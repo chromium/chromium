@@ -133,14 +133,8 @@ bool GetCommandDictAndOutputPaths(base::Value::Dict* commands,
     *pdf_file_path = path;
 
     base::Value::Dict params;
-    if (command_line->HasSwitch(switches::kNoPDFHeaderFooter) ||
-        command_line->HasSwitch(switches::kPrintToPDFNoHeaderDeprecated)) {
+    if (command_line->HasSwitch(switches::kNoPDFHeaderFooter)) {
       params.Set("noHeaderFooter", true);
-    }
-
-    if (command_line->HasSwitch(switches::kPrintToPDFNoHeaderDeprecated)) {
-      LOG(WARNING) << "--" << switches::kPrintToPDFNoHeaderDeprecated
-                   << " is deprecated, use --" << switches::kNoPDFHeaderFooter;
     }
 
     if (command_line->HasSwitch(switches::kDisablePDFTagging)) {
@@ -283,7 +277,6 @@ bool HeadlessCommandHandler::HasHeadlessCommandSwitches(
       switches::kDefaultBackgroundColor,
       switches::kDumpDom,
       switches::kPrintToPDF,
-      switches::kPrintToPDFNoHeaderDeprecated,
       switches::kNoPDFHeaderFooter,
       switches::kScreenshot,
       switches::kTimeout,
