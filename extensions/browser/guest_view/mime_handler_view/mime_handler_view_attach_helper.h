@@ -37,25 +37,31 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   // Returns the unique helper for process identified with |render_process_id|.
   static MimeHandlerViewAttachHelper* Get(int render_process_id);
 
-  // Called on IO thread to give this class a chance to override the response
-  // body for frame-based MimeHandlerView. |payload| will be populated with a
-  // template HTML page which appends a child frame to the frame associated
-  // with |navigating_frame_tree_node_id|. Then, an observer of the associated
-  // WebContents will observe the newly created RenderFrameHosts. As soon the
+  // Creates and returns a template HTML page containing an embed for a MIME
+  // handler. The MIME handler is expected to use this embed to load the MIME
+  // extension. `internal_id` is assigned to the embed.
+  static std::string CreateTemplateMimeHandlerPage(
+      const GURL& resource_url,
+      const std::string& mime_type,
+      const std::string& internal_id);
+
+  // Called on IO thread to override the response body for frame-based
+  // MimeHandlerView. The resulting payload will be populated with a template
+  // HTML page which appends a child frame to the frame associated with
+  // |navigating_frame_tree_node_id|. Then, an observer of the associated
+  // WebContents will observe the newly created RenderFrameHosts. As soon as the
   // expected RFH (i.e., the one added by the HTML string) is found, the
   // renderer is notified to start the MimHandlerView creation process. The
   // mentioned child frame will be used to attach the GuestView's WebContents to
   // the outer WebContents (WebContents associated with
-  // |navigating_frame_tree_node_id|). When this method returns true, the
-  // corresponding resource load will be halted until |resume| is invoked. This
-  // provides an opportunity for UI thread initializations.
-  static bool OverrideBodyForInterceptedResponse(
+  // |navigating_frame_tree_node_id|). The corresponding resource load will be
+  // halted until |resume| is invoked. This provides an opportunity for UI
+  // thread initializations.
+  static std::string OverrideBodyForInterceptedResponse(
       int32_t navigating_frame_tree_node_id,
       const GURL& resource_url,
       const std::string& mime_type,
       const std::string& stream_id,
-      std::string* payload,
-      uint32_t* data_pipe_size,
       base::OnceClosure resume_load = base::DoNothing());
 
   MimeHandlerViewAttachHelper(const MimeHandlerViewAttachHelper&) = delete;

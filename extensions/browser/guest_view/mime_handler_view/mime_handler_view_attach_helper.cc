@@ -4,6 +4,11 @@
 
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 
+#include <stdint.h>
+
+#include <string>
+#include <vector>
+
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -36,15 +41,14 @@ namespace extensions {
 
 namespace {
 
-// TODO(ekaramad): Make this a proper resource (https://crbug.com/659750).
-const char kFullPageMimeHandlerViewHTML[] =
+// TODO(crbug.com/659750): Make this a proper resource.
+constexpr char kFullPageMimeHandlerViewHTML[] =
     "<!doctype html><html><body style='height: 100%%; width: 100%%; overflow: "
     "hidden; margin:0px; background-color: rgb(%d, %d, %d);'><embed "
     "name='%s' "
     "style='position:absolute; left: 0; top: 0;'width='100%%' height='100%%'"
     " src='about:blank' type='%s' "
     "internalid='%s'></body></html>";
-const uint32_t kFullPageMimeHandlerViewDataPipeSize = 512U;
 
 SkColor GetBackgroundColorStringForMimeType(const GURL& url,
                                             const std::string& mime_type) {
@@ -53,8 +57,9 @@ SkColor GetBackgroundColorStringForMimeType(const GURL& url,
   std::vector<std::string> unused_actual_mime_types;
   content::PluginService::GetInstance()->GetPluginInfoArray(
       url, mime_type, true, &web_plugin_info_array, &unused_actual_mime_types);
-  if (!web_plugin_info_array.empty())
+  if (!web_plugin_info_array.empty()) {
     return web_plugin_info_array.front().background_color;
+  }
 #endif
   return content::WebPluginInfo::kDefaultBackgroundColor;
 }
@@ -85,28 +90,32 @@ MimeHandlerViewAttachHelper* MimeHandlerViewAttachHelper::Get(
 }
 
 // static
-bool MimeHandlerViewAttachHelper::OverrideBodyForInterceptedResponse(
+std::string MimeHandlerViewAttachHelper::CreateTemplateMimeHandlerPage(
+    const GURL& resource_url,
+    const std::string& mime_type,
+    const std::string& internal_id) {
+  auto color = GetBackgroundColorStringForMimeType(resource_url, mime_type);
+  return base::StringPrintf(kFullPageMimeHandlerViewHTML, SkColorGetR(color),
+                            SkColorGetG(color), SkColorGetB(color),
+                            internal_id.c_str(), mime_type.c_str(),
+                            internal_id.c_str());
+}
+
+// static
+std::string MimeHandlerViewAttachHelper::OverrideBodyForInterceptedResponse(
     int32_t navigating_frame_tree_node_id,
     const GURL& resource_url,
     const std::string& mime_type,
     const std::string& stream_id,
-    std::string* payload,
-    uint32_t* data_pipe_size,
     base::OnceClosure resume_load) {
-  auto color = GetBackgroundColorStringForMimeType(resource_url, mime_type);
-  std::string token = base::UnguessableToken::Create().ToString();
-  auto html_str = base::StringPrintf(
-      kFullPageMimeHandlerViewHTML, SkColorGetR(color), SkColorGetG(color),
-      SkColorGetB(color), token.c_str(), mime_type.c_str(), token.c_str());
-  payload->assign(html_str);
-  *data_pipe_size = kFullPageMimeHandlerViewDataPipeSize;
+  std::string internal_id = base::UnguessableToken::Create().ToString();
   content::GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(CreateFullPageMimeHandlerView,
                      navigating_frame_tree_node_id, resource_url, stream_id,
-                     token),
+                     internal_id),
       std::move(resume_load));
-  return true;
+  return CreateTemplateMimeHandlerPage(resource_url, mime_type, internal_id);
 }
 
 void MimeHandlerViewAttachHelper::RenderProcessHostDestroyed(
