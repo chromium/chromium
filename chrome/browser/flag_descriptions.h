@@ -2325,6 +2325,9 @@ extern const char kDeprecatedExternalPickerFunctionDescription[];
 extern const char kDragDropIntoOmniboxName[];
 extern const char kDragDropIntoOmniboxDescription[];
 
+extern const char kDrawCutoutEdgeToEdgeName[];
+extern const char kDrawCutoutEdgeToEdgeDescription[];
+
 extern const char kDrawEdgeToEdgeName[];
 extern const char kDrawEdgeToEdgeDescription[];
 

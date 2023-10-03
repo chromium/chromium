@@ -1919,6 +1919,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "draw-cutout-edge-to-edge",
+    "owners": ["donnd", "twellington", "edge-to-edge@chromium.org"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "draw-edge-to-edge",
     "owners": ["donnd", "twellington", "edge-to-edge@chromium.org"],
     "expiry_milestone": 125

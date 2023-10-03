@@ -294,6 +294,11 @@ BASE_FEATURE(kDocumentPolicy,
              "DocumentPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable drawing under System Bars within DisplayCutout.
+BASE_FEATURE(kDrawCutoutEdgeToEdge,
+             "DrawCutoutEdgeToEdge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable early swapping of RenderFrameHosts during some back/forward
 // navigations. This is an experimental feature intended to support new kinds of
 // navigation transitions. See https://crbug.com/1480129.

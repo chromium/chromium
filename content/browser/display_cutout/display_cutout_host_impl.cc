@@ -60,14 +60,21 @@ void DisplayCutoutHostImpl::DidFinishNavigation(
     return;
   }
 
+  // When Edge To Edge on Android is enabled it needs the messaging sent to
+  // Java.
+  bool is_not_just_fullscreen =
+      base::FeatureList::IsEnabled(features::kDrawCutoutEdgeToEdge);
+
   // If we finish a main frame navigation and the |WebDisplayMode| is
   // fullscreen then we should make the main frame the current
   // |RenderFrameHost|.  Note that this is probably not correct; we do not check
   // that the navigation completed successfully, nor do we check if the main
   // frame is still IsRenderFrameLive().
   blink::mojom::DisplayMode mode = web_contents_impl_->GetDisplayMode();
-  if (mode == blink::mojom::DisplayMode::kFullscreen)
+  if (is_not_just_fullscreen ||
+      mode == blink::mojom::DisplayMode::kFullscreen) {
     SetCurrentRenderFrameHost(web_contents_impl_->GetPrimaryMainFrame());
+  }
 }
 
 void DisplayCutoutHostImpl::RenderFrameDeleted(RenderFrameHost* rfh) {
