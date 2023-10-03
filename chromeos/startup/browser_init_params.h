@@ -18,8 +18,9 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserInitParams {
   BrowserInitParams& operator=(const BrowserInitParams&) = delete;
 
   // Returns BrowserInitParams which is passed from ash-chrome.
-  // Useful for tests. Production code always needs to go
-  // through BrowserParamsProxy instead.
+  // Useful for tests. This should generally be called only after
+  // BrowserTestBase::SetUp.
+  // Production code always needs to go through BrowserParamsProxy instead.
   static const crosapi::mojom::BrowserInitParams* GetForTests();
 
   // Sets `init_params_` to the provided value.
