@@ -6,13 +6,16 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
 namespace extensions {
 
 namespace {
 // TODO(crbug.com/1441221): Create test cases where we test "failures" like
 // events not acking.
 
+using ContextType = ExtensionBrowserTest::ContextType;
 using EventMetricsBrowserTest = ExtensionBrowserTest;
 
 // Tests that the only the dispatch time histogram provided to the test is
@@ -89,17 +92,89 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, DispatchMetricTest) {
   }
 }
 
-// TODO(crbug.com/1441221): Add persistent background page test case. This is
-// just for service workers.
+class EventMetricsDispatchToSenderBrowserTest
+    : public ExtensionBrowserTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  EventMetricsDispatchToSenderBrowserTest() = default;
+
+  EventMetricsDispatchToSenderBrowserTest(
+      const EventMetricsDispatchToSenderBrowserTest&) = delete;
+  EventMetricsDispatchToSenderBrowserTest& operator=(
+      const EventMetricsDispatchToSenderBrowserTest&) = delete;
+};
+
 // Tests that the we do not emit event dispatch time metrics for webRequest
 // events with active listeners.
-IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, DispatchToSenderMetricTest) {
+IN_PROC_BROWSER_TEST_P(EventMetricsDispatchToSenderBrowserTest,
+                       DispatchToSenderMetricTest) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  // Load an extension that listens for webRequest events.
+
+  // Load either a persistent background page or a service worker extension
+  // with webRequest permission.
+  static constexpr char kManifestPersistentBackgroundScript[] =
+      R"({"scripts": ["background.js"], "persistent": true})";
+  static constexpr char kManifestServiceWorkerBackgroundScript[] =
+      R"({"service_worker": "background.js"})";
+  static constexpr char kManifestPersistentBackgroundPermissions[] =
+      R"("permissions": ["webRequest", "http://example.com/*"])";
+  static constexpr char kManifestServiceWorkerPermissions[] =
+      R"(
+          "host_permissions": [
+            "http://example.com/*"
+          ],
+          "permissions": ["webRequest"]
+      )";
+
+  static constexpr char kManifest[] =
+      R"({
+        "name": "Test Extension",
+        "manifest_version": %s,
+        "version": "0.1",
+        "background": %s,
+        %s
+      })";
+  bool persistent_background_extension =
+      GetParam() == ContextType::kPersistentBackground;
+  const char* background_script = persistent_background_extension
+                                      ? kManifestPersistentBackgroundScript
+                                      : kManifestServiceWorkerBackgroundScript;
+  const char* manifest_version = persistent_background_extension ? "2" : "3";
+  const char* permissions = persistent_background_extension
+                                ? kManifestPersistentBackgroundPermissions
+                                : kManifestServiceWorkerPermissions;
+  std::string manifest = base::StringPrintf(kManifest, manifest_version,
+                                            background_script, permissions);
+
+  // The extensions script listens for runtime.onInstalled and
+  // webRequest.onBeforeRequest.
+  static constexpr char kScript[] =
+      R"({
+        chrome.runtime.onInstalled.addListener((details) => {
+          // Asynchronously send the message that the listener fired so that the
+          // event is considered ack'd in the browser C++ code.
+          setTimeout(() => {
+            chrome.test.sendMessage('installed listener fired');
+          }, 0);
+        });
+
+        chrome.webRequest.onBeforeRequest.addListener(
+          (details) => {
+            setTimeout(() => {
+              chrome.test.sendMessage('listener fired');
+            }, 0);
+          },
+          {urls: ['<all_urls>'], types: ['main_frame']},
+          []
+        );
+      })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(manifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kScript);
   ExtensionTestMessageListener extension_oninstall_listener_fired(
       "installed listener fired");
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("events/metrics/web_request"));
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   // This ensures that we wait until the the browser receives the ack from the
   // renderer. This prevents unexpected histogram emits later.
@@ -128,6 +203,13 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, DispatchToSenderMetricTest) {
   //     "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker",
   //     /*expected_count=*/0);
 }
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         EventMetricsDispatchToSenderBrowserTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         EventMetricsDispatchToSenderBrowserTest,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 }  // namespace
 
