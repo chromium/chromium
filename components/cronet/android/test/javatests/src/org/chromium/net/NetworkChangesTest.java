@@ -99,6 +99,14 @@ public class NetworkChangesTest {
             fakeNetworkDisconnected(getNonDefaultNetwork());
         }
 
+        public void disconnectDefaultNetwork() {
+            fakeNetworkDisconnected(mDefaultNetwork);
+        }
+
+        public void connectDefaultNetwork() {
+            fakeNetworkConnected(mDefaultNetwork);
+        }
+
         private void fakeDefaultNetworkChange(Network network) {
             postToInitThreadSync(() -> {
                 NetworkChangeNotifier.fakeDefaultNetwork(
@@ -109,6 +117,13 @@ public class NetworkChangesTest {
         private void fakeNetworkDisconnected(Network network) {
             postToInitThreadSync(() -> {
                 NetworkChangeNotifier.fakeNetworkDisconnected(network.getNetworkHandle());
+            });
+        }
+
+        private void fakeNetworkConnected(Network network) {
+            postToInitThreadSync(() -> {
+                NetworkChangeNotifier.fakeNetworkConnected(
+                        network.getNetworkHandle(), ConnectionType.CONNECTION_4G);
             });
         }
 
@@ -477,6 +492,46 @@ public class NetworkChangesTest {
         waitForStatus(request, UrlRequest.Status.IDLE);
         networks.swapDefaultNetwork();
         networks.disconnectNonDefaultNetwork();
+
+        callback.blockForDone();
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasNegotiatedProtocolThat()
+                .isEqualTo("h3");
+    }
+
+    @Test
+    @MediumTest
+    @DisabledTest(message = "crbug.com/1487204")
+    public void
+    testDefaultNetworkDisconnectAndReconnect_defaultNetworkMigration_pendingRequestSucceeds()
+            throws Exception {
+        mTestRule.getTestFramework().applyEngineBuilderPatch(
+                (builder) -> { enableDefaultNetworkMigration(builder); });
+        mTestRule.getTestFramework().startEngine();
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) mTestRule.getTestFramework().getContext().getSystemService(
+                        Context.CONNECTIVITY_SERVICE);
+        Networks networks = new Networks(connectivityManager);
+
+        String url = QuicTestServer.getServerURL() + "/simple.txt";
+        // Unfortunately we have no choice but to delay as QuicTestServer doesn't provide any
+        // synchronization control to the caller.
+        // 15 seconds is, hopefully, a good enough tradeoff between test execution speed and
+        // flakiness.
+        QuicTestServer.delayResponse("/simple.txt", 15);
+
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest request = mTestRule.getTestFramework()
+                                     .getEngine()
+                                     .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                                     .build();
+        request.start();
+
+        // Without this synchronization it seems that the default network change can happen before
+        // the underlying QUIC session is created (read: the test would be flaky).
+        waitForStatus(request, UrlRequest.Status.IDLE);
+        networks.disconnectDefaultNetwork();
+        networks.connectDefaultNetwork();
 
         callback.blockForDone();
         assertThat(callback.getResponseInfoWithChecks())
