@@ -332,11 +332,6 @@ void CanvasRenderingContext2DTest::TearDown() {
 class FakeCanvas2DLayerBridge : public Canvas2DLayerBridge {
  public:
   FakeCanvas2DLayerBridge() {}
-
-  MOCK_METHOD1(DrawFullImage, void(const PaintImage& image));
-  MOCK_METHOD1(DidRestoreCanvasMatrixClipStack, void(cc::PaintCanvas*));
-
- private:
 };
 
 //============================================================================
@@ -353,22 +348,35 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
                                /*context_provider_wrapper=*/nullptr,
                                /*resource_dispatcher=*/nullptr,
                                resource_host),
-        is_accelerated_(hint != RasterModeHint::kPreferCPU) {}
+        is_accelerated_(hint != RasterModeHint::kPreferCPU) {
+    ON_CALL(*this, Snapshot)
+        .WillByDefault(
+            [this](FlushReason reason, ImageOrientation orientation) {
+              return SnapshotInternal(orientation, reason);
+            });
+  }
   ~FakeCanvasResourceProvider() override = default;
   bool IsAccelerated() const override { return is_accelerated_; }
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
     return scoped_refptr<CanvasResource>();
   }
   bool SupportsDirectCompositing() const override { return false; }
-  bool IsValid() const override { return false; }
+  bool IsValid() const override { return true; }
   sk_sp<SkSurface> CreateSkSurface() const override {
-    return sk_sp<SkSurface>();
+    return SkSurfaces::Raster(GetSkImageInfo());
   }
-  scoped_refptr<StaticBitmapImage> Snapshot(
-      FlushReason reason,
-      ImageOrientation orientation) override {
-    return SnapshotInternal(orientation, reason);
-  }
+
+  MOCK_METHOD((scoped_refptr<StaticBitmapImage>),
+              Snapshot,
+              (FlushReason reason, ImageOrientation orientation));
+
+  MOCK_METHOD(bool,
+              WritePixels,
+              (const SkImageInfo& orig_info,
+               const void* pixels,
+               size_t row_bytes,
+               int x,
+               int y));
 
  private:
   bool is_accelerated_;
@@ -1579,39 +1587,32 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
-       DisableAcceleration_RestoreCanvasMatrixClipStack) {
-  // This tests verifies whether the RestoreCanvasMatrixClipStack happens after
-  // PaintCanvas is drawn from old 2d bridge to new 2d bridge.
-  InSequence s;
-
+       DisableAccelerationPreservesRaster) {
   CreateContext(kNonOpaque);
+
   gfx::Size size(10, 10);
-  auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>();
+  auto gpu_provider = std::make_unique<FakeCanvasResourceProvider>(
+      SkImageInfo::MakeN32Premul(size.width(), size.height()),
+      RasterModeHint::kPreferGPU, &CanvasElement());
+  auto cpu_provider = std::make_unique<FakeCanvasResourceProvider>(
+      SkImageInfo::MakeN32Premul(size.width(), size.height()),
+      RasterModeHint::kPreferCPU, &CanvasElement());
+
+  // When disabling acceleration, the raster content is read from the
+  // accelerated provider and written to the unaccelerated provider.
+  InSequence s;
+  EXPECT_CALL(*gpu_provider, Snapshot(FlushReason::kReplaceLayerBridge, _))
+      .Times(1);
+  EXPECT_CALL(*cpu_provider, WritePixels).Times(1);
+
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
-      nullptr, std::move(fake_accelerate_surface), size);
-
-  FakeCanvasResourceHost host(size);
-  auto fake_deaccelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>();
-  host.SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
-  fake_deaccelerate_surface->SetCanvasResourceHost(&host);
-
-  FakeCanvas2DLayerBridge* surface_ptr = fake_deaccelerate_surface.get();
-
-  EXPECT_CALL(*fake_deaccelerate_surface, DrawFullImage(_)).Times(1);
-  EXPECT_CALL(*fake_deaccelerate_surface, DidRestoreCanvasMatrixClipStack(_))
-      .Times(1);
+      std::move(gpu_provider), std::make_unique<FakeCanvas2DLayerBridge>(),
+      size);
 
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-  EXPECT_TRUE(
-      IsCanvasResourceHostSet(CanvasElement().GetCanvas2DLayerBridge()));
-
-  CanvasElement().DisableAcceleration(std::move(fake_deaccelerate_surface));
+  CanvasElement().DisableAcceleration(std::move(cpu_provider));
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
-  EXPECT_TRUE(
-      IsCanvasResourceHostSet(CanvasElement().GetCanvas2DLayerBridge()));
-
-  Mock::VerifyAndClearExpectations(surface_ptr);
 }
 
 class CanvasRenderingContext2DTestAcceleratedMultipleDisables

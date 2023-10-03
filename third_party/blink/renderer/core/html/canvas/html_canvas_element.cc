@@ -672,22 +672,19 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
 }
 
 void HTMLCanvasElement::DisableAcceleration(
-    std::unique_ptr<Canvas2DLayerBridge>
-        unaccelerated_bridge_used_for_testing) {
+    std::unique_ptr<CanvasResourceProvider> new_provider_for_testing) {
   if (base::FeatureList::IsEnabled(kStartCanvasWithAccelerationDisabled)) {
     DisabledAccelerationCounterSupplement::From(GetDocument())
         .IncrementDisabledCount();
   }
   // Create and configure an unaccelerated Canvas2DLayerBridge.
   SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
-  std::unique_ptr<Canvas2DLayerBridge> bridge;
-  if (unaccelerated_bridge_used_for_testing)
-    bridge = std::move(unaccelerated_bridge_used_for_testing);
-  else
-    bridge = Create2DLayerBridge();
+  std::unique_ptr<Canvas2DLayerBridge> bridge = Create2DLayerBridge();
 
-  if (bridge && canvas2d_bridge_)
-    ReplaceExisting2dLayerBridge(std::move(bridge));
+  if (bridge && canvas2d_bridge_) {
+    ReplaceExisting2dLayerBridge(std::move(bridge),
+                                 std::move(new_provider_for_testing));
+  }
 
   // We must force a paint invalidation on the canvas even if it's
   // content did not change because it layer was destroyed.
@@ -1810,7 +1807,8 @@ size_t HTMLCanvasElement::GetMemoryUsage() const {
 }
 
 void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
-    std::unique_ptr<Canvas2DLayerBridge> new_layer_bridge) {
+    std::unique_ptr<Canvas2DLayerBridge> new_layer_bridge,
+    std::unique_ptr<CanvasResourceProvider> new_provider_for_testing) {
   scoped_refptr<StaticBitmapImage> image;
   std::unique_ptr<Canvas2DLayerBridge> old_layer_bridge;
   if (canvas2d_bridge_) {
@@ -1831,10 +1829,16 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
   canvas2d_bridge_ = std::move(new_layer_bridge);
   canvas2d_bridge_->SetCanvasResourceHost(this);
 
+  if (new_provider_for_testing) {
+    ReplaceResourceProvider(std::move(new_provider_for_testing));
+  }
+
   // If PaintCanvas cannot be get from the new layer bridge, revert the
   // replacement.
+  CanvasResourceProvider* provider =
+      canvas2d_bridge_->GetOrCreateResourceProvider();
   cc::PaintCanvas* canvas = canvas2d_bridge_->GetPaintCanvas();
-  if (!canvas) {
+  if (!provider || !canvas) {
     if (old_layer_bridge) {
       canvas2d_bridge_ = std::move(old_layer_bridge);
       canvas2d_bridge_->SetCanvasResourceHost(this);
@@ -1842,15 +1846,6 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
     return;
   }
 
-  // After validating paint canvas on new layer bridge, removes the clip from
-  // the canvas. Since clips is automatically applied to paint canvas, the image
-  // already contains clip and the image needs to be drawn before the clip stack
-  // is re-applied, it needs to remove clip from canvas and restore it after the
-  // image is drawn.
-  canvas->restoreToCount(1);
-
-  // TODO(jochin): Consider using ResourceProvider()->RestoreBackBuffer() here
-  // to avoid all of this clip stack manipulation.
   if (image) {
     auto paint_image = image->PaintImageForCurrentFrame();
     if ((GetRasterMode() == RasterMode::kCPU) &&
@@ -1866,11 +1861,8 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
               .set_image(sk_image, content_id);
       paint_image = builder.TakePaintImage();
     }
-    canvas2d_bridge_->DrawFullImage(paint_image);
+    provider->RestoreBackBuffer(paint_image);
   }
-
-  InitializeForRecording(canvas);
-  canvas2d_bridge_->DidRestoreCanvasMatrixClipStack(canvas);
 
   UpdateMemoryUsage();
 }

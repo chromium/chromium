@@ -229,8 +229,8 @@ class CORE_EXPORT HTMLCanvasElement final
   // CanvasRenderingContextHost implementation.
   UkmParameters GetUkmParameters() override;
 
-  void DisableAcceleration(std::unique_ptr<Canvas2DLayerBridge>
-                               unaccelerated_bridge_used_for_testing = nullptr);
+  void DisableAcceleration(std::unique_ptr<CanvasResourceProvider>
+                               new_provider_for_testing = nullptr);
 
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const override;
@@ -407,7 +407,10 @@ class CORE_EXPORT HTMLCanvasElement final
 
   // Canvas2DLayerBridge is used when canvas has 2d rendering context
   std::unique_ptr<Canvas2DLayerBridge> canvas2d_bridge_;
-  void ReplaceExisting2dLayerBridge(std::unique_ptr<Canvas2DLayerBridge>);
+  void ReplaceExisting2dLayerBridge(
+      std::unique_ptr<Canvas2DLayerBridge> new_layer_bridge,
+      std::unique_ptr<CanvasResourceProvider> new_provider_for_testing =
+          nullptr);
 
   // Used for OffscreenCanvas that controls this HTML canvas element
   // and for low latency mode.

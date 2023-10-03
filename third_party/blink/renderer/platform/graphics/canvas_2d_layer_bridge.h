@@ -62,8 +62,8 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
 
   // virtual for unit testing
   virtual void WillOverwriteCanvas();
-  virtual void DrawFullImage(const cc::PaintImage&);
-  virtual void DidRestoreCanvasMatrixClipStack(cc::PaintCanvas*) {}
+
+  void DrawFullImage(const cc::PaintImage&);
 
   // This may recreate CanvasResourceProvider
   cc::PaintCanvas* GetPaintCanvas();

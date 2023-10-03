@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  assert_true(!!window.internals, 'Tests require window.internals.');
+}, 'Prerequisites to running the rest of the tests.');
+
+function checkPixel(ctx, x, y, rgb) {
+    assert_array_equals(ctx.getImageData(x, y, 1, 1).data.slice(0,3), rgb);
+}
+
+test(function(t) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = 'green';
+  ctx.fillRect(0, 0, 10, 10);
+
+  internals.disableCanvasAcceleration(canvas);
+
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(10, 0, 10, 10);
+  checkPixel(ctx, 5, 5, [0, 128, 0]);
+  checkPixel(ctx, 15, 5, [0, 0, 255]);
+}, 'Disabling acceleration preserves recording.');
+
+test(function(t) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = 'green';
+  ctx.fillRect(0, 0, 10, 10);
+
+  // Read the canvas content to force rasterization.
+  checkPixel(ctx, 5, 5, [0, 128, 0]);
+
+  internals.disableCanvasAcceleration(canvas);
+
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(10, 0, 10, 10);
+  checkPixel(ctx, 5, 5, [0, 128, 0]);
+  checkPixel(ctx, 15, 5, [0, 0, 255]);
+}, 'Disabling acceleration preserves previously rasterized image.');
+</script>

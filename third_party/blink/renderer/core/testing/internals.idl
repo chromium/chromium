@@ -334,6 +334,7 @@ interface Internals {
     unsigned long canvasFontCacheMaxFonts();
     void forceLoseCanvasContext(HTMLCanvasElement canvas, DOMString contextType);
     void forceLoseCanvasContext(OffscreenCanvas offscreencanvas, DOMString context_type);
+    void disableCanvasAcceleration(HTMLCanvasElement canvas);
 
     DictionaryTest dictionaryTest();
     RecordTest recordTest();

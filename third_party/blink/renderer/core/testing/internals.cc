@@ -3611,6 +3611,10 @@ void Internals::forceLoseCanvasContext(OffscreenCanvas* offscreencanvas,
   context->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
 }
 
+void Internals::disableCanvasAcceleration(HTMLCanvasElement* canvas) {
+  canvas->DisableAcceleration();
+}
+
 void Internals::setScrollChain(ScrollState* scroll_state,
                                const HeapVector<Member<Element>>& elements,
                                ExceptionState&) {

@@ -528,6 +528,7 @@ class Internals final : public ScriptWrappable {
 
   void forceLoseCanvasContext(OffscreenCanvas* offscreencanvas,
                               const String& context_type);
+  void disableCanvasAcceleration(HTMLCanvasElement* canvas);
 
   void setScrollChain(ScrollState*,
                       const HeapVector<Member<Element>>& elements,
