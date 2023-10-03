@@ -46,7 +46,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -98,14 +97,8 @@ public class TabGridAccessibilityHelperTest {
         CriteriaHelper.pollUiThread(
                 sActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
 
-        // Toggle layout state to trigger lazy layout creation.
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        enterTabSwitcher(cta);
-        leaveTabSwitcher(cta);
-
-        Layout layout =
-                sActivityTestRule.getActivity().getLayoutManager().getTabSwitcherLayoutForTesting();
-        assertTrue(layout instanceof TabSwitcherLayout);
+        TabUiTestHelper.getTabSwitcherLayoutAndVerify(
+                sActivityTestRule.getActivity(), /* isStartSurfaceRefactorEnabled= */ true);
     }
 
     @After
