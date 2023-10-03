@@ -517,8 +517,8 @@ void ActionManager::ResetForTesting() {
 // static
 ActionManager::ActionIdToStringMap& ActionManager::GetActionIdToStringMap() {
   static base::NoDestructor<ActionIdToStringMap> map(
-      base::MakeFlatMap<ActionId, std::string_view>(
-          std::vector<std::pair<ActionId, std::string_view>>{ACTION_IDS}));
+      base::MakeFlatMap<ActionId, std::string>(
+          std::vector<std::pair<ActionId, std::string>>{ACTION_IDS}));
   return *map;
 }
 
@@ -531,8 +531,8 @@ ActionManager::ActionIdToStringMap& ActionManager::GetActionIdToStringMap() {
 // static
 ActionManager::StringToActionIdMap& ActionManager::GetStringToActionIdMap() {
   static base::NoDestructor<StringToActionIdMap> map(
-      base::MakeFlatMap<std::string_view, ActionId>(
-          std::vector<std::pair<std::string_view, ActionId>>{ACTION_IDS}));
+      base::MakeFlatMap<std::string, ActionId>(
+          std::vector<std::pair<std::string, ActionId>>{ACTION_IDS}));
   return *map;
 }
 
@@ -544,7 +544,7 @@ absl::optional<std::string> ActionManager::ActionIdToString(
     const ActionId action_id) {
   auto iter = GetActionIdToStringMap().find(action_id);
   if (iter != GetActionIdToStringMap().end()) {
-    return std::string(iter->second);
+    return iter->second;
   }
   return absl::nullopt;
 }
@@ -595,7 +595,7 @@ void ActionManager::MergeMaps(base::flat_map<T, U>& map1,
 
 // static
 void ActionManager::AddActionIdToStringMappings(ActionIdToStringMap map) {
-  MergeMaps<ActionId, std::string_view>(GetActionIdToStringMap(), map);
+  MergeMaps<ActionId, std::string>(GetActionIdToStringMap(), map);
 }
 
 // static

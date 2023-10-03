@@ -266,8 +266,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
 
   using ActionItemInitializerList =
       base::RepeatingCallbackList<void(ActionManager*)>;
-  using ActionIdToStringMap = base::flat_map<ActionId, std::string_view>;
-  using StringToActionIdMap = base::flat_map<std::string_view, ActionId>;
+  using ActionIdToStringMap = base::flat_map<ActionId, std::string>;
+  using StringToActionIdMap = base::flat_map<std::string, ActionId>;
 
   ActionManager(const ActionManager&) = delete;
   ActionManager& operator=(const ActionManager&) = delete;

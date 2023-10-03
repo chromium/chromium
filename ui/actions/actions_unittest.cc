@@ -213,8 +213,8 @@ TEST_F(ActionManagerTest, MapBetweenEnumAndString) {
 #include "ui/actions/action_id_macros.inc"
 
 TEST_F(ActionManagerTest, MergeMaps) {
-  auto test_action_map = base::MakeFlatMap<ActionId, std::string_view>(
-      std::vector<std::pair<ActionId, std::string_view>>{TEST_ACTION_IDS});
+  auto test_action_map = base::MakeFlatMap<ActionId, std::string>(
+      std::vector<std::pair<ActionId, std::string>>{TEST_ACTION_IDS});
   ActionManager::AddActionIdToStringMappings(test_action_map);
 
   const std::string expected_action_string = "kActionPaste";
