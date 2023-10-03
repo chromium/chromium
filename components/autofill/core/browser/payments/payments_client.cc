@@ -325,8 +325,7 @@ void PaymentsClient::GetUploadDetails(
           account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
           app_locale, std::move(callback), billable_service_number,
           billing_customer_number, upload_card_source),
-      /*authenticate=*/base::FeatureList::IsEnabled(
-          features::kAutofillUpstreamAuthenticatePreflightCall));
+      /*authenticate=*/true);
 }
 
 void PaymentsClient::UploadCard(

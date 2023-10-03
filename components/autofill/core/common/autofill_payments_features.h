@@ -50,7 +50,6 @@ BASE_DECLARE_FEATURE(kAutofillUpdateChromeSettingsLinkToGPayWeb);
 BASE_DECLARE_FEATURE(kAutofillUpstream);
 BASE_DECLARE_FEATURE(kAutofillUpstreamAllowAdditionalEmailDomains);
 BASE_DECLARE_FEATURE(kAutofillUpstreamAllowAllEmailDomains);
-BASE_DECLARE_FEATURE(kAutofillUpstreamAuthenticatePreflightCall);
 BASE_DECLARE_FEATURE(kAutofillUseEloRegexForBinMatching);
 
 #if BUILDFLAG(IS_IOS)
