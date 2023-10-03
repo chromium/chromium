@@ -1636,7 +1636,10 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
 
   base::win::RegKey key;
-  ASSERT_EQ(key.Create(root, GetAppClientsKey(kLegacyGoogleUpdateAppID).c_str(),
+  ASSERT_EQ(key.Create(root,
+                       base::StrCat(
+                           {UPDATER_KEY L"Clients\\", kLegacyGoogleUpdateAppID})
+                           .c_str(),
                        Wow6432(KEY_WRITE)),
             ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValuePV, L"1.1.1.1"), ERROR_SUCCESS);
@@ -1647,17 +1650,17 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
   ASSERT_EQ(
       key.Create(
           root,
-          GetAppClientsKey(L"{8A69D345-D564-463C-AFF1-A69D9E530F96}").c_str(),
+          UPDATER_KEY L"\\Clients\\{8A69D345-D564-463C-AFF1-A69D9E530F96}",
           Wow6432(KEY_WRITE)),
       ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValuePV, L"99.0.0.1"), ERROR_SUCCESS);
   key.Close();
 
   ASSERT_EQ(
-      key.Create(root,
-                 GetAppClientStateKey(L"{8A69D345-D564-463C-AFF1-A69D9E530F96}")
-                     .c_str(),
-                 Wow6432(KEY_WRITE)),
+      key.Create(
+          root,
+          UPDATER_KEY L"\\ClientState\\{8A69D345-D564-463C-AFF1-A69D9E530F96}",
+          Wow6432(KEY_WRITE)),
       ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValueBrandCode, L"GGLS"), ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
@@ -1666,12 +1669,12 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
   ASSERT_EQ(key.WriteValue(kRegValueDateOfLastRollcall, 5929), ERROR_SUCCESS);
   key.Close();
 
-  ASSERT_EQ(
-      key.Create(
-          root,
-          GetAppCohortKey(L"{8A69D345-D564-463C-AFF1-A69D9E530F96}").c_str(),
-          Wow6432(KEY_WRITE)),
-      ERROR_SUCCESS);
+  ASSERT_EQ(key.Create(
+                root,
+                UPDATER_KEY L"\\ClientState"
+                            L"\\{8A69D345-D564-463C-AFF1-A69D9E530F96}\\cohort",
+                Wow6432(KEY_WRITE)),
+            ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(nullptr, L"TestCohort"), ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValueCohortName, L"TestCohortName"),
             ERROR_SUCCESS);
@@ -1682,7 +1685,7 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
   ASSERT_EQ(
       key.Create(
           root,
-          GetAppClientsKey(L"{fc54d8f9-b6fd-4274-92eb-c4335cd8761e}").c_str(),
+          UPDATER_KEY L"\\Clients\\{fc54d8f9-b6fd-4274-92eb-c4335cd8761e}",
           Wow6432(KEY_WRITE)),
       ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValueBrandCode, L"GGLS"), ERROR_SUCCESS);

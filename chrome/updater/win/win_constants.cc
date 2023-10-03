@@ -27,6 +27,8 @@ const wchar_t kRegValueDateOfLastRollcall[] = L"DayOfLastRollCall";
 const wchar_t kRegValueName[] = L"name";
 const wchar_t kRegValueUninstallCmdLine[] = L"UninstallCmdLine";
 const wchar_t kRegValueVersion[] = L"version";
+
+const wchar_t kRegKeyCohort[] = L"cohort";
 const wchar_t kRegValueCohortName[] = L"name";
 const wchar_t kRegValueCohortHint[] = L"hint";
 
