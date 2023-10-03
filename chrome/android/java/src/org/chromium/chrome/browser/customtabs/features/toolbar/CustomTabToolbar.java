@@ -337,12 +337,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private void setMaximizeButtonVisibility() {
         var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
-        if (maximizeButton == null) return;
-
-        if (!mMaximizeButtonEnabled) {
-            maximizeButton.setVisibility(View.GONE);
+        if (!mMaximizeButtonEnabled || maximizeButton == null) {
+            if (maximizeButton != null) maximizeButton.setVisibility(View.GONE);
+            setUrlTitleBarMargin(0);
             return;
         }
+
         // Find the title/url width threshold that turns the maximize button visible.
         int containerWidthPx = mLocationBar.mTitleUrlContainer.getWidth();
         if (containerWidthPx == 0) return;
@@ -359,13 +359,22 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mLocationBar.removeMaximizeButtonVisibilityUpdater();
 
             // Take some space from the title/url for maximization button.
-            var lpTitle = (ViewGroup.MarginLayoutParams) mLocationBar.mTitleBar.getLayoutParams();
-            var lpUrl = (ViewGroup.MarginLayoutParams) mLocationBar.mUrlBar.getLayoutParams();
-            lpTitle.rightMargin = maximizeButtonWidthPx;
-            lpUrl.rightMargin = maximizeButtonWidthPx;
-            mLocationBar.mTitleBar.setLayoutParams(lpTitle);
-            mLocationBar.mUrlBar.setLayoutParams(lpUrl);
+            setUrlTitleBarMargin(maximizeButtonWidthPx);
             maximizeButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setUrlTitleBarMargin(int margin) {
+        setViewRightMargin(mLocationBar.mTitleBar, margin);
+        setViewRightMargin(mLocationBar.mUrlBar, margin);
+    }
+
+    private static void setViewRightMargin(View view, int margin) {
+        if (view == null) return;
+        var lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        if (lp != null && lp.rightMargin != margin) {
+            lp.rightMargin = margin;
+            view.setLayoutParams(lp);
         }
     }
 
