@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
-#include "chrome/browser/companion/visual_search/features.h"
 #include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -145,7 +144,7 @@ void VisualSearchClassifierHost::StartClassification(
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &visual_search);
 
-  visual_search_service_->SetModelUpdateCallback(
+  visual_search_service_->RegisterModelUpdateCallback(
       base::BindOnce(&VisualSearchClassifierHost::StartClassificationWithModel,
                      weak_ptr_factory_.GetWeakPtr(), std::move(visual_search)));
 
@@ -158,7 +157,7 @@ void VisualSearchClassifierHost::StartClassificationWithModel(
     mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler>
         visual_search,
     base::File model,
-    std::string base64_config) {
+    const std::string& base64_config) {
   base::UmaHistogramBoolean("Companion.VisualQuery.ClassifierModelAvailable",
                             model.IsValid());
   if (!model.IsValid()) {
@@ -169,14 +168,6 @@ void VisualSearchClassifierHost::StartClassificationWithModel(
   if (result_callback_.is_null()) {
     RecordStatusChange(InitStatus::kCallbackCancelled);
     return;
-  }
-
-  absl::optional<std::string> config_switch =
-      switches::GetVisualSearchConfigForCompanionOverride();
-
-  // Replace empty string with config switch if we have one.
-  if (config_switch) {
-    base64_config = std::move(config_switch.value());
   }
 
   if (visual_search.is_bound() && !result_handler_.is_bound()) {

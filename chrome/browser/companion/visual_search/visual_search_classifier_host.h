@@ -127,7 +127,7 @@ class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
       mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler>
           visual_search,
       base::File file,
-      std::string base64_config);
+      const std::string& base64_config);
 
   // Pointer to visual search service which we do not own.
   raw_ptr<VisualSearchSuggestionsService> visual_search_service_ = nullptr;

@@ -17,5 +17,6 @@ mojom("mojo_bindings") {
     "//mojo/public/mojom/base",
     "//skia/public/mojom",
     "//ui/base/mojom",
+    "//url/mojom:url_mojom_gurl",
   ]
 }

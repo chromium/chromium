@@ -38,6 +38,7 @@ class VisualSearchClassifierAgent : public content::RenderFrameObserver,
 
   // RenderFrameObserver implementation:
   void OnDestruct() override;
+  void DidFinishLoad() override;
 
   // VisualSuggestionsRequestHandler implementation:
   // This method is the main entrypoint which triggers visual classification.
@@ -62,6 +63,9 @@ class VisualSearchClassifierAgent : public content::RenderFrameObserver,
   // same thread that triggered the classification task (i.e. main thread).
   void OnClassificationDone(ClassificationResultsAndStats results);
 
+  // Handler method used when agent request model from browser.
+  void HandleGetModelCallback(base::File file, const std::string& config);
+
   // Used to track whether there is an ongoing classification task, if so, we
   // drop the incoming request.
   bool is_classifying_ = false;
@@ -82,6 +86,9 @@ class VisualSearchClassifierAgent : public content::RenderFrameObserver,
   // The result handler is used to give us a path back to results. It
   // typically will lead to a Mojom IPC call back to the browser process.
   mojo::Remote<mojom::VisualSuggestionsResultHandler> result_handler_;
+
+  // Remote pipe for fetching model and metadata from the browser process.
+  mojo::Remote<mojom::VisualSuggestionsModelProvider> model_provider_;
 
   // Pointer factory necessary for scheduling tasks on different threads.
   base::WeakPtrFactory<VisualSearchClassifierAgent> weak_ptr_factory_{this};

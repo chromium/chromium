@@ -5,6 +5,7 @@
 #include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -79,7 +80,13 @@ VisualSearchSuggestionsService::~VisualSearchSuggestionsService() {
   }
 }
 
+void VisualSearchSuggestionsService::BindModelReceiver(
+    mojo::PendingReceiver<mojom::VisualSuggestionsModelProvider> receiver) {
+  model_receivers_.Add(this, std::move(receiver));
+}
+
 void VisualSearchSuggestionsService::Shutdown() {
+  model_receivers_.Clear();
   UnloadModelFile();
 }
 
@@ -140,7 +147,7 @@ void VisualSearchSuggestionsService::OnModelUpdated(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void VisualSearchSuggestionsService::SetModelUpdateCallback(
+void VisualSearchSuggestionsService::RegisterModelUpdateCallback(
     ModelUpdateCallback callback) {
   if (model_file_) {
     std::move(callback).Run(model_file_->Duplicate(),
@@ -148,6 +155,13 @@ void VisualSearchSuggestionsService::SetModelUpdateCallback(
     return;
   }
   model_callbacks_.emplace_back(std::move(callback));
+}
+
+void VisualSearchSuggestionsService::GetModelWithMetadata(
+    GetModelWithMetadataCallback callback) {
+  RegisterModelUpdateCallback(base::BindOnce(std::move(callback)));
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "Companion.VisualQuery.Service.GetModelRequestSuccess", true);
 }
 
 }  // namespace companion::visual_search
