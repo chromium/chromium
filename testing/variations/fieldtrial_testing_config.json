@@ -886,6 +886,22 @@
             ]
         }
     ],
+    "AshUrgentDiscardingFromPerformanceManager": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AshUrgentDiscardingFromPerformanceManager",
+                        "ContainerAppKiller"
+                    ]
+                }
+            ]
+        }
+    ],
     "AssistMultiWord": [
         {
             "platforms": [
