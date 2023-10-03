@@ -1367,6 +1367,13 @@ void WebViewGuest::SetAllowScaling(bool allow) {
   allow_scaling_ = allow;
 }
 
+bool WebViewGuest::ShouldResumeRequestsForCreatedWindow() {
+  // Delay so that the embedder page has a chance to call APIs such as
+  // webRequest in time to be applied to the initial navigation in the new guest
+  // contents. We resume during AttachToOuterWebContentsFrame.
+  return false;
+}
+
 void WebViewGuest::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,

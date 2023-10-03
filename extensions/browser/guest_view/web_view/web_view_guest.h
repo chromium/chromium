@@ -224,6 +224,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
                    base::OnceCallback<void(bool)> callback) final;
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* source) final;
+  bool ShouldResumeRequestsForCreatedWindow() override;
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,

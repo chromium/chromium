@@ -169,6 +169,7 @@ class MimeHandlerViewGuest
   void ExitFullscreenModeForTab(content::WebContents*) override;
   bool IsFullscreenForTabOrPending(
       const content::WebContents* web_contents) override;
+  bool ShouldResumeRequestsForCreatedWindow() override;
   bool IsWebContentsCreationOverridden(
       content::SiteInstance* source_site_instance,
       content::mojom::WindowContainerType window_container_type,

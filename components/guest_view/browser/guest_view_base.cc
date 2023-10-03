@@ -650,13 +650,6 @@ void GuestViewBase::UpdateTargetURL(WebContents* source, const GURL& url) {
       embedder_web_contents(), url);
 }
 
-bool GuestViewBase::ShouldResumeRequestsForCreatedWindow() {
-  // Delay so that the embedder page has a chance to call APIs such as
-  // webRequest in time to be applied to the initial navigation in the new guest
-  // contents. We resume during AttachToOuterWebContentsFrame.
-  return false;
-}
-
 void GuestViewBase::OnZoomControllerDestroyed(zoom::ZoomController* source) {
   DCHECK(zoom_controller_observations_.IsObservingSource(source));
   zoom_controller_observations_.RemoveObservation(source);

@@ -375,6 +375,12 @@ bool MimeHandlerViewGuest::IsFullscreenForTabOrPending(
   return is_guest_fullscreen_;
 }
 
+bool MimeHandlerViewGuest::ShouldResumeRequestsForCreatedWindow() {
+  // Not reached due to the use of `CreateCustomWebContents`.
+  NOTREACHED();
+  return true;
+}
+
 bool MimeHandlerViewGuest::IsWebContentsCreationOverridden(
     content::SiteInstance* source_site_instance,
     content::mojom::WindowContainerType window_container_type,
