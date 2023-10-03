@@ -1,0 +1,4 @@
+# This file is used by git-cl to get repository specific information.
+GERRIT_HOST: True
+GERRIT_PORT: True
+CODE_REVIEW_SERVER: https://chrome-internal-review.googlesource.com
