@@ -44,22 +44,6 @@ IndexedDBControlWrapper::~IndexedDBControlWrapper() {
 }
 
 void IndexedDBControlWrapper::BindIndexedDB(
-    const blink::StorageKey& storage_key,
-    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker_remote,
-    mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindRemoteIfNeeded();
-  if (storage_policy_observer_) {
-    // TODO(https://crbug.com/1199077): Pass the real StorageKey once
-    // StoragePolicyObserver is migrated.
-    storage_policy_observer_->StartTrackingOrigin(storage_key.origin());
-  }
-  indexed_db_control_->BindIndexedDB(
-      storage_key, std::move(client_state_checker_remote), std::move(receiver));
-}
-
-void IndexedDBControlWrapper::BindIndexedDBForBucket(
     const storage::BucketLocator& bucket_locator,
     mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
@@ -72,9 +56,9 @@ void IndexedDBControlWrapper::BindIndexedDBForBucket(
     storage_policy_observer_->StartTrackingOrigin(
         bucket_locator.storage_key.origin());
   }
-  indexed_db_control_->BindIndexedDBForBucket(
-      bucket_locator, std::move(client_state_checker_remote),
-      std::move(receiver));
+  indexed_db_control_->BindIndexedDB(bucket_locator,
+                                     std::move(client_state_checker_remote),
+                                     std::move(receiver));
 }
 
 void IndexedDBControlWrapper::GetUsage(GetUsageCallback usage_callback) {

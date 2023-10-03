@@ -180,30 +180,25 @@ void IndexedDBContextImpl::Bind(
 }
 
 void IndexedDBContextImpl::BindIndexedDB(
-    const blink::StorageKey& storage_key,
-    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker_remote,
-    mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  quota_manager_proxy()->UpdateOrCreateBucket(
-      storage::BucketInitParams::ForDefaultBucket(storage_key),
-      idb_task_runner_,
-      base::BindOnce(
-          &IndexedDBContextImpl::BindIndexedDBImpl, weak_factory_.GetWeakPtr(),
-          std::move(client_state_checker_remote), std::move(receiver)));
-}
-
-void IndexedDBContextImpl::BindIndexedDBForBucket(
     const storage::BucketLocator& bucket_locator,
     mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  // Query the database to make sure the bucket still exists.
+  auto on_got_bucket = base::BindOnce(
+      &IndexedDBContextImpl::BindIndexedDBImpl, weak_factory_.GetWeakPtr(),
+      std::move(client_state_checker_remote), std::move(receiver));
 
-  quota_manager_proxy()->GetBucketById(
-      bucket_locator.id, idb_task_runner_,
-      base::BindOnce(
-          &IndexedDBContextImpl::BindIndexedDBImpl, weak_factory_.GetWeakPtr(),
-          std::move(client_state_checker_remote), std::move(receiver)));
+  if (bucket_locator.is_default) {
+    // If it's for a default bucket, `bucket_locator` will be a placeholder
+    // without an ID, meaning the bucket still needs to be created.
+    quota_manager_proxy()->UpdateOrCreateBucket(
+        storage::BucketInitParams::ForDefaultBucket(bucket_locator.storage_key),
+        idb_task_runner_, std::move(on_got_bucket));
+  } else {
+    // Query the database to make sure the bucket still exists.
+    quota_manager_proxy()->GetBucketById(bucket_locator.id, idb_task_runner_,
+                                         std::move(on_got_bucket));
+  }
 }
 
 void IndexedDBContextImpl::BindIndexedDBImpl(

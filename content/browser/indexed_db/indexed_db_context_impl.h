@@ -82,11 +82,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   // mojom::IndexedDBControl implementation:
   void BindIndexedDB(
-      const blink::StorageKey& storage_key,
-      mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
-          client_state_checker_remote,
-      mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
-  void BindIndexedDBForBucket(
       const storage::BucketLocator& bucket_locator,
       mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,

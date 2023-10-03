@@ -176,7 +176,7 @@ void BucketHost::GetIdbFactory(
 
   bucket_manager_host_->GetStoragePartition()
       ->GetIndexedDBControl()
-      .BindIndexedDBForBucket(
+      .BindIndexedDB(
           bucket_info_.ToBucketLocator(),
           IndexedDBClientStateCheckerFactory::InitializePendingAssociatedRemote(
               rfh_id),

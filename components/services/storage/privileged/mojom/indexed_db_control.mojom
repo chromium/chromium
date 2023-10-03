@@ -50,16 +50,9 @@ interface IndexedDBObserver {
 // implementation will eventually live in the storage service which may run
 // out-of-process.
 interface IndexedDBControl {
-  // Binds an IDBFactory to the given `storage_key` and ids that identify
-  // the `RenderFrameHost` for the default bucket.
+  // Binds an IDBFactory for the given bucket. If the bucket locator refers to
+  // the default bucket, its ID may be invalid.
   BindIndexedDB(
-    blink.mojom.StorageKey storage_key,
-    pending_associated_remote<storage.mojom.IndexedDBClientStateChecker>
-      client_state_checker_remote,
-    pending_receiver<blink.mojom.IDBFactory> receiver);
-
-  // Binds an IDBFactory for the given bucket.
-  BindIndexedDBForBucket(
     storage.mojom.BucketLocator bucket_locator,
     pending_associated_remote<storage.mojom.IndexedDBClientStateChecker>
       client_state_checker_remote,

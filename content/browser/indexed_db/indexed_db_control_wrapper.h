@@ -18,7 +18,13 @@ class StorageKey;
 
 namespace content {
 
-// All functions should be called on the UI thread.
+// This wrapper is created, destroyed, and operated on the UI thread in the
+// browser process. It owns `IndexedDBContextImpl` and forwards all
+// `IndexedDBControl` calls to that context. It observes the
+// `special_storage_policy` and forwards policy updates to the context. In the
+// theoretical world where IndexedDBContextImpl lives in a separate process,
+// this class is necessary because `special_storage_policy` lives in the browser
+// process.
 class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
  public:
   explicit IndexedDBControlWrapper(
@@ -40,11 +46,6 @@ class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
 
   // mojom::IndexedDBControl implementation:
   void BindIndexedDB(
-      const blink::StorageKey& storage_key,
-      mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
-          client_state_checker_remote,
-      mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
-  void BindIndexedDBForBucket(
       const storage::BucketLocator& bucket_locator,
       mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
@@ -68,9 +69,6 @@ class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
       override;
   void AddObserver(
       mojo::PendingRemote<storage::mojom::IndexedDBObserver> observer) override;
-
-  // TODO(enne): remove this once IndexedDB moves to storage service.
-  IndexedDBContextImpl* GetIndexedDBContextInternal() { return context_.get(); }
 
  private:
   void BindRemoteIfNeeded();

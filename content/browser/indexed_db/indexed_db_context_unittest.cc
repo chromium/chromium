@@ -104,7 +104,7 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   mojo::AssociatedReceiver<storage::mojom::IndexedDBClientStateChecker>
       example_checker_receiver(&example_checker);
   indexed_db_context_->BindIndexedDB(
-      example_storage_key_,
+      storage::BucketLocator::ForDefaultBucket(example_storage_key_),
       example_checker_receiver.BindNewEndpointAndPassDedicatedRemote(),
       example_remote.BindNewPipeAndPassReceiver());
 
@@ -112,7 +112,7 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   mojo::AssociatedReceiver<storage::mojom::IndexedDBClientStateChecker>
       google_checker_receiver(&example_checker);
   indexed_db_context_->BindIndexedDB(
-      google_storage_key_,
+      storage::BucketLocator::ForDefaultBucket(google_storage_key_),
       google_checker_receiver.BindNewEndpointAndPassDedicatedRemote(),
       google_remote.BindNewPipeAndPassReceiver());
 
@@ -160,7 +160,7 @@ TEST_F(IndexedDBContextTest, GetDefaultBucketError) {
   mojo::AssociatedReceiver<storage::mojom::IndexedDBClientStateChecker>
       example_checker_receiver(&example_checker);
   indexed_db_context_->BindIndexedDB(
-      example_storage_key_,
+      storage::BucketLocator::ForDefaultBucket(example_storage_key_),
       example_checker_receiver.BindNewEndpointAndPassDedicatedRemote(),
       example_remote.BindNewPipeAndPassReceiver());
 
