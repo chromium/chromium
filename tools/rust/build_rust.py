@@ -91,6 +91,8 @@ EXCLUDED_TESTS_MAC = [
     # https://crbug.com/1479875 This fails on Mac. It relates to the large code
     # model which we don't use, so suppress it for now.
     os.path.join('tests', 'ui', 'thread-local', 'thread-local-issue-37508.rs'),
+    # https://crbug.com/1486137 Fails on Mac. Probably not critical.
+    os.path.join('tests', 'ui', 'abi', 'stack-probes-lto.rs'),
 ]
 
 CLANG_SCRIPTS_DIR = os.path.join(CHROMIUM_DIR, 'tools', 'clang', 'scripts')
@@ -745,6 +747,10 @@ def main():
 
     if not args.skip_checkout:
         CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
+
+        # Cherry-picks: for LLVM API changes:
+        # llvm-wrapper: adapt for LLVM API change
+        GitCherryPick(RUST_SRC_DIR, 'af401b0ca366edd7d0df061b7a635c06e6481f18')
 
         path = FetchBetaPackage('cargo', checkout_revision)
         if sys.platform == 'win32':

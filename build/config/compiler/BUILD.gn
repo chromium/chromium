@@ -605,6 +605,22 @@ config("compiler") {
       }
     }
 
+    # TODO(crbug.com/1488374): This causes binary size growth and potentially
+    # other problems.
+    if (default_toolchain != "//build/toolchain/cros:target") {
+      cflags += [
+        "-mllvm",
+        "-split-threshold-for-reg-with-hint=0",
+      ]
+      if (use_thin_lto && is_a_target_toolchain) {
+        if (is_win) {
+          ldflags += [ "-mllvm:-split-threshold-for-reg-with-hint=0" ]
+        } else {
+          ldflags += [ "-Wl,-mllvm,-split-threshold-for-reg-with-hint=0" ]
+        }
+      }
+    }
+
     # TODO(crbug.com/1235145): Investigate why/if this should be needed.
     if (is_win) {
       cflags += [ "/clang:-ffp-contract=off" ]
@@ -1825,14 +1841,6 @@ config("default_warnings") {
         "-Wno-ignored-pragma-optimize",
       ]
 
-      if (llvm_force_head_revision && !is_nacl && enable_precompiled_headers &&
-          !is_win) {
-        cflags += [
-          # TODO(crbug.com/1486799) Find a long-term solution.
-          "-Wno-deprecated-include-gch",
-        ]
-      }
-
       if (!is_nacl) {
         cflags += [
           # TODO(crbug.com/1343975) Evaluate and possibly enable.
@@ -1844,6 +1852,13 @@ config("default_warnings") {
           # TODO(crbug.com/1412713) Evaluate and possibly enable.
           "-Wno-deprecated-this-capture",
         ]
+
+        if (enable_precompiled_headers && !is_win) {
+          cflags += [
+            # TODO(crbug.com/1486799) Find a long-term solution.
+            "-Wno-deprecated-include-gch",
+          ]
+        }
       }
     }
 
