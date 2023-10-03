@@ -136,7 +136,6 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
     if (delegate_->CaptureTimeIdentifier()) {
       metadata->setCaptureTimestamp(delegate_->CaptureTimeIdentifier()->us());
     }
-    metadata->setRtpTimestamp(delegate_->RtpTimestamp());
   }
 
   const absl::optional<webrtc::VideoFrameMetadata> webrtc_metadata =
@@ -165,6 +164,7 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   metadata->setHeight(webrtc_metadata->GetHeight());
   metadata->setSpatialIndex(webrtc_metadata->GetSpatialIndex());
   metadata->setTemporalIndex(webrtc_metadata->GetTemporalIndex());
+  metadata->setRtpTimestamp(delegate_->RtpTimestamp());
 
   return metadata;
 }
