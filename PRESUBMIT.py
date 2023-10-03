@@ -7106,3 +7106,69 @@ def CheckLibcxxRevisionsMatch(input_api, output_api):
     return [output_api.PresubmitError(
         'libcxx_revision not equal across %s' % ', '.join(DEPS_FILES),
         changed_deps_files)]
+
+
+def CheckDanglingUntriaged(input_api, output_api):
+    """Warn developers adding DanglingUntriaged raw_ptr."""
+
+    # Ignore during git presubmit --all.
+    #
+    # This would be too costly, because this would check every lines of every
+    # C++ files. Check from _BANNED_CPP_FUNCTIONS are also reading the whole
+    # source code, but only once to apply every checks. It seems the bots like
+    # `win-presubmit` are particularly sensitive to reading the files. Adding
+    # this check caused the bot to run 2x longer. See https://crbug.com/1486612.
+    if input_api.no_diffs:
+      return []
+
+    def FilterFile(file):
+        return input_api.FilterSourceFile(
+            file,
+            files_to_check=[r".*\.(h|cc|cpp|cxx|m|mm)$"],
+            files_to_skip=[r"^base/allocator.*"],
+        )
+
+    count = 0
+    for f in input_api.AffectedSourceFiles(FilterFile):
+        count -= f.OldContents().count("DanglingUntriaged")
+        count += f.NewContents().count("DanglingUntriaged")
+
+    # Most likely, nothing changed:
+    if count == 0:
+        return []
+
+    # Congrats developers for improving it:
+    if count < 0:
+        message = (
+            f"DanglingUntriaged pointers removed: {-count}",
+            f"Thank you!",
+        )
+        return [output_api.PresubmitNotifyResult(message)]
+
+    # Check for 'DanglingUntriaged-notes' in the description:
+    notes_regex = input_api.re.compile("DanglingUntriaged-notes[:=]")
+    if any(
+            notes_regex.match(line)
+            for line in input_api.change.DescriptionText().splitlines()):
+        return []
+
+    # Check for DanglingUntriaged-notes in the git footer:
+    if input_api.change.GitFootersFromDescription().get(
+            "DanglingUntriaged-notes", []):
+        return []
+
+    message = (
+        "Unexpected new occurrences of `DanglingUntriaged` detected. Please",
+        "avoid adding new ones",
+        "",
+        "See documentation:",
+        "https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr.md",
+        "",
+        "See also the guide to fix dangling pointers:",
+        "https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr_guide.md",
+        "",
+        "To disable this warning, please add in the commit description:",
+        "DanglingUntriaged-notes: <rational for new untriaged dangling "
+        "pointers>",
+    )
+    return [output_api.PresubmitPromptWarning(message)]

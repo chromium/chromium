@@ -5086,5 +5086,152 @@ class CheckNoAbbreviationInPngFileNameTest(unittest.TestCase):
     results = PRESUBMIT.CheckNoAbbreviationInPngFileName(input_api, MockOutputApi())
     self.assertEqual(0, len(results))
 
+class CheckDanglingUntriagedTest(unittest.TestCase):
+  def testError(self):
+    """Test patch adding dangling pointers are reported"""
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.change.DescriptionText = lambda: "description"
+    mock_input_api.files = [
+      MockAffectedFile(
+        local_path="foo/foo.cc",
+        old_contents="raw_ptr<T>",
+        new_contents="raw_ptr<T, DanglingUntriaged>",
+      )
+    ]
+    msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api, mock_output_api)
+    self.assertEqual(len(msgs), 1)
+    self.assertEqual(len(msgs[0].message), 10)
+    self.assertEqual(
+      msgs[0].message[0],
+      "Unexpected new occurrences of `DanglingUntriaged` detected. Please",
+    )
+
+class CheckDanglingUntriagedTest(unittest.TestCase):
+  def testError(self):
+    """Test patch adding dangling pointers are reported"""
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.change.DescriptionText = lambda: "description"
+    mock_input_api.files = [
+      MockAffectedFile(
+        local_path="foo/foo.cc",
+        old_contents="raw_ptr<T>",
+        new_contents="raw_ptr<T, DanglingUntriaged>",
+      )
+    ]
+    msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
+                        mock_output_api)
+    self.assertEqual(len(msgs), 1)
+    self.assertEqual(len(msgs[0].message), 11)
+    self.assertEqual(
+      msgs[0].message[0],
+      "Unexpected new occurrences of `DanglingUntriaged` detected. Please",
+    )
+
+  def testNonCppFile(self):
+    """Test patch adding dangling pointers are not reported in non C++ files"""
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.change.DescriptionText = lambda: "description"
+    mock_input_api.files = [
+      MockAffectedFile(
+        local_path="foo/README.md",
+        old_contents="",
+        new_contents="The DanglingUntriaged annotation means",
+      )
+    ]
+    msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
+                        mock_output_api)
+    self.assertEqual(len(msgs), 0)
+
+  def testDeveloperAcknowledgeInCommitDescription(self):
+    """Test patch adding dangling pointers, but acknowledged by the developers
+    aren't reported"""
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.files = [
+      MockAffectedFile(
+        local_path="foo/foo.cc",
+        old_contents="raw_ptr<T>",
+        new_contents="raw_ptr<T, DanglingUntriaged>",
+      )
+    ]
+    mock_input_api.change.DescriptionText = lambda: (
+      "DanglingUntriaged-notes: Sorry about this!")
+    msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
+                        mock_output_api)
+    self.assertEqual(len(msgs), 0)
+
+  def testDeveloperAcknowledgeInCommitFooter(self):
+    """Test patch adding dangling pointers, but acknowledged by the developers
+    aren't reported"""
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.files = [
+      MockAffectedFile(
+        local_path="foo/foo.cc",
+        old_contents="raw_ptr<T>",
+        new_contents="raw_ptr<T, DanglingUntriaged>",
+      )
+    ]
+    mock_input_api.change.DescriptionText = lambda: "description"
+    mock_input_api.change.footers["DanglingUntriaged-notes"] = ["Sorry!"]
+    msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
+                        mock_output_api)
+    self.assertEqual(len(msgs), 0)
+
+  def testCongrats(self):
+    """Test the presubmit congrats users removing dangling pointers"""
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.files = [
+      MockAffectedFile(
+        local_path="foo/foo.cc",
+        old_contents="raw_ptr<T, DanglingUntriaged>",
+        new_contents="raw_ptr<T>",
+      )
+    ]
+    mock_input_api.change.DescriptionText = lambda: (
+      "This patch fixes some DanglingUntriaged pointers!")
+    msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
+                        mock_output_api)
+    self.assertEqual(len(msgs), 1)
+    self.assertTrue(
+      "DanglingUntriaged pointers removed: 1" in msgs[0].message)
+    self.assertTrue("Thank you!" in msgs[0].message)
+
+  def testRenameFile(self):
+    """Patch that we do not warn about DanglingUntriaged when moving files"""
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.files = [
+      MockAffectedFile(
+        local_path="foo/foo.cc",
+        old_contents="raw_ptr<T, DanglingUntriaged>",
+        new_contents="",
+        action="D",
+      ),
+      MockAffectedFile(
+        local_path="foo/foo.cc",
+        old_contents="",
+        new_contents="raw_ptr<T, DanglingUntriaged>",
+        action="A",
+      ),
+    ]
+    mock_input_api.change.DescriptionText = lambda: (
+      "This patch moves files")
+    msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
+                        mock_output_api)
+    self.assertEqual(len(msgs), 0)
+
+
 if __name__ == '__main__':
   unittest.main()
