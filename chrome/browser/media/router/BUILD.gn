@@ -13,14 +13,15 @@ declare_args() {
 }
 
 source_set("data_decoder_util") {
-  deps = [
-    "//base",
-    "//services/data_decoder/public/cpp",
-  ]
   sources = [
     "data_decoder_util.cc",
     "data_decoder_util.h",
   ]
+  deps = [
+    "//base",
+    "//services/data_decoder/public/cpp",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("logger_list") {
@@ -34,6 +35,7 @@ source_set("logger_list") {
     "//components/media_router/browser",
     "//content/public/browser",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("media_router_feature") {
@@ -47,16 +49,28 @@ static_library("media_router_feature") {
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//components/media_router/common:common",
-    "//components/prefs:prefs",
-    "//components/user_prefs:user_prefs",
+    "//components/prefs",
+    "//components/user_prefs",
     "//content/public/browser",
     "//content/public/common",
     "//crypto",
     "//media",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("router") {
+  sources = [
+    "chrome_media_router_factory.cc",
+    "chrome_media_router_factory.h",
+    "presentation/chrome_local_presentation_manager_factory.cc",
+    "presentation/chrome_local_presentation_manager_factory.h",
+  ]
+  public_deps = [
+    "//components/media_router/browser",
+    "//components/media_router/common",
+    "//components/media_router/common/mojom:media_router",
+  ]
   deps = [
     ":data_decoder_util",
     ":media_router_feature",
@@ -79,46 +93,9 @@ static_library("router") {
     "//third_party/icu",
     "//url",
   ]
-  public_deps = [
-    "//components/media_router/browser",
-    "//components/media_router/common",
-    "//components/media_router/common/mojom:media_router",
-  ]
-  sources = [
-    "chrome_media_router_factory.cc",
-    "chrome_media_router_factory.h",
-    "presentation/chrome_local_presentation_manager_factory.cc",
-    "presentation/chrome_local_presentation_manager_factory.h",
-  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (!is_android) {
-    deps += [
-      # We can't depend on //chrome/browser/ui due to introducing a cyclic
-      # dependency. Remove this target from the `allow_circular_includes_from`
-      # list in chrome/browser/ui/BUILD.gn once the issues is resolved.
-      # TODO(crbug.com/1030821): Resolve circular dependencies.
-
-      "discovery:discovery",
-      "//chrome/browser:browser_process",
-      "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
-      "//chrome/browser/profiles:profile",
-      "//components/access_code_cast/common:metrics",
-      "//components/embedder_support:browser_util",
-      "//components/mirroring/mojom:service",
-      "//components/ukm/content:content",
-      "//components/version_info:version_info",
-      "//media/cast:common",
-      "//media/remoting:remoting_device_capability",
-      "//mojo/public/cpp/bindings",
-      "//services/metrics/public/cpp:ukm_builders",
-      "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
-    ]
-
-    public_deps += [
-      "//components/media_router/common/mojom:debugger",
-      "//components/media_router/common/mojom:logger",
-    ]
-
     sources += [
       "mojo/media_router_debugger_impl.cc",
       "mojo/media_router_debugger_impl.h",
@@ -175,7 +152,33 @@ static_library("router") {
       "providers/wired_display/wired_display_presentation_receiver_factory.h",
     ]
 
-    deps += [ ":logger_list" ]
+    public_deps += [
+      "//components/media_router/common/mojom:debugger",
+      "//components/media_router/common/mojom:logger",
+    ]
+
+    deps += [
+      # We can't depend on //chrome/browser/ui due to introducing a cyclic
+      # dependency. Remove this target from the `allow_circular_includes_from`
+      # list in chrome/browser/ui/BUILD.gn once the issues is resolved.
+      # TODO(crbug.com/1030821): Resolve circular dependencies.
+
+      ":logger_list",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/media/router/discovery",
+      "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+      "//chrome/browser/profiles:profile",
+      "//components/access_code_cast/common:metrics",
+      "//components/embedder_support:browser_util",
+      "//components/mirroring/mojom:service",
+      "//components/ukm/content:content",
+      "//components/version_info:version_info",
+      "//media/cast:common",
+      "//media/remoting:remoting_device_capability",
+      "//mojo/public/cpp/bindings",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
+    ]
 
     if (is_win) {
       sources += [
@@ -205,7 +208,7 @@ static_library("router") {
 
   if (enable_extensions) {
     deps += [
-      "//extensions/buildflags:buildflags",
+      "//extensions/buildflags",
       "//extensions/common",
     ]
   }
@@ -215,7 +218,7 @@ if (!is_android) {
   static_library("test_support") {
     testonly = true
     deps = [
-      "discovery:discovery",
+      "//chrome/browser/media/router/discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
       "//chrome/test:test_support",
@@ -263,7 +266,7 @@ source_set("unittests") {
     "//base",
     "//base/test:test_support",
     "//chrome/test:test_support",
-    "//components/endpoint_fetcher:endpoint_fetcher",
+    "//components/endpoint_fetcher",
     "//components/media_router/browser:test_support",
     "//components/media_router/common:test_support",
     "//components/media_router/common/providers/cast/channel",
@@ -337,21 +340,21 @@ source_set("unittests") {
     deps += [
       ":logger_list",
       ":test_support",
-      "//chrome/browser/media/router/discovery:discovery",
+      "//chrome/browser/media/router/discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
       "//chrome/test:test_support",
       "//components/sync_preferences:test_support",
       "//content/test:test_support",
-      "//services/preferences/public/cpp:cpp",
+      "//services/preferences/public/cpp",
       "//third_party/openscreen/src/cast/common:public",
     ]
 
     if (is_chromeos_lacros) {
       deps += [
         "//chromeos/crosapi/mojom",
-        "//chromeos/lacros:lacros",
+        "//chromeos/lacros",
       ]
     } else {
       sources += [

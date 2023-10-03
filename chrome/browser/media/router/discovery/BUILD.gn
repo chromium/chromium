@@ -8,28 +8,6 @@ assert(!is_android)
 
 static_library("discovery") {
   inputs = [ "$root_gen_dir/chrome/grit/generated_resources.h" ]
-  deps = [
-    "//base",
-    "//base:i18n",
-    "//build:chromeos_buildflags",
-    "//chrome/app:generated_resources",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/media/router:data_decoder_util",
-    "//chrome/browser/media/router:logger_list",
-    "//chrome/browser/media/router:media_router_feature",
-    "//chrome/common:constants",
-    "//components/media_router/browser",
-    "//components/media_router/common",
-    "//components/media_router/common/mojom:logger",
-    "//components/media_router/common/providers/cast/channel",
-    "//components/net_log",
-    "//components/prefs",
-    "//components/version_info",
-    "//content/public/browser",
-    "//content/public/common",
-    "//services/network/public/cpp",
-    "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
-  ]
   sources = [
     "dial/device_description_fetcher.cc",
     "dial/device_description_fetcher.h",
@@ -79,6 +57,29 @@ static_library("discovery") {
     "media_sink_discovery_metrics.cc",
     "media_sink_discovery_metrics.h",
   ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//build:chromeos_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/media/router:data_decoder_util",
+    "//chrome/browser/media/router:logger_list",
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/common:constants",
+    "//components/media_router/browser",
+    "//components/media_router/common",
+    "//components/media_router/common/mojom:logger",
+    "//components/media_router/common/providers/cast/channel",
+    "//components/net_log",
+    "//components/prefs",
+    "//components/version_info",
+    "//content/public/browser",
+    "//content/public/common",
+    "//services/network/public/cpp",
+    "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_linux || is_chromeos) {
     sources += [ "discovery_network_list_wifi_linux.cc" ]

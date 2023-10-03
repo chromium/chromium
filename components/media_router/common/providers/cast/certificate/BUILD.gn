@@ -20,6 +20,7 @@ source_set("certificate_reader") {
     "//base",
     "//net",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("certificate_roots") {
@@ -28,6 +29,7 @@ source_set("certificate_roots") {
     "cast_root_ca_cert_der-inc.h",
     "eureka_root_ca_der-inc.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("certificate") {
@@ -37,7 +39,10 @@ static_library("certificate") {
     "cast_crl.cc",
     "cast_crl.h",
   ]
-  configs += [ ":developer_certificate_config" ]
+  configs += [
+    ":developer_certificate_config",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
   deps = [
     ":certificate_roots",
     "//base",
@@ -71,6 +76,7 @@ source_set("openscreen_certificate_verifier") {
     "//net",
     "//third_party/openscreen/src/cast/common:public",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {

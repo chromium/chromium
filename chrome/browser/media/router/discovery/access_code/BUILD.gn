@@ -23,10 +23,11 @@ static_library("access_code_cast_feature") {
     "//chrome/browser/profiles:profile",
     "//chrome/common:channel_info",
     "//components/pref_registry:pref_registry",
-    "//components/prefs:prefs",
-    "//components/user_prefs:user_prefs",
+    "//components/prefs",
+    "//components/user_prefs",
     "//components/version_info:channel",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (!is_android) {
@@ -48,32 +49,33 @@ if (!is_android) {
     public_deps = [
       "//base",
       "//chrome/browser/profiles:profile",
-      "//components/media_router/browser:browser",
+      "//components/media_router/browser",
       "//components/media_router/common",
       "//components/media_router/common/mojom:logger",
       "//components/media_router/common/mojom:media_router",
     ]
     deps = [
       ":access_code_cast_feature",
+      ":discovery_resources_proto",
       "//chrome/browser/media/router:router",
-      "//chrome/browser/media/router/discovery:discovery",
-      "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
+      "//chrome/browser/media/router/discovery",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin:identity_manager_provider",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//components/access_code_cast/common:metrics",
-      "//components/endpoint_fetcher:endpoint_fetcher",
+      "//components/endpoint_fetcher",
       "//components/keyed_service/content:content",
       "//components/leveldb_proto:leveldb_proto",
       "//components/media_router/common/providers/cast/channel",
       "//components/pref_registry",
-      "//components/prefs:prefs",
-      "//components/signin/public/base:base",
-      "//components/signin/public/identity_manager:identity_manager",
-      "//components/user_manager:user_manager",
+      "//components/prefs",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/user_manager",
       "//content/public/browser",
-      "//services/preferences/public/cpp:cpp",
+      "//services/preferences/public/cpp",
     ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     if (is_chromeos_lacros) {
       sources += [
@@ -82,7 +84,7 @@ if (!is_android) {
       ]
       deps += [
         "//chromeos/crosapi/mojom",
-        "//chromeos/lacros:lacros",
+        "//chromeos/lacros",
       ]
     }
   }
