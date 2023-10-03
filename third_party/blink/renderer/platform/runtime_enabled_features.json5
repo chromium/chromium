@@ -949,6 +949,15 @@
       base_feature: "none",
     },
     {
+      // Un-prefixed and interoperable mask implementation, including
+      // sub-features such as mask-image, mask-mode, etc. All sub-features
+      // should depend on this flag with: `depends_on: ["CSSMaskingInterop"]`.
+      // Tracking bug: https://crbug.com/1418401
+      // Spec: https://drafts.fxtf.org/css-masking/#the-mask
+      name: "CSSMaskingInterop",
+      status: "experimental",
+    },
+    {
       name: "CSSMixBlendModePlusLighter",
       status: "stable",
       base_feature: "none",
