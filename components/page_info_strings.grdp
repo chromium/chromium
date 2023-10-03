@@ -747,6 +747,15 @@
   <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP" desc="The tooltip on the blocking third-party cookies icon in cookies subpage if blocking is explicitly set by user in cookies settings.">
     Managed by cookies settings
   </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_ALLOWED" desc="The label detailing that third party cookies are allowed. This text will be shown on the blocking third-party cookies toggle when the toggle isn't active.">
+    Allowed
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITED" desc="The label detailing that third party cookies are limited. This text will be shown on the blocking third-party cookies toggle when the toggle is active.">
+    Limited
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED" desc="The label detailing that third party cookies are blocked. This text will be shown on the blocking third-party cookies toggle if the user has chosen to block all third party cookies.">
+    Blocked
+  </message>
   <message name="IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT" desc="The label of the count for sites that have blocked access to cookies on the page. This text will be shown on the blocking third-party cookies toggle.">
     {NUM_COOKIES, plural, =0 {No sites blocked} =1 {1 site blocked} other {# sites blocked}}
   </message>

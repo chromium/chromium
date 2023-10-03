@@ -313,14 +313,23 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
   third_party_cookies_toggle_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE);
 
-  const std::u16string toggle_subtitle =
-      are_third_party_cookies_blocked
-          ? l10n_util::GetPluralStringFUTF16(
-                IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT,
-                cookie_info.blocked_third_party_sites_count)
-          : l10n_util::GetPluralStringFUTF16(
-                IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
-                cookie_info.allowed_third_party_sites_count);
+  std::u16string toggle_subtitle;
+  if (presenter_->IsTrackingProtection3pcdEnabled()) {
+    toggle_subtitle = l10n_util::GetStringUTF16(
+        are_third_party_cookies_blocked
+            ? presenter_->AreAllThirdPartyCookiesBlocked()
+                  ? IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED
+                  : IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITED
+            : IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_ALLOWED);
+  } else {
+    toggle_subtitle = are_third_party_cookies_blocked
+                          ? l10n_util::GetPluralStringFUTF16(
+                                IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT,
+                                cookie_info.blocked_third_party_sites_count)
+                          : l10n_util::GetPluralStringFUTF16(
+                                IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
+                                cookie_info.allowed_third_party_sites_count);
+  }
   third_party_cookies_toggle_subtitle_->SetText(toggle_subtitle);
   if (features::IsChromeRefresh2023()) {
     third_party_cookies_toggle_subtitle_->SetTextStyle(
