@@ -4110,24 +4110,18 @@ void Element::UpdateDirectionalityAndDescendant(TextDirection direction) {
 // Because the self-or-ancestor has dir=auto state could come from either a
 // node tree ancestor, a slot, or an input, we have a method to
 // recalculate it (just for this element) based on all three sources.
-//
-// TODO(https://crbug.com/576815): When this code moves to Element, this could
-// be a member function.
-namespace {
-
-bool RecalcSelfOrAncestorHasDirAuto(Element* element) {
-  if (DynamicTo<HTMLElement>(element)) {
-    AtomicString dir_attribute_value =
-        element->FastGetAttribute(html_names::kDirAttr);
+bool Element::RecalcSelfOrAncestorHasDirAuto() {
+  if (DynamicTo<HTMLElement>(this)) {
+    AtomicString dir_attribute_value = FastGetAttribute(html_names::kDirAttr);
     if (HTMLElement::IsValidDirAttribute(dir_attribute_value)) {
       return EqualIgnoringASCIICase(dir_attribute_value, "auto");
     }
   }
-  Node* parent = element->parentNode();
+  Node* parent = parentNode();
   if (parent && parent->SelfOrAncestorHasDirAutoAttribute()) {
     return true;
   }
-  if (HTMLSlotElement* slot = element->AssignedSlot()) {
+  if (HTMLSlotElement* slot = AssignedSlot()) {
     if (slot->HasDirectionAuto()) {
       return true;
     }
@@ -4144,8 +4138,6 @@ bool RecalcSelfOrAncestorHasDirAuto(Element* element) {
   return false;
 }
 
-}  // namespace
-
 void Element::UpdateDescendantHasDirAutoAttribute(bool has_dir_auto) {
   if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
     if (ToHTMLSlotElementIfSupportsAssignmentOrNull(this) ||
@@ -4156,7 +4148,7 @@ void Element::UpdateDescendantHasDirAutoAttribute(bool has_dir_auto) {
                   element->FastGetAttribute(html_names::kDirAttr))) {
             if (!has_dir_auto) {
               if (!element->SelfOrAncestorHasDirAutoAttribute() ||
-                  RecalcSelfOrAncestorHasDirAuto(element)) {
+                  element->RecalcSelfOrAncestorHasDirAuto()) {
                 continue;
               }
               element->ClearSelfOrAncestorHasDirAutoAttribute();
@@ -4182,7 +4174,7 @@ void Element::UpdateDescendantHasDirAutoAttribute(bool has_dir_auto) {
 
         if (!has_dir_auto) {
           if (!element->SelfOrAncestorHasDirAutoAttribute() ||
-              RecalcSelfOrAncestorHasDirAuto(element)) {
+              element->RecalcSelfOrAncestorHasDirAuto()) {
             element = ElementTraversal::NextSkippingChildren(*element, this);
             continue;
           }

@@ -1496,6 +1496,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
 
   void RecomputeDirectionFromParent();
+  bool RecalcSelfOrAncestorHasDirAuto();
 
   ShadowRoot& CreateAndAttachShadowRoot(ShadowRootType);
 
