@@ -285,6 +285,12 @@ crbug.com/1201009 [ fuchsia ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerat
 crbug.com/1353952 [ chromeos cros-chrome chromeos-board-amd64-generic ] Pixel_WebGLContextRestored [ Skip ]
 crbug.com/1353952 [ chromeos cros-chrome chromeos-board-kevin ] Pixel_WebGLContextRestored [ Skip ]
 
+# Flakes on Nexus 5X due to timeout. Revert to RetryOnFailure once we have the Pixel tests
+# switched to using a heartbeat mechanism. crbug.com/1472852
+crbug.com/1488026 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4 [ Skip ]
+crbug.com/1488026 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Skip ]
+crbug.com/1488026 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4_FourColors_Rot_180 [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################
@@ -294,11 +300,6 @@ crbug.com/624256 [ android ] Pixel_SolidColorBackground [ Failure ]
 
 # Mark all webview tests as RetryOnFailure due to Nexus 5x driver bug.
 crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryOnFailure ]
-
-# Flakes on Nexus 5X due to timeout.
-crbug.com/1488026 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4 [ RetryOnFailure ]
-crbug.com/1302406 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
-crbug.com/1302406 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4_FourColors_Rot_180 [ RetryOnFailure ]
 
 # Mark 1 webview test as Failure. This test is failing instead of flaking. It
 # might have the same Nexus 5x driver bug as crbug.com/950932 but that
