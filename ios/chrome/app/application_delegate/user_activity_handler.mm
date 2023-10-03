@@ -561,13 +561,6 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
   }
 }
 
-+ (BOOL)willContinueUserActivityWithType:(NSString*)userActivityType {
-  return
-      [userActivityType isEqualToString:handoff::kChromeHandoffActivityType] ||
-      (spotlight::IsSpotlightAvailable() &&
-       [userActivityType isEqualToString:CSSearchableItemActionType]);
-}
-
 + (GURL)generateResultGURLFromSearchQuery:(NSString*)searchQuery
                              browserState:(ChromeBrowserState*)browserState {
   TemplateURLService* templateURLService =

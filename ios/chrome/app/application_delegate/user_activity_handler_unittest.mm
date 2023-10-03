@@ -152,33 +152,6 @@ class UserActivityHandlerTest : public PlatformTest {
 
 #pragma mark - Tests.
 
-// Tests that Chrome notifies the user if we are passing a correct
-// userActivityType.
-TEST_F(UserActivityHandlerTest, WillContinueUserActivityCorrectActivity) {
-  EXPECT_TRUE([UserActivityHandler
-      willContinueUserActivityWithType:handoff::kChromeHandoffActivityType]);
-
-  if (spotlight::IsSpotlightAvailable()) {
-    EXPECT_TRUE([UserActivityHandler
-        willContinueUserActivityWithType:CSSearchableItemActionType]);
-  }
-}
-
-// Tests that Chrome does not notifies the user if we are passing an incorrect
-// userActivityType.
-TEST_F(UserActivityHandlerTest, WillContinueUserActivityIncorrectActivity) {
-  EXPECT_FALSE([UserActivityHandler
-      willContinueUserActivityWithType:[handoff::kChromeHandoffActivityType
-                                           stringByAppendingString:@"test"]]);
-
-  EXPECT_FALSE([UserActivityHandler
-      willContinueUserActivityWithType:@"it.does.not.work"]);
-
-  EXPECT_FALSE([UserActivityHandler willContinueUserActivityWithType:@""]);
-
-  EXPECT_FALSE([UserActivityHandler willContinueUserActivityWithType:nil]);
-}
-
 // Tests that Chrome does not continue the activity is the activity type is
 // random.
 TEST_F(UserActivityHandlerTest, ContinueUserActivityFromGarbage) {

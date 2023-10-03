@@ -45,10 +45,6 @@ class PrefService;
                         browserState:(ChromeBrowserState*)browserState
                            initStage:(InitStage)initStage;
 
-// Returns YES if Chrome is passing a Handoff to itself or if it is an opening
-// from Spotlight.
-+ (BOOL)willContinueUserActivityWithType:(NSString*)userActivityType;
-
 // Opens a new Tab or routes to correct Tab.
 + (void)handleStartupParametersWithTabOpener:(id<TabOpening>)tabOpener
                        connectionInformation:
