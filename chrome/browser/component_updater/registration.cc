@@ -33,6 +33,7 @@
 #include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer.h"
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
+#include "chrome/browser/component_updater/tpcd_metadata_component_installer.h"
 #include "chrome/browser/component_updater/trust_token_key_commitments_component_installer.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_paths.h"
@@ -212,6 +213,8 @@ void RegisterComponentsForUpdate() {
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && !BUILDFLAG(IS_CHROMEOS)
 
   RegisterCommerceHeuristicsComponent(cus);
+
+  RegisterTpcdMetadataComponent(cus);
 }
 
 }  // namespace component_updater
