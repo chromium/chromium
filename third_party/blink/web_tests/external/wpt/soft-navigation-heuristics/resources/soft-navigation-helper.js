@@ -89,8 +89,13 @@ const testSoftNavigationNotDetected = options => {
         });
         t.step_timeout(resolve, 1000);
       });
-      assert_equals(
+      if (document.softNavigations) {
+        assert_equals(
           document.softNavigations, 0, 'Soft Navigation not detected');
+      }
+      const postClickLcp = await getLcpEntries();
+      assert_equals(
+          preClickLcp.length, postClickLcp.length, 'No LCP entries accumulated');
     }, options.testName);
   };
 

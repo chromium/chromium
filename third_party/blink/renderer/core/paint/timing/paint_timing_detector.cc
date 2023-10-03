@@ -616,9 +616,13 @@ void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
         image_paint_timing_detector_->UpdateMetricsCandidate();
   }
 
-  lcp_calculator->UpdateWebExposedLargestContentfulPaintIfNeeded(
-      largest_text_record, largest_image_record,
-      /*is_triggered_by_soft_navigation=*/lcp_was_restarted_);
+  // If we're still recording the initial LCP, or if LCP was explicitly
+  // restarted for soft navigations, fire the web exposed entry.
+  if (record_lcp_to_ukm_ || lcp_was_restarted_) {
+    lcp_calculator->UpdateWebExposedLargestContentfulPaintIfNeeded(
+        largest_text_record, largest_image_record,
+        /*is_triggered_by_soft_navigation=*/lcp_was_restarted_);
+  }
 }
 
 void PaintTimingDetector::ReportIgnoredContent() {
