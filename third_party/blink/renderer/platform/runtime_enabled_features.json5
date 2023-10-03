@@ -2517,12 +2517,6 @@
       status: "stable",
     },
     {
-      // Kill switch for crbug.com/1427047 fix.
-      // TODO(xiaochengh): Remove in M117.
-      name: "NonReentrantFieldSetDisable",
-      status: "stable",
-    },
-    {
       // TODO(crbug.com/924486): This feature enables the deprecated values
       // inner-spin-button, push-button, searchfield-cancel-button,
       // slider-horizontal, square-button. Disable this feature to stop

@@ -116,15 +116,11 @@ void HTMLFieldSetElement::DisabledAttributeChanged() {
 }
 
 void HTMLFieldSetElement::AncestorDisabledStateWasChanged() {
-  if (RuntimeEnabledFeatures::NonReentrantFieldSetDisableEnabled()) {
-    ancestor_disabled_state_ = AncestorDisabledState::kUnknown;
-    // Do not re-enter HTMLFieldSetElement::DisabledAttributeChanged(), so that
-    // we only invalidate this element's own disabled state and do not traverse
-    // the descendants.
-    HTMLFormControlElement::DisabledAttributeChanged();
-  } else {
-    HTMLFormControlElement::AncestorDisabledStateWasChanged();
-  }
+  ancestor_disabled_state_ = AncestorDisabledState::kUnknown;
+  // Do not re-enter HTMLFieldSetElement::DisabledAttributeChanged(), so that
+  // we only invalidate this element's own disabled state and do not traverse
+  // the descendants.
+  HTMLFormControlElement::DisabledAttributeChanged();
 }
 
 void HTMLFieldSetElement::ChildrenChanged(const ChildrenChange& change) {
