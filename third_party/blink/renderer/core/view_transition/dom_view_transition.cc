@@ -34,8 +34,7 @@ DOMViewTransition::DOMViewTransition(
     ViewTransition& view_transition,
     ScriptState& script_state,
     V8ViewTransitionCallback* update_dom_callback)
-    : ActiveScriptWrappable<DOMViewTransition>({}),
-      execution_context_(&execution_context),
+    : execution_context_(&execution_context),
       view_transition_{&view_transition},
       script_state_(&script_state),
       update_dom_callback_(update_dom_callback),
@@ -187,10 +186,6 @@ DOMViewTransition::InvokeDOMChangeCallback() {
           MakeGarbageCollected<DOMChangeFinishedCallback>(*this, false)));
 
   return *dom_callback_result_;
-}
-
-bool DOMViewTransition::HasPendingActivity() const {
-  return !view_transition_->IsDone();
 }
 
 void DOMViewTransition::Trace(Visitor* visitor) const {

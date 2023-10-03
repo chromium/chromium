@@ -220,9 +220,11 @@ void ViewTransitionSupplement::StartTransition(
 
 void ViewTransitionSupplement::OnTransitionFinished(
     ViewTransition* transition) {
-  // TODO(vmpstr): Do we need to explicitly reset transition state?
-  if (transition == transition_)
-    transition_ = nullptr;
+  CHECK(transition);
+  CHECK_EQ(transition, transition_);
+  // Clear the transition so it can be garbage collected if needed (and to
+  // prevent callers of GetTransition thinking there's an ongoing transition).
+  transition_ = nullptr;
 }
 
 ViewTransition* ViewTransitionSupplement::GetTransition() {

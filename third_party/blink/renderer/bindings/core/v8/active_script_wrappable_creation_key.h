@@ -35,7 +35,6 @@ class ActiveScriptWrappableCreationKey final {
   friend class DedicatedWorker;
   friend class DocumentTransition;
   friend class DOMFileSystem;
-  friend class DOMViewTransition;
   friend class DOMWebSocket;
   friend class EditContext;
   template <typename Traits>

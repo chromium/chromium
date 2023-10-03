@@ -22,9 +22,7 @@ class ViewTransition;
 
 // This class handles script interaction for the ViewTransition object. It
 // implements the ViewTransition IDL interface.
-class CORE_EXPORT DOMViewTransition
-    : public ScriptWrappable,
-      public ActiveScriptWrappable<DOMViewTransition> {
+class CORE_EXPORT DOMViewTransition : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
   using PromiseProperty =
@@ -65,13 +63,6 @@ class CORE_EXPORT DOMViewTransition
   //           finished running is async.
   enum class DOMCallbackResult { kFailed, kFinished, kRunning };
   DOMCallbackResult InvokeDOMChangeCallback();
-
-  // ActiveScriptWrappable functionality.
-  // TODO(bokan): `this` doesn't actually need to be ActiveScriptWrappable but
-  // is used to `view_transition_` alive in the face of the Viz callback. Could
-  // ViewTransition more explicitly manage its lifetime?
-  bool HasPendingActivity() const override;
-  ExecutionContext* GetExecutionContext() const { return execution_context_; }
 
   ViewTransition* GetViewTransitionForTest() { return view_transition_; }
 
