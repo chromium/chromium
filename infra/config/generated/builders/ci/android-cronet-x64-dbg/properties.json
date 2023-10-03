@@ -129,6 +129,10 @@
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "android-cronet-x64-dbg",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "android-cronet-x64-dbg-12-tests",
           "group": "tryserver.chromium.android"
         },

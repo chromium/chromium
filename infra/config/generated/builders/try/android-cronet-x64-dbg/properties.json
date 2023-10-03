@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-cronet-arm64-dbg",
+              "builder": "android-cronet-x64-dbg",
               "project": "chromium"
             },
             "builder_spec": {
@@ -14,7 +14,7 @@
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "main_builder"
+                "config": "x64_builder"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -39,7 +39,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-cronet-arm64-dbg",
+          "builder": "android-cronet-x64-dbg",
           "project": "chromium"
         }
       ]

@@ -296,7 +296,7 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-x64-dbg",
-    mirrors = ["ci/android-cronet-arm64-dbg"],
+    mirrors = ["ci/android-cronet-x64-dbg"],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
