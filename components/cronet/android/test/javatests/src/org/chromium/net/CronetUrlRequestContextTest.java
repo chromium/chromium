@@ -36,6 +36,7 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.DisableAutomaticNetLog;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
@@ -680,6 +681,7 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
             reason = "No netlogs for pure java impl")
+    @DisableAutomaticNetLog(reason = "Test is targeting NetLog")
     public void
     testNetLog() throws Exception {
         File directory = new File(PathUtils.getDataDirectory());
@@ -739,6 +741,7 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
             reason = "No netlogs for pure java impl")
+    @DisableAutomaticNetLog(reason = "Test is targeting NetLog")
     // Tests that if stopNetLog is not explicitly called, CronetEngine.shutdown()
     // will take care of it. crbug.com/623701.
     public void
@@ -1084,6 +1087,7 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
             reason = "No NetLog support for fallback imnplementation")
+    @DisableAutomaticNetLog(reason = "Test is targeting NetLog")
     // Tests that NetLog contains events emitted by all live CronetEngines.
     public void
     testNetLogContainEventsFromAllLiveEngines() throws Exception {
@@ -1313,6 +1317,7 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
             reason = "No NetLog support for fallback imnplementation")
+    @DisableAutomaticNetLog(reason = "Test is targeting NetLog")
     public void
     testNetLogAfterShutdown() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
@@ -1365,6 +1370,7 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
             reason = "No NetLog support for fallback imnplementation")
+    @DisableAutomaticNetLog(reason = "Test is targeting NetLog")
     public void
     testNetLogStartMultipleTimes() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
@@ -1425,6 +1431,7 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
             reason = "No NetLog support for fallback imnplementation")
+    @DisableAutomaticNetLog(reason = "Test is targeting NetLog")
     public void
     testNetLogStopMultipleTimes() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
@@ -1487,6 +1494,7 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
             reason = "No NetLog support for fallback imnplementation")
+    @DisableAutomaticNetLog(reason = "Test is targeting NetLog")
     public void
     testNetLogWithBytes() throws Exception {
         File directory = new File(PathUtils.getDataDirectory());

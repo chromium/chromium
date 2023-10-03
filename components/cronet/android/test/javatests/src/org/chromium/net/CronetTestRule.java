@@ -248,6 +248,15 @@ public class CronetTestRule implements TestRule {
     }
 
     /**
+     * Annotation allowing classes or individual tests to disable automatic NetLog collection.
+     */
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface DisableAutomaticNetLog {
+        String reason();
+    }
+
+    /**
      * Prepares the path for the test storage (http cache, QUIC server info).
      */
     public static void prepareTestStorage(Context context) {

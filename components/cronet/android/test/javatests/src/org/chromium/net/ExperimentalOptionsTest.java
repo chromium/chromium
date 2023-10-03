@@ -31,6 +31,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.DisableAutomaticNetLog;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -78,6 +79,7 @@ public class ExperimentalOptionsTest {
 
     @Test
     @MediumTest
+    @DisableAutomaticNetLog(reason = "Test is targeting NetLog")
     // Tests that NetLog writes effective experimental options to NetLog.
     public void testNetLog() throws Exception {
         File directory = new File(PathUtils.getDataDirectory());
