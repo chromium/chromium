@@ -274,7 +274,8 @@ class _BuildHelper:
     # my_great_apk -> MyGreat.apk
     apk_name = ''.join(s.title() for s in self.target.split('_')[:-1]) + '.apk'
     if self.is_bundle:
-      # trichrome_minimal_apks->TrichromeMinimal.apk->Trichrome.minimal.apks
+      # trichrome_32_minimal_apks -> Trichrome32Minimal.apk
+      #                           -> Trichrome32.minimal.apks
       apk_name = apk_name.replace('Minimal.apk', '.minimal.apks')
     return apk_name.replace('Webview', 'WebView')
 
@@ -357,9 +358,9 @@ class _BuildHelper:
       if self.IsLinux():
         self.target = 'chrome'
       elif self.enable_chrome_android_internal:
-        self.target = 'trichrome_google_minimal_apks'
+        self.target = 'trichrome_google_32_minimal_apks'
       else:
-        self.target = 'trichrome_minimal_apks'
+        self.target = 'trichrome_32_minimal_apks'
 
   def _GenGnCmd(self):
     gn_args = 'is_official_build=true'
@@ -925,8 +926,8 @@ def main():
                            help='Allow downstream targets to be built.')
   build_group.add_argument('--target',
                            help='GN target to build. Linux default: chrome. '
-                           'Android default: trichrome_minimal_apks or '
-                           'trichrome_google_minimal_apks (depending on '
+                           'Android default: trichrome_32_minimal_apks or '
+                           'trichrome_google_32_minimal_apks (depending on '
                            '--enable-chrome-android-internal).')
   build_group.add_argument('--custom-apk-name',
                            help='The apk name by default is derived from the '
