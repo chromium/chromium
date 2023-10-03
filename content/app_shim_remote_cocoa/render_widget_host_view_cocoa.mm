@@ -31,7 +31,6 @@
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #import "ui/base/cocoa/appkit_utils.h"
 #import "ui/base/cocoa/nsmenu_additions.h"
