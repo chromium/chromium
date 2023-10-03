@@ -556,9 +556,12 @@ void MergePrioritySignalsOverrides(
   }
 }
 
-// Adds indices to the `interest_group` table. Called after the table has been
-// created.
-bool CreateInterestGroupIndicesForV17AndPrior(sql::Database& db) {
+// Adds indices to the `interest_group` table.
+// Call this function after the table has been created,
+// both when creating a new database in CreateVxxSchema
+// and after dropping/recreating the `interest_groups` table
+// in the *latest* UpgradeVxxSchemaToVxx function to do so.
+bool CreateInterestGroupIndices(sql::Database& db) {
   // Index on group expiration. Owner and Name are only here to speed up
   // queries that don't need the full group.
   DCHECK(!db.DoesIndexExist("interest_group_expiration"));
@@ -582,6 +585,18 @@ bool CreateInterestGroupIndicesForV17AndPrior(sql::Database& db) {
     return false;
   }
 
+  // Index on group expiration by owner and IG type (regular vs negative)
+  DCHECK(!db.DoesIndexExist("interest_group_owner_and_type"));
+  static const char kInterestGroupOwnerAndTypeIndexSql[] =
+      // clang-format off
+      "CREATE INDEX interest_group_owner_and_type"
+      " ON interest_groups("
+      "LENGTH(additional_bid_key) == 0,owner,expiration DESC,name)";
+  // clang-format on
+  if (!db.Execute(kInterestGroupOwnerAndTypeIndexSql)) {
+    return false;
+  }
+
   // Index on group expiration by joining origin. Owner and Name are only here
   // to speed up queries that don't need the full group.
   DCHECK(!db.DoesIndexExist("interest_group_joining_origin"));
@@ -597,24 +612,11 @@ bool CreateInterestGroupIndicesForV17AndPrior(sql::Database& db) {
   return true;
 }
 
-bool CreateInterestGroupIndicesForV18(sql::Database& db) {
-  CreateInterestGroupIndicesForV17AndPrior(db);
-
-  // Index on group expiration by owner and IG type (regular vs negative)
-  DCHECK(!db.DoesIndexExist("interest_group_owner_and_type"));
-  static const char kInterestGroupOwnerAndTypeIndexSql[] =
-      // clang-format off
-      "CREATE INDEX interest_group_owner_and_type"
-      " ON interest_groups("
-      "LENGTH(additional_bid_key) == 0,owner,expiration DESC,name)";
-  // clang-format on
-  if (!db.Execute(kInterestGroupOwnerAndTypeIndexSql)) {
-    return false;
-  }
-  return true;
-}
-
-// Create indices on the k_anon table.
+// Adds indices to the `kanon` table.
+// Call this function after the table has been created,
+// both when creating a new database in CreateVxxSchema
+// and after dropping/recreating the `kanon` table
+// in the *latest* UpgradeVxxSchemaToVxx function to do so.
 bool CreateKAnonIndices(sql::Database& db) {
   DCHECK(!db.DoesIndexExist("kanon_key_idx"));
   static const char kCreateKAnonIndexSQL[] =
@@ -786,7 +788,7 @@ bool CreateV18Schema(sql::Database& db) {
     return false;
   }
 
-  if (!CreateInterestGroupIndicesForV18(db)) {
+  if (!CreateInterestGroupIndices(db)) {
     return false;
   }
 
@@ -870,7 +872,10 @@ bool CreateV18Schema(sql::Database& db) {
 }
 
 bool UpgradeV17SchemaToV18(sql::Database& db, sql::MetaTable& meta_table) {
-  DCHECK(!db.DoesIndexExist("interest_group_owner_and_type"));
+  // If we just upgraded from V15 to V16, we already created this index.
+  if (db.DoesIndexExist("interest_group_owner_and_type")) {
+    return true;
+  }
   static const char kInterestGroupOwnerAndTypeIndexSql[] =
       // clang-format off
       "CREATE INDEX interest_group_owner_and_type"
@@ -1085,7 +1090,7 @@ bool UpgradeV15SchemaToV16(sql::Database& db, sql::MetaTable& meta_table) {
     return false;
   }
 
-  return CreateInterestGroupIndicesForV17AndPrior(db);
+  return CreateInterestGroupIndices(db);
 }
 
 bool UpgradeV14SchemaToV15(sql::Database& db, sql::MetaTable& meta_table) {
@@ -1175,7 +1180,7 @@ bool UpgradeV14SchemaToV15(sql::Database& db, sql::MetaTable& meta_table) {
     return false;
   }
 
-  return CreateInterestGroupIndicesForV17AndPrior(db);
+  return true;
 }
 
 bool UpgradeV13SchemaToV14(sql::Database& db, sql::MetaTable& meta_table) {
@@ -1263,7 +1268,7 @@ bool UpgradeV13SchemaToV14(sql::Database& db, sql::MetaTable& meta_table) {
     return false;
   }
 
-  return CreateInterestGroupIndicesForV17AndPrior(db);
+  return true;
 }
 
 bool UpgradeV12SchemaToV13(sql::Database& db, sql::MetaTable& meta_table) {
@@ -1349,7 +1354,7 @@ bool UpgradeV12SchemaToV13(sql::Database& db, sql::MetaTable& meta_table) {
     return false;
   }
 
-  return CreateInterestGroupIndicesForV17AndPrior(db);
+  return true;
 }
 
 bool UpgradeV11SchemaToV12(sql::Database& db, sql::MetaTable& meta_table) {
@@ -1431,7 +1436,7 @@ bool UpgradeV11SchemaToV12(sql::Database& db, sql::MetaTable& meta_table) {
     return false;
   }
 
-  return CreateInterestGroupIndicesForV17AndPrior(db);
+  return true;
 }
 
 bool UpgradeV10SchemaToV11(sql::Database& db, sql::MetaTable& meta_table) {
@@ -1509,7 +1514,7 @@ bool UpgradeV10SchemaToV11(sql::Database& db, sql::MetaTable& meta_table) {
     return false;
   }
 
-  return CreateInterestGroupIndicesForV17AndPrior(db);
+  return true;
 }
 
 bool UpgradeV9SchemaToV10(sql::Database& db, sql::MetaTable& meta_table) {
