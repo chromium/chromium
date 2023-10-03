@@ -27,7 +27,7 @@ BASE_FEATURE(kMediaDeviceIdPartitioning,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kMediaDeviceIdRandomSaltsPerStorageKey,
              "MediaDeviceIdRandomSaltsPerStorageKey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
