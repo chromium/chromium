@@ -950,14 +950,13 @@ scoped_refptr<ShapeResult> HarfBuzzShaper::Shape(
 
   hb::unique_ptr<hb_buffer_t> buffer(hb_buffer_create());
   RangeData range_data = CreateRangeData(font, direction, buffer.get());
+  range_data.start = start;
+  range_data.end = end;
 
   for (const RunSegmenter::RunSegmenterRange& segmented_range : ranges) {
     DCHECK_GE(segmented_range.end, segmented_range.start);
     DCHECK_GE(segmented_range.start, start);
     DCHECK_LE(segmented_range.end, end);
-
-    range_data.start = segmented_range.start;
-    range_data.end = segmented_range.end;
     ShapeSegment(&range_data, segmented_range, result.get());
   }
 
