@@ -170,6 +170,13 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
     SetWmDropHandler(window_.get(), drop_handler_.get());
   }
 
+  void TearDown() override {
+    WaylandDragDropTest::TearDown();
+
+    drag_controller()->set_data_transferred_callback_for_testing(
+        base::DoNothing());
+  }
+
   WaylandDataDragController* drag_controller() const {
     return connection_->data_drag_controller();
   }
@@ -1166,6 +1173,79 @@ TEST_P(WaylandDataDragControllerTest, DndActionsToDragOperations) {
                                              _));
 
   SendMotionEvent(gfx::Point(10, 10));
+}
+
+// Emulate an incoming DnD session, testing that data drag controller gracefully
+// handles entered window destruction happening while the data fetching is still
+// unfinished. Regression test for https://crbug.com/1400872.
+TEST_P(WaylandDataDragControllerTest, DestroyWindowWhileFetchingForeignData) {
+  const auto* window_manager = connection_->window_manager();
+  ASSERT_TRUE(window_);
+
+  // Hook up data transfer flow and take needed actions to achieve the scenario
+  // intended by this test case.
+  base::RunLoop run_loop;
+  drag_controller()->set_data_transferred_callback_for_testing(
+      base::BindLambdaForTesting([&](const std::string& mime_type) {
+        // Destroy the entered window at client side once data for the first
+        // announced mime type, kMimeTypeText, gets fetched.
+        if (mime_type == kMimeTypeText) {
+          ASSERT_TRUE(window_);
+          window_.reset();
+          connection_->Flush();
+          return;
+        }
+        // Once data transfer for all mime types is done, ie: |mime_type| is
+        // empty, schedule a leave event, thus exercising the exact code path
+        // intended by this test, ie: OnDataTransferFinished with
+        // is_leave_pending_=false and window_=null. A nested run loop is usede
+        // to ensure the full flow gets executed so all the expectations below
+        // can be checked without flakiness.
+        if (mime_type.empty()) {
+          SendDndLeave();
+          ASSERT_TRUE(run_loop.running());
+          run_loop.Quit();
+          return;
+        }
+      }));
+
+  EXPECT_CALL(*drop_handler_, MockOnDragEnter()).Times(0);
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(0);
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(0);
+  EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(0);
+
+  // 3 mime types are offered, which gives as time to hook partial data transfer
+  // and destroy the entered window while it's still unfinished, see test
+  // closure above for more details.
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    const auto data = ToClipboardData(std::string(kSampleTextForDragAndDrop));
+    auto* server_device = server->data_device_manager()->data_device();
+    auto* server_offer = server_device->CreateAndSendDataOffer();
+    server_offer->OnOffer(kMimeTypeText, data);
+    server_offer->OnOffer(kMimeTypeTextUtf8, data);
+    server_offer->OnOffer(kMimeTypeHTML, data);
+
+    const uint32_t surface_id = window_->root_surface()->get_surface_id();
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    server_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                           wl_fixed_from_int(0), wl_fixed_from_int(0),
+                           server_offer);
+  });
+  ASSERT_EQ(drag_controller(), data_device()->drag_delegate_);
+  ASSERT_TRUE(window_manager->HasObserverForTesting(*drag_controller()));
+
+  // Wait for the full data transfer flow to finish before checking all
+  // expectations.
+  run_loop.Run();
+
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  EXPECT_FALSE(drop_handler_->dropped_data());
+  EXPECT_FALSE(data_device()->drag_delegate_);
+
+  // There are 2 possible paths for the drag controller to stop observing
+  // window destructions in incoming drag sessions. This exercises the one
+  // called from OnDragLeave().
+  EXPECT_FALSE(window_manager->HasObserverForTesting(*drag_controller()));
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
