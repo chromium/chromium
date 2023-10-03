@@ -22,8 +22,10 @@
 #include "ash/wm/default_state.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -544,6 +546,10 @@ void WindowState::OnWMEvent(const WMEvent* event) {
   // the window has a minimum size requirement.
   if (event->IsBoundsEvent())
     UpdateSnapRatio();
+
+  if (IsSnapGroupEnabledInClamshellMode() && event->IsSnapEvent()) {
+    SnapGroupController::Get()->OnWindowSnapped(window());
+  }
 }
 
 gfx::Rect WindowState::GetCurrentBoundsInScreen() const {

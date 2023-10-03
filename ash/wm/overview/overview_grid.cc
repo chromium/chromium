@@ -1043,17 +1043,13 @@ void OverviewGrid::OnWindowDragEnded(aura::Window* dragged_window,
   // Update the grid bounds and reposition windows. Since the grid bounds might
   // be updated based on the preview area during drag, but the window finally
   // didn't be snapped to the preview area.
-  SetBoundsAndUpdatePositions(GetGridBoundsInScreen(root_window_),
-                              /*ignored_items=*/{},
-                              /*animate=*/true);
+  RefreshGridBounds(/*animate=*/true);
 }
 
 void OverviewGrid::MergeWindowIntoOverviewForWebUITabStrip(
     aura::Window* dragged_window) {
   AddDraggedWindowIntoOverviewOnDragEnd(dragged_window);
-  SetBoundsAndUpdatePositions(GetGridBoundsInScreen(root_window_),
-                              /*ignored_items=*/{},
-                              /*animate=*/true);
+  RefreshGridBounds(/*animate=*/true);
 }
 
 void OverviewGrid::SetVisibleDuringWindowDragging(bool visible, bool animate) {
@@ -1100,8 +1096,7 @@ void OverviewGrid::OnDisplayMetricsChanged() {
   // updated in |OnSplitViewDividerPositionChanged|.
   if (SplitViewController::Get(root_window_)->InSplitViewMode())
     return;
-  SetBoundsAndUpdatePositions(GetGridBoundsInScreen(root_window_),
-                              /*ignored_items=*/{}, /*animate=*/false);
+  RefreshGridBounds(/*animate=*/false);
 }
 
 void OverviewGrid::OnUserWorkAreaInsetsChanged(aura::Window* root_window) {
@@ -1109,8 +1104,7 @@ void OverviewGrid::OnUserWorkAreaInsetsChanged(aura::Window* root_window) {
   if (!desks_widget_)
     return;
 
-  SetBoundsAndUpdatePositions(GetGridBoundsInScreen(root_window_),
-                              /*ignored_items=*/{}, /*animate=*/false);
+  RefreshGridBounds(/*animate=*/false);
 }
 
 void OverviewGrid::OnStartingAnimationComplete(bool canceled) {
@@ -1973,6 +1967,11 @@ void OverviewGrid::RefreshNoWindowsWidgetBounds(bool animate) {
   no_windows_widget_->SetBoundsCenteredIn(GetGridEffectiveBounds(), animate);
 }
 
+void OverviewGrid::RefreshGridBounds(bool animate) {
+  SetBoundsAndUpdatePositions(GetGridBoundsInScreen(root_window_),
+                              /*ignored_items=*/{}, animate);
+}
+
 void OverviewGrid::UpdateSaveDeskButtons() {
   // TODO(crbug.com/1275282): The button should be updated whenever the
   // overview grid changes, i.e. switches between active desks and/or the
@@ -2212,8 +2211,7 @@ void OverviewGrid::OnSplitViewStateChanged(
 
   // Update the cannot snap warnings and adjust the grid bounds.
   UpdateCannotSnapWarningVisibility(/*animate=*/true);
-  SetBoundsAndUpdatePositions(GetGridBoundsInScreen(root_window_),
-                              /*ignored_items=*/{}, /*animate=*/false);
+  RefreshGridBounds(/*animate=*/false);
 
   // If split view mode was ended, then activate the overview focus window, to
   // match the behavior of entering overview mode in the beginning.

@@ -49,6 +49,11 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   // created and owned by Shell.
   static SnapGroupController* Get();
 
+  // Called after a window snap event. This will decide whether to start
+  // overview or add `window` to a snap group.
+  // This may also be called by async window state observers.
+  void OnWindowSnapped(aura::Window* window);
+
   // Returns true if `window1` and `window2` are in the same snap group.
   bool AreWindowsInSnapGroup(aura::Window* window1,
                              aura::Window* window2) const;

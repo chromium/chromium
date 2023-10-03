@@ -380,6 +380,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // true.
   void RefreshNoWindowsWidgetBounds(bool animate);
 
+  // Refreshes this grid's bounds. This will set bounds and update the overview
+  // item positions depending on the current split view state.
+  void RefreshGridBounds(bool animate);
+
   // Updates bounds, tooltips and a11y focus, as well as handles animations on
   // `save_desk_button_container_widget_`.
   void UpdateSaveDeskButtons();

@@ -239,6 +239,7 @@ void StartSplitViewOverviewSession(aura::Window* window,
     // Overview may already be in session, if a window was dragged to split view
     // from overview in clamshell mode.
     CHECK(action && type);
+    // TODO(b/303146294): Move this to `StartSplitViewOverviewSession()`.
     Shell::Get()->overview_controller()->StartOverview(*action, *type);
   }
 }
@@ -647,9 +648,7 @@ bool SplitViewController::WillStartOverview() const {
   // Note that at this point `state_` may not have been updated yet, so check if
   // only one of `primary_window_` or `secondary_window_` are snapped.
   return !IsInOverviewSession() && !DesksController::Get()->animation() &&
-         (split_view_type_ == SplitViewType::kTabletType ||
-          (IsSnapGroupEnabledInClamshellMode() &&
-           SnapGroupController::Get()->CanEnterOverview())) &&
+         split_view_type_ == SplitViewType::kTabletType &&
          !!primary_window_ != !!secondary_window_;
 }
 
@@ -2295,12 +2294,12 @@ void SplitViewController::OnWindowSnapped(
       IsSnapGroupEnabledInClamshellMode();
   if (state_ == State::kBothSnapped && snap_group_enabled_in_clamshell &&
       snap_group_controller->IsArm1AutomaticallyLockEnabled()) {
+    // TODO(b/286963080): Move this to SnapGroupController.
     CHECK(primary_window_);
     CHECK(secondary_window_);
     if (!snap_group_controller->AreWindowsInSnapGroup(primary_window_,
                                                       secondary_window_)) {
-      CHECK(snap_group_controller->AddSnapGroup(primary_window_,
-                                                secondary_window_));
+      snap_group_controller->AddSnapGroup(primary_window_, secondary_window_);
     }
 
     if (!split_view_divider_) {
@@ -2349,7 +2348,6 @@ void SplitViewController::OnWindowSnapped(
   // mode when `CanEnterOverview()` returns true, the check will happen in
   // `OverviewController`.
   if (WillStartOverview()) {
-    // TODO(b/294580642): Move this to SnapGroupController.
     StartSplitViewOverviewSession(window, OverviewStartAction::kSplitView,
                                   OverviewEnterExitType::kNormal);
     return;
