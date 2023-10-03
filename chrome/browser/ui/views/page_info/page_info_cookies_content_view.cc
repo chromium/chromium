@@ -148,7 +148,10 @@ void PageInfoCookiesContentView::InitCookiesDialogButton() {
               },
               this),
           icon,
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE),
+          l10n_util::GetStringUTF16(
+              presenter_->IsTrackingProtection3pcdEnabled()
+                  ? IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_DIALOG_BUTTON_TITLE
+                  : IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE),
           std::u16string(),
 
           tooltip, /*subtitle_text=*/u" ",

@@ -768,6 +768,9 @@
    <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE" desc="The title on the button opening cookies in use dialog in cookies subpage.">
     Manage cookies and site data
   </message>
+   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_DIALOG_BUTTON_TITLE" desc="Title of the button on the Tracking Protection subpage that opens the 'Cookies and site data' dialog.">
+    Manage on-device site data
+  </message>
   <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Manage cookies and site data' button. The following screen shows cookies and other forms of site data used by the site the user is viewing.">
     Review a list of cookies and site data in a new window
   </message>
