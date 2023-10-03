@@ -5,6 +5,7 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.junit.Assert.fail;
 
@@ -169,6 +170,10 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
 
     public void blockForDone() {
         mDone.block();
+    }
+
+    public void blockForDone(long timeoutMs) {
+        assertWithMessage("Request didn't terminate in time").that(mDone.block(timeoutMs)).isTrue();
     }
 
     public void waitForNextStep() {
