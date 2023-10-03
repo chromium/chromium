@@ -1525,6 +1525,11 @@
                   'chrome/browser/ui/webui/nearby_share/|'\
                   'chrome/services/sharing/'
     },
+    'nearby_presence': {
+      'filepath': 'chrome/browser/ash/nearby/|'\
+                  'chromeos/ash/components/nearby/presence/|'\
+                  'chromeos/ash/services/nearby/'
+    },
     'net': {
       'filepath': 'net/',
     },
@@ -2938,6 +2943,12 @@
                'pushi+watch-nearby@google.com',
                'suetfei+watch-nearby@google.com',
                'xlythe+watch-nearby@google.com'],
+    'nearby_presence': ['ajayramamurthy+watch-presence@google.com',
+                        'akingsb+watch-presence@google.com',
+                        'crisrael+watch-presence@google.com',
+                        'hansberry+watch-presence@chromium.org',
+                        'julietlevesque+watch-presence@google.com',
+                        'polner+watch-presence@google.com'],
     'net': ['net-reviews@chromium.org'],
     'net_base': ['bnc+watch@chromium.org'],
     'net_http2': ['bnc+watch@chromium.org'],
