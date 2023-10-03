@@ -87,7 +87,7 @@ void WebKioskAppUpdateObserver::UpdateWebAppFromAppService(
         }
 
         WebKioskAppManager::Get()->UpdateAppByAccountId(
-            account_id_, app_info.Name(), start_url, IconBitmaps());
+            account_id_, app_info.Name(), start_url, web_app::IconBitmaps());
       });
 }
 
@@ -95,7 +95,7 @@ void WebKioskAppUpdateObserver::OnAppServiceIconLoaded(
     std::string title,
     GURL start_url,
     apps::IconValuePtr icon) {
-  IconBitmaps icon_bitmaps;
+  web_app::IconBitmaps icon_bitmaps;
   if (icon->uncompressed.bitmap()) {
     icon_bitmaps.any[kWebKioskIconSize] = *icon->uncompressed.bitmap();
   }

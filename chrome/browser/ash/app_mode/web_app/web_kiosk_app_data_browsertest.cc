@@ -53,7 +53,7 @@ base::FilePath GetFullPathToImage(bool valid) {
 
 void PopulateIcon(web_app::WebAppInstallInfo* web_app_info,
                   const std::string& icon_url_str) {
-  IconsMap icons_map;
+  web_app::IconsMap icons_map;
   const GURL icon_url(icon_url_str);
   std::vector<SkBitmap> bmp = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
   icons_map.emplace(icon_url, bmp);

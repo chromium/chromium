@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 
-struct IconBitmaps;
 
 namespace webapps {
 enum class InstallResultCode;
@@ -18,6 +17,7 @@ enum class InstallResultCode;
 
 namespace web_app {
 class AppLock;
+struct IconBitmaps;
 }  // namespace web_app
 
 // A class that can open a web app with the specified |app_id|, that is
@@ -48,7 +48,7 @@ class WebAppProfileSwitcher : public ProfileObserver {
 
   // Installs web app defined by |app_id_| for a |new_profile| and launches
   // it once installed.
-  void InstallAndLaunchWebApp(IconBitmaps icon_bitmaps);
+  void InstallAndLaunchWebApp(web_app::IconBitmaps icon_bitmaps);
 
   // Launches web app defined by |app_id| for a |new_profile|.
   void LaunchAppWithId(const web_app::AppId& app_id,

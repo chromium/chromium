@@ -49,7 +49,7 @@ class WebAppUninstallDialogDelegateView
       Profile* profile,
       webapps::AppId app_id,
       webapps::WebappUninstallSource uninstall_source,
-      std::map<SquareSizePx, SkBitmap> icon_bitmaps,
+      std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps,
       web_app::UninstallDialogCallback uninstall_choice_callback);
   WebAppUninstallDialogDelegateView(const WebAppUninstallDialogDelegateView&) =
       delete;

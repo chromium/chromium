@@ -105,10 +105,11 @@ void WebKioskAppManager::UpdateAppByAccountId(
   NOTREACHED();
 }
 
-void WebKioskAppManager::UpdateAppByAccountId(const AccountId& account_id,
-                                              const std::string& title,
-                                              const GURL& start_url,
-                                              const IconBitmaps& icon_bitmaps) {
+void WebKioskAppManager::UpdateAppByAccountId(
+    const AccountId& account_id,
+    const std::string& title,
+    const GURL& start_url,
+    const web_app::IconBitmaps& icon_bitmaps) {
   for (auto& web_app : apps_) {
     if (web_app->account_id() == account_id) {
       web_app->UpdateAppInfo(title, start_url, icon_bitmaps);

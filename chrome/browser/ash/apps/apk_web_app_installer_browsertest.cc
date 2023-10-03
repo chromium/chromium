@@ -73,11 +73,12 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInstallInfo(
   web_app_install_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
 
-  const std::vector<SquareSizePx> sizes_px{web_app::icon_size::k256,
-                                           web_app::icon_size::k512};
+  const std::vector<web_app::SquareSizePx> sizes_px{web_app::icon_size::k256,
+                                                    web_app::icon_size::k512};
   const std::vector<SkColor> colors{SK_ColorRED, SK_ColorYELLOW};
-  web_app::AddIconsToWebAppInstallInfo(web_app_install_info.get(), url,
-                                       {{IconPurpose::ANY, sizes_px, colors}});
+  web_app::AddIconsToWebAppInstallInfo(
+      web_app_install_info.get(), url,
+      {{web_app::IconPurpose::ANY, sizes_px, colors}});
 
   return web_app_install_info;
 }

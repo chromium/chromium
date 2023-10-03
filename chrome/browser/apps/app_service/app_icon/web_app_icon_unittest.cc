@@ -71,6 +71,8 @@
 
 namespace apps {
 
+using IconPurpose = web_app::IconPurpose;
+
 WebAppIconFactoryTest::WebAppIconFactoryTest() = default;
 
 WebAppIconFactoryTest::~WebAppIconFactoryTest() = default;
@@ -111,7 +113,7 @@ void WebAppIconFactoryTest::WriteIcons(const std::string& app_id,
   ASSERT_EQ(sizes_px.size(), colors.size());
   ASSERT_TRUE(!purposes.empty());
 
-  IconBitmaps icon_bitmaps;
+  web_app::IconBitmaps icon_bitmaps;
   for (size_t i = 0; i < sizes_px.size(); ++i) {
     if (base::Contains(purposes, IconPurpose::ANY)) {
       web_app::AddGeneratedIcon(&icon_bitmaps.any, sizes_px[i], colors[i]);
@@ -134,7 +136,7 @@ gfx::ImageSkia WebAppIconFactoryTest::GenerateWebAppIcon(
     const std::vector<int>& sizes_px,
     apps::ScaleToSize scale_to_size_in_px,
     bool skip_icon_effects) {
-  base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> future;
+  base::test::TestFuture<std::map<web_app::SquareSizePx, SkBitmap>> future;
   icon_manager().ReadIcons(app_id, purpose, sizes_px, future.GetCallback());
   auto icon_bitmaps = future.Take();
 
@@ -551,7 +553,7 @@ TEST_F(WebAppIconFactoryTest, LoadIconFailed) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_Empty) {
   gfx::ImageSkia converted_image = ConvertSquareBitmapsToImageSkia(
-      /*icon_bitmaps=*/std::map<SquareSizePx, SkBitmap>{},
+      /*icon_bitmaps=*/std::map<web_app::SquareSizePx, SkBitmap>{},
       /*icon_effects=*/apps::IconEffects::kNone,
       /*size_hint_in_dip=*/32);
 
@@ -560,7 +562,7 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_Empty) {
 
 TEST_F(WebAppIconFactoryTest,
        ConvertSquareBitmapsToImageSkia_OneBigIconForDownscale) {
-  std::map<SquareSizePx, SkBitmap> icon_bitmaps;
+  std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps;
   web_app::AddGeneratedIcon(&icon_bitmaps, web_app::icon_size::k512,
                             SK_ColorYELLOW);
 
@@ -583,7 +585,7 @@ TEST_F(WebAppIconFactoryTest,
 
 TEST_F(WebAppIconFactoryTest,
        ConvertSquareBitmapsToImageSkia_OneSmallIconNoUpscale) {
-  std::map<SquareSizePx, SkBitmap> icon_bitmaps;
+  std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps;
   web_app::AddGeneratedIcon(&icon_bitmaps, web_app::icon_size::k16,
                             SK_ColorMAGENTA);
 
@@ -594,13 +596,13 @@ TEST_F(WebAppIconFactoryTest,
 }
 
 TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_MatchBigger) {
-  const std::vector<SquareSizePx> sizes_px{
+  const std::vector<web_app::SquareSizePx> sizes_px{
       web_app::icon_size::k16, web_app::icon_size::k32, web_app::icon_size::k48,
       web_app::icon_size::k64, web_app::icon_size::k128};
   const std::vector<SkColor> colors{SK_ColorBLUE, SK_ColorRED, SK_ColorMAGENTA,
                                     SK_ColorGREEN, SK_ColorWHITE};
 
-  std::map<SquareSizePx, SkBitmap> icon_bitmaps;
+  std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps;
   for (size_t i = 0; i < sizes_px.size(); ++i) {
     web_app::AddGeneratedIcon(&icon_bitmaps, sizes_px[i], colors[i]);
   }
@@ -627,11 +629,11 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_MatchBigger) {
 }
 
 TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_StandardEffect) {
-  const std::vector<SquareSizePx> sizes_px{web_app::icon_size::k48,
-                                           web_app::icon_size::k96};
+  const std::vector<web_app::SquareSizePx> sizes_px{web_app::icon_size::k48,
+                                                    web_app::icon_size::k96};
   const std::vector<SkColor> colors{SK_ColorBLUE, SK_ColorRED};
 
-  std::map<SquareSizePx, SkBitmap> icon_bitmaps;
+  std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps;
   for (size_t i = 0; i < sizes_px.size(); ++i) {
     web_app::AddGeneratedIcon(&icon_bitmaps, sizes_px[i], colors[i]);
   }
@@ -657,7 +659,7 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_StandardEffect) {
         converted_image.GetRepresentation(scale).GetBitmap().getColor(0, 0));
 
     // Has color in the center.
-    const SquareSizePx center_px = sizes_px[i] / 2;
+    const web_app::SquareSizePx center_px = sizes_px[i] / 2;
     EXPECT_TRUE(converted_image.GetRepresentation(scale).GetBitmap().getColor(
         center_px, center_px));
   }

@@ -30,7 +30,7 @@
 
 namespace {
 
-const SquareSizePx kMinimumIconSize = 64;
+const web_app::SquareSizePx kMinimumIconSize = 64;
 
 // The seed to use when taking the murmur2 hash of the icon.
 const uint64_t kMurmur2HashSeed = 0;
@@ -60,7 +60,7 @@ crosapi::mojom::WebApkCreationParamsPtr AddIconDataAndSerializeProto(
 void OnLoadedIcon(apps::GetWebApkCreationParamsCallback callback,
                   const GURL& manifest_url,
                   std::unique_ptr<webapk::WebAppManifest> webapk_manifest,
-                  IconPurpose purpose,
+                  web_app::IconPurpose purpose,
                   std::vector<uint8_t> data) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
@@ -154,7 +154,8 @@ void GetWebApkCreationParams(Profile* profile,
   auto& icon_manager = provider->icon_manager();
   absl::optional<web_app::WebAppIconManager::IconSizeAndPurpose>
       icon_size_and_purpose = icon_manager.FindIconMatchBigger(
-          app_id, {IconPurpose::MASKABLE, IconPurpose::ANY}, kMinimumIconSize);
+          app_id, {web_app::IconPurpose::MASKABLE, web_app::IconPurpose::ANY},
+          kMinimumIconSize);
 
   if (!icon_size_and_purpose) {
     LOG(ERROR) << "Could not find suitable icon";
@@ -169,8 +170,8 @@ void GetWebApkCreationParams(Profile* profile,
   const auto& manifest_icons = registrar.GetAppIconInfos(app_id);
   auto it = base::ranges::find_if(
       manifest_icons, [&icon_size_and_purpose](const apps::IconInfo& info) {
-        return info.purpose ==
-               ManifestPurposeToIconInfoPurpose(icon_size_and_purpose->purpose);
+        return info.purpose == web_app::ManifestPurposeToIconInfoPurpose(
+                                   icon_size_and_purpose->purpose);
       });
 
   if (it == manifest_icons.end()) {
@@ -184,7 +185,8 @@ void GetWebApkCreationParams(Profile* profile,
 
   webapk::Image* image = webapk_manifest->add_icons();
   image->set_src(std::move(icon_url));
-  image->add_purposes(icon_size_and_purpose->purpose == IconPurpose::MASKABLE
+  image->add_purposes(icon_size_and_purpose->purpose ==
+                              web_app::IconPurpose::MASKABLE
                           ? webapk::Image::MASKABLE
                           : webapk::Image::ANY);
   image->add_usages(webapk::Image::PRIMARY_ICON);

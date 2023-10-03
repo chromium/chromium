@@ -14,7 +14,8 @@
 // An image source which draws from a WebAppInstallInfo icons list.
 class WebAppInfoImageSource : public gfx::ImageSkiaSource {
  public:
-  WebAppInfoImageSource(int dip_size, std::map<SquareSizePx, SkBitmap> icons);
+  WebAppInfoImageSource(int dip_size,
+                        std::map<web_app::SquareSizePx, SkBitmap> icons);
 
   WebAppInfoImageSource(const WebAppInfoImageSource&) = delete;
   WebAppInfoImageSource& operator=(const WebAppInfoImageSource&) = delete;
@@ -26,7 +27,7 @@ class WebAppInfoImageSource : public gfx::ImageSkiaSource {
   gfx::ImageSkiaRep GetImageForScale(float scale) override;
 
   int dip_size_;
-  std::map<SquareSizePx, SkBitmap> icons_;
+  std::map<web_app::SquareSizePx, SkBitmap> icons_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INFO_IMAGE_SOURCE_H_

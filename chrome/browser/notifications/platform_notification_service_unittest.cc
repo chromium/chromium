@@ -583,10 +583,10 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
   web_app->SetName("Web App Title");
 
   IconManagerWriteGeneratedIcons(icon_manager, app_id,
-                                 {{IconPurpose::MONOCHROME,
+                                 {{web_app::IconPurpose::MONOCHROME,
                                    {web_app::icon_size::k16},
                                    {SK_ColorTRANSPARENT}}});
-  web_app->SetDownloadedIconSizes(IconPurpose::MONOCHROME,
+  web_app->SetDownloadedIconSizes(web_app::IconPurpose::MONOCHROME,
                                   {web_app::icon_size::k16});
 
   provider->GetRegistrarMutable().registry().emplace(app_id,

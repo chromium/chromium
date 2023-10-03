@@ -230,7 +230,7 @@ void WebKioskAppData::UpdateFromWebAppInfo(
 
 void WebKioskAppData::UpdateAppInfo(const std::string& title,
                                     const GURL& start_url,
-                                    const IconBitmaps& icon_bitmaps) {
+                                    const web_app::IconBitmaps& icon_bitmaps) {
   name_ = title;
 
   base::FilePath cache_dir;

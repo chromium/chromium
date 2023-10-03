@@ -121,7 +121,8 @@ void WebAppProfileSwitcher::InstallOrOpenWebAppWindowForProfile(
                                  weak_factory_.GetWeakPtr()));
 }
 
-void WebAppProfileSwitcher::InstallAndLaunchWebApp(IconBitmaps icon_bitmaps) {
+void WebAppProfileSwitcher::InstallAndLaunchWebApp(
+    web_app::IconBitmaps icon_bitmaps) {
   web_app::WebAppProvider* active_profile_provider =
       web_app::WebAppProvider::GetForWebApps(&active_profile_.get());
   if (!active_profile_provider->registrar_unsafe().IsInstalled(app_id_)) {

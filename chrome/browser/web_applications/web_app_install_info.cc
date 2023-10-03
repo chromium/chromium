@@ -11,6 +11,14 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/skia_util.h"
 
+// This definition needs to be in the top-level namespace to be picked up by
+// IconBitmaps::operator==().
+static bool operator==(const SkBitmap& a, const SkBitmap& b) {
+  return gfx::BitmapsAreEqual(a, b);
+}
+
+namespace web_app {
+
 namespace {
 
 template <typename T>
@@ -21,12 +29,6 @@ std::string ConvertToString(const T& value) {
 }
 
 }  // namespace
-
-// This definition doesn't get picked up by IconBitmaps::operator==() when in
-// the anonymous namespace but it does as a static free function.
-static bool operator==(const SkBitmap& a, const SkBitmap& b) {
-  return gfx::BitmapsAreEqual(a, b);
-}
 
 apps::IconInfo::Purpose ManifestPurposeToIconInfoPurpose(
     IconPurpose manifest_purpose) {
@@ -250,15 +252,13 @@ base::Value WebAppShortcutsMenuItemInfo::AsDebugValue() const {
 
 // WebAppInstallInfo
 
-namespace web_app {
-
 // static
 WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
     const GURL& document_url,
     const std::u16string& document_title,
     const WebAppInstallInfo& other) {
   WebAppInstallInfo create_shortcut_info(
-      web_app::GenerateManifestIdFromStartUrlOnly(document_url));
+      GenerateManifestIdFromStartUrlOnly(document_url));
   create_shortcut_info.title = document_title;
   create_shortcut_info.description = other.description;
   create_shortcut_info.start_url = document_url;
@@ -313,8 +313,6 @@ WebAppInstallInfo WebAppInstallInfo::Clone() const {
   return WebAppInstallInfo(*this);
 }
 
-}  // namespace web_app
-
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2) {
   return std::tie(icon_sizes1.any, icon_sizes1.maskable,
                   icon_sizes1.monochrome) == std::tie(icon_sizes2.any,
@@ -335,3 +333,5 @@ bool operator==(const WebAppShortcutsMenuItemInfo& shortcut_info1,
          std::tie(shortcut_info2.name, shortcut_info2.url, shortcut_info2.any,
                   shortcut_info2.maskable, shortcut_info2.monochrome);
 }
+
+}  // namespace web_app

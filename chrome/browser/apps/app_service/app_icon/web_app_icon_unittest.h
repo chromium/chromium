@@ -42,27 +42,27 @@ class WebAppIconFactoryTest : public testing::Test {
   void SetUp() override;
 
   void WriteIcons(const std::string& app_id,
-                  const std::vector<IconPurpose>& purposes,
+                  const std::vector<web_app::IconPurpose>& purposes,
                   const std::vector<int>& sizes_px,
                   const std::vector<SkColor>& colors);
 
   void RegisterApp(std::unique_ptr<web_app::WebApp> web_app);
 
   gfx::ImageSkia GenerateWebAppIcon(const std::string& app_id,
-                                    IconPurpose purpose,
+                                    web_app::IconPurpose purpose,
                                     const std::vector<int>& sizes_px,
                                     apps::ScaleToSize scale_to_size_in_px,
                                     bool skip_icon_effects = false);
 
   std::vector<uint8_t> GenerateWebAppCompressedIcon(
       const std::string& app_id,
-      IconPurpose purpose,
+      web_app::IconPurpose purpose,
       const std::vector<int>& sizes_px,
       apps::ScaleToSize scale_to_size_in_px);
 
   std::vector<uint8_t> GenerateWebAppCompressedIcon(
       const std::string& app_id,
-      IconPurpose purpose,
+      web_app::IconPurpose purpose,
       IconEffects icon_effects,
       const std::vector<int>& sizes_px,
       apps::ScaleToSize scale_to_size_in_px,

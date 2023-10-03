@@ -366,7 +366,8 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
   webapk->set_android_abi(GetArcAbi(arc_features.value()));
 
   if (web_app::IsWebAppsCrosapiEnabled()) {
-    WebApkInstallTask::OnLoadedIcon(std::move(webapk), IconPurpose::ANY,
+    WebApkInstallTask::OnLoadedIcon(std::move(webapk),
+                                    web_app::IconPurpose::ANY,
                                     /*data=*/{});
     return;
   }
@@ -374,7 +375,8 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
   auto& icon_manager = web_app_provider_->icon_manager();
   absl::optional<web_app::WebAppIconManager::IconSizeAndPurpose>
       icon_size_and_purpose = icon_manager.FindIconMatchBigger(
-          app_id_, {IconPurpose::MASKABLE, IconPurpose::ANY}, kMinimumIconSize);
+          app_id_, {web_app::IconPurpose::MASKABLE, web_app::IconPurpose::ANY},
+          kMinimumIconSize);
 
   if (!icon_size_and_purpose) {
     LOG(ERROR) << "Could not find suitable icon";
@@ -390,8 +392,8 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
   const auto& manifest_icons = registrar.GetAppIconInfos(app_id_);
   auto it = base::ranges::find_if(
       manifest_icons, [&icon_size_and_purpose](const apps::IconInfo& info) {
-        return info.purpose ==
-               ManifestPurposeToIconInfoPurpose(icon_size_and_purpose->purpose);
+        return info.purpose == web_app::ManifestPurposeToIconInfoPurpose(
+                                   icon_size_and_purpose->purpose);
       });
 
   if (it == manifest_icons.end()) {
@@ -406,7 +408,8 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
 
   webapk::Image* image = web_app_manifest->add_icons();
   image->set_src(std::move(icon_url));
-  image->add_purposes(icon_size_and_purpose->purpose == IconPurpose::MASKABLE
+  image->add_purposes(icon_size_and_purpose->purpose ==
+                              web_app::IconPurpose::MASKABLE
                           ? webapk::Image::MASKABLE
                           : webapk::Image::ANY);
   image->add_usages(webapk::Image::PRIMARY_ICON);
@@ -418,7 +421,7 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
 }
 
 void WebApkInstallTask::OnLoadedIcon(std::unique_ptr<webapk::WebApk> webapk,
-                                     IconPurpose purpose,
+                                     web_app::IconPurpose purpose,
                                      std::vector<uint8_t> data) {
   app_short_name_ = webapk->manifest().short_name();
   base::ThreadPool::PostTaskAndReplyWithResult(

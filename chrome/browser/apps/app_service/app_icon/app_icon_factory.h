@@ -101,13 +101,13 @@ void ArcActivityIconsToImageSkias(
 // TODO(crbug.com/1189994): Unify this function with AppIconLoader class.
 // It's the same as AppIconLoader::OnReadWebAppIcon().
 gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
-    const std::map<SquareSizePx, SkBitmap>& icon_bitmaps,
+    const std::map<web_app::SquareSizePx, SkBitmap>& icon_bitmaps,
     IconEffects icon_effects,
     int size_hint_in_dip);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 gfx::ImageSkia ConvertIconBitmapsToImageSkia(
-    const std::map<SquareSizePx, SkBitmap>& icon_bitmaps,
+    const std::map<web_app::SquareSizePx, SkBitmap>& icon_bitmaps,
     int size_hint_in_dip);
 
 // Modifies |iv| to apply icon post-processing effects (like badging and

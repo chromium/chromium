@@ -38,7 +38,7 @@
 static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
               BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA));
 
-class SkBitmap;
+namespace web_app {
 
 // A map of icon urls to the bitmaps provided by that url.
 using IconsMap = std::map<GURL, std::vector<SkBitmap>>;
@@ -179,8 +179,6 @@ struct WebAppShortcutsMenuItemInfo {
   // Sizes of successfully downloaded icons for this shortcut menu item.
   IconSizes downloaded_icon_sizes{};
 };
-
-namespace web_app {
 
 // Structure used when installing a web page as an app.
 struct WebAppInstallInfo {
@@ -407,8 +405,6 @@ struct WebAppInstallInfo {
   WebAppInstallInfo(const WebAppInstallInfo& other);
 };
 
-}  // namespace web_app
-
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);
 
 bool operator==(const WebAppShortcutsMenuItemInfo::Icon& icon1,
@@ -416,5 +412,7 @@ bool operator==(const WebAppShortcutsMenuItemInfo::Icon& icon1,
 
 bool operator==(const WebAppShortcutsMenuItemInfo& shortcut_info1,
                 const WebAppShortcutsMenuItemInfo& shortcut_info2);
+
+}  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_INFO_H_

@@ -64,7 +64,7 @@ class WebKioskAppData : public KioskAppDataBase {
 
   void UpdateAppInfo(const std::string& title,
                      const GURL& start_url,
-                     const IconBitmaps& icon_bitmaps);
+                     const web_app::IconBitmaps& icon_bitmaps);
 
   void SetOnLoadedCallbackForTesting(base::OnceClosure callback);
 

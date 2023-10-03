@@ -160,11 +160,12 @@ void GetWebAppBasicInfo(const webapps::AppId& app_id,
   info->Set(kPackagedAppKey, false);
 }
 
-bool HasMatchingOrGreaterThanIcon(const SortedSizesPx& downloaded_icon_sizes,
-                                  int pixels) {
+bool HasMatchingOrGreaterThanIcon(
+    const web_app::SortedSizesPx& downloaded_icon_sizes,
+    int pixels) {
   if (downloaded_icon_sizes.empty())
     return false;
-  SquareSizePx largest = *downloaded_icon_sizes.rbegin();
+  web_app::SquareSizePx largest = *downloaded_icon_sizes.rbegin();
   return largest >= pixels;
 }
 

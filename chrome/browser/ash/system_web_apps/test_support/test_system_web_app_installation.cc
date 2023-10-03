@@ -677,23 +677,23 @@ TestSystemWebAppInstallation::SetUpAppWithShortcuts() {
                 GenerateWebAppInstallInfoForTestApp();
             info->title = u"Shortcuts";
             {
-              WebAppShortcutsMenuItemInfo menu_item;
+              web_app::WebAppShortcutsMenuItemInfo menu_item;
               menu_item.name = u"One";
               menu_item.url = GURL("chrome://test-system-app/pwa.html#one");
               info->shortcuts_menu_item_infos.push_back(std::move(menu_item));
 
-              IconBitmaps bitmaps;
+              web_app::IconBitmaps bitmaps;
               bitmaps.any[web_app::icon_size::k256] =
                   CreateIcon(web_app::icon_size::k256);
               info->shortcuts_menu_icon_bitmaps.push_back(bitmaps);
             }
             {
-              WebAppShortcutsMenuItemInfo menu_item;
+              web_app::WebAppShortcutsMenuItemInfo menu_item;
               menu_item.name = u"Two";
               menu_item.url = GURL("chrome://test-system-app/pwa.html#two");
               info->shortcuts_menu_item_infos.push_back(std::move(menu_item));
 
-              IconBitmaps bitmaps;
+              web_app::IconBitmaps bitmaps;
               bitmaps.any[web_app::icon_size::k256] =
                   CreateIcon(web_app::icon_size::k256);
               info->shortcuts_menu_icon_bitmaps.push_back(bitmaps);

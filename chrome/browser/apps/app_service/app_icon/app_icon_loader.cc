@@ -225,7 +225,7 @@ FaviconResultToImageSkia(base::OnceCallback<void(gfx::ImageSkia)> callback,
       std::move(callback), icon_scale);
 }
 
-absl::optional<IconPurpose> GetIconPurpose(
+absl::optional<web_app::IconPurpose> GetIconPurpose(
     const std::string& web_app_id,
     const web_app::WebAppIconManager& icon_manager,
     int size_hint_in_dip) {
@@ -242,14 +242,14 @@ absl::optional<IconPurpose> GetIconPurpose(
     }
   }
 
-  if (icon_manager.HasSmallestIcon(web_app_id, {IconPurpose::MASKABLE},
+  if (icon_manager.HasSmallestIcon(web_app_id, {web_app::IconPurpose::MASKABLE},
                                    max_icon_size_in_px)) {
-    return absl::make_optional(IconPurpose::MASKABLE);
+    return absl::make_optional(web_app::IconPurpose::MASKABLE);
   }
 
-  if (icon_manager.HasSmallestIcon(web_app_id, {IconPurpose::ANY},
+  if (icon_manager.HasSmallestIcon(web_app_id, {web_app::IconPurpose::ANY},
                                    max_icon_size_in_px)) {
-    return absl::make_optional(IconPurpose::ANY);
+    return absl::make_optional(web_app::IconPurpose::ANY);
   }
 
   return absl::nullopt;
@@ -478,7 +478,7 @@ void AppIconLoader::LoadWebAppIcon(const std::string& web_app_id,
   // constructor.
   icon_scale_for_compressed_response_ = icon_scale_;
 
-  absl::optional<IconPurpose> icon_purpose_to_read =
+  absl::optional<web_app::IconPurpose> icon_purpose_to_read =
       GetIconPurpose(web_app_id, icon_manager, size_hint_in_dip_);
 
   if (!icon_purpose_to_read.has_value()) {
@@ -490,7 +490,7 @@ void AppIconLoader::LoadWebAppIcon(const std::string& web_app_id,
   // background in case the maskable icon contains transparent pixels in its
   // safe zone, and clear the standard icon effect, apply the mask to the icon
   // without shrinking it.
-  if (icon_purpose_to_read.value() == IconPurpose::MASKABLE) {
+  if (icon_purpose_to_read.value() == web_app::IconPurpose::MASKABLE) {
     icon_effects_ &= ~apps::IconEffects::kCrOsStandardIcon;
     icon_effects_ |= apps::IconEffects::kCrOsStandardBackground;
     icon_effects_ |= apps::IconEffects::kCrOsStandardMask;
@@ -738,7 +738,7 @@ void AppIconLoader::GetWebAppCompressedIconData(
   TRACE_EVENT0("ui", "AppIconLoader::GetWebAppCompressedIconData");
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  absl::optional<IconPurpose> icon_purpose_to_read =
+  absl::optional<web_app::IconPurpose> icon_purpose_to_read =
       GetIconPurpose(web_app_id, icon_manager, size_hint_in_dip_);
 
   if (!icon_purpose_to_read.has_value() || icon_type_ == IconType::kUnknown) {
@@ -760,7 +760,7 @@ void AppIconLoader::GetWebAppCompressedIconData(
       web_app_id, *icon_purpose_to_read, icon_pixel_sizes,
       base::BindOnce(&AppIconLoader::OnReadWebAppForCompressedIconData,
                      base::WrapRefCounted(this),
-                     *icon_purpose_to_read == IconPurpose::MASKABLE));
+                     *icon_purpose_to_read == web_app::IconPurpose::MASKABLE));
 }
 
 void AppIconLoader::GetChromeAppCompressedIconData(

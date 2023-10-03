@@ -1831,7 +1831,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest,
   base::FilePath icon_path =
       SystemWebAppManager::GetWebAppProvider(browser()->profile())
           ->icon_manager()
-          .GetIconFilePathForTesting(app_id, IconPurpose::ANY, 32);
+          .GetIconFilePathForTesting(app_id, web_app::IconPurpose::ANY, 32);
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;

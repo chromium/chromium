@@ -56,7 +56,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
     Profile* profile,
     webapps::AppId app_id,
     webapps::WebappUninstallSource uninstall_source,
-    std::map<SquareSizePx, SkBitmap> icon_bitmaps,
+    std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps,
     web_app::UninstallDialogCallback uninstall_choice_callback)
     : app_id_(std::move(app_id)),
       profile_(profile),
@@ -211,7 +211,7 @@ void ShowWebAppUninstallDialog(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,
     gfx::NativeWindow parent,
-    std::map<SquareSizePx, SkBitmap> icon_bitmaps,
+    std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps,
     web_app::UninstallDialogCallback uninstall_dialog_result_callback) {
   auto* view = new WebAppUninstallDialogDelegateView(
       profile, app_id, uninstall_source, std::move(icon_bitmaps),

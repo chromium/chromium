@@ -63,7 +63,7 @@ class WebApkInstallTask {
   void OnArcFeaturesLoaded(std::unique_ptr<webapk::WebApk> webapk,
                            absl::optional<arc::ArcFeatures> arc_features);
   void OnLoadedIcon(std::unique_ptr<webapk::WebApk> webapk,
-                    IconPurpose purpose,
+                    web_app::IconPurpose purpose,
                     std::vector<uint8_t> data);
   void OnProtoSerialized(absl::optional<std::string> serialized_proto);
   void OnUrlLoaderComplete(std::unique_ptr<std::string> response_body);

@@ -218,7 +218,7 @@ void ShowWebAppUninstallDialog(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,
     gfx::NativeWindow parent,
-    std::map<SquareSizePx, SkBitmap> icon_bitmaps,
+    std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps,
     web_app::UninstallDialogCallback uninstall_dialog_result_callback);
 
 // Callback used to indicate whether a user has accepted the launch of a
