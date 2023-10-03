@@ -128,7 +128,7 @@ template("chrome_app") {
 
       deps = [
         "//base/allocator:early_zone_registration_apple",
-        "//base/allocator/partition_allocator:partition_alloc_buildflags",
+        "//base/allocator/partition_allocator/src/partition_alloc:partition_alloc_buildflags",
         "//ios/chrome/app:chrome_main_module_buildflags",
       ]
 
