@@ -85,14 +85,8 @@ TEST_F(OverlayPresentationContextViewControllerTest, NoPresentedUI) {
 
 // Tests that `view_controller_`'s frame is the same as its presenter while
 // showing overlay UI presented over its context.
-// TODO(crbug.com/1487982): Test fails on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_PresentedOverCurrentContext DISABLED_PresentedOverCurrentContext
-#else
-#define MAYBE_PresentedOverCurrentContext PresentedOverCurrentContext
-#endif
 TEST_F(OverlayPresentationContextViewControllerTest,
-       MAYBE_PresentedOverCurrentContext) {
+       PresentedOverCurrentContext) {
   if (@available(iOS 15.7.1, *)) {
     if (@available(iOS 15.7.2, *)) {
     } else {
@@ -133,11 +127,14 @@ TEST_F(OverlayPresentationContextViewControllerTest,
   EXPECT_TRUE(CGRectEqualToRect([view convertRect:view.bounds toView:nil],
                                 root_window_frame));
 
-  // Stop the coordinator and wait for its dismissal to finish.
+  // Stop the coordinator, wait for its dismissal to finish, and make sure the
+  // layout is updated.
   [coordinator stopAnimated:NO];
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
     return !overlay_view_controller.presentingViewController;
   }));
+  [container_view layoutIfNeeded];
+  [view layoutIfNeeded];
 
   // Verify that the views are resized to CGRectZero when nothing is presented
   // upon it.
@@ -148,14 +145,7 @@ TEST_F(OverlayPresentationContextViewControllerTest,
 // Tests that `view_controller_`'s frame is the same as its presented view's
 // container view if it is shown using custom UIViewController presentation that
 // resizes the contianer view.
-// TODO(crbug.com/1487982): Test fails on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_ResizingPresentedOverlay DISABLED_ResizingPresentedOverlay
-#else
-#define MAYBE_ResizingPresentedOverlay ResizingPresentedOverlay
-#endif
-TEST_F(OverlayPresentationContextViewControllerTest,
-       MAYBE_ResizingPresentedOverlay) {
+TEST_F(OverlayPresentationContextViewControllerTest, ResizingPresentedOverlay) {
   if (@available(iOS 15.7.1, *)) {
     if (@available(iOS 15.7.2, *)) {
     } else {
@@ -202,11 +192,14 @@ TEST_F(OverlayPresentationContextViewControllerTest,
                                                              toView:nil],
                                 kWindowFrame));
 
-  // Stop the coordinator and wait for its dismissal to finish.
+  // Stop the coordinator, wait for its dismissal to finish, and make sure the
+  // layout is updated.
   [coordinator stopAnimated:NO];
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
     return !overlay_view_controller.presentingViewController;
   }));
+  [container_view layoutIfNeeded];
+  [view layoutIfNeeded];
 
   // Verify that the views are resized to CGRectZero when nothing is presented
   // upon it.
