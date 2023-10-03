@@ -791,8 +791,8 @@ void CreateTabsAndWindows(
         }
         SessionTab* tab =
             GetTab(SessionID::FromSerializedValue(payload.tab_id), tabs);
-        tab->last_active_time =
-            base::TimeTicks::FromInternalValue(payload.last_active_time);
+        tab->last_active_time = base::Time::FromDeltaSinceWindowsEpoch(
+            base::Microseconds(payload.last_active_time));
         break;
       }
 
@@ -1058,7 +1058,14 @@ std::unique_ptr<SessionCommand> CreateLastActiveTimeCommand(
     base::TimeTicks last_active_time) {
   LastActiveTimePayload payload = {0};
   payload.tab_id = tab_id.id();
-  payload.last_active_time = last_active_time.ToInternalValue();
+
+  // Convert the last_active_time from TimeTicks to Time.
+  base::TimeDelta delta_since_epoch =
+      last_active_time - base::TimeTicks::UnixEpoch();
+  base::Time converted_time = base::Time::UnixEpoch() + delta_since_epoch;
+  payload.last_active_time =
+      converted_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+
   return CreateSessionCommandForPayload(kCommandLastActiveTime, payload);
 }
 
