@@ -85,6 +85,14 @@ void ContainerAppKiller::LowMemoryKill(
   uint64_t total_freed_kb = 0;
 
   for (KillCandidate& candidate : candidates) {
+    // If it's in critical memory pressure level, all non-protected processes
+    // should be freed, it would keep reclaiming until the candidate is
+    // protected.
+    if ((reclaim_target_kb <= total_freed_kb) &&
+        (!is_critical_level || candidate.is_protected())) {
+      break;
+    }
+
     if (IsRecentlyKilled(candidate.process_name(), now)) {
       LOG(WARNING) << "Avoided killing " << candidate.process_name()
                    << " too often";
@@ -97,13 +105,7 @@ void ContainerAppKiller::LowMemoryKill(
     if (KillArcProcess(candidate.nspid())) {
       recently_killed_[candidate.process_name()] = now;
 
-      if (is_critical_level && !candidate.is_protected()) {
-        // If it's in critical memory pressure level, memory freed from
-        // non-protected process doesn't count. All non-protected processes
-        // should be freed.
-      } else {
-        total_freed_kb += estimated_memory_freed_kb;
-      }
+      total_freed_kb += estimated_memory_freed_kb;
 
       memory::MemoryKillsMonitor::LogLowMemoryKill("APP",
                                                    estimated_memory_freed_kb);
@@ -116,15 +118,12 @@ void ContainerAppKiller::LowMemoryKill(
                  << ", pid:" << candidate.pid()
                  << ", protected: " << candidate.is_protected();
     }
-    if (reclaim_target_kb <= total_freed_kb) {
-      break;
-    }
   }
 
   if (is_critical_level) {
     LOG(WARNING) << "Reclaim target(KB): " << reclaim_target_kb
-                 << ", estimated total freed(KB)(non-protected excluded): "
-                 << total_freed_kb;
+                 << ", estimated total freed(KB): " << total_freed_kb
+                 << " (All non-protected apps are reclaimed)";
   } else {
     LOG(WARNING) << "Reclaim target(KB): " << reclaim_target_kb
                  << ", estimated total freed(KB): " << total_freed_kb;
