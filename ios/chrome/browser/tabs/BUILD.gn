@@ -176,9 +176,8 @@ source_set("unit_tests") {
 
 source_set("features") {
   sources = [
+    "features.cc",
     "features.h",
-    "features.mm",
   ]
-  public_deps = [ "//base" ]
   deps = [ "//ui/base" ]
 }
