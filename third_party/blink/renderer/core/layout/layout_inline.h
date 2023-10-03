@@ -270,8 +270,8 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   PhysicalRect CulledInlineVisualOverflowBoundingBox() const;
 
-  // For PhysicalVisualOverflowRect() only, to get bounding box of visual
-  // overflow of line boxes.
+  // For VisualOverflowRect() only, to get bounding box of visual overflow of
+  // line boxes.
   PhysicalRect LinesVisualOverflowBoundingBox() const;
 
   // PhysicalRectCollector should be like a function:

@@ -1086,13 +1086,13 @@ TEST_F(TextFragmentHandlerTest, InvalidateOverflowOnRemoval) {
   Text* first_paragraph = To<Text>(
       GetDocument().getElementById(AtomicString("first"))->firstChild());
   LayoutText* layout_text = first_paragraph->GetLayoutObject();
-  PhysicalRect marker_rect = layout_text->PhysicalVisualOverflowRect();
+  PhysicalRect marker_rect = layout_text->VisualOverflowRect();
 
   GetTextFragmentHandler().RemoveFragments();
   Compositor().BeginFrame();
 
   EXPECT_EQ(0u, GetDocument().Markers().Markers().size());
-  PhysicalRect removed_rect = layout_text->PhysicalVisualOverflowRect();
+  PhysicalRect removed_rect = layout_text->VisualOverflowRect();
 
   // Platforms differ in exact sizes, but the relative sizes are sufficient
   // for testing.

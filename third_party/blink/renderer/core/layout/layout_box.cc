@@ -2072,7 +2072,7 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
       VisibleToHitTestRequest(result.GetHitTestRequest())) {
     PhysicalRect bounds_rect;
     if (UNLIKELY(result.GetHitTestRequest().IsHitTestVisualOverflow())) {
-      bounds_rect = PhysicalVisualOverflowRectIncludingFilters();
+      bounds_rect = VisualOverflowRectIncludingFilters();
     } else {
       bounds_rect = PhysicalBorderBoxRect();
     }
@@ -3699,7 +3699,7 @@ void LayoutBox::CopyVisualOverflowFromFragments() {
   NOT_DESTROYED();
   DCHECK(CanUseFragmentsForVisualOverflow());
   const PhysicalRect previous_visual_overflow =
-      PhysicalVisualOverflowRectAllowingUnset();
+      VisualOverflowRectAllowingUnset();
   CopyVisualOverflowFromFragmentsWithoutInvalidations();
   const PhysicalRect visual_overflow = VisualOverflowRect();
   if (visual_overflow == previous_visual_overflow)
@@ -3906,7 +3906,7 @@ PhysicalRect LayoutBox::VisualOverflowRect() const {
 }
 
 #if DCHECK_IS_ON()
-PhysicalRect LayoutBox::PhysicalVisualOverflowRectAllowingUnset() const {
+PhysicalRect LayoutBox::VisualOverflowRectAllowingUnset() const {
   NOT_DESTROYED();
   NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
   return VisualOverflowRect();
@@ -4131,9 +4131,9 @@ void LayoutBox::MutableForPainting::SavePreviousOverflowData() {
     previous_overflow.emplace();
   previous_overflow->previous_physical_layout_overflow_rect =
       GetLayoutBox().PhysicalLayoutOverflowRect();
-  previous_overflow->previous_physical_visual_overflow_rect =
+  previous_overflow->previous_visual_overflow_rect =
       GetLayoutBox().VisualOverflowRect();
-  previous_overflow->previous_physical_self_visual_overflow_rect =
+  previous_overflow->previous_self_visual_overflow_rect =
       GetLayoutBox().SelfVisualOverflowRect();
 }
 
@@ -4151,8 +4151,7 @@ void LayoutBox::MutableForPainting::SetPreviousGeometryForLayoutShiftTracking(
   auto& previous_overflow = GetLayoutBox().overflow_->previous_overflow_data;
   if (!previous_overflow)
     previous_overflow.emplace();
-  previous_overflow->previous_physical_visual_overflow_rect =
-      visual_overflow_rect;
+  previous_overflow->previous_visual_overflow_rect = visual_overflow_rect;
   // Other previous rects don't matter because they are used for paint
   // invalidation and we always do full paint invalidation on reattachment.
 }

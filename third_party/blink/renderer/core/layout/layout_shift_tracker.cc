@@ -188,8 +188,7 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
     return false;
   }
 
-  if (SmallerThanRegionGranularity(
-          box->PhysicalVisualOverflowRectAllowingUnset())) {
+  if (SmallerThanRegionGranularity(box->VisualOverflowRectAllowingUnset())) {
     return false;
   }
 
@@ -851,7 +850,7 @@ void ReattachHookScope::NotifyDetach(const Node& node) {
 
   // Save the visual rect for restoration on future reattachment.
   const auto& box = To<LayoutBox>(*layout_object);
-  PhysicalRect visual_overflow_rect = box.PreviousPhysicalVisualOverflowRect();
+  PhysicalRect visual_overflow_rect = box.PreviousVisualOverflowRect();
   if (visual_overflow_rect.IsEmpty() && box.PreviousSize().IsEmpty())
     return;
   bool has_paint_offset_transform = false;

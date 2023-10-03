@@ -42,7 +42,7 @@ bool LayoutBox::MayIntersect(const HitTestResult& result,
 
   PhysicalRect overflow_box;
   if (UNLIKELY(result.GetHitTestRequest().IsHitTestVisualOverflow())) {
-    overflow_box = PhysicalVisualOverflowRectIncludingFilters();
+    overflow_box = VisualOverflowRectIncludingFilters();
   } else if (HasHitTestableOverflow()) {
     // PhysicalVisualOverflowRect is an approximation of
     // PhsyicalLayoutOverflowRect excluding self-painting descendants (which

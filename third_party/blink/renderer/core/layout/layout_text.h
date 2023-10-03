@@ -180,7 +180,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   // Returns the bounding box of visual overflow rects of all line boxes,
   // in containing block's physical coordinates with flipped blocks direction.
-  PhysicalRect PhysicalVisualOverflowRect() const;
+  PhysicalRect VisualOverflowRect() const;
 
   void InvalidateVisualOverflow();
 

@@ -1715,9 +1715,9 @@ TEST_F(LayoutBoxTest, PhysicalVisualOverflowRectIncludingFilters) {
   )HTML");
 
   // 12: blur(2) * blur-extent-ratio(3) * zoom(2)
-  EXPECT_EQ(PhysicalRect(-12, -12, 224, 424),
-            GetLayoutBoxByElementId("target")
-                ->PhysicalVisualOverflowRectIncludingFilters());
+  EXPECT_EQ(
+      PhysicalRect(-12, -12, 224, 424),
+      GetLayoutBoxByElementId("target")->VisualOverflowRectIncludingFilters());
 }
 
 TEST_F(LayoutBoxTest, SetNeedsOverflowRecalcLayoutBox) {

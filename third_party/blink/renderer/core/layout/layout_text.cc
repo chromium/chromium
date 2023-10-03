@@ -1076,7 +1076,7 @@ PhysicalRect LayoutText::PhysicalLinesBoundingBox() const {
   return result;
 }
 
-PhysicalRect LayoutText::PhysicalVisualOverflowRect() const {
+PhysicalRect LayoutText::VisualOverflowRect() const {
   NOT_DESTROYED();
   DCHECK(IsInLayoutNGInlineFormattingContext());
   return NGFragmentItem::LocalVisualRectFor(*this);
@@ -1084,7 +1084,7 @@ PhysicalRect LayoutText::PhysicalVisualOverflowRect() const {
 
 PhysicalRect LayoutText::LocalVisualRectIgnoringVisibility() const {
   NOT_DESTROYED();
-  return UnionRect(PhysicalVisualOverflowRect(), LocalSelectionVisualRect());
+  return UnionRect(VisualOverflowRect(), LocalSelectionVisualRect());
 }
 
 PhysicalRect LayoutText::LocalSelectionVisualRect() const {

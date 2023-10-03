@@ -136,9 +136,9 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
   DCHECK(object.IsBox());
   const auto& box = To<LayoutBox>(object);
 
-  PhysicalRect new_rect = box.PhysicalVisualOverflowRectAllowingUnset();
+  PhysicalRect new_rect = box.VisualOverflowRectAllowingUnset();
   new_rect.Move(new_paint_offset);
-  PhysicalRect old_rect = box.PreviousPhysicalVisualOverflowRect();
+  PhysicalRect old_rect = box.PreviousVisualOverflowRect();
   old_rect.Move(adjusted_old_paint_offset);
 
   // TODO(crbug.com/1178618): We may want to do better than this. For now, just

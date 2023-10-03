@@ -152,16 +152,14 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
   NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
 #endif
   if (box_.PreviousSize() == box_.Size() &&
-      box_.PreviousPhysicalSelfVisualOverflowRect() ==
-          box_.SelfVisualOverflowRect()) {
+      box_.PreviousSelfVisualOverflowRect() == box_.SelfVisualOverflowRect()) {
     return IsFullPaintInvalidationReason(reason)
                ? reason
                : PaintInvalidationReason::kNone;
   }
 
   // Incremental invalidation is not applicable if there is visual overflow.
-  if (box_.PreviousPhysicalSelfVisualOverflowRect().size !=
-          box_.PreviousSize() ||
+  if (box_.PreviousSelfVisualOverflowRect().size != box_.PreviousSize() ||
       box_.SelfVisualOverflowRect().size != box_.Size()) {
     return PaintInvalidationReason::kLayout;
   }

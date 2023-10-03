@@ -424,8 +424,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool CanResize() const;
 
-  // Like most of the other box geometries, visual and layout overflow are also
-  // in the "physical coordinates in flipped block-flow direction" of the box.
+  // Unlike most of the other box geometries, layout overflow is in the
+  // "physical coordinates in flipped block-flow direction" of the box.
   LayoutRect NoOverflowRect() const;
   LayoutRect LayoutOverflowRect() const {
     NOT_DESTROYED();
@@ -444,9 +444,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // functions pretend there is no visual overflow when it is not computed.
   // TODO(crbug.com/1205708): Audit the usages and fix issues.
 #if DCHECK_IS_ON()
-  PhysicalRect PhysicalVisualOverflowRectAllowingUnset() const;
+  PhysicalRect VisualOverflowRectAllowingUnset() const;
 #else
-  ALWAYS_INLINE PhysicalRect PhysicalVisualOverflowRectAllowingUnset() const {
+  ALWAYS_INLINE PhysicalRect VisualOverflowRectAllowingUnset() const {
     NOT_DESTROYED();
     return VisualOverflowRect();
   }
@@ -1272,11 +1272,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                ? rare_data_->previous_physical_content_box_rect_
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
-  PhysicalRect PreviousPhysicalVisualOverflowRect() const {
+  PhysicalRect PreviousVisualOverflowRect() const {
     NOT_DESTROYED();
     return overflow_ && overflow_->previous_overflow_data
                ? overflow_->previous_overflow_data
-                     ->previous_physical_visual_overflow_rect
+                     ->previous_visual_overflow_rect
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
   PhysicalRect PreviousPhysicalLayoutOverflowRect() const {
@@ -1286,11 +1286,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                      ->previous_physical_layout_overflow_rect
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
-  PhysicalRect PreviousPhysicalSelfVisualOverflowRect() const {
+  PhysicalRect PreviousSelfVisualOverflowRect() const {
     NOT_DESTROYED();
     return overflow_ && overflow_->previous_overflow_data
                ? overflow_->previous_overflow_data
-                     ->previous_physical_self_visual_overflow_rect
+                     ->previous_self_visual_overflow_rect
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
 

@@ -170,8 +170,8 @@ struct BoxOverflowModel : public GarbageCollected<BoxOverflowModel> {
   // last paint invalidation.
   struct PreviousOverflowData {
     PhysicalRect previous_physical_layout_overflow_rect;
-    PhysicalRect previous_physical_visual_overflow_rect;
-    PhysicalRect previous_physical_self_visual_overflow_rect;
+    PhysicalRect previous_visual_overflow_rect;
+    PhysicalRect previous_self_visual_overflow_rect;
   };
   absl::optional<PreviousOverflowData> previous_overflow_data;
 

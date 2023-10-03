@@ -446,8 +446,7 @@ void LayoutBoxModelObject::UpdateFromStyle() {
       ComputeCanCompositeBackgroundAttachmentFixed());
 }
 
-PhysicalRect LayoutBoxModelObject::PhysicalVisualOverflowRectIncludingFilters()
-    const {
+PhysicalRect LayoutBoxModelObject::VisualOverflowRectIncludingFilters() const {
   NOT_DESTROYED();
   return ApplyFiltersToRect(VisualOverflowRect());
 }

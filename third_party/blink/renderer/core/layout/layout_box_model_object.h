@@ -172,7 +172,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   // Returns the visual overflow rect, expanded to the area affected by any
   // filters that paint outside of the box, in physical coordinates.
-  PhysicalRect PhysicalVisualOverflowRectIncludingFilters() const;
+  PhysicalRect VisualOverflowRectIncludingFilters() const;
 
   // Returns a physical rect that is a result of apply this object's filters to
   // it. If there are no filters, it returns its argument.

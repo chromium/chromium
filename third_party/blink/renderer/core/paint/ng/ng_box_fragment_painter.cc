@@ -391,7 +391,7 @@ PhysicalRect NGBoxFragmentPainter::InkOverflowIncludingFilters() const {
   const NGPhysicalFragment& fragment = PhysicalFragment();
   DCHECK(!fragment.IsInlineBox());
   return To<LayoutBox>(fragment.GetLayoutObject())
-      ->PhysicalVisualOverflowRectIncludingFilters();
+      ->VisualOverflowRectIncludingFilters();
 }
 
 NGInlinePaintContext& NGBoxFragmentPainter::EnsureInlineContext() {

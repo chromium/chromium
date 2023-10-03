@@ -1756,7 +1756,7 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
           continue;
         }
 
-        auto overflow_rect = child_text->PhysicalVisualOverflowRect();
+        auto overflow_rect = child_text->VisualOverflowRect();
         child_text->MapToVisualRectInAncestorSpace(
             ancestor_for_recursion, overflow_rect, kUseGeometryMapper);
         result.Unite(overflow_rect);
@@ -1879,7 +1879,7 @@ ViewTransitionStyleTracker::ComputeVisualOverflowRectWithPaintLayers(
         layout_box && layout_box->ShouldClipOverflowAlongEitherAxis()) {
       result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
     }
-    result.Unite(box.PhysicalVisualOverflowRectIncludingFilters());
+    result.Unite(box.VisualOverflowRectIncludingFilters());
 
     // TODO(crbug.com/1432868): This captures a couple of common cases --
     // box-shadow and no box shadow on the element. However, this isn't at all
