@@ -83,6 +83,8 @@ base::WaitableEvent g_init_thread_init_done(
 }
 
 void NativeInit(JNIEnv* env) {
+  logging::InitLogging(logging::LoggingSettings());
+
 #if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
   base::i18n::InitializeICU();
 #endif
