@@ -140,12 +140,12 @@ END_METADATA
 }  // namespace
 
 bool DownloadBubbleRowView::UpdateBubbleUIInfo(bool initial_setup) {
-  if (!model_) {
+  if (!info_->model()) {
     return false;
   }
-  auto mode = download::GetDesiredDownloadItemMode(model_.get());
-  auto state = model_->GetState();
-  bool is_paused = model_->IsPaused();
+  auto mode = download::GetDesiredDownloadItemMode(info_->model());
+  auto state = info_->model()->GetState();
+  bool is_paused = info_->model()->IsPaused();
   if (!initial_setup && (mode_ == mode) && (state_ == state) &&
       (is_paused_ == is_paused)) {
     return false;
@@ -156,7 +156,7 @@ bool DownloadBubbleRowView::UpdateBubbleUIInfo(bool initial_setup) {
       state_ != state) {
     const std::u16string alert_text = l10n_util::GetStringFUTF16(
         IDS_DOWNLOAD_COMPLETE_ACCESSIBLE_ALERT,
-        model_->GetFileNameToReportUser().LossyDisplayName());
+        info_->model()->GetFileNameToReportUser().LossyDisplayName());
     GetViewAccessibility().AnnounceText(alert_text);
   }
 
@@ -180,13 +180,13 @@ bool DownloadBubbleRowView::UpdateBubbleUIInfo(bool initial_setup) {
   if (!browser_) {
     return false;
   }
-  ui_info_ = model_->GetBubbleUIInfo(
+  ui_info_ = info_->model()->GetBubbleUIInfo(
       download::IsDownloadBubbleV2Enabled(browser_->profile()));
   return true;
 }
 
 void DownloadBubbleRowView::UpdateRow(bool initial_setup) {
-  if (!model_) {
+  if (!info_->model()) {
     return;
   }
   bool ui_info_changed = UpdateBubbleUIInfo(initial_setup);
@@ -244,10 +244,10 @@ void DownloadBubbleRowView::SetIconFromImage(gfx::Image icon) {
 }
 
 bool DownloadBubbleRowView::StartLoadFileIcon() {
-  if (!model_) {
+  if (!info_->model()) {
     return false;
   }
-  base::FilePath file_path = model_->GetTargetFilePath();
+  base::FilePath file_path = info_->model()->GetTargetFilePath();
   // Use a default icon (drive file outline icon) in case we have an empty
   // target path, which is empty for non download offline items, and newly
   // started in-progress downloads.
@@ -308,7 +308,7 @@ void DownloadBubbleRowView::SetIcon() {
   if (!GetWidget()) {
     return;
   }
-  if (!model_) {
+  if (!info_->model()) {
     return;
   }
 
@@ -329,7 +329,7 @@ void DownloadBubbleRowView::SetIcon() {
 
   // For downloads in incognito mode.
   if (bubble_controller_ &&
-      bubble_controller_->ShouldShowIncognitoIcon(model_.get())) {
+      bubble_controller_->ShouldShowIncognitoIcon(info_->model())) {
     if (last_overridden_icon_ == &kIncognitoIcon) {
       return;
     }
@@ -342,7 +342,7 @@ void DownloadBubbleRowView::SetIcon() {
 
   // For downloads in guest sessions.
   if (bubble_controller_ &&
-      bubble_controller_->ShouldShowGuestIcon(model_.get())) {
+      bubble_controller_->ShouldShowGuestIcon(info_->model())) {
     if (last_overridden_icon_ == &kUserAccountAvatarIcon) {
       return;
     }
@@ -369,20 +369,19 @@ DownloadBubbleRowView::~DownloadBubbleRowView() {
   // Add/RemoveLayerFromRegions(). This is done so that the InkDrop doesn't
   // access the non-override versions in ~View.
   views::InkDrop::Remove(this);
+  info_->RemoveObserver(this);
 }
 
 DownloadBubbleRowView::DownloadBubbleRowView(
-    DownloadUIModel::DownloadUIModelPtr model,
-    DownloadBubbleRowListView* row_list_view,
+    const DownloadBubbleRowViewInfo& info,
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
     base::WeakPtr<Browser> browser,
     int fixed_width)
-    : model_(std::move(model)),
-      context_menu_(
-          std::make_unique<DownloadShelfContextMenuView>(model_->GetWeakPtr(),
-                                                         bubble_controller)),
-      row_list_view_(row_list_view),
+    : info_(info),
+      context_menu_(std::make_unique<DownloadShelfContextMenuView>(
+          info_->model()->GetWeakPtr(),
+          bubble_controller)),
       bubble_controller_(std::move(bubble_controller)),
       navigation_handler_(std::move(navigation_handler)),
       browser_(std::move(browser)),
@@ -401,8 +400,8 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       input_protector_(
           std::make_unique<views::InputEventActivationProtector>()),
       fixed_width_(fixed_width) {
-  CHECK(model_);
-  model_->SetDelegate(this);
+  CHECK(info_->model());
+  info_->AddObserver(this);
   SetBorder(views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
 
   views::InkDrop::Install(this, std::make_unique<views::InkDropHost>(this));
@@ -473,7 +472,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   }
 
   primary_label_ = AddChildView(std::make_unique<views::Label>(
-      model_->GetFileNameToReportUser().LossyDisplayName(),
+      info_->model()->GetFileNameToReportUser().LossyDisplayName(),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
   primary_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   primary_label_->SetCanProcessEventsWithinSubtree(false);
@@ -607,8 +606,8 @@ bool DownloadBubbleRowView::OnMouseDragged(const ui::MouseEvent& event) {
     drag_start_point_ = event.location();
   if (!dragging_) {
     dragging_ = ExceededDragThreshold(event.location() - *drag_start_point_);
-  } else if ((model_->GetState() == download::DownloadItem::COMPLETE) &&
-             model_->GetDownloadItem()) {
+  } else if ((info_->model()->GetState() == download::DownloadItem::COMPLETE) &&
+             info_->model()->GetDownloadItem()) {
     const views::Widget* const widget = GetWidget();
     // In most cases we should either have a |file_icon_| already synchronously
     // or the asynchronous lookup should have finished, but in case it hasn't,
@@ -620,7 +619,7 @@ bool DownloadBubbleRowView::OnMouseDragged(const ui::MouseEvent& event) {
       download_dragging_pin_ =
           navigation_handler_->PreventDialogCloseOnDeactivate();
     }
-    DragDownloadItem(model_->GetDownloadItem(), &file_icon_,
+    DragDownloadItem(info_->model()->GetDownloadItem(), &file_icon_,
                      widget ? widget->GetNativeView() : nullptr);
     // DragDownloadItem returns when the drag is over.
     download_dragging_pin_.reset();
@@ -712,30 +711,31 @@ void DownloadBubbleRowView::Layout() {
 
 void DownloadBubbleRowView::OnMainButtonPressed(const ui::Event& event) {
   if (!bubble_controller_ || !navigation_handler_ ||
-      !ui_info_.main_button_enabled || !model_ ||
+      !ui_info_.main_button_enabled || !info_->model() ||
       input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;
   }
   bubble_controller_->RecordDownloadBubbleInteraction();
   if (ui_info_.HasSubpage()) {
     DownloadItemWarningData::AddWarningActionEvent(
-        model_->GetDownloadItem(),
+        info_->model()->GetDownloadItem(),
         DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE,
         DownloadItemWarningData::WarningAction::OPEN_SUBPAGE);
-    navigation_handler_->OpenSecurityDialog(model_->GetContentId());
+    navigation_handler_->OpenSecurityDialog(info_->model()->GetContentId());
   } else {
-    model_->OpenDownload();
+    info_->model()->OpenDownload();
   }
 }
 
 void DownloadBubbleRowView::OnActionButtonPressed(
     DownloadCommands::Command command,
     const ui::Event& event) {
-  if (!bubble_controller_ || !model_ ||
+  if (!bubble_controller_ || !info_->model() ||
       input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;
   }
-  bubble_controller_->ProcessDownloadButtonPress(model_->GetWeakPtr(), command,
+  bubble_controller_->ProcessDownloadButtonPress(info_->model()->GetWeakPtr(),
+                                                 command,
                                                  /*is_main_view=*/true);
 }
 
@@ -747,7 +747,7 @@ void DownloadBubbleRowView::UpdateButtons() {
   show_in_folder_action_->SetVisible(false);
 
   for (const auto& action : ui_info_.quick_actions) {
-    if (!DownloadCommands(model_->GetWeakPtr())
+    if (!DownloadCommands(info_->model()->GetWeakPtr())
              .IsCommandEnabled(action.command)) {
       continue;
     }
@@ -792,8 +792,8 @@ void DownloadBubbleRowView::UpdateProgressBar() {
     progress_bar_->SetValue(
         ui_info_.is_progress_bar_looping
             ? -1
-            : static_cast<double>(model_->PercentComplete()) / 100);
-    progress_bar_->SetPaused(model_->IsPaused());
+            : static_cast<double>(info_->model()->PercentComplete()) / 100);
+    progress_bar_->SetPaused(info_->model()->IsPaused());
   } else if (progress_bar_->GetVisible()) {
     // Hide the progress bar.
     progress_bar_->SetVisible(false);
@@ -802,7 +802,8 @@ void DownloadBubbleRowView::UpdateProgressBar() {
 }
 
 void DownloadBubbleRowView::UpdateLabels() {
-  primary_label_->SetText(model_->GetFileNameToReportUser().LossyDisplayName());
+  primary_label_->SetText(
+      info_->model()->GetFileNameToReportUser().LossyDisplayName());
   UpdateStatusText();
 
   if (ui_info_.HasSubpage()) {
@@ -818,72 +819,43 @@ void DownloadBubbleRowView::UpdateLabels() {
 }
 
 void DownloadBubbleRowView::RecordMetricsOnUpdate() {
-  if (!model_) {
+  if (!info_->model()) {
     return;
   }
   // This should only be logged once per download.
-  if (is_download_warning(download::GetDesiredDownloadItemMode(model_.get())) &&
-      !model_->WasUIWarningShown()) {
-    model_->SetWasUIWarningShown(true);
+  if (is_download_warning(
+          download::GetDesiredDownloadItemMode(info_->model())) &&
+      !info_->model()->WasUIWarningShown()) {
+    info_->model()->SetWasUIWarningShown(true);
     RecordDangerousDownloadWarningShown(
-        model_->GetDangerType(), model_->GetTargetFilePath(),
-        model_->GetURL().SchemeIs(url::kHttpsScheme), model_->HasUserGesture());
+        info_->model()->GetDangerType(), info_->model()->GetTargetFilePath(),
+        info_->model()->GetURL().SchemeIs(url::kHttpsScheme),
+        info_->model()->HasUserGesture());
   }
   if (!has_download_completion_been_logged_ &&
-      model_->GetState() == download::DownloadItem::COMPLETE) {
+      info_->model()->GetState() == download::DownloadItem::COMPLETE) {
     RecordDownloadBubbleDragInfo(DownloadDragInfo::DOWNLOAD_COMPLETE);
     has_download_completion_been_logged_ = true;
   }
 }
 
 void DownloadBubbleRowView::RecordDownloadDisplayed() {
-  if (!model_) {
+  if (!info_->model()) {
     return;
   }
-  if (model_->IsDangerous()) {
+  if (info_->model()->IsDangerous()) {
     DownloadItemWarningData::AddWarningActionEvent(
-        model_->GetDownloadItem(),
+        info_->model()->GetDownloadItem(),
         DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE,
         DownloadItemWarningData::WarningAction::SHOWN);
   }
-  if (!model_->GetEphemeralWarningUiShownTime().has_value() &&
-      model_->IsEphemeralWarning()) {
-    model_->SetEphemeralWarningUiShownTime(base::Time::Now());
+  if (!info_->model()->GetEphemeralWarningUiShownTime().has_value() &&
+      info_->model()->IsEphemeralWarning()) {
+    info_->model()->SetEphemeralWarningUiShownTime(base::Time::Now());
     if (bubble_controller_) {
       bubble_controller_->ScheduleCancelForEphemeralWarning(
-          model_->GetDownloadItem()->GetGuid());
+          info_->model()->GetDownloadItem()->GetGuid());
     }
-  }
-}
-
-void DownloadBubbleRowView::OnDownloadUpdated() {
-  if (!navigation_handler_) {
-    return;
-  }
-  UpdateRow(/*initial_setup=*/false);
-  // Resize is needed because the height of the row can change when the text
-  // (primary_label_ or secondary_label_) is updated.
-  PreferredSizeChanged();
-  navigation_handler_->ResizeDialog();
-}
-
-void DownloadBubbleRowView::OnDownloadOpened() {
-  model_->SetActionedOn(true);
-}
-
-void DownloadBubbleRowView::OnDownloadDestroyed(const ContentId& id) {
-  if (!navigation_handler_) {
-    return;
-  }
-  model_.reset();
-  // This will return ownership and destroy this object at the end of the
-  // method.
-  std::unique_ptr<DownloadBubbleRowView> row_view_ptr =
-      row_list_view_->RemoveRow(this);
-  if (row_list_view_->NumRows() == 0) {
-    navigation_handler_->CloseDialog(views::Widget::ClosedReason::kUnspecified);
-  } else {
-    navigation_handler_->ResizeDialog();
   }
 }
 
@@ -948,23 +920,23 @@ std::u16string DownloadBubbleRowView::GetAccessibleNameForQuickAction(
     case DownloadCommands::RESUME:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_RESUME_QUICK_ACTION_ACCESSIBILITY,
-          model_->GetFileNameToReportUser().LossyDisplayName());
+          info_->model()->GetFileNameToReportUser().LossyDisplayName());
     case DownloadCommands::PAUSE:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_PAUSE_QUICK_ACTION_ACCESSIBILITY,
-          model_->GetFileNameToReportUser().LossyDisplayName());
+          info_->model()->GetFileNameToReportUser().LossyDisplayName());
     case DownloadCommands::OPEN_WHEN_COMPLETE:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION_ACCESSIBILITY,
-          model_->GetFileNameToReportUser().LossyDisplayName());
+          info_->model()->GetFileNameToReportUser().LossyDisplayName());
     case DownloadCommands::CANCEL:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION_ACCESSIBILITY,
-          model_->GetFileNameToReportUser().LossyDisplayName());
+          info_->model()->GetFileNameToReportUser().LossyDisplayName());
     case DownloadCommands::SHOW_IN_FOLDER:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION_ACCESSIBILITY,
-          model_->GetFileNameToReportUser().LossyDisplayName());
+          info_->model()->GetFileNameToReportUser().LossyDisplayName());
     default:
       NOTREACHED_NORETURN();
   }
@@ -976,39 +948,39 @@ std::u16string DownloadBubbleRowView::GetAccessibleNameForMainPageButton(
     case DownloadCommands::CANCEL:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_CANCEL_MAIN_BUTTON_ACCESSIBILITY,
-          model_->GetFileNameToReportUser().LossyDisplayName());
+          info_->model()->GetFileNameToReportUser().LossyDisplayName());
     case DownloadCommands::RESUME:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_RESUME_MAIN_BUTTON_ACCESSIBILITY,
-          model_->GetFileNameToReportUser().LossyDisplayName());
+          info_->model()->GetFileNameToReportUser().LossyDisplayName());
     case DownloadCommands::DISCARD:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_DELETE_MAIN_BUTTON_ACCESSIBILITY,
-          model_->GetFileNameToReportUser().LossyDisplayName());
+          info_->model()->GetFileNameToReportUser().LossyDisplayName());
     case DownloadCommands::KEEP:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_KEEP_MAIN_BUTTON_ACCESSIBILITY,
-          model_->GetFileNameToReportUser().LossyDisplayName());
+          info_->model()->GetFileNameToReportUser().LossyDisplayName());
     case DownloadCommands::DEEP_SCAN:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_SCAN_MAIN_BUTTON_ACCESSIBILITY,
-          model_->GetFileNameToReportUser().LossyDisplayName());
+          info_->model()->GetFileNameToReportUser().LossyDisplayName());
     case DownloadCommands::BYPASS_DEEP_SCANNING:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_OPEN_NOW_MAIN_BUTTON_ACCESSIBILITY,
-          model_->GetFileNameToReportUser().LossyDisplayName());
+          info_->model()->GetFileNameToReportUser().LossyDisplayName());
     case DownloadCommands::REVIEW:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_REVIEW_MAIN_BUTTON_ACCESSIBILITY,
-          model_->GetFileNameToReportUser().LossyDisplayName());
+          info_->model()->GetFileNameToReportUser().LossyDisplayName());
     case DownloadCommands::RETRY:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_RETRY_MAIN_BUTTON_ACCESSIBILITY,
-          model_->GetFileNameToReportUser().LossyDisplayName());
+          info_->model()->GetFileNameToReportUser().LossyDisplayName());
     case DownloadCommands::OPEN_WHEN_COMPLETE:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_OPEN_MAIN_BUTTON_ACCESSIBILITY,
-          model_->GetFileNameToReportUser().LossyDisplayName());
+          info_->model()->GetFileNameToReportUser().LossyDisplayName());
     default:
       NOTREACHED_NORETURN();
   }
@@ -1035,24 +1007,25 @@ void DownloadBubbleRowView::ShowContextMenuForViewImpl(
 }
 
 void DownloadBubbleRowView::AnnounceInProgressAlert() {
-  if (!model_) {
+  if (!info_->model()) {
     return;
   }
   GetViewAccessibility().AnnounceText(
-      model_->GetInProgressAccessibleAlertText());
+      info_->model()->GetInProgressAccessibleAlertText());
 }
 
 void DownloadBubbleRowView::UpdateStatusText() {
-  if (!model_) {
+  if (!info_->model()) {
     return;
   }
-  secondary_label_->SetText(model_->GetStatusTextForLabel(
+  secondary_label_->SetText(info_->model()->GetStatusTextForLabel(
       secondary_label_->font_list(), secondary_label_->width()));
 }
 
 bool DownloadBubbleRowView::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
-  if (!model_ || model_->GetState() != download::DownloadItem::COMPLETE) {
+  if (!info_->model() ||
+      info_->model()->GetState() != download::DownloadItem::COMPLETE) {
     return false;
   }
 
@@ -1071,8 +1044,9 @@ bool DownloadBubbleRowView::AcceleratorPressed(
 #endif
 
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-  std::string uri_list = ui::FileInfosToURIList({ui::FileInfo(
-      model_->GetTargetFilePath(), model_->GetFileNameToReportUser())});
+  std::string uri_list = ui::FileInfosToURIList(
+      {ui::FileInfo(info_->model()->GetTargetFilePath(),
+                    info_->model()->GetFileNameToReportUser())});
   scw.WriteFilenames(uri_list);
   return true;
 }
@@ -1124,6 +1098,20 @@ void DownloadBubbleRowView::UnregisterAccelerators(
 
   focus_manager->UnregisterAccelerator(accelerator, this);
 }
+
+void DownloadBubbleRowView::OnInfoChanged() {
+  if (!navigation_handler_) {
+    return;
+  }
+  UpdateRow(/*initial_setup=*/false);
+  // Resize is needed because the height of the row can change when the text
+  // (primary_label_ or secondary_label_) is updated.
+  PreferredSizeChanged();
+  navigation_handler_->ResizeDialog();
+}
+
+void DownloadBubbleRowView::OnDownloadDestroyed(
+    const offline_items_collection::ContentId& id) {}
 
 void DownloadBubbleRowView::SimulateMainButtonClickForTesting(
     const ui::Event& event) {

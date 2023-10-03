@@ -14,23 +14,43 @@
 
 using offline_items_collection::ContentId;
 
-DownloadBubbleRowListView::DownloadBubbleRowListView() {
+DownloadBubbleRowListView::DownloadBubbleRowListView(
+    base::WeakPtr<Browser> browser,
+    base::WeakPtr<DownloadBubbleUIController> bubble_controller,
+    base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
+    int fixed_width,
+    const DownloadBubbleRowListViewInfo& info)
+    : browser_(browser),
+      bubble_controller_(bubble_controller),
+      navigation_handler_(navigation_handler),
+      fixed_width_(fixed_width),
+      info_(info) {
   SetOrientation(views::LayoutOrientation::kVertical);
   SetNotifyEnterExitOnChild(true);
+  info_->AddObserver(this);
+
+  for (auto& [id, row_info] : info_->rows()) {
+    AddRow(row_info);
+  }
 }
 
-DownloadBubbleRowListView::~DownloadBubbleRowListView() = default;
+DownloadBubbleRowListView::~DownloadBubbleRowListView() {
+  info_->RemoveObserver(this);
+}
 
 void DownloadBubbleRowListView::AddRow(
-    std::unique_ptr<DownloadBubbleRowView> row) {
-  const ContentId& id = row->model()->GetContentId();
+    const DownloadBubbleRowViewInfo& row_info) {
+  const ContentId& id = row_info.model()->GetContentId();
   CHECK(!base::Contains(rows_by_id_, id));
-  auto* child = AddChildView(std::move(row));
+  auto* child = AddChildView(std::make_unique<DownloadBubbleRowView>(
+      row_info, bubble_controller_, navigation_handler_, browser_,
+      fixed_width_));
   rows_by_id_[id] = child;
 }
 
 std::unique_ptr<DownloadBubbleRowView> DownloadBubbleRowListView::RemoveRow(
     DownloadBubbleRowView* row) {
+  CHECK(row);
   // We can't remove the row by ContentId here, because by this point the model
   // has nulled out the DownloadItem* and we can no longer retrieve the proper
   // ContentId from `row->model()`.
@@ -55,6 +75,15 @@ size_t DownloadBubbleRowListView::NumRows() const {
   size_t num_rows = children().size();
   CHECK_EQ(num_rows, rows_by_id_.size());
   return num_rows;
+}
+
+void DownloadBubbleRowListView::OnRowAdded(
+    const offline_items_collection::ContentId& id) {
+  AddRow(info_->rows().at(id));
+}
+void DownloadBubbleRowListView::OnRowWillBeRemoved(
+    const offline_items_collection::ContentId& id) {
+  RemoveRow(GetRow(id));
 }
 
 BEGIN_METADATA(DownloadBubbleRowListView, views::FlexLayoutView)

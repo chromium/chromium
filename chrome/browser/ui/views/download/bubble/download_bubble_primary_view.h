@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 
@@ -54,7 +55,7 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
       base::WeakPtr<Browser> browser,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-      std::vector<DownloadUIModel::DownloadUIModelPtr> models,
+      const DownloadBubbleRowListViewInfo& info,
       int fixed_width);
 
   int DefaultPreferredWidth() const;

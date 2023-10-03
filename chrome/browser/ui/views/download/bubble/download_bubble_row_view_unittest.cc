@@ -56,15 +56,14 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
 
     DownloadToolbarButtonView* button =
         browser_view()->toolbar()->download_button();
-    row_list_view_ = std::make_unique<DownloadBubbleRowListView>();
     const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+    info_ = std::make_unique<DownloadBubbleRowViewInfo>(DownloadItemModel::Wrap(
+        &download_item_,
+        std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>()));
     row_view_ = std::make_unique<DownloadBubbleRowView>(
-        DownloadItemModel::Wrap(
-            &download_item_,
-            std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>()),
-        row_list_view_.get(), button->bubble_controller()->GetWeakPtr(),
-        button->GetWeakPtr(), browser()->AsWeakPtr(), bubble_width);
+        *info_, button->bubble_controller()->GetWeakPtr(), button->GetWeakPtr(),
+        browser()->AsWeakPtr(), bubble_width);
 
     auto input_protector =
         std::make_unique<NiceMock<views::MockInputEventActivationProtector>>();
@@ -84,7 +83,7 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   NiceMock<download::MockDownloadItem> download_item_;
-  std::unique_ptr<DownloadBubbleRowListView> row_list_view_;
+  std::unique_ptr<DownloadBubbleRowViewInfo> info_;
   std::unique_ptr<DownloadBubbleRowView> row_view_;
   raw_ptr<NiceMock<views::MockInputEventActivationProtector>> input_protector_;
 };
@@ -121,7 +120,7 @@ TEST_F(DownloadBubbleRowViewTest, UpdateTimeFromCompletedDownload) {
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   ON_CALL(*download_item(), GetEndTime())
       .WillByDefault(Return(base::Time::Now()));
-  row_view()->OnDownloadUpdated();
+  download_item()->NotifyObserversDownloadUpdated();
   // Get starting label for a finished download and ensure it stays
   // the same until one timer interval.
   std::u16string row_label = row_view()->GetSecondaryLabelTextForTesting();

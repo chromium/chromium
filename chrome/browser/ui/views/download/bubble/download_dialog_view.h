@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
+#include "chrome/browser/ui/download/download_bubble_primary_view_info.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
@@ -29,7 +30,7 @@ class DownloadDialogView : public DownloadBubblePrimaryView {
       base::WeakPtr<Browser> browser,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-      std::vector<DownloadUIModel::DownloadUIModelPtr> rows);
+      const DownloadBubblePrimaryViewInfo& info);
   ~DownloadDialogView() override;
 
  private:

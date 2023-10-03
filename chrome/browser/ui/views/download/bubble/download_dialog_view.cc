@@ -189,13 +189,13 @@ DownloadDialogView::DownloadDialogView(
     base::WeakPtr<Browser> browser,
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-    std::vector<DownloadUIModel::DownloadUIModelPtr> rows)
+    const DownloadBubblePrimaryViewInfo& info)
     : navigation_handler_(std::move(navigation_handler)),
       browser_(std::move(browser)) {
   AddHeader();
   MaybeAddOtrInfoRow(browser_.get());
   BuildAndAddScrollView(browser_, std::move(bubble_controller),
-                        navigation_handler_, std::move(rows),
+                        navigation_handler_, info.row_list_view_info(),
                         DefaultPreferredWidth());
   AddFooter();
 }

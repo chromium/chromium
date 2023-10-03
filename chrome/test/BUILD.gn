@@ -6287,6 +6287,8 @@ test("unit_tests") {
       "../browser/policy/messaging_layer/util/reporting_server_connector_unittest.cc",
       "../browser/segmentation_platform/client_util/local_tab_handler_unittest.cc",
       "../browser/ssl/generated_https_first_mode_pref_unittest.cc",
+      "../browser/ui/download/download_bubble_row_list_view_info_unittest.cc",
+      "../browser/ui/download/download_bubble_row_view_info_unittest.cc",
       "../browser/ui/plus_addresses/plus_address_creation_controller_desktop_unittest.cc",
       "../browser/ui/safety_hub/menu_notification_service_unittest.cc",
       "../browser/ui/safety_hub/menu_notification_unittest.cc",

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/ui/download/download_bubble_contents_view_info.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_security_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -49,8 +50,7 @@ class DownloadBubbleContentsView : public views::View,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       // Whether the primary view is the partial view.
       bool primary_view_is_partial_view,
-      // Models for rows that should go in the primary view. Must not be empty.
-      std::vector<DownloadUIModel::DownloadUIModelPtr> primary_view_models,
+      std::unique_ptr<DownloadBubbleContentsViewInfo> info,
       // The owning bubble's delegate.
       views::BubbleDialogDelegate* bubble_delegate);
   ~DownloadBubbleContentsView() override;
@@ -97,6 +97,8 @@ class DownloadBubbleContentsView : public views::View,
     return security_view_;
   }
 
+  DownloadBubbleContentsViewInfo& info() { return *info_; }
+
  private:
   void InitializeSecurityView(const offline_items_collection::ContentId& id);
 
@@ -104,6 +106,8 @@ class DownloadBubbleContentsView : public views::View,
   // given id. Returns nullptr if not found.
   DownloadUIModel* GetDownloadModel(
       const offline_items_collection::ContentId& id);
+
+  std::unique_ptr<DownloadBubbleContentsViewInfo> info_;
 
   base::WeakPtr<DownloadBubbleUIController> bubble_controller_;
 

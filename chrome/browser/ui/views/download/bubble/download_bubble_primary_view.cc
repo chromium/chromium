@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/download/download_bubble_info.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
@@ -66,19 +67,11 @@ void DownloadBubblePrimaryView::BuildAndAddScrollView(
     base::WeakPtr<Browser> browser,
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-    std::vector<DownloadUIModel::DownloadUIModelPtr> models,
+    const DownloadBubbleRowListViewInfo& info,
     int fixed_width) {
-  auto row_list_view = std::make_unique<DownloadBubbleRowListView>();
+  auto row_list_view = std::make_unique<DownloadBubbleRowListView>(
+      browser, bubble_controller, navigation_handler, fixed_width, info);
   row_list_view_ = row_list_view.get();
-  for (DownloadUIModel::DownloadUIModelPtr& model : models) {
-    // raw pointer for `row_list_view_` is safe as the row list view
-    // owns an individual row view. Note we need to copy rather than move
-    // the WeakPtrs so that each row view gets a valid pointer.
-    row_list_view_->AddRow(std::make_unique<DownloadBubbleRowView>(
-        std::move(model), row_list_view_, bubble_controller, navigation_handler,
-        browser, fixed_width));
-  }
-
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetContents(std::move(row_list_view));
   scroll_view_->ClipHeightTo(0, kMaxHeightForRowList);

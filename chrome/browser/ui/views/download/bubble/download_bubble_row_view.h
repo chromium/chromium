@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/ui/download/download_bubble_row_view_info.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
@@ -41,14 +42,13 @@ class DownloadBubbleUIController;
 
 class DownloadBubbleRowView : public views::View,
                               public views::ContextMenuController,
-                              public DownloadUIModel::Delegate,
-                              public views::FocusChangeListener {
+                              public views::FocusChangeListener,
+                              public DownloadBubbleRowViewInfoObserver {
  public:
   METADATA_HEADER(DownloadBubbleRowView);
 
   explicit DownloadBubbleRowView(
-      DownloadUIModel::DownloadUIModelPtr model,
-      DownloadBubbleRowListView* row_list_view,
+      const DownloadBubbleRowViewInfo& info,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       base::WeakPtr<Browser> browser,
@@ -79,11 +79,6 @@ class DownloadBubbleRowView : public views::View,
   void UpdateRowForHover(bool hovered);
   void UpdateRowForFocus(bool visible, bool request_focus_on_last_quick_action);
 
-  // Overrides DownloadUIModel::Delegate:
-  void OnDownloadOpened() override;
-  void OnDownloadUpdated() override;
-  void OnDownloadDestroyed(const ContentId& id) override;
-
   // Overrides views::ContextMenuController:
   void ShowContextMenuForViewImpl(View* source,
                                   const gfx::Point& point,
@@ -95,7 +90,7 @@ class DownloadBubbleRowView : public views::View,
 
   const std::u16string& GetSecondaryLabelTextForTesting();
 
-  DownloadUIModel* model() { return model_.get(); }
+  DownloadUIModel* model() { return info_->model(); }
 
   DownloadUIModel::BubbleUIInfo& ui_info() { return ui_info_; }
   void SetUIInfoForTesting(DownloadUIModel::BubbleUIInfo ui_info) {
@@ -169,6 +164,11 @@ class DownloadBubbleRowView : public views::View,
   void RegisterAccelerators(views::FocusManager* focus_manager);
   void UnregisterAccelerators(views::FocusManager* focus_manager);
 
+  // DownloadBubbleRowViewInfoObserver implementation:
+  void OnInfoChanged() override;
+  void OnDownloadDestroyed(
+      const offline_items_collection::ContentId& id) override;
+
   // The icon for the file. We get platform-specific file type icons from
   // IconLoader (see below).
   raw_ptr<views::ImageView> icon_ = nullptr;
@@ -211,13 +211,10 @@ class DownloadBubbleRowView : public views::View,
   float current_scale_ = 1.0f;
 
   // The model controlling this object's state.
-  DownloadUIModel::DownloadUIModelPtr model_;
+  raw_ref<const DownloadBubbleRowViewInfo> info_;
 
   // Reuse the download shelf context menu in the bubble.
   std::unique_ptr<DownloadShelfContextMenuView> context_menu_;
-
-  // Parent row list view.
-  raw_ptr<DownloadBubbleRowListView> row_list_view_ = nullptr;
 
   // Controller for keeping track of downloads.
   base::WeakPtr<DownloadBubbleUIController> bubble_controller_ = nullptr;

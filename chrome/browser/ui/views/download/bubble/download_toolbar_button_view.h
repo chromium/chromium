@@ -10,6 +10,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 #include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -71,7 +72,8 @@ class DownloadBubbleNavigationHandler {
 class DownloadToolbarButtonView : public ToolbarButton,
                                   public DownloadDisplay,
                                   public DownloadBubbleNavigationHandler,
-                                  public BrowserListObserver {
+                                  public BrowserListObserver,
+                                  public DownloadBubbleRowListViewInfoObserver {
  public:
   METADATA_HEADER(DownloadToolbarButtonView);
 
@@ -189,6 +191,9 @@ class DownloadToolbarButtonView : public ToolbarButton,
   bool ShouldShowBubbleAsInactive() const;
 
   SkColor GetProgressColor(bool is_disabled, bool is_active) const;
+
+  // DownloadBubbleRowListViewInfoObserver implementation:
+  void OnAnyRowRemoved() override;
 
   raw_ptr<Browser> browser_;
   bool is_primary_partial_view_ = false;

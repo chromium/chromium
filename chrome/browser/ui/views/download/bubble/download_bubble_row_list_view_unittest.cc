@@ -64,18 +64,28 @@ class DownloadBubbleRowListViewTest : public TestWithBrowserView {
     }
   }
 
-  // Creates a row view for the download item at `index` in `download_items_`.
-  // Pass an optional height to change the resulting view's height.
-  std::unique_ptr<DownloadBubbleRowView> MakeRow(int index) {
+  // Sets up `row_list_view_` with the first `initial_item_count` of
+  // `download_items_`.
+  void InitRowListView(int initial_item_count) {
+    std::vector<DownloadUIModel::DownloadUIModelPtr> models;
+    for (int i = 0; i < initial_item_count; ++i) {
+      models.push_back(MakeModel(i));
+    }
+    info_ = std::make_unique<DownloadBubbleRowListViewInfo>(std::move(models));
     const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-    auto row = std::make_unique<DownloadBubbleRowView>(
-        DownloadItemModel::Wrap(
-            download_items_[index].get(),
-            std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>()),
-        &row_list_view_, toolbar_button()->bubble_controller()->GetWeakPtr(),
-        toolbar_button()->GetWeakPtr(), browser()->AsWeakPtr(), bubble_width);
-    return row;
+    row_list_view_ = std::make_unique<DownloadBubbleRowListView>(
+        browser()->AsWeakPtr(),
+        toolbar_button()->bubble_controller()->GetWeakPtr(),
+        toolbar_button()->GetWeakPtr(), bubble_width, *info_);
+  }
+
+  // Creates a `DownloadUIModel` for the download item at `index` in
+  // `download_items_`.
+  DownloadUIModel::DownloadUIModelPtr MakeModel(int index) {
+    return DownloadItemModel::Wrap(
+        download_items_[index].get(),
+        std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
   }
 
   ContentId GetIdForItem(int index) {
@@ -85,30 +95,26 @@ class DownloadBubbleRowListViewTest : public TestWithBrowserView {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DownloadBubbleRowListView row_list_view_;
+  std::unique_ptr<DownloadBubbleRowListViewInfo> info_;
+  std::unique_ptr<DownloadBubbleRowListView> row_list_view_;
   std::vector<std::unique_ptr<NiceMock<download::MockDownloadItem>>>
       download_items_;
 };
 
 TEST_F(DownloadBubbleRowListViewTest, AddRow) {
-  EXPECT_EQ(row_list_view_.NumRows(), 0u);
   InitItems(2);
-  row_list_view_.AddRow(MakeRow(0));
-  EXPECT_EQ(row_list_view_.NumRows(), 1u);
-  row_list_view_.AddRow(MakeRow(1));
-  EXPECT_EQ(row_list_view_.NumRows(), 2u);
+  InitRowListView(1);
+  EXPECT_EQ(row_list_view_->NumRows(), 1u);
+  info_->AddRow(MakeModel(1));
+  EXPECT_EQ(row_list_view_->NumRows(), 2u);
 }
 
 TEST_F(DownloadBubbleRowListViewTest, RemoveRow) {
   InitItems(1);
-  std::unique_ptr<DownloadBubbleRowView> row = MakeRow(0);
-  auto* row_raw = row.get();
-  row_list_view_.AddRow(std::move(row));
-  EXPECT_EQ(row_list_view_.NumRows(), 1u);
-  std::unique_ptr<DownloadBubbleRowView> row_unique =
-      row_list_view_.RemoveRow(row_raw);
-  EXPECT_EQ(row_list_view_.NumRows(), 0u);
-  EXPECT_EQ(row_unique.get(), row_raw);
+  InitRowListView(1);
+  EXPECT_EQ(row_list_view_->NumRows(), 1u);
+  info_->RemoveRow(GetIdForItem(0));
+  EXPECT_EQ(row_list_view_->NumRows(), 0u);
 }
 
 }  // namespace

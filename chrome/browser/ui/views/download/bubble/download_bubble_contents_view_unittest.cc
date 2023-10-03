@@ -13,6 +13,7 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/download/download_bubble_info.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
@@ -159,7 +160,8 @@ class DownloadBubbleContentsViewTest
     InitItems(2);
     contents_view_ = std::make_unique<DownloadBubbleContentsView>(
         browser_->AsWeakPtr(), bubble_controller_->GetWeakPtr(),
-        navigation_handler_->GetWeakPtr(), IsPrimaryPartialView(), GetModels(),
+        navigation_handler_->GetWeakPtr(), IsPrimaryPartialView(),
+        std::make_unique<DownloadBubbleContentsViewInfo>(GetModels()),
         bubble_delegate_);
   }
 
