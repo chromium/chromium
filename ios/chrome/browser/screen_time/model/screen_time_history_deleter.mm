@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/screen_time/screen_time_history_deleter.h"
+#import "ios/chrome/browser/screen_time/model/screen_time_history_deleter.h"
 
 #import <ScreenTime/ScreenTime.h>
 
@@ -28,8 +28,9 @@ ScreenTimeHistoryDeleter::ScreenTimeHistoryDeleter(
 ScreenTimeHistoryDeleter::~ScreenTimeHistoryDeleter() = default;
 
 void ScreenTimeHistoryDeleter::Shutdown() {
-  if (history_service_)
+  if (history_service_) {
     history_service_observation_.Reset();
+  }
   history_service_ = nullptr;
   screen_time_history_ = nil;
 }

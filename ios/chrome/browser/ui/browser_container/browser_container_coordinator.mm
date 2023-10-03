@@ -10,7 +10,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/screen_time/screen_time_buildflags.h"
+#import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -33,7 +33,7 @@
 #import "url/gurl.h"
 
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
-#import "ios/chrome/browser/screen_time/features.h"
+#import "ios/chrome/browser/screen_time/model/features.h"
 #import "ios/chrome/browser/ui/screen_time/screen_time_coordinator.h"
 #endif
 

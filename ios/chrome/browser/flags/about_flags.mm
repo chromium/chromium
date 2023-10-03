@@ -85,7 +85,7 @@
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/promos_manager/features.h"
-#import "ios/chrome/browser/screen_time/screen_time_buildflags.h"
+#import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
@@ -111,7 +111,7 @@
 #import "ios/web/common/web_view_creation_util.h"
 
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
-#import "ios/chrome/browser/screen_time/features.h"
+#import "ios/chrome/browser/screen_time/model/features.h"
 #endif
 
 #if !defined(OFFICIAL_BUILD)

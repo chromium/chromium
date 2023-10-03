@@ -61,7 +61,7 @@
 #import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_factory.h"
-#import "ios/chrome/browser/screen_time/screen_time_buildflags.h"
+#import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
@@ -98,8 +98,8 @@
 #endif
 
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
-#import "ios/chrome/browser/screen_time/features.h"
-#import "ios/chrome/browser/screen_time/screen_time_history_deleter_factory.h"
+#import "ios/chrome/browser/screen_time/model/features.h"
+#import "ios/chrome/browser/screen_time/model/screen_time_history_deleter_factory.h"
 #endif
 
 // This method gets the instance of each ServiceFactory. We do this so that

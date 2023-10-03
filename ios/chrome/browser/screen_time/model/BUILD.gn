@@ -19,7 +19,7 @@ if (ios_enable_screen_time) {
     deps = [ "//base" ]
   }
 
-  source_set("screen_time") {
+  source_set("model") {
     sources = [
       "screen_time_history_deleter.h",
       "screen_time_history_deleter.mm",
