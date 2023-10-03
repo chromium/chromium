@@ -196,6 +196,10 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
       credit_card.record_type() == autofill::CreditCard::RecordType::kLocalCard
           ? credit_card.guid()
           : credit_card.server_id();
+  if (credit_card.record_type() ==
+      autofill::CreditCard::RecordType::kMaskedServerCard) {
+    card.instrument_id = base::NumberToString(credit_card.instrument_id());
+  }
   card.name = base::UTF16ToUTF8(
       credit_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL));
   card.card_number =

@@ -170,6 +170,7 @@ declare global {
 
       export interface CreditCardEntry {
         guid?: string;
+        instrumentId?: string;
         name?: string;
         cardNumber?: string;
         expirationMonth?: string;

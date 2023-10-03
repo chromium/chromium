@@ -233,6 +233,9 @@ namespace autofillPrivate {
     // Globally unique identifier for this entry.
     DOMString? guid;
 
+    // The card's instrument ID from the GPay server, if applicable.
+    DOMString? instrumentId;
+
     // Name of the person who owns the credit card.
     DOMString? name;
 
