@@ -55,6 +55,18 @@ HanKerning::CharType GetType(base::span<SkRect> bounds,
 
 }  // namespace
 
+void HanKerning::ResetFeatures() {
+  DCHECK(features_);
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  for (wtf_size_t i = num_features_before_; i < features_->size(); ++i) {
+    const hb_feature_t& feature = (*features_)[i];
+    DCHECK(feature.tag == HB_TAG('h', 'a', 'l', 't') ||
+           feature.tag == HB_TAG('v', 'h', 'a', 'l'));
+  }
+#endif
+  features_->Shrink(num_features_before_);
+}
+
 // Compute the character class.
 // See Text Spacing Character Classes:
 // https://drafts.csswg.org/css-text-4/#text-spacing-classes
@@ -114,7 +126,8 @@ void HanKerning::Compute(const String& text,
                          const SimpleFontData& font,
                          const FontDescription& font_description,
                          bool is_horizontal,
-                         FontFeatures& features) {
+                         FontFeatures* features) {
+  DCHECK(!features_);
   if (UNLIKELY(font_description.GetTextSpacingTrim() !=
                TextSpacingTrim::kSpaceFirst)) {
     return;
@@ -181,9 +194,11 @@ void HanKerning::Compute(const String& text,
   DCHECK(std::is_sorted(indices.begin(), indices.end(), std::less_equal<>()));
   const hb_tag_t tag =
       is_horizontal ? HB_TAG('h', 'a', 'l', 't') : HB_TAG('v', 'h', 'a', 'l');
-  features.Reserve(features.size() + indices.size());
+  features_ = features;
+  num_features_before_ = features->size();
+  features->Reserve(features->size() + indices.size());
   for (const wtf_size_t i : indices) {
-    features.Append({tag, 1, i, i + 1});
+    features->Append({tag, 1, i, i + 1});
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+﻿// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include <testing/gtest/include/gtest/gtest.h>
 
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/font_features.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -19,11 +21,14 @@ Font CreateNotoCjk() {
   return blink::test::CreateTestFont(
       AtomicString("Noto Sans CJK"),
       blink::test::BlinkWebTestsFontsTestDataPath(
-          "noto/cjk/NotoSansCJKjp-Regular-subset-chws.otf"),
+          "noto/cjk/NotoSansCJKjp-Regular-subset-halt.otf"),
       16.0);
 }
 
-class HanKerningTest : public testing::Test {};
+class HanKerningTest : public testing::Test, ScopedCSSTextSpacingTrimForTest {
+ public:
+  explicit HanKerningTest() : ScopedCSSTextSpacingTrimForTest(true) {}
+};
 
 TEST_F(HanKerningTest, FontDataHorizontal) {
   Font noto_cjk = CreateNotoCjk();
@@ -80,6 +85,23 @@ TEST_F(HanKerningTest, FontDataVertical) {
   EXPECT_EQ(zhs_data.type_for_semicolon, HanKerning::CharType::kOther);
   EXPECT_EQ(zht_data.type_for_colon, HanKerning::CharType::kOther);
   EXPECT_EQ(zht_data.type_for_semicolon, HanKerning::CharType::kOther);
+}
+
+TEST_F(HanKerningTest, ResetFeatures) {
+  Font noto_cjk = CreateNotoCjk();
+  const SimpleFontData* noto_cjk_data = noto_cjk.PrimaryFont();
+  EXPECT_TRUE(noto_cjk_data);
+  FontFeatures features;
+  features.Append(
+      {HB_TAG('T', 'E', 'S', 'T'), 1, 0, static_cast<unsigned>(-1)});
+  EXPECT_EQ(features.size(), 1u);
+  const String text(u"国）（国");
+  {
+    HanKerning han_kerning(text, 0, text.length(), *noto_cjk_data,
+                           noto_cjk.GetFontDescription(), true, &features);
+    EXPECT_EQ(features.size(), 2u);
+  }
+  EXPECT_EQ(features.size(), 1u);
 }
 
 }  // namespace

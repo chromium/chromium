@@ -48,13 +48,18 @@ class PLATFORM_EXPORT HanKerning {
              const SimpleFontData& font_data,
              const FontDescription& font_description,
              bool is_horizontal,
-             FontFeatures& features) {
+             FontFeatures* features) {
     if (!RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) {
       return;
     }
     // TODO(crbug.com/1463890): Add more conditions to fail fast.
     Compute(text, start, end, font_data, font_description, is_horizontal,
             features);
+  }
+  ~HanKerning() {
+    if (UNLIKELY(features_)) {
+      ResetFeatures();
+    }
   }
 
   enum class CharType : uint8_t {
@@ -95,13 +100,18 @@ class PLATFORM_EXPORT HanKerning {
   static bool ShouldKern(CharType type, CharType last_type);
   static bool ShouldKernLast(CharType type, CharType last_type);
 
-  static void Compute(const String& text,
-                      wtf_size_t start,
-                      wtf_size_t end,
-                      const SimpleFontData& font_data,
-                      const FontDescription& font_description,
-                      bool is_horizontal,
-                      FontFeatures& features);
+  void Compute(const String& text,
+               wtf_size_t start,
+               wtf_size_t end,
+               const SimpleFontData& font_data,
+               const FontDescription& font_description,
+               bool is_horizontal,
+               FontFeatures* features);
+
+  void ResetFeatures();
+
+  FontFeatures* features_ = nullptr;
+  wtf_size_t num_features_before_;
 };
 
 }  // namespace blink
