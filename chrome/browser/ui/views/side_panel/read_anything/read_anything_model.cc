@@ -298,6 +298,7 @@ ReadAnythingColorsModel::ColorInfo&
 ReadAnythingColorsModel::ColorInfo::operator=(const ColorInfo&) = default;
 ReadAnythingColorsModel::ColorInfo&
 ReadAnythingColorsModel::ColorInfo::operator=(ColorInfo&&) = default;
+ReadAnythingColorsModel::ColorInfo::~ColorInfo() = default;
 
 ReadAnythingColorsModel::ReadAnythingColorsModel() {
   // Define the possible sets of colors available to the user.
