@@ -205,14 +205,7 @@ STDMETHODIMP CompleteStatusImpl::get_statusMessage(BSTR* message) {
 }
 
 HRESULT UpdaterImpl::RuntimeClassInitialize() {
-  HRESULT hr = IsCOMCallerAllowed();
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  // TODO(crbug.com/1484803): remove once we know why E_NOINTERFACE happens.
-  return GetAppServerWinInstance()->RestoreComInterfaces(false) ? S_OK
-                                                                : E_UNEXPECTED;
+  return IsCOMCallerAllowed();
 }
 
 HRESULT UpdaterImpl::GetVersion(BSTR* version) {
@@ -829,14 +822,7 @@ HRESULT UpdaterImpl::GetAppStates(IUpdaterAppStatesCallback* callback) {
 }
 
 HRESULT UpdaterInternalImpl::RuntimeClassInitialize() {
-  HRESULT hr = IsCOMCallerAllowed();
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  // TODO(crbug.com/1484803): remove once we know why E_NOINTERFACE happens.
-  return GetAppServerWinInstance()->RestoreComInterfaces(true) ? S_OK
-                                                               : E_UNEXPECTED;
+  return IsCOMCallerAllowed();
 }
 
 // See the comment for the UpdaterImpl::Update.

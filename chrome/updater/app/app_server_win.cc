@@ -272,6 +272,10 @@ bool AppServerWin::RestoreComInterfaces(bool is_internal) {
 }
 
 HRESULT AppServerWin::RegisterClassObjects() {
+  // TODO(crbug.com/1484803): remove once we know why E_NOINTERFACE happens.
+  const bool succeeded = RestoreComInterfaces(false);
+  LOG_IF(ERROR, !succeeded);
+
   // Register COM class objects that are under either the ActiveSystem or the
   // ActiveUser group.
   // See wrl_classes.cc for details on the COM classes within the group.
@@ -280,6 +284,10 @@ HRESULT AppServerWin::RegisterClassObjects() {
 }
 
 HRESULT AppServerWin::RegisterInternalClassObjects() {
+  // TODO(crbug.com/1484803): remove once we know why E_NOINTERFACE happens.
+  const bool succeeded = RestoreComInterfaces(true);
+  LOG_IF(ERROR, !succeeded);
+
   // Register COM class objects that are under either the InternalSystem or the
   // InternalUser group.
   // See wrl_classes.cc for details on the COM classes within the group.

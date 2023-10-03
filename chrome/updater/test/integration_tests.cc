@@ -925,6 +925,7 @@ TEST_F(IntegrationTest, UpdateApp) {
 TEST_F(IntegrationTest, UpdateAppSucceedsEvenAfterDeletingInterfaces) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
 
   const UpdaterScope scope = GetTestScope();
   ASSERT_TRUE(AreComInterfacesPresent(scope, true));
