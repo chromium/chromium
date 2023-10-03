@@ -342,23 +342,17 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-bool PermissionInfoListContainsPermission(const PermissionInfoList& permissions,
-                                          ContentSettingsType content_type) {
-  for (const auto& permission : permissions) {
-    if (permission.type == content_type)
-      return true;
-  }
-  return false;
-}
-
 void ExpectPermissionInfoList(
-    const std::set<ContentSettingsType>& expected_permissions,
-    const PermissionInfoList& permissions) {
-  EXPECT_EQ(expected_permissions.size(), permissions.size());
-  for (ContentSettingsType type : expected_permissions) {
-    EXPECT_TRUE(PermissionInfoListContainsPermission(permissions, type))
-        << "expected: " << static_cast<int>(type);
-  }
+    const std::set<ContentSettingsType>& expected_types,
+    const PermissionInfoList& permissions,
+    const base::Location& location = FROM_HERE) {
+  std::set<ContentSettingsType> actual_types;
+  base::ranges::transform(permissions,
+                          std::inserter(actual_types, actual_types.end()),
+                          [](const auto& p) { return p.type; });
+
+  EXPECT_THAT(actual_types, expected_types)
+      << "(expected at " << location.ToString() << ")";
 }
 
 }  // namespace
@@ -1813,8 +1807,9 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
 // Tests that the SubresourceFilter setting is omitted correctly.
 TEST_F(PageInfoTest, SubresourceFilterSetting_MatchesActivation) {
   auto showing_setting = [](const PermissionInfoList& permissions) {
-    return PermissionInfoListContainsPermission(permissions,
-                                                ContentSettingsType::ADS);
+    return base::Contains(
+        permissions, ContentSettingsType::ADS,
+        [](const auto& permission) { return permission.type; });
   };
 
   // By default, the setting should not appear at all.
