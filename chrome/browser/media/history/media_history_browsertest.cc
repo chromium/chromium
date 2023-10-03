@@ -31,6 +31,7 @@
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/media_session.h"
+#include "content/public/browser/media_session_client.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
@@ -208,7 +209,14 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
 
   media_session::MediaMetadata GetExpectedMetadata() {
     media_session::MediaMetadata expected_metadata =
-        GetExpectedDefaultMetadata();
+        GetExpectedDefaultActiveMetadata();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (GetParam() == TestState::kIncognito) {
+      return expected_metadata;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     expected_metadata.title = u"Big Buck Bunny";
     expected_metadata.artist = u"Test Footage";
     expected_metadata.album = u"The Chrome Collection";
@@ -217,6 +225,13 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
 
   std::vector<media_session::MediaImage> GetExpectedArtwork() {
     std::vector<media_session::MediaImage> images;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (GetParam() == TestState::kIncognito) {
+      images.push_back(media_session::MediaImage());
+      return images;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {
       media_session::MediaImage image;
@@ -268,8 +283,30 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
     return images;
   }
 
+  media_session::MediaMetadata GetExpectedDefaultActiveMetadata() {
+    media_session::MediaMetadata expected_metadata =
+        GetExpectedDefaultMetadata();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (GetParam() == TestState::kIncognito) {
+      content::MediaSessionClient* media_session_client =
+          content::MediaSessionClient::Get();
+
+      expected_metadata.title = media_session_client->GetTitlePlaceholder();
+      expected_metadata.source_title =
+          media_session_client->GetSourceTitlePlaceholder();
+      expected_metadata.album = media_session_client->GetAlbumPlaceholder();
+      expected_metadata.artist = media_session_client->GetArtistPlaceholder();
+      return expected_metadata;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    return expected_metadata;
+  }
+
   media_session::MediaMetadata GetExpectedDefaultMetadata() {
     media_session::MediaMetadata expected_metadata;
+
     expected_metadata.title = u"Media History";
     expected_metadata.source_title = base::ASCIIToUTF16(base::StringPrintf(
         "%s:%u", embedded_test_server()->GetIPLiteralString().c_str(),
@@ -422,7 +459,8 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
 
   EXPECT_TRUE(SetupPageAndStartPlaying(browser, GetTestURL()));
 
-  media_session::MediaMetadata expected_metadata = GetExpectedDefaultMetadata();
+  media_session::MediaMetadata expected_metadata =
+      GetExpectedDefaultActiveMetadata();
 
   {
     media_session::test::MockMediaSessionMojoObserver observer(
@@ -467,7 +505,8 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
   EXPECT_TRUE(SetupPageAndStartPlaying(browser, GetTestURL()));
   EXPECT_TRUE(FinishPlaying(browser));
 
-  media_session::MediaMetadata expected_metadata = GetExpectedDefaultMetadata();
+  media_session::MediaMetadata expected_metadata =
+      GetExpectedDefaultActiveMetadata();
 
   {
     media_session::test::MockMediaSessionMojoObserver observer(
@@ -544,7 +583,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, DoNotRecordSessionIfNotActive) {
 // Flaky failures: crbug.com/1066853
 IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, DISABLED_GetPlaybackSessions) {
   auto* browser = CreateBrowserFromParam();
-  auto expected_default_metadata = GetExpectedDefaultMetadata();
+  auto expected_default_metadata = GetExpectedDefaultActiveMetadata();
 
   {
     // Start a session.
