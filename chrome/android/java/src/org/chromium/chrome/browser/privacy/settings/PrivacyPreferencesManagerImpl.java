@@ -190,7 +190,8 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
 
     @Override
     public boolean isUploadEnabledForTests() {
-        return CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_CRASH_DUMP_UPLOAD);
+        CommandLine commandLine = CommandLine.getInstance();
+        return commandLine != null && commandLine.hasSwitch(ChromeSwitches.FORCE_CRASH_DUMP_UPLOAD);
     }
 
     @Override
