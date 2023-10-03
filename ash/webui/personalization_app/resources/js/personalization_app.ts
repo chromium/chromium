@@ -116,7 +116,6 @@ export {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
 export {LocalImagesElement} from './wallpaper/local_images_element.js';
 export {SeaPenCollectionElement} from './wallpaper/sea_pen/sea_pen_collection_element.js';
 export {SeaPenImagesElement} from './wallpaper/sea_pen/sea_pen_images_element.js';
-export {SeaPenInputElement} from './wallpaper/sea_pen/sea_pen_input_element.js';
 export {isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage} from './wallpaper/utils.js';
 export * from './wallpaper/wallpaper_actions.js';
 export {WallpaperCollectionsElement} from './wallpaper/wallpaper_collections_element.js';
@@ -130,6 +129,7 @@ export {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
 export {WallpaperPreviewElement} from './wallpaper/wallpaper_preview_element.js';
 export {WallpaperSelectedElement} from './wallpaper/wallpaper_selected_element.js';
 export {WallpaperSubpageElement} from './wallpaper/wallpaper_subpage_element.js';
+export {WallpaperSubpageTopElement} from './wallpaper/wallpaper_subpage_top_element.js';
 export {DailyRefreshType} from './wallpaper/wallpaper_state.js';
 
 PersonalizationStore.getInstance().init(emptyState());

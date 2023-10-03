@@ -40,8 +40,12 @@ suite('WallpaperSubpageElementTest', function() {
         await waitAfterNextRender(wallpaperSubpage);
 
         // Wallpaper Selected is displayed.
+        const wallpaperSubpageTopElement =
+            wallpaperSubpage!.shadowRoot!.querySelector(
+                'wallpaper-subpage-top');
         const wallpaperSelected =
-            wallpaperSubpage!.shadowRoot!.querySelector('wallpaper-selected');
+            wallpaperSubpageTopElement!.shadowRoot!.querySelector(
+                'wallpaper-selected');
         assertTrue(!!wallpaperSelected);
 
         // Check whether Google Photos collection is displayed.
@@ -65,38 +69,25 @@ suite('WallpaperSubpageElementTest', function() {
     assertFalse(!!googlePhotosCollections);
   });
 
-  test('shows SeaPen input and collection', async () => {
+  test('shows SeaPen collection', async () => {
     loadTimeData.overrideValues({isSeaPenEnabled: true});
     wallpaperSubpage =
         initElement(WallpaperSubpageElement, {path: Paths.SEA_PEN_COLLECTION});
     await waitAfterNextRender(wallpaperSubpage);
 
-    // wallpaper selected page isn't displayed.
-    const wallpaperSelected =
-        wallpaperSubpage!.shadowRoot!.querySelector('wallpaper-selected');
-    assertFalse(!!wallpaperSelected);
-
-    // SeaPen input and collection are displayed.
-    const seaPenInput =
-        wallpaperSubpage!.shadowRoot!.querySelector('sea-pen-input');
-    assertTrue(!!seaPenInput, 'SeaPen input should be displayed.');
-
+    // SeaPen collection is displayed.
     const seaPenCollection =
         wallpaperSubpage!.shadowRoot!.querySelector('sea-pen-collection');
     assertTrue(!!seaPenCollection);
   });
 
-  test('hides SeaPen input and collection for ineligible users', async () => {
+  test('hides SeaPen collection for ineligible users', async () => {
     loadTimeData.overrideValues({isSeaPenEnabled: false});
     wallpaperSubpage =
         initElement(WallpaperSubpageElement, {path: Paths.SEA_PEN_COLLECTION});
     await waitAfterNextRender(wallpaperSubpage);
 
-    // SeaPen input and collection are displayed.
-    const seaPenInput =
-        wallpaperSubpage!.shadowRoot!.querySelector('sea-pen-input');
-    assertFalse(!!seaPenInput, 'SeaPen input should be displayed.');
-
+    // SeaPen collection is not displayed.
     const seaPenCollection =
         wallpaperSubpage!.shadowRoot!.querySelector('sea-pen-collection');
     assertFalse(!!seaPenCollection);

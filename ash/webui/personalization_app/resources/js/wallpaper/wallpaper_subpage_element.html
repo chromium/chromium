@@ -12,8 +12,7 @@
     width: 100%;
   }
 
-  wallpaper-selected,
-  sea-pen-input {
+  wallpaper-subpage-top {
     background-color: var(--cros-bg-color);
     grid-area: selected;
     position: sticky;
@@ -37,8 +36,7 @@
     z-index: 1;
   }
 
-  :host-context(body.jelly-enabled) wallpaper-selected,
-  :host-context(body.jelly-enabled) sea-pen-input {
+  :host-context(body.jelly-enabled) wallpaper-subpage-top {
     background-color: var(--cros-sys-app_base_shaded);
   }
 
@@ -54,15 +52,11 @@
   <!-- Prevent left margin from collapsing on narrow window in RTL -->
   <div class="leftspacertop"></div>
   <div class="leftspacerbottom"></div>
-  <template is="dom-if" if="[[shouldShowWallpaperSelected_(path)]]">
-    <wallpaper-selected path="[[path]]" collection-id="[[queryParams.id]]"
+  <wallpaper-subpage-top path="[[path]]" collection-id="[[queryParams.id]]"
         google-photos-album-id="[[queryParams.googlePhotosAlbumId]]"
-        is-google-photos-album-shared="[[isGooglePhotosAlbumShared_]]">
-    </wallpaper-selected>
-  </template>
-  <template is="dom-if" if="[[shouldShowSeaPenCollection_(path)]]">
-    <sea-pen-input></sea-pen-input>
-  </template>
+        is-google-photos-album-shared="[[isGooglePhotosAlbumShared_]]"
+        template-id="[[queryParams.seaPenTemplateId]]">
+  </wallpaper-subpage-top>
   <!-- do not use hidden$ here - need to listen on property change in
           these elements. -->
   <wallpaper-collections hidden="[[!shouldShowCollections_(path)]]">
@@ -81,7 +75,7 @@
   </template>
   <template is="dom-if" if="[[shouldShowSeaPenCollection_(path)]]">
     <sea-pen-collection template-id="[[queryParams.seaPenTemplateId]]"></sea-pen-collection>
-  </template>
+ </template>
   <!-- Prevent the right margin from collapsing when window gets very
            narrow -->
   <div class="rightspacertop"></div>

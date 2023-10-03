@@ -42,7 +42,6 @@ build_webui_tests("build_webui_tests") {
     "personalization_toast_element_test.ts",
     "sea_pen_collection_element_test.ts",
     "sea_pen_images_element_test.ts",
-    "sea_pen_input_element_test.ts",
     "test_ambient_interface_provider.ts",
     "test_keyboard_backlight_interface_provider.ts",
     "test_personalization_store.ts",
@@ -60,6 +59,7 @@ build_webui_tests("build_webui_tests") {
     "wallpaper_preview_element_test.ts",
     "wallpaper_selected_element_test.ts",
     "wallpaper_subpage_element_test.ts",
+    "wallpaper_subpage_top_element_test.ts",
     "zone_customization_element_test.ts",
   ]
 

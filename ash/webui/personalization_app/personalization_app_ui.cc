@@ -502,6 +502,9 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean(
       "isSeaPenEnabled",
       features::IsSeaPenEnabled() && manta::features::IsMantaServiceEnabled());
+  source->AddBoolean("isSeaPenTextInputEnabled",
+                     features::IsSeaPenTextInputEnabled() &&
+                         manta::features::IsMantaServiceEnabled());
 }
 
 void PersonalizationAppUI::AddIntegers(content::WebUIDataSource* source) {

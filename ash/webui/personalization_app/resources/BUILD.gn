@@ -85,7 +85,6 @@ build_webui("build") {
     "js/wallpaper/info_svg_element.ts",
     "js/wallpaper/local_images_element.ts",
     "js/wallpaper/sea_pen/sea_pen_collection_element.ts",
-    "js/wallpaper/sea_pen/sea_pen_input_element.ts",
     "js/wallpaper/sea_pen/sea_pen_input_query_element.ts",
     "js/wallpaper/sea_pen/sea_pen_template_query_element.ts",
     "js/wallpaper/sea_pen/sea_pen_images_element.ts",
@@ -98,6 +97,7 @@ build_webui("build") {
     "js/wallpaper/wallpaper_preview_element.ts",
     "js/wallpaper/wallpaper_selected_element.ts",
     "js/wallpaper/wallpaper_subpage_element.ts",
+    "js/wallpaper/wallpaper_subpage_top_element.ts",
   ]
 
   non_web_component_files = [

@@ -54,3 +54,7 @@ export function isTimeOfDayWallpaperEnabled() {
 export function isSeaPenEnabled() {
   return loadTimeData.getBoolean('isSeaPenEnabled');
 }
+
+export function isSeaPenTextInputEnabled() {
+  return loadTimeData.getBoolean('isSeaPenTextInputEnabled');
+}
