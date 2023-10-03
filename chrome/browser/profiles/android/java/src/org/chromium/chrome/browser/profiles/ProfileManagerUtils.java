@@ -8,8 +8,9 @@ import android.os.SystemClock;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
  * A utility class for applying operations on all loaded profiles.
@@ -38,7 +39,7 @@ public class ProfileManagerUtils {
      * since the updated timestamp is immediately saved.
      */
     public static void removeSessionCookiesForAllProfiles() {
-        SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
         long lastKnownBootTimestamp =
                 preferences.readLong(ChromePreferenceKeys.PROFILES_BOOT_TIMESTAMP, 0);
         long bootTimestamp = System.currentTimeMillis() - SystemClock.uptimeMillis();

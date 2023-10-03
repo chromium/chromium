@@ -25,6 +25,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -34,7 +35,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -384,7 +385,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     static int getTaskFromMap(int index) {
-        return SharedPreferencesManager.getInstance().readInt(taskMapKey(index), INVALID_TASK_ID);
+        return ChromeSharedPreferences.getInstance().readInt(taskMapKey(index), INVALID_TASK_ID);
     }
 
     private static String taskMapKey(int index) {
@@ -393,19 +394,19 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static void updateTaskMap(int instanceId, int taskId) {
-        SharedPreferencesManager.getInstance().writeInt(taskMapKey(instanceId), taskId);
+        ChromeSharedPreferences.getInstance().writeInt(taskMapKey(instanceId), taskId);
     }
 
     private void removeInvalidInstanceData() {
         // Remove tasks that do not exist any more from the task map
         Set<Integer> validTasks = getAllChromeTasks();
-        Map<String, Integer> taskMap = SharedPreferencesManager.getInstance().readIntsWithPrefix(
+        Map<String, Integer> taskMap = ChromeSharedPreferences.getInstance().readIntsWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
         List<String> tasksRemoved = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : taskMap.entrySet()) {
             if (!validTasks.contains(entry.getValue())) {
                 tasksRemoved.add(entry.getKey() + " - " + entry.getValue());
-                SharedPreferencesManager.getInstance().removeKey(entry.getKey());
+                ChromeSharedPreferences.getInstance().removeKey(entry.getKey());
             }
         }
 
@@ -491,13 +492,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static void writeIncognitoSelected(int index, Tab tab) {
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 incognitoSelectedKey(index), tab.isIncognito());
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static boolean readIncognitoSelected(int index) {
-        return SharedPreferencesManager.getInstance().readBoolean(
+        return ChromeSharedPreferences.getInstance().readBoolean(
                 incognitoSelectedKey(index), false);
     }
 
@@ -507,11 +508,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static String readUrl(int index) {
-        return SharedPreferencesManager.getInstance().readString(urlKey(index), null);
+        return ChromeSharedPreferences.getInstance().readString(urlKey(index), null);
     }
 
     static void writeUrl(int index, String url) {
-        SharedPreferencesManager.getInstance().writeString(urlKey(index), url);
+        ChromeSharedPreferences.getInstance().writeString(urlKey(index), url);
     }
 
     private static void writeUrl(int index, Tab tab) {
@@ -525,7 +526,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static String readTitle(int index) {
-        return SharedPreferencesManager.getInstance().readString(titleKey(index), null);
+        return ChromeSharedPreferences.getInstance().readString(titleKey(index), null);
     }
 
     private static void writeTitle(int index, Tab tab) {
@@ -534,7 +535,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     private static void writeTitle(int index, String title) {
-        SharedPreferencesManager.getInstance().writeString(titleKey(index), title);
+        ChromeSharedPreferences.getInstance().writeString(titleKey(index), title);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -543,7 +544,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     static int readTabCount(int index) {
-        return SharedPreferencesManager.getInstance().readInt(tabCountKey(index));
+        return ChromeSharedPreferences.getInstance().readInt(tabCountKey(index));
     }
 
     private static String incognitoTabCountKey(int index) {
@@ -553,13 +554,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static int readIncognitoTabCount(int index) {
-        return SharedPreferencesManager.getInstance().readInt(incognitoTabCountKey(index));
+        return ChromeSharedPreferences.getInstance().readInt(incognitoTabCountKey(index));
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static void writeTabCount(int index, TabModelSelector selector) {
         if (!selector.isTabStateInitialized()) return;
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         int tabCount = selector.getModel(false).getCount();
         prefs.writeInt(tabCountKey(index), tabCount);
         prefs.writeInt(incognitoTabCountKey(index), selector.getModel(true).getCount());
@@ -711,7 +712,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     private static void removeInstanceInfo(int index) {
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.removeKey(urlKey(index));
         prefs.removeKey(titleKey(index));
         prefs.removeKey(tabCountKey(index));
@@ -732,7 +733,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
         if (newState != ActivityState.RESUMED && newState != ActivityState.STOPPED) return;
 
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         // Check the max instance count in a day for every state update if needed.
         long timestamp = prefs.readLong(ChromePreferenceKeys.MULTI_INSTANCE_MAX_COUNT_TIME, 0);
         int maxCount = prefs.readInt(ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_COUNT, 0);
@@ -756,7 +757,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     private void onMultiInstanceStateChanged(boolean inMultiInstanceMode) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
 
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         long startTime = prefs.readLong(ChromePreferenceKeys.MULTI_INSTANCE_START_TIME);
         long current = System.currentTimeMillis();
 

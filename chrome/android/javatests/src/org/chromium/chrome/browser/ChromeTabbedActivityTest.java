@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
@@ -140,13 +140,13 @@ public class ChromeTabbedActivityTest {
         TestThreadUtils.runOnUiThreadBlocking(tabModelSelectorObserver::onTabStateInitialized);
         Assert.assertTrue(
                 "Regular tab count should be written to SharedPreferences after tab state initialization.",
-                SharedPreferencesManager.getInstance()
+                ChromeSharedPreferences.getInstance()
                                 .readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT)
                                 .size()
                         > 0);
         Assert.assertTrue(
                 "Incognito tab count should be written to SharedPreferences after tab state initialization.",
-                SharedPreferencesManager.getInstance()
+                ChromeSharedPreferences.getInstance()
                                 .readIntsWithPrefix(
                                         ChromePreferenceKeys.MULTI_INSTANCE_INCOGNITO_TAB_COUNT)
                                 .size()

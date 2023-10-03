@@ -10,13 +10,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.ui.hats.SurveyThrottler.FilteringResult;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -32,7 +33,7 @@ public class SurveyThrottlerUnitTest {
 
     @Before
     public void setup() {
-        mSharedPref = SharedPreferencesManager.getInstance();
+        mSharedPref = ChromeSharedPreferences.getInstance();
 
         FirstRunStatus.setFirstRunTriggeredForTesting(false);
         TestThreadUtils.setThreadAssertsDisabled(true);

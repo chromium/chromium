@@ -20,9 +20,10 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.ui.permissions.PermissionConstants;
 
 import java.lang.annotation.Retention;
@@ -263,7 +264,7 @@ public class NotificationUmaTracker {
     }
 
     private NotificationUmaTracker() {
-        mSharedPreferences = SharedPreferencesManager.getInstance();
+        mSharedPreferences = ChromeSharedPreferences.getInstance();
         mNotificationManager = NotificationManagerCompat.from(ContextUtils.getApplicationContext());
     }
 

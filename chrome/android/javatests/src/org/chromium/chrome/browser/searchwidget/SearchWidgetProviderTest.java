@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -35,7 +36,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.searchwidget.SearchActivity.SearchActivityDelegate;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
@@ -203,7 +203,7 @@ public class SearchWidgetProviderTest {
         // SearchWidgetProvider should now believe that its widgets are displaying branding when it
         // isn't allowed to, then update them.
         mDelegate.mViews.clear();
-        mDelegate.getSharedPreferencesManager().writeString(
+        mDelegate.getChromeSharedPreferences().writeString(
                 ChromePreferenceKeys.SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME, TEXT_SEARCH_ENGINE);
         performUpdate(TEXT_SEARCH_ENGINE, true);
         checkWidgetStates(TEXT_GENERIC, View.VISIBLE);
@@ -306,7 +306,7 @@ public class SearchWidgetProviderTest {
             }
         };
 
-        SharedPreferencesManager prefs = mDelegate.getSharedPreferencesManager();
+        SharedPreferencesManager prefs = mDelegate.getChromeSharedPreferences();
         Assert.assertEquals(0, SearchWidgetProvider.getNumConsecutiveCrashes(prefs));
 
         // The first few crashes should be silently absorbed.

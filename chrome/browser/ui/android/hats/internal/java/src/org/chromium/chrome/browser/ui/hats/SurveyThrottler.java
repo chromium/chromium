@@ -10,10 +10,11 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -94,7 +95,7 @@ public class SurveyThrottler {
 
     /** Logs in SharedPreferences that the survey prompt was displayed. */
     public void recordSurveyPromptDisplayed() {
-        SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
         preferences.writeLong(mPrefKeyPromptDisplayed, System.currentTimeMillis());
     }
 
@@ -108,7 +109,7 @@ public class SurveyThrottler {
      * @return Whether the user is eligible (i.e. the random number rolled was 0).
      */
     private boolean isRandomlySelectedForSurvey() {
-        SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
         int lastDate = preferences.readInt(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED, -1);
         int today = getDayOfYear();
         if (lastDate == today) {
@@ -133,7 +134,7 @@ public class SurveyThrottler {
 
     /** @return If the survey info bar for this survey was logged as seen before. */
     private boolean hasPromptBeenDisplayed() {
-        SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
         // TODO(https://crbug.com/1195928): Get an expiration date from feature flag.
         return preferences.readLong(mPrefKeyPromptDisplayed, -1L) != -1L;
     }

@@ -10,7 +10,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
@@ -112,7 +112,7 @@ public class FeedPositionUtils {
      * @return The segmentation result.
      */
     public static @FeedPositionSegmentationResult int getSegmentationResult() {
-        return SharedPreferencesManager.getInstance().readInt(
+        return ChromeSharedPreferences.getInstance().readInt(
                 ChromePreferenceKeys.SEGMENTATION_FEED_ACTIVE_USER,
                 FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER);
     }
@@ -136,7 +136,7 @@ public class FeedPositionUtils {
             } else {
                 resultEnum = FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER;
             }
-            SharedPreferencesManager.getInstance().writeInt(
+            ChromeSharedPreferences.getInstance().writeInt(
                     ChromePreferenceKeys.SEGMENTATION_FEED_ACTIVE_USER, resultEnum);
         });
     }

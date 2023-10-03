@@ -11,7 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -100,7 +100,7 @@ public class DseNewTabUrlManager {
      * Returns cached value of {@link ChromePreferenceKeys.IS_DSE_GOOGLE} in the SharedPreference.
      */
     public static boolean isDefaultSearchEngineGoogle() {
-        return SharedPreferencesManager.getInstance().readBoolean(
+        return ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.IS_DSE_GOOGLE, true);
     }
 
@@ -115,7 +115,7 @@ public class DseNewTabUrlManager {
     @Nullable
     public static String getDSENewTabUrl(TemplateUrlService templateUrlService) {
         if (templateUrlService == null) {
-            return SharedPreferencesManager.getInstance().readString(
+            return ChromeSharedPreferences.getInstance().readString(
                     ChromePreferenceKeys.DSE_NEW_TAB_URL, null);
         }
 
@@ -145,12 +145,12 @@ public class DseNewTabUrlManager {
 
     private void onTemplateURLServiceChanged() {
         boolean isDSEGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.IS_DSE_GOOGLE, isDSEGoogle);
         if (isDSEGoogle) {
-            SharedPreferencesManager.getInstance().removeKey(ChromePreferenceKeys.DSE_NEW_TAB_URL);
+            ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.DSE_NEW_TAB_URL);
         } else {
-            SharedPreferencesManager.getInstance().writeString(
+            ChromeSharedPreferences.getInstance().writeString(
                     ChromePreferenceKeys.DSE_NEW_TAB_URL, getDSENewTabUrl(mTemplateUrlService));
         }
     }

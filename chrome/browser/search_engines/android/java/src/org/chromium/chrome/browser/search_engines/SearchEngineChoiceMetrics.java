@@ -9,7 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -108,21 +108,21 @@ public class SearchEngineChoiceMetrics {
 
     /** @return True if the current search engine is possibly different from the previous one. */
     static boolean isSearchEnginePossiblyDifferent() {
-        return SharedPreferencesManager.getInstance().contains(
+        return ChromeSharedPreferences.getInstance().contains(
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE);
     }
 
     /** Remove the stored choice from prefs. */
     @VisibleForTesting
     static void removePreviousSearchEngineType() {
-        SharedPreferencesManager.getInstance().removeKey(
+        ChromeSharedPreferences.getInstance().removeKey(
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE);
     }
 
     /** Retrieves the previously set search engine from Android prefs. */
     @VisibleForTesting
     static @SearchEngineType int getPreviousSearchEngineType() {
-        return SharedPreferencesManager.getInstance().readInt(
+        return ChromeSharedPreferences.getInstance().readInt(
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE,
                 SearchEngineType.SEARCH_ENGINE_UNKNOWN);
     }
@@ -132,7 +132,7 @@ public class SearchEngineChoiceMetrics {
      */
     @VisibleForTesting
     static void setPreviousSearchEngineType(@SearchEngineType int engine) {
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE, engine);
     }
 

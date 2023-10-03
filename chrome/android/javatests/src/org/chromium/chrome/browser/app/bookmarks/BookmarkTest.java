@@ -90,7 +90,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
@@ -259,7 +259,7 @@ public class BookmarkTest {
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
         // Set default folder as "Other Folder".
         runOnUiThreadBlocking(() -> {
-            SharedPreferencesManager.getInstance().writeString(
+            ChromeSharedPreferences.getInstance().writeString(
                     ChromePreferenceKeys.BOOKMARKS_LAST_USED_PARENT,
                     mBookmarkModel.getOtherFolderId().toString());
         });

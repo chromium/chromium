@@ -11,7 +11,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -99,7 +99,7 @@ public final class BackupSigninProcessor {
      * Marks the backup flow sign-in as complete (whether sign-in was indeed performed or not).
      */
     private static void setBackupFlowSigninComplete() {
-        SharedPreferencesManager.getInstance().removeKey(
+        ChromeSharedPreferences.getInstance().removeKey(
                 ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME);
     }
 
@@ -107,7 +107,7 @@ public final class BackupSigninProcessor {
      * @return The account name restored during the backup flow, or null if none.
      */
     private static String getBackupFlowSigninAccountName() {
-        return SharedPreferencesManager.getInstance().readString(
+        return ChromeSharedPreferences.getInstance().readString(
                 ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME, null);
     }
 }

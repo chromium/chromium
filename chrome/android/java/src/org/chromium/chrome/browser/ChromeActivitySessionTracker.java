@@ -31,8 +31,8 @@ import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLifecycleHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -233,11 +233,11 @@ public class ChromeActivitySessionTracker {
      */
     private void updateAcceptLanguages() {
         String currentLocale = LocaleUtils.getDefaultLocaleListString();
-        String previousLocale = SharedPreferencesManager.getInstance().readString(
+        String previousLocale = ChromeSharedPreferences.getInstance().readString(
                 ChromePreferenceKeys.APP_LOCALE, null);
         ChromeLocalizationUtils.recordLocaleUpdateStatus(previousLocale, currentLocale);
         if (!TextUtils.equals(previousLocale, currentLocale)) {
-            SharedPreferencesManager.getInstance().writeString(
+            ChromeSharedPreferences.getInstance().writeString(
                     ChromePreferenceKeys.APP_LOCALE, currentLocale);
             TranslateBridge.resetAcceptLanguages(currentLocale);
             if (previousLocale != null) {

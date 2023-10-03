@@ -16,7 +16,8 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
  * Maintains and provides the night mode state for the entire application.
@@ -48,7 +49,7 @@ class GlobalNightModeStateController implements NightModeStateProvider,
      *                               night mode state.
      * @param powerSaveModeMonitor The {@link PowerSavingModeMonitor} that maintains the system
      *                              power saving setting.
-     * @param sharedPreferencesManager The {@link SharedPreferencesManager} that maintains shared
+     * @param sharedPreferencesManager The {@link ChromeSharedPreferences} that maintains shared
      *                                preferences.
      */
     GlobalNightModeStateController(@NonNull SystemNightModeMonitor systemNightModeMonitor,

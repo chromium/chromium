@@ -24,7 +24,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
@@ -110,7 +110,7 @@ public class RestoreMigrateTest {
         FileUtils.recursivelyDeleteFile(
                 TabStateDirectory.getOrCreateTabbedModeStateDirectory(), null);
         TabStateDirectory.resetTabbedModeStateDirectoryForTesting();
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, false);
         TabbedModeTabPersistencePolicy.resetMigrationTaskForTesting();
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
@@ -164,7 +164,7 @@ public class RestoreMigrateTest {
         store.waitForMigrationToFinish();
 
         // Make sure we don't hit the migration path again.
-        Assert.assertTrue(SharedPreferencesManager.getInstance().readBoolean(
+        Assert.assertTrue(ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, false));
 
         // Check that the files were moved.

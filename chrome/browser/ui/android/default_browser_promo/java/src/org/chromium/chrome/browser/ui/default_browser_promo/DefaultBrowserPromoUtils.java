@@ -11,7 +11,7 @@ import android.content.pm.ResolveInfo;
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
@@ -103,7 +103,7 @@ public class DefaultBrowserPromoUtils {
      * Increment session count for triggering feature in the future.
      */
     public static void incrementSessionCount() {
-        SharedPreferencesManager.getInstance().incrementInt(
+        ChromeSharedPreferences.getInstance().incrementInt(
                 ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT);
     }
 }

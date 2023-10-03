@@ -20,7 +20,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -41,7 +41,7 @@ public class QueryTileUtilsTest {
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         QueryTileUtils.setSegmentationResultsForTesting(0 /*UNINITIALIZED*/);
-        SharedPreferencesManager.getInstance().removeKey(
+        ChromeSharedPreferences.getInstance().removeKey(
                 ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS);
     }
 
@@ -60,7 +60,7 @@ public class QueryTileUtilsTest {
     public void
     testShouldUseSegmentationModel() {
         // Set segmentation model to show query tiles.
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false);
         QueryTileUtils.setSegmentationResultsForTesting(2 /*SHOW*/);
 
@@ -73,7 +73,7 @@ public class QueryTileUtilsTest {
         Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
 
         // Verify that segmentation is not used when previous decision time did not expire.
-        SharedPreferencesManager.getInstance().writeLong(
+        ChromeSharedPreferences.getInstance().writeLong(
                 ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
                 System.currentTimeMillis() + QueryTileUtils.MILLISECONDS_PER_DAY);
         Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
@@ -86,7 +86,7 @@ public class QueryTileUtilsTest {
     private void nextDecisionTimeStampInDays(int numOfDays) {
         long approximateTime =
                 System.currentTimeMillis() + numOfDays * QueryTileUtils.MILLISECONDS_PER_DAY;
-        long nextDecisionTime = SharedPreferencesManager.getInstance().readLong(
+        long nextDecisionTime = ChromeSharedPreferences.getInstance().readLong(
                 ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS, 0);
 
         assertThat("new decision time lower bound", approximateTime - MILLISECONDS_PER_MINUTE,
@@ -100,7 +100,7 @@ public class QueryTileUtilsTest {
      * Helper method to simulate that the next decision time has reached.
      */
     void nextDecisionTimeReached() {
-        SharedPreferencesManager.getInstance().writeLong(
+        ChromeSharedPreferences.getInstance().writeLong(
                 ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
                 System.currentTimeMillis() - MILLISECONDS_PER_MINUTE);
     }
@@ -110,7 +110,7 @@ public class QueryTileUtilsTest {
      */
     void queryTilesWillBeShownFromNowOn() {
         nextDecisionTimeStampInDays(QueryTileUtils.DEFAULT_NUM_DAYS_KEEP_SHOWING_QUERY_TILES);
-        Assert.assertTrue(SharedPreferencesManager.getInstance().readBoolean(
+        Assert.assertTrue(ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false));
     }
 
@@ -119,7 +119,7 @@ public class QueryTileUtilsTest {
      */
     void queryTilesWillBeHiddenFromNowOn() {
         nextDecisionTimeStampInDays(QueryTileUtils.DEFAULT_NUM_DAYS_MV_CLICKS_BELOW_THRESHOLD);
-        Assert.assertFalse(SharedPreferencesManager.getInstance().readBoolean(
+        Assert.assertFalse(ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false));
     }
 }

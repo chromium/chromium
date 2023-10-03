@@ -29,7 +29,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.omaha.metrics.UpdateSuccessMetrics;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
 import java.io.File;
@@ -167,7 +167,7 @@ public class UpdateStatusProvider {
             return;
         }
 
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION, currentlyUsedVersion);
         mStatus.latestUnsupportedVersion = currentlyUsedVersion;
         pingObservers();
@@ -273,7 +273,7 @@ public class UpdateStatusProvider {
                     break;
                 case UpdateState.UNSUPPORTED_OS_VERSION:
                     status.latestUnsupportedVersion =
-                            SharedPreferencesManager.getInstance().readString(
+                            ChromeSharedPreferences.getInstance().readString(
                                     ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION, null);
                     break;
             }
@@ -294,11 +294,11 @@ public class UpdateStatusProvider {
                 status.updateState =
                         allowedToUpdate ? UpdateState.UPDATE_AVAILABLE : UpdateState.NONE;
 
-                SharedPreferencesManager.getInstance().removeKey(
+                ChromeSharedPreferences.getInstance().removeKey(
                         ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION);
             } else if (!VersionNumberGetter.isCurrentOsVersionSupported()) {
                 status.updateState = UpdateState.UNSUPPORTED_OS_VERSION;
-                status.latestUnsupportedVersion = SharedPreferencesManager.getInstance().readString(
+                status.latestUnsupportedVersion = ChromeSharedPreferences.getInstance().readString(
                         ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION, null);
             } else {
                 status.updateState = UpdateState.NONE;

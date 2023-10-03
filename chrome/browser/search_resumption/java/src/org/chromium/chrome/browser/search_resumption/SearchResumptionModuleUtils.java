@@ -14,7 +14,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionUserData.SuggestionResult;
@@ -200,7 +200,7 @@ public class SearchResumptionModuleUtils {
      * @param cached: Whether cached suggestions are shown.
      */
     static void recordModuleShown(boolean cached) {
-        boolean isCollapsed = SharedPreferencesManager.getInstance().readBoolean(
+        boolean isCollapsed = ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP, false);
         RecordHistogram.recordEnumeratedHistogram(cached ? UMA_MODULE_SHOW_CACHED : UMA_MODULE_SHOW,
                 isCollapsed ? ModuleShowStatus.COLLAPSED : ModuleShowStatus.EXPANDED,

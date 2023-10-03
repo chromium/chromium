@@ -14,10 +14,11 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -35,7 +36,7 @@ public class FirstRunUtils {
      * Must be called after native initialization.
      */
     public static void cacheFirstRunPrefs() {
-        SharedPreferencesManager javaPrefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager javaPrefs = ChromeSharedPreferences.getInstance();
         // Set both Java and native prefs if any of the three indicators indicate ToS has been
         // accepted. This needed because:
         //   - Old versions only set native pref, so this syncs Java pref.
@@ -61,7 +62,7 @@ public class FirstRunUtils {
     public static boolean didAcceptTermsOfService() {
         // Note: Does not check FirstRunUtils.isFirstRunEulaAccepted() because this may be called
         // before native is initialized.
-        return SharedPreferencesManager.getInstance().readBoolean(
+        return ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, false);
     }
 
@@ -73,7 +74,7 @@ public class FirstRunUtils {
     static void acceptTermsOfService(boolean allowMetricsAndCrashUploading) {
         UmaSessionStats.changeMetricsReportingConsent(
                 allowMetricsAndCrashUploading, ChangeMetricsReportingStateCalledFrom.UI_FIRST_RUN);
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
         setEulaAccepted();
     }

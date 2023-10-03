@@ -21,11 +21,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
@@ -61,7 +62,7 @@ public class DseNewTabUrlManagerUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mSharedPreferenceManager = SharedPreferencesManager.getInstance();
+        mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
 
         doReturn(SEARCH_URL).when(mTemplateUrl).getURL();
         doReturn(NEW_TAB_URL).when(mTemplateUrl).getNewTabURL();
@@ -194,15 +195,15 @@ public class DseNewTabUrlManagerUnitTest {
     public void testIsDefaultSearchEngineGoogle() {
         assertNull(mDseNewTabUrlManager.getTemplateUrlServiceForTesting());
 
-        assertFalse(SharedPreferencesManager.getInstance().contains(
-                ChromePreferenceKeys.IS_DSE_GOOGLE));
+        assertFalse(
+                ChromeSharedPreferences.getInstance().contains(ChromePreferenceKeys.IS_DSE_GOOGLE));
         assertTrue(DseNewTabUrlManager.isDefaultSearchEngineGoogle());
 
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.IS_DSE_GOOGLE, false);
         assertFalse(DseNewTabUrlManager.isDefaultSearchEngineGoogle());
 
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.IS_DSE_GOOGLE, true);
         assertTrue(DseNewTabUrlManager.isDefaultSearchEngineGoogle());
     }

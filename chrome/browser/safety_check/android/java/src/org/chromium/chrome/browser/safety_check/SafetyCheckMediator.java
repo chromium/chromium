@@ -20,6 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
@@ -34,7 +35,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
@@ -191,7 +192,7 @@ class SafetyCheckMediator
         mSigninLauncher = signinLauncher;
         mSyncService = syncService;
         mHandler = handler;
-        mPreferenceManager = SharedPreferencesManager.getInstance();
+        mPreferenceManager = ChromeSharedPreferences.getInstance();
         // Set the listener for clicking the updates element.
         mModel.set(SafetyCheckProperties.UPDATES_CLICK_LISTENER,
                 (Preference.OnPreferenceClickListener) (p) -> {

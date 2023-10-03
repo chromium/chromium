@@ -32,7 +32,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -217,7 +217,7 @@ public class SafetyCheckSettingsFragmentTest {
         createFragmentAndModelByBundle(/*safetyCheckImmediateRun=*/false);
         assertEquals(false, mFragment.shouldRunSafetyCheckImmediately());
         assertEquals(0,
-                SharedPreferencesManager.getInstance().readLong(
+                ChromeSharedPreferences.getInstance().readLong(
                         ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP, 0));
     }
 
@@ -229,7 +229,7 @@ public class SafetyCheckSettingsFragmentTest {
         // Make sure the safety check was ran.
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
-                    SharedPreferencesManager.getInstance().readLong(
+                    ChromeSharedPreferences.getInstance().readLong(
                             ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP, 0),
                     Matchers.not(0));
         });

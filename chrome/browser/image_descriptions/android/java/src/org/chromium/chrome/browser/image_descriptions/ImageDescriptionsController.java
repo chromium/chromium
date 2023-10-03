@@ -8,10 +8,11 @@ import android.content.Context;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -183,10 +184,10 @@ public class ImageDescriptionsController {
 
     /**
      * Helper method to return SharedPreferencesManager instance.
-     * @return SharedPreferencesManager
+     * @return ChromeSharedPreferences
      */
     private SharedPreferencesManager getSharedPrefs() {
-        return SharedPreferencesManager.getInstance();
+        return ChromeSharedPreferences.getInstance();
     }
 
     @NativeMethods

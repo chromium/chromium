@@ -34,12 +34,13 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -592,7 +593,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return The time when the instance was last accessed.
      */
     static long readLastAccessedTime(int index) {
-        return SharedPreferencesManager.getInstance().readLong(lastAccessedTimeKey(index));
+        return ChromeSharedPreferences.getInstance().readLong(lastAccessedTimeKey(index));
     }
 
     /**
@@ -601,7 +602,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void writeLastAccessedTime(int index) {
-        SharedPreferencesManager.getInstance().writeLong(
+        ChromeSharedPreferences.getInstance().writeLong(
                 lastAccessedTimeKey(index), System.currentTimeMillis());
     }
 
@@ -637,7 +638,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         if (isFirstActivity) {
             if (isInMultiWindowMode) {
                 if (mMultiInstanceApi31Enabled) {
-                    SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+                    SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
                     long startTime = prefs.readLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME);
                     if (startTime == 0) {
                         RecordUserAction.record("Android.MultiWindowMode.Enter2");
@@ -649,7 +650,7 @@ public class MultiWindowUtils implements ActivityStateListener {
                 }
             } else {
                 if (mMultiInstanceApi31Enabled) {
-                    SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+                    SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
                     long startTime = prefs.readLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME);
                     if (startTime > 0) {
                         long current = System.currentTimeMillis();

@@ -61,7 +61,7 @@ import org.chromium.chrome.browser.logo.LogoBridge;
 import org.chromium.chrome.browser.logo.LogoBridgeJni;
 import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -532,7 +532,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT)
     public void testNotShowLogoWhenStartSurfaceDisabledFeedImprovementIsOn() {
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, false);
         createMediator(false);
         assertFalse(mMediator.isLogoVisibleForTesting());
@@ -614,7 +614,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     private void createMediator(boolean hideIncognitoSwitchWhenNoTabs) {
         boolean shouldCreateLogoInToolbar =
                 (!ChromeFeatureList.sStartSurfaceDisabledFeedImprovement.isEnabled()
-                        || SharedPreferencesManager.getInstance().readBoolean(
+                        || ChromeSharedPreferences.getInstance().readBoolean(
                                 ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, true))
                 && !(ChromeFeatureList.sSurfacePolish.isEnabled()
                         && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue());

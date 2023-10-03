@@ -33,12 +33,13 @@ import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -103,7 +104,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
-        mSharedPrefsManager = SharedPreferencesManager.getInstance();
+        mSharedPrefsManager = ChromeSharedPreferences.getInstance();
         mCoreAccountInfo = mAccountManagerTestRule.addAccount(TEST_EMAIL);
         when(mIdentityServicesProviderMock.getIdentityManager(mProfile))
                 .thenReturn(mIdentityManagerMock);

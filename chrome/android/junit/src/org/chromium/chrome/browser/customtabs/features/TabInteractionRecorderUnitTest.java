@@ -14,10 +14,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Unit test for {@link TabInteractionRecorder} on the java side. */
@@ -40,7 +41,7 @@ public class TabInteractionRecorderUnitTest {
     public void setup() {
         mTestNative = new TestNativeInteractionRecorder();
         mJniMocker.mock(TabInteractionRecorderJni.TEST_HOOKS, mTestNative);
-        mPref = SharedPreferencesManager.getInstance();
+        mPref = ChromeSharedPreferences.getInstance();
 
         TabInteractionRecorder.createForTab(mTab);
         TabInteractionRecorder recorder = TabInteractionRecorder.getFromTab(mTab);

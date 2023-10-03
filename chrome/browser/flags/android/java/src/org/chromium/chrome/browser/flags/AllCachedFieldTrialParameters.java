@@ -9,7 +9,7 @@ import androidx.annotation.AnyThread;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -73,7 +73,7 @@ public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
 
             value = CachedFlagsSafeMode.getInstance().getStringFieldTrialParam(preferenceName, "");
             if (value == null) {
-                value = SharedPreferencesManager.getInstance().readString(preferenceName, "");
+                value = ChromeSharedPreferences.getInstance().readString(preferenceName, "");
             }
 
             ValuesReturned.sStringValues.put(preferenceName, value);
@@ -85,7 +85,7 @@ public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
     void cacheToDisk() {
         final Map<String, String> params =
                 ChromeFeatureList.getFieldTrialParamsForFeature(getFeatureName());
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 getSharedPreferenceKey(), encodeParams(params));
     }
 

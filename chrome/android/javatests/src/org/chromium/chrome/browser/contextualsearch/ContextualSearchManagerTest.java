@@ -61,7 +61,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -740,7 +740,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         // for this test case.
         // Getting value from shared preference rather than FirstRunStatus#getFirstRunFlowComplete
         // to get rid of the impact from commandline switch. See https://crbug.com/1158467
-        boolean originalIsFirstRunComplete = SharedPreferencesManager.getInstance().readBoolean(
+        boolean originalIsFirstRunComplete = ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false);
         FirstRunStatus.setFirstRunFlowComplete(false);
 

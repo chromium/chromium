@@ -24,9 +24,10 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionTileBuilder.OnSuggestionClickCallback;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -70,14 +71,14 @@ public class SearchResumptionModuleViewUnitTest {
         inflateModuleView();
 
         Assert.assertTrue(mTilesView.isExpanded());
-        Assert.assertFalse(SharedPreferencesManager.getInstance().readBoolean(
+        Assert.assertFalse(ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP, false));
     }
 
     @Test
     @SmallTest
     public void testVisibilityDisallowInitially() {
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         sharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP, true);
 

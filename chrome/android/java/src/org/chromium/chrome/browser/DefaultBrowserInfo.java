@@ -21,7 +21,7 @@ import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.content_public.browser.BrowserStartupController;
 
 import java.lang.annotation.Retention;
@@ -101,7 +101,7 @@ public final class DefaultBrowserInfo {
                         boolean isDefault = info != null && info.match != 0
                                 && TextUtils.equals(
                                         context.getPackageName(), info.activityInfo.packageName);
-                        SharedPreferencesManager.getInstance().writeBoolean(
+                        ChromeSharedPreferences.getInstance().writeBoolean(
                                 ChromePreferenceKeys.CHROME_DEFAULT_BROWSER, isDefault);
 
                         // Check if there is a default handler for the Intent.  If so, store its

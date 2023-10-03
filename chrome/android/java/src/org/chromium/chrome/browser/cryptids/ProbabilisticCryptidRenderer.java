@@ -16,7 +16,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
@@ -135,7 +135,7 @@ public class ProbabilisticCryptidRenderer {
 
     // Protected for testing
     protected long getLastRenderTimestampMillis() {
-        long lastRenderTimestamp = SharedPreferencesManager.getInstance().readLong(
+        long lastRenderTimestamp = ChromeSharedPreferences.getInstance().readLong(
                 ChromePreferenceKeys.CRYPTID_LAST_RENDER_TIMESTAMP,
                 /* defaultValue = */ 0);
         if (lastRenderTimestamp == 0) {
@@ -168,7 +168,7 @@ public class ProbabilisticCryptidRenderer {
         RecordUserAction.record("CryptidRendered");
         RecordHistogram.recordEnumeratedHistogram(
                 "NewTabPage.CryptidRenderResult", HISTOGRAM_SUCCESS, HISTOGRAM_MAX);
-        SharedPreferencesManager.getInstance().writeLong(
+        ChromeSharedPreferences.getInstance().writeLong(
                 ChromePreferenceKeys.CRYPTID_LAST_RENDER_TIMESTAMP, timestamp);
     }
 

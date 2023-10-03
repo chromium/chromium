@@ -7,9 +7,10 @@ package org.chromium.chrome.browser.price_tracking;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Utility class for price tracking. */
 public class PriceTrackingUtilities {
@@ -35,7 +36,7 @@ public class PriceTrackingUtilities {
 
     @VisibleForTesting
     public static final SharedPreferencesManager SHARED_PREFERENCES_MANAGER =
-            SharedPreferencesManager.getInstance();
+            ChromeSharedPreferences.getInstance();
 
     /**
      * Update SharedPreferences when users turn on/off the feature tracking prices on tabs.

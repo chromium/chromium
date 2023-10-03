@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.flags;
 
 import androidx.annotation.AnyThread;
 
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
  * A boolean-type {@link CachedFieldTrialParameter}.
@@ -44,7 +44,7 @@ public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter 
             value = CachedFlagsSafeMode.getInstance().getBooleanFieldTrialParam(
                     preferenceName, defaultValue);
             if (value == null) {
-                value = SharedPreferencesManager.getInstance().readBoolean(
+                value = ChromeSharedPreferences.getInstance().readBoolean(
                         preferenceName, defaultValue);
             }
 
@@ -61,7 +61,7 @@ public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter 
     void cacheToDisk() {
         boolean value = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 getFeatureName(), getParameterName(), getDefaultValue());
-        SharedPreferencesManager.getInstance().writeBoolean(getSharedPreferenceKey(), value);
+        ChromeSharedPreferences.getInstance().writeBoolean(getSharedPreferenceKey(), value);
     }
 
     /**

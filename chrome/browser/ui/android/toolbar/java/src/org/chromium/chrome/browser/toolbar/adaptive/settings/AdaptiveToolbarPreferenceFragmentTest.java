@@ -28,7 +28,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.toolbar.R;
@@ -65,8 +65,8 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     public void setUpTest() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
-        SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
+        ChromeSharedPreferences.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
+        ChromeSharedPreferences.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
                 new Pair<>(false, AdaptiveToolbarButtonVariant.NEW_TAB));
 
@@ -76,8 +76,8 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     @After
     public void tearDownTest() throws Exception {
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(null);
-        SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
-        SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
+        ChromeSharedPreferences.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
+        ChromeSharedPreferences.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
     }
 
     @Test
@@ -92,20 +92,20 @@ public class AdaptiveToolbarPreferenceFragmentTest {
             mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
                     AdaptiveToolbarSettingsFragment.PREF_ADAPTIVE_RADIO_GROUP);
 
-            Assert.assertFalse(SharedPreferencesManager.getInstance().contains(
+            Assert.assertFalse(ChromeSharedPreferences.getInstance().contains(
                     ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED));
             Assert.assertTrue(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
 
             mSwitchPreference.performClick();
             Assert.assertFalse(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
-            Assert.assertTrue(SharedPreferencesManager.getInstance().contains(
+            Assert.assertTrue(ChromeSharedPreferences.getInstance().contains(
                     ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED));
-            Assert.assertFalse(SharedPreferencesManager.getInstance().readBoolean(
+            Assert.assertFalse(ChromeSharedPreferences.getInstance().readBoolean(
                     ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED, false));
 
             mSwitchPreference.performClick();
             Assert.assertTrue(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
-            Assert.assertTrue(SharedPreferencesManager.getInstance().readBoolean(
+            Assert.assertTrue(ChromeSharedPreferences.getInstance().readBoolean(
                     ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED, false));
 
             int expectedDefaultShortcut = AdaptiveToolbarButtonVariant.AUTO;
@@ -120,7 +120,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
             assertButtonCheckedCorrectly("Based on your usage", AdaptiveToolbarButtonVariant.AUTO);
             Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO, mRadioPreference.getSelection());
             Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO,
-                    SharedPreferencesManager.getInstance().readInt(
+                    ChromeSharedPreferences.getInstance().readInt(
                             ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
 
             // Select New tab
@@ -131,7 +131,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
             Assert.assertEquals(
                     AdaptiveToolbarButtonVariant.NEW_TAB, mRadioPreference.getSelection());
             Assert.assertEquals(AdaptiveToolbarButtonVariant.NEW_TAB,
-                    SharedPreferencesManager.getInstance().readInt(
+                    ChromeSharedPreferences.getInstance().readInt(
                             ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
 
             // Select Share
@@ -142,7 +142,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
             Assert.assertEquals(
                     AdaptiveToolbarButtonVariant.SHARE, mRadioPreference.getSelection());
             Assert.assertEquals(AdaptiveToolbarButtonVariant.SHARE,
-                    SharedPreferencesManager.getInstance().readInt(
+                    ChromeSharedPreferences.getInstance().readInt(
                             ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
 
             // Select Voice search
@@ -153,7 +153,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
             Assert.assertEquals(
                     AdaptiveToolbarButtonVariant.VOICE, mRadioPreference.getSelection());
             Assert.assertEquals(AdaptiveToolbarButtonVariant.VOICE,
-                    SharedPreferencesManager.getInstance().readInt(
+                    ChromeSharedPreferences.getInstance().readInt(
                             ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
         });
     }
@@ -177,7 +177,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
             Assert.assertEquals(
                     AdaptiveToolbarButtonVariant.TRANSLATE, mRadioPreference.getSelection());
             Assert.assertEquals(AdaptiveToolbarButtonVariant.TRANSLATE,
-                    SharedPreferencesManager.getInstance().readInt(
+                    ChromeSharedPreferences.getInstance().readInt(
                             ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
         });
     }
@@ -187,7 +187,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE)
     public void testTranslateOption_Disabled() {
         // Set initial preference to translate.
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, AdaptiveToolbarButtonVariant.TRANSLATE);
         FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
                 FragmentScenario.launchInContainer(AdaptiveToolbarSettingsFragment.class,
@@ -204,7 +204,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
             assertButtonCheckedCorrectly("Based on your usage", AdaptiveToolbarButtonVariant.AUTO);
             Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO, mRadioPreference.getSelection());
             Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO,
-                    SharedPreferencesManager.getInstance().readInt(
+                    ChromeSharedPreferences.getInstance().readInt(
                             ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
         });
     }
@@ -229,7 +229,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
             Assert.assertEquals(
                     AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS, mRadioPreference.getSelection());
             Assert.assertEquals(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
-                    SharedPreferencesManager.getInstance().readInt(
+                    ChromeSharedPreferences.getInstance().readInt(
                             ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
         });
     }
@@ -239,7 +239,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS)
     public void testAddToBookmarksOption_Disabled() {
         // Set initial preference to add to bookmarks.
-        SharedPreferencesManager.getInstance().writeInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
+        ChromeSharedPreferences.getInstance().writeInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
                 AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS);
         FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
                 FragmentScenario.launchInContainer(AdaptiveToolbarSettingsFragment.class,
@@ -256,7 +256,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
             assertButtonCheckedCorrectly("Based on your usage", AdaptiveToolbarButtonVariant.AUTO);
             Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO, mRadioPreference.getSelection());
             Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO,
-                    SharedPreferencesManager.getInstance().readInt(
+                    ChromeSharedPreferences.getInstance().readInt(
                             ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
         });
     }
@@ -282,7 +282,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
             Assert.assertEquals(
                     AdaptiveToolbarButtonVariant.READ_ALOUD, mRadioPreference.getSelection());
             Assert.assertEquals(AdaptiveToolbarButtonVariant.READ_ALOUD,
-                    SharedPreferencesManager.getInstance().readInt(
+                    ChromeSharedPreferences.getInstance().readInt(
                             ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
         });
     }
@@ -292,7 +292,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     @DisableFeatures(ChromeFeatureList.READALOUD)
     public void testReadAloudOption_Disabled() {
         // Set initial preference to Read Aloud.
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, AdaptiveToolbarButtonVariant.READ_ALOUD);
         FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
                 FragmentScenario.launchInContainer(AdaptiveToolbarSettingsFragment.class,
@@ -312,7 +312,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
             assertButtonCheckedCorrectly("Based on your usage", AdaptiveToolbarButtonVariant.AUTO);
             Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO, mRadioPreference.getSelection());
             Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO,
-                    SharedPreferencesManager.getInstance().readInt(
+                    ChromeSharedPreferences.getInstance().readInt(
                             ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
         });
     }

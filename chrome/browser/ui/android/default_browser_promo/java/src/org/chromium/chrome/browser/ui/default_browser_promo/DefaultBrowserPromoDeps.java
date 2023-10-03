@@ -18,14 +18,14 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserState;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * A utility class providing information regarding external states of the system to facilitate
- * testing and interacting with external states by {@link SharedPreferencesManager},
+ * testing and interacting with external states by {@link ChromeSharedPreferences},
  * {@link PackageManagerUtils} and {@link RoleManager}.
  */
 public class DefaultBrowserPromoDeps {
@@ -52,12 +52,12 @@ public class DefaultBrowserPromoDeps {
     }
 
     int getPromoCount() {
-        return SharedPreferencesManager.getInstance().readInt(
+        return ChromeSharedPreferences.getInstance().readInt(
                 ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_PROMOED_COUNT, 0);
     }
 
     void incrementPromoCount() {
-        SharedPreferencesManager.getInstance().incrementInt(
+        ChromeSharedPreferences.getInstance().incrementInt(
                 ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_PROMOED_COUNT);
     }
 
@@ -66,12 +66,12 @@ public class DefaultBrowserPromoDeps {
     }
 
     int getSessionCount() {
-        return SharedPreferencesManager.getInstance().readInt(
+        return ChromeSharedPreferences.getInstance().readInt(
                 ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT, 0);
     }
 
     void recordPromoTime() {
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME,
                 (int) TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis()));
     }
@@ -81,7 +81,7 @@ public class DefaultBrowserPromoDeps {
     }
 
     int getLastPromoInterval() {
-        int lastPromoTime = SharedPreferencesManager.getInstance().readInt(
+        int lastPromoTime = ChromeSharedPreferences.getInstance().readInt(
                 ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME, -1);
         if (lastPromoTime != -1) {
             return (int) (TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis())

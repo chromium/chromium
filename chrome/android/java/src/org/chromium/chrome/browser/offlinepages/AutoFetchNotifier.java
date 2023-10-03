@@ -20,6 +20,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
@@ -28,7 +29,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -106,7 +107,7 @@ public class AutoFetchNotifier {
             // the cancellation if Chrome is running in full browser. If Chrome isn't running in
             // full browser, runNowOrAfterFullBrowserStarted() will never call our runnable, so set
             // a pref to remember to cancel on next startup.
-            SharedPreferencesManager.getInstance().writeInt(
+            ChromeSharedPreferences.getInstance().writeInt(
                     ChromePreferenceKeys.OFFLINE_AUTO_FETCH_USER_CANCEL_ACTION_IN_PROGRESS, action);
             // This will call us back with cancellationComplete().
             ChromeBrowserInitializer.getInstance().runNowOrAfterFullBrowserStarted(
@@ -191,7 +192,7 @@ public class AutoFetchNotifier {
     // user interacting with the in-progress notification.
     @CalledByNative
     private static void cancellationComplete() {
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         @NotificationAction
         int currentAction = prefs.readInt(
                 ChromePreferenceKeys.OFFLINE_AUTO_FETCH_USER_CANCEL_ACTION_IN_PROGRESS,
@@ -209,7 +210,7 @@ public class AutoFetchNotifier {
     @VisibleForTesting
     @CalledByNative
     public static boolean autoFetchInProgressNotificationCanceled() {
-        return SharedPreferencesManager.getInstance().readInt(
+        return ChromeSharedPreferences.getInstance().readInt(
                        ChromePreferenceKeys.OFFLINE_AUTO_FETCH_USER_CANCEL_ACTION_IN_PROGRESS,
                        NotificationAction.NUM_ENTRIES)
                 != NotificationAction.NUM_ENTRIES;
@@ -330,12 +331,12 @@ public class AutoFetchNotifier {
     }
 
     private static boolean isShowingInProgressNotification() {
-        return SharedPreferencesManager.getInstance().readBoolean(
+        return ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.OFFLINE_AUTO_FETCH_SHOWING_IN_PROGRESS, false);
     }
 
     private static void setIsShowingInProgressNotification(boolean showing) {
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.OFFLINE_AUTO_FETCH_SHOWING_IN_PROGRESS, showing);
     }
 

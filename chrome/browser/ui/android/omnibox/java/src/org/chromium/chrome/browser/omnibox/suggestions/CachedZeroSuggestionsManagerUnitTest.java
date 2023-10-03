@@ -19,9 +19,10 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -162,7 +163,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
     @Test
     @SmallTest
     public void groupsDetails_restoreInvalidGroupsDetailsFromCache() {
-        final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+        final SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
         var groupsDetails = GroupsInfo.newBuilder()
                                     .putGroupConfigs(20, SECTION_2_WITH_HEADER)
                                     .putGroupConfigs(30, SECTION_1_NO_HEADER)
@@ -236,7 +237,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
         // Clear cache explicitly, otherwise this test will be flaky until the suite is re-executed.
         ContextUtils.getAppSharedPreferences().edit().clear().apply();
 
-        final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+        final SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
 
         // Save one valid suggestion to cache.
         AutocompleteResult dataToCache =
@@ -342,7 +343,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
 
         // Insert garbage for the Suggestion Subtypes.
-        final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+        final SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
         final Set<String> garbageSubtypes = new ArraySet<>();
         garbageSubtypes.add("invalid");
         manager.writeStringSet(
@@ -364,7 +365,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
         AutocompleteResult dataToCache = AutocompleteResult.fromCache(list, null);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
 
-        final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+        final SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
         final Set<String> garbageSubtypes = new ArraySet<>();
         garbageSubtypes.add("null");
         manager.writeStringSet(

@@ -12,7 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -65,13 +65,13 @@ public class MissingDeviceLockLauncher {
                 mMissingDeviceLockCoordinator.hideDialog(
                         DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
             }
-            SharedPreferencesManager.getInstance().writeBoolean(
+            ChromeSharedPreferences.getInstance().writeBoolean(
                     ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
             return null;
         }
 
         // If the device lock has been removed, prompt the user with the missing device lock UI.
-        if (SharedPreferencesManager.getInstance().readBoolean(
+        if (ChromeSharedPreferences.getInstance().readBoolean(
                     ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, false)) {
             Callback<Boolean> onContinueWithoutDeviceLock = (wipeAllData)
                     -> ensureSignOutAndDeleteSensitiveData(
@@ -117,7 +117,7 @@ public class MissingDeviceLockLauncher {
                     wipeDataCallback.run();
                 }
             }
-            SharedPreferencesManager.getInstance().writeBoolean(
+            ChromeSharedPreferences.getInstance().writeBoolean(
                     ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, false);
         });
     }

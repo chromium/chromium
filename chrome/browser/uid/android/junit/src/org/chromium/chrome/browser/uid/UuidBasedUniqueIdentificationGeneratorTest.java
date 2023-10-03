@@ -24,7 +24,7 @@ import org.mockito.Spy;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Unit tests for {@link UuidBasedUniqueIdentificationGenerator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -36,7 +36,7 @@ public class UuidBasedUniqueIdentificationGeneratorTest {
 
     @Before
     public void setUp() {
-        SharedPreferencesManager.getInstance().disableKeyCheckerForTesting();
+        ChromeSharedPreferences.getInstance().disableKeyCheckerForTesting();
     }
 
     @Test

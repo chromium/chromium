@@ -37,12 +37,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -99,7 +100,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
                     mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
         });
 
-        mManager = SharedPreferencesManager.getInstance();
+        mManager = ChromeSharedPreferences.getInstance();
         mController = ImageDescriptionsController.getInstance();
         mController.setDelegateForTesting(mDelegate);
     }

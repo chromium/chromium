@@ -20,11 +20,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.prefs.PrefService;
 
 /** Unit tests for SyncErrorMessageImpressionTracker. */
@@ -45,7 +46,7 @@ public class SyncErrorMessageImpressionTrackerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mSharedPrefsManager = SharedPreferencesManager.getInstance();
+        mSharedPrefsManager = ChromeSharedPreferences.getInstance();
     }
 
     @After

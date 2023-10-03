@@ -19,7 +19,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -89,7 +89,7 @@ public class OtherFormsOfHistoryDialogFragment
      * @param shown Whether the dialog was shown.
      */
     private static void recordDialogWasShown(boolean shown) {
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.SETTINGS_PRIVACY_OTHER_FORMS_OF_HISTORY_DIALOG_SHOWN, shown);
     }
 
@@ -97,7 +97,7 @@ public class OtherFormsOfHistoryDialogFragment
      * @return Whether the dialog has already been shown to the user before.
      */
     static boolean wasDialogShown() {
-        return SharedPreferencesManager.getInstance().readBoolean(
+        return ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.SETTINGS_PRIVACY_OTHER_FORMS_OF_HISTORY_DIALOG_SHOWN, false);
     }
 

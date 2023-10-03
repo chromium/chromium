@@ -22,7 +22,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -106,7 +106,7 @@ public class SigninBridgeTest {
     public void testAccountPickerSuppressedIfDismissLimitReached() {
         when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(true);
         mAccountManagerTestRule.addAccount("account@test.com");
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT,
                 SigninBridge.ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT);
         SigninBridge.openAccountPickerBottomSheet(mWindowAndroidMock, CONTINUE_URL);

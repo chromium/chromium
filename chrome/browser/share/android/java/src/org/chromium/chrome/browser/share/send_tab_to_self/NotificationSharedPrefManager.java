@@ -8,8 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,7 +32,7 @@ public class NotificationSharedPrefManager {
      *         this id hits close to the INT_MAX_VALUE (unlikely), gets reset to 0.
      */
     static int getNextNotificationId() {
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         int nextId = prefs.readInt(ChromePreferenceKeys.SEND_TAB_TO_SELF_NEXT_NOTIFICATION_ID, -1);
         // Reset the counter when it gets close to max value
         if (nextId >= Integer.MAX_VALUE - 1) {
@@ -131,7 +132,7 @@ public class NotificationSharedPrefManager {
      * @param notification Notification to be inserted into the active set.
      */
     static void addActiveNotification(ActiveNotification notification) {
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         Set<String> activeNotifications = getMutableStringSetPreference(
                 prefs, ChromePreferenceKeys.SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS);
         boolean added = activeNotifications.add(serializeNotification(notification));
@@ -151,7 +152,7 @@ public class NotificationSharedPrefManager {
         if (guid == null) {
             return false;
         }
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         ActiveNotification notification = findActiveNotification(guid);
         if (notification == null) {
             return false;
@@ -179,7 +180,7 @@ public class NotificationSharedPrefManager {
         if (guid == null) {
             return null;
         }
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         Set<String> activeNotifications = prefs.readStringSet(
                 ChromePreferenceKeys.SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS, null);
         if (activeNotifications == null) {

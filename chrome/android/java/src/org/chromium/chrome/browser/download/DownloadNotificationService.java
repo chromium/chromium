@@ -29,7 +29,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
@@ -546,13 +546,13 @@ public class DownloadNotificationService {
      * @return notificationId that is next based on stored value.
      */
     private static int getNextNotificationId() {
-        int nextNotificationId = SharedPreferencesManager.getInstance().readInt(
+        int nextNotificationId = ChromeSharedPreferences.getInstance().readInt(
                 ChromePreferenceKeys.DOWNLOAD_NEXT_DOWNLOAD_NOTIFICATION_ID,
                 STARTING_NOTIFICATION_ID);
         int nextNextNotificationId = nextNotificationId == Integer.MAX_VALUE
                 ? STARTING_NOTIFICATION_ID
                 : nextNotificationId + 1;
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.DOWNLOAD_NEXT_DOWNLOAD_NOTIFICATION_ID,
                 nextNextNotificationId);
         return nextNotificationId;

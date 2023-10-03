@@ -5,8 +5,9 @@
 package org.chromium.chrome.browser.download;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.offline_items_collection.ContentId;
 
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class DownloadSharedPreferenceHelper {
     }
 
     private DownloadSharedPreferenceHelper() {
-        mSharedPrefs = SharedPreferencesManager.getInstance();
+        mSharedPrefs = ChromeSharedPreferences.getInstance();
         parseDownloadSharedPrefs();
     }
 

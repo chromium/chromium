@@ -8,8 +8,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Flag;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +89,7 @@ public class CachedFlag extends Flag {
             flag = CachedFlagsSafeMode.getInstance().isEnabled(
                     mFeatureName, preferenceName, mDefaultValue);
             if (flag == null) {
-                SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+                SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
                 if (prefs.contains(preferenceName)) {
                     flag = prefs.readBoolean(preferenceName, false);
                 } else {
@@ -137,12 +138,12 @@ public class CachedFlag extends Flag {
     void cacheFeature() {
         boolean isEnabledInNative = ChromeFeatureList.isEnabled(mFeatureName);
 
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 getNewSharedPreferenceKey(), isEnabledInNative);
 
         // TODO(crbug.com/1446352): After Oct/2023, stop writing the legacy SharedPreferences key.
         if (mLegacySharedPreferenceKey != null) {
-            SharedPreferencesManager.getInstance().writeBoolean(
+            ChromeSharedPreferences.getInstance().writeBoolean(
                     mLegacySharedPreferenceKey, isEnabledInNative);
         }
     }
@@ -178,7 +179,7 @@ public class CachedFlag extends Flag {
     }
 
     public static void resetDiskForTesting() {
-        SharedPreferencesManager.getInstance().removeKeysWithPrefix(
+        ChromeSharedPreferences.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.FLAGS_CACHED);
 
         // TODO(crbug.com/1446352): After Oct/2023, remove this since all legacy SharedPreferences
@@ -186,7 +187,7 @@ public class CachedFlag extends Flag {
         for (Map.Entry<String, CachedFlag> e : ChromeFeatureList.sAllCachedFlags.entrySet()) {
             String legacyPreferenceKey = e.getValue().mLegacySharedPreferenceKey;
             if (legacyPreferenceKey != null) {
-                SharedPreferencesManager.getInstance().removeKey(legacyPreferenceKey);
+                ChromeSharedPreferences.getInstance().removeKey(legacyPreferenceKey);
             }
         }
     }

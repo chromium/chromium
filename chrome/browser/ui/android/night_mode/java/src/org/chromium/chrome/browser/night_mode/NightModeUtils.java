@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.LinkedHashSet;
 
@@ -115,7 +115,7 @@ public class NightModeUtils {
      * @return The current theme setting. See {@link ThemeType}.
      */
     public static @ThemeType int getThemeSetting() {
-        int userSetting = SharedPreferencesManager.getInstance().readInt(UI_THEME_SETTING, -1);
+        int userSetting = ChromeSharedPreferences.getInstance().readInt(UI_THEME_SETTING, -1);
         if (userSetting == -1) {
             return isNightModeDefaultToLight() ? ThemeType.LIGHT : ThemeType.SYSTEM_DEFAULT;
         } else {

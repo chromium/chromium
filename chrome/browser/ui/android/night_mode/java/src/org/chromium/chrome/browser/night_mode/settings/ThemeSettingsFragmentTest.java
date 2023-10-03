@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntr
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.ThemeType;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -89,7 +89,7 @@ public class ThemeSettingsFragmentTest {
         // For some reason MockitoRule does not work with JniMocker (seems like an order issue), and
         // RuleChain cannot be applied to MockitoRule since it is not a TestRule.
         MockitoAnnotations.initMocks(this);
-        SharedPreferencesManager.getInstance().removeKey(UI_THEME_SETTING);
+        ChromeSharedPreferences.getInstance().removeKey(UI_THEME_SETTING);
 
         mMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mMockWebsitePreferenceBridgeJni);
 
@@ -132,7 +132,7 @@ public class ThemeSettingsFragmentTest {
             assertButtonCheckedCorrectly("System default", 0);
             Assert.assertEquals(ThemeType.SYSTEM_DEFAULT, mPreference.getSetting());
             Assert.assertEquals(mPreference.getSetting(),
-                    SharedPreferencesManager.getInstance().readInt(UI_THEME_SETTING));
+                    ChromeSharedPreferences.getInstance().readInt(UI_THEME_SETTING));
 
             // Select Light
             Assert.assertEquals(R.id.light, getButton(1).getId());
@@ -140,7 +140,7 @@ public class ThemeSettingsFragmentTest {
             assertButtonCheckedCorrectly("Light", 1);
             Assert.assertEquals(ThemeType.LIGHT, mPreference.getSetting());
             Assert.assertEquals(mPreference.getSetting(),
-                    SharedPreferencesManager.getInstance().readInt(UI_THEME_SETTING));
+                    ChromeSharedPreferences.getInstance().readInt(UI_THEME_SETTING));
 
             // Select Dark
             Assert.assertEquals(R.id.dark, getButton(2).getId());
@@ -148,7 +148,7 @@ public class ThemeSettingsFragmentTest {
             assertButtonCheckedCorrectly("Dark", 2);
             Assert.assertEquals(ThemeType.DARK, mPreference.getSetting());
             Assert.assertEquals(mPreference.getSetting(),
-                    SharedPreferencesManager.getInstance().readInt(UI_THEME_SETTING));
+                    ChromeSharedPreferences.getInstance().readInt(UI_THEME_SETTING));
         });
     }
 

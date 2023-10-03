@@ -20,9 +20,10 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
  * Unit tests for PasswordProtectionBroadcastReceiver.
@@ -40,7 +41,7 @@ public class PasswordProtectionBroadcastReceiverTest {
         mContext = spy(RuntimeEnvironment.application);
         ContextUtils.initApplicationContextForTests(mContext);
         mReceiver = new PasswordProtectionBroadcastReceiver();
-        mPrefManager = SharedPreferencesManager.getInstance();
+        mPrefManager = ChromeSharedPreferences.getInstance();
     }
 
     @Test

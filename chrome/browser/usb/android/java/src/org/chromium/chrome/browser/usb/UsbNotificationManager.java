@@ -10,11 +10,12 @@ import android.content.Intent;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -55,7 +56,7 @@ public class UsbNotificationManager {
             NotificationManagerProxy notificationManager, UsbNotificationManagerDelegate delegate) {
         mDelegate = delegate;
         mNotificationManager = notificationManager;
-        mSharedPreferences = SharedPreferencesManager.getInstance();
+        mSharedPreferences = ChromeSharedPreferences.getInstance();
     }
 
     /**
@@ -194,7 +195,7 @@ public class UsbNotificationManager {
     private static boolean shouldStartService(
             Context context, boolean isConnected, int notificationTabId) {
         if (isConnected) return true;
-        SharedPreferencesManager sharedPreferences = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
         Set<String> notificationIds =
                 sharedPreferences.readStringSet(ChromePreferenceKeys.USB_NOTIFICATION_IDS, null);
         if (notificationIds == null || notificationIds.isEmpty()) return false;
@@ -231,7 +232,7 @@ public class UsbNotificationManager {
      * @param service The usb notification service class.
      */
     public static void clearUsbNotifications(Class service) {
-        SharedPreferencesManager sharedPreferences = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
         Set<String> notificationIds =
                 sharedPreferences.readStringSet(ChromePreferenceKeys.USB_NOTIFICATION_IDS, null);
         if (notificationIds == null || notificationIds.isEmpty()) return;

@@ -18,7 +18,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog;
@@ -78,7 +78,7 @@ public class LocaleManagerDelegate {
      */
     public LocaleManagerDelegate() {
         @SearchEnginePromoState
-        int state = SharedPreferencesManager.getInstance().readInt(
+        int state = ChromeSharedPreferences.getInstance().readInt(
                 ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE,
                 SearchEnginePromoState.SHOULD_CHECK);
         mSearchEnginePromoCompleted = state == SearchEnginePromoState.CHECKED_AND_SHOWN;
@@ -148,7 +148,7 @@ public class LocaleManagerDelegate {
     }
 
     protected void maybeAutoSwitchSearchEngine() {
-        SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
+        var preferences = ChromeSharedPreferences.getInstance();
         boolean wasInSpecialLocale = preferences.readBoolean(
                 ChromePreferenceKeys.LOCALE_MANAGER_WAS_IN_SPECIAL_LOCALE, false);
         boolean isInSpecialLocale = isSpecialLocaleEnabled();
@@ -259,13 +259,13 @@ public class LocaleManagerDelegate {
      * @return Whether auto switch for search engine is enabled.
      */
     private boolean isSearchEngineAutoSwitchEnabled() {
-        return SharedPreferencesManager.getInstance().readBoolean(
+        return ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.LOCALE_MANAGER_AUTO_SWITCH, false);
     }
 
     /** @see LocaleManager#setSearchEngineAutoSwitch */
     public void setSearchEngineAutoSwitch(boolean isEnabled) {
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.LOCALE_MANAGER_AUTO_SWITCH, isEnabled);
     }
 
@@ -294,7 +294,7 @@ public class LocaleManagerDelegate {
     /** @see LocaleManager#getSearchEnginePromoShowType */
     public @SearchEnginePromoType int getSearchEnginePromoShowType() {
         if (!isSpecialLocaleEnabled()) return SearchEnginePromoType.DONT_SHOW;
-        SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
+        var preferences = ChromeSharedPreferences.getInstance();
         if (preferences.readBoolean(ChromePreferenceKeys.LOCALE_MANAGER_PROMO_SHOWN, false)) {
             return SearchEnginePromoType.DONT_SHOW;
         }
@@ -322,7 +322,7 @@ public class LocaleManagerDelegate {
             @SearchEnginePromoType int type, List<String> keywords, String keyword) {
         TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
                 .setSearchEngine(keyword);
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE,
                 SearchEnginePromoState.CHECKED_AND_SHOWN);
         mSearchEnginePromoCompleted = true;
@@ -357,7 +357,7 @@ public class LocaleManagerDelegate {
     /** @see LocaleManager#needToCheckForSearchEnginePromo */
     public boolean needToCheckForSearchEnginePromo() {
         @SearchEnginePromoState
-        int state = SharedPreferencesManager.getInstance().readInt(
+        int state = ChromeSharedPreferences.getInstance().readInt(
                 ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE,
                 SearchEnginePromoState.SHOULD_CHECK);
         return !mSearchEnginePromoCheckedThisSession

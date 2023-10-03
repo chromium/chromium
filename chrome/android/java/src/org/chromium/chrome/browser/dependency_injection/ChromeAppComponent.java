@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.dependency_injection;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.AppHooksModule;
 import org.chromium.chrome.browser.browserservices.ClearDataDialogResultRecorder;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
@@ -14,7 +15,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabsClientFileProcessor;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import javax.inject.Singleton;
@@ -34,7 +34,7 @@ public interface ChromeAppComponent {
             BaseCustomTabActivityModule baseCustomTabActivityModule);
 
     CustomTabsConnection resolveCustomTabsConnection();
-    SharedPreferencesManager resolveSharedPreferencesManager();
+    SharedPreferencesManager resolveChromeSharedPreferences();
     ClearDataDialogResultRecorder resolveClearDataDialogResultRecorder();
     InstalledWebappPermissionManager resolvePermissionManager();
     PermissionUpdater resolvePermissionUpdater();

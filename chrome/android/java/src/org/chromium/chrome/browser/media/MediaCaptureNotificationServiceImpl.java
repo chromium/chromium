@@ -13,6 +13,7 @@ import android.util.SparseIntArray;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
@@ -20,7 +21,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.MediaCaptureOverlayController;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -63,7 +64,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     public void onCreate() {
         mNotificationManager =
                 new NotificationManagerProxyImpl(ContextUtils.getApplicationContext());
-        mSharedPreferences = SharedPreferencesManager.getInstance();
+        mSharedPreferences = ChromeSharedPreferences.getInstance();
         super.onCreate();
     }
 
@@ -282,7 +283,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     private static boolean shouldStartService(
             Context context, @MediaType int mediaType, int tabId) {
         if (mediaType != MediaType.NO_MEDIA) return true;
-        SharedPreferencesManager sharedPreferences = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
         Set<String> notificationIds = sharedPreferences.readStringSet(
                 ChromePreferenceKeys.MEDIA_WEBRTC_NOTIFICATION_IDS, null);
         if (notificationIds != null && !notificationIds.isEmpty()
@@ -320,7 +321,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
      * Clear any previous media notifications.
      */
     public static void clearMediaNotifications() {
-        SharedPreferencesManager sharedPreferences = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
         Set<String> notificationIds = sharedPreferences.readStringSet(
                 ChromePreferenceKeys.MEDIA_WEBRTC_NOTIFICATION_IDS, null);
         if (notificationIds == null || notificationIds.isEmpty()) return;

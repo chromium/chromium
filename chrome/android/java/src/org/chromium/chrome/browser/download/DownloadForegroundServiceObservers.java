@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -56,7 +56,7 @@ public final class DownloadForegroundServiceObservers {
         observers = new HashSet<>(observers);
         observers.add(observerClassName);
 
-        SharedPreferencesManager.getInstance().writeStringSet(
+        ChromeSharedPreferences.getInstance().writeStringSet(
                 ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS, observers);
     }
 
@@ -81,7 +81,7 @@ public final class DownloadForegroundServiceObservers {
             return;
         }
 
-        SharedPreferencesManager.getInstance().writeStringSet(
+        ChromeSharedPreferences.getInstance().writeStringSet(
                 ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS, observers);
     }
 
@@ -105,12 +105,12 @@ public final class DownloadForegroundServiceObservers {
     }
 
     private static Set<String> getAllObservers() {
-        return SharedPreferencesManager.getInstance().readStringSet(
+        return ChromeSharedPreferences.getInstance().readStringSet(
                 ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS);
     }
 
     private static void removeAllObservers() {
-        SharedPreferencesManager.getInstance().removeKey(
+        ChromeSharedPreferences.getInstance().removeKey(
                 ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS);
     }
 

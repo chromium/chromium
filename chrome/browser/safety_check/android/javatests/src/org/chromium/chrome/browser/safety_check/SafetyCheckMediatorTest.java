@@ -41,6 +41,7 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
@@ -54,8 +55,8 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSuppor
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge.PasswordStoreObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckMediator.SafetyCheckInteractions;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
@@ -469,7 +470,7 @@ public class SafetyCheckMediatorTest {
     @Test
     public void testNullStateLessThan10MinsPasswordsSafeState() {
         // Ran just now.
-        SharedPreferencesManager preferenceManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager preferenceManager = ChromeSharedPreferences.getInstance();
         preferenceManager.writeLong(ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 System.currentTimeMillis());
         // Safe Browsing: on.
@@ -498,7 +499,7 @@ public class SafetyCheckMediatorTest {
     @Test
     public void testNullStateLessThan10MinsNoSavedPasswords() {
         // Ran just now.
-        SharedPreferencesManager preferenceManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager preferenceManager = ChromeSharedPreferences.getInstance();
         preferenceManager.writeLong(ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 System.currentTimeMillis());
         // Safe Browsing: disabled by admin.
@@ -527,7 +528,7 @@ public class SafetyCheckMediatorTest {
     @Test
     public void testNullStateLessThan10MinsPasswordsUnsafeState() {
         // Ran just now.
-        SharedPreferencesManager preferenceManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager preferenceManager = ChromeSharedPreferences.getInstance();
         preferenceManager.writeLong(ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 System.currentTimeMillis());
         // Safe Browsing: off.
@@ -556,7 +557,7 @@ public class SafetyCheckMediatorTest {
     @Test
     public void testNullStateMoreThan10MinsPasswordsSafeState() {
         // Ran 20 mins ago.
-        SharedPreferencesManager preferenceManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager preferenceManager = ChromeSharedPreferences.getInstance();
         preferenceManager.writeLong(ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 System.currentTimeMillis() - (20 * 60 * 1000));
         // Safe Browsing: on.
@@ -585,7 +586,7 @@ public class SafetyCheckMediatorTest {
     @Test
     public void testNullStateMoreThan10MinsPasswordsUnsafeState() {
         // Ran 20 mins ago.
-        SharedPreferencesManager preferenceManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager preferenceManager = ChromeSharedPreferences.getInstance();
         preferenceManager.writeLong(ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 System.currentTimeMillis() - (20 * 60 * 1000));
         // Safe Browsing: off.

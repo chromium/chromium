@@ -16,7 +16,7 @@ import androidx.annotation.StringRes;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.LensUtils;
@@ -246,7 +246,7 @@ class ChromeContextMenuItem {
         String menuTitle = context.getString(getStringId(context, item));
         if (!showNewLabel
                 || (prefKey != null
-                        && SharedPreferencesManager.getInstance().readBoolean(prefKey, false))) {
+                        && ChromeSharedPreferences.getInstance().readBoolean(prefKey, false))) {
             return SpanApplier.removeSpanText(menuTitle, new SpanInfo("<new>", "</new>"));
         }
         return SpanApplier.applySpans(menuTitle,

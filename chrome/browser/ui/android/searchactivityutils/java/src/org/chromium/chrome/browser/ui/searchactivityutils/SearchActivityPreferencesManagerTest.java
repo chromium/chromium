@@ -29,11 +29,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
@@ -259,7 +260,7 @@ public class SearchActivityPreferencesManagerTest {
     @SmallTest
     @UiThreadTest
     public void managerTest_preferencesRetentionTest() {
-        final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+        final SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
 
         // Make sure we don't have anything on disk.
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME));

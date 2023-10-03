@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -29,7 +30,7 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.webapps.WebappCustomTabTimeSpentLogger;
 
 import java.lang.annotation.Retention;
@@ -136,7 +137,7 @@ public class CustomTabActivityLifecycleUmaTracker
                 RecordUserAction.record("CustomTabs.StartedReopened");
             }
         } else {
-            SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
+            SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
             String lastUrl =
                     preferences.readString(ChromePreferenceKeys.CUSTOM_TABS_LAST_URL, null);
             String urlToLoad = mIntentDataProvider.getUrlToLoad();
@@ -198,7 +199,7 @@ public class CustomTabActivityLifecycleUmaTracker
      * @param clientPackage Package name get from CCT service
      * @param referrer Referrer of the CCT activity.
      * @param taskId The task Id of CCT activity.
-     * @param preferences Instance from {@link SharedPreferencesManager#getInstance()}.
+     * @param preferences Instance from {@link ChromeSharedPreferences#getInstance()}.
      */
     @VisibleForTesting
     static void recordForRetainableSessions(String clientPackage, String referrer, int taskId,
@@ -260,7 +261,7 @@ public class CustomTabActivityLifecycleUmaTracker
      * will be compared back to as the previous session in the next potentially restorable
      * Custom Tab activity.
      *
-     * @param preferences Instance from {@link SharedPreferencesManager#getInstance()}.
+     * @param preferences Instance from {@link ChromeSharedPreferences#getInstance()}.
      * @param clientPackage Package name from CCT service.
      * @param referrer Referrer of the CCT activity.
      * @param taskId The task Id of CCT activity.

@@ -9,8 +9,8 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SYNC_
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TimeUtils;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.prefs.PrefService;
 
 import java.util.concurrent.TimeUnit;
@@ -29,8 +29,8 @@ public class SyncErrorMessageImpressionTracker {
             TimeUnit.MILLISECONDS.convert(30, TimeUnit.MINUTES);
 
     public static boolean canShowNow(PrefService prefService) {
-        long lastShownTime = SharedPreferencesManager.getInstance().readLong(
-                SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, 0);
+        long lastShownTime =
+                ChromeSharedPreferences.getInstance().readLong(SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, 0);
 
         // Since the password manager error and the sync error can be related,
         // the sync error should be shown only if at least MINIMAL_DURATION_TO_PWM_ERROR_UI_MS
@@ -44,11 +44,11 @@ public class SyncErrorMessageImpressionTracker {
     }
 
     public static void updateLastShownTime() {
-        SharedPreferencesManager.getInstance().writeLong(
+        ChromeSharedPreferences.getInstance().writeLong(
                 SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, TimeUtils.currentTimeMillis());
     }
 
     public static void resetLastShownTime() {
-        SharedPreferencesManager.getInstance().removeKey(SYNC_ERROR_MESSAGE_SHOWN_AT_TIME);
+        ChromeSharedPreferences.getInstance().removeKey(SYNC_ERROR_MESSAGE_SHOWN_AT_TIME);
     }
 }

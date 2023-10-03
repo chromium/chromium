@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -442,7 +442,7 @@ public class TabSwitcherCoordinator
                     mIncognitoReauthPromoMessageService = new IncognitoReauthPromoMessageService(
                             MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
                             Profile.getLastUsedRegularProfile(), mActivity,
-                            SharedPreferencesManager.getInstance(), mIncognitoReauthManager,
+                            ChromeSharedPreferences.getInstance(), mIncognitoReauthManager,
                             mSnackbarManager,
                             ()
                                     -> TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivity),

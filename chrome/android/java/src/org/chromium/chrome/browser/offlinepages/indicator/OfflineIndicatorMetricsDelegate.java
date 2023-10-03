@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.offlinepages.indicator;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
  * Tracks metrics about how long the Offline Indicator is shown. All state related to the metrics
@@ -70,7 +71,7 @@ public class OfflineIndicatorMetricsDelegate {
     private int mNumTimesBackgrounded;
 
     public OfflineIndicatorMetricsDelegate() {
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
 
         // Read stored state from Prefs
         if (sharedPreferencesManager.contains(
@@ -137,7 +138,7 @@ public class OfflineIndicatorMetricsDelegate {
     public void onIndicatorShown() {
         if (mIsTrackingShownDuration) return;
 
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
 
         long currentTimeMs = sClock.currentTimeMillis();
 
@@ -199,7 +200,7 @@ public class OfflineIndicatorMetricsDelegate {
 
             // Updates state based on the foreground to background transition.
             SharedPreferencesManager sharedPreferencesManager =
-                    SharedPreferencesManager.getInstance();
+                    ChromeSharedPreferences.getInstance();
             if (!sharedPreferencesManager.contains(
                         ChromePreferenceKeys.OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS)) {
                 mFirstTimeInForegroundMs = mTimeInForegroundMs;
@@ -221,7 +222,7 @@ public class OfflineIndicatorMetricsDelegate {
      * |mLastUpdateWallTimeMs| until now. Metrics are persisted to prefs when updated.
      */
     private void updateForegroundPeriod() {
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
 
         long currentTimeMs = sClock.currentTimeMillis();
         long timeSinceLastUpdateMs = currentTimeMs - mLastUpdateWallTimeMs;
@@ -242,7 +243,7 @@ public class OfflineIndicatorMetricsDelegate {
      * |mLastUpdateWallTimeMs| until now. Metrics are persisted to prefs when updated.
      */
     private void updateBackgroundPeriod() {
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
 
         long currentTimeMs = sClock.currentTimeMillis();
         long timeSinceLastUpdateMs = currentTimeMs - mLastUpdateWallTimeMs;
@@ -253,7 +254,7 @@ public class OfflineIndicatorMetricsDelegate {
                 mTimeInBackgroundMs);
 
         mLastUpdateWallTimeMs = currentTimeMs;
-        SharedPreferencesManager.getInstance().writeLong(
+        ChromeSharedPreferences.getInstance().writeLong(
                 ChromePreferenceKeys.OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS,
                 mLastUpdateWallTimeMs);
     }
@@ -266,7 +267,7 @@ public class OfflineIndicatorMetricsDelegate {
         RecordHistogram.recordLongTimesHistogram100(
                 OFFLINE_INDICATOR_SHOWN_DURATION_V2, mTimeInForegroundMs + mTimeInBackgroundMs);
 
-        if (!SharedPreferencesManager.getInstance().contains(
+        if (!ChromeSharedPreferences.getInstance().contains(
                     ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS)) {
             assert mNumTimesBackgrounded == 0;
         }
@@ -285,7 +286,7 @@ public class OfflineIndicatorMetricsDelegate {
         mNumTimesBackgrounded = 0;
         mIsTrackingShownDuration = false;
 
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         sharedPreferencesManager.removeKey(
                 ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS);
         sharedPreferencesManager.removeKey(

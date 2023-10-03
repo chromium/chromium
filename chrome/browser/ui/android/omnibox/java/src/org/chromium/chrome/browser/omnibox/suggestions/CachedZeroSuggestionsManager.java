@@ -25,9 +25,10 @@ import androidx.collection.ArraySet;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
@@ -50,7 +51,7 @@ public class CachedZeroSuggestionsManager {
      * Save the content of the CachedZeroSuggestionsManager to SharedPreferences cache.
      */
     public static void saveToCache(AutocompleteResult resultToCache) {
-        final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+        final SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
         cacheSuggestionList(manager, resultToCache.getSuggestionsList());
         cacheGroupsDetails(manager, resultToCache.getGroupsInfo());
     }
@@ -60,7 +61,7 @@ public class CachedZeroSuggestionsManager {
      * @return AutocompleteResult populated with the content of the SharedPreferences cache.
      */
     static AutocompleteResult readFromCache() {
-        final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+        final SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
         List<AutocompleteMatch> suggestions =
                 CachedZeroSuggestionsManager.readCachedSuggestionList(manager);
         GroupsInfo groupsDetails = CachedZeroSuggestionsManager.readCachedGroupsDetails(manager);

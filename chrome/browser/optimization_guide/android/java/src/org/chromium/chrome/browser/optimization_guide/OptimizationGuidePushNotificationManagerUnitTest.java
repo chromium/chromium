@@ -32,7 +32,7 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -379,7 +379,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         int startTotalCount = RecordHistogram.getHistogramTotalCountForTesting(
                 "OptimizationGuide.PushNotifications.ReadCacheResult");
 
-        SharedPreferencesManager.getInstance().writeStringSet(
+        ChromeSharedPreferences.getInstance().writeStringSet(
                 OptimizationGuidePushNotificationManager.cacheKey(
                         OptimizationType.PERFORMANCE_HINTS),
                 new HashSet<String>(Arrays.asList(
@@ -410,7 +410,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         int startTotalCount = RecordHistogram.getHistogramTotalCountForTesting(
                 "OptimizationGuide.PushNotifications.ReadCacheResult");
 
-        SharedPreferencesManager.getInstance().writeStringSet(
+        ChromeSharedPreferences.getInstance().writeStringSet(
                 OptimizationGuidePushNotificationManager.cacheKey(
                         OptimizationType.PERFORMANCE_HINTS),
                 new HashSet<String>(Arrays.asList("=")));

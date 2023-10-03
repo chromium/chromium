@@ -19,7 +19,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.version_info.VersionInfo;
 
 import java.lang.annotation.Retention;
@@ -121,7 +121,7 @@ public class CachedFlagsSafeMode {
             return;
         }
 
-        SharedPreferencesManager.getInstance().incrementInt(
+        ChromeSharedPreferences.getInstance().incrementInt(
                 ChromePreferenceKeys.FLAGS_CRASH_STREAK_BEFORE_CACHE);
         RecordHistogram.recordEnumeratedHistogram(
                 "Variations.SafeModeCachedFlags.WillCache", mBehavior.get(), Behavior.NUM_ENTRIES);
@@ -147,13 +147,13 @@ public class CachedFlagsSafeMode {
     }
 
     private void decreaseCrashStreak(int decrement) {
-        int currentStreak = SharedPreferencesManager.getInstance().readInt(
+        int currentStreak = ChromeSharedPreferences.getInstance().readInt(
                 ChromePreferenceKeys.FLAGS_CRASH_STREAK_BEFORE_CACHE);
         assert currentStreak >= 0;
 
         int newStreak = currentStreak - decrement;
         if (newStreak < 0) newStreak = 0;
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.FLAGS_CRASH_STREAK_BEFORE_CACHE, newStreak);
     }
 
@@ -168,7 +168,7 @@ public class CachedFlagsSafeMode {
         }
 
         if (isInSafeMode()) {
-            SharedPreferencesManager.getInstance().writeInt(
+            ChromeSharedPreferences.getInstance().writeInt(
                     ChromePreferenceKeys.FLAGS_CRASH_STREAK_BEFORE_CACHE,
                     CRASH_STREAK_TO_ENTER_SAFE_MODE - 1);
         } else {
@@ -209,19 +209,19 @@ public class CachedFlagsSafeMode {
             return false;
         }
 
-        int safeModeRunsLeft = SharedPreferencesManager.getInstance().readInt(
+        int safeModeRunsLeft = ChromeSharedPreferences.getInstance().readInt(
                 ChromePreferenceKeys.FLAGS_SAFE_MODE_RUNS_LEFT, 0);
         assert safeModeRunsLeft <= 2;
 
         if (safeModeRunsLeft > 0) {
-            SharedPreferencesManager.getInstance().writeInt(
+            ChromeSharedPreferences.getInstance().writeInt(
                     ChromePreferenceKeys.FLAGS_SAFE_MODE_RUNS_LEFT, safeModeRunsLeft - 1);
 
             Log.e(TAG, "Enter Safe Mode for CachedFlags, %d runs left.", safeModeRunsLeft);
             return true;
         }
 
-        int crashStreak = SharedPreferencesManager.getInstance().readInt(
+        int crashStreak = ChromeSharedPreferences.getInstance().readInt(
                 ChromePreferenceKeys.FLAGS_CRASH_STREAK_BEFORE_CACHE, 0);
         RecordHistogram.recordExactLinearHistogram(
                 "Variations.SafeModeCachedFlags.Streak.Crashes", crashStreak, 50);
@@ -229,7 +229,7 @@ public class CachedFlagsSafeMode {
         if (crashStreak >= CRASH_STREAK_TO_ENTER_SAFE_MODE) {
             // Run safe mode twice. This run will enter Safe Mode by returning true here. The next
             // run will enter Safe Mode by looking at the FLAGS_SAFE_MODE_RUNS_LEFT SharedPref.
-            SharedPreferencesManager.getInstance().writeInt(
+            ChromeSharedPreferences.getInstance().writeInt(
                     ChromePreferenceKeys.FLAGS_SAFE_MODE_RUNS_LEFT, 1);
 
             Log.e(TAG, "Enter Safe Mode for CachedFlags, crash streak is %d.", crashStreak);

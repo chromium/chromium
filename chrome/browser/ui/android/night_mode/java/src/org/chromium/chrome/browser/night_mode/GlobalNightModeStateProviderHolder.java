@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
  * Holds an instance of {@link NightModeStateProvider} that provides night mode state for the entire
@@ -61,7 +61,7 @@ public class GlobalNightModeStateProviderHolder {
             } else {
                 sInstance = new GlobalNightModeStateController(SystemNightModeMonitor.getInstance(),
                         PowerSavingModeMonitor.getInstance(),
-                        SharedPreferencesManager.getInstance());
+                        ChromeSharedPreferences.getInstance());
             }
             // Do not cache the singleton between tests since the creation logic depends on flags.
             ResettersForTesting.register(() -> sInstance = null);

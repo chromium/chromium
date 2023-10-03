@@ -5,13 +5,15 @@
 package org.chromium.chrome.browser.password_manager;
 
 import android.app.Activity;
+
 import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.TimeUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.prefs.PrefService;
@@ -56,7 +58,7 @@ public class PasswordManagerErrorMessageHelperBridge {
         PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
         long lastShownTimestamp =
                 Long.valueOf(prefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP));
-        long lastShownSyncErrorTimestamp = SharedPreferencesManager.getInstance().readLong(
+        long lastShownSyncErrorTimestamp = ChromeSharedPreferences.getInstance().readLong(
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, 0);
         long currentTime = TimeUtils.currentTimeMillis();
         return (currentTime - lastShownTimestamp > MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS)

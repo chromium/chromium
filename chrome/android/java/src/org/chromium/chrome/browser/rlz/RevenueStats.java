@@ -9,7 +9,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
@@ -41,7 +41,7 @@ public class RevenueStats {
      * Returns whether the RLZ provider has been notified that the first search has occurred.
      */
     protected static boolean getRlzNotified() {
-        return SharedPreferencesManager.getInstance().readBoolean(
+        return ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.RLZ_NOTIFIED, false);
     }
 
@@ -49,8 +49,7 @@ public class RevenueStats {
      * Stores that the RLZ provider has been notified that the first search has occurred.
      */
     protected static void markRlzNotified() {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.RLZ_NOTIFIED, true);
+        ChromeSharedPreferences.getInstance().writeBoolean(ChromePreferenceKeys.RLZ_NOTIFIED, true);
     }
 
     /**

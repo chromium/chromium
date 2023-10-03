@@ -32,12 +32,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -103,7 +104,7 @@ public class MissingDeviceLockLauncherTest {
         mProfile = Mockito.mock(Profile.class);
         mCoreAccountInfo = Mockito.mock(CoreAccountInfo.class);
 
-        mSharedPreferencesManager = SharedPreferencesManager.getInstance();
+        mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
         mSharedPreferencesManager.removeKey(ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         PersonalDataManager.setInstanceForTesting(mPersonalDataManager);

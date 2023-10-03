@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
  * The view for the entire search resumption layout, including a header, an option button to
@@ -36,7 +36,7 @@ public class SearchResumptionModuleView extends LinearLayout {
         mTileContainerView = findViewById(R.id.search_resumption_module_tiles_container);
         mOptionView = findViewById(R.id.header_option);
         configureExpandedCollapsed(
-                !SharedPreferencesManager.getInstance().readBoolean(
+                !ChromeSharedPreferences.getInstance().readBoolean(
                         ChromePreferenceKeys.SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP,
                         false) /* shouldExpand */,
                 true /* isFirstSetup */);

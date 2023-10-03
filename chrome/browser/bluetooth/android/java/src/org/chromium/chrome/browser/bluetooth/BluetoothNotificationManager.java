@@ -12,11 +12,12 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -65,7 +66,7 @@ public class BluetoothNotificationManager {
             BluetoothNotificationManagerDelegate delegate) {
         mDelegate = delegate;
         mNotificationManager = notificationManager;
-        mSharedPreferences = SharedPreferencesManager.getInstance();
+        mSharedPreferences = ChromeSharedPreferences.getInstance();
     }
 
     /**
@@ -261,7 +262,7 @@ public class BluetoothNotificationManager {
             return false;
         }
         if (bluetoothType != BluetoothType.NO_BLUETOOTH) return true;
-        SharedPreferencesManager sharedPreferences = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
         Set<String> notificationIds = sharedPreferences.readStringSet(
                 ChromePreferenceKeys.BLUETOOTH_NOTIFICATION_IDS, null);
         if (notificationIds == null || notificationIds.isEmpty()) return false;
@@ -303,7 +304,7 @@ public class BluetoothNotificationManager {
                     ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND)) {
             return;
         }
-        SharedPreferencesManager sharedPreferences = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
         Set<String> notificationIds = sharedPreferences.readStringSet(
                 ChromePreferenceKeys.BLUETOOTH_NOTIFICATION_IDS, null);
         if (notificationIds == null || notificationIds.isEmpty()) return;

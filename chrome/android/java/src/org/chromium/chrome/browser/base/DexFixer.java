@@ -19,13 +19,14 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.version_info.VersionInfo;
 
 import java.io.File;
@@ -135,7 +136,7 @@ public class DexFixer {
             // bg-dexopt-job runs it will break the optimized dex for splits. If we force compile
             // now, then bg-dexopt-job won't mess up the splits, and we save the user a slow
             // startup.
-            SharedPreferencesManager prefManager = SharedPreferencesManager.getInstance();
+            SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
             long versionCode = BuildInfo.getInstance().versionCode;
             // The default value is always lesser than any non-negative versionCode. This prevents
             // some tests from failing when application's versionCode is stuck at 0.

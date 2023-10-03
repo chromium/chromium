@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersDelegate;
 import org.chromium.chrome.browser.history_clusters.QueryState;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -302,7 +302,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         mSelectionDelegate.addObserver(this);
 
         // 2. Create HistoryContentManager and initialize recycler view.
-        boolean shouldShowInfoHeader = SharedPreferencesManager.getInstance().readBoolean(
+        boolean shouldShowInfoHeader = ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO, true);
         mContentManager = new HistoryContentManager(mActivity, this, isSeparateActivity, profile,
                 shouldShowInfoHeader, /* shouldShowClearData */ true,
@@ -557,7 +557,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     private void toggleInfoHeaderVisibility() {
         boolean shouldShowInfoHeader =
                 !mContentManager.getShouldShowPrivacyDisclaimersIfAvailable();
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO, shouldShowInfoHeader);
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeader);
         mContentManager.updatePrivacyDisclaimers(shouldShowInfoHeader);

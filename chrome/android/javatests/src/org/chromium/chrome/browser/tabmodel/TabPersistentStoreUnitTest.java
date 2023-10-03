@@ -37,7 +37,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -389,10 +389,10 @@ public class TabPersistentStoreUnitTest {
                 metadata.incognitoModelMetadata.urls.get(1));
 
         Assert.assertEquals("Incorrect number of cached normal tab count.", 2,
-                SharedPreferencesManager.getInstance().readInt(
+                ChromeSharedPreferences.getInstance().readInt(
                         ChromePreferenceKeys.REGULAR_TAB_COUNT));
         Assert.assertEquals("Incorrect number of cached incognito tab count.", 2,
-                SharedPreferencesManager.getInstance().readInt(
+                ChromeSharedPreferences.getInstance().readInt(
                         ChromePreferenceKeys.INCOGNITO_TAB_COUNT));
     }
 
@@ -414,7 +414,7 @@ public class TabPersistentStoreUnitTest {
                 metadata.normalModelMetadata.urls.get(1));
 
         Assert.assertEquals("Incorrect number of cached normal tab count.", 2,
-                SharedPreferencesManager.getInstance().readInt(
+                ChromeSharedPreferences.getInstance().readInt(
                         ChromePreferenceKeys.REGULAR_TAB_COUNT));
     }
 
@@ -434,7 +434,7 @@ public class TabPersistentStoreUnitTest {
                 metadata.normalModelMetadata.urls.get(0));
 
         Assert.assertEquals("Incorrect number of cached normal tab count.", 1,
-                SharedPreferencesManager.getInstance().readInt(
+                ChromeSharedPreferences.getInstance().readInt(
                         ChromePreferenceKeys.REGULAR_TAB_COUNT));
     }
 
@@ -454,7 +454,7 @@ public class TabPersistentStoreUnitTest {
                 metadata.normalModelMetadata.urls.get(0));
 
         Assert.assertEquals("Incorrect number of cached normal tab count.", 1,
-                SharedPreferencesManager.getInstance().readInt(
+                ChromeSharedPreferences.getInstance().readInt(
                         ChromePreferenceKeys.REGULAR_TAB_COUNT));
     }
 

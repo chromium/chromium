@@ -8,7 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -53,7 +53,7 @@ public class OfflineContentAvailabilityStatusProvider implements OfflineContentP
      * @return Whether or not there is any suggested offline content available in Chrome.
      */
     public boolean isSuggestedContentAvailable() {
-        return SharedPreferencesManager.getInstance().readBoolean(
+        return ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS, false);
     }
 
@@ -62,7 +62,7 @@ public class OfflineContentAvailabilityStatusProvider implements OfflineContentP
      *         available in Chrome.
      */
     public boolean isPersistentContentAvailable() {
-        return SharedPreferencesManager.getInstance().readBoolean(
+        return ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS, false);
     }
 
@@ -90,10 +90,10 @@ public class OfflineContentAvailabilityStatusProvider implements OfflineContentP
     public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {}
 
     private void updateSharedPrefs() {
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 !mSuggestedItems.isEmpty());
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 !mPersistentItems.isEmpty());
     }

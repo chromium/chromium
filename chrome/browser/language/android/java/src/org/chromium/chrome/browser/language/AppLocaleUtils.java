@@ -17,7 +17,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.language.LocaleManagerDelegate;
 import org.chromium.components.language.LocaleManagerDelegateImpl;
 import org.chromium.ui.base.ResourceBundle;
@@ -66,14 +66,14 @@ public class AppLocaleUtils {
         if (shouldUseSystemManagedLocale()) {
             return getSystemManagedAppLanguage();
         }
-        return SharedPreferencesManager.getInstance().readString(
+        return ChromeSharedPreferences.getInstance().readString(
                 ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, APP_LOCALE_USE_SYSTEM_LANGUAGE);
     }
 
     /**
      * Get the value of application language shared preference or null if there is none.
      * Used during {@link ChromeApplication#attachBaseContext} before
-     * {@link SharedPreferencesManager} is created.
+     * {@link ChromeSharedPreferences} is created.
      * @param base Context to use for getting the shared preference.
      * @return String BCP-47 language tag (e.g. en-US).
      */
@@ -142,7 +142,7 @@ public class AppLocaleUtils {
                 if (shouldUseSystemManagedLocale()) {
                     setSystemManagedAppLanguage(languageName);
                 } else {
-                    SharedPreferencesManager.getInstance().writeString(
+                    ChromeSharedPreferences.getInstance().writeString(
                             ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, languageName);
                 }
             }
@@ -191,7 +191,7 @@ public class AppLocaleUtils {
         // Since null is saved in the SharedPreference if following the system language, a custom
         // token is used for when the preference is not present.
         String unsetToken = "__UNSET__";
-        String sharedPrefAppLanguage = SharedPreferencesManager.getInstance().readString(
+        String sharedPrefAppLanguage = ChromeSharedPreferences.getInstance().readString(
                 ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, unsetToken);
         if (TextUtils.equals(sharedPrefAppLanguage, unsetToken)) return;
 
@@ -210,7 +210,7 @@ public class AppLocaleUtils {
     }
 
     private static void removeSharedPrefAppLanguage() {
-        SharedPreferencesManager.getInstance().removeKey(
+        ChromeSharedPreferences.getInstance().removeKey(
                 ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE);
     }
 

@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.VersionNumber;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -123,18 +123,18 @@ public final class SearchEngineChoiceNotification {
 
     private static void updateSearchEngineChoiceRequested() {
         long now = System.currentTimeMillis();
-        SharedPreferencesManager.getInstance().writeLong(
+        ChromeSharedPreferences.getInstance().writeLong(
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_REQUESTED_TIMESTAMP, now);
     }
 
     private static boolean wasSearchEngineChoiceRequested() {
-        return SharedPreferencesManager.getInstance().contains(
+        return ChromeSharedPreferences.getInstance().contains(
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_REQUESTED_TIMESTAMP);
     }
 
     private static void updateSearchEngineChoicePresented() {
         String productVersion = VersionInfo.getProductVersion();
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PRESENTED_VERSION, productVersion);
     }
 
@@ -149,7 +149,7 @@ public final class SearchEngineChoiceNotification {
     }
 
     private static @Nullable VersionNumber getLastPresentedVersionNumber() {
-        return VersionNumber.fromString(SharedPreferencesManager.getInstance().readString(
+        return VersionNumber.fromString(ChromeSharedPreferences.getInstance().readString(
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PRESENTED_VERSION, null));
     }
 

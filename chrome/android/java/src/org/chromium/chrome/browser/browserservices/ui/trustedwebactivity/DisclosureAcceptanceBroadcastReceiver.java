@@ -13,7 +13,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.BrowserServicesStore;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -42,7 +42,7 @@ public class DisclosureAcceptanceBroadcastReceiver extends BroadcastReceiver {
     /** Constructor used by the Android framework. */
     public DisclosureAcceptanceBroadcastReceiver() {
         this(new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()),
-                new BrowserServicesStore(SharedPreferencesManager.getInstance()));
+                new BrowserServicesStore(ChromeSharedPreferences.getInstance()));
     }
 
     /** Constructor that allows dependency injection for use in tests. */

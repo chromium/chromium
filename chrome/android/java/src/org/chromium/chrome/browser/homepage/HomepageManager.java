@@ -14,6 +14,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.common.ChromeUrlConstants;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
@@ -21,7 +22,7 @@ import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.partnercustomizations.HomepageCharacterizationHelper;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -54,7 +55,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
     private SettingsLauncher mSettingsLauncher;
 
     private HomepageManager() {
-        mSharedPreferencesManager = SharedPreferencesManager.getInstance();
+        mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
         mHomepageStateListeners = new ObserverList<>();
         HomepagePolicyManager.getInstance().addListener(this);
         PartnerBrowserCustomizations.getInstance().setPartnerHomepageListener(this);
@@ -173,7 +174,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         }
 
         String homepagePartnerDefaultGurlSerialized =
-                SharedPreferencesManager.getInstance().readString(
+                ChromeSharedPreferences.getInstance().readString(
                         ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
         if (!homepagePartnerDefaultGurlSerialized.equals("")) {
             GURL homepagePartnerDefaultGurl =
@@ -183,7 +184,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
             }
         }
 
-        String homepagePartnerDefaultUri = SharedPreferencesManager.getInstance().readString(
+        String homepagePartnerDefaultUri = ChromeSharedPreferences.getInstance().readString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, "");
         if (!homepagePartnerDefaultUri.equals("")) {
             GURL homepagePartnerDefaultGurl = new GURL(homepagePartnerDefaultUri);

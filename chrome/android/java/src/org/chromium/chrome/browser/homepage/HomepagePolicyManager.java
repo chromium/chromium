@@ -10,12 +10,13 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar.PrefObserver;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -114,7 +115,7 @@ public class HomepagePolicyManager implements PrefObserver {
         mPrefChangeRegistrar = null;
 
         // Update feature flag related setting
-        mSharedPreferenceManager = SharedPreferencesManager.getInstance();
+        mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
 
         String homepageLocationPolicyGurlSerialized = mSharedPreferenceManager.readString(
                 ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, null);

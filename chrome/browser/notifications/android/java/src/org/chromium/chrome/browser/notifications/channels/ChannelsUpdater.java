@@ -9,8 +9,9 @@ import android.os.Build;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
@@ -40,7 +41,7 @@ public class ChannelsUpdater {
                 // AppContext etc when we won't need it. It's ok for these parameters to be null
                 // when mIsAtLeastO is false.
                 INSTANCE = new ChannelsUpdater(true /* isAtLeastO */,
-                        SharedPreferencesManager.getInstance(),
+                        ChromeSharedPreferences.getInstance(),
                         new ChannelsInitializer(new NotificationManagerProxyImpl(
                                                         ContextUtils.getApplicationContext()),
                                 ChromeChannelDefinitions.getInstance(),

@@ -70,7 +70,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
@@ -558,7 +558,7 @@ public class InstantStartTabSwitcherTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
         StartSurfaceTestUtils.pressHome();
-        Assert.assertTrue(SharedPreferencesManager.getInstance().readBoolean(
+        Assert.assertTrue(ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, false));
 
         // Simulates pressing Chrome's icon and launching Chrome from warm start.
@@ -570,7 +570,7 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.launchFirstMVTile(cta, 1);
 
         StartSurfaceTestUtils.pressHome();
-        Assert.assertFalse(SharedPreferencesManager.getInstance().readBoolean(
+        Assert.assertFalse(ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, false));
     }
 
@@ -585,7 +585,7 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
         TabAttributeCache.setTitleForTesting(0, "Google SRP");
         TabAttributeCache.setTitleForTesting(1, "Google Homepage");
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, isSRP);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);

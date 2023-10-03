@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.crash;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.crash.MinidumpUploadServiceImpl.ProcessType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
  * Records number of crashes uploaded in SharedPreferences.
@@ -20,7 +21,7 @@ public class CrashUploadCountStore {
     private final SharedPreferencesManager mManager;
 
     private CrashUploadCountStore() {
-        mManager = SharedPreferencesManager.getInstance();
+        mManager = ChromeSharedPreferences.getInstance();
     }
 
     /**

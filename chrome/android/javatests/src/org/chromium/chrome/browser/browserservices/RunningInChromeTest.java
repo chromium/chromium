@@ -124,7 +124,7 @@ public class RunningInChromeTest {
         mMockNotificationManager.setNotificationsEnabled(false);
 
         mStore = new BrowserServicesStore(
-                ChromeApplicationImpl.getComponent().resolveSharedPreferencesManager());
+                ChromeApplicationImpl.getComponent().resolveChromeSharedPreferences());
         mStore.removeTwaDisclosureAcceptanceForPackage(PACKAGE_NAME);
     }
 

@@ -17,7 +17,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoBridge.LogoObserver;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -271,7 +271,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         boolean doesDseHaveLogo = mProfile != null
                 ? TemplateUrlServiceFactory.getForProfile(mProfile)
                           .doesDefaultSearchEngineHaveLogo()
-                : SharedPreferencesManager.getInstance().readBoolean(
+                : ChromeSharedPreferences.getInstance().readBoolean(
                         APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, true);
         mShouldShowLogo = mIsParentSurfaceShown && doesDseHaveLogo;
         mLogoModel.set(LogoProperties.VISIBILITY, mShouldShowLogo);

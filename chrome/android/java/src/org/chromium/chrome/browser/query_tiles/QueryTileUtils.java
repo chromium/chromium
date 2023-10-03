@@ -14,7 +14,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
@@ -113,7 +113,7 @@ public class QueryTileUtils {
             return true;
         }
 
-        long nextDecisionTimestamp = SharedPreferencesManager.getInstance().readLong(
+        long nextDecisionTimestamp = ChromeSharedPreferences.getInstance().readLong(
                 ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
                 INVALID_DECISION_TIMESTAMP);
 
@@ -126,12 +126,12 @@ public class QueryTileUtils {
         // using code algorithm.
         boolean lastDecisionExpired = noPreviousHistory || nextDecisionTimestampReached;
         if (lastDecisionExpired) {
-            SharedPreferencesManager.getInstance().removeKey(
+            ChromeSharedPreferences.getInstance().removeKey(
                     ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS);
             return getBehaviourResultFromSegmentation(getSegmentationResult(), false);
         }
 
-        return SharedPreferencesManager.getInstance().readBoolean(
+        return ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false);
     }
 
@@ -168,7 +168,7 @@ public class QueryTileUtils {
         @ShowQueryTilesSegmentationResult
         int segmentationResult;
         if (sSegmentationResultsForTesting == -1) {
-            segmentationResult = SharedPreferencesManager.getInstance().readInt(
+            segmentationResult = ChromeSharedPreferences.getInstance().readInt(
                     ChromePreferenceKeys.SEGMENTATION_SHOW_QUERY_TILES,
                     ShowQueryTilesSegmentationResult.DONT_SHOW);
         } else {
@@ -199,7 +199,7 @@ public class QueryTileUtils {
                     } else {
                         segmentationResult = ShowQueryTilesSegmentationResult.DONT_SHOW;
                     }
-                    SharedPreferencesManager.getInstance().writeInt(
+                    ChromeSharedPreferences.getInstance().writeInt(
                             ChromePreferenceKeys.SEGMENTATION_SHOW_QUERY_TILES, segmentationResult);
                 });
     }

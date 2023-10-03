@@ -35,6 +35,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -42,7 +43,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -75,8 +76,8 @@ public final class WebFeedFollowIntroControllerTest {
     private static final GURL sTestUrl = JUnitTestGURLs.EXAMPLE_URL;
     private static final GURL sFaviconUrl = JUnitTestGURLs.RED_1;
     private static final byte[] sWebFeedId = "webFeedId".getBytes();
-    private static final SharedPreferencesManager sSharedPreferencesManager =
-            SharedPreferencesManager.getInstance();
+    private static final SharedPreferencesManager sChromeSharedPreferences =
+            ChromeSharedPreferences.getInstance();
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -194,11 +195,11 @@ public final class WebFeedFollowIntroControllerTest {
                 "Intro should be shown.", mWebFeedFollowIntroController.getIntroShownForTesting());
         assertEquals("WEB_FEED_INTRO_LAST_SHOWN_TIME_MS should be updated.",
                 mClock.currentTimeMillis(),
-                sSharedPreferencesManager.readLong(
+                sChromeSharedPreferences.readLong(
                         ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS));
         assertEquals("WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX should be updated.",
                 mClock.currentTimeMillis(),
-                sSharedPreferencesManager.readLong(
+                sChromeSharedPreferences.readLong(
                         ChromePreferenceKeys.WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX
                                 .createKey(Base64.encodeToString(sWebFeedId, Base64.DEFAULT))));
     }
@@ -240,11 +241,11 @@ public final class WebFeedFollowIntroControllerTest {
                 "Intro should be shown.", mWebFeedFollowIntroController.getIntroShownForTesting());
         assertEquals("WEB_FEED_INTRO_LAST_SHOWN_TIME_MS should be updated.",
                 mClock.currentTimeMillis(),
-                sSharedPreferencesManager.readLong(
+                sChromeSharedPreferences.readLong(
                         ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS));
         assertEquals("WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX should be updated.",
                 mClock.currentTimeMillis(),
-                sSharedPreferencesManager.readLong(
+                sChromeSharedPreferences.readLong(
                         ChromePreferenceKeys.WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX
                                 .createKey(Base64.encodeToString(sWebFeedId, Base64.DEFAULT))));
     }
@@ -513,12 +514,12 @@ public final class WebFeedFollowIntroControllerTest {
     }
 
     private void setWebFeedIntroLastShownTimeMsPref(long webFeedIntroLastShownTimeMs) {
-        sSharedPreferencesManager.writeLong(ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS,
+        sChromeSharedPreferences.writeLong(ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS,
                 webFeedIntroLastShownTimeMs);
     }
 
     private void setWebFeedIntroWebFeedIdShownTimeMsPref(long webFeedIntroWebFeedIdShownTimeMs) {
-        sSharedPreferencesManager.writeLong(
+        sChromeSharedPreferences.writeLong(
                 ChromePreferenceKeys.WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.createKey(
                         Base64.encodeToString(sWebFeedId, Base64.DEFAULT)),
                 webFeedIntroWebFeedIdShownTimeMs);

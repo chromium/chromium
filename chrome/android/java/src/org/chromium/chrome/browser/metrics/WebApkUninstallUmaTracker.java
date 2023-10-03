@@ -5,10 +5,11 @@
 package org.chromium.chrome.browser.metrics;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.webapps.WebApkDistributor;
@@ -22,7 +23,7 @@ import java.util.Set;
 public class WebApkUninstallUmaTracker {
     /** Makes recordings that were deferred in order to not load native. */
     public static void recordDeferredUma() {
-        SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager preferencesManager = ChromeSharedPreferences.getInstance();
         Set<String> uninstalledPackages =
                 preferencesManager.readStringSet(ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES);
         if (uninstalledPackages.isEmpty()) return;
@@ -54,7 +55,7 @@ public class WebApkUninstallUmaTracker {
 
     /** Sets WebAPK uninstall to be recorded next time that native is loaded. */
     public static void deferRecordWebApkUninstalled(String packageName) {
-        SharedPreferencesManager.getInstance().addToStringSet(
+        ChromeSharedPreferences.getInstance().addToStringSet(
                 ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES, packageName);
         String webApkId = WebappIntentUtils.getIdForWebApkPackage(packageName);
         WebappRegistry.warmUpSharedPrefsForId(webApkId);

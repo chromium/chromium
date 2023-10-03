@@ -15,9 +15,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Tests for the TabIdManager. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -40,7 +41,7 @@ public class TabIdManagerTest {
     /** Tests that IDs are stored and generated properly. */
     @Test
     public void testBasic() {
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.writeInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID, 11684);
 
         TabIdManager manager = TabIdManager.getInstance(mContext);
@@ -54,7 +55,7 @@ public class TabIdManagerTest {
     /** Tests that the max ID is updated properly. */
     @Test
     public void testIncrementIdCounterTo() {
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.writeInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID, 11684);
 
         TabIdManager manager = TabIdManager.getInstance(mContext);

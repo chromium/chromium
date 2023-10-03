@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.payments;
 
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Place to define and control payment preferences. */
 public class PaymentPreferencesUtil {
@@ -18,13 +18,13 @@ public class PaymentPreferencesUtil {
      * @return True If payment request has been successfully completed once.
      */
     public static boolean isPaymentCompleteOnce() {
-        return SharedPreferencesManager.getInstance().readBoolean(
+        return ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.PAYMENTS_PAYMENT_COMPLETE_ONCE, false);
     }
 
     /** Sets the payment request has been successfully completed once. */
     public static void setPaymentCompleteOnce() {
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.PAYMENTS_PAYMENT_COMPLETE_ONCE, true);
     }
 
@@ -35,7 +35,7 @@ public class PaymentPreferencesUtil {
      * @return The use count.
      */
     public static int getPaymentAppUseCount(String id) {
-        return SharedPreferencesManager.getInstance().readInt(
+        return ChromeSharedPreferences.getInstance().readInt(
                 ChromePreferenceKeys.PAYMENTS_PAYMENT_INSTRUMENT_USE_COUNT.createKey(id));
     }
 
@@ -45,7 +45,7 @@ public class PaymentPreferencesUtil {
      * @param id The app identifier.
      */
     public static void increasePaymentAppUseCount(String id) {
-        SharedPreferencesManager.getInstance().incrementInt(
+        ChromeSharedPreferences.getInstance().incrementInt(
                 ChromePreferenceKeys.PAYMENTS_PAYMENT_INSTRUMENT_USE_COUNT.createKey(id));
     }
 
@@ -56,7 +56,7 @@ public class PaymentPreferencesUtil {
      * @param count The count value.
      */
     public static void setPaymentAppUseCountForTest(String id, int count) {
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.PAYMENTS_PAYMENT_INSTRUMENT_USE_COUNT.createKey(id), count);
     }
 
@@ -68,7 +68,7 @@ public class PaymentPreferencesUtil {
      *         milliseconds.
      */
     public static long getPaymentAppLastUseDate(String id) {
-        return SharedPreferencesManager.getInstance().readLong(
+        return ChromeSharedPreferences.getInstance().readLong(
                 ChromePreferenceKeys.PAYMENTS_PAYMENT_INSTRUMENT_USE_DATE.createKey(id));
     }
 
@@ -80,7 +80,7 @@ public class PaymentPreferencesUtil {
      *             in milliseconds.
      */
     public static void setPaymentAppLastUseDate(String id, long date) {
-        SharedPreferencesManager.getInstance().writeLong(
+        ChromeSharedPreferences.getInstance().writeLong(
                 ChromePreferenceKeys.PAYMENTS_PAYMENT_INSTRUMENT_USE_DATE.createKey(id), date);
     }
 }

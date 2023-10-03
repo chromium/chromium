@@ -10,9 +10,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Unit tests for {@link OfflineMeasurementsBackgroundTask}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -21,7 +22,7 @@ public final class OfflineMeasurementsBackgroundTaskUnitTest {
     @Test
     public void cancelTaskAndclearPersistedDataFromPrefs() {
         // Simulates the task writing data to prefs.
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         sharedPreferencesManager.writeString(
                 ChromePreferenceKeys.OFFLINE_MEASUREMENTS_LAST_CHECK_MILLIS, "test data");
         sharedPreferencesManager.writeString(

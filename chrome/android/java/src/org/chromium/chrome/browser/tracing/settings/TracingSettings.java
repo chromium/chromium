@@ -14,7 +14,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tracing.TracingController;
 import org.chromium.chrome.browser.tracing.TracingNotificationManager;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -99,7 +99,7 @@ public class TracingSettings
      * @return the current set of all enabled categories, irrespective of their type.
      */
     public static Set<String> getEnabledCategories() {
-        Set<String> enabled = SharedPreferencesManager.getInstance().readStringSet(
+        Set<String> enabled = ChromeSharedPreferences.getInstance().readStringSet(
                 ChromePreferenceKeys.SETTINGS_DEVELOPER_TRACING_CATEGORIES, null);
         if (enabled == null) {
             enabled = new HashSet<>();
@@ -141,7 +141,7 @@ public class TracingSettings
                 enabled.add(category);
             }
         }
-        SharedPreferencesManager.getInstance().writeStringSet(
+        ChromeSharedPreferences.getInstance().writeStringSet(
                 ChromePreferenceKeys.SETTINGS_DEVELOPER_TRACING_CATEGORIES, enabled);
     }
 
@@ -160,7 +160,7 @@ public class TracingSettings
      *     "record-as-much-as-possible", or "record-continuously".
      */
     public static String getSelectedTracingMode() {
-        return SharedPreferencesManager.getInstance().readString(
+        return ChromeSharedPreferences.getInstance().readString(
                 ChromePreferenceKeys.SETTINGS_DEVELOPER_TRACING_MODE,
                 TRACING_MODES.keySet().iterator().next());
     }
@@ -173,7 +173,7 @@ public class TracingSettings
      */
     public static void setSelectedTracingMode(String tracingMode) {
         assert TRACING_MODES.containsKey(tracingMode);
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.SETTINGS_DEVELOPER_TRACING_MODE, tracingMode);
     }
 

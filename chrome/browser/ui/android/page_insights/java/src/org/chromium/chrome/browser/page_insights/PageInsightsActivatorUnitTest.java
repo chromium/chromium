@@ -22,7 +22,7 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -89,7 +89,7 @@ public class PageInsightsActivatorUnitTest {
 
     @Test
     public void testInvalidateSwaaCacheUponProfileChange() throws Exception {
-        var prefs = SharedPreferencesManager.getInstance();
+        var prefs = ChromeSharedPreferences.getInstance();
 
         int token = mActivator.start(mActivateCallback);
 

@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /**
  * Manages the Contextual Search disable-able promo tap counter for privacy opt-in/out.

@@ -18,7 +18,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
@@ -76,7 +76,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
 
         mMediator = new BookmarkFolderPickerMediator(context, bookmarkModel, bookmarkImageFetcher,
                 bookmarkIds, finishRunnable,
-                new BookmarkUiPrefs(SharedPreferencesManager.getInstance()), model, mModelList,
+                new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()), model, mModelList,
                 addNewFolderCoordinator, improvedBookmarkRowCoordinator, shoppingService);
 
         FadingShadowView shadow = (FadingShadowView) mView.findViewById(R.id.shadow);

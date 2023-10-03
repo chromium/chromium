@@ -80,8 +80,8 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -1545,7 +1545,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
     private int getNormalTabCount() {
         if (!mTabModelSelector.isTabStateInitialized()) {
-            return SharedPreferencesManager.getInstance().readInt(
+            return ChromeSharedPreferences.getInstance().readInt(
                     ChromePreferenceKeys.REGULAR_TAB_COUNT);
         } else {
             return mTabModelSelector.getModel(false).getCount();
@@ -1557,7 +1557,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         return mTabModelSelector.isTabStateInitialized() && currentTab != null
                         && currentTab.getUrl() != null
                 ? UrlUtilities.isNTPUrl(currentTab.getUrl())
-                : SharedPreferencesManager.getInstance().readInt(
+                : ChromeSharedPreferences.getInstance().readInt(
                           ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE)
                         == ActiveTabState.NTP;
     }

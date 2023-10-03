@@ -18,13 +18,14 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager.HomepagePolicyStateListener;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.url.GURL;
@@ -61,7 +62,7 @@ public class HomepagePolicyManagerTest {
         MockitoAnnotations.initMocks(this);
 
         // Reset shared preference
-        mSharedPreferenceManager = SharedPreferencesManager.getInstance();
+        mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
         setHomepageInSharedPreference(GURL.emptyGURL());
 
         ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
@@ -260,32 +261,32 @@ public class HomepagePolicyManagerTest {
     @Test
     @SmallTest
     public void testGurlPreferenceKeysMigrationInConstructor() {
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, null);
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, null);
         mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertFalse(mHomepagePolicyManager.isHomepageLocationPolicyEnabled());
 
         final String url1 = JUnitTestGURLs.URL_1.getSpec();
         final String url2 = JUnitTestGURLs.URL_2.getSpec();
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, url1);
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, null);
         mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertEquals(url1, mHomepagePolicyManager.getHomepagePreference().getSpec());
 
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, null);
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, new GURL(url1).serialize());
         mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertEquals(url1, mHomepagePolicyManager.getHomepagePreference().getSpec());
 
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, url1);
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, new GURL(url2).serialize());
         mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertEquals(url2, mHomepagePolicyManager.getHomepagePreference().getSpec());

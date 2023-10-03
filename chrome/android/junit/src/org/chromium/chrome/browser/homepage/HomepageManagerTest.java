@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -113,36 +113,36 @@ public class HomepageManagerTest {
                 .when(mPartnerBrowserCustomizations)
                 .isHomepageProviderAvailableAndEnabled();
 
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, null);
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, null);
         Assert.assertEquals(
                 ChromeUrlConstants.nativeNtpGurl(), HomepageManager.getDefaultHomepageGurl());
 
         final GURL blueUrl = JUnitTestGURLs.BLUE_1;
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
                 blueUrl.getSpec());
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, null);
         Assert.assertEquals(blueUrl, HomepageManager.getDefaultHomepageGurl());
 
         final GURL redUrl = JUnitTestGURLs.RED_1;
         final String serializedRedGurl = redUrl.serialize();
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, null);
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, serializedRedGurl);
         Assert.assertEquals(redUrl, HomepageManager.getDefaultHomepageGurl());
 
         final GURL url1 = JUnitTestGURLs.URL_1;
         final GURL url2 = JUnitTestGURLs.URL_2;
         final String serializedGurl2 = url2.serialize();
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
                 url1.getSpec());
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, serializedGurl2);
         Assert.assertEquals(url2, HomepageManager.getDefaultHomepageGurl());
     }
@@ -151,30 +151,30 @@ public class HomepageManagerTest {
     public void testGetPrefHomepageCustomGurlPreferenceKeysMigration() {
         HomepageManager homepageManager = HomepageManager.getInstance();
 
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_CUSTOM_URI, null);
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, null);
         Assert.assertTrue(homepageManager.getPrefHomepageCustomGurl().isEmpty());
 
         final GURL blueUrl = JUnitTestGURLs.BLUE_1;
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_CUSTOM_URI, blueUrl.getSpec());
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, null);
         Assert.assertEquals(blueUrl, homepageManager.getPrefHomepageCustomGurl());
 
         final GURL redUrl = JUnitTestGURLs.RED_1;
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_CUSTOM_URI, null);
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, redUrl.serialize());
         Assert.assertEquals(redUrl, homepageManager.getPrefHomepageCustomGurl());
 
         final GURL url1 = JUnitTestGURLs.URL_1;
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_CUSTOM_URI, redUrl.serialize());
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, url1.serialize());
         Assert.assertEquals(url1, homepageManager.getPrefHomepageCustomGurl());
     }
@@ -209,7 +209,7 @@ public class HomepageManagerTest {
         TemplateUrlServiceFactory.setInstanceForTesting(templateUrlService);
         ProfileManager.onProfileAdded(profile);
 
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.IS_DSE_GOOGLE, false);
         Assert.assertFalse(DseNewTabUrlManager.isDefaultSearchEngineGoogle());
     }

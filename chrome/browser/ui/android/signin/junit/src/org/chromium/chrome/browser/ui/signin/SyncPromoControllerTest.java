@@ -20,10 +20,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
@@ -68,7 +69,7 @@ public class SyncPromoControllerTest {
     private IdentityManager mIdentityManagerMock;
 
     private final SharedPreferencesManager mSharedPreferencesManager =
-            SharedPreferencesManager.getInstance();
+            ChromeSharedPreferences.getInstance();
     private final AccountCapabilitiesBuilder mAccountCapabilitiesBuilder =
             new AccountCapabilitiesBuilder();
 
@@ -201,13 +202,13 @@ public class SyncPromoControllerTest {
         Assert.assertFalse(
                 SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
         Assert.assertEquals(firstShownTime,
-                SharedPreferencesManager.getInstance().readLong(
+                ChromeSharedPreferences.getInstance().readLong(
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME));
         Assert.assertEquals(lastShownTime,
-                SharedPreferencesManager.getInstance().readLong(
+                ChromeSharedPreferences.getInstance().readLong(
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME));
         Assert.assertEquals(MAX_SIGN_IN_PROMO_IMPRESSIONS,
-                SharedPreferencesManager.getInstance().readInt(
+                ChromeSharedPreferences.getInstance().readInt(
                         SyncPromoController.getPromoShowCountPreferenceName(
                                 SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)));
     }
@@ -226,13 +227,13 @@ public class SyncPromoControllerTest {
         Assert.assertFalse(
                 SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
         Assert.assertEquals(firstShownTime,
-                SharedPreferencesManager.getInstance().readLong(
+                ChromeSharedPreferences.getInstance().readLong(
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME));
         Assert.assertEquals(lastShownTime,
-                SharedPreferencesManager.getInstance().readLong(
+                ChromeSharedPreferences.getInstance().readLong(
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME));
         Assert.assertEquals(MAX_SIGN_IN_PROMO_IMPRESSIONS,
-                SharedPreferencesManager.getInstance().readInt(
+                ChromeSharedPreferences.getInstance().readInt(
                         SyncPromoController.getPromoShowCountPreferenceName(
                                 SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)));
     }
@@ -251,13 +252,13 @@ public class SyncPromoControllerTest {
         Assert.assertTrue(
                 SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
         Assert.assertEquals(0L,
-                SharedPreferencesManager.getInstance().readLong(
+                ChromeSharedPreferences.getInstance().readLong(
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME));
         Assert.assertEquals(0L,
-                SharedPreferencesManager.getInstance().readLong(
+                ChromeSharedPreferences.getInstance().readLong(
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME));
         Assert.assertEquals(0,
-                SharedPreferencesManager.getInstance().readInt(
+                ChromeSharedPreferences.getInstance().readInt(
                         SyncPromoController.getPromoShowCountPreferenceName(
                                 SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)));
     }
@@ -287,13 +288,13 @@ public class SyncPromoControllerTest {
         StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS.setForTesting(
                 signinPromoResetAfterHours);
 
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 SyncPromoController.getPromoShowCountPreferenceName(
                         SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
                 MAX_SIGN_IN_PROMO_IMPRESSIONS);
-        SharedPreferencesManager.getInstance().writeLong(
+        ChromeSharedPreferences.getInstance().writeLong(
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, firstShownTime);
-        SharedPreferencesManager.getInstance().writeLong(
+        ChromeSharedPreferences.getInstance().writeLong(
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME, lastShownTime);
     }
 }

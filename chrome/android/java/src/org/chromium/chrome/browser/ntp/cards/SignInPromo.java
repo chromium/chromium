@@ -12,7 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -85,7 +85,7 @@ public abstract class SignInPromo {
      */
     public static boolean shouldCreatePromo() {
         return !sDisablePromoForTests
-                && !SharedPreferencesManager.getInstance().readBoolean(
+                && !ChromeSharedPreferences.getInstance().readBoolean(
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false)
                 && !getSuppressionStatus();
     }
@@ -138,7 +138,7 @@ public abstract class SignInPromo {
     }
 
     public void onDismissPromo() {
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, true);
         mSyncPromoController.detach();
         setVisibilityInternal(false);

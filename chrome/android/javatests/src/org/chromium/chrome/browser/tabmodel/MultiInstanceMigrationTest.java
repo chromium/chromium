@@ -22,7 +22,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -51,7 +51,7 @@ public class MultiInstanceMigrationTest {
 
         // Set the shared pref stating that the legacy file migration has occurred. The
         // multi-instance migration won't happen if the legacy path is taken.
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, true);
     }
 
@@ -61,7 +61,7 @@ public class MultiInstanceMigrationTest {
         // between tests - otherwise changes to these in one test will interfere with the other
         // tests.
         // TODO(crbug.com/1086663) Don't persist changes to SharedPreferences.
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION, false);
         FileUtils.recursivelyDeleteFile(
                 TabStateDirectory.getOrCreateBaseStateDirectory(), FileUtils.DELETE_ALL);
@@ -127,7 +127,7 @@ public class MultiInstanceMigrationTest {
         buildPersistentStoreAndWaitForMigration();
 
         // Make sure we don't hit the migration path again.
-        Assert.assertTrue(SharedPreferencesManager.getInstance().readBoolean(
+        Assert.assertTrue(ChromeSharedPreferences.getInstance().readBoolean(
                 ChromePreferenceKeys.TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION, false));
 
         // Check that all metadata files moved.

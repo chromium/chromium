@@ -32,9 +32,10 @@ import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
@@ -148,7 +149,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * Gets the {@link ComponentName} of the app that was used to last share.
      */
     public static @Nullable ComponentName getLastShareComponentName() {
-        SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager preferencesManager = ChromeSharedPreferences.getInstance();
         String name = preferencesManager.readString(
                 ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME, null);
         if (name == null) {
@@ -237,7 +238,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      */
     @VisibleForTesting
     public static void setLastShareComponentName(Profile profile, ComponentName component) {
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME,
                 component.flattenToString());
         if (profile != null) {

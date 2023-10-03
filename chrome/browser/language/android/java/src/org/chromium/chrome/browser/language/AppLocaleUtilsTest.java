@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +35,7 @@ public class AppLocaleUtilsTest {
     @After
     public void tearDown() {
         LanguageTestUtils.clearResourceBundleForTesting();
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, null);
     }
 
@@ -129,7 +129,7 @@ public class AppLocaleUtilsTest {
     // Helper function to manually get and check AppLanguagePref.
     private void assertLanguagePrefEquals(String language) {
         Assert.assertEquals(language,
-                SharedPreferencesManager.getInstance().readString(
+                ChromeSharedPreferences.getInstance().readString(
                         ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, null));
     }
 }

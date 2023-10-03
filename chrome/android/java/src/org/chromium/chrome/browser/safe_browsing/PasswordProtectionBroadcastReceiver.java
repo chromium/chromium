@@ -13,8 +13,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.Log;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.Locale;
 
@@ -49,7 +50,7 @@ public final class PasswordProtectionBroadcastReceiver extends BroadcastReceiver
                                        .put(EXTRA_ACCOUNT_IDENTIFIER, accountIdentifier)
                                        .put(EXTRA_SALT, salt)
                                        .put(EXTRA_HASHED_PASSWORD, hashedPassword);
-            SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+            SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
             String accounts =
                     manager.readString(ChromePreferenceKeys.PASSWORD_PROTECTION_ACCOUNTS, null);
             JSONArray entries;

@@ -41,7 +41,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.share.ShareHelper.TargetChosenReceiver;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -83,7 +83,7 @@ public class ShareHelperUnitTest {
 
     @After
     public void tearDown() {
-        SharedPreferencesManager.getInstance().removeKey(
+        ChromeSharedPreferences.getInstance().removeKey(
                 ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME);
         mWindow.destroy();
         mActivity.finish();

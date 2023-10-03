@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -27,7 +28,7 @@ import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -138,7 +139,7 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
      * registered listeners.
      */
     private static void initializeFromCache() {
-        SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
         setCurrentlyLoadedPreferences(
                 new SearchActivityPreferences(
                         manager.readString(SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME, null),
@@ -158,7 +159,7 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
      * registered listeners.
      */
     public static void resetCachedValues() {
-        SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
         manager.removeKey(SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME);
         manager.removeKey(SEARCH_WIDGET_SEARCH_ENGINE_URL);
         manager.removeKey(SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE);
@@ -186,7 +187,7 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
         PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
             // Note: it takes about 6.5ms to update a single property on debug-enabled builds.
             if (updateStorage) {
-                SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+                SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
                 manager.writeString(SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME, prefs.searchEngineName);
                 manager.writeString(SEARCH_WIDGET_SEARCH_ENGINE_URL, prefs.searchEngineUrl);
                 manager.writeBoolean(

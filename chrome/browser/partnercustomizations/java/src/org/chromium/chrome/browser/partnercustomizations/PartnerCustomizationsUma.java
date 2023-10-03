@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -265,7 +265,7 @@ class PartnerCustomizationsUma {
      */
     private boolean isHomepageCached() {
         // TODO(https://crbug.com/1456533): merge into HomepageManager.
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        var sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         return (sharedPreferencesManager.readString(
                         ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, null)
                        != null)

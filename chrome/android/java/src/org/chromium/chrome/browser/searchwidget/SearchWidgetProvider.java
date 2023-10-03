@@ -23,11 +23,12 @@ import androidx.core.app.ActivityOptionsCompat;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
@@ -65,8 +66,8 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         }
 
         /** Returns the {@link SharedPreferencesManager} to store prefs. */
-        protected SharedPreferencesManager getSharedPreferencesManager() {
-            return SharedPreferencesManager.getInstance();
+        protected SharedPreferencesManager getChromeSharedPreferences() {
+            return ChromeSharedPreferences.getInstance();
         }
 
         /** Returns IDs for all search widgets that exist. */
@@ -168,7 +169,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     /** Updates the number of consecutive crashes this widget has absorbed. */
     @SuppressLint({"ApplySharedPref", "CommitPrefEdits"})
     static void updateNumConsecutiveCrashes(int newValue) {
-        SharedPreferencesManager prefs = getDelegate().getSharedPreferencesManager();
+        SharedPreferencesManager prefs = getDelegate().getChromeSharedPreferences();
         if (getNumConsecutiveCrashes(prefs) == newValue) return;
 
         // This metric is committed synchronously because it relates to crashes.
@@ -196,7 +197,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
             updateNumConsecutiveCrashes(0);
         } catch (Exception e) {
             int numCrashes =
-                    getNumConsecutiveCrashes(getDelegate().getSharedPreferencesManager()) + 1;
+                    getNumConsecutiveCrashes(getDelegate().getChromeSharedPreferences()) + 1;
             updateNumConsecutiveCrashes(numCrashes);
 
             if (numCrashes < CRASH_LIMIT) {

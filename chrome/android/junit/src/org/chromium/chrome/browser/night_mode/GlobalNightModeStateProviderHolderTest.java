@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
  * Unit tests for {@link GlobalNightModeStateProviderHolder}.
@@ -30,7 +30,7 @@ public class GlobalNightModeStateProviderHolderTest {
         assertFalse(GlobalNightModeStateProviderHolder.getInstance().isInNightMode());
 
         // Verify that night mode cannot be enabled.
-        SharedPreferencesManager.getInstance().writeInt(UI_THEME_SETTING, ThemeType.DARK);
+        ChromeSharedPreferences.getInstance().writeInt(UI_THEME_SETTING, ThemeType.DARK);
         assertFalse(GlobalNightModeStateProviderHolder.getInstance().isInNightMode());
     }
 

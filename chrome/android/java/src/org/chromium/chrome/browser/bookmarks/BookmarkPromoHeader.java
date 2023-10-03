@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.LegacySyncPromoView;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
@@ -173,7 +173,7 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
         }
 
         boolean impressionLimitNotReached =
-                SharedPreferencesManager.getInstance().readInt(
+                ChromeSharedPreferences.getInstance().readInt(
                         ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT)
                 < MAX_SIGNIN_AND_SYNC_PROMO_SHOW_COUNT;
         if (mSyncService.getSelectedTypes().isEmpty() && impressionLimitNotReached) {
@@ -196,7 +196,7 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
             mSyncPromoController.increasePromoShowCount();
         }
         if (newState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE) {
-            SharedPreferencesManager.getInstance().incrementInt(
+            ChromeSharedPreferences.getInstance().incrementInt(
                     ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT);
         }
         mPromoState = newState;

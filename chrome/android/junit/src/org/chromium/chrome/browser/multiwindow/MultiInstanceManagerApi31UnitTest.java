@@ -59,7 +59,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerApi31UnitTest.ShadowApplicationStatus;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -374,7 +374,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMultiWindowModeStateDispatcher, mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier, mMenuOrKeyboardActionController));
         ApplicationStatus.onStateChangeForTesting(mCurrentActivity, ActivityState.CREATED);
-        SharedPreferencesManager.getInstance().removeKeysWithPrefix(
+        ChromeSharedPreferences.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
 
         mTabbedActivityPool = new Activity[] {
@@ -388,7 +388,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @After
     public void tearDown() {
-        SharedPreferencesManager.getInstance().removeKeysWithPrefix(
+        ChromeSharedPreferences.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
         ApplicationStatus.destroyForJUnitTests();
@@ -820,7 +820,7 @@ public class MultiInstanceManagerApi31UnitTest {
         // Store minimal data to get the instance recognized.
         MultiInstanceManagerApi31.writeUrl(instanceId, "url" + instanceId);
         MultiInstanceManagerApi31.writeLastAccessedTime(index);
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 MultiInstanceManagerApi31.tabCountKey(index), 1);
         return instanceId;
     }

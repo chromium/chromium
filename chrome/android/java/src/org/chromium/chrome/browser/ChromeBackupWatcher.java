@@ -13,8 +13,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -43,7 +44,7 @@ public class ChromeBackupWatcher {
 
         mBackupManager = new BackupManager(context);
         // Watch the Java preferences that are backed up.
-        SharedPreferencesManager sharedPrefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPrefs = ChromeSharedPreferences.getInstance();
         // If we have never done a backup do one immediately.
         if (!sharedPrefs.readBoolean(ChromePreferenceKeys.BACKUP_FIRST_BACKUP_DONE, false)) {
             try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {

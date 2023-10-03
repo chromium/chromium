@@ -15,8 +15,9 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.Locale;
@@ -92,7 +93,7 @@ public class TabInteractionRecorder {
                         "timestamp=%d, TabInteractionRecorder.recordInteractions=%b", timestamp,
                         hadInteraction));
 
-        SharedPreferencesManager pref = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager pref = ChromeSharedPreferences.getInstance();
         pref.writeLong(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP, timestamp);
 
         pref.writeBoolean(
@@ -151,7 +152,7 @@ public class TabInteractionRecorder {
      *  Remove all the shared preferences related to tab interactions.
      */
     public static void resetTabInteractionRecords() {
-        SharedPreferencesManager pref = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager pref = ChromeSharedPreferences.getInstance();
         pref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP);
         pref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION);
     }

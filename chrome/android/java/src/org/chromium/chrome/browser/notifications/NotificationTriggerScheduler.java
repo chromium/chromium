@@ -12,7 +12,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
  * The {@link NotificationTriggerScheduler} singleton is responsible for scheduling notification
@@ -103,17 +103,17 @@ public class NotificationTriggerScheduler {
     }
 
     private long getNextTrigger() {
-        return SharedPreferencesManager.getInstance().readLong(
+        return ChromeSharedPreferences.getInstance().readLong(
                 ChromePreferenceKeys.NOTIFICATIONS_NEXT_TRIGGER, Long.MAX_VALUE);
     }
 
     private void removeNextTrigger() {
-        SharedPreferencesManager.getInstance().removeKey(
+        ChromeSharedPreferences.getInstance().removeKey(
                 ChromePreferenceKeys.NOTIFICATIONS_NEXT_TRIGGER);
     }
 
     private void setNextTrigger(long timestamp) {
-        SharedPreferencesManager.getInstance().writeLong(
+        ChromeSharedPreferences.getInstance().writeLong(
                 ChromePreferenceKeys.NOTIFICATIONS_NEXT_TRIGGER, timestamp);
     }
 

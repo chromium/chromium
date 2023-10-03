@@ -35,7 +35,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.io.IOException;
 
@@ -119,7 +119,7 @@ public class DexFixerTest {
         appInfo.splitNames = new String[] {"a"};
         appInfo.splitSourceDirs = new String[] {"/a.apk"};
         DexFixer.setHasIsolatedSplits(true);
-        SharedPreferencesManager.getInstance().writeLong(
+        ChromeSharedPreferences.getInstance().writeLong(
                 ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION,
                 BuildInfo.getInstance().versionCode);
 
@@ -136,7 +136,7 @@ public class DexFixerTest {
         appInfo.splitNames = new String[] {"ignored.en"};
         DexFixer.setHasIsolatedSplits(true);
         ShadowOs.sWorldReadable = false;
-        SharedPreferencesManager.getInstance().writeLong(
+        ChromeSharedPreferences.getInstance().writeLong(
                 ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION,
                 BuildInfo.getInstance().versionCode);
 

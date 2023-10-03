@@ -77,7 +77,7 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
     public InstalledWebappBroadcastReceiver() {
         this(new ClearDataStrategy(), new InstalledWebappDataRegister(),
                 new BrowserServicesStore(
-                        ChromeApplicationImpl.getComponent().resolveSharedPreferencesManager()),
+                        ChromeApplicationImpl.getComponent().resolveChromeSharedPreferences()),
                 ChromeApplicationImpl.getComponent().resolvePermissionUpdater());
     }
 

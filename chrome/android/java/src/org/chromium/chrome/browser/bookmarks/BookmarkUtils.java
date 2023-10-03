@@ -30,6 +30,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
@@ -44,7 +45,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -392,7 +393,7 @@ public class BookmarkUtils {
         Context context = activity == null ? ContextUtils.getApplicationContext() : activity;
         String url = getFirstUrlToLoad(context, folderId);
 
-        if (SharedPreferencesManager.getInstance().contains(
+        if (ChromeSharedPreferences.getInstance().contains(
                     ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL)) {
             RecordUserAction.record("MobileBookmarkManagerReopenBookmarksInSameSession");
         }
@@ -465,7 +466,7 @@ public class BookmarkUtils {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setLastUsedUrl(Context context, String url) {
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL, url);
     }
 
@@ -474,7 +475,7 @@ public class BookmarkUtils {
      */
     @VisibleForTesting
     public static String getLastUsedUrl(Context context) {
-        return SharedPreferencesManager.getInstance().readString(
+        return ChromeSharedPreferences.getInstance().readString(
                 ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL, UrlConstants.BOOKMARKS_URL);
     }
 
@@ -482,7 +483,7 @@ public class BookmarkUtils {
      * Save the last used {@link BookmarkId} as a folder to put new bookmarks to.
      */
     public static void setLastUsedParent(Context context, BookmarkId bookmarkId) {
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.BOOKMARKS_LAST_USED_PARENT, bookmarkId.toString());
     }
 
@@ -494,7 +495,7 @@ public class BookmarkUtils {
      *         has never selected a parent folder to use.
      */
     static BookmarkId getLastUsedParent(Context context, BookmarkModel bookmarkModel) {
-        SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
         if (!preferences.contains(ChromePreferenceKeys.BOOKMARKS_LAST_USED_PARENT)) return null;
 
         BookmarkId parent = BookmarkId.getBookmarkIdFromString(
@@ -615,7 +616,7 @@ public class BookmarkUtils {
     public static void maybeExpireLastBookmarkLocationForReadLater(
             long timeSinceLastBackgroundedMs) {
         if (timeSinceLastBackgroundedMs > READING_LIST_SESSION_LENGTH_MS) {
-            SharedPreferencesManager.getInstance().removeKey(
+            ChromeSharedPreferences.getInstance().removeKey(
                     ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL);
         }
     }

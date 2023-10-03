@@ -17,13 +17,13 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -90,7 +90,7 @@ public class IncognitoReauthPromoMessageService
 
     private final @NonNull Profile mProfile;
     private final @NonNull Context mContext;
-    private final @NonNull SharedPreferencesManager mSharedPreferencesManager;
+    private final @NonNull SharedPreferencesManager mSharedPrefrencesManager;
     private final @NonNull SnackbarManager mSnackBarManager;
     private final @NonNull ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
@@ -139,7 +139,7 @@ public class IncognitoReauthPromoMessageService
         super(mMessageType);
         mProfile = profile;
         mContext = context;
-        mSharedPreferencesManager = sharedPreferencesManager;
+        mSharedPrefrencesManager = sharedPreferencesManager;
         mIncognitoReauthManager = incognitoReauthManager;
         mSnackBarManager = snackbarManager;
         mTabSwitcherImpressionMultiplier = isTabToGtsAnimationEnabledSupplier.get() ? 2 : 1;
@@ -174,14 +174,14 @@ public class IncognitoReauthPromoMessageService
     }
 
     private void increasePomoImpressionCount() {
-        mSharedPreferencesManager.writeInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
-                mSharedPreferencesManager.readInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT, 0) + 1);
+        mSharedPrefrencesManager.writeInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
+                mSharedPrefrencesManager.readInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT, 0) + 1);
     }
 
     int getPromoShowCount() {
         // We divide the recorded count by the multiplier to get the number of times
         // the user has actually seen the promo.
-        return mSharedPreferencesManager.readInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT, 0)
+        return mSharedPrefrencesManager.readInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT, 0)
                 / mTabSwitcherImpressionMultiplier;
     }
 
@@ -293,7 +293,7 @@ public class IncognitoReauthPromoMessageService
             return false;
         }
 
-        return mSharedPreferencesManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, true);
+        return mSharedPrefrencesManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, true);
     }
 
     public static void setTriggerReviewActionWithoutReauthForTesting(boolean enabled) {
@@ -307,7 +307,7 @@ public class IncognitoReauthPromoMessageService
     }
 
     private void disableIncognitoReauthPromoMessage() {
-        mSharedPreferencesManager.writeBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, false);
+        mSharedPrefrencesManager.writeBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, false);
     }
 
     /**

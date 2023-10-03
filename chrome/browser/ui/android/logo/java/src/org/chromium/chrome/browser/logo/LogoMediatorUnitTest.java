@@ -32,7 +32,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -216,10 +216,10 @@ public class LogoMediatorUnitTest {
     @Test
     public void testInitWithoutNativeWhenDseDoesNotHaveLogo() {
         LogoMediator logoMediator = createMediatorWithoutNative(true, true);
-        boolean originKeyValue = SharedPreferencesManager.getInstance().readBoolean(
-                APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO,
-                mTemplateUrlService.doesDefaultSearchEngineHaveLogo());
-        SharedPreferencesManager.getInstance().writeBoolean(
+        boolean originKeyValue =
+                ChromeSharedPreferences.getInstance().readBoolean(APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO,
+                        mTemplateUrlService.doesDefaultSearchEngineHaveLogo());
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, false);
         logoMediator.updateVisibilityAndMaybeCleanUp(
                 /*isParentSurfaceShown*/ true, /*shouldDestroyBridge*/ false,
@@ -227,7 +227,7 @@ public class LogoMediatorUnitTest {
         Assert.assertFalse(mLogoModel.get(LogoProperties.VISIBILITY));
         Assert.assertFalse(logoMediator.getIsLoadPendingForTesting());
         verify(mLogoBridge, times(0)).destroy();
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, originKeyValue);
     }
 

@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.policy;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
  * Gets and sets preferences associated with cloud management.
@@ -21,7 +21,7 @@ public class CloudManagementSharedPreferences {
      */
     @CalledByNative
     public static void saveDmToken(String dmToken) {
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN, dmToken);
     }
     /**
@@ -29,7 +29,7 @@ public class CloudManagementSharedPreferences {
      */
     @CalledByNative
     public static void deleteDmToken() {
-        SharedPreferencesManager.getInstance().removeKey(
+        ChromeSharedPreferences.getInstance().removeKey(
                 ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN);
     }
 
@@ -39,7 +39,7 @@ public class CloudManagementSharedPreferences {
      */
     @CalledByNative
     public static String readDmToken() {
-        return SharedPreferencesManager.getInstance().readString(
+        return ChromeSharedPreferences.getInstance().readString(
                 ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN, "");
     }
 
@@ -49,7 +49,7 @@ public class CloudManagementSharedPreferences {
      * @param clientId The ID generated to represent the current browser installation.
      */
     public static void saveClientId(String clientId) {
-        SharedPreferencesManager.getInstance().writeString(
+        ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.CLOUD_MANAGEMENT_CLIENT_ID, clientId);
     }
 
@@ -57,7 +57,7 @@ public class CloudManagementSharedPreferences {
      * Returns the value of the "Cloud management client ID" preference.
      */
     public static String readClientId() {
-        return SharedPreferencesManager.getInstance().readString(
+        return ChromeSharedPreferences.getInstance().readString(
                 ChromePreferenceKeys.CLOUD_MANAGEMENT_CLIENT_ID, "");
     }
 }

@@ -16,9 +16,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Optional;
@@ -71,7 +72,7 @@ public class PageInsightsSwaaChecker {
 
     /** Reset sWAA info when it gets invalidated, or in preparation for the new profile. */
     static void invalidateCache() {
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.removeKey(ChromePreferenceKeys.SWAA_TIMESTAMP);
         prefs.removeKey(ChromePreferenceKeys.SWAA_STATUS);
     }
@@ -110,7 +111,7 @@ public class PageInsightsSwaaChecker {
     }
 
     private long timeSinceLastUpdateMs() {
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         long lastUpdateMs = prefs.readLong(ChromePreferenceKeys.SWAA_TIMESTAMP, 0);
         assert lastUpdateMs != 0 : "There has been no sWAA update before.";
         return mElapsedRealtime.get() - lastUpdateMs;
@@ -136,7 +137,7 @@ public class PageInsightsSwaaChecker {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void onSwaaResponse(boolean enabled) {
         mHandler.removeMessages(MSG_RETRY);
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.writeLong(ChromePreferenceKeys.SWAA_TIMESTAMP, mElapsedRealtime.get());
         prefs.writeBoolean(ChromePreferenceKeys.SWAA_STATUS, enabled);
         if (enabled) mActivateCallback.run();
@@ -148,7 +149,7 @@ public class PageInsightsSwaaChecker {
      */
     @NonNull
     public Optional<Boolean> isSwaaEnabled() {
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         long lastUpdate = prefs.readLong(ChromePreferenceKeys.SWAA_TIMESTAMP, 0);
         if (lastUpdate != 0 && timeSinceLastUpdateMs() < REFRESH_PERIOD_MS) {
             return Optional.of(prefs.readBoolean(ChromePreferenceKeys.SWAA_STATUS, false));

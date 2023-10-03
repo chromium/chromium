@@ -53,7 +53,7 @@ import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
@@ -147,20 +147,20 @@ public class AppLaunchDrawBlockerUnitTest {
     @Test
     public void testSearchEngineHadLogoPrefWritten() {
         // Set to false initially.
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, false);
 
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
         mStartStopWithNativeObserver.onStopWithNative();
 
         assertTrue("SearchEngineHadLogo pref isn't written.",
-                SharedPreferencesManager.getInstance().readBoolean(
+                ChromeSharedPreferences.getInstance().readBoolean(
                         ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, false));
     }
 
     @Test
     public void testLastTabNtp_phone_searchEngineHasLogo_noIntent() {
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
 
@@ -181,7 +181,7 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void testLastTabEmpty_phone_searchEngineHasLogo_noIntent() {
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.EMPTY);
         setSearchEngineHasLogo(true);
 
@@ -202,7 +202,7 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void testLastTabOther_phone_searchEngineHasLogo_noIntent() {
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.OTHER);
         setSearchEngineHasLogo(true);
 
@@ -214,7 +214,7 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void testLastTabNtp_phone_searchEngineHasLogo_withIntent() {
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
         mIntent = new Intent();
@@ -229,7 +229,7 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void testLastTabEmpty_phone_searchEngineHasLogo_withIntentIgnore() {
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.EMPTY);
         setSearchEngineHasLogo(true);
         mIntent = new Intent();
@@ -253,7 +253,7 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void testLastTabEmpty_phone_noSearchEngineLogo_noIntent() {
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.EMPTY);
         setSearchEngineHasLogo(false);
 
@@ -265,7 +265,7 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void testLastTabNtp_tablet_searchEngineHasLogo_noIntent() {
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
         when(mIsTabletSupplier.get()).thenReturn(true);
@@ -279,7 +279,7 @@ public class AppLaunchDrawBlockerUnitTest {
     @Test
     public void
     testLastTabNtp_phone_searchEngineHasLogo_noIntent_tabSwitcherOnStartWithoutInstantStart() {
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
         when(mShouldShowTabSwitcherOnStartSupplier.get()).thenReturn(true);
@@ -301,7 +301,7 @@ public class AppLaunchDrawBlockerUnitTest {
     @Test
     public void
     testLastTabNtp_phone_searchEngineHasLogo_noIntent_tabSwitcherOnStartWithInstantStart() {
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
         when(mShouldShowTabSwitcherOnStartSupplier.get()).thenReturn(true);
@@ -316,7 +316,7 @@ public class AppLaunchDrawBlockerUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
     public void testLastTabNtp_phone_searchEngineHasLogo_withIntent_incognito() {
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
         mIntent = IntentHandler.createTrustedOpenNewTabIntent(
@@ -334,7 +334,7 @@ public class AppLaunchDrawBlockerUnitTest {
     public void testBlockedButShouldNotHaveRecorded() {
         // Same scenario as #testLastTabNtp_phone_searchEngineHasLogo_noIntent, but we assume the
         // prediction to block was wrong to verify the histogram is recorded correctly.
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
 
@@ -346,7 +346,7 @@ public class AppLaunchDrawBlockerUnitTest {
     public void testDidNotBlockButShouldHaveRecorded() {
         // Same scenario as #testLastTabEmpty_phone_noSearchEngineLogo_noIntent, but we assume the
         // prediction to not block was wrong to verify the histogram is recorded correctly.
-        SharedPreferencesManager.getInstance().writeInt(
+        ChromeSharedPreferences.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.OTHER);
         setSearchEngineHasLogo(true);
 
@@ -416,7 +416,7 @@ public class AppLaunchDrawBlockerUnitTest {
     }
 
     private void setSearchEngineHasLogo(boolean hasLogo) {
-        SharedPreferencesManager.getInstance().writeBoolean(
+        ChromeSharedPreferences.getInstance().writeBoolean(
                 ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, hasLogo);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(hasLogo);
     }
