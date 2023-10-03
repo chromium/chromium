@@ -4078,38 +4078,34 @@ bool AXObject::CanSetFocusAttribute() const {
   return cached_can_set_focus_attribute_;
 }
 
-// This does not use Element::IsFocusable(), as that can sometimes recalculate
-// styles because of IsFocusableStyle() check, resetting the document lifecycle.
+// TODO(accessibility) Look at reusing Element::IsFocusable() or
+// AXObject::IsKeyboardFocusable(). As long as we guard against style recalc by
+// returning early if IsHiddenViaStyle() is true, we can call
+// Element::IsKeyboardFocusable(), which would otherwise recalculate style at an
+// awkward time.
 bool AXObject::ComputeCanSetFocusAttribute() const {
   DCHECK(!IsDetached());
   DCHECK(GetDocument());
+
+  // Focusable: web area -- this is the only focusable non-element. Web areas
+  // inside portals are not focusable though (portal contents cannot get focus).
+  if (IsWebArea()) {
+    return true;
+  }
 
   // Objects within a portal are not focusable.
   // Note that they are ignored but can be included in the tree.
   bool inside_portal =
       GetDocument()->GetPage() && GetDocument()->GetPage()->InsidePortal();
-  if (inside_portal)
-    return false;
-
-  // The portal itself is focusable. Portals are treated as buttons in platform
-  // APIs, hiding their subtree.
-  if (RoleValue() == ax::mojom::blink::Role::kPortal)
-    return true;
-
-  // Display-locked nodes that have content-visibility: hidden are not exposed
-  // to accessibility in any way, so they are not focusable. Note that for
-  // content-visibility: auto cases, `ShouldIgnoreNodeDueToDisplayLock()` would
-  // return false, since we're not ignoring the element in that case.
-  if (GetNode() &&
-      DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
-          *GetNode(), DisplayLockActivationReason::kAccessibility)) {
+  if (inside_portal) {
     return false;
   }
 
-  // Focusable: web area -- this is the only focusable non-element. Web areas
-  // inside portals are not focusable though (portal contents cannot get focus).
-  if (IsWebArea())
+  // The portal itself is focusable. Portals are treated as buttons in platform
+  // APIs, hiding their subtree.
+  if (RoleValue() == ax::mojom::blink::Role::kPortal) {
     return true;
+  }
 
   // NOT focusable: objects with no DOM node, e.g. extra layout blocks inserted
   // as filler, or objects where the node is not an element, such as a text
@@ -4124,8 +4120,9 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
 
   // NOT focusable: child tree owners (it's the content area that will be marked
   // focusable in the a11y tree).
-  if (IsChildTreeOwner())
+  if (IsChildTreeOwner()) {
     return false;
+  }
 
   // NOT focusable: disabled form controls.
   if (IsDisabledFormControl(elem))
@@ -4135,8 +4132,26 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
   // unless they are part of a <datalist>, in which case they can be displayed
   // by the browser process, but not the renderer.
   // TODO(crbug.com/1399852) Address gaps in datalist a11y.
-  if (auto* option = DynamicTo<HTMLOptionElement>(elem))
+  if (auto* option = DynamicTo<HTMLOptionElement>(elem)) {
     return !option->OwnerDataListElement();
+  }
+
+  // Invisible nodes are never focusable.
+  // We already have these cached, so it's a very quick check.
+  // This also prevents implementations of Element::SupportsFocus()
+  // from trying to update style on descendants of content-visibility:hidden
+  // nodes, or display:none nodes, which are the only nodes that don't have
+  // updated style at this point.
+  if (cached_is_hidden_via_style_) {
+    return false;
+  }
+
+  // At this point, all nodes should have updated style. If they don't, it can
+  // cause crashes such as the one at crbug.com/1485059 when
+  // Element::SupportsFocus() calls IsFocusableStyleAfterUpdate() and
+  // the element doesn't have updated style yet, causing layout to update,
+  // resulting in unwanted recursion into ProcessDeferredAccessibilityEvents().
+  CHECK(!elem->NeedsStyleRecalc());
 
   // NOT focusable: hidden elements.
   // TODO(aleventhal) Consider caching visibility when it's safe to compute.
@@ -4166,14 +4181,24 @@ bool AXObject::IsKeyboardFocusable() const {
     // frame owner elements have SupportsFocus() == false.
     return false;
   }
-  // content-visibility:hidden or content-visibility: auto nodes (when locked)
-  // cannot be marked as keyboard focusable, because then we'll need to do a
-  // style/layout update within the locked subtree to get scroller information.
-  // For all practical purposes, it's unlikely to matter if display-locked
-  // content is marked non-focusable, so let's just avoid the lifecycle update.
-  if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(element)) {
+
+  // Invisible/inert nodes are never focusable.
+  // We already have these cached, so it's a very quick check.
+  // This also prevents implementations of Element::IsKeyboardFocusable()
+  // from trying to update style on descendants of content-visibility:hidden
+  // nodes, or display:none nodes, which are the only nodes that don't have
+  // updated style at this point.
+  if (IsHiddenViaStyle() || IsInert()) {
     return false;
   }
+
+  // At this point, all nodes should have updated style. If they don't, it can
+  // cause crashes such as the one at crbug.com/1485059 when
+  // Element::IsKeyboardFocusable() calls IsFocusableStyleAfterUpdate() and
+  // the element doesn't have updated style yet, causing layout to update,
+  // resulting in unwanted recursion into ProcessDeferredAccessibilityEvents().
+  CHECK(!element->NeedsStyleRecalc());
+
   return element->IsKeyboardFocusable();
 }
 

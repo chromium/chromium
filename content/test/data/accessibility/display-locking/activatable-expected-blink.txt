@@ -1,4 +1,4 @@
-rootWebArea
+rootWebArea focusable
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer ignored
@@ -9,8 +9,14 @@ rootWebArea
 ++++++++++++staticText offscreen name='child'
 ++++++++++staticText offscreen name='<newline>    '
 ++++++++++genericContainer offscreen
-++++++++++++staticText offscreen name='nested locked element!'
+++++++++++++staticText offscreen name='<newline>      nested locked element!<newline>      '
+++++++++++++button focusable offscreen name='locked button'
+++++++++++++++staticText offscreen name='locked button'
+++++++++++++staticText offscreen name='<newline>    '
 ++++++++++staticText offscreen name='<newline>    '
 ++++++++++genericContainer offscreen
-++++++++++++staticText ignored invisible offscreen name='nested non activatable locked element'
+++++++++++++staticText ignored invisible offscreen name='<newline>      nested non activatable locked element<newline>      '
+++++++++++++button ignored invisible offscreen
+++++++++++++++staticText ignored invisible offscreen name='locked button'
+++++++++++++staticText ignored invisible offscreen name='<newline>    '
 ++++++++++staticText offscreen name='<newline>  '
