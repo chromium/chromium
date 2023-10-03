@@ -16,7 +16,9 @@ using MLIntegrationTest = InteractiveAshTest;
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(MLIntegrationTest, Bootstrap) {
+// Failing on betty-pi-arc-chrome builder.
+// TODO(b/302983380): Re-enable the test.
+IN_PROC_BROWSER_TEST_F(MLIntegrationTest, DISABLED_Bootstrap) {
   std::string ml_service = "ml-service";
   std::vector<std::string> extra_args{"TASK=mojo_service"};
 
