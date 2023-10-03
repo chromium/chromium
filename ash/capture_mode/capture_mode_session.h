@@ -22,6 +22,7 @@
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
+#include "ui/color/color_provider_source_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/event.h"
@@ -60,7 +61,8 @@ class ASH_EXPORT CaptureModeSession
       public TabletModeObserver,
       public aura::WindowObserver,
       public display::DisplayObserver,
-      public FolderSelectionDialogController::Delegate {
+      public FolderSelectionDialogController::Delegate,
+      public ui::ColorProviderSourceObserver {
  public:
   // Centralized place to control the events, observe windows and create the
   // capture mode needed widgets including `capture_mode_bar_widget_`,
@@ -189,6 +191,9 @@ class ASH_EXPORT CaptureModeSession
   void OnFolderSelected(const base::FilePath& path) override;
   void OnSelectionWindowAdded() override;
   void OnSelectionWindowClosed() override;
+
+  // ui::ColorProviderSourceObserver:
+  void OnColorProviderChanged() override;
 
  private:
   friend class CaptureModeSettingsTestApi;

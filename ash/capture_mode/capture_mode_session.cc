@@ -35,6 +35,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/color_util.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/tab_slider_button.h"
 #include "ash/utility/cursor_setter.h"
@@ -1156,9 +1157,7 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
   layer()->SetBounds(new_parent->bounds());
 
   current_root_ = new_root;
-  // TODO(conniekxu): Observe the new color provider source from the `new_root`
-  // when we support wallpaper per display.
-
+  Observe(ColorUtil::GetColorProviderSourceForWindow(current_root_));
   // Update the bounds of the widgets after setting the new root. For region
   // capture, the capture bar will move at a later time, when the mouse is
   // released.
@@ -1219,9 +1218,12 @@ void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
     return;
   }
 
+  const auto* color_provider_source = GetColorProviderSource();
+  CHECK(color_provider_source);
   ui::PaintRecorder recorder(context, layer()->size());
-  // TODO(crbug.com/1364248): Make the dimming shield color a dynamic color.
-  recorder.canvas()->DrawColor(capture_mode::kDimmingShieldColor);
+  recorder.canvas()->DrawColor(
+      color_provider_source->GetColorProvider()->GetColor(
+          capture_mode::kDimmingShieldColor));
 
   PaintCaptureRegion(recorder.canvas());
 }
@@ -1498,6 +1500,12 @@ void CaptureModeSession::OnSelectionWindowClosed() {
   keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
 }
 
+void CaptureModeSession::OnColorProviderChanged() {
+  if (!is_shutting_down_) {
+    layer()->SchedulePaint(layer()->bounds());
+  }
+}
+
 void CaptureModeSession::A11yAlertCaptureType() {
   capture_mode_util::TriggerAccessibilityAlert(
       CaptureModeController::Get()->type() == CaptureModeType::kImage
@@ -1675,8 +1683,7 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
   const float dsf = canvas->UndoDeviceScaleFactor();
   region = gfx::ScaleToEnclosingRect(region, dsf);
 
-  const auto* color_provider =
-      capture_mode_util::GetColorProviderForNativeTheme();
+  const auto* color_provider = GetColorProviderSource()->GetColorProvider();
 
   if (!adjustable_region) {
     canvas->FillRect(region, SK_ColorTRANSPARENT, SkBlendMode::kClear);
@@ -2570,6 +2577,7 @@ void CaptureModeSession::UpdateRootWindowDimmers() {
     }
 
     auto dimmer = std::make_unique<WindowDimmer>(root_window);
+    dimmer->SetDimColor(capture_mode::kDimmingShieldColor);
     dimmer->window()->Show();
     root_window_dimmers_.emplace(std::move(dimmer));
   }
@@ -2866,6 +2874,8 @@ void CaptureModeSession::InitInternal() {
 
   UpdateRootWindowDimmers();
 
+  Observe(ColorUtil::GetColorProviderSourceForWindow(current_root_));
+
   TabletModeController::Get()->AddObserver(this);
   display_observer_.emplace(this);
   // Our event handling code assumes the capture bar widget has been initialized
@@ -2893,6 +2903,8 @@ void CaptureModeSession::ShutdownInternal() {
   user_nudge_controller_.reset();
   capture_window_observer_.reset();
   TabletModeController::Get()->RemoveObserver(this);
+
+  Observe(nullptr);
 
   if (input_capture_window_) {
     input_capture_window_->RemoveObserver(this);

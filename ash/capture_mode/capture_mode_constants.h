@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -36,11 +37,8 @@ constexpr SkColor kRegionBorderColor = SK_ColorWHITE;
 
 // Color of the dimming shield layer. It is set to dim the region that is
 // outside of the region will be recorded, either in the capture session or
-// video recording is in progress. This color is set to be the same in both dark
-// and light mode. We will investigate whether to do this kind of change to
-// ShieldLayer globally.
-constexpr SkColor kDimmingShieldColor =
-    SkColorSetA(gfx::kGoogleGrey900, 102);  // 40%
+// video recording is in progress.
+constexpr ui::ColorId kDimmingShieldColor = cros_tokens::kCrosSysScrim;
 
 // The space between the `image_toggle_button_` and `video_toggle_button_`.
 constexpr int kSpaceBetweenCaptureModeTypeButtons = 2;

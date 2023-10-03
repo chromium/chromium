@@ -20,6 +20,7 @@
 #include "ui/aura/scoped_window_capture_request.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/color/color_provider_source_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/display/display_observer.h"
@@ -60,7 +61,8 @@ class ASH_EXPORT VideoRecordingWatcher
       public WindowDimmer::Delegate,
       public ui::EventHandler,
       public TabletModeObserver,
-      public CursorWindowController::Observer {
+      public CursorWindowController::Observer,
+      public ui::ColorProviderSourceObserver {
  public:
   VideoRecordingWatcher(
       CaptureModeController* controller,
@@ -152,6 +154,9 @@ class ASH_EXPORT VideoRecordingWatcher
 
   // CursorWindowController::Observer:
   void OnCursorCompositingStateChanged(bool enabled) override;
+
+  // ui::ColorProviderSourceObserver:
+  void OnColorProviderChanged() override;
 
   bool IsWindowDimmedForTesting(aura::Window* window) const;
 
