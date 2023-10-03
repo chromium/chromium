@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.scene_layer;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
@@ -81,7 +83,8 @@ public class StaticTabSceneLayer extends SceneLayer {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         long init(StaticTabSceneLayer caller);
         void updateTabLayer(long nativeStaticTabSceneLayer, StaticTabSceneLayer caller, int id,
                 boolean canUseLiveLayer, int backgroundColor, float x, float y,

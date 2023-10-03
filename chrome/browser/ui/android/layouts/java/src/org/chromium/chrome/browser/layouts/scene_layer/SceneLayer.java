@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.layouts.scene_layer;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -50,7 +52,8 @@ public class SceneLayer {
     }
 
     @CalledByNative
-    private void setNativePtr(long nativeSceneLayerPtr) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setNativePtr(long nativeSceneLayerPtr) {
         assert mNativePtr == 0 || nativeSceneLayerPtr == 0;
         mNativePtr = nativeSceneLayerPtr;
     }
@@ -61,7 +64,8 @@ public class SceneLayer {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         long init(SceneLayer caller);
         void removeFromParent(long nativeSceneLayer, SceneLayer caller);
         void destroy(long nativeSceneLayer, SceneLayer caller);

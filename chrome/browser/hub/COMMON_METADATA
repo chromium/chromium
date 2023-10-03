@@ -1,0 +1,5 @@
+monorail: {
+  component: "UI>Browser>Mobile>Hub"
+}
+team_email: "clank-hub-dev@google.com"
+os: ANDROID

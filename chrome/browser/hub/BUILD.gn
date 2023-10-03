@@ -9,6 +9,8 @@ android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/DefaultPaneOrderController.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubFieldTrial.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimation.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationType.java",
     "android/java/src/org/chromium/chrome/browser/hub/Pane.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneId.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilder.java",
