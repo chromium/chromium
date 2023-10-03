@@ -14,6 +14,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TwaDisclosureUi;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
@@ -70,16 +71,18 @@ public class DisclosureUiPicker implements NativeInitObserver {
 
         if (mIntentDataProvider.getTwaDisclosureUi() == TwaDisclosureUi.V1_INFOBAR) {
             mDisclosureInfobar.get().showIfNeeded();
-        } else if (areNotificationsEnabled()) {
+        } else if (areHeadsUpNotificationsEnabled()) {
             mDisclosureNotification.get().onStartWithNative();
         } else {
             mDisclosureSnackbar.get().showIfNeeded();
         }
     }
 
-    private boolean areNotificationsEnabled() {
+    private boolean areHeadsUpNotificationsEnabled() {
         if (!mNotificationManager.areNotificationsEnabled()) return false;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return true;
+        // Android Automotive doesn't currently allow heads-up notifications.
+        if (BuildInfo.getInstance().isAutomotive) return false;
 
         return isChannelEnabled(WEBAPPS) && isChannelEnabled(WEBAPPS_QUIET);
     }

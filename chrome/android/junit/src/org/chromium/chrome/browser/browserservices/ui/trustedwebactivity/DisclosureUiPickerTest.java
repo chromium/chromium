@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 
@@ -62,6 +63,10 @@ public class DisclosureUiPickerTest {
     public NotificationManagerProxy mNotificationManager;
     @Mock
     public ActivityLifecycleDispatcher mLifecycleDispatcher;
+
+    @Rule
+    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new AutomotiveContextWrapperTestRule();
 
     private DisclosureUiPicker mPicker;
 
@@ -137,6 +142,17 @@ public class DisclosureUiPickerTest {
 
         mPicker.onFinishNativeInitialization();
         verify(mNotification).onStartWithNative();
+    }
+
+    @Test
+    @Feature("TrustedWebActivities")
+    public void picksSnackbar_whenAutomotive() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        setChannelEnabled(WEBAPPS, true);
+        setChannelEnabled(WEBAPPS_QUIET, true);
+
+        mPicker.onFinishNativeInitialization();
+        verify(mSnackbar).showIfNeeded();
     }
 
     private void setNotificationsEnabled(boolean enabled) {
