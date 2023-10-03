@@ -230,7 +230,7 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // This method is called internally each time we detect a change to the list
   // of input methods in the current session.
   void UpdatePacksForInputMethods(
-      base::span<const std::string> current_dlcs,
+      base::span<const std::string> current_hwr_locales,
       input_method::InputMethodManager* input_method_manager);
 
   // Adds an observer to the observer list.
