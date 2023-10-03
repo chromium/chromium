@@ -36,9 +36,10 @@ TabGroupsEventRouterFactory::TabGroupsEventRouterFactory()
   DependsOn(EventRouterFactory::GetInstance());
 }
 
-KeyedService* TabGroupsEventRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+TabGroupsEventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new TabGroupsEventRouter(context);
+  return std::make_unique<TabGroupsEventRouter>(context);
 }
 
 bool TabGroupsEventRouterFactory::ServiceIsCreatedWithBrowserContext() const {
