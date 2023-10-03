@@ -1,5 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.3.0-alpha05" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha05">
+<issues format="6" by="lint 8.3.0-alpha06" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha06">
+
+    <issue
+        id="SupportAnnotationUsage"
+        message="Top level class can&apos;t have private or protected access level"
+        errorLine1="@VisibleForTesting"
+        errorLine2="~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java"
+            line="14"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="SupportAnnotationUsage"
+        message="Top level class can&apos;t have private or protected access level"
+        errorLine1="@VisibleForTesting"
+        errorLine2="~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java"
+            line="46"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="SupportAnnotationUsage"
+        message="Top level class can&apos;t have private or protected access level"
+        errorLine1="@VisibleForTesting"
+        errorLine2="~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java"
+            line="31"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="SupportAnnotationUsage"
+        message="Top level class can&apos;t have private or protected access level"
+        errorLine1="@VisibleForTesting"
+        errorLine2="~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetManifest.java"
+            line="39"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="SupportAnnotationUsage"
+        message="Top level class can&apos;t have private or protected access level"
+        errorLine1="@VisibleForTesting"
+        errorLine2="~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java"
+            line="17"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="SupportAnnotationUsage"
+        message="Top level class can&apos;t have private or protected access level"
+        errorLine1="@VisibleForTesting"
+        errorLine2="~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java"
+            line="39"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="SupportAnnotationUsage"
+        message="Top level class can&apos;t have private or protected access level"
+        errorLine1="@VisibleForTesting"
+        errorLine2="~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java"
+            line="54"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="SupportAnnotationUsage"
+        message="Top level class can&apos;t have private or protected access level"
+        errorLine1="@VisibleForTesting"
+        errorLine2="~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java"
+            line="57"
+            column="1"/>
+    </issue>
 
     <issue
         id="AssertionSideEffect"

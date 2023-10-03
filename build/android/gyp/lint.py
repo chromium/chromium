@@ -339,7 +339,7 @@ def _RunLint(create_cache,
 
   start = time.time()
   logging.debug('Lint command %s', ' '.join(cmd))
-  failed = True
+  failed = False
 
   if creating_baseline and not warnings_as_errors:
     # Allow error code 6 when creating a baseline: ERRNO_CREATED_BASELINE
@@ -348,14 +348,14 @@ def _RunLint(create_cache,
     fail_func = lambda returncode, _: returncode != 0
 
   try:
-    failed = bool(
-        build_utils.CheckOutput(cmd,
-                                print_stdout=True,
-                                stdout_filter=stdout_filter,
-                                stderr_filter=stderr_filter,
-                                fail_on_output=warnings_as_errors,
-                                fail_func=fail_func))
+    build_utils.CheckOutput(cmd,
+                            print_stdout=True,
+                            stdout_filter=stdout_filter,
+                            stderr_filter=stderr_filter,
+                            fail_on_output=warnings_as_errors,
+                            fail_func=fail_func)
   except build_utils.CalledProcessError as e:
+    failed = True
     # Do not output the python stacktrace because it is lengthy and is not
     # relevant to the actual lint error.
     sys.stderr.write(e.output)

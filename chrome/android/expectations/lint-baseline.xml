@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.3.0-alpha05" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha05">
+<issues format="6" by="lint 8.3.0-alpha06" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha06">
 
     <issue
         id="ResourceType"
@@ -63,7 +63,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java"
-            line="116"
+            line="121"
             column="27"/>
     </issue>
 
@@ -184,7 +184,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="501"
+            line="507"
             column="13"/>
     </issue>
 
@@ -195,7 +195,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="520"
+            line="526"
             column="13"/>
     </issue>
 
@@ -316,7 +316,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="316"
+            line="315"
             column="13"/>
     </issue>
 
@@ -327,7 +327,7 @@
         errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1173"
+            line="1179"
             column="56"/>
     </issue>
 
@@ -338,7 +338,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1193"
+            line="1199"
             column="21"/>
     </issue>
 
@@ -349,7 +349,7 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1208"
+            line="1214"
             column="52"/>
     </issue>
 
@@ -360,7 +360,7 @@
         errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1274"
+            line="1280"
             column="56"/>
     </issue>
 
@@ -415,7 +415,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1601"
+            line="1620"
             column="21"/>
     </issue>
 
@@ -426,7 +426,7 @@
         errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1641"
+            line="1660"
             column="25"/>
     </issue>
 
@@ -437,7 +437,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="2182"
+            line="2205"
             column="13"/>
     </issue>
 
@@ -448,7 +448,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="2197"
+            line="2220"
             column="17"/>
     </issue>
 
@@ -1240,7 +1240,7 @@
         errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../ui/android/java/src/org/chromium/ui/display/PhysicalDisplayAndroid.java"
-            line="196"
+            line="201"
             column="35"/>
     </issue>
 
@@ -1251,7 +1251,7 @@
         errorLine2="                              ~~~~~~~~~~">
         <location
             file="../../ui/android/java/src/org/chromium/ui/display/PhysicalDisplayAndroid.java"
-            line="207"
+            line="212"
             column="31"/>
     </issue>
 
@@ -1449,7 +1449,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="261"
+            line="262"
             column="13"/>
     </issue>
 
@@ -1460,7 +1460,7 @@
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1090"
+            line="1097"
             column="34"/>
     </issue>
 
@@ -1471,7 +1471,7 @@
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1105"
+            line="1112"
             column="34"/>
     </issue>
 
@@ -1482,7 +1482,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1643"
+            line="1642"
             column="36"/>
     </issue>
 
@@ -1933,7 +1933,7 @@
         errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java"
-            line="628"
+            line="630"
             column="25"/>
     </issue>
 
@@ -1944,7 +1944,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java"
-            line="633"
+            line="635"
             column="36"/>
     </issue>
 
@@ -2389,7 +2389,7 @@
         errorLine2="    ^">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/gen/chrome/android/monochrome_public_bundle__base_bundle_module/AndroidManifest.xml"
-            line="602"
+            line="605"
             column="5"/>
     </issue>
 
@@ -2424,6 +2424,50 @@
             file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
             line="9"
             column="20"/>
+    </issue>
+
+    <issue
+        id="SupportAnnotationUsage"
+        message="Top level class can&apos;t have private or protected access level"
+        errorLine1="@VisibleForTesting"
+        errorLine2="~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/policy/AwPolicyProvider.java"
+            line="18"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="SupportAnnotationUsage"
+        message="Top level class can&apos;t have private or protected access level"
+        errorLine1="@VisibleForTesting"
+        errorLine2="~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegate.java"
+            line="20"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="SupportAnnotationUsage"
+        message="Top level class can&apos;t have private or protected access level"
+        errorLine1="@VisibleForTesting"
+        errorLine2="~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../content/public/android/java/src/org/chromium/content/browser/BackgroundSyncNetworkObserver.java"
+            line="42"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="SupportAnnotationUsage"
+        message="Top level class can&apos;t have private or protected access level"
+        errorLine1="@VisibleForTesting"
+        errorLine2="~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/FindAddress.java"
+            line="17"
+            column="1"/>
     </issue>
 
     <issue
@@ -2532,7 +2576,7 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListRecyclerView.java"
-            line="332"
+            line="331"
             column="33"/>
     </issue>
 
@@ -2543,7 +2587,7 @@
         errorLine2="                                                       ^">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="395"
+            line="407"
             column="56"/>
     </issue>
 
@@ -2697,7 +2741,7 @@
         errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                                                                           ~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/gen/chrome/android/monochrome_public_bundle__base_bundle_module/AndroidManifest.xml"
-            line="250"
+            line="253"
             column="444"/>
     </issue>
 
@@ -3346,7 +3390,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="552"
+            line="564"
             column="20"/>
     </issue>
 
