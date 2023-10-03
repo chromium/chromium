@@ -92,6 +92,64 @@ TEST(AutofillSaveCardUiInfoTest, CreateForLocalSaveSetsProperties) {
   EXPECT_EQ(ui_info.is_google_pay_branding_enabled, false);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Tests that the card-only prompt is set for local save without cvc.
+TEST(AutofillSaveCardUiInfoTest,
+     CreateForLocalSaveSetsDescriptionWhenCardSaveTypeIsOnlyCard) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnablePaymentsAndroidBottomSheet,
+                            features::kAutofillEnableCvcStorageAndFilling},
+      /*disabled_features=*/{});
+  CreditCard card = test::GetCreditCard();
+
+  auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
+      /*options=*/{.card_save_type =
+                       AutofillClient::CardSaveType::kCardSaveOnly},
+      card);
+
+  EXPECT_EQ(ui_info.description_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL));
+}
+
+// Tests that the card-save-with-cvc prompt is set for local save with cvc.
+TEST(AutofillSaveCardUiInfoTest,
+     CreateForLocalSaveSetsDescriptionWhenCardSaveTypeIsWithCVC) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnablePaymentsAndroidBottomSheet,
+                            features::kAutofillEnableCvcStorageAndFilling},
+      /*disabled_features=*/{});
+  CreditCard card = test::GetCreditCard();
+
+  auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
+      /*options=*/{.card_save_type =
+                       AutofillClient::CardSaveType::kCardSaveWithCvc},
+      card);
+
+  EXPECT_EQ(ui_info.description_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_LOCAL));
+}
+#else   // BUILDFLAG(IS_ANDROID)
+// Tests that the card-only prompt sets no description on non-android platforms.
+TEST(AutofillSaveCardUiInfoTest,
+     CreateForLocalSaveSetsEmptyDescriptionWhenNotAndroid) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+  CreditCard card = test::GetCreditCard();
+
+  for (auto card_save_type : {AutofillClient::CardSaveType::kCardSaveOnly,
+                              AutofillClient::CardSaveType::kCardSaveWithCvc}) {
+    auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
+        /*options=*/{.card_save_type = card_save_type}, card);
+
+    EXPECT_EQ(ui_info.description_text, std::u16string());
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Tests that CreateForUploadSave() sets properties where no branched logic is
 // needed.
 TEST(AutofillSaveCardUiInfoTest, CreateForUploadSaveSetsProperties) {

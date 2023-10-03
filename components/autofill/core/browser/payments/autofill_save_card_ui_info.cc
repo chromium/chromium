@@ -91,13 +91,27 @@ static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
 AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
     AutofillClient::SaveCreditCardOptions options,
     const CreditCard& card) {
+  std::u16string description_text;
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnablePaymentsAndroidBottomSheet) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableCvcStorageAndFilling)) {
+    CHECK_NE(options.card_save_type,
+             AutofillClient::CardSaveType::kCvcSaveOnly);
+    description_text = l10n_util::GetStringUTF16(
+        options.card_save_type == AutofillClient::CardSaveType::kCardSaveWithCvc
+            ? IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_LOCAL
+            : IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL);
+  }
+#endif
   return CreateAutofillSaveCardUiInfo(
       /*is_for_upload=*/false, card, IDR_INFOBAR_AUTOFILL_CC,
       LegalMessageLines(), AccountInfo(),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL),
       GetConfirmButtonText(options),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_NO_THANKS_MOBILE_LOCAL_SAVE),
-      /*description_text=*/base::EmptyString16(),
+      description_text,
       /*is_google_pay_branding_enabled=*/false);
 }
 

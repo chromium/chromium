@@ -54,6 +54,8 @@ struct AutofillSaveCardUiInfo {
   AutofillSaveCardUiInfo& operator=(AutofillSaveCardUiInfo&& other);
 
   // Create the ui info for a local save prompt.
+  // Requires that `options.card_save_type` is not equal to
+  // `AutofillClient::CardSaveType::kCvcSaveOnly`
   static AutofillSaveCardUiInfo CreateForLocalSave(
       AutofillClient::SaveCreditCardOptions options,
       const CreditCard& card);

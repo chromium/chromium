@@ -793,10 +793,19 @@ void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
     LocalSaveCardPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(options.show_prompt);
+  if (options.card_save_type ==
+      ChromeAutofillClient::CardSaveType::kCvcSaveOnly) {
+    // TODO (crbug.com/1485194): Create a Message UI for saving CVC to an
+    // existing local card.
+    NOTIMPLEMENTED();
+    return;
+  }
   AutofillSaveCardUiInfo ui_info =
       AutofillSaveCardUiInfo::CreateForLocalSave(options, card);
   auto save_card_delegate = std::make_unique<AutofillSaveCardDelegateAndroid>(
       std::move(callback), options, web_contents());
+
+  // Saving a new local card (may include CVC) via a bottom sheet.
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnablePaymentsAndroidBottomSheet)) {
     if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
@@ -804,6 +813,9 @@ void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
     }
     return;
   }
+
+  // Saving a new local card (may include CVC) via an infobar when the bottom
+  // sheet feature is disabled.
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->AddInfoBar(CreateSaveCardInfoBarMobile(
           std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
