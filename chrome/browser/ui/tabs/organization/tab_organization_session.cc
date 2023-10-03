@@ -44,16 +44,21 @@ void TabOrganizationSession::PopulateOrganizations(
     std::vector<std::unique_ptr<TabData>> tab_datas_for_org;
 
     for (const TabData::TabID& tab_id : response_organization.tab_ids) {
-      // TODO for now we cant use the TabID directly, we instead need to use
+      // TODO for now we can't use the TabID directly, we instead need to use
       // the webcontents ptr to refer to the tab.
       const auto matching_tab = std::find_if(
           request()->tab_datas().begin(), request()->tab_datas().end(),
           [tab_id](const std::unique_ptr<TabData>& tab_data) {
             return tab_id == tab_data->tab_id();
           });
+
+      // If the tab was removed or bad data was returned, do not include it in
+      // the organization.
       if (matching_tab == request()->tab_datas().end()) {
         continue;
       }
+
+      // If the tab is no longer valid, do not include it in the organization.
       if (!(*matching_tab)->IsValidForOrganizing()) {
         continue;
       }

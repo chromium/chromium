@@ -35,8 +35,6 @@ class TabOrganizationRequest {
  public:
   enum class State { NOT_STARTED, STARTED, COMPLETED, FAILED, CANCELED };
 
-  using Response = TabOrganizationResponse;
-
   using OnResponseCallback =
       base::OnceCallback<void(const TabOrganizationResponse* response)>;
 
@@ -83,4 +81,4 @@ class TabOrganizationRequest {
   BackendCancelRequest backend_cancel_request_lambda_;
 };
 
-#endif  // CHROME_BROWSER_UI__idsORGANIZATION_TAB_ORGANIZATION_REQUEST_H_
+#endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_REQUEST_H_

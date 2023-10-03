@@ -7,6 +7,7 @@
 #include <string>
 
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -75,7 +76,22 @@ void TabOrganization::SetCurrentName(
 // TODO(1469128) Add UKM/UMA Logging on user accept.
 void TabOrganization::Accept() {
   CHECK(!choice_.has_value());
+  CHECK(IsValidForOrganizing());
   choice_ = UserChoice::ACCEPTED;
+
+  TabStripModel* tab_strip_model = tab_datas_[0]->original_tab_strip_model();
+  std::vector<int> valid_indices;
+  for (const std::unique_ptr<TabData>& tab_data : tab_datas_) {
+    // Individual tabs may become invalid. in those cases, where the tab is
+    // invalid but the organization is not, do not include the tab in the
+    // organization, but still create the organization.
+    if (tab_data->IsValidForOrganizing()) {
+      valid_indices.emplace_back(
+          tab_strip_model->GetIndexOfWebContents(tab_data->web_contents()));
+    }
+  }
+
+  tab_strip_model->AddToNewGroup(valid_indices);
 }
 
 // TODO(1469128) Add UKM/UMA Logging on user reject.
