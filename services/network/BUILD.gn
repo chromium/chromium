@@ -11,12 +11,6 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 component("network_service") {
   sources = [
-    "brokered_client_socket_factory.cc",
-    "brokered_client_socket_factory.h",
-    "brokered_tcp_client_socket.cc",
-    "brokered_tcp_client_socket.h",
-    "brokered_udp_client_socket.cc",
-    "brokered_udp_client_socket.h",
     "chunked_data_pipe_upload_data_stream.cc",
     "chunked_data_pipe_upload_data_stream.h",
     "conditional_cache_deletion_helper.cc",
@@ -286,6 +280,12 @@ component("network_service") {
     sources += [
       "broker_helper_win.cc",
       "broker_helper_win.h",
+      "brokered_client_socket_factory.cc",
+      "brokered_client_socket_factory.h",
+      "brokered_tcp_client_socket.cc",
+      "brokered_tcp_client_socket.h",
+      "brokered_udp_client_socket.cc",
+      "brokered_udp_client_socket.h",
       "windows_system_proxy_resolver_mojo.cc",
       "windows_system_proxy_resolver_mojo.h",
     ]
@@ -401,8 +401,6 @@ source_set("tests") {
   testonly = true
 
   sources = [
-    "brokered_tcp_client_socket_unittest.cc",
-    "brokered_udp_client_socket_unittest.cc",
     "chunked_data_pipe_upload_data_stream_unittest.cc",
     "cookie_access_delegate_impl_unittest.cc",
     "cookie_manager_unittest.cc",
@@ -521,6 +519,8 @@ source_set("tests") {
   if (is_win) {
     sources += [
       "broker_helper_win_unittest.cc",
+      "brokered_tcp_client_socket_unittest.cc",
+      "brokered_udp_client_socket_unittest.cc",
       "windows_system_proxy_resolver_mojo_unittest.cc",
     ]
   }

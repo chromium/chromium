@@ -52,12 +52,10 @@ BrokeredUdpClientSocket::~BrokeredUdpClientSocket() {
 }
 
 int BrokeredUdpClientSocket::Connect(const net::IPEndPoint& address) {
-#if BUILDFLAG(IS_WIN)
   if (!broker_helper_.ShouldBroker(address.address())) {
     return ConnectInternal(address, CONNECT,
                            net::handles::kInvalidNetworkHandle);
   }
-#endif
   // Brokered sockets can only support asynchronous connections so this does not
   // need to be implemented. However, this path can still be hit if the sandbox
   // is enabled and a caller attempts to call a synchronous Connect. Callers are
@@ -69,11 +67,9 @@ int BrokeredUdpClientSocket::Connect(const net::IPEndPoint& address) {
 int BrokeredUdpClientSocket::ConnectUsingNetwork(
     net::handles::NetworkHandle network,
     const net::IPEndPoint& address) {
-#if BUILDFLAG(IS_WIN)
   if (!broker_helper_.ShouldBroker(address.address())) {
     return ConnectInternal(address, CONNECT_USING_NETWORK, network);
   }
-#endif
   // Similar to Connect(), callers are expected to handles failures themselves
   // if they call this method, so return ERR_NOT_IMPLEMENTED.
   return net::ERR_NOT_IMPLEMENTED;
@@ -81,12 +77,10 @@ int BrokeredUdpClientSocket::ConnectUsingNetwork(
 
 int BrokeredUdpClientSocket::ConnectUsingDefaultNetwork(
     const net::IPEndPoint& address) {
-#if BUILDFLAG(IS_WIN)
   if (!broker_helper_.ShouldBroker(address.address())) {
     return ConnectInternal(address, CONNECT_USING_DEFAULT_NETWORK,
                            net::handles::kInvalidNetworkHandle);
   }
-#endif
   // Similar to Connect(), callers are expected to handles failures themselves
   // if they call this method, so return ERR_NOT_IMPLEMENTED.
   return net::ERR_NOT_IMPLEMENTED;
@@ -131,13 +125,11 @@ int BrokeredUdpClientSocket::ConnectAsyncInternal(
       !net::NetworkChangeNotifier::AreNetworkHandlesSupported()) {
     return net::ERR_NOT_IMPLEMENTED;
   }
-#if BUILDFLAG(IS_WIN)
   if (!broker_helper_.ShouldBroker(address.address())) {
     return DidCompleteCreate(/*should_broker=*/false, address, which_connect,
                              network, std::move(callback),
                              network::TransferableSocket(), net::OK);
   }
-#endif
   net_log_source_.BeginEvent(net::NetLogEventType::BROKERED_CREATE_SOCKET);
   client_socket_factory_->BrokerCreateUdpSocket(
       address.GetFamily(),

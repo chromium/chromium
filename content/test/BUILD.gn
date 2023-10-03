@@ -1434,7 +1434,6 @@ test("content_browsertests") {
     "../browser/network/sandboxed_http_cache_browsertest.cc",
     "../browser/network/sandboxed_network_list_browsertest.cc",
     "../browser/network/sandboxed_nqe_browsertest.cc",
-    "../browser/network/sandboxed_socket_broker_browsertest.cc",
     "../browser/network/shared_dictionary_browsertest.cc",
     "../browser/network/split_cache_browsertest.cc",
     "../browser/network/transferable_socket_browsertest.cc",
@@ -1642,6 +1641,10 @@ test("content_browsertests") {
       # for other platforms.
       "../browser/renderer_host/navigation_transitions/navigation_entry_screenshot_browsertest.cc",
     ]
+  }
+
+  if (is_win) {
+    sources += [ "../browser/network/sandboxed_socket_broker_browsertest.cc" ]
   }
 
   if (enable_reporting) {

@@ -8,12 +8,9 @@
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/tcp_client_socket.h"
 #include "net/socket/udp_client_socket.h"
+#include "services/network/broker_helper_win.h"
 #include "services/network/brokered_tcp_client_socket.h"
 #include "services/network/brokered_udp_client_socket.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "services/network/broker_helper_win.h"
-#endif
 
 namespace net {
 
@@ -87,15 +84,11 @@ void BrokeredClientSocketFactory::BrokerCreateUdpSocket(
 
 bool BrokeredClientSocketFactory::ShouldBroker(
     const net::AddressList& addresses) const {
-#if BUILDFLAG(IS_WIN)
   for (const auto& address : addresses) {
     if (broker_helper_.ShouldBroker(address.address()))
       return true;
   }
   return false;
-#else
-  return true;
-#endif
 }
 
 }  // namespace network

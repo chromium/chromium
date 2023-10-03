@@ -47,12 +47,11 @@ enum WhichConnect {
 };
 
 // A client socket used exclusively with a socket broker. Currently intended for
-// Windows and Android only. Not intended to be used by non-brokered
-// connections. Generally, all calls pass through to an underlying
-// TCPClientSocket API, but Bind and Connect are the sent to a privileged
-// process using the net:SocketBroker interface. This is because socket creation
-// needs to be brokered, and TCPClientSocket only creates and opens a socket
-// within Bind and Connect.
+// Windows only. Not intended to be used by non-brokered connections. Generally,
+// all calls pass through to an underlying TCPClientSocket API, but Bind and
+// Connect are the sent to a privileged process using the net:SocketBroker
+// interface. This is because socket creation needs to be brokered, and
+// TCPClientSocket only creates and opens a socket within Bind and Connect.
 class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredUdpClientSocket
     : public net::DatagramClientSocket {
  public:

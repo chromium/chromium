@@ -444,7 +444,8 @@ struct NetworkContextParams {
   pending_remote<ProxyErrorClient>? proxy_error_client;
 
   // Broker used by the network service sandbox to create sockets in
-  // the browser. Set when the sandbox is enabled.
+  // the browser. Set when the sandbox is enabled on Windows.
+  [EnableIf=is_win]
   pending_remote<SocketBroker>? socket_broker;
 
   // A service to fetch blind-signed auth tokens for IP protection. If this
