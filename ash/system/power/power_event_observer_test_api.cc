@@ -16,6 +16,11 @@ PowerEventObserverTestApi::PowerEventObserverTestApi(
 
 PowerEventObserverTestApi::~PowerEventObserverTestApi() = default;
 
+void PowerEventObserverTestApi::SendLidEvent(
+    chromeos::PowerManagerClient::LidState state) {
+  power_event_observer_->LidEventReceived(state, base::TimeTicks::Now());
+}
+
 void PowerEventObserverTestApi::CompositingDidCommit(
     ui::Compositor* compositor) {
   if (!power_event_observer_->compositor_watcher_.get())

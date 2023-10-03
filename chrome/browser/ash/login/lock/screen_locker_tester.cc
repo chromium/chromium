@@ -96,16 +96,20 @@ void ScreenLockerTester::OnSessionStateChanged() {
 }
 
 void ScreenLockerTester::Lock() {
-  base::RunLoop run_loop;
-  on_lock_callback_ = run_loop.QuitClosure();
-
   ScreenLocker::Show();
-  if (!IsLocked())
+  WaitForLock();
+  base::RunLoop().RunUntilIdle();
+}
+
+void ScreenLockerTester::WaitForLock() {
+  if (!IsLocked()) {
+    base::RunLoop run_loop;
+    on_lock_callback_ = run_loop.QuitClosure();
     run_loop.Run();
+  }
   ASSERT_TRUE(IsLocked());
   ASSERT_EQ(session_manager::SessionState::LOCKED,
             session_manager::SessionManager::Get()->session_state());
-  base::RunLoop().RunUntilIdle();
 }
 
 void ScreenLockerTester::WaitForUnlock() {
@@ -126,6 +130,7 @@ void ScreenLockerTester::SetUnlockPassword(const AccountId& account_id,
   user_context.SetKey(Key(password));
 
   auto* locker = ScreenLocker::default_screen_locker();
+  CHECK(locker);
   locker->SetAuthenticatorsForTesting(
       base::MakeRefCounted<StubAuthenticator>(locker, user_context),
       base::MakeRefCounted<FakeExtendedAuthenticator>(locker, user_context));
