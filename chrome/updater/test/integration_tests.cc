@@ -903,10 +903,12 @@ TEST_F(IntegrationTest, UpdateAppSucceedsEvenAfterDeletingInterfaces) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());
 
+  const UpdaterScope scope = GetTestScope();
+  ASSERT_TRUE(AreComInterfacesPresent(scope, true));
+  ASSERT_TRUE(AreComInterfacesPresent(scope, false));
   // Delete IUpdaterXXX, used by `InstallApp` via `RegisterApp`.
   // Delete IUpdaterInternal, used by the `wake` task.
   {
-    const UpdaterScope scope = GetTestScope();
     for (const IID& iid : [&scope]() -> std::vector<IID> {
            switch (scope) {
              case UpdaterScope::kUser:
@@ -931,6 +933,8 @@ TEST_F(IntegrationTest, UpdateAppSucceedsEvenAfterDeletingInterfaces) {
       ASSERT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
     }
   }
+  ASSERT_FALSE(AreComInterfacesPresent(scope, true));
+  ASSERT_FALSE(AreComInterfacesPresent(scope, false));
 
   const std::string kAppId("test");
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));

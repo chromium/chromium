@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/registry_util.h"
@@ -235,6 +236,26 @@ bool InstallComInterfaces(UpdaterScope scope, bool is_internal) {
                                     iid, list.get());
   }
   return list->Do();
+}
+
+bool AreComInterfacesPresent(UpdaterScope scope, bool is_internal) {
+  VLOG(1) << __func__ << ": scope: " << scope
+          << ": is_internal: " << is_internal;
+  for (const auto& iid : GetInterfaces(is_internal, scope)) {
+    const HKEY root = UpdaterScopeToHKeyRoot(scope);
+    const std::wstring iid_path = GetComIidRegistryPath(iid);
+    const std::wstring typelib_path = GetComTypeLibRegistryPath(iid);
+    for (const auto& path :
+         {iid_path, base::StrCat({iid_path, L"\\", L"ProxyStubClsid32"}),
+          base::StrCat({iid_path, L"\\", L"TypeLib"}), typelib_path}) {
+      if (!base::win::RegKey(root, path.c_str(), KEY_QUERY_VALUE).Valid()) {
+        VLOG(2) << __func__ << ": interface missing: " << iid_path;
+        return false;
+      }
+    }
+  }
+  VLOG(2) << __func__ << ": all interfaces present";
+  return true;
 }
 
 // Adds work items to `list` to install the interface `iid`.

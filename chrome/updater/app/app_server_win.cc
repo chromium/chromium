@@ -265,6 +265,9 @@ void AppServerWin::Stop() {
 }
 
 bool AppServerWin::RestoreComInterfaces(bool is_internal) {
+  if (AreComInterfacesPresent(updater_scope(), is_internal)) {
+    return true;
+  }
   return InstallComInterfaces(updater_scope(), is_internal);
 }
 
