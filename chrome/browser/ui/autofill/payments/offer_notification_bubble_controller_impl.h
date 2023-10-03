@@ -53,6 +53,7 @@ class OfferNotificationBubbleControllerImpl
   const AutofillOfferData* GetOffer() const override;
   bool IsIconVisible() const override;
   bool ShouldIconExpand() const override;
+  void OnIconExpanded() override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
   void OnPromoCodeButtonClicked() override;
 
