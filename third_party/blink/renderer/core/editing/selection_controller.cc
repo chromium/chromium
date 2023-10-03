@@ -155,7 +155,7 @@ void MarkSelectionEndpointsForRepaint(const SelectionInFlatTree& selection) {
 
 bool IsNonSelectable(const Node* node) {
   LayoutObject* layout_object = node ? node->GetLayoutObject() : nullptr;
-  return !layout_object || !layout_object->IsSelectable();
+  return layout_object && !layout_object->IsSelectable();
 }
 
 inline bool ShouldIgnoreNodeForCheckSelectable(const Node* enclosing_block,

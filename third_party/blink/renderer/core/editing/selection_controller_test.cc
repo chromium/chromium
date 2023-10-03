@@ -571,4 +571,27 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithSpan) {
             PositionInFlatTree::LastPositionInNode(*two->firstChild()));
 }
 
+// http://crbug.com/1487484
+TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithComment) {
+  SetBodyContent(R"HTML(
+    <div id="div">
+      <span id="one">Hello World!</span>
+      <b>before comment</b><!---->
+      <span>after comment Hello World!</span>
+    </div>)HTML");
+
+  Element* div = GetDocument().getElementById(AtomicString("div"));
+  Element* one = GetDocument().getElementById(AtomicString("one"));
+
+  const SelectionInFlatTree& selection =
+      ExpandWithGranularity(SelectionInFlatTree::Builder()
+                                .Collapse(PositionInFlatTree(one, 0))
+                                .Build(),
+                            TextGranularity::kParagraph);
+  SelectionInFlatTree adjust_selection =
+      AdjustSelectionByUserSelect(one, selection);
+  EXPECT_EQ(adjust_selection.Base(), PositionInFlatTree(div, 0));
+  EXPECT_EQ(adjust_selection.Extent(), PositionInFlatTree(div->lastChild(), 5));
+}
+
 }  // namespace blink
