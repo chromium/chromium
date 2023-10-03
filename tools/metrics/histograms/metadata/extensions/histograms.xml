@@ -1330,7 +1330,10 @@ chromium-metrics-reviews@google.com.
     chosen based on when the majority of events are ack'd.
   </summary>
   <token key="BackgroundContextType">
-    <variant name="ExtensionServiceWorker" summary="service worker."/>
+    <variant name="ExtensionServiceWorker2"
+        summary="service worker. Replaced previous version because values
+                 were inconsistent with excluding
+                 EventRouter::DispatchEventToSender() events 2023-09"/>
   </token>
 </histogram>
 

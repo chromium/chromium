@@ -197,11 +197,9 @@ IN_PROC_BROWSER_TEST_P(EventMetricsDispatchToSenderBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker2",
       /*expected_count=*/0);
-  // TODO(crbug.com/1441221): Uncomment after fixing and incrementing this
-  // metric.
-  // histogram_tester.ExpectTotalCount(
-  //     "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker",
-  //     /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker",
+      /*expected_count=*/0);
 }
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
