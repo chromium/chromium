@@ -48,6 +48,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".QueryWebFeed" summary="QueryWebFeed"/>
   <variant name=".SingleWebFeedListContents"
       summary="SingleWebFeedListContents"/>
+  <variant name=".SupervisedFeed" summary="SupervisedFeed"/>
   <variant name=".UnfollowWebFeed" summary="UnfollowWebFeed"/>
   <variant name=".UploadActions" summary="UploadActions"/>
   <variant name=".WebFeedListContents" summary="WebFeedListContents"/>

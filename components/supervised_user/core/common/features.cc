@@ -18,6 +18,9 @@ BASE_FEATURE(kKidFriendlyContentFeed,
              "KidFriendlyContentFeed",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<std::string> kKidFriendlyContentFeedEndpoint{
+    &kKidFriendlyContentFeed, "supervised_feed_endpoint", ""};
+
 // Enables local parent approvals for the blocked website on the Family Link
 // user's device.
 // The feature includes one experiment parameter: "preferred_button", which

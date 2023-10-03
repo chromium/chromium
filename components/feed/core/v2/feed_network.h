@@ -18,12 +18,19 @@
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/types.h"
+#include "components/supervised_user/core/browser/proto/get_discover_feed_request.pb.h"
+#include "components/supervised_user/core/browser/proto/get_discover_feed_response.pb.h"
 #include "net/http/http_request_headers.h"
 
 namespace feedwire {
 class Request;
 class Response;
 }  // namespace feedwire
+
+namespace supervised_user {
+class GetDiscoverFeedRequest;
+class GetDiscoverFeedResponse;
+}  // namespace supervised_user
 
 namespace feed {
 struct AccountInfo;
@@ -179,6 +186,17 @@ class FeedNetwork {
     bool was_signed_in;
   };
 
+  // Result of SendKidFriendlyApiRequest.
+  struct KidFriendlyQueryRequestResult {
+    KidFriendlyQueryRequestResult();
+    ~KidFriendlyQueryRequestResult();
+    KidFriendlyQueryRequestResult(KidFriendlyQueryRequestResult&&);
+    KidFriendlyQueryRequestResult& operator=(KidFriendlyQueryRequestResult&&);
+    NetworkResponseInfo response_info;
+    // Response body if one was received.
+    std::unique_ptr<supervised_user::GetDiscoverFeedResponse> response_body;
+  };
+
   template <typename RESPONSE_MESSAGE>
   struct ApiResult {
     ApiResult() = default;
@@ -202,6 +220,14 @@ class FeedNetwork {
       const feedwire::Request& request,
       const AccountInfo& account_info,
       base::OnceCallback<void(QueryRequestResult)> callback) = 0;
+
+  // Send a supervised_user::GetDiscoverFeedRequest, and receive the response in
+  // |callback|. Supports unimplemented overrides on platforms that do not
+  // support supervision.
+  virtual void SendKidFriendlyApiRequest(
+      const supervised_user::GetDiscoverFeedRequest& request,
+      const AccountInfo& account_info,
+      base::OnceCallback<void(KidFriendlyQueryRequestResult)> callback) {}
 
   // Send a Discover API request. Usage:
   // SendApiRequest<UploadActionsDiscoverApi>(request_message, callback).

@@ -162,6 +162,7 @@ if (!is_ios) {
       "//components/reading_list/features:flags",
       "//components/search_engines",
       "//components/signin/public/identity_manager",
+      "//components/supervised_user/core/common:features",
       "//components/url_matcher:url_matcher",
       "//components/variations",
       "//components/variations/net",
@@ -179,6 +180,7 @@ if (!is_ios) {
       "//components/feed/core/common:feed_core_common",
       "//components/feed/core/proto:proto_ios_shared_v2",
       "//components/feed/core/proto:proto_v2",
+      "//components/supervised_user/core/browser/proto",
     ]
   }
 
@@ -256,6 +258,7 @@ if (!is_ios) {
       "//components/search_engines",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
+      "//components/supervised_user/core/common:buildflags",
       "//components/sync/base",
       "//components/sync_preferences:test_support",
       "//components/variations:test_support",

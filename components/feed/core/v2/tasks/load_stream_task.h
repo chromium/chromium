@@ -130,6 +130,8 @@ class LoadStreamTask : public offline_pages::Task {
       DocViewDigest doc_view_digest);
   void LoadFromStoreComplete(LoadStreamFromStoreTask::Result result);
   void UploadActionsComplete(UploadActionsTask::Result result);
+  void KidFriendlyRequestComplete(
+      FeedNetwork::KidFriendlyQueryRequestResult result);
   void QueryApiRequestComplete(
       FeedNetwork::ApiResult<feedwire::Response> result);
   void QueryRequestComplete(FeedNetwork::QueryRequestResult result);

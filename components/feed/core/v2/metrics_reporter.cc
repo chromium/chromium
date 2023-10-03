@@ -243,6 +243,8 @@ base::StringPiece NetworkRequestTypeUmaName(NetworkRequestType type) {
       return "QueryNextPage";
     case NetworkRequestType::kQueryWebFeed:
       return "QueryWebFeed";
+    case NetworkRequestType::kSupervisedFeed:
+      return "SupervisedFeed";
   }
 }
 

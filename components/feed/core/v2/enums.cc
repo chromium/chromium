@@ -40,6 +40,8 @@ std::ostream& operator<<(std::ostream& out, NetworkRequestType value) {
       return out << "kSingleWebFeedListContents";
     case NetworkRequestType::kQueryWebFeed:
       return out << "kQueryWebFeed";
+    case NetworkRequestType::kSupervisedFeed:
+      return out << "kSupervisedFeed";
   }
 #endif
   return out << (static_cast<int>(value));
