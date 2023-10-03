@@ -52,6 +52,10 @@ def PullAndMaybeMergeClangCoverageFiles(device, device_coverage_dir, output_dir,
         |device_coverage_dir| into. It will be deleted after merging if
         merging happens.
   """
+  if not device.PathExists(device_coverage_dir, retries=0):
+    logging.warning('Clang coverage data folder does not exist on device: %s',
+                    device_coverage_dir)
+    return
   # Host side dir to pull device coverage profraw folder into.
   profraw_parent_dir = os.path.join(output_dir, output_subfolder_name)
   # Note: The function pulls |device_coverage_dir| folder,
