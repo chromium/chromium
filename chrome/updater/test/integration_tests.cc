@@ -51,6 +51,7 @@
 #include "chrome/updater/util/util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -923,6 +924,18 @@ TEST_F(IntegrationTest, UpdateApp) {
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, UpdateAppSucceedsEvenAfterDeletingInterfaces) {
+  if (!::IsUserAnAdmin()) {
+    GTEST_SKIP() << "Need admin privileges to run this test";
+  }
+
+  // Skips `DUMP_WILL_BE_CHECK` when running this test.
+  base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_DEV_KEY, KEY_WRITE)
+      .WriteValue(kRegValueIntegrationTestMode, 1);
+  absl::Cleanup remove_test_mode = [] {
+    base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_DEV_KEY, DELETE)
+        .DeleteValue(kRegValueIntegrationTestMode);
+  };
+
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_TRUE(WaitForUpdaterExit());

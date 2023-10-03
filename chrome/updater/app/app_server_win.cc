@@ -268,6 +268,13 @@ bool AppServerWin::RestoreComInterfaces(bool is_internal) {
   if (AreComInterfacesPresent(updater_scope(), is_internal)) {
     return true;
   }
+
+  // Skip `DUMP_WILL_BE_CHECK` when running
+  // `IntegrationTest.UpdateAppSucceedsEvenAfterDeletingInterfaces`.
+  if (!base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_DEV_KEY, KEY_READ)
+           .HasValue(kRegValueIntegrationTestMode)) {
+    DUMP_WILL_BE_CHECK(false);
+  }
   return InstallComInterfaces(updater_scope(), is_internal);
 }
 
@@ -300,6 +307,11 @@ void AppServerWin::UnregisterClassObjects() {
       Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
           .UnregisterObjects();
   LOG_IF(ERROR, FAILED(hr)) << "UnregisterObjects failed; hr: " << hr;
+
+  // TODO(crbug.com/1484803): remove once we know why E_NOINTERFACE happens.
+  const bool succeeded =
+      RestoreComInterfaces(update_service_internal_ != nullptr);
+  LOG_IF(ERROR, !succeeded);
 }
 
 void AppServerWin::CreateWRLModule() {
