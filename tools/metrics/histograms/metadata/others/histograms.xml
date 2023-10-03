@@ -13488,7 +13488,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="TouchScreen.MissedTOUCHEVENTF_UP" enum="BooleanHit"
-    expires_after="2023-10-03">
+    expires_after="2024-10-03">
   <owner>girard@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
