@@ -1078,6 +1078,7 @@ component("base") {
     ":synchronization_buildflags",
     ":tracing_buildflags",
     "//base/allocator/partition_allocator/src/partition_alloc:buildflags",
+    "//base/allocator/partition_allocator/src/partition_alloc:raw_ptr",
     "//base/numerics:base_numerics",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
@@ -4153,8 +4154,13 @@ if (enable_nocompile_tests) {
     ]
 
     # Since the nocompile test is not able to inspect the contents of
-    # include_dirs, we need to specify the Abseil include dir manually.
-    include_dirs = [ "//third_party/abseil-cpp" ]
+    # include_dirs, we need to specify the Abseil and PartitionAlloc include dir
+    # manually.
+    include_dirs = [
+      "${root_gen_dir}/base/allocator/partition_allocator/src",
+      "//base/allocator/partition_allocator/src",
+      "//third_party/abseil-cpp",
+    ]
   }
 }
 
