@@ -20,14 +20,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.sync.protocol.DeviceInfoSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
@@ -70,21 +67,8 @@ public class SendTabToSelfCoordinatorTest {
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO)
-    public void testShowFeatureUnavailablePromptIfSignedOutAndFeatureDisabled() {
-        // Set up a user satisfying all the preconditions for a sign-in promo, except having the
-        // feature enabled.
-        mSyncTestRule.addTestAccount();
-        buildAndShowCoordinator();
-
-        waitForViewShown(R.id.send_tab_to_self_feature_unavailable_prompt);
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO)
     @DisabledTest(message = "https://crbug.com/1302062")
-    public void testShowSigninPromoIfSignedOutAndFeatureEnabled() {
+    public void testShowSigninPromoIfSignedOut() {
         // An account must be added to the device so the promo is offered.
         mSyncTestRule.addTestAccount();
         buildAndShowCoordinator();

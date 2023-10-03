@@ -6,7 +6,6 @@
 
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -50,8 +49,7 @@ absl::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
     return absl::nullopt;
   }
 
-  if (ShouldOfferSignin(sync_service, pref_service) &&
-      base::FeatureList::IsEnabled(kSendTabToSelfSigninPromo)) {
+  if (ShouldOfferSignin(sync_service, pref_service)) {
     return EntryPointDisplayReason::kOfferSignIn;
   }
 
@@ -69,10 +67,7 @@ absl::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
   }
 
   if (!send_tab_to_self_model->HasValidTargetDevice()) {
-    return base::FeatureList::IsEnabled(kSendTabToSelfSigninPromo)
-               ? absl::make_optional(
-                     EntryPointDisplayReason::kInformNoTargetDevice)
-               : absl::nullopt;
+    return EntryPointDisplayReason::kInformNoTargetDevice;
   }
 
   return EntryPointDisplayReason::kOfferFeature;

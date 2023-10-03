@@ -11,7 +11,6 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -161,14 +160,7 @@ public class SendTabToSelfCoordinator {
     public void show() {
         Optional</*@EntryPointDisplayReason*/ Integer> displayReason =
                 SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, mUrl);
-        if (!displayReason.isPresent()) {
-            // This must be the old behavior where the entry point is shown even in states where
-            // no promo is shown.
-            assert !ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO);
-            MetricsRecorder.recordSendingEvent(SendingEvent.SHOW_NO_TARGET_DEVICE_MESSAGE);
-            mController.requestShowContent(new NoTargetDeviceBottomSheetContent(mContext), true);
-            return;
-        }
+        assert displayReason.isPresent();
 
         switch (displayReason.get()) {
             case EntryPointDisplayReason.INFORM_NO_TARGET_DEVICE:

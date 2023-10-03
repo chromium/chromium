@@ -3115,11 +3115,6 @@ const char kSecurePaymentConfirmationExtensionsDescription[] =
     "Enables extensions in the Secure Payment Confirmation API that allows "
     "using webauthn extensions with Secure Payment Confirmation";
 
-const char kSendTabToSelfSigninPromoName[] = "Send tab to self sign-in promo";
-const char kSendTabToSelfSigninPromoDescription[] =
-    "Enables a sign-in promo if the user attempts to share a tab while being "
-    "signed out";
-
 const char kSidePanelJourneysFlagId[] = "side-panel-journeys";
 const char kSidePanelJourneysName[] = "Side panel journeys";
 const char kSidePanelJourneysDescription[] =

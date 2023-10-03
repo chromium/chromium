@@ -281,8 +281,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     private void maybeAddSendTabToSelfFirstPartyOption() {
         Optional<Integer> sendTabToSelfDisplayReason =
                 SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, mUrl);
-        if (sendTabToSelfDisplayReason.isPresent()
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO)) {
+        if (sendTabToSelfDisplayReason.isPresent()) {
             mOrderedFirstPartyOptions.add(createSendTabToSelfFirstPartyOption());
         }
     }

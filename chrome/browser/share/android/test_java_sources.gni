@@ -59,5 +59,6 @@ share_junit_test_java_deps = [
   "//chrome/browser/paint_preview/android:java",
   "//chrome/browser/paint_preview/android:java",
   "//components/paint_preview/player/android:java",
+  "//components/send_tab_to_self:send_tab_to_self_java",
   "//components/shared_highlighting/core/common:shared_highlighting_android_enums_java",
 ]

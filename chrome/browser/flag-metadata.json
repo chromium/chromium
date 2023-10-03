@@ -7439,11 +7439,6 @@
     "expiry_milestone" : 115
   },
   {
-    "name": "send-tab-to-self-signin-promo",
-    "owners": ["victorvianna@google.com", "chrome-sync-dev+finch@google.com"],
-    "expiry_milestone": 117
-  },
-  {
     "name": "send-tab-to-self-v2",
     "owners": ["ellyjones", "jeffreycohen", "chrome-with-friends-robots@google.com"],
     "expiry_milestone": 119
