@@ -11,6 +11,8 @@
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,6 +22,25 @@ namespace ash::input_method {
 namespace {
 
 EditorMediator* g_instance_ = nullptr;
+constexpr auto striped_symbols =
+    base::MakeFixedFlatSet<char>({' ', '\t', '\n', '.', ','});
+
+size_t NonWhitespaceAndSymbolsLength(const std::u16string& text,
+                                     gfx::Range selection_range) {
+  size_t start = selection_range.start();
+  while (start < selection_range.end() &&
+         striped_symbols.contains(text[start])) {
+    start++;
+  }
+
+  size_t end = selection_range.end();
+  while (end > selection_range.start() && end < text.length() &&
+         striped_symbols.contains(text[end])) {
+    end--;
+  }
+
+  return std::max(static_cast<int>(end) - static_cast<int>(start), 0);
+}
 
 }  // namespace
 
@@ -160,7 +181,8 @@ void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
   if (editor_event_proxy_ != nullptr) {
     editor_event_proxy_->OnSurroundingTextChanged(text, selection_range);
   }
-  editor_switch_->OnTextSelectionLengthChanged(selection_range.length());
+  size_t selected_length = NonWhitespaceAndSymbolsLength(text, selection_range);
+  editor_switch_->OnTextSelectionLengthChanged(selected_length);
 }
 
 void EditorMediator::ProcessConsentAction(ConsentAction consent_action) {
