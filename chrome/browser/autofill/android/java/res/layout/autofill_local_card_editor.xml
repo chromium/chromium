@@ -47,7 +47,7 @@ found in the LICENSE file.
         android:text="@string/autofill_credit_card_editor_expiration_date" />
 
     <LinearLayout
-        android:id="@+id/credit_card_expiration_container"
+        android:id="@+id/credit_card_expiration_spinner_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
@@ -76,7 +76,7 @@ found in the LICENSE file.
 
         </LinearLayout>
 
-       <LinearLayout
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -94,7 +94,90 @@ found in the LICENSE file.
         </LinearLayout>
     </LinearLayout>
 
-     <!-- Name -->
+    <!--- Expiration date & CVC -->
+    <RelativeLayout
+        android:id="@+id/credit_card_expiration_and_cvc_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/credit_card_expiration_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/credit_card_expiration_month_and_year_label"
+                android:labelFor="@+id/expiration_month_and_year"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
+                android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
+                android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+                android:text="@string/autofill_credit_card_editor_expiration_date" />
+
+            <EditText
+                android:id="@+id/expiration_month_and_year"
+                android:width="@dimen/local_card_expiration_date_editor_width"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:digits="0123456789/"
+                android:gravity="start"
+                android:hint="@string/autofill_credit_card_editor_expiration_date_hint"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                android:maxLength="5"
+                android:minHeight="@dimen/min_touch_target_size"
+                tools:ignore="Autofill,LabelFor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/credit_card_security_code_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_toStartOf="@id/cvc_hint_image">
+
+            <TextView
+                android:id="@+id/credit_card_security_code_label"
+                android:labelFor="@+id/cvc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
+                android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
+                android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+                android:text="@string/autofill_credit_card_editor_security_code" />
+
+            <EditText
+                android:id="@+id/cvc"
+                android:width="@dimen/local_card_cvc_editor_width"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:hint="@string/autofill_optional_tag"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                android:maxLength="4"
+                android:minHeight="@dimen/min_touch_target_size"
+                tools:ignore="Autofill,LabelFor" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/cvc_hint_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/local_card_cvc_image_horizontal_margin"
+            android:layout_marginEnd="@dimen/local_card_cvc_image_large_horizontal_margin"
+            android:layout_centerInParent="true"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/cvc_icon"
+            tools:ignore="ContentDescription" />
+
+    </RelativeLayout>
+
+    <!-- Name -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/credit_card_name_label"
         android:labelFor="@+id/credit_card_name_edit"

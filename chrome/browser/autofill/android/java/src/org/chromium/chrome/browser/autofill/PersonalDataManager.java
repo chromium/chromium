@@ -76,11 +76,11 @@ public class PersonalDataManager {
         private String mCardLabel;
         private String mNickname;
         private GURL mCardArtUrl;
+        private String mCvc;
         private final @VirtualCardEnrollmentState int mVirtualCardEnrollmentState;
         private final String mProductDescription;
         private final String mCardNameForAutofillDisplay;
         private final String mObfuscatedLastFourDigits;
-        private final String mCvc;
 
         @CalledByNative("CreditCard")
         public static CreditCard create(String guid, String origin, boolean isLocal,
@@ -297,6 +297,10 @@ public class PersonalDataManager {
 
         public void setYear(String year) {
             mYear = year;
+        }
+
+        public void setCvc(String cvc) {
+            mCvc = cvc;
         }
 
         public void setBasicCardIssuerNetwork(String network) {

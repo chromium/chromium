@@ -525,8 +525,23 @@ CHAR_LIMIT guidelines:
       <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_NICKNAME" desc="Label for text input field containing the nickname on a credit card. [CHAR_LIMIT=25]">
         Card nickname
       </message>
+      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_EXPIRATION_DATE_HINT" desc="Hint for text input field containing the expiration date on a credit card. [CHAR_LIMIT=25]">
+        MM / YY
+      </message>
+      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_SECURITY_CODE" desc="Label for text input field containing the security code on a credit card. [CHAR_LIMIT=25]">
+        Security code
+      </message>
       <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_INVALID_NICKNAME" desc="Label for text input field containing the nickname on a credit card. [CHAR_LIMIT=25]">
         Nickname can’t include numbers
+      </message>
+      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_INVALID_EXPIRATION_DATE" desc="Error label shown to the user in the expiration date field when the expiration date is invalid. [CHAR_LIMIT=25]">
+        Invalid date
+      </message>
+      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_EXPIRED_CARD" desc="Error label shown to the user in the expiration date field when the expiration date has already passed. [CHAR_LIMIT=25]">
+        Card expired
+      </message>
+      <message name="IDS_AUTOFILL_OPTIONAL_TAG" desc="The placeholder/label text to show for the autofill security code text field to indicate that the user can optionally enter a card security code.">
+        Optional
       </message>
       <message name="IDS_AUTOFILL_CARD_HOLDER_NAME" desc="Label for text input field containing the name on a credit card. [CHAR_LIMIT=32]">
         Cardholder name

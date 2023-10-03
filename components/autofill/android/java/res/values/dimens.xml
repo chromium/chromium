@@ -57,4 +57,11 @@ found in the LICENSE file.
     <dimen name="card_icon_border_width">1dp</dimen>
     <dimen name="large_card_icon_corner_radius">3dp</dimen>
     <dimen name="small_card_icon_corner_radius">2dp</dimen>
+
+    <!-- Local credit card editor -->
+    <dimen name="local_card_expiration_date_editor_width">100dp</dimen>
+    <dimen name="local_card_cvc_editor_width">150dp</dimen>
+    <dimen name="local_card_cvc_image_horizontal_margin">8dp</dimen>
+    <dimen name="local_card_cvc_image_large_horizontal_margin">16dp</dimen>
+
 </resources>
