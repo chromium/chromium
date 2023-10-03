@@ -104,7 +104,6 @@ static_library("util") {
     "//services/network/public/cpp:cpp",
     "//services/network/public/mojom:mojom",
     "//url",
-    "//url:gurl_android",
   ]
 }
 
@@ -189,7 +188,7 @@ static_library("web_contents_delegate") {
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",
-    "//url:gurl_android",
+    "//url",
   ]
 }
 
@@ -255,7 +254,7 @@ static_library("context_menu") {
     "//base",
     "//content/public/browser",
     "//content/public/common",
-    "//url:gurl_android",
+    "//url",
   ]
 }
 

@@ -110,7 +110,6 @@ static_library("autofill") {
       "//components/messages/android:feature_flags",
       "//components/password_manager/core/browser",
       "//third_party/libaddressinput",
-      "//url:gurl_android",
     ]
   } else {
     # !is_android

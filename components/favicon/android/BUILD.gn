@@ -43,6 +43,5 @@ source_set("android") {
     "//skia",
     "//ui/gfx",
     "//url",
-    "//url:gurl_android",
   ]
 }

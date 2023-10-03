@@ -158,7 +158,6 @@ source_set("browser") {
       "//ui/android:android",
       "//ui/base",
       "//ui/gfx",
-      "//url:gurl_android",
     ]
   }
 }

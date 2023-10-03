@@ -50,7 +50,7 @@ android_library("nonembedded_java") {
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
-    "//url:gurl_java",
+    "//url:url_java",
   ]
 }
 
@@ -204,7 +204,6 @@ source_set("nonembedded") {
     "//components/version_info",
     "//components/version_info/android:channel_getter",
     "//url",
-    "//url:gurl_android",
 
     # Called via JNI by LicenseContentProvider in :nonembedded_java.
     "//components/about_ui:about_ui_android",

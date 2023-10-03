@@ -16,8 +16,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "url/android/parsed_android.h"
-#include "url/gurl_jni_headers/GURL_jni.h"
 #include "url/third_party/mozilla/url_parse.h"
+#include "url/url_jni_headers/GURL_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

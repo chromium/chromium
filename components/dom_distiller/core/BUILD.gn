@@ -77,10 +77,7 @@ static_library("core") {
       "dom_distiller_service_android.h",
       "url_utils_android.cc",
     ]
-    deps += [
-      "//components/dom_distiller/core/android:jni_headers",
-      "//url:gurl_android",
-    ]
+    deps += [ "//components/dom_distiller/core/android:jni_headers" ]
   }
 }
 

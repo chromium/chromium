@@ -990,7 +990,7 @@ static_library("ui") {
       "//services/device/public/cpp/usb",
       "//services/device/public/mojom:usb",
       "//ui/android",
-      "//url:gurl_android",
+      "//url",
     ]
   } else {
     # !is_android

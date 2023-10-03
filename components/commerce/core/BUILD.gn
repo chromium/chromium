@@ -248,10 +248,7 @@ static_library("shopping_service") {
       "android/shopping_service_android.h",
     ]
 
-    deps += [
-      "//components/commerce/core/android:core_jni",
-      "//url:gurl_android",
-    ]
+    deps += [ "//components/commerce/core/android:core_jni" ]
   }
 }
 

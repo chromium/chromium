@@ -53,7 +53,7 @@ source_set("share") {
       "//components/history/core/browser:browser",
       "//components/ukm/content:content",
       "//ui/android",
-      "//url:gurl_android",
+      "//url",
     ]
   }
 }

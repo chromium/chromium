@@ -30,10 +30,7 @@ component("base_cpp") {
       "media_metadata_android.cc",
       "media_position_android.cc",
     ]
-    deps += [
-      "android:media_session_jni_headers",
-      "//url:gurl_android",
-    ]
+    deps += [ "android:media_session_jni_headers" ]
   }
 
   defines = [ "IS_MEDIA_SESSION_BASE_CPP_IMPL" ]

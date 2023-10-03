@@ -2,20 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 config("jni_include_dir") {
   include_dirs = [ jni_headers_dir ]
 }
 
-java_library("test_mocker_java") {
-  supports_android = true
-  sources = [ "java/src/org/jni_zero/JniStaticTestMocker.java" ]
-}
+if (is_android) {
+  import("//build/config/android/rules.gni")
 
-java_library("native_library_loaded_status_java") {
-  supports_android = true
-  sources = [ "java/src/org/jni_zero/NativeLibraryLoadedStatus.java" ]
-  deps = [ "//build/android:build_java" ]
+  java_library("test_mocker_java") {
+    supports_android = true
+    sources = [ "java/src/org/jni_zero/JniStaticTestMocker.java" ]
+  }
+
+  java_library("native_library_loaded_status_java") {
+    supports_android = true
+    sources = [ "java/src/org/jni_zero/NativeLibraryLoadedStatus.java" ]
+    deps = [ "//build/android:build_java" ]
+  }
 }

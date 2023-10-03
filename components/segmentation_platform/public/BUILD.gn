@@ -56,10 +56,7 @@ source_set("public") {
       "android/segmentation_platform_conversion_bridge.cc",
       "android/segmentation_platform_conversion_bridge.h",
     ]
-    deps += [
-      ":jni_headers",
-      "//url:gurl_android",
-    ]
+    deps += [ ":jni_headers" ]
   }
 }
 
@@ -80,7 +77,6 @@ source_set("unit_tests") {
 
     deps += [
       "//base:base",
-      "//url:gurl_android",
       "//url:url",
     ]
   }

@@ -25,7 +25,6 @@ source_set("android") {
     "//ui/android",
     "//ui/gfx",
     "//url",
-    "//url:gurl_android",
   ]
 }
 

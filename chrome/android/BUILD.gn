@@ -2487,8 +2487,8 @@ if (current_toolchain == default_toolchain) {
       "//components/sync:test_support",
       "//content/test:test_support",
       "//net:test_support",
+      "//url",
       "//url:android_test_helper",
-      "//url:gurl_android",
     ]
   }
 
@@ -3656,7 +3656,6 @@ source_set("chrome_test_util") {
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
     "//components/variations",
-    "//url:gurl_android",
     "//url:url",
   ]
 }

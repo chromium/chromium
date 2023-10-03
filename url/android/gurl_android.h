@@ -8,12 +8,13 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "url/gurl.h"
 
 namespace url {
 
-class GURLAndroid {
+class COMPONENT_EXPORT(URL) GURLAndroid {
  public:
   static std::unique_ptr<GURL> ToNativeGURL(
       JNIEnv* env,

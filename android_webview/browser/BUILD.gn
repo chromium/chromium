@@ -308,7 +308,7 @@ source_set("browser") {
     "//ui/gl",
     "//ui/resources",
     "//ui/touch_selection",
-    "//url:gurl_android",
+    "//url",
   ]
 
   if (enable_printing) {

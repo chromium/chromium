@@ -373,7 +373,7 @@ static_library("browser") {
     ]
     deps += [
       ":jni_headers",
-      "//url:gurl_android",
+      "//url",
     ]
   } else {
     deps += [ "//components/keep_alive_registry" ]

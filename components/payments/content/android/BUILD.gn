@@ -64,7 +64,7 @@ static_library("android") {
     "//components/webdata_services",
     "//content/public/browser",
     "//net",
-    "//url:gurl_android",
+    "//url",
   ]
 }
 

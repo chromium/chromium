@@ -3240,7 +3240,7 @@ source_set("browser") {
       "//ui/android",
       "//ui/android:ui_android_jni_headers",
       "//ui/compositor",
-      "//url:gurl_android",
+      "//url",
     ]
     if (enable_vulkan) {
       deps += [ "//gpu/vulkan/init" ]

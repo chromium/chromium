@@ -14,7 +14,9 @@ import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/zip.gni")
 import("//build/toolchain/toolchain.gni")
-assert(is_android || is_robolectric)
+assert(
+    is_android || is_robolectric,
+    "current_toolchain=$current_toolchain default_toolchain=$default_toolchain")
 
 if (target_cpu == "arm") {
   _sanitizer_arch = "arm"
