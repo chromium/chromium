@@ -2431,7 +2431,12 @@ void WallpaperControllerImpl::ReloadWallpaper(bool clear_cache) {
       was_one_shot_wallpaper
           ? current_wallpaper_->wallpaper_info().one_shot_wallpaper
           : gfx::ImageSkia();
+
   current_wallpaper_.reset();
+
+  // Cancel any in-flight color calculation.
+  color_calculator_.reset();
+
   if (clear_cache)
     wallpaper_cache_map_.clear();
 
@@ -2466,12 +2471,13 @@ void WallpaperControllerImpl::ResetCalculatedColors() {
 }
 
 void WallpaperControllerImpl::CalculateWallpaperColors() {
-  if (!current_wallpaper_)
-    return;
-
   // Cancel any in-flight color calculation.
   if (color_calculator_) {
     color_calculator_.reset();
+  }
+
+  if (!current_wallpaper_) {
+    return;
   }
 
   absl::optional<WallpaperCalculatedColors> colors =
