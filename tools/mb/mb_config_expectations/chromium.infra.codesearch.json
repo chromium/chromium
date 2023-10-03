@@ -30,15 +30,29 @@
     "gn_args": {
       "blink_enable_generated_code_formatting": true,
       "clang_use_chrome_plugins": false,
+      "clang_use_default_sample_profile": false,
       "debuggable_apks": false,
+      "default_min_sdk_version": 21,
+      "disable_file_support": true,
+      "enable_base_tracing": false,
       "enable_kythe_annotations": true,
+      "enable_reporting": true,
+      "enable_resource_allowlist_generation": false,
+      "enable_websockets": false,
+      "include_transport_security_state_preload_list": false,
       "is_clang": true,
       "is_component_build": false,
       "is_cronet_build": true,
       "is_debug": true,
+      "media_use_ffmpeg": false,
       "symbol_level": 1,
       "target_os": "android",
-      "use_remoteexec": true
+      "use_crash_key_stubs": true,
+      "use_hashed_jni_names": true,
+      "use_partition_alloc": false,
+      "use_platform_icu_alternatives": true,
+      "use_remoteexec": true,
+      "use_thin_lto": false
     }
   },
   "codesearch-gen-chromium-fuchsia": {
