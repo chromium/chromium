@@ -9850,26 +9850,14 @@
             ]
         }
     ],
-    "MacWebContentsOcclusion": [
+    "MacWebContentsOcclusionV2": [
         {
             "platforms": [
                 "mac"
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithEnhancedWindowOcclusionDetection",
-                    "params": {
-                        "EnhancedWindowOcclusionDetection": "true"
-                    },
-                    "enable_features": [
-                        "MacWebContentsOcclusion"
-                    ]
-                },
-                {
-                    "name": "EnabledWithDisplaySleepAndAppHideDetection",
-                    "params": {
-                        "DisplaySleepAndAppHideDetection": "true"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
                         "MacWebContentsOcclusion"
                     ]
