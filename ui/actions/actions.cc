@@ -516,10 +516,10 @@ void ActionManager::ResetForTesting() {
 
 // static
 ActionManager::ActionIdToStringMap& ActionManager::GetActionIdToStringMap() {
-  static ActionIdToStringMap map =
+  static base::NoDestructor<ActionIdToStringMap> map(
       base::MakeFlatMap<ActionId, std::string_view>(
-          std::vector<std::pair<ActionId, std::string_view>>{ACTION_IDS});
-  return map;
+          std::vector<std::pair<ActionId, std::string_view>>{ACTION_IDS}));
+  return *map;
 }
 
 #include "ui/actions/action_id_macros.inc"
@@ -530,10 +530,10 @@ ActionManager::ActionIdToStringMap& ActionManager::GetActionIdToStringMap() {
 
 // static
 ActionManager::StringToActionIdMap& ActionManager::GetStringToActionIdMap() {
-  static StringToActionIdMap map =
+  static base::NoDestructor<StringToActionIdMap> map(
       base::MakeFlatMap<std::string_view, ActionId>(
-          std::vector<std::pair<std::string_view, ActionId>>{ACTION_IDS});
-  return map;
+          std::vector<std::pair<std::string_view, ActionId>>{ACTION_IDS}));
+  return *map;
 }
 
 #include "ui/actions/action_id_macros.inc"

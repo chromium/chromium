@@ -13,11 +13,13 @@ source_set("actions_headers") {
   ]
 
   public_deps = [
-    "//base:base",
+    "//base",
     "//ui/base",
     "//ui/base/metadata",
-    "//ui/events:events",
+    "//ui/events",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 component("actions") {
@@ -26,6 +28,8 @@ component("actions") {
   defines = [ "IS_ACTIONS_IMPL" ]
 
   public_deps = [ ":actions_headers" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {
