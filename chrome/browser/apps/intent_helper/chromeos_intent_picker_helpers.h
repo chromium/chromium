@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
+#include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "url/gurl.h"
 
 namespace content {

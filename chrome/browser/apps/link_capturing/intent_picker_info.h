@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_INTENT_HELPER_APPS_NAVIGATION_TYPES_H_
-#define CHROME_BROWSER_APPS_INTENT_HELPER_APPS_NAVIGATION_TYPES_H_
+#ifndef CHROME_BROWSER_APPS_LINK_CAPTURING_INTENT_PICKER_INFO_H_
+#define CHROME_BROWSER_APPS_LINK_CAPTURING_INTENT_PICKER_INFO_H_
 
 #include <string>
 #include <vector>
@@ -32,29 +32,6 @@ enum class IntentPickerCloseReason {
 
   // The user chose to open an app.
   OPEN_APP,
-};
-
-// Describes what's the preferred platform for this navigation, if any.
-enum class PreferredPlatform {
-  // Either there was an error or there is no preferred app at all.
-  NONE,
-
-  // The preferred app is Chrome browser.
-  CHROME_BROWSER,
-
-  // The preferred app is an ARC app.
-  ARC,
-
-  // The preferred app is a PWA app.
-  PWA,
-};
-
-enum class AppsNavigationAction {
-  // The current navigation should be cancelled.
-  CANCEL,
-
-  // The current navigation should resume.
-  RESUME,
 };
 
 // The type of an entry in the intent picker for the user to choose from.
@@ -105,18 +82,6 @@ enum class IntentPickerBubbleType {
   kClickToCall,
 };
 
-// Callback to allow app-platform-specific code to asynchronously signal what
-// action should be taken for the current navigation, and provide a list of apps
-// which can handle the navigation.
-using AppsNavigationCallback =
-    base::OnceCallback<void(AppsNavigationAction action,
-                            std::vector<IntentPickerAppInfo> apps)>;
-
-// Callback to allow app-platform-specific code to asynchronously provide a list
-// of apps which can handle the navigation.
-using GetAppsCallback =
-    base::OnceCallback<void(std::vector<IntentPickerAppInfo> apps)>;
-
 }  // namespace apps
 
 // Callback to pass the launch name and type of the app selected by the user,
@@ -129,4 +94,4 @@ using IntentPickerResponse =
                             apps::IntentPickerCloseReason close_reason,
                             bool should_persist)>;
 
-#endif  // CHROME_BROWSER_APPS_INTENT_HELPER_APPS_NAVIGATION_TYPES_H_
+#endif  // CHROME_BROWSER_APPS_LINK_CAPTURING_INTENT_PICKER_INFO_H_

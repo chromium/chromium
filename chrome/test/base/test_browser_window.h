@@ -25,7 +25,7 @@
 #include "ui/base/interaction/element_identifier.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
+#include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #endif  //  !BUILDFLAG(IS_ANDROID)
 
 class LocationBarTesting;

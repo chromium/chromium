@@ -2,10 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
+
+assert(!is_android)
 
 source_set("link_capturing") {
   sources = [
+    "intent_picker_info.cc",
+    "intent_picker_info.h",
     "link_capturing_navigation_throttle.cc",
     "link_capturing_navigation_throttle.h",
   ]
@@ -27,6 +32,8 @@ source_set("link_capturing") {
     sources += [
       "chromeos_link_capturing_delegate.cc",
       "chromeos_link_capturing_delegate.h",
+      "metrics/intent_handling_metrics.cc",
+      "metrics/intent_handling_metrics.h",
     ]
     deps += [
       "//ash/webui/projector_app/public/cpp",
@@ -38,16 +45,29 @@ source_set("link_capturing") {
       "web_app_link_capturing_delegate.h",
     ]
   }
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/components/arc:arc" ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [ "link_capturing_navigation_throttle_unittest.cc" ]
-
   deps = [
     ":link_capturing",
+    "//base/test:test_support",
     "//testing/gtest",
     "//ui/base:base",
     "//url",
   ]
+
+  if (is_chromeos) {
+    sources += [ "metrics/intent_handling_metrics_unittest.cc" ]
+    deps += [
+      "//chrome/test:test_support",
+      "//components/prefs:test_support",
+      "//content/test:test_support",
+    ]
+  }
 }

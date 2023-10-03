@@ -7,15 +7,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/apps/intent_helper/intent_chip_display_prefs.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
+#include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
+#include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #endif  // #if BUILDFLAG(IS_CHROMEOS)
 
 class IntentPickerTabHelperTest : public ChromeRenderViewHostTestHarness {

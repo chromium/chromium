@@ -37,7 +37,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
+#include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #endif
 
 using content::WebContents;

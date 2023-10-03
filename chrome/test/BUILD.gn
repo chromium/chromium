@@ -539,6 +539,7 @@ static_library("test_support") {
     }
 
     deps += [
+      "//chrome/browser/apps/link_capturing",
       "//components/constrained_window",
       "//components/performance_manager",
       "//components/performance_manager/test_support:test_support_common",
@@ -5447,6 +5448,7 @@ if (is_chromeos_lacros) {
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+      "//chrome/browser/apps/link_capturing",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:test_support",
       "//chrome/browser/chromeos/extensions/vpn_provider",
@@ -7914,6 +7916,7 @@ test("unit_tests") {
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/apps/app_service:unit_tests",
+      "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:unit_tests",
       "//chrome/browser/companion/core",
       "//chrome/browser/companion/core/mojom:mojo_bindings",
@@ -8014,7 +8017,6 @@ test("unit_tests") {
 
   if (is_chromeos) {
     sources += [
-      "../browser/apps/intent_helper/metrics/intent_handling_metrics_unittest.cc",
       "../browser/apps/intent_helper/supported_links_infobar_prefs_service_unittest.cc",
       "../browser/certificate_provider/certificate_provider_service_unittest.cc",
       "../browser/device_notifications/device_pinned_notification_unittest.cc",

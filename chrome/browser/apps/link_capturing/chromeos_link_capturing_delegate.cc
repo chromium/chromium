@@ -13,7 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"  // nogncheck https://crbug.com/1474116
+#include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"

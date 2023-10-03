@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_INTENT_HELPER_METRICS_INTENT_HANDLING_METRICS_H_
-#define CHROME_BROWSER_APPS_INTENT_HELPER_METRICS_INTENT_HANDLING_METRICS_H_
+#ifndef CHROME_BROWSER_APPS_LINK_CAPTURING_METRICS_INTENT_HANDLING_METRICS_H_
+#define CHROME_BROWSER_APPS_LINK_CAPTURING_METRICS_INTENT_HANDLING_METRICS_H_
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 
 namespace content {
 class BrowserContext;
@@ -161,4 +157,4 @@ class IntentHandlingMetrics {
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_INTENT_HELPER_METRICS_INTENT_HANDLING_METRICS_H_
+#endif  // CHROME_BROWSER_APPS_LINK_CAPTURING_METRICS_INTENT_HANDLING_METRICS_H_

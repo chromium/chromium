@@ -1919,6 +1919,7 @@ static_library("ui") {
       "//chrome/browser:browser_themes",
       "//chrome/browser:theme_properties",
       "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/link_capturing",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/cart:mojo_bindings",
       "//chrome/browser/companion/core/mojom:mojo_bindings",

@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
+#include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_mojo_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

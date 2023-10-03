@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
+#include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
-#include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
+#include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -19,7 +17,6 @@
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
