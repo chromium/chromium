@@ -208,6 +208,7 @@ export {ConfirmationDialogType, SettingsGoogleDriveSubpageElement} from './os_fi
 export {OneDriveBrowserProxy, OneDrivePageCallbackRouter, OneDrivePageHandlerRemote, OneDrivePageRemote} from './os_files_page/one_drive_browser_proxy.js';
 export {createPageAvailability as createPageAvailabilityForTesting, OsPageAvailability} from './os_page_availability.js';
 export {AccountManagerSettingsCardElement} from './os_people_page/account_manager_settings_card.js';
+export {AdditionalAccountsSettingsCardElement} from './os_people_page/additional_accounts_settings_card.js';
 export {OsSettingsPeoplePageElement} from './os_people_page/os_people_page.js';
 export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
 export {OsSettingsPrivacyPageElement} from './os_privacy_page/os_privacy_page.js';

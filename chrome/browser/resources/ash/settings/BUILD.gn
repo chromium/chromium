@@ -260,6 +260,7 @@ build_webui("build") {
     "os_people_page/account_manager_settings_card.ts",
     "os_people_page/account_manager_subpage.ts",
     "os_people_page/add_user_dialog.ts",
+    "os_people_page/additional_accounts_settings_card.ts",
     "os_people_page/fingerprint_list_subpage.ts",
     "os_people_page/local_data_recovery_dialog.ts",
     "os_people_page/lock_screen_subpage.ts",

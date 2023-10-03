@@ -359,8 +359,21 @@ suite('<os-settings-people-page>', () => {
       const accountManagerSettingsCard =
           peoplePage.shadowRoot!.querySelector('account-manager-settings-card');
 
-      // Account manager settings card is visible.
       assertTrue(isVisible(accountManagerSettingsCard));
+    });
+
+    test('additional accounts settings card is visible', async () => {
+      createPage();
+
+      await accountManagerBrowserProxy.whenCalled('getAccounts');
+      await syncBrowserProxy.whenCalled('getSyncStatus');
+      flush();
+
+      const additionalAccountsSettingsCard =
+          peoplePage.shadowRoot!.querySelector(
+              'additional-accounts-settings-card');
+
+      assertTrue(isVisible(additionalAccountsSettingsCard));
     });
   });
 });

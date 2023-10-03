@@ -22,6 +22,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {assertExists} from '../assert_extras.js';
 import {isChild} from '../common/load_time_booleans.js';
+import {ParentalControlsBrowserProxyImpl} from '../parental_controls_page/parental_controls_browser_proxy.js';
 
 import {Account, AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
 import {getTemplate} from './account_manager_settings_card.html.js';
@@ -110,16 +111,22 @@ export class AccountManagerSettingsCardElement extends
     this.deviceAccount_ = deviceAccount;
   }
 
-  private getAccountManagerDescription_(): string {
-    if (this.isChildUser_ && this.isSecondaryGoogleAccountSigninAllowed_) {
-      return this.i18n('accountManagerChildDescription');
+  private onManagedIconClick_(): void {
+    if (this.isChildUser_) {
+      ParentalControlsBrowserProxyImpl.getInstance().launchFamilyLinkSettings();
     }
-    return this.i18n('accountManagerDescription');
   }
 
-  private getManagementDescription_(): string {
+  private getAccountManagerDescription_(): TrustedHTML {
+    if (this.isChildUser_ && this.isSecondaryGoogleAccountSigninAllowed_) {
+      return this.i18nAdvanced('accountManagerChildDescription');
+    }
+    return this.i18nAdvanced('accountManagerDescription');
+  }
+
+  private getManagementDescription_(): TrustedHTML|string {
     if (this.isChildUser_) {
-      return this.i18n('accountManagerManagementDescription');
+      return this.i18nAdvanced('accountManagerManagementDescription');
     }
     if (!this.deviceAccount_) {
       return '';
@@ -135,9 +142,11 @@ export class AccountManagerSettingsCardElement extends
     // Format: 'This account is managed by
     //          <a target="_blank" href="chrome://management">google.com</a>'.
     // Where href will be set by <localized-link>.
-    return this.i18n(
-        'accountManagerManagementDescription',
-        this.deviceAccount_.organization);
+    return this.i18nAdvanced('accountManagerManagementDescription', {
+      substitutions: [
+        this.deviceAccount_.organization,
+      ],
+    });
   }
 
   /**

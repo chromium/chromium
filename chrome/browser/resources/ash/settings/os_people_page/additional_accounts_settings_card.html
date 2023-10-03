@@ -1,0 +1,240 @@
+<style include="settings-shared iron-flex iron-flex-alignment">
+  :host {
+    --add-account-margin-top: 16px;
+    --account-item-padding-size: 8px;
+  }
+
+  #addAccountButtonContainer {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .profile-icon {
+    --profile-icon-size: 40px;
+    background: center / cover no-repeat;
+    border-radius: 50%;
+    flex-shrink: 0;
+    height: var(--profile-icon-size);
+    width: var(--profile-icon-size);
+  }
+
+  .profile-icon.device-account-icon {
+    --profile-icon-size: 60px;
+    margin-top: 16px;
+  }
+
+  .middle .secondary {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .middle.two-line-or-more {
+    min-height: calc(var(--cr-section-two-line-min-height)
+                      - 2*var(--account-item-padding-size));
+    padding-bottom: var(--account-item-padding-size);
+    padding-top: var(--account-item-padding-size);
+  }
+
+  .middle.two-line-or-more>.flex {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(var(--cr-section-two-line-min-height)
+                      - 2*var(--account-item-padding-size));
+  }
+
+  .secondary-accounts-policy-indicator {
+    margin-inline-end: 12px;
+  }
+
+  .settings-box.user-message {
+    align-items: flex-end;
+  }
+
+  .secondary-accounts-tooltip {
+    margin-inline-start: 5px;
+    width: 15px;
+  }
+
+  .settings-box.secondary-accounts-box {
+    align-items: flex-end;
+  }
+
+  .secondary-accounts-disabled-tooltip {
+    padding-inline-end: 12px;
+  }
+
+  cr-policy-indicator {
+    margin-inline-end: 1em;
+    margin-top: var(--add-account-margin-top);
+  }
+
+  .secondary-accounts-box > #addAccountButton {
+    margin-bottom: 12px;
+    margin-top: 12px;
+  }
+
+  #addAccountIcon {
+    -webkit-mask-image: url(chrome://resources/images/add.svg);
+    background-color: currentColor;
+    height: 24px;
+    margin-inline-end: 0.5em;
+    width: 24px;
+  }
+
+  .signed-out-text {
+    color: var(--cros-text-color-alert);
+  }
+
+  .error-badge {
+    background: url(chrome://os-settings/images/error_badge.svg)
+        center / cover no-repeat;
+    display: block;
+    height: 20px;
+    left: 60%;
+    position: relative;
+    top: 60%;
+    width: 20px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .error-badge {
+      background: url(chrome://os-settings/images/error_badge_dark.svg)
+          center / cover no-repeat;
+    }
+  }
+
+  :host-context([dir='rtl']) .error-badge {
+    left: auto;
+    right: 60%;
+  }
+
+  .edu-account-label {
+    margin-inline-start: 12px;
+  }
+
+  #removeConfirmationButton {
+    --active-shadow-action-rgb: var(--cros-color-alert-rgb);
+    --bg-action: var(--cros-color-alert);
+    --focus-shadow-color: var(--cros-highlight-color-error);
+    --hover-bg-action: rgba(var(--cros-color-alert-rgb), .9);
+    --hover-shadow-action-rgb: var(--cros-color-alert-rgb);
+  }
+
+  :host-context(body.jelly-enabled) #removeConfirmationButton {
+    --hover-bg-action: var(--cros-sys-hover_on_prominent);
+  }
+</style>
+
+<settings-card header-text="[[getAccountListHeader_(isChildUser_)]]">
+  <!-- Secondary Accounts list header -->
+  <div class="settings-box first secondary">
+    [[getAccountListDescription_(isChildUser_)]]
+  </div>
+
+  <!-- Secondary Accounts list -->
+  <template is="dom-repeat" id="accountList"
+      items="[[getSecondaryAccounts_(accounts_)]]">
+    <div class="settings-box" role="listitem">
+      <div class="profile-icon"
+          style="background-image: [[getIconImageSet_(item.pic)]]">
+        <template is="dom-if" if="[[!item.isSignedIn]]">
+          <span class="error-badge"></span>
+        </template>
+      </div>
+      <div class="middle two-line-or-more no-min-width">
+        <div class="flex text-elide">
+          <!-- If account is signed in, display the full name -->
+          <template is="dom-if" if="[[item.isSignedIn]]">
+            <span id="fullName_[[index]]"
+                aria-hidden="true">[[item.fullName]]</span>
+          </template>
+          <!-- Else, display a re-authentication message -->
+          <template is="dom-if" if="[[!item.isSignedIn]]">
+            <span class="signed-out-text">
+              [[getAccountManagerSignedOutName_(item.unmigrated)]]
+            </span>
+          </template>
+          <!-- Display email -->
+          <div class="secondary" id="email_[[index]]"
+              aria-hidden="true">[[item.email]]</div>
+          <!-- Display ARC status -->
+          <template is="dom-if" if="[[isArcAccountRestrictionsEnabled_]]">
+            <span class="arc-availability secondary" id="arcStatus_[[index]]"
+                aria-hidden="true" hidden$="[[item.isAvailableInArc]]">
+              $i18n{accountNotUsedInArcLabel}
+            </span>
+          </template>
+        </div>
+      </div>
+      <template is="dom-if"
+          if="[[shouldShowReauthenticationButton_(item)]]">
+        <cr-button title="[[getAccountManagerSignedOutTitle_(item)]]"
+            class="reauth-button" on-click="onReauthenticationClick_"
+            aria-labelledby$="fullName_[[index]] email_[[index]]">
+          [[getAccountManagerSignedOutLabel_(item.unmigrated)]]
+        </cr-button>
+      </template>
+      <!-- Display a hamburger menu for removing the account -->
+      <cr-icon-button class="icon-more-vert"
+          title="[[getMoreActionsTitle_(item)]]"
+          aria-label="[[getMoreActionsTitle_(item)]]"
+          aria-describedby$="fullName_[[index]]
+                              arcStatus_[[index]]
+                              eduAccountLabel_[[index]]"
+          on-click="onAccountActionsMenuButtonClick_"
+          deep-link-focus-id$="[[Setting.kRemoveAccount]]">
+      </cr-icon-button>
+    </div>
+  </template>
+  <cr-action-menu role-description="$i18n{menu}">
+    <button class="dropdown-item" on-click="onRemoveAccountClick_">
+      $i18n{removeAccountLabel}
+    </button>
+    <template is="dom-if" if="[[isArcAccountRestrictionsEnabled_]]">
+      <button class="dropdown-item" on-click="onChangeArcAvailability_">
+        [[getChangeArcAvailabilityLabel_(actionMenuAccount_)]]
+      </button>
+    </template>
+  </cr-action-menu>
+
+  <!-- Add account button -->
+  <div id="addAccountButtonContainer" class="settings-box">
+    <template is="dom-if" if="[[!isSecondaryGoogleAccountSigninAllowed_]]">
+      <cr-tooltip-icon
+          class="secondary-accounts-disabled-tooltip"
+          icon-class="[[getManagedAccountTooltipIcon_(isChildUser_)]]"
+          tooltip-text="[[getSecondaryAccountsDisabledUserMessage_(
+                              isChildUser_)]]"
+          icon-aria-label="[[getSecondaryAccountsDisabledUserMessage_(
+                                isChildUser_)]]">
+      </cr-tooltip-icon>
+    </template>
+    <cr-button disabled="[[!isSecondaryGoogleAccountSigninAllowed_]]"
+        id="addAccountButton" on-click="addAccount_"
+        deep-link-focus-id$="[[Setting.kAddAccount]]">
+      <div id="addAccountIcon"></div>
+      [[getAddAccountLabel_(isChildUser_,
+          isSecondaryGoogleAccountSigninAllowed_)]]
+    </cr-button>
+  </div>
+
+  <cr-dialog id="removeConfirmationDialog">
+    <div slot="title" class="key-text">
+      $i18n{removeLacrosAccountDialogTitle}
+    </div>
+    <div slot="body" class="warning-message">
+      $i18n{removeLacrosAccountDialogBody}
+    </div>
+    <div slot="button-container">
+      <cr-button class="cancel-button"
+          on-click="onRemoveAccountDialogCancelClick_">
+        $i18n{removeLacrosAccountDialogCancel}
+      </cr-button>
+      <cr-button id="removeConfirmationButton" class="action-button"
+          on-click="onRemoveAccountDialogRemoveClick_">
+        $i18n{removeLacrosAccountDialogRemove}
+      </cr-button>
+    </div>
+  </cr-dialog>
+</settings-card>

@@ -960,7 +960,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'parental_controls_page/parental_controls_page_test.js'
  ],
  [
-   'OsPeopleAccountManagerSettingsCard',
+   'OsPeoplePageAccountManagerSettingsCard',
    'os_people_page/account_manager_settings_card_test.js',
  ],
  [
@@ -977,6 +977,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
        'ash::features::kLacrosProfileMigrationForceOff'
      ]
    },
+ ],
+ [
+   'OsPeoplePageAdditionalAccountsSettingsCard',
+   'os_people_page/additional_accounts_settings_card_test.js',
  ],
  [
    'PersonalizationPageWithPersonalizationHub',
