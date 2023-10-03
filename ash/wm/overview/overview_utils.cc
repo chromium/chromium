@@ -169,11 +169,12 @@ gfx::RectF GetTargetBoundsInScreen(aura::Window* window) {
     ::wm::TranslateRectToScreen(window_iter->parent(), &target_bounds);
     bounds.Union(target_bounds);
   }
+
   return bounds;
 }
 
 void SetTransform(aura::Window* window, const gfx::Transform& transform) {
-  gfx::PointF target_origin(GetTargetBoundsInScreen(window).origin());
+  const gfx::PointF target_origin(GetTargetBoundsInScreen(window).origin());
   for (auto* window_iter :
        window_util::GetVisibleTransientTreeIterator(window)) {
     aura::Window* parent_window = window_iter->parent();
