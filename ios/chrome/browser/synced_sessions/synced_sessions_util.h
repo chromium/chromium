@@ -17,19 +17,22 @@ struct DistantTab;
 // URLs are loaded simultaneously.
 int GetDefaultNumberOfTabsToLoadSimultaneously();
 
-// Opens a tab in the background.
-void OpenDistantTabInBackground(const synced_sessions::DistantTab* tab,
-                                bool in_incognito,
-                                bool instant_load,
-                                UrlLoadingBrowserAgent* url_loader,
-                                UrlLoadStrategy load_strategy);
+// Opens a tab with `url_loader` using `load_strategy`.
+void OpenDistantTab(const synced_sessions::DistantTab* tab,
+                    bool in_incognito,
+                    bool instant_load,
+                    UrlLoadingBrowserAgent* url_loader,
+                    UrlLoadStrategy load_strategy);
 
-// Opens all tabs in the given session in the background.
+// Opens all tabs in the given session in the background. If
+// `first_tab_load_strategy` is ALWAYS_NEW_FOREGROUND_TAB, it would be opened on
+// the foreground right after this method is called. All other tabs would be
+// opened in the background.
 void OpenDistantSessionInBackground(
     const synced_sessions::DistantSession* session,
     bool in_incognito,
     int maximum_instant_load_tabs,
     UrlLoadingBrowserAgent* url_loader,
-    UrlLoadStrategy load_strategy);
+    UrlLoadStrategy first_tab_load_strategy);
 
 #endif  // IOS_CHROME_BROWSER_SYNCED_SESSIONS_SYNCED_SESSIONS_UTIL_H_

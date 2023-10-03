@@ -17,11 +17,11 @@ int GetDefaultNumberOfTabsToLoadSimultaneously() {
              : 20;
 }
 
-void OpenDistantTabInBackground(const synced_sessions::DistantTab* tab,
-                                bool in_incognito,
-                                bool instant_load,
-                                UrlLoadingBrowserAgent* url_loader,
-                                UrlLoadStrategy load_strategy) {
+void OpenDistantTab(const synced_sessions::DistantTab* tab,
+                    bool in_incognito,
+                    bool instant_load,
+                    UrlLoadingBrowserAgent* url_loader,
+                    UrlLoadStrategy load_strategy) {
   UrlLoadParams params = UrlLoadParams::InNewTab(tab->virtual_url);
   params.SetInBackground(YES);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
@@ -37,11 +37,11 @@ void OpenDistantSessionInBackground(
     bool in_incognito,
     int maximum_instant_load_tabs,
     UrlLoadingBrowserAgent* url_loader,
-    UrlLoadStrategy load_strategy) {
+    UrlLoadStrategy first_tab_load_strategy) {
   const int tab_count = static_cast<int>(session->tabs.size());
   for (int i = 0; i < tab_count; i++) {
-    OpenDistantTabInBackground(session->tabs[i].get(), in_incognito,
-                               /*instant_load=*/i < maximum_instant_load_tabs,
-                               url_loader, load_strategy);
+    OpenDistantTab(session->tabs[i].get(), in_incognito,
+                   /*instant_load=*/i < maximum_instant_load_tabs, url_loader,
+                   i == 0 ? first_tab_load_strategy : UrlLoadStrategy::NORMAL);
   }
 }

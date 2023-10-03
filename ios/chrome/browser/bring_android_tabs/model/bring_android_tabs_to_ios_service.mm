@@ -171,9 +171,8 @@ void BringAndroidTabsToIOSService::OpenTabsAtIndices(
       GetDefaultNumberOfTabsToLoadSimultaneously();
   for (int i = 0; i < tab_count; i++) {
     const bool instant_load = i < maximum_instant_load_tabs;
-    OpenDistantTabInBackground(GetTabAtIndex(indices[i]), in_incognito,
-                               instant_load, url_loader,
-                               UrlLoadStrategy::NORMAL);
+    OpenDistantTab(GetTabAtIndex(indices[i]), in_incognito, instant_load,
+                   url_loader, UrlLoadStrategy::NORMAL);
   }
 }
 

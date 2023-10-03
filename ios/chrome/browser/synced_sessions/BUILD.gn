@@ -29,3 +29,20 @@ source_set("synced_sessions") {
   ]
   public_deps = [ "//components/sync_sessions" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "synced_sessions_util_unittest.mm" ]
+  deps = [
+    ":synced_sessions",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/url_loading:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

@@ -46,6 +46,7 @@
 #import "url/gurl.h"
 
 namespace {
+
 // Number of test foreign sessions from a phone.
 const size_t kPhoneSessionCount = 2;
 // Maximum number of tabs that should be imported.
@@ -282,9 +283,17 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
     }
   }
 
+  // Returns the fake Url Loader for testing purpose.
   FakeUrlLoadingBrowserAgent* GetTestUrlLoader() {
     return FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
+  }
+
+  // Sets the data types that are synced.
+  void SetSelectedTypes(syncer::UserSelectableTypeSet types) {
+    test_sync_service_->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false,
+        /*types=*/types);
   }
 
   // Helper method that checks if `prompt_attempt_status` is recorded in the
@@ -305,7 +314,7 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
     return bring_android_tabs_service_.get();
   }
 
- protected:
+ private:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
@@ -324,9 +333,7 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
 TEST_F(BringAndroidTabsToIOSServiceTest, UserNotSynced) {
   SetUpOpenTabsUIDelegate(/*tab_per_session=*/2, /*tabs_recently_active=*/true);
   // Set something other than `kTabs` as the selected type.
-  test_sync_service_->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPasswords});
+  SetSelectedTypes({syncer::UserSelectableType::kPasswords});
   SetUpBringAndroidTabsServiceAndLoadTabs(/*is_android_switcher=*/true);
   EXPECT_EQ(bring_android_tabs_to_ios_service()->GetNumberOfAndroidTabs(), 0u);
   ExpectHistogram(bring_android_tabs::PromptAttemptStatus::kTabSyncDisabled);
