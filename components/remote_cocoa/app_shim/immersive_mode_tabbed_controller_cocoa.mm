@@ -161,6 +161,7 @@ void ImmersiveModeTabbedControllerCocoa::OnTopViewBoundsChanged(
 }
 
 void ImmersiveModeTabbedControllerCocoa::RevealLock() {
+  AddController();
   TitlebarReveal();
 
   // Call after TitlebarReveal() for a proper layout.
