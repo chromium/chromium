@@ -116,7 +116,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/ssl",
-    "//ios/chrome/browser/store_kit",
+    "//ios/chrome/browser/store_kit/model",
     "//ios/chrome/browser/sync/model:sync_error_browser_agent",
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/translate",

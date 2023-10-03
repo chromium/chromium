@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
+#import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 
 #import <StoreKit/StoreKit.h>
 #import <UIKit/UIKit.h>
 
 #import "base/check.h"
 #import "base/metrics/histogram_macros.h"
-#import "ios/chrome/browser/store_kit/store_kit_coordinator_delegate.h"
+#import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 
 @interface StoreKitCoordinator () <SKStoreProductViewControllerDelegate>
 // StoreKitViewController to present. Set as a weak reference so it only exists
@@ -26,8 +26,9 @@
   DCHECK(self.iTunesProductParameters
              [SKStoreProductParameterITunesItemIdentifier]);
   // StoreKit shouldn't be launched, if there is one already presented.
-  if (self.viewController)
+  if (self.viewController) {
     return;
+  }
   SKStoreProductViewController* viewController =
       [[SKStoreProductViewController alloc] init];
   viewController.delegate = self;

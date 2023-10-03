@@ -35,7 +35,7 @@ source_set("fakes") {
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/store_kit",
+    "//ios/chrome/browser/store_kit/model",
     "//ios/chrome/browser/ui/download",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/presenters",
