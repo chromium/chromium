@@ -128,6 +128,7 @@ export {SettingsAudioElement} from './device_page/audio.js';
 export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {SettingsDevicePageElement} from './device_page/device_page.js';
 export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';
+export {SettingsDisplayElement} from './device_page/display.js';
 export * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
 export {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, fakeKeyboards, fakeKeyboards2, fakeMice, fakeMice2, fakeMouseButtonActions, fakePointingSticks, fakePointingSticks2, fakeStyluses, fakeTouchpads, fakeTouchpads2} from './device_page/fake_input_device_data.js';
 export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_settings_provider.js';

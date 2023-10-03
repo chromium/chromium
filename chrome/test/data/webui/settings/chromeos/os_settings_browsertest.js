@@ -269,6 +269,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
      ]
    }
  ],
+ ['DevicePageDisplayPage', 'device_page/display_page_test.js'],
  [
    'DevicePageDragAndDropManager', 'device_page/drag_and_drop_manager_test.js',
    {

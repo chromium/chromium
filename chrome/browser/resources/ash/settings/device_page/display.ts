@@ -64,7 +64,7 @@ interface DisplayResolutionPrefObject {
   }|null;
 }
 
-interface SettingsDisplayElement {
+export interface SettingsDisplayElement {
   $: {
     displayOverscan: SettingsDisplayOverscanDialogElement,
     displaySizeSlider: SettingsSliderElement,
@@ -74,7 +74,7 @@ interface SettingsDisplayElement {
 const SettingsDisplayElementBase =
     DeepLinkingMixin(PrefsMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
-class SettingsDisplayElement extends SettingsDisplayElementBase {
+export class SettingsDisplayElement extends SettingsDisplayElementBase {
   static get is() {
     return 'settings-display';
   }
@@ -402,7 +402,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     getDisplayApi().getDisplayLayout().then(
         (layouts: DisplayLayout[]) =>
             this.displayLayoutFetched_(displays, layouts));
-    if (this.isMirrored_(displays)) {
+    if (this.isMirrored(displays)) {
       this.mirroringDestinationIds = displays[0].mirroringDestinationIds;
     } else {
       this.mirroringDestinationIds = [];
@@ -823,7 +823,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Returns true if the ambient color setting should be shown for |display|.
    */
-  private showAmbientColorSetting_(
+  showAmbientColorSetting(
       ambientColorAvailable: boolean, display: DisplayUnitInfo): boolean {
     return ambientColorAvailable && display && display.isInternal;
   }
@@ -865,7 +865,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     return this.i18n('displayMirror', displays[0].name);
   }
 
-  private showUnifiedDesktop_(
+  showUnifiedDesktop(
       unifiedDesktopAvailable: boolean, unifiedDesktopMode: boolean,
       displays: DisplayUnitInfo[]): boolean {
     if (displays === undefined) {
@@ -874,7 +874,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
 
     return unifiedDesktopMode ||
         (unifiedDesktopAvailable && displays.length > 1 &&
-         !this.isMirrored_(displays));
+         !this.isMirrored(displays));
   }
 
   private getUnifiedDesktopText_(unifiedDesktopMode: boolean): string {
@@ -883,17 +883,17 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
                              'displayUnifiedDesktopOff');
   }
 
-  private showMirror_(unifiedDesktopMode: boolean, displays: DisplayUnitInfo[]):
+  showMirror(unifiedDesktopMode: boolean, displays: DisplayUnitInfo[]):
       boolean {
     if (displays === undefined) {
       return false;
     }
 
-    return this.isMirrored_(displays) ||
+    return this.isMirrored(displays) ||
         (!unifiedDesktopMode && displays.length > 1);
   }
 
-  private isMirrored_(displays: DisplayUnitInfo[]): boolean {
+  isMirrored(displays: DisplayUnitInfo[]): boolean {
     return displays !== undefined && displays.length > 0 &&
         !!displays[0].mirroringSourceId;
   }
@@ -1198,8 +1198,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     (event.currentTarget as CrCheckboxElement).blur();
 
     const mirrorModeInfo: MirrorModeInfo = {
-      mode: this.isMirrored_(this.displays) ? MirrorMode.OFF :
-                                              MirrorMode.NORMAL,
+      mode: this.isMirrored(this.displays) ? MirrorMode.OFF : MirrorMode.NORMAL,
     };
     getDisplayApi().setMirrorMode(mirrorModeInfo).then(() => {
       const error = chrome.runtime.lastError;
@@ -1272,11 +1271,11 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     }
   }
 
-  private shouldShowArrangementSection_(): boolean {
+  shouldShowArrangementSection(): boolean {
     if (!this.displays) {
       return false;
     }
-    return this.hasMultipleDisplays_() || this.isMirrored_(this.displays);
+    return this.hasMultipleDisplays_() || this.isMirrored(this.displays);
   }
 
   private onDisplaysChanged_(): void {
@@ -1286,6 +1285,26 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
       displayLayout.updateDisplays(
           this.displays, this.layouts, this.mirroringDestinationIds);
     }
+  }
+
+  getInvalidDisplayId(): string {
+    return this.invalidDisplayId_;
+  }
+
+  getRefreshRateList(): DropdownMenuOptionList {
+    return this.refreshRateList_;
+  }
+
+  getModeToParentModeMap(): Map<number, number> {
+    return this.modeToParentModeMap_;
+  }
+
+  getParentModeToRefreshRateMap(): Map<number, DropdownMenuOptionList> {
+    return this.parentModeToRefreshRateMap_;
+  }
+
+  getSelectedZoomPref(): chrome.settingsPrivate.PrefObject {
+    return this.selectedZoomPref_;
   }
 }
 
