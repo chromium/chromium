@@ -12578,6 +12578,7 @@ namespace console
     method confirm
     method createImageBitmap
     method fetch
+    method fetchLater
     method find
     method focus
     method gc

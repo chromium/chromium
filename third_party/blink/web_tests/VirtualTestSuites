@@ -2419,7 +2419,8 @@
     "prefix": "fetch-later",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "external/wpt/fetch/fetch-later"
+      "external/wpt/fetch/fetch-later",
+      "http/tests/origin_trials/webexposed/fetch-later-origin-trial-interfaces.html"
     ],
     "exclusive_tests": "ALL",
     "args": [

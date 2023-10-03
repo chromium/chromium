@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL FetchLater API interface in Origin-Trial enabled document. assert_equals: Interface fetchLater exists on provided object expected true but got false
+Harness: the test ran to completion.
+

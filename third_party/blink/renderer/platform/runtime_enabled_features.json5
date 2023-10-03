@@ -1695,6 +1695,7 @@
     {
       // The Blink runtime-enabled feature name for the API's IDL.
       name: "FetchLaterAPI",
+      status: "experimental",
       public: true,
     },
     {
