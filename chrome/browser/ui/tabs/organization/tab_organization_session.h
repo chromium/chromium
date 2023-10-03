@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_SESSION_H_
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_SESSION_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,13 @@ class TabOrganizationSession {
     return tab_organizations_;
   }
 
+  TabOrganization* GetNextTabOrganization();
+
   void StartRequest();
+
+  void AddOrganizationForTesting(TabOrganization tab_organization) {
+    tab_organizations_.emplace_back(std::move(tab_organization));
+  }
 
  private:
   void PopulateOrganizations(const TabOrganizationResponse* response);

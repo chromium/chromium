@@ -16,12 +16,13 @@
 struct TabOrganizationResponse {
   struct Organization {
     explicit Organization(std::u16string label_,
-                          std::vector<TabData::TabID> tabs_);
+                          std::vector<TabData::TabID> tab_ids_);
     Organization(const Organization& organization);
+    Organization(Organization&& organization);
     ~Organization();
 
     const std::u16string label;
-    const std::vector<TabData::TabID> tabs;
+    const std::vector<TabData::TabID> tab_ids;
   };
 
   explicit TabOrganizationResponse(std::vector<Organization> organizations_);
@@ -34,6 +35,8 @@ class TabOrganizationRequest {
  public:
   enum class State { NOT_STARTED, STARTED, COMPLETED, FAILED, CANCELED };
 
+  using Response = TabOrganizationResponse;
+
   using OnResponseCallback =
       base::OnceCallback<void(const TabOrganizationResponse* response)>;
 
@@ -42,20 +45,22 @@ class TabOrganizationRequest {
   using BackendCancelRequest =
       base::OnceCallback<void(const TabOrganizationRequest* request)>;
 
-  TabOrganizationRequest(
+  using TabDatas = std::vector<std::unique_ptr<TabData>>;
+
+  explicit TabOrganizationRequest(
       BackendStartRequest backend_start_request_lambda = base::DoNothing(),
       BackendCancelRequest backend_cancel_request_lambda = base::DoNothing());
   ~TabOrganizationRequest();
 
   State state() const { return state_; }
-  const std::vector<std::unique_ptr<TabData>>& tab_datas() const {
-    return tab_datas_;
-  }
+  const TabDatas& tab_datas() const { return tab_datas_; }
   const absl::optional<TabData::TabID> base_tab_id() const {
     return base_tab_id_;
   }
+  const TabOrganizationResponse* response() const { return response_.get(); }
 
   void SetResponseCallback(OnResponseCallback callback);
+  TabData* AddTabData(std::unique_ptr<TabData> tab_data);
 
   void StartRequest();
   void FailRequest();
@@ -69,7 +74,7 @@ class TabOrganizationRequest {
   void CompleteRequest(std::unique_ptr<TabOrganizationResponse> response);
 
   State state_ = State::NOT_STARTED;
-  std::vector<std::unique_ptr<TabData>> tab_datas_;
+  TabDatas tab_datas_;
   absl::optional<TabData::TabID> base_tab_id_ = absl::nullopt;
   std::unique_ptr<TabOrganizationResponse> response_;
   OnResponseCallback response_callback_;
@@ -78,4 +83,4 @@ class TabOrganizationRequest {
   BackendCancelRequest backend_cancel_request_lambda_;
 };
 
-#endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_REQUEST_H_
+#endif  // CHROME_BROWSER_UI__idsORGANIZATION_TAB_ORGANIZATION_REQUEST_H_

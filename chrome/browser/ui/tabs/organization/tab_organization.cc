@@ -23,8 +23,8 @@ TabOrganization::TabOrganization(
       names_(names),
       current_name_(current_name),
       choice_(choice) {}
-TabOrganization::TabOrganization(const TabOrganization&) {}
-TabOrganization::~TabOrganization() {}
+TabOrganization::TabOrganization(TabOrganization&& organization) = default;
+TabOrganization::~TabOrganization() = default;
 
 const std::u16string TabOrganization::GetDisplayName() const {
   if (absl::holds_alternative<size_t>(current_name())) {

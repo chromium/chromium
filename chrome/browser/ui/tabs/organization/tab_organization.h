@@ -25,7 +25,7 @@ class TabOrganization {
                   std::vector<std::u16string> names,
                   absl::variant<size_t, std::u16string> current_name,
                   absl::optional<UserChoice> choice);
-  TabOrganization(const TabOrganization&);
+  TabOrganization(TabOrganization&& organization);
   TabOrganization& operator=(const TabOrganization& other) = default;
   ~TabOrganization();
 
