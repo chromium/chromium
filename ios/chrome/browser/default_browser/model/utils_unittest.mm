@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 
 #import "base/ios/ios_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/feature_constants.h"
-#import "ios/chrome/browser/default_browser/utils_test_support.h"
+#import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"

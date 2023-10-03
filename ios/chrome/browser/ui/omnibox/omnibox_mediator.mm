@@ -11,7 +11,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
-#import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"

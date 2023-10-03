@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_browser/utils_test_support.h"
+#import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 
-#import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 
 // Visible for testing.
 extern NSString* const kDefaultBrowserUtilsKey;

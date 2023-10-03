@@ -11,7 +11,7 @@ source_set("default_browser_promo") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/default_browser:utils",
+    "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -32,7 +32,7 @@ source_set("default_browser_promo_scene_agent_utils") {
   ]
   deps = [
     ":default_browser_promo",
-    "//ios/chrome/browser/default_browser:utils",
+    "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/ui/main:default_browser_scene_agent",
   ]
@@ -50,8 +50,8 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/app/application_delegate:test_support",
-    "//ios/chrome/browser/default_browser:test_support",
-    "//ios/chrome/browser/default_browser:utils",
+    "//ios/chrome/browser/default_browser/model:test_support",
+    "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/test",
     "//ios/chrome/browser/overlays",

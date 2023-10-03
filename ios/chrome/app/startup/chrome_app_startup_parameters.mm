@@ -14,7 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
-#import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/x_callback_url.h"

@@ -10,7 +10,7 @@
 
 #import "components/metrics/metrics_log_uploader.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 
 namespace {

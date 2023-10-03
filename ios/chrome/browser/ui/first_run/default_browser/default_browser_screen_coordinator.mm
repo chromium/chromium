@@ -6,7 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

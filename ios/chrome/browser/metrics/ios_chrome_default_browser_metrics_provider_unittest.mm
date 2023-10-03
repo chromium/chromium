@@ -6,8 +6,8 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "components/metrics/metrics_log_uploader.h"
-#import "ios/chrome/browser/default_browser/utils.h"
-#import "ios/chrome/browser/default_browser/utils_test_support.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "testing/platform_test.h"
 
 // Tests metrics that are recorded and uploaded by

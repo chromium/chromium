@@ -6,7 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
-#import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/ui/default_promo/half_screen_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/default_promo/half_screen_promo_view_controller.h"

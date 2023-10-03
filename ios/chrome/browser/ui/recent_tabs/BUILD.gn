@@ -21,7 +21,7 @@ source_set("recent_tabs") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/sync",
-    "//ios/chrome/browser/default_browser:utils",
+    "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/net:crurl",

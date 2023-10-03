@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_DEFAULT_BROWSER_UTILS_H_
-#define IOS_CHROME_BROWSER_DEFAULT_BROWSER_UTILS_H_
+#ifndef IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_UTILS_H_
+#define IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_UTILS_H_
 
 #import <UIKit/UIKit.h>
 
 #import "base/feature_list.h"
-#import "ios/chrome/browser/default_browser/promo_statistics.h"
+#import "ios/chrome/browser/default_browser/model/promo_statistics.h"
 
 namespace feature_engagement {
 class Tracker;
@@ -356,4 +356,4 @@ void LogBrowserLaunched(bool is_cold_start);
 // `LogBrowserLaunched` will have overlap.
 void LogBrowserIndirectlylaunched();
 
-#endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_UTILS_H_
+#endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_UTILS_H_

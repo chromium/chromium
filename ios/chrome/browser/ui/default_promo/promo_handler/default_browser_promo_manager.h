@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_PROMO_HANDLER_DEFAULT_BROWSER_PROMO_MANAGER_H_
 #define IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_PROMO_HANDLER_DEFAULT_BROWSER_PROMO_MANAGER_H_
 
-#import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol PromosManagerUIHandler;
