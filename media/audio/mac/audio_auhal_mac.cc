@@ -21,10 +21,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
-#include "media/audio/mac/core_audio_util_mac.h"
 #include "media/base/audio_pull_fifo.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/mac/channel_layout_util_mac.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "media/audio/mac/core_audio_util_mac.h"
+#endif
 
 namespace media {
 
@@ -142,9 +145,14 @@ bool AUHALStream::Open() {
   if (configured) {
     DCHECK(audio_unit_);
     DCHECK(audio_unit_->is_valid());
+#if BUILDFLAG(IS_MAC)
     hardware_latency_ = core_audio_mac::GetHardwareLatency(
         audio_unit_->audio_unit(), device_, kAudioObjectPropertyScopeOutput,
         params_.sample_rate());
+#else
+    // TODO(crbug.com/1413450): Implement me.
+    hardware_latency_ = base::TimeDelta();
+#endif
   }
 
   DVLOG(1) << __FUNCTION__ << " this " << this << " received hardware latency "

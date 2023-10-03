@@ -384,7 +384,6 @@ base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
                                    AudioDeviceID device_id,
                                    AudioObjectPropertyScope scope,
                                    int sample_rate) {
-#if BUILDFLAG(IS_MAC)
   if (!audio_unit || device_id == kAudioObjectUnknown) {
     DLOG(WARNING) << "Audio unit object is NULL or device ID is unknown";
     return base::TimeDelta();
@@ -446,10 +445,6 @@ base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
   return base::Seconds(audio_unit_latency_sec) +
          AudioTimestampHelper::FramesToTime(
              device_latency_frames + stream_latency_frames, sample_rate);
-#else
-  // TODO(crbug.com/1413450): Implement me.
-  return base::TimeDelta();
-#endif
 }
 
 }  // namespace core_audio_mac
