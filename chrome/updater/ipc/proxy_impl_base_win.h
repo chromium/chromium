@@ -117,16 +117,13 @@ class ProxyImplBase {
         base::ThreadPool::PostTask(
             FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
             base::BindOnce(
-                [](const std::wstring& hkey_root,
+                [](const std::wstring& hkey_root, const std::wstring& path,
                    const std::vector<IID>& interface_iids) {
                   for (const auto& iid : interface_iids) {
                     const std::wstring interface_iid =
                         base::win::WStringFromGUID(iid);
                     const auto reg_key =
-                        base::StrCat({hkey_root,
-                                      L"\\SOFTWARE\\WOW6432Node\\Classes"
-                                      L"\\Interface\\",
-                                      interface_iid});
+                        base::StrCat({hkey_root, path, interface_iid});
                     absl::optional<std::wstring> contents =
                         GetRegKeyContents(reg_key);
                     LOG(ERROR)
@@ -138,7 +135,12 @@ class ProxyImplBase {
                   }
                   DUMP_WILL_BE_CHECK(false);
                 },
-                IsSystemInstall(scope_) ? L"HKLM" : L"HKCU", iids_));
+                IsSystemInstall(scope_) ? L"HKLM" : L"HKCU",
+                IsSystemInstall(scope_) ? L"\\SOFTWARE\\WOW6432Node\\Classes"
+                                          L"\\Interface\\"
+                                        : L"\\SOFTWARE\\Classes\\WOW6432Node"
+                                          L"\\Interface\\",
+                iids_));
 
         base::PlatformThread::Sleep(base::Seconds(10));
       }();
