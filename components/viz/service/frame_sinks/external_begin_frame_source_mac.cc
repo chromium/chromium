@@ -219,6 +219,7 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
     interval = params.display_times_valid ? params.display_interval
                                           : nominal_refresh_period_;
   }
+  bool display_link_frame_interval_change = nominal_refresh_period_ != interval;
   nominal_refresh_period_ = interval;
 
   // If the preferred frame interval is not equal to |nominal_refresh_period_|,
@@ -230,9 +231,9 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
       source_id(), frame_time, frame_time + interval, interval));
 
   // Notify Display FrameRateDecider of the frame interval change.
-  if (last_interval_ != interval) {
+  if (display_link_frame_interval_change) {
     DCHECK(update_vsync_params_callback_);
-    update_vsync_params_callback_.Run(frame_time, interval);
+    update_vsync_params_callback_.Run(frame_time, nominal_refresh_period_);
   } else if (!just_started_begin_frame_) {
     base::TimeDelta delta =
         base::TimeTicks::Now() - (last_frame_time_ + last_interval_);
