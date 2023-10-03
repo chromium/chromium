@@ -4265,8 +4265,8 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_TITLE" desc="Incognito Lock title displayed in What's New. [iOS only]">
         Incognito Lock
       </message>
-      <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_BUTTON_TITLE" desc="Text of the primary button of Incognito Lock to open the iOS settings page. [iOS only]">
-        Go to Settings
+      <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_BUTTON_TITLE" desc="Text of the primary button of Incognito Lock to open chrome settings page. [iOS only]">
+        Open Settings
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_SCREENSHOT_TEXT_UNLOCK" desc="Text in image indicating the user to unlock with face ID. [iOS only]">
         Unlock With Face ID
