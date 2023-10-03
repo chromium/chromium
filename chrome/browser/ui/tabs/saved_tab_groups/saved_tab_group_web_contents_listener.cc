@@ -17,6 +17,9 @@ namespace {
 
 bool IsSaveableNavigation(content::NavigationHandle* navigation_handle) {
   ui::PageTransition page_transition = navigation_handle->GetPageTransition();
+  if (navigation_handle->IsPost()) {
+    return false;
+  }
   if (!ui::IsValidPageTransitionType(page_transition)) {
     return false;
   }
