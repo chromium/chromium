@@ -132,7 +132,6 @@ public class ColdStartTracker implements ActivityStateListener {
      * Application).
      */
     public static boolean wasColdOnFirstActivityCreationOrNow() {
-        if (BuildConfig.IS_FOR_TEST && sColdStartTracker == null) return false;
         return sColdStartTracker.firstActivityWasColdOrDidNotGetCreatedYet();
     }
 

@@ -334,7 +334,7 @@ public abstract class AsyncInitializationActivity
     /**
      * @return true if will proceed with Activity creation, false if will abort.
      */
-    private boolean onCreateInternal(Bundle savedInstanceState) {
+    private final boolean onCreateInternal(Bundle savedInstanceState) {
         initializeStartupMetrics();
         setIntent(IntentHandler.rewriteFromHistoryIntent(getIntent()));
 
