@@ -134,6 +134,8 @@ test(() => {
   text.innerText = "\u05D0";
   assert_false(tree.matches(":dir(ltr)"), "node tree ancestor before fifth text change");
   assert_false(slot.matches(":dir(ltr)"), "slot before fifth text change");
+
+  tree.remove();
 }, "text changes affecting both slot and ancestor with dir=auto");
 
 test(() => {
@@ -166,4 +168,109 @@ test(() => {
   assert_true(tree.matches(":dir(ltr)"), "after change 7");
   aleph1.dir = "invalid";
   assert_false(tree.matches(":dir(ltr)"), "after change 8");
+
+  tree.remove();
 }, "dynamic changes to subtrees excluded as a result of the dir attribute");
+
+test(() => {
+  let tree = setup_tree(`
+    <div dir="auto">
+      <!-- element goes here -->
+    </div>
+  `);
+
+  let element = document.createElementNS("namespace", "element");
+  let text = document.createTextNode("\u05D0");
+  element.appendChild(text);
+  tree.prepend(element);
+  assert_not_equals(element.namespaceURI, tree.namespaceURI);
+
+  assert_true(tree.matches(":dir(rtl)"), "initial state");
+  assert_false(tree.matches(":dir(ltr)"), "initial state");
+  text.data = "A";
+  assert_true(tree.matches(":dir(ltr)"), "after dynamic change");
+  assert_false(tree.matches(":dir(rtl)"), "after dynamic change");
+
+  tree.remove();
+}, "dynamic changes inside of non-HTML elements");
+
+test(() => {
+  let tree, shadow;
+  [tree, shadow] = setup_tree(`
+    <div dir="auto">
+      <div id="root">
+        <element xmlns="namespace">A</element>
+        \u05D0
+      </div>
+    </div>
+  `, `
+    <div dir="ltr">
+      <slot dir="auto">\u05D0</slot>
+    </div>
+  `);
+
+  let element = tree.querySelector("element");
+  let slot = shadow.querySelector("slot");
+  let text = element.firstChild;
+
+  assert_true(tree.matches(":dir(ltr)"), "initial state (tree)");
+  assert_true(element.matches(":dir(ltr)"), "initial state (element)");
+  assert_true(slot.matches(":dir(ltr)"), "initial state (slot)");
+
+  text.data = "\u05D0";
+
+  assert_true(tree.matches(":dir(rtl)"), "state after first change (tree)");
+  assert_true(element.matches(":dir(rtl)"), "state after first change (element)");
+  assert_true(slot.matches(":dir(rtl)"), "state after first change (slot)");
+
+  text.data = "";
+
+  assert_true(tree.matches(":dir(rtl)"), "state after second change (tree)");
+  assert_true(element.matches(":dir(rtl)"), "state after second change (element)");
+  assert_true(slot.matches(":dir(rtl)"), "state after second change (slot)");
+
+  tree.remove();
+}, "slotted non-HTML elements");
+
+test(() => {
+  let tree, shadow;
+  [tree, shadow] = setup_tree(`
+    <div>
+      <div id="root">
+        <!-- element goes here -->
+        \u05D0
+      </div>
+    </div>
+  `, `
+    <div dir="ltr">
+      <slot></slot>
+    </div>
+  `);
+
+  let element = document.createElementNS("namespace", "element");
+  let text = document.createTextNode("A");
+  element.appendChild(text);
+  tree.querySelector("#root").prepend(element);
+
+  assert_not_equals(element.namespaceURI, tree.namespaceURI);
+
+  assert_true(tree.matches(":dir(ltr)"), "initial state (tree)");
+  assert_true(element.matches(":dir(ltr)"), "initial state (element)");
+
+  tree.dir = "auto";
+
+  assert_true(tree.matches(":dir(ltr)"), "state after making dir=auto (tree)");
+  assert_true(element.matches(":dir(ltr)"), "state after making dir=auto (element)");
+
+  text.data = "\u05D0";
+
+  assert_true(tree.matches(":dir(rtl)"), "state after first change (tree)");
+  assert_true(element.matches(":dir(rtl)"), "state after first change (element)");
+
+  text.data = "";
+
+  assert_true(tree.matches(":dir(rtl)"), "state after second change (tree)");
+  assert_true(element.matches(":dir(rtl)"), "state after second change (element)");
+
+  tree.remove();
+}, "slotted non-HTML elements after dynamically assigning dir=auto, and dir attribute ignored on non-HTML elements");

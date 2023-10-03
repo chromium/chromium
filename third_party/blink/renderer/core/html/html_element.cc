@@ -2443,18 +2443,15 @@ bool HTMLElement::ElementInheritsDirectionality(const Node* node) {
 void HTMLElement::ChildrenChanged(const ChildrenChange& change) {
   Element::ChildrenChanged(change);
 
-  if (GetDocument().HasDirAttribute()) {
-    AdjustDirectionalityIfNeededAfterChildrenChanged(change);
-
-    if (change.IsChildInsertion() && !SelfOrAncestorHasDirAutoAttribute() &&
-        // The new code for handling this is in Element::InsertedInto and
-        // Element::RemovedFrom.
-        !RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
-      auto* element = DynamicTo<HTMLElement>(change.sibling_changed);
-      if (element && !element->NeedsInheritDirectionalityFromParent() &&
-          ElementInheritsDirectionality(element)) {
-        element->UpdateDirectionalityAndDescendant(CachedDirectionality());
-      }
+  if (GetDocument().HasDirAttribute() && change.IsChildInsertion() &&
+      !SelfOrAncestorHasDirAutoAttribute() &&
+      // The new code for handling this is in Element::InsertedInto and
+      // Element::RemovedFrom.
+      !RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+    auto* element = DynamicTo<HTMLElement>(change.sibling_changed);
+    if (element && !element->NeedsInheritDirectionalityFromParent() &&
+        ElementInheritsDirectionality(element)) {
+      element->UpdateDirectionalityAndDescendant(CachedDirectionality());
     }
   }
   if (change.IsChildInsertion()) {

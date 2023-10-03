@@ -18,6 +18,8 @@ test(() => {
   const ele2 = document.createElement("foobar");
   ele.append(ele2);
   assert_true(ele2.matches(":dir(rtl)"));
+  ele.dir = "ltr";
+  assert_true(ele2.matches(":dir(ltr)"), "direction after dynamic change");
 }, "Element without direction has parent element direction");
 
 test(() => {
@@ -26,6 +28,8 @@ test(() => {
   const ele2 = document.createElementNS("foobar", "foobar");
   ele.append(ele2);
   assert_true(ele2.matches(":dir(rtl)"));
+  ele.dir = "ltr";
+  assert_true(ele2.matches(":dir(ltr)"), "direction after dynamic change");
 }, "Non-HTML element without direction has parent element direction");
 
 test(() => {
@@ -45,3 +49,17 @@ test(() => {
 
   container1.remove();
 }, "dir inheritance is correct after insertion and removal from document");
+
+test(() => {
+  const ele = document.createElement("foobar");
+  ele.dir = "auto";
+  const ele2 = document.createElementNS("foobar", "foobar");
+  ele.append(ele2);
+  const text = document.createTextNode("\u05D0\u05D1\u05D2");
+  ele2.append(text);
+  assert_true(ele.matches(":dir(rtl)"), "is RTL before change");
+  assert_true(ele2.matches(":dir(rtl)"), "child is RTL before change");
+  text.data = "ABC";
+  assert_true(ele.matches(":dir(ltr)"), "is LTR after change");
+  assert_true(ele2.matches(":dir(ltr)"), "child is LTR after change");
+}, "Non-HTML element text contents influence dir=auto");

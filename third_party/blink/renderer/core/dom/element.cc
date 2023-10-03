@@ -4083,9 +4083,7 @@ void Element::UpdateDirectionalityAndDescendant(TextDirection direction) {
 
       if (ShadowRoot* shadow_root = element->GetShadowRoot()) {
         for (Node& child : ElementTraversal::ChildrenOf(*shadow_root)) {
-          // TODO(https://crbug.com/576815): This should work for
-          // non-HTML elements too.
-          if (HTMLElement* child_element = DynamicTo<HTMLElement>(child)) {
+          if (Element* child_element = DynamicTo<Element>(child)) {
             if (HTMLElement::ElementInheritsDirectionality(child_element) &&
                 child_element->CachedDirectionality() != direction) {
               child_element->UpdateDirectionalityAndDescendant(direction);
@@ -4111,7 +4109,8 @@ void Element::UpdateDirectionalityAndDescendant(TextDirection direction) {
 // node tree ancestor, a slot, or an input, we have a method to
 // recalculate it (just for this element) based on all three sources.
 bool Element::RecalcSelfOrAncestorHasDirAuto() {
-  if (DynamicTo<HTMLElement>(this)) {
+  CHECK(RuntimeEnabledFeatures::CSSPseudoDirEnabled());
+  if (IsHTMLElement()) {
     AtomicString dir_attribute_value = FastGetAttribute(html_names::kDirAttr);
     if (HTMLElement::IsValidDirAttribute(dir_attribute_value)) {
       return EqualIgnoringASCIICase(dir_attribute_value, "auto");
@@ -4143,8 +4142,9 @@ void Element::UpdateDescendantHasDirAutoAttribute(bool has_dir_auto) {
     if (ToHTMLSlotElementIfSupportsAssignmentOrNull(this) ||
         HTMLElement::ElementIfAutoDirShouldUseValueOrNull(this)) {
       for (Node& node : FlatTreeTraversal::ChildrenOf(*this)) {
-        if (HTMLElement* element = DynamicTo<HTMLElement>(node)) {
-          if (!HTMLElement::IsValidDirAttribute(
+        if (Element* element = DynamicTo<Element>(node)) {
+          if (!element->IsHTMLElement() ||
+              !HTMLElement::IsValidDirAttribute(
                   element->FastGetAttribute(html_names::kDirAttr))) {
             if (!has_dir_auto) {
               if (!element->SelfOrAncestorHasDirAutoAttribute() ||
@@ -4165,11 +4165,13 @@ void Element::UpdateDescendantHasDirAutoAttribute(bool has_dir_auto) {
     } else {
       Element* element = ElementTraversal::FirstChild(*this);
       while (element) {
-        AtomicString dir_attribute_value =
-            element->FastGetAttribute(html_names::kDirAttr);
-        if (HTMLElement::IsValidDirAttribute(dir_attribute_value)) {
-          element = ElementTraversal::NextSkippingChildren(*element, this);
-          continue;
+        if (element->IsHTMLElement()) {
+          AtomicString dir_attribute_value =
+              element->FastGetAttribute(html_names::kDirAttr);
+          if (HTMLElement::IsValidDirAttribute(dir_attribute_value)) {
+            element = ElementTraversal::NextSkippingChildren(*element, this);
+            continue;
+          }
         }
 
         if (!has_dir_auto) {
@@ -4262,10 +4264,8 @@ absl::optional<TextDirection> Element::ResolveAutoDirectionality(
                         slotted_node->textContent(true))) {
               return *text_direction;
             }
-          } else if (HTMLElement* slotted_element =
-                         DynamicTo<HTMLElement>(slotted_node)) {
-            // TODO(https://crbug.com/576815): This should work for
-            // non-HTML elements too.
+          } else if (Element* slotted_element =
+                         DynamicTo<Element>(slotted_node)) {
             absl::optional<TextDirection> slotted_child_result =
                 slotted_element->ResolveAutoDirectionality<NodeTraversal>(
                     is_deferred, slotted_element);
@@ -4313,9 +4313,10 @@ absl::optional<TextDirection> Element::ResolveAutoDirectionality(
     }
 
     // Skip elements with valid dir attribute
-    if (auto* element_node = DynamicTo<Element>(node)) {
+    if (element && (element->IsHTMLElement() ||
+                    !RuntimeEnabledFeatures::CSSPseudoDirEnabled())) {
       AtomicString dir_attribute_value =
-          element_node->FastGetAttribute(html_names::kDirAttr);
+          element->FastGetAttribute(html_names::kDirAttr);
       if (HTMLElement::IsValidDirAttribute(dir_attribute_value)) {
         node = Traversal::NextSkippingChildren(*node, stay_within);
         continue;
@@ -4363,6 +4364,10 @@ Element::ResolveAutoDirectionality<NodeTraversal>(bool& is_deferred,
 void Element::AdjustDirectionalityIfNeededAfterChildrenChanged(
     const ChildrenChange& change) {
   if (!SelfOrAncestorHasDirAutoAttribute()) {
+    return;
+  }
+
+  if (!IsHTMLElement() && !RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
     return;
   }
 
@@ -5297,6 +5302,10 @@ void Element::ChildrenChanged(const ChildrenChange& change) {
           .GetStyleEngine()
           .ScheduleInvalidationsForHasPseudoWhenAllChildrenRemoved(*this);
     }
+  }
+
+  if (GetDocument().HasDirAttribute()) {
+    AdjustDirectionalityIfNeededAfterChildrenChanged(change);
   }
 }
 

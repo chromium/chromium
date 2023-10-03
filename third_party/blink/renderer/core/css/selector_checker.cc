@@ -1766,19 +1766,16 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         break;
       }
 
-      if (auto* html_element = DynamicTo<HTMLElement>(element)) {
-        // Recomputing the slot assignment can update cached directionality.
-        // This should already have been done unless this an API call like
-        // Element.matches().
-        Document& document = element.GetDocument();
-        if (document.IsSlotAssignmentDirty()) {
-          CHECK_EQ(mode_, kQueryingRules);
-          document.GetSlotAssignmentEngine().RecalcSlotAssignments();
-        }
-
-        return html_element->CachedDirectionality() == direction;
+      // Recomputing the slot assignment can update cached directionality.
+      // This should already have been done unless this an API call like
+      // Element.matches().
+      Document& document = element.GetDocument();
+      if (document.IsSlotAssignmentDirty()) {
+        CHECK_EQ(mode_, kQueryingRules);
+        document.GetSlotAssignmentEngine().RecalcSlotAssignments();
       }
-      break;
+
+      return element.CachedDirectionality() == direction;
     }
     case CSSSelector::kPseudoDialogInTopLayer:
       if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
