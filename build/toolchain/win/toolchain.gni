@@ -81,7 +81,7 @@ template("msvc_toolchain") {
 
     if (toolchain_uses_remoteexec) {
       if (toolchain_is_clang) {
-        cl_prefix = "${rbe_bin_dir}/rewrapper -cfg=${rbe_cc_cfg_file} -exec_root=${rbe_exec_root} "
+        cl_prefix = "${rbe_bin_dir}/rewrapper -cfg=${rbe_cc_cfg_file} -exec_root=${rbe_exec_root} -labels=type=compile,compiler=clang-cl,lang=cpp "
       } else {
         cl_prefix = ""
       }
