@@ -6,7 +6,6 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink.h"
@@ -65,12 +64,12 @@ void HostDisplayClient::AddChildWindowToBrowser(
 }
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(OZONE_PLATFORM_X11)
 void HostDisplayClient::DidCompleteSwapWithNewSize(const gfx::Size& size) {
   NOTIMPLEMENTED();
 }
-#endif
+#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
+#endif  // BUILFFLAG(IS_OZONE)
 
 }  // namespace viz

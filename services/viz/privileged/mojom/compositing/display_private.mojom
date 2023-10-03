@@ -128,7 +128,7 @@ interface DisplayClient {
   DidCompleteSwapWithSize(gfx.mojom.Size size);
 
   // Notifies that a swap has occurred with a new size.
-  [EnableIf=is_linux_or_chromeos_lacros]
+  [EnableIf=ozone_platform_x11]
   DidCompleteSwapWithNewSize(gfx.mojom.Size size);
 
   // Notifies the client of the result of context creation attempt. On Android we can't

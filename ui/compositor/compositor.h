@@ -56,6 +56,10 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_transform.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/buildflags.h"
+#endif
+
 namespace base {
 class SingleThreadTaskRunner;
 }
@@ -456,11 +460,11 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   // base::PowerSuspendObserver:
   void OnResume() override;
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(OZONE_PLATFORM_X11)
   void OnCompleteSwapWithNewSize(const gfx::Size& size);
-#endif
+#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
+#endif  // BUILFFLAG(IS_OZONE)
 
   bool IsLocked() { return lock_manager_.IsLocked(); }
 

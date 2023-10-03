@@ -894,14 +894,14 @@ void Compositor::OnResume() {
     obs.ResetIfActive();
 }
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(OZONE_PLATFORM_X11)
 void Compositor::OnCompleteSwapWithNewSize(const gfx::Size& size) {
   for (auto& observer : observer_list_)
     observer.OnCompositingCompleteSwapWithNewSize(this, size);
 }
-#endif
+#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
+#endif  // BUILFFLAG(IS_OZONE)
 
 void Compositor::SetOutputIsSecure(bool output_is_secure) {
   output_is_secure_ = output_is_secure;

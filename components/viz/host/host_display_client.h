@@ -9,12 +9,15 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/host/viz_host_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "ui/gfx/native_widget_types.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/buildflags.h"
+#endif
 
 namespace viz {
 
@@ -52,11 +55,11 @@ class VIZ_HOST_EXPORT HostDisplayClient : public mojom::DisplayClient {
   void AddChildWindowToBrowser(gpu::SurfaceHandle child_window) override;
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(OZONE_PLATFORM_X11)
   void DidCompleteSwapWithNewSize(const gfx::Size& size) override;
-#endif
+#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
+#endif  // BUILFFLAG(IS_OZONE)
 
   mojo::Receiver<mojom::DisplayClient> receiver_{this};
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)

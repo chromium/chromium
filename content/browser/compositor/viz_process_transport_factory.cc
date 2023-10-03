@@ -53,6 +53,10 @@
 #include "ui/gfx/win/rendering_window_manager.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/buildflags.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -106,13 +110,13 @@ class HostDisplayClient : public viz::HostDisplayClient {
   HostDisplayClient& operator=(const HostDisplayClient&) = delete;
 
   // viz::HostDisplayClient:
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(OZONE_PLATFORM_X11)
   void DidCompleteSwapWithNewSize(const gfx::Size& size) override {
     compositor_->OnCompleteSwapWithNewSize(size);
   }
-#endif
+#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
+#endif  // BUILFFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_WIN)
   void AddChildWindowToBrowser(gpu::SurfaceHandle child_window) override {

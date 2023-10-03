@@ -41,11 +41,11 @@ mojom("compositing") {
   if (use_ozone) {
     enabled_features += [ "use_ozone" ]
   }
+  if (ozone_platform_x11) {
+    enabled_features += [ "ozone_platform_x11" ]
+  }
   if (enable_cast_overlay_strategy) {
     enabled_features += [ "enable_cast_overlay_strategy" ]
-  }
-  if (is_linux || is_chromeos_lacros) {
-    enabled_features += [ "is_linux_or_chromeos_lacros" ]
   }
 
   cpp_typemaps = [

@@ -32,6 +32,7 @@ include_rules = [
   "+ui/events",
   "+ui/gl",
   "+ui/latency",
+  "+ui/ozone/buildflags.h",
   "+ui/ozone/public",
 ]
 
