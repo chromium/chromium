@@ -10,12 +10,14 @@ GPUAdapterInfo::GPUAdapterInfo(const String& vendor,
                                const String& architecture,
                                const String& device,
                                const String& description,
-                               const String& driver)
+                               const String& driver,
+                               const String& backend)
     : vendor_(vendor),
       architecture_(architecture),
       device_(device),
       description_(description),
-      driver_(driver) {}
+      driver_(driver),
+      backend_(backend) {}
 
 const String& GPUAdapterInfo::vendor() const {
   return vendor_;
@@ -35,6 +37,10 @@ const String& GPUAdapterInfo::description() const {
 
 const String& GPUAdapterInfo::driver() const {
   return driver_;
+}
+
+const String& GPUAdapterInfo::backend() const {
+  return backend_;
 }
 
 }  // namespace blink

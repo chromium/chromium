@@ -331,7 +331,8 @@ ScriptPromise GPUAdapter::requestAdapterInfo(
     // versions of all available adapter info values, including some that are
     // only available when the flag is enabled.
     adapter_info = MakeGarbageCollected<GPUAdapterInfo>(
-        vendor_, architecture_, device_, description_, driver_);
+        vendor_, architecture_, device_, description_, driver_,
+        FromDawnEnum(backend_type_));
   } else {
     // TODO(dawn:1427): If unmask_hints are given ask the user for consent to
     // expose more information and, if given, include device_ and description_
