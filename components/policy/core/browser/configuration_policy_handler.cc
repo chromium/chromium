@@ -377,7 +377,7 @@ void SimplePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     prefs->SetValue(pref_path_, value->Clone());
 }
 
-// SimplePolicyHandler implementation ------------------------------------------
+// PolicyWithDependencyHandler implementation ------------------------------------------
 
 PolicyWithDependencyHandler::PolicyWithDependencyHandler(
     const char* required_policy_name,
