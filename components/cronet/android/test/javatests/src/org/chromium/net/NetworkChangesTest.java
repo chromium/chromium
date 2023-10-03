@@ -152,7 +152,7 @@ public class NetworkChangesTest {
             request.start();
         }
 
-        waitForConnectingStatus(request);
+        waitForStatus(request, UrlRequest.Status.CONNECTING);
 
         // Simulate network change which should abort connect jobs
         postToInitThreadSync(() -> {
@@ -179,12 +179,12 @@ public class NetworkChangesTest {
         Networks networks;
     }
 
-    private static void waitForConnectingStatus(UrlRequest request) {
-        final ConditionVariable cv = new ConditionVariable(false /* closed */);
+    private static void waitForStatus(UrlRequest request, int targetStatus) {
+        final ConditionVariable cv = new ConditionVariable(/*open=*/false);
         request.getStatus(new UrlRequest.StatusListener() {
             @Override
             public void onStatus(int status) {
-                if (status == UrlRequest.Status.CONNECTING) {
+                if (status == targetStatus) {
                     cv.open();
                 }
             }
