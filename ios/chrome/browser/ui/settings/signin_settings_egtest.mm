@@ -318,14 +318,14 @@ using chrome_test_util::SettingsSignInRowMatcher;
       grey_sufficientlyVisible(), nil);
   [[[EarlGrey selectElementWithMatcher:footerTextMatcher]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
-      onElementWithMatcher:chrome_test_util::HistoryOptInScrollViewMatcher()]
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       assertWithMatcher:grey_notNil()];
 
   // Decline History Sync.
-  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                           HistoryOptInSecondaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:
+                  chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
-      onElementWithMatcher:chrome_test_util::HistoryOptInScrollViewMatcher()]
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
@@ -365,10 +365,10 @@ using chrome_test_util::SettingsSignInRowMatcher;
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Decline History Sync.
-  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                           HistoryOptInSecondaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:
+                  chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
-      onElementWithMatcher:chrome_test_util::HistoryOptInScrollViewMatcher()]
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:

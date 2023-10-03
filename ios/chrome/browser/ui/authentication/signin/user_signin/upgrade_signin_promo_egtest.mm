@@ -4,6 +4,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -28,7 +29,7 @@ void VerifySigninPromoSufficientlyVisible() {
   ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
+        selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
@@ -36,6 +37,20 @@ void VerifySigninPromoSufficientlyVisible() {
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForUIElementTimeout, condition),
              @"Sign-in promo not visible");
+}
+
+void VerifyHystoryOptInPromoSufficientlyVisible() {
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"History opt-in promo not visible");
 }
 
 }  // namespace
@@ -49,8 +64,6 @@ void VerifySigninPromoSufficientlyVisible() {
 - (void)setUp {
   [[self class] testForStartup];
   [super setUp];
-  // Make sure the new tab is opened to open the upgrade sign-in promo.
-  [ChromeEarlGrey openNewTab];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -59,29 +72,29 @@ void VerifySigninPromoSufficientlyVisible() {
   // "com.apple.configuration.managed" key.
   AppLaunchConfiguration config;
   config.features_enabled.push_back(switches::kForceStartupSigninPromo);
+  config.features_enabled.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableUpgradeSigninPromo);
-  config.relaunch_policy = NoForceRelaunchAndResetState;
+  // Without relaunch upgrade signin promo will not be shown again.
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
 }
 
 // Tests that the sign-in promo is not visible at start-up with no identity.
-// TODO(crbug.com/1442297): Need to enable this test.
-- (void)DISABLED_testNoSigninPromoWithNoIdentity {
+- (void)testNoSigninPromoWithNoIdentity {
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
 
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
+      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
 
-// Tests that the sign-in promo is not visible at start-up once
-// the user has signed in to their account previously.
-// TODO(crbug.com/1442297): Need to enable this test.
-- (void)DISABLED_testStartupSigninPromoUserSignedIn {
+// Tests that the history opt-in promo is shown if the user is signed in to
+// an account without history sync.
+- (void)testHistoryOptInPromoUserSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
   [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:YES
                                           forIdentity:fakeIdentity];
 
@@ -89,7 +102,25 @@ void VerifySigninPromoSufficientlyVisible() {
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
+      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
+      assertWithMatcher:grey_notVisible()];
+  VerifyHystoryOptInPromoSufficientlyVisible();
+}
+
+- (void)testHistoryOptInPromoNotShownWhenAlreadyGranted {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:YES
+                                          forIdentity:fakeIdentity];
+
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -105,13 +136,12 @@ void VerifySigninPromoSufficientlyVisible() {
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
 
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
+      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
 
 // Tests that the sign-in promo is visible at start-up for regular user.
-// TODO(crbug.com/1442297): Need to enable this test.
-- (void)DISABLED_testStartupSigninPromoShownForNoneMinor {
+- (void)testStartupSigninPromoShownForNoneMinor {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:YES
@@ -120,9 +150,6 @@ void VerifySigninPromoSufficientlyVisible() {
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
   VerifySigninPromoSufficientlyVisible();
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSkipSigninAccessibilityIdentifier)]
-      performAction:grey_tap()];
 }
 
 // Tests sign-in promo behavior in landscape. It should appears if and only if
@@ -143,7 +170,7 @@ void VerifySigninPromoSufficientlyVisible() {
     VerifySigninPromoSufficientlyVisible();
   } else {
     [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
+        selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
         assertWithMatcher:grey_notVisible()];
   }
 }
