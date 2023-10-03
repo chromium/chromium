@@ -12,7 +12,7 @@
 
 #include <algorithm>
 
-#include "base/allocator/partition_allocator/tagging.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "base/android/build_info.h"
 #include "base/android/java_exception_reporter.h"
 #include "base/android/jni_android.h"

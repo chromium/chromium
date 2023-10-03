@@ -8,13 +8,13 @@
 #include <new>
 #include <type_traits>
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // This header defines following macros:

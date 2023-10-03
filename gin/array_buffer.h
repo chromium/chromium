@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/compiler_specific.h"
 #include "base/memory/shared_memory_mapper.h"
 #include "gin/converter.h"

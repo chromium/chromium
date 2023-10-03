@@ -10,8 +10,8 @@
 #include <set>
 #include <string>
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
-#include "base/allocator/partition_allocator/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"

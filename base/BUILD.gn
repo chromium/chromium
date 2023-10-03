@@ -18,7 +18,8 @@
 # huge sequence of random-looking conditionals.
 
 import("//base/allocator/allocator.gni")
-import("//base/allocator/partition_allocator/partition_alloc.gni")
+import(
+    "//base/allocator/partition_allocator/src/partition_alloc/partition_alloc.gni")
 import("//base/debug/debug.gni")
 import("//base/trace_event/tracing.gni")
 import("//build/buildflag_header.gni")
@@ -1037,7 +1038,7 @@ component("base") {
   deps = [
     ":message_pump_buildflags",
     "//base/allocator:buildflags",
-    "//base/allocator/partition_allocator:raw_ptr",
+    "//base/allocator/partition_allocator/src/partition_alloc:raw_ptr",
     "//base/third_party/double_conversion",
     "//base/third_party/dynamic_annotations",
     "//build:blink_buildflags",
@@ -1076,7 +1077,7 @@ component("base") {
     ":sanitizer_buildflags",
     ":synchronization_buildflags",
     ":tracing_buildflags",
-    "//base/allocator/partition_allocator:buildflags",
+    "//base/allocator/partition_allocator/src/partition_alloc:buildflags",
     "//base/numerics:base_numerics",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
@@ -1703,8 +1704,8 @@ component("base") {
     # partition_alloc code if use_partition_alloc = false because no code uses
     # partition_alloc.
     public_deps += [
-      "allocator/partition_allocator:partition_alloc",
-      "allocator/partition_allocator:raw_ptr",
+      "allocator/partition_allocator/src/partition_alloc",
+      "allocator/partition_allocator/src/partition_alloc:raw_ptr",
     ]
   }
 
@@ -2729,8 +2730,8 @@ test("base_perftests") {
 
   if (use_partition_alloc) {
     sources += [
-      "allocator/partition_allocator/partition_alloc_perftest.cc",
-      "allocator/partition_allocator/partition_lock_perftest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_perftest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_lock_perftest.cc",
     ]
     deps += [ ":partition_alloc_test_support" ]
   }
@@ -3049,8 +3050,8 @@ source_set("arm_bti_testfunctions") {
 
   if (target_cpu == "arm64" && (is_linux || is_android)) {
     sources = [
-      "allocator/partition_allocator/arm_bti_test_functions.S",
-      "allocator/partition_allocator/arm_bti_test_functions.h",
+      "allocator/partition_allocator/src/partition_alloc/arm_bti_test_functions.S",
+      "allocator/partition_allocator/src/partition_alloc/arm_bti_test_functions.h",
     ]
   }
 }
@@ -3083,9 +3084,9 @@ test("base_unittests") {
     "allocator/dispatcher/testing/observer_mock.h",
     "allocator/dispatcher/testing/tools.h",
     "allocator/dispatcher/tls_unittest.cc",
-    "allocator/partition_allocator/pointers/raw_ptr_test_support.h",
-    "allocator/partition_allocator/pointers/raw_ptr_unittest.cc",
-    "allocator/partition_allocator/pointers/raw_ref_unittest.cc",
+    "allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_test_support.h",
+    "allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_unittest.cc",
+    "allocator/partition_allocator/src/partition_alloc/pointers/raw_ref_unittest.cc",
     "at_exit_unittest.cc",
     "atomicops_unittest.cc",
     "auto_reset_unittest.cc",
@@ -3521,7 +3522,9 @@ test("base_unittests") {
   ]
 
   if (!is_ios) {
-    sources += [ "allocator/partition_allocator/tagging_unittest.cc" ]
+    sources += [
+      "allocator/partition_allocator/src/partition_alloc/tagging_unittest.cc",
+    ]
 
     data_deps += [ "//base/test:test_proto_descriptor" ]
     data += [ "$root_gen_dir/base/test/test_proto.descriptor" ]
@@ -3739,8 +3742,8 @@ test("base_unittests") {
 
   if (is_mac) {
     sources += [
-      "allocator/partition_allocator/shim/allocator_interception_apple_unittest.mm",
-      "allocator/partition_allocator/shim/malloc_zone_functions_apple_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple_unittest.mm",
+      "allocator/partition_allocator/src/partition_alloc/shim/malloc_zone_functions_apple_unittest.cc",
       "apple/call_with_eh_frame_unittest.mm",
       "apple/scoped_mach_vm_unittest.cc",
       "apple/scoped_nsautorelease_pool_unittest.mm",
@@ -3798,8 +3801,8 @@ test("base_unittests") {
 
     if (use_allocator_shim) {
       sources += [
-        "allocator/partition_allocator/shim/allocator_interception_apple_unittest.mm",
-        "allocator/partition_allocator/shim/malloc_zone_functions_apple_unittest.cc",
+        "allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple_unittest.mm",
+        "allocator/partition_allocator/src/partition_alloc/shim/malloc_zone_functions_apple_unittest.cc",
       ]
     }
 
@@ -3810,37 +3813,37 @@ test("base_unittests") {
 
   if (use_partition_alloc) {
     sources += [
-      "allocator/partition_allocator/address_pool_manager_unittest.cc",
-      "allocator/partition_allocator/address_space_randomization_unittest.cc",
-      "allocator/partition_allocator/compressed_pointer_unittest.cc",
-      "allocator/partition_allocator/freeslot_bitmap_unittest.cc",
-      "allocator/partition_allocator/hardening_unittest.cc",
-      "allocator/partition_allocator/memory_reclaimer_unittest.cc",
-      "allocator/partition_allocator/page_allocator_unittest.cc",
-      "allocator/partition_allocator/partition_alloc_base/bits_pa_unittest.cc",
-      "allocator/partition_allocator/partition_alloc_base/component_export_pa_unittest.cc",
-      "allocator/partition_allocator/partition_alloc_base/cpu_pa_unittest.cc",
-      "allocator/partition_allocator/partition_alloc_base/logging_pa_unittest.cc",
-      "allocator/partition_allocator/partition_alloc_base/rand_util_pa_unittest.cc",
-      "allocator/partition_allocator/partition_alloc_base/scoped_clear_last_error_pa_unittest.cc",
-      "allocator/partition_allocator/partition_alloc_base/strings/cstring_builder_pa_unittest.cc",
-      "allocator/partition_allocator/partition_alloc_base/strings/safe_sprintf_pa_unittest.cc",
-      "allocator/partition_allocator/partition_alloc_base/strings/string_util_pa_unittest.cc",
-      "allocator/partition_allocator/partition_alloc_base/strings/stringprintf_pa_unittest.cc",
-      "allocator/partition_allocator/partition_alloc_base/thread_annotations_pa_unittest.cc",
-      "allocator/partition_allocator/partition_alloc_unittest.cc",
-      "allocator/partition_allocator/partition_lock_unittest.cc",
-      "allocator/partition_allocator/reverse_bytes_unittest.cc",
-      "allocator/partition_allocator/thread_cache_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/address_pool_manager_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/address_space_randomization_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/compressed_pointer_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/freeslot_bitmap_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/hardening_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/memory_reclaimer_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/page_allocator_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits_pa_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export_pa_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/cpu_pa_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging_pa_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/rand_util_pa_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/scoped_clear_last_error_pa_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/cstring_builder_pa_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/safe_sprintf_pa_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/string_util_pa_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/stringprintf_pa_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations_pa_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_lock_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/reverse_bytes_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/thread_cache_unittest.cc",
     ]
 
     if (use_starscan) {
       sources += [
-        "allocator/partition_allocator/starscan/pcscan_scheduling_unittest.cc",
-        "allocator/partition_allocator/starscan/pcscan_unittest.cc",
-        "allocator/partition_allocator/starscan/scan_loop_unittest.cc",
-        "allocator/partition_allocator/starscan/stack/stack_unittest.cc",
-        "allocator/partition_allocator/starscan/state_bitmap_unittest.cc",
+        "allocator/partition_allocator/src/partition_alloc/starscan/pcscan_scheduling_unittest.cc",
+        "allocator/partition_allocator/src/partition_alloc/starscan/pcscan_unittest.cc",
+        "allocator/partition_allocator/src/partition_alloc/starscan/scan_loop_unittest.cc",
+        "allocator/partition_allocator/src/partition_alloc/starscan/stack/stack_unittest.cc",
+        "allocator/partition_allocator/src/partition_alloc/starscan/state_bitmap_unittest.cc",
       ]
     }
 
@@ -3855,19 +3858,18 @@ test("base_unittests") {
 
     if (is_android) {
       sources += [
-        "allocator/partition_allocator/partition_alloc_base/files/file_path_pa_unittest.cc",
-        "allocator/partition_allocator/partition_alloc_base/native_library_pa_unittest.cc",
+        "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/files/file_path_pa_unittest.cc",
+        "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/native_library_pa_unittest.cc",
       ]
     } else if (is_fuchsia) {
-      sources += [ "allocator/partition_allocator/partition_alloc_base/fuchsia/fuchsia_logging_pa_unittest.cc" ]
+      sources += [ "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/fuchsia/fuchsia_logging_pa_unittest.cc" ]
     }
 
     if (enable_pkeys && is_debug && !is_component_build) {
       # This test requires RELRO, which is not enabled in component builds.
       # Also, require a debug build, since we only disable stack protectors in
       # debug builds in partition alloc (see below why it's needed).
-      sources +=
-          [ "allocator/partition_allocator/thread_isolation/pkey_unittest.cc" ]
+      sources += [ "allocator/partition_allocator/src/partition_alloc/thread_isolation/pkey_unittest.cc" ]
 
       # We want to test the pkey code without access to memory that is not
       # pkey-tagged. This will allow us to catch unintended memory accesses
@@ -4023,19 +4025,18 @@ test("base_unittests") {
 
   if (use_allocator_shim) {
     sources += [
-      "allocator/partition_allocator/shim/allocator_shim_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_unittest.cc",
       "sampling_heap_profiler/poisson_allocation_sampler_unittest.cc",
       "sampling_heap_profiler/sampling_heap_profiler_unittest.cc",
     ]
 
     if (is_win) {
-      sources +=
-          [ "allocator/partition_allocator/shim/winheap_stubs_win_unittest.cc" ]
+      sources += [ "allocator/partition_allocator/src/partition_alloc/shim/winheap_stubs_win_unittest.cc" ]
     }
 
     sources += [
       "allocator/partition_alloc_support_unittest.cc",
-      "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_unittest.cc",
     ]
   }
 
@@ -4118,9 +4119,9 @@ if (enable_nocompile_tests_new) {
 if (enable_nocompile_tests) {
   nocompile_test("base_nocompile_tests") {
     sources = [
-      "allocator/partition_allocator/partition_alloc_base/thread_annotations_pa_unittest.nc",
-      "allocator/partition_allocator/pointers/raw_ptr_unittest.nc",
-      "allocator/partition_allocator/pointers/raw_ref_unittest.nc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations_pa_unittest.nc",
+      "allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_unittest.nc",
+      "allocator/partition_allocator/src/partition_alloc/pointers/raw_ref_unittest.nc",
       "containers/buffer_iterator_unittest.nc",
       "containers/checked_iterators_unittest.nc",
       "containers/contains_unittest.nc",
@@ -5021,42 +5022,42 @@ fuzzer_test("pickle_fuzzer") {
 }
 
 # TODO(1151236): Temporarily move test_support from
-# //base/allocator/partition_allocator/BUILD.gn to //base/BUILD.gn. After
+# //base/allocator/partition_allocator/src/partition_alloc/BUILD.gn to //base/BUILD.gn. After
 # fixing partition_allocator tests issue, we will move test_support to
-# //base/allocator/partition_allocator/BUILD.gn again.
+# //base/allocator/partition_allocator/src/partition_alloc/BUILD.gn again.
 source_set("partition_alloc_test_support") {
   testonly = true
 
   sources = [
-    "allocator/partition_allocator/extended_api.cc",
-    "allocator/partition_allocator/extended_api.h",
-    "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h",
-    "allocator/partition_allocator/partition_alloc_for_testing.h",
-    "allocator/partition_allocator/pointers/raw_ptr_counting_impl_wrapper_for_test.h",
+    "allocator/partition_allocator/src/partition_alloc/extended_api.cc",
+    "allocator/partition_allocator/src/partition_alloc/extended_api.h",
+    "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h",
+    "allocator/partition_allocator/src/partition_alloc/partition_alloc_for_testing.h",
+    "allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_counting_impl_wrapper_for_test.h",
   ]
   if (is_posix) {
-    sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_posix_for_testing.cc" ]
+    sources += [ "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_posix_for_testing.cc" ]
   }
   if (is_fuchsia) {
     sources += [
-      "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_fuchsia_for_testing.cc",
-      "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_posix_for_testing.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_fuchsia_for_testing.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_posix_for_testing.cc",
     ]
   }
   if (is_win) {
-    sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_win_for_testing.cc" ]
+    sources += [ "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_win_for_testing.cc" ]
   }
   if (is_apple) {
-    sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_apple_for_testing.mm" ]
+    sources += [ "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_apple_for_testing.mm" ]
   }
   if (is_linux || is_chromeos) {
-    sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_linux_for_testing.cc" ]
+    sources += [ "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_linux_for_testing.cc" ]
   }
   if (is_android) {
-    sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_android_for_testing.cc" ]
+    sources += [ "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_android_for_testing.cc" ]
   }
   public_deps = [
-    "allocator/partition_allocator:buildflags",
+    "allocator/partition_allocator/src/partition_alloc:buildflags",
     "//build:branding_buildflags",
     "//build/config/compiler:compiler_buildflags",
   ]

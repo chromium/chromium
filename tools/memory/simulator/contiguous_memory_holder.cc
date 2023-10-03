@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/memory/page_size.h"

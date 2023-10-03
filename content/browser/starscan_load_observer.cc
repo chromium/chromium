@@ -4,7 +4,7 @@
 
 #include "content/browser/starscan_load_observer.h"
 
-#include "base/allocator/partition_allocator/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
 #include "base/logging.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_request.h"

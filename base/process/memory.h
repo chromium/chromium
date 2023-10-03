@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include "base/allocator/partition_allocator/oom.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
 #include "base/base_export.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"

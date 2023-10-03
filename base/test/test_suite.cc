@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/tagging.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "base/at_exit.h"
 #include "base/base_paths.h"
 #include "base/base_switches.h"

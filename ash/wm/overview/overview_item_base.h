@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wm/overview/overview_types.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"

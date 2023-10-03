@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/allocator/partition_alloc_features.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -115,7 +115,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
-#include "base/allocator/partition_allocator/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
 #endif
 
 namespace content {

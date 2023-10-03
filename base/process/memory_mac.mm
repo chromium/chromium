@@ -6,9 +6,9 @@
 
 #include <new>
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/shim/allocator_interception_apple.h"
-#include "base/allocator/partition_allocator/shim/allocator_shim.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "build/build_config.h"
 
 namespace base {

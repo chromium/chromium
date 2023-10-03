@@ -28,7 +28,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/allocator/partition_allocator/oom.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"

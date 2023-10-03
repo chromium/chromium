@@ -121,8 +121,8 @@ AST_MATCHER(clang::Stmt, isInRawPtrCastHeader) {
   std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
                                      Node.getSourceRange().getBegin());
   return filename.find(
-             "base/allocator/partition_allocator/pointers/raw_ptr_cast.h") !=
-         std::string::npos;
+             "base/allocator/partition_allocator/src/partition_alloc/pointers/"
+             "raw_ptr_cast.h") != std::string::npos;
 }
 
 AST_POLYMORPHIC_MATCHER(isInGeneratedLocation,

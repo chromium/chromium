@@ -1,6 +1,6 @@
 include_rules = [
-    "+base/allocator/partition_allocator/page_allocator.h",
-    "+base/allocator/partition_allocator/partition_alloc_constants.h",
+    "+base/allocator/partition_allocator/src/partition_alloc/page_allocator.h",
+    "+base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h",
     "+base/memory/page_size.h",
     "+base/memory/platform_shared_memory_region.h",
     "+gin/array_buffer.h"

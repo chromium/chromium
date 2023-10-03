@@ -1,6 +1,6 @@
 include_rules = [
-    "+base/allocator/partition_allocator/oom.h",
-    "+base/allocator/partition_allocator/partition_alloc.h",
+    "+base/allocator/partition_allocator/src/partition_alloc/oom.h",
+    "+base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h",
     "+base/auto_reset.h",
     "+base/bit_cast.h",
     "+base/bits.h",

@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/debug/stack_trace.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -25,7 +25,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/shim/allocator_interception_apple.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
 #endif
 
 using base::allocator::dispatcher::AllocationSubsystem;

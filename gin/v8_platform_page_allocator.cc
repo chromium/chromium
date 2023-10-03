@@ -4,9 +4,9 @@
 
 #include "v8_platform_page_allocator.h"
 
-#include "base/allocator/partition_allocator/address_space_randomization.h"
-#include "base/allocator/partition_allocator/page_allocator_constants.h"
-#include "base/allocator/partition_allocator/random.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/address_space_randomization.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_constants.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/random.h"
 #include "base/check_op.h"
 #include "base/cpu.h"
 #include "base/memory/page_size.h"

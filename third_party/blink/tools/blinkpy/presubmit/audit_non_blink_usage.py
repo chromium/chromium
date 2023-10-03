@@ -150,7 +150,7 @@ _CONFIG = [
             'logging::GetVlogLevel',
             'logging::SetLogItems',
 
-            # //base/allocator/partition_allocator/partition_alloc_constants.h
+            # //base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h
             'partition_alloc::internal::kAlignment',
 
             # //base/task/bind_post_task.h

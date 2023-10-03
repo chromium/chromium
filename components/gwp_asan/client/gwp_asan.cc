@@ -11,7 +11,7 @@
 #include <tuple>
 
 #include "base/allocator/partition_alloc_support.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"

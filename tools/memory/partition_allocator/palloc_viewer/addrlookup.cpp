@@ -236,7 +236,7 @@ int main(int argc, char **argv) {
   printf("pthread_block_offset=0x%lx\n", pthread_block_offset);
 
   Dwarf_Addr bias;
-  Dwarf_Die *cu = lookup_cu(NULL, "../../base/allocator/partition_allocator/thread_cache.cc", &bias);
+  Dwarf_Die *cu = lookup_cu(NULL, "../../base/allocator/partition_allocator/src/partition_alloc/thread_cache.cc", &bias);
 
   const char *nspath[] = { "base", "internal", NULL };
   unsigned long g_instance_addr = addrlookup_get_variable_address(cu, bias, nspath, 3, "g_instance");

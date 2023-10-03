@@ -7,14 +7,14 @@
 #include <string.h>
 
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/debug/alias.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-#include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)

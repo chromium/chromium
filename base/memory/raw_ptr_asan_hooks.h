@@ -5,7 +5,7 @@
 #ifndef BASE_MEMORY_RAW_PTR_ASAN_HOOKS_H_
 #define BASE_MEMORY_RAW_PTR_ASAN_HOOKS_H_
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 

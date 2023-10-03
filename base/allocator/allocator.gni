@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//base/allocator/partition_allocator/partition_alloc.gni")
+import(
+    "//base/allocator/partition_allocator/src/partition_alloc/partition_alloc.gni")
 
 # Chromium-specific asserts. External embedders _may_ elect to use these
 # features even without PA-E.

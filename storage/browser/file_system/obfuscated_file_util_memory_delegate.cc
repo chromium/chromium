@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/checked_math.h"

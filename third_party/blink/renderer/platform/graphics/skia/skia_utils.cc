@@ -30,7 +30,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"

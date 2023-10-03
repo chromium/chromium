@@ -3,7 +3,8 @@
 # found in the LICENSE file.
 
 import("//base/allocator/allocator.gni")
-import("//base/allocator/partition_allocator/partition_alloc.gni")
+import(
+    "//base/allocator/partition_allocator/src/partition_alloc/partition_alloc.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
@@ -20,12 +21,12 @@ if (is_apple) {
     sources = [
       "early_zone_registration_apple.cc",
       "early_zone_registration_apple.h",
-      "partition_allocator/shim/early_zone_registration_constants.h",
+      "partition_allocator/src/partition_alloc/shim/early_zone_registration_constants.h",
     ]
 
     deps = [
       ":buildflags",
-      "//base/allocator/partition_allocator:buildflags",
+      "//base/allocator/partition_allocator/src/partition_alloc:buildflags",
     ]
   }
 }

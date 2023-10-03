@@ -1,0 +1,797 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import(
+    "//base/allocator/partition_allocator/src/partition_alloc/partition_alloc.gni")
+import("//build/buildflag_header.gni")
+import("//build/config/android/config.gni")
+import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/compiler/compiler.gni")
+import("//build/config/dcheck_always_on.gni")
+import("//build/config/logging.gni")
+
+# Add partition_alloc.gni and import it for partition_alloc configs.
+
+config("partition_alloc_implementation") {
+  # See also: `partition_alloc_base/component_export.h`
+  defines = [ "IS_PARTITION_ALLOC_IMPL" ]
+}
+
+config("memory_tagging") {
+  if (current_cpu == "arm64" && is_clang &&
+      (is_linux || is_chromeos || is_android || is_fuchsia)) {
+    # base/ has access to the MTE intrinsics because it needs to use them,
+    # but they're not backwards compatible. Use base::CPU::has_mte()
+    # beforehand to confirm or use indirect functions (ifuncs) to select
+    # an MTE-specific implementation at dynamic link-time.
+    cflags = [
+      "-Xclang",
+      "-target-feature",
+      "-Xclang",
+      "+mte",
+    ]
+  }
+}
+
+# Used to shim malloc symbols on Android. see //base/allocator/README.md.
+config("wrap_malloc_symbols") {
+  ldflags = [
+    "-Wl,-wrap,calloc",
+    "-Wl,-wrap,free",
+    "-Wl,-wrap,malloc",
+    "-Wl,-wrap,memalign",
+    "-Wl,-wrap,posix_memalign",
+    "-Wl,-wrap,pvalloc",
+    "-Wl,-wrap,realloc",
+    "-Wl,-wrap,valloc",
+
+    # Not allocating memory, but part of the API
+    "-Wl,-wrap,malloc_usable_size",
+
+    # <stdlib.h> functions
+    "-Wl,-wrap,realpath",
+
+    # <string.h> functions
+    "-Wl,-wrap,strdup",
+    "-Wl,-wrap,strndup",
+
+    # <unistd.h> functions
+    "-Wl,-wrap,getcwd",
+
+    # <stdio.h> functions
+    "-Wl,-wrap,asprintf",
+    "-Wl,-wrap,vasprintf",
+  ]
+}
+
+config("mac_no_default_new_delete_symbols") {
+  if (!is_component_build) {
+    # This is already set when we compile libc++, see
+    # buildtools/third_party/libc++/BUILD.gn. But it needs to be set here as
+    # well, since the shim defines the symbols, to prevent them being exported.
+    cflags = [ "-fvisibility-global-new-delete-hidden" ]
+  }
+}
+
+if (is_fuchsia) {
+  config("fuchsia_sync_lib") {
+    libs = [
+      "sync",  # Used by spinning_mutex.h.
+    ]
+  }
+}
+
+if (enable_pkeys && is_debug) {
+  config("no_stack_protector") {
+    cflags = [ "-fno-stack-protector" ]
+  }
+}
+
+_remove_configs = []
+_add_configs = []
+if (!is_debug || partition_alloc_optimized_debug) {
+  _remove_configs += [ "//build/config/compiler:default_optimization" ]
+
+  # Partition alloc is relatively hot (>1% of cycles for users of CrOS).
+  # Use speed-focused optimizations for it.
+  _add_configs += [ "//build/config/compiler:optimize_speed" ]
+} else {
+  _remove_configs += [ "//build/config/compiler:default_optimization" ]
+  _add_configs += [ "//build/config/compiler:no_optimize" ]
+}
+
+component("partition_alloc") {
+  public_deps = [
+    ":allocator_base",
+    ":allocator_core",
+    ":allocator_shim",
+  ]
+}
+
+# Changes the freelist implementation to use pointer offsets in lieu
+# of full-on pointers. Defaults to false, which implies the use of
+# "encoded next" freelist entry.
+#
+# Only usable when pointers are 64-bit.
+use_freelist_pool_offsets = has_64_bit_pointers && false
+
+source_set("allocator_core") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "address_pool_manager.cc",
+    "address_pool_manager.h",
+    "address_pool_manager_bitmap.cc",
+    "address_pool_manager_bitmap.h",
+    "address_pool_manager_types.h",
+    "address_space_randomization.cc",
+    "address_space_randomization.h",
+    "address_space_stats.h",
+    "allocation_guard.cc",
+    "allocation_guard.h",
+    "compressed_pointer.cc",
+    "compressed_pointer.h",
+    "dangling_raw_ptr_checks.cc",
+    "dangling_raw_ptr_checks.h",
+    "flags.h",
+    "freeslot_bitmap.h",
+    "freeslot_bitmap_constants.h",
+    "gwp_asan_support.cc",
+    "gwp_asan_support.h",
+    "memory_reclaimer.cc",
+    "memory_reclaimer.h",
+    "oom.cc",
+    "oom.h",
+    "oom_callback.cc",
+    "oom_callback.h",
+    "page_allocator.cc",
+    "page_allocator.h",
+    "page_allocator_constants.h",
+    "page_allocator_internal.h",
+    "partition_address_space.cc",
+    "partition_address_space.h",
+    "partition_alloc-inl.h",
+    "partition_alloc.cc",
+    "partition_alloc.h",
+    "partition_alloc_allocation_data.h",
+    "partition_alloc_check.h",
+    "partition_alloc_config.h",
+    "partition_alloc_constants.h",
+    "partition_alloc_forward.h",
+    "partition_alloc_hooks.cc",
+    "partition_alloc_hooks.h",
+    "partition_bucket.cc",
+    "partition_bucket.h",
+    "partition_bucket_lookup.h",
+    "partition_cookie.h",
+    "partition_dcheck_helper.cc",
+    "partition_dcheck_helper.h",
+    "partition_direct_map_extent.h",
+    "partition_freelist_entry.cc",
+    "partition_freelist_entry.h",
+    "partition_lock.h",
+    "partition_oom.cc",
+    "partition_oom.h",
+    "partition_page.cc",
+    "partition_page.h",
+    "partition_page_constants.h",
+    "partition_ref_count.h",
+    "partition_root.cc",
+    "partition_root.h",
+    "partition_stats.cc",
+    "partition_stats.h",
+    "partition_superpage_extent_entry.h",
+    "partition_tls.h",
+    "random.cc",
+    "random.h",
+    "reservation_offset_table.cc",
+    "reservation_offset_table.h",
+    "reverse_bytes.h",
+    "spinning_mutex.cc",
+    "spinning_mutex.h",
+    "tagging.cc",
+    "tagging.h",
+    "thread_cache.cc",
+    "thread_cache.h",
+    "thread_isolation/alignment.h",
+    "thread_isolation/pkey.cc",
+    "thread_isolation/pkey.h",
+    "thread_isolation/thread_isolation.cc",
+    "thread_isolation/thread_isolation.h",
+    "yield_processor.h",
+  ]
+
+  if (use_starscan) {
+    sources += [
+      "starscan/logging.h",
+      "starscan/metadata_allocator.cc",
+      "starscan/metadata_allocator.h",
+      "starscan/pcscan.cc",
+      "starscan/pcscan.h",
+      "starscan/pcscan_internal.cc",
+      "starscan/pcscan_internal.h",
+      "starscan/pcscan_scheduling.cc",
+      "starscan/pcscan_scheduling.h",
+      "starscan/raceful_worklist.h",
+      "starscan/scan_loop.h",
+      "starscan/snapshot.cc",
+      "starscan/snapshot.h",
+      "starscan/stack/stack.cc",
+      "starscan/stack/stack.h",
+      "starscan/starscan_fwd.h",
+      "starscan/state_bitmap.h",
+      "starscan/stats_collector.cc",
+      "starscan/stats_collector.h",
+      "starscan/stats_reporter.h",
+      "starscan/write_protector.cc",
+      "starscan/write_protector.h",
+    ]
+  }
+
+  defines = []
+  if (is_win) {
+    sources += [
+      "page_allocator_internals_win.h",
+      "partition_tls_win.cc",
+    ]
+  } else if (is_posix) {
+    sources += [
+      "page_allocator_internals_posix.cc",
+      "page_allocator_internals_posix.h",
+    ]
+  } else if (is_fuchsia) {
+    sources += [ "page_allocator_internals_fuchsia.h" ]
+  }
+  if (is_android) {
+    # The Android NDK supports PR_MTE_* macros as of NDK r23.
+    if (android_ndk_major_version >= 23) {
+      defines += [ "HAS_PR_MTE_MACROS" ]
+    }
+  }
+  if (use_starscan) {
+    if (current_cpu == "x64") {
+      assert(pcscan_stack_supported)
+      sources += [ "starscan/stack/asm/x64/push_registers_asm.cc" ]
+    } else if (current_cpu == "x86") {
+      assert(pcscan_stack_supported)
+      sources += [ "starscan/stack/asm/x86/push_registers_asm.cc" ]
+    } else if (current_cpu == "arm") {
+      assert(pcscan_stack_supported)
+      sources += [ "starscan/stack/asm/arm/push_registers_asm.cc" ]
+    } else if (current_cpu == "arm64") {
+      assert(pcscan_stack_supported)
+      sources += [ "starscan/stack/asm/arm64/push_registers_asm.cc" ]
+    } else if (current_cpu == "riscv64") {
+      assert(pcscan_stack_supported)
+      sources += [ "starscan/stack/asm/riscv64/push_registers_asm.cc" ]
+    } else {
+      # To support a trampoline for another arch, please refer to v8/src/heap/base.
+      assert(!pcscan_stack_supported)
+    }
+  }
+  if (use_freelist_pool_offsets) {
+    sources += [ "pool_offset_freelist.h" ]
+  } else {
+    sources += [ "encoded_next_freelist.h" ]
+  }
+
+  public_deps = [
+    ":chromecast_buildflags",
+    ":chromeos_buildflags",
+    ":debugging_buildflags",
+    ":partition_alloc_buildflags",
+  ]
+
+  configs += [
+    ":partition_alloc_implementation",
+    ":memory_tagging",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
+  deps = [ ":allocator_base" ]
+  public_configs = []
+  if (is_android) {
+    # tagging.cc requires __arm_mte_set_* functions.
+    deps += [ "//third_party/cpu_features:ndk_compat" ]
+  }
+  if (is_fuchsia) {
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.kernel:fuchsia.kernel_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
+    ]
+    public_deps += [
+      "//third_party/fuchsia-sdk/sdk/pkg/sync",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
+
+    # Needed for users of spinning_mutex.h, which for performance reasons,
+    # contains inlined calls to `libsync` inside the header file.
+    # It appends an entry to the "libs" section of the dependent target.
+    public_configs += [ ":fuchsia_sync_lib" ]
+  }
+
+  frameworks = []
+  if (is_mac) {
+    # SecTaskGetCodeSignStatus needs:
+    frameworks += [ "Security.framework" ]
+  }
+
+  if (is_apple) {
+    frameworks += [
+      "CoreFoundation.framework",
+      "Foundation.framework",
+    ]
+  }
+
+  configs -= _remove_configs
+  configs += _add_configs
+
+  # We want to be able to test pkey mode without access to the default pkey.
+  # This is incompatible with stack protectors since the TLS won't be pkey-tagged.
+  if (enable_pkeys && is_debug) {
+    configs += [ ":no_stack_protector" ]
+  }
+}
+
+source_set("allocator_base") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "partition_alloc_base/atomic_ref_count.h",
+    "partition_alloc_base/augmentations/compiler_specific.h",
+    "partition_alloc_base/bit_cast.h",
+    "partition_alloc_base/bits.h",
+    "partition_alloc_base/check.cc",
+    "partition_alloc_base/check.h",
+    "partition_alloc_base/compiler_specific.h",
+    "partition_alloc_base/component_export.h",
+    "partition_alloc_base/cpu.cc",
+    "partition_alloc_base/cpu.h",
+    "partition_alloc_base/cxx20_is_constant_evaluated.h",
+    "partition_alloc_base/debug/alias.cc",
+    "partition_alloc_base/debug/alias.h",
+    "partition_alloc_base/debug/stack_trace.cc",
+    "partition_alloc_base/debug/stack_trace.h",
+    "partition_alloc_base/export_template.h",
+    "partition_alloc_base/gtest_prod_util.h",
+    "partition_alloc_base/immediate_crash.h",
+    "partition_alloc_base/log_message.cc",
+    "partition_alloc_base/log_message.h",
+    "partition_alloc_base/logging.cc",
+    "partition_alloc_base/logging.h",
+    "partition_alloc_base/memory/page_size.h",
+    "partition_alloc_base/memory/ref_counted.cc",
+    "partition_alloc_base/memory/ref_counted.h",
+    "partition_alloc_base/memory/scoped_policy.h",
+    "partition_alloc_base/memory/scoped_refptr.h",
+    "partition_alloc_base/no_destructor.h",
+    "partition_alloc_base/notreached.h",
+    "partition_alloc_base/numerics/checked_math.h",
+    "partition_alloc_base/numerics/checked_math_impl.h",
+    "partition_alloc_base/numerics/clamped_math.h",
+    "partition_alloc_base/numerics/clamped_math_impl.h",
+    "partition_alloc_base/numerics/safe_conversions.h",
+    "partition_alloc_base/numerics/safe_conversions_arm_impl.h",
+    "partition_alloc_base/numerics/safe_conversions_impl.h",
+    "partition_alloc_base/numerics/safe_math.h",
+    "partition_alloc_base/numerics/safe_math_arm_impl.h",
+    "partition_alloc_base/numerics/safe_math_clang_gcc_impl.h",
+    "partition_alloc_base/numerics/safe_math_shared_impl.h",
+    "partition_alloc_base/posix/eintr_wrapper.h",
+    "partition_alloc_base/process/process_handle.h",
+    "partition_alloc_base/rand_util.cc",
+    "partition_alloc_base/rand_util.h",
+    "partition_alloc_base/scoped_clear_last_error.h",
+    "partition_alloc_base/strings/cstring_builder.cc",
+    "partition_alloc_base/strings/cstring_builder.h",
+    "partition_alloc_base/strings/safe_sprintf.cc",
+    "partition_alloc_base/strings/safe_sprintf.h",
+    "partition_alloc_base/strings/string_util.cc",
+    "partition_alloc_base/strings/string_util.h",
+    "partition_alloc_base/strings/stringprintf.cc",
+    "partition_alloc_base/strings/stringprintf.h",
+    "partition_alloc_base/system/sys_info.h",
+    "partition_alloc_base/thread_annotations.h",
+    "partition_alloc_base/threading/platform_thread.cc",
+    "partition_alloc_base/threading/platform_thread.h",
+    "partition_alloc_base/threading/platform_thread_ref.h",
+    "partition_alloc_base/time/time.cc",
+    "partition_alloc_base/time/time.h",
+    "partition_alloc_base/time/time_override.cc",
+    "partition_alloc_base/time/time_override.h",
+    "partition_alloc_base/types/strong_alias.h",
+    "partition_alloc_base/win/win_handle_types.h",
+    "partition_alloc_base/win/win_handle_types_list.inc",
+    "partition_alloc_base/win/windows_types.h",
+  ]
+
+  if (is_win) {
+    sources += [
+      "partition_alloc_base/debug/stack_trace_win.cc",
+      "partition_alloc_base/memory/page_size_win.cc",
+      "partition_alloc_base/process/process_handle_win.cc",
+      "partition_alloc_base/rand_util_win.cc",
+      "partition_alloc_base/scoped_clear_last_error_win.cc",
+      "partition_alloc_base/threading/platform_thread_win.cc",
+      "partition_alloc_base/time/time_win.cc",
+    ]
+  } else if (is_posix) {
+    sources += [
+      "partition_alloc_base/debug/stack_trace_posix.cc",
+      "partition_alloc_base/files/file_util.h",
+      "partition_alloc_base/files/file_util_posix.cc",
+      "partition_alloc_base/memory/page_size_posix.cc",
+      "partition_alloc_base/posix/safe_strerror.cc",
+      "partition_alloc_base/posix/safe_strerror.h",
+      "partition_alloc_base/process/process_handle_posix.cc",
+      "partition_alloc_base/rand_util_posix.cc",
+      "partition_alloc_base/threading/platform_thread_internal_posix.h",
+      "partition_alloc_base/threading/platform_thread_posix.cc",
+      "partition_alloc_base/time/time_conversion_posix.cc",
+    ]
+
+    if (is_linux || is_chromeos) {
+      sources += [ "partition_alloc_base/debug/stack_trace_linux.cc" ]
+    }
+
+    if (is_android || is_chromeos_ash) {
+      sources += [ "partition_alloc_base/time/time_android.cc" ]
+    }
+    if (is_apple) {
+      sources += [
+        "partition_alloc_base/debug/stack_trace_mac.cc",
+        "partition_alloc_base/time/time_apple.mm",
+      ]
+    } else {
+      sources += [ "partition_alloc_base/time/time_now_posix.cc" ]
+    }
+  } else if (is_fuchsia) {
+    sources += [
+      "partition_alloc_base/fuchsia/fuchsia_logging.cc",
+      "partition_alloc_base/fuchsia/fuchsia_logging.h",
+      "partition_alloc_base/memory/page_size_posix.cc",
+      "partition_alloc_base/posix/safe_strerror.cc",
+      "partition_alloc_base/posix/safe_strerror.h",
+      "partition_alloc_base/rand_util_fuchsia.cc",
+      "partition_alloc_base/threading/platform_thread_internal_posix.h",
+      "partition_alloc_base/threading/platform_thread_posix.cc",
+      "partition_alloc_base/time/time_conversion_posix.cc",
+      "partition_alloc_base/time/time_fuchsia.cc",
+    ]
+  }
+  if (is_android) {
+    # Only android build requires native_library, and native_library depends
+    # on file_path. So file_path is added if is_android = true.
+    sources += [
+      "partition_alloc_base/debug/stack_trace_android.cc",
+      "partition_alloc_base/files/file_path.cc",
+      "partition_alloc_base/files/file_path.h",
+      "partition_alloc_base/native_library.cc",
+      "partition_alloc_base/native_library.h",
+      "partition_alloc_base/native_library_posix.cc",
+    ]
+  }
+  if (is_apple) {
+    # Apple-specific utilities
+    sources += [
+      "partition_alloc_base/apple/foundation_util.h",
+      "partition_alloc_base/apple/foundation_util.mm",
+      "partition_alloc_base/apple/mach_logging.cc",
+      "partition_alloc_base/apple/mach_logging.h",
+      "partition_alloc_base/apple/scoped_cftyperef.h",
+      "partition_alloc_base/apple/scoped_typeref.h",
+    ]
+    if (is_ios) {
+      sources += [
+        "partition_alloc_base/ios/ios_util.h",
+        "partition_alloc_base/ios/ios_util.mm",
+        "partition_alloc_base/system/sys_info_ios.mm",
+      ]
+    }
+    if (is_mac) {
+      sources += [
+        "partition_alloc_base/mac/mac_util.h",
+        "partition_alloc_base/mac/mac_util.mm",
+        "partition_alloc_base/system/sys_info_mac.mm",
+      ]
+    }
+  }
+
+  public_deps = [
+    ":chromecast_buildflags",
+    ":chromeos_buildflags",
+    ":debugging_buildflags",
+    ":partition_alloc_buildflags",
+  ]
+
+  configs += [
+    ":partition_alloc_implementation",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
+
+  deps = []
+  if (is_fuchsia) {
+    public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/fit" ]
+  }
+
+  frameworks = []
+  if (is_apple) {
+    frameworks += [
+      "CoreFoundation.framework",
+      "Foundation.framework",
+    ]
+  }
+
+  configs -= _remove_configs
+  configs += _add_configs
+}
+
+source_set("allocator_shim") {
+  visibility = [ ":*" ]
+
+  sources = []
+  deps = [ ":allocator_base" ]
+  all_dependent_configs = []
+  configs += [
+    ":partition_alloc_implementation",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
+
+  configs -= _remove_configs
+  configs += _add_configs
+
+  if (use_allocator_shim) {
+    sources += [
+      "shim/allocator_shim.cc",
+      "shim/allocator_shim.h",
+      "shim/allocator_shim_internals.h",
+    ]
+    if (use_partition_alloc) {
+      sources += [
+        "shim/allocator_shim_default_dispatch_to_partition_alloc.cc",
+        "shim/allocator_shim_default_dispatch_to_partition_alloc.h",
+        "shim/nonscannable_allocator.cc",
+        "shim/nonscannable_allocator.h",
+      ]
+    }
+    if (is_android) {
+      sources += [
+        "shim/allocator_shim_override_cpp_symbols.h",
+        "shim/allocator_shim_override_linker_wrapped_symbols.h",
+      ]
+      all_dependent_configs += [ ":wrap_malloc_symbols" ]
+    }
+    if (is_apple) {
+      sources += [
+        "shim/allocator_shim_override_apple_default_zone.h",
+        "shim/allocator_shim_override_apple_symbols.h",
+        "shim/early_zone_registration_constants.h",
+      ]
+      configs += [ ":mac_no_default_new_delete_symbols" ]
+    }
+    if (is_chromeos || is_linux) {
+      sources += [
+        "shim/allocator_shim_override_cpp_symbols.h",
+        "shim/allocator_shim_override_glibc_weak_symbols.h",
+        "shim/allocator_shim_override_libc_symbols.h",
+      ]
+    }
+    if (is_win) {
+      sources += [
+        "shim/allocator_shim_override_ucrt_symbols_win.h",
+        "shim/winheap_stubs_win.cc",
+        "shim/winheap_stubs_win.h",
+      ]
+    }
+
+    if (!use_partition_alloc_as_malloc) {
+      if (is_android) {
+        sources += [
+          "shim/allocator_shim_default_dispatch_to_linker_wrapped_symbols.cc",
+        ]
+      }
+      if (is_apple) {
+        sources +=
+            [ "shim/allocator_shim_default_dispatch_to_apple_zoned_malloc.cc" ]
+      }
+      if (is_chromeos || is_linux) {
+        sources += [ "shim/allocator_shim_default_dispatch_to_glibc.cc" ]
+      }
+      if (is_win) {
+        sources += [ "shim/allocator_shim_default_dispatch_to_winheap.cc" ]
+      }
+    }
+
+    deps += [
+      ":allocator_base",
+      ":allocator_core",
+      ":buildflags",
+    ]
+  }
+
+  if (is_apple) {
+    sources += [
+      "shim/allocator_interception_apple.h",
+      "shim/allocator_interception_apple.mm",
+      "shim/malloc_zone_functions_apple.cc",
+      "shim/malloc_zone_functions_apple.h",
+    ]
+
+    # Do not compile with ARC because this target has to interface with
+    # low-level Objective-C and having ARC would interfere.
+    configs -= [ "//build/config/compiler:enable_arc" ]
+    deps += [
+      ":allocator_base",
+      ":allocator_core",
+      ":buildflags",
+    ]
+  }
+}
+
+source_set("raw_ptr") {
+  # `gn check` is unhappy with most `#includes` when PA isn't
+  # actually built.
+  check_includes = use_partition_alloc
+  public = [
+    "pointers/raw_ptr.h",
+    "pointers/raw_ptr_cast.h",
+    "pointers/raw_ptr_exclusion.h",
+    "pointers/raw_ref.h",
+  ]
+  sources = []
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  if (enable_backup_ref_ptr_support) {
+    sources += [
+      "pointers/raw_ptr_backup_ref_impl.cc",
+      "pointers/raw_ptr_backup_ref_impl.h",
+    ]
+  } else if (use_hookable_raw_ptr) {
+    sources += [
+      "pointers/raw_ptr_hookable_impl.cc",
+      "pointers/raw_ptr_hookable_impl.h",
+    ]
+  } else if (use_asan_unowned_ptr) {
+    sources += [
+      "pointers/raw_ptr_asan_unowned_impl.cc",
+      "pointers/raw_ptr_asan_unowned_impl.h",
+    ]
+  } else {
+    sources += [ "pointers/raw_ptr_noop_impl.h" ]
+  }
+  if (use_partition_alloc) {
+    public_deps = [ ":partition_alloc" ]
+  }
+  deps = [ ":buildflags" ]
+
+  # See also: `partition_alloc_base/component_export.h`
+  defines = [ "IS_RAW_PTR_IMPL" ]
+
+  configs -= _remove_configs
+  configs += _add_configs
+}
+
+buildflag_header("partition_alloc_buildflags") {
+  header = "partition_alloc_buildflags.h"
+
+  _record_alloc_info = false
+
+  # GWP-ASan is tied to BRP's "refcount in previous slot" mode, whose
+  # enablement is already gated on BRP enablement.
+  _enable_gwp_asan_support = put_ref_count_in_previous_slot
+
+  # Pools are a logical concept when address space is 32-bit.
+  _glue_core_pools = glue_core_pools && has_64_bit_pointers
+
+  # Pointer compression requires 64-bit pointers.
+  _enable_pointer_compression =
+      enable_pointer_compression_support && has_64_bit_pointers
+
+  # Force-enable live BRP in all processes, ignoring the canonical
+  # experiment state of `PartitionAllocBackupRefPtr`.
+  #
+  # This is not exposed as a GN arg as it is not meant to be used by
+  # developers - it is simply a compile-time hinge that should be
+  # set in the experimental build and then reverted immediately.
+  _force_all_process_brp = false
+
+  # TODO(crbug.com/1151236): Need to refactor the following buildflags.
+  # The buildflags (except RECORD_ALLOC_INFO) are used by both chrome and
+  # partition alloc. For partition alloc,
+  # gen/base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h
+  # defines and partition alloc includes the header file. For chrome,
+  # gen/base/allocator/buildflags.h defines and chrome includes.
+  flags = [
+    "HAS_64_BIT_POINTERS=$has_64_bit_pointers",
+
+    "USE_ALLOCATOR_SHIM=$use_allocator_shim",
+    "USE_PARTITION_ALLOC=$use_partition_alloc",
+    "USE_PARTITION_ALLOC_AS_MALLOC=$use_partition_alloc_as_malloc",
+
+    "ENABLE_BACKUP_REF_PTR_SUPPORT=$enable_backup_ref_ptr_support",
+    "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$enable_backup_ref_ptr_slow_checks",
+    "ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=$enable_backup_ref_ptr_feature_flag",
+    "ENABLE_DANGLING_RAW_PTR_CHECKS=$enable_dangling_raw_ptr_checks",
+    "ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=$enable_dangling_raw_ptr_feature_flag",
+    "ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT=$enable_dangling_raw_ptr_perf_experiment",
+    "ENABLE_POINTER_SUBTRACTION_CHECK=$enable_pointer_subtraction_check",
+    "ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=$enable_pointer_arithmetic_trait_check",
+    "BACKUP_REF_PTR_POISON_OOB_PTR=$backup_ref_ptr_poison_oob_ptr",
+    "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$put_ref_count_in_previous_slot",
+    "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
+    "USE_ASAN_UNOWNED_PTR=$use_asan_unowned_ptr",
+    "USE_HOOKABLE_RAW_PTR=$use_hookable_raw_ptr",
+    "ENABLE_GWP_ASAN_SUPPORT=$_enable_gwp_asan_support",
+    "FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES=$_force_all_process_brp",
+
+    "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
+
+    "RECORD_ALLOC_INFO=$_record_alloc_info",
+    "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
+    "GLUE_CORE_POOLS=$_glue_core_pools",
+    "ENABLE_POINTER_COMPRESSION=$_enable_pointer_compression",
+    "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
+    "USE_FREELIST_POOL_OFFSETS=$use_freelist_pool_offsets",
+
+    "USE_STARSCAN=$use_starscan",
+    "PCSCAN_STACK_SUPPORTED=$pcscan_stack_supported",
+
+    "ENABLE_PKEYS=$enable_pkeys",
+    "ENABLE_THREAD_ISOLATION=$enable_pkeys",
+  ]
+}
+
+buildflag_header("raw_ptr_buildflags") {
+  header = "raw_ptr_buildflags.h"
+
+  flags = [
+    "RAW_PTR_ZERO_ON_CONSTRUCT=$raw_ptr_zero_on_construct",
+    "RAW_PTR_ZERO_ON_MOVE=$raw_ptr_zero_on_move",
+    "RAW_PTR_ZERO_ON_DESTRUCT=$raw_ptr_zero_on_destruct",
+  ]
+}
+
+buildflag_header("chromecast_buildflags") {
+  header = "chromecast_buildflags.h"
+
+  flags = [
+    "PA_IS_CAST_ANDROID=$is_cast_android",
+    "PA_IS_CASTOS=$is_castos",
+  ]
+}
+
+buildflag_header("chromeos_buildflags") {
+  header = "chromeos_buildflags.h"
+
+  flags = [ "PA_IS_CHROMEOS_ASH=$is_chromeos_ash" ]
+}
+
+buildflag_header("debugging_buildflags") {
+  header = "debugging_buildflags.h"
+  header_dir = rebase_path(".", "//") + "/partition_alloc_base/debug"
+
+  # Duplicates the setup Chromium uses to define `DCHECK_IS_ON()`,
+  # but avails it as a buildflag.
+  _dcheck_is_on = is_debug || dcheck_always_on
+
+  flags = [
+    "PA_DCHECK_IS_ON=$_dcheck_is_on",
+    "PA_EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
+    "PA_DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
+    "PA_CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
+  ]
+}
+
+group("buildflags") {
+  public_deps = [
+    ":chromecast_buildflags",
+    ":chromeos_buildflags",
+    ":debugging_buildflags",
+    ":partition_alloc_buildflags",
+    ":raw_ptr_buildflags",
+  ]
+}
+# TODO(crbug.com/1151236): After making partition_alloc a standalone library,
+# move test code here. i.e. test("partition_alloc_tests") { ... } and
+# test("partition_alloc_perftests").

@@ -11,21 +11,21 @@
 #include <string>
 
 #include "base/allocator/partition_alloc_features.h"
-#include "base/allocator/partition_allocator/allocation_guard.h"
-#include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
-#include "base/allocator/partition_allocator/memory_reclaimer.h"
-#include "base/allocator/partition_allocator/page_allocator.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/partition_lock.h"
-#include "base/allocator/partition_allocator/partition_root.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
-#include "base/allocator/partition_allocator/shim/allocator_shim.h"
-#include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
-#include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/allocation_guard.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/dangling_raw_ptr_checks.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/alias.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_lock.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/cpu.h"
@@ -56,12 +56,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(USE_STARSCAN)
-#include "base/allocator/partition_allocator/shim/nonscannable_allocator.h"
-#include "base/allocator/partition_allocator/starscan/pcscan.h"
-#include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
-#include "base/allocator/partition_allocator/starscan/stack/stack.h"
-#include "base/allocator/partition_allocator/starscan/stats_collector.h"
-#include "base/allocator/partition_allocator/starscan/stats_reporter.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/nonscannable_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan_scheduling.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/stack/stack.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/stats_collector.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/stats_reporter.h"
 #endif  // BUILDFLAG(USE_STARSCAN)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -69,7 +69,7 @@
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/memory_reclaimer.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.h"
 #endif
 
 namespace base::allocator {

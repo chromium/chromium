@@ -3,4 +3,4 @@ file://build/OWNERS
 machenbach@chromium.org
 mbonadei@chromium.org
 
-per-file partition_alloc.*=file://base/allocator/partition_allocator/OWNERS
+per-file partition_alloc.*=file://base/allocator/partition_allocator/src/partition_alloc/OWNERS

@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "base/allocator/partition_allocator/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"

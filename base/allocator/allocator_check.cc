@@ -4,11 +4,11 @@
 
 #include "base/allocator/allocator_check.h"
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/allocator/partition_allocator/shim/winheap_stubs_win.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/winheap_stubs_win.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -16,7 +16,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/allocator/partition_allocator/shim/allocator_interception_apple.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
 #endif
 
 namespace base::allocator {

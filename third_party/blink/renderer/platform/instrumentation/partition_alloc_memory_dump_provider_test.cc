@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/platform/instrumentation/partition_alloc_memory_dump_provider.h"
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "testing/gtest/include/gtest/gtest.h"

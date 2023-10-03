@@ -4,10 +4,10 @@
 
 #include "base/allocator/partition_alloc_features.h"
 
-#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_root.h"
-#include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/features.h"

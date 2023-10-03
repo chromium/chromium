@@ -20,7 +20,7 @@
 #include <memory>
 #include <mutex>
 
-#include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"

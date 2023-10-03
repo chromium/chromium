@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include <new>
-#include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
 #include "base/memory/safety_checks.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

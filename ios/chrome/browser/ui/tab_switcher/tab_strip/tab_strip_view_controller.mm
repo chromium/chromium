@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_view_controller.h"
 
-#import "base/allocator/partition_allocator/partition_alloc.h"
+#import "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
 #import "base/numerics/safe_conversions.h"

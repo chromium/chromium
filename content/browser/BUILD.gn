@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//base/allocator/partition_allocator/partition_alloc.gni")
+import(
+    "//base/allocator/partition_allocator/src/partition_alloc/partition_alloc.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")
@@ -24,6 +25,7 @@ import("//printing/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
+
 if (is_mac) {
   import("//content/public/app/mac_helpers.gni")
 }

@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/allocator/partition_allocator/flags.h"
-#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/flags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/gwp_asan/client/export.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"

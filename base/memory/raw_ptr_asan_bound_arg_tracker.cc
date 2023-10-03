@@ -4,7 +4,7 @@
 
 #include "base/memory/raw_ptr_asan_bound_arg_tracker.h"
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 

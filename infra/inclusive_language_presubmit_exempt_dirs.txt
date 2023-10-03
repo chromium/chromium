@@ -4,7 +4,7 @@ ash/ambient/managed 2 1
 ash/components/arc 1 1
 ash/webui/camera_app_ui/resources/js/lib 8 1
 base 1 1
-base/allocator/partition_allocator/partition_alloc_base 1 1
+base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base 1 1
 base/android/java/src/org/chromium/base 1 1
 base/android/java/src/org/chromium/base/compat 1 1
 base/containers 1 1

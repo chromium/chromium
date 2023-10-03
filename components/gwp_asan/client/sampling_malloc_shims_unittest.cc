@@ -9,8 +9,8 @@
 #include <memory>
 #include <string>
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/shim/allocator_shim.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/page_size.h"
 #include "base/strings/string_number_conversions.h"

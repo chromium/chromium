@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_SHARED_ARRAY_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_SHARED_ARRAY_BUFFER_H_
 
-#include "base/allocator/partition_allocator/oom.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_base.h"

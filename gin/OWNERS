@@ -15,4 +15,4 @@ per-file thread_isolation.*=sroettger@google.com
 per-file v8_platform_thread_isolated_allocator.*=sroettger@google.com
 
 # For PartitionAlloc related changes.
-per-file array_buffer.cc=file://base/allocator/partition_allocator/OWNERS
+per-file array_buffer.cc=file://base/allocator/partition_allocator/src/partition_alloc/OWNERS

@@ -36,7 +36,7 @@
 #include <tuple>
 #include <utility>
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/numerics/checked_math.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/stream_parser_buffer.h"

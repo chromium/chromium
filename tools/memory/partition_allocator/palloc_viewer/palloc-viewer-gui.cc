@@ -295,9 +295,11 @@ static int open_task(struct task* restrict out, pid_t pid) {
         pthread_cu, NULL, 0, "pthread", "stackblock_size");
 
     unsigned long thread_cache_bias;
-    void* thread_cache_cu = lookup_cu(
-        dwfl, NULL, "../../base/allocator/partition_allocator/thread_cache.cc",
-        &thread_cache_bias);
+    void* thread_cache_cu =
+        lookup_cu(dwfl, NULL,
+                  "../../base/allocator/partition_allocator/src/"
+                  "partition_alloc/thread_cache.cc",
+                  &thread_cache_bias);
     const char* nspath[] = {"base", "internal", NULL};
     out->thread_cache_registry_addr = addrlookup_get_variable_address(
         thread_cache_cu, thread_cache_bias, nspath, 3, "g_instance");

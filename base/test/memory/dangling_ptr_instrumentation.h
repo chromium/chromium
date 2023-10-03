@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/dangling_raw_ptr_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/types/expected.h"

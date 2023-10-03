@@ -31,7 +31,7 @@ When you simply call `new` or `malloc` PartitionAlloc will be used, unless
 are specified.
 
 The implementation is in /base/allocator/partition_allocator.
-See [PartitionAlloc.md](/base/allocator/partition_allocator/PartitionAlloc.md)
+See [PartitionAlloc.md](/base/allocator/partition_allocator/src/partition_alloc/PartitionAlloc.md)
 to learn the design.
 
 #### `USING_FAST_MALLOC`

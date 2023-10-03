@@ -7,9 +7,9 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "base/allocator/partition_allocator/page_allocator.h"
-#include "base/allocator/partition_allocator/partition_alloc.h"
-#include "base/allocator/partition_allocator/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"

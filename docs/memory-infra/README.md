@@ -95,7 +95,7 @@ and it is discounted from malloc and the blue columns.
 [discardable]:base/memory/discardable_memory.h
 [cc-memory]:  probe-cc.md
 [gpu-memory]: probe-gpu.md
-[partalloc]:  /base/allocator/partition_allocator/PartitionAlloc.md
+[partalloc]:  /base/allocator/partition_allocator/src/partition_alloc/PartitionAlloc.md
 
 ## 'effective\_size' vs. 'size'
 

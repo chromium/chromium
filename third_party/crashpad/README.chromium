@@ -56,3 +56,7 @@ Local Modifications:
    "base/allocator/partition_allocator/partition_alloc_buildflags.h", because
    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) was moved. crrev.com/c/3963596
  - Fix some accidental argument-dependent lookup: https://crrev.com/c/4298113
+ - #include path was modified:
+   "base/allocator/partition_allocator/buildflags.h" ->
+   "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h",
+   https://crbug.com/1467773

@@ -17,8 +17,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/allocator/partition_allocator/partition_root.h"
-#include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
 #include "base/check_op.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/files/file.h"

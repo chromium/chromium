@@ -3,7 +3,8 @@
 # found in the LICENSE file.
 
 import("//base/allocator/allocator.gni")
-import("//base/allocator/partition_allocator/partition_alloc.gni")
+import(
+    "//base/allocator/partition_allocator/src/partition_alloc/partition_alloc.gni")
 import("//build/config/compiler/compiler.gni")
 
 # Windows/32-bit is disabled due to https://crbug.com/969146

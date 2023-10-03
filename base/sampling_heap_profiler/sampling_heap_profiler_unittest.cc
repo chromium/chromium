@@ -8,7 +8,7 @@
 #include <cinttypes>
 
 #include "base/allocator/dispatcher/dispatcher.h"
-#include "base/allocator/partition_allocator/shim/allocator_shim.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/debug/alias.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"

@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/allocator/partition_allocator/memory_reclaimer.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

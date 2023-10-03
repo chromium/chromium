@@ -3,4 +3,4 @@ mlippautz@chromium.org
 thakis@chromium.org
 tkent@chromium.org
 
-per-file allocator/*=file://base/allocator/partition_allocator/OWNERS
+per-file allocator/*=file://base/allocator/partition_allocator/src/partition_alloc/OWNERS

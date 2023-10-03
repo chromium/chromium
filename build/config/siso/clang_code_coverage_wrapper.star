@@ -39,7 +39,7 @@ _COVERAGE_EXCLUSION_LIST_MAP = {
     "fuchsia": [
         # TODO(crbug.com/1174725): These files caused clang to crash while
         # compiling them.
-        "../../base/allocator/partition_allocator/pcscan.cc",
+        "../../base/allocator/partition_allocator/src/partition_alloc/pcscan.cc",
         "../../third_party/skia/src/core/SkOpts.cpp",
         "../../third_party/skia/src/opts/SkOpts_hsw.cpp",
         "../../third_party/skia/third_party/skcms/skcms.cc",

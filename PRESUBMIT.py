@@ -509,7 +509,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       False,
       excluded_paths = (
         "base/gtest_prod_util.h",
-        "base/allocator/partition_allocator/partition_alloc_base/gtest_prod_util.h",
+        "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/gtest_prod_util.h",
       ),
     ),
     BanRule(
@@ -645,7 +645,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       False,
       excluded_paths = (
         "base/time/time.h",
-        "base/allocator/partition_allocator/partition_alloc_base/time/time.h",
+        "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h",
       ),
     ),
     BanRule(
@@ -865,7 +865,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         # the standard library's random number generators, and should be
         # migrated to the //base equivalent.
         r'ash/ambient/model/ambient_topic_queue\.cc',
-        r'base/allocator/partition_allocator/partition_alloc_unittest\.cc',
+        r'base/allocator/partition_allocator/src/partition_alloc/partition_alloc_unittest\.cc',
         r'base/ranges/algorithm_unittest\.cc',
         r'base/test/launcher/test_launcher\.cc',
         r'cc/metrics/video_playback_roughness_reporter_unittest\.cc',
@@ -1036,7 +1036,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
           _THIRD_PARTY_EXCEPT_BLINK,
           # PartitionAlloc's starscan, doesn't depend on base/. It can't use
           # base::ConditionalVariable::TimedWait(..).
-          "base/allocator/partition_allocator/starscan/pcscan_internal.cc",
+          "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan_internal.cc",
       ]
     ),
     BanRule(

@@ -15,7 +15,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"

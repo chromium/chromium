@@ -4,7 +4,7 @@
 
 #include "base/memory/platform_shared_memory_mapper.h"
 
-#include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "base/logging.h"
 
 #include <aclapi.h>

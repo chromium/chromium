@@ -5,7 +5,7 @@
 # This defines PartitionAlloc's default build configuration for chromium.
 # If building PartitionAlloc as a part of chromium,
 # //build_overrides/partition_alloc.gni points out this file.
-# //base/allocator/partition_allocator/partition_alloc.gni will import
+# //base/allocator/partition_allocator/src/partition_alloc/partition_alloc.gni will import
 # this file and will use the defined values as default build configuration.
 #
 # partition_alloc.gni declares the following variables:

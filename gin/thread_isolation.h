@@ -5,11 +5,11 @@
 #ifndef GIN_THREAD_ISOLATION_H_
 #define GIN_THREAD_ISOLATION_H_
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
-#include "base/allocator/partition_allocator/thread_isolation/alignment.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/alignment.h"
 #include "base/no_destructor.h"
 #include "gin/gin_export.h"
 #include "gin/v8_platform_thread_isolated_allocator.h"

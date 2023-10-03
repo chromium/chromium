@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/profiler.h"
@@ -32,8 +32,8 @@
 #include <windows.h>
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
-#include "base/allocator/partition_allocator/starscan/pcscan.h"
-#include "base/allocator/partition_allocator/starscan/stack/stack.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/stack/stack.h"
 #endif
 
 namespace base {

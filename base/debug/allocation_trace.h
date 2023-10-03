@@ -11,7 +11,7 @@
 #include <cstdint>
 
 #include "base/allocator/dispatcher/subsystem.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr_exclusion.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_exclusion.h"
 #include "base/base_export.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"

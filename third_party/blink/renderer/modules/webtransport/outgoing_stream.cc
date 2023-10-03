@@ -7,7 +7,7 @@
 #include <cstring>
 #include <utility>
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"

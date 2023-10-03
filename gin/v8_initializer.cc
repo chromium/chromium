@@ -13,8 +13,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/page_allocator.h"
-#include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/check_op.h"

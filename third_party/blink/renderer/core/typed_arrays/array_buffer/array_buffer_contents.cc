@@ -28,7 +28,7 @@
 
 #include <cstring>
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/bits.h"
 #include "base/system/sys_info.h"
 #include "gin/array_buffer.h"

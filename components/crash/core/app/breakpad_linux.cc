@@ -26,7 +26,7 @@
 #include <string>
 #include <tuple>
 
-#include "base/allocator/partition_allocator/oom.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"

@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/allocator/partition_alloc_features.h"
-#include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/dangling_raw_ptr_checks.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/cpu.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"

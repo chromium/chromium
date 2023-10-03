@@ -5,7 +5,7 @@
 #ifndef GIN_PUBLIC_V8_PLATFORM_H_
 #define GIN_PUBLIC_V8_PLATFORM_H_
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "gin/gin_export.h"
