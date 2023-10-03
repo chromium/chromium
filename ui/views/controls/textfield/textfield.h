@@ -844,7 +844,7 @@ class VIEWS_EXPORT Textfield : public View,
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
   // View containing the text cursor.
-  raw_ptr<View, DanglingUntriaged> cursor_view_ = nullptr;
+  raw_ptr<View> cursor_view_ = nullptr;
 
 #if BUILDFLAG(IS_MAC)
   // Used to track active password input sessions.
