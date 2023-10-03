@@ -46,10 +46,10 @@
   if (self = [super initWithConsumer:consumer]) {
       CHECK(prefService);
       _prefService = prefService;
-      _prefChangeRegistrar.Init(_prefService);
       if (base::FeatureList::IsEnabled(
               supervised_user::
                   kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)) {
+        _prefChangeRegistrar.Init(_prefService);
         _prefObserverBridge.reset(new PrefObserverBridge(self));
         // Register to observe any changes on supervised_user status.
         _prefObserverBridge->ObserveChangesForPreference(
@@ -127,8 +127,11 @@
 #pragma mark - Parent's function
 
 - (void)disconnect {
-  _prefChangeRegistrar.RemoveAll();
-  _prefObserverBridge.reset();
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)) {
+    _prefChangeRegistrar.RemoveAll();
+    _prefObserverBridge.reset();
+  }
   _prefService = nil;
   [super disconnect];
 }
