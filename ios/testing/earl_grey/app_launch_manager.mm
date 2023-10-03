@@ -176,6 +176,13 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   XCUIApplication* application = [[XCUIApplication alloc] init];
   application.launchArguments = arguments;
 
+  // Instruct EG to not DYLD_INSERT_LIBRARIES, which can interfere with
+  // Chromium's framework setup.
+  NSMutableDictionary<NSString*, NSString*>* mutableEnv =
+      [application.launchEnvironment mutableCopy];
+  mutableEnv[@"EG_SKIP_INSERT_LIBRARIES"] = @"YES";
+  application.launchEnvironment = [mutableEnv copy];
+
   @try {
     [application launch];
   } @catch (id exception) {
