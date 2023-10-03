@@ -453,9 +453,7 @@ void MediaFoundationStreamWrapper::OnDemuxerStreamRead(
       }
 
       if (has_clear_lead_ && !switched_clear_to_encrypted_ &&
-          !buffer->end_of_stream() && buffer->decrypt_config() &&
-          buffer->decrypt_config()->encryption_scheme() !=
-              EncryptionScheme::kUnencrypted) {
+          !buffer->end_of_stream() && buffer->is_encrypted()) {
         MEDIA_LOG(INFO, media_log_)
             << "Stream switched from clear to encrypted buffers.";
         switched_clear_to_encrypted_ = true;

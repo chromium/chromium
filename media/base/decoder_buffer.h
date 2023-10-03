@@ -129,7 +129,7 @@ class MEDIA_EXPORT DecoderBuffer
   static scoped_refptr<DecoderBuffer> CreateEOSBuffer();
 
   // Method to verify if subsamples of a DecoderBuffer match.
-  static bool DoSubsamplesMatch(const DecoderBuffer& encrypted);
+  static bool DoSubsamplesMatch(const DecoderBuffer& buffer);
 
   const TimeInfo& time_info() const {
     DCHECK(!end_of_stream());
@@ -214,6 +214,12 @@ class MEDIA_EXPORT DecoderBuffer
   bool is_key_frame() const {
     DCHECK(!end_of_stream());
     return is_key_frame_;
+  }
+
+  bool is_encrypted() const {
+    DCHECK(!end_of_stream());
+    return decrypt_config() && decrypt_config()->encryption_scheme() !=
+                                   EncryptionScheme::kUnencrypted;
   }
 
   void set_is_key_frame(bool is_key_frame) {

@@ -247,4 +247,23 @@ TEST(DecoderBufferTest, SideData) {
   EXPECT_FALSE(buffer->has_side_data());
 }
 
+TEST(DecoderBufferTest, IsEncrypted) {
+  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
+  EXPECT_FALSE(buffer->is_encrypted());
+
+  const char kKeyId[] = "key id";
+  const char kIv[] = "0123456789abcdef";
+  std::vector<SubsampleEntry> subsamples;
+  subsamples.emplace_back(10, 5);
+  subsamples.emplace_back(15, 7);
+
+  std::unique_ptr<DecryptConfig> decrypt_config =
+      DecryptConfig::CreateCencConfig(kKeyId, kIv, subsamples);
+
+  buffer->set_decrypt_config(
+      DecryptConfig::CreateCencConfig(kKeyId, kIv, subsamples));
+
+  EXPECT_TRUE(buffer->is_encrypted());
+}
+
 }  // namespace media
