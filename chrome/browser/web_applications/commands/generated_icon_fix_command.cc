@@ -51,6 +51,9 @@ void GeneratedIconFixCommand::StartWithLock(
     return;
   }
 
+  // DCHECK instead of CHECK to avoid crashing at start up.
+  DCHECK(generated_icon_fix_util::HasRemainingAttempts(*app));
+
   {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     generated_icon_fix_util::RecordFixAttempt(*lock_, update, app_id_, source_);

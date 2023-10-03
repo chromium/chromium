@@ -60,21 +60,25 @@ void GeneratedIconFixManager::Start() {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
+void GeneratedIconFixManager::InvalidateWeakPtrsForTesting() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 GeneratedIconFixScheduleDecision GeneratedIconFixManager::MaybeScheduleFix(
     WithAppResources& resources,
     const webapps::AppId& app_id) {
   CHECK(IsEnabled());
 
-  GeneratedIconFixScheduleDecision decision =
-      MakeScheduleDecision(resources.registrar(), app_id);
+  const WebApp* app = resources.registrar().GetAppById(app_id);
+  GeneratedIconFixScheduleDecision decision = MakeScheduleDecision(app);
 
   if (decision == GeneratedIconFixScheduleDecision::kSchedule) {
     scheduled_fixes_.insert(app_id);
-    provider_->command_manager().ScheduleCommand(
-        std::make_unique<GeneratedIconFixCommand>(
-            app_id, GeneratedIconFixSource_RETROACTIVE,
-            base::BindOnce(&GeneratedIconFixManager::FixCompleted,
-                           weak_ptr_factory_.GetWeakPtr(), app_id)));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&GeneratedIconFixManager::StartFix,
+                       weak_ptr_factory_.GetWeakPtr(), app_id),
+        generated_icon_fix_util::GetThrottleDuration(*app));
   }
 
   if (maybe_schedule_callback_for_testing_) {
@@ -85,11 +89,13 @@ GeneratedIconFixScheduleDecision GeneratedIconFixManager::MaybeScheduleFix(
 }
 
 GeneratedIconFixScheduleDecision GeneratedIconFixManager::MakeScheduleDecision(
-    const WebAppRegistrar& registrar,
-    const webapps::AppId& app_id) {
-  const WebApp* app = registrar.GetAppById(app_id);
+    const WebApp* app) {
   if (!app || !app->IsSynced()) {
     return GeneratedIconFixScheduleDecision::kNoApp;
+  }
+
+  if (!generated_icon_fix_util::HasRemainingAttempts(*app)) {
+    return GeneratedIconFixScheduleDecision::kAttemptLimitReached;
   }
 
   if (!generated_icon_fix_util::IsWithinFixTimeWindow(*app)) {
@@ -102,16 +108,48 @@ GeneratedIconFixScheduleDecision GeneratedIconFixManager::MakeScheduleDecision(
     return GeneratedIconFixScheduleDecision::kNotRequired;
   }
 
-  // TODO(crbug.com/1216965): Throttle fix attempts to once per day.
-
-  return scheduled_fixes_.contains(app_id)
+  return scheduled_fixes_.contains(app->app_id())
              ? GeneratedIconFixScheduleDecision::kAlreadyScheduled
              : GeneratedIconFixScheduleDecision::kSchedule;
+}
+
+void GeneratedIconFixManager::StartFix(const webapps::AppId& app_id) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<GeneratedIconFixCommand>(
+          app_id, GeneratedIconFixSource_RETROACTIVE,
+          base::BindOnce(&GeneratedIconFixManager::FixCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), app_id)));
 }
 
 void GeneratedIconFixManager::FixCompleted(const webapps::AppId& app_id,
                                            GeneratedIconFixResult result) {
   CHECK_EQ(scheduled_fixes_.erase(app_id), 1u);
+
+  // Retry on failure.
+  switch (result) {
+    case GeneratedIconFixResult::kAppUninstalled:
+    case GeneratedIconFixResult::kShutdown:
+    case GeneratedIconFixResult::kSuccess:
+      break;
+    case GeneratedIconFixResult::kDownloadFailure:
+    case GeneratedIconFixResult::kStillGenerated:
+    case GeneratedIconFixResult::kWriteFailure: {
+      provider_->scheduler().ScheduleCallbackWithLock<AppLock>(
+          "GeneratedIconFixManager::Retry",
+          std::make_unique<AppLockDescription>(app_id),
+          base::BindOnce(
+              [](base::WeakPtr<GeneratedIconFixManager> manager,
+                 const webapps::AppId& app_id, AppLock& app_lock) {
+                if (!manager) {
+                  return;
+                }
+                manager->MaybeScheduleFix(app_lock, app_id);
+                // TODO(crbug.com/1216965): Record this retry attempt.
+              },
+              weak_ptr_factory_.GetWeakPtr(), app_id));
+      break;
+    }
+  };
 
   if (fix_completed_callback_for_testing_) {
     std::move(fix_completed_callback_for_testing_).Run(app_id, result);
