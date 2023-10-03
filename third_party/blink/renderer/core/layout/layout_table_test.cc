@@ -28,7 +28,7 @@ TEST_F(LayoutTableTest, OverflowViaOutline) {
     </div>
   )HTML");
   auto* target = GetTableByElementId("target");
-  EXPECT_EQ(LayoutRect(0, 0, 100, 200), target->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 200), target->SelfVisualOverflowRect());
   To<Element>(target->GetNode())
       ->setAttribute(html_names::kStyleAttr,
                      AtomicString("outline: 2px solid black"));
@@ -39,9 +39,9 @@ TEST_F(LayoutTableTest, OverflowViaOutline) {
                      AtomicString("outline: 2px solid black"));
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(LayoutRect(-2, -2, 104, 204), target->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(-2, -2, 104, 204), target->SelfVisualOverflowRect());
 
-  EXPECT_EQ(LayoutRect(-2, -2, 104, 204), child->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(-2, -2, 104, 204), child->SelfVisualOverflowRect());
 }
 
 TEST_F(LayoutTableTest, OverflowWithCollapsedBorders) {
@@ -75,15 +75,14 @@ TEST_F(LayoutTableTest, OverflowWithCollapsedBorders) {
   auto expected_self_visual_overflow = table->PhysicalContentBoxRect();
   expected_self_visual_overflow.ExpandEdges(LayoutUnit(2), LayoutUnit(10),
                                             LayoutUnit(0), LayoutUnit(10));
-  EXPECT_EQ(expected_self_visual_overflow,
-            table->PhysicalSelfVisualOverflowRect());
+  EXPECT_EQ(expected_self_visual_overflow, table->SelfVisualOverflowRect());
   EXPECT_EQ(expected_self_visual_overflow, table->PhysicalLayoutOverflowRect());
   // The table's visual overflow covers self visual overflow and content visual
   // overflows.
   auto expected_visual_overflow = table->PhysicalContentBoxRect();
   expected_visual_overflow.ExpandEdges(LayoutUnit(6), LayoutUnit(10),
                                        LayoutUnit(8), LayoutUnit(10));
-  EXPECT_EQ(expected_visual_overflow, table->PhysicalVisualOverflowRect());
+  EXPECT_EQ(expected_visual_overflow, table->VisualOverflowRect());
 }
 
 TEST_F(LayoutTableTest, CollapsedBorders) {
@@ -368,12 +367,12 @@ TEST_F(LayoutTableTest, VisualOverflowCleared) {
     <table id='table' style='width: 50px; height: 50px'></table>
   )HTML");
   auto* table = GetTableByElementId("table");
-  EXPECT_EQ(LayoutRect(-3, -3, 66, 66), table->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(-3, -3, 66, 66), table->SelfVisualOverflowRect());
   To<Element>(table->GetNode())
       ->setAttribute(html_names::kStyleAttr,
                      AtomicString("box-shadow: initial"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(LayoutRect(0, 0, 50, 50), table->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 50, 50), table->SelfVisualOverflowRect());
 }
 
 }  // anonymous namespace

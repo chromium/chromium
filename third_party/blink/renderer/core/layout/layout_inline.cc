@@ -722,7 +722,7 @@ PhysicalRect LayoutInline::LinesVisualOverflowBoundingBox() const {
 
 PhysicalRect LayoutInline::VisualRectInDocument(VisualRectFlags flags) const {
   NOT_DESTROYED();
-  PhysicalRect rect = PhysicalVisualOverflowRect();
+  PhysicalRect rect = VisualOverflowRect();
   MapToVisualRectInAncestorSpace(View(), rect, flags);
   return rect;
 }
@@ -735,7 +735,7 @@ PhysicalRect LayoutInline::LocalVisualRectIgnoringVisibility() const {
   return PhysicalRect();
 }
 
-PhysicalRect LayoutInline::PhysicalVisualOverflowRect() const {
+PhysicalRect LayoutInline::VisualOverflowRect() const {
   NOT_DESTROYED();
   PhysicalRect overflow_rect = LinesVisualOverflowBoundingBox();
   const ComputedStyle& style = StyleRef();

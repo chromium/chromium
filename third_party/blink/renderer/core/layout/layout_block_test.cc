@@ -85,8 +85,7 @@ TEST_F(LayoutBlockTest, NestedInlineVisualOverflow) {
   )HTML");
 
   auto* target = GetLayoutBoxByElementId("target");
-  EXPECT_EQ(LayoutRect(-15, 0, 40, 40), target->VisualOverflowRect());
-  EXPECT_EQ(PhysicalRect(-15, 0, 40, 40), target->PhysicalVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(-15, 0, 40, 40), target->VisualOverflowRect());
 }
 
 TEST_F(LayoutBlockTest, NestedInlineVisualOverflowVerticalRL) {
@@ -101,8 +100,7 @@ TEST_F(LayoutBlockTest, NestedInlineVisualOverflowVerticalRL) {
   )HTML");
 
   auto* target = GetLayoutBoxByElementId("target");
-  EXPECT_EQ(LayoutRect(-25, 0, 40, 40), target->VisualOverflowRect());
-  EXPECT_EQ(PhysicalRect(-25, 0, 40, 40), target->PhysicalVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(-25, 0, 40, 40), target->VisualOverflowRect());
 }
 
 TEST_F(LayoutBlockTest, ContainmentStyleChange) {

@@ -142,7 +142,7 @@ inline PhysicalRect PhysicalVisualOverflowRectAllowingUnset(
 #if DCHECK_IS_ON()
   NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
 #endif
-  return layout_object.PhysicalVisualOverflowRect();
+  return layout_object.VisualOverflowRect();
 }
 
 PaintLayer* SlowContainingLayer(const PaintLayer* ancestor,
@@ -478,7 +478,7 @@ void PaintLayer::UpdateDescendantDependentFlags() {
       PhysicalRect old_visual_rect =
           PhysicalVisualOverflowRectAllowingUnset(GetLayoutObject());
       GetLayoutObject().RecalcVisualOverflow();
-      if (old_visual_rect != GetLayoutObject().PhysicalVisualOverflowRect()) {
+      if (old_visual_rect != GetLayoutObject().VisualOverflowRect()) {
         MarkAncestorChainForFlagsUpdate(kDoesNotNeedDescendantDependentUpdate);
       }
     }
@@ -1902,7 +1902,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
 }
 
 PhysicalRect PaintLayer::LocalBoundingBox() const {
-  PhysicalRect rect = GetLayoutObject().PhysicalVisualOverflowRect();
+  PhysicalRect rect = GetLayoutObject().VisualOverflowRect();
   if (GetLayoutObject().IsEffectiveRootScroller() || IsRootLayer()) {
     rect.Unite(
         PhysicalRect(rect.offset, GetLayoutObject().View()->ViewRect().size));

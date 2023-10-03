@@ -1867,7 +1867,7 @@ ViewTransitionStyleTracker::ComputeVisualOverflowRectWithPaintLayers(
     // ancestor space and combine that with the result. GeometryMapper should
     // take care of any filters and clips that are necessary between this box
     // and the ancestor.
-    auto overflow_rect = box.PhysicalVisualOverflowRect();
+    auto overflow_rect = box.VisualOverflowRect();
     box.MapToVisualRectInAncestorSpace(ancestor, overflow_rect,
                                        kUseGeometryMapper);
     result.Unite(overflow_rect);

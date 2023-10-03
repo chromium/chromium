@@ -49,7 +49,7 @@ bool LayoutBox::MayIntersect(const HitTestResult& result,
     // hit test by themselves), with false-positive (which won't cause any
     // functional issues) when the point is only in visual overflow, but
     // excluding self-painting descendants is more important for performance.
-    overflow_box = PhysicalVisualOverflowRect();
+    overflow_box = VisualOverflowRect();
     if (ShouldClipOverflowAlongEitherAxis()) {
       overflow_box.Intersect(OverflowClipRect(PhysicalOffset()));
     }

@@ -168,7 +168,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // border boxes.
   virtual gfx::Rect BorderBoundingBox() const = 0;
 
-  virtual PhysicalRect PhysicalVisualOverflowRect() const = 0;
+  virtual PhysicalRect VisualOverflowRect() const = 0;
 
   // Returns the visual overflow rect, expanded to the area affected by any
   // filters that paint outside of the box, in physical coordinates.

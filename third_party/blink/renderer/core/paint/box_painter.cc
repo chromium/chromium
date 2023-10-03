@@ -102,7 +102,7 @@ void BoxPainter::RecordScrollHitTestData(
 gfx::Rect BoxPainter::VisualRect(const PhysicalOffset& paint_offset) {
   DCHECK(!layout_box_.VisualRectRespectsVisibility() ||
          layout_box_.StyleRef().Visibility() == EVisibility::kVisible);
-  PhysicalRect rect = layout_box_.PhysicalSelfVisualOverflowRect();
+  PhysicalRect rect = layout_box_.SelfVisualOverflowRect();
   rect.Move(paint_offset);
   return ToEnclosingRect(rect);
 }

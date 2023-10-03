@@ -221,7 +221,7 @@ void LayoutSVGRoot::RecalcVisualOverflow() {
     AddContentsVisualOverflow(ComputeContentsVisualOverflow());
 }
 
-LayoutRect LayoutSVGRoot::ComputeContentsVisualOverflow() const {
+PhysicalRect LayoutSVGRoot::ComputeContentsVisualOverflow() const {
   NOT_DESTROYED();
   gfx::RectF content_visual_rect = VisualRectInLocalSVGCoordinates();
   content_visual_rect =
@@ -231,8 +231,8 @@ LayoutRect LayoutSVGRoot::ComputeContentsVisualOverflow() const {
   // overflow that would never be seen anyway.
   // To condition, we intersect with something that we oftentimes
   // consider to be "infinity".
-  return Intersection(EnclosingLayoutRect(content_visual_rect),
-                      LayoutRect(InfiniteIntRect()));
+  return Intersection(PhysicalRect::EnclosingRect(content_visual_rect),
+                      PhysicalRect(InfiniteIntRect()));
 }
 
 void LayoutSVGRoot::PaintReplaced(const PaintInfo& paint_info,

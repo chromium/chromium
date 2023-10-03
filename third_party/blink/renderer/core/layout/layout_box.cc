@@ -383,8 +383,8 @@ inline void CheckDidAddFragment(const LayoutBox& box,
 // is reset to |no_overflow_rect|. If neither axis is clipped, nothing is
 // changed.
 void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
-                       const LayoutRect& no_overflow_rect,
-                       LayoutRect& result) {
+                       const PhysicalRect& no_overflow_rect,
+                       PhysicalRect& result) {
   if (overflow_clip_axes & kOverflowClipX) {
     result.SetX(no_overflow_rect.X());
     result.SetWidth(no_overflow_rect.Width());
@@ -2383,7 +2383,7 @@ bool LayoutBox::IntersectsVisibleViewport() const {
   if (this == layout_view) {
     return true;
   }
-  PhysicalRect rect = PhysicalVisualOverflowRect();
+  PhysicalRect rect = VisualOverflowRect();
   MapToVisualRectInAncestorSpace(layout_view, rect);
   return rect.Intersects(PhysicalRect(
       layout_view->GetFrameView()->GetScrollableArea()->VisibleContentRect()));
@@ -2982,7 +2982,7 @@ void LayoutBox::ClearSpannerPlaceholder() {
 
 PhysicalRect LayoutBox::LocalVisualRectIgnoringVisibility() const {
   NOT_DESTROYED();
-  return PhysicalSelfVisualOverflowRect();
+  return SelfVisualOverflowRect();
 }
 
 void LayoutBox::InflateVisualRectForFilterUnderContainer(
@@ -3355,7 +3355,7 @@ NGPhysicalBoxStrut LayoutBox::ComputeVisualEffectOverflowOutsets() {
 }
 
 void LayoutBox::AddVisualOverflowFromChild(const LayoutBox& child,
-                                           const DeprecatedLayoutSize& delta) {
+                                           const PhysicalOffset& delta) {
   NOT_DESTROYED();
   // Never allow flow threads to propagate overflow up to a parent.
   if (child.IsLayoutFlowThread())
@@ -3367,8 +3367,7 @@ void LayoutBox::AddVisualOverflowFromChild(const LayoutBox& child,
   // clipping our own overflow.
   if (child.HasSelfPaintingLayer())
     return;
-  LayoutRect child_visual_overflow_rect =
-      child.VisualOverflowRectForPropagation();
+  PhysicalRect child_visual_overflow_rect = child.VisualOverflowRect();
   child_visual_overflow_rect.Move(delta);
   AddContentsVisualOverflow(child_visual_overflow_rect);
 }
@@ -3570,12 +3569,12 @@ RecalcLayoutOverflowResult LayoutBox::RecalcChildLayoutOverflowNG() {
   return result;
 }
 
-void LayoutBox::AddSelfVisualOverflow(const LayoutRect& rect) {
+void LayoutBox::AddSelfVisualOverflow(const PhysicalRect& rect) {
   NOT_DESTROYED();
   if (rect.IsEmpty())
     return;
 
-  LayoutRect border_box = BorderBoxRect();
+  PhysicalRect border_box = PhysicalBorderBoxRect();
   if (border_box.Contains(rect))
     return;
 
@@ -3589,7 +3588,7 @@ void LayoutBox::AddSelfVisualOverflow(const LayoutRect& rect) {
   overflow_->visual_overflow->AddSelfVisualOverflow(rect);
 }
 
-void LayoutBox::AddContentsVisualOverflow(const LayoutRect& rect) {
+void LayoutBox::AddContentsVisualOverflow(const PhysicalRect& rect) {
   NOT_DESTROYED();
   if (rect.IsEmpty())
     return;
@@ -3599,7 +3598,7 @@ void LayoutBox::AddContentsVisualOverflow(const LayoutRect& rect) {
   // e.g. to determine whether to apply rounded corner clip on contents.
   // Otherwise we save contents visual overflow only if it overflows the border
   // box.
-  LayoutRect border_box = BorderBoxRect();
+  PhysicalRect border_box = PhysicalBorderBoxRect();
   if (!HasNonVisibleOverflow() && border_box.Contains(rect))
     return;
 
@@ -3628,12 +3627,12 @@ void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
   if (!VisualOverflowIsSet())
     return;
 
-  const LayoutRect overflow_rect =
+  const PhysicalRect overflow_rect =
       overflow_->visual_overflow->SelfVisualOverflowRect();
   const PhysicalSize box_size = Size();
   const NGPhysicalBoxStrut outsets(
-      -overflow_rect.Y(), overflow_rect.MaxX() - box_size.width,
-      overflow_rect.MaxY() - box_size.height, -overflow_rect.X());
+      -overflow_rect.Y(), overflow_rect.Right() - box_size.width,
+      overflow_rect.Bottom() - box_size.height, -overflow_rect.X());
   UpdateHasSubpixelVisualEffectOutsets(outsets);
 
   // |OutlineMayBeAffectedByDescendants| is set whenever outline style
@@ -3702,7 +3701,7 @@ void LayoutBox::CopyVisualOverflowFromFragments() {
   const PhysicalRect previous_visual_overflow =
       PhysicalVisualOverflowRectAllowingUnset();
   CopyVisualOverflowFromFragmentsWithoutInvalidations();
-  const PhysicalRect visual_overflow = PhysicalVisualOverflowRect();
+  const PhysicalRect visual_overflow = VisualOverflowRect();
   if (visual_overflow == previous_visual_overflow)
     return;
   InvalidateIntersectionObserverCachedRects();
@@ -3866,13 +3865,13 @@ LayoutRect LayoutBox::NoOverflowRect() const {
   return FlipForWritingMode(PhysicalPaddingBoxRect());
 }
 
-LayoutRect LayoutBox::VisualOverflowRect() const {
+PhysicalRect LayoutBox::VisualOverflowRect() const {
   NOT_DESTROYED();
   DCHECK(!IsLayoutMultiColumnSet());
   if (!VisualOverflowIsSet())
-    return BorderBoxRect();
+    return PhysicalBorderBoxRect();
 
-  const LayoutRect& self_visual_overflow_rect =
+  const PhysicalRect& self_visual_overflow_rect =
       overflow_->visual_overflow->SelfVisualOverflowRect();
   if (HasMask()) {
     return self_visual_overflow_rect;
@@ -3883,10 +3882,10 @@ LayoutRect LayoutBox::VisualOverflowRect() const {
     // We should apply overflow clip margin only if we clip overflow on both
     // axis.
     DCHECK_EQ(overflow_clip_axes, kOverflowClipBothAxis);
-    const LayoutRect& contents_visual_overflow_rect =
+    const PhysicalRect& contents_visual_overflow_rect =
         overflow_->visual_overflow->ContentsVisualOverflowRect();
     if (!contents_visual_overflow_rect.IsEmpty()) {
-      LayoutRect result = BorderBoxRect();
+      PhysicalRect result = PhysicalBorderBoxRect();
       NGPhysicalBoxStrut outsets = BorderOutsetsForClipping();
       result.ExpandEdges(outsets.top, outsets.right, outsets.bottom,
                          outsets.left);
@@ -3899,7 +3898,8 @@ LayoutRect LayoutBox::VisualOverflowRect() const {
   if (overflow_clip_axes == kOverflowClipBothAxis)
     return self_visual_overflow_rect;
 
-  LayoutRect result = overflow_->visual_overflow->ContentsVisualOverflowRect();
+  PhysicalRect result =
+      overflow_->visual_overflow->ContentsVisualOverflowRect();
   result.Unite(self_visual_overflow_rect);
   ApplyOverflowClip(overflow_clip_axes, self_visual_overflow_rect, result);
   return result;
@@ -3909,7 +3909,7 @@ LayoutRect LayoutBox::VisualOverflowRect() const {
 PhysicalRect LayoutBox::PhysicalVisualOverflowRectAllowingUnset() const {
   NOT_DESTROYED();
   NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
-  return PhysicalVisualOverflowRect();
+  return VisualOverflowRect();
 }
 
 void LayoutBox::CheckIsVisualOverflowComputed() const {
@@ -4132,9 +4132,9 @@ void LayoutBox::MutableForPainting::SavePreviousOverflowData() {
   previous_overflow->previous_physical_layout_overflow_rect =
       GetLayoutBox().PhysicalLayoutOverflowRect();
   previous_overflow->previous_physical_visual_overflow_rect =
-      GetLayoutBox().PhysicalVisualOverflowRect();
+      GetLayoutBox().VisualOverflowRect();
   previous_overflow->previous_physical_self_visual_overflow_rect =
-      GetLayoutBox().PhysicalSelfVisualOverflowRect();
+      GetLayoutBox().SelfVisualOverflowRect();
 }
 
 void LayoutBox::MutableForPainting::SetPreviousGeometryForLayoutShiftTracking(

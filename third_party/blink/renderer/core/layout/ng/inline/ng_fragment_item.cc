@@ -906,7 +906,7 @@ void NGFragmentItem::RecalcInkOverflow(
       LayoutBox* owner_box = MutableInkOverflowOwnerBox();
       DCHECK(owner_box);
       owner_box->RecalcNormalFlowChildVisualOverflowIfNeeded();
-      *self_and_contents_rect_out = owner_box->PhysicalVisualOverflowRect();
+      *self_and_contents_rect_out = owner_box->VisualOverflowRect();
       return;
     }
 

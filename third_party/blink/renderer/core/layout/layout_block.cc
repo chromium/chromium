@@ -337,7 +337,7 @@ void LayoutBlock::ComputeVisualOverflow() {
   NOT_DESTROYED();
   DCHECK(!SelfNeedsFullLayout());
 
-  LayoutRect previous_visual_overflow_rect = VisualOverflowRect();
+  PhysicalRect previous_visual_overflow_rect = VisualOverflowRect();
   ClearVisualOverflow();
   AddVisualOverflowFromChildren();
   AddVisualEffectOverflow();

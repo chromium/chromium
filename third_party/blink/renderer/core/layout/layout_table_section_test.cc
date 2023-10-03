@@ -85,11 +85,12 @@ TEST_F(LayoutTableSectionTest, VisualOverflowWithCollapsedBorders) {
   auto* section = GetSectionByElementIdAsBox("section");
 
   // The section's self visual overflow doesn't cover the collapsed borders.
-  EXPECT_EQ(section->BorderBoxRect(), section->SelfVisualOverflowRect());
+  EXPECT_EQ(section->PhysicalBorderBoxRect(),
+            section->SelfVisualOverflowRect());
 
   // The section's visual overflow covers self visual overflow and visual
   // overflows rows.
-  LayoutRect expected_visual_overflow = section->BorderBoxRect();
+  PhysicalRect expected_visual_overflow = section->PhysicalBorderBoxRect();
   expected_visual_overflow.ExpandEdges(LayoutUnit(3), LayoutUnit(8),
                                        LayoutUnit(8), LayoutUnit(8));
   EXPECT_EQ(expected_visual_overflow, section->VisualOverflowRect());

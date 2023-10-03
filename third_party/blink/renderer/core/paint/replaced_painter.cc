@@ -261,7 +261,7 @@ bool ReplacedPainter::ShouldPaint(const ScopedPaintState& paint_state) const {
       layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible)
     return false;
 
-  PhysicalRect local_rect = layout_replaced_.PhysicalVisualOverflowRect();
+  PhysicalRect local_rect = layout_replaced_.VisualOverflowRect();
   local_rect.Unite(layout_replaced_.LocalSelectionVisualRect());
   if (!paint_state.LocalRectIntersectsCullRect(local_rect))
     return false;
@@ -276,7 +276,7 @@ void ReplacedPainter::MeasureOverflowMetrics() const {
     return;
   }
 
-  auto overflow_size = layout_replaced_.PhysicalVisualOverflowRect().size;
+  auto overflow_size = layout_replaced_.VisualOverflowRect().size;
   auto overflow_area = overflow_size.width * overflow_size.height;
 
   auto content_size = layout_replaced_.Size();

@@ -449,7 +449,7 @@ void LayoutBoxModelObject::UpdateFromStyle() {
 PhysicalRect LayoutBoxModelObject::PhysicalVisualOverflowRectIncludingFilters()
     const {
   NOT_DESTROYED();
-  return ApplyFiltersToRect(PhysicalVisualOverflowRect());
+  return ApplyFiltersToRect(VisualOverflowRect());
 }
 
 PhysicalRect LayoutBoxModelObject::ApplyFiltersToRect(

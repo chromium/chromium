@@ -153,7 +153,7 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
 #endif
   if (box_.PreviousSize() == box_.Size() &&
       box_.PreviousPhysicalSelfVisualOverflowRect() ==
-          box_.PhysicalSelfVisualOverflowRect()) {
+          box_.SelfVisualOverflowRect()) {
     return IsFullPaintInvalidationReason(reason)
                ? reason
                : PaintInvalidationReason::kNone;
@@ -162,7 +162,7 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
   // Incremental invalidation is not applicable if there is visual overflow.
   if (box_.PreviousPhysicalSelfVisualOverflowRect().size !=
           box_.PreviousSize() ||
-      box_.PhysicalSelfVisualOverflowRect().size != box_.Size()) {
+      box_.SelfVisualOverflowRect().size != box_.Size()) {
     return PaintInvalidationReason::kLayout;
   }
 

@@ -439,11 +439,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return FlipForWritingMode(LayoutOverflowRect());
   }
 
-  LayoutRect VisualOverflowRect() const;
-  PhysicalRect PhysicalVisualOverflowRect() const final {
-    NOT_DESTROYED();
-    return PhysicalRect(VisualOverflowRect());
-  }
+  PhysicalRect VisualOverflowRect() const final;
   // VisualOverflow has DCHECK for reading before it is computed. These
   // functions pretend there is no visual overflow when it is not computed.
   // TODO(crbug.com/1205708): Audit the usages and fix issues.
@@ -452,29 +448,21 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 #else
   ALWAYS_INLINE PhysicalRect PhysicalVisualOverflowRectAllowingUnset() const {
     NOT_DESTROYED();
-    return PhysicalVisualOverflowRect();
+    return VisualOverflowRect();
   }
 #endif
 
-  LayoutRect SelfVisualOverflowRect() const {
+  PhysicalRect SelfVisualOverflowRect() const {
     NOT_DESTROYED();
     return VisualOverflowIsSet()
                ? overflow_->visual_overflow->SelfVisualOverflowRect()
-               : BorderBoxRect();
+               : PhysicalBorderBoxRect();
   }
-  PhysicalRect PhysicalSelfVisualOverflowRect() const {
-    NOT_DESTROYED();
-    return PhysicalRect(SelfVisualOverflowRect());
-  }
-  LayoutRect ContentsVisualOverflowRect() const {
+  PhysicalRect ContentsVisualOverflowRect() const {
     NOT_DESTROYED();
     return VisualOverflowIsSet()
                ? overflow_->visual_overflow->ContentsVisualOverflowRect()
-               : LayoutRect();
-  }
-  PhysicalRect PhysicalContentsVisualOverflowRect() const {
-    NOT_DESTROYED();
-    return PhysicalRect(ContentsVisualOverflowRect());
+               : PhysicalRect();
   }
 
   // These methods don't mean the box *actually* has top/left overflow. They
@@ -488,25 +476,17 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Sets the layout-overflow from the current set of layout-results.
   void SetLayoutOverflowFromLayoutResults();
 
-  void AddSelfVisualOverflow(const PhysicalRect& r) {
-    NOT_DESTROYED();
-    AddSelfVisualOverflow(r.ToLayoutRect());
-  }
-  void AddSelfVisualOverflow(const LayoutRect&);
-  void AddContentsVisualOverflow(const PhysicalRect& r) {
-    NOT_DESTROYED();
-    AddContentsVisualOverflow(r.ToLayoutRect());
-  }
-  void AddContentsVisualOverflow(const LayoutRect&);
+  void AddSelfVisualOverflow(const PhysicalRect& r);
+  void AddContentsVisualOverflow(const PhysicalRect& r);
 
   virtual void AddVisualEffectOverflow();
   NGPhysicalBoxStrut ComputeVisualEffectOverflowOutsets();
   void AddVisualOverflowFromChild(const LayoutBox& child) {
     NOT_DESTROYED();
-    AddVisualOverflowFromChild(child, PhysicalLocation().ToLayoutSize());
+    AddVisualOverflowFromChild(child, PhysicalLocation());
   }
   void AddVisualOverflowFromChild(const LayoutBox& child,
-                                  const DeprecatedLayoutSize& delta);
+                                  const PhysicalOffset& delta);
 
   void ClearLayoutOverflow();
   void ClearVisualOverflow();
@@ -1129,15 +1109,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // direction, for parent to accumulate layout or visual overflow.
   LayoutRect RectForOverflowPropagation(const LayoutRect&) const;
 
-  LayoutRect VisualOverflowRectForPropagation() const {
-    NOT_DESTROYED();
-    return VisualOverflowRect();
-  }
-
   bool HasSelfVisualOverflow() const {
     NOT_DESTROYED();
     return VisualOverflowIsSet() &&
-           !BorderBoxRect().Contains(
+           !PhysicalBorderBoxRect().Contains(
                overflow_->visual_overflow->SelfVisualOverflowRect());
   }
 

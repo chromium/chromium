@@ -187,9 +187,8 @@ PhysicalRect PaintLayerClipper::LocalVisualRect(
   // clipping rect may be larger than its box rect (crbug.com/492871).
   bool affected_by_url_bar = layout_object.IsGlobalRootScroller();
   PhysicalRect layer_bounds_with_visual_overflow =
-      affected_by_url_bar
-          ? layout_object.View()->ViewRect()
-          : To<LayoutBox>(layout_object).PhysicalVisualOverflowRect();
+      affected_by_url_bar ? layout_object.View()->ViewRect()
+                          : To<LayoutBox>(layout_object).VisualOverflowRect();
   return layer_bounds_with_visual_overflow;
 }
 

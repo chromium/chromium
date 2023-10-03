@@ -122,7 +122,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
 
  private:
   OverflowClipAxes ComputeOverflowClipAxes() const override;
-  LayoutRect ComputeContentsVisualOverflow() const;
+  PhysicalRect ComputeContentsVisualOverflow() const;
 
   LayoutObjectChildList* VirtualChildren() override {
     NOT_DESTROYED();

@@ -476,8 +476,8 @@ TEST_F(LayoutBoxTest, VisualOverflowRectWithBlockChild) {
   )HTML");
 
   LayoutBox* target = GetLayoutBoxByElementId("target");
-  EXPECT_EQ(LayoutRect(0, 0, 100, 100), target->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(0, 0, 300, 300), target->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 100), target->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 300, 300), target->VisualOverflowRect());
 }
 
 TEST_F(LayoutBoxTest, VisualOverflowRectWithLegacyChild) {
@@ -488,8 +488,8 @@ TEST_F(LayoutBoxTest, VisualOverflowRectWithLegacyChild) {
   )HTML");
 
   LayoutBox* target = GetLayoutBoxByElementId("target");
-  EXPECT_EQ(LayoutRect(0, 0, 100, 100), target->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(0, 0, 300, 300), target->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 100), target->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 300, 300), target->VisualOverflowRect());
 }
 
 TEST_F(LayoutBoxTest, VisualOverflowRectWithMask) {
@@ -504,8 +504,8 @@ TEST_F(LayoutBoxTest, VisualOverflowRectWithMask) {
   EXPECT_TRUE(target->HasMask());
   EXPECT_FALSE(target->IsScrollContainer());
   EXPECT_FALSE(target->ShouldClipOverflowAlongEitherAxis());
-  EXPECT_EQ(LayoutRect(0, 0, 100, 100), target->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(0, 0, 100, 100), target->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 100), target->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 100), target->VisualOverflowRect());
 }
 
 TEST_F(LayoutBoxTest, VisualOverflowRectWithMaskAndOverflowHidden) {
@@ -520,8 +520,8 @@ TEST_F(LayoutBoxTest, VisualOverflowRectWithMaskAndOverflowHidden) {
   EXPECT_TRUE(target->HasMask());
   EXPECT_TRUE(target->IsScrollContainer());
   EXPECT_TRUE(target->ShouldClipOverflowAlongBothAxis());
-  EXPECT_EQ(LayoutRect(0, 0, 100, 100), target->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(0, 0, 100, 100), target->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 100), target->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 100), target->VisualOverflowRect());
 }
 
 TEST_F(LayoutBoxTest, VisualOverflowRectWithMaskWithOutset) {
@@ -537,8 +537,8 @@ TEST_F(LayoutBoxTest, VisualOverflowRectWithMaskWithOutset) {
   EXPECT_TRUE(target->HasMask());
   EXPECT_FALSE(target->IsScrollContainer());
   EXPECT_FALSE(target->ShouldClipOverflowAlongEitherAxis());
-  EXPECT_EQ(LayoutRect(-20, -10, 140, 120), target->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(-20, -10, 140, 120), target->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(-20, -10, 140, 120), target->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(-20, -10, 140, 120), target->VisualOverflowRect());
 }
 
 TEST_F(LayoutBoxTest, VisualOverflowRectWithMaskWithOutsetAndOverflowHidden) {
@@ -554,8 +554,8 @@ TEST_F(LayoutBoxTest, VisualOverflowRectWithMaskWithOutsetAndOverflowHidden) {
   EXPECT_TRUE(target->HasMask());
   EXPECT_TRUE(target->IsScrollContainer());
   EXPECT_TRUE(target->ShouldClipOverflowAlongBothAxis());
-  EXPECT_EQ(LayoutRect(-20, -10, 140, 120), target->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(-20, -10, 140, 120), target->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(-20, -10, 140, 120), target->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(-20, -10, 140, 120), target->VisualOverflowRect());
 }
 
 TEST_F(LayoutBoxTest, VisualOverflowRectOverflowHidden) {
@@ -569,8 +569,8 @@ TEST_F(LayoutBoxTest, VisualOverflowRectOverflowHidden) {
   LayoutBox* target = GetLayoutBoxByElementId("target");
   EXPECT_TRUE(target->IsScrollContainer());
   EXPECT_TRUE(target->ShouldClipOverflowAlongBothAxis());
-  EXPECT_EQ(LayoutRect(0, 0, 100, 100), target->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(0, 0, 100, 100), target->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 100), target->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 100), target->VisualOverflowRect());
 }
 
 TEST_F(LayoutBoxTest, VisualOverflowRectOverflowClip) {
@@ -593,20 +593,20 @@ TEST_F(LayoutBoxTest, VisualOverflowRectOverflowClip) {
   LayoutBox* clip = GetLayoutBoxByElementId("clip");
   EXPECT_FALSE(clip->IsScrollContainer());
   EXPECT_TRUE(clip->ShouldClipOverflowAlongBothAxis());
-  EXPECT_EQ(LayoutRect(0, 0, 100, 50), clip->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(0, 0, 100, 50), clip->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 50), clip->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 50), clip->VisualOverflowRect());
 
   LayoutBox* clip_x = GetLayoutBoxByElementId("clip-x");
   EXPECT_FALSE(clip_x->IsScrollContainer());
   EXPECT_EQ(kOverflowClipX, clip_x->GetOverflowClipAxes());
-  EXPECT_EQ(LayoutRect(0, 0, 100, 50), clip_x->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(0, 0, 100, 300), clip_x->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 50), clip_x->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 300), clip_x->VisualOverflowRect());
 
   LayoutBox* clip_y = GetLayoutBoxByElementId("clip-y");
   EXPECT_FALSE(clip_y->IsScrollContainer());
   EXPECT_EQ(kOverflowClipY, clip_y->GetOverflowClipAxes());
-  EXPECT_EQ(LayoutRect(0, 0, 100, 50), clip_y->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(0, 0, 300, 50), clip_y->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 50), clip_y->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 300, 50), clip_y->VisualOverflowRect());
 }
 
 TEST_F(LayoutBoxTest, VisualOverflowRectWithOverflowClipMargin) {
@@ -630,17 +630,17 @@ TEST_F(LayoutBoxTest, VisualOverflowRectWithOverflowClipMargin) {
   LayoutBox* clip1 = GetLayoutBoxByElementId("clip1");
   EXPECT_FALSE(clip1->IsScrollContainer());
   EXPECT_TRUE(clip1->ShouldClipOverflowAlongBothAxis());
-  EXPECT_EQ(LayoutRect(0, 0, 104, 54), clip1->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 104, 54), clip1->VisualOverflowRect());
 
   LayoutBox* clip2 = GetLayoutBoxByElementId("clip2");
   EXPECT_FALSE(clip2->IsScrollContainer());
   EXPECT_TRUE(clip2->ShouldClipOverflowAlongBothAxis());
-  EXPECT_EQ(LayoutRect(0, 0, 110, 55), clip2->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 110, 55), clip2->VisualOverflowRect());
 
   LayoutBox* clip3 = GetLayoutBoxByElementId("clip3");
   EXPECT_FALSE(clip3->IsScrollContainer());
   EXPECT_TRUE(clip3->ShouldClipOverflowAlongBothAxis());
-  EXPECT_EQ(LayoutRect(0, 0, 110, 55), clip3->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 110, 55), clip3->VisualOverflowRect());
 }
 
 // |NGInkOverflow| stopped storing visual overflow contained by |BorderBoxRect|
@@ -648,12 +648,12 @@ TEST_F(LayoutBoxTest, VisualOverflowRectWithOverflowClipMargin) {
 // and partially contained.
 // TODO(crbug.com/1144203): Change this to "if (NG)" when NG always use
 // fragment-based ink overflow. Then, remove this when legacy is gone.
-#define EXPECT_CONTENTS_VISUAL_OVERFLOW(rect, layout_box)      \
-  if (layout_box->CanUseFragmentsForVisualOverflow()) {        \
-    EXPECT_EQ(UnionRect(rect, layout_box->BorderBoxRect()),    \
-              layout_box->ContentsVisualOverflowRect());       \
-  } else {                                                     \
-    EXPECT_EQ(rect, layout_box->ContentsVisualOverflowRect()); \
+#define EXPECT_CONTENTS_VISUAL_OVERFLOW(rect, layout_box)           \
+  if (layout_box->CanUseFragmentsForVisualOverflow()) {             \
+    EXPECT_EQ(UnionRect(rect, layout_box->PhysicalBorderBoxRect()), \
+              layout_box->ContentsVisualOverflowRect());            \
+  } else {                                                          \
+    EXPECT_EQ(rect, layout_box->ContentsVisualOverflowRect());      \
   }
 
 TEST_F(LayoutBoxTest, ContentsVisualOverflowPropagation) {
@@ -679,36 +679,28 @@ TEST_F(LayoutBoxTest, ContentsVisualOverflowPropagation) {
 
   const int kCContentsLeft = -10;
   auto* c = GetLayoutBoxByElementId("c");
-  EXPECT_EQ(LayoutRect(0, 0, 100, 100), c->SelfVisualOverflowRect());
-  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(kCContentsLeft, 20, 100, 100), c);
-  EXPECT_EQ(LayoutRect(kCContentsLeft, 0, 110, 120), c->VisualOverflowRect());
-  // C and its parent b have the same blocks direction.
-  EXPECT_EQ(LayoutRect(kCContentsLeft, 0, 110, 120),
-            c->VisualOverflowRectForPropagation());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 100), c->SelfVisualOverflowRect());
+  EXPECT_CONTENTS_VISUAL_OVERFLOW(PhysicalRect(kCContentsLeft, 20, 100, 100),
+                                  c);
+  EXPECT_EQ(PhysicalRect(kCContentsLeft, 0, 110, 120), c->VisualOverflowRect());
 
-  const int kDLeft = 0;
   auto* d = GetLayoutBoxByElementId("d");
-  EXPECT_EQ(LayoutRect(0, 0, 100, 100), d->SelfVisualOverflowRect());
-  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(10, 20, 100, 100), d);
-  EXPECT_EQ(LayoutRect(0, 0, 110, 120), d->VisualOverflowRect());
-  // D and its parent b have different blocks direction.
-  EXPECT_EQ(LayoutRect(kDLeft, 0, 110, 120),
-            d->VisualOverflowRectForPropagation());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 100), d->SelfVisualOverflowRect());
+  EXPECT_CONTENTS_VISUAL_OVERFLOW(PhysicalRect(10, 20, 100, 100), d);
+  EXPECT_EQ(PhysicalRect(0, 0, 110, 120), d->VisualOverflowRect());
 
   auto* b = GetLayoutBoxByElementId("b");
   const int kBContentsLeft = -130;
-  EXPECT_EQ(LayoutRect(0, 0, 100, 100), b->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 100), b->SelfVisualOverflowRect());
   // Union of VisualOverflowRectForPropagations offset by locations of c and d.
-  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(kBContentsLeft, 40, 200, 120), b);
-  EXPECT_EQ(LayoutRect(kBContentsLeft, 0, 230, 160), b->VisualOverflowRect());
-  // B and its parent A have different blocks direction.
-  EXPECT_EQ(LayoutRect(-130, 0, 230, 160),
-            b->VisualOverflowRectForPropagation());
+  EXPECT_CONTENTS_VISUAL_OVERFLOW(PhysicalRect(kBContentsLeft, 40, 200, 120),
+                                  b);
+  EXPECT_EQ(PhysicalRect(kBContentsLeft, 0, 230, 160), b->VisualOverflowRect());
 
   auto* a = GetLayoutBoxByElementId("a");
-  EXPECT_EQ(LayoutRect(0, 0, 100, 100), a->SelfVisualOverflowRect());
-  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(-70, 50, 230, 160), a);
-  EXPECT_EQ(LayoutRect(-70, 0, 230, 210), a->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 100), a->SelfVisualOverflowRect());
+  EXPECT_CONTENTS_VISUAL_OVERFLOW(PhysicalRect(-70, 50, 230, 160), a);
+  EXPECT_EQ(PhysicalRect(-70, 0, 230, 210), a->VisualOverflowRect());
 }
 
 TEST_F(LayoutBoxTest, HitTestOverflowClipMargin) {
@@ -756,9 +748,9 @@ TEST_F(LayoutBoxTest, OverflowRectsContainPaint) {
   auto* container = GetLayoutBoxByElementId("container");
   EXPECT_TRUE(container->ShouldClipOverflowAlongEitherAxis());
   EXPECT_EQ(LayoutRect(10, 10, 300, 400), container->LayoutOverflowRect());
-  EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->VisualOverflowRect());
-  EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->SelfVisualOverflowRect());
-  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(10, 10, 300, 400), container);
+  EXPECT_EQ(PhysicalRect(0, 0, 120, 220), container->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 120, 220), container->SelfVisualOverflowRect());
+  EXPECT_CONTENTS_VISUAL_OVERFLOW(PhysicalRect(10, 10, 300, 400), container);
   EXPECT_EQ(PhysicalRect(10, 10, 100, 200),
             container->OverflowClipRect(PhysicalOffset()));
 }
@@ -774,9 +766,9 @@ TEST_F(LayoutBoxTest, OverflowRectsOverflowHidden) {
   auto* container = GetLayoutBoxByElementId("container");
   EXPECT_TRUE(container->ShouldClipOverflowAlongEitherAxis());
   EXPECT_EQ(LayoutRect(10, 10, 300, 400), container->LayoutOverflowRect());
-  EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->VisualOverflowRect());
-  EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->SelfVisualOverflowRect());
-  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(10, 10, 300, 400), container);
+  EXPECT_EQ(PhysicalRect(0, 0, 120, 220), container->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 120, 220), container->SelfVisualOverflowRect());
+  EXPECT_CONTENTS_VISUAL_OVERFLOW(PhysicalRect(10, 10, 300, 400), container);
   EXPECT_EQ(PhysicalRect(10, 10, 100, 200),
             container->OverflowClipRect(PhysicalOffset()));
 }

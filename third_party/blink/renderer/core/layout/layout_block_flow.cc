@@ -168,7 +168,7 @@ void LayoutBlockFlow::ComputeVisualOverflow() {
   AddVisualOverflowFromChildren();
   AddVisualEffectOverflow();
 
-  if (PhysicalVisualOverflowRect() != previous_visual_overflow_rect) {
+  if (VisualOverflowRect() != previous_visual_overflow_rect) {
     InvalidateIntersectionObserverCachedRects();
     SetShouldCheckForPaintInvalidation();
     GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);

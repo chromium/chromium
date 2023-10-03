@@ -726,7 +726,7 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
 PhysicalRect NGPhysicalBoxFragment::SelfInkOverflow() const {
   if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
     const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
-    return owner_box->PhysicalSelfVisualOverflowRect();
+    return owner_box->SelfVisualOverflowRect();
   }
   if (!HasInkOverflow())
     return LocalRect();
@@ -736,7 +736,7 @@ PhysicalRect NGPhysicalBoxFragment::SelfInkOverflow() const {
 PhysicalRect NGPhysicalBoxFragment::ContentsInkOverflow() const {
   if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
     const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
-    return owner_box->PhysicalContentsVisualOverflowRect();
+    return owner_box->ContentsVisualOverflowRect();
   }
   if (!HasInkOverflow())
     return LocalRect();
@@ -746,7 +746,7 @@ PhysicalRect NGPhysicalBoxFragment::ContentsInkOverflow() const {
 PhysicalRect NGPhysicalBoxFragment::InkOverflow() const {
   if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
     const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
-    return owner_box->PhysicalVisualOverflowRect();
+    return owner_box->VisualOverflowRect();
   }
 
   if (!HasInkOverflow())
@@ -1277,7 +1277,7 @@ PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
                 child_layout_object->IsLayoutFlowThread());
       if (child_fragment->IsColumnBox())
         continue;
-      child_rect = child_layout_object->PhysicalVisualOverflowRect();
+      child_rect = child_layout_object->VisualOverflowRect();
     }
     child_rect.offset += child.offset;
     contents_rect.Unite(child_rect);
@@ -1305,7 +1305,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
       if (child_fragment.CanUseFragmentsForInkOverflow())
         child_rect = child_fragment.InkOverflow();
       else
-        child_rect = child_layout_object->PhysicalVisualOverflowRect();
+        child_rect = child_layout_object->VisualOverflowRect();
       child_rect.offset += child.offset;
       ink_overflow.Unite(child_rect);
     }

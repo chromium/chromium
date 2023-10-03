@@ -456,8 +456,7 @@ TEST_F(LayoutFlexibleBoxTest, ResizedFlexChildRequiresVisualOverflowRecalc) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(child1_box->PhysicalVisualOverflowRect(),
-            PhysicalRect(0, 0, 105, 960));
+  EXPECT_EQ(child1_box->VisualOverflowRect(), PhysicalRect(0, 0, 105, 960));
 }
 
 TEST_F(LayoutFlexibleBoxTest, PercentDefiniteGapUseCounter) {

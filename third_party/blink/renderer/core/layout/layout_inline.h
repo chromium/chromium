@@ -153,7 +153,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   gfx::RectF LocalBoundingBoxRectForAccessibility() const final;
 
   PhysicalRect PhysicalLinesBoundingBox() const;
-  PhysicalRect PhysicalVisualOverflowRect() const final;
+  PhysicalRect VisualOverflowRect() const final;
 
   bool HasInlineFragments() const final;
   wtf_size_t FirstInlineFragmentItemIndex() const final;
