@@ -420,15 +420,19 @@ void AppManagementPageHandler::GetOverlappingPreferredApps(
     GetOverlappingPreferredAppsCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS)
   auto intent_filters = GetSupportedLinkIntentFilters(profile_, app_id);
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   base::flat_set<std::string> app_ids =
-      apps::AppServiceProxyFactory::GetForProfile(profile_)
-          ->PreferredAppsList()
-          .FindPreferredAppsForFilters(intent_filters);
+      proxy->PreferredAppsList().FindPreferredAppsForFilters(intent_filters);
   app_ids.erase(app_id);
-  // Remove the use_browser app ID as it's mainly used inside the intent system
-  // and is not an app in app management. This prevents an overlap dialog from
-  // being shown when there are no "real" apps that overlap.
-  app_ids.erase(apps_util::kUseBrowserForLink);
+
+  // Erase all IDs that do not correspond to installed apps in App Service. Such
+  // IDs could be apps that have been uninstalled but did not have their
+  // preference updated correctly, or the legacy "use_browser" preference. This
+  // prevents attempting to show an overlapping app dialog for an app that
+  // doesn't currently exist.
+  base::EraseIf(app_ids, [proxy](const std::string& app_id) {
+    return !proxy->AppRegistryCache().IsAppInstalled(app_id);
+  });
   std::move(callback).Run(std::move(app_ids).extract());
 #else
   web_app::WebAppProvider* provider =

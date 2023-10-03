@@ -22,12 +22,15 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/components/arc/test/fake_app_instance.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
 #else
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_features.h"
@@ -492,6 +495,32 @@ TEST_F(AppManagementPageHandlerTestBase,
       GetOverlappingPreferredApps(app_id1);
   EXPECT_TRUE(overlapping_apps.empty());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// On ChromeOS, it's possible for the supported links preference file to contain
+// references to apps that don't exist. These should be filtered out from the
+// GetOverlappingPreferredApps call.
+TEST_F(AppManagementPageHandlerTestBase,
+       GetOverlappingPreferredAppsInvalidApp) {
+  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  web_app_info->title = u"app_name";
+  web_app_info->start_url = GURL("https://example.com/index.html");
+  web_app_info->scope = GURL("https://example.com/");
+
+  std::string app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  IntentFilters filters;
+  filters.push_back(
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://example.com/")));
+  auto* proxy = AppServiceProxyFactory::GetForProfile(profile());
+  proxy->SetSupportedLinksPreference("foobar", std::move(filters));
+
+  std::vector<std::string> overlapping_apps =
+      GetOverlappingPreferredApps(app_id);
+  EXPECT_TRUE(overlapping_apps.empty());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(AppManagementPageHandlerTestBase, DifferentScopeNoOverlap) {
   auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
