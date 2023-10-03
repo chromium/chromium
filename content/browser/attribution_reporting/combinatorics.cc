@@ -171,6 +171,12 @@ double ComputeChannelCapacity(int64_t num_states,
   DCHECK_GE(randomized_response_rate, 0);
   DCHECK_LE(randomized_response_rate, 1);
 
+  // The capacity of a unary channel is 0. This follows from the definition
+  // of mutual information.
+  if (num_states == 1) {
+    return 0;
+  }
+
   double p = randomized_response_rate * (num_states - 1) / num_states;
   return log2(num_states) - BinaryEntropy(p) - p * log2(num_states - 1);
 }

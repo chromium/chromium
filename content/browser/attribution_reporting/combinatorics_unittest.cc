@@ -263,6 +263,11 @@ TEST(CombinatoricsTest, ComputeChannelCapacity) {
           .epsilon = 14,
           .expected = 1.584926511508231,
       },
+      {
+          .num_states = 1,
+          .epsilon = 14,
+          .expected = 0,
+      },
   };
 
   for (const auto& test_case : kTestCases) {
