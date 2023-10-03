@@ -1292,7 +1292,9 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
 
   absl::visit(
       base::Overloaded{
-          [](const AttributionReport::EventLevelData&) { NOTREACHED(); },
+          [](const AttributionReport::EventLevelData&) {
+            NOTREACHED_NORETURN();
+          },
           [&](AttributionReport::AggregatableAttributionData& data) {
             data.common_data.assembled_report = std::move(assembled_report);
           },

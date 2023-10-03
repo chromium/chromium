@@ -134,7 +134,7 @@ struct AttributionReportJsonConverter {
               DCHECK(ok);
             },
             [](const AttributionReport::NullAggregatableData&) {
-              NOTREACHED();
+              NOTREACHED_NORETURN();
             },
         },
         report.data());

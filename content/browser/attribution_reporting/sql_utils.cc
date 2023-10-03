@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/event_report_windows.h"
@@ -57,10 +56,7 @@ std::string SerializeReadOnlySourceData(
     msg.set_randomized_response_rate(randomized_response_rate);
   }
 
-  std::string str;
-  bool success = msg.SerializeToString(&str);
-  DCHECK(success);
-  return str;
+  return msg.SerializeAsString();
 }
 
 absl::optional<proto::AttributionReadOnlySourceData>

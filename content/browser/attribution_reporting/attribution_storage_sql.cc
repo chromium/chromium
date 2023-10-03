@@ -191,10 +191,7 @@ std::string SerializeFilterData(
     (*msg.mutable_filter_values())[filter] = std::move(filter_values_msg);
   }
 
-  std::string string;
-  bool success = msg.SerializeToString(&string);
-  DCHECK(success);
-  return string;
+  return msg.SerializeAsString();
 }
 
 absl::optional<attribution_reporting::FilterData> DeserializeFilterData(
@@ -247,10 +244,7 @@ std::string SerializeAggregationKeys(
     (*msg.mutable_keys())[id] = std::move(key_msg);
   }
 
-  std::string str;
-  bool success = msg.SerializeToString(&str);
-  DCHECK(success);
-  return str;
+  return msg.SerializeAsString();
 }
 
 bool IsValid(const proto::AttributionAggregationKey& key) {
@@ -289,10 +283,7 @@ std::string SerializeReportMetadata(
   msg.set_trigger_data(data.trigger_data);
   msg.set_priority(data.priority);
 
-  std::string str;
-  bool success = msg.SerializeToString(&str);
-  DCHECK(success);
-  return str;
+  return msg.SerializeAsString();
 }
 
 [[nodiscard]] bool DeserializeReportMetadata(const std::string& str,
@@ -392,10 +383,7 @@ std::string SerializeReportMetadata(
     contribution_msg->set_value(contribution.value());
   }
 
-  std::string str;
-  bool success = msg.SerializeToString(&str);
-  DCHECK(success);
-  return str;
+  return msg.SerializeAsString();
 }
 
 [[nodiscard]] bool DeserializeReportMetadata(
@@ -434,10 +422,7 @@ std::string SerializeReportMetadata(
   msg.set_fake_source_time(
       data.fake_source_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 
-  std::string str;
-  bool success = msg.SerializeToString(&str);
-  DCHECK(success);
-  return str;
+  return msg.SerializeAsString();
 }
 
 [[nodiscard]] bool DeserializeReportMetadata(
@@ -3284,7 +3269,9 @@ void AttributionStorageSql::AssignTriggerVerificationData(
         std::move(verification.aggregatable_report_id()));
     absl::visit(
         base::Overloaded{
-            [](const AttributionReport::EventLevelData&) { NOTREACHED(); },
+            [](const AttributionReport::EventLevelData&) {
+              NOTREACHED_NORETURN();
+            },
             [&](AttributionReport::AggregatableAttributionData& data) {
               data.common_data.verification_token =
                   std::move(verification.token());

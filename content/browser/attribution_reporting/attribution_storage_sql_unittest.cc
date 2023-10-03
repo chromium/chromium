@@ -715,7 +715,9 @@ TEST_P(AttributionStorageSqlTest,
               expected_verification.aggregatable_report_id());
     absl::visit(
         base::Overloaded{
-            [](const AttributionReport::EventLevelData&) { NOTREACHED(); },
+            [](const AttributionReport::EventLevelData&) {
+              NOTREACHED_NORETURN();
+            },
             [&expected_verification](
                 const AttributionReport::AggregatableAttributionData& data) {
               EXPECT_EQ(data.common_data.verification_token,

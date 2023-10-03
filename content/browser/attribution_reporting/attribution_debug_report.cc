@@ -337,8 +337,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kTriggerUnknownError:
     case DebugDataType::kOsSourceDelegated:
     case DebugDataType::kOsTriggerDelegated:
-      NOTREACHED();
-      return base::Value::Dict();
+      NOTREACHED_NORETURN();
   }
 
   return data_body;
@@ -413,8 +412,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kSourceDestinationRateLimit:
     case DebugDataType::kOsSourceDelegated:
     case DebugDataType::kOsTriggerDelegated:
-      NOTREACHED();
-      return base::Value::Dict();
+      NOTREACHED_NORETURN();
   }
 
   return data_body;

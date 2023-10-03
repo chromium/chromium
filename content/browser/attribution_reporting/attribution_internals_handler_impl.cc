@@ -120,8 +120,7 @@ void ForwardSourcesToWebUI(
           attributability = Attributability::kReachedEventLevelAttributionLimit;
           break;
         case StoredSource::ActiveState::kInactive:
-          NOTREACHED();
-          return;
+          NOTREACHED_NORETURN();
       }
     }
 
