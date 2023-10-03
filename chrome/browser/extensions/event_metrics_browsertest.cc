@@ -92,6 +92,33 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, DispatchMetricTest) {
   }
 }
 
+// Tests that for every event received there is a corresponding emit of starting
+// and finishing status of the service worker external request.
+IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, ExternalRequestMetrics) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  // Load the extension for the particular context type. The manifest
+  // file is for a legacy event page-based extension. LoadExtension will
+  // modify the extension for the kServiceWorker case.
+  base::HistogramTester histogram_tester_oninstalled;
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("events/metrics/web_navigation"),
+                    {.context_type = ContextType::kServiceWorker});
+  ASSERT_TRUE(extension);
+  // This ensures that we wait until the the browser receives the ack from the
+  // renderer. This prevents unexpected histogram emits later.
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+
+  // Call to runtime.onInstalled expected.
+  histogram_tester_oninstalled.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.StartingExternalRequest_Result",
+      /*expected_count=*/1);
+  histogram_tester_oninstalled.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result",
+      /*expected_count=*/1);
+}
+
 class EventMetricsDispatchToSenderBrowserTest
     : public ExtensionBrowserTest,
       public testing::WithParamInterface<ContextType> {
@@ -200,6 +227,16 @@ IN_PROC_BROWSER_TEST_P(EventMetricsDispatchToSenderBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker",
       /*expected_count=*/0);
+
+  // We do always log starting/finishing an external request.
+  if (!persistent_background_extension) {  // service worker
+    histogram_tester.ExpectTotalCount(
+        "Extensions.ServiceWorkerBackground.StartingExternalRequest_Result",
+        /*expected_count=*/1);
+    histogram_tester.ExpectTotalCount(
+        "Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result",
+        /*expected_count=*/1);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

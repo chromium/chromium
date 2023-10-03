@@ -4251,6 +4251,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result"
+    enum="ServiceWorkerStatusCode" expires_after="never">
+<!-- expires-never: Monitors core extension system health. -->
+
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks the result (ServiceWorkerExternalRequestResult) of when we attempt to
+    remove (finish) an external request for the extension service worker.
+    Emitted when we attempt to finish the external request after the browser has
+    received an ack from the renderer that it fired the event in the service
+    worker.
+  </summary>
+</histogram>
+
+<histogram
     name="Extensions.ServiceWorkerBackground.ProcessManagerFinishedExternalRequestResultWithSuccessfulStart"
     enum="ServiceWorkerExternalRequestResult" expires_after="2024-08-01">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -4341,6 +4357,21 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether or not an expected Service Worker registration was found. Note that
     this expectation was stored in ExtensionPrefs.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ServiceWorkerBackground.StartingExternalRequest_Result"
+    enum="ServiceWorkerExternalRequestResult" expires_after="never">
+<!-- expires-never: Monitors core extension system health. -->
+
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks the result (ServiceWorkerExternalRequestResult) of when we attempt to
+    add (start) an external request for the extension service worker. Logged
+    each time an external request is added prior to dispatching the event to the
+    service worker.
   </summary>
 </histogram>
 

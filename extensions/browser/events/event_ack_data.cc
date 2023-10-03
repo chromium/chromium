@@ -43,6 +43,9 @@ void EventAckData::IncrementInflightEvent(
           version_id,
           content::ServiceWorkerExternalRequestTimeoutType::kDefault,
           request_uuid);
+  base::UmaHistogramEnumeration(
+      "Extensions.ServiceWorkerBackground.StartingExternalRequest_Result",
+      result);
   if (result != content::ServiceWorkerExternalRequestResult::kOk) {
     LOG(ERROR) << "StartExternalRequest failed: " << static_cast<int>(result);
     start_ok = false;
@@ -127,6 +130,9 @@ void EventAckData::DecrementInflightEvent(
 
   content::ServiceWorkerExternalRequestResult result =
       context->FinishedExternalRequest(version_id, request_uuid);
+  base::UmaHistogramEnumeration(
+      "Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result",
+      result);
   // If the worker was already stopped or StartExternalRequest didn't succeed,
   // the FinishedExternalRequest will legitimately fail.
   if (worker_stopped || !start_ok)
