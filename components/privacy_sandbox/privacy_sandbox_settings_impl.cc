@@ -871,7 +871,7 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
          pref_name == prefs::kPrivacySandboxM1FledgeEnabled ||
          pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled);
   if (features::kCookieDeprecationTestingDisableAdsAPIs.Get()) {
-    return Status::kBlockedByTPCExperiment;
+    return Status::kBlockedBy3pcdExperiment;
   }
 
   bool should_ignore_restriction =

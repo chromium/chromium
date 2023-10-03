@@ -2568,16 +2568,41 @@ TEST_F(PrivacySandboxAttestationsTest, SetOverrideFromFlags) {
   }
 }
 
-// TODO(trishalfonso@google.com): Make these parameterized tests.
-class PrivacySandboxTPCDExperimentTest : public PrivacySandboxSettingsM1Test {
- public:
-  PrivacySandboxTPCDExperimentTest() = default;
+struct PrivacySandbox3pcdTestCase {
+  std::string disable_ads_apis_param = "false";
+  bool m1_topics_enabled_pref_consent = true;
+  bool output_keys = true;
+  int expected_status;
+};
 
-  void InitializePrefsBeforeStart() override {
-    prefs()->SetUserPref(prefs::kPrivacySandboxM1TopicsEnabled,
-                         std::make_unique<base::Value>(::base::TimeToValue(
-                             base::Time::FromTimeT(12345))));
-  }
+const PrivacySandbox3pcdTestCase kTestCases[] = {
+    {
+        .disable_ads_apis_param = "true",
+        .m1_topics_enabled_pref_consent = false,
+        .output_keys = false,
+        .expected_status =
+            /*static_cast<int>(Status::kBlockedBy3pcdExperiment)*/ 11,
+    },
+    {
+        .disable_ads_apis_param = "true",
+        .output_keys = false,
+        .expected_status =
+            /*static_cast<int>(Status::kBlockedBy3pcdExperiment)*/ 11,
+    },
+    {
+        .m1_topics_enabled_pref_consent = false,
+        .output_keys = false,
+        .expected_status = /*static_cast<int>(Status::kApisDisabled)*/ 3,
+    },
+    {
+        .expected_status = /*static_cast<int>(Status::kAllowed)*/ 0,
+    }};
+
+class PrivacySandbox3pcdExperimentTest
+    : public PrivacySandboxSettingsM1Test,
+      public testing::WithParamInterface<PrivacySandbox3pcdTestCase> {
+ public:
+  PrivacySandbox3pcdExperimentTest() = default;
 
   void InitializeFeaturesBeforeStart() override {
     feature_list_.InitAndEnableFeature(
@@ -2589,104 +2614,33 @@ class PrivacySandboxTPCDExperimentTest : public PrivacySandboxSettingsM1Test {
   base::test::ScopedFeatureList cookie_deprecation_feature_list_;
 };
 
-// Topics blocked by experiment, when privacy sandbox settings would otherwise
-// disallow it.
-TEST_F(PrivacySandboxTPCDExperimentTest,
-       ExperimentDisablesAdsAPIsTrueTopicsDisabled) {
+TEST_P(PrivacySandbox3pcdExperimentTest, ExperimentDisablesAdsAPIs) {
+  const PrivacySandbox3pcdTestCase& test_case = GetParam();
   cookie_deprecation_feature_list_.InitAndEnableFeatureWithParameters(
       features::kCookieDeprecationFacilitatedTesting,
-      {{features::kCookieDeprecationTestingDisableAdsAPIsName, "true"}});
-
+      {{features::kCookieDeprecationTestingDisableAdsAPIsName,
+        test_case.disable_ads_apis_param}});
   RunTestCase(
-      TestState{{kM1TopicsEnabledUserPrefValue, false},
-                {kHasAppropriateTopicsConsent, false}},
+      TestState{{kM1TopicsEnabledUserPrefValue,
+                 test_case.m1_topics_enabled_pref_consent},
+                {kHasAppropriateTopicsConsent,
+                 test_case.m1_topics_enabled_pref_consent}},
       TestInput{
           {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
           {kTopicsURL, GURL("https://embedded.com")},
       },
       TestOutput{
           {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
-           false},
+           test_case.output_keys},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric,
                kIsTopicsAllowedForContextMetric,
            },
-           static_cast<int>(Status::kBlockedByTPCExperiment)}});
+           test_case.expected_status}});
 }
 
-// Topics blocked by experiment, when privacy sandbox settings would otherwise
-// allow it.
-TEST_F(PrivacySandboxTPCDExperimentTest,
-       ExperimentDisablesAdsAPIsTopicsEnabled) {
-  cookie_deprecation_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kCookieDeprecationFacilitatedTesting,
-      {{features::kCookieDeprecationTestingDisableAdsAPIsName, "true"}});
-
-  RunTestCase(
-      TestState{{kM1TopicsEnabledUserPrefValue, true},
-                {kHasAppropriateTopicsConsent, true}},
-      TestInput{
-          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
-          {kTopicsURL, GURL("https://embedded.com")},
-      },
-      TestOutput{
-          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
-           false},
-          {MultipleOutputKeys{
-               kIsTopicsAllowedMetric,
-               kIsTopicsAllowedForContextMetric,
-           },
-           static_cast<int>(Status::kBlockedByTPCExperiment)}});
-}
-
-// Topics not blocked by experiment, when privacy sandbox settings would
-// otherwise disallow it.
-TEST_F(PrivacySandboxTPCDExperimentTest,
-       ExperimentDisablesAdsAPIsDoesNothingTopicsDisabled) {
-  cookie_deprecation_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kCookieDeprecationFacilitatedTesting,
-      {{features::kCookieDeprecationTestingDisableAdsAPIsName, "false"}});
-
-  RunTestCase(
-      TestState{{kM1TopicsEnabledUserPrefValue, false},
-                {kHasAppropriateTopicsConsent, false}},
-      TestInput{
-          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
-          {kTopicsURL, GURL("https://embedded.com")},
-      },
-      TestOutput{
-          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
-           false},
-          {MultipleOutputKeys{
-               kIsTopicsAllowedMetric,
-               kIsTopicsAllowedForContextMetric,
-           },
-           static_cast<int>(Status::kApisDisabled)}});
-}
-
-// Topics not blocked by experiment, when privacy sandbox settings would
-// otherwise allow it.
-TEST_F(PrivacySandboxTPCDExperimentTest,
-       ExperimentDisablesAdsAPIsDoesNothingTopicsEnabled) {
-  cookie_deprecation_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kCookieDeprecationFacilitatedTesting,
-      {{features::kCookieDeprecationTestingDisableAdsAPIsName, "false"}});
-
-  RunTestCase(
-      TestState{{kM1TopicsEnabledUserPrefValue, true},
-                {kHasAppropriateTopicsConsent, true}},
-      TestInput{
-          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
-          {kTopicsURL, GURL("https://embedded.com")},
-      },
-      TestOutput{
-          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
-           true},
-          {MultipleOutputKeys{
-               kIsTopicsAllowedMetric,
-               kIsTopicsAllowedForContextMetric,
-           },
-           static_cast<int>(Status::kAllowed)}});
-}
+INSTANTIATE_TEST_SUITE_P(PrivacySandbox3pcdExperimentTests,
+                         PrivacySandbox3pcdExperimentTest,
+                         testing::ValuesIn(kTestCases));
 
 }  // namespace privacy_sandbox
