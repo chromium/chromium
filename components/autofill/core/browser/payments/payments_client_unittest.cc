@@ -1572,25 +1572,6 @@ TEST_F(PaymentsClientTest,
               std::string::npos);
 }
 
-TEST_F(PaymentsClientTest, UploadRequestIncludesEncryptedPan) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillUpstreamUseAlternateSecureDataType);
-
-  StartUploading(UploadCardOptions());
-  IssueOAuthToken();
-
-  // Verify that the `encrypted_pan` and s7e_1_pan parameters were included in
-  // the request, and `pan` was not.
-  // Because "pan" is a subset of "encrypted_pan", temporarily include their
-  // enclosing quotation marks (as %22) in the searches.
-  EXPECT_TRUE(GetUploadData().find("%22encrypted_pan%22") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("%22pan%22") == std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("__param:s7e_1_pan") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("&s7e_1_pan=4111111111111111") !=
-              std::string::npos);
-}
-
 TEST_F(PaymentsClientTest, UploadRequestIncludesClientBehaviorSignals) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -1613,15 +1594,11 @@ TEST_F(PaymentsClientTest, UploadRequestIncludesClientBehaviorSignals) {
 }
 
 TEST_F(PaymentsClientTest, UploadRequestIncludesPan) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillUpstreamUseAlternateSecureDataType);
-
   StartUploading(UploadCardOptions());
   IssueOAuthToken();
 
   // Verify that the `pan` and s7e_21_pan parameters were included in the
-  // request, and `encrypted_pan` was not.
+  // request, and the legacy field `encrypted_pan` was not.
   EXPECT_TRUE(GetUploadData().find("encrypted_pan") == std::string::npos);
   EXPECT_TRUE(GetUploadData().find("pan") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("__param:s7e_21_pan") != std::string::npos);

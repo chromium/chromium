@@ -249,12 +249,6 @@ BASE_FEATURE(kAutofillUpstreamAuthenticatePreflightCall,
              "AutofillUpstreamAuthenticatePreflightCall",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, the secure data type for cards sent during credit card upload
-// save is updated to match newer server requirements.
-BASE_FEATURE(kAutofillUpstreamUseAlternateSecureDataType,
-             "AutofillUpstreamUseAlternateSecureDataType",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, we use the Elo regex to match the BIN ranges.
 BASE_FEATURE(kAutofillUseEloRegexForBinMatching,
              "AutofillUseEloRegexForBinMatching_LAUNCHED",
