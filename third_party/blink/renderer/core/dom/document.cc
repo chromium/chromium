@@ -6547,7 +6547,7 @@ void Document::ProcessStorageAccessPermissionState(
     ScriptPromiseResolver* resolver,
     mojom::blink::PermissionStatus status) {
   DCHECK(resolver);
-  DCHECK(GetFrame());
+
   ScriptState* script_state = resolver->GetScriptState();
   DCHECK(script_state);
   ScriptState::Scope scope(script_state);
@@ -6555,7 +6555,10 @@ void Document::ProcessStorageAccessPermissionState(
   if (status == mojom::blink::PermissionStatus::GRANTED) {
     FireRequestStorageAccessHistogram(
         RequestStorageResult::APPROVED_NEW_OR_EXISTING_GRANT);
-    dom_window_->SetHasStorageAccess();
+    // document could be no longer alive.
+    if (dom_window_) {
+      dom_window_->SetHasStorageAccess();
+    }
     resolver->Resolve();
   } else {
     LocalFrame::ConsumeTransientUserActivation(GetFrame());
