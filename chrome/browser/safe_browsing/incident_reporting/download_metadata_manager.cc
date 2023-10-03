@@ -200,6 +200,7 @@ class DownloadMetadataManager::ManagerContext
   void OnDownloadUpdated(download::DownloadItem* download) override;
   void OnDownloadOpened(download::DownloadItem* download) override;
   void OnDownloadRemoved(download::DownloadItem* download) override;
+  void OnDownloadDestroyed(download::DownloadItem* download) override;
 
  private:
   enum State {
@@ -466,10 +467,17 @@ void DownloadMetadataManager::ManagerContext::OnDownloadOpened(
 
 void DownloadMetadataManager::ManagerContext::OnDownloadRemoved(
     download::DownloadItem* download) {
+  download->RemoveObserver(this);
+
   if (state_ != LOAD_COMPLETE)
     pending_items_[download->GetId()].removed = true;
   else if (HasMetadataFor(download))
     RemoveMetadata();
+}
+
+void DownloadMetadataManager::ManagerContext::OnDownloadDestroyed(
+    download::DownloadItem* download) {
+  download->RemoveObserver(this);
 }
 
 DownloadMetadataManager::ManagerContext::~ManagerContext() {
