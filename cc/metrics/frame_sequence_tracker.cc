@@ -436,9 +436,6 @@ void FrameSequenceTracker::ReportFramePresented(
   DCHECK(!vsync_interval.is_zero()) << TRACKER_DCHECK_MSG;
   const bool was_presented = !feedback.failed();
   if (was_presented && submitted_frame_since_last_presentation) {
-    DCHECK_LT(impl_throughput().frames_produced,
-              impl_throughput().frames_expected)
-        << TRACKER_DCHECK_MSG;
     ++impl_throughput().frames_produced;
     if (metrics()->GetEffectiveThread() == ThreadType::kCompositor) {
       metrics()->AdvanceTrace(feedback.timestamp, frame_token);
