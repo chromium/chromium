@@ -9,7 +9,6 @@
 #include "base/base_paths.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
@@ -31,12 +30,6 @@ namespace content {
 namespace {
 
 constexpr char kDefaultConfigFileName[] = "default_config.json";
-
-base::Value::Dict ReadJsonFromFile(const base::FilePath& path) {
-  std::string contents;
-  EXPECT_TRUE(base::ReadFileToString(path, &contents));
-  return base::test::ParseJsonDict(contents);
-}
 
 base::FilePath GetInputDir() {
   base::FilePath input_dir;
@@ -100,7 +93,7 @@ class AttributionInteropTest : public ::testing::TestWithParam<base::FilePath> {
  public:
   static void SetUpTestSuite() {
     ASSERT_OK_AND_ASSIGN(
-        g_config_, ParseAttributionConfig(ReadJsonFromFile(
+        g_config_, ParseAttributionConfig(base::test::ParseJsonDictFromFile(
                        GetInputDir().AppendASCII(kDefaultConfigFileName))));
   }
 
@@ -128,7 +121,7 @@ AttributionConfig AttributionInteropTest::g_config_;
 // JSON schema.
 TEST_P(AttributionInteropTest, HasExpectedOutput) {
   AttributionConfig config = GetConfig();
-  base::Value::Dict dict = ReadJsonFromFile(GetParam());
+  base::Value::Dict dict = base::test::ParseJsonDictFromFile(GetParam());
 
   if (const base::Value* api_config = dict.Find("api_config")) {
     ASSERT_TRUE(api_config->is_dict());
