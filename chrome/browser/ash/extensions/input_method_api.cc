@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
@@ -31,6 +32,8 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/extensions/api/input_method_private.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/language_packs/handwriting.h"
+#include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -77,6 +80,8 @@ namespace OnInputMethodOptionsChanged =
 namespace OnAutocorrect = extensions::api::input_method_private::OnAutocorrect;
 namespace GetTextFieldBounds =
     extensions::api::input_method_private::GetTextFieldBounds;
+namespace GetLanguagePackStatus =
+    extensions::api::input_method_private::GetLanguagePackStatus;
 
 using ::ash::input_method::InputMethodEngine;
 
@@ -108,6 +113,31 @@ InputMethodEngine* GetEngineIfActive(content::BrowserContext* browser_context,
   InputMethodEngine* engine =
       event_router->GetEngineIfActive(extension_id, error);
   return engine;
+}
+
+input_method_private::LanguagePackStatus ResultToStatus(
+    const ash::language_packs::PackResult& result) {
+  using ash::language_packs::PackResult;
+  if (result.operation_error != PackResult::ErrorCode::kNone) {
+    if (result.operation_error == PackResult::ErrorCode::kNeedReboot) {
+      return input_method_private::LANGUAGE_PACK_STATUS_ERRORNEEDSREBOOT;
+    } else {
+      return input_method_private::LANGUAGE_PACK_STATUS_ERROROTHER;
+    }
+  }
+
+  switch (result.pack_state) {
+    case PackResult::StatusCode::kUnknown:
+      return input_method_private::LANGUAGE_PACK_STATUS_UNKNOWN;
+    case PackResult::StatusCode::kNotInstalled:
+      return input_method_private::LANGUAGE_PACK_STATUS_NOTINSTALLED;
+    case PackResult::StatusCode::kInProgress:
+      return input_method_private::LANGUAGE_PACK_STATUS_INPROGRESS;
+    case PackResult::StatusCode::kInstalled:
+      return input_method_private::LANGUAGE_PACK_STATUS_INSTALLED;
+  }
+  LOG(ERROR) << "Unexpected PackResult pack_state.";
+  return input_method_private::LANGUAGE_PACK_STATUS_UNKNOWN;
 }
 
 }  // namespace
@@ -510,6 +540,64 @@ InputMethodPrivateNotifyInputMethodReadyForTestingFunction::Run() {
 
   engine->NotifyInputMethodExtensionReadyForTesting();  // IN-TEST
   return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+InputMethodPrivateGetLanguagePackStatusFunction::Run() {
+  absl::optional<GetLanguagePackStatus::Params> params =
+      GetLanguagePackStatus::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  // This currently only handles handwriting, but this should (in theory)
+  // handle a collection of language packs once input methods depend on multiple
+  // language packs.
+  auto* manager = ash::input_method::InputMethodManager::Get();
+
+  absl::optional<std::string> handwriting_locale =
+      ash::language_packs::MapInputMethodIdToHandwritingLocale(
+          manager->GetInputMethodUtil(), params->input_method_id);
+  // If there are no language packs associated with an input method, installed
+  // is returned.
+  if (!handwriting_locale.has_value()) {
+    return RespondNow(
+        WithArguments(ToString(input_method_private::LanguagePackStatus::
+                                   LANGUAGE_PACK_STATUS_INSTALLED)));
+  }
+  if (!ash::language_packs::HandwritingLocaleToDlc(*handwriting_locale)
+           .has_value()) {
+    // We obtained a handwriting locale, but it doesn't have an associated
+    // language pack. This means that there are no language packs associated
+    // with this input method.
+    //
+    // "en" is the only handwriting locale which does not have an associated
+    // language pack (as of writing).
+    if (*handwriting_locale != "en") {
+      LOG(DFATAL) << "Got non-English handwriting locale from manifest which "
+                     "does not have DLC: "
+                  << *handwriting_locale;
+    }
+    return RespondNow(
+        WithArguments(ToString(input_method_private::LanguagePackStatus::
+                                   LANGUAGE_PACK_STATUS_INSTALLED)));
+  }
+
+  ash::language_packs::LanguagePackManager::GetInstance()->GetPackState(
+      ash::language_packs::kHandwritingFeatureId, *handwriting_locale,
+      // This `BindOnce` into a `.Then` is required to avoid having a method on
+      // this class which has a language pack type in its function signature,
+      // which would cause language packs to be included in this file's headers,
+      // which would cause a slew of dependency issues.
+      base::BindOnce(&ResultToStatus)
+          .Then(
+              base::BindOnce(&InputMethodPrivateGetLanguagePackStatusFunction::
+                                 OnGetLanguagePackStatusComplete,
+                             this)));
+  return RespondLater();
+}
+
+void InputMethodPrivateGetLanguagePackStatusFunction::
+    OnGetLanguagePackStatusComplete(
+        const input_method_private::LanguagePackStatus status) {
+  Respond(WithArguments(ToString(status)));
 }
 
 InputMethodAPI::InputMethodAPI(content::BrowserContext* context)

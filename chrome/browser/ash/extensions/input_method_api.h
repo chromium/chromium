@@ -394,6 +394,29 @@ class InputMethodPrivateNotifyInputMethodReadyForTestingFunction
       INPUTMETHODPRIVATE_NOTIFYINPUTMETHODREADYFORTESTING)
 };
 
+class InputMethodPrivateGetLanguagePackStatusFunction
+    : public ExtensionFunction {
+ public:
+  InputMethodPrivateGetLanguagePackStatusFunction() = default;
+
+  InputMethodPrivateGetLanguagePackStatusFunction(
+      const InputMethodPrivateGetLanguagePackStatusFunction&) = delete;
+  InputMethodPrivateGetLanguagePackStatusFunction& operator=(
+      const InputMethodPrivateGetLanguagePackStatusFunction&) = delete;
+
+ protected:
+  ~InputMethodPrivateGetLanguagePackStatusFunction() override = default;
+
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.getLanguagePackStatus",
+                             INPUTMETHODPRIVATE_GETLANGUAGEPACKSTATUS)
+
+  void OnGetLanguagePackStatusComplete(
+      const api::input_method_private::LanguagePackStatus result);
+};
+
 class InputMethodAPI : public BrowserContextKeyedAPI,
                        public extensions::EventRouter::Observer {
  public:

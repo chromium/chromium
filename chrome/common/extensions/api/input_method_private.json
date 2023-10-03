@@ -64,6 +64,22 @@
         "enum": ["off", "characters", "words", "sentences"]
       },
       {
+        "id": "LanguagePackStatus",
+        "type": "string",
+        "description": "The aggregated status of all language packs for a given input method.",
+        "enum": [
+          "unknown",
+          "notInstalled",
+          "inProgress",
+          // If there are no language packs associated with an input method,
+          // such as for input methods which aren't Google 1P, installed is
+          // returned.
+          "installed",
+          "errorOther",
+          "errorNeedsReboot"
+        ]
+      },
+      {
         "id": "InputContext",
         "type": "object",
         "description": "Describes an input Context",
@@ -560,6 +576,29 @@
       "type" : "function",
       "description" : "Notifies Chrome that the current input method is ready to accept key events from Tast.",
       "parameters": []
+    },
+    {
+      "name": "getLanguagePackStatus",
+      "type": "function",
+      "description": "Gets the aggregate status of all language packs for a given input method.",
+      "parameters": [
+        {
+          "name": "inputMethodId",
+          "type": "string",
+          "description": "Fully qualified ID of the input method"
+        }
+      ],
+      "returns_async": {
+        "name": "callback",
+        "description": "Called with a LanguagePackStatus when the operation completes.",
+        "parameters": [
+          {
+            "name": "status",
+            "$ref": "LanguagePackStatus",
+            "description": "The aggregated status of all language packs for the given input method, or 'installed' if there are no language packs."
+          }
+        ]
+      }
     }
     ],
     "events": [

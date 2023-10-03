@@ -98,6 +98,18 @@ chrome.inputMethodPrivate.AutoCapitalizeType = {
 };
 
 /**
+ * @enum {string}
+ */
+chrome.inputMethodPrivate.LanguagePackStatus = {
+  UNKNOWN: 'unknown',
+  NOT_INSTALLED: 'notInstalled',
+  IN_PROGRESS: 'inProgress',
+  INSTALLED: 'installed',
+  ERROR_OTHER: 'errorOther',
+  ERROR_NEEDS_REBOOT: 'errorNeedsReboot',
+};
+
+/**
  * Describes an input Context
  * @typedef {{
  *   contextID: number,
@@ -361,6 +373,17 @@ chrome.inputMethodPrivate.getTextFieldBounds = function(parameters, callback) {}
  * from Tast.
  */
 chrome.inputMethodPrivate.notifyInputMethodReadyForTesting = function() {};
+
+/**
+ * Gets the aggregate status of all language packs for a given input method.
+ * @param {string} inputMethodId Fully qualified ID of the input method
+ * @param {function(
+ *   !chrome.inputMethodPrivate.LanguagePackStatus
+ * ): void} callback Called with a LanguagePackStatus when the operation
+ *     completes.
+ */
+chrome.inputMethodPrivate.getLanguagePackStatus = function(
+    inputMethodId, callback) {};
 
 /**
  * Fired when the caret bounds change.
