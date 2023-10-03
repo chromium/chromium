@@ -1573,6 +1573,11 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // Wrapper for glBindRenderbuffer since we need to track the current targets.
   void DoBindRenderbuffer(GLenum target, GLuint renderbuffer);
 
+  // Updates any targets to which `client_id` is bound to be bound to `texture`.
+  void UpdateTextureBinding(GLenum target,
+                            GLuint client_id,
+                            TextureRef* texture_ref);
+
   // Wrapper for glBindTexture since we need to track the current targets.
   void DoBindTexture(GLenum target, GLuint texture);
 
@@ -5683,6 +5688,47 @@ void GLES2DecoderImpl::DoBindRenderbuffer(GLenum target, GLuint client_id) {
   state_.bound_renderbuffer = renderbuffer;
   state_.bound_renderbuffer_valid = true;
   api()->glBindRenderbufferEXTFn(GL_RENDERBUFFER, service_id);
+}
+
+void GLES2DecoderImpl::UpdateTextureBinding(GLenum target,
+                                            GLuint client_id,
+                                            TextureRef* texture) {
+  CHECK(texture);
+  size_t last_active_unit_index = state_.active_texture_unit;
+
+  for (size_t curr_unit_index = 0;
+       curr_unit_index < state_.texture_units.size(); curr_unit_index++) {
+    auto curr_unit = state_.texture_units[curr_unit_index];
+    auto* curr_texture = curr_unit.GetInfoForTarget(target);
+
+    if (!curr_texture) {
+      continue;
+    }
+
+    if (curr_texture->client_id() != client_id) {
+      continue;
+    }
+
+    // `target` is bound to `client_id` in this unit, so we need to update the
+    // service-side binding.
+
+    // First update the active texture unit if needed.
+    if (last_active_unit_index != curr_unit_index) {
+      api()->glActiveTextureFn(
+          static_cast<GLenum>(GL_TEXTURE0 + curr_unit_index));
+      last_active_unit_index = curr_unit_index;
+    }
+
+    // Now update the texture binding.
+    api()->glBindTextureFn(target, texture->service_id());
+    curr_unit.SetInfoForTarget(target, texture);
+  }
+
+  // Reset the active texture unit if it was changed.
+  if (last_active_unit_index != state_.active_texture_unit) {
+    api()->glActiveTextureFn(
+        static_cast<GLenum>(GL_TEXTURE0 + state_.active_texture_unit));
+  }
 }
 
 void GLES2DecoderImpl::DoBindTexture(GLenum target, GLuint client_id) {
