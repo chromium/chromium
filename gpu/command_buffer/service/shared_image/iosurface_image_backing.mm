@@ -597,7 +597,8 @@ wgpu::Texture DawnIOSurfaceRepresentation::BeginAccess(
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
   internalDesc.internalUsage =
       wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
-  if (wgpu_format_ != wgpu::TextureFormat::R8BG8Biplanar420Unorm) {
+  if (wgpu_format_ != wgpu::TextureFormat::R8BG8Biplanar420Unorm &&
+      wgpu_format_ != wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm) {
     internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
   }
 
