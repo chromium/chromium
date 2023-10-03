@@ -138,6 +138,9 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
       UninstallCompleteCallback callback,
       UninstallScheduledCallback scheduled_callback) override;
 
+  void LaunchIsolatedWebAppInstaller(
+      const base::FilePath& bundle_path) override;
+
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;

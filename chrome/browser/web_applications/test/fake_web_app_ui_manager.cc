@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
@@ -204,5 +205,8 @@ void FakeWebAppUiManager::PresentUserUninstallDialog(
   std::move(scheduled_callback).Run(/*uninstall_scheduled=*/true);
   std::move(callback).Run(webapps::UninstallResultCode::kSuccess);
 }
+
+void FakeWebAppUiManager::LaunchIsolatedWebAppInstaller(
+    const base::FilePath& bundle_path) {}
 
 }  // namespace web_app

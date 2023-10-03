@@ -28,6 +28,10 @@ class Browser;
 class BrowserWindow;
 class Profile;
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace content {
 class WebContents;
 class NavigationHandle;
@@ -230,6 +234,10 @@ class WebAppUiManager {
       gfx::NativeWindow parent_window,
       UninstallCompleteCallback callback,
       UninstallScheduledCallback scheduled_callback) = 0;
+
+  // Launches the Isolated Web App installer for a bundle with the given path.
+  virtual void LaunchIsolatedWebAppInstaller(
+      const base::FilePath& bundle_path) = 0;
 
  private:
   base::ObserverList<WebAppUiManagerObserver, /*check_empty=*/true> observers_;

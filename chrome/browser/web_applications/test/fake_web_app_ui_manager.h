@@ -14,6 +14,10 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace web_app {
 
 class FakeWebAppUiManager : public WebAppUiManager {
@@ -111,6 +115,9 @@ class FakeWebAppUiManager : public WebAppUiManager {
       gfx::NativeWindow parent_window,
       UninstallCompleteCallback callback,
       UninstallScheduledCallback scheduled_callback) override;
+
+  void LaunchIsolatedWebAppInstaller(
+      const base::FilePath& bundle_path) override;
 
  private:
   base::flat_map<webapps::AppId, size_t> app_id_to_num_windows_map_;

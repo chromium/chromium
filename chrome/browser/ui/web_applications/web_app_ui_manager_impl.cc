@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -460,6 +461,11 @@ void WebAppUiManagerImpl::PresentUserUninstallDialog(
                      parent_window, std::move(parent_window_tracker),
                      std::move(uninstall_complete_callback),
                      std::move(uninstall_scheduled_callback)));
+}
+
+void WebAppUiManagerImpl::LaunchIsolatedWebAppInstaller(
+    const base::FilePath& bundle_path) {
+  // TODO(crbug.com/1479140): Launch the UI.
 }
 
 void WebAppUiManagerImpl::OnBrowserAdded(Browser* browser) {
