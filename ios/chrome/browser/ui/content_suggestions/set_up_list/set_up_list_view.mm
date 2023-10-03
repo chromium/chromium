@@ -149,12 +149,10 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
 
   [_itemsStack layoutIfNeeded];
   _itemsStack.accessibilityElements = @[ allSetView ];
-  _expandButton = nil;
-  NSArray<UIView*>* itemsStackSubviews = _itemsStack.arrangedSubviews;
   __weak __typeof(_itemsStack) weakItemsStack = _itemsStack;
   [UIView animateWithDuration:kAllSetAnimationDuration.InSecondsF()
       animations:^{
-        for (UIView* view in itemsStackSubviews) {
+        for (UIView* view in weakItemsStack.arrangedSubviews) {
           view.alpha = 0;
           view.hidden = YES;
           // Constrain the old item view's position so that it doesn't move
@@ -178,7 +176,7 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
         }
       }
       completion:^(BOOL finished) {
-        for (UIView* view in itemsStackSubviews) {
+        for (UIView* view in weakItemsStack.arrangedSubviews) {
           if (view != allSetView) {
             [view removeFromSuperview];
           }
@@ -439,9 +437,7 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
   _expandButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_COLLAPSE);
 
-  // Insert new items just before the expand button.
-  int index = [_itemsStack.arrangedSubviews indexOfObject:_expandButton];
-  CHECK_NE(index, NSNotFound);
+  int index = 2;
   for (SetUpListItemView* item in items) {
     item.alpha = 0;
     item.hidden = YES;
