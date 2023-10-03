@@ -77,7 +77,7 @@ void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
     return;
   }
 
-  if (base::TimeTicks::Now() < auto_picture_in_picture_activation_time_) {
+  if (AreAutoPictureInPicturePreconditionsMet()) {
     is_in_auto_picture_in_picture_ = true;
     auto_picture_in_picture_activation_time_ = base::TimeTicks();
 
@@ -244,6 +244,13 @@ ContentSetting AutoPictureInPictureTabHelper::GetCurrentContentSetting() const {
 
 bool AutoPictureInPictureTabHelper::IsInAutoPictureInPicture() const {
   return is_in_auto_picture_in_picture_;
+}
+
+bool AutoPictureInPictureTabHelper::AreAutoPictureInPicturePreconditionsMet()
+    const {
+  // Note that `auto_picture_in_picture_activation_time_` is not set if all of
+  // the other preconditions are not set.
+  return base::TimeTicks::Now() < auto_picture_in_picture_activation_time_;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutoPictureInPictureTabHelper);

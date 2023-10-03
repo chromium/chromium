@@ -375,7 +375,13 @@ PictureInPictureWindowManager::GetOverlayView(
 
   auto* auto_pip_tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents);
-  if (!auto_pip_tab_helper ||
+  if (!auto_pip_tab_helper) {
+    return nullptr;
+  }
+  // Check both preconditions and "in pip", since we don't know if pip is
+  // officially ready yet or not.  This might be during the opening of the pip
+  // window, so the tab helper might not know about it yet.
+  if (!auto_pip_tab_helper->AreAutoPictureInPicturePreconditionsMet() &&
       !auto_pip_tab_helper->IsInAutoPictureInPicture()) {
     // This isn't auto-pip, so the content setting doesn't matter.
     return nullptr;
