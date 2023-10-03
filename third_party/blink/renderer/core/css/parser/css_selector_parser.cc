@@ -430,6 +430,7 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     valid_and_invalid_counter.SetEmptyAfterLastComma(false);
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
     CSSParserTokenRange argument = ConsumeNestedArgument(range);
+    CSSParserTokenRange argument_copy = argument;
     wtf_size_t subpos = output_.size();
     base::span<CSSSelector> selector = ConsumeComplexSelector(
         argument, nesting_type, first_in_complex_selector_list);
@@ -439,7 +440,7 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
       }
       output_.resize(subpos);  // Drop what we parsed so far.
       valid_and_invalid_counter.CountInvalid();
-      AddPlaceholderSelectorIfNeeded(argument);
+      AddPlaceholderSelectorIfNeeded(argument_copy);
     } else {
       valid_and_invalid_counter.CountValid();
     }

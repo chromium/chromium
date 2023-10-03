@@ -2812,7 +2812,6 @@ crbug.com/626703 external/wpt/css/css-fonts/font-variant-position-05.html [ Fail
 crbug.com/626703 [ Mac10.15 ] external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-017.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-018.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-nesting/nest-containing-forgiving.html [ Failure ]
 crbug.com/626703 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-line-grammar-error-color-001.html [ Failure ]
