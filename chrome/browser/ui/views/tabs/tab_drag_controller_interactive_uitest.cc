@@ -1694,15 +1694,8 @@ class MaximizedBrowserWindowWaiter {
 }  // namespace
 
 // Drags from browser to separate window and releases mouse.
-// TODO(crbug/1444028): The test is failing. Please re-enable after fixing the
-// failure.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DetachToOwnWindow DISABLED_DetachToOwnWindow
-#else
-#define MAYBE_DetachToOwnWindow DetachToOwnWindow
-#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       MAYBE_DetachToOwnWindow) {
+                       DetachToOwnWindow) {
   const gfx::Rect initial_bounds(browser()->window()->GetBounds());
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -1932,17 +1925,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // This test doesn't make sense on Mac, since it has no concept of "maximized".
 #if !BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1476904) Test is flaky on ChromeOS/Lacros.
-#define MAYBE_DetachToOwnWindowFromMaximizedWindow \
-  DISABLED_DetachToOwnWindowFromMaximizedWindow
-#else
-#define MAYBE_DetachToOwnWindowFromMaximizedWindow \
-  DetachToOwnWindowFromMaximizedWindow
-#endif
 // Drags from browser to a separate window and releases mouse.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       MAYBE_DetachToOwnWindowFromMaximizedWindow) {
+                       DetachToOwnWindowFromMaximizedWindow) {
   // Maximize the initial browser window.
   browser()->window()->Maximize();
   MaximizedBrowserWindowWaiter(browser()->window()).Wait();
@@ -2914,14 +2899,8 @@ class DetachToBrowserTabDragControllerTestWithTabbedWebApp
 };
 
 // Tabbed web apps with the home tab cannot have detachable tabs.
-// TODO(crbug.com/1381358): Enable this test for Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_HomeTabAddedToEveryWindow DISABLED_HomeTabAddedToEveryWindow
-#else
-#define MAYBE_HomeTabAddedToEveryWindow HomeTabAddedToEveryWindow
-#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
-                       MAYBE_HomeTabAddedToEveryWindow) {
+                       HomeTabAddedToEveryWindow) {
   // Install tabbed web app.
   webapps::AppId app_id = InstallMockApp(/*add_home_tab=*/true);
   Browser* app_browser =
@@ -3016,14 +2995,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
 }
 
 // Tabbed web apps without a home tab do not have home tab added.
-// TODO(crbug.com/1381358): Enable this test for Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_NoHomeTab DISABLED_NoHomeTab
-#else
-#define MAYBE_NoHomeTab NoHomeTab
-#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
-                       MAYBE_NoHomeTab) {
+                       NoHomeTab) {
   // Install tabbed web app.
   webapps::AppId app_id = InstallMockApp(/*add_home_tab=*/false);
   Browser* app_browser =
@@ -4766,6 +4739,7 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1488094): Enable Multi Display Test on lacros
 INSTANTIATE_TEST_SUITE_P(TabDragging,
                          DetachToBrowserInSeparateDisplayTabDragControllerTest,
                          ::testing::Combine(::testing::Bool(),
