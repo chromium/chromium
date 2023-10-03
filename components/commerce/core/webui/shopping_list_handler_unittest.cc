@@ -48,6 +48,8 @@ class MockPage : public shopping_list::mojom::Page {
   MOCK_METHOD2(OperationFailedForBookmark,
                void(shopping_list::mojom::BookmarkProductInfoPtr product,
                     bool is_tracked));
+  MOCK_METHOD1(OnProductBookmarkMoved,
+               void(shopping_list::mojom::BookmarkProductInfoPtr product));
 };
 
 class MockDelegate : public ShoppingListHandler::Delegate {
@@ -593,6 +595,26 @@ TEST_F(ShoppingListHandlerTest, TestShowBookmarkEditorForCurrentUrl) {
   EXPECT_CALL(*delegate_, ShowBookmarkEditorForCurrentUrl).Times(1);
 
   handler_->ShowBookmarkEditorForCurrentUrl();
+}
+
+TEST_F(ShoppingListHandlerTest, TestBookmarkNodeMoved) {
+  uint64_t cluster_id = 12345L;
+
+  const bookmarks::BookmarkNode* node_with_product = AddProductBookmark(
+      bookmark_model_.get(), u"title", GURL("https://example.com"), cluster_id);
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+  const bookmarks::BookmarkNode* node_without_product =
+      bookmark_model_->AddNewURL(bookmark_model_->other_node(), 0, u"title",
+                                 GURL("https://test.com"));
+
+  EXPECT_CALL(page_, OnProductBookmarkMoved(
+                         MojoBookmarkInfoWithId(node_with_product->id())))
+      .Times(1);
+  bookmark_model_->Move(node_with_product, bookmark_model_->bookmark_bar_node(),
+                        0);
+  bookmark_model_->Move(node_without_product,
+                        bookmark_model_->bookmark_bar_node(), 1);
+  base::RunLoop().RunUntilIdle();
 }
 
 class ShoppingListHandlerFeatureDisableTest : public testing::Test {

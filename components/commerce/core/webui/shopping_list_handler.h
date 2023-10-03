@@ -38,7 +38,8 @@ struct ProductInfo;
 // TODO(b:283833590): Rename this class since it serves for all shopping
 // features now.
 class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
-                            public SubscriptionsObserver {
+                            public SubscriptionsObserver,
+                            public bookmarks::BaseBookmarkModelObserver {
  public:
   // Handles platform specific tasks.
   class Delegate {
@@ -105,6 +106,14 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
   void OnUnsubscribe(const CommerceSubscription& subscription,
                      bool succeeded) override;
 
+  // bookmarks::BaseBookmarkModelObserver:
+  void BookmarkModelChanged() override;
+  void BookmarkNodeMoved(bookmarks::BookmarkModel* model,
+                         const bookmarks::BookmarkNode* old_parent,
+                         size_t old_index,
+                         const bookmarks::BookmarkNode* new_parent,
+                         size_t new_index) override;
+
   static std::vector<shopping_list::mojom::BookmarkProductInfoPtr>
   BookmarkListToMojoList(
       bookmarks::BookmarkModel& model,
@@ -151,7 +160,10 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
   std::unique_ptr<Delegate> delegate_;
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<ShoppingService, SubscriptionsObserver>
-      scoped_observation_{this};
+      scoped_subscriptions_observation_{this};
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
+      scoped_bookmark_model_observation_{this};
 
   base::WeakPtrFactory<ShoppingListHandler> weak_ptr_factory_{this};
 };

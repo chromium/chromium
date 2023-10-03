@@ -167,4 +167,8 @@ interface Page {
   // untrack price.
   OperationFailedForBookmark(BookmarkProductInfo bookmark_product,
                              bool attempted_track);
+
+  // Callback when a product bookmark is observed to be moved and
+  // pass along the BookmarkProductInfo of the product.
+  OnProductBookmarkMoved(BookmarkProductInfo bookmark_product);
 };

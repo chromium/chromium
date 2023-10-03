@@ -70,6 +70,9 @@ export class PriceTrackingSection extends PolymerElement {
         callbackRouter.operationFailedForBookmark.addListener(
             (product: BookmarkProductInfo, attemptedTrack: boolean) =>
                 this.onBookmarkOperationFailed(product, attemptedTrack)),
+        callbackRouter.onProductBookmarkMoved.addListener(
+            (product: BookmarkProductInfo) =>
+                this.onProductBookmarkMoved(product)),
     );
 
 
@@ -141,6 +144,15 @@ export class PriceTrackingSection extends PolymerElement {
     this.toggleAnnotationText_ = loadTimeData.getString('trackPriceError');
     this.folderName_ = '';
     this.isProductTracked_ = !attemptedTrack;
+  }
+
+  private async onProductBookmarkMoved(product: BookmarkProductInfo) {
+    if (product.info.clusterId === this.productInfo.clusterId &&
+        this.isProductTracked_) {
+      const {name} =
+          await this.shoppingApi_.getParentBookmarkFolderNameForCurrentUrl();
+      this.folderName_ = decodeString16(name);
+    }
   }
 }
 
