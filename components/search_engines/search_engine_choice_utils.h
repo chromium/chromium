@@ -72,11 +72,9 @@ bool ShouldShowUpdatedSettings(PrefService& profile_prefs);
 
 // Returns whether the search engine choice screen can be displayed or not based
 // on device policies and profile properties.
-// TODO(b/302687046): Change `template_url_service` to a reference and remove
-// default value.
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
                             const ProfileProperties& profile_properties,
-                            TemplateURLService* template_url_service = nullptr);
+                            TemplateURLService* template_url_service);
 
 // Returns the country ID to use in the context of any search engine choice
 // logic. If `profile_prefs` are null, returns

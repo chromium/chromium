@@ -4,6 +4,7 @@
 
 #include "components/search_engines/search_engine_choice_utils.h"
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -141,21 +142,18 @@ bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
     return true;
   }
 
-  // TODO(b/302687046): Change `template_url_service` to a reference once the
-  // code is updated on iOS side.
-  if (template_url_service) {
-    // A custom search engine will have a `prepopulate_id` of 0.
-    const int kCustomSearchEnginePrepopulateId = 0;
-    const TemplateURL* default_search_engine =
-        template_url_service->GetDefaultSearchProvider();
-    // Don't show the dialog if the user as a custom search engine set a
-    // default.
-    if (default_search_engine->prepopulate_id() ==
-        kCustomSearchEnginePrepopulateId) {
-      RecordChoiceScreenProfileInitCondition(
-          SearchEngineChoiceScreenConditions::kHasCustomSearchEngine);
-      return false;
-    }
+  CHECK(template_url_service);
+  // A custom search engine will have a `prepopulate_id` of 0.
+  const int kCustomSearchEnginePrepopulateId = 0;
+  const TemplateURL* default_search_engine =
+      template_url_service->GetDefaultSearchProvider();
+  // Don't show the dialog if the user as a custom search engine set a
+  // default.
+  if (default_search_engine->prepopulate_id() ==
+      kCustomSearchEnginePrepopulateId) {
+    RecordChoiceScreenProfileInitCondition(
+        SearchEngineChoiceScreenConditions::kHasCustomSearchEngine);
+    return false;
   }
 
   PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());
