@@ -737,6 +737,12 @@ def _set_builder_config_property(ctx):
 
             builder.description_html = _get_builder_mirror_description(bucket_name, builder, bc_state)
 
+            # TODO: crbug.com/1488845 - This check shouldn't be disabled on
+            # branches, but the branch config verifier didn't catch errors
+            # associated with the try builders not being defined on the branches
+            if not settings.is_main:
+                continue
+
             rotations = get_sheriff_rotations(bucket_name, builder.name)
             excluded_groups = [
                 # Most/all the clang bots build using clang built from HEAD.
