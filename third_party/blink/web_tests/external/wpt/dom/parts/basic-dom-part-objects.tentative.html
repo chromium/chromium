@@ -70,19 +70,19 @@ function addCleanup(t, part) {
 
     const nodeBefore = target.previousSibling || target.parentNode;
     const nodePartBefore = addCleanup(t,new NodePart(root,nodeBefore));
-    runningPartsExpectation.unshift({type:'NodePart',metadata:[]});
-    assertEqualParts(root.getParts(),runningPartsExpectation,[nodePartBefore,nodePart,childNodePart],'getParts() for the root should now have this nodePart, in tree order');
+    runningPartsExpectation.push({type:'NodePart',metadata:[]});
+    assertEqualParts(root.getParts(),runningPartsExpectation,[nodePart,childNodePart,nodePartBefore],'getParts() for the root should now have this nodePart, in construction order');
 
     const nodePart2 = addCleanup(t,new NodePart(childNodePart,target.children[2],{metadata:['blah']}));
     assert_equals(nodePart2.root,childNodePart);
-    assertEqualParts(root.getParts(),runningPartsExpectation,[nodePartBefore,nodePart,childNodePart],'getParts() for the root DocumentPartRoot shouldn\'t change');
+    assertEqualParts(root.getParts(),runningPartsExpectation,[nodePart,childNodePart,nodePartBefore],'getParts() for the root DocumentPartRoot shouldn\'t change');
     assertEqualParts(childNodePart.getParts(),[{type:'NodePart',metadata:['blah']}],[nodePart2],'getParts() for the childNodePart should have it');
 
     nodePart2.disconnect();
     assert_equals(nodePart2.root,null,'root should be null after disconnect');
     assert_equals(nodePart2.node,null,'node should be null after disconnect');
     assert_equals(childNodePart.getParts().length,0,'calling disconnect() should remove the part from root.getParts()');
-    assertEqualParts(root.getParts(),runningPartsExpectation,[nodePartBefore,nodePart,childNodePart],'getParts() for the root DocumentPartRoot still shouldn\'t change');
+    assertEqualParts(root.getParts(),runningPartsExpectation,[nodePart,childNodePart,nodePartBefore],'getParts() for the root DocumentPartRoot still shouldn\'t change');
     nodePart2.disconnect(); // Calling twice should be ok.
 
     childNodePart.disconnect();
@@ -182,41 +182,41 @@ function addCleanup(t, part) {
     const nodePartB = addCleanup(t,new NodePart(root,b));
     const nodePartA = addCleanup(t,new NodePart(root,a));
     const nodePartC = addCleanup(t,new NodePart(root,c));
-    assert_array_equals(root.getParts(),[nodePartA,nodePartB,nodePartC]);
+    assert_array_equals(root.getParts(),[nodePartB,nodePartA,nodePartC],'Parts can be out of order, if added out of order');
     b.remove();
-    assert_array_equals(root.getParts(),[nodePartA,nodePartC]);
+    assert_array_equals(root.getParts(),[nodePartB,nodePartA,nodePartC],'Removals are not tracked');
     target.parentElement.insertBefore(b,target);
-    assert_array_equals(root.getParts(),[nodePartB,nodePartA,nodePartC]);
+    assert_array_equals(root.getParts(),[nodePartB,nodePartA,nodePartC],'Insertions are not tracked');
     target.insertBefore(b,c);
-    assert_array_equals(root.getParts(),[nodePartA,nodePartB,nodePartC]);
+    assert_array_equals(root.getParts(),[nodePartB,nodePartA,nodePartC],'Nothing is tracked');
     nodePartA.disconnect();
     nodePartB.disconnect();
     nodePartC.disconnect();
-    assert_array_equals(root.getParts(),[]);
+    assert_array_equals(root.getParts(),[],'disconnections are tracked');
 
     const childPartAC = addCleanup(t,new ChildNodePart(root,a,c));
     assert_array_equals(root.getParts(),[childPartAC]);
     a.remove();
     assert_array_equals(root.getParts(),[],'Removing endpoints invalidates the part');
     target.insertBefore(a,b); // Restore
-    assert_array_equals(root.getParts(),[childPartAC]);
+    assert_array_equals(root.getParts(),[],'Insertions are not tracked');
 
     target.insertBefore(c,a);
     assert_array_equals(root.getParts(),[],'Endpoints out of order');
     target.appendChild(c); // Restore
-    assert_array_equals(root.getParts(),[childPartAC]);
+    assert_array_equals(root.getParts(),[],'Insertions are not tracked');
 
     document.body.appendChild(c);
-    assert_array_equals(root.getParts(),[],'Children need to have same parent');
+    assert_array_equals(root.getParts(),[],'Parts are\'t invalidated when endpoints have different parents');
     target.appendChild(c); // Restore
-    assert_array_equals(root.getParts(),[childPartAC]);
+    assert_array_equals(root.getParts(),[],'Insertions are not tracked');
 
     const oldParent = target.parentElement;
     target.remove();
-    assert_array_equals(root.getParts(),[],'Parent needs to be connected');
+    assert_array_equals(root.getParts(),[],'Parts are\'t invalidated when disconnected');
     oldParent.appendChild(target); // Restore
-    assert_array_equals(root.getParts(),[childPartAC]);
-  }, `DOM mutation support (${description})`);
+    assert_array_equals(root.getParts(),[]);
+  }, `DOM mutations are not tracked (${description})`);
 
   test((t) => {
     const root = doc.getPartRoot();

@@ -817,7 +817,7 @@ namespace {
 // Returns nullptr if an exception was thrown.
 VectorOf<Node> ConvertNodeUnionsIntoNodes(
     const Node* parent,
-    const VectorOf<V8UnionNodeOrStringOrTrustedScript>& node_unions,
+    const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
     Document& document,
     ExceptionState& exception_state) {
   bool needs_check = IsA<HTMLScriptElement>(parent) &&
@@ -838,10 +838,13 @@ VectorOf<Node> ConvertNodeUnionsIntoNodes(
   return nodes;
 }
 
+}  // namespace
+
+// static
 // Returns nullptr if an exception was thrown.
-Node* ConvertNodeUnionsIntoNode(
+Node* Node::ConvertNodeUnionsIntoNode(
     const Node* parent,
-    const VectorOf<V8UnionNodeOrStringOrTrustedScript>& node_unions,
+    const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
     Document& document,
     ExceptionState& exception_state) {
   VectorOf<Node> nodes = ConvertNodeUnionsIntoNodes(parent, node_unions,
@@ -851,8 +854,6 @@ Node* ConvertNodeUnionsIntoNode(
   }
   return Node::ConvertNodesIntoNode(parent, nodes, document, exception_state);
 }
-
-}  // namespace
 
 void Node::prepend(
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,

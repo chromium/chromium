@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
 
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
@@ -134,6 +135,15 @@ void ChildNodePart::replaceChildren(
         "previous_sibling before next_sibling, and both with the same parent.");
     return;
   }
+  ContainerNode* parent = parentNode();
+  if (!parent) {
+    return;
+  }
+  if (previous_sibling_ == parent->firstChild() &&
+      next_sibling_ == parent->lastChild()) {
+    parent->replaceChildren(nodes, exception_state);
+    return;
+  }
   // Remove existing children, leaving endpoints.
   Node* node = previous_sibling_->nextSibling();
   while (node != next_sibling_) {
@@ -142,7 +152,12 @@ void ChildNodePart::replaceChildren(
     remove->remove();
   }
   // Insert new contents.
-  next_sibling_->before(nodes, exception_state);
+  Node* nodes_as_node = Node::ConvertNodeUnionsIntoNode(
+      parent, nodes, parent->GetDocument(), exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  parent->InsertBefore(nodes_as_node, next_sibling_, exception_state);
 }
 
 void ChildNodePart::Trace(Visitor* visitor) const {
@@ -150,38 +165,6 @@ void ChildNodePart::Trace(Visitor* visitor) const {
   visitor->Trace(next_sibling_);
   PartRoot::Trace(visitor);
   Part::Trace(visitor);
-}
-
-// A ChildNodePart is valid if:
-//  1. The base |Part| is valid (it has a |root|).
-//  2. previous_sibling_ and next_sibling_ are non-null.
-//  3. previous_sibling_ and next_sibling_ have the same (non-null) parent.
-//  4. previous_sibling_ comes strictly before next_sibling_ in the tree.
-bool ChildNodePart::IsValid() const {
-  if (!Part::IsValid()) {
-    return false;
-  }
-  if (!previous_sibling_ || !next_sibling_) {
-    return false;
-  }
-  ContainerNode* parent = parentNode();
-  if (!parent) {
-    return false;
-  }
-  if (next_sibling_->parentNode() != parent) {
-    return false;
-  }
-  if (previous_sibling_ == next_sibling_) {
-    return false;
-  }
-  Node* left = previous_sibling_;
-  do {
-    left = left->nextSibling();
-    if (left == next_sibling_) {
-      return true;
-    }
-  } while (left);
-  return false;
 }
 
 Node* ChildNodePart::NodeToSortBy() const {

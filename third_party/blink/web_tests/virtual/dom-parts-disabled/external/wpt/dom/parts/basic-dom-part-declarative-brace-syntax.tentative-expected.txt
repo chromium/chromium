@@ -3,7 +3,6 @@ FAIL Basic declarative DOM Parts (Main Document) doc.getPartRoot is not a functi
 FAIL Basic declarative DOM Parts (Template) doc.getPartRoot is not a function
 FAIL Basic declarative DOM Parts (Clone) doc.getPartRoot is not a function
 FAIL Basic declarative DOM Parts (PartClone) template.content.getPartRoot is not a function
-FAIL Basic declarative DOM Parts (DeclarativeShadowDOM) doc.getPartRoot is not a function
 FAIL Post-parsing structure of child parts, and stickiness document.getPartRoot is not a function
 FAIL Parser only behavior - adding parseparts does nothing document.getPartRoot is not a function
 FAIL Just parts, no text before document.getPartRoot is not a function

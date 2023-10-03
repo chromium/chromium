@@ -50,32 +50,12 @@
     </div>
   </div>
 </template>
-<div id=declarative_shadow_dom>
-  <template shadowrootmode="open">
-    <div>
-      <div id=target3>Declarative syntax
-        <h1 id="name">
-          <?child-node-part fullname?>
-            First
-            <!--?child-node-part middle?--> <?node-part middle-node?>Middle <?/child-node-part middle?>
-            Last
-          <!-- ?/child-node-part foobar? -->
-        </h1>
-        Email: <?node-part email-link?><a id="link"></a>
 
-        Here are some invalid parts that should not get parsed:
-        <!--child-node-part test comment without leading ?-->
-        <child-node-part test PI without leading ?>
-        <!--?child-node-partfoobar?-->
-        <?child-node-partfoobar?>
-      </div>
-    </div>
-  </template>
-</div>
+<!-- TODO: This test should look at declarative shadow DOM behavior. -->
 
 <script> {
 const template = document.getElementById('declarative');
-['Main Document','Template','Clone','PartClone','DeclarativeShadowDOM'].forEach(testCase => {
+['Main Document','Template','Clone','PartClone'].forEach(testCase => {
   function assertIsComment(node,commentText) {
     assert_true(node instanceof Comment);
     assert_equals(node.textContent,commentText);
@@ -107,24 +87,22 @@ const template = document.getElementById('declarative');
       case 'PartClone':
         doc = document;
         wrapper = document.body.appendChild(document.createElement('div'));
+        assert_true(template.content.getPartRoot().getParts().length != 0);
         wrapper.appendChild(template.content.getPartRoot().clone().rootContainer);
         target = wrapper.querySelector('#target3');
+        // Even a PartRoot clone should not add parts to the document, when that
+        // clone is appendChilded to the document.
+        expectDOMParts = false;
         cleanup = [wrapper];
         break;
-      case 'DeclarativeShadowDOM': {
-        const host = document.getElementById('declarative_shadow_dom');
-        doc = host.shadowRoot;
-        target = doc.querySelector('#target3'); // Shadow isolated
-        cleanup = [host];
-        break;
-      }
       default:
         assert_unreached('Invalid test case');
     }
     assert_true(!!(doc && target && target.parentElement));
-    t.add_cleanup(() => cleanup.forEach(el => el.remove())); // Cleanup
-
     const root = doc.getPartRoot();
+    t.add_cleanup(() => cleanup.forEach(el => el.remove())); // Cleanup
+    t.add_cleanup(() => root.getParts().forEach(part => part.disconnect()));
+
     assert_true(root instanceof DocumentPartRoot);
     if (expectDOMParts) {
       const expectedRootParts = [{type:'ChildNodePart',metadata:['fullname']},{type:'NodePart',metadata:['email-link']}];

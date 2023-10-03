@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -31,6 +32,7 @@ class NodeMoveScopeItem : public GarbageCollected<NodeMoveScopeItem> {
                                    Document::kDOMMutationEventListener)),
         prepending_children_(type ==
                              NodeMoveScopeType::kInsertBeforeAllChildren) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIActivePartTrackingEnabled());
     DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   }
   NodeMoveScopeItem(const NodeMoveScopeItem&) = delete;
@@ -80,9 +82,10 @@ class NodeMoveScope {
 
  public:
   NodeMoveScope(Node& destination_root, NodeMoveScopeType type) {
-    if (!RuntimeEnabledFeatures::DOMPartsAPIEnabled()) {
+    if (!RuntimeEnabledFeatures::DOMPartsAPIActivePartTrackingEnabled()) {
       return;
     }
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
     DCHECK(IsMainThread());
     auto* document = &destination_root.GetDocument();
     if (!document->DOMPartsInUse() && type != NodeMoveScopeType::kClone) {
@@ -97,9 +100,10 @@ class NodeMoveScope {
   NodeMoveScope& operator=(const NodeMoveScope&) = delete;
 
   ~NodeMoveScope() {
-    if (!RuntimeEnabledFeatures::DOMPartsAPIEnabled()) {
+    if (!RuntimeEnabledFeatures::DOMPartsAPIActivePartTrackingEnabled()) {
       return;
     }
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
     DCHECK(IsMainThread());
     if (!InScope()) {
       return;
@@ -123,6 +127,7 @@ class NodeMoveScope {
   }
 
   static Node* GetDestinationTreeRoot() {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIActivePartTrackingEnabled());
     DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
     DCHECK(IsMainThread());
     if (!InScope()) {
@@ -132,9 +137,10 @@ class NodeMoveScope {
   }
 
   static void SetCurrentNodeBeingRemoved(Node& node) {
-    if (!RuntimeEnabledFeatures::DOMPartsAPIEnabled()) {
+    if (!RuntimeEnabledFeatures::DOMPartsAPIActivePartTrackingEnabled()) {
       return;
     }
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
     DCHECK(IsMainThread());
     if (!InScope()) {
       return;
@@ -143,6 +149,7 @@ class NodeMoveScope {
   }
 
   static Node* CurrentNodeBeingRemoved() {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIActivePartTrackingEnabled());
     DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
     DCHECK(IsMainThread());
     if (!InScope()) {
@@ -152,6 +159,7 @@ class NodeMoveScope {
   }
 
   static bool AllMovedPartsWereClean() {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIActivePartTrackingEnabled());
     DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
     DCHECK(IsMainThread());
     if (!InScope()) {
@@ -161,6 +169,7 @@ class NodeMoveScope {
   }
 
   static bool IsPrepend() {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIActivePartTrackingEnabled());
     DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
     DCHECK(IsMainThread());
     if (!InScope()) {

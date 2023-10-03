@@ -6,6 +6,7 @@ function assertEqualParts(parts,partDescriptions,expectedParts,description) {
     assert_array_equals(parts[i].metadata,partDescriptions[i].metadata,`${description}: index ${i} wrong metadata`);
     if (expectedParts) {
       assert_equals(parts[i],expectedParts[i],`${description}: index ${i} object equality`);
+      assert_equals(parts[i].root.getPartNode(i),parts[i].node || parts[i].previousSibling,'getPartNode() should return the same node as getParts().node/previousSibling');
     }
   }
 }

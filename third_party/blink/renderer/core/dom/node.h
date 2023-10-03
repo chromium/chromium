@@ -981,6 +981,16 @@ class CORE_EXPORT Node : public EventTarget {
                                     Document& document,
                                     ExceptionState& exception_state);
 
+  // Creates a DocumentFragment, converts |node_unions| from bindings into
+  // actual Nodes by converting strings and script into text nodes via
+  // NodeOrStringToNode, appends all resulting Nodes to the DocumentFragment,
+  // and returns it. Returns nullptr if exceptions are thrown.
+  static Node* ConvertNodeUnionsIntoNode(
+      const Node* parent,
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
+      Document& document,
+      ExceptionState& exception_state);
+
   bool SelfOrAncestorHasDirAutoAttribute() const {
     return GetFlag(kSelfOrAncestorHasDirAutoAttribute);
   }

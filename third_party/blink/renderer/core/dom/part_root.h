@@ -49,7 +49,8 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
   }
 
   // PartRoot API
-  HeapVector<Member<Part>>& getParts();
+  const HeapDeque<Member<Part>>& getParts();
+  Node* getPartNode(unsigned index);
   virtual ContainerNode* rootContainer() const = 0;
 
  protected:

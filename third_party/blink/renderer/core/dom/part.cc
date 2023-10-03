@@ -30,7 +30,8 @@ Part::Part(PartRoot& root, const Vector<String> metadata)
 // by itself, that won't trigger any root changes, so we mark the PartRoot
 // dirty in this case.
 void Part::PartDisconnected(Node& node) {
-  if (!root()) {
+  if (!root() ||
+      !RuntimeEnabledFeatures::DOMPartsAPIActivePartTrackingEnabled()) {
     return;
   }
   if (&node == NodeToSortBy()) {
@@ -53,7 +54,8 @@ void Part::PartDisconnected(Node& node) {
 // then it will have the root container, otherwise we use the slow TreeRoot()
 // walk.
 void Part::PartConnected(Node& node, ContainerNode& insertion_point) {
-  if (node != NodeToSortBy() || root()) {
+  if (node != NodeToSortBy() || root() ||
+      !RuntimeEnabledFeatures::DOMPartsAPIActivePartTrackingEnabled()) {
     return;
   }
   Node* root_container = NodeMoveScope::GetDestinationTreeRoot();

@@ -26,12 +26,14 @@ void PartRoot::AddPart(Part& new_part) {
   if (cached_parts_list_dirty_) {
     return;
   }
-  if (NodeMoveScope::AllMovedPartsWereClean()) {
+  bool no_tracking =
+      !RuntimeEnabledFeatures::DOMPartsAPIActivePartTrackingEnabled();
+  if (no_tracking || NodeMoveScope::AllMovedPartsWereClean()) {
     DCHECK(!base::Contains(cached_ordered_parts_, &new_part));
-    if (NodeMoveScope::IsPrepend()) {
-      cached_ordered_parts_.push_front(&new_part);
-    } else {
+    if (no_tracking || !NodeMoveScope::IsPrepend()) {
       cached_ordered_parts_.push_back(&new_part);
+    } else {
+      cached_ordered_parts_.push_front(&new_part);
     }
   } else {
     cached_ordered_parts_.clear();
@@ -54,7 +56,8 @@ void PartRoot::RemovePart(Part& part) {
     return;
   }
   DCHECK(!cached_ordered_parts_.empty());
-  if (NodeMoveScope::InScope() && cached_ordered_parts_.front() == &part) {
+  if (RuntimeEnabledFeatures::DOMPartsAPIActivePartTrackingEnabled() &&
+      NodeMoveScope::InScope() && cached_ordered_parts_.front() == &part) {
     cached_ordered_parts_.pop_front();
   } else {
     cached_ordered_parts_.clear();
@@ -139,20 +142,38 @@ HeapDeque<Member<Part>>& PartRoot::RebuildPartsList() {
   return ordered_parts;
 }
 
-HeapVector<Member<Part>>& PartRoot::getParts() {
+const HeapDeque<Member<Part>>& PartRoot::getParts() {
   if (cached_parts_list_dirty_) {
     cached_ordered_parts_ = RebuildPartsList();
     cached_parts_list_dirty_ = false;
+  } else {
+    // Remove invalid cached parts.
+    bool remove_invalid = false;
+    for (auto part : cached_ordered_parts_) {
+      if (!part->IsValid()) {
+        remove_invalid = true;
+        break;
+      }
+    }
+    if (remove_invalid) {
+      HeapDeque<Member<Part>> new_list;
+      for (auto part : cached_ordered_parts_) {
+        if (part->IsValid()) {
+          new_list.push_back(part);
+        }
+      }
+      cached_ordered_parts_.Swap(new_list);
+    }
   }
-  // TODO(crbug.com/1453291) It would help to be able to directly return
-  // HeapDeque for sequences-valued IDL return values. Add an overload of
-  // bindings::ToV8HelperSequence(). In profiles, this call takes significant
-  // time.
-  auto& returned_vector = *MakeGarbageCollected<HeapVector<Member<Part>>>();
-  for (auto part : cached_ordered_parts_) {
-    returned_vector.push_back(part);
+  return cached_ordered_parts_;
+}
+
+Node* PartRoot::getPartNode(unsigned index) {
+  auto& parts = getParts();
+  if (index >= parts.size()) {
+    return nullptr;
   }
-  return returned_vector;
+  return parts[index]->NodeToSortBy();
 }
 
 // static

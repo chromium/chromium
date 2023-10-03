@@ -37,7 +37,11 @@ class CORE_EXPORT NodePart : public Part {
 
   void Trace(Visitor* visitor) const override;
   void disconnect() override;
-  bool IsValid() const override;
+  bool IsValid() const override {
+    // A NodePart is valid if the base Part is valid (has a root), and if there
+    // is a node reference.
+    return Part::IsValid() && node_;
+  }
   Node* NodeToSortBy() const override;
   Part* ClonePart(NodeCloningData&) const override;
   Document& GetDocument() const override;

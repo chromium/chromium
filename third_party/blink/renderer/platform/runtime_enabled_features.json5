@@ -1496,6 +1496,12 @@
       status: "experimental",
     },
     {
+      // If enabled, DOM Parts API tracks DOM mutations that cause part changes.
+      // If disabled, the parts list returned by getParts() can be stale.
+      name: "DOMPartsAPIActivePartTracking",
+      depends_on: ["DOMPartsAPI"],
+    },
+    {
       name: "EarlyHintsPreloadForNavigationOptIn",
       origin_trial_feature_name: "EarlyHintsPreloadForNavigation",
       status: "stable",

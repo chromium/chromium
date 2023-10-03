@@ -42,12 +42,6 @@ void NodePart::Trace(Visitor* visitor) const {
   Part::Trace(visitor);
 }
 
-bool NodePart::IsValid() const {
-  // A NodePart is valid if the base Part is valid (has a root), and if there
-  // is a node reference.
-  return Part::IsValid() && node_;
-}
-
 Node* NodePart::NodeToSortBy() const {
   return node_;
 }

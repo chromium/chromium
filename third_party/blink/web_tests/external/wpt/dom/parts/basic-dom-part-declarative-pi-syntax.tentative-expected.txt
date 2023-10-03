@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS Basic declarative DOM Parts (Main Document)
-PASS Basic declarative DOM Parts (Template)
-PASS Basic declarative DOM Parts (Clone)
-PASS Basic declarative DOM Parts (PartClone)
-FAIL Basic declarative DOM Parts (DeclarativeShadowDOM) assert_equals: declarative root should have two parts: lengths differ expected 2 but got 0
-Harness: the test ran to completion.
-

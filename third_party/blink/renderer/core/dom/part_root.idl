@@ -10,7 +10,9 @@
 interface mixin PartRootMixin {
   // Retrieve the parts list for this PartRoot, always in tree order breaking
   // ties for a Node using the order Parts were constructed.
-  FrozenArray<Part> getParts();
+  sequence<Part> getParts();
+  // Retrieve getParts()[index].NodeToSortBy. This is experimental.
+  [PerWorldBindings] Node getPartNode(unsigned long index);
   // This clones the PartRoot, and also clones the Node tree itself, starting
   // at the RootContainer. In the case of a DocumentPartRoot, the entire
   // document tree is cloned. In the case of a ChildPartRoot, only the children

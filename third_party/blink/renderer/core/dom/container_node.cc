@@ -152,7 +152,9 @@ static inline bool CollectChildrenAndRemoveFromOldParent(
     Node& node,
     NodeVector& nodes,
     ExceptionState& exception_state) {
-  NodeMoveScope::SetCurrentNodeBeingRemoved(node);
+  if (RuntimeEnabledFeatures::DOMPartsAPIActivePartTrackingEnabled()) {
+    NodeMoveScope::SetCurrentNodeBeingRemoved(node);
+  }
   if (auto* fragment = DynamicTo<DocumentFragment>(node)) {
     GetChildNodes(*fragment, nodes);
     fragment->RemoveChildren();
