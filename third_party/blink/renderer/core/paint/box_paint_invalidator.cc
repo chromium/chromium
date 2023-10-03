@@ -140,10 +140,9 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
     return PaintInvalidationReason::kLayout;
 
   if (const auto* layout_replaced = DynamicTo<LayoutReplaced>(box_)) {
-    if (RuntimeEnabledFeatures::PaintNewReplacedInvalidationEnabled() &&
-        layout_replaced->ReplacedContentRect() !=
-            layout_replaced->ReplacedContentRectFrom(
-                box_.PreviousPhysicalContentBoxRect())) {
+    if (layout_replaced->ReplacedContentRect() !=
+        layout_replaced->ReplacedContentRectFrom(
+            box_.PreviousPhysicalContentBoxRect())) {
       return PaintInvalidationReason::kLayout;
     }
   }

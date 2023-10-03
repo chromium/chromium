@@ -2795,10 +2795,6 @@
       status: "stable",
     },
     {
-      name: "PaintNewReplacedInvalidation",
-      status: "stable",
-    },
-    {
       name: "PaintUnderInvalidationChecking",
       base_feature: "none",
       settable_from_internals: true,

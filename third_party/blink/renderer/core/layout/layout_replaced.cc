@@ -124,22 +124,10 @@ void LayoutReplaced::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
-  PhysicalRect old_content_rect = ReplacedContentRect();
-
   ClearLayoutOverflow();
   ClearSelfNeedsLayoutOverflowRecalc();
   ClearChildNeedsLayoutOverflowRecalc();
-
   ClearNeedsLayout();
-
-  if (RuntimeEnabledFeatures::PaintNewReplacedInvalidationEnabled()) {
-    return;
-  }
-
-  if (ReplacedContentRectFrom(PhysicalContentBoxRectFromNG()) !=
-      old_content_rect) {
-    SetShouldDoFullPaintInvalidation();
-  }
 }
 
 void LayoutReplaced::IntrinsicSizeChanged() {
