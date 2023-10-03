@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "url/android/parsed_android.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_jni_headers/GURL_jni.h"
@@ -49,6 +50,10 @@ static std::unique_ptr<GURL> FromJavaGURL(JNIEnv* env,
 static void InitFromGURL(JNIEnv* env,
                          const GURL& gurl,
                          const JavaRef<jobject>& target) {
+  // Ensure that the spec only contains US-ASCII (single-byte characters) or the
+  // parsed indices will be wrong as the indices are in bytes while Java Strings
+  // are always 16-bit.
+  DCHECK(base::IsStringASCII(gurl.possibly_invalid_spec()));
   Java_GURL_init(
       env, target,
       base::android::ConvertUTF8ToJavaString(env, gurl.possibly_invalid_spec()),

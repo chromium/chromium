@@ -135,8 +135,6 @@ public class GURL {
     @CalledByNative
     private void init(String spec, boolean isValid, Parsed parsed) {
         mSpec = spec;
-        // Ensure that the spec only contains US-ASCII or the parsed indices will be wrong.
-        assert mSpec.matches("\\A\\p{ASCII}*\\z");
         mIsValid = isValid;
         mParsed = parsed;
     }
