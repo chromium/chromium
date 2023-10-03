@@ -106,7 +106,7 @@ bool ShouldShowPartialTranslateInIncognito() {
   }
   return !base::GetFieldTrialParamByFeatureAsBool(
       kIOSEditMenuPartialTranslate,
-      kIOSEditMenuPartialTranslateNoIncognitoParam, true);
+      kIOSEditMenuPartialTranslateNoIncognitoParam, false);
 }
 
 const char kIOSEditMenuSearchWithTitleParamTitle[] =
