@@ -56,6 +56,12 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
   }
 
   void Qualify(base::OnceClosure callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (attempted_qualification_) {
+      std::move(callback).Run();
+      return;
+    }
+    attempted_qualification_ = true;
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
         base::BindOnce(&DoPlatformSpecificHealthChecks, GetUpdaterScope()),
@@ -70,6 +76,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
 
   void PlatformSpecificHealthChecksDone(base::OnceCallback<void(bool)> callback,
                                         bool success) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!success) {
       VLOG(1) << "Platfom-specific qualification checks failed.";
       std::move(callback).Run(false);
@@ -79,6 +86,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
   }
 
   void RegisterQualificationApp(base::OnceCallback<void(bool)> callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     RegistrationRequest registration;
     registration.app_id = kQualificationAppId;
     registration.version = base::Version(kQualificationInitialVersion);
@@ -91,6 +99,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
 
   void RegisterQualificationAppDone(base::OnceCallback<void(bool)> callback,
                                     int result) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (result != kRegistrationSuccess) {
       VLOG(1) << "Registration failed: " << result;
       std::move(callback).Run(false);
@@ -100,6 +109,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
   }
 
   void UpdateCheck(base::OnceCallback<void(bool)> callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Create a `CheckForUpdatesTask` with the local prefs' config and perform
     // an `Update` task for `kQualificationAppId`.
     base::MakeRefCounted<CheckForUpdatesTask>(
@@ -116,6 +126,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
   }
 
   void UpdateCheckDone(base::OnceCallback<void(bool)> callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     const base::Version qualification_app_version =
         base::MakeRefCounted<PersistedData>(GetUpdaterScope(),
                                             local_prefs_->GetPrefService())
@@ -126,6 +137,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
   }
 
   void QualificationDone(base::OnceClosure callback, bool qualified) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << "Qualification complete, qualified = " << qualified;
     local_prefs_->SetQualified(qualified);
     local_prefs_->GetPrefService()->CommitPendingWrite();
@@ -134,6 +146,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
 
   scoped_refptr<Configurator> config_;
   scoped_refptr<LocalPrefs> local_prefs_;
+  bool attempted_qualification_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
