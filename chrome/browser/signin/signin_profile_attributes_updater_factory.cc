@@ -32,7 +32,8 @@ SigninProfileAttributesUpdaterFactory::SigninProfileAttributesUpdaterFactory()
 SigninProfileAttributesUpdaterFactory::
     ~SigninProfileAttributesUpdaterFactory() = default;
 
-KeyedService* SigninProfileAttributesUpdaterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SigninProfileAttributesUpdaterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -41,7 +42,7 @@ KeyedService* SigninProfileAttributesUpdaterFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return new SigninProfileAttributesUpdater(
+  return std::make_unique<SigninProfileAttributesUpdater>(
       IdentityManagerFactory::GetForProfile(profile),
       &g_browser_process->profile_manager()->GetProfileAttributesStorage(),
       profile->GetPath(), profile->GetPrefs());
