@@ -76,7 +76,7 @@
 
   // Positive double that controls the max channel capacity in bits for event
   // sources.
-  "max_event_info_gain": "1.58494",
+  "max_event_info_gain": "6.5",
 
   // Positive integer that controls how many aggregatable reports can be in the
   // storage per destination. Formatted as a base-10 string.

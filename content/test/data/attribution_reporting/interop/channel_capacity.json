@@ -99,8 +99,32 @@
       },
       {
         // Should not register due to exceeding max info gain bar.
-        // Value: 2.80725 bits
+        // Value: 8.84346 bits
         "timestamp": "8000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter3.test/register-source",
+          "source_type": "event"
+        },
+        "responses": [{
+          "url": "https://reporter3.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination3.test",
+              "source_event_id": "789",
+              "max_event_level_reports": 5,
+              "event_report_windows": {
+                "start_time":0,
+                "end_times":[3600,7200,10800]
+              }
+            }
+          }
+        }]
+      },
+      {
+        // Should register due to not exceeding max info gain bar.
+        // Value: 2.80725 bits
+        "timestamp": "10000",
         "registration_request": {
           "source_origin": "https://source.test",
           "attribution_src_url": "https://reporter3.test/register-source",
@@ -221,6 +245,26 @@
             }
           }
         }]
+      },
+      {
+        // Should result in an event-level report.
+        "timestamp": "11000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter3.test/register-trigger",
+          "destination_origin": "https://destination3.test"
+        },
+        "responses": [{
+          "url": "https://reporter3.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1"
+                }
+              ]
+            }
+          }
+        }]
       }
     ]
   },
@@ -250,6 +294,18 @@
         },
         "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "3606000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination3.test",
+          "randomized_trigger_rate": 0.0000058,
+          "scheduled_report_time": "3610",
+          "source_event_id": "789",
+          "source_type": "event",
+          "trigger_data": "1"
+        },
+        "report_url": "https://reporter3.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "3610000"
       }
     ]
   }
