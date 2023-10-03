@@ -284,32 +284,44 @@ def main():
       lib = [p.replace('"', r'\"') for p in env['LIB'].split(';') if p]
       lib = list(map(relflag, lib))
 
-      include_I = ' '.join([q('/I' + i) for i in include])
-      include_imsvc = ' '.join([q('-imsvc' + i) for i in include])
-      libpath_flags = ' '.join([q('-libpath:' + i) for i in lib])
+      include_I = ['/I' + i for i in include]
+      include_imsvc = ['-imsvc' + i for i in include]
+      libpath_flags = ['-libpath:' + i for i in lib]
 
       if (environment_block_name != ''):
         env_block = _FormatAsEnvironmentBlock(env)
         with open(environment_block_name, 'w', encoding='utf8') as f:
           f.write(env_block)
 
+  def ListToArgString(x):
+    return gn_helpers.ToGNString(' '.join(q(i) for i in x))
+
+  def ListToArgList(x):
+    return f'[{", ".join(gn_helpers.ToGNString(i) for i in x)}]'
+
   print('vc_bin_dir = ' + gn_helpers.ToGNString(vc_bin_dir))
   assert include_I
-  print('include_flags_I = ' + gn_helpers.ToGNString(include_I))
+  print(f'include_flags_I = {ListToArgString(include_I)}')
+  print(f'include_flags_I_list = {ListToArgList(include_I)}')
   assert include_imsvc
   if bool(int(os.environ.get('DEPOT_TOOLS_WIN_TOOLCHAIN', 1))) and win_sdk_path:
-    print('include_flags_imsvc = ' +
-          gn_helpers.ToGNString(q('/winsysroot' + relflag(toolchain_root))))
+    flags = ['/winsysroot' + relflag(toolchain_root)]
+    print(f'include_flags_imsvc = {ListToArgString(flags)}')
+    print(f'include_flags_imsvc_list = {ListToArgList(flags)}')
   else:
-    print('include_flags_imsvc = ' + gn_helpers.ToGNString(include_imsvc))
+    print(f'include_flags_imsvc = {ListToArgString(include_imsvc)}')
+    print(f'include_flags_imsvc_list = {ListToArgList(include_imsvc)}')
   print('paths = ' + gn_helpers.ToGNString(env['PATH']))
   assert libpath_flags
-  print('libpath_flags = ' + gn_helpers.ToGNString(libpath_flags))
+  print(f'libpath_flags = {ListToArgString(libpath_flags)}')
+  print(f'libpath_flags_list = {ListToArgList(libpath_flags)}')
   if bool(int(os.environ.get('DEPOT_TOOLS_WIN_TOOLCHAIN', 1))) and win_sdk_path:
-    print('libpath_lldlink_flags = ' +
-          gn_helpers.ToGNString(q('/winsysroot:' + relflag(toolchain_root))))
+    flags = ['/winsysroot:' + relflag(toolchain_root)]
+    print(f'libpath_lldlink_flags = {ListToArgString(flags)}')
+    print(f'libpath_lldlink_flags_list = {ListToArgList(flags)}')
   else:
-    print('libpath_lldlink_flags = ' + gn_helpers.ToGNString(libpath_flags))
+    print(f'libpath_lldlink_flags = {ListToArgString(libpath_flags)}')
+    print(f'libpath_lldlink_flags_list = {ListToArgList(libpath_flags)}')
 
 
 if __name__ == '__main__':

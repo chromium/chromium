@@ -173,10 +173,8 @@ if (enable_nocompile_tests_new) {
         } else {
           error("Unsupported target_cpu, add it to win_toolchain_data.gni")
         }
-        args += [
-          "${win_toolchain_data.include_flags_imsvc}",
-          "/showIncludes:user",
-        ]
+        args += win_toolchain_data.include_flags_imsvc_list
+        args += [ "/showIncludes:user" ]
       }
 
       # Note: for all platforms, the depfile only lists user includes, and not
@@ -336,7 +334,7 @@ if (enable_nocompile_tests) {
         } else {
           error("Unsupported host_cpu, add it to win_toolchain_data.gni")
         }
-        args += [ "${win_toolchain_data.include_flags_imsvc}" ]
+        args += win_toolchain_data.include_flags_imsvc_list
 
         args += [
           "/W4",

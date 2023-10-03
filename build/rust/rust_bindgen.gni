@@ -146,7 +146,7 @@ template("rust_bindgen") {
       } else {
         error("Unsupported host_cpu, add it to win_toolchain_data.gni")
       }
-      args += [ "${win_toolchain_data.include_flags_imsvc}" ]
+      args += win_toolchain_data.include_flags_imsvc_list
     }
 
     # Passes C comments through as rustdoc attributes.
