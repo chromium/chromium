@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
+
 import {fakeFirmwareUpdates} from './fake_data.js';
 import {FakeUpdateController} from './fake_update_controller.js';
 import {FakeUpdateProvider} from './fake_update_provider.js';
-import {InstallController, InstallControllerInterface, UpdateProvider, UpdateProviderInterface} from './firmware_update_types.js';
+import {InstallController, InstallControllerInterface, UpdateProvider, UpdateProviderInterface} from './firmware_update.mojom-webui.js';
+
 /**
  * @fileoverview
  * Provides singleton access to mojo interfaces with the ability

@@ -28,7 +28,3 @@ static_library("firmware_update_ui") {
     "//ui/webui",
   ]
 }
-
-group("closure_compile") {
-  deps = [ "resources:closure_compile" ]
-}

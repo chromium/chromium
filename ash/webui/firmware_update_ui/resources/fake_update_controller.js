@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 
 import {fakeFirmwareUpdates, fakeInstallationProgress, fakeInstallationProgressFailure} from './fake_data.js';
-import {FakeUpdateProviderInterface, FirmwareUpdate, InstallationProgress, InstallControllerInterface, UpdateProgressObserver, UpdateProviderInterface, UpdateState} from './firmware_update_types.js';
+import {InstallationProgress, InstallControllerInterface, UpdateProviderInterface, UpdateState} from './firmware_update.mojom-webui.js';
+import {FakeUpdateProviderInterface} from './firmware_update_types.js';
 import {getUpdateProvider, setUseFakeProviders} from './mojo_interface_provider.js';
 
 // Method names.

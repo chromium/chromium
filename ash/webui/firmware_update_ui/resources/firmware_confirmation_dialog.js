@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import './firmware_shared_css.js';
 import './firmware_shared_fonts.js';
 import './strings.m.js';
@@ -14,7 +13,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FirmwareUpdate} from './firmware_update_types.js';
+import {FirmwareUpdate} from './firmware_update.mojom-webui.js';
 
 /**
  * @fileoverview

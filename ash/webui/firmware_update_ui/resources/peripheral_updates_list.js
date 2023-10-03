@@ -4,11 +4,10 @@
 
 import './firmware_shared_css.js';
 import './firmware_shared_fonts.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
-import '/file_path.mojom-lite.js';
-import './mojom/firmware_update.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import './firmware_update.mojom-webui.js';
 import './update_card.js';
 import './strings.m.js';
 
@@ -16,7 +15,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FirmwareUpdate, UpdateObserverInterface, UpdateObserverReceiver, UpdateProviderInterface} from './firmware_update_types.js';
+import {FirmwareUpdate, UpdateObserverInterface, UpdateObserverReceiver, UpdateProviderInterface} from './firmware_update.mojom-webui.js';
 import {getUpdateProvider} from './mojo_interface_provider.js';
 
 /**

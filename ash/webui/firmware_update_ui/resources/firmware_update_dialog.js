@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
-import '/file_path.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import './firmware_shared_css.js';
 import './firmware_shared_fonts.js';
-import './mojom/firmware_update.mojom-lite.js';
+import './firmware_update.mojom-webui.js';
 import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
@@ -17,7 +16,8 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DialogContent, FirmwareUpdate, InstallationProgress, InstallControllerRemote, UpdateProgressObserverInterface, UpdateProgressObserverReceiver, UpdateProviderInterface, UpdateState} from './firmware_update_types.js';
+import {FirmwareUpdate, InstallationProgress, InstallControllerRemote, UpdateProgressObserverInterface, UpdateProgressObserverReceiver, UpdateProviderInterface, UpdateState} from './firmware_update.mojom-webui.js';
+import {DialogContent} from './firmware_update_types.js';
 import {getUpdateProvider} from './mojo_interface_provider.js';
 
 /** @type {!Array<!UpdateState>} */

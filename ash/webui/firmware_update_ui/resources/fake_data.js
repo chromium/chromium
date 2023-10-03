@@ -4,7 +4,7 @@
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 
-import {FirmwareUpdate, InstallationProgress, UpdatePriority, UpdateState} from './firmware_update_types.js';
+import {FirmwareUpdate, InstallationProgress, UpdatePriority, UpdateState} from './firmware_update.mojom-webui.js';
 
 /** @type {!Array<!Array<!FirmwareUpdate>>} */
 export const fakeFirmwareUpdates = [[
