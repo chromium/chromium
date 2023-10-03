@@ -6682,9 +6682,13 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->OverrideInnerIconLoaderForTesting(&app_stub_icon_loader);
   shortcut_stub_icon_loader.timelines_by_app_id_[shortcut_id.value()] = 1;
-  app_stub_icon_loader.timelines_by_app_id_[app_constants::kChromeAppId] = 1;
+  app_stub_icon_loader.timelines_by_app_id_["app_id"] = 1;
   EXPECT_EQ(0, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
   EXPECT_EQ(0, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  gfx::ImageSkia stub_icon(gfx::ImageSkiaRep(gfx::Size(1, 1), 1.0f));
+  gfx::ImageSkia expected_image =
+      gfx::ImageSkiaOperations::CreateIconWithBadge(stub_icon, stub_icon);
 
   cache()->UpdateShortcut(std::move(shortcut));
   PinAppWithIDToShelf(shortcut_id.value());
@@ -6697,6 +6701,11 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
   EXPECT_EQ(1, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
   EXPECT_EQ(1, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
   EXPECT_FALSE(item->image.isNull());
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_image),
+                                        gfx::Image(item->image)));
+
+  // Set the image to a different icon so that we can verify the updates.
+  shelf_controller_->SetItemImage(id, stub_icon);
 
   // Verify icon update loads icon again.
   apps::ShortcutPtr delta =
@@ -6706,6 +6715,9 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
 
   EXPECT_EQ(2, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
   EXPECT_EQ(2, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_FALSE(item->image.isNull());
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_image),
+                                        gfx::Image(item->image)));
 
   apps::ShortcutPtr delta_no_icon_update =
       std::make_unique<apps::Shortcut>("app_id", "local_id");
@@ -6715,6 +6727,12 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
   // Verify the icon is not updated.
   EXPECT_EQ(2, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
   EXPECT_EQ(2, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_FALSE(item->image.isNull());
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_image),
+                                        gfx::Image(item->image)));
+
+  // Set the image to a different icon so that we can verify the updates.
+  shelf_controller_->SetItemImage(id, stub_icon);
 
   // Verify unpin then pin shortcut loads icon again.
   UnpinAppWithIDFromShelf(shortcut_id.value());
@@ -6722,11 +6740,41 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
   EXPECT_EQ(3, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
   EXPECT_EQ(3, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
 
+  item = shelf_controller_->GetItem(id);
+  ASSERT_TRUE(item);
+  EXPECT_FALSE(item->image.isNull());
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_image),
+                                        gfx::Image(item->image)));
+
+  // Set the image to a different icon so that we can verify the updates.
+  shelf_controller_->SetItemImage(id, stub_icon);
+
   // Verify UpdateItemImage uses the cache in memory and does not load icon
   // again.
   shelf_controller_->UpdateItemImage(shortcut_id.value());
   EXPECT_EQ(3, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
   EXPECT_EQ(3, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_FALSE(item->image.isNull());
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_image),
+                                        gfx::Image(item->image)));
+
+  // Set the image to a different icon so that we can verify the updates.
+  shelf_controller_->SetItemImage(id, stub_icon);
+
+  // Verify remove then recreate the shortcut again still shows icon.
+  cache()->RemoveShortcut(shortcut_id);
+  apps::ShortcutPtr same_shortcut =
+      std::make_unique<apps::Shortcut>("app_id", "local_id");
+  same_shortcut->icon_key = apps::IconKey(100, 0, 0);
+  cache()->UpdateShortcut(std::move(same_shortcut));
+  // In this case icon loaded on shortcut creation.
+  EXPECT_EQ(4, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_EQ(4, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  PinAppWithIDToShelf(shortcut_id.value());
+  EXPECT_FALSE(item->image.isNull());
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_image),
+                                        gfx::Image(item->image)));
 }
 
 TEST_F(ChromeShelfControllerShortcutTest, PinStatusSynced) {
