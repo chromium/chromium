@@ -385,23 +385,37 @@ void GameDashboardToolbarView::MayAddGameControlsTile() {
           IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE),
       /*is_togglable=*/true));
 
-  UpdateGameControlsButton(*flags);
+  UpdateViewForGameControls(*flags);
 }
 
-void GameDashboardToolbarView::UpdateGameControlsButton(
+void GameDashboardToolbarView::UpdateViewForGameControls(
     ArcGameControlsFlag flags) {
   DCHECK(game_controls_button_);
 
-  game_controls_button_->SetEnabled(
-      game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEnabled) &&
-      !game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEmpty));
-  if (game_controls_button_->GetEnabled()) {
-    game_controls_button_->SetToggled(
-        game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kHint));
-  }
+  auto* widget = GetWidget();
+  if (game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEdit)) {
+    CHECK(widget);
+    widget->Hide();
+  } else {
+    // Show the widget in an inactive state.
+    if (widget) {
+      // `widget` is null when this function is indirectly called from the
+      // constructor.
+      widget->ShowInactive();
+    }
 
-  game_dashboard_utils::UpdateGameControlsHintButtonToolTipText(
-      game_controls_button_, flags);
+    // Update game_controls_button_.
+    game_controls_button_->SetEnabled(
+        game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEnabled) &&
+        !game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEmpty));
+    if (game_controls_button_->GetEnabled()) {
+      game_controls_button_->SetToggled(
+          game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kHint));
+    }
+
+    game_dashboard_utils::UpdateGameControlsHintButtonToolTipText(
+        game_controls_button_, flags);
+  }
 }
 
 void GameDashboardToolbarView::UpdateRecordGameButton(
@@ -433,7 +447,7 @@ void GameDashboardToolbarView::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
 
-  UpdateGameControlsButton(new_flags);
+  UpdateViewForGameControls(new_flags);
 }
 
 BEGIN_METADATA(GameDashboardToolbarView, views::BoxLayoutView)
