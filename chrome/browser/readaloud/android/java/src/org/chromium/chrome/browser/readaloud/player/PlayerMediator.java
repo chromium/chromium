@@ -17,6 +17,17 @@ import org.chromium.ui.modelutil.PropertyModel;
 class PlayerMediator implements InteractionHandler {
     private final PlayerCoordinator mCoordinator;
     private final PropertyModel mModel;
+    private final PlaybackListener mPlaybackListener = new PlaybackListener() {
+        @Override
+        public void onPlaybackDataChanged(PlaybackData data) {
+            mModel.set(PlayerProperties.PLAYBACK_STATE, data.state());
+            float percent =
+                    (float) data.absolutePositionNanos() / (float) data.totalDurationNanos();
+            mModel.set(PlayerProperties.PROGRESS, percent);
+        }
+    };
+
+    private Playback mPlayback;
 
     PlayerMediator(PlayerCoordinator coordinator, PropertyModel model) {
         mCoordinator = coordinator;
@@ -25,19 +36,25 @@ class PlayerMediator implements InteractionHandler {
     }
 
     void destroy() {
-        // TODO implement
+        if (mPlayback != null) {
+            mPlayback.removeListener(mPlaybackListener);
+        }
     }
 
     void setPlayback(@Nullable Playback playback) {
-        // TODO implement
+        if (mPlayback != null) {
+            mPlayback.removeListener(mPlaybackListener);
+        }
+        mPlayback = playback;
+        if (mPlayback != null) {
+            mPlayback.addListener(mPlaybackListener);
+            mModel.set(PlayerProperties.TITLE, mPlayback.getMetadata().title());
+            mModel.set(PlayerProperties.PUBLISHER, mPlayback.getMetadata().publisher());
+        }
     }
 
     void setPlaybackState(@PlaybackListener.State int currentPlaybackState) {
         mModel.set(PlayerProperties.PLAYBACK_STATE, currentPlaybackState);
-    }
-
-    void updateTitleAndPublisher(String title, String publisher) {
-        // TODO implement
     }
 
     // InteractionHandler implementation

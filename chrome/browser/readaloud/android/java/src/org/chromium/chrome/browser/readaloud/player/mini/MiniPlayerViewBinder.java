@@ -27,8 +27,17 @@ public class MiniPlayerViewBinder {
                             ? View.VISIBLE
                             : View.GONE);
 
+        } else if (key == PlayerProperties.TITLE) {
+            view.setTitle(model.get(PlayerProperties.TITLE));
+
+        } else if (key == PlayerProperties.PUBLISHER) {
+            view.setPublisher(model.get(PlayerProperties.PUBLISHER));
+
         } else if (key == PlayerProperties.PLAYBACK_STATE) {
             view.onPlaybackStateChanged(model.get(PlayerProperties.PLAYBACK_STATE));
+
+        } else if (key == PlayerProperties.PROGRESS) {
+            view.setProgress(model.get(PlayerProperties.PROGRESS));
 
         } else if (key == PlayerProperties.INTERACTION_HANDLER) {
             view.setInteractionHandler(model.get(PlayerProperties.INTERACTION_HANDLER));

@@ -14,14 +14,22 @@ public class PlayerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Boolean> MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> PUBLISHER =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Integer> PLAYBACK_STATE =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Float> PROGRESS =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<InteractionHandler> INTERACTION_HANDLER =
             new WritableObjectPropertyKey<>();
     public static final PropertyKey[] ALL_KEYS = {
             MINI_PLAYER_VISIBILITY, //
             MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES, //
+            TITLE, //
+            PUBLISHER, //
             PLAYBACK_STATE, //
+            PROGRESS, //
             INTERACTION_HANDLER //
     };
 }

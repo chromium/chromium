@@ -4,9 +4,10 @@
 package org.chromium.chrome.browser.readaloud.player;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import android.view.ViewStub;
@@ -33,11 +34,13 @@ public class PlayerCoordinatorUnitTest {
     @Mock
     private ViewStub mMiniPlayerViewStub;
     @Mock
-    private MiniPlayerLayout mLayout;
+    private MiniPlayerLayout mMiniPlayerLayout;
     @Mock
     private Playback mPlayback;
     @Mock
     private PlayerCoordinator.Observer mObserver;
+    @Mock
+    private PlayerMediator mMediator;
 
     private PlayerCoordinator mPlayerCoordinator;
     private PropertyModel mModel;
@@ -45,53 +48,65 @@ public class PlayerCoordinatorUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        doReturn(mLayout).when(mMiniPlayerViewStub).inflate();
+        doReturn(mMiniPlayerLayout).when(mMiniPlayerViewStub).inflate();
         mPlayerCoordinator = new PlayerCoordinator(
                 ApplicationProvider.getApplicationContext(), mMiniPlayerViewStub);
         mModel = mPlayerCoordinator.getModelForTesting();
+        mPlayerCoordinator.setMediatorForTesting(mMediator);
     }
 
     @Test
     public void testInitialModelState() {
-        assertNotNull(mModel.get(PlayerProperties.INTERACTION_HANDLER));
+        assertEquals(
+                VisibilityState.GONE, (int) mModel.get(PlayerProperties.MINI_PLAYER_VISIBILITY));
+        assertEquals(PlaybackListener.State.BUFFERING,
+                (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
     }
 
     @Test
     public void testPlayTabRequested() {
         mPlayerCoordinator.playTabRequested();
+
         // Mini player shows in buffering state
-        assertEquals(PlaybackListener.State.BUFFERING,
-                (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
+        verify(mMediator).setPlayback(eq(null));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.BUFFERING));
         verify(mMiniPlayerViewStub).inflate();
-        assertEquals(
-                VisibilityState.VISIBLE, (int) mModel.get(PlayerProperties.MINI_PLAYER_VISIBILITY));
-        assertEquals(true,
-                (boolean) mModel.get(PlayerProperties.MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES));
     }
 
     @Test
     public void testPlaybackReady() {
         mPlayerCoordinator.playTabRequested();
+        verify(mMediator).setPlayback(eq(null));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.BUFFERING));
+        reset(mMediator);
         mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
-        assertEquals(
-                PlaybackListener.State.PLAYING, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
+
+        verify(mMediator).setPlayback(eq(mPlayback));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.PLAYING));
     }
 
     @Test
     public void testPlaybackFailed() {
         mPlayerCoordinator.playTabRequested();
+        verify(mMediator).setPlayback(eq(null));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.BUFFERING));
+        reset(mMediator);
         mPlayerCoordinator.playbackFailed();
-        assertEquals(
-                PlaybackListener.State.ERROR, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
+
+        verify(mMediator).setPlayback(eq(null));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.ERROR));
     }
 
     @Test
     public void testDismissPlayers() {
         mPlayerCoordinator.playTabRequested();
+        verify(mMediator).setPlayback(eq(null));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.BUFFERING));
+        reset(mMediator);
         mPlayerCoordinator.dismissPlayers();
 
-        assertEquals(
-                PlaybackListener.State.STOPPED, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
+        verify(mMediator).setPlayback(eq(null));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.STOPPED));
         assertEquals(true,
                 (boolean) mModel.get(PlayerProperties.MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES));
         assertEquals(
@@ -110,16 +125,20 @@ public class PlayerCoordinatorUnitTest {
         mPlayerCoordinator.addObserver(mObserver);
         // Show mini player
         mPlayerCoordinator.playTabRequested();
+        reset(mMediator);
 
         mPlayerCoordinator.destroy();
 
         // Mini player is gone.
-        assertEquals(
-                PlaybackListener.State.STOPPED, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
+        verify(mMediator).setPlayback(eq(null));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.STOPPED));
         assertEquals(true,
                 (boolean) mModel.get(PlayerProperties.MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES));
         assertEquals(
                 VisibilityState.GONE, (int) mModel.get(PlayerProperties.MINI_PLAYER_VISIBILITY));
+
+        verify(mMediator).destroy();
+
         verify(mObserver, never()).onRequestClosePlayers();
     }
 }

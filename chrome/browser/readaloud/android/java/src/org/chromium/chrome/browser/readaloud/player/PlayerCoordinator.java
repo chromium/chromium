@@ -34,7 +34,7 @@ public class PlayerCoordinator implements Player {
 
     private final ObserverList<Observer> mObserverList;
     private final PropertyModel mModel;
-    private final PlayerMediator mMediator;
+    private PlayerMediator mMediator;
     private final MiniPlayerCoordinator mMiniPlayer;
 
     // TODO(b/302567541): remove this constructor when Delegate is available.
@@ -70,19 +70,20 @@ public class PlayerCoordinator implements Player {
 
     @Override
     public void playTabRequested() {
+        mMediator.setPlayback(null);
         mMediator.setPlaybackState(PlaybackListener.State.BUFFERING);
         mMiniPlayer.show(shouldAnimateMiniPlayer());
     }
 
     @Override
     public void playbackReady(Playback playback, @PlaybackListener.State int currentPlaybackState) {
-        // TODO bind playback
+        mMediator.setPlayback(playback);
         mMediator.setPlaybackState(currentPlaybackState);
     }
 
     @Override
     public void playbackFailed() {
-        // TODO unbind playback
+        mMediator.setPlayback(null);
         mMediator.setPlaybackState(PlaybackListener.State.ERROR);
     }
 
@@ -95,6 +96,7 @@ public class PlayerCoordinator implements Player {
     public void dismissPlayers() {
         // Resetting the state. We can do it unconditionally because this UI is only
         // dismissed when stopping the playback.
+        mMediator.setPlayback(null);
         mMediator.setPlaybackState(PlaybackListener.State.STOPPED);
         mMiniPlayer.dismiss(shouldAnimateMiniPlayer());
         // TODO dismiss expanded player
@@ -116,5 +118,9 @@ public class PlayerCoordinator implements Player {
         // animating the mini player show and hide.
         // TODO return !mExpandedPlayer.isVisible();
         return true;
+    }
+
+    void setMediatorForTesting(PlayerMediator mediator) {
+        mMediator = mediator;
     }
 }

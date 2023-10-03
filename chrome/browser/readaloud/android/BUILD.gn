@@ -195,6 +195,7 @@ robolectric_library("player_junit_java") {
   testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/player/PlayerCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/player/PlayerMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/mini/MiniPlayerCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/mini/MiniPlayerLayoutUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/mini/MiniPlayerMediatorUnitTest.java",
