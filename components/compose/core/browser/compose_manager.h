@@ -9,17 +9,33 @@
 
 #include "base/functional/callback.h"
 
+namespace autofill {
+struct FormFieldData;
+}  // namespace autofill
+
 namespace compose {
 
 // The interface for embedder-independent, tab-specific compose logic.
 class ComposeManager {
  public:
+  // The callback to Autofill. When run, it fills the passed string into the
+  // form field on which it was triggered.
   using ComposeCallback = base::OnceCallback<void(const std::u16string&)>;
 
   virtual ~ComposeManager() = default;
 
-  virtual bool IsEnabled() const = 0;
-  virtual void OfferCompose(ComposeCallback callback) = 0;
+  // Trigger methods for the compose offer.
+  enum class TriggerMethod {
+    kAutofillPopup,
+    kContextMenu,
+  };
+  // Returns whether compose is available for this `trigger_method and
+  // `trigger_field`.
+  virtual bool ShouldOfferCompose(
+      TriggerMethod trigger_method,
+      const autofill::FormFieldData& trigger_field) = 0;
+
+  virtual void OpenCompose(ComposeCallback callback) = 0;
 };
 
 }  // namespace compose

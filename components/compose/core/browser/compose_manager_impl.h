@@ -18,10 +18,14 @@ class ComposeManagerImpl : public ComposeManager {
   ComposeManagerImpl& operator=(const ComposeManagerImpl&) = delete;
   ~ComposeManagerImpl() override;
 
-  bool IsEnabled() const override;
-  void OfferCompose(ComposeCallback callback) override;
+  // ComposeManager:
+  bool ShouldOfferCompose(
+      TriggerMethod trigger_method,
+      const autofill::FormFieldData& trigger_field) override;
+  void OpenCompose(ComposeCallback callback) override;
 
  private:
+  bool IsEnabled() const;
   void ComposeTextForQuery(const ComposeClient::QueryParams& params);
 
   // A raw reference to the client, which owns `this` and therefore outlives it.

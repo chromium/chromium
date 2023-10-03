@@ -1,5 +1,6 @@
 include_rules = [
   "+components/browser_ui/device_lock/android",
+  "+components/compose/core/browser/compose_manager.h",
   "+components/device_reauth/device_authenticator.h",
   "+components/feature_engagement",
   "+components/google/core/common/google_util.h",
@@ -48,6 +49,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*test.(cc|h)": [
+    "+components/compose/core/browser/mock_compose_manager.h",
     "+components/device_reauth",
     "+content/public/test",
   ],

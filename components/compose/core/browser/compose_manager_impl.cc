@@ -18,11 +18,18 @@ ComposeManagerImpl::ComposeManagerImpl(ComposeClient* client)
 
 ComposeManagerImpl::~ComposeManagerImpl() = default;
 
+bool ComposeManagerImpl::ShouldOfferCompose(
+    TriggerMethod trigger_method,
+    const autofill::FormFieldData& trigger_field) {
+  // TODO(b/300941076): Improve should-offer logic.
+  return IsEnabled();
+}
+
 bool ComposeManagerImpl::IsEnabled() const {
   return base::FeatureList::IsEnabled(features::kEnableCompose);
 }
 
-void ComposeManagerImpl::OfferCompose(ComposeCallback callback) {
+void ComposeManagerImpl::OpenCompose(ComposeCallback callback) {
   callback_ = std::move(callback);
   CHECK(IsEnabled());
   // TODO(b/301609035): Either pass a weak pointer or make sure that

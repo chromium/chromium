@@ -124,6 +124,10 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
+#include "components/compose/core/browser/compose_manager.h"  // nogncheck
+#endif
+
 namespace autofill {
 
 using base::StartsWith;
@@ -1213,6 +1217,14 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
         AutofillMetrics::LogAddressSuggestionsCount(suggestions.size());
         has_logged_address_suggestions_count_ = true;
       }
+    }
+  }
+
+  if (suggestions.empty() &&
+      field.form_control_type == FormControlType::kTextArea) {
+    if (absl::optional<Suggestion> maybe_compose_suggestion =
+            MaybeGetComposeSuggestion(field)) {
+      suggestions.push_back(*std::move(maybe_compose_suggestion));
     }
   }
 
@@ -3841,6 +3853,23 @@ BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
       plus_addresses::PlusAddressMetrics::PlusAddressAutofillSuggestionEvent::
           kExistingPlusAddressSuggested);
   return existing_plus_address_suggestion;
+}
+
+absl::optional<Suggestion> BrowserAutofillManager::MaybeGetComposeSuggestion(
+    const FormFieldData& field) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
+  return absl::nullopt;
+#else
+  compose::ComposeManager* compose_manager = client().GetComposeManager();
+  if (!compose_manager ||
+      !compose_manager->ShouldOfferCompose(
+          compose::ComposeManager::TriggerMethod::kAutofillPopup, field)) {
+    return absl::nullopt;
+  }
+
+  return Suggestion(/*main_text=*/"Compose", /*label=*/"",
+                    /*icon=*/"", PopupItemId::kCompose);
+#endif
 }
 
 void BrowserAutofillManager::LogEventCountsUMAMetric(

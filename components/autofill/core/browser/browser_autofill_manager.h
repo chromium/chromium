@@ -727,6 +727,11 @@ class BrowserAutofillManager : public AutofillManager,
   // `GetPlusAddressService`.
   absl::optional<Suggestion> MaybeGetPlusAddressSuggestion();
 
+  // Returns a compose suggestion if the compose service is available for
+  // `field`.
+  absl::optional<Suggestion> MaybeGetComposeSuggestion(
+      const FormFieldData& field);
+
   // Delegates to perform external processing (display, selection) on
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;

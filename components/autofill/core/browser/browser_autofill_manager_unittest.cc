@@ -79,6 +79,8 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/compose/core/browser/compose_manager.h"
+#include "components/compose/core/browser/mock_compose_manager.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
@@ -110,11 +112,13 @@ using testing::Contains;
 using testing::DoAll;
 using testing::Each;
 using testing::ElementsAre;
+using testing::Eq;
 using testing::Field;
 using testing::HasSubstr;
 using testing::Matcher;
 using testing::NiceMock;
 using testing::Not;
+using testing::Property;
 using testing::Return;
 using testing::SaveArg;
 using testing::UnorderedElementsAre;
@@ -278,6 +282,7 @@ class MockAutofillClient : public TestAutofillClient {
               GetPlusAddressService,
               (),
               (override));
+  MOCK_METHOD(compose::ComposeManager*, GetComposeManager, (), (override));
 };
 
 class MockAutofillDownloadManager : public AutofillDownloadManager {
@@ -9817,6 +9822,54 @@ TEST_F(BrowserAutofillManagerTest, NoPlusAddressSuggestionsByDefault) {
       Suggestion("buddy@gmail.com", "", "", PopupItemId::kAddressEntry),
       Suggestion("theking@gmail.com", "", "", PopupItemId::kAddressEntry));
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
+// Tests that compose suggestions are not queried if Autofill has suggestions
+// itself.
+TEST_F(BrowserAutofillManagerTest, NoComposeSuggestionsByDefault) {
+  compose::MockComposeManager compose_manager;
+  ON_CALL(autofill_client_, GetComposeManager)
+      .WillByDefault(Return(&compose_manager));
+
+  FormData form = CreateTestAddressFormData();
+  form.fields[3].form_control_type = FormControlType::kTextArea;
+  FormsSeen({form});
+
+  // The third field is meant to correspond to address line 1. For that (unlike
+  // for first and last name), parsing also derives that type if it is a
+  // textarea.
+  EXPECT_CALL(compose_manager, ShouldOfferCompose).Times(0);
+  GetAutofillSuggestions(form, form.fields[3]);
+  CheckSuggestions(form.fields[3].global_id(),
+                   Suggestion("123 Apple St., unit 6", "123 Apple St.",
+                              kAddressEntryIcon, PopupItemId::kAddressEntry),
+                   Suggestion("3734 Elvis Presley Blvd., Apt. 10",
+                              "3734 Elvis Presley Blvd.", kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
+}
+
+// Tests that compose suggestions are queried for textareas if Autofill does not
+// have suggestions of its own.
+TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
+  compose::MockComposeManager compose_manager;
+  ON_CALL(autofill_client_, GetComposeManager)
+      .WillByDefault(Return(&compose_manager));
+
+  FormData form =
+      test::GetFormData({.fields = {{.form_control_type = "textarea"}}});
+  form.name = u"MyForm";
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+  FormsSeen({form});
+
+  EXPECT_CALL(
+      compose_manager,
+      ShouldOfferCompose(
+          compose::ComposeManager::TriggerMethod::kAutofillPopup,
+          Property(&FormFieldData::global_id, Eq(form.fields[0].global_id()))));
+  GetAutofillSuggestions(form, form.fields[0]);
+}
+#endif
 
 // Test param indicates if there is an active screen reader.
 class OnFocusOnFormFieldTest : public BrowserAutofillManagerTest,

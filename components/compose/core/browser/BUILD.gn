@@ -26,3 +26,17 @@ static_library("browser") {
     "//components/keyed_service/core",
   ]
 }
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_compose_manager.cc",
+    "mock_compose_manager.h",
+  ]
+
+  public_deps = [
+    ":browser",
+    "//testing/gmock",
+  ]
+}
