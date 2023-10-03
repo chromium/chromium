@@ -52,6 +52,15 @@ NavigationEntry* GetPossiblyPendingEntryAtIndex(
 
 }  // namespace
 
+base::Time TabContentsSyncedTabDelegate::GetLastActiveTime() const {
+  // Use the TimeDelta common ground between the two units to make the
+  // conversion.
+  const base::TimeDelta delta_since_epoch =
+      web_contents_->GetLastActiveTime() - base::TimeTicks::UnixEpoch();
+  const base::Time converted_time = base::Time::UnixEpoch() + delta_since_epoch;
+  return converted_time;
+}
+
 bool TabContentsSyncedTabDelegate::IsBeingDestroyed() const {
   return web_contents_->IsBeingDestroyed();
 }

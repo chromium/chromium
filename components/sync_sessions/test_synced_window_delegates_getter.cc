@@ -114,6 +114,10 @@ bool TestSyncedTabDelegate::IsBeingDestroyed() const {
   return false;
 }
 
+base::Time TestSyncedTabDelegate::GetLastActiveTime() const {
+  return base::Time::UnixEpoch();
+}
+
 std::string TestSyncedTabDelegate::GetExtensionAppId() const {
   return std::string();
 }
@@ -209,6 +213,11 @@ SessionID PlaceholderTabDelegate::GetWindowId() const {
 bool PlaceholderTabDelegate::IsBeingDestroyed() const {
   NOTREACHED();
   return false;
+}
+
+base::Time PlaceholderTabDelegate::GetLastActiveTime() const {
+  NOTREACHED();
+  return base::Time::UnixEpoch();
 }
 
 std::string PlaceholderTabDelegate::GetExtensionAppId() const {

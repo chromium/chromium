@@ -190,6 +190,10 @@ inline constexpr base::FeatureParam<base::TimeDelta>
 BASE_DECLARE_FEATURE(kRestoreSyncedPlaceholderTabs);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// If enabled, triggers a synchronisation when WebContentsObserver's
+// -OnVisibilityChanged method is called.
+BASE_DECLARE_FEATURE(kSyncSessionOnVisibilityChanged);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

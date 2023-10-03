@@ -84,6 +84,10 @@ message SessionTab {
   repeated uint64 variation_id = 12 [deprecated = true];
 
   optional SyncEnums.BrowserType browser_type = 13;
+
+  // Timestamp for when this tab was last activated.
+  // Corresponds to WebContents::GetLastActiveTime().
+  optional int64 last_active_time_unix_epoch_millis = 14;
 }
 
 message TabNavigation {

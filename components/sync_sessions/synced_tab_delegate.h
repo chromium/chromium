@@ -34,6 +34,7 @@ class SyncedTabDelegate {
   // distinct IDs does not imply they are distinct tabs.
   virtual SessionID GetSessionId() const = 0;
   virtual bool IsBeingDestroyed() const = 0;
+  virtual base::Time GetLastActiveTime() const = 0;
 
   // Method derived from extensions TabHelper.
   virtual std::string GetExtensionAppId() const = 0;

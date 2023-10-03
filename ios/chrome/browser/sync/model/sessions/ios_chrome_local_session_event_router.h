@@ -69,6 +69,7 @@ class IOSChromeLocalSessionEventRouter
     void PageLoaded(
         web::WebState* web_state,
         web::PageLoadCompletionStatus load_completion_status) override;
+    void WasShown(web::WebState* web_state) override;
     void DidChangeBackForwardState(web::WebState* web_state) override;
     void WebStateDestroyed(web::WebState* web_state) override;
 

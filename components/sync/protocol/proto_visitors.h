@@ -1189,6 +1189,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SessionTab& proto) {
   VISIT(favicon_source);
   VISIT_REP(variation_id);
   VISIT_ENUM(browser_type);
+  VISIT(last_active_time_unix_epoch_millis);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SessionWindow& proto) {
