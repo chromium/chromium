@@ -36,12 +36,12 @@ public_app_shared_sources = [
 ]
 
 public_app_shared_public_deps = [
+  "//base",
   "//content:export",
   "//third_party/abseil-cpp:absl",
 ]
 
 public_app_shared_deps = [
-  "//base",
   "//base:i18n",
   "//content/app",
   "//content/public/common:common_sources",
