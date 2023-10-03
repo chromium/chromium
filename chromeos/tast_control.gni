@@ -238,5 +238,8 @@ tast_disabled_tests_from_lacros_all = [
   # https://crbug.com/1470305
   "inputs.VirtualKeyboardTypingOmnibox.a11y_lacros",
 
+  # On branch day, Lacros is +3 newer than ash which break the test.
+  "lacros.CompareVersionWithAsh",
+
   # THIS IS THE LACROS LIST, SCROLL UP FOR CHROME/CHROMEOS.
 ]
