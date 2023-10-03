@@ -10,8 +10,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 blink_modules_sources("webcodecs") {
   sources = [
-    "allow_shared_buffer_source_util.cc",
-    "allow_shared_buffer_source_util.h",
+    "array_buffer_util.cc",
+    "array_buffer_util.h",
     "audio_data.cc",
     "audio_data.h",
     "audio_data_attachment.cc",

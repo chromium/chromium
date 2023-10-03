@@ -250,12 +250,13 @@ class ArrayBufferSource extends FrameSource {
     let buf = new ArrayBuffer(size);
     let layout = await prototype_frame.copyTo(buf);
     let init = {
-        format: prototype_frame.format,
-        timestamp: prototype_frame.timestamp,
-        codedWidth: prototype_frame.codedWidth,
-        codedHeight: prototype_frame.codedHeight,
-        colorSpace: prototype_frame.colorSpace,
-        layout: layout
+      format: prototype_frame.format,
+      timestamp: prototype_frame.timestamp,
+      codedWidth: prototype_frame.codedWidth,
+      codedHeight: prototype_frame.codedHeight,
+      colorSpace: prototype_frame.colorSpace,
+      layout: layout,
+      transfer: [buf]
     };
     return new VideoFrame(buf, init);
   }

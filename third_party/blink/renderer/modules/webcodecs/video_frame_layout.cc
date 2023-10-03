@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_layout.h"
 
 #include <stdint.h>
+#include <vector>
 
 #include "base/numerics/checked_math.h"
 #include "media/base/limits.h"
@@ -118,6 +119,21 @@ VideoFrameLayout::VideoFrameLayout(
 
     planes_.push_back(Plane{offset, stride});
   }
+}
+
+media::VideoFrameLayout VideoFrameLayout::ToMediaLayout() {
+  std::vector<media::ColorPlaneLayout> planes;
+  planes.reserve(planes_.size());
+  for (wtf_size_t i = 0; i < planes_.size(); i++) {
+    auto& plane = planes_[i];
+    const gfx::Size sample_size = media::VideoFrame::SampleSize(format_, i);
+    const uint32_t height = coded_size_.height() / sample_size.height();
+    const size_t plane_size = plane.stride * height;
+    planes.emplace_back(plane.stride, plane.offset, plane_size);
+  }
+  return media::VideoFrameLayout::CreateWithPlanes(format_, coded_size_,
+                                                   std::move(planes))
+      .value();
 }
 
 uint32_t VideoFrameLayout::Size() const {

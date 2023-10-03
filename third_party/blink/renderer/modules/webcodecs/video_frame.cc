@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
+#include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/background_readback.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_color_space.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_init_util.h"
@@ -801,6 +802,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
                                const VideoFrameBufferInit* init,
                                ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  auto* isolate = script_state->GetIsolate();
 
   // Handle format; the string was validated by the V8 binding.
   auto typed_fmt = V8VideoPixelFormat::Create(init->format());
@@ -862,6 +864,12 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
+  auto frame_contents = TransferArrayBufferForSpan(init->transfer(), buffer,
+                                                   exception_state, isolate);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
   // Validate display (natural) size.
   gfx::Size display_size = src_visible_rect.size();
   if (init->hasDisplayWidth() || init->hasDisplayHeight()) {
@@ -877,9 +885,44 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
   // Create a frame.
   const auto timestamp = base::Microseconds(init->timestamp());
-  auto& frame_pool = CachedVideoFramePool::From(*execution_context);
-  auto frame = frame_pool.CreateFrame(
-      media_fmt, dest_coded_size, dest_visible_rect, display_size, timestamp);
+  scoped_refptr<media::VideoFrame> frame;
+  if (frame_contents.IsValid()) {
+    // We can directly use memory from the array buffer, no need to copy.
+    frame = media::VideoFrame::WrapExternalDataWithLayout(
+        src_layout.ToMediaLayout(), dest_visible_rect, display_size,
+        buffer.data(), buffer.size(), timestamp);
+    if (frame) {
+      base::OnceCallback<void()> cleanup_cb =
+          base::DoNothingWithBoundArgs(std::move(frame_contents));
+      auto runner = execution_context->GetTaskRunner(TaskType::kInternalMedia);
+      frame->AddDestructionObserver(
+          base::BindPostTask(runner, std::move(cleanup_cb)));
+    }
+
+  } else {
+    // The array buffer hasn't been transferred, we need to allocate and
+    // copy pixel data.
+    auto& frame_pool = CachedVideoFramePool::From(*execution_context);
+    frame = frame_pool.CreateFrame(media_fmt, dest_coded_size,
+                                   dest_visible_rect, display_size, timestamp);
+
+    if (frame) {
+      for (wtf_size_t i = 0; i < media::VideoFrame::NumPlanes(media_fmt); i++) {
+        const gfx::Size sample_size =
+            media::VideoFrame::SampleSize(media_fmt, i);
+        const int sample_bytes =
+            media::VideoFrame::BytesPerElement(media_fmt, i);
+        const int rows = PlaneSize(crop.height(), sample_size.height());
+        const int columns = PlaneSize(crop.width(), sample_size.width());
+        const int row_bytes = columns * sample_bytes;
+        libyuv::CopyPlane(buffer.data() + src_layout.Offset(i),
+                          static_cast<int>(src_layout.Stride(i)),
+                          frame->writable_data(i),
+                          static_cast<int>(frame->stride(i)), row_bytes, rows);
+      }
+    }
+  }
+
   if (!frame) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,
@@ -906,19 +949,6 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
   if (init->hasDuration()) {
     frame->metadata().frame_duration = base::Microseconds(init->duration());
-  }
-
-  // Copy planes.
-  for (wtf_size_t i = 0; i < media::VideoFrame::NumPlanes(media_fmt); i++) {
-    const gfx::Size sample_size = media::VideoFrame::SampleSize(media_fmt, i);
-    const int sample_bytes = media::VideoFrame::BytesPerElement(media_fmt, i);
-    const int rows = PlaneSize(crop.height(), sample_size.height());
-    const int columns = PlaneSize(crop.width(), sample_size.width());
-    const int row_bytes = columns * sample_bytes;
-    libyuv::CopyPlane(buffer.data() + src_layout.Offset(i),
-                      static_cast<int>(src_layout.Stride(i)),
-                      frame->writable_data(i),
-                      static_cast<int>(frame->stride(i)), row_bytes, rows);
   }
 
   return MakeGarbageCollected<VideoFrame>(std::move(frame),

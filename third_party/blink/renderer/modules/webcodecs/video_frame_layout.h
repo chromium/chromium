@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "media/base/video_frame.h"
+#include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -39,6 +41,7 @@ class VideoFrameLayout {
   wtf_size_t NumPlanes() const;
   uint32_t Offset(wtf_size_t i) const;
   uint32_t Stride(wtf_size_t i) const;
+  media::VideoFrameLayout ToMediaLayout();
 
  private:
   struct Plane {
