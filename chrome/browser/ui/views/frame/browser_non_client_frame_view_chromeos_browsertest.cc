@@ -752,7 +752,7 @@ class WebAppNonClientFrameViewAshTest
   void SetUpOnMainThread() override {
     TopChromeMdParamTest<InProcessBrowserTest>::SetUpOnMainThread();
 
-    WebAppToolbarButtonContainer::DisableAnimationForTesting(true);
+    WebAppToolbarButtonContainer::DisableAnimationForTesting();
 
     // Start secure local server.
     host_resolver()->AddRule("*", "127.0.0.1");

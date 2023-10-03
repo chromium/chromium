@@ -88,7 +88,7 @@ class WebAppToolbarButtonContainer : public views::View,
 
   AvatarToolbarButton* avatar_button() { return avatar_button_; }
 
-  static void DisableAnimationForTesting(bool disable);
+  static void DisableAnimationForTesting();
 
  private:
   friend class ImmersiveModeControllerChromeosWebAppBrowserTest;

@@ -42,7 +42,7 @@ class WebAppAshInteractiveUITest : public web_app::WebAppControllerBrowserTest {
         static_cast<ImmersiveModeControllerChromeos*>(controller_)
             ->controller())
         .SetupForTest();
-    WebAppToolbarButtonContainer::DisableAnimationForTesting(true);
+    WebAppToolbarButtonContainer::DisableAnimationForTesting();
   }
 
   void CheckWebAppMenuClickable() {
