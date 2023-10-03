@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -54,6 +55,19 @@ bool IsUrlLoadingResultSuccess(WebAppUrlLoader::Result result) {
 }
 
 }  // namespace
+
+// static
+std::unique_ptr<content::WebContents>
+IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
+    Profile& profile) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(
+          /*context=*/&profile));
+
+  webapps::InstallableManager::CreateForWebContents(web_contents.get());
+
+  return web_contents;
+}
 
 // static
 std::unique_ptr<IsolatedWebAppResponseReaderFactory>

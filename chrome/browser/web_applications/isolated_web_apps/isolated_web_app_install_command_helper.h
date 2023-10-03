@@ -46,6 +46,9 @@ class IsolatedWebAppInstallCommandHelper {
   static std::unique_ptr<IsolatedWebAppResponseReaderFactory>
   CreateDefaultResponseReaderFactory(const PrefService& prefs);
 
+  static std::unique_ptr<content::WebContents> CreateIsolatedWebAppWebContents(
+      Profile& profile);
+
   IsolatedWebAppInstallCommandHelper(
       IsolatedWebAppUrlInfo url_info,
       std::unique_ptr<WebAppDataRetriever> data_retriever,

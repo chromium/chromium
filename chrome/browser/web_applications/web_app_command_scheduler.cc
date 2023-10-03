@@ -67,26 +67,11 @@
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
-namespace {
-
-std::unique_ptr<content::WebContents> CreateIsolatedWebAppWebContents(
-    Profile& profile) {
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContents::Create(content::WebContents::CreateParams(
-          /*context=*/&profile));
-
-  webapps::InstallableManager::CreateForWebContents(web_contents.get());
-
-  return web_contents;
-}
-
-}  // namespace
 
 WebAppCommandScheduler::WebAppCommandScheduler(Profile& profile)
     : profile_(profile) {}
@@ -372,7 +357,8 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedWebAppCommand>(
           url_info, location, expected_version,
-          CreateIsolatedWebAppWebContents(*profile_),
+          IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
+              *profile_),
           provider_->web_contents_manager().CreateUrlLoader(),
           std::move(optional_keep_alive),
           std::move(optional_profile_keep_alive), std::move(callback),
@@ -403,7 +389,9 @@ void WebAppCommandScheduler::PrepareAndStoreIsolatedWebAppUpdate(
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<IsolatedWebAppUpdatePrepareAndStoreCommand>(
-          update_info, url_info, CreateIsolatedWebAppWebContents(*profile_),
+          update_info, url_info,
+          IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
+              *profile_),
           std::move(optional_keep_alive),
           std::move(optional_profile_keep_alive), std::move(callback),
           std::make_unique<IsolatedWebAppInstallCommandHelper>(
@@ -431,7 +419,9 @@ void WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate(
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<IsolatedWebAppApplyUpdateCommand>(
-          url_info, CreateIsolatedWebAppWebContents(*profile_),
+          url_info,
+          IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
+              *profile_),
           std::move(optional_keep_alive),
           std::move(optional_profile_keep_alive), std::move(callback),
           std::make_unique<IsolatedWebAppInstallCommandHelper>(
