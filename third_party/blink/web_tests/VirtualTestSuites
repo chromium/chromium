@@ -3646,7 +3646,6 @@
       "http/tests/devtools/tracing/anonymous-image-object.js",
       "http/tests/devtools/tracing/category-filter.js",
       "http/tests/devtools/tracing/frame-model-instrumentation.js",
-      "http/tests/devtools/tracing/frame-model.js",
       "http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile.js",
       "http/tests/devtools/tracing/timeline-js/timeline-open-function-call.js",
       "http/tests/devtools/tracing/timeline-js/timeline-runtime-stats.js",
