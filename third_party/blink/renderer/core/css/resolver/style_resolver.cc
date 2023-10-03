@@ -1201,14 +1201,15 @@ void StyleResolver::InitStyle(Element& element,
   state.StyleBuilder().SetStyleType(style_request.pseudo_id);
   state.StyleBuilder().SetPseudoArgument(style_request.pseudo_argument);
 
-  // For highlight inheritance, propagate link visitedness and forced-colors
-  // status.
+  // For highlight inheritance, propagate link visitedness, forced-colors
+  // status, the font and the line height from the originating element. The
+  // font and line height are necessary to correctly resolve font relative
+  // units.
   if (state.UsesHighlightPseudoInheritance()) {
     state.StyleBuilder().SetInForcedColorsMode(
         style_request.originating_element_style->InForcedColorsMode());
     state.StyleBuilder().SetForcedColorAdjust(
         style_request.originating_element_style->ForcedColorAdjust());
-    // TODO(schenney): Remove these when a better solution is found
     state.StyleBuilder().SetFont(
         style_request.originating_element_style->GetFont());
     state.StyleBuilder().SetLineHeight(

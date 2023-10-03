@@ -4,7 +4,7 @@
 <link rel="author" title="Stephen Chenney" href="mailto:schenney@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#highlight-cascade">
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/6641">
-<meta name="assert" content="This test verifies that non-applicable property declarations are ignored in highlight pseudos, that the computed values of ‘font-size’ and ‘line-height’ in highlight pseudos are taken from the originating element, and that ‘text-shadow’ in highlight pseudos respects these values when given ‘em’ and ‘lh’ units.">
+<meta name="assert" content="This test verifies that custom properties used in highlight pseudos are taken from the ::root if not found in the highlight inheritance chain.">
 <script src="support/selections.js"></script>
 <link rel="stylesheet" href="support/highlights.css">
 <script src="/resources/testharness.js"></script>

@@ -154,20 +154,11 @@ const ComputedStyle* StyleResolverState::TakeStyle() {
 }
 
 void StyleResolverState::UpdateLengthConversionData() {
-  if (uses_highlight_pseudo_inheritance_) {
-    DCHECK(OriginatingElementStyle());
-    css_to_length_conversion_data_ = CSSToLengthConversionData(
-        *OriginatingElementStyle(), ParentStyle(), RootElementStyle(),
-        GetDocument().GetStyleEngine().GetViewportSize(),
-        CSSToLengthConversionData::ContainerSizes(container_unit_context_),
-        StyleBuilder().EffectiveZoom(), length_conversion_flags_);
-  } else {
-    css_to_length_conversion_data_ = CSSToLengthConversionData(
-        *style_builder_, ParentStyle(), RootElementStyle(),
-        GetDocument().GetStyleEngine().GetViewportSize(),
-        CSSToLengthConversionData::ContainerSizes(container_unit_context_),
-        StyleBuilder().EffectiveZoom(), length_conversion_flags_);
-  }
+  css_to_length_conversion_data_ = CSSToLengthConversionData(
+      *style_builder_, ParentStyle(), RootElementStyle(),
+      GetDocument().GetStyleEngine().GetViewportSize(),
+      CSSToLengthConversionData::ContainerSizes(container_unit_context_),
+      StyleBuilder().EffectiveZoom(), length_conversion_flags_);
   element_style_resources_.UpdateLengthConversionData(
       &css_to_length_conversion_data_);
 }

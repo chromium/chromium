@@ -1410,8 +1410,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Determine whether pseudo highlight style must be recalculated,
   // either because full recalc is required or the parent has font relative
-  // units.
-  bool ShouldRecalcHighlightPseudoStyle(HighlightRecalc, const ComputedStyle*);
+  // units and the parent's font size differs from the originating element.
+  bool ShouldRecalcHighlightPseudoStyle(HighlightRecalc,
+                                        const ComputedStyle*,
+                                        const ComputedStyle&);
 
   // Recalc those custom highlights that require it.
   void RecalcCustomHighlightPseudoStyle(const StyleRecalcContext&,

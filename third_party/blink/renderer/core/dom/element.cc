@@ -4714,12 +4714,15 @@ Element::HighlightRecalc Element::CalculateHighlightRecalc(
 
 bool Element::ShouldRecalcHighlightPseudoStyle(
     HighlightRecalc highlight_recalc,
-    const ComputedStyle* highlight_parent) {
+    const ComputedStyle* highlight_parent,
+    const ComputedStyle& originating_style) {
   if (highlight_recalc == HighlightRecalc::kFull) {
     return true;
   }
   DCHECK(highlight_recalc == HighlightRecalc::kFontRelative);
-  return (highlight_parent && highlight_parent->HasFontRelativeUnits());
+  return (highlight_parent && highlight_parent->HasFontRelativeUnits() &&
+          originating_style.SpecifiedFontSize() !=
+              highlight_parent->SpecifiedFontSize());
 }
 
 void Element::RecalcCustomHighlightPseudoStyle(
@@ -4739,7 +4742,8 @@ void Element::RecalcCustomHighlightPseudoStyle(
     const ComputedStyle* highlight_parent =
         parent_highlights ? parent_highlights->CustomHighlight(highlight_name)
                           : nullptr;
-    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent)) {
+    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
+                                         originating_style)) {
       const ComputedStyle* highlight_style = StyleForHighlightPseudoElement(
           style_recalc_context, highlight_parent, originating_style,
           kPseudoIdHighlight, highlight_name);
@@ -4776,7 +4780,8 @@ const ComputedStyle* Element::RecalcHighlightStyles(
       new_style.HasPseudoElementStyle(kPseudoIdSelection)) {
     const ComputedStyle* highlight_parent =
         parent_highlights ? parent_highlights->Selection() : nullptr;
-    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent)) {
+    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
+                                         new_style)) {
       builder.AccessHighlightData().SetSelection(
           StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
                                          new_style, kPseudoIdSelection));
@@ -4787,7 +4792,8 @@ const ComputedStyle* Element::RecalcHighlightStyles(
       new_style.HasPseudoElementStyle(kPseudoIdTargetText)) {
     const ComputedStyle* highlight_parent =
         parent_highlights ? parent_highlights->TargetText() : nullptr;
-    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent)) {
+    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
+                                         new_style)) {
       builder.AccessHighlightData().SetTargetText(
           StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
                                          new_style, kPseudoIdTargetText));
@@ -4798,7 +4804,8 @@ const ComputedStyle* Element::RecalcHighlightStyles(
       new_style.HasPseudoElementStyle(kPseudoIdSpellingError)) {
     const ComputedStyle* highlight_parent =
         parent_highlights ? parent_highlights->SpellingError() : nullptr;
-    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent)) {
+    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
+                                         new_style)) {
       builder.AccessHighlightData().SetSpellingError(
           StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
                                          new_style, kPseudoIdSpellingError));
@@ -4809,7 +4816,8 @@ const ComputedStyle* Element::RecalcHighlightStyles(
       new_style.HasPseudoElementStyle(kPseudoIdGrammarError)) {
     const ComputedStyle* highlight_parent =
         parent_highlights ? parent_highlights->GrammarError() : nullptr;
-    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent)) {
+    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
+                                         new_style)) {
       builder.AccessHighlightData().SetGrammarError(
           StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
                                          new_style, kPseudoIdGrammarError));
