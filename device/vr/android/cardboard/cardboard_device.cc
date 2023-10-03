@@ -218,6 +218,12 @@ void CardboardDevice::OnDrawingSurfaceTouch(bool is_primary,
     return;
   }
 
+  // It's possible that we could get some touch events trail in after we've
+  // decided to shutdown the render loop due to scheduling conflicts.
+  if (!render_loop_) {
+    return;
+  }
+
   // Cardboard touch events don't make use of any of the pointer information,
   // so we only need to notify that an touch has happened.
   PostTaskToRenderThread(base::BindOnce(&CardboardRenderLoop::OnTriggerEvent,
