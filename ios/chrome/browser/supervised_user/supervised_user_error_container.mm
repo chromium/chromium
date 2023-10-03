@@ -21,8 +21,6 @@ WEB_STATE_USER_DATA_KEY_IMPL(SupervisedUserErrorContainer)
 
 namespace {
 
-const char kSupervisedUserInterstitialType[] = "kSupervisedUserInterstitial";
-
 const char* BoolToString(bool value) {
   return value ? "true" : "false";
 }
@@ -47,6 +45,8 @@ void OnRequestUrlAccessRemote(base::WeakPtr<web::WebState> weak_web_state,
 }
 
 }  // namespace
+
+const char kSupervisedUserInterstitialType[] = "kSupervisedUserInterstitial";
 
 SupervisedUserErrorContainer::SupervisedUserErrorContainer(
     web::WebState* web_state)

@@ -25,6 +25,10 @@ namespace web {
 class WebState;
 }
 
+// Exposed for testing. It allows us to confirm that a Supervised User
+// interstitial is created for a web state.
+extern const char kSupervisedUserInterstitialType[];
+
 using RequestUrlAccessRemoteCallback = base::OnceCallback<void(bool)>;
 
 // Helper object that holds information needed for the supervised user

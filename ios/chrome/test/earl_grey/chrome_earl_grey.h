@@ -355,6 +355,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns the number of browsers.
 - (NSUInteger)browserCount [[nodiscard]];
 
+// Returns the number of the realized web states from the existing web states.
+- (NSInteger)realizedWebStatesCount [[nodiscard]];
+
 // Returns the index of active tab in normal (non-incognito) mode.
 - (NSUInteger)indexOfActiveNormalTab;
 

@@ -56,6 +56,10 @@
 // Tear down the TestUrlLoaderFactoryHelper singleton.
 + (void)tearDownTestUrlLoaderFactoryHelper;
 
+// Returns the number of Supervised User interstitials attached to the existing
+// web states.
++ (NSInteger)countSupervisedUserIntersitialsForExistingWebStates;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SUPERVISED_USER_SETTINGS_APP_INTERFACE_H_

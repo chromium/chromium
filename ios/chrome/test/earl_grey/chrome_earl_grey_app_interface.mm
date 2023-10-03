@@ -276,6 +276,17 @@ NSString* SerializedValue(const base::Value* value) {
   return chrome_test_util::RegularBrowserCount();
 }
 
++ (NSInteger)realizedWebStatesCount {
+  int count = 0;
+  int tab_count = chrome_test_util::GetMainTabCount();
+  for (int i = 0; i < tab_count; i++) {
+    if (chrome_test_util::GetWebStateAtIndexInCurrentMode(i)->IsRealized()) {
+      count++;
+    }
+  }
+  return count;
+}
+
 + (NSUInteger)evictedMainTabCount {
   return chrome_test_util::GetEvictedMainTabCount();
 }

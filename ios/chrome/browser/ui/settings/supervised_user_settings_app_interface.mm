@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/supervised_user_settings_app_interface.h"
 
+#import "base/memory/ptr_util.h"
 #import "base/memory/singleton.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -16,11 +17,19 @@
 #import "components/supervised_user/core/common/pref_names.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/supervised_user/core/common/supervised_user_utils.h"
+#import "ios/chrome/app/main_controller.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/chrome/test/app/tab_test_util.h"
+#import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
+#import "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -81,6 +90,19 @@ void setUrlFilteringForUrl(const GURL& url, bool isAllowed) {
       supervised_user::kContentPackManualBehaviorHosts,
       std::move(dict_to_insert));
 }
+
+bool isShowingInterstitialForState(web::WebState* web_state) {
+  CHECK(web_state);
+  auto* blocking_tab_helper =
+      security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state);
+
+  CHECK(blocking_tab_helper);
+  security_interstitials::IOSSecurityInterstitialPage* blocking_page =
+      blocking_tab_helper->GetCurrentBlockingPage();
+  return blocking_page && blocking_page->GetInterstitialType() ==
+                              kSupervisedUserInterstitialType;
+}
+
 }  // namespace
 
 @implementation SupervisedUserSettingsAppInterface : NSObject
@@ -218,6 +240,18 @@ void setUrlFilteringForUrl(const GURL& url, bool isAllowed) {
 
 + (void)tearDownTestUrlLoaderFactoryHelper {
   TestUrlLoaderFactoryHelper::SharedInstance()->TearDown();
+}
+
++ (NSInteger)countSupervisedUserIntersitialsForExistingWebStates {
+  int count = 0;
+  int tab_count = chrome_test_util::GetMainTabCount();
+  for (int i = 0; i < tab_count; i++) {
+    if (isShowingInterstitialForState(
+            chrome_test_util::GetWebStateAtIndexInCurrentMode(i))) {
+      count++;
+    }
+  }
+  return count;
 }
 
 @end

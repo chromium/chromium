@@ -20,7 +20,9 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
 #import "net/base/mac/url_conversions.h"
@@ -163,6 +165,54 @@ static const char* kInterstitialFirstTimeBanner =
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
+// Tests that only realized existing web states will display the interstitial
+// when a filtering for them is triggered. Also tests that the filtering logic
+// on existing tabs does not force-realize unrealized states. This is a
+// regression test for bug: 1486459.
+- (void)testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates {
+  // Signing in the user and allow all sites.
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+
+  // Open three tabs, visit a webpage from them and check they are unblocked.
+  GURL URL = self.testServer->GetURL(kEchoPath);
+  for (int i = 0; i < 3; i++) {
+    if (i != 0) {
+      [ChromeEarlGreyUI openNewTab];
+    }
+    [ChromeEarlGrey loadURL:URL];
+    [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
+  }
+
+  // Restart the browser (needed to obtain non-realized states).
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(
+      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  // Add the switch to make sure that the user stays signed in in the restart.
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kSignInAtStartup);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Check the previously used tabs are maintained.
+  [ChromeEarlGrey waitForMainTabCount:3];
+  // Change the filtering setting to block the previously used urls. This
+  // results in a new filtering of the existing tabs.
+  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+
+  // There should be one realized web state (active tab).
+  // Check that only one tab displays the intersitial.
+  GREYAssertEqual(
+      1, [ChromeEarlGrey realizedWebStatesCount],
+      @"A single realized web state must exist. The tab reloading filtering"
+      @"behaviour should not force web states to become realized.");
+  GREYAssertEqual(1,
+                  [SupervisedUserSettingsAppInterface
+                      countSupervisedUserIntersitialsForExistingWebStates],
+                  @"A single interstitial must exist.");
+  [ChromeEarlGrey waitForMainTabCount:3];
+}
+
 // Tests that the user is correctly signed out after signin is disabled via
 // policy.
 - (void)testSupervisedUserSignedOutOnPolicyChange {
@@ -201,6 +251,7 @@ static const char* kInterstitialFirstTimeBanner =
 
   GURL blockedURL = self.testServer->GetURL(kEchoPath);
   [ChromeEarlGrey loadURL:blockedURL];
+
   [self checkInterstitalIsShown];
 }
 
@@ -245,11 +296,11 @@ static const char* kInterstitialFirstTimeBanner =
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
 
-  GURL blockedUrl = self.testServer->GetURL(kHost, kEchoPath);
+  GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
   [SupervisedUserSettingsAppInterface
-      addWebsiteToBlockList:net::NSURLWithGURL(blockedUrl)];
+      addWebsiteToBlockList:net::NSURLWithGURL(blockedURL)];
 
-  [ChromeEarlGrey loadURL:blockedUrl];
+  [ChromeEarlGrey loadURL:blockedURL];
   [self checkInterstitalIsShown];
 }
 
@@ -259,40 +310,40 @@ static const char* kInterstitialFirstTimeBanner =
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
-  GURL url = self.testServer->GetURL(kEchoPath);
+  GURL URL = self.testServer->GetURL(kEchoPath);
   // The page is originally blocked.
-  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey loadURL:URL];
   [self checkInterstitalIsShown];
 
   // Navigate to another page to change the browser content (otherwise,
   // allow-listing the site will trigger an immediate refresh - not the scope
   // of this test, see
   // `testSupervisedUserWithAllowAllFilteringIsBlockedOnUrlBlockListing`-).
-  GURL otherUrl = self.testServer->GetURL(kHost, kEchoPath);
-  [ChromeEarlGrey loadURL:otherUrl];
+  GURL otherURL = self.testServer->GetURL(kHost, kEchoPath);
+  [ChromeEarlGrey loadURL:otherURL];
   [self checkInterstitalIsShown];
 
   // Allow-list the page and re-visit it. It should now be unblocked.
   [SupervisedUserSettingsAppInterface
-      addWebsiteToAllowList:net::NSURLWithGURL(url)];
+      addWebsiteToAllowList:net::NSURLWithGURL(URL)];
 
-  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
 }
 
 // Tests that when an interstitial is displayed for a blocked site,
 // allow-listing it triggers an intestitial refresh and unblocks the page.
 - (void)
-    testSupervisedUserWithAllowApprovedFilteringIsUnblockedOnUrlAllowListing {
+    testSupervisedUserWithAllowApprovedFilteringIsUnblockedOnURLAllowListing {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
-  GURL url = self.testServer->GetURL(kEchoPath);
-  [ChromeEarlGrey loadURL:url];
+  GURL URL = self.testServer->GetURL(kEchoPath);
+  [ChromeEarlGrey loadURL:URL];
   [self checkInterstitalIsShown];
 
   [SupervisedUserSettingsAppInterface
-      addWebsiteToAllowList:net::NSURLWithGURL(url)];
+      addWebsiteToAllowList:net::NSURLWithGURL(URL)];
   // Ensure that the interstitial is refreshed and the un-blocked page is
   // displayed.
   [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
@@ -300,16 +351,16 @@ static const char* kInterstitialFirstTimeBanner =
 
 // Tests that block-listing a url, results in showing immediately the
 // interstitial if the user has the url open in a tab.
-- (void)testSupervisedUserWithAllowAllFilteringIsBlockedOnUrlBlockListing {
+- (void)testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
 
-  GURL url = self.testServer->GetURL(kEchoPath);
-  [ChromeEarlGrey loadURL:url];
+  GURL URL = self.testServer->GetURL(kEchoPath);
+  [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
 
   [SupervisedUserSettingsAppInterface
-      addWebsiteToBlockList:net::NSURLWithGURL(url)];
+      addWebsiteToBlockList:net::NSURLWithGURL(URL)];
   // Ensure that the interstitial is triggered.
   [self checkInterstitalIsShown];
 }
@@ -356,11 +407,11 @@ static const char* kInterstitialFirstTimeBanner =
   [SupervisedUserSettingsAppInterface setFakePermissionCreator];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
 
-  GURL blockedUrl = self.testServer->GetURL(kEchoPath);
+  GURL blockedURL = self.testServer->GetURL(kEchoPath);
   [SupervisedUserSettingsAppInterface
-      addWebsiteToBlockList:net::NSURLWithGURL(blockedUrl)];
+      addWebsiteToBlockList:net::NSURLWithGURL(blockedURL)];
 
-  [ChromeEarlGrey loadURL:blockedUrl];
+  [ChromeEarlGrey loadURL:blockedURL];
   [self checkInterstitalIsShown];
 
   // On clicking "Ask in a message" button, the interstitial "Waiting" screen is
@@ -371,7 +422,7 @@ static const char* kInterstitialFirstTimeBanner =
   // Approving the permission request for the blocked host
   // should refresh the newly unblocked page.
   [SupervisedUserSettingsAppInterface
-      approveWebsiteDomain:net::NSURLWithGURL(blockedUrl)];
+      approveWebsiteDomain:net::NSURLWithGURL(blockedURL)];
   [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
 }
 
@@ -391,8 +442,8 @@ static const char* kInterstitialFirstTimeBanner =
   [SupervisedUserSettingsAppInterface setFakePermissionCreator];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
-  GURL blockedUrl = self.testServer->GetURL(kHost, kEchoPath);
-  [ChromeEarlGrey loadURL:blockedUrl];
+  GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
+  [ChromeEarlGrey loadURL:blockedURL];
   [self checkInterstitalIsShown];
   [ChromeEarlGrey waitForWebStateContainingText:kInterstitialDetails];
   [self checkShowDetailsLinkVisibility:YES];
@@ -427,8 +478,8 @@ static const char* kInterstitialFirstTimeBanner =
   [SupervisedUserSettingsAppInterface setFakePermissionCreator];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
-  GURL blockedUrl = self.testServer->GetURL(kHost, kEchoPath);
-  [ChromeEarlGrey loadURL:blockedUrl];
+  GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
+  [ChromeEarlGrey loadURL:blockedURL];
   [self checkInterstitalIsShown];
 
   // Details link must be visible.
@@ -447,13 +498,13 @@ static const char* kInterstitialFirstTimeBanner =
   // Case 2: Already requested host on a new intersitial case:
   // Tge Details link must not be visible on the
   // "Waiting" screen on the new interstitial.
-  GURL otherUrl = self.testServer->GetURL("other.host", kEchoPath);
-  [ChromeEarlGrey loadURL:otherUrl];
+  GURL otherURL = self.testServer->GetURL("other.host", kEchoPath);
+  [ChromeEarlGrey loadURL:otherURL];
   [self checkInterstitalIsShown];
 
   // Request the original blocked site. The interstitial "Waiting" screen is
   // displayed without the Details.
-  [ChromeEarlGrey loadURL:blockedUrl];
+  [ChromeEarlGrey loadURL:blockedURL];
   [self checkInterstitalIsShownInWaitingScreen];
   [self checkShowDetailsLinkVisibility:NO];
   [self checkHideDetailsLinkVisibility:NO];
@@ -465,9 +516,9 @@ static const char* kInterstitialFirstTimeBanner =
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
-  GURL blockedUrl = self.testServer->GetURL(kHost, kEchoPath);
+  GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
 
-  [ChromeEarlGrey loadURL:blockedUrl];
+  [ChromeEarlGrey loadURL:blockedURL];
   [self checkInterstitalIsShown];
 
   if ([ChromeEarlGrey isCompactWidth]) {
@@ -491,15 +542,15 @@ static const char* kInterstitialFirstTimeBanner =
   [SupervisedUserSettingsAppInterface setFakePermissionCreator];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
 
-  GURL allowedUrl = self.testServer->GetURL(kDefaultPath);
-  GURL blockedUrl = self.testServer->GetURL(kHost, kEchoPath);
+  GURL allowedURL = self.testServer->GetURL(kDefaultPath);
+  GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
   [SupervisedUserSettingsAppInterface
-      addWebsiteToBlockList:net::NSURLWithGURL(blockedUrl)];
+      addWebsiteToBlockList:net::NSURLWithGURL(blockedURL)];
 
-  [ChromeEarlGrey loadURL:allowedUrl];
+  [ChromeEarlGrey loadURL:allowedURL];
   [ChromeEarlGrey waitForWebStateContainingText:kDefaultContent];
 
-  [ChromeEarlGrey loadURL:blockedUrl];
+  [ChromeEarlGrey loadURL:blockedURL];
   [self checkInterstitalIsShown];
 
   // On clicking "Ask in a message" button, the interstitial "Waiting" screen is
@@ -520,9 +571,9 @@ static const char* kInterstitialFirstTimeBanner =
   [SupervisedUserSettingsAppInterface setFakePermissionCreator];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
-  GURL blockedUrl = self.testServer->GetURL(kHost, kEchoPath);
+  GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
 
-  [ChromeEarlGrey loadURL:blockedUrl];
+  [ChromeEarlGrey loadURL:blockedURL];
   [self checkInterstitalIsShown];
 
   // On clicking "Ask in a message" button, the interstitial "Waiting" screen is
@@ -531,13 +582,13 @@ static const char* kInterstitialFirstTimeBanner =
   [self checkInterstitalIsShownInWaitingScreen];
 
   // Navigate to another site.
-  GURL otherUrl = self.testServer->GetURL("other.host", kEchoPath);
-  [ChromeEarlGrey loadURL:otherUrl];
+  GURL otherURL = self.testServer->GetURL("other.host", kEchoPath);
+  [ChromeEarlGrey loadURL:otherURL];
   [self checkInterstitalIsShown];
 
   // Navigate to the original blocked site. The interstitial "Waiting" screen is
   // displayed.
-  [ChromeEarlGrey loadURL:blockedUrl];
+  [ChromeEarlGrey loadURL:blockedURL];
   [self checkInterstitalIsShownInWaitingScreen];
 }
 
