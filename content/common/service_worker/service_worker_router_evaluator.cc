@@ -260,7 +260,10 @@ namespace content {
 class ServiceWorkerRouterEvaluator::BaseCondition {
  public:
   BaseCondition() = default;
-  ~BaseCondition() = default;
+  // Not copyable
+  BaseCondition(const BaseCondition&) = delete;
+  // Movable
+  BaseCondition(BaseCondition&&) = default;
   // Returns true on success. Otherwise, false.
   bool Set(const std::vector<blink::ServiceWorkerRouterCondition>& conditions);
   bool Match(const network::ResourceRequest& request,
@@ -273,14 +276,14 @@ class ServiceWorkerRouterEvaluator::BaseCondition {
       const network::ResourceRequest& request,
       absl::optional<blink::EmbeddedWorkerStatus> running_status) const;
 
-  absl::optional<RE2> protocol_pattern_;
-  absl::optional<RE2> username_pattern_;
-  absl::optional<RE2> password_pattern_;
-  absl::optional<RE2> hostname_pattern_;
-  absl::optional<RE2> port_pattern_;
-  absl::optional<RE2> pathname_pattern_;
-  absl::optional<RE2> search_pattern_;
-  absl::optional<RE2> hash_pattern_;
+  std::unique_ptr<RE2> protocol_pattern_;
+  std::unique_ptr<RE2> username_pattern_;
+  std::unique_ptr<RE2> password_pattern_;
+  std::unique_ptr<RE2> hostname_pattern_;
+  std::unique_ptr<RE2> port_pattern_;
+  std::unique_ptr<RE2> pathname_pattern_;
+  std::unique_ptr<RE2> search_pattern_;
+  std::unique_ptr<RE2> hash_pattern_;
   bool has_url_pattern_ = false;
   // Non-SafeUrlPattern conditions are processed one by one.
   std::vector<blink::ServiceWorkerRouterCondition> non_url_pattern_conditions_;
@@ -314,7 +317,7 @@ bool ServiceWorkerRouterEvaluator::BaseCondition::Set(
 #define SET_PATTERN(type_name, type)                                         \
   do {                                                                       \
     auto regex = ConvertToRegex(url_pattern, type);                          \
-    type_name##_pattern_.emplace(regex, RE2::Options());                     \
+    type_name##_pattern_ = std::make_unique<RE2>(regex, RE2::Options());     \
     if (!type_name##_pattern_->ok()) {                                       \
       RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kParseError); \
       return false;                                                          \
@@ -329,7 +332,6 @@ bool ServiceWorkerRouterEvaluator::BaseCondition::Set(
     SET_PATTERN(search, URLPatternFieldType::kSearch);
     SET_PATTERN(hash, URLPatternFieldType::kHash);
 #undef SET_PATTERN
-    // Counts the conditions to ensure all conditions are matched.
     has_url_pattern_ = true;
     // TODO(crbug.com/1371756): consider fast path on empty parts and "*".
     // Currently, regular expressions are executed even for empty parts cases,
@@ -353,7 +355,7 @@ bool ServiceWorkerRouterEvaluator::BaseCondition::MatchUrlPatternConditions(
     return true;
   }
 #define PATTERN_MATCH(type_name, field)                                  \
-  CHECK(type_name##_pattern_.has_value());                               \
+  CHECK(type_name##_pattern_);                                           \
   if (!RE2::FullMatch(request.url.field(), *type_name##_pattern_)) {     \
     VLOG(3) << "not matched. url=" << request.url << " field=" << #field \
             << " value=" << request.url.field();                         \
