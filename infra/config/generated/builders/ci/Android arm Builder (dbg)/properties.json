@@ -41,6 +41,12 @@
           "builder": "Android arm Builder (dbg)",
           "project": "chromium-m119"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-arm-compile-dbg",
+          "group": "tryserver.chromium.android"
+        }
       ]
     }
   },

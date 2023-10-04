@@ -64,6 +64,12 @@
           "builder": "mac12-arm64-rel-tests",
           "project": "chromium-m119"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "mac12-arm64-rel",
+          "group": "tryserver.chromium.mac"
+        }
       ]
     }
   },

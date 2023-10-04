@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Android WebView O (dbg)",
+              "builder": "Android WebView P (dbg)",
               "project": "chromium-m119"
             },
             "builder_spec": {
@@ -76,17 +76,24 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Android WebView O (dbg)",
+          "builder": "Android arm64 Builder (dbg)",
           "project": "chromium-m119"
         }
       ],
-      "mirroring_builder_group_and_names": [
+      "builder_ids_in_scope_for_testing": [
         {
-          "builder": "android-webview-oreo-arm64-dbg",
-          "group": "tryserver.chromium.android"
+          "bucket": "ci",
+          "builder": "Android WebView P (dbg)",
+          "project": "chromium-m119"
         }
       ]
     }
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -95,9 +102,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.android",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chrome_browser_release"
-  ]
+  "builder_group": "tryserver.chromium.android",
+  "recipe": "chromium_trybot"
 }

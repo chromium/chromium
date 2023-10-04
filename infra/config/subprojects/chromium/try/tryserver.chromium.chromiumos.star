@@ -285,6 +285,7 @@ try_.compilator_builder(
 
 try_.builder(
     name = "linux-lacros-dbg",
+    branch_selector = branches.selector.CROS_BRANCHES,
     # TODO(crbug.com/1233247) Adds the CI tester when it's available.
     mirrors = [
         "ci/linux-lacros-dbg",

@@ -61,17 +61,23 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "mac11-arm64-rel-tests",
+          "builder": "mac-arm64-rel",
           "project": "chromium-m119"
         }
       ],
-      "mirroring_builder_group_and_names": [
+      "builder_ids_in_scope_for_testing": [
         {
-          "builder": "mac11-arm64-rel",
-          "group": "tryserver.chromium.mac"
+          "bucket": "ci",
+          "builder": "mac11-arm64-rel-tests",
+          "project": "chromium-m119"
         }
       ]
     }
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -80,9 +86,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.mac",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chrome_browser_release"
-  ]
+  "builder_group": "tryserver.chromium.mac",
+  "recipe": "chromium_trybot"
 }

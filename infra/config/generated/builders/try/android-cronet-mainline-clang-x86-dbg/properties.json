@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Android x64 Builder (dbg)",
+              "builder": "android-cronet-mainline-clang-x86-dbg",
               "project": "chromium-m119"
             },
             "builder_spec": {
@@ -14,12 +14,16 @@
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "x64_builder_mb"
+                "config": "x86_builder"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "cronet_builder",
+                  "mb"
+                ],
                 "build_config": "Debug",
                 "config": "android",
-                "target_bits": 64,
+                "target_bits": 32,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -35,15 +39,15 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Android x64 Builder (dbg)",
+          "builder": "android-cronet-mainline-clang-x86-dbg",
           "project": "chromium-m119"
         }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -54,9 +58,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.android",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chrome_browser_release"
-  ]
+  "builder_group": "tryserver.chromium.android",
+  "recipe": "chromium_trybot"
 }

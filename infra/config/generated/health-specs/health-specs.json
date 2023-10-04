@@ -36,9 +36,6 @@
       "Android arm64 Builder All Targets (dbg)": {
         "_default": "_default"
       },
-      "Android x64 Builder (dbg)": {
-        "_default": "_default"
-      },
       "Android x64 Builder All Targets (dbg)": {
         "_default": "_default"
       },

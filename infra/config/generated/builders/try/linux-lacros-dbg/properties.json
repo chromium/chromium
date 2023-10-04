@@ -6,29 +6,25 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-cronet-x64-dbg",
+              "builder": "linux-lacros-dbg",
               "project": "chromium-m119"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
-              "builder_group": "chromium.android",
+              "build_gs_bucket": "chromium-chromiumos-archive",
+              "builder_group": "chromium.chromiumos",
               "execution_mode": "COMPILE_AND_TEST",
-              "legacy_android_config": {
-                "config": "x64_builder"
-              },
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "cronet_builder",
                   "mb"
                 ],
                 "build_config": "Debug",
-                "config": "android",
-                "target_bits": 64,
-                "target_platform": "android"
+                "config": "chromium",
+                "target_arch": "intel",
+                "target_bits": 64
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "android"
+                  "chromeos"
                 ],
                 "config": "chromium"
               }
@@ -39,21 +35,15 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-cronet-x64-dbg",
+          "builder": "linux-lacros-dbg",
           "project": "chromium-m119"
-        }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-cronet-x64-dbg",
-          "group": "tryserver.chromium.android"
         }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -64,9 +54,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.android",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chrome_browser_release"
-  ]
+  "builder_group": "tryserver.chromium.chromiumos",
+  "recipe": "chromium_trybot"
 }

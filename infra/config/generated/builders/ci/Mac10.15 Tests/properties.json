@@ -67,6 +67,12 @@
           "builder": "Mac10.15 Tests",
           "project": "chromium-m119"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "mac_chromium_10.15_rel_ng",
+          "group": "tryserver.chromium.mac"
+        }
       ]
     }
   },

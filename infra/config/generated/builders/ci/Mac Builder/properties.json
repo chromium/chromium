@@ -178,6 +178,18 @@
         {
           "builder": "mac-rel",
           "group": "tryserver.chromium.mac"
+        },
+        {
+          "builder": "mac12-tests",
+          "group": "tryserver.chromium.mac"
+        },
+        {
+          "builder": "mac_chromium_10.15_rel_ng",
+          "group": "tryserver.chromium.mac"
+        },
+        {
+          "builder": "mac_chromium_11.0_rel_ng",
+          "group": "tryserver.chromium.mac"
         }
       ]
     }
