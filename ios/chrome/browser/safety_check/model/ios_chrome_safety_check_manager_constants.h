@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_CONSTANTS_H_
 
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -106,4 +106,4 @@ absl::optional<PasswordSafetyCheckState> PasswordSafetyCheckStateForName(
 absl::optional<SafeBrowsingSafetyCheckState>
 SafeBrowsingSafetyCheckStateForName(const std::string& check_state);
 
-#endif  // IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_CONSTANTS_H_

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_utils.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_utils.h"
 
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/password_checkup_utils.h"
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 
 namespace {
 

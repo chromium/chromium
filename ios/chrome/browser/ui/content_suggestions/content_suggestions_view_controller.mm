@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/ntp/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"

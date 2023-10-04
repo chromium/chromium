@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
 
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/multi_row_container_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_item_view.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_H_
-#define IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_H_
+#ifndef IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_H_
+#define IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_H_
 
 #import "base/memory/scoped_refptr.h"
 #import "base/memory/weak_ptr.h"
@@ -15,7 +15,7 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 
 class IOSChromeSafetyCheckManager;
 class PrefService;
@@ -340,4 +340,4 @@ class IOSChromeSafetyCheckManager
   base::WeakPtrFactory<IOSChromeSafetyCheckManager> weak_ptr_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_H_
+#endif  // IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_H_

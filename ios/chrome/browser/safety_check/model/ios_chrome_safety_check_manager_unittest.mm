@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 
 #import <vector>
 
@@ -21,8 +21,8 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_utils.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

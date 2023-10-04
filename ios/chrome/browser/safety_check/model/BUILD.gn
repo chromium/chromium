@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("safety_check") {
+source_set("model") {
   sources = [
     "ios_chrome_safety_check_manager.h",
     "ios_chrome_safety_check_manager.mm",
@@ -42,7 +42,7 @@ source_set("factory") {
     "//components/keyed_service/ios",
   ]
   deps = [
-    ":safety_check",
+    ":model",
     "//components/keyed_service/core",
     "//components/prefs",
     "//ios/chrome/browser/passwords",
@@ -83,7 +83,7 @@ source_set("unit_tests") {
   sources = [ "ios_chrome_safety_check_manager_unittest.mm" ]
   deps = [
     ":constants",
-    ":safety_check",
+    ":model",
     ":utils",
     "//base",
     "//base/test:test_support",

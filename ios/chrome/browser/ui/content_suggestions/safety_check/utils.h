@@ -10,7 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/time/time.h"
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 @protocol ApplicationCommands;

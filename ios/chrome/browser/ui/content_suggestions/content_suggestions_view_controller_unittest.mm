@@ -11,7 +11,7 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"

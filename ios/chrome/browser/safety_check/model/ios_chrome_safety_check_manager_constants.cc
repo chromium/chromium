@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
+#include "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 
 const std::string NameForSafetyCheckState(
     UpdateChromeSafetyCheckState check_state) {

@@ -78,7 +78,7 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prerender/prerender_pref.h"
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

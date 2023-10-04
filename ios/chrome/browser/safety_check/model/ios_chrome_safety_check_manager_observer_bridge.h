@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_OBSERVER_BRIDGE_H_
-#define IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_OBSERVER_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_OBSERVER_BRIDGE_H_
+#define IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_OBSERVER_BRIDGE_H_
 
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager.h"
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 
 #import <Foundation/Foundation.h>
 
@@ -63,4 +63,4 @@ class SafetyCheckObserverBridge : public IOSChromeSafetyCheckManagerObserver {
   raw_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
 };
 
-#endif  // IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_OBSERVER_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_OBSERVER_BRIDGE_H_

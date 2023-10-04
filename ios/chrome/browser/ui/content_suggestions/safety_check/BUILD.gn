@@ -20,7 +20,7 @@ source_set("safety_check") {
   ]
   public_deps = [
     "//base",
-    "//ios/chrome/browser/safety_check:constants",
+    "//ios/chrome/browser/safety_check/model:constants",
     "//third_party/abseil-cpp:absl",
   ]
   deps = [
