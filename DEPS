@@ -854,7 +854,7 @@ deps = {
   },
 
   'src/ios/third_party/earl_grey2/src': {
-      'url': Var('chromium_git') + '/external/github.com/google/EarlGrey.git' + '@' + '8dd54384fcda304fddf2f55a53b64c8ca0103edf',
+      'url': Var('chromium_git') + '/external/github.com/google/EarlGrey.git' + '@' + 'a56af86f685186247835edad65a6f0f0ba13ddc7',
       'condition': 'checkout_ios',
   },
 
