@@ -18,11 +18,11 @@ void RecordMicrosecondTimesUmaByDecodeType(
     uint32_t bucket_count,
     ScopedImageDecodeTask::DecodeType decode_type_) {
   switch (decode_type_) {
-    case ScopedImageDecodeTask::kSoftware:
+    case ScopedImageDecodeTask::DecodeType::kSoftware:
       UmaHistogramCustomMicrosecondsTimes(metric_prefix + ".Software", duration,
                                           min, max, bucket_count);
       break;
-    case ScopedImageDecodeTask::kGpu:
+    case ScopedImageDecodeTask::DecodeType::kGpu:
       UmaHistogramCustomMicrosecondsTimes(metric_prefix + ".Gpu", duration, min,
                                           max, bucket_count);
       break;
@@ -119,12 +119,12 @@ ScopedImageDecodeTask::~ScopedImageDecodeTask() {
                                         hist_max_, bucket_count_, decode_type_);
 
   switch (task_type_) {
-    case kInRaster:
+    case TaskType::kInRaster:
       RecordMicrosecondTimesUmaByDecodeType(
           "Renderer4.ImageDecodeTaskDurationUs", duration, hist_min_, hist_max_,
           bucket_count_, decode_type_);
       break;
-    case kOutOfRaster:
+    case TaskType::kOutOfRaster:
       RecordMicrosecondTimesUmaByDecodeType(
           "Renderer4.ImageDecodeTaskDurationUs.OutOfRaster", duration,
           hist_min_, hist_max_, bucket_count_, decode_type_);

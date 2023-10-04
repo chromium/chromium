@@ -618,7 +618,7 @@ class GpuImageDecodeTaskImpl : public TileTask {
         image_metadata ? image_metadata->image_type : ImageType::kInvalid;
     devtools_instrumentation::ScopedImageDecodeTask image_decode_task(
         &image_.paint_image(),
-        devtools_instrumentation::ScopedImageDecodeTask::kGpu,
+        devtools_instrumentation::ScopedImageDecodeTask::DecodeType::kGpu,
         ImageDecodeCache::ToScopedTaskType(tracing_info_.task_type),
         ImageDecodeCache::ToScopedImageType(image_type));
     cache_->DecodeImageInTask(image_, tracing_info_.task_type);
