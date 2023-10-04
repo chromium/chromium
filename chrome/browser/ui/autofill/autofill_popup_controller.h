@@ -34,6 +34,10 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   // (crbug.com/1279268).
   virtual void AcceptSuggestion(int index, base::TimeTicks event_time) = 0;
 
+  // Executes the action associated with the button that is displayed in the
+  // suggestion at `index`. Button actions depend on the type of the suggestion.
+  virtual void PerformButtonActionForSuggestion(int index) = 0;
+
   // Removes the suggestion at the given index.
   virtual bool RemoveSuggestion(int index) = 0;
 

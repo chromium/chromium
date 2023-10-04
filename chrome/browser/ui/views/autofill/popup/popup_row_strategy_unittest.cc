@@ -373,4 +373,26 @@ TEST_F(PopupSuggestionStrategyTest, AutocompleteDeleteButtonSetsAccessibility) {
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
+// Tests that a Compose suggestion always has a visible button.
+TEST_F(PopupSuggestionStrategyTest, ComposeSuggestionHasVisibleButton) {
+  ShowSuggestion(Suggestion(/*main_text=*/u"", PopupItemId::kCompose));
+  views::ImageButton* button = cell_with_button_view().GetCellButtonForTest();
+  ASSERT_TRUE(button);
+  EXPECT_TRUE(button->GetVisible());
+}
+
+// Tests that triggering the button of a Compose suggestion calls
+// `AutofillPopupController::PerformExtraActionForSuggestion`.
+TEST_F(PopupSuggestionStrategyTest, ComposeSuggestionButtonCallsController) {
+  ShowSuggestion(Suggestion(/*main_text=*/u"", PopupItemId::kCompose));
+  views::ImageButton* button = cell_with_button_view().GetCellButtonForTest();
+  ASSERT_TRUE(button);
+
+  EXPECT_CALL(controller(), PerformButtonActionForSuggestion(/*index=*/0));
+  // Select the button.
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  // Trigger the button.
+  SimulateKeyPress(ui::VKEY_RETURN);
+}
+
 }  // namespace autofill

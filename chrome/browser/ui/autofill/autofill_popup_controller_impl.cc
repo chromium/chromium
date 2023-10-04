@@ -444,6 +444,11 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index,
 #endif
 }
 
+void AutofillPopupControllerImpl::PerformButtonActionForSuggestion(int index) {
+  CHECK_LE(base::checked_cast<size_t>(index), suggestions_.size());
+  delegate_->DidPerformButtonActionForSuggestion(suggestions_[index]);
+}
+
 gfx::NativeView AutofillPopupControllerImpl::container_view() const {
   return controller_common_.container_view;
 }

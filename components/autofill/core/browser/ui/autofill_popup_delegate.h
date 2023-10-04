@@ -42,6 +42,12 @@ class AutofillPopupDelegate {
       int position,
       AutofillSuggestionTriggerSource trigger_source) = 0;
 
+  // Informs the delegate that the user chose to perform the button action
+  // associated with `suggestion`. Actions are currently implemented only on
+  // Desktop.
+  virtual void DidPerformButtonActionForSuggestion(
+      const Suggestion& suggestion) = 0;
+
   // Returns whether the given value can be deleted, and if true,
   // fills out |title| and |body|.
   virtual bool GetDeletionConfirmationText(const std::u16string& value,

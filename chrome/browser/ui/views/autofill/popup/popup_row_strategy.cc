@@ -57,6 +57,18 @@ constexpr int kExpandableControlCellIconSize = 6;
 // The size of a close or delete icon.
 constexpr int kCloseIconSize = 16;
 
+// Returns a wrapper around `closure` that posts it to the default message
+// queue instead of executing it directly. This is to avoid that the callback's
+// caller can suicide by (unwittingly) deleting itself or its parent.
+base::RepeatingClosure CreateExecuteSoonWrapper(base::RepeatingClosure task) {
+  return base::BindRepeating(
+      [](base::RepeatingClosure delayed_task) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(delayed_task));
+      },
+      std::move(task));
+}
+
 // ********************* AccessibilityDelegate implementations *****************
 
 // ********************* ContentItemAccessibilityDelegate  *********************
@@ -184,6 +196,11 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
     return CreateAutocompleteWithDeleteButtonCell();
   }
 
+  if (GetController()->GetSuggestionAt(GetLineNumber()).popup_item_id ==
+      PopupItemId::kCompose) {
+    return CreateComposeCell();
+  }
+
   auto view = std::make_unique<PopupCellView>(
       GetController()->ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
   AddContentLabelsAndCallbacks(*view);
@@ -237,19 +254,10 @@ PopupSuggestionStrategy::CreateAutocompleteWithDeleteButtonCell() {
         }
       },
       GetController(), GetLineNumber());
-
-  // The closure that delays makes sure this is called only via direct entry
-  // from the task queue to avoid that the caller suicides.
-  base::RepeatingClosure button_action = base::BindRepeating(
-      [](base::RepeatingClosure delayed_task) {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(delayed_task));
-      },
-      std::move(deletion_action));
-
   std::unique_ptr<views::ImageButton> button =
       views::CreateVectorImageButtonWithNativeTheme(
-          std::move(button_action), views::kIcCloseIcon, kCloseIconSize);
+          CreateExecuteSoonWrapper(std::move(deletion_action)),
+          views::kIcCloseIcon, kCloseIconSize);
 
   // We are making sure that the vertical distance from the delete button edges
   // to the cell border is the same as the horizontal distance.
@@ -269,6 +277,51 @@ PopupSuggestionStrategy::CreateAutocompleteWithDeleteButtonCell() {
       popup_cell_utils::GetVoiceOverStringFromSuggestion(
           GetController()->GetSuggestionAt(GetLineNumber()))));
   button->SetVisible(false);
+  view->SetCellButton(std::move(button));
+  static_cast<views::BoxLayout*>(view->GetLayoutManager())
+      ->SetFlexForView(view->GetButtonContainer(), 0);
+  return view;
+}
+
+// TODO(crbug.com/1487965): Adjust the layout once mocks are ready.
+std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateComposeCell() {
+  auto view = std::make_unique<PopupCellWithButtonView>(
+      GetController()->ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
+  AddContentLabelsAndCallbacks(*view);
+
+  // Add a close button.
+  views::BoxLayout* layout =
+      static_cast<views::BoxLayout*>(view->GetLayoutManager());
+  for (views::View* child : view->children()) {
+    layout->SetFlexForView(child, 1);
+  }
+
+  // The closure that actually attempts to delete an entry and record metrics
+  // for it.
+  base::RepeatingClosure close_action = base::BindRepeating(
+      &AutofillPopupController::PerformButtonActionForSuggestion,
+      GetController(), GetLineNumber());
+  std::unique_ptr<views::ImageButton> button =
+      views::CreateVectorImageButtonWithNativeTheme(
+          CreateExecuteSoonWrapper(std::move(close_action)),
+          views::kIcCloseIcon, kCloseIconSize);
+
+  // We are making sure that the vertical distance from the  button edges
+  // to the cell border is the same as the horizontal distance.
+  // 1. Take the current horizontal distance.
+  int horizontal_margin = layout->inside_border_insets().right();
+  // 2. Take the height of the cell.
+  int cell_height = layout->minimum_cross_axis_size();
+  // 3. The diameter needs to be the height - 2 * the desired margin.
+  int radius = (cell_height - horizontal_margin * 2) / 2;
+  InstallFixedSizeCircleHighlightPathGenerator(button.get(), radius);
+  button->SetPreferredSize(gfx::Size(radius * 2, radius * 2));
+  // TODO(crbug.com/1487965): Use proper strings.
+  button->SetTooltipText(u"Close");
+  button->SetAccessibleRole(ax::mojom::Role::kMenuItem);
+  button->SetAccessibleName(u"Close");
+  view->SetCellButtonBehavior(
+      PopupCellWithButtonView::CellButtonBehavior::kShowAlways);
   view->SetCellButton(std::move(button));
   static_cast<views::BoxLayout*>(view->GetLayoutManager())
       ->SetFlexForView(view->GetButtonContainer(), 0);

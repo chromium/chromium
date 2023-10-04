@@ -33,6 +33,10 @@ class MockAutofillPopupDelegate : public AutofillPopupDelegate {
                int position,
                AutofillSuggestionTriggerSource trigger_source),
               (override));
+  MOCK_METHOD(void,
+              DidPerformButtonActionForSuggestion,
+              (const Suggestion&),
+              (override));
   MOCK_METHOD(bool,
               GetDeletionConfirmationText,
               (const std::u16string& value,

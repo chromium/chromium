@@ -523,6 +523,17 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
   }
 }
 
+void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
+    const Suggestion& suggestion) {
+  switch (suggestion.popup_item_id) {
+    case PopupItemId::kCompose:
+      NOTIMPLEMENTED();
+      return;
+    default:
+      NOTREACHED();
+  }
+}
+
 bool AutofillExternalDelegate::GetDeletionConfirmationText(
     const std::u16string& value,
     PopupItemId popup_item_id,

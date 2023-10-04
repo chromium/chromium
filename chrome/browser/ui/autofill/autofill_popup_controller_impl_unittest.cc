@@ -121,6 +121,10 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
               DidAcceptSuggestion,
               (const Suggestion&, int, AutofillSuggestionTriggerSource),
               (override));
+  MOCK_METHOD(void,
+              DidPerformButtonActionForSuggestion,
+              (const Suggestion&),
+              (override));
 };
 
 class MockAutofillPopupView : public AutofillPopupView {
@@ -186,6 +190,7 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
   using AutofillPopupControllerImpl::GetSuggestionLabelsAt;
   using AutofillPopupControllerImpl::GetSuggestionMainTextAt;
   using AutofillPopupControllerImpl::GetWeakPtr;
+  using AutofillPopupControllerImpl::PerformButtonActionForSuggestion;
   using AutofillPopupControllerImpl::RemoveSuggestion;
   using AutofillPopupControllerImpl::SelectSuggestion;
   MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
@@ -936,6 +941,15 @@ TEST_F(AutofillPopupControllerImplTest, EventsAreDelegatedToChildrenAndView) {
       .WillOnce(Return(false));
   EXPECT_CALL(client().popup_view(), HandleKeyPressEvent).Times(1);
   EXPECT_FALSE(client().popup_controller(manager()).HandleKeyPressEvent(event));
+}
+
+// Tests that the controller forwards calls to perform a button action (such as
+// clicking a close button on a suggestion) to its delegate.
+TEST_F(AutofillPopupControllerImplTest, ButtonActionsAreSentToDelegate) {
+  ShowSuggestions(manager(), {PopupItemId::kCompose});
+  EXPECT_CALL(manager().external_delegate(),
+              DidPerformButtonActionForSuggestion);
+  client().popup_controller(manager()).PerformButtonActionForSuggestion(0);
 }
 #endif
 

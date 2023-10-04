@@ -528,6 +528,12 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       autofill::PopupHidingReason::kAcceptSuggestion);
 }
 
+void PasswordAutofillManager::DidPerformButtonActionForSuggestion(
+    const autofill::Suggestion&) {
+  // Button actions do currently not exist for password entries.
+  NOTREACHED();
+}
+
 bool PasswordAutofillManager::GetDeletionConfirmationText(
     const std::u16string& value,
     autofill::PopupItemId popup_item_id,

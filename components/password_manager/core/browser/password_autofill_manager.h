@@ -62,6 +62,8 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
       int position,
       autofill::AutofillSuggestionTriggerSource trigger_source =
           autofill::AutofillSuggestionTriggerSource::kPasswordManager) override;
+  void DidPerformButtonActionForSuggestion(
+      const autofill::Suggestion&) override;
   bool GetDeletionConfirmationText(const std::u16string& value,
                                    autofill::PopupItemId popup_item_id,
                                    autofill::Suggestion::BackendId backend_id,
