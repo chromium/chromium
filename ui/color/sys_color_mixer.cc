@@ -143,6 +143,9 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
                                                 : kColorRefPrimary90};
   mixer[kColorSysOnPrimaryContainer] = {dark_mode ? kColorRefPrimary90
                                                   : kColorRefPrimary10};
+  mixer[kColorSysGradientPrimary] = {dark_mode ? kColorRefPrimary20
+                                               : kColorRefPrimary90};
+
   // Secondary.
   mixer[kColorSysSecondary] = {dark_mode ? kColorRefSecondary80
                                          : kColorRefSecondary40};
@@ -161,6 +164,9 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
                                                  : kColorRefTertiary90};
   mixer[kColorSysOnTertiaryContainer] = {dark_mode ? kColorRefTertiary90
                                                    : kColorRefTertiary10};
+  mixer[kColorSysGradientTertiary] = {dark_mode ? kColorRefTertiary20
+                                                : kColorRefTertiary95};
+
   // Error.
   mixer[kColorSysError] = {dark_mode ? kColorRefError80 : kColorRefError40};
   mixer[kColorSysOnError] = {dark_mode ? kColorRefError20 : kColorRefError100};

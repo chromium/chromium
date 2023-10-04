@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
+import './tab_organization_in_progress.js';
 import './tab_organization_not_started.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -54,16 +55,16 @@ export class TabOrganizationPageElement extends PolymerElement {
     this.state_ = TabOrganizationState.IN_PROGRESS;
   }
 
-  private onDismissClicked_() {
+  private onDismissClick_() {
     this.state_ = TabOrganizationState.NOT_STARTED;
   }
 
-  private onCreateGroupClicked_() {
+  private onCreateGroupClick_() {
     // TODO(emshack): Implement this.
   }
 
   // TODO(emshack): Remove once there's another way to move between states.
-  private onCycleStateClicked_() {
+  private onCycleStateClick_() {
     if (this.state_ === TabOrganizationState.IN_PROGRESS) {
       this.state_ = TabOrganizationState.SUCCESS;
     } else if (this.state_ === TabOrganizationState.SUCCESS) {

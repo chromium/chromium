@@ -8,28 +8,32 @@ import './tab_organization_shared_style.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './tab_organization_not_started.html.js';
+import {getTemplate} from './tab_organization_in_progress.html.js';
 
-export class TabOrganizationNotStartedElement extends PolymerElement {
+// Loading state for the tab organization UI.
+export class TabOrganizationInProgressElement extends PolymerElement {
   static get is() {
-    return 'tab-organization-not-started';
+    return 'tab-organization-in-progress';
+  }
+
+  static get properties() {
+    return {};
   }
 
   static get template() {
     return getTemplate();
   }
 
-  private onOrganizeTabsClick_() {
-    this.dispatchEvent(new CustomEvent(
-        'organize-tabs-click', {bubbles: true, composed: true}));
+  private onSuccess_() {
+    this.dispatchEvent(new Event('success'));
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-organization-not-started': TabOrganizationNotStartedElement;
+    'tab-organization-in-progress': TabOrganizationInProgressElement;
   }
 }
 
 customElements.define(
-    TabOrganizationNotStartedElement.is, TabOrganizationNotStartedElement);
+    TabOrganizationInProgressElement.is, TabOrganizationInProgressElement);

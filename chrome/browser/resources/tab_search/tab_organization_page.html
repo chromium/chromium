@@ -16,24 +16,21 @@
       hidden="[[!isState_(tabOrganizationStateEnum_.NOT_STARTED, state_)]]"
       on-organize-tabs-click="onOrganizeTabsClick_">
   </tab-organization-not-started>
-  <div id="in-progress"
-      hidden="[[!isState_(tabOrganizationStateEnum_.IN_PROGRESS, state_)]]">
-    Placeholder: In Progress
-    <cr-button class="action-button" on-click="onCycleStateClicked_">
-      Set state to success
-    </cr-button>
-  </div>
+  <tab-organization-in-progress
+      hidden="[[!isState_(tabOrganizationStateEnum_.IN_PROGRESS, state_)]]"
+      on-success="onCycleStateClick_">
+  </tab-organization-in-progress>
   <div id="success"
       hidden="[[!isState_(tabOrganizationStateEnum_.SUCCESS, state_)]]">
     Placeholder: Success
-    <cr-button class="action-button" on-click="onCycleStateClicked_">
+    <cr-button class="action-button" on-click="onCycleStateClick_">
       Set state to failure
     </cr-button>
     <div class="button-container">
-      <cr-button class="tonal-button" on-click="onDismissClicked_">
+      <cr-button class="tonal-button" on-click="onDismissClick_">
         $i18n{dismiss}
       </cr-button>
-      <cr-button class="action-button" on-click="onCreateGroupClicked_">
+      <cr-button class="action-button" on-click="onCreateGroupClick_">
         $i18n{createGroup}
       </cr-button>
     </div>
@@ -41,7 +38,7 @@
   <div id="failure"
       hidden="[[!isState_(tabOrganizationStateEnum_.FAILURE, state_)]]">
     Placeholder: Failure
-    <cr-button class="action-button" on-click="onCycleStateClicked_">
+    <cr-button class="action-button" on-click="onCycleStateClick_">
       Set state to not started
     </cr-button>
   </div>

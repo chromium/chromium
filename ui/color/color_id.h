@@ -117,6 +117,7 @@
   E_CPONLY(kColorSysOnPrimary) \
   E_CPONLY(kColorSysPrimaryContainer) \
   E_CPONLY(kColorSysOnPrimaryContainer) \
+  E_CPONLY(kColorSysGradientPrimary) \
   /* Secondary. */ \
   E_CPONLY(kColorSysSecondary) \
   E_CPONLY(kColorSysOnSecondary) \
@@ -127,6 +128,7 @@
   E_CPONLY(kColorSysOnTertiary) \
   E_CPONLY(kColorSysTertiaryContainer) \
   E_CPONLY(kColorSysOnTertiaryContainer) \
+  E_CPONLY(kColorSysGradientTertiary) \
   /* Error. */ \
   E_CPONLY(kColorSysError) \
   E_CPONLY(kColorSysOnError) \
@@ -444,6 +446,8 @@
   E_CPONLY(kColorTableHeaderSeparator) \
   E_CPONLY(kColorSuggestionChipBorder) \
   E_CPONLY(kColorSuggestionChipIcon) \
+  E_CPONLY(kColorTabOrganizationGradient1) \
+  E_CPONLY(kColorTabOrganizationGradient2) \
   E_CPONLY(kColorTextfieldBackground) \
   E_CPONLY(kColorTextfieldBackgroundDisabled) \
   E_CPONLY(kColorTextfieldFilledBackground) \
