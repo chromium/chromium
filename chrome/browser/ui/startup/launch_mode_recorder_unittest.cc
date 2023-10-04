@@ -76,14 +76,6 @@ TEST_F(LaunchModeRecorderTest, SimpleMetric) {
 }
 
 #if BUILDFLAG(IS_WIN)
-// Test  that we we record a LaunchMode of `kUserExperiment` for
-// `kTryChromeAgain`.
-TEST_F(LaunchModeRecorderTest, TryChromeAgain) {
-  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
-  cmd_line.AppendSwitch(switches::kTryChromeAgain);
-  ComputeLaunchModeAndVerify(cmd_line, LaunchMode::kUserExperiment);
-}
-
 TEST_F(LaunchModeRecorderTest, WinNotification) {
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   cmd_line.AppendSwitch(switches::kNotificationLaunchId);

@@ -171,25 +171,6 @@ StartupTabs StartupTabProviderImpl::GetOnboardingTabs(Profile* profile) const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if BUILDFLAG(IS_WIN)
-StartupTabs StartupTabProviderImpl::GetWelcomeBackTabs(
-    Profile* profile,
-    StartupBrowserCreator* browser_creator,
-    chrome::startup::IsProcessStartup process_startup) const {
-  StartupTabs tabs;
-  if (process_startup == chrome::startup::IsProcessStartup::kNo ||
-      !browser_creator) {
-    return tabs;
-  }
-  if (browser_creator->welcome_back_page() &&
-      CanShowWelcome(SyncServiceFactory::IsSyncAllowed(profile),
-                     profile->IsChild(), signin_util::IsForceSigninEnabled())) {
-    tabs.emplace_back(GetWelcomePageUrl(false));
-  }
-  return tabs;
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 StartupTabs StartupTabProviderImpl::GetDistributionFirstRunTabs(
     StartupBrowserCreator* browser_creator) const {
   if (!browser_creator)

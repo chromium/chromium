@@ -729,15 +729,7 @@
     E_CPONLY(kColorCaptionForegroundActive) \
     E_CPONLY(kColorCaptionForegroundInactive) \
     /* Tab search caption button colors. */ \
-    E_CPONLY(kColorTabSearchCaptionButtonFocusRing) \
-    /* Try Chrome dialog colors. */ \
-    E_CPONLY(kColorTryChromeBackground) \
-    E_CPONLY(kColorTryChromeBorder) \
-    E_CPONLY(kColorTryChromeButtonBackgroundAccept) \
-    E_CPONLY(kColorTryChromeButtonBackgroundNoThanks) \
-    E_CPONLY(kColorTryChromeButtonForeground) \
-    E_CPONLY(kColorTryChromeForeground) \
-    E_CPONLY(kColorTryChromeHeaderForeground)
+    E_CPONLY(kColorTabSearchCaptionButtonFocusRing)
 #else
 #define CHROME_PLATFORM_SPECIFIC_COLOR_IDS
 #endif  // BUILDFLAG(IS_WIN)

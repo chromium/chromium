@@ -209,22 +209,6 @@ TEST_F(FillLayoutTest, LayoutIgnoreView) {
   EXPECT_EQ(gfx::Size(25, 10), child_3->size());
 }
 
-TEST_F(FillLayoutTest, LayoutIgnoresHiddenView) {
-  View* const child_1 = AddChildView(10, 50);
-  View* const child_2 = AddChildView(5, 5);
-  View* const child_3 = AddChildView(25, 10);
-  child_3->SetVisible(false);
-  layout_->SetIncludeHiddenViews(false);
-
-  EXPECT_EQ(gfx::Size(10, 50), GetPreferredSize());
-  test::RunScheduledLayout(host_.get());
-
-  const gfx::Size kExpectedSize(kDefaultHostWidth, kDefaultHostHeight);
-  EXPECT_EQ(kExpectedSize, child_1->size());
-  EXPECT_EQ(kExpectedSize, child_2->size());
-  EXPECT_EQ(gfx::Size(25, 10), child_3->size());
-}
-
 TEST_F(FillLayoutTest, LayoutIncludesHiddenView) {
   View* const child_1 = AddChildView(10, 50);
   View* const child_2 = AddChildView(5, 5);

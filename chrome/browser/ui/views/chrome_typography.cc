@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 
 #include "base/feature_list.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/default_style.h"
@@ -92,12 +91,6 @@ void ApplyCommonFontStyles(int context,
       }
       break;
     }
-#if BUILDFLAG(IS_WIN)
-    case CONTEXT_WINDOWS10_NATIVE:
-      // Adjusts default font size up to match Win10 modern UI.
-      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(15);
-      break;
-#endif
     case CONTEXT_IPH_BUBBLE_TITLE:
       details.size_delta =
           gfx::PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(18);

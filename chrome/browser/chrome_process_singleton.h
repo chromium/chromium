@@ -8,21 +8,13 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/process_singleton.h"
-#include "chrome/browser/process_singleton_modal_dialog_lock.h"
 #include "chrome/browser/process_singleton_startup_lock.h"
 
-// Composes a basic ProcessSingleton with ProcessSingletonStartupLock and
-// ProcessSingletonModalDialogLock.
+// Composes a `ProcessSingleton` with a `ProcessSingletonStartupLock`.
 //
-// Notifications from ProcessSingleton will first close a modal dialog if
-// active. Otherwise, until |Unlock()| is called, they will be queued up. Once
-// unlocked, notifications will be passed to the client-supplied
-// NotificationCallback; which is passed as an argument by |Unlock()|.
-//
-// The client must ensure that SetModalDialogNotificationHandler is called
-// appropriately when dialogs are displayed or dismissed during startup. If a
-// dialog is active, it is closed (via the provided handler) and then the
-// notification is processed as normal.
+// Notifications from `ProcessSingleton` will be queued up until `Unlock()` is
+// called. Once unlocked, notifications will be passed to the
+// `NotificationCallback` passed to `Unlock()`.
 class ChromeProcessSingleton {
  public:
   explicit ChromeProcessSingleton(const base::FilePath& user_data_dir);
@@ -47,11 +39,6 @@ class ChromeProcessSingleton {
 
   // Clear any lock state during shutdown.
   void Cleanup();
-
-  // Receives a callback to be run to close the active modal dialog, or an empty
-  // closure if the active dialog is dismissed.
-  void SetModalDialogNotificationHandler(
-      base::RepeatingClosure notification_handler);
 
   // Executes previously queued command-line invocations and allows future
   // invocations to be executed immediately.
@@ -87,7 +74,6 @@ class ChromeProcessSingleton {
   // Notifications passing through both locks are finally delivered to our
   // client.
   ProcessSingletonStartupLock startup_lock_;
-  ProcessSingletonModalDialogLock modal_dialog_lock_;
 
   // The basic ProcessSingleton
   ProcessSingleton process_singleton_;

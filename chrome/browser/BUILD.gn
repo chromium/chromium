@@ -4210,8 +4210,6 @@ static_library("browser") {
       "private_network_access/chrome_private_network_device_chooser.h",
       "private_network_access/chrome_private_network_device_chooser_desktop.cc",
       "private_network_access/chrome_private_network_device_chooser_desktop.h",
-      "process_singleton_modal_dialog_lock.cc",
-      "process_singleton_modal_dialog_lock.h",
       "process_singleton_startup_lock.cc",
       "process_singleton_startup_lock.h",
       "profile_resetter/brandcode_config_fetcher.cc",
@@ -7980,15 +7978,8 @@ if (is_win) {
 # //chrome:main_dll (chrome.dll). It must not pull in additional dependencies
 # over what those targets already require.
 source_set("active_use_util") {
-  sources = [
-    "active_use_util.cc",
-    "active_use_util.h",
-  ]
-  deps = [
-    "//base",
-    "//chrome/common:constants",
-    "//chrome/install_static:buildflags",
-  ]
+  sources = [ "active_use_util.h" ]
+  public_deps = [ "//chrome/install_static:buildflags" ]
 }
 
 source_set("theme_properties") {

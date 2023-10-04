@@ -356,7 +356,6 @@ absl::optional<LaunchMode> GetLaunchModeFast(
       {switches::kInstallChromeApp, LaunchMode::kNone},
       {switches::kFromInstaller, LaunchMode::kNone},
       {switches::kUninstall, LaunchMode::kNone},
-      {switches::kTryChromeAgain, LaunchMode::kUserExperiment},
       {switches::kNotificationLaunchId, LaunchMode::kWinPlatformNotification},
   };
   for (const auto& [switch_val, mode] : switch_to_mode) {

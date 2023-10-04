@@ -17,9 +17,8 @@ ChromeProcessSingleton::ChromeProcessSingleton(
     : startup_lock_(
           base::BindRepeating(&ChromeProcessSingleton::NotificationCallback,
                               base::Unretained(this))),
-      modal_dialog_lock_(startup_lock_.AsNotificationCallback()),
       process_singleton_(user_data_dir,
-                         modal_dialog_lock_.AsNotificationCallback()) {}
+                         startup_lock_.AsNotificationCallback()) {}
 
 ChromeProcessSingleton::~ChromeProcessSingleton() = default;
 
@@ -42,12 +41,6 @@ void ChromeProcessSingleton::Cleanup() {
   if (is_singleton_instance_) {
     process_singleton_.Cleanup();
   }
-}
-
-void ChromeProcessSingleton::SetModalDialogNotificationHandler(
-    base::RepeatingClosure notification_handler) {
-  modal_dialog_lock_.SetModalDialogNotificationHandler(
-      std::move(notification_handler));
 }
 
 void ChromeProcessSingleton::Unlock(

@@ -188,7 +188,6 @@ extern const char kThisTabCaptureAutoReject[];
 extern const char kTestMemoryLogDelayInMinutes[];
 extern const char kTestName[];
 extern const char kTrustedDownloadSources[];
-extern const char kTryChromeAgain[];
 extern const char kUnlimitedStorage[];
 extern const char kUserDataDir[];
 extern const char kUseSystemProxyResolver[];

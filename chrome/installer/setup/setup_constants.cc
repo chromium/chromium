@@ -37,9 +37,6 @@ const char kSetDisplayVersionValue[] = "set-display-version-value";
 // work.
 const char kStartupEventHandle[] = "startup-event-handle";
 
-// Run setup.exe to conduct a post-update experiment.
-const char kUserExperiment[] = "user-experiment";
-
 // Sets the operation to do for the downgrade cleanup. Only the values "revert"
 // and "cleanup" are accepted. If the operation is "cleanup", cleans up the
 // necessary data, if the operation is "revert", reverts any cleanup previously

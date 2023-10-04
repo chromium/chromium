@@ -36,8 +36,9 @@ enum class OldLaunchMode {
   //                            See kShortcutTaskbar instead.
   kShortcutDesktop = 7,  // Launched from a desktop shortcut.
   kShortcutTaskbar = 8,  // Launched from the Windows taskbar.
-  kUserExperiment = 9,   // Launched after acceptance of a user experiment.
-  kOtherOS = 10,         // Result bucket for OSes with no coverage here.
+  // kUserExperiment = 9,  Launched after acceptance of a user experiment.
+  //                       Deprecated.
+  kOtherOS = 10,                // Result bucket for OSes with no coverage here.
   kMacUndockedDiskLaunch = 11,  // Undocked launch from disk.
   kMacDockedDiskLaunch = 12,    // Docked launch from disk.
   kMacUndockedDMGLaunch = 13,   // Undocked launch from a dmg.
@@ -83,8 +84,8 @@ class OldLaunchModeRecorder {
 enum class LaunchMode {
   kNone = 0,   // Don't record this launch.
   kOther = 1,  // Catch-all launch for Windows
-  // Launched after acceptance of a user experiment.
-  kUserExperiment = 2,
+  // kUserExperiment = 2,  Launched after acceptance of a user experiment.
+  //                       Deprecated.
   kOtherOS = 3,          // Result bucket for OSes with no coverage here.
   kProtocolHandler = 4,  // Chrome launched as registered protocol handler.
   kFileTypeHandler = 5,  // Chrome launched as registered file handler.

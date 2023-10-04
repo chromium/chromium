@@ -59035,7 +59035,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="0" label="kNone">Unknown</int>
   <int value="1" label="kOther">Catch-all launch for Windows</int>
   <int value="2" label="kUserExperiment">
-    Launched after acceptance of a user experiment
+    Launched after acceptance of a user experiment (deprecated)
   </int>
   <int value="3" label="kOtherOS">
     Result bucket for OSes with no specific launch modes

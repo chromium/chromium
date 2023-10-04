@@ -91,8 +91,6 @@ if (is_win) {
       "setup_util.h",
       "update_active_setup_version_work_item.cc",
       "update_active_setup_version_work_item.h",
-      "user_experiment.cc",
-      "user_experiment.h",
       "user_hive_visitor.cc",
       "user_hive_visitor.h",
     ]
@@ -154,7 +152,6 @@ if (is_win) {
       "setup_util_unittest.h",
       "taskbar_util_unittest.cc",
       "update_active_setup_version_work_item_unittest.cc",
-      "user_experiment_unittest.cc",
       "user_hive_visitor_unittest.cc",
     ]
 

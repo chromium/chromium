@@ -605,10 +605,6 @@ const char kTestName[] = "test-name";
 // policy is set.
 const char kTrustedDownloadSources[] = "trusted-download-sources";
 
-// Experimental. Shows a dialog asking the user to try chrome. This flag is to
-// be used only by the upgrade process.
-const char kTryChromeAgain[] = "try-chrome-again";
-
 // Overrides per-origin quota settings to unlimited storage for any
 // apps/origins.  This should be used only for testing purpose.
 const char kUnlimitedStorage[] = "unlimited-storage";

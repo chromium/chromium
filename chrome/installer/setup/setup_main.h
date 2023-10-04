@@ -30,7 +30,6 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
                                     const base::CommandLine& cmd_line,
                                     const InitialPreferences& prefs,
                                     InstallerState& installer_state,
-                                    base::FilePath* installer_directory,
                                     ArchiveType* archive_type);
 
 }  // namespace installer

@@ -37,7 +37,6 @@
 #include "chrome/installer/setup/setup_constants.h"
 #include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/setup/update_active_setup_version_work_item.h"
-#include "chrome/installer/setup/user_experiment.h"
 #include "chrome/installer/util/beacons.h"
 #include "chrome/installer/util/create_reg_key_work_item.h"
 #include "chrome/installer/util/delete_after_reboot_helper.h"
@@ -710,14 +709,6 @@ void HandleActiveSetupForBrowser(const InstallerState& installer_state,
                                  CURRENT_USER, install_operation);
 
   UpdateDefaultBrowserBeaconForPath(installation_root.Append(kChromeExe));
-
-  // This install may have been selected into a study for a retention
-  // experiment following a successful update. In case the experiment was not
-  // able to run immediately after the update (e.g., no user was logged on at
-  // the time), try to run it now that the installer is running in the context
-  // of a user.
-  if (ShouldRunUserExperiment(installer_state))
-    BeginUserExperiment(installer_state, setup_path, true /* user_context */);
 }
 
 }  // namespace installer

@@ -9,8 +9,10 @@
 BrowserProcessPlatformPart::BrowserProcessPlatformPart() = default;
 BrowserProcessPlatformPart::~BrowserProcessPlatformPart() = default;
 
-void BrowserProcessPlatformPart::PlatformSpecificCommandLineProcessing(
-    const base::CommandLine& command_line) {
-  if (!did_run_updater_ && ShouldRecordActiveUse(command_line))
-    did_run_updater_.emplace();
+void BrowserProcessPlatformPart::OnBrowserLaunch() {
+  if constexpr (kShouldRecordActiveUse) {
+    if (!did_run_updater_) {
+      did_run_updater_.emplace();
+    }
+  }
 }

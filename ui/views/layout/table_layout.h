@@ -131,8 +131,6 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
 
   TableLayout& SetMinimumSize(const gfx::Size& size);
 
-  TableLayout& SetIncludeHidden(bool include_hidden);
-
  protected:
   ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const override;
@@ -203,9 +201,6 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
 
   // ViewStates sorted based on column_span in ascending order.
   mutable std::vector<ViewState*> view_states_by_col_span_;
-
-  // Indicates whether hidden views are included.
-  bool include_hidden_ = false;
 };
 
 }  // namespace views

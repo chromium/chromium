@@ -163,7 +163,7 @@ int MainDllLoader::Launch(HINSTANCE instance,
                                    SHUTDOWN_NORETRY);
   }
 
-  OnBeforeLaunch(cmd_line, process_type_, file);
+  OnBeforeLaunch(process_type_, file);
   DLL_MAIN chrome_main =
       reinterpret_cast<DLL_MAIN>(::GetProcAddress(dll_, "ChromeMain"));
   int rc = chrome_main(instance, &sandbox_info,
@@ -190,17 +190,16 @@ void MainDllLoader::RelaunchChromeBrowserWithNewCommandLineIfNeeded() {
 class ChromeDllLoader : public MainDllLoader {
  protected:
   // MainDllLoader implementation.
-  void OnBeforeLaunch(const base::CommandLine& cmd_line,
-                      const std::string& process_type,
+  void OnBeforeLaunch(const std::string& process_type,
                       const base::FilePath& dll_path) override;
 };
 
-void ChromeDllLoader::OnBeforeLaunch(const base::CommandLine& cmd_line,
-                                     const std::string& process_type,
+void ChromeDllLoader::OnBeforeLaunch(const std::string& process_type,
                                      const base::FilePath& dll_path) {
   if (process_type.empty()) {
-    if (ShouldRecordActiveUse(cmd_line))
+    if constexpr (kShouldRecordActiveUse) {
       RecordDidRun(dll_path);
+    }
   } else {
     // Set non-browser processes up to be killed by the system after the browser
     // goes away. The browser uses the default shutdown order, which is 0x280.
@@ -214,17 +213,10 @@ void ChromeDllLoader::OnBeforeLaunch(const base::CommandLine& cmd_line,
 
 //=============================================================================
 
-class ChromiumDllLoader : public MainDllLoader {
- protected:
-  void OnBeforeLaunch(const base::CommandLine& cmd_line,
-                      const std::string& process_type,
-                      const base::FilePath& dll_path) override {}
-};
-
 MainDllLoader* MakeMainDllLoader() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return new ChromeDllLoader();
 #else
-  return new ChromiumDllLoader();
+  return new MainDllLoader();
 #endif
 }

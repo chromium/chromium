@@ -191,15 +191,10 @@ void StartupBrowserCreatorImpl::Launch(
   // Check the true process command line for --try-chrome-again=N rather than
   // the one parsed for startup URLs and such.
   if (launch_mode_recorder) {
-    if (!command_line_->GetSwitchValueNative(switches::kTryChromeAgain)
-             .empty()) {
-      launch_mode_recorder->SetLaunchMode(OldLaunchMode::kUserExperiment);
-    } else {
-      launch_mode_recorder->SetLaunchMode(launch_result ==
-                                                  LaunchResult::kWithGivenUrls
-                                              ? OldLaunchMode::kWithUrls
-                                              : OldLaunchMode::kToBeDecided);
-    }
+    launch_mode_recorder->SetLaunchMode(launch_result ==
+                                                LaunchResult::kWithGivenUrls
+                                            ? OldLaunchMode::kWithUrls
+                                            : OldLaunchMode::kToBeDecided);
   }
 
   if (command_line_->HasSwitch(switches::kInstallChromeApp)) {
@@ -547,18 +542,6 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     bool has_welcome_tabs = false;
 
     if (promotional_tabs_enabled) {
-      StartupTabs welcome_back_tabs;
-#if BUILDFLAG(IS_WIN)
-      // This is a launch from a prompt presented to an inactive user who chose
-      // to open Chrome and is being brought to a specific URL for this one
-      // launch. Launch the browser with the desired welcome back URL in the
-      // foreground and the other ordinary URLs (e.g., a restored session) in
-      // the background.
-      welcome_back_tabs = provider.GetWelcomeBackTabs(
-          profile_, browser_creator_, process_startup);
-      AppendTabs(welcome_back_tabs, &tabs);
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       if (is_first_run_ == chrome::startup::IsFirstRun::kYes &&
           base::FeatureList::IsEnabled(kForYouFre)) {
@@ -586,10 +569,9 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
 
       // Potentially add the What's New Page. Note that the What's New page
       // should never be shown in the same session as any first-run onboarding
-      // tabs. It also shouldn't be shown with reset tabs or welcome back tabs
-      // that are required to always be the first foreground tab.
-      if (!has_first_run_experience && reset_tabs.empty() &&
-          welcome_back_tabs.empty()) {
+      // tabs. It also shouldn't be shown with reset tabs that are required to
+      // always be the first foreground tab.
+      if (!has_first_run_experience && reset_tabs.empty()) {
         StartupTabs new_features_tabs;
         new_features_tabs = provider.GetNewFeaturesTabs(whats_new_enabled);
         AppendTabs(new_features_tabs, &tabs);

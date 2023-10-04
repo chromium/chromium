@@ -282,15 +282,6 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabSearchCaptionButtonFocusRing] = ui::PickGoogleColor(
       ui::kColorFocusableBorderFocused, ui::kColorFrameActive,
       color_utils::kMinimumVisibleContrastRatio);
-  mixer[kColorTryChromeBackground] = {SkColorSetRGB(0x1F, 0x1F, 0x1F)};
-  mixer[kColorTryChromeBorder] = {SkColorSetARGB(0x80, 0x80, 0x80, 0x80)};
-  mixer[kColorTryChromeButtonBackgroundAccept] = {
-      SkColorSetRGB(0x00, 0x78, 0xDA)};
-  mixer[kColorTryChromeButtonBackgroundNoThanks] = {
-      SkColorSetA(SK_ColorWHITE, 0x33)};
-  mixer[kColorTryChromeButtonForeground] = {SK_ColorWHITE};
-  mixer[kColorTryChromeForeground] = {SkColorSetA(SK_ColorWHITE, 0xAD)};
-  mixer[kColorTryChromeHeaderForeground] = {SK_ColorWHITE};
 
   if (key.color_mode == ui::ColorProviderKey::ColorMode::kLight) {
     mixer[kColorNewTabPageBackground] = {ui::kColorNativeWindow};

@@ -14,13 +14,11 @@
 #include "base/time/time.h"
 
 namespace base {
-class CommandLine;
 class FilePath;
 }  // namespace base
 
 // Implements the common aspects of loading the main dll for both chrome and
-// chromium scenarios, which are in charge of implementing one abstract
-// method: OnBeforeLaunch()
+// chromium scenarios.
 class MainDllLoader {
  public:
   MainDllLoader();
@@ -39,13 +37,11 @@ class MainDllLoader {
 
  protected:
   // Called after chrome.dll has been loaded but before the entry point is
-  // invoked. Derived classes can implement custom actions here. |cmd_line| is
-  // the process command line. |process_type| is the argument to the --type
-  // command line argument (e.g., "renderer" or "watcher"). |dll_path| refers
-  // to the path of the Chrome dll being loaded.
-  virtual void OnBeforeLaunch(const base::CommandLine& cmd_line,
-                              const std::string& process_type,
-                              const base::FilePath& dll_path) = 0;
+  // invoked. Derived classes can implement custom actions here. `process_type`
+  // is the argument to the `--type` command line argument (e.g., `renderer` or
+  // `watcher`). `dll_path` refers to the path of the Chrome dll being loaded.
+  virtual void OnBeforeLaunch(const std::string& process_type,
+                              const base::FilePath& dll_path) {}
 
  private:
   HMODULE dll_;

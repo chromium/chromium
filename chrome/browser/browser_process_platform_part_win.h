@@ -18,8 +18,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   ~BrowserProcessPlatformPart() override;
 
   // BrowserProcessPlatformPartBase:
-  void PlatformSpecificCommandLineProcessing(
-      const base::CommandLine& command_line) override;
+  void OnBrowserLaunch() override;
 
  private:
   absl::optional<DidRunUpdater> did_run_updater_;

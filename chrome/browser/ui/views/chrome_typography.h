@@ -62,10 +62,6 @@ enum ChromeTextContext {
   //   - Error messages in password manager (manage_passwords_details_view.cc)
   CONTEXT_OMNIBOX_DEEMPHASIZED,
 
-  // Text for titles, body text and buttons that appear in dialogs attempting to
-  // mimic the native Windows 10 look and feel.
-  CONTEXT_WINDOWS10_NATIVE,
-
   // ToolbarButton label
   CONTEXT_TOOLBAR_BUTTON,
 

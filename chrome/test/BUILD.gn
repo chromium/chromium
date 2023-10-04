@@ -2974,8 +2974,6 @@ if (!is_android) {
         "../browser/ui/startup/credential_provider_signin_dialog_win_browsertest.cc",
         "../browser/ui/startup/startup_browser_creator_corrupt_profiles_browsertest_win.cc",
         "../browser/ui/startup/startup_browser_creator_triggered_reset_browsertest_win.cc",
-        "../browser/ui/startup/startup_browser_creator_welcome_back_browsertest.cc",
-        "../browser/ui/views/try_chrome_dialog_win/try_chrome_dialog_browsertest.cc",
         "../browser/ui/views/uninstall_view_browsertest.cc",
         "../test/delayload/delayload_hook_browsertest.cc",
       ]
@@ -5866,7 +5864,6 @@ test("unit_tests") {
     # All unittests in browser, common, renderer and service.
     "../browser/about_flags_unittest.cc",
     "../browser/accessibility/media_app/ax_media_app_handler_unittest.cc",
-    "../browser/active_use_util_unittest.cc",
     "../browser/after_startup_task_utils_unittest.cc",
     "../browser/apps/icon_standardizer_unittest.cc",
     "../browser/apps/user_type_filter_unittest.cc",
@@ -6877,7 +6874,6 @@ test("unit_tests") {
       "../browser/shell_integration_win_unittest.cc",
       "../browser/ui/startup/credential_provider_signin_info_fetcher_win_unittest.cc",
       "../browser/ui/views/frame/windows_caption_button_unittest.cc",
-      "../browser/ui/views/try_chrome_dialog_win/button_layout_unittest.cc",
       "../browser/ui/views/uninstall_view_unittest.cc",
       "../browser/ui/webui/version/version_handler_win_unittest.cc",
       "../browser/upgrade_detector/get_installed_version_win_unittest.cc",

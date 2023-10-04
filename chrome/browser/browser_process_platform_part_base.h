@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_BASE_H_
 #define CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_BASE_H_
 
-namespace base {
-class CommandLine;
-}
+#include "chrome/browser/buildflags.h"
 
 // A base class for platform-specific BrowserProcessPlatformPart
 // implementations. This class itself should never be used verbatim.
@@ -22,10 +20,11 @@ class BrowserProcessPlatformPartBase {
 
   virtual ~BrowserProcessPlatformPartBase();
 
-  // Called after creating the process singleton or when another chrome
-  // rendez-vous with this one.
-  virtual void PlatformSpecificCommandLineProcessing(
-      const base::CommandLine& command_line);
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+  // Called after launch, whether it is from creating a new process or after
+  // rendezvous to an existing process via the process singleton.
+  virtual void OnBrowserLaunch();
+#endif
 
   // Called in the middle of BrowserProcessImpl::StartTearDown().
   virtual void StartTearDown();

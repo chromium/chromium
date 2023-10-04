@@ -34,8 +34,6 @@ using base::win::RegKey;
 
 namespace {
 
-const wchar_t kTestExperimentLabel[] = L"test_label_value";
-
 // This test fixture redirects the HKLM and HKCU registry hives for
 // the duration of the test to make it independent of the machine
 // and user settings.
@@ -55,50 +53,6 @@ class GoogleUpdateSettingsTest : public testing::Test {
         registry_overrides_.OverrideRegistry(HKEY_LOCAL_MACHINE));
     ASSERT_NO_FATAL_FAILURE(
         registry_overrides_.OverrideRegistry(HKEY_CURRENT_USER));
-  }
-
-  // Test the writing and deleting functionality of the experiments label
-  // helper.
-  void TestExperimentsLabelHelper(SystemUserInstall install) {
-    // Install a basic InstallDetails instance.
-    install_static::ScopedInstallDetails details(install == SYSTEM_INSTALL);
-
-    std::wstring value;
-    // Before anything is set, ReadExperimentLabels should succeed but return
-    // an empty string.
-    EXPECT_TRUE(GoogleUpdateSettings::ReadExperimentLabels(&value));
-    EXPECT_EQ(std::wstring(), value);
-
-    EXPECT_TRUE(
-        GoogleUpdateSettings::SetExperimentLabels(kTestExperimentLabel));
-
-    // Validate that something is written. Only worry about the label itself.
-    RegKey key;
-    HKEY root =
-        install == SYSTEM_INSTALL ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-    std::wstring state_key = install == SYSTEM_INSTALL
-                                 ? install_static::GetClientStateMediumKeyPath()
-                                 : install_static::GetClientStateKeyPath();
-
-    EXPECT_EQ(ERROR_SUCCESS,
-              key.Open(root, state_key.c_str(), KEY_QUERY_VALUE));
-    EXPECT_EQ(ERROR_SUCCESS,
-              key.ReadValue(google_update::kExperimentLabels, &value));
-    EXPECT_EQ(kTestExperimentLabel, value);
-    EXPECT_TRUE(GoogleUpdateSettings::ReadExperimentLabels(&value));
-    EXPECT_EQ(kTestExperimentLabel, value);
-    key.Close();
-
-    // Now that the label is set, test the delete functionality. An empty label
-    // should result in deleting the value.
-    EXPECT_TRUE(GoogleUpdateSettings::SetExperimentLabels(std::wstring()));
-    EXPECT_EQ(ERROR_SUCCESS,
-              key.Open(root, state_key.c_str(), KEY_QUERY_VALUE));
-    EXPECT_EQ(ERROR_FILE_NOT_FOUND,
-              key.ReadValue(google_update::kExperimentLabels, &value));
-    EXPECT_TRUE(GoogleUpdateSettings::ReadExperimentLabels(&value));
-    EXPECT_EQ(std::wstring(), value);
-    key.Close();
   }
 
   // Creates "ap" key with the value given as parameter. Also adds work
@@ -621,14 +575,6 @@ TEST_F(GoogleUpdateSettingsTest, UpdatesDisabledByTimeout) {
 }
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-TEST_F(GoogleUpdateSettingsTest, ExperimentsLabelHelperSystem) {
-  TestExperimentsLabelHelper(SYSTEM_INSTALL);
-}
-
-TEST_F(GoogleUpdateSettingsTest, ExperimentsLabelHelperUser) {
-  TestExperimentsLabelHelper(USER_INSTALL);
-}
 
 TEST_F(GoogleUpdateSettingsTest, GetDownloadPreference) {
   RegKey policy_key;

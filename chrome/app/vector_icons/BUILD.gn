@@ -294,9 +294,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     sources += [
       "back_arrow_windows.icon",
       "back_arrow_windows_touch.icon",
-      "inactive_toast_arrow.icon",
-      "inactive_toast_close.icon",
-      "inactive_toast_logo.icon",
       "navigate_stop_windows.icon",
       "navigate_stop_windows_touch.icon",
       "open_in_phone.icon",
