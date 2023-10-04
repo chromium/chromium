@@ -902,7 +902,16 @@ WebBundleParser::~WebBundleParser() {
   // Explicitly delete active parsers to avoid potential problems
   // with deletion of them in |active_parsers_|'s dtor and consequently
   // referring to |active_parsers_| in OnParsingComplete().
-  active_parsers_.clear();
+  //
+  // Avoid using container clear method directly on the member variable
+  // since parser destructor can call back to this class OnParsingComplete
+  // method via the complete_callback_. OnParsingComplete would in such
+  // case call erase method on the same container trying to remove an object
+  // from whose destructor it has been called. C++ and //base containers
+  // generally don't support re-entrancy so this would result in undefined
+  // behavior.
+  auto parsers = std::exchange(active_parsers_, {});
+  parsers.clear();
 }
 
 void WebBundleParser::ParseIntegrityBlock(
