@@ -115,18 +115,21 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(
 
   // Only EGLGLES2 is supported with surfaceless view gl.
   if ((gl::GetGLImplementation() != gl::kGLImplementationEGLGLES2) ||
-      !connection_)
+      !connection_) {
     return nullptr;
+  }
 
   WaylandWindow* window = connection_->window_manager()->GetWindow(widget);
-  if (!window)
+  if (!window) {
     return nullptr;
+  }
 
   // The wl_egl_window needs to be created before the GLSurface so it can be
   // used in the GLSurface constructor.
   auto egl_window = CreateWaylandEglWindow(window);
-  if (!egl_window)
+  if (!egl_window) {
     return nullptr;
+  }
   return gl::InitializeGLSurface(new GLSurfaceWayland(
       display->GetAs<gl::GLDisplayEGL>(), std::move(egl_window), window));
 }
@@ -139,9 +142,9 @@ scoped_refptr<gl::Presenter> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
   } else {
 #if defined(WAYLAND_GBM)
   // If there is a gbm device available, use surfaceless gl surface.
-  if (!buffer_manager_->GetGbmDevice())
+  if (!buffer_manager_->GetGbmDevice()) {
     return nullptr;
-
+  }
   return base::MakeRefCounted<GbmSurfacelessWayland>(
       display->GetAs<gl::GLDisplayEGL>(), buffer_manager_, window);
 #else
@@ -164,9 +167,10 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateOffscreenGLSurface(
 }
 
 gl::EGLDisplayPlatform GLOzoneEGLWayland::GetNativeDisplay() {
-  if (connection_)
+  if (connection_) {
     return gl::EGLDisplayPlatform(
         reinterpret_cast<EGLNativeDisplayType>(connection_->display()));
+  }
   return gl::EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
 }
 
@@ -243,8 +247,10 @@ scoped_refptr<gfx::NativePixmap> WaylandSurfaceFactory::CreateNativePixmap(
   scoped_refptr<GbmPixmapWayland> pixmap =
       base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
 
-  if (!pixmap->InitializeBuffer(widget, size, format, usage, framebuffer_size))
+  if (!pixmap->InitializeBuffer(widget, size, format, usage,
+                                framebuffer_size)) {
     return nullptr;
+  }
   return pixmap;
 #else
   return nullptr;
@@ -275,8 +281,9 @@ WaylandSurfaceFactory::CreateNativePixmapFromHandle(
       base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
 
   if (!pixmap->InitializeBufferFromHandle(widget, size, format,
-                                          std::move(handle)))
+                                          std::move(handle))) {
     return nullptr;
+  }
   return pixmap;
 #else
   return nullptr;
@@ -297,8 +304,9 @@ bool WaylandSurfaceFactory::SupportsNativePixmaps() const {
 
 absl::optional<gfx::BufferFormat>
 WaylandSurfaceFactory::GetPreferredFormatForSolidColor() const {
-  if (!buffer_manager_->SupportsFormat(gfx::BufferFormat::RGBA_8888))
+  if (!buffer_manager_->SupportsFormat(gfx::BufferFormat::RGBA_8888)) {
     return gfx::BufferFormat::BGRA_8888;
+  }
   return gfx::BufferFormat::RGBA_8888;
 }
 
