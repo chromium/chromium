@@ -27,6 +27,18 @@ function clearChildren(element: Element) {
   }
 }
 
+function createEl<K extends keyof HTMLElementTagNameMap>(
+    tagName: K, parentEl: Element|null = null, classes: string[] = [],
+    text: string = ''): HTMLElementTagNameMap[K] {
+  const el = document.createElement(tagName);
+  el.classList.add(...classes);
+  el.textContent = text;
+  if (parentEl) {
+    parentEl.appendChild(el);
+  }
+  return el;
+}
+
 export class OmniboxOutput extends OmniboxElement {
   private selectedResponseIndex: number = 0;
   responsesHistory: OmniboxResponse[][] = [];
@@ -213,14 +225,11 @@ class OutputResultsGroup extends OmniboxElement {
     customElements.whenDefined(outputResultsDetails.localName)
         .then(() => outputResultsDetails.setDetails(this.details));
 
-    const head = document.createElement('thead');
-    head.classList.add('head');
-    const row = document.createElement('tr');
-    this.headers.forEach(cell => row.appendChild(cell));
-    head.appendChild(row);
     const table = this.$('#table');
+    const head = createEl('thead', table, ['head']);
+    const row = createEl('tr', head);
+    this.headers.forEach(cell => row.appendChild(cell));
     assert(table);
-    table.appendChild(head);
 
     table.appendChild(this.combinedResults);
     this.individualResultsList.forEach(results => {
@@ -232,14 +241,9 @@ class OutputResultsGroup extends OmniboxElement {
   }
 
   private renderInnerHeader(results: OutputResultsTable): HTMLElement {
-    const head = document.createElement('tbody');
-    head.classList.add('head');
-    const row = document.createElement('tr');
-    const cell = document.createElement('th');
-    cell.colSpan = COLUMNS.length;
-    cell.textContent = results.innerHeaderText;
-    row.appendChild(cell);
-    head.appendChild(row);
+    const head = createEl('tbody', null, ['head']);
+    const row = createEl('tr', head);
+    createEl('th', row, [], results.innerHeaderText).colSpan = COLUMNS.length;
     return head;
   }
 
@@ -400,20 +404,12 @@ class OutputHeader extends HTMLTableCellElement {
     super();
     this.classList.add(column.headerClassName);
 
-    let container: HTMLAnchorElement|HTMLDivElement;
+    const container =
+        createEl(column.url ? 'a' : 'div', this, ['header-container']);
     if (column.url) {
-      container = document.createElement('a');
-      container.href = column.url;
-    } else {
-      container = document.createElement('div');
+      (container as HTMLAnchorElement).href = column.url;
     }
-    container.classList.add('header-container');
-    column.headerText.forEach(text => {
-      const part = document.createElement('span');
-      part.textContent = text;
-      container.appendChild(part);
-    });
-    this.appendChild(container);
+    column.headerText.forEach(text => createEl('span', container, [], text));
 
     this.title = column.tooltip;
   }
@@ -443,12 +439,8 @@ abstract class FlexWrappingOutputProperty extends OutputProperty {
     // scrollContainer.
     // Flex gutters may provide a cleaner alternative once implemented.
     // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout/Mastering_Wrapping_of_Flex_Items#Creating_gutters_between_items
-    const scrollContainer = document.createElement('div');
-    this.appendChild(scrollContainer);
-
-    this.container = document.createElement('div');
-    this.container.classList.add('pair-container');
-    scrollContainer.appendChild(this.container);
+    const scrollContainer = createEl('div', this);
+    this.container = createEl('div', scrollContainer, ['pair-container']);
 
     return this;
   }
@@ -457,16 +449,8 @@ abstract class FlexWrappingOutputProperty extends OutputProperty {
 class OutputPairProperty extends FlexWrappingOutputProperty {
   constructor(value1: string, value2: string) {
     super(`${value1}.${value2}`);
-
-    const first = document.createElement('div');
-    first.classList.add('pair-item');
-    first.textContent = value1;
-    this.container.appendChild(first);
-
-    const second = document.createElement('div');
-    second.classList.add('pair-item');
-    second.textContent = value2;
-    this.container.appendChild(second);
+    createEl('div', this.container, ['pair-item'], value1);
+    createEl('div', this.container, ['pair-item'], value2);
 
     return this;
   }
@@ -476,14 +460,11 @@ class OutputOverlappingPairProperty extends OutputPairProperty {
   constructor(value1: string, value2: string) {
     const overlap = value1.endsWith(value2);
     super(value2 && overlap ? value1.slice(0, -value2.length) : value1, value2);
-
-    const notOverlapWarning = document.createElement('div');
-    notOverlapWarning.classList.add('overlap-warning');
-    notOverlapWarning.textContent = overlap ?
-        '' :
-        `btw, these texts do not overlap; '${
-            value2}' was expected to be a suffix of '${value1}'`;
-    this.container.appendChild(notOverlapWarning);
+    createEl(
+        'div', this.container, ['overlap-warning'],
+        overlap ? '' :
+                  `btw, these texts do not overlap; '${
+                      value2}' was expected to be a suffix of '${value1}'`);
 
     return this;
   }
@@ -501,32 +482,21 @@ class OutputAnswerProperty extends FlexWrappingOutputProperty {
 
     this.image = image;
 
-    this.imageElement = document.createElement('img');
-    this.imageElement.classList.add('pair-item');
-    this.container.appendChild(this.imageElement);
+    this.imageElement = createEl('img', this.container, ['pair-item']);
 
-    const contentsDiv = document.createElement('div');
-    contentsDiv.classList.add('pair-item', 'contents');
+    const contentsDiv =
+        createEl('div', this.container, ['pair-item', 'contents']);
     OutputAnswerProperty.renderClassifiedText(
         contentsDiv, contents, contentsClassification);
-    this.container.appendChild(contentsDiv);
 
-    const descriptionDiv = document.createElement('div');
-    descriptionDiv.classList.add('pair-item', 'description');
+    const descriptionDiv =
+        createEl('div', this.container, ['pair-item', 'description']);
     OutputAnswerProperty.renderClassifiedText(
         descriptionDiv, description, descriptionClassification);
-    this.container.appendChild(descriptionDiv);
 
-    const answerDiv = document.createElement('div');
-    answerDiv.classList.add('pair-item', 'answer');
-    answerDiv.textContent = answer;
-    this.container.appendChild(answerDiv);
-
-    const imageUrl = document.createElement('a');
-    imageUrl.classList.add('pair-item', 'image-url');
-    imageUrl.textContent = image;
-    imageUrl.href = image;
-    this.container.appendChild(imageUrl);
+    createEl('div', this.container, ['pair-item', 'answer'], answer);
+    createEl('a', this.container, ['pair-item', 'image-url'], image).href =
+        image;
   }
 
   setAnswerImageData(imageData: string) {
@@ -538,12 +508,10 @@ class OutputAnswerProperty extends FlexWrappingOutputProperty {
       classes: ACMatchClassification[]) {
     clearChildren(container);
     OutputAnswerProperty.classify(string, classes)
-        .forEach(({string, style}) => {
-          const span = document.createElement('span');
-          span.classList.add(...OutputAnswerProperty.styleToClasses(style));
-          span.textContent = string;
-          container.appendChild(span);
-        });
+        .forEach(
+            ({string, style}) => createEl(
+                'span', container, OutputAnswerProperty.styleToClasses(style),
+                string));
   }
 
   private static classify(string: string, classes: ACMatchClassification[]):
@@ -567,10 +535,7 @@ class OutputAnswerProperty extends FlexWrappingOutputProperty {
 class OutputBooleanProperty extends OutputProperty {
   constructor(value: boolean, filterName: string) {
     super((value ? 'is: ' : 'not: ') + filterName);
-
-    const icon = document.createElement('div');
-    icon.classList.add('icon', value ? 'check-icon' : 'x-icon');
-    this.appendChild(icon);
+    createEl('div', this, ['icon', value ? 'check-icon' : 'x-icon']);
 
     return this;
   }
@@ -580,30 +545,18 @@ class OutputDictionaryProperty extends OutputProperty {
   constructor(value: DictionaryEntry[]) {
     super(value.map(({key, value}) => `${key}: ${value}`).join('\n'));
 
-    const container = document.createElement('div');
+    const container = createEl('div', this);
 
-    const pre = document.createElement('pre');
-    pre.classList.add('json');
+    const pre = createEl('pre', container, ['json']);
     value.forEach(({key, value}) => {
-      const keySpan = document.createElement('span');
-      keySpan.classList.add('key');
-      keySpan.textContent = key + ': ';
-      pre.appendChild(keySpan);
-
-      const valueSpan = document.createElement('span');
-      valueSpan.classList.add('value');
-      valueSpan.textContent = value + '\n';
-      pre.appendChild(valueSpan);
+      createEl('span', pre, ['key'], key + ': ');
+      createEl('span', pre, ['value'], value + '\n');
     });
-    container.appendChild(pre);
 
-    const link = document.createElement('a');
-    link.classList.add('icon', 'download-icon');
+    const link = createEl('a', null, ['icon', 'download-icon']);
     link.download = 'AdditionalInfo.json';
     link.href = OutputDictionaryProperty.createDownloadLink(value);
     container.insertBefore(link, container.firstChild);
-
-    this.appendChild(container);
 
     return this;
   }
@@ -625,26 +578,16 @@ class OutputUrlProperty extends FlexWrappingOutputProperty {
       strippedDestinationUrl: string) {
     super(destinationUrl);
 
-    const iconAndUrlContainer = document.createElement('div');
-    iconAndUrlContainer.classList.add('pair-item');
-    this.container.appendChild(iconAndUrlContainer);
+    const iconAndUrlContainer = createEl('div', this.container, ['pair-item']);
 
     if (!isSearchType) {
-      const icon = document.createElement('img');
-      icon.src = `chrome://favicon/${destinationUrl}`;
-      iconAndUrlContainer.appendChild(icon);
+      createEl('img', iconAndUrlContainer).src =
+          `chrome://favicon/${destinationUrl}`;
     }
-
-    const urlLink = document.createElement('a');
-    urlLink.textContent = destinationUrl;
-    urlLink.href = destinationUrl;
-    iconAndUrlContainer.appendChild(urlLink);
-
-    const strippedUrlLink = document.createElement('a');
-    strippedUrlLink.classList.add('pair-item');
-    strippedUrlLink.textContent = strippedDestinationUrl;
-    strippedUrlLink.href = strippedDestinationUrl;
-    this.container.appendChild(strippedUrlLink);
+    createEl('a', iconAndUrlContainer, [], destinationUrl).href =
+        destinationUrl;
+    createEl('a', this.container, ['pair-item'], strippedDestinationUrl).href =
+        strippedDestinationUrl;
 
     return this;
   }
@@ -653,10 +596,7 @@ class OutputUrlProperty extends FlexWrappingOutputProperty {
 class OutputTextProperty extends OutputProperty {
   constructor(text: string) {
     super(text);
-
-    const div = document.createElement('div');
-    div.textContent = text;
-    this.appendChild(div);
+    createEl('div', this, [], text);
 
     return this;
   }
