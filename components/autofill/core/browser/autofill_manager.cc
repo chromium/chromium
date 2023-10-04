@@ -727,8 +727,6 @@ void AutofillManager::ParseFormsAsync(
       form_structure->RetrieveFromCache(
           *cached_form_structure,
           FormStructure::RetrieveFromCacheReason::kFormParsing);
-      if (form_structure->value_from_dynamic_change_form())
-        value_from_dynamic_change_form_ = true;
 
       // Not updating signatures of credit card forms is legacy behaviour. We
       // believe that the signatures are kept stable for voting purposes.
@@ -849,8 +847,6 @@ void AutofillManager::ParseFormAsync(
     form_structure->RetrieveFromCache(
         *cached_form_structure,
         FormStructure::RetrieveFromCacheReason::kFormParsing);
-    if (form_structure->value_from_dynamic_change_form())
-      value_from_dynamic_change_form_ = true;
   }
   form_structure->set_current_page_language(GetCurrentPageLanguage());
 
@@ -936,9 +932,6 @@ FormStructure* AutofillManager::ParseForm(const FormData& form,
     // determining the heuristics.
     form_structure->RetrieveFromCache(
         *cached_form, FormStructure::RetrieveFromCacheReason::kFormParsing);
-
-    if (form_structure.get()->value_from_dynamic_change_form())
-      value_from_dynamic_change_form_ = true;
   }
 
   form_structure->set_current_page_language(GetCurrentPageLanguage());

@@ -282,8 +282,6 @@ TEST_P(SaveCardBubbleSingletonTest, OnlyOneActiveBubble) {
 // struct can be true at the same time, we don't support that in the test case
 // (by the way we create histogram name suffixes).
 struct SaveCardOptionParam {
-  bool from_dynamic_change_form;
-  bool has_non_focusable_field;
   bool should_request_name_from_user;
   bool should_request_expiration_date_from_user;
   bool has_multiple_legal_lines;
@@ -291,13 +289,9 @@ struct SaveCardOptionParam {
 };
 
 const SaveCardOptionParam kSaveCardOptionParam[] = {
-    {false, false, false, false, false, false},
-    {true, false, false, false, false, false},
-    {false, true, false, false, false, false},
-    {false, false, true, false, false, false},
-    {false, false, false, true, false, false},
-    {false, false, false, false, true, false},
-    {false, false, false, false, false, true},
+    {false, false, false, false}, {true, false, false, false},
+    {false, true, false, false},  {false, false, true, false},
+    {false, false, false, true},
 };
 
 // Param of the SaveCardBubbleSingletonTestData:
@@ -317,10 +311,6 @@ class SaveCardBubbleLoggingTest
     SaveCardOptionParam save_card_option_param = std::get<2>(GetParam());
     save_credit_card_options_ =
         AutofillClient::SaveCreditCardOptions()
-            .with_from_dynamic_change_form(
-                save_card_option_param.from_dynamic_change_form)
-            .with_has_non_focusable_field(
-                save_card_option_param.has_non_focusable_field)
             .with_should_request_name_from_user(
                 save_card_option_param.should_request_name_from_user)
             .with_should_request_expiration_date_from_user(
@@ -367,12 +357,6 @@ class SaveCardBubbleLoggingTest
 
   std::string GetHistogramNameSuffix() {
     std::string result = "." + destination_ + "." + show_;
-
-    if (GetSaveCreditCardOptions().from_dynamic_change_form)
-      result += ".FromDynamicChangeForm";
-
-    if (GetSaveCreditCardOptions().has_non_focusable_field)
-      result += ".FromNonFocusableForm";
 
     if (GetSaveCreditCardOptions().should_request_name_from_user)
       result += ".RequestingCardholderName";

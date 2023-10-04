@@ -1392,10 +1392,6 @@ chromium-metrics-reviews@google.com.
   </token>
   <token key="SaveSituation">
     <variant name="" summary="aggregated across all situations"/>
-    <variant name=".FromDynamicChangeForm"
-        summary="shown dynamic change forms"/>
-    <variant name=".FromNonFocusableForm"
-        summary="shown from non-focusable forms"/>
     <variant name=".RequestingCardholderName"
         summary="explicitly requesting cardholder name"/>
     <variant name=".RequestingExpirationDate"

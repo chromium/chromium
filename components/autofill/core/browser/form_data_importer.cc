@@ -787,8 +787,7 @@ bool FormDataImporter::ProcessExtractedCreditCard(
     DCHECK(credit_card_import_type_ == CreditCardImportType::kLocalCard ||
            credit_card_import_type_ == CreditCardImportType::kNewCard);
     credit_card_save_manager_->AttemptToOfferCardUploadSave(
-        submitted_form, from_dynamic_change_form_, has_non_focusable_field_,
-        *extracted_credit_card,
+        submitted_form, *extracted_credit_card,
         /*uploading_local_card=*/credit_card_import_type_ ==
             CreditCardImportType::kLocalCard);
     return true;
@@ -796,7 +795,6 @@ bool FormDataImporter::ProcessExtractedCreditCard(
   // If upload save is not allowed, new cards should be saved locally.
   DCHECK(credit_card_import_type_ == CreditCardImportType::kNewCard);
   if (credit_card_save_manager_->AttemptToOfferCardLocalSave(
-          from_dynamic_change_form_, has_non_focusable_field_,
           *extracted_credit_card)) {
     return true;
   }
@@ -957,9 +955,6 @@ absl::optional<Iban> FormDataImporter::ExtractIban(const FormStructure& form) {
 
 FormDataImporter::ExtractCreditCardFromFormResult
 FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
-  has_non_focusable_field_ = false;
-  from_dynamic_change_form_ = false;
-
   ExtractCreditCardFromFormResult result;
 
   ServerFieldTypeSet types_seen;
@@ -976,11 +971,6 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
     // Field was not identified as a credit card field.
     if (field_type.group() != FieldTypeGroup::kCreditCard)
       continue;
-
-    if (form.value_from_dynamic_change_form())
-      from_dynamic_change_form_ = true;
-    if (!field->is_focusable)
-      has_non_focusable_field_ = true;
 
     ServerFieldType server_field_type = field_type.GetStorableType();
     result.has_duplicate_credit_card_field_type |=

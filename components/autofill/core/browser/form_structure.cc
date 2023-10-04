@@ -1040,7 +1040,6 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         // to be preserved.
         if (!field->IsSelectOrSelectListElement()) {
           field->value = cached_field->value;
-          value_from_dynamic_change_form_ = true;
         }
         break;
       case RetrieveFromCacheReason::kFormImport:

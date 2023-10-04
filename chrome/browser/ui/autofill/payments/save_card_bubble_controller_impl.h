@@ -57,10 +57,6 @@ class SaveCardBubbleControllerImpl
   // with respect to the offer-to-save prompt.
   // If |options.show_bubble| is true, pops up the offer-to-save bubble;
   // otherwise, only the omnibox icon is displayed.
-  // If |options.has_non_focusable_field| is true, the save is triggered by a
-  // form that has non_focusable fields.
-  // If |options.from_dynamic_change_form| is true, the save is triggered by a
-  // dynamic change form.
   // If |options.card_save_type| has value `CardSaveType::kCardSaveOnly`, the
   // offer-to-save card bubble is shown. If the value is
   // `CardSaveType::kCardSaveWithCvc`, the offer-to-save card bubble is shown,
@@ -83,10 +79,6 @@ class SaveCardBubbleControllerImpl
   // dropdowns for entering the expiration date will appear in the bubble.
   // If |options.show_prompt| is true, pops up the offer-to-save bubble;
   // Otherwise, only the omnibox icon is displayed.
-  // If |options.has_non_focusable_field| is true, the save is triggered by a
-  // form that has non-focusable fields.
-  // If |options.from_dynamic_change_form| is true, the save is triggered by a
-  // dynamic change form.
   // If |options.card_save_type| has value `CardSaveType::kCardSaveOnly`, the
   // offer-to-save card bubble is shown. If the value is
   // `CardSaveType::kCardSaveWithCvc`, the offer-to-save card bubble is shown,

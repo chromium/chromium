@@ -235,7 +235,7 @@ class FormStructure {
     //   kFormParsing the value is persisted. During import, however, we want to
     //   store the last observed value. Furthermore, if the submitted value of a
     //   field has never been changed, we ignore the previous value from import
-    //   (unless it's a state or country as websites can find meanigful default
+    //   (unless it's a state or country as websites can find meaningful default
     //   values via GeoIP).
     kFormImport,
   };
@@ -442,14 +442,6 @@ class FormStructure {
     current_page_language_ = std::move(language);
   }
 
-  bool value_from_dynamic_change_form() const {
-    return value_from_dynamic_change_form_;
-  }
-
-  void set_value_from_dynamic_change_form(bool v) {
-    value_from_dynamic_change_form_ = v;
-  }
-
   FormGlobalId global_id() const { return {host_frame_, unique_renderer_id_}; }
 
   FormVersion version() const { return version_; }
@@ -643,7 +635,7 @@ class FormStructure {
   absl::optional<std::pair<PasswordAttribute, bool>> password_attributes_vote_;
 
   // If |password_attribute_vote_| contains (kHasSpecialSymbol, true), this
-  // field contains nosified information about a special symbol in a
+  // field contains noisified information about a special symbol in a
   // user-created password stored as ASCII code. The default value of 0
   // indicates that no symbol was set.
   int password_symbol_vote_ = 0;
@@ -666,8 +658,6 @@ class FormStructure {
   // True iff queries encoded from this form structure should include rich
   // form/field metadata.
   bool is_rich_query_enabled_ = false;
-
-  bool value_from_dynamic_change_form_ = false;
 
   // A unique identifier of the containing frame.
   // This value must not be leaked to other renderer processes.

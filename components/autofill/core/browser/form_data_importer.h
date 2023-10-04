@@ -344,13 +344,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // `kAutofillRemoveInaccessibleProfileValues` is enabled.
   void RemoveInaccessibleProfileValues(AutofillProfile& profile);
 
-  // Whether a dynamic change form is imported.
-  bool from_dynamic_change_form_ = false;
-
-  // Whether the form imported has non-focusable fields after user entered
-  // information into it.
-  bool has_non_focusable_field_ = false;
-
   // The associated autofill client. Weak reference.
   raw_ptr<AutofillClient> client_;
 

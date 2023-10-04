@@ -279,7 +279,7 @@ class AutofillManager
   // whether focus was previously on a form with which the user had interacted.
   void OnFocusNoLongerOnForm(bool had_interacted_form);
 
-  // Invoked when textfeild editing ended
+  // Invoked when textfield editing ended
   void OnDidEndTextFieldEditing();
 
   // Invoked when popup window should be hidden.
@@ -492,7 +492,7 @@ class AutofillManager
   // TODO(crbug.com/1309848): Add unit tests.
   // TODO(crbug.com/1345089): Eliminate either the ParseFormsAsync() or
   // ParseFormAsync(). There are a few possible directions:
-  // - Let ParseFormAync() wrap the FormData in a vector, call
+  // - Let ParseFormAsync() wrap the FormData in a vector, call
   //   ParseFormsAsync(), and then unwrap the vector again.
   // - Let OnFormsSeen() take a single FormData. That simplifies also
   //   ContentAutofillDriver and AutofillDriverRouter a bit, but then the
@@ -514,8 +514,6 @@ class AutofillManager
   // the returned form structure to the |form_structures_|.
   FormStructure* ParseForm(const FormData& form,
                            const FormStructure* cached_form);
-
-  bool value_from_dynamic_change_form_ = false;
 
   std::map<FormGlobalId, std::unique_ptr<FormStructure>>*
   mutable_form_structures() {

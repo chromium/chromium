@@ -2798,9 +2798,6 @@ std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
   submitted_form->RetrieveFromCache(
       *cached_submitted_form,
       FormStructure::RetrieveFromCacheReason::kFormImport);
-  if (value_from_dynamic_change_form_) {
-    submitted_form->set_value_from_dynamic_change_form(true);
-  }
 
   return submitted_form;
 }

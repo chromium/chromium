@@ -95,14 +95,6 @@ void LogSaveCardPromptOfferMetric(
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".RequestingExpirationDate", metric);
   }
-  if (options.has_non_focusable_field) {
-    base::UmaHistogramEnumeration(
-        metric_with_destination_and_show + ".FromNonFocusableForm", metric);
-  }
-  if (options.from_dynamic_change_form) {
-    base::UmaHistogramEnumeration(
-        metric_with_destination_and_show + ".FromDynamicChangeForm", metric);
-  }
   if (options.has_multiple_legal_lines) {
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".WithMultipleLegalLines", metric);
@@ -149,14 +141,6 @@ void LogSaveCardPromptResultMetric(
   if (options.should_request_expiration_date_from_user) {
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".RequestingExpirationDate", metric);
-  }
-  if (options.has_non_focusable_field) {
-    base::UmaHistogramEnumeration(
-        metric_with_destination_and_show + ".FromNonFocusableForm", metric);
-  }
-  if (options.from_dynamic_change_form) {
-    base::UmaHistogramEnumeration(
-        metric_with_destination_and_show + ".FromDynamicChangeForm", metric);
   }
   if (options.has_multiple_legal_lines) {
     base::UmaHistogramEnumeration(

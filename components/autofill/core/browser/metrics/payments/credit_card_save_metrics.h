@@ -69,14 +69,8 @@ enum CardUploadDecision {
   // A pair of dropdowns for the user to select expiration date was surfaced
   // in the offer-to-save dialog.
   USER_REQUESTED_TO_PROVIDE_EXPIRATION_DATE = 1 << 14,
-  // All the required conditions were satisfied even though the form is
-  // unfocused after the user entered information into it.
-  UPLOAD_OFFERED_FROM_NON_FOCUSABLE_FIELD = 1 << 15,
   // The card does not satisfy any of the ranges of supported BIN ranges.
   UPLOAD_NOT_OFFERED_UNSUPPORTED_BIN_RANGE = 1 << 16,
-  // All the required conditions were satisfied even though the form is
-  // dynamic changed.
-  UPLOAD_OFFERED_FROM_DYNAMIC_CHANGE_FORM = 1 << 17,
   // The legal message was invalid.
   UPLOAD_NOT_OFFERED_INVALID_LEGAL_MESSAGE = 1 << 18,
   // Update |kNumCardUploadDecisionMetrics| when adding new enum here.
