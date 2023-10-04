@@ -285,6 +285,7 @@ EncodedVideoChunk* MakeEncodedVideoChunk(
 }
 
 EncodedAudioChunk* MakeEncodedAudioChunk(
+    ScriptState* script_state,
     const wc_fuzzer::EncodedAudioChunk& proto) {
   auto* data = MakeGarbageCollected<AllowSharedBufferSource>(
       DOMArrayBuffer::Create(proto.data().data(), proto.data().size()));
@@ -297,7 +298,8 @@ EncodedAudioChunk* MakeEncodedAudioChunk(
   if (proto.has_duration())
     init->setDuration(proto.duration());
 
-  return EncodedAudioChunk::Create(init);
+  return EncodedAudioChunk::Create(script_state, init,
+                                   IGNORE_EXCEPTION_FOR_TESTING);
 }
 
 VideoEncoderEncodeOptions* MakeEncodeOptions(

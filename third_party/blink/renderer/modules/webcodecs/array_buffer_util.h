@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_ARRAY_BUFFER_UTIL_H_
 
 #include "base/containers/span.h"
+#include "media/base/decoder_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -53,6 +54,25 @@ ArrayBufferContents TransferArrayBufferForSpan(
     base::span<const uint8_t> data_range,
     ExceptionState& exception_state,
     v8::Isolate* isolate);
+
+// A wrapper around `ArrayBuffer` contents that allows to transfer ownership
+// to `DecoderBuffer`.
+class ArrayBufferContentsExternalMemory
+    : public media::DecoderBuffer::ExternalMemory {
+ public:
+  explicit ArrayBufferContentsExternalMemory(ArrayBufferContents contents,
+                                             base::span<const uint8_t> span)
+      : media::DecoderBuffer::ExternalMemory(span),
+        contents_(std::move(contents)) {
+    // Check that `span` refers to the memory inside `contents`.
+    auto* contents_data = static_cast<const uint8_t*>(contents_.Data());
+    CHECK_GE(span.data(), contents_data);
+    CHECK_LE(span.data() + span.size(), contents_data + contents_.DataLength());
+  }
+
+ private:
+  ArrayBufferContents contents_;
+};
 
 }  // namespace blink
 

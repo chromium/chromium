@@ -91,7 +91,8 @@ DEFINE_TEXT_PROTO_FUZZER(
           }
           case wc_fuzzer::AudioDecoderApiInvocation::kDecode:
             audio_decoder->decode(
-                MakeEncodedAudioChunk(invocation.decode().chunk()),
+                MakeEncodedAudioChunk(script_state,
+                                      invocation.decode().chunk()),
                 IGNORE_EXCEPTION_FOR_TESTING);
             break;
           case wc_fuzzer::AudioDecoderApiInvocation::kFlush: {

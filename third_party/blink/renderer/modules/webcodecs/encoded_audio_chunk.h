@@ -23,7 +23,9 @@ class MODULES_EXPORT EncodedAudioChunk final : public ScriptWrappable {
  public:
   explicit EncodedAudioChunk(scoped_refptr<media::DecoderBuffer> buffer);
 
-  static EncodedAudioChunk* Create(const EncodedAudioChunkInit* init);
+  static EncodedAudioChunk* Create(ScriptState* script_state,
+                                   const EncodedAudioChunkInit* init,
+                                   ExceptionState& exception_state);
 
   // encoded_audio_chunk.idl implementation.
   String type() const;

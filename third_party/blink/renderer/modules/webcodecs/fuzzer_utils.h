@@ -62,6 +62,7 @@ EncodedVideoChunk* MakeEncodedVideoChunk(
     const wc_fuzzer::EncodedVideoChunk& proto);
 
 EncodedAudioChunk* MakeEncodedAudioChunk(
+    ScriptState* script_state,
     const wc_fuzzer::EncodedAudioChunk& proto);
 
 AllowSharedBufferSource* MakeAllowSharedBufferSource(
