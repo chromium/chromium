@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_POLICY_CORE_BROWSER_SIGNIN_PROFILE_SEPARATION_POLICIES_H_
 #define COMPONENTS_POLICY_CORE_BROWSER_SIGNIN_PROFILE_SEPARATION_POLICIES_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "components/policy/policy_export.h"
