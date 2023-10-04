@@ -113,6 +113,16 @@ AccessibilityInfoDataWrapper* AXTreeSourceAndroid::GetFirstImportantAncestor(
   return parent;
 }
 
+AccessibilityInfoDataWrapper*
+AXTreeSourceAndroid::GetFirstAccessibilityFocusableAncestor(
+    AccessibilityInfoDataWrapper* info_data) const {
+  AccessibilityInfoDataWrapper* node = info_data;
+  while (node && !node->IsAccessibilityFocusableContainer()) {
+    node = GetParent(node);
+  }
+  return node;
+}
+
 bool AXTreeSourceAndroid::GetTreeData(ui::AXTreeData* data) const {
   data->tree_id = ax_tree_id();
   if (android_focused_id_.has_value()) {
@@ -234,6 +244,9 @@ void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
     return;
   }
 
+  AccessibilityInfoDataWrapper* const source_node =
+      GetFromId(event_data.source_id);
+
   std::vector<int32_t> update_ids = ProcessHooksOnEvent(event_data);
 
   // Prep the event and send it to automation.
@@ -241,8 +254,8 @@ void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
       android_focused_id_.has_value() ? GetFromId(*android_focused_id_)
                                       : nullptr;
   std::vector<ui::AXEvent> events;
-  const absl::optional<ax::mojom::Event> event_type = ToAXEvent(
-      event_data.event_type, GetFromId(event_data.source_id), focused_node);
+  const absl::optional<ax::mojom::Event> event_type =
+      ToAXEvent(event_data.event_type, source_node, focused_node);
   if (event_type) {
     ui::AXEvent event;
     event.event_type = event_type.value();
@@ -261,14 +274,20 @@ void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
     events.push_back(std::move(event));
   }
 
-  // On event type of WINDOW_STATE_CHANGED, update the entire tree so that
-  // window location is correctly calculated.
-  int32_t node_id_to_clear =
-      (event_data.event_type == AXEventType::WINDOW_STATE_CHANGED)
-          ? *root_id_
-          : event_data.source_id;
-
-  update_ids.push_back(node_id_to_clear);
+  if (event_data.event_type == AXEventType::WINDOW_STATE_CHANGED) {
+    // On event type of WINDOW_STATE_CHANGED, update the entire tree so that
+    // window location is correctly calculated.
+    update_ids.push_back(*root_id_);
+  } else if (!UseFullFocusMode()) {
+    update_ids.push_back(event_data.source_id);
+  } else {
+    // Otherwise, update subtree under the event source.
+    // If the event source is ignored, it's possible that the name is used by
+    // ancestor.
+    AccessibilityInfoDataWrapper* parent =
+        GetFirstAccessibilityFocusableAncestor(source_node);
+    update_ids.push_back(parent ? parent->GetId() : event_data.source_id);
+  }
 
   for (const int32_t update_id : update_ids) {
     current_tree_serializer_->MarkSubtreeDirty(GetFromId(update_id));

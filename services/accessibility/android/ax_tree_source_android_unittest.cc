@@ -1582,4 +1582,102 @@ TEST_F(AXTreeSourceAndroidTest, EventFrom) {
   EXPECT_EQ(ax::mojom::EventFrom::kAction, actual.event_from);
   EXPECT_EQ(ax::mojom::Action::kDoDefault, actual.event_from_action);
 }
+
+TEST_F(AXTreeSourceAndroidTest, UpdateChangeFromNameMergedNode) {
+  set_full_focus_mode(true);
+
+  auto event = AXEventData::New();
+  event->source_id = 10;  // root
+  event->task_id = 1;
+  event->event_type = AXEventType::WINDOW_STATE_CHANGED;
+
+  event->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
+  event->window_data->push_back(AXWindowInfoData::New());
+  AXWindowInfoData* root_window = event->window_data->back().get();
+  root_window->window_id = 100;
+  root_window->root_node_id = 10;
+
+  /* AXTree of this test:
+    [10] root
+    --[1] node1 clickable container
+    ----[2] node2 text node, not clickable
+    ----[3] node3 button node, clickable
+  */
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* root = event->node_data.back().get();
+  root->id = 10;
+  SetProperty(root, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({1}));
+  SetProperty(root, AXBooleanProperty::IMPORTANCE, true);
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* node1 = event->node_data.back().get();
+  node1->id = 1;
+  SetProperty(node1, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(node1, AXBooleanProperty::VISIBLE_TO_USER, true);
+  SetProperty(node1, AXBooleanProperty::CLICKABLE, true);
+  SetProperty(node1, AXIntListProperty::CHILD_NODE_IDS,
+              std::vector<int>({2, 3}));
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* node2 = event->node_data.back().get();
+  node2->id = 2;
+  SetProperty(node2, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(node2, AXBooleanProperty::VISIBLE_TO_USER, true);
+  SetProperty(node2, AXStringProperty::TEXT, "text");
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* node3 = event->node_data.back().get();
+  node3->id = 3;
+  SetProperty(node3, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(node3, AXBooleanProperty::VISIBLE_TO_USER, true);
+  SetProperty(node3, AXBooleanProperty::CLICKABLE, true);
+  SetProperty(node3, AXStringProperty::TEXT, "button");
+
+  CallNotifyAccessibilityEvent(event.get());
+
+  ui::AXNodeData data;
+  std::string name;
+
+  // (Precondition) First, check name computation from children.
+
+  data = GetSerializedNode(node1->id);
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  EXPECT_EQ("text", name);
+
+  data = GetSerializedNode(node2->id);
+  ASSERT_TRUE(data.IsIgnored());
+
+  data = GetSerializedNode(node3->id);
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  EXPECT_EQ("button", name);
+
+  // Update button text.
+  event->source_id = node3->id;
+  event->event_type = AXEventType::VIEW_TEXT_CHANGED;
+  SetProperty(node3, AXStringProperty::TEXT, "button2");
+
+  CallNotifyAccessibilityEvent(event.get());
+
+  data = GetSerializedNode(node3->id);
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  EXPECT_EQ("button2", name);
+
+  // Update text in node2.
+  // This text is used by node1, but event source is node2.
+  // AXTreeSourceAndroid should handle and update the tree.
+  event->source_id = node2->id;
+  event->event_type = AXEventType::VIEW_TEXT_CHANGED;
+  SetProperty(node2, AXStringProperty::TEXT, "text2");
+
+  CallNotifyAccessibilityEvent(event.get());
+
+  data = GetSerializedNode(node1->id);
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  EXPECT_EQ("text2", name);
+}
+
 }  // namespace ax::android

@@ -125,6 +125,9 @@ class AXTreeSourceAndroid
   AccessibilityInfoDataWrapper* GetFirstImportantAncestor(
       AccessibilityInfoDataWrapper* info_data) const;
 
+  AccessibilityInfoDataWrapper* GetFirstAccessibilityFocusableAncestor(
+      AccessibilityInfoDataWrapper* info_data) const;
+
   SerializationDelegate& serialization_delegate() const {
     return *serialization_delegate_.get();
   }
