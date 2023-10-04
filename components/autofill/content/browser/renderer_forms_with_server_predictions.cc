@@ -15,7 +15,6 @@
 #include "components/autofill/core/browser/autofill_driver_router.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -35,50 +34,41 @@ RendererFormsWithServerPredictions::FromBrowserForm(AutofillManager& manager,
       GetFormDataAndServerPredictions(*browser_form);
   RendererFormsWithServerPredictions result;
   result.predictions = std::move(form_and_predictions.predictions);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillPassRendererFormsToPasswordManager)) {
-    // The cast is safe, since this method can only get called by content
-    // embedders.
-    ContentAutofillClient& client =
-        static_cast<ContentAutofillClient&>(manager.client());
-    const AutofillDriverRouter& router =
-        client.GetAutofillDriverFactory()->router();
-    std::vector<FormData> renderer_forms =
-        router.GetRendererForms(form_and_predictions.form_data);
+  // The cast is safe, since this method can only get called by content
+  // embedders.
+  ContentAutofillClient& client =
+      static_cast<ContentAutofillClient&>(manager.client());
+  const AutofillDriverRouter& router =
+      client.GetAutofillDriverFactory()->router();
+  std::vector<FormData> renderer_forms =
+      router.GetRendererForms(form_and_predictions.form_data);
 
-    result.renderer_forms.reserve(renderer_forms.size());
-    base::flat_map<LocalFrameToken, content::GlobalRenderFrameHostId>
-        token_rfh_map;
-    for (FormData& form : renderer_forms) {
-      content::GlobalRenderFrameHostId rfh_id;
-      if (auto it = token_rfh_map.find(form.host_frame);
-          it != token_rfh_map.end()) {
-        rfh_id = it->second;
-      } else {
-        // Attempt to find the RFH with `form.host_frame` as a local frame
-        // token.
-        client.GetWebContents().ForEachRenderFrameHost(
-            [&rfh_id, &form](content::RenderFrameHost* host) {
-              if (LocalFrameToken(host->GetFrameToken().value()) ==
-                  form.host_frame) {
-                rfh_id = host->GetGlobalId();
-              }
-            });
-        token_rfh_map.insert({form.host_frame, rfh_id});
-      }
-      if (!rfh_id) {
-        continue;
-      }
-      result.renderer_forms.emplace_back(std::move(form), rfh_id);
+  result.renderer_forms.reserve(renderer_forms.size());
+  base::flat_map<LocalFrameToken, content::GlobalRenderFrameHostId>
+      token_rfh_map;
+  for (FormData& form : renderer_forms) {
+    content::GlobalRenderFrameHostId rfh_id;
+    if (auto it = token_rfh_map.find(form.host_frame);
+        it != token_rfh_map.end()) {
+      rfh_id = it->second;
+    } else {
+      // Attempt to find the RFH with `form.host_frame` as a local frame
+      // token.
+      client.GetWebContents().ForEachRenderFrameHost(
+          [&rfh_id, &form](content::RenderFrameHost* host) {
+            if (LocalFrameToken(host->GetFrameToken().value()) ==
+                form.host_frame) {
+              rfh_id = host->GetGlobalId();
+            }
+          });
+      token_rfh_map.insert({form.host_frame, rfh_id});
     }
-
-    return result;
+    if (!rfh_id) {
+      continue;
+    }
+    result.renderer_forms.emplace_back(std::move(form), rfh_id);
   }
 
-  ContentAutofillDriver& driver =
-      static_cast<ContentAutofillDriver&>(manager.driver());
-  result.renderer_forms = {{std::move(form_and_predictions.form_data),
-                            driver.render_frame_host()->GetGlobalId()}};
   return result;
 }
 

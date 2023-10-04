@@ -509,13 +509,6 @@ BASE_FEATURE(kAutofillAlwaysParsePlaceholders,
              "AutofillAlwaysParsePlaceholders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If the feature is enabled, browser forms for which Autofill has received
-// predictions, are split into renderer forms before passing them on to password
-// manager.
-BASE_FEATURE(kAutofillPassRendererFormsToPasswordManager,
-             "AutofillPassRendererFormsToPasswordManager",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If the feature is enabled, paint checks over individual `PopupCellView`s (to
 // verify that a user's cursor has been outside the cell before accepting it)
 // are disabled.
