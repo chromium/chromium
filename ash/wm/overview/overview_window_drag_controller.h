@@ -247,8 +247,8 @@ class ASH_EXPORT OverviewWindowDragController {
   // mode is only allowed when |is_touch_dragging_| is true.
   const bool is_touch_dragging_;
 
-  // True if SplitView is enabled.
-  const bool should_allow_split_view_;
+  // True if the `item_` can be snapped by dragging.
+  const bool is_eligible_for_drag_to_snap_;
 
   // True if the Virtual Desks bar is created and dragging to desks is enabled.
   const bool virtual_desks_bar_enabled_;

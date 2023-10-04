@@ -1494,6 +1494,57 @@ TEST_F(SnapGroupEntryPointArm1Test, StackingOrderWhileDraggingInOverview) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
 }
 
+// Tests that `OverviewGroupItem` is not snappable in overview when there are
+// two windows hosted by it however when one of the windows gets destroyed in
+// overview, the remaining item becomes snappable.
+TEST_F(SnapGroupEntryPointArm1Test, GroupItemSnapBehaviorInOverview) {
+  auto* desk_controller = DesksController::Get();
+  desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desk_controller->desks().size());
+
+  std::unique_ptr<aura::Window> window0 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  SnapTwoTestWindowsInArm1(window0.get(), window1.get());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto& window_list = overview_grid->window_list();
+  ASSERT_EQ(window_list.size(), 1u);
+
+  OverviewSession* overview_session = overview_controller->overview_session();
+  auto* overview_item =
+      overview_session->GetOverviewItemForWindow(window0.get());
+  auto* event_generator = GetEventGenerator();
+  const auto target_bounds_before_dragging = overview_item->target_bounds();
+
+  DragItemToPoint(
+      overview_item,
+      Shell::GetPrimaryRootWindow()->GetBoundsInScreen().left_center(),
+      event_generator, /*by_touch_gestures=*/false, /*drop=*/true);
+  EXPECT_FALSE(overview_item->get_cannot_snap_widget_for_testing());
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Verify that `overview_item` is dropped to its old position before
+  // dragging.
+  EXPECT_EQ(overview_item->target_bounds(), target_bounds_before_dragging);
+
+  // Reset `window0` and verify that the remaining item becomes snappable.
+  window0.reset();
+
+  DragItemToPoint(
+      overview_session->GetOverviewItemForWindow(window1.get()),
+      Shell::GetPrimaryRootWindow()->GetBoundsInScreen().left_center(),
+      event_generator, /*by_touch_gestures=*/false, /*drop=*/true);
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_EQ(WindowState::Get(window1.get())->GetStateType(),
+            chromeos::WindowStateType::kPrimarySnapped);
+}
+
 // Tests that the hit area of the split view divider can be outside of its
 // bounds with the extra insets whose value is `kSplitViewDividerExtraInset`.
 TEST_F(SnapGroupEntryPointArm1Test, SplitViewDividerEnlargedHitArea) {

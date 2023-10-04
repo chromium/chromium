@@ -300,6 +300,10 @@ class ASH_EXPORT OverviewItemBase {
     target_bounds_ = target_bounds;
   }
 
+  RoundedLabelWidget* get_cannot_snap_widget_for_testing() {
+    return cannot_snap_widget_.get();
+  }
+
  protected:
   // Creates `item_widget_` with `OverviewItemView` or
   // `OverviewGroupContainerView` as its contents view.

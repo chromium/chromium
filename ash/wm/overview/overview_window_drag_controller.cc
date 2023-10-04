@@ -18,6 +18,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -166,6 +167,13 @@ void RecordDrag(OverviewDragAction action) {
   base::UmaHistogramEnumeration("Ash.Overview.WindowDrag.Workflow", action);
 }
 
+// Returns true if the `item` can to be snapped in overview, an
+// `OverviewGroupItem` with two `OverviewItem`s is not allowed to snap in
+// overview.
+bool IsEligibleForDragToSnap(OverviewItemBase* item) {
+  return (item->GetWindows().size() == 1u) && ShouldAllowSplitView();
+}
+
 // Helps with handling the workflow where you drag an overview item from one
 // grid and drop into another grid. The challenge is that if the item represents
 // an ARC window, that window will be moved to the target root asynchronously.
@@ -236,11 +244,10 @@ OverviewWindowDragController::OverviewWindowDragController(
       item_(item),
       display_count_(Shell::GetAllRootWindows().size()),
       is_touch_dragging_(is_touch_dragging),
-      should_allow_split_view_(ShouldAllowSplitView()),
+      is_eligible_for_drag_to_snap_(IsEligibleForDragToSnap(item)),
       virtual_desks_bar_enabled_(GetVirtualDesksBarEnabled(item)) {
-  DCHECK(!Shell::Get()->overview_controller()->IsInStartAnimation());
-  DCHECK(!SplitViewController::Get(Shell::GetPrimaryRootWindow())
-              ->IsDividerAnimating());
+  CHECK(!Shell::Get()->overview_controller()->IsInStartAnimation());
+  CHECK(!SplitViewController::Get(item_->root_window())->IsDividerAnimating());
 }
 
 OverviewWindowDragController::~OverviewWindowDragController() {
@@ -277,10 +284,11 @@ void OverviewWindowDragController::Drag(const gfx::PointF& location_in_screen) {
 
     if (is_touch_dragging_ && std::abs(distance.x()) < std::abs(distance.y()))
       StartDragToCloseMode();
-    else if (should_allow_split_view_ || virtual_desks_bar_enabled_)
+    else if (is_eligible_for_drag_to_snap_ || virtual_desks_bar_enabled_) {
       StartNormalDragMode(location_in_screen);
-    else
+    } else {
       return;
+    }
   }
 
   if (current_drag_behavior_ == DragBehavior::kDragToClose)
@@ -338,7 +346,7 @@ OverviewWindowDragController::CompleteDrag(
 
 void OverviewWindowDragController::StartNormalDragMode(
     const gfx::PointF& location_in_screen) {
-  DCHECK(should_allow_split_view_ || virtual_desks_bar_enabled_);
+  CHECK(is_eligible_for_drag_to_snap_ || virtual_desks_bar_enabled_);
 
   did_move_ = true;
   current_drag_behavior_ = DragBehavior::kNormalDrag;
@@ -362,7 +370,7 @@ void OverviewWindowDragController::StartNormalDragMode(
 
   item_->UpdateShadowTypeForDrag(/*is_dragging=*/true);
 
-  if (should_allow_split_view_) {
+  if (is_eligible_for_drag_to_snap_) {
     overview_session_->SetSplitViewDragIndicatorsDraggedWindow(
         item_->GetWindow());
     overview_session_->UpdateSplitViewDragIndicatorsWindowDraggingStates(
@@ -376,7 +384,7 @@ void OverviewWindowDragController::StartNormalDragMode(
     // Update the split view divider bar status if necessary. If splitview is
     // active when dragging the overview window, the split divider bar should be
     // placed below the dragged window during dragging.
-    SplitViewController::Get(Shell::GetPrimaryRootWindow())
+    SplitViewController::Get(item_->root_window())
         ->OnWindowDragStarted(item_->GetWindow());
   }
 
@@ -455,7 +463,7 @@ void OverviewWindowDragController::ActivateDraggedWindow() {
   SplitViewController* split_view_controller =
       SplitViewController::Get(item_->root_window());
   SplitViewController::State split_state = split_view_controller->state();
-  if (!should_allow_split_view_ ||
+  if (!is_eligible_for_drag_to_snap_ ||
       split_state == SplitViewController::State::kNoSnap) {
     overview_session_->SelectWindow(item_);
     // Explicitly set `item_` to null to avoid being accessed after been
@@ -484,9 +492,8 @@ void OverviewWindowDragController::ResetGesture() {
     Shell::Get()->mouse_cursor_filter()->HideSharedEdgeIndicator();
     item_->DestroyMirrorsForDragging();
     overview_session_->RemoveDropTargets();
-    if (should_allow_split_view_) {
-      SplitViewController::Get(Shell::GetPrimaryRootWindow())
-          ->OnWindowDragCanceled();
+    if (is_eligible_for_drag_to_snap_) {
+      SplitViewController::Get(item_->root_window())->OnWindowDragCanceled();
       overview_session_->ResetSplitViewDragIndicatorsWindowDraggingStates();
       item_->UpdateCannotSnapWarningVisibility(/*animate=*/true);
     }
@@ -664,7 +671,7 @@ void OverviewWindowDragController::ContinueNormalDrag(
     }
   }
 
-  if (should_allow_split_view_) {
+  if (is_eligible_for_drag_to_snap_) {
     UpdateDragIndicatorsAndOverviewGrid(location_in_screen);
     // The newly updated indicator state may cause the desks widget to be pushed
     // down to make room for the top splitview guidance indicator when in
@@ -673,7 +680,7 @@ void OverviewWindowDragController::ContinueNormalDrag(
   }
 
   if (!overview_grid->GetDropTarget() &&
-      (!should_allow_split_view_ ||
+      (!is_eligible_for_drag_to_snap_ ||
        SplitViewDragIndicators::GetSnapPosition(
            overview_grid->split_view_drag_indicators()
                ->current_window_dragging_state()) ==
@@ -740,13 +747,13 @@ OverviewWindowDragController::CompleteNormalDrag(
 
   const gfx::Point rounded_screen_point =
       gfx::ToRoundedPoint(location_in_screen);
-  if (should_allow_split_view_) {
+  if (is_eligible_for_drag_to_snap_) {
     // Update the split view divider bar status if necessary. The divider bar
     // should be placed above the dragged window after drag ends. Note here the
     // passed parameters |snap_position_| and |location_in_screen| won't be used
     // in this function for this case, but they are passed in as placeholders.
     aura::Window* window = item_->GetWindow();
-    SplitViewController::Get(Shell::GetPrimaryRootWindow())
+    SplitViewController::Get(item_->root_window())
         ->OnWindowDragEnded(
             window, snap_position_, rounded_screen_point,
             WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap);
@@ -792,7 +799,7 @@ OverviewWindowDragController::CompleteNormalDrag(
 
   auto* desks_bar_view = current_grid->desks_bar_view();
   // Snap a window if appropriate.
-  if (should_allow_split_view_ &&
+  if (is_eligible_for_drag_to_snap_ &&
       snap_position_ != SplitViewController::SnapPosition::kNone) {
     // Overview grid will be updated after window is snapped in splitview.
     SnapWindow(SplitViewController::Get(target_root), snap_position_);
@@ -895,7 +902,7 @@ void OverviewWindowDragController::UpdateDragIndicatorsAndOverviewGrid(
     }
   }
 
-  DCHECK(should_allow_split_view_);
+  CHECK(is_eligible_for_drag_to_snap_);
   snap_position_ = GetSnapPosition(location_in_screen);
   overview_session_->UpdateSplitViewDragIndicatorsWindowDraggingStates(
       GetRootWindowBeingDraggedIn(),
@@ -916,8 +923,8 @@ aura::Window* OverviewWindowDragController::GetRootWindowBeingDraggedIn()
 
 SplitViewController::SnapPosition OverviewWindowDragController::GetSnapPosition(
     const gfx::PointF& location_in_screen) const {
-  DCHECK(item_);
-  DCHECK(should_allow_split_view_);
+  CHECK(item_);
+  CHECK(is_eligible_for_drag_to_snap_);
   gfx::Rect area =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           GetRootWindowBeingDraggedIn());
@@ -965,8 +972,7 @@ void OverviewWindowDragController::SnapWindow(
     SplitViewController::SnapPosition snap_position) {
   DCHECK_NE(snap_position, SplitViewController::SnapPosition::kNone);
 
-  DCHECK(!SplitViewController::Get(Shell::GetPrimaryRootWindow())
-              ->IsDividerAnimating());
+  CHECK(!SplitViewController::Get(item_->root_window())->IsDividerAnimating());
   aura::Window* window = item_->GetWindow();
 
   // If `window` is currently fullscreen, snapping it will trigger a work area
