@@ -103,6 +103,7 @@ struct GpuPreferences {
   bool enable_gpu_benchmarking_extension;
   bool enable_webgpu;
   bool enable_unsafe_webgpu;
+  bool enable_webgpu_developer_features;
   WebGPUAdapterName use_webgpu_adapter;
   WebGPUPowerPreference use_webgpu_power_preference;
   bool force_webgpu_compat;

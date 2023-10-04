@@ -160,6 +160,8 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
       base::FeatureList::IsEnabled(features::kWebGPUService);
   gpu_preferences.enable_unsafe_webgpu =
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU);
+  gpu_preferences.enable_webgpu_developer_features =
+      command_line->HasSwitch(switches::kEnableWebGPUDeveloperFeatures);
   gpu_preferences.use_webgpu_adapter = ParseWebGPUAdapterName(command_line);
   gpu_preferences.use_webgpu_power_preference =
       ParseWebGPUPowerPreference(command_line);

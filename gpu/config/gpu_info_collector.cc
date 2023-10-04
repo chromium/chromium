@@ -255,6 +255,7 @@ void AddTogglesToDawnInfoList(dawn::native::Instance* instance,
 
 void GetDawnTogglesForWebGPU(
     bool enable_unsafe_webgpu,
+    bool enable_webgpu_developer_features,
     const std::vector<std::string>& enabled_preference,
     const std::vector<std::string>& disabled_preference,
     std::vector<const char*>* force_enabled_toggles,
@@ -263,6 +264,13 @@ void GetDawnTogglesForWebGPU(
   // is secure), unless --enable-unsafe-webgpu is used.
   if (!enable_unsafe_webgpu) {
     force_enabled_toggles->push_back("disallow_spirv");
+  }
+  // Enable timestamp quantization by default for privacy, unless
+  // --enable-webgpu-developer-features is used.
+  if (!enable_webgpu_developer_features) {
+    force_enabled_toggles->push_back("timestamp_quantization");
+  } else {
+    force_disabled_toggles->push_back("timestamp_quantization");
   }
 
   for (const std::string& toggle : enabled_preference) {
@@ -878,6 +886,7 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   std::vector<const char*> required_disabled_toggles_webgpu;
 
   GetDawnTogglesForWebGPU(gpu_preferences.enable_unsafe_webgpu,
+                          gpu_preferences.enable_webgpu_developer_features,
                           gpu_preferences.enabled_dawn_features_list,
                           gpu_preferences.disabled_dawn_features_list,
                           &required_enabled_toggles_webgpu,

@@ -257,6 +257,9 @@ struct GPU_EXPORT GpuPreferences {
   // Enable usage of unsafe WebGPU features.
   bool enable_unsafe_webgpu = false;
 
+  // Enable usage of WebGPU features intended only for use during development.
+  bool enable_webgpu_developer_features = false;
+
   // Enable validation layers in Dawn backends.
   DawnBackendValidationLevel enable_dawn_backend_validation =
       DawnBackendValidationLevel::kDisabled;

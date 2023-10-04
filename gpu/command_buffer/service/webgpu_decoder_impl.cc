@@ -418,6 +418,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::unique_ptr<DawnServiceMemoryTransferService> memory_transfer_service_;
 
   bool enable_unsafe_webgpu_ = false;
+  bool enable_webgpu_developer_features_ = false;
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
   WebGPUPowerPreference use_webgpu_power_preference_ =
       WebGPUPowerPreference::kNone;
@@ -1056,6 +1057,8 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
       wire_serializer_(new DawnServiceSerializer(client)),
       isolation_key_provider_(isolation_key_provider) {
   enable_unsafe_webgpu_ = gpu_preferences.enable_unsafe_webgpu;
+  enable_webgpu_developer_features_ =
+      gpu_preferences.enable_webgpu_developer_features;
   use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
   use_webgpu_power_preference_ = gpu_preferences.use_webgpu_power_preference;
   force_webgpu_compat_ = gpu_preferences.force_webgpu_compat;
@@ -1327,7 +1330,7 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
   desc.requiredFeaturesCount = required_features.size();
 #endif
 
-  // If a new toggle is added here, ForceDawnTogglesForWebGPU() which collects
+  // If a new toggle is added here, GetDawnTogglesForWebGPU() which collects
   // info for about:gpu should be updated as well.
   wgpu::DawnTogglesDescriptor dawn_device_toggles;
   std::vector<const char*> require_device_enabled_toggles;
@@ -1337,6 +1340,11 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
   // is secure), unless --enable-unsafe-webgpu is used.
   if (!enable_unsafe_webgpu_) {
     require_device_enabled_toggles.push_back("disallow_spirv");
+  }
+  // Enable timestamp quantization by default for privacy, unless
+  // --enable-webgpu-developer-features is used.
+  if (!enable_webgpu_developer_features_) {
+    require_device_enabled_toggles.push_back("timestamp_quantization");
   }
   // Disable the blob cache if we don't have an isolation key.
   if (isolation_key_->empty()) {
