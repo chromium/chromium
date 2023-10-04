@@ -395,6 +395,13 @@ BASE_FEATURE(kReloadHiddenTabsWithCrashedSubframes,
 #endif
 );
 
+// Run StableVideoDecoderFactoryProcessService and StableVideoDecoderService on
+// the IO thread in the video decoder process. If it is disabled, they run on
+// the main thread in the process.
+BASE_FEATURE(kRunStableVideoDecoderFactoryProcessServiceOnIOThread,
+             "RunStableVideoDecoderFactoryProcessServiceOnIOThread",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables auto preloading for fetch requests before invoking the fetch handler
 // in ServiceWorker. The fetch request inside the fetch handler is resolved with
 // this preload response. If the fetch handler result is fallback, uses this
