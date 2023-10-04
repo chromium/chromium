@@ -36,11 +36,6 @@ std::string SourceToString(SourceForRefreshTokenOperation source) {
       return "InlineLoginHandler::Signin";
     case SourceForRefreshTokenOperation::kPrimaryAccountManager_ClearAccount:
       return "PrimaryAccountManager::ClearAccount";
-    case SourceForRefreshTokenOperation::
-        kPrimaryAccountManager_LegacyPreDiceSigninFlow:
-      return "PrimaryAccountManager::LegacyPreDiceSigninFlow";
-    case SourceForRefreshTokenOperation::kUserMenu_RemoveAccount:
-      return "UserMenu::RemoveAccount";
     case SourceForRefreshTokenOperation::kUserMenu_SignOutAllAccounts:
       return "UserMenu::SignOutAllAccounts";
     case SourceForRefreshTokenOperation::kSettings_Signout:

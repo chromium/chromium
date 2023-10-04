@@ -105,32 +105,32 @@ enum class ProfileSignout {
   kMaxValue = kRevokeSyncFromSettings
 };
 
-// Enum values used for use with "AutoLogin.Reverse" histograms.
+// Enum values used for use with "Signin.AllAccessPointActions" histograms.
 enum AccessPointAction {
   // The infobar was shown to the user.
-  HISTOGRAM_SHOWN,
+  HISTOGRAM_SHOWN = 0,
   // The user pressed the accept button to perform the suggested action.
-  HISTOGRAM_ACCEPTED,
+  HISTOGRAM_ACCEPTED = 1,
   // The user pressed the reject to turn off the feature.
-  HISTOGRAM_REJECTED,
+  // Deprecated: HISTOGRAM_REJECTED = 2,
   // The user pressed the X button to dismiss the infobar this time.
-  HISTOGRAM_DISMISSED,
+  // Deprecated: HISTOGRAM_DISMISSED = 3,
   // The user completely ignored the infobar.  Either they navigated away, or
   // they used the page as is.
-  HISTOGRAM_IGNORED,
+  // Deprecated: HISTOGRAM_IGNORED = 4,
   // The user clicked on the learn more link in the infobar.
-  HISTOGRAM_LEARN_MORE,
+  // Deprecated: HISTOGRAM_LEARN_MORE = 5,
   // The sync was started with default settings.
-  HISTOGRAM_WITH_DEFAULTS,
+  HISTOGRAM_WITH_DEFAULTS = 6,
   // The sync was started with advanced settings.
-  HISTOGRAM_WITH_ADVANCED,
+  HISTOGRAM_WITH_ADVANCED = 7,
   // The sync was started through auto-accept with default settings.
-  HISTOGRAM_AUTO_WITH_DEFAULTS,
+  // Deprecated: HISTOGRAM_AUTO_WITH_DEFAULTS = 8,
   // The sync was started through auto-accept with advanced settings.
-  HISTOGRAM_AUTO_WITH_ADVANCED,
+  // Deprecated: HISTOGRAM_AUTO_WITH_ADVANCED = 9,
   // The sync was aborted with an undo button.
-  HISTOGRAM_UNDO,
-  HISTOGRAM_MAX
+  // Deprecated: HISTOGRAM_UNDO = 10,
+  HISTOGRAM_MAX = 11
 };
 
 // Enum values which enumerates all access points where sign in could be
@@ -434,8 +434,10 @@ enum class SourceForRefreshTokenOperation {
   // kSupervisedUser_InitSync = 2,
   kInlineLoginHandler_Signin = 3,
   kPrimaryAccountManager_ClearAccount = 4,
-  kPrimaryAccountManager_LegacyPreDiceSigninFlow = 5,
-  kUserMenu_RemoveAccount = 6,
+  // DEPRECATED
+  // kPrimaryAccountManager_LegacyPreDiceSigninFlow = 5,
+  // DEPRECATED
+  // kUserMenu_RemoveAccount = 6,
   kUserMenu_SignOutAllAccounts = 7,
   kSettings_Signout = 8,
   kSettings_PauseSync = 9,
