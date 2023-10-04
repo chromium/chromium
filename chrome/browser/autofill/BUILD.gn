@@ -40,13 +40,6 @@ static_library("autofill") {
     "validation_rules_storage_factory.h",
   ]
 
-  if (build_with_tflite_lib) {
-    sources += [
-      "autofill_ml_prediction_model_service_factory.cc",
-      "autofill_ml_prediction_model_service_factory.h",
-    ]
-  }
-
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
@@ -73,6 +66,7 @@ static_library("autofill") {
     "//components/variations/service",
     "//third_party/libphonenumber",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_android) {
     sources += [
@@ -118,6 +112,13 @@ static_library("autofill") {
       "ui/autofill_image_fetcher_impl.h",
     ]
     deps += [ "//components/sync/base" ]
+  }
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "autofill_ml_prediction_model_service_factory.cc",
+      "autofill_ml_prediction_model_service_factory.h",
+    ]
   }
 }
 

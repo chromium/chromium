@@ -56,6 +56,8 @@ static_library("renderer") {
     "//third_party/re2",
     "//ui/base",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {

@@ -61,6 +61,7 @@ static_library("browser") {
     "//ui/gfx/geometry",
     "//url",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (!is_android) {
     deps += [ "//components/webauthn/content/browser" ]

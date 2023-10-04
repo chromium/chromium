@@ -28,6 +28,7 @@ source_set("form_util") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("form_util_feature") {
@@ -42,6 +43,7 @@ source_set("form_util_feature") {
     "//components/autofill/ios/common:common",
     "//ios/web/public/js_messaging",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("form_handler_feature") {
@@ -58,6 +60,7 @@ source_set("form_handler_feature") {
     "//components/password_manager/ios:password_manager_feature_header",
     "//ios/web/public/js_messaging",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 compile_ts("fill_js_dependencies") {

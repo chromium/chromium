@@ -605,7 +605,10 @@ static_library("browser") {
 
   defines = [ "CHROME_VERSION_MAJOR=" + chrome_version_major ]
 
-  configs += [ "//build/config:precompiled_headers" ]
+  configs += [
+    "//build/config:precompiled_headers",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 
   public_deps = [
     ":legal_message_line",
@@ -740,9 +743,10 @@ static_library("legal_message_line") {
   deps = [
     "//base",
     "//base:i18n",
-    "//ui/gfx/range:range",
-    "//url:url",
+    "//ui/gfx/range",
+    "//url",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {

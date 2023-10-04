@@ -13,4 +13,5 @@ source_set("common") {
     "//base",
     "//ios/web/public/js_messaging:content_world_header",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
