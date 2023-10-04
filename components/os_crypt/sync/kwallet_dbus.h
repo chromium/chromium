@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OS_CRYPT_SYNC_KWALLET_DBUS_H_
 #define COMPONENTS_OS_CRYPT_SYNC_KWALLET_DBUS_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
