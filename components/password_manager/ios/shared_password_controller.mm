@@ -839,7 +839,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     autofill::FormSignature formSignature =
         found ? CalculateFormSignature(form) : autofill::FormSignature(0);
     autofill::FieldSignature fieldSignature = autofill::FieldSignature(0);
-    int maxLength = 0;
+    uint64_t maxLength = 0;
 
     if (found) {
       for (const autofill::FormFieldData& field : form.fields) {

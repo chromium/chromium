@@ -35,7 +35,7 @@ namespace {
 
 // Returns true if a field that has |max_length| can fit the data for a field of
 // |type|.
-bool FieldCanFitDataForFieldType(int max_length, ServerFieldType type) {
+bool FieldCanFitDataForFieldType(uint64_t max_length, ServerFieldType type) {
   if (max_length == 0)
     return true;
 
@@ -602,7 +602,7 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
   scanner->RewindTo(month_year_saved_cursor);
 
   // Bail out if the field cannot fit a 2-digit year expiration date.
-  const int current_field_max_length = scanner->Cursor()->max_length;
+  const uint64_t current_field_max_length = scanner->Cursor()->max_length;
   if (!FieldCanFitDataForFieldType(current_field_max_length,
                                    CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR))
     return false;

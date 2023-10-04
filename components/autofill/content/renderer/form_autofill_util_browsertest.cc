@@ -1986,5 +1986,38 @@ TEST_F(FormAutofillUtilsTest, NextWebNode_Backward) {
   EXPECT_THAT(found_elements, Pointwise(SameNode(), expected_elements));
 }
 
+// Tests that GetMaxLength() of non-text form controls is 0, and text form
+// controls default to the maximum 32 bit integer (and *not* 64 bit integer, so
+// that we can still do arithmetic with the maximum length).
+TEST_F(FormAutofillUtilsTest, GetMaxLength) {
+  struct TestCase {
+    const char* html;
+    uint64_t expected_max_length;
+  };
+  static constexpr TestCase test_cases[] = {
+      {"<input id=field>", FormFieldData::kDefaultMaxLength},
+      {"<input id=field type=text>", FormFieldData::kDefaultMaxLength},
+      {"<input id=field type=text maxlength=-1>",
+       FormFieldData::kDefaultMaxLength},
+      {"<input id=field type=password>", FormFieldData::kDefaultMaxLength},
+      {"<input id=field type=text maxlength=123>", 123},
+      {"<textarea id=field>", FormFieldData::kDefaultMaxLength},
+      {"<textarea id=field maxlength=123>", 123},
+      {"<input id=field type=submit>", 0},
+      {"<select id=field></select>", 0},
+  };
+  for (auto test_case : test_cases) {
+    SCOPED_TRACE(test_case.html);
+    LoadHTML(test_case.html);
+    WebLocalFrame* web_frame = GetMainFrame();
+    ASSERT_NE(nullptr, web_frame);
+    WebFormControlElement field =
+        GetElementById(web_frame->GetDocument(), "field")
+            .DynamicTo<WebFormControlElement>();
+    EXPECT_FALSE(field.IsNull());
+    EXPECT_EQ(test_case.expected_max_length, GetMaxLength(field));
+  }
+}
+
 }  // namespace
 }  // namespace autofill::form_util

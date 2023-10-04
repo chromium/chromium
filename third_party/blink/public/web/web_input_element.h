@@ -66,10 +66,6 @@ class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
   bool IsCheckbox() const;
   bool IsPasswordFieldForAutofill() const;
   void SetHasBeenPasswordField();
-  // This has different behavior from 'maxLength' IDL attribute, it returns
-  // defaultMaxLength() when no valid has been set, whereas 'maxLength' IDL
-  // attribute returns -1.
-  int MaxLength() const;
   void SetActivatedSubmit(bool);
   int size() const;
   void SetChecked(bool,
@@ -84,9 +80,6 @@ class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
 
   // Return the localized value for this input type.
   WebString LocalizeValue(const WebString&) const;
-
-  // Exposes the default value of the maxLength attribute.
-  static int DefaultMaxLength();
 
   // If true, forces the text of the element to be visible.
   void SetShouldRevealPassword(bool value);

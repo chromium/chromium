@@ -314,11 +314,29 @@ struct FormFieldData {
   // of this field.
   Section section;
 
-  // Note: we use uint64_t instead of size_t because this struct is sent over
-  // IPC which could span 32 & 64 bit processes. We chose uint64_t instead of
+  // The default value for text fields that have no maxlength attribute
+  // specified. We choose the maximum 32 bit, rather than 64 bit, number because
+  // so we don't need to worry about integer overflows when doing arithmetic
+  // with FormFieldData::max_length.
+  static constexpr size_t kDefaultMaxLength =
+      std::numeric_limits<uint32_t>::max();
+
+  // The maximum length of the FormFieldData::value as specified in the DOM. For
+  // fields that do not support free text input (e.g., <select> and <input
+  // type=month>), this is 0. For other fields (e.g., <input type=text>), this
+  // is `kDefaultMaxLength`, which means we don't need to worry about integer
+  // overflows when doing arithmetic with FormFieldData::max_length.
+  //
+  // Changes to the default value also must be reflected in
+  // form_autofill_util.cc's GetMaxLength() and
+  // FormFieldData::has_no_max_length().
+  //
+  // We use uint64_t instead of size_t because this struct is sent over IPC
+  // which could span 32 & 64 bit processes. We chose uint64_t instead of
   // uint32_t to maintain compatibility with old code which used size_t
   // (base::Pickle used to serialize that as 64 bit).
-  uint64_t max_length = 0;
+  uint64_t max_length = std::numeric_limits<uint32_t>::max();
+
   bool is_autofilled = false;
   CheckStatus check_status = CheckStatus::kNotCheckable;
   bool is_focusable = true;

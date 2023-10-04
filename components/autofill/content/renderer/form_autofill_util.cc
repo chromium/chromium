@@ -2042,6 +2042,17 @@ bool IsWebElementVisible(const blink::WebElement& element) {
           HasMinSize(element.GetScrollSize()));
 }
 
+uint64_t GetMaxLength(const blink::WebFormControlElement& element) {
+  if (IsTextInput(element.DynamicTo<WebInputElement>()) ||
+      element.FormControlTypeForAutofill() == Type::kTextArea) {
+    auto max_length = element.MaxLength();
+    static_assert(uint64_t{std::numeric_limits<decltype(max_length)>::max()} <=
+                  FormFieldData::kDefaultMaxLength);
+    return max_length < 0 ? FormFieldData::kDefaultMaxLength : max_length;
+  }
+  return 0;
+}
+
 std::u16string GetFormIdentifier(const WebFormElement& form) {
   std::u16string identifier = form.GetName().Utf16();
   if (identifier.empty())
@@ -2111,7 +2122,6 @@ void WebFormControlElementToFormField(
   DCHECK(element.GetDocument().GetFrame());
   DCHECK(IsAutofillableElement(element));
 
-  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   const FieldRendererId renderer_id = GetFieldRendererId(element);
   // Save both id and name attributes, if present. If there is only one of them,
   // it will be saved to |name|. See HTMLFormControlElement::nameForAutofill.
@@ -2123,8 +2133,7 @@ void WebFormControlElementToFormField(
   field->form_control_ax_id = element.GetAxId();
   field->form_control_type =
       ToAutofillFormControlType(element.FormControlTypeForAutofill());
-  field->max_length =
-      IsTextInput(input_element) ? input_element.MaxLength() : 0;
+  field->max_length = GetMaxLength(element);
   field->autocomplete_attribute = GetAutocompleteAttribute(element);
   field->parsed_autocomplete =
       ParseAutocompleteAttribute(field->autocomplete_attribute);
@@ -2203,7 +2212,8 @@ void WebFormControlElementToFormField(
   field->is_enabled = element.IsEnabled();
   field->is_readonly = element.IsReadOnly();
 
-  if (IsAutofillableInputElement(input_element)) {
+  if (auto input_element = element.DynamicTo<WebInputElement>();
+      IsAutofillableInputElement(input_element)) {
     SetCheckStatus(field, IsCheckableElement(input_element),
                    input_element.IsChecked());
   } else if (IsTextAreaElement(element)) {

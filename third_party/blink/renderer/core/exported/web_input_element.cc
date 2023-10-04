@@ -87,11 +87,6 @@ bool WebInputElement::IsCheckbox() const {
   return ConstUnwrap<HTMLInputElement>()->type() == input_type_names::kCheckbox;
 }
 
-int WebInputElement::MaxLength() const {
-  int max_len = ConstUnwrap<HTMLInputElement>()->maxLength();
-  return max_len == -1 ? DefaultMaxLength() : max_len;
-}
-
 void WebInputElement::SetActivatedSubmit(bool activated) {
   Unwrap<HTMLInputElement>()->SetActivatedSubmit(activated);
 }
@@ -130,10 +125,6 @@ WebVector<WebOptionElement> WebInputElement::FilteredDataListOptions() const {
 WebString WebInputElement::LocalizeValue(
     const WebString& proposed_value) const {
   return ConstUnwrap<HTMLInputElement>()->LocalizeValue(proposed_value);
-}
-
-int WebInputElement::DefaultMaxLength() {
-  return std::numeric_limits<int>::max();
 }
 
 void WebInputElement::SetShouldRevealPassword(bool value) {

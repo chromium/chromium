@@ -156,6 +156,12 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   // a null string is returned.
   WebString EditingValue() const;
 
+  // The maximum length in terms of text length the form control can hold. Like
+  // the maxLength IDL attribute, this is non-negative with two exceptions: if
+  // the attribute does not apply to the element or the element has no (valid)
+  // maximum length set, it is -1.
+  int MaxLength() const;
+
   // Sets character selection range.
   void SetSelectionRange(unsigned start, unsigned end);
   // Returned value represents a cursor/caret position at the current

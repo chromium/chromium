@@ -217,6 +217,17 @@ bool IsWebElementFocusableForAutofill(const blink::WebElement& element);
 // TODO(crbug.com/1335257): Can input fields or iframes actually overflow?
 bool IsWebElementVisible(const blink::WebElement& element);
 
+// Returns the maximum length value that Autofill may fill into the field. There
+// are two special cases:
+// - It is 0 for fields that do not support free text input (e.g., <select> and
+//   <input type=month>).
+// - It is the maximum 32 bit number for fields that support text values (e.g.,
+//   <input type=text> or <textarea>) but have no maxlength attribute set.
+//   The choice of 32 (as opposed to 64) is intentional: it allows us to still
+//   do arithmetic with FormFieldData::max_length without having to worry about
+//   integer overflows everywhere.
+uint64_t GetMaxLength(const blink::WebFormControlElement& element);
+
 // Returns the form's |name| attribute if non-empty; otherwise the form's |id|
 // attribute.
 std::u16string GetFormIdentifier(const blink::WebFormElement& form);

@@ -379,6 +379,13 @@ WebString WebFormControlElement::EditingValue() const {
   return WebString();
 }
 
+int WebFormControlElement::MaxLength() const {
+  if (auto* text_control = ::blink::DynamicTo<TextControlElement>(*private_)) {
+    return text_control->maxLength();
+  }
+  return -1;
+}
+
 void WebFormControlElement::SetSelectionRange(unsigned start, unsigned end) {
   if (auto* input = ::blink::DynamicTo<HTMLInputElement>(*private_))
     input->SetSelectionRange(start, end);

@@ -761,10 +761,12 @@ std::u16string GetExpirationYearForVirtualCardPreviewInput(
     ServerFieldType storable_type,
     const AutofillField& field) {
   if (storable_type == CREDIT_CARD_EXP_2_DIGIT_YEAR &&
-      (field.max_length == 2 || field.max_length == 0)) {
+      (field.max_length == 2 ||
+       field.max_length == FormFieldData::kDefaultMaxLength)) {
     return CreditCard::GetMidlineEllipsisDots(2);
   } else if (storable_type == CREDIT_CARD_EXP_4_DIGIT_YEAR &&
-             (field.max_length == 4 || field.max_length == 0)) {
+             (field.max_length == 4 ||
+              field.max_length == FormFieldData::kDefaultMaxLength)) {
     return CreditCard::GetMidlineEllipsisDots(4);
   }
 

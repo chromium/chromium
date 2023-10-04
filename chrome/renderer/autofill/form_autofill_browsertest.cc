@@ -321,7 +321,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
       expected.name = names[i];
       expected.value = values[i];
       expected.form_control_type = FormControlType::kInputText;
-      expected.max_length = WebInputElement::DefaultMaxLength();
+      expected.max_length = FormFieldData::kDefaultMaxLength;
       fields.push_back(expected);
     }
     ExpectLabelsAndTypes(html, fields);
@@ -452,8 +452,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
       expected.form_control_type =
           StringToFormControlType(field_cases[i].form_control_type);
       expected.max_length =
-          expected.form_control_type == FormControlType::kInputText
-              ? WebInputElement::DefaultMaxLength()
+          (expected.form_control_type == FormControlType::kInputText ||
+           expected.form_control_type == FormControlType::kTextArea)
+              ? FormFieldData::kDefaultMaxLength
               : 0;
       expected.id_attribute = ASCIIToUTF16(field_cases[i].id_attribute);
       expected.name = expected.id_attribute;
@@ -708,7 +709,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     FormFieldData expected;
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
 
     expected.id_attribute = u"firstname";
     expected.name = expected.id_attribute;
@@ -774,7 +775,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     expected.value = u"John";
     expected.label = u"John";
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
 
     expected.id_attribute = u"lastname";
@@ -782,7 +783,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     expected.value = u"Smith";
     expected.label = u"Smith";
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
 
     expected.id_attribute = u"email";
@@ -791,7 +792,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     expected.label = u"john@example.com";
     expected.autocomplete_attribute = "off";
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
     expected.autocomplete_attribute.clear();
 
@@ -800,7 +801,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     expected.value = u"123 Fantasy Ln.\nApt. 42";
     expected.label.clear();
     expected.form_control_type = FormControlType::kTextArea;
-    expected.max_length = 0;
+    expected.max_length = FormFieldData::kDefaultMaxLength;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[3]);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, field);
   }
@@ -927,7 +928,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     FormFieldData expected;
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
 
     expected.id_attribute = u"firstname";
     expected.name = expected.id_attribute;
@@ -1005,7 +1006,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     FormFieldData expected;
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
 
     expected.id_attribute = u"firstname";
     expected.name = expected.id_attribute;
@@ -1040,7 +1041,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_EQ(3U, fields2.size());
 
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
 
     expected.id_attribute = u"firstname";
     expected.name = expected.id_attribute;
@@ -1088,7 +1089,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     FormFieldData expected;
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
 
     expected.id_attribute = u"apple";
     expected.name = expected.id_attribute;
@@ -1184,7 +1185,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     FormFieldData expected;
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
 
     expected.id_attribute = u"firstname";
     expected.name = expected.id_attribute;
@@ -1394,7 +1395,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     FormFieldData expected;
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
 
     expected.id_attribute = u"firstname";
     expected.name = expected.id_attribute;
@@ -1552,7 +1553,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     FormFieldData expected;
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
 
     expected.id_attribute = u"firstname";
     expected.name = expected.id_attribute;
@@ -1668,7 +1669,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     FormFieldData expected;
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
 
     expected.id_attribute = u"cc";
     expected.name = expected.id_attribute;
@@ -1787,7 +1788,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     FormFieldData expected;
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
 
     expected.id_attribute = u"cc";
     expected.name = expected.id_attribute;
@@ -1878,7 +1879,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     FormFieldData expected;
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
 
     expected.id_attribute = u"firstname";
     expected.name = expected.id_attribute;
@@ -1920,6 +1921,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     expected.form_control_type = FormControlType::kTextArea;
     expected.id_attribute = u"textarea";
+    expected.max_length = FormFieldData::kDefaultMaxLength;
     expected.name = expected.id_attribute;
     expected.value.clear();
     expected.label.clear();
@@ -2013,7 +2015,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     FormFieldData expected;
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
 
     // shipping section
     expected.is_autofilled = false;
@@ -2099,14 +2101,14 @@ class FormAutofillTest : public ChromeRenderViewTest {
     expected.name = expected.id_attribute;
     expected.value.clear();
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
 
     expected.id_attribute = u"lastname";
     expected.name = expected.id_attribute;
     expected.value.clear();
     expected.form_control_type = FormControlType::kInputText;
-    expected.max_length = WebInputElement::DefaultMaxLength();
+    expected.max_length = FormFieldData::kDefaultMaxLength;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
 
     expected.id_attribute = u"state";
@@ -2360,7 +2362,8 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormField) {
 
   FormFieldData expected;
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
+
   expected.id_attribute = u"element";
   expected.name = expected.id_attribute;
 
@@ -2400,7 +2403,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompleteOff) {
   expected.value = u"value";
   expected.form_control_type = FormControlType::kInputText;
   expected.autocomplete_attribute = "off";
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
 }
 
@@ -2444,7 +2447,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutofilled) {
   expected.name = expected.id_attribute;
   expected.value = u"value";
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   expected.is_autofilled = true;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
 }
@@ -2469,6 +2472,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToClickableFormField) {
   expected.name = expected.id_attribute;
   expected.value = u"mail";
   expected.form_control_type = FormControlType::kInputCheckbox;
+  expected.max_length = 0;
   expected.is_autofilled = true;
   expected.check_status = FormFieldData::CheckStatus::kChecked;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
@@ -2481,6 +2485,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToClickableFormField) {
   expected.name = expected.id_attribute;
   expected.value = u"male";
   expected.form_control_type = FormControlType::kInputRadio;
+  expected.max_length = 0;
   expected.is_autofilled = true;
   expected.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
@@ -2645,8 +2650,8 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldTextArea) {
   FormFieldData expected;
   expected.id_attribute = u"element";
   expected.name = expected.id_attribute;
-  expected.max_length = 0;
-  expected.form_control_type = FormControlType::kTextArea;
+  expected.max_length = FormFieldData::kDefaultMaxLength;
+  expected.form_control_type = StringToFormControlType("textarea");
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result_sans_value);
 
   FormFieldData result_with_value;
@@ -2699,7 +2704,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToPasswordFormField) {
                                    EXTRACT_VALUE, &result);
 
   FormFieldData expected;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   expected.id_attribute = u"password";
   expected.name = expected.id_attribute;
   expected.form_control_type = FormControlType::kInputPassword;
@@ -2780,8 +2785,9 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompletetype) {
     expected.name = expected.id_attribute;
     expected.form_control_type =
         autofill::StringToFormControlType(test_case.form_control_type);
-    expected.max_length = test_case.form_control_type == "text"
-                              ? WebInputElement::DefaultMaxLength()
+    expected.max_length = test_case.form_control_type == "text" ||
+                                  test_case.form_control_type == "textarea"
+                              ? FormFieldData::kDefaultMaxLength
                               : 0;
     expected.autocomplete_attribute = test_case.autocomplete_attribute;
     expected.parsed_autocomplete =
@@ -2987,7 +2993,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData) {
   expected.value = u"John";
   expected.label = u"First name:";
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
 
   expected.id_attribute = u"lastname";
@@ -2995,7 +3001,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData) {
   expected.value = u"Smith";
   expected.label = u"Last name:";
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
 
   expected.id_attribute = u"street-address";
@@ -3003,7 +3009,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData) {
   expected.value = u"123 Fantasy Ln.\nApt. 42";
   expected.label = u"Address:";
   expected.form_control_type = FormControlType::kTextArea;
-  expected.max_length = 0;
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
 
   expected.id_attribute = u"state";
@@ -3019,7 +3025,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData) {
   expected.value = u"secret";
   expected.label = u"Password:";
   expected.form_control_type = FormControlType::kInputPassword;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[4]);
 
   expected.id_attribute = u"month";
@@ -3284,7 +3290,7 @@ TEST_F(FormAutofillTest, ExtractMultipleForms) {
 
   FormFieldData expected;
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
 
   expected.id_attribute = u"firstname";
   expected.name = expected.id_attribute;
@@ -3369,7 +3375,7 @@ TEST_F(FormAutofillTest, OnlyExtractNewForms) {
 
   FormFieldData expected;
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
 
   expected.id_attribute = u"firstname";
   expected.name = expected.id_attribute;
@@ -4028,7 +4034,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableWithSpecialElements) {
   expected.name = expected.id_attribute;
   expected.value = u"John";
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   fields.push_back(expected);
 
   expected.id_attribute = u"middlename";
@@ -4037,7 +4043,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableWithSpecialElements) {
   expected.name = expected.id_attribute;
   expected.value = u"Joe";
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   fields.push_back(expected);
 
   expected.id_attribute = u"lastname";
@@ -4046,7 +4052,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableWithSpecialElements) {
   expected.name = expected.id_attribute;
   expected.value = u"Smith";
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   fields.push_back(expected);
 
   expected.id_attribute = u"country";
@@ -4064,7 +4070,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableWithSpecialElements) {
   expected.name = expected.id_attribute;
   expected.value = u"john@example.com";
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   fields.push_back(expected);
 
   ExpectLabelsAndTypes(
@@ -4820,7 +4826,7 @@ TEST_F(FormAutofillTest, ThreePartPhone) {
 
   FormFieldData expected;
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
 
   expected.label = u"Phone:";
   expected.name_attribute = u"dayphone1";
@@ -4905,14 +4911,14 @@ TEST_F(FormAutofillTest, MaxLengthFields) {
   expected.name_attribute = u"default1";
   expected.label.clear();
   expected.name = expected.name_attribute;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[4]);
 
   // When invalid |size|, default is returned.
   expected.name_attribute = u"invalid1";
   expected.label.clear();
   expected.name = expected.name_attribute;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[5]);
 }
 
@@ -5425,7 +5431,7 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
   expected.value = u"John";
   expected.label = u"John";
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
 
   expected.id_attribute = u"lastname";
@@ -5433,7 +5439,7 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
   expected.value = u"Smith";
   expected.label = u"Smith";
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
 
   expected.id_attribute = u"country";
@@ -5458,7 +5464,7 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
   expected.value = u"John";
   expected.label = u"John";
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
 
   expected.id_attribute = u"lastname";
@@ -5466,7 +5472,7 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
   expected.value = u"Smith";
   expected.label = u"Smith";
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
 
   expected.id_attribute = u"country";
@@ -5516,7 +5522,7 @@ TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithoutForm) {
 
   FormFieldData expected;
   expected.form_control_type = FormControlType::kInputText;
-  expected.max_length = WebInputElement::DefaultMaxLength();
+  expected.max_length = FormFieldData::kDefaultMaxLength;
 
   expected.id_attribute = u"firstname";
   expected.name = expected.id_attribute;

@@ -151,7 +151,7 @@ class MockPasswordGenerationFrameHelper : public PasswordGenerationFrameHelper {
               (const GURL&,
                autofill::FormSignature,
                autofill::FieldSignature,
-               uint32_t),
+               uint64_t),
               (override));
 
   MOCK_METHOD(bool, IsGenerationEnabled, (bool), (const));
