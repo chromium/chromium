@@ -244,6 +244,7 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
       std::make_unique<ash::cloud_upload::CloudOpenMetrics>();
   base::SafeRef<CloudOpenMetrics> cloud_open_metrics_ref_ =
       cloud_open_metrics_->GetSafeRef();
+  base::HistogramTester histogram_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -276,6 +277,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, UploadFromMyFiles) {
     EXPECT_FALSE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
     CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name));
   }
+
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
+                                OfficeFilesUploadResult::kSuccess, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
@@ -301,6 +305,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
     EXPECT_TRUE(base::PathExists(read_only_dir_.AppendASCII(test_file_name)));
     CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name));
   }
+
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
+                                OfficeFilesUploadResult::kSuccess, 1);
 }
 
 // Test that when the upload to ODFS fails due reauthentication to OneDrive
@@ -340,6 +347,11 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
     EXPECT_TRUE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
     CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
   }
+
+  histogram_.ExpectUniqueSample(kOneDriveMoveErrorMetricName,
+                                -base::File::FILE_ERROR_ACCESS_DENIED, 1);
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
+                                OfficeFilesUploadResult::kCloudAuthError, 1);
 }
 
 // Test that when the upload to ODFS fails due an access error that is not
@@ -380,6 +392,11 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
     EXPECT_TRUE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
     CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
   }
+
+  histogram_.ExpectUniqueSample(kOneDriveMoveErrorMetricName,
+                                -base::File::FILE_ERROR_ACCESS_DENIED, 1);
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
+                                OfficeFilesUploadResult::kCloudAuthError, 1);
 }
 
 }  // namespace ash::cloud_upload
