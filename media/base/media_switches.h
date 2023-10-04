@@ -408,7 +408,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationD3D11VideoCaptureZeroCopy);
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationClearPlayback);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowMediaFoundationFrameServerMode);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kWasapiRawAudioCapture);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kD3D11Vp9kSVCHWDecoding);
 
 // Strategy affecting how Media Foundation Renderer determines its rendering

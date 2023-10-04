@@ -35,7 +35,6 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
-#include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
 
 using ABI::Windows::Foundation::Collections::IVectorView;
@@ -454,8 +453,7 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
   // Attempt to enable communications category and raw capture mode on the audio
   // stream. Ignoring return value since the method logs its own error messages
   // and it should be OK to continue opening the stream even after a failure.
-  if (base::FeatureList::IsEnabled(media::kWasapiRawAudioCapture) &&
-      raw_processing_supported_ &&
+  if (raw_processing_supported_ &&
       !AudioDeviceDescription::IsLoopbackDevice(device_id_) && SUCCEEDED(hr)) {
     SetCommunicationsCategoryAndMaybeRawCaptureMode(audio_engine_channels);
   }

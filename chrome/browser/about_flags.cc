@@ -9013,12 +9013,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfV2)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN)
-    {"raw-audio-capture", flag_descriptions::kRawAudioCaptureName,
-     flag_descriptions::kRawAudioCaptureDescription, kOsWin,
-     FEATURE_VALUE_TYPE(media::kWasapiRawAudioCapture)},
-#endif  // BUILDFLAG(IS_WIN)
-
     {"enable-managed-configuration-web-api",
      flag_descriptions::kEnableManagedConfigurationWebApiName,
      flag_descriptions::kEnableManagedConfigurationWebApiDescription, kOsCrOS,

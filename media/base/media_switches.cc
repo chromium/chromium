@@ -1289,15 +1289,6 @@ BASE_FEATURE(kMediaFoundationClearPlayback,
              "MediaFoundationClearPlayback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Use the AUDCLNT_STREAMOPTIONS_RAW option on WASAPI input audio streams in
-// combination with  the IAudioClient2::SetClientProperties() API.
-// The audio stream is a 'raw' stream that bypasses all signal processing except
-// for endpoint specific, always-on processing in the Audio Processing Object
-// (APO), driver, and hardware.
-// https://docs.microsoft.com/en-us/windows/win32/api/audioclient/ne-audioclient-audclnt_streamoptions
-const base::Feature MEDIA_EXPORT kWasapiRawAudioCapture{
-    "WASAPIRawAudioCapture", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable VP9 kSVC decoding with HW decoder for webrtc use case on Windows.
 BASE_FEATURE(kD3D11Vp9kSVCHWDecoding,
              "D3D11Vp9kSVCHWDecoding",

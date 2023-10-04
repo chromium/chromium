@@ -7140,11 +7140,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "raw-audio-capture",
-    "owners": [ "henrika@google.com", "video-cmi-mpp@google.com" ],
-    "expiry_milestone": 104
-  },
-  {
     "name": "read-aloud",
     "owners": [
       "basiaz@google.com",
