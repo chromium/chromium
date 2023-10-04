@@ -57,6 +57,9 @@ class BASE_EXPORT SysInfo {
   // system, but could instead be the number of physical cores when
   // SetCpuSecurityMitigationsEnabled() has been invoked to indicate that CPU
   // security mitigations are enabled on Mac.
+  // On some platforms this may cache the resulting value in its implementation,
+  // e.g. on Linux/ChromeOS where this function cannot run in a sandbox and so
+  // a cached value must be returned.
   static int NumberOfProcessors();
 
   // Returns the number of the most efficient logical processors for the current

@@ -44,9 +44,6 @@ BASE_EXPORT absl::optional<int> NumberOfPhysicalProcessors();
 absl::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled();
 #endif
 
-// Exposed for testing.
-BASE_EXPORT int NumberOfProcessors();
-
 #if BUILDFLAG(IS_APPLE)
 absl::optional<int> GetSysctlIntValue(const char* key_name);
 #endif
