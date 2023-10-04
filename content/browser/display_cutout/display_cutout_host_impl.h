@@ -66,7 +66,7 @@ class DisplayCutoutHostImpl : public blink::mojom::DisplayCutoutHost {
 
   // Stores the current |RenderFrameHost| that has the applied safe area insets
   // and is controlling the viewport fit value. This value is different than
-  // `WebContentsImpl::current_fullscreen_frame_` because it also considers
+  // `WebContentsImpl::current_fullscreen_frame_id_` because it also considers
   // browser side driven fullscreen mode, not just renderer side requested
   // frames.
   base::WeakPtr<RenderFrameHostImpl> current_rfh_;

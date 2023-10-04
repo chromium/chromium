@@ -3782,7 +3782,7 @@ void WebContentsImpl::ExitFullscreenMode(bool will_cause_resize) {
     }
   }
 
-  current_fullscreen_frame_ = nullptr;
+  current_fullscreen_frame_id_ = GlobalRenderFrameHostId();
 
   observers_.NotifyObservers(
       &WebContentsObserver::DidToggleFullscreenModeForTab, IsFullscreen(),
@@ -3898,7 +3898,7 @@ void WebContentsImpl::FullscreenFrameSetUpdated() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::FullscreenFrameSetUpdated");
   if (fullscreen_frames_.empty()) {
-    current_fullscreen_frame_ = nullptr;
+    current_fullscreen_frame_id_ = GlobalRenderFrameHostId();
     return;
   }
 
@@ -3910,9 +3910,10 @@ void WebContentsImpl::FullscreenFrameSetUpdated() {
 
   // If we have already notified observers about this frame then we should not
   // fire the observers again.
-  if (new_fullscreen_frame == current_fullscreen_frame_)
+  if (new_fullscreen_frame->GetGlobalId() == current_fullscreen_frame_id_) {
     return;
-  current_fullscreen_frame_ = new_fullscreen_frame;
+  }
+  current_fullscreen_frame_id_ = new_fullscreen_frame->GetGlobalId();
 
   observers_.NotifyObservers(&WebContentsObserver::DidAcquireFullscreen,
                              new_fullscreen_frame);
