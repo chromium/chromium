@@ -10,6 +10,7 @@
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "net/base/mime_sniffer.h"
 
 namespace network::features {
@@ -228,34 +229,34 @@ BASE_FEATURE(kMaxNumConsumedBytesInTaskFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The default Mojo ring buffer size, used to send the content body.
-constexpr base::FeatureParam<int> kDefaultDataPipeAllocationSize(
-    &kDefaultDataPipeAllocationSizeFeature,
-    "DefaultDataPipeAllocationSize",
-    512 * 1024);
+MIRACLE_PARAMETER_FOR_INT(GetDefaultDataPipeAllocationSize,
+                          kDefaultDataPipeAllocationSizeFeature,
+                          "DefaultDataPipeAllocationSize",
+                          512 * 1024)
 
 // The larger ring buffer size, used primarily for network::URLLoader loads.
 // This value was optimized via Finch: see crbug.com/1041006.
-constexpr base::FeatureParam<int> kLargerDataPipeAllocationSize(
-    &kLargerDataPipeAllocationSizeFeature,
-    "LargerDataPipeAllocationSize",
-    2 * 1024 * 1024);
+MIRACLE_PARAMETER_FOR_INT(GetLargerDataPipeAllocationSize,
+                          kLargerDataPipeAllocationSizeFeature,
+                          "LargerDataPipeAllocationSize",
+                          2 * 1024 * 1024)
 
 // The max buffer size of NetToMojoPendingBuffer. This buffer size should be
 // smaller than the mojo ring buffer size.
-constexpr base::FeatureParam<int> kNetAdapterMaxBufSize(
-    &kNetAdapterMaxBufSizeFeature,
-    "NetAdapterMaxBufSize",
-    64 * 1024);
+MIRACLE_PARAMETER_FOR_INT(GetNetAdapterMaxBufSizeParam,
+                          kNetAdapterMaxBufSizeFeature,
+                          "NetAdapterMaxBufSize",
+                          64 * 1024)
 
 // The maximal number of bytes consumed in a loading task. When there are more
 // bytes in the data pipe, they will be consumed in following tasks. Setting too
 // small of a number will generate many tasks but setting a too large of a
 // number will lead to thread janks. This value was optimized via Finch:
 // see crbug.com/1041006.
-constexpr base::FeatureParam<int> kMaxNumConsumedBytesInTask(
-    &kMaxNumConsumedBytesInTaskFeature,
-    "MaxNumConsumedBytesInTask",
-    1024 * 1024);
+MIRACLE_PARAMETER_FOR_INT(GetMaxNumConsumedBytesInTask,
+                          kMaxNumConsumedBytesInTaskFeature,
+                          "MaxNumConsumedBytesInTask",
+                          1024 * 1024)
 
 }  // namespace
 
@@ -263,36 +264,36 @@ constexpr base::FeatureParam<int> kMaxNumConsumedBytesInTask(
 uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
   // The smallest buffer size must be larger than the maximum MIME sniffing
   // chunk size. This is assumed several places in content/browser/loader.
-  CHECK_LE(kDefaultDataPipeAllocationSize.Get(),
-           kLargerDataPipeAllocationSize.Get());
-  CHECK_GE(kDefaultDataPipeAllocationSize.Get(), net::kMaxBytesToSniff)
+  CHECK_LE(GetDefaultDataPipeAllocationSize(),
+           GetLargerDataPipeAllocationSize());
+  CHECK_GE(GetDefaultDataPipeAllocationSize(), net::kMaxBytesToSniff)
       << "Smallest data pipe size must be at least as large as a "
          "MIME-type sniffing buffer.";
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1306998): ChromeOS experiences a much higher OOM crash
   // rate if the larger data pipe size is used.
-  return kDefaultDataPipeAllocationSize.Get();
+  return GetDefaultDataPipeAllocationSize();
 #else
   // For low-memory devices, always use the (smaller) default buffer size.
   if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512)
-    return kDefaultDataPipeAllocationSize.Get();
+    return GetDefaultDataPipeAllocationSize();
   switch (option) {
     case DataPipeAllocationSize::kDefaultSizeOnly:
-      return kDefaultDataPipeAllocationSize.Get();
+      return GetDefaultDataPipeAllocationSize();
     case DataPipeAllocationSize::kLargerSizeIfPossible:
-      return kLargerDataPipeAllocationSize.Get();
+      return GetLargerDataPipeAllocationSize();
   }
 #endif
 }
 
 uint32_t GetNetAdapterMaxBufSize() {
-  return kNetAdapterMaxBufSize.Get();
+  return GetNetAdapterMaxBufSizeParam();
 }
 
 // static
 uint32_t GetLoaderChunkSize() {
-  return kMaxNumConsumedBytesInTask.Get();
+  return GetMaxNumConsumedBytesInTask();
 }
 
 // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name

@@ -182,6 +182,7 @@ component("cpp") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/link_header_util",
+    "//components/miracle_parameter/common",
     "//components/prefs",
     "//ipc",
     "//services/proxy_resolver/public/mojom",
