@@ -14362,7 +14362,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "SafeBrowsingHashPrefixRealTimeLookupsRelayUrl": "https://test.ohttp.endpoint.com/"
+                        "SafeBrowsingHashPrefixRealTimeLookupsRelayUrl": "https://google-ohttp-relay-safebrowsing.fastly-edge.com/"
                     },
                     "enable_features": [
                         "SafeBrowsingHashPrefixRealTimeLookups"
@@ -14384,7 +14384,7 @@
                 {
                     "name": "EnabledWithRelay",
                     "params": {
-                        "SafeBrowsingHashRealTimeOverOhttpRelayUrl": "https://test.ohttp.endpoint.com/"
+                        "SafeBrowsingHashRealTimeOverOhttpRelayUrl": "https://google-ohttp-relay-safebrowsing.fastly-edge.com/"
                     },
                     "enable_features": [
                         "SafeBrowsingHashRealTimeOverOhttp",
