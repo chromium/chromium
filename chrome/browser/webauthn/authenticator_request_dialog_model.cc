@@ -458,7 +458,13 @@ void AuthenticatorRequestDialogModel::
     const Mechanism::Credential* cred =
         absl::get_if<Mechanism::Credential>(&mechanism.type);
     if (cred != nullptr &&
-        cred->value().source != device::AuthenticatorType::kICloudKeychain) {
+        // Credentials on phones should never be triggered automatically.
+        (cred->value().source == device::AuthenticatorType::kPhone ||
+         (transport_availability_.has_empty_allow_list &&
+          // iCloud Keychain has its own confirmation UI and we don't want to
+          // duplicate it.
+          cred->value().source !=
+              device::AuthenticatorType::kICloudKeychain))) {
       SetCurrentStep(Step::kSelectPriorityMechanism);
     } else {
       mechanism.callback.Run();

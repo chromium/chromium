@@ -400,6 +400,15 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       // If the platform authenticator has a credential it should activate.
       {L,
        ga,
+       {},
+       {has_plat, one_cred},
+       {},
+       {c(cred1)},
+       plat_ui,
+     },
+      // If the platform authenticator has a credential it should activate.
+      {L,
+       ga,
        {usb, internal},
        {has_plat, one_cred},
        {},
@@ -2554,12 +2563,12 @@ TEST_F(MultiplePlatformAuthenticatorsTest,
     model.StartFlow(std::move(transports_info),
                     /*is_conditional_mediation=*/false);
 
+    EXPECT_EQ(model.current_step(), Step::kNotStarted);
+    device::PublicKeyCredentialDescriptor descriptor =
+        account_preselected_callback.WaitForResult();
     if (credential_source == device::AuthenticatorType::kTouchID) {
-      EXPECT_EQ(model.current_step(), Step::kSelectPriorityMechanism);
+      EXPECT_EQ(descriptor.id, kCred2.cred_id);
     } else {
-      EXPECT_EQ(model.current_step(), Step::kNotStarted);
-      device::PublicKeyCredentialDescriptor descriptor =
-          account_preselected_callback.WaitForResult();
       EXPECT_EQ(descriptor.id, kCred1FromICloudKeychain.cred_id);
     }
   }
@@ -2734,6 +2743,7 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
 
 using HasCreds = device::FidoRequestHandlerBase::RecognizedCredential;
 constexpr int kNoWinButton = -1;
+constexpr int kNoChromeUI = -2;
 constexpr int kHelloOrSk = IDS_WEBAUTHN_TRANSPORT_WINDOWS_HELLO_OR_SECURITY_KEY;
 constexpr int kHello = IDS_WEBAUTHN_TRANSPORT_WINDOWS_HELLO;
 constexpr int kSk = IDS_WEBAUTHN_TRANSPORT_EXTERNAL_SECURITY_KEY;
@@ -2761,7 +2771,7 @@ struct {
 
     // Windows v7+ with only internal creds.
     {L, false, false, true, true, HasCreds::kHasRecognizedCredential,
-     kNoWinButton},
+     kNoChromeUI},
 
     // Windows v7+ with empty allow-list.
     {L, false, false, false, true, HasCreds::kHasRecognizedCredential,
@@ -2779,7 +2789,7 @@ struct {
 
     // Windows v5+ with only internal creds.
     {L, false, false, true, false, HasCreds::kHasRecognizedCredential,
-     kNoWinButton},
+     kNoChromeUI},
 
     // Windows v5+ with empty allow-list.
     {L, false, false, false, false, HasCreds::kHasRecognizedCredential, kSk},
@@ -2807,6 +2817,9 @@ TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_GetAssertion) {
       &fake_win_webauthn_api);
   for (const auto& test_case : kWinHelloButtonGetAssertionTestCases) {
     AuthenticatorRequestDialogModel model(main_rfh());
+    model.SetAccountPreselectedCallback(
+        base::BindRepeating([](device::PublicKeyCredentialDescriptor cred) {}));
+
     TransportAvailabilityInfo transports_info;
     transports_info.has_win_native_api_authenticator = true;
     transports_info.request_type = device::FidoRequestType::kGetAssertion;
@@ -2840,6 +2853,9 @@ TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_GetAssertion) {
         });
     if (test_case.expected_button == kNoWinButton) {
       EXPECT_EQ(win_button_it, model.mechanisms().end());
+    } else if (test_case.expected_button == kNoChromeUI) {
+      // In these cases, Chrome should have invoked the Windows UI immediately.
+      EXPECT_EQ(model.current_step(), Step::kNotStarted);
     } else {
       ASSERT_NE(win_button_it, model.mechanisms().end());
       EXPECT_EQ(win_button_it->name,
