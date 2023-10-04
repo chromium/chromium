@@ -6925,6 +6925,8 @@ static_library("browser") {
       sources += [
         "printing/pdf_blob_data_flattener.cc",
         "printing/pdf_blob_data_flattener.h",
+        "printing/print_job_controller.cc",
+        "printing/print_job_controller.h",
       ]
       deps += [
         "//chrome/browser/chromeos/extensions/telemetry/api:keyed_service_factory",

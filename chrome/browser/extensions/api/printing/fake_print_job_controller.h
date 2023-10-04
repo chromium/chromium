@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_PRINTING_FAKE_PRINT_JOB_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/extensions/api/printing/print_job_controller.h"
+#include "chrome/browser/printing/print_job_controller.h"
 
 namespace extensions {
 

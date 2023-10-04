@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager.h"
-#include "chrome/browser/extensions/api/printing/print_job_controller.h"
+#include "chrome/browser/printing/print_job_controller.h"
 
 namespace ash {
 class CupsPrintersManager;
@@ -25,7 +25,7 @@ namespace extensions {
 // pipeline.
 // It's used in API integration tests.
 class FakePrintJobControllerAsh : public printing::PrintJobController,
-                                  ash::CupsPrintJobManager::Observer {
+                                  public ash::CupsPrintJobManager::Observer {
  public:
   FakePrintJobControllerAsh(ash::TestCupsPrintJobManager* print_job_manager,
                             ash::CupsPrintersManager* printers_manager);

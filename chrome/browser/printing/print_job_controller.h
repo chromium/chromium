@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_PRINTING_PRINT_JOB_CONTROLLER_H_
-#define CHROME_BROWSER_EXTENSIONS_API_PRINTING_PRINT_JOB_CONTROLLER_H_
+#ifndef CHROME_BROWSER_PRINTING_PRINT_JOB_CONTROLLER_H_
+#define CHROME_BROWSER_PRINTING_PRINT_JOB_CONTROLLER_H_
 
 #include <memory>
 #include <string>
@@ -28,6 +28,8 @@ struct PrintJobCreatedInfo {
 
 // This class serves as an entry point to the printing pipeline. It sends print
 // jobs to the printing system and waits for them to be acknowledged.
+// Not to be confused with PrintJobManager -- these two are not part of the same
+// printing pipeline.
 class PrintJobController {
  public:
   class PendingJobStorage;
@@ -65,4 +67,4 @@ class PrintJobController {
 
 }  // namespace printing
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_PRINTING_PRINT_JOB_CONTROLLER_H_
+#endif  // CHROME_BROWSER_PRINTING_PRINT_JOB_CONTROLLER_H_
