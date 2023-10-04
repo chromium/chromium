@@ -10,18 +10,17 @@
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 
 #include "base/containers/contains.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 
 namespace blink {
 
 namespace origin_trials {
 
-bool FeatureEnabledForNavigation(blink::mojom::OriginTrialFeature feature) {
-  static blink::mojom::OriginTrialFeature const kEnabledForNavigation[] = {
+bool FeatureEnabledForNavigation(OriginTrialFeature feature) {
+  static OriginTrialFeature const kEnabledForNavigation[] = {
       // Enable the kOriginTrialsSampleAPINavigation feature as a navigation
       // feature, for tests.
-      blink::mojom::OriginTrialFeature::kOriginTrialsSampleAPINavigation,
-      blink::mojom::OriginTrialFeature::kTextFragmentIdentifiers,
+      OriginTrialFeature::kOriginTrialsSampleAPINavigation,
+      OriginTrialFeature::kTextFragmentIdentifiers,
   };
   return base::Contains(kEnabledForNavigation, feature);
 }

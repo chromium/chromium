@@ -1213,7 +1213,7 @@ class OriginTrialsControllerDelegateMock
   }
   bool IsFeaturePersistedForOrigin(const url::Origin& origin,
                                    const url::Origin& partition_origin,
-                                   blink::mojom::OriginTrialFeature feature,
+                                   blink::OriginTrialFeature feature,
                                    const base::Time current_time) override {
     DCHECK(false) << "Method not implemented for test.";
     return false;

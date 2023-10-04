@@ -14,16 +14,16 @@
 #include "components/origin_trials/common/persisted_trial_token.h"
 #include "components/origin_trials/test/test_persistence_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace origin_trials {
 namespace {
 
-using blink::mojom::OriginTrialFeature;
+using blink::OriginTrialFeature;
 
 const char kPersistentTrialName[] = "FrobulatePersistent";
 const char kNonPersistentTrialName[] = "Frobulate";
@@ -197,7 +197,7 @@ class OriginTrialsTest : public testing::Test {
 
   // IsFeaturePersistedForOrigin using |origin| as partition origin.
   bool IsFeaturePersistedForOrigin(const url::Origin& origin,
-                                   blink::mojom::OriginTrialFeature feature,
+                                   blink::OriginTrialFeature feature,
                                    base::Time lookup_time) {
     return origin_trials_.IsFeaturePersistedForOrigin(
         origin, /* partition_origin */ origin, feature, lookup_time);
@@ -519,7 +519,7 @@ TEST_F(OriginTrialsTest, PersistTokensInOpaquePartition) {
 
   EXPECT_TRUE(origin_trials_.IsFeaturePersistedForOrigin(
       trial_enabled_origin_, /*partition_origin=*/opaque_origin,
-      blink::mojom::OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature,
+      blink::OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature,
       kValidTime));
 }
 

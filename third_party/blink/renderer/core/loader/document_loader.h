@@ -771,8 +771,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   const base::TickClock* clock_;
 
-  const Vector<mojom::blink::OriginTrialFeature>
-      initiator_origin_trial_features_;
+  const Vector<OriginTrialFeature> initiator_origin_trial_features_;
 
   const Vector<String> force_enabled_origin_trials_;
 
