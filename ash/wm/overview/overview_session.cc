@@ -1631,8 +1631,9 @@ void OverviewSession::OnItemAdded(aura::Window* window) {
 
   OverviewGrid* grid = GetGridWithRootWindow(window->GetRootWindow());
   // The drop target window is non-activatable, so no need to transfer focus.
-  if (grid && grid->IsDropTargetWindow(window))
+  if (grid && grid->IsDropTargetItem(grid->GetOverviewItemContaining(window))) {
     return;
+  }
 
   // Transfer focus from `window` to `overview_focus_widget_` to match the
   // behavior of entering overview mode in the beginning.

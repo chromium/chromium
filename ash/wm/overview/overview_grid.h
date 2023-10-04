@@ -230,8 +230,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // from shelf.
   void SetVisibleDuringWindowDragging(bool visible, bool animate);
 
-  // Returns true if |window| is the placeholder window from the drop target.
-  bool IsDropTargetWindow(aura::Window* window) const;
+  // Returns true if the `item` is the placeholder for the
+  // `drop_target_widget_`.
+  bool IsDropTargetItem(OverviewItemBase* item) const;
 
   // Returns the overview item that accociates with |drop_target_widget_|.
   // Returns nullptr if overview does not have the drop target.
@@ -647,8 +648,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Records the presentation time of scrolling the grid in overview mode.
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
-  // Pointer to the window that is being dragged from the shelf, if there is
-  // one.
+  // Window that is being dragged from the shelf or during tab dragging.
   raw_ptr<aura::Window, ExperimentalAsh> dragged_window_ = nullptr;
 
   // The widget that contains the view for all saved desks.

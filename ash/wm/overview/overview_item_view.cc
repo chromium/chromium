@@ -98,8 +98,7 @@ OverviewItemView::OverviewItemView(
   close_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   // Do not show header if the current overview item is the drop target widget.
-  if (overview_item_->overview_grid()->IsDropTargetWindow(
-          overview_item_->GetWindow())) {
+  if (overview_item_->overview_grid()->IsDropTargetItem(overview_item_)) {
     header_view()->SetVisible(false);
     current_header_visibility_ = HeaderVisibility::kInvisible;
   }

@@ -56,8 +56,9 @@ void FadeOutWidgetFromOverview(std::unique_ptr<views::Widget> widget,
 // Takes ownership of `widget`, closes and destroys it without any animations.
 void ImmediatelyCloseWidgetOnExit(std::unique_ptr<views::Widget> widget);
 
-// Returns the original target bounds of `window`. The bounds are a union of all
-// regular (normal and panel) windows in the window's transient hierarchy.
+// Returns the original bounds of `window` outside of overview. The bounds are a
+// union of all regular (normal and panel) windows in the window's transient
+// hierarchy.
 gfx::RectF GetTargetBoundsInScreen(aura::Window* window);
 
 // Applies the `transform` to `window` and all of its transient children. Note
