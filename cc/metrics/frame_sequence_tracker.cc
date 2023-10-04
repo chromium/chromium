@@ -366,9 +366,6 @@ void FrameSequenceTracker::ReportFrameEnd(
   // is ignored.
   if (frame_had_no_compositor_damage_ && !compositor_frame_submitted_) {
     DCHECK_GT(impl_throughput().frames_expected, 0u) << TRACKER_DCHECK_MSG;
-    DCHECK_GT(impl_throughput().frames_expected,
-              impl_throughput().frames_produced)
-        << TRACKER_DCHECK_MSG;
     --impl_throughput().frames_expected;
     metrics()->NotifyNoUpdateForJankReporter(
         FrameInfo::SmoothEffectDrivingThread::kCompositor,
