@@ -198,12 +198,11 @@ unsigned LayoutMultiColumnSet::FragmentainerGroupIndexAtFlowThreadOffset(
 
 const MultiColumnFragmentainerGroup&
 LayoutMultiColumnSet::FragmentainerGroupAtVisualPoint(
-    const LayoutPoint& visual_point) const {
+    const LogicalOffset& visual_point) const {
   NOT_DESTROYED();
   UpdateGeometryIfNeeded();
   DCHECK_GT(fragmentainer_groups_.size(), 0u);
-  LayoutUnit block_offset =
-      IsHorizontalWritingMode() ? visual_point.Y() : visual_point.X();
+  LayoutUnit block_offset = visual_point.block_offset;
   for (unsigned index = 0; index < fragmentainer_groups_.size(); index++) {
     const auto& row = fragmentainer_groups_[index];
     if (row.LogicalTop() + row.GroupLogicalHeight() > block_offset)
@@ -303,20 +302,15 @@ PhysicalOffset LayoutMultiColumnSet::FlowThreadTranslationAtOffset(
       .FlowThreadTranslationAtOffset(block_offset, rule, mode);
 }
 
-// `visual_point` is in the flipped block-flow coordinate system.
-LayoutPoint LayoutMultiColumnSet::VisualPointToFlowThreadPoint(
-    const LayoutPoint& visual_point) const {
+LogicalOffset LayoutMultiColumnSet::VisualPointToFlowThreadPoint(
+    const PhysicalOffset& visual_point) const {
   NOT_DESTROYED();
-  const MultiColumnFragmentainerGroup& row =
-      FragmentainerGroupAtVisualPoint(visual_point);
   LogicalOffset logical_point =
-      IsHorizontalWritingMode()
-          ? LogicalOffset(visual_point.X(), visual_point.Y())
-          : LogicalOffset(visual_point.Y(), visual_point.X());
-  LogicalOffset logical_result = row.VisualPointToFlowThreadPoint(
-      logical_point - row.OffsetFromColumnSet());
-  LayoutPoint result(logical_result.inline_offset, logical_result.block_offset);
-  return IsHorizontalWritingMode() ? result : result.TransposedPoint();
+      CreateWritingModeConverter().ToLogical(visual_point, {});
+  const MultiColumnFragmentainerGroup& row =
+      FragmentainerGroupAtVisualPoint(logical_point);
+  return row.VisualPointToFlowThreadPoint(logical_point -
+                                          row.OffsetFromColumnSet());
 }
 
 void LayoutMultiColumnSet::ResetColumnHeight() {

@@ -1787,10 +1787,6 @@
       status: "stable",
     },
     {
-      name: "FixOffsetInMultiColVerticalRl",
-      status: "stable",
-    },
-    {
       name: "Fledge",
       base_feature: "none",
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",
