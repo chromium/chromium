@@ -194,24 +194,17 @@ public class ChromeBrowserProviderImpl extends ChromeBrowserProvider.Impl {
         // Keep returning non-null values just in case, to avoid breaking old apps.
         ensureUriMatcherInitialized();
         int match = mUriMatcher.match(uri);
-        switch (match) {
-            case URI_MATCH_BOOKMARKS:
-            case URL_MATCH_API_BOOKMARK:
-                return BROWSER_CONTRACT_BOOKMARK_CONTENT_TYPE;
-            case URI_MATCH_BOOKMARKS_ID:
-            case URL_MATCH_API_BOOKMARK_ID:
-                return BROWSER_CONTRACT_BOOKMARK_CONTENT_ITEM_TYPE;
-            case URL_MATCH_API_SEARCHES:
-                return BROWSER_CONTRACT_SEARCH_CONTENT_TYPE;
-            case URL_MATCH_API_SEARCHES_ID:
-                return BROWSER_CONTRACT_SEARCH_CONTENT_ITEM_TYPE;
-            case URL_MATCH_API_HISTORY_CONTENT:
-                return BROWSER_CONTRACT_HISTORY_CONTENT_TYPE;
-            case URL_MATCH_API_HISTORY_CONTENT_ID:
-                return BROWSER_CONTRACT_HISTORY_CONTENT_ITEM_TYPE;
-            default:
-                throw new IllegalArgumentException(TAG + ": getType - unknown URL " + uri);
-        }
+        return switch (match) {
+            case URI_MATCH_BOOKMARKS,
+                    URL_MATCH_API_BOOKMARK -> BROWSER_CONTRACT_BOOKMARK_CONTENT_TYPE;
+            case URI_MATCH_BOOKMARKS_ID,
+                    URL_MATCH_API_BOOKMARK_ID -> BROWSER_CONTRACT_BOOKMARK_CONTENT_ITEM_TYPE;
+            case URL_MATCH_API_SEARCHES -> BROWSER_CONTRACT_SEARCH_CONTENT_TYPE;
+            case URL_MATCH_API_SEARCHES_ID -> BROWSER_CONTRACT_SEARCH_CONTENT_ITEM_TYPE;
+            case URL_MATCH_API_HISTORY_CONTENT -> BROWSER_CONTRACT_HISTORY_CONTENT_TYPE;
+            case URL_MATCH_API_HISTORY_CONTENT_ID -> BROWSER_CONTRACT_HISTORY_CONTENT_ITEM_TYPE;
+            default -> throw new IllegalArgumentException(uri.toString());
+        };
     }
 
     private static Uri buildContentUri(String authority, String path) {

@@ -278,9 +278,10 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
         ThreadUtils.assertOnUiThread();
 
         for (Activity activity : ApplicationStatus.getRunningActivities()) {
-            if (!(activity instanceof BaseCustomTabActivity)) continue;
-            getAllTabIdsForActivity((BaseCustomTabActivity) activity, liveTabIds);
-            liveTaskIds.add(activity.getTaskId());
+            if (activity instanceof BaseCustomTabActivity customActivity) {
+                getAllTabIdsForActivity(customActivity, liveTabIds);
+                liveTaskIds.add(customActivity.getTaskId());
+            }
         }
     }
 

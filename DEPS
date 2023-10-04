@@ -1537,7 +1537,7 @@ deps = {
       + '@' + '42e892d96e47b1f6e29844cc705e148ec4856448', # release 1.9.4
 
   'src/third_party/junit/src': {
-      'url': Var('chromium_git') + '/external/junit.git' + '@' + '05fe2a64f59127c02135be22f416e91260d6ede6',
+      'url': Var('chromium_git') + '/external/junit.git' + '@' + '0eb5ce72848d730da5bd6d42902fdd6a8a42055d',
       'condition': 'checkout_android',
   },
 

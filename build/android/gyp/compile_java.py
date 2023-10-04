@@ -216,8 +216,7 @@ ERRORPRONE_WARNINGS_TO_ENABLE = [
 def ProcessJavacOutput(output, target_name):
   # These warnings cannot be suppressed even for third party code. Deprecation
   # warnings especially do not help since we must support older android version.
-  deprecated_re = re.compile(
-      r'(Note: .* uses? or overrides? a deprecated API.)$')
+  deprecated_re = re.compile(r'Note: .* uses? or overrides? a deprecated API')
   unchecked_re = re.compile(
       r'(Note: .* uses? unchecked or unsafe operations.)$')
   recompile_re = re.compile(r'(Note: Recompile with -Xlint:.* for details.)$')
@@ -758,10 +757,9 @@ def main(argv):
 
   javac_args = [
       '-g',
-      # We currently target JDK 11 everywhere, since Mockito is broken by JDK17.
-      # See crbug.com/1409661 for more details.
+      # Jacoco does not currently support a higher value.
       '--release',
-      '11',
+      '17',
       # Chromium only allows UTF8 source files.  Being explicit avoids
       # javac pulling a default encoding from the user's environment.
       '-encoding',
@@ -773,6 +771,9 @@ def main(argv):
       # protobuf-generated files fail this check (javadoc has @deprecated,
       # but method missing @Deprecated annotation).
       '-Xlint:-dep-ann',
+      # Do not warn about finalize() methods. Android still intends to support
+      # them.
+      '-Xlint:-removal',
   ]
 
   if options.enable_errorprone:

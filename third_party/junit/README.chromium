@@ -1,6 +1,6 @@
 Name: JUnit
 URL: http://junit.org
-Version: 4.13.2
+Version: 0eb5ce72848d730da5bd6d42902fdd6a8a42055d
 CPEPrefix: cpe:/a:junit:junit4:4.13.2:-
 License: Common Public License 1.0
 License File: LICENSE
