@@ -581,6 +581,9 @@ void ApplicationContextImpl::CreateLocalState() {
 
   // Delete obsolete data from user storage.
   CleanupUnusedStorage();
+
+  // Delete obsolete data from NSUserDefaults.
+  MigrateObsoleteUserDefault();
 }
 
 void ApplicationContextImpl::CreateGCMDriver() {

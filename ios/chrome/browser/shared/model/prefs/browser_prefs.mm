@@ -711,8 +711,12 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 }
 
 void MigrateObsoleteUserDefault(void) {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
   // Added 08/2023.
-  [[NSUserDefaults standardUserDefaults]
-      setBool:NO
-       forKey:@"userHasInteractedWithPinnedTabsOverflow"];
+  [defaults removeObjectForKey:@"userHasInteractedWithPinnedTabsOverflow"];
+
+  // Added 10/2023
+  [defaults removeObjectForKey:@"PathToBrowserStateToKeep"];
+  [defaults removeObjectForKey:@"HasBrowserStateBeenRemoved"];
 }
