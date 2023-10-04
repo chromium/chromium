@@ -232,11 +232,6 @@ class PictureInPictureWindowManager {
   // helper class for callbacks, to avoid re-entrant calls during pip set-up.
   static void ExitPictureInPictureSoon();
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Create the settings helper if this is auto-pip and we don't have one.
-  void CreateAutoPipSettingHelperIfNeeded();
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   PictureInPictureWindowManager();
   ~PictureInPictureWindowManager();
 
