@@ -347,5 +347,7 @@ class TabSearchStoryMeasureMemory3TabSearch(TabSearchStoryMeasureMemory):
 
 
 SCROLL_ELEMENT_FUNCTION = '''
-document.querySelector('tab-search-app').shadowRoot.getElementById('tabsList')
+document.querySelector('tab-search-app').shadowRoot
+        .querySelector('tab-search-page').shadowRoot
+        .getElementById('tabsList')
 '''
