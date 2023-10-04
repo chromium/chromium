@@ -336,7 +336,9 @@ class WTF_EXPORT StringImpl {
   static void CopyChars(T* destination,
                         const T* source,
                         wtf_size_t num_characters) {
-    memcpy(destination, source, num_characters * sizeof(T));
+    if (num_characters > 0) {
+      memcpy(destination, source, num_characters * sizeof(T));
+    }
   }
 
   ALWAYS_INLINE static void CopyChars(UChar* destination,
