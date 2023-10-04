@@ -19,6 +19,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/test/base/chromeos/crosier/helper/switches.h"
 #include "chrome/test/base/chromeos/crosier/helper/utils.h"
@@ -49,6 +50,11 @@ TestSudoHelperClient::~TestSudoHelperClient() = default;
 
 TestSudoHelperClient::Result TestSudoHelperClient::RunCommand(
     const std::string_view command) {
+  // This is a test-only function that does a blocking call to the test helper
+  // process that should already be running. Synchronuos blocking operation is
+  // expected in this testing context.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
   base::Value::Dict dict;
   dict.Set(kKeyMethod, kMethodRunCommand);
   dict.Set(kKeyCommand, command);
