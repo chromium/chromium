@@ -15,6 +15,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -80,6 +81,7 @@ public class MinimizedFeatureUtils {
 
         RecordHistogram.recordEnumeratedHistogram("CustomTabs.MinimizedFeatureAvailability",
                 availability, MinimizedFeatureAvailability.NUM_ENTRIES);
+        ResettersForTesting.register(() -> sIsMinimizedCustomTabAvailable = null);
         return sIsMinimizedCustomTabAvailable;
     }
 
@@ -90,9 +92,5 @@ public class MinimizedFeatureUtils {
         int result = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
                 activity.getApplicationInfo().uid, activity.getPackageName());
         return result == AppOpsManager.MODE_ALLOWED;
-    }
-
-    static void resetResultForTesting() {
-        sIsMinimizedCustomTabAvailable = null;
     }
 }

@@ -91,7 +91,6 @@ public class MinimizedFeatureUtilsUnitTest {
     @After
     public void tearDown() {
         ShadowSysUtils.sIsLowEndDevice = false;
-        MinimizedFeatureUtils.resetResultForTesting();
     }
 
     @Test
