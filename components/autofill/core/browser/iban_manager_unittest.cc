@@ -88,9 +88,7 @@ class IbanManagerTest : public testing::Test {
 
   // Sets up the TestPersonalDataManager with an IBAN.
   Iban SetUpLocalIban(std::string_view value, std::string_view nickname) {
-    Iban iban;
-    std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-    iban.set_identifier(Iban::Guid(guid));
+    Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
     iban.set_value(base::UTF8ToUTF16(std::string(value)));
     iban.set_nickname(base::UTF8ToUTF16(std::string(nickname)));
     personal_data_manager_.AddIbanForTest(std::make_unique<Iban>(iban));

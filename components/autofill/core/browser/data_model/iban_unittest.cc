@@ -156,10 +156,10 @@ TEST(IbanTest, SetRawData) {
   EXPECT_EQ(u"DE91100000000123456789", iban.GetRawInfo(IBAN_VALUE));
 }
 
-TEST(IbanTest, GetUserFacingValue) {
+TEST(IbanTest, GetUserFacingValue_LocalIban) {
   // Verify each case of an IBAN ending in 1, 2, 3, and 4 unobfuscated
   // digits.
-  Iban iban;
+  Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   EXPECT_EQ(u"", GetIbanValueGroupedByFour(iban, /*is_value_masked=*/true));
 
   iban.set_value(u"CH5604835012345678009");
@@ -189,6 +189,57 @@ TEST(IbanTest, GetUserFacingValue) {
             GetIbanValueGroupedByFour(iban, /*is_value_masked=*/true));
   EXPECT_EQ(u"PK70 BANK 0000 1234 5678 9000",
             GetIbanValueGroupedByFour(iban, /*is_value_masked=*/false));
+}
+
+TEST(IbanTest, GetUserFacingValue_ServerIban_UnmaskNotAllowed) {
+  Iban server_iban(Iban::InstrumentId("1234567"));
+  // Set the prefix, suffix and length of the server IBAN.
+  server_iban.set_prefix(u"FR76");
+  server_iban.set_suffix(u"0189");
+  server_iban.set_length(27);
+  EXPECT_DEATH_IF_SUPPORTED(server_iban.GetIdentifierStringForAutofillDisplay(
+                                /*is_value_masked=*/false),
+                            "");
+}
+
+TEST(IbanTest, GetUserFacingValue_ServerIban_RegularPrefixAndSuffix) {
+  Iban server_iban(Iban::InstrumentId("1234567"));
+  // Set the prefix, suffix and length of the server IBAN.
+  server_iban.set_prefix(u"FR76");
+  server_iban.set_suffix(u"0189");
+  server_iban.set_length(27);
+  EXPECT_EQ(u"FR76 **** **** **** **** ***0 189",
+            GetIbanValueGroupedByFour(server_iban, /*is_value_masked=*/true));
+}
+
+TEST(IbanTest, GetUserFacingValue_ServerIban_EmptyPrefix) {
+  // Set up a `server_iban` with empty prefix.
+  Iban server_iban(Iban::InstrumentId("1234567"));
+  server_iban.set_prefix(u"");
+  server_iban.set_suffix(u"0189");
+  server_iban.set_length(27);
+  EXPECT_EQ(u"**** **** **** **** **** ***0 189",
+            GetIbanValueGroupedByFour(server_iban, /*is_value_masked=*/true));
+}
+
+TEST(IbanTest, GetUserFacingValue_ServerIban_EmptySuffix) {
+  // Set up a `server_iban` with empty suffix.
+  Iban server_iban(Iban::InstrumentId("1234567"));
+  server_iban.set_prefix(u"FR76");
+  server_iban.set_suffix(u"");
+  server_iban.set_length(27);
+  EXPECT_EQ(u"FR76 **** **** **** **** **** ***",
+            GetIbanValueGroupedByFour(server_iban, /*is_value_masked=*/true));
+}
+
+TEST(IbanTest, GetUserFacingValue_ServerIban_OtherLengthOfPrefixAndSuffix) {
+  // Set the prefix and suffix of the server IBAN with length other than 4.
+  Iban server_iban(Iban::InstrumentId("1234567"));
+  server_iban.set_prefix(u"FR7");
+  server_iban.set_suffix(u"10189");
+  server_iban.set_length(27);
+  EXPECT_EQ(u"FR7* **** **** **** **** **10 189",
+            GetIbanValueGroupedByFour(server_iban, /*is_value_masked=*/true));
 }
 
 TEST(IbanTest, ValidateIbanValue_ValidateOnLength) {

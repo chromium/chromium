@@ -8,6 +8,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -102,6 +103,9 @@ static constexpr auto kCountryToIbanLength =
         {"XK", 20},  // Kosovo
     });
 
+// This prefix and suffix length are for local-based IBANs only. Server-based
+// IBANs should generally use the same value but the client will respect
+// whatever it receives from the server.
 static constexpr int kPrefixLength = 4;
 static constexpr int kSuffixLength = 4;
 
@@ -373,25 +377,42 @@ bool Iban::IsValid() {
 
 std::u16string Iban::GetIdentifierStringForAutofillDisplay(
     bool is_value_masked) const {
-  const std::u16string stripped_value = GetStrippedValue();
-  if (stripped_value.empty()) {
-    return stripped_value;
+  // `value_` is expected to be empty for server-based IBANs. For local IBANs,
+  // it might be empty in rare situations (e.g., keychain is locked).
+  if (value_.empty() && record_type_ == kLocalIban) {
+    return value_;
   }
-  size_t value_length = stripped_value.size();
-  auto ShouldMask = [&](size_t i) {
-    // The first 2-letter country code and 2 IBAN check digits will stay
-    // unmasked, the last four digits will be shown as-is too. The rest of the
-    // digits will not be masked if `is_value_masked` is false
-    return 4 <= i && i < value_length - 4 && is_value_masked;
-  };
+  // Displaying the full IBAN value is not possible for server-based IBANs.
+  CHECK(is_value_masked || record_type_ != Iban::kServerIban);
+  CHECK(length_ >= int(prefix_.length() + suffix_.length()));
 
-  std::u16string output;
-  output.reserve(stripped_value.size() + (stripped_value.size() - 1) / 4);
-  for (size_t i = 0; i < stripped_value.size(); ++i) {
-    if (i % 4 == 0 && i > 0)
-      output.push_back(kEllipsisOneSpace);
-    output.push_back(ShouldMask(i) ? kEllipsisOneDot : stripped_value[i]);
+  // If masked IBAN value is needed, the IBAN identifier string can be
+  // constructed by adding ellipsis dots in the middle based on the middle
+  // length (which can be calculated from subtracting `prefix_.length()` and
+  // `suffix_.length()` from `length_`). Otherwise, `iban_identifier` can be
+  // directly set to the full value.
+  std::u16string iban_identifier;
+  if (is_value_masked) {
+    iban_identifier = base::StrCat(
+        {prefix_,
+         std::u16string(length_ - prefix_.length() - suffix_.length(),
+                        kEllipsisOneDot),
+         suffix_});
+  } else {
+    iban_identifier = value_;
   }
+
+  // Now that the IBAN identifier string has been constructed, the remaining
+  // step is to add space separators.
+  std::u16string output;
+  output.reserve(length_ + (length_ - 1) / 4);
+  for (int i = 0; i < length_; ++i) {
+    if (i % 4 == 0 && i > 0) {
+      output.push_back(kEllipsisOneSpace);
+    }
+    output.push_back(iban_identifier[i]);
+  }
+
   return output;
 }
 

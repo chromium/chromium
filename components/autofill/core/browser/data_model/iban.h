@@ -126,14 +126,18 @@ class Iban : public AutofillDataModel {
   // server-based IBANs because server-based IBANs don't store the full `value`.
   bool IsValid();
 
-  // Converts value (E.g., CH12 1234 1234 1234 1234) of IBAN to a partially
-  // masked text formatted by the following rules:
+  // Construct an IBAN identifier from `prefix_`, `suffix_`, `length_` (and
+  // `value_` if it's a local-based IBAN) by the following rules:
   // 1. Always reveal the first and the last four characters.
   // 2. Mask the remaining digits if `is_value_masked` is true, otherwise,
-  //    display the digits.
+  //    display the digits. `is_value_masked` is true only for local IBANs
+  //    because revealing a server IBAN needs an additional retrieval step from
+  //    the GPay server.
   // 3. The identifier string will be arranged in groups of four with a space
   //    between each group.
   //
+  // Note: The condition "is_value_masked" being false will not function
+  //       properly for IBANs with the "kServerIban" record type.
   // Here are some examples:
   // BE71 0961 2345 6769 will be shown as: BE71 **** **** 6769.
   // CH56 0483 5012 3456 7800 9 will be shown as: CH56 **** **** **** *800 9.
