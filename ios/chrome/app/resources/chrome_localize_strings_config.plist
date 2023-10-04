@@ -66,26 +66,32 @@
       <key>strings</key>
       <array>
         <dict>
+         <key>output</key>
+          <string>eoLMs3</string>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_OPEN_LATEST_TAB_TITLE</string>
+        </dict>
+        <dict>
           <key>output</key>
           <string>QI9R4N</string>
           <key>input</key>
           <string>IDS_IOS_INTENTS_CLEAR_BROWSING_DATA_TITLE</string>
         </dict>
         <dict>
-          <key>output</key>
+         <key>output</key>
           <string>6yFN6Z</string>
           <key>input</key>
           <string>IDS_IOS_INTENTS_CLEAR_BROWSING_DATA_TITLE</string>
         </dict>
         <dict>
           <key>output</key>
-          <string>lfVwmu</string>
+          <string>G5abvV</string>
           <key>input</key>
-          <string>IDS_IOS_INTENTS_CLEAR_BROWSING_DATA_DESCRIPTION</string>
+          <string>IDS_IOS_INTENTS_CLEAR_BROWSING_DATA_TITLE</string>
         </dict>
         <dict>
           <key>output</key>
-          <string>G5abvV</string>
+          <string>QNOy9O</string>
           <key>input</key>
           <string>IDS_IOS_INTENTS_CLEAR_BROWSING_DATA_DESCRIPTION</string>
         </dict>
@@ -93,17 +99,17 @@
           <key>output</key>
           <string>O7udUr</string>
           <key>input</key>
-          <string>IDS_IOS_INTENTS_OPEN_LENS_DESCRIPTION</string>
+          <string>IDS_IOS_INTENTS_OPEN_LENS_TITLE</string>
         </dict>
         <dict>
           <key>output</key>
-          <string>IBwb6d</string>
+          <string>M0ARnB</string>
           <key>input</key>
           <string>IDS_IOS_INTENTS_OPEN_LENS_DESCRIPTION</string>
         </dict>
         <dict>
           <key>output</key>
-          <string>pe1BPb</string>
+          <string>IBwb6d</string>
           <key>input</key>
           <string>IDS_IOS_INTENTS_OPEN_LENS_TITLE</string>
         </dict>
@@ -115,7 +121,7 @@
         </dict>
         <dict>
           <key>output</key>
-          <string>k6vkhf</string>
+          <string>Evtnyl</string>
           <key>input</key>
           <string>IDS_IOS_INTENTS_OPEN_LATEST_TAB_DESCRIPTION</string>
         </dict>

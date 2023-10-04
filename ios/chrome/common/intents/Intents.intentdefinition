@@ -1205,7 +1205,7 @@
     </dict>
     <dict>
       <key>INIntentCategory</key>
-      <string>generic</string>
+      <string>information</string>
       <key>INIntentConfigurable</key>
       <true/>
       <key>INIntentDescriptionID</key>
@@ -1218,6 +1218,10 @@
         <dict>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
           <true/>
+          <key>INIntentParameterCombinationTitle</key>
+          <string>Open My Latest Tab in Chrome</string>
+          <key>INIntentParameterCombinationTitleID</key>
+          <string>eoLMs3</string>
           <key>INIntentParameterCombinationUpdatesLinked</key>
           <true/>
         </dict>
@@ -1230,10 +1234,6 @@
         <dict>
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
-          <key>INIntentParameterCombinationSubtitle</key>
-          <string>Open My Latest Tab in Chrome.</string>
-          <key>INIntentParameterCombinationSubtitleID</key>
-          <string>k6vkhf</string>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
           <false/>
           <key>INIntentParameterCombinationTitle</key>
@@ -1265,11 +1265,11 @@
       <key>INIntentType</key>
       <string>Custom</string>
       <key>INIntentVerb</key>
-      <string>Do</string>
+      <string>Open</string>
     </dict>
     <dict>
       <key>INIntentCategory</key>
-      <string>generic</string>
+      <string>information</string>
       <key>INIntentConfigurable</key>
       <true/>
       <key>INIntentDescriptionID</key>
@@ -1298,10 +1298,6 @@
         <dict>
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
-          <key>INIntentParameterCombinationSubtitle</key>
-          <string>Search Visuals in Chrome</string>
-          <key>INIntentParameterCombinationSubtitleID</key>
-          <string>pe1BPb</string>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
           <false/>
           <key>INIntentParameterCombinationTitle</key>
@@ -1333,11 +1329,11 @@
       <key>INIntentType</key>
       <string>Custom</string>
       <key>INIntentVerb</key>
-      <string>Do</string>
+      <string>Open</string>
     </dict>
     <dict>
       <key>INIntentCategory</key>
-      <string>generic</string>
+      <string>information</string>
       <key>INIntentConfigurable</key>
       <true/>
       <key>INIntentDescriptionID</key>
@@ -1366,10 +1362,6 @@
         <dict>
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
-          <key>INIntentParameterCombinationSubtitle</key>
-          <string>Clear Browsing Data in Chrome.</string>
-          <key>INIntentParameterCombinationSubtitleID</key>
-          <string>lfVwmu</string>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
           <false/>
           <key>INIntentParameterCombinationTitle</key>
@@ -1401,7 +1393,7 @@
       <key>INIntentType</key>
       <string>Custom</string>
       <key>INIntentVerb</key>
-      <string>Do</string>
+      <string>Open</string>
     </dict>
   </array>
   <key>INTypes</key>
