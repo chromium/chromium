@@ -52,6 +52,9 @@ class ASH_PUBLIC_EXPORT TabletMode {
   // Returns true if TabletMode singleton exists and is in the tablet mode.
   static bool IsInTabletMode();
 
+  // Whether the events from the internal mouse/keyboard are blocked.
+  virtual bool AreInternalInputDeviceEventsBlocked() const = 0;
+
   // Force the tablet mode state for integration tests. The meaning of |enabled|
   // are as follows:
   //   true: UI in the tablet mode

@@ -4941,6 +4941,7 @@ source_set("unit_tests") {
     "../ui/webui/settings/ash/device_keyboard_handler_unittest.cc",
     "../ui/webui/settings/ash/device_section_unittest.cc",
     "../ui/webui/settings/ash/device_storage_handler_unittest.cc",
+    "../ui/webui/settings/ash/display_settings/display_settings_provider_unittest.cc",
     "../ui/webui/settings/ash/hierarchy_unittest.cc",
     "../ui/webui/settings/ash/input_device_settings/input_device_settings_provider_unittest.cc",
     "../ui/webui/settings/ash/internet_handler_unittest.cc",

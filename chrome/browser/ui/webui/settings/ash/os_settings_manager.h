@@ -10,6 +10,7 @@
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/ui/webui/settings/ash/display_settings/display_settings_provider.h"
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -111,6 +112,10 @@ class OsSettingsManager : public KeyedService {
     return input_device_settings_provider_.get();
   }
 
+  DisplaySettingsProvider* display_settings_provider() {
+    return display_settings_provider_.get();
+  }
+
   SearchHandler* search_handler() { return search_handler_.get(); }
 
   SettingsUserActionTracker* settings_user_action_tracker() {
@@ -132,6 +137,7 @@ class OsSettingsManager : public KeyedService {
   std::unique_ptr<SearchHandler> search_handler_;
   std::unique_ptr<AppNotificationHandler> app_notification_handler_;
   std::unique_ptr<InputDeviceSettingsProvider> input_device_settings_provider_;
+  std::unique_ptr<DisplaySettingsProvider> display_settings_provider_;
 };
 
 }  // namespace settings

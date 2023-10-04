@@ -1,0 +1,21 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.settings.mojom;
+
+// Implemented by clients that wish to be notified when the tablet mode is
+// changed.
+interface TabletModeObserver {
+  // OnTabletModeChanged calls are triggered when display mode has changed
+  // between clamshell mode and tablet mode.
+  OnTabletModeChanged(bool is_tablet_mode);
+};
+
+// Interface display related OS settings.
+interface DisplaySettingsProvider {
+  // Registers an observer for tablet mode changes and returns tablet mode
+  // initial state.
+  ObserveTabletMode(pending_remote<TabletModeObserver> observer) =>
+    (bool is_tablet_mode);
+};

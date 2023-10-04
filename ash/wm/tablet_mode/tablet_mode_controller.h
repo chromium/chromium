@@ -116,9 +116,6 @@ class ASH_EXPORT TabletModeController
   // Checks if we should auto hide title bars for the |widget| in tablet mode.
   bool ShouldAutoHideTitlebars(views::Widget* widget);
 
-  // Whether the events from the internal mouse/keyboard are blocked.
-  bool AreInternalInputDeviceEventsBlocked() const;
-
   // If |record_lid_angle_timer_| is running, invokes its task and returns true.
   // Otherwise, returns false.
   [[nodiscard]] bool TriggerRecordLidAngleTimerForTesting();
@@ -141,6 +138,7 @@ class ASH_EXPORT TabletModeController
   // about to be initialized. When it is about to be shutdown, we are considered
   // out of tablet mode.
   bool InTabletMode() const override;
+  bool AreInternalInputDeviceEventsBlocked() const override;
   bool ForceUiTabletModeState(absl::optional<bool> enabled) override;
   void SetEnabledForTest(bool enabled) override;
 

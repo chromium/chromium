@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/app_notification_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/ash/display_settings/display_settings_provider.h"
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
@@ -57,7 +58,8 @@ OsSettingsManager::OsSettingsManager(
       app_notification_handler_(
           std::make_unique<AppNotificationHandler>(app_service_proxy)),
       input_device_settings_provider_(
-          std::make_unique<InputDeviceSettingsProvider>()) {}
+          std::make_unique<InputDeviceSettingsProvider>()),
+      display_settings_provider_(std::make_unique<DisplaySettingsProvider>()) {}
 
 OsSettingsManager::~OsSettingsManager() = default;
 
@@ -82,6 +84,7 @@ void OsSettingsManager::AddHandlers(content::WebUI* web_ui) {
 void OsSettingsManager::Shutdown() {
   // Note: These must be deleted in the opposite order of their creation to
   // prevent against UAF violations.
+  display_settings_provider_.reset();
   input_device_settings_provider_.reset();
   app_notification_handler_.reset();
   search_handler_.reset();

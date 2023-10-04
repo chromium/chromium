@@ -81,6 +81,10 @@ class FakeTabletMode : public ash::TabletMode {
 
   bool InTabletMode() const override { return in_tablet_mode; }
 
+  bool AreInternalInputDeviceEventsBlocked() const override {
+    return in_tablet_mode;
+  }
+
   bool ForceUiTabletModeState(absl::optional<bool> enabled) override {
     return false;
   }

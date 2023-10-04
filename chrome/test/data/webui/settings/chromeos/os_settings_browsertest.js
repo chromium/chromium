@@ -292,6 +292,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [
+   'DevicePageDisplaySettingsMojoInterfaceProvider',
+   'device_page/display_settings_mojo_interface_provider_test.js'
+ ],
+ [
    'DevicePageKeyCombinationInputDialog',
    'device_page/key_combination_input_dialog_test.js'
  ],

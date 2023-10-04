@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {DevicePageBrowserProxyImpl, Router, routes, setDisplayApiForTesting, SettingsDisplayElement} from 'chrome://os-settings/os_settings.js';
+import {DevicePageBrowserProxyImpl, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -15,6 +15,7 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {FakeSystemDisplay} from '../fake_system_display.js';
 
 import {getFakePrefs} from './device_page_test_util.js';
+import {FakeDisplaySettingsProvider} from './fake_display_settings_provider.js';
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
 import DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
@@ -23,6 +24,7 @@ suite('<settings-display>', () => {
   let displayPage: SettingsDisplayElement;
   let fakeSystemDisplay: FakeSystemDisplay;
   let browserProxy: any;
+  let displaySettingsProvider: FakeDisplaySettingsProvider;
 
   // Add a fake display.
   function addDisplay(displayIndex: number): void {
@@ -121,6 +123,9 @@ suite('<settings-display>', () => {
     DevicePageBrowserProxyImpl.setInstanceForTesting(
         new TestDevicePageBrowserProxy());
     browserProxy = DevicePageBrowserProxyImpl.getInstance();
+
+    displaySettingsProvider = new FakeDisplaySettingsProvider();
+    setDisplaySettingsProviderForTesting(displaySettingsProvider);
   });
 
   teardown(() => {
@@ -137,10 +142,10 @@ suite('<settings-display>', () => {
     assertFalse(displayPage.showMirror(true, displayPage.displays));
     assertFalse(displayPage.showMirror(false, displayPage.displays));
     assertFalse(displayPage.isMirrored(displayPage.displays));
-    assertFalse(
-        displayPage.showUnifiedDesktop(true, true, displayPage.displays));
-    assertFalse(
-        displayPage.showUnifiedDesktop(false, false, displayPage.displays));
+    assertFalse(displayPage.showUnifiedDesktop(
+        true, true, displayPage.displays, /*isTabletMode=*/ false));
+    assertFalse(displayPage.showUnifiedDesktop(
+        false, false, displayPage.displays, /*isTabletMode=*/ false));
     assertEquals(
         displayPage.getInvalidDisplayId(),
         browserProxy.lastHighlightedDisplayId);
@@ -166,10 +171,10 @@ suite('<settings-display>', () => {
           assertFalse(displayPage.isMirrored(displayPage.displays));
 
           // Verify unified desktop only shown when enabled.
-          assertTrue(
-              displayPage.showUnifiedDesktop(true, true, displayPage.displays));
+          assertTrue(displayPage.showUnifiedDesktop(
+              true, true, displayPage.displays, /*isTabletMode=*/ false));
           assertFalse(displayPage.showUnifiedDesktop(
-              false, false, displayPage.displays));
+              false, false, displayPage.displays, /*isTabletMode=*/ false));
 
           // Sanity check the first display is internal.
           assertTrue(displayPage.displays[0]!.isInternal);
@@ -209,10 +214,10 @@ suite('<settings-display>', () => {
           assertFalse(displayPage.isMirrored(displayPage.displays));
 
           // Verify unified desktop only shown when enabled.
-          assertTrue(
-              displayPage.showUnifiedDesktop(true, true, displayPage.displays));
+          assertTrue(displayPage.showUnifiedDesktop(
+              true, true, displayPage.displays, /*isTabletMode=*/ false));
           assertFalse(displayPage.showUnifiedDesktop(
-              false, false, displayPage.displays));
+              false, false, displayPage.displays, /*isTabletMode=*/ false));
 
           // Sanity check the second display is not internal.
           assertFalse(displayPage.displays[1]!.isInternal);
@@ -458,6 +463,29 @@ suite('<settings-display>', () => {
               new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
           assertEquals(offset, layout.offset);
         });
+  });
+
+  test('Unified desktop not supported in tablet mode', async () => {
+    await initPage();
+
+    addDisplay(1);
+    addDisplay(2);
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await fakeSystemDisplay.getInfoCalled.promise;
+    await fakeSystemDisplay.getLayoutCalled.promise;
+    assertEquals(2, displayPage.displays.length);
+
+    // Unified desktop is supported when in clamshell mode.
+    displaySettingsProvider.setTabletMode(false);
+    assertTrue(displayPage.showUnifiedDesktop(
+        /*unifiedDesktopAvailable=*/ true, /*unifiedDesktopMode=*/ false,
+        displayPage.displays, displaySettingsProvider.getIsTabletMode()));
+
+    // Unified desktop is not supported when in tablet mode.
+    displaySettingsProvider.setTabletMode(true);
+    assertFalse(displayPage.showUnifiedDesktop(
+        /*unifiedDesktopAvailable=*/ true, /*unifiedDesktopMode=*/ false,
+        displayPage.displays, displaySettingsProvider.getIsTabletMode()));
   });
 
   test('night light', async function() {

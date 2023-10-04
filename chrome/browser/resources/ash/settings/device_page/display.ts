@@ -37,6 +37,7 @@ import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 import {assertExists, cast, castExists} from '../assert_extras.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DisplaySettingsProviderInterface, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
@@ -44,6 +45,7 @@ import {Route, routes} from '../router.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, getDisplayApi} from './device_page_browser_proxy.js';
 import {getTemplate} from './display.html.js';
 import {SettingsDisplayOverscanDialogElement} from './display_overscan_dialog.js';
+import {getDisplaySettingsProvider} from './display_settings_mojo_interface_provider.js';
 
 import DisplayLayout = chrome.system.display.DisplayLayout;
 import DisplayMode = chrome.system.display.DisplayMode;
@@ -182,6 +184,11 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         value: false,
       },
 
+      isTabletMode_: {
+        type: Boolean,
+        value: false,
+      },
+
       selectedParentModePref_: {
         type: Object,
         value: function() {
@@ -252,9 +259,11 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private currentSelectedParentModeIndex_: number;
   private displayChangedListener_: (() => void)|null;
   private displayModeList_: DropdownMenuOptionList;
+  private displaySettingsProvider: DisplaySettingsProviderInterface;
   private displayTabNames_: string[];
   private invalidDisplayId_: string;
   private isRevampWayfindingEnabled_: boolean;
+  private isTabletMode_: boolean;
   private listAllDisplayModes_: boolean;
   private logicalResolutionText_: string;
   private modeToParentModeMap_: Map<number, number>;
@@ -310,9 +319,12 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
      * Mode index values for slider.
      */
     this.modeToParentModeMap_ = new Map();
+
+    // Provider of display settings mojo API.
+    this.displaySettingsProvider = getDisplaySettingsProvider();
   }
 
-  override connectedCallback(): void {
+  override async connectedCallback(): Promise<void> {
     super.connectedCallback();
 
     this.displayChangedListener_ =
@@ -321,6 +333,10 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
 
     this.getDisplayInfo_();
     this.$.displaySizeSlider.updateValueInstantly = false;
+
+    const {isTabletMode} = await this.displaySettingsProvider.observeTabletMode(
+        new TabletModeObserverReceiver(this).$.bindNewPipeAndPassRemote());
+    this.isTabletMode_ = isTabletMode;
   }
 
   override disconnectedCallback(): void {
@@ -331,6 +347,13 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
 
     this.currentSelectedModeIndex_ = -1;
     this.currentSelectedParentModeIndex_ = -1;
+  }
+
+  /**
+   * Implements TabletModeObserver.OnTabletModeChanged.
+   */
+  onTabletModeChanged(isTabletMode: boolean): void {
+    this.isTabletMode_ = isTabletMode;
   }
 
   override beforeDeepLinkAttempt(_settingId: Setting): boolean {
@@ -867,14 +890,15 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
 
   showUnifiedDesktop(
       unifiedDesktopAvailable: boolean, unifiedDesktopMode: boolean,
-      displays: DisplayUnitInfo[]): boolean {
+      displays: DisplayUnitInfo[], isTabletMode: boolean): boolean {
     if (displays === undefined) {
       return false;
     }
 
+    // Unified desktop is not supported in tablet mode.
     return unifiedDesktopMode ||
         (unifiedDesktopAvailable && displays.length > 1 &&
-         !this.isMirrored(displays));
+         !this.isMirrored(displays) && !isTabletMode);
   }
 
   private getUnifiedDesktopText_(unifiedDesktopMode: boolean): string {

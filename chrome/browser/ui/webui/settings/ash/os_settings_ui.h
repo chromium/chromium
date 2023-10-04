@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/files/one_drive_page_handler_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/user_action_recorder.mojom-forward.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
+#include "chrome/browser/ui/webui/settings/ash/display_settings/display_settings_provider.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "chrome/common/webui_url_constants.h"
@@ -123,6 +124,11 @@ class OSSettingsUI : public ui::MojoWebUIController {
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<mojom::InputDeviceSettingsProvider> receiver);
+
+  // Instantiates implementor of the mojom::DisplaySettingsProvider mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<mojom::DisplaySettingsProvider> receiver);
 
   // Instantiates implementor of the mojom::PageHandlerFactory mojo interface
   // passing the pending receiver that will be internally bound.

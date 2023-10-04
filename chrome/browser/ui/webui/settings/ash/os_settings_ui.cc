@@ -273,6 +273,13 @@ void OSSettingsUI::BindInterface(
 }
 
 void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<mojom::DisplaySettingsProvider> receiver) {
+  OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
+      ->display_settings_provider()
+      ->BindInterface(std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<auth::mojom::AuthFactorConfig> receiver) {
   auth::BindToAuthFactorConfig(std::move(receiver),
                                quick_unlock::QuickUnlockFactory::GetDelegate());
