@@ -71,6 +71,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"notStartedBody", IDS_TAB_ORGANIZATION_NOT_STARTED_BODY},
       {"notStartedButton", IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON},
       {"notStartedTitle", IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE},
+      {"successTitle", IDS_TAB_ORGANIZATION_SUCCESS_TITLE},
       {"tabOrganizationTabName", IDS_TAB_ORGANIZATION_TAB_NAME},
   };
   webui::SetupChromeRefresh2023(source);

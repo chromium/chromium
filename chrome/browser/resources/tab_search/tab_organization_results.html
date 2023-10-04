@@ -1,0 +1,54 @@
+<style include="mwb-shared-style tab-organization-shared-style">
+  cr-button {
+    align-self: flex-end;
+    margin: 16px 16px 0 16px;
+    width: fit-content;
+  }
+
+  cr-input {
+    --cr-input-background-color: transparent;
+    --cr-input-border: 1px solid var(--color-side-panel-textfield-border);
+    --cr-input-border-bottom: none;
+    --cr-input-border-radius: 8px;
+    --cr-input-padding-bottom: 9px;
+    --cr-input-padding-top: 9px;
+    --cr-input-underline-display: none;
+    margin: 0 16px;
+  }
+
+  cr-input:focus {
+    --cr-input-border: 2px solid var(--cr-focus-outline-color);
+    --cr-input-padding-bottom: 8px;
+    --cr-input-padding-top: 8px;
+  }
+
+  .mwb-list-item {
+    background-color: transparent;
+  }
+
+  .results {
+    background-color: var(--color-sys-surface5);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0;
+  }
+</style>
+
+<div class="tab-organization-container">
+  <div class="tab-organization-header">$i18n{successTitle}</div>
+  <div class="results">
+    <cr-input id="input" type="text" value="{{name}}"
+        on-focus="onInputFocus_"
+        on-keydown="onInputKeyDown_">
+    </cr-input>
+    <template is="dom-repeat" items="[[tabDatas_]]">
+      <tab-search-item class="mwb-list-item" data="[[item]]"
+          on-close="onTabRemove_">
+      </tab-search-item>
+    </template>
+    <cr-button class="action-button" on-click="onCreateGroupClick_">
+      $i18n{createGroup}
+    </cr-button>
+  </div>
+</div>

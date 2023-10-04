@@ -2,13 +2,6 @@
   .body {
     margin: 16px var(--mwb-list-item-horizontal-margin);
   }
-
-  .button-container {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-    margin: 8px 0;
-  }
 </style>
 
 <div class="body">
@@ -20,21 +13,12 @@
       hidden="[[!isState_(tabOrganizationStateEnum_.IN_PROGRESS, state_)]]"
       on-success="onCycleStateClick_">
   </tab-organization-in-progress>
-  <div id="success"
-      hidden="[[!isState_(tabOrganizationStateEnum_.SUCCESS, state_)]]">
-    Placeholder: Success
-    <cr-button class="action-button" on-click="onCycleStateClick_">
-      Set state to failure
-    </cr-button>
-    <div class="button-container">
-      <cr-button class="tonal-button" on-click="onDismissClick_">
-        $i18n{dismiss}
-      </cr-button>
-      <cr-button class="action-button" on-click="onCreateGroupClick_">
-        $i18n{createGroup}
-      </cr-button>
-    </div>
-  </div>
+  <tab-organization-results
+      hidden="[[!isState_(tabOrganizationStateEnum_.SUCCESS, state_)]]"
+      name="[[name_]]"
+      tabs="[[tabs_]]"
+      on-create-group-click="onCreateGroupClick_">
+  </tab-organization-results>
   <div id="failure"
       hidden="[[!isState_(tabOrganizationStateEnum_.FAILURE, state_)]]">
     Placeholder: Failure
