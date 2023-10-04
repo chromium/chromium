@@ -77,6 +77,15 @@ class TestAutofillManager : public autofill::BrowserAutofillManager {
     return forms_seen_.Wait(num_awaited_calls);
   }
 
+  const FormStructure* WaitForFormWithNFields(int n) {
+    return WaitForMatchingForm(this, base::BindRepeating(
+                                         [](int n, const FormStructure& form) {
+                                           return form.active_field_count() ==
+                                                  (size_t)n;
+                                         },
+                                         n));
+  }
+
  private:
   autofill::TestAutofillManagerWaiter forms_seen_{
       *this,
@@ -332,9 +341,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInIframe) {
   EXPECT_EQ(GetFilledOutForm(unique_context_id), GetTestCreditCard());
 }
 
-// TODO(crbug.com/1486043): Disabled due to segfaults across platforms.
-IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
-                       DISABLED_TriggerCreditCardInOOPIFIframe) {
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInOOPIFIframe) {
   embedded_test_server()->ServeFilesFromSourceDirectory(
       "chrome/test/data/autofill");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -345,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
   Attach();
 
-  EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
+  EXPECT_TRUE(main_autofill_manager().WaitForFormWithNFields(4));
 
   {
     base::Value::Dict params;
@@ -383,6 +390,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
   params.Set("card", GetTestCreditCard());
   SendSessionCommand("Autofill.trigger", std::move(params), session_id,
                      /*wait=*/true);
+  ASSERT_TRUE(result());
   EXPECT_EQ(*result(), base::Value::Dict());
   EXPECT_EQ(GetFilledOutForm("", session_id), GetTestCreditCard());
 }
