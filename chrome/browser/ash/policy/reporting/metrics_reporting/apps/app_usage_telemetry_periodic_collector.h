@@ -5,16 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_APPS_APP_USAGE_TELEMETRY_PERIODIC_COLLECTOR_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_APPS_APP_USAGE_TELEMETRY_PERIODIC_COLLECTOR_H_
 
-#include <memory>
-
-#include "base/memory/raw_ptr.h"
-#include "base/sequence_checker.h"
-#include "base/thread_annotations.h"
+#include "chrome/browser/chromeos/reporting/usage_telemetry_periodic_collector_base.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
-#include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/reporting_settings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/reporting/metrics/sampler.h"
 
 namespace reporting {
 
@@ -24,7 +19,7 @@ namespace reporting {
 // based on the respective policy setting. This is to avoid data staleness
 // because we do not associate usage data with a timestamp today.
 class AppUsageTelemetryPeriodicCollector
-    : public CollectorBase,
+    : public UsageTelemetryPeriodicCollectorBase,
       public ::ash::SessionTerminationManager::Observer {
  public:
   AppUsageTelemetryPeriodicCollector(Sampler* sampler,
@@ -36,26 +31,9 @@ class AppUsageTelemetryPeriodicCollector
       const AppUsageTelemetryPeriodicCollector& other) = delete;
   ~AppUsageTelemetryPeriodicCollector() override;
 
- protected:
-  // CollectorBase:
-  void OnMetricDataCollected(bool is_event_driven,
-                             absl::optional<MetricData> metric_data) override;
-
-  // CollectorBase:
-  bool CanCollect() const override;
-
  private:
   // ::ash::SessionTerminationManager::Observer:
   void OnSessionWillBeTerminated() override;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  // `MetricReportQueue` used for enqueueing data collected by the sampler.
-  const raw_ptr<MetricReportQueue> metric_report_queue_;
-
-  // Component used to control collection rate based on the policy setting.
-  std::unique_ptr<MetricRateController> rate_controller_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace reporting
