@@ -11,6 +11,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <string>
 #include <string_view>
 
