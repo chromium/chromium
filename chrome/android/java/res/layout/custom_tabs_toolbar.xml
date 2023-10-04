@@ -12,11 +12,27 @@ found in the LICENSE file.
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/custom_tabs_control_container_height">
-    <ImageButton
-        android:id="@+id/close_button"
-        style="@style/ToolbarButton"
-        android:layout_gravity="start|center_vertical"
-        android:contentDescription="@string/close_tab" />
+    <LinearLayout
+        android:id="@+id/close_minimize_layout"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="42dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/close_button"
+            style="@style/ToolbarButton"
+            android:layout_gravity="start|center_vertical"
+            android:contentDescription="@string/close_tab" />
+        <ViewStub
+            android:id="@+id/minimize_button_stub"
+            style="@style/ToolbarButton"
+            android:inflatedId="@+id/custom_tabs_minimize_button"
+            android:layout="@layout/custom_tabs_minimize_button"
+            android:layout_gravity="start|center_vertical"
+            app:tint="@color/default_icon_color_tint_list" />
+    </LinearLayout>
+
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/incognito_cct_logo_image_view"
         style="@style/LocationBarButton"
@@ -27,6 +43,7 @@ found in the LICENSE file.
         app:srcCompat="@drawable/ic_incognito_cct_24dp"
         android:visibility="gone"
         android:contentDescription="@string/accessibility_incognito_badge"/>
+
     <FrameLayout
         android:id="@+id/location_bar_frame_layout"
         android:layout_width="match_parent"

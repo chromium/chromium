@@ -106,4 +106,5 @@ found in the LICENSE file.
 
     <!-- Custom Tabs -->
     <item type="id" name="view_id_tag_key" />
+    <item type="id" name="custom_tabs_toolbar_tintable" />
 </resources>
