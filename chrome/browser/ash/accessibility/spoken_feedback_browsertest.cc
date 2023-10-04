@@ -39,6 +39,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -96,20 +97,14 @@ LoggedInSpokenFeedbackTest::~LoggedInSpokenFeedbackTest() = default;
 
 void LoggedInSpokenFeedbackTest::SetUpInProcessBrowserTestFixture() {
   AccessibilityManager::SetBrailleControllerForTest(&braille_controller_);
-  ash_starter_ = std::make_unique<::test::AshBrowserTestStarter>();
-  if (ash_starter_->HasLacrosArgument()) {
-    ASSERT_TRUE(ash_starter_->PrepareEnvironmentForLacros());
-  }
+  AccessibilityFeatureBrowserTest::SetUpInProcessBrowserTestFixture();
 }
 
 void LoggedInSpokenFeedbackTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
   event_generator_ = std::make_unique<ui::test::EventGenerator>(
       Shell::Get()->GetPrimaryRootWindow());
-  CHECK(ash_starter_);
-  if (ash_starter_->HasLacrosArgument()) {
-    ash_starter_->StartLacros(this);
-  }
+  AccessibilityFeatureBrowserTest::SetUpOnMainThread();
 }
 
 void LoggedInSpokenFeedbackTest::TearDownOnMainThread() {
@@ -207,8 +202,7 @@ bool LoggedInSpokenFeedbackTest::PerformAcceleratorAction(
 
 void LoggedInSpokenFeedbackTest::RunJSForChromeVox(const std::string& script) {
   extensions::BackgroundScriptExecutor::ExecuteScriptAsync(
-      AccessibilityManager::Get()->profile(),
-      extension_misc::kChromeVoxExtensionId, script,
+      GetProfile(), extension_misc::kChromeVoxExtensionId, script,
       extensions::browsertest_util::ScriptUserActivation::kDontActivate);
 }
 
@@ -218,16 +212,14 @@ void LoggedInSpokenFeedbackTest::DisableEarcons() {
   // (http://crbug.com/396507). Work around this by just telling
   // ChromeVox to not ever play earcons (prerecorded sound effects).
   extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      AccessibilityManager::Get()->profile(),
-      extension_misc::kChromeVoxExtensionId,
+      GetProfile(), extension_misc::kChromeVoxExtensionId,
       "ChromeVox.earcons.playEarcon = function() {};");
 }
 
 void LoggedInSpokenFeedbackTest::ImportJSModuleForChromeVox(std::string name,
                                                             std::string path) {
   extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
-      AccessibilityManager::Get()->profile(),
-      extension_misc::kChromeVoxExtensionId,
+      GetProfile(), extension_misc::kChromeVoxExtensionId,
       "import('" + path +
           "').then(mod => {"
           "globalThis." +
@@ -270,23 +262,6 @@ void LoggedInSpokenFeedbackTest::ExecuteCommandHandlerCommand(
       "/chromevox/background/command_handler_interface.js");
   RunJSForChromeVox("CommandHandlerInterface.instance.onCommand('" + command +
                     "');");
-}
-
-void LoggedInSpokenFeedbackTest::NavigateToUrl(const GURL& url) {
-  CHECK(ash_starter_);
-  if (ash_starter_->HasLacrosArgument()) {
-    crosapi::BrowserManager::Get()->OpenUrl(
-        url, crosapi::mojom::OpenUrlFrom::kUnspecified,
-        crosapi::mojom::OpenUrlParams::WindowOpenDisposition::
-            kNewForegroundTab);
-  } else {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  }
-}
-
-bool LoggedInSpokenFeedbackTest::IsLacrosRunning() const {
-  CHECK(ash_starter_);
-  return ash_starter_->HasLacrosArgument();
 }
 
 // Flaky test, crbug.com/1081563
@@ -813,8 +788,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
 
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
-  apps::AppServiceProxyFactory::GetForProfile(
-      AccessibilityManager::Get()->profile())
+  apps::AppServiceProxyFactory::GetForProfile(GetProfile())
       ->AppRegistryCache()
       .OnApps(std::move(apps), apps::AppType::kBuiltIn,
               false /* should_notify_initialized */);
@@ -900,8 +874,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   app->readiness = apps::Readiness::kDisabledByPolicy;
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
-  apps::AppServiceProxyFactory::GetForProfile(
-      AccessibilityManager::Get()->profile())
+  apps::AppServiceProxyFactory::GetForProfile(GetProfile())
       ->AppRegistryCache()
       .OnApps(std::move(apps), apps::AppType::kBuiltIn,
               false /* should_notify_initialized */);

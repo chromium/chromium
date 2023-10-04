@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
@@ -9,8 +10,10 @@
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
+#include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/ash/accessibility/fullscreen_magnifier_test_helper.h"
 #include "chrome/browser/ash/accessibility/html_test_utils.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
@@ -49,7 +52,8 @@ gfx::Rect GetViewPort() {
 
 }  // namespace
 
-class FullscreenMagnifierControllerTest : public InProcessBrowserTest {
+class FullscreenMagnifierControllerTest
+    : public AccessibilityFeatureBrowserTest {
  public:
   FullscreenMagnifierControllerTest() = default;
   FullscreenMagnifierControllerTest(const FullscreenMagnifierControllerTest&) =
@@ -66,24 +70,15 @@ class FullscreenMagnifierControllerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
-        browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);
+        GetProfile(), extension_misc::kAccessibilityCommonExtensionId);
 
     aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
     generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
     // Start in a known location, centered on the screen.
     helper_ =
         std::make_unique<FullscreenMagnifierTestHelper>(gfx::Point(600, 400));
-  }
 
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  void SetFocusOnElement(const std::string& element_id) {
-    EXPECT_TRUE(
-        ExecJs(GetWebContents(),
-               base::StringPrintf(R"(document.getElementById('%s').focus();)",
-                                  element_id.c_str())));
+    AccessibilityFeatureBrowserTest::SetUpOnMainThread();
   }
 
   ui::test::EventGenerator* generator() { return generator_.get(); }
@@ -97,12 +92,17 @@ class FullscreenMagnifierControllerTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
                        FollowFocusOnWebButton) {
-  helper()->LoadURLAndMagnifier(browser(),
-                                std::string(kDataURIPrefix) + kTestHtmlContent);
+  helper()->LoadMagnifier(GetProfile());
+
+  AutomationTestUtils utils(extension_misc::kAccessibilityCommonExtensionId);
+  utils.SetUpTestSupport();
+  const std::string url = std::string(kDataURIPrefix) + kTestHtmlContent;
+  NavigateToUrl(GURL(url));
+  utils.WaitForPageLoad(url);
 
   // Move magnifier window to exclude the button.
   const gfx::Rect button_bounds =
-      GetControlBoundsInRoot(GetWebContents(), "test_button");
+      utils.GetNodeBoundsInRoot("Big Button 1", "button");
   helper()->MoveMagnifierWindow(
       button_bounds.right() + GetViewPort().width(),
       button_bounds.bottom() + GetViewPort().height());
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
   EXPECT_FALSE(view_port_before_focus.Contains(button_bounds));
 
   // Set the focus on the button.
-  SetFocusOnElement("test_button");
+  utils.SetFocusOnNode("Big Button 1", "button");
   helper()->WaitForMagnifierBoundsChanged();
 
   // Verify the magnifier window has moved to contain the button.
@@ -120,10 +120,10 @@ IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
 
 IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
                        MovesContinuouslyWithMouse) {
-  browser()->profile()->GetPrefs()->SetInteger(
+  GetProfile()->GetPrefs()->SetInteger(
       prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
       static_cast<int>(MagnifierMouseFollowingMode::kContinuous));
-  helper()->LoadMagnifier(browser()->profile());
+  helper()->LoadMagnifier(GetProfile());
 
   // Screen resolution 1200x800.
   gfx::Point center_point(600, 400);
@@ -146,10 +146,10 @@ IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
 
 IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
                        MovesWithMouseAtEdge) {
-  browser()->profile()->GetPrefs()->SetInteger(
+  GetProfile()->GetPrefs()->SetInteger(
       prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
       static_cast<int>(MagnifierMouseFollowingMode::kEdge));
-  helper()->LoadMagnifier(browser()->profile());
+  helper()->LoadMagnifier(GetProfile());
 
   // Screen resolution 1200x800.
   gfx::Point initial_center = GetViewPort().CenterPoint();
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
 
 IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
                        ChangeZoomWithAccelerator) {
-  helper()->LoadMagnifier(browser()->profile());
+  helper()->LoadMagnifier(GetProfile());
 
   // Press keyboard shortcut to zoom in. Default zoom is 2.0.
   generator()->PressAndReleaseKey(ui::VKEY_BRIGHTNESS_UP,
@@ -193,15 +193,15 @@ IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest, ChangeZoomWithPrefs) {
-  helper()->LoadMagnifier(browser()->profile());
+  helper()->LoadMagnifier(GetProfile());
 
   // Change the bounds pref.
-  browser()->profile()->GetPrefs()->SetDouble(
-      prefs::kAccessibilityScreenMagnifierScale, 4.0);
+  GetProfile()->GetPrefs()->SetDouble(prefs::kAccessibilityScreenMagnifierScale,
+                                      4.0);
   EXPECT_EQ(4.0, GetFullscreenMagnifierController()->GetScale());
 
-  browser()->profile()->GetPrefs()->SetDouble(
-      prefs::kAccessibilityScreenMagnifierScale, 10.5);
+  GetProfile()->GetPrefs()->SetDouble(prefs::kAccessibilityScreenMagnifierScale,
+                                      10.5);
   EXPECT_EQ(10.5, GetFullscreenMagnifierController()->GetScale());
 }
 

@@ -46,10 +46,16 @@ void AutomationTestUtils::SetUpTestSupport() {
   ExecuteScriptInExtensionPage(script);
 }
 
+void AutomationTestUtils::WaitForPageLoad(const std::string& url) {
+  ExecuteScriptInExtensionPage(base::StringPrintf(
+      R"JS(globalThis.automationTestSupport.waitForPageLoad(`%s`))JS",
+      url.c_str()));
+}
+
 gfx::Rect AutomationTestUtils::GetNodeBoundsInRoot(const std::string& name,
                                                    const std::string& role) {
   std::string script_result = ExecuteScriptInExtensionPage(base::StringPrintf(
-      R"JS(globalThis.automationTestSupport.getBoundsForNode("%s", "%s"))JS",
+      R"JS(globalThis.automationTestSupport.getBoundsForNode(`%s`, "%s"))JS",
       name.c_str(), role.c_str()));
   std::vector<std::string> tokens = base::SplitString(
       script_result, ",;", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -60,6 +66,13 @@ gfx::Rect AutomationTestUtils::GetNodeBoundsInRoot(const std::string& name,
   base::StringToInt(tokens[2], &width);
   base::StringToInt(tokens[3], &height);
   return gfx::Rect(x, y, width, height);
+}
+
+void AutomationTestUtils::SetFocusOnNode(const std::string& name,
+                                         const std::string& role) {
+  ExecuteScriptInExtensionPage(base::StringPrintf(
+      R"JS(globalThis.automationTestSupport.setFocusOnNode(`%s`, "%s"))JS",
+      name.c_str(), role.c_str()));
 }
 
 std::string AutomationTestUtils::ExecuteScriptInExtensionPage(

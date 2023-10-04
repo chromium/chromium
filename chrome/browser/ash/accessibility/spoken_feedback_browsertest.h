@@ -6,11 +6,10 @@
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SPOKEN_FEEDBACK_BROWSERTEST_H_
 
 #include "ash/public/cpp/accelerators.h"
+#include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
-#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
@@ -23,7 +22,7 @@ namespace ash {
 using ::extensions::api::braille_display_private::StubBrailleController;
 
 // Spoken feedback tests only in a logged in user's window.
-class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
+class LoggedInSpokenFeedbackTest : public AccessibilityFeatureBrowserTest {
  public:
   LoggedInSpokenFeedbackTest();
 
@@ -33,7 +32,7 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
 
   ~LoggedInSpokenFeedbackTest() override;
 
-  // InProcessBrowserTest:
+  // AccessibilityFeatureBrowserTest:
   void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
@@ -68,8 +67,6 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
                                      const std::string& expected_utterance);
   void RunJSForChromeVox(const std::string& script);
   void ImportJSModuleForChromeVox(std::string name, std::string path);
-  void NavigateToUrl(const GURL& url);
-  bool IsLacrosRunning() const;
 
   test::SpeechMonitor sm_;
 
@@ -80,7 +77,6 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
   ui::ScopedAnimationDurationScaleMode animation_mode_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<::test::AshBrowserTestStarter> ash_starter_;
 };
 
 }  // namespace ash

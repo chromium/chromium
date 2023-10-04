@@ -22,10 +22,21 @@ class AutomationTestUtils {
   // Should be called once the extension under test is loaded.
   void SetUpTestSupport();
 
+  // Waits for the root web area with the given URL to be loaded.
+  // Note that the URL should not use backtick quotes, or if so they
+  // should be escaped, to avoid collisions with the Javascript
+  // strings.
+  void WaitForPageLoad(const std::string& url);
+
   // Gets the bounds of the automation node with the given
-  // `name` and `role` in density-independent pixels.
+  // `name` and `role` in density-independent pixels. Will wait
+  // for the node to exist if it does not exist already.
   gfx::Rect GetNodeBoundsInRoot(const std::string& name,
                                 const std::string& role);
+
+  // Sets focus on the automation node with the given `name` and `role`.
+  // Will wait for the node to exist if it does not exist already.
+  void SetFocusOnNode(const std::string& name, const std::string& role);
 
  private:
   std::string ExecuteScriptInExtensionPage(const std::string& script);

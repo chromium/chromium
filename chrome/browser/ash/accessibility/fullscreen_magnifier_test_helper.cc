@@ -10,10 +10,8 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/accessibility/magnifier_animation_waiter.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
@@ -42,18 +40,6 @@ FullscreenMagnifierTestHelper::FullscreenMagnifierTestHelper(
           weak_ptr_factory_.GetWeakPtr()));
 }
 FullscreenMagnifierTestHelper::~FullscreenMagnifierTestHelper() = default;
-
-void FullscreenMagnifierTestHelper::LoadURLAndMagnifier(
-    Browser* browser,
-    const std::string& url) {
-  auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
-  content::AccessibilityNotificationWaiter waiter(
-      web_contents, ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GURL(url)));
-  ASSERT_TRUE(waiter.WaitForNotification());
-
-  LoadMagnifier(browser->profile());
-}
 
 void FullscreenMagnifierTestHelper::LoadMagnifier(Profile* profile) {
   extensions::ExtensionHostTestHelper host_helper(
@@ -108,9 +94,9 @@ void FullscreenMagnifierTestHelper::WaitForMagnifierJSReady(Profile* profile) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::string script = base::StringPrintf(R"JS(
       (async function() {
-        window.accessibilityCommon.setFeatureLoadCallbackForTest('magnifier',
-            () => {
-              window.accessibilityCommon.magnifier_.setIsInitializingForTest(
+        globalThis.accessibilityCommon.setFeatureLoadCallbackForTest(
+            'magnifier', () => {
+              globalThis.accessibilityCommon.magnifier_.setIsInitializingForTest(
                   false);
               chrome.test.sendScriptResult('ready');
             });

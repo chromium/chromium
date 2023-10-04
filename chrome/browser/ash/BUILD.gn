@@ -4414,6 +4414,8 @@ static_library("user_event_reporter_helper_test_support") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "accessibility/accessibility_feature_browsertest.cc",
+    "accessibility/accessibility_feature_browsertest.h",
     "accessibility/accessibility_test_utils.cc",
     "accessibility/accessibility_test_utils.h",
     "accessibility/autoclick_test_utils.cc",
