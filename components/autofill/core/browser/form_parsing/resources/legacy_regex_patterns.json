@@ -1296,6 +1296,26 @@
       }
     ]
   },
+  "BETWEEN_STREETS_OR_LANDMARK": {
+    "en": [
+      {
+        "positive_pattern": "(cross|between).*street.*landmark|landmark.*(cross|between).*street",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
+      }
+    ],
+    "es": [
+      {
+        "positive_pattern": "entre.*calle.*referencia|referencia.*entre.*calle",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
+      }
+    ]
+  },
   "BETWEEN_STREETS": {
     "en": [
       {

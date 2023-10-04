@@ -12,7 +12,7 @@ shopt -s globstar  # Enable **
 for FILE in "${SCRIPT_DIR}"/**/*.json; do
   if [[ -f "${FILE}.new" ]]; then
     echo "${FILE} has different results:"
-    diff -U5 "${FILE}" "${FILE}.new"
+    diff -U6 "${FILE}" "${FILE}.new"
   else
     echo "${FILE} was not changed"
   fi

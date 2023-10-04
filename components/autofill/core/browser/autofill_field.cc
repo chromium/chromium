@@ -49,6 +49,12 @@ static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
          {ADDRESS_HOME_APT_NUM, HtmlFieldType::kAddressLine2},
          {ADDRESS_HOME_APT_NUM, HtmlFieldType::kAddressLine3},
          {ADDRESS_HOME_BETWEEN_STREETS, HtmlFieldType::kAddressLevel2},
+         {ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+          HtmlFieldType::kAddressLevel2},
+         {ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+          HtmlFieldType::kAddressLine2},
+         {ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+          HtmlFieldType::kOrganization},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLevel1},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLevel2},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLevel3},
@@ -76,6 +82,7 @@ static constexpr auto kAutofillHeuristicsVsServerOverrides =
          {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_LINE2},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_LINE3},
          {ADDRESS_HOME_LANDMARK, ADDRESS_HOME_LINE2},
+         {ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK, ADDRESS_HOME_LINE2},
          {ADDRESS_HOME_OVERFLOW_AND_LANDMARK, ADDRESS_HOME_LINE2},
          {ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_LINE2}});
 

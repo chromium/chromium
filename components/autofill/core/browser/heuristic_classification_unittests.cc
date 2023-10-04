@@ -542,6 +542,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillEnableSupportForApartmentNumbers,
       features::kAutofillEnableDependentLocalityParsing,
       features::kAutofillEnableExpirationDateImprovements,
+      features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
       // Allow local heuristics to take precedence.
       features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
       features::kAutofillLocalHeuristicsOverrides,

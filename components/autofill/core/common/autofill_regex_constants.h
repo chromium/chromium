@@ -198,6 +198,11 @@ inline constexpr char16_t kLandmarkRe[] =
     u"landmark"
     u"|ref[êe]r[êe]ncia";  // es-MX, pt-BR
 
+inline constexpr char16_t kBetweenStreetsOrLandmarkRe[] =
+    u"(cross|between).*street.*landmark"                    // en
+    u"|landmark.*(cross|between).*street"                   // en
+    u"|entre.*calle.*referencia|referencia.*entre.*calle";  // es-MX
+
 inline constexpr char16_t kBetweenStreetsRe[] =
     u"(cross|between).*street"
     u"|entre.*calle";  // es
