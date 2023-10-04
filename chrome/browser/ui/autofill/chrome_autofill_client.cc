@@ -122,6 +122,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
+#include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
 #include "chrome/browser/ui/android/autofill/autofill_logger_android.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
@@ -836,12 +837,19 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(options.show_prompt);
+  // If a CVC is detected for an existing server card in the checkout form, the
+  // CVC save prompt is shown in a message.
   if (options.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly) {
-    // TODO (crbug.com/1485194): Create a Message UI for saving CVC to an
-    // existing server card.
-    NOTIMPLEMENTED();
+    if (!autofill_cvc_save_message_delegate_) {
+      autofill_cvc_save_message_delegate_ =
+          std::make_unique<AutofillCvcSaveMessageDelegate>(web_contents());
+    }
+    autofill_cvc_save_message_delegate_->ShowMessage();
     return;
   }
+
+  // For new cards, the save card prompt is shown either in a bottom sheet or in
+  // an infobar.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
   AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
@@ -1377,6 +1385,13 @@ void ChromeAutofillClient::SetAutofillSaveCardBottomSheetBridgeForTesting(
         autofill_save_card_bottom_sheet_bridge) {
   autofill_save_card_bottom_sheet_bridge_ =
       std::move(autofill_save_card_bottom_sheet_bridge);
+}
+
+void ChromeAutofillClient::SetAutofillCvcSaveMessageDelegateForTesting(
+    std::unique_ptr<AutofillCvcSaveMessageDelegate>
+        autofill_cvc_save_message_delegate) {
+  autofill_cvc_save_message_delegate_ =
+      std::move(autofill_cvc_save_message_delegate);
 }
 #endif
 

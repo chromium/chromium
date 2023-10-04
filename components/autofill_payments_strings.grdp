@@ -222,6 +222,9 @@
     <message name="IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation for the effect of the Autofill save card prompt when the card is to be saved along with the CVC by uploading it to Google Payments. The prompt will be shown in a bottom sheet on Android devices.">
       To pay faster next time, save your card, security code, and billing address in your Google Account
     </message>
+    <message name="IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT" desc="Positive button label for the Autofill save CVC prompt that offers to save CVC for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission. The prompt is shown in a Message UI on Android devices.">
+      Save
+    </message>
   </if>
 
   <if expr="is_ios">

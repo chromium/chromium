@@ -123,6 +123,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".ArCoreUpgrade"/>
   <variant name=".AutoDarkWebContents"/>
   <variant name=".ChromeSurvey"/>
+  <variant name=".CvcSave"/>
   <variant name=".DesktopSiteGlobalDefaultOptOut"/>
   <variant name=".DesktopSiteGlobalOptIn"/>
   <variant name=".DownloadIncognitoWarning"/>

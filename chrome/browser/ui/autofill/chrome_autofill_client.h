@@ -52,6 +52,7 @@ class AutofillPopupControllerImpl;
 #if BUILDFLAG(IS_ANDROID)
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSnackbarControllerImpl;
+class AutofillCvcSaveMessageDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
 struct OfferNotificationOptions;
 struct VirtualCardEnrollmentFields;
@@ -320,6 +321,9 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void SetAutofillSaveCardBottomSheetBridgeForTesting(
       std::unique_ptr<AutofillSaveCardBottomSheetBridge>
           autofill_save_card_bottom_sheet_bridge);
+  void SetAutofillCvcSaveMessageDelegateForTesting(
+      std::unique_ptr<AutofillCvcSaveMessageDelegate>
+          autofill_cvc_save_message_delegate);
 #endif
 
  private:
@@ -363,6 +367,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<FastCheckoutClient> fast_checkout_client_;
   std::unique_ptr<AutofillSaveCardBottomSheetBridge>
       autofill_save_card_bottom_sheet_bridge_;
+  std::unique_ptr<AutofillCvcSaveMessageDelegate>
+      autofill_cvc_save_message_delegate_;
 #endif
   std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
   AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;

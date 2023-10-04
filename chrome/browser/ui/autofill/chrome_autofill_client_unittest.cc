@@ -29,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
@@ -37,6 +38,8 @@
 namespace autofill {
 namespace {
 
+using ::testing::AllOf;
+using ::testing::Field;
 using ::testing::InSequence;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -52,6 +55,16 @@ class MockAutofillSaveCardBottomSheetBridge
               (const AutofillSaveCardUiInfo&,
                std::unique_ptr<AutofillSaveCardDelegateAndroid>),
               (override));
+};
+
+class MockAutofillCvcSaveMessageDelegate
+    : public AutofillCvcSaveMessageDelegate {
+ public:
+  explicit MockAutofillCvcSaveMessageDelegate(
+      content::WebContents* web_contents)
+      : AutofillCvcSaveMessageDelegate(web_contents) {}
+
+  MOCK_METHOD(void, ShowMessage, (), (override));
 };
 #endif
 
@@ -73,6 +86,17 @@ class TestChromeAutofillClient : public ChromeAutofillClient {
     auto mock = std::make_unique<MockAutofillSaveCardBottomSheetBridge>();
     auto* pointer = mock.get();
     SetAutofillSaveCardBottomSheetBridgeForTesting(std::move(mock));
+    return pointer;
+  }
+
+  // Inject a new MockAutofillCvcSaveMessageDelegate.
+  // Returns a pointer to the mock.
+  MockAutofillCvcSaveMessageDelegate* InjectMockAutofillCvcSaveMessageDelegate(
+      content::WebContents* web_contents) {
+    auto mock =
+        std::make_unique<MockAutofillCvcSaveMessageDelegate>(web_contents);
+    auto* pointer = mock.get();
+    SetAutofillCvcSaveMessageDelegateForTesting(std::move(mock));
     return pointer;
   }
 
@@ -216,19 +240,70 @@ class ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature
       features::kAutofillEnablePaymentsAndroidBottomSheet};
 };
 
-TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
-       ConfirmSaveCreditCardToCloud_RequestsBottomSheet) {
+// Verify that when `AutofillEnablePaymentsAndroidBottomSheet` feature is
+// enabled, the prompt to upload save a user's card without CVC is shown in a
+// bottom sheet.
+TEST_F(
+    ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
+    ConfirmSaveCreditCardToCloud_CardSaveTypeIsOnlyCard_RequestsBottomSheet) {
   TestChromeAutofillClient* autofill_client = client();
   auto* bottom_sheet_bridge =
       autofill_client->InjectMockAutofillSaveCardBottomSheetBridge();
 
+  std::u16string expected_description;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  expected_description =
+      u"To pay faster next time, save your card and billing address in your "
+      u"Google Account";
+#endif
+
+  // Verify that `AutofillSaveCardUiInfo` has the correct attributes that
+  // indicate upload save card prompt without CVC.
   EXPECT_CALL(*bottom_sheet_bridge,
-              RequestShowContent(testing::An<const AutofillSaveCardUiInfo&>(),
-                                 testing::NotNull()));
+              RequestShowContent(
+                  AllOf(Field(&AutofillSaveCardUiInfo::is_for_upload, true),
+                        Field(&AutofillSaveCardUiInfo::description_text,
+                              expected_description)),
+                  testing::NotNull()));
 
   autofill_client->ConfirmSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
-      ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
+      ChromeAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveOnly)
+          .with_show_prompt(true),
+      base::DoNothing());
+}
+
+// Verify that when `AutofillEnablePaymentsAndroidBottomSheet` feature is
+// enabled, the prompt to upload save a user's card with CVC is shown in a
+// bottom sheet.
+TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
+       ConfirmSaveCreditCardToCloud_CardSaveTypeIsWithCvc_RequestsBottomSheet) {
+  TestChromeAutofillClient* autofill_client = client();
+  auto* bottom_sheet_bridge =
+      autofill_client->InjectMockAutofillSaveCardBottomSheetBridge();
+
+  std::u16string expected_description;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  expected_description =
+      u"To pay faster next time, save your card, security code, and billing "
+      u"address in your Google Account";
+#endif
+
+  // Verify that `AutofillSaveCardUiInfo` has the correct attributes that
+  // indicate upload save card prompt with CVC.
+  EXPECT_CALL(*bottom_sheet_bridge,
+              RequestShowContent(
+                  AllOf(Field(&AutofillSaveCardUiInfo::is_for_upload, true),
+                        Field(&AutofillSaveCardUiInfo::description_text,
+                              expected_description)),
+                  testing::NotNull()));
+
+  autofill_client->ConfirmSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      ChromeAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveWithCvc)
+          .with_show_prompt(true),
       base::DoNothing());
 }
 
@@ -242,19 +317,63 @@ TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
       base::DoNothing()));
 }
 
-TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
-       ConfirmSaveCreditCardLocally_RequestsBottomSheet) {
+// Verify that when `AutofillEnablePaymentsAndroidBottomSheet` feature is
+// enabled, the prompt to local save a user's card is shown in a bottom sheet.
+TEST_F(
+    ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
+    ConfirmSaveCreditCardLocally_CardSaveTypeIsOnlyCard_RequestsBottomSheet) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableCvcStorageAndFilling};
+
   TestChromeAutofillClient* autofill_client = client();
   auto* bottom_sheet_bridge =
       autofill_client->InjectMockAutofillSaveCardBottomSheetBridge();
 
-  EXPECT_CALL(*bottom_sheet_bridge,
-              RequestShowContent(testing::An<const AutofillSaveCardUiInfo&>(),
-                                 testing::NotNull()));
+  // Verify that `AutofillSaveCardUiInfo` has the correct attributes that
+  // indicate local save card prompt without CVC.
+  EXPECT_CALL(
+      *bottom_sheet_bridge,
+      RequestShowContent(
+          AllOf(
+              Field(&AutofillSaveCardUiInfo::is_for_upload, false),
+              Field(&AutofillSaveCardUiInfo::description_text,
+                    u"To pay faster next time, save your card to your device")),
+          testing::NotNull()));
 
   autofill_client->ConfirmSaveCreditCardLocally(
       CreditCard(),
-      ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
+      ChromeAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveOnly)
+          .with_show_prompt(true),
+      base::DoNothing());
+}
+
+// Verify that when `AutofillEnablePaymentsAndroidBottomSheet` feature is
+// enabled, the prompt to local save a user's card is shown in a bottom sheet.
+TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
+       ConfirmSaveCreditCardLocally_CardSaveTypeIsWithCvc_RequestsBottomSheet) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableCvcStorageAndFilling};
+
+  TestChromeAutofillClient* autofill_client = client();
+  auto* bottom_sheet_bridge =
+      autofill_client->InjectMockAutofillSaveCardBottomSheetBridge();
+
+  // Verify that `AutofillSaveCardUiInfo` has the correct attributes that
+  // indicate local save card prompt with CVC.
+  EXPECT_CALL(*bottom_sheet_bridge,
+              RequestShowContent(
+                  AllOf(Field(&AutofillSaveCardUiInfo::is_for_upload, false),
+                        Field(&AutofillSaveCardUiInfo::description_text,
+                              u"To pay faster next time, save your card, and "
+                              u"security code to your device")),
+                  testing::NotNull()));
+
+  autofill_client->ConfirmSaveCreditCardLocally(
+      CreditCard(),
+      ChromeAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveWithCvc)
+          .with_show_prompt(true),
       base::DoNothing());
 }
 
@@ -266,6 +385,24 @@ TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
       CreditCard(),
       ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
       base::DoNothing()));
+}
+
+// Verify that the prompt to save the CVC of an existing server card is shown in
+// a Message.
+TEST_F(ChromeAutofillClientTest,
+       ConfirmSaveCreditCardToCloud_CardSaveTypeIsOnlyCvc_RequestsMessage) {
+  TestChromeAutofillClient* autofill_client = client();
+  auto* cvc_save_message_delegate =
+      autofill_client->InjectMockAutofillCvcSaveMessageDelegate(web_contents());
+
+  EXPECT_CALL(*cvc_save_message_delegate, ShowMessage());
+
+  autofill_client->ConfirmSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      ChromeAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
+          .with_show_prompt(true),
+      base::DoNothing());
 }
 #endif
 
