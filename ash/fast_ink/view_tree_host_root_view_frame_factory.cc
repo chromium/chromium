@@ -169,11 +169,7 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
     return nullptr;
   }
 
-  auto& resource_buffer = resource->gpu_memory_buffer;
-
-  DCHECK(resource_buffer);
-
-  Paint(total_damage_rect, rotation_transform, resource_buffer.get());
+  Paint(total_damage_rect, rotation_transform, resource.get());
 
   if (resource->damaged) {
     DCHECK(resource->context_provider);
@@ -233,7 +229,10 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
 void ViewTreeHostRootViewFrameFactory::Paint(
     const gfx::Rect& invalidation_rect,
     const gfx::Transform& rotate_transform,
-    gfx::GpuMemoryBuffer* gpu_buffer) {
+    ViewTreeHostUiResource* resource) {
+  auto* gpu_buffer = resource->gpu_memory_buffer.get();
+  DCHECK(gpu_buffer);
+
   auto display_item_list = base::MakeRefCounted<cc::DisplayItemList>();
   float dsf = widget_->GetCompositor()->device_scale_factor();
 

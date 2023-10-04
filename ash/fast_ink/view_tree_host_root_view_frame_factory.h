@@ -74,7 +74,7 @@ class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
  private:
   void Paint(const gfx::Rect& invalidation_rect,
              const gfx::Transform& rotate_transform,
-             gfx::GpuMemoryBuffer* gpu_buffer);
+             ViewTreeHostUiResource* resource);
 
   // Configures and adds a `TextureDrawQuad` to the `render_pass`.
   void AppendQuad(viz::CompositorRenderPass& render_pass,
