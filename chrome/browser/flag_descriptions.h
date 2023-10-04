@@ -2307,9 +2307,6 @@ extern const char kContextualSearchSuppressShortViewDescription[];
 extern const char kConvertTrackpadEventsToMouseName[];
 extern const char kConvertTrackpadEventsToMouseDescription[];
 
-extern const char kCormorantName[];
-extern const char kCormorantDescription[];
-
 extern const char kDefaultViewportIsDeviceWidthName[];
 extern const char kDefaultViewportIsDeviceWidthDescription[];
 

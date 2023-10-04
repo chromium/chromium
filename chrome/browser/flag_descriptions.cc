@@ -4645,9 +4645,6 @@ const char kEnableAndroidGamepadVibrationName[] = "Gamepad vibration";
 const char kEnableAndroidGamepadVibrationDescription[] =
     "Enables the ability to play vibration effects on supported gamepads.";
 
-const char kCormorantName[] = "Cormorant";
-const char kCormorantDescription[] = "Enables the experimental Cormorant UI.";
-
 #if BUILDFLAG(ENABLE_VR) && BUILDFLAG(ENABLE_OPENXR)
 const char kOpenXRName[] = "Enable OpenXR WebXR Runtime";
 const char kOpenXRDescription[] =

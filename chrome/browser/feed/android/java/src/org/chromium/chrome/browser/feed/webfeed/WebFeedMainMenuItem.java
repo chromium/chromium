@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.FollowResults;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -160,7 +159,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
             mTitle = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mUrl);
         }
         mItemText.setText(mTitle);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CORMORANT)) {
+        if (WebFeedBridge.isCormorantEnabledForLocale()) {
             mItemText.setContentDescription(
                     mContext.getString(R.string.cormorant_creator_preview, mTitle));
             mItemText.setOnClickListener((view) -> {
@@ -295,7 +294,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         if (icon == null) {
             mIcon.setVisibility(View.GONE);
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CORMORANT)) {
+        if (WebFeedBridge.isCormorantEnabledForLocale()) {
             mIcon.setOnClickListener((view) -> {
                 PostTask.postTask(TaskTraits.UI_DEFAULT, this::launchCreatorActivity);
             });

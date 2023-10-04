@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.app.creator.CreatorActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -18,6 +17,7 @@ import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
 import org.chromium.chrome.browser.feed.signinbottomsheet.SigninBottomSheetCoordinator;
 import org.chromium.chrome.browser.feed.webfeed.CreatorIntentConstants;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
@@ -124,8 +124,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void openWebFeed(String webFeedName, @SingleWebFeedEntryPoint int entryPoint) {
-        if (!FeatureList.isInitialized()
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.CORMORANT)) {
+        if (!WebFeedBridge.isCormorantEnabledForLocale()) {
             return;
         }
 

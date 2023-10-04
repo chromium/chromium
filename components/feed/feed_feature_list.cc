@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/feed/feed_feature_list.h"
+#include "base/containers/contains.h"
 #include "base/time/time.h"
+#include "components/country_codes/country_codes.h"
 #include "components/feed/buildflags.h"
 
 #include "base/feature_list.h"
@@ -96,6 +98,12 @@ std::string GetFeedReferrerUrl() {
   return kDefaultReferrerUrl;
 }
 
+bool IsCormorantEnabledForLocale(std::string country) {
+  const std::vector<std::string> launched_countries = {"AU", "CA", "GB",
+                                                       "NZ", "US", "ZA"};
+  return base::Contains(launched_countries, country);
+}
+
 BASE_FEATURE(kPersonalizeFeedUnsignedUsers,
              "PersonalizeFeedUnsignedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -140,8 +148,6 @@ BASE_FEATURE(kFeedPerformanceStudy,
 BASE_FEATURE(kSyntheticCapabilities,
              "FeedSyntheticCapabilities",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCormorant, "Cormorant", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedUserInteractionReliabilityReport,
              "FeedUserInteractionReliabilityReport",

@@ -537,6 +537,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   void RegisterExperiments(const Experiments& experiments) override {}
   void RegisterFollowingFeedFollowCountFieldTrial(size_t follow_count) override;
   void RegisterFeedUserSettingsFieldTrial(base::StringPiece group) override;
+  std::string GetCountry() override;
 
   // For tests.
 

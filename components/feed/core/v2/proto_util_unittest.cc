@@ -268,13 +268,13 @@ TEST(ProtoUtilTest, ReadLaterEnabled) {
 #endif
 
 TEST(ProtoUtilTest, CormorantEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kCormorant}, {});
+  RequestMetadata request_metadata;
+  request_metadata.country = "US";
+
   feedwire::FeedRequest request =
       CreateFeedQueryRefreshRequest(
           StreamType(StreamKind::kSingleWebFeed, "test_web_id"),
-          feedwire::FeedQuery::MANUAL_REFRESH,
-          /*request_metadata=*/{},
+          feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
           /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kMenu,
           /*doc_view_counts=*/{})
           .feed_request();

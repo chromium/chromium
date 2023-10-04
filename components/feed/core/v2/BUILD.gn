@@ -153,6 +153,7 @@ if (!is_ios) {
     ]
     deps = [
       "public:common",
+      "//components/country_codes:country_codes",
       "//components/feed:feature_list",
       "//components/feed/core/shared_prefs:feed_shared_prefs",
       "//components/history/core/browser",

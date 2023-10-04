@@ -1019,6 +1019,9 @@ bool FeedApiTest::IsEulaAccepted() {
 bool FeedApiTest::IsOffline() {
   return is_offline_;
 }
+std::string FeedApiTest::GetCountry() {
+  return "US";
+}
 AccountInfo FeedApiTest::GetAccountInfo() {
   return account_info_;
 }

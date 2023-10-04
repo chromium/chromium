@@ -12,6 +12,7 @@ specific_include_rules = {
   "feed_stream\.(h|cc)": [
     "+components/feed/core/v2/tasks",
     "+components/feed/core/v2/stream",
+    "+components/country_codes",
   ],
   "stream_model\.(h|cc)": [
     "+components/feed/core/v2/stream_model",

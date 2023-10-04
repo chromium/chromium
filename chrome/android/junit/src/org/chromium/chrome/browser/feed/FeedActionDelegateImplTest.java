@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import com.google.common.collect.ImmutableMap;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -25,8 +27,11 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
@@ -39,6 +44,12 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 /** Tests for FeedActionDelegateImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class FeedActionDelegateImplTest {
+    @Rule
+    public JniMocker jniMocker = new JniMocker();
+
+    @Mock
+    private WebFeedBridge.Natives mWebFeedBridgeJniMock;
+
     @Mock
     private SyncConsentActivityLauncher mMockSyncConsentActivityLauncher;
 
@@ -70,6 +81,9 @@ public final class FeedActionDelegateImplTest {
         mFeedActionDelegateImpl = new FeedActionDelegateImpl(mActivityContext, mMockSnackbarManager,
                 mMockNavigationDelegate, mMockBookmarkModel, BrowserUiUtils.HostSurface.NOT_SET,
                 mTabModelSelector);
+        jniMocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJniMock);
+
+        when(mWebFeedBridgeJniMock.isCormorantEnabledForLocale()).thenReturn(true);
     }
 
     @Test
@@ -104,6 +118,7 @@ public final class FeedActionDelegateImplTest {
 
     @Test
     public void testOpenWebFeed_disabledWhenCormorantFlagDisabled() {
+        when(mWebFeedBridgeJniMock.isCormorantEnabledForLocale()).thenReturn(false);
         FeatureList.setTestFeatures(ImmutableMap.of(ChromeFeatureList.CORMORANT, false));
         mFeedActionDelegateImpl.openWebFeed("SomeFeedName", SingleWebFeedEntryPoint.OTHER);
         verify(mActivityContext, never()).startActivity(any());

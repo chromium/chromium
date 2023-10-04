@@ -1216,6 +1216,8 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
 
   result.default_search_engine = GetDefaultSearchEngine();
 
+  result.country = delegate_->GetCountry();
+
   return result;
 }
 

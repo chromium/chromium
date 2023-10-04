@@ -22,6 +22,7 @@ static_library("feature_list") {
   deps = [
     ":buildflags",
     "//base",
+    "//components/country_codes",
     "//components/signin/public/base",
     "//components/sync/base",
   ]

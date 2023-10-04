@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
@@ -114,6 +115,8 @@ public final class WebFeedMainMenuItemTest {
         // Print logs to stdout.
         ShadowLog.stream = System.out;
         mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
+
+        when(mWebFeedBridgeJniMock.isCormorantEnabledForLocale()).thenReturn(true);
 
         doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
         doReturn(false).when(mTab).isShowingErrorPage();

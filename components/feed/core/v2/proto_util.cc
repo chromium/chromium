@@ -163,8 +163,8 @@ feedwire::Request CreateFeedQueryRequest(
   }
 
   feed_request.add_client_capability(Capability::READ_LATER);
-
-  if (base::FeatureList::IsEnabled(kCormorant)) {
+  // Cormorant is only enabled for en.* locales
+  if (feed::IsCormorantEnabledForLocale(request_metadata.country)) {
     feed_request.add_client_capability(Capability::OPEN_WEB_FEED_COMMAND);
   }
 
