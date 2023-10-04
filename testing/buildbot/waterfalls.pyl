@@ -1719,7 +1719,7 @@
       'linux-chromeos-rel': {
         'mixins': [
           'isolate_profile_data',
-          'linux-jammy-2',
+          'linux-jammy',
         ],
         'additional_compile_targets': [
           'all',
@@ -1737,7 +1737,7 @@
       'linux-lacros-tester-rel': {
         'mixins': [
           'isolate_profile_data',
-          'linux-jammy-4',
+          'linux-jammy',
         ],
         'additional_compile_targets': [
           'chrome',
@@ -4912,7 +4912,7 @@
       },
       'Cast Linux': {
         'mixins': [
-          'linux-jammy-5',
+          'linux-jammy',
         ],
         'additional_compile_targets': [
           'cast_shell',
@@ -4969,7 +4969,7 @@
       'Linux Tests': {
         'mixins': [
           'isolate_profile_data',
-          'linux-jammy-3',
+          'linux-jammy',
         ],
         'test_suites': {
           # TODO(crbug.com/1444855): Switch this back to
@@ -4981,7 +4981,7 @@
       },
       'Linux Tests (Wayland)': {
         'mixins': [
-          'linux-jammy-6',
+          'linux-jammy',
           'isolate_profile_data',
          ],
         'args': [
@@ -5234,7 +5234,7 @@
     'machines': {
       'Linux ASan LSan Tests (1)': {
         'mixins': [
-          'linux-jammy-8',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_and_gl_gtests',
@@ -5290,7 +5290,7 @@
       },
       'Linux TSan Tests': {
         'mixins': [
-          'linux-jammy-7',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_and_gl_and_vulkan_gtests',

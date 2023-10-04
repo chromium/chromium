@@ -541,62 +541,6 @@
       },
     },
   },
-  'linux-jammy-2': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-22.04',
-        'zone': 'us',
-      },
-    },
-  },
-  'linux-jammy-3': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-22.04',
-        'locale': 'en_US.UTF-8',
-      },
-    },
-  },
-  'linux-jammy-4': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-22.04',
-        'kvm': '1',
-      },
-    },
-  },
-  'linux-jammy-5': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-22.04',
-        'python': '3',
-      },
-    },
-  },
-  'linux-jammy-6': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-22.04',
-        'inside_docker': '0',
-      },
-    },
-  },
-  'linux-jammy-7': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-22.04',
-        'python': '3.8',
-      },
-    },
-  },
-  'linux-jammy-8': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-22.04',
-        'cipd_platform': 'linux-amd64',
-      },
-    },
-  },
   'linux-jammy-or-bionic': {
     'swarming': {
       'dimensions': {
