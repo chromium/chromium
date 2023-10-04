@@ -1624,7 +1624,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kOpened, 1);
   histogram_.ExpectUniqueSample(
-      kOneDriveErrorMetricName,
+      ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kSuccess, 1);
 }
 
@@ -1678,7 +1678,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback, 1);
   histogram_.ExpectUniqueSample(
-      kOneDriveErrorMetricName,
+      ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kOffline, 1);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1716,7 +1716,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromODFS) {
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kOpened, 1);
   histogram_.ExpectUniqueSample(
-      kOneDriveErrorMetricName,
+      ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kSuccess, 1);
 }
 
@@ -1793,7 +1793,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kFailedToOpen, 1);
   histogram_.ExpectUniqueSample(
-      kOneDriveErrorMetricName,
+      ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kGetActionsReauthRequired,
       1);
 
@@ -1841,7 +1841,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kFailedToOpen, 1);
   histogram_.ExpectUniqueSample(
-      kOneDriveErrorMetricName,
+      ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kGetActionsAccessDenied, 1);
 
   NotificationDisplayService::GetForProfile(browser()->profile())
@@ -1896,7 +1896,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromAndroidOneDriveViaODFS) {
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kOpened, 1);
   histogram_.ExpectUniqueSample(
-      kOneDriveErrorMetricName,
+      ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kSuccess, 1);
 }
 
@@ -1941,7 +1941,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kFailedToOpen, 1);
   histogram_.ExpectUniqueSample(
-      kOneDriveErrorMetricName,
+      ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kEmailsDoNotMatch, 1);
 }
 
@@ -1985,7 +1985,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
       ash::cloud_upload::OfficeTaskResult::kFailedToOpen, 1);
   // Expect get actions error for a non-existent path.
   histogram_.ExpectUniqueSample(
-      kOneDriveErrorMetricName,
+      ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kGetActionsGenericError, 1);
 }
 
@@ -2033,7 +2033,7 @@ IN_PROC_BROWSER_TEST_F(
       ash::cloud_upload::OfficeTaskResult::kFailedToOpen, 1);
   // Expect the conversion to an ODFS equivalent URL to fail.
   histogram_.ExpectUniqueSample(
-      kOneDriveErrorMetricName,
+      ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kConversionToODFSUrlError,
       1);
 }

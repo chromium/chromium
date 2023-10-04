@@ -40,25 +40,6 @@ constexpr char kActionIdWebDriveOfficePowerPoint[] =
 constexpr char kActionIdOpenInOffice[] = "open-in-office";
 constexpr char kActionIdOpenWeb[] = "OPEN_WEB";
 
-constexpr char kDriveErrorMetricName[] = "FileBrowser.OfficeFiles.Errors.Drive";
-constexpr char kOneDriveErrorMetricName[] =
-    "FileBrowser.OfficeFiles.Errors.OneDrive";
-
-// List of UMA enum values for Office File Handler task results for Drive. The
-// enum values must be kept in sync with OfficeDriveOpenErrors in
-// tools/metrics/histograms/enums.xml.
-enum class OfficeDriveOpenErrors {
-  kOffline = 0,
-  kDriveFsInterface = 1,
-  kTimeout = 2,
-  kNoMetadata = 3,
-  kInvalidAlternateUrl = 4,
-  kDriveAlternateUrl = 5,
-  kUnexpectedAlternateUrl = 6,
-  kSuccess = 7,
-  kMaxValue = kSuccess,
-};
-
 // UMA metric name that tracks the result of using a MS Office file outside
 // of Drive.
 constexpr char kUseOutsideDriveMetricName[] =

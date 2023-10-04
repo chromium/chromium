@@ -79,7 +79,7 @@ void LogOneDriveOpenErrorUmaAfterFallback(
   switch (fallback_reason) {
     case ash::office_fallback::FallbackReason::kOffline:
       UMA_HISTOGRAM_ENUMERATION(
-          kOneDriveErrorMetricName,
+          ash::cloud_upload::kOneDriveErrorMetricName,
           ash::cloud_upload::OfficeOneDriveOpenErrors::kOffline);
       break;
     case ash::office_fallback::FallbackReason::kDriveUnavailable:
@@ -95,12 +95,14 @@ void LogGoogleDriveOpenErrorUmaAfterFallback(
     ash::cloud_upload::OfficeTaskResult task_result) {
   switch (fallback_reason) {
     case ash::office_fallback::FallbackReason::kOffline:
-      UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
-                                OfficeDriveOpenErrors::kOffline);
+      UMA_HISTOGRAM_ENUMERATION(
+          ash::cloud_upload::kDriveErrorMetricName,
+          ash::cloud_upload::OfficeDriveOpenErrors::kOffline);
       break;
     case ash::office_fallback::FallbackReason::kDriveUnavailable:
-      UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
-                                OfficeDriveOpenErrors::kDriveFsInterface);
+      UMA_HISTOGRAM_ENUMERATION(
+          ash::cloud_upload::kDriveErrorMetricName,
+          ash::cloud_upload::OfficeDriveOpenErrors::kDriveFsInterface);
       break;
   }
   UMA_HISTOGRAM_ENUMERATION(ash::cloud_upload::kGoogleDriveTaskResultMetricName,
