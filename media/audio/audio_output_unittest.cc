@@ -138,7 +138,14 @@ TEST_P(AudioOutputTest, StopTwice) {
 }
 
 // This test produces actual audio for .25 seconds on the default device.
-TEST_P(AudioOutputTest, Play200HzTone) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1489278): audio output unit startup fails with partition
+// alloc.
+#define MAYBE_Play200HzTone DISABLED_Play200HzTone
+#else
+#define MAYBE_Play200HzTone Play200HzTone
+#endif
+TEST_P(AudioOutputTest, MAYBE_Play200HzTone) {
   if (should_use_aaudio_ && !aaudio_is_supported_)
     return;
 
