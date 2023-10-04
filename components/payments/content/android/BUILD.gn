@@ -346,10 +346,17 @@ java_cpp_enum("pre_purchase_query_enum_javagen") {
   sources = [ "//components/payments/core/pre_purchase_query.h" ]
 }
 
+android_library("payments_java_test_support") {
+  testonly = true
+  sources = [
+    "junit/src/org/chromium/components/payments/test_support/FakeClock.java",
+  ]
+  deps = [ ":java" ]
+}
+
 robolectric_library("junit_test_support") {
   sources = [
     "junit/src/org/chromium/components/payments/test_support/DefaultPaymentFeatureConfig.java",
-    "junit/src/org/chromium/components/payments/test_support/FakeClock.java",
     "junit/src/org/chromium/components/payments/test_support/PaymentRequestServiceBuilder.java",
     "junit/src/org/chromium/components/payments/test_support/ShadowWebContentsStatics.java",
   ]
@@ -379,6 +386,7 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":junit_test_support",
+    ":payments_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

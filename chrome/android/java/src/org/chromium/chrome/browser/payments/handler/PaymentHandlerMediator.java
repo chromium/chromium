@@ -23,6 +23,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.payments.InputProtector;
 import org.chromium.components.payments.SslValidityChecker;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationController;
@@ -61,6 +62,7 @@ import java.lang.annotation.RetentionPolicy;
     private @CloseReason int mCloseReason = CloseReason.OTHERS;
     private final TabObscuringHandler mTabObscuringHandler;
     private final ActivityStateListener mActivityStateListener;
+    private final InputProtector mInputProtector;
 
     /** A token held while the payment sheet is obscuring all visible tabs. */
     private TabObscuringHandler.Token mTabObscuringToken;
@@ -95,7 +97,7 @@ import java.lang.annotation.RetentionPolicy;
             WebContents paymentRequestWebContents, WebContents paymentHandlerWebContents,
             PaymentHandlerUiObserver observer, View tabView, int toolbarViewHeightPx,
             BottomSheetController sheetController, TabObscuringHandler tabObscuringHandler,
-            Activity activity) {
+            Activity activity, InputProtector inputProtector) {
         super(paymentHandlerWebContents);
         assert paymentHandlerWebContents != null;
         mTabView = tabView;
@@ -109,6 +111,7 @@ import java.lang.annotation.RetentionPolicy;
         mPaymentHandlerUiObserver = observer;
         mModel.set(PaymentHandlerProperties.CONTENT_VISIBLE_HEIGHT_PX, contentVisibleHeight());
         mTabObscuringHandler = tabObscuringHandler;
+        mInputProtector = inputProtector;
 
         mActivityStateListener = new ActivityStateListener() {
             @Override
@@ -282,6 +285,7 @@ import java.lang.annotation.RetentionPolicy;
     // Implement PaymentHandlerToolbarObserver:
     @Override
     public void onToolbarCloseButtonClicked() {
+        if (!mInputProtector.shouldInputBeProcessed()) return;
         mCloseReason = CloseReason.USER;
         mHandler.post(mHider);
     }

@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestUI;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI.PaymentRequestObserverForTest;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.payments.AbortReason;
+import org.chromium.components.payments.InputProtector;
 import org.chromium.components.payments.PayerData;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
@@ -47,6 +48,7 @@ import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.PaymentRequestServiceObserverForTest;
+import org.chromium.components.payments.test_support.FakeClock;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -76,6 +78,9 @@ import java.util.concurrent.atomic.AtomicReference;
         implements PaymentRequestObserverForTest, PaymentRequestServiceObserverForTest,
                    ChromePaymentRequestDelegateImplObserverForTest, CardUnmaskObserverForTest,
                    EditorObserverForTest {
+    private static final long SAFE_INPUT_DELAY =
+            InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD;
+
     @IntDef({AppPresence.NO_APPS, AppPresence.HAVE_APPS})
     @Retention(RetentionPolicy.SOURCE)
     /* package */ @interface AppPresence {
@@ -122,6 +127,7 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ static final String ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES =
             "enable-experimental-web-platform-features";
 
+    private final PaymentsCallbackHelper<PaymentRequestUI> mShowCalled;
     private final PaymentsCallbackHelper<PaymentRequestUI> mReadyForInput;
     private final PaymentsCallbackHelper<PaymentRequestUI> mReadyToPay;
     private final PaymentsCallbackHelper<PaymentRequestUI> mSelectionChecked;
@@ -145,8 +151,11 @@ import java.util.concurrent.atomic.AtomicReference;
     private final CallbackHelper mRendererClosedMojoConnection;
     private ChromePaymentRequestDelegateImpl mChromePaymentRequestDelegateImpl;
     private PaymentRequestUI mUI;
+    private FakeClock mClock;
+    private InputProtector mInputProtector;
 
     private final boolean mDelayStartActivity;
+    private boolean mAutoAdvanceInputProtectorClock;
 
     private final AtomicReference<WebContents> mWebContentsRef;
 
@@ -187,6 +196,7 @@ import java.util.concurrent.atomic.AtomicReference;
     private PaymentRequestTestRule(
             String testFilePath, String pathPrefix, boolean delayStartActivity) {
         super();
+        mShowCalled = new PaymentsCallbackHelper<>();
         mReadyForInput = new PaymentsCallbackHelper<>();
         mReadyToPay = new PaymentsCallbackHelper<>();
         mSelectionChecked = new PaymentsCallbackHelper<>();
@@ -215,6 +225,9 @@ import java.util.concurrent.atomic.AtomicReference;
             mTestFilePath = UrlUtils.getIsolatedTestFilePath(pathPrefix + testFilePath);
         }
         mDelayStartActivity = delayStartActivity;
+        mAutoAdvanceInputProtectorClock = true;
+        mClock = new FakeClock();
+        mInputProtector = new InputProtector(mClock);
     }
 
     /* package */ void setObserversAndWaitForInitialPageLoad() throws TimeoutException {
@@ -234,6 +247,10 @@ import java.util.concurrent.atomic.AtomicReference;
             CardUnmaskPrompt.setObserverForTest(PaymentRequestTestRule.this);
         });
         assertWaitForPageScaleFactorMatch(0.5f);
+    }
+
+    /* package */ PaymentsCallbackHelper<PaymentRequestUI> getShowCalled() {
+        return mShowCalled;
     }
 
     /* package */ PaymentsCallbackHelper<PaymentRequestUI> getReadyForInput() {
@@ -306,7 +323,6 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ void triggerUIAndWait(String nodeId,
             PaymentsCallbackHelper<PaymentRequestUI> helper) throws TimeoutException {
         clickNodeAndWait(nodeId, helper);
-        mUI = helper.getTarget();
     }
 
     /* package */ void retryPaymentRequest(String validationErrors, CallbackHelper helper)
@@ -887,12 +903,30 @@ import java.util.concurrent.atomic.AtomicReference;
                 () -> mUI.getEditorDialog().findViewById(R.id.editor_container));
     }
 
+    /* package */ void setAutoAdvanceInputProtectorClock(boolean autoAdvanceInputProtectorClock) {
+        mAutoAdvanceInputProtectorClock = autoAdvanceInputProtectorClock;
+    }
+
+    /* package */ void advanceInputProtectorClock() {
+        mClock.advanceCurrentTimeMillis(SAFE_INPUT_DELAY);
+    }
+
+    @Override
+    public void onPaymentRequestUIShow(PaymentRequestUI ui) {
+        ThreadUtils.assertOnUiThread();
+        mUI = ui;
+        mInputProtector.markShowTime();
+        mUI.setInputProtectorForTest(mInputProtector);
+        // By default, we advance the clock immediately as most tests just wait for ReadyForInput.
+        if (mAutoAdvanceInputProtectorClock) {
+            advanceInputProtectorClock();
+        }
+        mShowCalled.notifyCalled(ui);
+    }
+
     @Override
     public void onPaymentRequestReadyForInput(PaymentRequestUI ui) {
         ThreadUtils.assertOnUiThread();
-        // This happens when the payment request is created by a direct js function call rather than
-        // calling the js function via triggerUIAndWait() which sets the mUI.
-        if (mUI == null) mUI = ui;
         mReadyForInput.notifyCalled(ui);
     }
 
@@ -922,9 +956,6 @@ import java.util.concurrent.atomic.AtomicReference;
     @Override
     public void onPaymentRequestReadyToPay(PaymentRequestUI ui) {
         ThreadUtils.assertOnUiThread();
-        // This happens when the payment request is created by a direct js function call rather than
-        // calling the js function via triggerUIAndWait() which sets the mUI.
-        if (mUI == null) mUI = ui;
         mReadyToPay.notifyCalled(ui);
     }
 

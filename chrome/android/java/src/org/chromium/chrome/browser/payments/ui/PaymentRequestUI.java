@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.browser_ui.widget.animation.FocusAnimator;
+import org.chromium.components.payments.InputProtector;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -223,6 +224,11 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
      */
     public interface PaymentRequestObserverForTest {
         /**
+         * Called immediately when PaymentRequestUI#show() is called.
+         */
+        void onPaymentRequestUIShow(PaymentRequestUI ui);
+
+        /**
          * Called when clicks on the UI are possible.
          */
         void onPaymentRequestReadyForInput(PaymentRequestUI ui);
@@ -338,6 +344,8 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
     private Animator mSheetAnimator;
     private FocusAnimator mSectionAnimator;
 
+    private InputProtector mInputProtector = new InputProtector();
+
     /**
      * Builds the UI for PaymentRequest.
      *
@@ -420,6 +428,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
      * @param waitForUpdatedDetails Whether the payment details is pending to be updated.
      */
     public void show(boolean waitForUpdatedDetails) {
+        mInputProtector.markShowTime();
         mDialog.addBottomSheetView(mRequestView);
         mPaymentUisShowStateReconciler.showPaymentRequestDialogWhenNoBottomSheet();
         mClient.getDefaultPaymentInformation(
@@ -449,6 +458,9 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
                         mRequestView.addOnLayoutChangeListener(new SheetEnlargingAnimator(false));
                     }
                 });
+        if (sPaymentRequestObserverForTest != null) {
+            sPaymentRequestObserverForTest.onPaymentRequestUIShow(PaymentRequestUI.this);
+        }
     }
 
     /**
@@ -1007,9 +1019,10 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
 
     /** @return Whether or not the dialog can be closed via the X close button. */
     private boolean isAcceptingCloseButton() {
+        assert mInputProtector != null;
         return !mDialog.isAnimatingDisappearance() && mSheetAnimator == null
                 && mSectionAnimator == null && !mIsProcessingPayClicked && !mIsEditingPaymentItem
-                && !mIsClosing;
+                && !mIsClosing && mInputProtector.shouldInputBeProcessed();
     }
 
     /** @return Whether or not the dialog is accepting user input. */
@@ -1368,6 +1381,10 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
             PaymentRequestObserverForTest paymentRequestObserverForTest) {
         sPaymentRequestObserverForTest = paymentRequestObserverForTest;
         ResettersForTesting.register(() -> sPaymentRequestObserverForTest = null);
+    }
+
+    public void setInputProtectorForTest(InputProtector inputProtector) {
+        mInputProtector = inputProtector;
     }
 
     public Dialog getDialogForTest() {

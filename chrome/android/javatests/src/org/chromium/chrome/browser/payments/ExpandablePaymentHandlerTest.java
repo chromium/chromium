@@ -44,6 +44,8 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.payments.InputProtector;
+import org.chromium.components.payments.test_support.FakeClock;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -62,6 +64,11 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ExpandablePaymentHandlerTest {
+    private static final long IGNORED_INPUT_DELAY =
+            InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD - 100;
+    private static final long SAFE_INPUT_DELAY =
+            InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD;
+
     @Rule
     public ChromeTabbedActivityTestRule mRule = new ChromeTabbedActivityTestRule();
 
@@ -73,6 +80,7 @@ public class ExpandablePaymentHandlerTest {
     private boolean mDefaultIsIncognito;
     private ChromeActivity mDefaultActivity;
     private BottomSheetTestSupport mBottomSheetTestSupport;
+    private FakeClock mClock;
 
     /**
      * A list of bad server-certificates used for parameterized tests.
@@ -127,11 +135,13 @@ public class ExpandablePaymentHandlerTest {
         mDefaultActivity = mRule.getActivity();
         mBottomSheetTestSupport = new BottomSheetTestSupport(
                 mRule.getActivity().getRootUiCoordinatorForTesting().getBottomSheetController());
+        mClock = new FakeClock();
     }
 
     private PaymentHandlerCoordinator createPaymentHandlerAndShow(boolean isIncognito)
             throws Throwable {
         PaymentHandlerCoordinator paymentHandler = new PaymentHandlerCoordinator();
+        paymentHandler.setInputProtectorForTest(new InputProtector(mClock));
         mRule.runOnUiThread(
                 ()
                         -> paymentHandler.show(mDefaultActivity.getCurrentWebContents(),
@@ -237,6 +247,30 @@ public class ExpandablePaymentHandlerTest {
         createPaymentHandlerAndShow(mDefaultIsIncognito);
         waitForUiShown();
 
+        mClock.advanceCurrentTimeMillis(SAFE_INPUT_DELAY);
+        onView(withId(R.id.close)).perform(click());
+        waitForUiClosed();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Payments"})
+    public void testCloseButtonInputProtection() throws Throwable {
+        startDefaultServer();
+        createPaymentHandlerAndShow(mDefaultIsIncognito);
+        waitForUiShown();
+
+        // Clicking close immediately is prevented.
+        onView(withId(R.id.close)).perform(click());
+        Assert.assertFalse(mUiClosedCalled);
+
+        // Clicking close after an interval less than the threshold is still prevented.
+        mClock.advanceCurrentTimeMillis(IGNORED_INPUT_DELAY);
+        onView(withId(R.id.close)).perform(click());
+        Assert.assertFalse(mUiClosedCalled);
+
+        // Clicking close after the threshold is no longer prevented and closes the dialog.
+        mClock.advanceCurrentTimeMillis(SAFE_INPUT_DELAY);
         onView(withId(R.id.close)).perform(click());
         waitForUiClosed();
     }
