@@ -16,7 +16,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "ui/aura/client/cursor_client.h"
-#include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -25,6 +24,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/touch_selection/touch_handle_drawable_aura.h"
@@ -35,24 +35,7 @@ namespace content {
 namespace {
 
 // Delay before showing the quick menu, in milliseconds.
-const int kQuickMenuDelayInMs = 100;
-
-gfx::Rect ConvertRectToScreen(aura::Window* window, const gfx::RectF& rect) {
-  gfx::Point origin = gfx::ToRoundedPoint(rect.origin());
-  gfx::Point bottom_right = gfx::ToRoundedPoint(rect.bottom_right());
-
-  aura::Window* root_window = window->GetRootWindow();
-  if (root_window) {
-    aura::client::ScreenPositionClient* screen_position_client =
-        aura::client::GetScreenPositionClient(root_window);
-    if (screen_position_client) {
-      screen_position_client->ConvertPointToScreen(window, &origin);
-      screen_position_client->ConvertPointToScreen(window, &bottom_right);
-    }
-  }
-  return gfx::Rect(origin.x(), origin.y(), bottom_right.x() - origin.x(),
-                   bottom_right.y() - origin.y());
-}
+constexpr int kQuickMenuDelayInMs = 100;
 
 }  // namespace
 
@@ -298,34 +281,27 @@ void TouchSelectionControllerClientAura::ShowQuickMenu() {
     return;
   }
 
-  gfx::RectF rect =
-      rwhva_->selection_controller()->GetVisibleRectBetweenBounds();
+  gfx::Rect anchor_rect = gfx::ToRoundedRect(
+      rwhva_->selection_controller()->GetVisibleRectBetweenBounds());
 
-  // Clip rect, which is in |rwhva_|'s window's coordinate space, to client
-  // bounds.
-  gfx::PointF origin = rect.origin();
-  gfx::PointF bottom_right = rect.bottom_right();
-  auto client_bounds = gfx::RectF(rwhva_->GetNativeView()->bounds());
-  origin.SetToMax(client_bounds.origin());
-  bottom_right.SetToMin(client_bounds.bottom_right());
-  if (origin.x() > bottom_right.x() || origin.y() > bottom_right.y())
+  // Clip the anchor rect to the rwhva bounds and only show the menu if there is
+  // at least some (possibly zero-area) overlap. We use `InclusiveIntersect`
+  // rather than checking `IsEmpty` here, since we might want to show the menu
+  // even if the anchor rect is empty (e.g. zero-width caret).
+  if (!anchor_rect.InclusiveIntersect(rwhva_->GetNativeView()->bounds())) {
     return;
+  }
 
-  gfx::Vector2dF diagonal = bottom_right - origin;
-  gfx::SizeF size(diagonal.x(), diagonal.y());
-  gfx::RectF anchor_rect(origin, size);
-
-  // Calculate maximum handle image size;
   gfx::SizeF max_handle_size =
       rwhva_->selection_controller()->GetStartHandleRect().size();
   max_handle_size.SetToMax(
       rwhva_->selection_controller()->GetEndHandleRect().size());
 
-  aura::Window* parent = rwhva_->GetNativeView();
   ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
       active_menu_client_->GetWeakPtr(),
-      ConvertRectToScreen(parent, anchor_rect),
-      gfx::ToRoundedSize(max_handle_size), parent->GetToplevelWindow());
+      rwhva_->ConvertRectToScreen(anchor_rect),
+      gfx::ToRoundedSize(max_handle_size),
+      rwhva_->GetNativeView()->GetToplevelWindow());
 }
 
 void TouchSelectionControllerClientAura::UpdateQuickMenu() {
