@@ -42,4 +42,8 @@ WindowPerformance* DOMWindowPerformance::performance() {
   return performance_.Get();
 }
 
+uint64_t DOMWindowPerformance::GetCurrentInteractionCount() {
+  return performance()->interactionCount();
+}
+
 }  // namespace blink

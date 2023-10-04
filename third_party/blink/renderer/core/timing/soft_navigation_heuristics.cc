@@ -84,7 +84,7 @@ void SoftNavigationHeuristics::ResetHeuristic() {
 
 void SoftNavigationHeuristics::UserInitiatedInteraction(
     ScriptState* script_state,
-    bool is_unfocused_keydown) {
+    bool is_unfocused_keyboard_event) {
   // Set task ID to the current one.
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
@@ -94,17 +94,33 @@ void SoftNavigationHeuristics::UserInitiatedInteraction(
   }
   ResetHeuristic();
   CHECK(script_state);
-  if (is_unfocused_keydown) {
+  if (is_unfocused_keyboard_event) {
     // TODO(https://crbug.com/1479052): investigate if we need to consider
     // including the current task also for other cases.
     scheduler::TaskAttributionInfo* task = tracker->RunningTask(script_state);
     if (task) {
       potential_soft_navigation_task_ids_.insert(task->Id().value());
     }
+    CHECK(script_state);
+    ScriptState::Scope scope(script_state);
+    if (LocalFrame* frame =
+            ToLocalFrameIfNotDetached(script_state->GetContext())) {
+      LocalDOMWindow* window = frame->DomWindow();
+      CHECK(window);
+      DOMWindowPerformance& performance = DOMWindowPerformance::From(*window);
+      uint64_t current_interaction_count =
+          performance.GetCurrentInteractionCount();
+      if (current_interaction_count != last_interaction_count_ ||
+          user_interaction_timestamp_.is_null()) {
+        last_interaction_count_ = current_interaction_count;
+        user_interaction_timestamp_ = base::TimeTicks::Now();
+      }
+    }
+  } else {
+    user_interaction_timestamp_ = base::TimeTicks::Now();
   }
   tracker->RegisterObserver(this);
   SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
-  user_click_timestamp_ = base::TimeTicks::Now();
   TRACE_EVENT_INSTANT("scheduler",
                       "SoftNavigationHeuristics::UserInitiatedInteraction");
 }
@@ -218,14 +234,16 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
   auto* performance = DOMWindowPerformance::performance(*window);
   DCHECK(!url_.IsNull());
   performance->AddSoftNavigationEntry(AtomicString(url_),
-                                      user_click_timestamp_);
+                                      user_interaction_timestamp_);
 
   // TODO(yoav): There's a theoretical race here where DOM modifications trigger
   // paints before the URL change happens, leading to unspotted LCPs and FCPs.
   ResetPaintsIfNeeded(frame, window);
 
   ResetHeuristic();
-  LogAndTraceDetectedSoftNavigation(frame, window, url_, user_click_timestamp_);
+
+  LogAndTraceDetectedSoftNavigation(frame, window, url_,
+                                    user_interaction_timestamp_);
 
   ReportSoftNavigationToMetrics(frame);
 }
@@ -239,7 +257,8 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
   }
 
   auto soft_navigation_start_time =
-      loader->GetTiming().MonotonicTimeToPseudoWallTime(user_click_timestamp_);
+      loader->GetTiming().MonotonicTimeToPseudoWallTime(
+          user_interaction_timestamp_);
 
   LocalDOMWindow* window = frame->DomWindow();
 

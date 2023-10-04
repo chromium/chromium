@@ -9,7 +9,7 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/soft-navigation-helper.js"></script>
 </head>
-<!-- Not including a body element to ensure the keydown heuristic works on
+<!-- Not including a body element to ensure the keypress heuristic works on
      malformed HTML -->
   <main id=main>
     <div>
@@ -22,9 +22,10 @@
         addTextToDivOnMain();
       },
       link: document.body,
-      interactionType: "keydown",
-      eventType: "keydown",
-      test: "Keydown on body triggers SoftNavigationHeuristics"});
+      interactionType: "keypress",
+      eventType: "keypress",
+      test: "Keypress on body triggers SoftNavigationHeuristics"});
   </script>
 </html>
+
 
