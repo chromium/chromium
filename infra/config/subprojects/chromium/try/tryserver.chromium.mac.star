@@ -620,7 +620,7 @@ ios_builder(
     mirrors = [
         "ci/ios16-sdk-simulator",
     ],
-    os = os.MAC_13,
+    os = os.MAC_14,
     cpu = cpu.ARM64,
     xcode = xcode.x15betabots,
 )
