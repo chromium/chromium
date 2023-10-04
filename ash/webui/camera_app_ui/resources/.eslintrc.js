@@ -413,7 +413,7 @@ module.exports = {
       },
     },
   },
-  parser: `${typescriptEslintDir}/parser`,
+  parser: `${typescriptEslintDir}/parser/dist/index.js`,
   plugins: ['@typescript-eslint', 'jsdoc', 'eslint-plugin-cca'],
   // Generally, the rules should be compatible to both bundled and the newest
   // stable eslint, so it's easier to upgrade and develop without the full
@@ -696,9 +696,7 @@ module.exports = {
       },
     ],
 
-    '@typescript-eslint/prefer-optional-chain': 'error',
-
-    '@typescript-eslint/sort-type-union-intersection-members': 'error',
+    '@typescript-eslint/sort-type-constituents': 'error',
 
     'comma-dangle': 'off',
     '@typescript-eslint/comma-dangle': ['error', 'always-multiline'],
@@ -748,7 +746,6 @@ module.exports = {
     'jsdoc/check-values': 'error',
     'jsdoc/empty-tags': 'error',
     'jsdoc/implements-on-classes': 'error',
-    'jsdoc/newline-after-description': 'error',
     'jsdoc/no-undefined-types': 'error',
     'jsdoc/require-param-description': 'error',
     'jsdoc/require-param-name': 'error',
@@ -759,7 +756,7 @@ module.exports = {
     'jsdoc/require-returns-check': 'error',
     'jsdoc/require-returns-description': 'error',
     'jsdoc/require-yields-check': 'error',
-    'jsdoc/tag-lines': 'error',
+    'jsdoc/tag-lines': ['error', 'never', {startLines: 1}],
     'jsdoc/valid-types': 'error',
 
     'no-invalid-this': 'off',
@@ -781,6 +778,8 @@ module.exports = {
       '@typescript-eslint/require-array-sort-compare': 'error',
 
       '@typescript-eslint/prefer-nullish-coalescing': 'error',
+
+      '@typescript-eslint/prefer-optional-chain': 'error',
 
       // go/tsstyle#optimization-compatibility-for-property-access
       '@typescript-eslint/dot-notation': 'error',

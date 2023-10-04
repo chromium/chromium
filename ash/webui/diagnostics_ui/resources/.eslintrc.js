@@ -12,7 +12,7 @@ module.exports = {
     'overrides': [{
       'files': ['**/*.ts'],
       'parser':
-        '../../../../third_party/node/node_modules/@typescript-eslint/parser',
+        '../../../../third_party/node/node_modules/@typescript-eslint/parser/dist/index.js',
       'parserOptions': {
         tsconfigRootDir: __dirname,
       },

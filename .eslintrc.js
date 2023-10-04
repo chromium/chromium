@@ -81,7 +81,7 @@ module.exports = {
 
   'overrides': [{
     'files': ['**/*.ts'],
-    'parser': './third_party/node/node_modules/@typescript-eslint/parser',
+    'parser': './third_party/node/node_modules/@typescript-eslint/parser/dist/index.js',
     'plugins': [
       '@typescript-eslint',
     ],
