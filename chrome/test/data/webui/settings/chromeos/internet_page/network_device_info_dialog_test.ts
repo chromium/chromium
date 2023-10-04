@@ -8,6 +8,7 @@ import {NetworkDeviceInfoDialogElement} from 'chrome://os-settings/lazy_load.js'
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ESimManagerRemote, EuiccRemote, QRCode} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -66,6 +67,13 @@ suite('<network-device-info-dialog>', () => {
     assertTrue(!!eidElem);
     assertEquals(testEuicc.properties.eid, eidElem.textContent?.trim());
     assertNull(deviceInfoDialog.shadowRoot!.querySelector('#imei'));
+    const ariaElem = deviceInfoDialog.shadowRoot!.querySelector('#body');
+    assertTrue(!!ariaElem);
+    assertEquals(
+        deviceInfoDialog.i18n(
+            'deviceInfoPopupA11yEid', testEuicc.properties.eid),
+        ariaElem.ariaLabel);
+
   });
 
   test('Should render EID QRCode', async () => {
@@ -91,7 +99,57 @@ suite('<network-device-info-dialog>', () => {
     assertTrue(!!imeiElem);
     assertEquals(cellularDeviceState.imei, imeiElem.textContent?.trim());
     assertNull(deviceInfoDialog.shadowRoot!.querySelector('#eid'));
+    const ariaElem = deviceInfoDialog.shadowRoot!.querySelector('#body');
+    assertTrue(!!ariaElem);
+    assertEquals(
+        deviceInfoDialog.i18n(
+            'deviceInfoPopupA11yImei', cellularDeviceState.imei),
+        ariaElem.ariaLabel);
   });
+
+  test('Should display serial', async () => {
+    loadTimeData.overrideValues({isCellularCarrierLockEnabled: true});
+    const cellularDeviceState =
+        mojoApi.getDeviceStateForTest(NetworkType.kCellular);
+    assertTrue(!!cellularDeviceState);
+    cellularDeviceState.serial = 'ABCD';
+    await init(undefined, cellularDeviceState, true);
+    const serialElem =
+        deviceInfoDialog.shadowRoot!.querySelector('#serialLabel');
+    assertTrue(!!serialElem);
+    assertEquals(cellularDeviceState.serial, serialElem.textContent?.trim());
+    const ariaElem = deviceInfoDialog.shadowRoot!.querySelector('#body');
+    assertTrue(!!ariaElem);
+    assertEquals(
+        deviceInfoDialog.i18n(
+            'deviceInfoPopupA11ySerial', cellularDeviceState.serial),
+        ariaElem.ariaLabel);
+  });
+
+  test('Should not display serial if not set', async () => {
+    loadTimeData.overrideValues({isCellularCarrierLockEnabled: true});
+    const cellularDeviceState =
+        mojoApi.getDeviceStateForTest(NetworkType.kCellular);
+    assertTrue(!!cellularDeviceState);
+    await init(undefined, cellularDeviceState, true);
+    const serialElem =
+        deviceInfoDialog.shadowRoot!.querySelector('#serialLabel');
+    assertNull(serialElem);
+  });
+
+  test(
+      'Should not display serial when carrier lock feature flag is disabled',
+      async () => {
+        loadTimeData.overrideValues({isCellularCarrierLockEnabled: false});
+        const cellularDeviceState =
+            mojoApi.getDeviceStateForTest(NetworkType.kCellular);
+        assertTrue(!!cellularDeviceState);
+        cellularDeviceState.serial = 'ABCD';
+        await init(undefined, cellularDeviceState, true);
+        const serialElem =
+            deviceInfoDialog.shadowRoot!.querySelector('#serialLabel');
+        assertNull(serialElem);
+      });
 
   test('Should display both EID and IMEI', async () => {
     const cellularDeviceState =
@@ -101,5 +159,55 @@ suite('<network-device-info-dialog>', () => {
     await init(undefined, cellularDeviceState);
     assertTrue(!!deviceInfoDialog.shadowRoot!.querySelector('#imei'));
     assertTrue(!!deviceInfoDialog.shadowRoot!.querySelector('#eid'));
+    const ariaElem = deviceInfoDialog.shadowRoot!.querySelector('#body');
+    assertTrue(!!ariaElem);
+    assertEquals(
+        deviceInfoDialog.i18n(
+            'deviceInfoPopupA11yEidAndImei', testEuicc.properties.eid,
+            cellularDeviceState.imei),
+        ariaElem.ariaLabel);
   });
+
+  test('Test aria label with all set', async () => {
+    loadTimeData.overrideValues({isCellularCarrierLockEnabled: true});
+    const cellularDeviceState =
+        mojoApi.getDeviceStateForTest(NetworkType.kCellular);
+    assertTrue(!!cellularDeviceState);
+    cellularDeviceState.imei = '1234567890';
+    cellularDeviceState.serial = 'ABCD';
+    await init(undefined, cellularDeviceState);
+    assertTrue(!!deviceInfoDialog.shadowRoot!.querySelector('#imei'));
+    assertTrue(!!deviceInfoDialog.shadowRoot!.querySelector('#eid'));
+    const serialElem =
+        deviceInfoDialog.shadowRoot!.querySelector('#serialLabel');
+    assertTrue(!!serialElem);
+    assertEquals(cellularDeviceState.serial, serialElem.textContent?.trim());
+    const ariaElem = deviceInfoDialog.shadowRoot!.querySelector('#body');
+    assertTrue(!!ariaElem);
+    assertEquals(
+        deviceInfoDialog.i18n(
+            'deviceInfoPopupA11yEidImeiAndSerial', testEuicc.properties.eid,
+            cellularDeviceState.imei, cellularDeviceState.serial),
+        ariaElem.ariaLabel);
+  });
+
+  test('Test aria label with all set, carrier lock disabled', async () => {
+    loadTimeData.overrideValues({isCellularCarrierLockEnabled: false});
+    const cellularDeviceState =
+        mojoApi.getDeviceStateForTest(NetworkType.kCellular);
+    assertTrue(!!cellularDeviceState);
+    cellularDeviceState.imei = '1234567890';
+    cellularDeviceState.serial = 'ABCD';
+    await init(undefined, cellularDeviceState);
+    assertTrue(!!deviceInfoDialog.shadowRoot!.querySelector('#imei'));
+    assertTrue(!!deviceInfoDialog.shadowRoot!.querySelector('#eid'));
+    const ariaElem = deviceInfoDialog.shadowRoot!.querySelector('#body');
+    assertTrue(!!ariaElem);
+    assertEquals(
+        deviceInfoDialog.i18n(
+            'deviceInfoPopupA11yEidAndImei', testEuicc.properties.eid,
+            cellularDeviceState.imei),
+        ariaElem.ariaLabel);
+  });
+
 });

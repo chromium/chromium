@@ -14,6 +14,7 @@ import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {EuiccProperties, EuiccRemote, QRCode} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -56,6 +57,14 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
       canvasSize_: Number,
 
       eid_: String,
+
+      isCellularCarrierLockEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
+              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
+        },
+      },
     };
   }
 
@@ -64,99 +73,132 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
   private canvasSize_: number;
   private eid_: string|undefined;
   private canvasContext_: CanvasRenderingContext2D|null;
+  private isCellularCarrierLockEnabled_:
+    boolean;
 
-  override ready(): void {
-    super.ready();
+    override ready(): void {
+      super.ready();
 
-    if (this.euicc) {
-      this.fetchEid_(this.euicc);
-      return;
+      if (this.euicc) {
+        this.fetchEid_(this.euicc);
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        this.$.done.focus();
+      });
     }
 
-    requestAnimationFrame(() => {
-      this.$.done.focus();
-    });
-  }
-
-  private onDonePressed_(): void {
-    this.$.deviceInfoDialog.close();
-  }
-
-  private async fetchEid_(euicc: EuiccRemote): Promise<void> {
-    const [qrCodeResponse, euiccPropertiesResponse] = await Promise.all([
-      euicc.getEidQRCode(),
-      euicc.getProperties(),
-    ]);
-    this.updateEid_(euiccPropertiesResponse?.properties);
-    this.renderQrCode_(qrCodeResponse?.qrCode);
-  }
-
-  private renderQrCode_(qrCode: QRCode|null): void {
-    if (!qrCode) {
-      return;
+    private onDonePressed_(): void {
+      this.$.deviceInfoDialog.close();
     }
-    this.canvasSize_ = qrCode.size * QR_CODE_TILE_SIZE;
-    flush();
-    const context = this.getCanvasContext_();
-    if (!context) {
-      return;
+
+    private async fetchEid_(euicc: EuiccRemote): Promise<void> {
+      const [qrCodeResponse, euiccPropertiesResponse] = await Promise.all([
+        euicc.getEidQRCode(),
+        euicc.getProperties(),
+      ]);
+      this.updateEid_(euiccPropertiesResponse?.properties);
+      this.renderQrCode_(qrCodeResponse?.qrCode);
     }
-    context.clearRect(0, 0, this.canvasSize_, this.canvasSize_);
-    context.fillStyle = QR_CODE_FILL_STYLE;
-    let index = 0;
-    for (let x = 0; x < qrCode.size; x++) {
-      for (let y = 0; y < qrCode.size; y++) {
-        if (qrCode.data[index]) {
-          context.fillRect(
-              x * QR_CODE_TILE_SIZE, y * QR_CODE_TILE_SIZE, QR_CODE_TILE_SIZE,
-              QR_CODE_TILE_SIZE);
+
+    private renderQrCode_(qrCode: QRCode|null): void {
+      if (!qrCode) {
+        return;
+      }
+      this.canvasSize_ = qrCode.size * QR_CODE_TILE_SIZE;
+      flush();
+      const context = this.getCanvasContext_();
+      if (!context) {
+        return;
+      }
+      context.clearRect(0, 0, this.canvasSize_, this.canvasSize_);
+      context.fillStyle = QR_CODE_FILL_STYLE;
+      let index = 0;
+      for (let x = 0; x < qrCode.size; x++) {
+        for (let y = 0; y < qrCode.size; y++) {
+          if (qrCode.data[index]) {
+            context.fillRect(
+                x * QR_CODE_TILE_SIZE, y * QR_CODE_TILE_SIZE, QR_CODE_TILE_SIZE,
+                QR_CODE_TILE_SIZE);
+          }
+          index++;
         }
-        index++;
       }
     }
-  }
 
-  private updateEid_(euiccProperties: EuiccProperties|null): void {
-    if (!euiccProperties) {
-      return;
+    private updateEid_(euiccProperties: EuiccProperties|null): void {
+      if (!euiccProperties) {
+        return;
+      }
+      this.eid_ = euiccProperties.eid;
     }
-    this.eid_ = euiccProperties.eid;
-  }
 
-  private getCanvasContext_(): CanvasRenderingContext2D|null {
-    if (this.canvasContext_) {
-      return this.canvasContext_;
+    private getCanvasContext_(): CanvasRenderingContext2D|null {
+      if (this.canvasContext_) {
+        return this.canvasContext_;
+      }
+      const canvas =
+          this.shadowRoot!.querySelector<HTMLCanvasElement>('#qrCodeCanvas');
+      return canvas!.getContext('2d');
     }
-    const canvas =
-        this.shadowRoot!.querySelector<HTMLCanvasElement>('#qrCodeCanvas');
-    return canvas!.getContext('2d');
-  }
 
-  private shouldShowEidAndQrCode_(): boolean {
-    return !!this.eid_;
-  }
-
-  private shouldShowImei_(): boolean {
-    return !!this.deviceState?.imei;
-  }
-
-  setCanvasContextForTest(canvasContext: CanvasRenderingContext2D): void {
-    this.canvasContext_ = canvasContext;
-  }
-
-  private getA11yLabel_(): string {
-    if (this.eid_ && !this.deviceState?.imei) {
-      return this.i18n('deviceInfoPopupA11yEid', this.eid_);
+    private shouldShowEidAndQrCode_(): boolean {
+      return !!this.eid_;
     }
-    if (!this.eid_ && this.deviceState?.imei) {
-      return this.i18n('deviceInfoPopupA11yImei', this.deviceState.imei);
+
+    private shouldShowImei_(): boolean {
+      return !!this.deviceState?.imei;
     }
-    if (this.eid_ && this.deviceState?.imei) {
-      return this.i18n(
-          'deviceInfoPopupA11yEidAndImei', this.eid_, this.deviceState.imei);
+
+    private shouldShowSerial_(): boolean {
+      if (!this.isCellularCarrierLockEnabled_) {
+        return false;
+      }
+      return !!this.deviceState?.serial;
     }
-    return '';
-  }
+
+    setCanvasContextForTest(canvasContext: CanvasRenderingContext2D): void {
+      this.canvasContext_ = canvasContext;
+    }
+
+    private getA11yLabel_(): string {
+      if (this.eid_ && this.deviceState?.imei &&
+          this.isCellularCarrierLockEnabled_ && this.deviceState?.serial) {
+        return this.i18n(
+            'deviceInfoPopupA11yEidImeiAndSerial', this.eid_,
+            this.deviceState.imei, this.deviceState.serial);
+      }
+
+      if (this.eid_) {
+        if (this.deviceState?.imei) {
+          return this.i18n(
+              'deviceInfoPopupA11yEidAndImei', this.eid_,
+              this.deviceState.imei);
+        }
+        if (this.isCellularCarrierLockEnabled_ && this.deviceState?.serial) {
+          return this.i18n(
+              'deviceInfoPopupA11yEidAndSerial', this.eid_,
+              this.deviceState.serial);
+        }
+        return this.i18n('deviceInfoPopupA11yEid', this.eid_);
+      }
+
+      if (this.deviceState?.imei) {
+        if (this.isCellularCarrierLockEnabled_ && this.deviceState?.serial) {
+          return this.i18n(
+              'deviceInfoPopupA11yImeiAndSerial', this.deviceState.imei,
+              this.deviceState.serial);
+        }
+        return this.i18n('deviceInfoPopupA11yImei', this.deviceState.imei);
+      }
+
+      if (this.isCellularCarrierLockEnabled_ && this.deviceState?.serial) {
+        return this.i18n('deviceInfoPopupA11ySerial', this.deviceState.serial);
+      }
+
+      return '';
+    }
 }
 
 declare global {

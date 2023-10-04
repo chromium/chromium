@@ -4371,15 +4371,30 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_DEVICE_INFO_IMEI_LABEL" desc="Label for the IMEI number of the device shown in the network device info popup dialog.">
     IMEI
+    </message>
+  <message name="IDS_SETTINGS_DEVICE_INFO_SERIAL_LABEL" desc="Label for the Serial number of the device shown in the network device info popup dialog.">
+    Serial number
   </message>
   <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_EID" desc="A11y label for the network device info popup dialog that's read out when only EID is displayed.">
     Your device EID is <ph name="EID_NUMBER">$1<ex>123456789</ex></ph>. This number can be used to help activate service.
   </message>
   <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_IMEI" desc="A11y label for the network device info popup dialog that's read out when only IMEI is displayed.">
     Your device IMEI is <ph name="IMEI_NUMBER">$1<ex>123456789</ex></ph>. This number can be used to help activate service.
+    </message>
+  <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_SERIAL" desc="A11y label for the network device info popup dialog that's read out when only Serial is displayed.">
+    Your device serial number is <ph name="SERIAL_NUMBER">$1<ex>123456789</ex></ph>. This number can be used to help activate service.
   </message>
   <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_EID_AND_IMEI" desc="A11y label for the network device info popup dialog that's read out when both EID and IMEI is displayed.">
     Your device EID is <ph name="EID_NUMBER">$1<ex>123456789</ex></ph> and device IMEI is <ph name="IMEI_NUMBER">$1<ex>123456789</ex></ph>. These numbers can be used to help activate service.
+  </message>
+  <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_EID_AND_SERIAL" desc="A11y label for the network device info popup dialog that's read out when EID and serial number is displayed.">
+    Your device EID is <ph name="EID_NUMBER">$1<ex>123456789</ex></ph> and device serial number is <ph name="SERIAL_NUMBER">$1<ex>123456789</ex></ph>. These numbers can be used to help activate service.
+  </message>
+  <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_IMEI_AND_SERIAL" desc="A11y label for the network device info popup dialog that's read out when IMEI and serial number is displayed.">
+    Your device IMEI is <ph name="IMEI_NUMBER">$1<ex>123456789</ex></ph> and device serial is <ph name="SERIAL_NUMBER">$1<ex>123456789</ex></ph>. These numbers can be used to help activate service.
+  </message>
+  <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_EID_IMEI_AND_SERIAL" desc="A11y label for the network device info popup dialog that's read out when EID, IMEI and serial number is displayed.">
+    Your device EID is <ph name="EID_NUMBER">$1<ex>123456789</ex></ph> , device IMEI is <ph name="IMEI_NUMBER">$1<ex>123456789</ex></ph> and device serial number is <ph name="SERIAL_NUMBER">$1<ex>123456789</ex></ph>. These numbers can be used to help activate service.
   </message>
   <message name="IDS_SETTINGS_INTERNET_PASSPOINT_DETAILS" desc="Name of the settings page which displays details about Passpoint.">
     Passpoint provider details

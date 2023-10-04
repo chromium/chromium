@@ -46,7 +46,7 @@
 </style>
 <cr-dialog id="deviceInfoDialog" show-on-attach>
   <div slot="title">$i18n{mobileDeviceInfoPopupTitle}</div>
-  <div slot="body" aria-label="[[getA11yLabel_(deviceState, eid_)]]">
+  <div slot="body" id="body" aria-label="[[getA11yLabel_(deviceState, eid_)]]">
     <div id="dialogDescription" aria-hidden="true">
       $i18n{mobileDeviceInfoPopupDescription}
     </div>
@@ -69,6 +69,16 @@
         </div>
         <div id="imei" class="info-value" aria-hidden="true">
           [[deviceState.imei]]
+        </div>
+      </div>
+    </template>
+    <template is="dom-if" if="[[shouldShowSerial_(deviceState)]]">
+      <div class="info-container">
+        <div class="info-label" aria-hidden="true">
+          $i18n{deviceInfoPopupSerialLabel}
+        </div>
+        <div id="serialLabel" class="info-value" aria-hidden="true">
+          [[deviceState.serial]]
         </div>
       </div>
     </template>
