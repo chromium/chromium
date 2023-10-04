@@ -504,6 +504,33 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ContextMenu, /* context_menu.js for file list */
     FilesAppBrowserTest,
     ::testing::Values(
+        TestCase("checkNewFolderEnabledInsideReadWriteFolder")
+            .FilesExperimental(),
+        TestCase("checkNewFolderDisabledInsideReadOnlyFolder")
+            .FilesExperimental(),
+        TestCase("checkPasteEnabledInsideReadWriteFolder").FilesExperimental(),
+        TestCase("checkPasteDisabledInsideReadOnlyFolder").FilesExperimental(),
+        TestCase("checkDownloadsContextMenu").FilesExperimental(),
+        TestCase("checkPlayFilesContextMenu").FilesExperimental(),
+        TestCase("checkLinuxFilesContextMenu").FilesExperimental(),
+        TestCase("checkDeleteDisabledInDocProvider")
+            .EnableGenericDocumentsProvider()
+            .FilesExperimental(),
+        TestCase("checkDeleteEnabledInDocProvider")
+            .EnableGenericDocumentsProvider()
+            .FilesExperimental(),
+        TestCase("checkRenameDisabledInDocProvider")
+            .EnableGenericDocumentsProvider()
+            .FilesExperimental(),
+        TestCase("checkRenameEnabledInDocProvider")
+            .EnableGenericDocumentsProvider()
+            .FilesExperimental(),
+        TestCase("checkDeleteEnabledInRecents").FilesExperimental(),
+        TestCase("checkGoToFileLocationEnabledInRecents").FilesExperimental(),
+        TestCase("checkGoToFileLocationDisabledInMultipleSelection")
+            .FilesExperimental(),
+        TestCase("checkEncryptedCrossVolumeMoveDisabled").FilesExperimental(),
+        TestCase("checkEncryptedMoveEnabled").FilesExperimental(),
         TestCase("checkDeleteEnabledForReadWriteFile"),
         TestCase("checkDeleteDisabledForReadOnlyDocument"),
         TestCase("checkDeleteDisabledForReadOnlyFile"),
@@ -1210,14 +1237,17 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     CopyBetweenWindows, /* copy_between_windows.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("copyBetweenWindowsLocalToDrive"),
-                      TestCase("copyBetweenWindowsLocalToUsb"),
-                      // TODO(b/189173190): Enable
-                      // TestCase("copyBetweenWindowsUsbToDrive"),
-                      TestCase("copyBetweenWindowsDriveToLocal"),
-                      // TODO(b/189173190): Enable
-                      // TestCase("copyBetweenWindowsDriveToUsb"),
-                      TestCase("copyBetweenWindowsUsbToLocal")));
+    ::testing::Values(
+        TestCase("copyBetweenWindowsLocalToUsb").FilesExperimental(),
+        TestCase("copyBetweenWindowsUsbToLocal").FilesExperimental(),
+        TestCase("copyBetweenWindowsLocalToDrive"),
+        TestCase("copyBetweenWindowsLocalToUsb"),
+        // TODO(b/189173190): Enable
+        // TestCase("copyBetweenWindowsUsbToDrive"),
+        TestCase("copyBetweenWindowsDriveToLocal"),
+        // TODO(b/189173190): Enable
+        // TestCase("copyBetweenWindowsDriveToUsb"),
+        TestCase("copyBetweenWindowsUsbToLocal")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     GridView, /* grid_view.js */
@@ -1479,20 +1509,35 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Breadcrumbs, /* breadcrumbs.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("breadcrumbsNavigate"),
-                      TestCase("breadcrumbsDownloadsTranslation"),
-                      TestCase("breadcrumbsRenderShortPath"),
-                      TestCase("breadcrumbsEliderButtonNotExist"),
-                      TestCase("breadcrumbsRenderLongPath"),
-                      TestCase("breadcrumbsMainButtonClick"),
-                      TestCase("breadcrumbsMainButtonEnterKey"),
-                      TestCase("breadcrumbsEliderButtonClick"),
-                      TestCase("breadcrumbsEliderButtonKeyboard"),
-                      TestCase("breadcrumbsEliderMenuClickOutside"),
-                      TestCase("breadcrumbsEliderMenuItemClick"),
-                      TestCase("breadcrumbsEliderMenuItemTabLeft"),
-                      TestCase("breadcrumbNavigateBackToSharedWithMe"),
-                      TestCase("breadcrumbsEliderMenuItemTabRight")));
+    ::testing::Values(
+        TestCase("breadcrumbsNavigate").FilesExperimental(),
+        TestCase("breadcrumbsDownloadsTranslation").FilesExperimental(),
+        TestCase("breadcrumbsRenderShortPath").FilesExperimental(),
+        TestCase("breadcrumbsEliderButtonNotExist").FilesExperimental(),
+        TestCase("breadcrumbsRenderLongPath").FilesExperimental(),
+        TestCase("breadcrumbsMainButtonClick").FilesExperimental(),
+        TestCase("breadcrumbsMainButtonEnterKey").FilesExperimental(),
+        TestCase("breadcrumbsEliderButtonClick").FilesExperimental(),
+        TestCase("breadcrumbsEliderButtonKeyboard").FilesExperimental(),
+        TestCase("breadcrumbsEliderMenuClickOutside").FilesExperimental(),
+        TestCase("breadcrumbsEliderMenuItemClick").FilesExperimental(),
+        TestCase("breadcrumbsEliderMenuItemTabLeft").FilesExperimental(),
+        TestCase("breadcrumbNavigateBackToSharedWithMe").FilesExperimental(),
+        TestCase("breadcrumbsEliderMenuItemTabRight").FilesExperimental(),
+        TestCase("breadcrumbsNavigate"),
+        TestCase("breadcrumbsDownloadsTranslation"),
+        TestCase("breadcrumbsRenderShortPath"),
+        TestCase("breadcrumbsEliderButtonNotExist"),
+        TestCase("breadcrumbsRenderLongPath"),
+        TestCase("breadcrumbsMainButtonClick"),
+        TestCase("breadcrumbsMainButtonEnterKey"),
+        TestCase("breadcrumbsEliderButtonClick"),
+        TestCase("breadcrumbsEliderButtonKeyboard"),
+        TestCase("breadcrumbsEliderMenuClickOutside"),
+        TestCase("breadcrumbsEliderMenuItemClick"),
+        TestCase("breadcrumbsEliderMenuItemTabLeft"),
+        TestCase("breadcrumbNavigateBackToSharedWithMe"),
+        TestCase("breadcrumbsEliderMenuItemTabRight")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FormatDialog, /* format_dialog.js */
