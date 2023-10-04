@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.readaloud.expandedplayer;
+package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import org.chromium.chrome.browser.readaloud.PlayerState;
 import org.chromium.chrome.modules.readaloud.ExpandedPlayer.Observer;
@@ -24,8 +24,11 @@ public class ExpandedPlayerMediator extends EmptyBottomSheetObserver {
         mBottomSheetController.addObserver(this);
         mModel = model;
         mObserver = observer;
-        mModel.set(ExpandedPlayerProperties.ON_CLOSE_CLICK_KEY,
-                (view) -> { mObserver.onCloseClicked(); });
+        mModel.set(
+                ExpandedPlayerProperties.ON_CLOSE_CLICK_KEY,
+                (view) -> {
+                    mObserver.onCloseClicked();
+                });
     }
 
     public void destroy() {
@@ -34,8 +37,7 @@ public class ExpandedPlayerMediator extends EmptyBottomSheetObserver {
 
     public void show(Playback playback) {
         // TODO use playback
-        @PlayerState
-        int state = getState();
+        @PlayerState int state = getState();
         if (state == PlayerState.SHOWING || state == PlayerState.VISIBLE) {
             return;
         }
@@ -43,8 +45,7 @@ public class ExpandedPlayerMediator extends EmptyBottomSheetObserver {
     }
 
     public void dismiss() {
-        @PlayerState
-        int state = getState();
+        @PlayerState int state = getState();
         if (state == PlayerState.GONE || state == PlayerState.HIDING) {
             return;
         }

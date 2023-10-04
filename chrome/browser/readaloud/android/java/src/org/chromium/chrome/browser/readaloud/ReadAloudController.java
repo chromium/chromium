@@ -14,8 +14,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.readaloud.expandedplayer.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
+import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelTabObserver;
@@ -68,13 +68,11 @@ public class ReadAloudController implements Player.Observer {
     private Tab mCurrentlyPlayingTab;
 
     /**
-     * Kicks of readability check on a page load iff: the url is valid, no previous
-     * result is available/pending and if a request has to be sent, the necessary
-     * conditions are satisfied.
-     * TODO: Add optimizations (don't send requests on chrome:// pages, remove
-     * password from the url, etc). Also include enterprise policy check.
+     * Kicks of readability check on a page load iff: the url is valid, no previous result is
+     * available/pending and if a request has to be sent, the necessary conditions are satisfied.
+     * TODO: Add optimizations (don't send requests on chrome:// pages, remove password from the
+     * url, etc). Also include enterprise policy check.
      */
-
     private ReadAloudReadabilityHooks.ReadabilityCallback mReadabilityCallback =
             new ReadAloudReadabilityHooks.ReadabilityCallback() {
                 @Override
@@ -87,7 +85,7 @@ public class ReadAloudController implements Player.Observer {
 
                 @Override
                 public void onFailure(String url, Throwable t) {
-                    Log.i(TAG, "onFailure called for %s", url);
+                    Log.i(TAG, "onFailure called for %s because %s", url, t);
                     mPendingRequests.remove(url);
                 }
             };

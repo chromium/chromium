@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.readaloud.expandedplayer;
+package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.eq;
@@ -31,8 +31,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ExpandedPlayerSheetContentUnitTest {
-    @Mock
-    private BottomSheetController mBottomSheetController;
+    @Mock private BottomSheetController mBottomSheetController;
 
     private Context mContext;
     private Drawable mPlayDrawable;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.readaloud.expandedplayer;
+package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
@@ -31,20 +31,18 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ExpandedPlayerCoordinatorUnitTest {
-    @Mock
-    private BottomSheetController mBottomSheetController;
-    @Mock
-    private Playback mPlayback;
-    @Mock
-    private Observer mObserver;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Playback mPlayback;
+    @Mock private Observer mObserver;
 
     private ExpandedPlayerCoordinator mCoordinator;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mCoordinator = new ExpandedPlayerCoordinator(
-                ApplicationProvider.getApplicationContext(), mBottomSheetController);
+        mCoordinator =
+                new ExpandedPlayerCoordinator(
+                        ApplicationProvider.getApplicationContext(), mBottomSheetController);
     }
 
     @Test
@@ -71,10 +69,12 @@ public class ExpandedPlayerCoordinatorUnitTest {
         mCoordinator.addObserver(mObserver);
         mCoordinator.show(mPlayback);
 
-        assertTrue(mCoordinator.getSheetContentForTesting()
-                           .getContentView()
-                           .findViewById(R.id.readaloud_expanded_player_close_button)
-                           .performClick());
+        assertTrue(
+                mCoordinator
+                        .getSheetContentForTesting()
+                        .getContentView()
+                        .findViewById(R.id.readaloud_expanded_player_close_button)
+                        .performClick());
 
         verify(mObserver, times(1)).onCloseClicked();
     }

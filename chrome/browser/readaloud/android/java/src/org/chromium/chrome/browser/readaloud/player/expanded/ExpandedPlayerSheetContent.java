@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.readaloud.expandedplayer;
+package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -35,16 +36,19 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
             Context context, BottomSheetController bottomSheetController) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
-        mContentView = LayoutInflater.from(context).inflate(
-                R.layout.readaloud_expanded_player_layout, null);
+        mContentView =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.readaloud_expanded_player_layout, null);
         ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_title))
                 .setText("Page title");
         ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_publisher))
                 .setText("Site");
         Resources res = mContext.getResources();
-        mContentView.findViewById(R.id.readaloud_seek_back_button)
+        mContentView
+                .findViewById(R.id.readaloud_seek_back_button)
                 .setContentDescription(res.getString(R.string.readaloud_replay, BACK_SECONDS));
-        mContentView.findViewById(R.id.readaloud_seek_forward_button)
+        mContentView
+                .findViewById(R.id.readaloud_seek_forward_button)
                 .setContentDescription(res.getString(R.string.readaloud_forward, FORWARD_SECONDS));
         ((TextView) mContentView.findViewById(R.id.readaloud_player_time)).setText("00:00");
         ((TextView) mContentView.findViewById(R.id.readaloud_player_duration)).setText("00:00");
@@ -52,15 +56,16 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     }
 
     public void show() {
-        mBottomSheetController.requestShowContent(this, /*animate=*/true);
+        mBottomSheetController.requestShowContent(this, /* animate= */ true);
     }
 
     public void hide() {
-        mBottomSheetController.hideContent(this, /*animate=*/true);
+        mBottomSheetController.hideContent(this, /* animate= */ true);
     }
 
     void setCloseButtonHandler(View.OnClickListener onClick) {
-        mContentView.findViewById(R.id.readaloud_expanded_player_close_button)
+        mContentView
+                .findViewById(R.id.readaloud_expanded_player_close_button)
                 .setOnClickListener(onClick);
     }
 
@@ -68,8 +73,11 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     public void setSpeed(float speed) {
         TextView speedButton = (TextView) mContentView.findViewById(R.id.readaloud_playback_speed);
         speedButton.setText(String.format("%.1fx", speed));
-        speedButton.setContentDescription(mContext.getResources().getString(
-                R.string.readaloud_speed_menu_button, String.format("%.1f", speed)));
+        speedButton.setContentDescription(
+                mContext.getResources()
+                        .getString(
+                                R.string.readaloud_speed_menu_button,
+                                String.format("%.1f", speed)));
     }
 
     public void setPlaying(boolean playing) {
@@ -160,7 +168,8 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        Log.e(TAG,
+        Log.e(
+                TAG,
                 "Tried to get half height accessibility string, but half height isn't supported.");
         assert false;
         return 0;

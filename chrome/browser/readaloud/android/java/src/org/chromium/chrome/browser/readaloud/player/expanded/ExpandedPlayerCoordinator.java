@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.readaloud.expandedplayer;
+package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import android.content.Context;
 
@@ -48,19 +48,25 @@ public class ExpandedPlayerCoordinator implements ExpandedPlayer {
         assert playback != null;
         if (mSheetContent == null) {
             mSheetContent = new ExpandedPlayerSheetContent(mContext, mBottomSheetController);
-            mModel = new PropertyModel.Builder(ExpandedPlayerProperties.ALL_KEYS)
-                             .with(ExpandedPlayerProperties.STATE_KEY, PlayerState.GONE)
-                             .build();
-            mModelChangeProcessor = PropertyModelChangeProcessor.create(
-                    mModel, mSheetContent, ExpandedPlayerViewBinder::bind);
-            mMediator = new ExpandedPlayerMediator(mBottomSheetController, mModel, new Observer() {
-                @Override
-                public void onCloseClicked() {
-                    for (Observer observer : mObserverList) {
-                        observer.onCloseClicked();
-                    }
-                }
-            });
+            mModel =
+                    new PropertyModel.Builder(ExpandedPlayerProperties.ALL_KEYS)
+                            .with(ExpandedPlayerProperties.STATE_KEY, PlayerState.GONE)
+                            .build();
+            mModelChangeProcessor =
+                    PropertyModelChangeProcessor.create(
+                            mModel, mSheetContent, ExpandedPlayerViewBinder::bind);
+            mMediator =
+                    new ExpandedPlayerMediator(
+                            mBottomSheetController,
+                            mModel,
+                            new Observer() {
+                                @Override
+                                public void onCloseClicked() {
+                                    for (Observer observer : mObserverList) {
+                                        observer.onCloseClicked();
+                                    }
+                                }
+                            });
         }
         mMediator.show(playback);
     }

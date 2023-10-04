@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.readaloud.expandedplayer;
+package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.any;
@@ -31,12 +31,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ExpandedPlayerMediatorUnitTest {
-    @Mock
-    private BottomSheetController mBottomSheetController;
-    @Mock
-    private ExpandedPlayer.Observer mObserver;
-    @Mock
-    private Playback mPlayback;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ExpandedPlayer.Observer mObserver;
+    @Mock private Playback mPlayback;
 
     private PropertyModel mModel;
     private ExpandedPlayerMediator mMediator;
@@ -44,9 +41,11 @@ public class ExpandedPlayerMediatorUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mModel = Mockito.spy(new PropertyModel.Builder(ExpandedPlayerProperties.ALL_KEYS)
-                                     .with(ExpandedPlayerProperties.STATE_KEY, PlayerState.GONE)
-                                     .build());
+        mModel =
+                Mockito.spy(
+                        new PropertyModel.Builder(ExpandedPlayerProperties.ALL_KEYS)
+                                .with(ExpandedPlayerProperties.STATE_KEY, PlayerState.GONE)
+                                .build());
 
         mMediator = new ExpandedPlayerMediator(mBottomSheetController, mModel, mObserver);
     }
