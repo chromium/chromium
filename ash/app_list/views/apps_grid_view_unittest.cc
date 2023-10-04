@@ -85,6 +85,7 @@
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -92,7 +93,9 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_observer.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 namespace test {
@@ -107,6 +110,18 @@ constexpr float kDragDropAppIconScale = 1.2f;
 gfx::RectF GetViewBoundsWithCurrentTransform(views::View* view) {
   return view->layer()->transform().MapRect(
       gfx::RectF(view->GetMirroredBounds()));
+}
+
+absl::optional<gfx::Vector2d> GetOffsetBetweenLayers(ui::Layer* source,
+                                                     ui::Layer* target) {
+  gfx::Vector2d offset;
+  for (auto* current = source; current; current = current->parent()) {
+    if (current == target) {
+      return offset;
+    }
+    offset += current->bounds().OffsetFromOrigin();
+  }
+  return absl::nullopt;
 }
 
 float CalculateManhattanDistance(gfx::Point p1, gfx::Point p2) {
@@ -2086,6 +2101,124 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragToCreateFolder) {
   ui::LayerAnimationStoppedWaiter animation_waiter;
   animation_waiter.Wait(drag_icon_layer);
   EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  MaybeCheckHaptickEventsCount(1);
+}
+
+TEST_P(AppsGridViewDragTest, DragIconAnimatesToTargetItemBounds) {
+  GetTestModel()->PopulateApps(3);
+  UpdateLayout();
+
+  // Start drag from centerpoint of item_view
+  AppListItemView* const item_view = GetItemViewInTopLevelGrid(1);
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, item_view);
+
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
+    const gfx::Point drop_point =
+        GetItemRectOnCurrentPageAt(0, 3).CenterPoint();
+    UpdateDrag(AppsGridView::MOUSE, drop_point, apps_grid_view_, 5 /*steps*/);
+  }));
+
+  // End drag, and verify target drop icon bounds.
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Enable drop animation, as the test is verifying target animated
+    // transform/bounds.
+    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+    EndDrag();
+
+    gfx::Rect final_item_icon_bounds = item_view->GetIconBounds();
+    views::View::ConvertRectToScreen(item_view, &final_item_icon_bounds);
+
+    ui::Layer* const drag_icon_layer = GetDragIconLayer(apps_grid_view_);
+    // Get drag icon layer's target position relative to the layer target
+    // bounds.
+    gfx::Rect drag_icon_target_bounds =
+        drag_icon_layer->GetTargetTransform().MapRect(
+            gfx::Rect(drag_icon_layer->GetTargetBounds().size()));
+
+    // Convert the drag icon target bounds to the layer of the root window that
+    // host the drag icon.
+    aura::Window* const root_window =
+        item_view->GetWidget()->GetNativeWindow()->GetRootWindow();
+    const absl::optional<gfx::Vector2d> offset_to_root_window =
+        GetOffsetBetweenLayers(drag_icon_layer, root_window->layer());
+    ASSERT_TRUE(offset_to_root_window);
+    drag_icon_target_bounds.Offset(*offset_to_root_window);
+
+    // Convert drag icon target bounds to screen.
+    gfx::RectF drag_icon_target_bounds_in_screen(drag_icon_target_bounds);
+    wm::TranslateRectToScreen(root_window, &drag_icon_target_bounds_in_screen);
+
+    EXPECT_EQ(gfx::RectF(final_item_icon_bounds),
+              drag_icon_target_bounds_in_screen);
+  }));
+
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
+  MaybeCheckHaptickEventsCount(1);
+}
+
+TEST_P(AppsGridViewDragTest,
+       DragIconAnimatesToTargetItemBoundsOnSecondaryScreen) {
+  UpdateDisplay("1000x700, 1024x768");
+  GetTestModel()->PopulateApps(3);
+  UpdateLayout();
+
+  // Show the app list on the secondary display.
+  GetAppListTestHelper()->Dismiss();
+  GetAppListTestHelper()->ShowAndRunLoop(GetSecondaryDisplay().id());
+
+  // Start drag from centerpoint of item_view
+  AppListItemView* const item_view = GetItemViewInTopLevelGrid(1);
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, item_view);
+
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
+    const gfx::Point drop_point =
+        GetItemRectOnCurrentPageAt(0, 3).CenterPoint();
+    UpdateDrag(AppsGridView::MOUSE, drop_point, apps_grid_view_, 5 /*steps*/);
+  }));
+
+  // End drag, and verify target drop icon bounds.
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Enable drop animation, as the test is verifying target animated
+    // transform/bounds.
+    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+    EndDrag();
+
+    gfx::Rect final_item_icon_bounds = item_view->GetIconBounds();
+    views::View::ConvertRectToScreen(item_view, &final_item_icon_bounds);
+
+    ui::Layer* const drag_icon_layer = GetDragIconLayer(apps_grid_view_);
+    // Get drag icon layer's target position relative to the layer target
+    // bounds.
+    gfx::Rect drag_icon_target_bounds =
+        drag_icon_layer->GetTargetTransform().MapRect(
+            gfx::Rect(drag_icon_layer->GetTargetBounds().size()));
+
+    // Convert the drag icon target bounds to the layer of the root window that
+    // host the drag icon.
+    aura::Window* const root_window =
+        item_view->GetWidget()->GetNativeWindow()->GetRootWindow();
+    const absl::optional<gfx::Vector2d> offset_to_root_window =
+        GetOffsetBetweenLayers(drag_icon_layer, root_window->layer());
+    ASSERT_TRUE(offset_to_root_window);
+    drag_icon_target_bounds.Offset(*offset_to_root_window);
+
+    // Convert drag icon target bounds to screen.
+    gfx::RectF drag_icon_target_bounds_in_screen(drag_icon_target_bounds);
+    wm::TranslateRectToScreen(root_window, &drag_icon_target_bounds_in_screen);
+
+    EXPECT_EQ(gfx::RectF(final_item_icon_bounds),
+              drag_icon_target_bounds_in_screen);
+  }));
+
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
   MaybeCheckHaptickEventsCount(1);
 }
 

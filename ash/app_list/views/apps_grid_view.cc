@@ -1858,16 +1858,13 @@ void AppsGridView::AnimateDragIconToTargetPosition(
         continue;
       }
 
-      auto* drag_view = view_model_.view_at(i);
-      // Get icon bounds in the drag view coordinates.
-      drag_icon_drop_bounds = drag_view->GetIconBounds();
-
       // Get the expected drag item view location.
       const gfx::Rect drag_view_ideal_bounds = view_model_.ideal_bounds(i);
+      // Get icon bounds in the drag view coordinates.
+      drag_icon_drop_bounds = AppListItemView::GetIconBoundsForTargetViewBounds(
+          app_list_config_, drag_view_ideal_bounds,
+          app_list_config_->grid_icon_size(), 1.0f);
 
-      // Position target icon bounds relative to the ideal drag view bounds.
-      drag_icon_drop_bounds.Offset(drag_view_ideal_bounds.x(),
-                                   drag_view_ideal_bounds.y());
       break;
     }
   } else if (target_folder_view) {
