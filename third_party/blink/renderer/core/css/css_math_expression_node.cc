@@ -235,9 +235,6 @@ absl::optional<PixelsAndPercent> EvaluateValueIfNaNorInfinity(
 }
 
 bool CanEagerlySimplify(const CSSMathExpressionNode* operand) {
-  // Eager Simplification can be expanded to more cases like lengths with
-  // absolute units.
-  // TODO(crbug.com/1050968)
   if (operand->IsOperation()) {
     return false;
   }
@@ -249,14 +246,8 @@ bool CanEagerlySimplify(const CSSMathExpressionNode* operand) {
     case CalculationResultCategory::kCalcFrequency:
     case CalculationResultCategory::kCalcResolution:
       return true;
-    case CalculationResultCategory::kCalcLength: {
-      switch (operand->ResolvedUnitType()) {
-        case CSSPrimitiveValue::UnitType::kPixels:
-          return true;
-        default:
-          return false;
-      }
-    }
+    case CalculationResultCategory::kCalcLength:
+      return !CSSPrimitiveValue::IsRelativeUnit(operand->ResolvedUnitType());
     default:
       return false;
   }
