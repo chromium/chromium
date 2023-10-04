@@ -14,11 +14,13 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
@@ -253,6 +255,9 @@ void TurnSyncOnHelper::TurnSyncOnInternal() {
   DCHECK(!account_info_.gaia.empty());
   DCHECK(!account_info_.email.empty());
 
+  DCHECK(!user_input_complete_timer_);
+  user_input_complete_timer_ = base::ElapsedTimer();
+
   if (HasCanOfferSigninError()) {
     AbortAndDelete();
     return;
@@ -288,6 +293,8 @@ bool TurnSyncOnHelper::HasCanOfferSigninError() {
 }
 
 void TurnSyncOnHelper::OnMergeAccountConfirmation(signin::SigninChoice choice) {
+  user_input_complete_timer_ = base::ElapsedTimer();
+
   switch (choice) {
     case signin::SIGNIN_CHOICE_NEW_PROFILE:
       base::RecordAction(
@@ -313,6 +320,8 @@ void TurnSyncOnHelper::OnMergeAccountConfirmation(signin::SigninChoice choice) {
 
 void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(
     signin::SigninChoice choice) {
+  user_input_complete_timer_ = base::ElapsedTimer();
+
   enterprise_account_confirmed_ = choice == signin::SIGNIN_CHOICE_CONTINUE ||
                                   choice == signin::SIGNIN_CHOICE_NEW_PROFILE;
   signin_util::RecordEnterpriseProfileCreationUserChoice(
@@ -577,6 +586,12 @@ bool TurnSyncOnHelper::HasCurrentTurnSyncOnHelperForTesting(Profile* profile) {
 }
 
 void TurnSyncOnHelper::ShowSyncConfirmationUI() {
+  // We have now gathered all the required async information to show either the
+  // sync confirmation UI, or another screen.
+  DCHECK(user_input_complete_timer_);
+  base::UmaHistogramMediumTimes("Signin.SyncOptIn.PreSyncConfirmationLatency",
+                                user_input_complete_timer_->Elapsed());
+
   if (g_show_sync_enabled_ui_for_testing_ || GetSyncService()) {
     signin_metrics::LogSyncOptInStarted(signin_access_point_);
     delegate_->ShowSyncConfirmation(

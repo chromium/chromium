@@ -678,6 +678,10 @@ class TurnSyncOnHelperTest : public testing::Test {
         BucketsAre(Bucket(signin_metrics::ProfileSignout::kTest,
                           expected.sync_turn_off ? 1 : 0)));
 
+    histogram_tester_->ExpectUniqueTimeSample(
+        "Signin.SyncOptIn.PreSyncConfirmationLatency", base::Milliseconds(0),
+        expected.sync_opt_in_started ? 1 : 0);
+
     // Reset the tester so that these histograms don't need to be taken into
     // account for future verifications.
     ResetHistogramTester();
@@ -1170,8 +1174,9 @@ TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortWithoutShowingUI_RemoveAccount) {
   // Check expectations.
   CheckSyncAborted(/*kept_account=*/false);
   CheckDelegateCalls();
-  CheckSigninMetrics(
-      {.sign_in_access_point = kAccessPoint, .sign_in_recorded = true});
+  CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
+                      .sign_in_recorded = true,
+                      .sync_opt_in_started = true});
 }
 
 // Tests that the sync aborted before displaying the sync disabled message and
@@ -1192,8 +1197,9 @@ TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortWithoutShowingUI_KeepAccount) {
   // Check expectations.
   CheckSyncAborted(/*kept_account=*/true);
   CheckDelegateCalls();
-  CheckSigninMetrics(
-      {.sign_in_access_point = kAccessPoint, .sign_in_recorded = true});
+  CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
+                      .sign_in_recorded = true,
+                      .sync_opt_in_started = true});
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1223,8 +1229,9 @@ TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortWithoutShowingUI_PrimaryProfile) {
   // Check expectations.
   CheckSyncAborted(/*kept_account=*/true);
   CheckDelegateCalls();
-  CheckSigninMetrics(
-      {.sign_in_access_point = kAccessPoint, .sign_in_recorded = true});
+  CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
+                      .sign_in_recorded = true,
+                      .sync_opt_in_started = true});
 }
 #endif
 
