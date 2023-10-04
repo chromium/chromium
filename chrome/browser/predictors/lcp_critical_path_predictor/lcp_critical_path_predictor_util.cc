@@ -4,6 +4,7 @@
 
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace predictors {
 
@@ -75,6 +76,41 @@ std::vector<GURL> PredictLcpInfluencerScripts(const LcppData& data) {
     lcp_script_urls.push_back(std::move(parsed_url));
   }
   return lcp_script_urls;
+}
+
+// Returns possible fonts from past loads for a given `data`.
+// The returned urls are ordered by descending frequency (the most
+// frequent one comes first). If there is no data, it returns an empty
+// vector.
+std::vector<GURL> PredictFetchedFontUrls(const LcppData& data) {
+  std::vector<std::pair<double, std::string>> font_urls_with_frequency =
+      ConvertToFrequencyStringPair(data.lcpp_stat().fetched_font_url_stat());
+
+  const double threshold =
+      blink::features::kLCPPFontURLPredictorFrequencyThreshold.Get();
+  int num_open_spots =
+      blink::features::kLCPPFontURLPredictorMaxPreloadCount.Get();
+
+  std::set<GURL> font_urls;  // Use std::set for deduplicate.
+  for (const auto& [frequency, script_url] : font_urls_with_frequency) {
+    // The frequencies are reverse sorted by `ConvertToFrequencyStringPair`.
+    // No need to see later frequencies if the frequency is smaller than the
+    // threshold.
+    if (frequency < threshold) {
+      break;
+    }
+    GURL parsed_url(script_url);
+    if (!parsed_url.is_valid() || !parsed_url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+    if (!font_urls.insert(std::move(parsed_url)).second) {
+      continue;
+    }
+    if (--num_open_spots <= 0) {
+      break;
+    }
+  }
+  return std::vector(font_urls.begin(), font_urls.end());
 }
 
 double SumOfFrequency(const std::map<std::string, double>& histogram,
@@ -402,10 +438,13 @@ ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
       PredictLcpElementLocators(lcpp_data);
   std::vector<GURL> lcp_influencer_scripts =
       PredictLcpInfluencerScripts(lcpp_data);
+  std::vector<GURL> fetched_fonts = PredictFetchedFontUrls(lcpp_data);
 
-  if (!lcp_element_locators.empty() || !lcp_influencer_scripts.empty()) {
+  if (!lcp_element_locators.empty() || !lcp_influencer_scripts.empty() ||
+      !fetched_fonts.empty()) {
     return blink::mojom::LCPCriticalPathPredictorNavigationTimeHint(
-        std::move(lcp_element_locators), std::move(lcp_influencer_scripts));
+        std::move(lcp_element_locators), std::move(lcp_influencer_scripts),
+        std::move(fetched_fonts));
   }
   return absl::nullopt;
 }

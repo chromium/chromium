@@ -3261,6 +3261,14 @@ void WebLocalFrameImpl::SetLCPPHint(
     lcp_influencer_scripts.insert(KURL(url));
   }
   lcpp->set_lcp_influencer_scripts(std::move(lcp_influencer_scripts));
+
+  Vector<KURL> fetched_fonts;
+  fetched_fonts.reserve(
+      base::checked_cast<wtf_size_t>(hint->fetched_fonts.size()));
+  for (const auto& url : hint->fetched_fonts) {
+    fetched_fonts.emplace_back(url);
+  }
+  lcpp->set_fetched_fonts(std::move(fetched_fonts));
 }
 
 void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(

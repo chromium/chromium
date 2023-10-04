@@ -23,11 +23,13 @@ testRunner.waitUntilDone();
 if (window.location.search != "?start") {
   const hint = new LCPCriticalPathPredictorNavigationTimeHint();
 
-  hint.lcpElementLocators = []; // both fields are non-nullable.
   hint.lcpInfluencerScripts = [
     {url: new URL('/low-priority-async-script-execution/resources/lcp-img-insert.js', location).toString()},
     {url: new URL('/low-priority-async-script-execution/resources/lcp-img-create.js', location).toString()}
   ];
+  // All fields are non-nullable.
+  hint.lcpElementLocators = [];
+  hint.fetchedFonts = [];
 
   const web_test_control_host_remote = new NonAssociatedWebTestControlHostRemote();
   web_test_control_host_remote.$.bindNewPipeAndPassReceiver().bindInBrowser('process');

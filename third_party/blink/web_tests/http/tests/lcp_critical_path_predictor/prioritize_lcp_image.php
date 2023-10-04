@@ -19,9 +19,10 @@ if (window.location.search != "?start") {
 
   const bytes = new ByteString;
   bytes.data = new Uint8Array(await resp.arrayBuffer());
-
   hint.lcpElementLocators = [bytes];
-  hint.lcpInfluencerScripts = []; // both fields are non-nullable.
+  // All fields are non-nullable.
+  hint.lcpInfluencerScripts = [];
+  hint.fetchedFonts = [];
 
   const web_test_control_host_remote = new NonAssociatedWebTestControlHostRemote();
   web_test_control_host_remote.$.bindNewPipeAndPassReceiver().bindInBrowser('process');

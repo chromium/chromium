@@ -36,4 +36,7 @@ struct LCPCriticalPathPredictorNavigationTimeHint {
 
   // Script URLs that influence LCP, learned from past loads.
   array<url.mojom.Url> lcp_influencer_scripts;
+
+  // Font URLs that were used in the past loads.
+  array<url.mojom.Url> fetched_fonts;
 };
