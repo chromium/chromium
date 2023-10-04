@@ -178,8 +178,9 @@ class AccountConsistencyServiceTest : public PlatformTest {
     settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
         false /* restore_session */, false /* should_record_metrics */);
-    cookie_settings_ = new content_settings::CookieSettings(settings_map_.get(),
-                                                            &prefs_, false, "");
+    cookie_settings_ = new content_settings::CookieSettings(
+        settings_map_.get(), &prefs_, /*tracking_protection_settings=*/nullptr,
+        false, "");
     // Use a NiceMock here to suppress "uninteresting call" warnings.
     account_reconcilor_ =
         std::make_unique<NiceMock<MockAccountReconcilor>>(signin_client_.get());

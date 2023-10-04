@@ -22,7 +22,7 @@
 #include "components/permissions/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
@@ -39,24 +39,27 @@ namespace content_settings {
 CookieSettings::CookieSettings(
     HostContentSettingsMap* host_content_settings_map,
     PrefService* prefs,
+    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     bool is_incognito,
     const char* extension_scheme)
-    : host_content_settings_map_(host_content_settings_map),
+    : tracking_protection_settings_(tracking_protection_settings),
+      host_content_settings_map_(host_content_settings_map),
       is_incognito_(is_incognito),
       extension_scheme_(extension_scheme),
       block_third_party_cookies_(
           net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
   content_settings_observation_.Observe(host_content_settings_map_.get());
+  if (tracking_protection_settings_) {
+    tracking_protection_settings_observation_.Observe(
+        tracking_protection_settings_.get());
+  }
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
       prefs::kCookieControlsMode,
       base::BindRepeating(&CookieSettings::OnCookiePreferencesChanged,
                           base::Unretained(this)));
   OnCookiePreferencesChanged();
-
-#if BUILDFLAG(USE_BLINK)
   OnBlockAllThirdPartyCookiesChanged();
-#endif
 }
 
 ContentSetting CookieSettings::GetDefaultCookieSetting(
@@ -211,6 +214,8 @@ bool CookieSettings::ShouldIgnoreSameSiteRestrictions(
 
 void CookieSettings::ShutdownOnUIThread() {
   DCHECK(thread_checker_.CalledOnValidThread());
+  tracking_protection_settings_ = nullptr;
+  tracking_protection_settings_observation_.Reset();
   pref_change_registrar_.RemoveAll();
 }
 
@@ -283,14 +288,6 @@ bool CookieSettings::IsStorageAccessApiEnabled() const {
 
 CookieSettings::~CookieSettings() = default;
 
-bool CookieSettings::IsTrackingProtection3pcdEnabled() {
-  // NOTE: TrackingProtectionSettings will set kTrackingProtection3pcd to false
-  // if kCookieControlsMode is enterprise controlled.
-  return base::FeatureList::IsEnabled(features::kTrackingProtection3pcd) ||
-         pref_change_registrar_.prefs()->GetBoolean(
-             prefs::kTrackingProtection3pcdEnabled);
-}
-
 bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -304,8 +301,9 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
     return true;
   }
 
-  // Cookies should always be blocked in 3PCD experiment or if debug flag is on.
-  if (IsTrackingProtection3pcdEnabled()) {
+  // Cookies should always be blocked in 3PCD experiment.
+  if (tracking_protection_settings_ &&
+      tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
     return true;
   }
 
@@ -336,11 +334,10 @@ bool CookieSettings::MitigationsEnabledFor3pcdInternal() {
     return false;
   }
 
-  if (IsTrackingProtection3pcdEnabled()) {
-    // If the user has chosen to block all 3PC then respect user's choice by
-    // switching mitigations off.
-    return !pref_change_registrar_.prefs()->GetBoolean(
-        prefs::kBlockAll3pcToggleEnabled);
+  if (tracking_protection_settings_ &&
+      tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
+    // Mitigations should be on iff the user has not chosen to block all 3PC.
+    return !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked();
   }
 
   return false;
@@ -375,10 +372,8 @@ void CookieSettings::OnBlockAllThirdPartyCookiesChanged() {
 void CookieSettings::OnTrackingProtection3pcdChanged() {
   // If the user opted to block all 3PC while in the experiment, preserve that
   // preference if they are offboarded.
-  if (!pref_change_registrar_.prefs()->GetBoolean(
-          prefs::kTrackingProtection3pcdEnabled) &&
-      pref_change_registrar_.prefs()->GetBoolean(
-          prefs::kBlockAll3pcToggleEnabled)) {
+  if (!tracking_protection_settings_->IsTrackingProtection3pcdEnabled() &&
+      tracking_protection_settings_->AreAllThirdPartyCookiesBlocked()) {
     pref_change_registrar_.prefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(CookieControlsMode::kBlockThirdParty));

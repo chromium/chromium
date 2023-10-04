@@ -116,7 +116,6 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/privacy_sandbox:features",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
-    "//components/privacy_sandbox:tracking_protection_onboarding",
     "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/privacy_sandbox:tracking_protection_settings",
     "//components/sync_preferences:test_support",

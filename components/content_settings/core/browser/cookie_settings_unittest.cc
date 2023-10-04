@@ -25,7 +25,6 @@
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -184,7 +183,12 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
                                                 disabled_features);
   }
 
-  ~CookieSettingsTest() override { settings_map_->ShutdownOnUIThread(); }
+  ~CookieSettingsTest() override {
+    cookie_settings_->ShutdownOnUIThread();
+    cookie_settings_incognito_->ShutdownOnUIThread();
+    settings_map_->ShutdownOnUIThread();
+    tracking_protection_settings_->Shutdown();
+  }
 
   void SetUp() override {
 #if !BUILDFLAG(IS_IOS)
@@ -198,19 +202,16 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
         false /* restore_session */, false /* should_record_metrics */);
-    cookie_settings_ = new CookieSettings(settings_map_.get(), &prefs_, false,
-                                          "chrome-extension");
-
-    tracking_protection_onboarding_ =
-        std::make_unique<privacy_sandbox::TrackingProtectionOnboarding>(
-            &prefs_);
     tracking_protection_settings_ =
         std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
-            &prefs_, tracking_protection_onboarding_.get());
-    tracking_protection_settings_->AddObserver(cookie_settings_.get());
-
+            &prefs_,
+            /*onboarding_service=*/nullptr);
+    cookie_settings_ = new CookieSettings(settings_map_.get(), &prefs_,
+                                          tracking_protection_settings_.get(),
+                                          false, "chrome-extension");
     cookie_settings_incognito_ = new CookieSettings(
-        settings_map_.get(), &prefs_, true, "chrome-extension");
+        settings_map_.get(), &prefs_, tracking_protection_settings_.get(), true,
+        "chrome-extension");
   }
 
   void FastForwardTime(base::TimeDelta delta) {
@@ -336,13 +337,11 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  std::unique_ptr<privacy_sandbox::TrackingProtectionOnboarding>
-      tracking_protection_onboarding_;
-  std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
-      tracking_protection_settings_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
   scoped_refptr<CookieSettings> cookie_settings_;
   scoped_refptr<CookieSettings> cookie_settings_incognito_;
+  std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
+      tracking_protection_settings_;
   const GURL kBlockedSite;
   const GURL kAllowedSite;
   const GURL kFirstPartySite;
@@ -721,7 +720,8 @@ TEST_P(CookieSettingsTest, TestThirdPartyCookiePhaseout) {
   // Build new CookieSettings since `cookie_settings_` was created before
   // ForceThirdPartyCookieBlocking was enabled.
   scoped_refptr<CookieSettings> cookie_settings = new CookieSettings(
-      settings_map_.get(), &prefs_, false, "chrome-extension");
+      settings_map_.get(), &prefs_, tracking_protection_settings_.get(), false,
+      "chrome-extension");
 
   EXPECT_TRUE(cookie_settings->ShouldBlockThirdPartyCookies());
 
@@ -1677,7 +1677,6 @@ TEST_P(CookieSettingsTest, ThirdPartySettingObserver) {
 TEST_P(CookieSettingsTest, PreservesBlockingStateFrom3pcdOnOffboarding) {
   // CookieControlsMode starts in the default state when we onboard.
   prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  cookie_settings_->OnTrackingProtection3pcdChanged();
   EXPECT_EQ(prefs_.GetInteger(prefs::kCookieControlsMode),
             static_cast<int>(CookieControlsMode::kIncognitoOnly));
 
@@ -1685,14 +1684,14 @@ TEST_P(CookieSettingsTest, PreservesBlockingStateFrom3pcdOnOffboarding) {
   // pref stays the same.
   prefs_.SetBoolean(prefs::kBlockAll3pcToggleEnabled, false);
   prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
-  cookie_settings_->OnTrackingProtection3pcdChanged();
   EXPECT_EQ(prefs_.GetInteger(prefs::kCookieControlsMode),
             static_cast<int>(CookieControlsMode::kIncognitoOnly));
 
   // If the block all toggle is on when we offboard, the CookieControlsMode
   // pref is changed to BlockThirdParty.
+  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
   prefs_.SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
-  cookie_settings_->OnTrackingProtection3pcdChanged();
+  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
   EXPECT_EQ(prefs_.GetInteger(prefs::kCookieControlsMode),
             static_cast<int>(CookieControlsMode::kBlockThirdParty));
 }

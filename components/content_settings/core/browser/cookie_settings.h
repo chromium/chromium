@@ -17,6 +17,7 @@
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 
 class GURL;
@@ -65,10 +66,12 @@ class CookieSettings
   // the whole lifetime of this instance.
   // |is_incognito| indicates whether this is an incognito profile. It is not
   // true for other types of off-the-record profiles like guest mode.
-  CookieSettings(HostContentSettingsMap* host_content_settings_map,
-                 PrefService* prefs,
-                 bool is_incognito,
-                 const char* extension_scheme = kDummyExtensionScheme);
+  CookieSettings(
+      HostContentSettingsMap* host_content_settings_map,
+      PrefService* prefs,
+      privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+      bool is_incognito,
+      const char* extension_scheme = kDummyExtensionScheme);
 
   CookieSettings(const CookieSettings&) = delete;
   CookieSettings& operator=(const CookieSettings&) = delete;
@@ -196,9 +199,6 @@ class CookieSettings
   // called.
   void ShutdownOnUIThread() override;
 
-  // TrackingProtectionSettingsObserver:
-  void OnTrackingProtection3pcdChanged() override;
-
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   void AddObserver(Observer* obs) { observers_.AddObserver(obs); }
@@ -209,9 +209,6 @@ class CookieSettings
   ~CookieSettings() override;
 
  private:
-  // TrackingProtectionSettingsObserver:
-  void OnBlockAllThirdPartyCookiesChanged() override;
-
   // Evaluates if third-party cookies are blocked. Should only be called
   // when the preference changes to update the internal state.
   bool ShouldBlockThirdPartyCookiesInternal();
@@ -234,20 +231,23 @@ class CookieSettings
       const std::string& scheme) const override;
   bool IsStorageAccessApiEnabled() const override;
 
+  // TrackingProtectionSettingsObserver:
+  void OnTrackingProtection3pcdChanged() override;
+  void OnBlockAllThirdPartyCookiesChanged() override;
+
   // content_settings::Observer:
   void OnContentSettingChanged(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsTypeSet content_type_set) override;
 
-  // Indicates whether the current user profile has been onboarded to 3PCD.
-  //
-  // TODO(http://b/302524567): Remove this function in the future and just use
-  // `TrackingProtectionSettings::IsTrackingProtection3pcdEnabled()`.
-  bool IsTrackingProtection3pcdEnabled();
-
   base::ThreadChecker thread_checker_;
   base::ObserverList<Observer> observers_;
+  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
+      tracking_protection_settings_;
+  base::ScopedObservation<privacy_sandbox::TrackingProtectionSettings,
+                          privacy_sandbox::TrackingProtectionSettingsObserver>
+      tracking_protection_settings_observation_{this};
   const scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};

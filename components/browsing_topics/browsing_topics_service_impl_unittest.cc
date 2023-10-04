@@ -195,11 +195,13 @@ class BrowsingTopicsServiceImplTest
     host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
         &prefs_, /*is_off_the_record=*/false, /*store_last_modified=*/false,
         /*restore_session=*/false, /*should_record_metrics=*/false);
-    cookie_settings_ = base::MakeRefCounted<content_settings::CookieSettings>(
-        host_content_settings_map_.get(), &prefs_, false, "chrome-extension");
     tracking_protection_settings_ =
-        std::make_unique<privacy_sandbox::TrackingProtectionSettings>(&prefs_,
-                                                                      nullptr);
+        std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
+            &prefs_,
+            /*onboarding_service=*/nullptr);
+    cookie_settings_ = base::MakeRefCounted<content_settings::CookieSettings>(
+        host_content_settings_map_.get(), &prefs_,
+        tracking_protection_settings_.get(), false, "chrome-extension");
 
     auto privacy_sandbox_delegate = std::make_unique<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
@@ -251,7 +253,9 @@ class BrowsingTopicsServiceImplTest
     history_service_->Shutdown();
     run_loop.Run();
 
+    cookie_settings_->ShutdownOnUIThread();
     host_content_settings_map_->ShutdownOnUIThread();
+    tracking_protection_settings_->Shutdown();
 
     content::RenderViewHostTestHarness::TearDown();
   }

@@ -54,7 +54,8 @@ CookieSettingsFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   return base::MakeRefCounted<content_settings::CookieSettings>(
       ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state),
-      browser_state->GetPrefs(), browser_state->IsOffTheRecord());
+      browser_state->GetPrefs(), /*tracking_protection_settings=*/nullptr,
+      browser_state->IsOffTheRecord());
 }
 
 }  // namespace ios

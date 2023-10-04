@@ -178,7 +178,9 @@ TEST_F(ChromeSigninHelperTest, FixAccountConsistencyRequestHeader) {
                                  /*restore_session=*/false,
                                  /*should_record_metrics=*/false);
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
-      new content_settings::CookieSettings(settings_map.get(), &prefs, false);
+      new content_settings::CookieSettings(
+          settings_map.get(), &prefs,
+          /*tracking_protection_settings=*/nullptr, false);
 
   {
     // Non-elligible request, no header.

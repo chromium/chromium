@@ -176,14 +176,18 @@ class PrivacySandboxSettingsTest : public testing::Test {
     host_content_settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
         false /* restore_session */, false /* should_record_metrics */);
-    cookie_settings_ = new content_settings::CookieSettings(
-        host_content_settings_map_.get(), &prefs_, false, "chrome-extension");
     tracking_protection_settings_ =
-        std::make_unique<privacy_sandbox::TrackingProtectionSettings>(&prefs_,
-                                                                      nullptr);
+        std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
+            &prefs_,
+            /*onboarding_service=*/nullptr);
+    cookie_settings_ = new content_settings::CookieSettings(
+        host_content_settings_map_.get(), &prefs_,
+        tracking_protection_settings_.get(), false, "chrome-extension");
   }
   ~PrivacySandboxSettingsTest() override {
+    cookie_settings()->ShutdownOnUIThread();
     host_content_settings_map()->ShutdownOnUIThread();
+    tracking_protection_settings_->Shutdown();
   }
 
   void SetUp() override {

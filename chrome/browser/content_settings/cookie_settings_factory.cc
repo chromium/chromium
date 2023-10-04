@@ -13,7 +13,6 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -96,13 +95,8 @@ CookieSettingsFactory::BuildServiceInstanceFor(
       content_settings::kDummyExtensionScheme;
 #endif
 
-  auto* cookie_settings = new content_settings::CookieSettings(
+  return new content_settings::CookieSettings(
       HostContentSettingsMapFactory::GetForProfile(profile), prefs,
+      TrackingProtectionSettingsFactory::GetForProfile(profile),
       profile->IsIncognitoProfile(), extension_scheme);
-
-  privacy_sandbox::TrackingProtectionSettings* tps =
-      TrackingProtectionSettingsFactory::GetForProfile(profile);
-  tps->AddObserver(cookie_settings);
-
-  return cookie_settings;
 }
