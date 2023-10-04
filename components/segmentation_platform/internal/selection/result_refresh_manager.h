@@ -36,6 +36,10 @@ class ResultRefreshManager {
   ResultRefreshManager(ResultRefreshManager&) = delete;
   ResultRefreshManager& operator=(ResultRefreshManager&) = delete;
 
+  // This method initialises the class with result providers.
+  void Initialize(std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+                      result_providers);
+
   // This refreshes model results. It does the following when result for a
   // model is required.
   // 1. Try to get model result from database.
@@ -44,10 +48,7 @@ class ResultRefreshManager {
   // 3. Else, try to get result by running the model and also save computed
   // scores in db and update it in prefs if prefs result is invalid or
   // expired.
-  void RefreshModelResults(
-      std::map<std::string, std::unique_ptr<SegmentResultProvider>>
-          result_providers,
-      ExecutionService* execution_service);
+  void RefreshModelResults(ExecutionService* execution_service);
 
   // This is triggered when model info is updated. This ensures model execution,
   // updating prefs and database if required on model update.

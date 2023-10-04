@@ -53,12 +53,13 @@ ResultRefreshManager::ResultRefreshManager(
 
 ResultRefreshManager::~ResultRefreshManager() = default;
 
-void ResultRefreshManager::RefreshModelResults(
+void ResultRefreshManager::Initialize(
     std::map<std::string, std::unique_ptr<SegmentResultProvider>>
-        result_providers,
-    ExecutionService* execution_service) {
+        result_providers) {
   result_providers_ = std::move(result_providers);
-
+}
+void ResultRefreshManager::RefreshModelResults(
+    ExecutionService* execution_service) {
   for (const auto& config : config_holder_->configs()) {
     GetCachedResultOrRunModel(config.get(), execution_service);
   }

@@ -27,7 +27,6 @@ class FeatureListQueryProcessor;
 class InputDelegateHolder;
 }
 
-struct Config;
 struct PlatformOptions;
 class ModelExecutor;
 class ModelProviderFactory;
@@ -54,12 +53,11 @@ class ExecutionService {
       SignalHandler* signal_handler,
       base::Clock* clock,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const base::flat_set<SegmentId>& all_segment_ids,
+      const base::flat_set<SegmentId>& legacy_output_segment_ids,
       ModelProviderFactory* model_provider_factory,
       std::vector<ModelExecutionScheduler::Observer*>&& observers,
       const PlatformOptions& platform_options,
       std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder,
-      const std::vector<std::unique_ptr<Config>>* configs,
       PrefService* profile_prefs,
       CachedResultProvider* cached_result_provider);
 

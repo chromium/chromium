@@ -80,7 +80,7 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
   const raw_ptr<ModelExecutor> model_executor_;
 
   // The set of all known segments.
-  base::flat_set<proto::SegmentId> all_segment_ids_;
+  base::flat_set<proto::SegmentId> legacy_output_segment_ids_;
 
   // The time provider.
   raw_ptr<base::Clock> clock_;
