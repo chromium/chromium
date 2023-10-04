@@ -4577,6 +4577,14 @@ public class AwContents implements SmartClipProvider {
                 float touchMajor = Math.max(event.getTouchMajor(), event.getTouchMinor());
                 AwContentsJni.get().requestNewHitTestDataAt(
                         mNativeAwContents, eventX, eventY, touchMajor);
+                // If the stylus is above an editable element, prevent the parent element from
+                // intercepting the scroll event.
+                if (event.getPointerCount() == 1
+                        && event.getToolType(0) == MotionEvent.TOOL_TYPE_STYLUS
+                        && getLastHitTestResult().hitTestResultType
+                                == 9 /* HitTestDataType::kEditText */) {
+                    mContainerView.getParent().requestDisallowInterceptTouchEvent(true);
+                }
             }
 
             if (mOverScrollGlow != null) {
