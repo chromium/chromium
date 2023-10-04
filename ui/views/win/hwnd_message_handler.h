@@ -849,6 +849,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
     enum { kNormal, kMinimized, kMaximized } minmax_state = kNormal;
 
     gfx::Rect bounds;
+    absl::optional<gfx::Rect> restored_bounds;
   };
 
   // This is present iff the window has been created in headless mode.

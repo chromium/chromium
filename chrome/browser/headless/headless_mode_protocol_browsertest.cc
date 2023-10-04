@@ -267,9 +267,8 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_ScreencastBasics,
 HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
                             "sanity/large-browser-window-size.js")
 
-// These currently fail on Mac and Windows,see https://crbug.com/1488010 and
-// https://crbug.com/1487021.
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+// These currently fail on Mac,see https://crbug.com/1488010
+#if !BUILDFLAG(IS_MAC)
 HEADLESS_MODE_PROTOCOL_TEST(MinimizeRestoreWindow,
                             "sanity/minimize-restore-window.js")
 HEADLESS_MODE_PROTOCOL_TEST(MaximizeRestoreWindow,

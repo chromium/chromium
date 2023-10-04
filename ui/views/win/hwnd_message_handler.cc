@@ -769,7 +769,10 @@ void HWNDMessageHandler::Show(ui::WindowShowState show_state,
   // window visibility state and explicitly activate window just like
   // platform window manager would do.
   if (IsHeadless()) {
-    headless_mode_window_->visibility_state = true;
+    if (!headless_mode_window_->visibility_state) {
+      headless_mode_window_->visibility_state = true;
+      delegate_->HandleVisibilityChanged(/*visible=*/true);
+    }
     if (show_state != ui::SHOW_STATE_INACTIVE) {
       Activate();
     }
@@ -850,7 +853,10 @@ void HWNDMessageHandler::Hide() {
   // hiding it just maintain a local flag to track the expected headless
   // window visibility state.
   if (IsHeadless()) {
-    headless_mode_window_->visibility_state = false;
+    if (headless_mode_window_->visibility_state) {
+      headless_mode_window_->visibility_state = false;
+      delegate_->HandleVisibilityChanged(/*visible=*/false);
+    }
     return;
   }
 
@@ -867,7 +873,18 @@ void HWNDMessageHandler::Hide() {
 
 void HWNDMessageHandler::Maximize() {
   if (IsHeadless()) {
-    headless_mode_window_->minmax_state = HeadlessModeWindow::kMaximized;
+    if (headless_mode_window_->minmax_state != HeadlessModeWindow::kMaximized) {
+      headless_mode_window_->minmax_state = HeadlessModeWindow::kMaximized;
+      headless_mode_window_->restored_bounds = headless_mode_window_->bounds;
+      gfx::Rect bounds = headless_mode_window_->bounds;
+      // When running in headless mode there is no screen size that would define
+      // maximized window dimensions. Instead just double the current window
+      // size assuming the user will expect it to increase.
+      bounds.set_width(bounds.width() * 2);
+      bounds.set_height(bounds.height() * 2);
+      SetBoundsInternal(bounds, /*force_size_changed=*/false);
+      delegate_->HandleCommand(static_cast<int>(SC_MAXIMIZE));
+    }
     return;
   }
 
@@ -876,7 +893,12 @@ void HWNDMessageHandler::Maximize() {
 
 void HWNDMessageHandler::Minimize() {
   if (IsHeadless()) {
-    headless_mode_window_->minmax_state = HeadlessModeWindow::kMinimized;
+    if (headless_mode_window_->minmax_state != HeadlessModeWindow::kMinimized) {
+      headless_mode_window_->minmax_state = HeadlessModeWindow::kMinimized;
+      delegate_->HandleWindowMinimizedOrRestored(/*restored=*/false);
+      delegate_->HandleCommand(static_cast<int>(SC_MINIMIZE));
+      delegate_->HandleNativeBlur(nullptr);
+    }
     return;
   }
 
@@ -886,7 +908,21 @@ void HWNDMessageHandler::Minimize() {
 
 void HWNDMessageHandler::Restore() {
   if (IsHeadless()) {
-    headless_mode_window_->minmax_state = HeadlessModeWindow::kNormal;
+    if (headless_mode_window_->minmax_state != HeadlessModeWindow::kNormal) {
+      auto prev_state = headless_mode_window_->minmax_state;
+      headless_mode_window_->minmax_state = HeadlessModeWindow::kNormal;
+
+      if (headless_mode_window_->restored_bounds) {
+        gfx::Rect bounds = *headless_mode_window_->restored_bounds;
+        headless_mode_window_->restored_bounds.reset();
+        SetBoundsInternal(bounds, /*force_size_changed=*/false);
+      }
+
+      if (prev_state == HeadlessModeWindow::kMinimized) {
+        delegate_->HandleWindowMinimizedOrRestored(/*restored=*/true);
+      }
+      delegate_->HandleCommand(static_cast<int>(SC_RESTORE));
+    }
     return;
   }
 
