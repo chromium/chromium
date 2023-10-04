@@ -41,8 +41,6 @@ source_set("lib") {
   sources = [
     "gcapi.cc",
     "gcapi.h",
-    "gcapi_omaha_experiment.cc",
-    "gcapi_omaha_experiment.h",
     "gcapi_reactivation.cc",
     "gcapi_reactivation.h",
     "google_update_util.cc",
@@ -60,7 +58,6 @@ source_set("lib") {
 test("gcapi_test") {
   sources = [
     "gcapi_last_run_test.cc",
-    "gcapi_omaha_experiment_test.cc",
     "gcapi_reactivation_test.cc",
     "gcapi_test.cc",
     "gcapi_test.rc",

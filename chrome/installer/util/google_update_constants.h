@@ -87,10 +87,6 @@ extern const wchar_t kRegWebAccessibleField[];
 // Last time that chrome ran in the Time internal format.
 extern const wchar_t kRegLastRunTimeField[];
 
-// The name of the value where Google Update reads the list of experiments for
-// itself and Chrome.
-extern const wchar_t kExperimentLabels[];
-
 }  // namespace google_update
 
 #endif  // CHROME_INSTALLER_UTIL_GOOGLE_UPDATE_CONSTANTS_H_

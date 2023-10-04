@@ -272,21 +272,6 @@ class GoogleUpdateSettings {
   // Returns product data for the current product. (Equivalent to calling
   // GetUpdateDetailForApp with the current install mode's app guid.)
   static bool GetUpdateDetail(ProductData* data);
-
-  // Sets |experiment_labels| as the Google Update experiment_labels value in
-  // the ClientState key for this Chrome product, if appropriate. If
-  // |experiment_labels| is empty, this will delete the value instead. This will
-  // return true if the label was successfully set (or deleted), false otherwise
-  // (even if the label does not need to be set for this particular brand).
-  static bool SetExperimentLabels(const std::wstring& experiment_labels);
-
-  // Reads the Google Update experiment_labels value in the ClientState key for
-  // this Chrome product and writes it into |experiment_labels|. If the key or
-  // value does not exist, |experiment_labels| will be set to the empty string.
-  // If this brand does not set the experiment_labels value, this will do
-  // nothing to |experiment_labels|. This will return true if the label did not
-  // exist, or was successfully read.
-  static bool ReadExperimentLabels(std::wstring* experiment_labels);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_GOOGLE_UPDATE_SETTINGS_H_

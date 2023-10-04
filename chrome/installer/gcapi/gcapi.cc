@@ -42,7 +42,6 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/wmi.h"
-#include "chrome/installer/gcapi/gcapi_omaha_experiment.h"
 #include "chrome/installer/gcapi/gcapi_reactivation.h"
 #include "chrome/installer/gcapi/google_update_util.h"
 #include "chrome/installer/launcher_support/chrome_launcher_support.h"
@@ -642,21 +641,18 @@ BOOL __stdcall CanOfferReactivation(const wchar_t* brand_code,
 BOOL __stdcall ReactivateChrome(const wchar_t* brand_code,
                                 int shell_mode,
                                 DWORD* error_code) {
-  BOOL result = FALSE;
-  if (CanOfferReactivation(brand_code, shell_mode, error_code)) {
-    if (SetReactivationBrandCode(brand_code, shell_mode)) {
-      // Currently set this as a best-effort thing. We return TRUE if
-      // reactivation succeeded regardless of the experiment label result.
-      SetReactivationExperimentLabels(brand_code, shell_mode);
-
-      result = TRUE;
-    } else {
-      if (error_code)
-        *error_code = REACTIVATE_ERROR_REACTIVATION_FAILED;
-    }
+  if (!CanOfferReactivation(brand_code, shell_mode, error_code)) {
+    return FALSE;
   }
 
-  return result;
+  if (SetReactivationBrandCode(brand_code, shell_mode)) {
+    return TRUE;
+  }
+
+  if (error_code) {
+    *error_code = REACTIVATE_ERROR_REACTIVATION_FAILED;
+  }
+  return FALSE;
 }
 
 BOOL __stdcall CanOfferRelaunch(const wchar_t** partner_brandcode_list,
@@ -743,15 +739,14 @@ BOOL __stdcall SetRelaunchOffered(const wchar_t** partner_brandcode_list,
     return FALSE;
 
   // Store the relaunched brand code and the minimum date for relaunch (6 months
-  // from now), and set the Omaha experiment label.
+  // from now).
   RegKey key;
   if (key.Create(HKEY_CURRENT_USER, gcapi_internals::kChromeRegClientStateKey,
                  KEY_SET_VALUE | KEY_WOW64_32KEY) != ERROR_SUCCESS ||
       key.WriteValue(kRelaunchBrandcodeValue, relaunch_brandcode) !=
           ERROR_SUCCESS ||
       key.WriteValue(kRelaunchAllowedAfterValue, FormatDateOffsetByMonths(6)) !=
-          ERROR_SUCCESS ||
-      !SetRelaunchExperimentLabels(relaunch_brandcode, shell_mode)) {
+          ERROR_SUCCESS) {
     if (error_code)
       *error_code = RELAUNCH_ERROR_RELAUNCH_FAILED;
     return FALSE;

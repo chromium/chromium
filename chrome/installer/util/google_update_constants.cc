@@ -68,6 +68,4 @@ const wchar_t kRegUsageStatsField[] = L"usagestats";
 const wchar_t kRegVersionField[] = L"pv";
 const wchar_t kRegWebAccessibleField[] = L"WebAccessible";
 
-const wchar_t kExperimentLabels[] = L"experiment_labels";
-
 }  // namespace google_update

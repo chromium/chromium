@@ -1239,6 +1239,16 @@ void AddFinalizeUpdateWorkItems(const base::Version& new_version,
       installer_state.root_key(), client_state_key, KEY_WOW64_32KEY,
       google_update::kRegCleanInstallRequiredForVersionBelowField,
       kLastBreakingInstallerVersion, true);
+
+  // Remove any "experiment_labels" value that may have been set. Support for
+  // this was removed in Q4 2023.
+  list->AddDeleteRegValueWorkItem(
+          installer_state.root_key(),
+          installer_state.system_install()
+              ? install_static::GetClientStateMediumKeyPath()
+              : client_state_key,
+          KEY_WOW64_32KEY, L"experiment_labels")
+      ->set_best_effort(true);
 }
 
 }  // namespace installer
