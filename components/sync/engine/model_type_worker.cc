@@ -132,14 +132,16 @@ void AdaptWebAuthnClientTagHash(syncer::EntityData* data) {
   // Valid ClientTagHash values are Base64(SHA1(protobuf_prefix + client_tag))
   // and therefore always 28 bytes.
   const std::string& client_tag_hash = data->client_tag_hash.value();
+  std::string sync_id;
   if (client_tag_hash.size() == 32 &&
-      // base::HexEncode() returns upper case, `client_tag_hash` is lower case.
-      base::ToUpperASCII(client_tag_hash) ==
-          base::HexEncode(base::as_bytes(base::make_span(
-              data->specifics.webauthn_credential().sync_id())))) {
-    data->client_tag_hash = ClientTagHash::FromUnhashed(
-        ModelType::WEBAUTHN_CREDENTIAL,
-        data->specifics.webauthn_credential().sync_id());
+      base::HexStringToString(client_tag_hash, &sync_id) &&
+      // Deletions don't include the specifics, only the client_tag_hash.
+      (!data->specifics.has_webauthn_credential() ||
+       // Otherwise, check that the client_tag_hash really is the hex encoded
+       // sync_id.
+       sync_id == data->specifics.webauthn_credential().sync_id())) {
+    data->client_tag_hash =
+        ClientTagHash::FromUnhashed(ModelType::WEBAUTHN_CREDENTIAL, sync_id);
   }
 }
 

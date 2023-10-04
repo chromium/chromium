@@ -1986,6 +1986,25 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
             ClientTagHash::FromUnhashed(WEBAUTHN_CREDENTIAL, sync_id));
 }
 
+TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
+     WebAuthnCredentialWithLegacyClientTagHashForDeletion) {
+  UpdateResponseData response_data;
+
+  // Deletions don't have the specifics included, but should still be adapted.
+  sync_pb::SyncEntity update_entity;
+  update_entity.set_client_tag_hash("7c37c66ec1f6febff2afc15638803a79");
+  update_entity.set_deleted(true);
+
+  ASSERT_EQ(ModelTypeWorker::SUCCESS,
+            ModelTypeWorker::PopulateUpdateResponseData(
+                FakeCryptographer(), WEBAUTHN_CREDENTIAL, update_entity,
+                &response_data));
+
+  // The client tag hash gets filled in by the worker.
+  EXPECT_EQ(response_data.entity.client_tag_hash.value(),
+            "FCQMkPplvLlt4RPilbF12na9/AU=");
+}
+
 class GetLocalChangesRequestTest : public testing::Test {
  public:
   GetLocalChangesRequestTest();
