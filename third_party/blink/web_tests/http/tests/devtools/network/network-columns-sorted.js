@@ -26,13 +26,13 @@ import {NetworkTestRunner} from 'network_test_runner';
   function ensureAllResources() {
     if (++resourceCount < totalResourceCount)
       return;
-    UI.panels.network.networkLogView.refresh();
+    self.UI.panels.network.networkLogView.refresh();
     sortGrid();
     TestRunner.completeTest();
   }
 
   function sortGrid() {
-    var logView = UI.panels.network.networkLogView;
+    var logView = self.UI.panels.network.networkLogView;
     var dataGrid = logView.dataGrid;
     var columnsView = logView.columns();
     TestRunner.addSniffer(columnsView, 'dataGridSortedForTest', dataGridSorted.bind(null, logView), true);

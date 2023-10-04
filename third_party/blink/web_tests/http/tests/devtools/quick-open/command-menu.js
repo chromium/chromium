@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Test that the command menu is properly filled.\n`);
@@ -31,7 +32,7 @@ import {TestRunner} from 'test_runner';
   TestRunner.addResult('Switching to console panel');
   try {
     commands.get('Panel: Show Console').execute().then(() => {
-      TestRunner.addResult('Current panel: ' + UI.inspectorView.currentPanelDeprecated().name);
+      TestRunner.addResult('Current panel: ' + UI.InspectorView.InspectorView.instance().currentPanelDeprecated().name);
       TestRunner.completeTest();
     });
   } catch (e) {

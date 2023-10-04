@@ -4,6 +4,7 @@
 
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult('Tests accessibility in the Changes drawer.');
@@ -16,8 +17,8 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
   const uiSourceCodeMock = {mimeType: () => {}};
 
   TestRunner.addResult('Showing the Changes drawer.');
-  await UI.viewManager.showView('changes.changes');
-  const changesWidget = await UI.viewManager.view('changes.changes').widget();
+  await UI.ViewManager.ViewManager.instance().showView('changes.changes');
+  const changesWidget = await UI.ViewManager.ViewManager.instance().view('changes.changes').widget();
   changesWidget.selectedUISourceCode = uiSourceCodeMock;
   changesWidget.renderDiffRows(diff);
 

@@ -35,7 +35,7 @@ import * as Common from 'devtools/core/common/common.js';
   });
 
   function updateFocusedNode() {
-    TestRunner.addResult('Selected node id: \'' + UI.panels.elements.selectedDOMNode().getAttribute('id') + '\'.');
+    TestRunner.addResult('Selected node id: \'' + self.UI.panels.elements.selectedDOMNode().getAttribute('id') + '\'.');
     SourcesTestRunner.completeDebuggerTest();
   }
 

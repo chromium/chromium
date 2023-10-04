@@ -35,7 +35,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
   }
 
   function step2() {
-    var currentFrame = UI.panels.sources.visibleView;
+    var currentFrame = self.UI.panels.sources.visibleView;
     var decorations = currentFrame.textEditor._decorations;
     for (var line of decorations.keysArray()) {
       var lineDecorations =

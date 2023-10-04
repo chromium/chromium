@@ -4,6 +4,7 @@
 
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(
@@ -11,7 +12,7 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
 
   await TestRunner.loadLegacyModule('settings');
 
-  await UI.actionRegistry.action('settings.show').execute();
+  await UI.ActionRegistry.ActionRegistry.instance().action('settings.show').execute();
 
   const tabbedPane = Settings.SettingsScreen.instance().tabbedLocation.tabbedPane();
 

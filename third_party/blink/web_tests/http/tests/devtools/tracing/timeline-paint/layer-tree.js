@@ -33,7 +33,7 @@ import {LayersTestRunner} from 'layers_test_runner';
       }
   `);
 
-  UI.panels.timeline._captureLayersAndPicturesSetting.set(true);
+  self.UI.panels.timeline._captureLayersAndPicturesSetting.set(true);
 
   await PerformanceTestRunner.invokeAsyncWithTimeline('doActions');
   const frames = PerformanceTestRunner.timelineFrameModel().frames();

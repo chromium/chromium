@@ -4,12 +4,13 @@
 
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function () {
   await TestRunner.showPanel('sources');
   await TestRunner.loadLegacyModule('browser_debugger');
 
-  await UI.viewManager.showView('sources.eventListenerBreakpoints');
+  await UI.ViewManager.ViewManager.instance().showView('sources.eventListenerBreakpoints');
   const eventListenerWidget = BrowserDebugger.EventListenerBreakpointsSidebarPane.instance();
   TestRunner.addResult('Setting event listener breakpoints.');
   const {checkbox, element} = eventListenerWidget.categories.get('Animation');

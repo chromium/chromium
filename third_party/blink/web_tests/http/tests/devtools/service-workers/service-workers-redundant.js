@@ -61,6 +61,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
       TestRunner.completeTest();
     }
   }
-  UI.panels.resources.sidebar.serviceWorkersTreeElement.select();
+  self.UI.panels.resources.sidebar.serviceWorkersTreeElement.select();
   ApplicationTestRunner.registerServiceWorker(scriptURL, scope);
 })();

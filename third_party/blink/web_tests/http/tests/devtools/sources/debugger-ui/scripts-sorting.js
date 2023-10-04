@@ -6,7 +6,8 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {SDKTestRunner} from 'sdk_test_runner';
 
-import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   'use strict';
@@ -15,14 +16,14 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
   function createNavigatorView(constructor) {
     var navigatorView = new constructor();
-    navigatorView.show(UI.inspectorView.element);
+    navigatorView.show(UI.InspectorView.InspectorView.instance().element);
     return navigatorView;
   }
 
   const sourcesNavigatorView =
-      createNavigatorView(SourcesModule.SourcesNavigator.NetworkNavigatorView);
+      createNavigatorView(Sources.SourcesNavigator.NetworkNavigatorView);
   const contentScriptsNavigatorView =
-      createNavigatorView(SourcesModule.SourcesNavigator.ContentScriptsNavigatorView);
+      createNavigatorView(Sources.SourcesNavigator.ContentScriptsNavigatorView);
 
   var pageMock = new SDKTestRunner.PageMock('http://example.com');
   pageMock.turnIntoWorker();

@@ -26,7 +26,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
       function nodeCallback(node) {
         nodeId = node.id;
-        stylesPane = UI.panels.elements.stylesWidget;
+        stylesPane = self.UI.panels.elements.stylesWidget;
         ElementsTestRunner.addNewRule('foo, #inspected, .bar, #inspected', callback);
       }
 

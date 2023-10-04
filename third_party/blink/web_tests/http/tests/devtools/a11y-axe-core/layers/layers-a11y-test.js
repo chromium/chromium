@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {LayersTestRunner} from 'layers_test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests accessibility in the layers view using the axe-core linter.`);
@@ -18,8 +19,8 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
       </div>
   `);
   const view = 'layers';
-  await UI.viewManager.showView(view);
-  const widget = await UI.viewManager.view(view).widget();
+  await UI.ViewManager.ViewManager.instance().showView(view);
+  const widget = await UI.ViewManager.ViewManager.instance().view(view).widget();
 
   await LayersTestRunner.requestLayers();
 

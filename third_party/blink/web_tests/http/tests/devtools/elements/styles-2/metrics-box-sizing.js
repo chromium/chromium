@@ -84,7 +84,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     return event;
   }
 
-  var section = UI.panels.elements.metricsWidget;
+  var section = self.UI.panels.elements.metricsWidget;
 
   TestRunner.runTestSuite([
     function testBorderBoxInit1(next) {

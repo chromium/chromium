@@ -45,7 +45,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
     function testEditSelector(next) {
       var section =
-          UI.panels.elements.stylesWidget.sectionBlocks[0].sections[3];
+          self.UI.panels.elements.stylesWidget.sectionBlocks[0].sections[3];
       section.startEditingSelector();
       section.selectorElement.textContent = '.should-change, .INSERTED-OTHER-SELECTOR';
       ElementsTestRunner.waitForSelectorCommitted(onSelectorEdited);

@@ -14,7 +14,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
   var textEditor;
   var searchString = 'FINDME';
-  var searchableView = UI.panels.sources.searchableView();
+  var searchableView = self.UI.panels.sources.searchableView();
   var sourceFrame;
   SourcesTestRunner.showScriptSource('search-me.js', didShowScriptSource);
 

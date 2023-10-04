@@ -4,12 +4,13 @@
 
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult('Tests accessibility in IgnoreList view using the axe-core linter.');
 
-  await UI.viewManager.showView('blackbox');
-  const ignoreListWidget = await UI.viewManager.view('blackbox').widget();
+  await UI.ViewManager.ViewManager.instance().showView('blackbox');
+  const ignoreListWidget = await UI.ViewManager.ViewManager.instance().view('blackbox').widget();
 
   async function testAddPattern() {
     const addPatternButton = ignoreListWidget.defaultFocusedElement;

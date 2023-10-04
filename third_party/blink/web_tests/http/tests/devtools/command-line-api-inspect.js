@@ -44,7 +44,7 @@ import * as Common from 'devtools/core/common/common.js';
     evalAndDump('inspect($(\'#p1\'))');
 
     function step3() {
-      TestRunner.addResult('Selected node id: \'' + UI.panels.elements.selectedDOMNode().getAttribute('id') + '\'.');
+      TestRunner.addResult('Selected node id: \'' + self.UI.panels.elements.selectedDOMNode().getAttribute('id') + '\'.');
       next();
     }
   }]);

@@ -35,8 +35,8 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   `);
 
   var watchExpressionsPane = SourcesModule.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
-  UI.panels.sources.sidebarPaneStack
-      .showView(UI.panels.sources.watchSidebarPane)
+  self.UI.panels.sources.sidebarPaneStack
+      .showView(self.UI.panels.sources.watchSidebarPane)
       .then(() => {
         watchExpressionsPane.doUpdate();
         watchExpressionsPane.createWatchExpression('globalObject');

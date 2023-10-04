@@ -13,7 +13,7 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
   await TestRunner.showPanel('timeline');
   TestRunner.addResult('Performance panel loaded.');
 
-  const tabbedPane = UI.panels.timeline.flameChart.detailsView.tabbedPane;
+  const tabbedPane = self.UI.panels.timeline.flameChart.detailsView.tabbedPane;
   tabbedPane.selectTab(TimelineModule.TimelineDetailsView.Tab.EventLog);
 
   TestRunner.addResult('Loading a performance model.');

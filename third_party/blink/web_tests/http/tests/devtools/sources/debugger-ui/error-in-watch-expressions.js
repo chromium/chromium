@@ -14,7 +14,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
   `);
 
   var watchExpressionsPane = SourcesModule.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
-  UI.panels.sources.sidebarPaneStack.showView(UI.panels.sources.watchSidebarPane).then(() => {
+  self.UI.panels.sources.sidebarPaneStack.showView(UI.panels.sources.watchSidebarPane).then(() => {
     watchExpressionsPane.doUpdate();
     watchExpressionsPane.createWatchExpression('#$%');
     watchExpressionsPane.saveExpressions();

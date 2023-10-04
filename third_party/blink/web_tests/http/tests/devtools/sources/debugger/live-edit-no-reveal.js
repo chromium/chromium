@@ -13,7 +13,7 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/edit-me-when-paused-no-reveal.js');
 
-  var panel = UI.panels.sources;
+  var panel = self.UI.panels.sources;
   var sourceFrame;
 
   function didStepInto() {

@@ -564,7 +564,7 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
     }
   ];
 
-  var timeline = UI.panels.timeline;
+  var timeline = self.UI.panels.timeline;
   timeline.setModel(await PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
 
   var groupByEnum = TimelineModule.TimelineTreeView.AggregatedTimelineTreeView.GroupBy;

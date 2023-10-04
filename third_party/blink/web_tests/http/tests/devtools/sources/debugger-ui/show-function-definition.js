@@ -19,7 +19,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
       }
   `);
 
-  var panel = UI.panels.sources;
+  var panel = self.UI.panels.sources;
 
   TestRunner.runTestSuite([
     function testRevealFunctionDefinition(next) {

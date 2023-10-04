@@ -13,7 +13,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
       'resources/dynamic-scripts-breakpoints.html');
 
   Bindings.breakpointManager.storage.breakpoints = new Map();
-  var panel = UI.panels.sources;
+  var panel = self.UI.panels.sources;
 
   SourcesTestRunner.startDebuggerTest();
 

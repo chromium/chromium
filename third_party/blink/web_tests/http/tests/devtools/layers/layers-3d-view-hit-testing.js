@@ -58,7 +58,7 @@ import {LayersTestRunner} from 'layers_test_runner';
   }
 
   function initSizes() {
-    canvas = UI.panels.layers._layers3DView._canvasElement;
+    canvas = self.UI.panels.layers._layers3DView._canvasElement;
     var canvasWidth = canvas.offsetWidth;
     var canvasHeight = canvas.offsetHeight;
     var rootWidth = 800;
@@ -86,10 +86,10 @@ import {LayersTestRunner} from 'layers_test_runner';
 
   function dumpStateForOutlineType(type) {
     var outlined = 'none';
-    UI.panels.layers._update();
+    self.UI.panels.layers._update();
 
     function checkLayer(layerInfo) {
-      var l3dview = UI.panels.layers._layers3DView;
+      var l3dview = self.UI.panels.layers._layers3DView;
       if (l3dview._lastSelection[type] && layerInfo.layer.id() === l3dview._lastSelection[type].layer().id())
         outlined = layerInfo.name;
     }

@@ -24,7 +24,7 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
   }`;
 
   await TestRunner.showPanel('resources');
-  const manifestView = UI.panels.resources.visibleView;
+  const manifestView = self.UI.panels.resources.visibleView;
   await manifestView.renderManifest('test_manifest', manifest, [], []);
   await AxeCoreTestRunner.runValidation(manifestView.contentElement);
   TestRunner.completeTest();

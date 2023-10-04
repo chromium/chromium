@@ -7,7 +7,8 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
-import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult('Tests accessibility in the Sources panel Navigator pane FileSystem tab using axe-core.');
@@ -21,7 +22,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
   };
 
 
-  await UI.viewManager.showView('sources');
+  await UI.ViewManager.ViewManager.instance().showView('sources');
   await setup();
 
   await testA11yForView(NO_REQUIRED_CHILDREN_RULESET);
@@ -35,12 +36,12 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
   }
 
   async function testA11yForView(ruleSet) {
-    await UI.viewManager.showView('navigator-files');
-    const sourcesNavigatorView = new SourcesModule.SourcesNavigator.FilesNavigatorView();
+    await UI.ViewManager.ViewManager.instance().showView('navigator-files');
+    const sourcesNavigatorView = new Sources.SourcesNavigator.FilesNavigatorView();
 
-    sourcesNavigatorView.show(UI.inspectorView.element);
+    sourcesNavigatorView.show(UI.InspectorView.InspectorView.instance().element);
     SourcesTestRunner.dumpNavigatorView(sourcesNavigatorView);
-    const element = UI.panels.sources.navigatorTabbedLocation.tabbedPane().element;
+    const element = self.UI.panels.sources.navigatorTabbedLocation.tabbedPane().element;
     await AxeCoreTestRunner.runValidation(element, ruleSet);
   }
 })();

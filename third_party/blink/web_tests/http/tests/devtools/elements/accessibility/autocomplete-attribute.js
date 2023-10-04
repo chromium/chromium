@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {AccessibilityTestRunner} from 'accessibility_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests that autocompletions are computed correctly when editing the ARIA pane.\n`);
@@ -13,7 +14,7 @@ import {AccessibilityTestRunner} from 'accessibility_test_runner';
       <span id="inspected" aria-checked="true" role="checkbox"></span>
     `);
 
-  await UI.viewManager.showView('accessibility.view')
+  await UI.ViewManager.ViewManager.instance().showView('accessibility.view')
       .then(() => AccessibilityTestRunner.selectNodeAndWaitForAccessibility('inspected'))
       .then(runTests);
 

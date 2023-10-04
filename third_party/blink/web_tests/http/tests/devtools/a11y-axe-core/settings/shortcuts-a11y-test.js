@@ -4,6 +4,7 @@
 
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult('Tests accessibility in the settings tool shortcuts pane using the axe-core linter.');
@@ -11,10 +12,10 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
 
   async function testShortcuts() {
     // Open a view that supports context menu action to open shortcuts panel
-    await UI.viewManager.showView('sources');
+    await UI.ViewManager.ViewManager.instance().showView('sources');
 
     // Open Shortcuts pane using context menu action
-    await UI.actionRegistry.action('settings.shortcuts').execute();
+    await UI.ActionRegistry.ActionRegistry.instance().action('settings.shortcuts').execute();
 
     const settingsPaneElement = Settings.SettingsScreen.instance().tabbedLocation.tabbedPane().contentElement;
     await AxeCoreTestRunner.runValidation(settingsPaneElement);

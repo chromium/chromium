@@ -10,7 +10,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 (async function() {
   await TestRunner.showPanel('network');
 
-  var panel = UI.panels.network;
+  var panel = self.UI.panels.network;
   var target = panel.networkLogView;
   var types = Common.ResourceType.resourceTypes;
 

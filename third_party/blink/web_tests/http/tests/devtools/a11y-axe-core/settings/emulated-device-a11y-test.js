@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult('Test error message in the settings tool Emulated Device pane');
-  await UI.viewManager.showView('devices');
-  const devicesWidget = await UI.viewManager.view('devices').widget();
+  await UI.ViewManager.ViewManager.instance().showView('devices');
+  const devicesWidget = await UI.ViewManager.ViewManager.instance().view('devices').widget();
 
   async function testNewDeviceError() {
     const addDeviceButton = devicesWidget.defaultFocusedElement;

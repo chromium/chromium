@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult('Tests accessibility in heap profiler using the axe-core linter.');
@@ -37,8 +38,8 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
       pageFunction();`);
   HeapProfilerTestRunner.stopSamplingHeapProfiler();
 
-  await UI.viewManager.showView('heap_profiler');
-  const widget = await UI.viewManager.view('heap_profiler').widget();
+  await UI.ViewManager.ViewManager.instance().showView('heap_profiler');
+  const widget = await UI.ViewManager.ViewManager.instance().view('heap_profiler').widget();
   await AxeCoreTestRunner.runValidation(widget.element);
   TestRunner.completeTest();
 })();

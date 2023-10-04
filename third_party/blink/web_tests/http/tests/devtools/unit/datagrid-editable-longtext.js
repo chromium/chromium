@@ -1,3 +1,4 @@
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 import {TestRunner} from 'test_runner';
 (async function() {
@@ -10,7 +11,7 @@ import {TestRunner} from 'test_runner';
     {id: "value", title: "Value column", editable: true, longText: true}
   ];
   var dataGrid = new DataGrid.DataGrid({displayName: 'Test', columns, editCallback: onEdit});
-  UI.inspectorView.element.appendChild(dataGrid.element);
+  UI.InspectorView.InspectorView.instance().element.appendChild(dataGrid.element);
 
   var rootNode = dataGrid.rootNode();
   var node = new DataGrid.DataGridNode({key: "k".repeat(1500), value: "v".repeat(1500)});

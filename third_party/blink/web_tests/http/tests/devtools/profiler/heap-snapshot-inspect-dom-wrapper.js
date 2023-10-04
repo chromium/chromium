@@ -32,7 +32,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
       return clear('FAILED: wrong number of recorded profiles was found. profiles.length = ' + profiles.length);
 
     var profile = profiles[profiles.length - 1];
-    UI.panels.heap_profiler.showProfile(profile);
+    self.UI.panels.heap_profiler.showProfile(profile);
   }
 
   async function snapshotReceived(profile) {
@@ -67,7 +67,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
     if (errorMessage)
       TestRunner.addResult(errorMessage);
     setTimeout(done, 0);
-    UI.panels.heap_profiler.reset();
+    self.UI.panels.heap_profiler.reset();
     return !errorMessage;
   }
 

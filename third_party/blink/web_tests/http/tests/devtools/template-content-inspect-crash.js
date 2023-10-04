@@ -20,7 +20,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
   ElementsTestRunner.expandElementsTree(function() {
     var contentNode = ElementsTestRunner.expandedNodeWithId('tpl').templateContent();
-    UI.panels.elements.selectDOMNode(contentNode, true);
+    self.UI.panels.elements.selectDOMNode(contentNode, true);
     ConsoleTestRunner.evaluateInConsole('$0', callback);
   });
 

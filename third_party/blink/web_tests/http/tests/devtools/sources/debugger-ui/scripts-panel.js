@@ -7,7 +7,8 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import {SDKTestRunner} from 'sdk_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
-import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests that scripts panel UI elements work as intended.\n`);
@@ -19,8 +20,8 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
   }
 
   function createNavigatorView() {
-    var navigatorView = new SourcesModule.SourcesNavigator.NetworkNavigatorView();
-    navigatorView.show(UI.inspectorView.element);
+    var navigatorView = new Sources.SourcesNavigator.NetworkNavigatorView();
+    navigatorView.show(UI.InspectorView.InspectorView.instance().element);
     return navigatorView;
   }
 

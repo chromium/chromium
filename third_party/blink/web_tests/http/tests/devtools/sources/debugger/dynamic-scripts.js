@@ -51,7 +51,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   function step3() {
-    var panel = UI.panels.sources;
+    var panel = self.UI.panels.sources;
     var uiSourceCodes = Workspace.workspace.uiSourceCodesForProjectType(Workspace.projectTypes.Network);
     var urls = uiSourceCodes.map(function(uiSourceCode) {
       return uiSourceCode.name();

@@ -17,10 +17,10 @@ import {ApplicationTestRunner} from 'application_test_runner';
   const scope2 = 'http://127.0.0.1:8000/devtools/service-workers/resources/scope2/';
   Resources.ServiceWorkersView.setThrottleDisabledForDebugging = true;
 
-  UI.panels.resources.sidebar.serviceWorkersTreeElement.select();
+  self.UI.panels.resources.sidebar.serviceWorkersTreeElement.select();
   await ApplicationTestRunner.registerServiceWorker(scriptURL, scope1);
   await ApplicationTestRunner.registerServiceWorker(scriptURL, scope2);
-  const element = UI.panels.resources.visibleView.contentElement;
+  const element = self.UI.panels.resources.visibleView.contentElement;
 
   await AxeCoreTestRunner.runValidation(element);
   TestRunner.completeTest();

@@ -22,7 +22,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
   function dumpObjectStores() {
     TestRunner.addResult('Dumping ObjectStore data:');
-    var idbDatabaseTreeElement = UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
+    var idbDatabaseTreeElement = self.UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
     for (var objectStoreTreeElement of idbDatabaseTreeElement.children()) {
       objectStoreTreeElement.select();
       TestRunner.addResult(`    Object store: ${objectStoreTreeElement.title}`);
@@ -37,10 +37,10 @@ import {ApplicationTestRunner} from 'application_test_runner';
   await TestRunner.showPanel('resources');
   var databaseAddedPromise = TestRunner.addSnifferPromise(Resources.IndexedDBTreeElement.prototype, 'addIndexedDB');
   await ApplicationTestRunner.createDatabaseAsync('database1');
-  UI.panels.resources.sidebar.indexedDBListTreeElement.refreshIndexedDB();
+  self.UI.panels.resources.sidebar.indexedDBListTreeElement.refreshIndexedDB();
   await databaseAddedPromise;
 
-  var idbDatabaseTreeElement = UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
+  var idbDatabaseTreeElement = self.UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
   await ApplicationTestRunner.createObjectStoreAsync('database1', 'objectStore1', 'index1');
   idbDatabaseTreeElement.refreshIndexedDB();
   await TestRunner.addSnifferPromise(Resources.IDBIndexTreeElement.prototype, 'updateTooltip');

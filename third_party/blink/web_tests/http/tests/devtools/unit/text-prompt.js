@@ -1,12 +1,12 @@
 
 import {TestRunner} from 'test_runner';
 
-import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 (async function() {
   TestRunner.addResult("This tests if the TextPrompt autocomplete works properly.\n");
 
   var suggestions = ["heyoo", "hey it's a suggestion", "hey another suggestion"].map(s => ({text: s}));
-  var prompt = new UIModule.TextPrompt.TextPrompt();
+  var prompt = new UI.TextPrompt.TextPrompt();
   let expression, query;
   prompt.initialize(async (e, q) => {
     expression = e;
@@ -14,7 +14,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
     return suggestions;
   });
   var div = document.createElement("div");
-  UI.inspectorView.element.appendChild(div);
+  UI.InspectorView.InspectorView.instance().element.appendChild(div);
   prompt.attachAndStartEditing(div);
   prompt.setText("hey");
   await prompt.complete();

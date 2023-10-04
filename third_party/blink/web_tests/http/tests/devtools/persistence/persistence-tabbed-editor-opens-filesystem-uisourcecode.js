@@ -24,13 +24,13 @@ import {BindingsTestRunner} from 'bindings_test_runner';
     TestRunner.addResult('Binding created: ' + binding);
     dumpEditorTabs('Opened tabs before opening any UISourceCodes:');
     TestRunner.addResult('request open uiSourceCode: ' + binding.fileSystem.url());
-    UI.panels.sources.showUISourceCode(binding.network, 0, 0);
+    self.UI.panels.sources.showUISourceCode(binding.network, 0, 0);
     dumpEditorTabs('Opened tabs after opening UISourceCode:');
     TestRunner.completeTest();
   }
 
   function dumpEditorTabs(title) {
-    var editorContainer = UI.panels.sources.sourcesView().editorContainer;
+    var editorContainer = self.UI.panels.sources.sourcesView().editorContainer;
     var openedUISourceCodes = [...editorContainer.tabIds.keys()];
     openedUISourceCodes.sort((a, b) => a.url > b.url ? 1 : b.url > a.url ? -1 : 0);
     TestRunner.addResult(title);

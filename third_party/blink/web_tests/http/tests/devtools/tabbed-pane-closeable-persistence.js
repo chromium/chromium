@@ -4,17 +4,17 @@
 
 import {TestRunner} from 'test_runner';
 
-import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests extensible tabbed pane closeable tabs persistence logic.\n`);
 
 
-  var tabbedLocation = UI.viewManager.createTabbedLocation();
+  var tabbedLocation = UI.ViewManager.ViewManager.instance().createTabbedLocation();
   logPersistenceSetting();
 
   // Show a closeable tab.
-  var sensors = new UIModule.View.SimpleView('sensors');
+  var sensors = new UI.View.SimpleView('sensors');
   sensors.isCloseable = function() {
     return true;
   };
@@ -26,12 +26,12 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   logPersistenceSetting();
 
   // Show a permanent tab.
-  var console = new UIModule.View.SimpleView('console');
+  var console = new UI.View.SimpleView('console');
   tabbedLocation.showView(console);
   logPersistenceSetting();
 
   // Show transient tab.
-  var history = new UIModule.View.SimpleView('history');
+  var history = new UI.View.SimpleView('history');
   history.isTransient = function() {
     return true;
   };

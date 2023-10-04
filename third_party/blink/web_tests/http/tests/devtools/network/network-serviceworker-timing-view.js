@@ -67,7 +67,7 @@ import * as Network from 'devtools/panels/network/network.js';
         'http://example.com/fake-document-url', 1, 1, fakeInitiator);
     setRequestValues(testRequest);
 
-    const calculator = UI.panels.network.calculator;
+    const calculator = self.UI.panels.network.calculator;
     const tableElement = Network.RequestTimingView.RequestTimingView.createTimingTable(testRequest, calculator);
 
     for (const element of tableElement.getElementsByTagName('td')) {

@@ -33,7 +33,7 @@ import * as Common from 'devtools/core/common/common.js';
   }
 
   function step4(node) {
-    UI.panels.elements.revealAndSelectNode(node.shadowRoots()[0]);
+    self.UI.panels.elements.revealAndSelectNode(node.shadowRoots()[0]);
     ConsoleTestRunner.evaluateInConsoleAndDump('\'User agent shadow host: \' + $0.id', step5);
   }
 

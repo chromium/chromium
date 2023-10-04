@@ -31,7 +31,7 @@ import {NetworkTestRunner} from 'network_test_runner';
   var seenRequests = 0;
 
   function dumpRequests() {
-    var logView = UI.panels.network.networkLogView;
+    var logView = self.UI.panels.network.networkLogView;
     logView.refresh();
     var dataGrid = logView.element.querySelector('table.data');
     var urls = document.evaluate(

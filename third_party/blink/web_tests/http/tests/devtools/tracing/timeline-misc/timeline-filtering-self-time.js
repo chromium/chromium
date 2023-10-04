@@ -89,7 +89,7 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
   ];
 
   var model = await PerformanceTestRunner.createPerformanceModelWithEvents(testData);
-  const tabbedPane = UI.panels.timeline.flameChart.detailsView.tabbedPane;
+  const tabbedPane = self.UI.panels.timeline.flameChart.detailsView.tabbedPane;
   tabbedPane.selectTab(TimelineModule.TimelineDetailsView.Tab.BottomUp);
   const view = tabbedPane.visibleView;
 

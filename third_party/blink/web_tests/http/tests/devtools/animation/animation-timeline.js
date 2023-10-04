@@ -4,6 +4,7 @@
 
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests the display of animations on the animation timeline.\n`);
@@ -63,7 +64,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     return 1000;
   };
 
-  await UI.viewManager.showView('animations');
+  await UI.ViewManager.ViewManager.instance().showView('animations');
   var timeline = Animation.AnimationTimeline.instance();
   TestRunner.evaluateInPage('startAnimationWithDelay()');
   ElementsTestRunner.waitForAnimationAdded(step2);

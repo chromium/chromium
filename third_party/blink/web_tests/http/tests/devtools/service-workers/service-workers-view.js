@@ -49,7 +49,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   TestRunner.addResult('Select ServiceWorkers tree element.');
-  UI.panels.resources.sidebar.serviceWorkersTreeElement.select();
+  self.UI.panels.resources.sidebar.serviceWorkersTreeElement.select();
   TestRunner.addResult('Register ServiceWorker for scope1');
   ApplicationTestRunner.registerServiceWorker(scriptURL, scope1);
 })();

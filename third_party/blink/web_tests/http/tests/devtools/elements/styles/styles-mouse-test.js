@@ -19,7 +19,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   `);
   await new Promise(x => ElementsTestRunner.selectNodeAndWaitForStyles('inspected', x));
 
-  var stylesPane = UI.panels.elements.stylesWidget;
+  var stylesPane = self.UI.panels.elements.stylesWidget;
   var firstRule = stylesPane.sectionBlocks[0].sections[1].propertiesTreeOutline;
   var blueElement = () => firstRule.firstChild().valueElement;
   var colorElement = () => firstRule.firstChild().nameElement;

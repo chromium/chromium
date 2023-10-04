@@ -1,7 +1,7 @@
 
 import {TestRunner} from 'test_runner';
 
-import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 (async function() {
   TestRunner.addResult('Test ListControl rendering for various height items case.');
 
@@ -35,10 +35,10 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   }
 
   var delegate = new Delegate();
-  var model = new UIModule.ListModel.ListModel();
-  var list = new UIModule.ListControl.ListControl(model, delegate, UIModule.ListControl.ListMode.VariousHeightItems);
+  var model = new UI.ListModel.ListModel();
+  var list = new UI.ListControl.ListControl(model, delegate, UI.ListControl.ListMode.VariousHeightItems);
   list.element.style.height = '73px';
-  UI.inspectorView.element.appendChild(list.element);
+  UI.InspectorView.InspectorView.instance().element.appendChild(list.element);
 
   function dumpList()
   {

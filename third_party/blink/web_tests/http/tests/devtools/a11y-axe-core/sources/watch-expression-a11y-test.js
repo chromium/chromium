@@ -7,21 +7,22 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
-import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise('../sources/debugger-breakpoints/resources/dom-breakpoints.html');
 
-  await UI.viewManager.showView('sources.watch');
+  await UI.ViewManager.ViewManager.instance().showView('sources.watch');
   TestRunner.addResult('Adding watch expression.');
-  const watchPane = SourcesModule.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
+  const watchPane = Sources.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
   watchPane.doUpdate();
   TestRunner.addResult('Running the axe-core linter on the empty watch pane.');
   await AxeCoreTestRunner.runValidation(watchPane.contentElement);
 
   const watchExpression = watchPane.createWatchExpression('2 + 2 === 5');
-  await TestRunner.addSnifferPromise(SourcesModule.WatchExpressionsSidebarPane.WatchExpression.prototype, 'createWatchExpression');
+  await TestRunner.addSnifferPromise(Sources.WatchExpressionsSidebarPane.WatchExpression.prototype, 'createWatchExpression');
 
   const watchExpressionElement = watchExpression.treeElement().listItemElement;
   TestRunner.addResult(`Watch expression text content: ${watchExpressionElement.deepTextContent()}`);

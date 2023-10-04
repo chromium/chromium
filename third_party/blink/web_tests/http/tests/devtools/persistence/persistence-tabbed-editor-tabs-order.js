@@ -59,7 +59,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
   ]);
 
   function dumpTabs(title) {
-    var tabbedPane = UI.panels.sources.sourcesView().editorContainer.tabbedPane;
+    var tabbedPane = self.UI.panels.sources.sourcesView().editorContainer.tabbedPane;
     var tabs = tabbedPane.tabs;
     TestRunner.addResult(title);
     for (var i = 0; i < tabs.length; ++i) {

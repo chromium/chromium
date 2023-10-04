@@ -4,6 +4,7 @@
 
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Verifies that text editor has focus after panel re-selecting.\n`);
@@ -14,8 +15,8 @@ import {SourcesTestRunner} from 'sources_test_runner';
   SourcesTestRunner.showScriptSource('script.js', onSourceFrame);
   function onSourceFrame(sourceFrame) {
     TestRunner.addResult('initial: focused = ' + sourceFrame.hasFocus());
-    UI.inspectorView.showPanel('elements')
-        .then(() => UI.inspectorView.showPanel('sources'))
+    UI.InspectorView.InspectorView.instance().showPanel('elements')
+        .then(() => UI.InspectorView.InspectorView.instance().showPanel('sources'))
         .then(onPanelReselected.bind(null, sourceFrame));
   }
 

@@ -26,8 +26,8 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
     'x', 'y.foo'
   ]);
   await SourcesTestRunner.startDebuggerTestPromise();
-  UI.panels.sources.sidebarPaneStack.showView(
-      UI.panels.sources.watchSidebarPane);
+  self.UI.panels.sources.sidebarPaneStack.showView(
+      self.UI.panels.sources.watchSidebarPane);
   TestRunner.addResult('Watches before running testFunction:');
   await waitForUpdate();
   TestRunner.evaluateInPagePromise('testFunction()');

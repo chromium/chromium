@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 
 import * as Network from 'devtools/panels/network/network.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests that mobile, network, and CPU throttling interact with each other logically.\n`);
@@ -12,17 +13,17 @@ import * as Network from 'devtools/panels/network/network.js';
   await TestRunner.showPanel("timeline");
   await TestRunner.loadLegacyModule('emulation');
   await TestRunner.loadLegacyModule('mobile_throttling');
-  await UI.viewManager.showView("network.config");
+  await UI.ViewManager.ViewManager.instance().showView("network.config");
 
   var deviceModeView = new Emulation.DeviceModeView();
 
   var deviceModeThrottling = deviceModeView.toolbar.throttlingConditionsItem;
-  var networkPanelThrottling = UI.panels.network.throttlingSelectForTest();
+  var networkPanelThrottling = self.UI.panels.network.throttlingSelectForTest();
   var networkConfigView = Network.NetworkConfigView.NetworkConfigView.instance();
   var networkConditionsDrawerThrottlingSelector =
       networkConfigView.contentElement.querySelector('.network-config-throttling select.chrome-select');
-  var performancePanelNetworkThrottling = UI.panels.timeline.networkThrottlingSelect;
-  var performancePanelCPUThrottling = UI.panels.timeline.cpuThrottlingSelect;
+  var performancePanelNetworkThrottling = self.UI.panels.timeline.networkThrottlingSelect;
+  var performancePanelCPUThrottling = self.UI.panels.timeline.cpuThrottlingSelect;
 
   function dumpThrottlingState() {
     TestRunner.addResult('=== THROTTLING STATE ===');

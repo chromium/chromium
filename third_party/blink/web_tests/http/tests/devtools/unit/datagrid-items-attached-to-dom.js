@@ -1,12 +1,13 @@
 
 import {TestRunner} from 'test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 (async function() {
   await TestRunner.loadLegacyModule('data_grid');
 
   TestRunner.addResult("This tests viewport datagrid.");
 
   var div = document.createElement("div");
-  UI.inspectorView.element.appendChild(div);
+  UI.InspectorView.InspectorView.instance().element.appendChild(div);
 
   var columns = [{id: "id", title: "ID column", width: "250px"}];
   var dataGrid = new DataGrid.DataGrid({displayName: 'Test', columns});

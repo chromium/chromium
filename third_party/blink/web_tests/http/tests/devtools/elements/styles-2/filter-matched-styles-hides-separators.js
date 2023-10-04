@@ -72,7 +72,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   ]);
 
   function dumpSidebarSeparators() {
-    var separators = UI.panels.elements.stylesWidget.contentElement.querySelectorAll('.sidebar-separator');
+    var separators = self.UI.panels.elements.stylesWidget.contentElement.querySelectorAll('.sidebar-separator');
     for (var i = 0; i < separators.length; ++i) {
       var separator = separators[i];
       var hidden = separator.classList.contains('hidden');

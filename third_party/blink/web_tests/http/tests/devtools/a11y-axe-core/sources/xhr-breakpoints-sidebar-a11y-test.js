@@ -4,6 +4,7 @@
 
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   await TestRunner.showPanel('sources');
@@ -12,7 +13,7 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
   // this rule causes false negatives due to axe not handling the shadow DOM properly
   const noRequiredParent = {'aria-required-parent': {enabled: false}};
 
-  await UI.viewManager.showView('sources.xhrBreakpoints');
+  await UI.ViewManager.ViewManager.instance().showView('sources.xhrBreakpoints');
   TestRunner.addResult('Adding XHR breakpoint.');
   const xhrBreakpointsPane = BrowserDebugger.XHRBreakpointsSidebarPane.instance();
   xhrBreakpointsPane.setBreakpoint('test xhr breakpoint', true);

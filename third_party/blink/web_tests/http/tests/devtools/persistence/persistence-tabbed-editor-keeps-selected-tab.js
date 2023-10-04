@@ -20,10 +20,10 @@ import {BindingsTestRunner} from 'bindings_test_runner';
   var fsSourceCode = await TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.FileSystem);
   var networkSourceCode = await TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.Network);
   var barSourceCode = await TestRunner.waitForUISourceCode('bar.js');
-  UI.panels.sources.showUISourceCode(barSourceCode, 0, 0);
-  UI.panels.sources.showUISourceCode(networkSourceCode, 0, 0);
+  self.UI.panels.sources.showUISourceCode(barSourceCode, 0, 0);
+  self.UI.panels.sources.showUISourceCode(networkSourceCode, 0, 0);
   // Open and select file system tab. Selection should stay here.
-  UI.panels.sources.showUISourceCode(fsSourceCode, 0, 0);
+  self.UI.panels.sources.showUISourceCode(fsSourceCode, 0, 0);
 
   dumpTabs('Opened tabs before persistence binding:');
   testMapping.addBinding('foo.js');
@@ -32,7 +32,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
   TestRunner.completeTest();
 
   function dumpTabs(title) {
-    var tabbedPane = UI.panels.sources.sourcesView().editorContainer.tabbedPane;
+    var tabbedPane = self.UI.panels.sources.sourcesView().editorContainer.tabbedPane;
     var tabs = tabbedPane.tabs;
     TestRunner.addResult(title);
     for (var i = 0; i < tabs.length; ++i) {

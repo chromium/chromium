@@ -16,7 +16,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   TestRunner.addResult('Testing accessibility in the DOM breakpoints pane.');
 
   // Expand the DOM Breakpoints container
-  const domBreakpointContainer = UI.panels.sources.sidebarPaneStack.expandableContainers.get('sources.domBreakpoints');
+  const domBreakpointContainer = self.UI.panels.sources.sidebarPaneStack.expandableContainers.get('sources.domBreakpoints');
   await domBreakpointContainer.expand();
 
   TestRunner.addResult('Setting DOM breakpoints.');

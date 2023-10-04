@@ -10,7 +10,7 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
   TestRunner.addResult('Tests accessibility of Tree outline sidepane in Application Panel.');
 
   await TestRunner.showPanel('resources');
-  const applicationSidebar = UI.panels.resources.panelSidebarElement();
+  const applicationSidebar = self.UI.panels.resources.panelSidebarElement();
   await AxeCoreTestRunner.runValidation(applicationSidebar);
   TestRunner.completeTest();
 })();

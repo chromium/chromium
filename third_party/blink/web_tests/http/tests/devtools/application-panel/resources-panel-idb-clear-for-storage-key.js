@@ -18,7 +18,7 @@ import * as Common from 'devtools/core/common/common.js';
   await TestRunner.showPanel('resources');
 
   const model = TestRunner.mainTarget.model(Resources.IndexedDBModel);
-  const view = UI.panels.resources;
+  const view = self.UI.panels.resources;
 
   function createIndexedDBInMainFrame(callback) {
     var mainFrameId = TestRunner.resourceTreeModel.mainFrame.id;
@@ -42,7 +42,7 @@ import * as Common from 'devtools/core/common/common.js';
 
   TestRunner.addResult('Create IndexedDB in main frame');
   await new Promise(createIndexedDBInMainFrame);
-  await TestRunner.addSnifferPromise(UI.panels.resources.sidebar.indexedDBListTreeElement, 'indexedDBLoadedForTest');
+  await TestRunner.addSnifferPromise(self.UI.panels.resources.sidebar.indexedDBListTreeElement, 'indexedDBLoadedForTest');
   dumpDatabases();
 
   TestRunner.addResult('Removing bogus security origin...');

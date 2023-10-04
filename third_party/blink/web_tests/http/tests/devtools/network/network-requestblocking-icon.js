@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(
@@ -34,7 +35,7 @@ import {TestRunner} from 'test_runner';
   TestRunner.completeTest();
 
   function dumpIconResult() {
-    const icons = UI.inspectorView.tabbedPane.tabsElement.getElementsByTagName('devtools-icon');
+    const icons = UI.InspectorView.InspectorView.instance().tabbedPane.tabsElement.getElementsByTagName('devtools-icon');
     const warnings = [...icons].filter(icon => icon.data.iconName === 'warning-filled');
     TestRunner.addResult('Is blocking: ' + SDK.multitargetNetworkManager.isBlocking());
     TestRunner.addResult(Boolean(warnings.length) ? 'Has Icon' : 'Does Not Have Icon');

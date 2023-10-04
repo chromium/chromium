@@ -32,7 +32,7 @@ import * as Common from 'devtools/core/common/common.js';
   var databaseId;
 
   function waitRefreshDatabase() {
-    var view = UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0].view;
+    var view = self.UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0].view;
 
     view.getComponent().refreshDatabaseButtonClicked();
     return indexedDBModel.once(Resources.IndexedDBModel.Events.DatabaseLoaded);
@@ -61,7 +61,7 @@ import * as Common from 'devtools/core/common/common.js';
       Common.EventTarget.removeEventListeners([event]);
       callback();
     });
-    UI.panels.resources.sidebar.indexedDBListTreeElement.refreshIndexedDB();
+    self.UI.panels.resources.sidebar.indexedDBListTreeElement.refreshIndexedDB();
   }
 
   // Initial tree
@@ -70,7 +70,7 @@ import * as Common from 'devtools/core/common/common.js';
   // Create database
   ApplicationTestRunner.createDatabaseAsync(databaseName);
   await new Promise(waitDatabaseAdded);
-  var idbDatabaseTreeElement = UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
+  var idbDatabaseTreeElement = self.UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
   databaseId = idbDatabaseTreeElement.databaseId;
   TestRunner.addResult('Created database.');
   ApplicationTestRunner.dumpIndexedDBTree();

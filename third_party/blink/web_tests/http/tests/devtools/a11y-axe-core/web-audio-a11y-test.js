@@ -4,13 +4,14 @@
 
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(
       'Tests accessibility in the web audio tool using the axe-core linter.');
 
-  await UI.viewManager.showView('web-audio');
-  const widget = await UI.viewManager.view('web-audio').widget();
+  await UI.ViewManager.ViewManager.instance().showView('web-audio');
+  const widget = await UI.ViewManager.ViewManager.instance().view('web-audio').widget();
 
   await AxeCoreTestRunner.runValidation(widget.element);
   TestRunner.completeTest();

@@ -8,7 +8,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Common from 'devtools/core/common/common.js';
-import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests Application Panel preview for resources of different types.\n`);
@@ -41,11 +41,11 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
       [SourceFrame.ResourceSourceFrame, 'source'], [SourceFrame.ImageView, 'image'], [SourceFrame.JSONView, 'json']
     ]);
 
-    var view = UI.panels.resources;
+    var view = self.UI.panels.resources;
     TestRunner.addResult(label);
     dump(view.sidebar.sidebarTree.rootElement(), '');
     var visibleView = view.visibleView;
-    if (visibleView instanceof UIModule.SearchableView.SearchableView)
+    if (visibleView instanceof UI.SearchableView.SearchableView)
       visibleView = visibleView.children()[0];
     var typeLabel = 'unknown';
     for (var type of types) {
@@ -76,7 +76,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
     dumpCurrentState('Revealed ' + name + ':');
   }
 
-  await UI.viewManager.showView('resources');
+  await UI.ViewManager.ViewManager.instance().showView('resources');
   dumpCurrentState('Initial state:');
   await revealResourceWithDisplayName('json-value.js');
   await revealResourceWithDisplayName('image.png');

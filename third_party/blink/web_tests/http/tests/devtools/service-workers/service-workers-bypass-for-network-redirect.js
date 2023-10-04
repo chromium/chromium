@@ -7,6 +7,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests "Bypass for network" checkbox with redirection doesn't cause crash.\n`);
@@ -21,7 +22,7 @@ import * as Common from 'devtools/core/common/common.js';
       'bypass-for-network-redirect.php';
   const frameId = 'frame_id';
 
-  UI.inspectorView.showPanel('sources')
+  UI.InspectorView.InspectorView.instance().showPanel('sources')
       .then(function() {
         Common.Settings.settingForTest('bypassServiceWorker').set(true);
         let callback;

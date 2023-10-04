@@ -7,6 +7,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests Application Panel response to a main frame navigation.\n`);
@@ -37,7 +38,7 @@ import * as Common from 'devtools/core/common/common.js';
   }
 
   function dumpCurrentState(label) {
-    var view = UI.panels.resources;
+    var view = self.UI.panels.resources;
     TestRunner.addResult(label);
     dump(view.sidebar.sidebarTree.rootElement(), '');
     var path = [];
@@ -50,8 +51,8 @@ import * as Common from 'devtools/core/common/common.js';
   }
 
   await new Promise(createIndexedDB);
-  await UI.viewManager.showView('resources');
-  UI.panels.resources.sidebar.cookieListTreeElement.firstChild().select(false, true);
+  await UI.ViewManager.ViewManager.instance().showView('resources');
+  self.UI.panels.resources.sidebar.cookieListTreeElement.firstChild().select(false, true);
   dumpCurrentState('Initial state:');
   await TestRunner.reloadPagePromise();
   dumpCurrentState('After navigation:');

@@ -6,7 +6,8 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
-import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Verify that inline stylesheets do not appear in navigator.\n`);
@@ -24,11 +25,11 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
       }
   `);
 
-  Promise.all([UI.inspectorView.showPanel('sources'), TestRunner.evaluateInPageAnonymously('injectStyleSheet()')])
+  Promise.all([UI.InspectorView.InspectorView.instance().showPanel('sources'), TestRunner.evaluateInPageAnonymously('injectStyleSheet()')])
       .then(onInjected);
 
   function onInjected() {
-    var sourcesNavigator = new SourcesModule.SourcesNavigator.NetworkNavigatorView();
+    var sourcesNavigator = new Sources.SourcesNavigator.NetworkNavigatorView();
     SourcesTestRunner.dumpNavigatorView(sourcesNavigator);
     TestRunner.completeTest();
   }

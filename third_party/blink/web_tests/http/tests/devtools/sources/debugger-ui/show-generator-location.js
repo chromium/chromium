@@ -33,7 +33,7 @@ import * as Common from 'devtools/core/common/common.js';
       var iterClosed = forward(gen(), 4);
   `);
 
-  var panel = UI.panels.sources;
+  var panel = self.UI.panels.sources;
 
   async function performStandardTestCase(pageExpression, next) {
     TestRunner.addSniffer(panel, 'showUISourceCode', showUISourceCodeHook);

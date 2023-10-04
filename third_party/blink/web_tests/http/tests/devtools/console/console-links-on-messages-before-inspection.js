@@ -6,7 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
-import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(
@@ -52,10 +52,10 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
     TestRunner.completeTest();
   };
 
-  UI.inspectorView.tabbedPane.addEventListener(UIModule.TabbedPane.Events.TabSelected, panelChanged);
+  UI.InspectorView.InspectorView.instance().tabbedPane.addEventListener(UI.TabbedPane.Events.TabSelected, panelChanged);
 
   function panelChanged() {
-    TestRunner.addResult('Panel ' + UI.inspectorView.tabbedPane.currentTab.id + ' was opened');
+    TestRunner.addResult('Panel ' + UI.InspectorView.InspectorView.instance().tabbedPane.currentTab.id + ' was opened');
     TestRunner.completeTest();
   }
 })();

@@ -4,12 +4,13 @@
 
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult('Tests accessibility in the settings tool locations pane using the axe-core linter.');
 
-  await UI.viewManager.showView('emulation-locations');
-  const locationsWidget = await UI.viewManager.view('emulation-locations').widget();
+  await UI.ViewManager.ViewManager.instance().showView('emulation-locations');
+  const locationsWidget = await UI.ViewManager.ViewManager.instance().view('emulation-locations').widget();
 
   async function testAddLocation() {
     const addLocationButton = locationsWidget.defaultFocusedElement;

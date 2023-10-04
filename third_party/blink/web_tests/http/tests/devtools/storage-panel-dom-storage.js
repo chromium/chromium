@@ -53,11 +53,11 @@ import {ApplicationTestRunner} from 'application_test_runner';
       TestRunner.completeTest();
       return;
     }
-    UI.panels.resources.showDOMStorage(storage);
+    self.UI.panels.resources.showDOMStorage(storage);
     TestRunner.addResult('Did show: ' + name(storage));
     TestRunner.deprecatedRunAfterPendingDispatches(function() {
       TestRunner.addResult(name(storage) + ' content: ');
-      var view = UI.panels.resources.domStorageView;
+      var view = self.UI.panels.resources.domStorageView;
       dumpDataGridContent(view.dataGrid);
       TestRunner.deprecatedRunAfterPendingDispatches(() => testStorageInView(storages));
     });

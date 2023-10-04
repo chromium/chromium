@@ -20,7 +20,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 
   async function injectMockProfile(callback) {
     var heapProfilerModel = TestRunner.mainTarget.model(SDK.HeapProfilerModel.HeapProfilerModel);
-    var panel = UI.panels.heap_profiler;
+    var panel = self.UI.panels.heap_profiler;
     panel.reset();
 
     var profileType = ProfilerModule.ProfileTypeRegistry.instance.heapSnapshotProfileType;
@@ -85,7 +85,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
     },
 
     function heapSnapshotLoadFromFileTest(next) {
-      var panel = UI.panels.heap_profiler;
+      var panel = self.UI.panels.heap_profiler;
       var file = new File(
           [sourceStringified], 'mock.heapsnapshot', {type: 'text/plain'});
       TestRunner.addSniffer(

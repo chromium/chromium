@@ -4,6 +4,7 @@
 
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests that animation with negative start delay gets added.\n`);
@@ -29,7 +30,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     return 50;
   };
 
-  await UI.viewManager.showView('animations');
+  await UI.ViewManager.ViewManager.instance().showView('animations');
   var timeline = Animation.AnimationTimeline.instance();
   TestRunner.evaluateInPage('startAnimation()');
   ElementsTestRunner.waitForAnimationAdded(step2);

@@ -49,10 +49,10 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
     function childrenCallback(children) {
       var shadowDiv = children[0];
       TestRunner.addResult('User-agent shadow DOM hidden:');
-      UI.panels.elements.revealAndSelectNode(shadowDiv).then(() => {
+      self.UI.panels.elements.revealAndSelectNode(shadowDiv).then(() => {
         Common.Settings.settingForTest('showUAShadowDOM').set(true);
         TestRunner.addResult('User-agent shadow DOM shown:');
-        UI.panels.elements.revealAndSelectNode(shadowDiv);
+        self.UI.panels.elements.revealAndSelectNode(shadowDiv);
       });
     }
   });

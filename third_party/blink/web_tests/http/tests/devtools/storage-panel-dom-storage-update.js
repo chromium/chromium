@@ -71,8 +71,8 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
       TestRunner.assertTrue(!!storage, 'Local storage not found.');
 
-      UI.panels.resources.showDOMStorage(storage);
-      view = UI.panels.resources.domStorageView;
+      self.UI.panels.resources.showDOMStorage(storage);
+      view = self.UI.panels.resources.domStorageView;
       TestRunner.addSniffer(view, 'showDOMStorageItems', viewUpdated);
     },
 

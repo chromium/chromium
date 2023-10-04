@@ -4,6 +4,7 @@
 
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   const locationsToTest =
@@ -29,8 +30,8 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
 
   async function loadViewAndTestElementViolations(view) {
     TestRunner.addResult(`Tests accessibility in the ${view} view using the axe-core linter.`);
-    await UI.viewManager.showView(view);
-    const widget = await UI.viewManager.view(view).widget();
+    await UI.ViewManager.ViewManager.instance().showView(view);
+    const widget = await UI.ViewManager.ViewManager.instance().view(view).widget();
     const ruleset = view === 'performance.monitor' ? NO_SCROLLABLE_REGION_FOCUSABLE_RULESET : {};
     await AxeCoreTestRunner.runValidation(widget.element, ruleset);
   }

@@ -7,7 +7,7 @@ import {TestRunner} from 'test_runner';
 function dumpPreviewPanel() {
   TestRunner.addResult('Panel view:');
 
-  const treeElement = UI.panels.resources.sidebar.backgroundFetchTreeElement;
+  const treeElement = self.UI.panels.resources.sidebar.backgroundFetchTreeElement;
   treeElement.onselect(false);
 
   const preview = treeElement.view.preview;
@@ -26,7 +26,7 @@ function dumpPreviewPanel() {
 };
 
 async function toggleRecord(model) {
-  const treeElement = UI.panels.resources.sidebar.backgroundFetchTreeElement;
+  const treeElement = self.UI.panels.resources.sidebar.backgroundFetchTreeElement;
   treeElement.onselect(false);
 
   // Simulate click.
@@ -79,14 +79,14 @@ async function toggleRecord(model) {
   });
   dumpPreviewPanel();
 
-  const dataGrid = UI.panels.resources.sidebar.backgroundFetchTreeElement.view.dataGrid;
+  const dataGrid = self.UI.panels.resources.sidebar.backgroundFetchTreeElement.view.dataGrid;
   dataGrid.rootNode().children[0].select();
   dumpPreviewPanel();
   dataGrid.rootNode().children[1].select();
   dumpPreviewPanel();
 
   // Simulate clicking the clear button.
-  UI.panels.resources.sidebar.backgroundFetchTreeElement.view.clearEvents();
+  self.UI.panels.resources.sidebar.backgroundFetchTreeElement.view.clearEvents();
   dumpPreviewPanel();
 
   TestRunner.completeTest();

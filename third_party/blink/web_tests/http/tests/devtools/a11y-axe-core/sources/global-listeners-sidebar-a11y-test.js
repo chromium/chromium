@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   await TestRunner.showPanel('sources');
@@ -13,7 +14,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
   TestRunner.addResult('Adding global listener.');
   await TestRunner.evaluateInPagePromise('window.addEventListener(\'touchstart\', () => console.log);');
-  await UI.viewManager.showView('sources.globalListeners');
+  await UI.ViewManager.ViewManager.instance().showView('sources.globalListeners');
   const globalListenersPane = BrowserDebugger.ObjectEventListenersSidebarPane.instance();
   const eventListenersView = globalListenersPane.eventListenersView;
 

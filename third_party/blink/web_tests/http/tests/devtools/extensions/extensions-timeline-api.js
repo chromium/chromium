@@ -6,7 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ExtensionsTestRunner} from 'extensions_test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
-import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
+import * as Timeline from 'devtools/panels/timeline/timeline.js';
 
 (async function() {
   await TestRunner.showPanel('timeline');
@@ -14,8 +14,8 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
   TestRunner.enableTimelineExtensionAndStart = function(callback) {
     const traceProviders = Extensions.extensionServer.traceProviders();
     const provider = traceProviders[traceProviders.length - 1];
-    const timelinePanel = UI.panels.timeline;
-    const setting = TimelineModule.TimelinePanel.TimelinePanel.settingForTraceProvider(provider);
+    const timelinePanel = self.UI.panels.timeline;
+    const setting = Timeline.TimelinePanel.TimelinePanel.settingForTraceProvider(provider);
     setting.set(true);
     TestRunner.addResult(`Provider short display name: ${provider.shortDisplayName()}`);
     TestRunner.addResult(`Provider long display name: ${provider.longDisplayName()}`);

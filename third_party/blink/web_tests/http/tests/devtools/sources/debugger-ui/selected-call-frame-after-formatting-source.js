@@ -27,7 +27,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   `);
 
   SourcesTestRunner.startDebuggerTest(step1);
-  var panel = UI.panels.sources;
+  var panel = self.UI.panels.sources;
   var sourceFrame;
 
   function step1() {

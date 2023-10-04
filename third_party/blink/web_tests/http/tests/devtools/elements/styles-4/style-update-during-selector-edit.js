@@ -38,7 +38,7 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
   }
 
   function rebuildUpdate() {
-    if (UI.panels.elements.stylesWidget.node === treeOutline.selectedDOMNode())
+    if (self.UI.panels.elements.stylesWidget.node === treeOutline.selectedDOMNode())
       seenRebuildUpdate = true;
   }
 
@@ -46,7 +46,7 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
     TestRunner.addSniffer(ElementsModule.StylesSidebarPane.StylesSidebarPane.prototype, 'doUpdate', rebuildUpdate);
     TestRunner.domModel.addEventListener(SDK.DOMModel.Events.AttrModified, attributeChanged, this);
     // Click "Add new rule".
-    UI.panels.elements.stylesWidget.contentElement.querySelector('.styles-pane-toolbar')
+    self.UI.panels.elements.stylesWidget.contentElement.querySelector('.styles-pane-toolbar')
         .shadowRoot.querySelector('.largeicon-add')
         .click();
     TestRunner.evaluateInPage('addStyleClass()', step2);

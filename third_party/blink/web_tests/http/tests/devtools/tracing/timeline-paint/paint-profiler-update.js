@@ -37,7 +37,7 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
       }
   `);
 
-  const panel = UI.panels.timeline;
+  const panel = self.UI.panels.timeline;
   panel.captureLayersAndPicturesSetting.set(true);
   panel.onModeChanged();
 

@@ -12,7 +12,7 @@ import {NetworkTestRunner} from 'network_test_runner';
   NetworkTestRunner.recordNetwork();
 
   const wsUrl = 'ws://localhost:8880/echo';
-  const networkLogView = UI.panels.network.networkLogView;
+  const networkLogView = self.UI.panels.network.networkLogView;
   const dataGrid = networkLogView.dataGrid;
   await TestRunner.evaluateInPagePromise('ws = new WebSocket(\'' + wsUrl + '\')');
   var websocketRequest = NetworkTestRunner.findRequestsByURLPattern(createPlainTextSearchRegex(wsUrl))[0];

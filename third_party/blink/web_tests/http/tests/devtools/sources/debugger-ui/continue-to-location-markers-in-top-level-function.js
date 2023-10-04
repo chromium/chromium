@@ -42,7 +42,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
   }
 
   function step2() {
-    var currentFrame = UI.panels.sources.visibleView;
+    var currentFrame = self.UI.panels.sources.visibleView;
     var debuggerPlugin = SourcesTestRunner.debuggerPlugin(currentFrame);
     var decorations = debuggerPlugin._continueToLocationDecorations;
     var lines = [];

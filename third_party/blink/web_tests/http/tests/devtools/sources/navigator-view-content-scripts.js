@@ -5,7 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
-import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(
@@ -13,8 +14,8 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
   await TestRunner.showPanel('sources');
 
   var rootURL = 'http://localhost:8080/LayoutTests/inspector/debugger/';
-  var sourcesNavigatorView = new SourcesModule.SourcesNavigator.NetworkNavigatorView();
-  sourcesNavigatorView.show(UI.inspectorView.element);
+  var sourcesNavigatorView = new Sources.SourcesNavigator.NetworkNavigatorView();
+  sourcesNavigatorView.show(UI.InspectorView.InspectorView.instance().element);
 
   TestRunner.addResult('\n\n================================================');
   TestRunner.addResult('Adding urls');

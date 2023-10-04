@@ -4,13 +4,14 @@
 
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult('Tests accessibility in Performance landing page using the axe-core linter.');
 
   const view = 'timeline';
-  await UI.viewManager.showView(view);
-  const widget = await UI.viewManager.view(view).widget();
+  await UI.ViewManager.ViewManager.instance().showView(view);
+  const widget = await UI.ViewManager.ViewManager.instance().view(view).widget();
   await AxeCoreTestRunner.runValidation(widget.element);
 
   TestRunner.completeTest();

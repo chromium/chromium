@@ -10,7 +10,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
       'Tests accessibility in DOM breakpoints using the axe-core linter.');
 
   await TestRunner.showPanel('elements');
-  UI.panels.elements.sidebarPaneView.tabbedPane().selectTab('elements.domBreakpoints', true);
+  self.UI.panels.elements.sidebarPaneView.tabbedPane().selectTab('elements.domBreakpoints', true);
 
   await TestRunner.navigatePromise(
       '../../sources/debugger-breakpoints/resources/dom-breakpoints.html');
@@ -23,7 +23,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   TestRunner.addResult(
       'Test DOM breakpoint container with multiple breakpoints.');
 
-  const widget = UI.panels.elements.sidebarPaneView.tabbedPane().visibleView;
+  const widget = self.UI.panels.elements.sidebarPaneView.tabbedPane().visibleView;
   await AxeCoreTestRunner.runValidation(widget.element);
   TestRunner.completeTest();
 })();

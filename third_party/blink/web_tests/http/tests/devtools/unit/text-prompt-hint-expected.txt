@@ -1,4 +1,4 @@
-Tests that the hint displays properly on a UIModule.TextPrompt.TextPrompt with autocomplete.
+Tests that the hint displays properly on a UI.TextPrompt.TextPrompt with autocomplete.
 Requesting completions
 Text:testT
 TextWithCurrentSuggestion:testT

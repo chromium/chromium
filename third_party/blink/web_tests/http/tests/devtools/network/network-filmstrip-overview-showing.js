@@ -13,7 +13,7 @@ import * as Common from 'devtools/core/common/common.js';
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();
-  var networkPanel = UI.panels.network;
+  var networkPanel = self.UI.panels.network;
   var showOverviewSetting = Common.Settings.Settings.instance().createSetting('networkLogShowOverview', true);
   var showFilmstripSetting = Common.Settings.Settings.instance().createSetting('networkRecordFilmStripSetting', false);
 

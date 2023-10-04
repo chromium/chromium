@@ -8,6 +8,7 @@ import {ExtensionsTestRunner} from 'extensions_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests resource-related methods of WebInspector extension API\n`);
@@ -15,7 +16,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   await TestRunner.loadLegacyModule('components');
 
   TestRunner.clickOnURL = async function() {
-    await UI.viewManager.showView("console").then(() => {
+    await UI.ViewManager.ViewManager.instance().showView("console").then(() => {
       Console.ConsoleView.instance().updateMessageList();
 
       // Trigger link creation so we can properly await pending live location updates. Needed so we can

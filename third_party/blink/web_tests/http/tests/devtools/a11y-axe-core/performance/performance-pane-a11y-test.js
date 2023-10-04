@@ -43,7 +43,7 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
   // create dummy data for test
   const model = await PerformanceTestRunner.createPerformanceModelWithEvents(testData);
 
-  const detailsView = UI.panels.timeline.flameChart.detailsView;
+  const detailsView = self.UI.panels.timeline.flameChart.detailsView;
 
   async function testDetailsView() {
     TestRunner.addResult('Tests accessibility in performance Details view using the axe-core linter');
