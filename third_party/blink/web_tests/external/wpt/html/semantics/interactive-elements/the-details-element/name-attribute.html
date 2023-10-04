@@ -153,8 +153,8 @@ promise_test(async t => {
   if (mutation_event_received_ids.length == 0) {
     // ok if mutation events are not supported
   } else {
-    assert_array_equals(mutation_event_received_ids, ["e0", "e1"],
-                        "removal event followed by addition event");
+    assert_array_equals(mutation_event_received_ids, ["e1"],
+                        "mutation events received only for open attribute mutation and not for closing other element");
   }
   assert_element_states(elements, [0, 1, 0, 0], "states after mutation");
   assert_array_equals(toggle_event_received_ids, [], "toggle events received before awaiting promises");
@@ -205,8 +205,8 @@ promise_test(async t => {
   assert_array_equals(received_ids, []);
   assert_element_states(elements, [1, 0, 0], "states before mutation");
   elements[1].open = true;
-  assert_array_equals(received_ids, ["e0", "e1"],
-                      "removal events received in tree order, followed by addition event, despite changes to name during mutation event");
+  assert_array_equals(received_ids, ["e1"],
+                      "mutation events received only for open attribute mutation and not for closing other element");
   assert_element_states(elements, [0, 1, 0], "states after mutation");
 }, "interaction of open attribute changes with mutation events");
 
@@ -336,14 +336,47 @@ promise_test(async t => {
                    document.getElementById("e1"),
                    document.getElementById("e2") ];
 
+  let mutation_received_ids = [];
+  let listener = event => {
+    mutation_received_ids.push(event.target.id);
+  };
+  for (let element of elements) {
+    element.addEventListener("DOMSubtreeModified", listener);
+  }
+
   assert_element_states(elements, [1, 0, 1], "states before first mutation");
+  assert_array_equals(mutation_received_ids, [], "mutation events received before first mutation");
   elements[2].name = "a";
   assert_element_states(elements, [1, 0, 0], "states after first mutation");
+  if (mutation_received_ids.length != 0) {
+    // OK to not support mutation events, or to send DOMSubtreeModified
+    // only for attribute addition/removal (open) but not for attribute
+    // change (name)
+    assert_array_equals(mutation_received_ids, ["e2"], "mutation events received after first mutation");
+  }
   elements[0].name = "c";
   elements[2].open = true;
   assert_element_states(elements, [1, 0, 1], "states before second mutation");
+  if (mutation_received_ids.length != 0) { // OK to not support mutation events
+    if (mutation_received_ids.length == 1) {
+      // OK to receive DOMSubtreeModified for attribute addition/removal
+      // (open) but not for attribute change (name)
+      assert_array_equals(mutation_received_ids, ["e2"], "mutation events received before second mutation");
+    } else {
+      assert_array_equals(mutation_received_ids, ["e2", "e0", "e2"], "mutation events received before second mutation");
+    }
+  }
   elements[0].name = "a";
   assert_element_states(elements, [0, 0, 1], "states after second mutation");
+  if (mutation_received_ids.length != 0) { // OK to not support mutation events
+    if (mutation_received_ids.length == 1) {
+      // OK to receive DOMSubtreeModified for attribute addition/removal
+      // (open) but not for attribute change (name)
+      assert_array_equals(mutation_received_ids, ["e2"], "mutation events received before second mutation");
+    } else {
+      assert_array_equals(mutation_received_ids, ["e2", "e0", "e2", "e0"], "mutation events received after second mutation");
+    }
+  }
 }, "handling of name attribute changes");
 
 promise_test(async t => {
@@ -392,28 +425,45 @@ promise_test(async t => {
     });
   };
 
+  let track_mutations = (element) => {
+    let result = { count: 0 };
+    let listener = event => {
+      ++result.count;
+    };
+    element.addEventListener("DOMSubtreeModified", listener);
+    return result;
+  }
+
   await expect_opening(watch_e0);
 
   // Test appending an open element in the group.
   let new1 = make_details();
+  let mutations1 = track_mutations(new1);
   let watch_new1 = new EventWatcher(t, new1, ['toggle']);
   new1.open = true;
+  assert_in_array(mutations1.count, [0, 1], "mutation events count before inserting new1");
   await expect_opening(watch_new1);
   container.appendChild(new1);
   await expect_closing(watch_new1);
+  assert_in_array(mutations1.count, [0, 1], "mutation events count after inserting new1");
 
   // Test appending a closed element in the group.
   let new2 = make_details();
+  let mutations2 = track_mutations(new2);
   let watch_new2 = new EventWatcher(t, new2, ['toggle']);
   container.appendChild(new2);
+  assert_equals(mutations2.count, 0, "mutation events count after inserting new2");
 
   // Test inserting an open element at the start of the group.
   let new3 = make_details();
+  let mutations3 = track_mutations(new3);
   new3.open = true; // this time do this before creating the EventWatcher
   let watch_new3 = new EventWatcher(t, new3, ['toggle']);
+  assert_in_array(mutations3.count, [0, 1], "mutation events count before inserting new3");
   await expect_opening(watch_new3);
   container.insertBefore(new3, elements[0]);
   await expect_closing(watch_new3);
+  assert_in_array(mutations3.count, [0, 1], "mutation events count after inserting new3");
 }, "handling of insertion of elements into group");
 
 </script>

@@ -214,6 +214,8 @@ void HTMLDetailsElement::ParseAttribute(
       content->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
       content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
 
+      // https://html.spec.whatwg.org/multipage/interactive-elements.html#ensure-details-exclusivity-by-closing-other-elements-if-needed
+      //
       // The name attribute links multiple details elements into an
       // exclusive accordion.  So if this one has a name, close the
       // other ones with the same name.
@@ -224,9 +226,10 @@ void HTMLDetailsElement::ParseAttribute(
       if (RuntimeEnabledFeatures::AccordionPatternEnabled() &&
           !GetName().empty() &&
           params.reason == AttributeModificationReason::kDirectly) {
-        // It's important that we have a copy of the set of details
-        // elements, because the setAttribute call can trigger mutation
-        // events that change the set.
+        // Don't fire mutation events for any changes to the open attribute
+        // that this causes.
+        MutationEventSuppressionScope scope(GetDocument());
+
         HeapVector<Member<HTMLDetailsElement>> details_with_name(
             OtherElementsInNameGroup());
         for (HTMLDetailsElement* other_details : details_with_name) {
@@ -261,22 +264,21 @@ Node::InsertionNotificationRequest HTMLDetailsElement::InsertedInto(
   Node::InsertionNotificationRequest result =
       HTMLElement::InsertedInto(insertion_point);
 
-  {
-    // Don't fire mutation events for any changes to the open attribute
-    // that this causes.
-    MutationEventSuppressionScope scope(GetDocument());
-
-    MaybeCloseForExclusivity();
-  }
+  MaybeCloseForExclusivity();
 
   return result;
 }
 
+// https://html.spec.whatwg.org/multipage/C#ensure-details-exclusivity-by-closing-the-given-element-if-needed
 void HTMLDetailsElement::MaybeCloseForExclusivity() {
   if (!RuntimeEnabledFeatures::AccordionPatternEnabled() || GetName().empty() ||
       !is_open_) {
     return;
   }
+
+  // Don't fire mutation events for any changes to the open attribute
+  // that this causes.
+  MutationEventSuppressionScope scope(GetDocument());
 
   DCHECK(RuntimeEnabledFeatures::OptimizedNodeCloneOrderEnabled())
       << "OptimizedNodeCloneOrder should ship before AccordionPattern";
