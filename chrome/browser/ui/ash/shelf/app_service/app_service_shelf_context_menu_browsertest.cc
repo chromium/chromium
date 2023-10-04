@@ -27,11 +27,11 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/features.h"
@@ -53,7 +53,7 @@ class AppServiceShelfContextMenuBrowserTest : public InProcessBrowserTest {
   };
 
   absl::optional<MenuSection> GetContextMenuSectionForAppCommand(
-      const web_app::AppId& app_id,
+      const webapps::AppId& app_id,
       int command_id) {
     MenuSection result;
     ash::ShelfModel* shelf_model = ash::ShelfModel::Get();
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
   auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_install_info->start_url = GURL("https://example.org");
   web_app_install_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
   // Activate open in window menu item.
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
   auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_install_info->start_url = GURL("https://example.org");
   web_app_install_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
   // Set app to open in tabbed window.
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
 
   auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_install_info->start_url = GURL("https://example.org");
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
   // Set app to open in browser tab.
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
   Profile* profile = browser()->profile();
   auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_install_info->start_url = GURL("https://example.org");
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
   absl::optional<MenuSection> menu_section =
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuTabbedWebAppBrowserTest,
   web_app_install_info->start_url = GURL("https://example.org");
   web_app_install_info->display_mode = blink::mojom::DisplayMode::kStandalone;
   web_app_install_info->display_override = {blink::mojom::DisplayMode::kTabbed};
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
   // Select the "Open in window" menu item.
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuNonTabbedWebAppBrowserTest,
   web_app_install_info->start_url = GURL("https://example.org");
   web_app_install_info->display_mode = blink::mojom::DisplayMode::kStandalone;
   web_app_install_info->display_override = {blink::mojom::DisplayMode::kTabbed};
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
   // Select the "Open in window" menu item.
