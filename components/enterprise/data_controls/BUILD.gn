@@ -25,6 +25,8 @@ source_set("data_controls") {
     "data_controls_policy_handler.h",
     "prefs.cc",
     "prefs.h",
+    "rule.cc",
+    "rule.h",
   ]
 
   deps = [
@@ -50,6 +52,7 @@ source_set("unit_tests") {
   sources = [
     "and_condition_unittest.cc",
     "attributes_condition_unittest.cc",
+    "rule_unittest.cc",
   ]
 
   deps = [

@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "components/enterprise/data_controls/rule.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
@@ -19,37 +20,8 @@ namespace policy {
 // can be queried anytime about the restrictions set by the policy.
 class DlpRulesManagerBase : public KeyedService {
  public:
-  // A restriction that can be set by DataLeakPreventionRulesList policy.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // When new entries are added, EnterpriseDlpPolicyRestriction enum in
-  // histograms/enums.xml should be updated.
-  enum class Restriction {
-    kUnknownRestriction = 0,
-    kClipboard = 1,      // Restricts sharing the data via clipboard and
-                         // drag-n-drop.
-    kScreenshot = 2,     // Restricts taking screenshots and video captures of
-                         // confidential screen content.
-    kPrinting = 3,       // Restricts printing confidential screen content.
-    kPrivacyScreen = 4,  // Enforces the Eprivacy screen when there's
-                         // confidential content on the screen.
-    kScreenShare = 5,    // Restricts screen sharing of confidential content
-                         // through 3P extensions/websites.
-    kFiles = 6,          // Restricts file operations, like copying, uploading
-                         // or opening in an app.
-    kMaxValue = kFiles
-  };
-
-  // The enforcement level of the restriction set by DataLeakPreventionRulesList
-  // policy. Should be listed in the order of increased priority.
-  enum class Level {
-    kNotSet = 0,  // Restriction level is not set.
-    kReport = 1,  // Restriction level to only report on every action.
-    kWarn = 2,    // Restriction level to warn the user on every action.
-    kBlock = 3,   // Restriction level to block the user on every action.
-    kAllow = 4,   // Restriction level to allow (no restriction).
-    kMaxValue = kAllow
-  };
+  using Restriction = data_controls::Rule::Restriction;
+  using Level = data_controls::Rule::Level;
 
   // Represents rule metadata that is used for reporting.
   struct RuleMetadata {

@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, DlpReportingVideoCapture) {
   ASSERT_EQ(events_.size(), 1u);
   EXPECT_THAT(
       events_[0],
-      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyEvent(
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
           kRuleName, kRuleId, policy::DlpRulesManager::Level::kReport)));
 
@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, DlpReportingVideoCapture) {
   ASSERT_EQ(events_.size(), 2u);
   EXPECT_THAT(
       events_[1],
-      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyEvent(
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
           kRuleName, kRuleId, policy::DlpRulesManager::Level::kReport)));
 }
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   ASSERT_EQ(events_.size(), 1u);
   EXPECT_THAT(
       events_[0],
-      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyEvent(
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
           kRuleName, kRuleId, policy::DlpRulesManager::Level::kReport)));
 }
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   ASSERT_EQ(events_.size(), 1u);
   EXPECT_THAT(
       events_[0],
-      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyEvent(
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
           kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
 }
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   ASSERT_EQ(events_.size(), 2u);
   EXPECT_THAT(
       events_[0],
-      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyEvent(
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
           kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
   EXPECT_THAT(
@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_P(CaptureModeParamBrowserTest,
   ASSERT_EQ(events_.size(), 1u);
   EXPECT_THAT(
       events_[0],
-      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyEvent(
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
           kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
 }
@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_P(CaptureModeParamBrowserTest,
   ASSERT_EQ(events_.size(), 1u);
   EXPECT_THAT(
       events_[0],
-      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyEvent(
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
           kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
 }
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_P(CaptureModeParamBrowserTest,
   ASSERT_EQ(events_.size(), 1u);
   EXPECT_THAT(
       events_[0],
-      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyEvent(
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
           kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
 }
@@ -538,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   EXPECT_EQ(events_.size(), 2u);
   EXPECT_THAT(
       events_[0],
-      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyEvent(
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
           kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
   EXPECT_THAT(
@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   ASSERT_EQ(events_.size(), 2u);
   EXPECT_THAT(
       events_[0],
-      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyEvent(
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
           kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
   EXPECT_THAT(
@@ -643,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   ASSERT_EQ(events_.size(), 1u);
   EXPECT_THAT(
       events_[0],
-      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyEvent(
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
           kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
 }
@@ -685,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   ASSERT_EQ(events_.size(), 2u);
   EXPECT_THAT(
       events_[0],
-      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyEvent(
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
           kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
   EXPECT_THAT(
@@ -717,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(events_.size(), 1u);
   EXPECT_THAT(
       events_[0],
-      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyEvent(
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
           kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
 }
@@ -756,7 +756,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(events_.size(), 2u);
   EXPECT_THAT(
       events_[0],
-      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyEvent(
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
           kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
   EXPECT_THAT(
