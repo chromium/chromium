@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 /**
  * Layer over android {@link SharedPreferences}.
@@ -58,25 +57,6 @@ public class SharedPreferencesManager {
             manager = sInstances.get(registry);
             if (manager == null) {
                 manager = new SharedPreferencesManager(registry);
-                sInstances.put(registry, manager);
-            }
-        }
-        return manager;
-    }
-
-    // TODO(crbug.com/1484291): Remove this after ChromeSharedPreferences does not use it anymore.
-    @Deprecated
-    public static SharedPreferencesManager getInstanceForRegistry(
-            PreferenceKeyRegistry registry, Callable<SharedPreferencesManager> factoryMethod) {
-        SharedPreferencesManager manager;
-        synchronized (sInstances) {
-            manager = sInstances.get(registry);
-            if (manager == null) {
-                try {
-                    manager = factoryMethod.call();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
                 sInstances.put(registry, manager);
             }
         }

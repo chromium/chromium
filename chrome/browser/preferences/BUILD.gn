@@ -13,7 +13,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/preferences/DeprecatedChromePreferenceKeys.java",
     "android/java/src/org/chromium/chrome/browser/preferences/LegacyChromePreferenceKeys.java",
     "android/java/src/org/chromium/chrome/browser/preferences/PrefChangeRegistrar.java",
-    "android/java/src/org/chromium/chrome/browser/preferences/SharedPreferencesManager.java",
   ]
 
   public_deps = [ "//base:base_shared_preferences_java" ]
@@ -79,10 +78,7 @@ source_set("android") {
 }
 
 robolectric_library("preferences_junit_tests") {
-  sources = [
-    "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeysTest.java",
-    "android/java/src/org/chromium/chrome/browser/preferences/SharedPreferencesManagerTest.java",
-  ]
+  sources = [ "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeysTest.java" ]
   deps = [
     ":java",
     "//base:base_java",
