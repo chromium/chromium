@@ -19,6 +19,18 @@ config("partition_alloc_implementation") {
   defines = [ "IS_PARTITION_ALLOC_IMPL" ]
 }
 
+# TODO(https://crbug.com/1467773): Split PartitionAlloc into a public and
+# private parts. The public config would include add the "./include" dir and
+# the private config would add the "./src" dir.
+# TODO(https://crbug.com/1467773): Move this config and several target into
+# "../..".
+config("public_includes") {
+  include_dirs = [
+    "..",
+    "$root_gen_dir/" + rebase_path("..", "//"),
+  ]
+}
+
 config("memory_tagging") {
   if (current_cpu == "arm64" && is_clang &&
       (is_linux || is_chromeos || is_android || is_fuchsia)) {
@@ -504,7 +516,7 @@ source_set("allocator_base") {
     ":debugging_buildflags",
     ":partition_alloc_buildflags",
   ]
-
+  public_configs = [ ":public_includes" ]
   configs += [
     ":partition_alloc_implementation",
     "//build/config/compiler:wexit_time_destructors",
@@ -533,6 +545,7 @@ source_set("allocator_shim") {
   sources = []
   deps = [ ":allocator_base" ]
   all_dependent_configs = []
+  public_configs = [ ":public_includes" ]
   configs += [
     ":partition_alloc_implementation",
     "//build/config/compiler:wexit_time_destructors",
@@ -640,6 +653,7 @@ source_set("raw_ptr") {
     "pointers/raw_ref.h",
   ]
   sources = []
+  public_configs = [ ":public_includes" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (enable_backup_ref_ptr_support) {
@@ -791,6 +805,7 @@ group("buildflags") {
     ":partition_alloc_buildflags",
     ":raw_ptr_buildflags",
   ]
+  public_configs = [ ":public_includes" ]
 }
 # TODO(crbug.com/1151236): After making partition_alloc a standalone library,
 # move test code here. i.e. test("partition_alloc_tests") { ... } and
