@@ -636,7 +636,7 @@ BASE_FEATURE(kMultiPlaneVideoCaptureSharedImages,
 // initializing and managing streaming sessions, or the legacy implementation.
 BASE_FEATURE(kOpenscreenCastStreamingSession,
              "OpenscreenCastStreamingSession",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the Mirroring Service will fetch, analyze, and store
 // information on the quality of the session using RTCP logs.

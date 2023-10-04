@@ -23,6 +23,7 @@
 #include "components/mirroring/service/mirroring_features.h"
 #include "components/mirroring/service/receiver_response.h"
 #include "components/mirroring/service/value_util.h"
+#include "media/base/media_switches.h"
 #include "media/capture/video_capture_types.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/net_utility.h"
@@ -116,7 +117,9 @@ class SessionTest : public mojom::ResourceProvider,
                     public mojom::CastMessageChannel,
                     public ::testing::Test {
  public:
-  SessionTest() = default;
+  SessionTest() {
+    feature_list_.InitAndDisableFeature(media::kOpenscreenCastStreamingSession);
+  }
 
   SessionTest(const SessionTest&) = delete;
   SessionTest& operator=(const SessionTest&) = delete;
@@ -505,6 +508,7 @@ class SessionTest : public mojom::ResourceProvider,
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList feature_list_;
   const net::IPEndPoint receiver_endpoint_ =
       media::cast::test::GetFreeLocalPort();
   mojo::Receiver<mojom::ResourceProvider> resource_provider_receiver_{this};

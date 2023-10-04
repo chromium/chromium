@@ -144,9 +144,15 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
                             inbound_channel_.BindNewPipeAndPassReceiver(),
                             error_callback_.Get()),
         rpc_dispatcher_(message_dispatcher_),
-        sink_metadata_(DefaultSinkMetadata()) {}
+        sink_metadata_(DefaultSinkMetadata()) {
+    feature_list_.InitWithFeatureState(media::kOpenscreenCastStreamingSession,
+                                       GetParam());
+  }
+
+  MediaRemoterTest(MediaRemoterTest&&) = delete;
   MediaRemoterTest(const MediaRemoterTest&) = delete;
   MediaRemoterTest& operator=(const MediaRemoterTest&) = delete;
+  MediaRemoterTest& operator=(MediaRemoterTest&&) = delete;
   ~MediaRemoterTest() override { task_environment_.RunUntilIdle(); }
 
  protected:
@@ -198,13 +204,8 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
     Mock::VerifyAndClear(&remoting_source_);
   }
 
-  // Should only be called once per test.
-  void EnableOpenscreenCastStreamingSession() {
-    feature_list_.InitAndEnableFeature(media::kOpenscreenCastStreamingSession);
-  }
-
   // Signals that a remoting streaming session starts successfully.
-  void RemotingStreamingStarted(bool should_use_openscreen_senders) {
+  void RemotingStreamingStarted() {
     ASSERT_TRUE(media_remoter_);
     scoped_refptr<media::cast::CastEnvironment> cast_environment =
         new media::cast::CastEnvironment(
@@ -213,7 +214,7 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
             task_environment_.GetMainThreadTaskRunner(),
             task_environment_.GetMainThreadTaskRunner());
 
-    if (should_use_openscreen_senders) {
+    if (GetParam()) {
       openscreen_test_senders_ = std::make_unique<OpenscreenTestSenders>();
       media_remoter_->StartRpcMessaging(
           cast_environment, std::move(openscreen_test_senders_->audio_sender),
@@ -311,49 +312,37 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
 };
 
 TEST_P(MediaRemoterTest, StartAndStopRemoting) {
-  if (GetParam()) {
-    EnableOpenscreenCastStreamingSession();
-  }
   CreateRemoter();
   StartRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
-  RemotingStreamingStarted(GetParam());
+  RemotingStreamingStarted();
   StartDataStreams(SessionType::AUDIO_AND_VIDEO);
   StopRemoting();
 }
 
 TEST_P(MediaRemoterTest, StartAndStopRemotingAudioOnly) {
-  if (GetParam()) {
-    EnableOpenscreenCastStreamingSession();
-  }
   CreateRemoter();
   StartRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
-  RemotingStreamingStarted(GetParam());
+  RemotingStreamingStarted();
   StartDataStreams(SessionType::AUDIO_ONLY);
   StopRemoting();
 }
 
 TEST_P(MediaRemoterTest, StartAndStopRemotingVideoOnly) {
-  if (GetParam()) {
-    EnableOpenscreenCastStreamingSession();
-  }
   CreateRemoter();
   StartRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
-  RemotingStreamingStarted(GetParam());
+  RemotingStreamingStarted();
   StartDataStreams(SessionType::VIDEO_ONLY);
   StopRemoting();
 }
 
 TEST_P(MediaRemoterTest, StartRemotingWithoutCallingStart) {
-  if (GetParam()) {
-    EnableOpenscreenCastStreamingSession();
-  }
   CreateRemoter();
   // Should fail since we didn't call `StartRemoting().`
   EXPECT_CALL(remoting_source(), OnStarted()).Times(0);
-  RemotingStreamingStarted(GetParam());
+  RemotingStreamingStarted();
 }
 
 TEST_P(MediaRemoterTest, StopRemotingWhileStarting) {
@@ -378,15 +367,12 @@ TEST_P(MediaRemoterTest, RemotingStartFailed) {
 }
 
 TEST_P(MediaRemoterTest, SwitchBetweenMultipleSessions) {
-  if (GetParam()) {
-    EnableOpenscreenCastStreamingSession();
-  }
   CreateRemoter();
 
   // Start a remoting session.
   StartRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
-  RemotingStreamingStarted(GetParam());
+  RemotingStreamingStarted();
   StartDataStreams(SessionType::AUDIO_AND_VIDEO);
 
   // Stop the remoting session and switch to mirroring.
@@ -396,7 +382,7 @@ TEST_P(MediaRemoterTest, SwitchBetweenMultipleSessions) {
   // Switch to remoting again.
   StartRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
-  RemotingStreamingStarted(GetParam());
+  RemotingStreamingStarted();
   StartDataStreams(SessionType::AUDIO_AND_VIDEO);
 
   // Switch to mirroring again.
