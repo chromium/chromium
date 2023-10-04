@@ -1073,10 +1073,15 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public boolean shouldAnimateOnFinish() {
-        return mAnimationBundle != null && getClientPackageName() != null;
+        return getInsecureClientPackageNameForOnFinishAnimation() != null;
     }
 
+    /**
+     * Returns client package name for finishing animation.
+     */
     public String getInsecureClientPackageNameForOnFinishAnimation() {
+        // The package name may come from the insecure info contained in the animation
+        // bundle which won't do any harm in the operation.
         if (mAnimationBundle == null) return null;
         return mAnimationBundle.getString(BUNDLE_PACKAGE_NAME);
     }
