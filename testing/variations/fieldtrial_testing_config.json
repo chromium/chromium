@@ -3732,28 +3732,6 @@
             ]
         }
     ],
-    "ClientSideDetectionRetryLimit": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "RetryTimeMax": "15"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionRetryLimit"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClipboardDeemphasisAndroid": [
         {
             "platforms": [
