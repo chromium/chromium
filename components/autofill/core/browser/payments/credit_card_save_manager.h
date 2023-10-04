@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
@@ -112,8 +113,17 @@ class CreditCardSaveManager {
   bool AttemptToOfferCardLocalSave(const CreditCard& card);
 
   // Begins the process to offer local CVC save to the user. Returns true if the
-  // prompt is shown.
-  bool AttemptToOfferCvcLocalSave(const CreditCard& card);
+  // prompt is shown. `card` is the credit card extracted from the form.
+  virtual bool AttemptToOfferCvcLocalSave(const CreditCard& card);
+
+  // Returns true if CVC local save should be offered to the user. `card` is the
+  // credit card extracted from the form. `credit_card_import_type` is the
+  // credit card type extracted from the form.
+  // TODO(crbug.com/1450749): Update param after resolving duplicate local and
+  // server card issue.
+  virtual bool ShouldOfferCvcLocalSave(
+      const CreditCard& card,
+      FormDataImporter::CreditCardImportType credit_card_import_type);
 
   // Begins the process to offer upload credit card save to the user if the
   // imported card passes all requirements and Google Payments approves.

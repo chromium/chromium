@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
+#include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -176,6 +177,11 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
 FormDataImporter::~FormDataImporter() {
   if (personal_data_manager_)
     personal_data_manager_->RemoveObserver(this);
+}
+
+void FormDataImporter::set_credit_card_save_manager_for_testing(
+    std::unique_ptr<CreditCardSaveManager> credit_card_save_manager) {
+  credit_card_save_manager_ = std::move(credit_card_save_manager);
 }
 
 FormDataImporter::AddressProfileImportCandidate::
@@ -770,9 +776,10 @@ bool FormDataImporter::ProcessExtractedCreditCard(
 
   // Local card migration will not be offered. We check to see if it is valid to
   // offer upload save or local card save, which will happen below if we do not
-  // early return false in this if-statement.
-  if (!ShouldOfferUploadCardOrLocalCardSave(extracted_credit_card,
-                                            is_credit_card_upstream_enabled)) {
+  // early return false in this if-statement. It will also check to see if it is
+  // valid to offer CVC local save.
+  if (!ShouldOfferCreditCardSave(extracted_credit_card,
+                                 is_credit_card_upstream_enabled)) {
     return false;
   }
 
@@ -791,7 +798,15 @@ bool FormDataImporter::ProcessExtractedCreditCard(
         /*uploading_local_card=*/credit_card_import_type_ ==
             CreditCardImportType::kLocalCard);
     return true;
-  };
+  }
+
+  // We should offer CVC local save for local cards.
+  if (credit_card_import_type_ == CreditCardImportType::kLocalCard) {
+    credit_card_save_manager_->AttemptToOfferCvcLocalSave(
+        *extracted_credit_card);
+    return true;
+  }
+
   // If upload save is not allowed, new cards should be saved locally.
   DCHECK(credit_card_import_type_ == CreditCardImportType::kNewCard);
   if (credit_card_save_manager_->AttemptToOfferCardLocalSave(
@@ -1019,7 +1034,7 @@ Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
   return candidate_iban;
 }
 
-bool FormDataImporter::ShouldOfferUploadCardOrLocalCardSave(
+bool FormDataImporter::ShouldOfferCreditCardSave(
     const absl::optional<CreditCard>& extracted_credit_card,
     bool is_credit_card_upload_enabled) {
   // If we have an invalid card in the form, a duplicate field type, or we have
@@ -1036,9 +1051,13 @@ bool FormDataImporter::ShouldOfferUploadCardOrLocalCardSave(
 
   // If we have a local card but credit card upload is not enabled, we do not
   // want to offer upload save as it is disabled and we do not want to offer
-  // local card save as it is already saved as a local card.
+  // local card save as it is already saved as a local card. If CVC local save
+  // should be offered, even if the credit card upload is not enabled, we will
+  // return true and offer CVC local save.
   if (!is_credit_card_upload_enabled &&
-      credit_card_import_type_ == CreditCardImportType::kLocalCard) {
+      credit_card_import_type_ == CreditCardImportType::kLocalCard &&
+      !credit_card_save_manager_->ShouldOfferCvcLocalSave(
+          *extracted_credit_card, credit_card_import_type_)) {
     return false;
   }
 

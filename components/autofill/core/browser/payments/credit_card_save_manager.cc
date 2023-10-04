@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -130,6 +131,31 @@ bool CreditCardSaveManager::AttemptToOfferCvcLocalSave(const CreditCard& card) {
   }
   OfferCvcLocalSave();
   return show_save_prompt_.value_or(false);
+}
+
+bool CreditCardSaveManager::ShouldOfferCvcLocalSave(
+    const CreditCard& card,
+    FormDataImporter::CreditCardImportType credit_card_import_type) {
+  // Only offer CVC local save if CVC storage is enabled.
+  if (!personal_data_manager_->IsPaymentCvcStorageEnabled()) {
+    return false;
+  }
+
+  // Only offer CVC local save if the user entered a CVC during checkout.
+  if (card.cvc().empty()) {
+    return false;
+  }
+
+  // Only offer CVC local save for local cards.
+  if (credit_card_import_type !=
+      FormDataImporter::CreditCardImportType::kLocalCard) {
+    return false;
+  }
+
+  // Only offer CVC local save if CVC is different than the existing card's CVC.
+  CreditCard* existing_credit_card =
+      personal_data_manager_->GetCreditCardByGUID(card.guid());
+  return existing_credit_card && existing_credit_card->cvc() != card.cvc();
 }
 
 void CreditCardSaveManager::AttemptToOfferCardUploadSave(

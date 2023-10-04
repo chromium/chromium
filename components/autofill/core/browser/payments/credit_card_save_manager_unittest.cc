@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
@@ -4895,12 +4896,80 @@ TEST_P(SaveCvcTest, OnDidUploadCard_SaveServerCvc) {
       upload_card_response_details);
 }
 
+// Tests that we should not offer CvcLocalSave if the user entered empty CVC
+// during checkout.
+TEST_P(SaveCvcTest, ShouldNotOfferCvcLocalSaveWithEmptyCvc) {
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
+                              IsSaveCvcPrefEnabled());
+  CreditCard card = test::WithCvc(test::GetCreditCard());
+  personal_data().AddCreditCard(card);
+
+  // We should not offer CvcLocalSave if the user entered empty CVC during
+  // checkout.
+  card.set_cvc(u"");
+  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcLocalSave(
+      card, FormDataImporter::CreditCardImportType::kLocalCard));
+}
+
+// Tests that we should only OfferCvcLocalSave if we have an existing local
+// card that matches the local card in the form.
+TEST_P(SaveCvcTest, ShouldNotOfferCvcLocalSaveWithoutExistingCard) {
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
+                              IsSaveCvcPrefEnabled());
+  personal_data().DeleteAllLocalCreditCards();
+  CreditCard card = test::WithCvc(test::GetCreditCard());
+
+  // We should not OfferCvcLocalSave if we don't have an existing local card
+  // that matches the local card in the form.
+  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcLocalSave(
+      card, FormDataImporter::CreditCardImportType::kLocalCard));
+}
+
+// Tests that we should only OfferCvcLocalSave with local cards.
+TEST_P(SaveCvcTest, ShouldOnlyOfferCvcLocalSaveWithLocalCards) {
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
+                              IsSaveCvcPrefEnabled());
+  CreditCard card = test::WithCvc(test::GetMaskedServerCard(), u"123");
+  personal_data().AddServerCreditCard(card);
+  card.set_cvc(u"234");
+
+  // We should not OfferCvcLocalSave with server cards.
+  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcLocalSave(
+      card, FormDataImporter::CreditCardImportType::kServerCard));
+}
+
+// Tests that we should not OfferCvcLocalSave with same CVC.
+TEST_P(SaveCvcTest, ShouldNotOfferCvcLocalSaveWithSameCvc) {
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
+                              IsSaveCvcPrefEnabled());
+  CreditCard card = test::WithCvc(test::GetCreditCard(), u"123");
+  personal_data().AddCreditCard(card);
+
+  // We should not OfferCvcLocalSave with same CVC.
+  card.set_cvc(u"123");
+  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcLocalSave(
+      card, FormDataImporter::CreditCardImportType::kLocalCard));
+}
+
+// Tests that we should OfferCvcLocalSave with expected input.
+TEST_P(SaveCvcTest, ShouldOfferCvcLocalSave) {
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
+                              IsSaveCvcPrefEnabled());
+  CreditCard card = test::WithCvc(test::GetCreditCard(), u"123");
+  personal_data().AddCreditCard(card);
+  card.set_cvc(u"234");
+  if (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled()) {
+    EXPECT_TRUE(credit_card_save_manager_->ShouldOfferCvcLocalSave(
+        card, FormDataImporter::CreditCardImportType::kLocalCard));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(CreditCardSaveManagerTest,
                          SaveCvcTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
-// Tests that server CVC is not added to AutofillTable during credit card upload
-// save if CVC was empty.
+// Tests that server CVC is not added to AutofillTable during credit card
+// upload save if CVC was empty.
 TEST_F(CreditCardSaveManagerTest,
        OnDidUploadCard_DoNotAddServerCvcIfCvcIsEmpty) {
   // Set up the flags and prefs.
@@ -4927,8 +4996,8 @@ TEST_F(CreditCardSaveManagerTest,
       upload_card_response_details);
 }
 
-// Tests that server CVC is not added to AutofillTable during credit card upload
-// save if instrument_id was empty.
+// Tests that server CVC is not added to AutofillTable during credit card
+// upload save if instrument_id was empty.
 TEST_F(CreditCardSaveManagerTest,
        OnDidUploadCard_DoNotAddServerCvcIfInstrumentIdIsEmpty) {
   // Set up the flags and prefs.

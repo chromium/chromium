@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/test_form_data_importer.h"
+
 #include "build/build_config.h"
+#include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 
 namespace autofill {
 

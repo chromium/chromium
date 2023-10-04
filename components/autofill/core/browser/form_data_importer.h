@@ -18,7 +18,6 @@
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/form_data_importer_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
@@ -31,6 +30,7 @@ class SaveCardOfferObserver;
 namespace autofill {
 
 class AddressProfileSaveManager;
+class CreditCardSaveManager;
 
 // Manages logic for importing address profiles and credit card information from
 // web forms into the user's Autofill profile via the PersonalDataManager.
@@ -104,6 +104,10 @@ class FormDataImporter : public PersonalDataManagerObserver {
     return virtual_card_enrollment_manager_.get();
   }
 
+  CreditCardSaveManager* GetCreditCardSaveManager() {
+    return credit_card_save_manager_.get();
+  }
+
   void AddMultiStepImportCandidate(const AutofillProfile& profile,
                                    const ProfileImportMetadata& import_metadata,
                                    bool is_imported) {
@@ -159,9 +163,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
 
  protected:
   void set_credit_card_save_manager_for_testing(
-      std::unique_ptr<CreditCardSaveManager> credit_card_save_manager) {
-    credit_card_save_manager_ = std::move(credit_card_save_manager);
-  }
+      std::unique_ptr<CreditCardSaveManager> credit_card_save_manager);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void set_iban_save_manager_for_testing(
@@ -313,16 +315,18 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // Helper function which extracts the IBAN from the form structure.
   Iban ExtractIbanFromForm(const FormStructure& form);
 
-  // Returns true if credit card upload or local save should be offered to user.
-  // `extracted_credit_card` is the credit card imported from the form if there
-  // is any. If no valid card was imported, it is set to nullopt. It might be
-  // set to a copy of a LOCAL_CARD or SERVER_CARD we have already saved if we
-  // were able to find a matching copy. |is_credit_card_upstream_enabled|
-  // denotes whether the user has credit card upload enabled. This function is
-  // used to prevent offering upload card save or local card save in situations
-  // where it would be invalid to offer them. For example, we should not offer
-  // to upload card if it is already a valid server card.
-  bool ShouldOfferUploadCardOrLocalCardSave(
+  // Returns true if credit card upload, local save, or cvc local save should be
+  // offered to user. `extracted_credit_card` is the credit card imported from
+  // the form if there is any. If no valid card was imported, it is set to
+  // nullopt. It might be set to a copy of a LOCAL_CARD or SERVER_CARD we have
+  // already saved if we were able to find a matching copy.
+  // |is_credit_card_upstream_enabled| denotes whether the user has credit card
+  // upload enabled. This function is used to prevent offering upload card save
+  // or local card save in situations where it would be invalid to offer them.
+  // For example, we should not offer to upload card if it is already a valid
+  // server card.
+  // TODO(crbug.com/1450749): Move to CreditCardSaveManger.
+  bool ShouldOfferCreditCardSave(
       const absl::optional<CreditCard>& extracted_credit_card,
       bool is_credit_card_upload_enabled);
 
@@ -404,7 +408,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
   friend class SaveCardInfobarEGTestHelper;
   friend class ::SaveCardOfferObserver;
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterNonParameterizedTest,
-                           ShouldOfferUploadCardOrLocalCardSave);
+                           ShouldOfferCreditCardSave);
 };
 
 }  // namespace autofill
