@@ -83,7 +83,6 @@ static_library("cardboard") {
     "src/sdk/polynomial_radial_distortion.cc",
     "src/sdk/polynomial_radial_distortion.h",
     "src/sdk/qr_code.h",
-    "src/sdk/qrcode/android/qr_code.cc",
     "src/sdk/qrcode/cardboard_v1/cardboard_v1.cc",
     "src/sdk/qrcode/cardboard_v1/cardboard_v1.h",
     "src/sdk/qrcode/ios/device_params_helper.h",
@@ -131,8 +130,8 @@ static_library("cardboard") {
     "src/sdk/util/vectorutils.cc",
     "src/sdk/util/vectorutils.h",
     "src_overrides/sdk/cardboard.cc",
-    "src_overrides/sdk/jni_utils/android/jni_registration.h",
     "src_overrides/sdk/jni_utils/android/jni_utils.cc",
+    "src_overrides/sdk/qrcode/android/qr_code.cc",
     "src_overrides/sdk/rendering/opengl_es2_distortion_renderer.cc",
   ]
 

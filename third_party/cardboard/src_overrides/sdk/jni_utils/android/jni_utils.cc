@@ -17,7 +17,6 @@
 
 #include "base/android/jni_android.h"
 #include "third_party/cardboard/src/sdk/util/logging.h"
-#include "third_party/cardboard/src_overrides/sdk/jni_utils/android/jni_registration.h"
 
 namespace cardboard::jni {
 namespace {
@@ -35,7 +34,6 @@ void initializeAndroid(JavaVM* vm, jobject /*context*/) {
   JNIEnv* env;
   LoadJNIEnv(vm, &env);
   LoadJNIResources(env);
-  RegisterNatives(env);
 }
 
 bool CheckExceptionInJava(JNIEnv* env) {
