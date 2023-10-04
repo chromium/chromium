@@ -381,6 +381,42 @@ subsetTest(promise_test, async test => {
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
+  let iframe = await createIframe(test, OTHER_ORIGIN1, "run-ad-auction");
+
+  // Do everything in a cross-origin iframe, and make sure correct top-frame origin is used.
+  await runInFrame(
+      test, iframe,
+      `const uuid = "${uuid}";
+       const renderURL = createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'hostname');
+
+       await joinInterestGroup(
+          test_instance, uuid,
+          { trustedBiddingSignalsKeys: ['hostname'],
+            trustedBiddingSignalsURL: TRUSTED_BIDDING_SIGNALS_URL,
+            ads: [{ renderURL: renderURL }],
+            biddingLogicURL: createBiddingScriptURL({
+              generateBid:
+                  \`if (browserSignals.topWindowHostname !== "${document.location.hostname}")
+                      throw "Wrong topWindowHostname: " + browserSignals.topWindowHostname;
+                    if (trustedBiddingSignals.hostname !== '${window.location.hostname}')
+                      throw 'Wrong hostname: ' + trustedBiddingSignals.hostname;\`})});
+
+       await runBasicFledgeTestExpectingWinner(
+           test_instance, uuid,
+           { trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL,
+            decisionLogicURL:
+            createDecisionScriptURL(
+              uuid,
+              { scoreAd:
+                    \`if (browserSignals.topWindowHostname !== "${document.location.hostname}")
+                        throw "Wrong topWindowHostname: " + browserSignals.topWindowHostname;
+                      if (trustedScoringSignals.renderURL["\${renderURL}"] !== '${window.location.hostname}')
+                        throw 'Wrong hostname: ' + trustedScoringSignals.renderURL["\${renderURL}"];\` })});`);
+}, 'Different top-frame origin.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+
   let bidderOrigin = OTHER_ORIGIN1;
   let sellerOrigin = OTHER_ORIGIN2;
   let bidderSendReportToURL = createBidderReportURL(uuid, '1', OTHER_ORIGIN3);
