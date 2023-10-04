@@ -135,17 +135,6 @@ bool CookieControlsIconView::MaybeShowIPH() {
   CHECK(browser_->window());
   // Need to make element visible or calls to show IPH will fail.
   SetVisible(true);
-  // IPH for UB on high-confidence site.
-  if (confidence_ == CookieControlsBreakageConfidenceLevel::kHigh) {
-    user_education::FeaturePromoParams params(
-        feature_engagement::kIPHCookieControlsFeature);
-    params.close_callback = base::BindOnce(&CookieControlsIconView::OnIPHClosed,
-                                           weak_ptr_factory_.GetWeakPtr());
-    if (browser_->window()->MaybeShowFeaturePromo(std::move(params))) {
-      SetHighlighted(true);
-      return true;
-    }
-  }
 
   auto* const web_contents = delegate()->GetWebContentsForPageActionIconView();
   if (!web_contents) {
@@ -153,19 +142,33 @@ bool CookieControlsIconView::MaybeShowIPH() {
   }
   Profile* const profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  // IPH for UB in 3PCD experiment.
+
+  const base::Feature* feature = nullptr;
   if (TrackingProtectionSettingsFactory::GetForProfile(profile)
           ->IsTrackingProtection3pcdEnabled()) {
-    user_education::FeaturePromoParams params(
-        feature_engagement::kIPH3pcdUserBypassFeature);
-    params.close_callback = base::BindOnce(&CookieControlsIconView::OnIPHClosed,
-                                           weak_ptr_factory_.GetWeakPtr());
-    if (browser_->window()->MaybeShowFeaturePromo(std::move(params))) {
-      SetHighlighted(true);
-      return true;
+    // Only show the reminder IPH if cookies are blocked on the current site.
+    if (status_ != CookieControlsStatus::kEnabled) {
+      return false;
     }
+    // UB reminder IPH in 3PCD experiment.
+    feature = &feature_engagement::kIPH3pcdUserBypassFeature;
+  } else if (confidence_ == CookieControlsBreakageConfidenceLevel::kHigh) {
+    // UB IPH on high-confidence site.
+    feature = &feature_engagement::kIPHCookieControlsFeature;
+  } else {
+    // In all other cases return without trying to show IPH.
+    return false;
   }
-  return false;
+
+  CHECK(feature);
+  user_education::FeaturePromoParams params(*feature);
+  params.close_callback = base::BindOnce(&CookieControlsIconView::OnIPHClosed,
+                                         weak_ptr_factory_.GetWeakPtr());
+  if (!browser_->window()->MaybeShowFeaturePromo(std::move(params))) {
+    return false;
+  }
+  SetHighlighted(true);
+  return true;
 }
 
 void CookieControlsIconView::OnIPHClosed() {
