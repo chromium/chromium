@@ -50,8 +50,16 @@ void TestPhotosService::UploadImage(
   identity_ = identity;
   cancelable_upload_completion_.Reset(
       base::BindOnce(std::move(completion_callback), result_));
+  int64_t number_of_bytes = static_cast<int64_t>(image_data.length);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, cancelable_upload_completion_.callback().Then(quit_closure_));
+      FROM_HERE,
+      base::BindOnce(
+          progress_callback,
+          UploadProgress{.bytes_sent = number_of_bytes,
+                         .total_bytes_sent = number_of_bytes,
+                         .total_bytes_expected_to_send = number_of_bytes})
+          .Then(cancelable_upload_completion_.callback())
+          .Then(quit_closure_));
 }
 
 void TestPhotosService::CancelUpload() {
