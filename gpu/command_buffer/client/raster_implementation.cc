@@ -36,6 +36,7 @@
 #include "cc/paint/skottie_serialization_history.h"
 #include "cc/paint/transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "gpu/command_buffer/client/gpu_control.h"
 #include "gpu/command_buffer/client/image_decode_accelerator_interface.h"
 #include "gpu/command_buffer/client/query_tracker.h"
@@ -94,15 +95,15 @@ BASE_FEATURE(kPaintCacheBudgetConfigurableFeature,
              "PaintCacheBudgetConfigurableFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<int> kNormalPaintCacheBudget(
-    &kPaintCacheBudgetConfigurableFeature,
-    "NormalPaintCacheBudgetBytes",
-    4 * 1024 * 1024);
+MIRACLE_PARAMETER_FOR_INT(GetNormalPaintCacheBudget,
+                          kPaintCacheBudgetConfigurableFeature,
+                          "NormalPaintCacheBudgetBytes",
+                          4 * 1024 * 1024)
 
-constexpr base::FeatureParam<int> kLowEndPaintCacheBudget(
-    &kPaintCacheBudgetConfigurableFeature,
-    "LowEndPaintCacheBudgetBytes",
-    256 * 1024);
+MIRACLE_PARAMETER_FOR_INT(GetLowEndPaintCacheBudget,
+                          kPaintCacheBudgetConfigurableFeature,
+                          "LowEndPaintCacheBudgetBytes",
+                          256 * 1024)
 
 const uint32_t kMaxTransferCacheEntrySizeForTransferBuffer = 1024;
 const size_t kMaxImmediateDeletedPaintCachePaths = 1024;
@@ -1944,9 +1945,9 @@ cc::ClientPaintCache* RasterImplementation::GetOrCreatePaintCache() {
   if (!paint_cache_) {
     size_t paint_cache_budget = 0u;
     if (base::SysInfo::IsLowEndDevice()) {
-      paint_cache_budget = kLowEndPaintCacheBudget.Get();
+      paint_cache_budget = GetLowEndPaintCacheBudget();
     } else {
-      paint_cache_budget = kNormalPaintCacheBudget.Get();
+      paint_cache_budget = GetNormalPaintCacheBudget();
     }
     paint_cache_ = std::make_unique<cc::ClientPaintCache>(paint_cache_budget);
   }
