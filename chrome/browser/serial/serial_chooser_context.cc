@@ -488,9 +488,10 @@ bool SerialChooserContext::HasPortPermission(
       return true;
     } else {
 #if BUILDFLAG(IS_WIN)
-      const std::string& device_instance_id =
-          *device.FindString(kDeviceInstanceIdKey);
-      if (port.device_instance_id == device_instance_id) {
+      const std::string* device_instance_id =
+          device.FindString(kDeviceInstanceIdKey);
+      if (device_instance_id &&
+          port.device_instance_id == *device_instance_id) {
         return true;
       }
 #else

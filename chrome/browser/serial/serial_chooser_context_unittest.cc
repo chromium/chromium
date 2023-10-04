@@ -322,6 +322,54 @@ TEST_F(SerialChooserContextTest, RevokeEphemeralPermissionByWebsite) {
       SerialPermissionRevoked::kEphemeralByWebsite, 1);
 }
 
+TEST_F(SerialChooserContextTest, GrantAndCheckPersistentUsbPermission) {
+  const auto origin = url::Origin::Create(GURL("https://google.com"));
+
+  // Connect a USB serial port and a Bluetooth serial port. Both are eligible
+  // for persistent permissions.
+  auto port_1 = CreatePersistentUsbPort("Persistent USB Port", "ABC123");
+  auto port_2 = CreatePersistentBluetoothPort("Persistent Bluetooth Port",
+                                              "aa:aa:aa:aa:aa:aa");
+
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+
+  // Grant a persistent permission for the USB serial port.
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+  context()->GrantPortPermission(origin, *port_1);
+
+  // Check that permission was granted only for the USB serial port.
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+}
+
+TEST_F(SerialChooserContextTest, GrantAndCheckPersistentBluetoothPermission) {
+  const auto origin = url::Origin::Create(GURL("https://google.com"));
+
+  // Connect a USB serial port and a Bluetooth serial port. Both are eligible
+  // for persistent permissions.
+  auto port_1 = CreatePersistentUsbPort("Persistent USB Port", "ABC123");
+  auto port_2 = CreatePersistentBluetoothPort("Persistent Bluetooth Port",
+                                              "aa:aa:aa:aa:aa:aa");
+
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+
+  // Grant a persistent permission for the Bluetooth serial port.
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+  context()->GrantPortPermission(origin, *port_2);
+
+  // Check that permission was granted only for the Bluetooth serial port.
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port_2));
+}
+
 TEST_F(SerialChooserContextTest, GrantAndRevokePersistentUsbPermission) {
   base::HistogramTester histogram_tester;
 
