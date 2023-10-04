@@ -854,6 +854,11 @@ def add_common_args(*parsers):
         help='Will flash the device to the current SDK version before running '
         'the test.')
     parser.add_argument(
+        '--no-flash',
+        action='store_false',
+        dest='flash',
+        help='Will not flash the device before running the test.')
+    parser.add_argument(
         '--public-image',
         action='store_true',
         help='Will flash a public "full" image to the device.')
