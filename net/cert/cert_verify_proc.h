@@ -88,7 +88,7 @@ class NET_EXPORT CertVerifyProc
       scoped_refptr<CRLSet> crl_set);
 #endif
 
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(USE_NSS_CERTS)
+#if BUILDFLAG(IS_FUCHSIA)
   // Creates and returns a CertVerifyProcBuiltin using the SSL SystemTrustStore.
   static scoped_refptr<CertVerifyProc> CreateBuiltinVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,

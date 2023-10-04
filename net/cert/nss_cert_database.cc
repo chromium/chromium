@@ -555,7 +555,6 @@ NSSCertDatabase::CertInfoList NSSCertDatabase::ListCertsInfoImpl(
     // ListCertsInfo call is not expensive. If that ever changes this might
     // need to be rethought.
     TrustStoreNSS trust_store_nss(
-        TrustStoreNSS::kIgnoreSystemTrust,
         slot ? TrustStoreNSS::UserSlotTrustSetting(
                    crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot.get())))
              : TrustStoreNSS::UseTrustFromAllUserSlots());

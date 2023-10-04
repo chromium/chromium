@@ -1441,8 +1441,6 @@ component("net") {
       "cert/internal/system_trust_store_nss.h",
       "cert/internal/trust_store_nss.cc",
       "cert/internal/trust_store_nss.h",
-      "cert/known_roots_nss.cc",
-      "cert/known_roots_nss.h",
       "cert/nss_cert_database.cc",
       "cert/nss_cert_database.h",
       "cert/test_root_certs_builtin.cc",

@@ -32,16 +32,6 @@ namespace net {
 
 namespace {
 
-std::string SystemTrustSettingToString(
-    TrustStoreNSS::SystemTrustSetting system_trust_setting) {
-  switch (system_trust_setting) {
-    case TrustStoreNSS::SystemTrustSetting::kUseSystemTrust:
-      return "UseSystemTrust";
-    case TrustStoreNSS::SystemTrustSetting::kIgnoreSystemTrust:
-      return "IgnoreSystemTrust";
-  };
-}
-
 unsigned TrustTypeToNSSTrust(CertificateTrustType trust) {
   switch (trust) {
     case CertificateTrustType::DISTRUSTED:
@@ -418,29 +408,23 @@ std::string SlotFilterTypeToString(SlotFilterType slot_filter_type) {
 // regardless of the slot filter type.
 class TrustStoreNSSTestWithSlotFilterType
     : public TrustStoreNSSTestBase,
-      public testing::WithParamInterface<
-          std::tuple<TrustStoreNSS::SystemTrustSetting, SlotFilterType>> {
+      public testing::WithParamInterface<SlotFilterType> {
  public:
   TrustStoreNSSTestWithSlotFilterType() = default;
   ~TrustStoreNSSTestWithSlotFilterType() override = default;
 
-  TrustStoreNSS::SystemTrustSetting system_trust_setting() const {
-    return std::get<0>(GetParam());
-  }
-  SlotFilterType slot_filter_type() const { return std::get<1>(GetParam()); }
+  SlotFilterType slot_filter_type() const { return GetParam(); }
 
   std::unique_ptr<TrustStoreNSS> CreateTrustStoreNSS() override {
     switch (slot_filter_type()) {
       case SlotFilterType::kDontFilter:
         return std::make_unique<TrustStoreNSS>(
-            system_trust_setting(), TrustStoreNSS::UseTrustFromAllUserSlots());
+            TrustStoreNSS::UseTrustFromAllUserSlots());
       case SlotFilterType::kDoNotAllowUserSlots:
         return std::make_unique<TrustStoreNSS>(
-            system_trust_setting(),
             /*user_slot_trust_setting=*/nullptr);
       case SlotFilterType::kAllowSpecifiedUserSlot:
         return std::make_unique<TrustStoreNSS>(
-            system_trust_setting(),
             crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nssdb_.slot())));
     }
   }
@@ -469,37 +453,23 @@ TEST_P(TrustStoreNSSTestWithSlotFilterType, TempCertPresent) {
 }
 
 // Independent of the specified slot-based filtering mode, built-in root certs
-// should always be trusted if kUseSystemTrust, otherwise they always should
-// not.
+// should never be trusted.
 TEST_P(TrustStoreNSSTestWithSlotFilterType, TrustAllowedForBuiltinRootCerts) {
   auto builtin_root_cert = GetASSLTrustedBuiltinRoot();
   ASSERT_TRUE(builtin_root_cert);
-  switch (system_trust_setting()) {
-    case TrustStoreNSS::SystemTrustSetting::kUseSystemTrust:
-      EXPECT_TRUE(
-          HasTrust({builtin_root_cert}, ExpectedTrustForBuiltinAnchor()));
-      break;
-    case TrustStoreNSS::SystemTrustSetting::kIgnoreSystemTrust:
-      EXPECT_TRUE(
-          HasTrust({builtin_root_cert}, CertificateTrust::ForUnspecified()));
-      break;
-  }
+  EXPECT_TRUE(
+      HasTrust({builtin_root_cert}, CertificateTrust::ForUnspecified()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     TrustStoreNSSTestWithSlotFilterType,
-    ::testing::Combine(
-        ::testing::Values(
-            TrustStoreNSS::SystemTrustSetting::kUseSystemTrust,
-            TrustStoreNSS::SystemTrustSetting::kIgnoreSystemTrust),
-        ::testing::Values(SlotFilterType::kDontFilter,
-                          SlotFilterType::kDoNotAllowUserSlots,
-                          SlotFilterType::kAllowSpecifiedUserSlot)),
+    ::testing::Values(SlotFilterType::kDontFilter,
+                      SlotFilterType::kDoNotAllowUserSlots,
+                      SlotFilterType::kAllowSpecifiedUserSlot),
     [](const testing::TestParamInfo<
         TrustStoreNSSTestWithSlotFilterType::ParamType>& info) {
-      return base::StrCat({SystemTrustSettingToString(std::get<0>(info.param)),
-                           SlotFilterTypeToString(std::get<1>(info.param))});
+      return SlotFilterTypeToString(info.param);
     });
 
 // Tests a TrustStoreNSS that ignores system root certs.
@@ -514,7 +484,6 @@ class TrustStoreNSSTestIgnoreSystemCerts
 
   std::unique_ptr<TrustStoreNSS> CreateTrustStoreNSS() override {
     return std::make_unique<TrustStoreNSS>(
-        TrustStoreNSS::kIgnoreSystemTrust,
         TrustStoreNSS::UseTrustFromAllUserSlots());
   }
 };
@@ -721,7 +690,6 @@ class TrustStoreNSSTestWithoutSlotFilter
 
   std::unique_ptr<TrustStoreNSS> CreateTrustStoreNSS() override {
     return std::make_unique<TrustStoreNSS>(
-        TrustStoreNSS::kUseSystemTrust,
         TrustStoreNSS::UseTrustFromAllUserSlots());
   }
 };
@@ -847,26 +815,20 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests for a TrustStoreNSS which does not allow certificates on user slots
 // to be trusted.
-class TrustStoreNSSTestDoNotAllowUserSlots
-    : public TrustStoreNSSTestBase,
-      public testing::WithParamInterface<TrustStoreNSS::SystemTrustSetting> {
+class TrustStoreNSSTestDoNotAllowUserSlots : public TrustStoreNSSTestBase {
  public:
   TrustStoreNSSTestDoNotAllowUserSlots() = default;
   ~TrustStoreNSSTestDoNotAllowUserSlots() override = default;
 
-  TrustStoreNSS::SystemTrustSetting system_trust_setting() const {
-    return GetParam();
-  }
-
   std::unique_ptr<TrustStoreNSS> CreateTrustStoreNSS() override {
-    return std::make_unique<TrustStoreNSS>(system_trust_setting(),
-                                           /*user_slot_trust_setting=*/nullptr);
+    return std::make_unique<TrustStoreNSS>(
+        /*user_slot_trust_setting=*/nullptr);
   }
 };
 
 // A certificate that is stored on a "user slot" is not trusted if the
 // TrustStoreNSS is not allowed to trust certificates on user slots.
-TEST_P(TrustStoreNSSTestDoNotAllowUserSlots, CertOnUserSlot) {
+TEST_F(TrustStoreNSSTestDoNotAllowUserSlots, CertOnUserSlot) {
   AddCertToNSSSlotWithTrust(newroot_.get(), test_nssdb_.slot(),
                             CertificateTrustType::TRUSTED_ANCHOR);
   EXPECT_TRUE(HasTrust({newroot_}, CertificateTrust::ForUnspecified()));
@@ -878,7 +840,7 @@ TEST_P(TrustStoreNSSTestDoNotAllowUserSlots, CertOnUserSlot) {
 
 // If an NSS trusted root is present in a user slot but
 // user_slot_trust_setting=null, that trust setting should be ignored.
-TEST_P(TrustStoreNSSTestDoNotAllowUserSlots, UserDbTrustForSystemRootIgnored) {
+TEST_F(TrustStoreNSSTestDoNotAllowUserSlots, UserDbTrustForSystemRootIgnored) {
   std::shared_ptr<const ParsedCertificate> system_root =
       GetASSLTrustedBuiltinRoot();
   ASSERT_TRUE(system_root);
@@ -888,52 +850,25 @@ TEST_P(TrustStoreNSSTestDoNotAllowUserSlots, UserDbTrustForSystemRootIgnored) {
   AddCertToNSSSlotWithTrust(system_root.get(), test_nssdb_.slot(),
                             CertificateTrustType::TRUSTED_LEAF);
 
-  switch (system_trust_setting()) {
-    case TrustStoreNSS::SystemTrustSetting::kUseSystemTrust:
-      // This should actually be CertificateTrust::ForTrustAnchor, but the old
-      // kUseSystemTrust code path doesn't handle trust settings in multiple
-      // slots correctly, and we aren't going to fix that now.
-      EXPECT_TRUE(HasTrust({system_root}, ExpectedTrustForLeaf()));
-      break;
-    case TrustStoreNSS::SystemTrustSetting::kIgnoreSystemTrust:
-      EXPECT_TRUE(HasTrust({system_root}, CertificateTrust::ForUnspecified()));
-      break;
-  }
+  EXPECT_TRUE(HasTrust({system_root}, CertificateTrust::ForUnspecified()));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TrustStoreNSSTestDoNotAllowUserSlots,
-    ::testing::Values(TrustStoreNSS::SystemTrustSetting::kUseSystemTrust,
-                      TrustStoreNSS::SystemTrustSetting::kIgnoreSystemTrust),
-    [](const testing::TestParamInfo<
-        TrustStoreNSSTestDoNotAllowUserSlots::ParamType>& info) {
-      return SystemTrustSettingToString(info.param);
-    });
 
 // Tests for a TrustStoreNSS which does allows certificates on user slots to
 // be only trusted if they are on a specific user slot.
-class TrustStoreNSSTestAllowSpecifiedUserSlot
-    : public TrustStoreNSSTestBase,
-      public testing::WithParamInterface<TrustStoreNSS::SystemTrustSetting> {
+class TrustStoreNSSTestAllowSpecifiedUserSlot : public TrustStoreNSSTestBase {
  public:
   TrustStoreNSSTestAllowSpecifiedUserSlot() = default;
   ~TrustStoreNSSTestAllowSpecifiedUserSlot() override = default;
 
-  TrustStoreNSS::SystemTrustSetting system_trust_setting() const {
-    return GetParam();
-  }
-
   std::unique_ptr<TrustStoreNSS> CreateTrustStoreNSS() override {
     return std::make_unique<TrustStoreNSS>(
-        system_trust_setting(),
         crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nssdb_.slot())));
   }
 };
 
 // A certificate that is stored on a "user slot" is trusted if the
 // TrustStoreNSS is allowed to trust that user slot.
-TEST_P(TrustStoreNSSTestAllowSpecifiedUserSlot, CertOnUserSlot) {
+TEST_F(TrustStoreNSSTestAllowSpecifiedUserSlot, CertOnUserSlot) {
   AddCertToNSSSlotWithTrust(newroot_.get(), test_nssdb_.slot(),
                             CertificateTrustType::TRUSTED_ANCHOR);
   EXPECT_TRUE(HasTrust({newroot_}, ExpectedTrustForAnchor()));
@@ -942,7 +877,7 @@ TEST_P(TrustStoreNSSTestAllowSpecifiedUserSlot, CertOnUserSlot) {
 // A certificate that is stored on a "user slot" is not trusted if the
 // TrustStoreNSS is allowed to trust a user slot, but the certificate is
 // stored on another user slot.
-TEST_P(TrustStoreNSSTestAllowSpecifiedUserSlot, CertOnOtherUserSlot) {
+TEST_F(TrustStoreNSSTestAllowSpecifiedUserSlot, CertOnOtherUserSlot) {
   AddCertToNSSSlotWithTrust(newroot_.get(), other_test_nssdb_.slot(),
                             CertificateTrustType::TRUSTED_ANCHOR);
   EXPECT_TRUE(HasTrust({newroot_}, CertificateTrust::ForUnspecified()));
@@ -950,7 +885,7 @@ TEST_P(TrustStoreNSSTestAllowSpecifiedUserSlot, CertOnOtherUserSlot) {
 
 // The same certificate is stored in multiple user slots with different trust
 // settings. Ensure that the correct trust setting is used.
-TEST_P(TrustStoreNSSTestAllowSpecifiedUserSlot, CertOnMultipleSlots) {
+TEST_F(TrustStoreNSSTestAllowSpecifiedUserSlot, CertOnMultipleSlots) {
   // Add unrelated trust record to test that we find the correct one.
   AddCertToNSSSlotWithTrust(newintermediate_.get(), test_nssdb_.slot(),
                             CertificateTrustType::DISTRUSTED);
@@ -966,25 +901,12 @@ TEST_P(TrustStoreNSSTestAllowSpecifiedUserSlot, CertOnMultipleSlots) {
   AddCertToNSSSlotWithTrust(target_.get(), test_nssdb_.slot(),
                             CertificateTrustType::DISTRUSTED);
 
-  switch (system_trust_setting()) {
-    case TrustStoreNSS::SystemTrustSetting::kUseSystemTrust:
-      // The kUseSystemTrust implementation doesn't attempt to handle this case
-      // correctly, but it actually is slightly more broken than expected and
-      // ends up returning Unspecified rather than any of the trust settings
-      // set above since the PK11_GetAllSlotsForCert call in
-      // TrustStoreNSS::IsCertAllowedForTrust doesn't actually do what it
-      // claims to do.
-      EXPECT_TRUE(HasTrust({newroot_}, CertificateTrust::ForUnspecified()));
-      break;
-    case TrustStoreNSS::SystemTrustSetting::kIgnoreSystemTrust:
-      EXPECT_TRUE(HasTrust({newroot_}, ExpectedTrustForAnchor()));
-      break;
-  }
+  EXPECT_TRUE(HasTrust({newroot_}, ExpectedTrustForAnchor()));
 }
 
 // A NSS trusted root certificate is also stored in multiple user slots with
 // different trust settings. Ensure that the correct trust setting is used.
-TEST_P(TrustStoreNSSTestAllowSpecifiedUserSlot, SystemRootCertOnMultipleSlots) {
+TEST_F(TrustStoreNSSTestAllowSpecifiedUserSlot, SystemRootCertOnMultipleSlots) {
   std::shared_ptr<const ParsedCertificate> system_root =
       GetASSLTrustedBuiltinRoot();
   ASSERT_TRUE(system_root);
@@ -997,29 +919,9 @@ TEST_P(TrustStoreNSSTestAllowSpecifiedUserSlot, SystemRootCertOnMultipleSlots) {
                             CertificateTrustType::TRUSTED_LEAF);
   AddCertToNSSSlotWithTrust(system_root.get(), other_test_nssdb_.slot(),
                             CertificateTrustType::UNSPECIFIED);
-  switch (system_trust_setting()) {
-    case TrustStoreNSS::SystemTrustSetting::kUseSystemTrust:
-      // The kUseSystemTrust implementation doesn't attempt to handle this case
-      // correctly, it returns distrust due to how NSS evaluates the trust
-      // records internally with regards to the order the slots were
-      // created.
-      EXPECT_TRUE(HasTrust({system_root}, CertificateTrust::ForDistrusted()));
-      break;
-    case TrustStoreNSS::SystemTrustSetting::kIgnoreSystemTrust:
-      EXPECT_TRUE(HasTrust({system_root}, ExpectedTrustForLeaf()));
-      break;
-  }
-}
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TrustStoreNSSTestAllowSpecifiedUserSlot,
-    ::testing::Values(TrustStoreNSS::SystemTrustSetting::kUseSystemTrust,
-                      TrustStoreNSS::SystemTrustSetting::kIgnoreSystemTrust),
-    [](const testing::TestParamInfo<
-        TrustStoreNSSTestAllowSpecifiedUserSlot::ParamType>& info) {
-      return SystemTrustSettingToString(info.param);
-    });
+  EXPECT_TRUE(HasTrust({system_root}, ExpectedTrustForLeaf()));
+}
 
 // TODO(https://crbug.com/980443): If the internal non-removable slot is
 // relevant on Chrome OS, add a test for allowing trust for certificates
@@ -1028,8 +930,7 @@ INSTANTIATE_TEST_SUITE_P(
 class TrustStoreNSSTestDelegate {
  public:
   TrustStoreNSSTestDelegate()
-      : trust_store_nss_(TrustStoreNSS::kUseSystemTrust,
-                         TrustStoreNSS::UseTrustFromAllUserSlots()) {}
+      : trust_store_nss_(TrustStoreNSS::UseTrustFromAllUserSlots()) {}
 
   void AddCert(std::shared_ptr<const ParsedCertificate> cert) {
     ASSERT_TRUE(test_nssdb_.is_open());

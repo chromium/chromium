@@ -541,8 +541,7 @@ class CertVerifierServiceFactoryCRLSetTest : public ::testing::Test {
 
  private:
   bool SystemSupportsCRLSets() {
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(CHROME_ROOT_STORE_ONLY)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(CHROME_ROOT_STORE_ONLY)
     return true;
 #elif BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
     // On CHROME_ROOT_STORE_OPTIONAL platforms, the tests set

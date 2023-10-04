@@ -13,7 +13,7 @@
 #include "net/cert/multi_threaded_cert_verifier.h"
 #include "net/net_buildflags.h"
 
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/internal/system_trust_store.h"
 #endif
@@ -101,14 +101,7 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
   scoped_refptr<net::CertVerifyProc> CreateOldCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
       scoped_refptr<net::CRLSet> crl_set) {
-#if BUILDFLAG(IS_CHROMEOS)
-    return net::CreateCertVerifyProcBuiltin(
-        std::move(cert_net_fetcher), std::move(crl_set),
-        net::CreateSslSystemTrustStoreNSSWithUserSlotRestriction(
-            user_slot_restriction_ ? crypto::ScopedPK11Slot(PK11_ReferenceSlot(
-                                         user_slot_restriction_.get()))
-                                   : nullptr));
-#elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_FUCHSIA)
     return net::CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
                                             std::move(crl_set),
                                             net::CreateSslSystemTrustStore());
@@ -173,7 +166,6 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
 
 bool IsUsingCertNetFetcher() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||      \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||       \
     BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   return true;
 #else

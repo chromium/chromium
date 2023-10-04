@@ -852,8 +852,8 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert) {
       x509_util::CreateX509CertificateFromCERTCertificate(found_server_cert);
   ASSERT_TRUE(x509_found_server_cert);
   scoped_refptr<CertVerifyProc> verify_proc(
-      CertVerifyProc::CreateBuiltinVerifyProc(/*cert_net_fetcher=*/nullptr,
-                                              crl_set_));
+      CertVerifyProc::CreateBuiltinWithChromeRootStore(
+          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(
@@ -890,8 +890,8 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned) {
       x509_util::CreateX509CertificateFromCERTCertificate(puny_cert);
   ASSERT_TRUE(x509_puny_cert);
   scoped_refptr<CertVerifyProc> verify_proc(
-      CertVerifyProc::CreateBuiltinVerifyProc(/*cert_net_fetcher=*/nullptr,
-                                              crl_set_));
+      CertVerifyProc::CreateBuiltinWithChromeRootStore(
+          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(
@@ -929,8 +929,8 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned_Trusted) {
       x509_util::CreateX509CertificateFromCERTCertificate(puny_cert);
   ASSERT_TRUE(x509_puny_cert);
   scoped_refptr<CertVerifyProc> verify_proc(
-      CertVerifyProc::CreateBuiltinVerifyProc(/*cert_net_fetcher=*/nullptr,
-                                              crl_set_));
+      CertVerifyProc::CreateBuiltinWithChromeRootStore(
+          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(
@@ -978,8 +978,8 @@ TEST_F(CertDatabaseNSSTest, ImportCaAndServerCert) {
       x509_util::CreateX509CertificateFromCERTCertificate(certs[0].get());
   ASSERT_TRUE(x509_server_cert);
   scoped_refptr<CertVerifyProc> verify_proc(
-      CertVerifyProc::CreateBuiltinVerifyProc(/*cert_net_fetcher=*/nullptr,
-                                              crl_set_));
+      CertVerifyProc::CreateBuiltinWithChromeRootStore(
+          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(
@@ -1021,8 +1021,8 @@ TEST_F(CertDatabaseNSSTest, ImportCaAndServerCert_DistrustServer) {
       x509_util::CreateX509CertificateFromCERTCertificate(certs[0].get());
   ASSERT_TRUE(x509_server_cert);
   scoped_refptr<CertVerifyProc> verify_proc(
-      CertVerifyProc::CreateBuiltinVerifyProc(/*cert_net_fetcher=*/nullptr,
-                                              crl_set_));
+      CertVerifyProc::CreateBuiltinWithChromeRootStore(
+          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(
@@ -1080,8 +1080,8 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa) {
 
   // Server cert should verify.
   scoped_refptr<CertVerifyProc> verify_proc(
-      CertVerifyProc::CreateBuiltinVerifyProc(/*cert_net_fetcher=*/nullptr,
-                                              crl_set_));
+      CertVerifyProc::CreateBuiltinWithChromeRootStore(
+          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(
@@ -1147,8 +1147,8 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa2) {
 
   // Server cert should verify.
   scoped_refptr<CertVerifyProc> verify_proc(
-      CertVerifyProc::CreateBuiltinVerifyProc(/*cert_net_fetcher=*/nullptr,
-                                              crl_set_));
+      CertVerifyProc::CreateBuiltinWithChromeRootStore(
+          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(
@@ -1212,8 +1212,8 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa3) {
 
   // Server cert should verify.
   scoped_refptr<CertVerifyProc> verify_proc(
-      CertVerifyProc::CreateBuiltinVerifyProc(/*cert_net_fetcher=*/nullptr,
-                                              crl_set_));
+      CertVerifyProc::CreateBuiltinWithChromeRootStore(
+          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(
@@ -1277,8 +1277,8 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa4) {
 
   // Server cert should not verify.
   scoped_refptr<CertVerifyProc> verify_proc(
-      CertVerifyProc::CreateBuiltinVerifyProc(/*cert_net_fetcher=*/nullptr,
-                                              crl_set_));
+      CertVerifyProc::CreateBuiltinWithChromeRootStore(
+          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(

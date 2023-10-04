@@ -46,7 +46,7 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc() {
   return CertVerifyProc::CreateBuiltinWithChromeRootStore(
       /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
       /*root_store_data=*/nullptr);
-#elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#elif BUILDFLAG(IS_FUCHSIA)
   return CertVerifyProc::CreateBuiltinVerifyProc(/*cert_net_fetcher=*/nullptr,
                                                  CRLSet::BuiltinCRLSet().get());
 #else

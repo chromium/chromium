@@ -20,28 +20,19 @@ namespace net {
 // anchors for path building. This TrustStore is thread-safe.
 class NET_EXPORT TrustStoreNSS : public TrustStore {
  public:
-  enum SystemTrustSetting {
-    kUseSystemTrust,
-    kIgnoreSystemTrust,
-  };
-
   struct UseTrustFromAllUserSlots : absl::monostate {};
   using UserSlotTrustSetting =
       absl::variant<UseTrustFromAllUserSlots, crypto::ScopedPK11Slot>;
 
   // Creates a TrustStoreNSS which will find anchors that are trusted for
-  // SSL server auth.
-  //
-  // |system_trust_setting| configures the use of trust from the builtin roots.
-  // If |system_trust_setting| is kIgnoreSystemTrust, trust settings from the
-  // builtin roots slot with the Mozilla CA Policy attribute will not be used.
+  // SSL server auth. (Trust settings from the builtin roots slot with the
+  // Mozilla CA Policy attribute will not be used.)
   //
   // |user_slot_trust_setting| configures the use of trust from user slots:
   //  * UseTrustFromAllUserSlots: all user slots will be allowed.
   //  * nullptr: no user slots will be allowed.
   //  * non-null PK11Slot: the specified slot will be allowed.
-  TrustStoreNSS(SystemTrustSetting system_trust_setting,
-                UserSlotTrustSetting user_slot_trust_setting);
+  explicit TrustStoreNSS(UserSlotTrustSetting user_slot_trust_setting);
 
   TrustStoreNSS(const TrustStoreNSS&) = delete;
   TrustStoreNSS& operator=(const TrustStoreNSS&) = delete;
@@ -67,19 +58,9 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
   std::vector<ListCertsResult> ListCertsIgnoringNSSRoots();
 
  private:
-  bool IsCertAllowedForTrust(CERTCertificate* cert) const;
   CertificateTrust GetTrustForNSSTrust(const CERTCertTrust& trust) const;
 
-  CertificateTrust GetTrustIgnoringSystemTrust(
-      const ParsedCertificate* cert) const;
-
   CertificateTrust GetTrustIgnoringSystemTrust(CERTCertificate* nss_cert) const;
-
-  CertificateTrust GetTrustWithSystemTrust(const ParsedCertificate* cert) const;
-
-  // |ignore_system_certs_trust_settings_| specifies if the system trust
-  // settings should be considered when determining a cert's trustworthiness.
-  const bool ignore_system_trust_settings_ = false;
 
   // |user_slot_trust_setting_| specifies which slots certificates must be
   // stored on to be allowed to be trusted. The possible values are:

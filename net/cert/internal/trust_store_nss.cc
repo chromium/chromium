@@ -25,7 +25,6 @@
 #include "crypto/scoped_nss_types.h"
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_features.h"
-#include "net/cert/known_roots_nss.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/pki/trust_store.h"
@@ -119,10 +118,8 @@ TrustStoreNSS::ListCertsResult::ListCertsResult(ListCertsResult&& other) =
 TrustStoreNSS::ListCertsResult& TrustStoreNSS::ListCertsResult::operator=(
     ListCertsResult&& other) = default;
 
-TrustStoreNSS::TrustStoreNSS(SystemTrustSetting system_trust_setting,
-                             UserSlotTrustSetting user_slot_trust_setting)
-    : ignore_system_trust_settings_(system_trust_setting == kIgnoreSystemTrust),
-      user_slot_trust_setting_(std::move(user_slot_trust_setting)) {}
+TrustStoreNSS::TrustStoreNSS(UserSlotTrustSetting user_slot_trust_setting)
+    : user_slot_trust_setting_(std::move(user_slot_trust_setting)) {}
 
 TrustStoreNSS::~TrustStoreNSS() = default;
 
@@ -163,21 +160,6 @@ void TrustStoreNSS::SyncGetIssuersOf(const ParsedCertificate* cert,
     }
 
     issuers->push_back(std::move(cur_cert));
-  }
-}
-
-CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert) {
-  crypto::EnsureNSSInit();
-  // In theory we could also do better multi-profile slot filtering using a
-  // similar approach as GetTrustIgnoringSystemTrust, however it makes the
-  // logic more complicated and isn't really worth doing since we'll be
-  // removing the old path entirely. Also keeping the old path unmodified is
-  // better for ensuring that the temporary fallback policy actually falls back
-  // to the same old behavior.
-  if (ignore_system_trust_settings_) {
-    return GetTrustIgnoringSystemTrust(cert);
-  } else {
-    return GetTrustWithSystemTrust(cert);
   }
 }
 
@@ -229,8 +211,8 @@ TrustStoreNSS::ListCertsIgnoringNSSRoots() {
 // matching trust object. Do we need to do that too? (this pk11_isID0 thing:
 // https://searchfox.org/nss/source/lib/pk11wrap/pk11cert.c#357)
 
-CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
-    const ParsedCertificate* cert) const {
+CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert) {
+  crypto::EnsureNSSInit();
   // If trust settings are only being used from a specified slot, and that slot
   // is nullptr, there's nothing to do. This corresponds to the case where we
   // wanted to get the builtin roots from NSS still but not user-added roots.
@@ -463,41 +445,6 @@ CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   return CertificateTrust::ForUnspecified();
 }
 
-CertificateTrust TrustStoreNSS::GetTrustWithSystemTrust(
-    const ParsedCertificate* cert) const {
-  // TODO(eroman): Inefficient -- path building will convert between
-  // CERTCertificate and ParsedCertificate representations multiple times
-  // (when getting the issuers, and again here).
-
-  // Note that trust records in NSS are keyed on issuer + serial, and there
-  // exist builtin distrust records for which a matching certificate is not
-  // included in the builtin cert list. Therefore, create a temp NSS cert even
-  // if no existing cert matches. (Eg, this uses CERT_NewTempCertificate, not
-  // CERT_FindCertByDERCert.)
-  ScopedCERTCertificate nss_cert(
-      x509_util::CreateCERTCertificateFromBytes(cert->der_cert().AsSpan()));
-  if (!nss_cert) {
-    return CertificateTrust::ForUnspecified();
-  }
-
-  if (!IsCertAllowedForTrust(nss_cert.get())) {
-    return CertificateTrust::ForUnspecified();
-  }
-
-  // Determine the trustedness of the matched certificate.
-  CERTCertTrust nss_trust;
-  if (CERT_GetCertTrust(nss_cert.get(), &nss_trust) != SECSuccess) {
-    return CertificateTrust::ForUnspecified();
-  }
-
-  CertificateTrust trust = GetTrustForNSSTrust(nss_trust);
-  if (trust.enforce_anchor_constraints && IsKnownRoot(nss_cert.get())) {
-    trust.enforce_anchor_constraints = false;
-    trust.enforce_anchor_expiry = false;
-  }
-  return trust;
-}
-
 CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
     const CERTCertTrust& trust) const {
   unsigned int trust_flags = SEC_GET_TRUST_FLAGS(&trust, trustSSL);
@@ -539,44 +486,6 @@ CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
   }
 
   return CertificateTrust::ForUnspecified();
-}
-
-bool TrustStoreNSS::IsCertAllowedForTrust(CERTCertificate* cert) const {
-  if (absl::holds_alternative<UseTrustFromAllUserSlots>(
-          user_slot_trust_setting_)) {
-    return true;
-  }
-
-  crypto::ScopedPK11SlotList slots_for_cert(
-      PK11_GetAllSlotsForCert(cert, nullptr));
-  if (!slots_for_cert) {
-    return false;
-  }
-
-  for (PK11SlotListElement* slot_element =
-           PK11_GetFirstSafe(slots_for_cert.get());
-       slot_element;
-       slot_element = PK11_GetNextSafe(slots_for_cert.get(), slot_element,
-                                       /*restart=*/PR_FALSE)) {
-    PK11SlotInfo* slot = slot_element->slot;
-    bool allow_slot =
-        // Allow the root certs module.
-        PK11_HasRootCerts(slot) ||
-        // Allow read-only internal slots.
-        (PK11_IsInternal(slot) && !PK11_IsRemovable(slot)) ||
-        // Allow configured user slot if specified.
-        (absl::holds_alternative<crypto::ScopedPK11Slot>(
-             user_slot_trust_setting_) &&
-         slot ==
-             absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_).get());
-
-    if (allow_slot) {
-      PK11_FreeSlotListElement(slots_for_cert.get(), slot_element);
-      return true;
-    }
-  }
-
-  return false;
 }
 
 }  // namespace net

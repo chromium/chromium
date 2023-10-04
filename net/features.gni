@@ -45,12 +45,11 @@ declare_args() {
   # flag is false, verification may be done with the platform verifier or the
   # builtin verifier using platform roots, depending on the platform.
   # See https://crbug.com/1216547 for status.
-  chrome_root_store_optional =
-      (is_android && !is_cronet_build) || is_linux || is_chromeos
+  chrome_root_store_optional = is_android && !is_cronet_build
 
   # Platforms for which certificate verification can only be performed using
   # the builtin cert verifier with the Chrome Root Store.
-  chrome_root_store_only = is_win || is_mac
+  chrome_root_store_only = is_win || is_mac || is_linux || is_chromeos
 }
 
 assert(!chrome_root_store_optional || !chrome_root_store_only,
