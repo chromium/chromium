@@ -476,6 +476,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseWindowBoundsForPip);
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseSharedImagesForPepperVideo);
 
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kTheoraVideoCodec);
+#endif
+
 // Based on a |command_line| and the current platform, returns the effective
 // autoplay policy. In other words, it will take into account the default policy
 // if none is specified via the command line and options passed for testing.

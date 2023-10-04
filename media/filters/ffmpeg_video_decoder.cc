@@ -20,6 +20,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_frame.h"
@@ -121,6 +122,15 @@ static void ReleaseVideoBufferImpl(void* opaque, uint8_t* data) {
 
 // static
 bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
+  if (codec == VideoCodec::kTheora &&
+      !base::FeatureList::IsEnabled(kTheoraVideoCodec)) {
+    return false;
+  }
+  if (codec == VideoCodec::kVP8 &&
+      !base::FeatureList::IsEnabled(kFFmpegDecodeOpaqueVP8)) {
+    return false;
+  }
+
   return avcodec_find_decoder(VideoCodecToCodecID(codec)) != nullptr;
 }
 
@@ -242,14 +252,14 @@ void FFmpegVideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
 
   InitCB bound_init_cb = base::BindPostTaskToCurrentDefault(std::move(init_cb));
-
   if (config.is_encrypted()) {
     std::move(bound_init_cb)
         .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
-  if (!ConfigureDecoder(config, low_delay)) {
+  if (!IsCodecSupported(config.codec()) ||
+      !ConfigureDecoder(config, low_delay)) {
     std::move(bound_init_cb).Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }

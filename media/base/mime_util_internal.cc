@@ -302,7 +302,9 @@ void MimeUtil::AddSupportedMediaFormats() {
 
   CodecSet ogg_video_codecs{VP8};
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  ogg_video_codecs.emplace(THEORA);
+  if (base::FeatureList::IsEnabled(kTheoraVideoCodec)) {
+    ogg_video_codecs.emplace(THEORA);
+  }
 #endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
   CodecSet ogg_codecs(ogg_audio_codecs);

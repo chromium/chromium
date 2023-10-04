@@ -1627,6 +1627,13 @@ BASE_FEATURE(kUseSharedImagesForPepperVideo,
              "UseSharedImagesForPepperVideo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+// Allows decoding of theora / vp3 content.
+BASE_FEATURE(kTheoraVideoCodec,
+             "TheoraVideoCodec",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   return base::FeatureList::IsEnabled(kChromeWideEchoCancellation);

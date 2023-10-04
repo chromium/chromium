@@ -56,8 +56,11 @@ constexpr gfx::Size kDefaultSize(128, 128);
 
 bool IsSoftwareCodecSupported(media::VideoCodec codec) {
 #if BUILDFLAG(ENABLE_LIBVPX)
-  if (codec == media::VideoCodec::kVP9)
+  if (codec == media::VideoCodec::kVP9 ||
+      (codec == media::VideoCodec::kVP8 &&
+       !base::FeatureList::IsEnabled(media::kFFmpegDecodeOpaqueVP8))) {
     return true;
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
@@ -188,7 +191,9 @@ void VideoDecoderShim::DecoderImpl::InitializeSoftwareDecoder(
   DCHECK(!decoder_);
 #if BUILDFLAG(ENABLE_LIBVPX) || BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 #if BUILDFLAG(ENABLE_LIBVPX)
-  if (config.codec() == media::VideoCodec::kVP9) {
+  if (config.codec() == media::VideoCodec::kVP9 ||
+      (config.codec() == media::VideoCodec::kVP8 &&
+       !base::FeatureList::IsEnabled(media::kFFmpegDecodeOpaqueVP8))) {
     decoder_ = std::make_unique<media::VpxVideoDecoder>();
   } else
 #endif  // BUILDFLAG(ENABLE_LIBVPX)
