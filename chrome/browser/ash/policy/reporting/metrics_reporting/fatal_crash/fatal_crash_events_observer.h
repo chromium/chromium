@@ -16,8 +16,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/mojo_service_events_observer_base.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
+#include "components/reporting/util/status.h"
 
 namespace reporting {
 
@@ -35,6 +37,12 @@ class FatalCrashEventsObserver
     int64_t capture_timestamp_us;
   };
 
+  using SkippedUploadedCrashCallback =
+      base::RepeatingCallback<void(std::string /* crash_report_id */,
+                                   base::Time /* creation_time */,
+                                   uint64_t /* offset */)>;
+
+  // Create a `FatalCrashEventsObserver` instance.
   static std::unique_ptr<FatalCrashEventsObserver> Create();
 
   FatalCrashEventsObserver(const FatalCrashEventsObserver& other) = delete;
@@ -46,9 +54,12 @@ class FatalCrashEventsObserver
   // Convert a `base::Time` to a timestamp in microseconds.
   static int64_t ConvertTimeToMicroseconds(base::Time t);
 
-  // Sets the callback that is called when a crash is skipped.
-  void SetSkippedCrashCallback(
+  // Sets the callback that is called when an unuploaded crash is skipped.
+  void SetSkippedUnuploadedCrashCallback(
       base::RepeatingCallback<void(LocalIdEntry)> callback);
+
+  // Sets the callback that is called when an uploaded crash is skipped.
+  void SetSkippedUploadedCrashCallback(SkippedUploadedCrashCallback callback);
 
  private:
   // Give `TestEnvironment` the access to the private constructor that specifies
@@ -62,7 +73,6 @@ class FatalCrashEventsObserver
         base::FilePath save_file_path);
     ReportedLocalIdManager(const ReportedLocalIdManager&) = delete;
     ReportedLocalIdManager& operator=(const ReportedLocalIdManager&) = delete;
-
     virtual ~ReportedLocalIdManager();
 
     // Returns true unless the local ID is already in the reported Local IDs or
@@ -130,8 +140,70 @@ class FatalCrashEventsObserver
         GUARDED_BY_CONTEXT(sequence_checker_);
   };
 
+  // Manages uploaded crash info, namely the creation time and offset of
+  // uploads.log since last report.
+  class UploadedCrashInfoManager {
+   public:
+    static std::unique_ptr<UploadedCrashInfoManager> Create(
+        base::FilePath save_file_path);
+    UploadedCrashInfoManager(const UploadedCrashInfoManager&) = delete;
+    UploadedCrashInfoManager& operator=(const UploadedCrashInfoManager&) =
+        delete;
+    virtual ~UploadedCrashInfoManager();
+
+    // Tells whether a given crash event should be reported.
+    bool ShouldReport(
+        const ash::cros_healthd::mojom::CrashUploadInfoPtr& upload_info) const;
+
+    // Updates uploaded crash info if the given info is newer.
+    void Update(base::Time uploads_log_creation_time,
+                uint64_t uploads_log_offset);
+
+   private:
+    // Give `TestEnvironment` the access to the JSON key strings.
+    friend class FatalCrashEventsObserver::TestEnvironment;
+
+    struct ParseResult {
+      int64_t uploads_log_creation_timestamp_ms;
+      uint64_t uploads_log_offset;
+    };
+
+    // Keys of the fields in the save file.
+    static constexpr std::string_view kCreationTimestampMsJsonKey =
+        "creation_timestamp_ms";
+    static constexpr std::string_view kOffsetJsonKey = "offset";
+
+    explicit UploadedCrashInfoManager(base::FilePath save_file_path);
+
+    // Loads the save file in JSON format.
+    [[nodiscard]] base::expected<ParseResult, Status> LoadSaveFile();
+    // Writes the save file in JSON format.
+    Status WriteSaveFile() const;
+    // Is the given creation time and offset newer than the currently saved.
+    bool IsNewer(base::Time uploads_log_creation_time,
+                 uint64_t uploads_log_offset) const;
+
+    SEQUENCE_CHECKER(sequence_checker_);
+
+    // The JSON file that saves the creation time and offset of uploads.log
+    // since last report.
+    const base::FilePath save_file_ GUARDED_BY_CONTEXT(sequence_checker_);
+    // The temporary save file that was written to before updating `save_file_`.
+    const base::FilePath save_file_tmp_ GUARDED_BY_CONTEXT(sequence_checker_){
+        save_file_.AddExtension(".tmp")};
+    // The creation time of uploads.log of the last reported crash. Initialize
+    // this to minimum creation time possible so that the first uploaded crash
+    // (which always has a creation time larger than `base::Time::Min()`) would
+    // always be reported.
+    base::Time uploads_log_creation_time_ GUARDED_BY_CONTEXT(sequence_checker_){
+        base::Time::Min()};
+    // The offset of uploads.log of the last reported crash.
+    uint64_t uploads_log_offset_ GUARDED_BY_CONTEXT(sequence_checker_);
+  };
+
   FatalCrashEventsObserver();
-  explicit FatalCrashEventsObserver(base::FilePath reported_local_id_save_file);
+  FatalCrashEventsObserver(base::FilePath reported_local_id_save_file,
+                           base::FilePath uploaded_crash_info_save_file);
 
   MetricData FillFatalCrashTelemetry(
       const ::ash::cros_healthd::mojom::CrashEventInfoPtr& info);
@@ -154,9 +226,18 @@ class FatalCrashEventsObserver
   std::unique_ptr<ReportedLocalIdManager> reported_local_id_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Called when a crash is skipped and not reported. Currently only used in
-  // tests but production code may also use it in the future.
-  base::RepeatingCallback<void(LocalIdEntry)> skipped_callback_
+  // Manages the state of uploaded crash info.
+  std::unique_ptr<UploadedCrashInfoManager> uploaded_crash_info_manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Called when an unuploaded crash is skipped and not reported. Currently only
+  // used in tests but production code may also use it in the future.
+  base::RepeatingCallback<void(LocalIdEntry)> skipped_unuploaded_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_){base::DoNothing()};
+
+  // Called when an uploaded crash is skipped and not reported. Currently only
+  // used in tests but production code may also use it in the future.
+  SkippedUploadedCrashCallback skipped_uploaded_callback_
       GUARDED_BY_CONTEXT(sequence_checker_){base::DoNothing()};
 
   // If true, stop the processing after the event observed callback is called.

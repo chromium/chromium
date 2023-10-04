@@ -7,20 +7,26 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/shell.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/values.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/user_manager/user_type.h"
@@ -30,11 +36,20 @@ namespace reporting {
 
 using ::ash::cros_healthd::mojom::CrashEventInfo;
 using ::ash::cros_healthd::mojom::CrashEventInfoPtr;
+using ::ash::cros_healthd::mojom::CrashUploadInfoPtr;
 
 namespace {
 
-constexpr std::string_view kDefaultReportedLocalIdFilePath =
+constexpr std::string_view kDefaultReportedLocalIdSaveFilePath =
     "/var/lib/reporting/crash_events/REPORTED_LOCAL_IDS";
+constexpr std::string_view kDefaultUploadedCrashInfoSaveFilePath =
+    "/var/lib/reporting/crash_events/UPLOADED_CRASH_INFO";
+
+// Truncates a string to a maximum of length of `size`.
+[[nodiscard]] std::string_view TruncateString(std::string_view str,
+                                              size_t size) {
+  return str.substr(0u, size);
+}
 
 // Get current user session.
 const ash::UserSession* GetCurrentUserSession() {
@@ -82,14 +97,18 @@ absl::optional<std::string> GetUserEmail(const ash::UserSession* user_session) {
 
 FatalCrashEventsObserver::FatalCrashEventsObserver()
     : FatalCrashEventsObserver(
-          base::FilePath(kDefaultReportedLocalIdFilePath)) {}
+          base::FilePath(kDefaultReportedLocalIdSaveFilePath),
+          base::FilePath(kDefaultUploadedCrashInfoSaveFilePath)) {}
 
 FatalCrashEventsObserver::FatalCrashEventsObserver(
-    base::FilePath reported_local_id_save_file)
+    base::FilePath reported_local_id_save_file,
+    base::FilePath uploaded_crash_info_save_file)
     : MojoServiceEventsObserverBase<ash::cros_healthd::mojom::EventObserver>(
           this),
       reported_local_id_manager_{ReportedLocalIdManager::Create(
-          std::move(reported_local_id_save_file))} {}
+          std::move(reported_local_id_save_file))},
+      uploaded_crash_info_manager_{UploadedCrashInfoManager::Create(
+          std::move(uploaded_crash_info_save_file))} {}
 
 FatalCrashEventsObserver::~FatalCrashEventsObserver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -105,10 +124,16 @@ int64_t FatalCrashEventsObserver::ConvertTimeToMicroseconds(base::Time t) {
   return t.ToJavaTime() * base::Time::kMicrosecondsPerMillisecond;
 }
 
-void FatalCrashEventsObserver::SetSkippedCrashCallback(
+void FatalCrashEventsObserver::SetSkippedUnuploadedCrashCallback(
     base::RepeatingCallback<void(LocalIdEntry)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  skipped_callback_ = std::move(callback);
+  skipped_unuploaded_callback_ = std::move(callback);
+}
+
+void FatalCrashEventsObserver::SetSkippedUploadedCrashCallback(
+    SkippedUploadedCrashCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  skipped_uploaded_callback_ = std::move(callback);
 }
 
 void FatalCrashEventsObserver::OnEvent(
@@ -127,13 +152,26 @@ void FatalCrashEventsObserver::OnEvent(
         !reported_local_id_manager_->ShouldReport(crash_event_info->local_id,
                                                   capture_timestamp_us)) {
       // Crash is already reported. Skip.
-      skipped_callback_.Run({.local_id = std::move(crash_event_info->local_id),
-                             .capture_timestamp_us = capture_timestamp_us});
+      skipped_unuploaded_callback_.Run(
+          {.local_id = std::move(crash_event_info->local_id),
+           .capture_timestamp_us = capture_timestamp_us});
       return;
     }
+  } else {
+    // Uploaded crash.
+    if (!uploaded_crash_info_manager_->ShouldReport(
+            crash_event_info->upload_info)) {
+      // The crash is from an earlier part of uploads.log. Skip.
+      const auto& upload_info = crash_event_info->upload_info;
+      skipped_uploaded_callback_.Run(upload_info->crash_report_id,
+                                     upload_info->creation_time,
+                                     upload_info->offset);
+      return;
+    }
+
+    // TODO(b/266018440): If the crash is found to have been uploaded, need to
+    // mark it as stale in reported local IDs.
   }
-  // TODO(b/266018440): If the crash is found to have been uploaded, need to
-  // remove it from reported local IDs.
 
   MetricData metric_data = FillFatalCrashTelemetry(crash_event_info);
   OnEventObserved(std::move(metric_data));
@@ -151,6 +189,11 @@ void FatalCrashEventsObserver::OnEvent(
       LOG(ERROR) << "Failed to update local ID: " << crash_event_info->local_id;
       return;
     }
+  } else {
+    // Uploaded crash.
+    uploaded_crash_info_manager_->Update(
+        crash_event_info->upload_info->creation_time,
+        crash_event_info->upload_info->offset);
   }
 }
 
@@ -345,4 +388,174 @@ operator()(const LocalIdEntry& a, const LocalIdEntry& b) const {
   return a.capture_timestamp_us > b.capture_timestamp_us;
 }
 
+// static
+std::unique_ptr<FatalCrashEventsObserver::UploadedCrashInfoManager>
+FatalCrashEventsObserver::UploadedCrashInfoManager::Create(
+    base::FilePath save_file_path) {
+  return base::WrapUnique(
+      new UploadedCrashInfoManager(std::move(save_file_path)));
+}
+
+FatalCrashEventsObserver::UploadedCrashInfoManager::UploadedCrashInfoManager(
+    base::FilePath save_file_path)
+    : save_file_{std::move(save_file_path)} {
+  auto result = LoadSaveFile();
+  if (!result.has_value()) {
+    LOG(ERROR) << result.error();
+    return;
+  }
+
+  uploads_log_creation_time_ = base::Time::FromJavaTime(
+      result.value().uploads_log_creation_timestamp_ms);
+  uploads_log_offset_ = result.value().uploads_log_offset;
+}
+
+FatalCrashEventsObserver::UploadedCrashInfoManager::
+    ~UploadedCrashInfoManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+base::expected<FatalCrashEventsObserver::UploadedCrashInfoManager::ParseResult,
+               Status>
+FatalCrashEventsObserver::UploadedCrashInfoManager::LoadSaveFile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::string content;
+  if (!base::ReadFileToString(save_file_, &content)) {
+    return base::unexpected(Status(
+        error::INTERNAL,
+        base::StrCat({"Failed to read save file: ", save_file_.value()})));
+  }
+
+  const auto parsed_result =
+      base::JSONReader::ReadAndReturnValueWithError(content);
+  if (!parsed_result.has_value()) {
+    return base::unexpected(Status(
+        error::INTERNAL,
+        base::StrCat({"Failed to parse the save file ", save_file_.value(),
+                      " as JSON: ", parsed_result.error().ToString()})));
+  }
+
+  const auto* const dict_result = parsed_result.value().GetIfDict();
+  if (dict_result == nullptr) {
+    return base::unexpected(
+        Status(error::INTERNAL,
+               base::StrCat({"Parsed JSON string is not a dict: ",
+                             TruncateString(content, /*size=*/200u)})));
+  }
+
+  const auto* const creation_timestamp_ms_string =
+      dict_result->FindString(kCreationTimestampMsJsonKey);
+  if (creation_timestamp_ms_string == nullptr) {
+    return base::unexpected(Status(
+        error::INTERNAL,
+        base::StrCat(
+            {"Creation timestamp key ", kCreationTimestampMsJsonKey,
+             " not found in JSON: ", TruncateString(content, /*size=*/200u)})));
+  }
+
+  ParseResult result;
+
+  if (!base::StringToInt64(*creation_timestamp_ms_string,
+                           &result.uploads_log_creation_timestamp_ms)) {
+    return base::unexpected(
+        Status(error::INTERNAL,
+               base::StrCat({"Failed to convert timestamp ",
+                             *creation_timestamp_ms_string, " to int64."})));
+  }
+
+  if (result.uploads_log_creation_timestamp_ms < 0) {
+    return base::unexpected(
+        Status(error::INTERNAL,
+               base::StrCat({"Timestamp ", *creation_timestamp_ms_string,
+                             " is negative."})));
+  }
+
+  const auto* const offset_string = dict_result->FindString(kOffsetJsonKey);
+  if (offset_string == nullptr) {
+    return base::unexpected(Status(
+        error::INTERNAL,
+        base::StrCat({"Offset key ", kOffsetJsonKey, " not found in JSON: ",
+                      TruncateString(content, /*size=*/200u)})));
+  }
+
+  if (!base::StringToUint64(*offset_string, &result.uploads_log_offset)) {
+    return base::unexpected(
+        Status(error::INTERNAL, base::StrCat({"Failed to convert offset ",
+                                              *offset_string, " to uint64."})));
+  }
+
+  // Ignore additional keys here even if they are present, so as to keep
+  // slightly better flexibility when more fields are added to this JSON file
+  // (thus reversion won't break the current code).
+
+  return result;
+}
+
+Status FatalCrashEventsObserver::UploadedCrashInfoManager::WriteSaveFile()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::Value::Dict info;
+  info.Set(kCreationTimestampMsJsonKey,
+           base::NumberToString(uploads_log_creation_time_.ToJavaTime()));
+  info.Set(kOffsetJsonKey, base::NumberToString(uploads_log_offset_));
+
+  auto content = base::WriteJson(info);
+  if (!content.has_value()) {
+    return Status(error::INTERNAL,
+                  "Failed to create a JSON string for uploaded crash info");
+  }
+
+  // Write to the temp save file first, then rename it to the official save
+  // file. This would prevent partly written file to be effective, as renaming
+  // within the same partition is atomic on POSIX systems.
+  if (!base::WriteFile(save_file_tmp_, content.value())) {
+    return Status(error::INTERNAL, base::StrCat({"Failed to write save file ",
+                                                 save_file_tmp_.value()}));
+  }
+  if (base::File::Error err;
+      !base::ReplaceFile(save_file_tmp_, save_file_, &err)) {
+    std::ostringstream err_msg;
+    err_msg << "Failed to move file from " << save_file_tmp_ << " to "
+            << save_file_ << ": " << err;
+    return Status(error::INTERNAL, err_msg.str());
+  }
+
+  return Status::StatusOK();
+}
+
+bool FatalCrashEventsObserver::UploadedCrashInfoManager::IsNewer(
+    base::Time uploads_log_creation_time,
+    uint64_t uploads_log_offset) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return std::tie(uploads_log_creation_time, uploads_log_offset) >
+         std::tie(uploads_log_creation_time_, uploads_log_offset_);
+}
+
+bool FatalCrashEventsObserver::UploadedCrashInfoManager::ShouldReport(
+    const CrashUploadInfoPtr& upload_info) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return IsNewer(upload_info->creation_time, upload_info->offset);
+}
+
+void FatalCrashEventsObserver::UploadedCrashInfoManager::Update(
+    base::Time uploads_log_creation_time,
+    uint64_t uploads_log_offset) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!IsNewer(uploads_log_creation_time, uploads_log_offset)) {
+    return;
+  }
+
+  uploads_log_creation_time_ = uploads_log_creation_time;
+  uploads_log_offset_ = uploads_log_offset;
+  const Status status = WriteSaveFile();
+  if (!status.ok()) {
+    LOG(ERROR) << "Failed to write save file: " << status;
+    return;
+  }
+}
 }  // namespace reporting

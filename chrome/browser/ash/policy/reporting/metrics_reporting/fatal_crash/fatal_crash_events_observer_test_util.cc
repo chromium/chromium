@@ -18,12 +18,20 @@ FatalCrashEventsObserver::TestEnvironment::~TestEnvironment() = default;
 std::unique_ptr<FatalCrashEventsObserver>
 FatalCrashEventsObserver::TestEnvironment::CreateFatalCrashEventsObserver()
     const {
-  return base::WrapUnique(new FatalCrashEventsObserver(save_file_path_));
+  return base::WrapUnique(new FatalCrashEventsObserver(
+      GetReportedLocalIdSaveFilePath(), GetUploadedCrashInfoSaveFilePath()));
 }
 
 const base::FilePath&
-FatalCrashEventsObserver::TestEnvironment::GetSaveFilePath() const {
-  return save_file_path_;
+FatalCrashEventsObserver::TestEnvironment::GetReportedLocalIdSaveFilePath()
+    const {
+  return reported_local_id_save_file_path_;
+}
+
+const base::FilePath&
+FatalCrashEventsObserver::TestEnvironment::GetUploadedCrashInfoSaveFilePath()
+    const {
+  return uploaded_crash_info_save_file_path_;
 }
 
 // static
