@@ -202,8 +202,10 @@ void NavigationFinishedWaiter::DidFinishNavigation(
   run_loop_.Quit();
 }
 
-enum LocalWebApprovalSupportEnum { ENABLED = 0, DISABLED = 1 };
-
+enum class LocalWebApprovalSupport {
+  kSupported,
+  kNotSupported
+};
 }  // namespace
 
 class SupervisedUserNavigationThrottleTestBase
@@ -410,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
 
 class SupervisedUserIframeFilterTest
     : public SupervisedUserNavigationThrottleTest,
-      public testing::WithParamInterface<LocalWebApprovalSupportEnum> {
+      public testing::WithParamInterface<LocalWebApprovalSupport> {
  protected:
   SupervisedUserIframeFilterTest() { InitFeatures(); }
 
@@ -615,14 +617,14 @@ void SupervisedUserIframeFilterTest::InitFeatures() {
 }
 
 bool SupervisedUserIframeFilterTest::IsLocalWebApprovalsEnabled() const {
-  return GetParam() == LocalWebApprovalSupportEnum::ENABLED;
+  return GetParam() == LocalWebApprovalSupport::kSupported;
 }
 
 INSTANTIATE_TEST_SUITE_P(
     LocalWebApprovalsEnabled,
     SupervisedUserIframeFilterTest,
-    testing::Values(LocalWebApprovalSupportEnum::ENABLED,
-                    LocalWebApprovalSupportEnum::DISABLED));
+    testing::Values(LocalWebApprovalSupport::kSupported,
+                    LocalWebApprovalSupport::kNotSupported));
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, BlockSubFrame) {
   base::HistogramTester histogram_tester;
@@ -913,8 +915,8 @@ void SupervisedUserNarrowWidthIframeFilterTest::SetUp() {
 INSTANTIATE_TEST_SUITE_P(
     LocalWebApprovalsEnabledNarrowWidth,
     SupervisedUserNarrowWidthIframeFilterTest,
-    testing::Values(LocalWebApprovalSupportEnum::ENABLED,
-                    LocalWebApprovalSupportEnum::DISABLED));
+    testing::Values(LocalWebApprovalSupport::kSupported,
+                    LocalWebApprovalSupport::kNotSupported));
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserNarrowWidthIframeFilterTest,
                        NarrowWidthWindow) {
@@ -992,9 +994,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNarrowWidthIframeFilterTest,
 using ChromeOSLocalWebApprovalsTest = SupervisedUserIframeFilterTest;
 
 // Only test for the local web approvals feature enabled.
-INSTANTIATE_TEST_SUITE_P(,
-                         ChromeOSLocalWebApprovalsTest,
-                         testing::Values(LocalWebApprovalSupportEnum::ENABLED));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ChromeOSLocalWebApprovalsTest,
+    testing::Values(LocalWebApprovalSupport::kSupported));
 
 IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
                        StartLocalWebApprovalsFromMainFrame) {
