@@ -206,6 +206,7 @@ static_library("shopping_service") {
 
   deps = [
     ":account_checker",
+    ":commerce_constants",
     ":commerce_subscription_db_content_proto",
     ":discounts_db_content_proto",
     ":feature_list",
@@ -213,6 +214,7 @@ static_library("shopping_service") {
     ":parcel_tracking_db_content_proto",
     ":pref_names",
     ":proto",
+    ":utils",
     "//base",
     "//components/bookmarks/browser",
     "//components/commerce/core/parcel:parcel",
