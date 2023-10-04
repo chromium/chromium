@@ -6,6 +6,7 @@
 #include <cstring>
 #include "base/memory/values_equivalent.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
@@ -197,7 +198,7 @@ TEST_F(CSSPropertyTest, OriginTrialTestPropertyWithContext) {
   // Enable it:
   LocalDOMWindow* window = GetFrame().DomWindow();
   OriginTrialContext* context = window->GetOriginTrialContext();
-  context->AddFeature(OriginTrialFeature::kOriginTrialsSampleAPI);
+  context->AddFeature(mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPI);
 
   // Context-aware exposure functions should now report the property as
   // exposed.

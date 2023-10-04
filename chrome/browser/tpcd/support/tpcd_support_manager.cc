@@ -38,7 +38,7 @@ TpcdSupportManager::TpcdSupportManager(
     std::unique_ptr<TpcdSupportDelegate> delegate)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<TpcdSupportManager>(*web_contents),
-      delegate_(std::move(delegate)){};
+      delegate_(std::move(delegate)) {}
 
 TpcdSupportManager::~TpcdSupportManager() = default;
 
@@ -127,7 +127,7 @@ void TpcdSupportManager::Check3pcdTrialOnUiThread(
   }
 
   bool enrolled = trial_delegate->IsFeaturePersistedForOrigin(
-      request_origin, partition_origin, blink::OriginTrialFeature::kTpcd,
+      request_origin, partition_origin, blink::mojom::OriginTrialFeature::kTpcd,
       base::Time::Now());
 
   std::move(done_callback)

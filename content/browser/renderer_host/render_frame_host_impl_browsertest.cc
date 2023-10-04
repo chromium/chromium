@@ -1124,7 +1124,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   url::Origin trial_origin = url::Origin::Create(GURL(kOriginTrialUrl));
   EXPECT_TRUE(delegate->IsFeaturePersistedForOrigin(
       /*origin=*/trial_origin, /*partition_origin=*/trial_origin,
-      blink::OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature,
+      blink::mojom::OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature,
       validTime));
 }
 
@@ -1179,7 +1179,7 @@ IN_PROC_BROWSER_TEST_F(
   url::Origin trial_origin = url::Origin::Create(GURL(kThirdPartyScriptUrl));
   EXPECT_TRUE(delegate->IsFeaturePersistedForOrigin(
       /*origin=*/trial_origin, /*partition_origin=*/main_origin,
-      blink::OriginTrialFeature::
+      blink::mojom::OriginTrialFeature::
           kOriginTrialsSampleAPIPersistentThirdPartyDeprecationFeature,
       validTime));
 }

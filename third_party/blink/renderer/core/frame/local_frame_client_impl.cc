@@ -645,9 +645,10 @@ void LocalFrameClientImpl::BeginNavigation(
         source_location->ColumnNumber();
   }
 
-  std::unique_ptr<Vector<OriginTrialFeature>> initiator_origin_trial_features =
-      OriginTrialContext::GetEnabledNavigationFeatures(
-          web_frame_->GetFrame()->DomWindow());
+  std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+      initiator_origin_trial_features =
+          OriginTrialContext::GetEnabledNavigationFeatures(
+              web_frame_->GetFrame()->DomWindow());
   if (initiator_origin_trial_features) {
     navigation_info->initiator_origin_trial_features.reserve(
         initiator_origin_trial_features->size());

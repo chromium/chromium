@@ -1,0 +1,45 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/blink/renderer/build/scripts/scripts.gni")
+
+mojom("origin_trial_feature") {
+  sources = [ "$root_gen_dir/third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  parser_deps = [ ":generate_origin_trial_feature" ]
+
+  export_class_attribute = "BLINK_COMMON_EXPORT"
+  export_define = "BLINK_COMMON_IMPLEMENTATION=1"
+  export_header = "third_party/blink/public/common/common_export.h"
+
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+
+  generate_java = true
+}
+
+blink_python_runner("generate_origin_trial_feature") {
+  script =
+      "../../../renderer/build/scripts/make_origin_trial_feature_mojom_defs.py"
+
+  args = [
+    rebase_path(
+        "//third_party/blink/renderer/platform/runtime_enabled_features.json5",
+        root_build_dir),
+    "--output_dir",
+    rebase_path(
+        "$root_gen_dir/third_party/blink/public/mojom/origin_trial_feature/",
+        root_build_dir),
+  ]
+
+  inputs = scripts_for_json5_files + [
+             "../../../renderer/platform/runtime_enabled_features.json5",
+             "../../../renderer/build/scripts/templates/origin_trial_feature.mojom.tmpl",
+           ]
+  outputs = [ "$root_gen_dir/third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom" ]
+}

@@ -13,7 +13,7 @@ InstallPropertiesPerFeatureFuncType g_install_properties_per_feature_func;
 }  // namespace
 
 void InstallPropertiesPerFeature(ScriptState* script_state,
-                                 OriginTrialFeature feature) {
+                                 mojom::blink::OriginTrialFeature feature) {
   return g_install_properties_per_feature_func(script_state, feature);
 }
 

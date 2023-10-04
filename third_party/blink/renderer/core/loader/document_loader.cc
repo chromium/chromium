@@ -59,6 +59,7 @@
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom-blink.h"
@@ -171,21 +172,22 @@
 namespace blink {
 namespace {
 
-Vector<OriginTrialFeature> CopyInitiatorOriginTrials(
+Vector<mojom::blink::OriginTrialFeature> CopyInitiatorOriginTrials(
     const WebVector<int>& initiator_origin_trial_features) {
-  Vector<OriginTrialFeature> result;
+  Vector<mojom::blink::OriginTrialFeature> result;
   for (auto feature : initiator_origin_trial_features) {
     // Convert from int to OriginTrialFeature. These values are passed between
     // blink navigations. OriginTrialFeature isn't visible outside of blink (and
     // doesn't need to be) so the values are transferred outside of blink as
     // ints and casted to OriginTrialFeature once being processed in blink.
-    result.push_back(static_cast<OriginTrialFeature>(feature));
+    result.push_back(static_cast<mojom::blink::OriginTrialFeature>(feature));
   }
   return result;
 }
 
 WebVector<int> CopyInitiatorOriginTrials(
-    const Vector<OriginTrialFeature>& initiator_origin_trial_features) {
+    const Vector<mojom::blink::OriginTrialFeature>&
+        initiator_origin_trial_features) {
   WebVector<int> result;
   for (auto feature : initiator_origin_trial_features) {
     // Convert from OriginTrialFeature to int. These values are passed between
@@ -301,7 +303,8 @@ struct SameSizeAsDocumentLoader
   ukm::SourceId ukm_source_id;
   UseCounterImpl use_counter;
   const base::TickClock* clock;
-  const Vector<OriginTrialFeature> initiator_origin_trial_features;
+  const Vector<mojom::blink::OriginTrialFeature>
+      initiator_origin_trial_features;
   const Vector<String> force_enabled_origin_trials;
   bool navigation_scroll_allowed;
   bool origin_agent_cluster;
@@ -2863,7 +2866,7 @@ void DocumentLoader::CreateParserPostCommit() {
     if (frame_->GetSettings()
             ->GetForceTouchEventFeatureDetectionForInspector()) {
       window->GetOriginTrialContext()->AddFeature(
-          OriginTrialFeature::kTouchEventFeatureDetection);
+          mojom::blink::OriginTrialFeature::kTouchEventFeatureDetection);
     }
 
     // Enable any origin trials that have been force enabled for this commit.

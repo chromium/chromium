@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -28,7 +28,7 @@ class RuntimeFeatureStateOverrideContext;
 // overridden.
 class PLATFORM_EXPORT FeatureContext {
  public:
-  virtual bool FeatureEnabled(OriginTrialFeature) const = 0;
+  virtual bool FeatureEnabled(mojom::blink::OriginTrialFeature) const = 0;
   virtual RuntimeFeatureStateOverrideContext*
   GetRuntimeFeatureStateOverrideContext() const = 0;
 };

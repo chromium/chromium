@@ -4,7 +4,7 @@
 {{source_files_for_generated_file(template_file, input_files)}}
 
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -95,14 +95,14 @@ bool RuntimeFeatureStateOverrideContext::
 {% endfor %}
 
 void RuntimeFeatureStateOverrideContext::ApplyOriginTrialOverride(
-    const blink::OriginTrialFeature& origin_trial_feature,
+    const blink::mojom::blink::OriginTrialFeature& origin_trial_feature,
     const WTF::Vector<WTF::String>& tokens) {
   // Determine which of the overrideable features has been set
   // via Origin Trial.
   bool overridden = false;
 {% for feature in overridable_features %}
 {% if origin_trial_controlled_features.count(feature) > 0 %}
-  if(origin_trial_feature == blink::OriginTrialFeature::k{{feature.name}}) {
+  if(origin_trial_feature == blink::mojom::blink::OriginTrialFeature::k{{feature.name}}) {
     overridden = Set{{feature.name}}Enabled(tokens);
   }
 {% endif %}

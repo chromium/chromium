@@ -12,12 +12,13 @@ namespace blink {
 
 class ScriptState;
 
-using InstallPropertiesPerFeatureFuncType = void (*)(ScriptState*,
-                                                     OriginTrialFeature);
+using InstallPropertiesPerFeatureFuncType =
+    void (*)(ScriptState*, mojom::blink::OriginTrialFeature);
 
 // Install ES properties associated with the given origin trial feature.
-PLATFORM_EXPORT void InstallPropertiesPerFeature(ScriptState* script_state,
-                                                 OriginTrialFeature feature);
+PLATFORM_EXPORT void InstallPropertiesPerFeature(
+    ScriptState* script_state,
+    mojom::blink::OriginTrialFeature feature);
 
 PLATFORM_EXPORT InstallPropertiesPerFeatureFuncType
 SetInstallPropertiesPerFeatureFunc(InstallPropertiesPerFeatureFuncType func);

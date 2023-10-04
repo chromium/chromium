@@ -61,7 +61,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       HttpsState starter_https_state,
       WorkerClients*,
       std::unique_ptr<WebContentSettingsClient>,
-      const Vector<OriginTrialFeature>* inherited_trial_features,
+      const Vector<mojom::blink::OriginTrialFeature>* inherited_trial_features,
       const base::UnguessableToken& parent_devtools_token,
       std::unique_ptr<WorkerSettings>,
       mojom::blink::V8CacheOptions,
@@ -127,7 +127,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
 
   // Origin trial features to be inherited by worker/worklet from the document
   // loading it.
-  std::unique_ptr<Vector<OriginTrialFeature>> inherited_trial_features;
+  std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+      inherited_trial_features;
 
   // The SecurityOrigin of the Document creating a Worker/Worklet.
   //

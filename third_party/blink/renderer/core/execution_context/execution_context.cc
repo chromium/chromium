@@ -565,7 +565,8 @@ v8::MicrotaskQueue* ExecutionContext::GetMicrotaskQueue() const {
   return GetAgent()->event_loop()->microtask_queue();
 }
 
-bool ExecutionContext::FeatureEnabled(OriginTrialFeature feature) const {
+bool ExecutionContext::FeatureEnabled(
+    mojom::blink::OriginTrialFeature feature) const {
   return origin_trial_context_->IsFeatureEnabled(feature);
 }
 
