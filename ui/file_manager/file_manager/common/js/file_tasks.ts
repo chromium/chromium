@@ -155,6 +155,8 @@ export function annotateTasks(
       } else if (parsedActionId === 'open-encrypted') {
         annotateTask.iconType = 'generic';
         annotateTask.title = str('TASK_OPEN_GDRIVE');
+      } else if (parsedActionId === 'install-isolated-web-app') {
+        annotateTask.iconType = 'removable';
       }
     }
     if (!annotateTask.iconType && taskType === 'web-intent') {

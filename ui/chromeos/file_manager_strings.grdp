@@ -400,6 +400,9 @@
   <message name="IDS_FILE_BROWSER_TASK_LISTEN" desc="Title of the action to play an audio file.">
     Listen
   </message>
+  <message name="IDS_FILE_BROWSER_TASK_INSTALL_ISOLATED_WEB_APP" desc="Title of the action to install an Isolated Web App from a swbn file">
+    Install
+  </message>
   <message name="IDS_FILE_BROWSER_TASK_INSTALL_LINUX_PACKAGE" desc="Title of the action to install a Linux package.">
     Install with Linux
   </message>

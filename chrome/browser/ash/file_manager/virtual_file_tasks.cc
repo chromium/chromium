@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/virtual_tasks/install_isolated_web_app_virtual_task.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/network_service_instance.h"
@@ -27,7 +28,8 @@ std::vector<VirtualTask*>& GetTestVirtualTasks() {
 // on or off dynamically by implementing |IsEnabled()|.
 const std::vector<VirtualTask*> GetVirtualTasks() {
   static const base::NoDestructor<std::vector<VirtualTask*>> virtual_tasks(
-      std::initializer_list<VirtualTask*>({}));
+      std::initializer_list<VirtualTask*>(
+          {new InstallIsolatedWebAppVirtualTask()}));
   if (!GetTestVirtualTasks().empty()) {
     return GetTestVirtualTasks();
   }
