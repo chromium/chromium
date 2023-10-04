@@ -18,6 +18,7 @@ import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_page/settings_card.js';
 import '../parental_controls_page/parental_controls_page.js';
+import '../parental_controls_page/parental_controls_settings_card.js';
 import './account_manager_settings_card.js';
 import './additional_accounts_settings_card.js';
 

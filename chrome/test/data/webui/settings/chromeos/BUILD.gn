@@ -306,6 +306,7 @@ build_webui_tests("build") {
     "os_settings_ui/user_action_recorder_test.ts",
 
     "parental_controls_page/parental_controls_page_test.ts",
+    "parental_controls_page/parental_controls_settings_card_test.ts",
     "parental_controls_page/test_parental_controls_browser_proxy.ts",
 
     "personalization_page/personalization_page_with_personalization_hub_test.ts",

@@ -11,7 +11,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -375,5 +375,47 @@ suite('<os-settings-people-page>', () => {
 
       assertTrue(isVisible(additionalAccountsSettingsCard));
     });
+
+    test(
+        'parental controls settings card is visible when showParentalControls is enabled',
+        async () => {
+          loadTimeData.overrideValues({
+            // Simulate parental controls.
+            showParentalControls: true,
+          });
+
+          createPage();
+
+          await accountManagerBrowserProxy.whenCalled('getAccounts');
+          await syncBrowserProxy.whenCalled('getSyncStatus');
+          flush();
+
+          const parentalControlsSettingsCard =
+              peoplePage.shadowRoot!.querySelector(
+                  'parental-controls-settings-card');
+
+          assertTrue(isVisible(parentalControlsSettingsCard));
+        });
+
+    test(
+        'parental controls settings card is not shown when showParentalControls is disabled',
+        async () => {
+          loadTimeData.overrideValues({
+            // Simulate parental controls.
+            showParentalControls: false,
+          });
+
+          createPage();
+
+          await accountManagerBrowserProxy.whenCalled('getAccounts');
+          await syncBrowserProxy.whenCalled('getSyncStatus');
+          flush();
+
+          const parentalControlsSettingsCard =
+              peoplePage.shadowRoot!.querySelector(
+                  'parental-controls-settings-card');
+
+          assertNull(parentalControlsSettingsCard);
+        });
   });
 });

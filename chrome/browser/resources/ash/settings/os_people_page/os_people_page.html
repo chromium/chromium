@@ -33,6 +33,10 @@
     --cr-link-row-icon-width: var(--icon-width);
   }
 
+  parental-controls-settings-card {
+    --cr-link-row-icon-width: var(--icon-width);
+  }
+
   .icon-container {
     display: flex;
     flex-shrink: 0;
@@ -51,6 +55,11 @@
       <additional-accounts-settings-card
           prefs="{{prefs}}">
       </additional-accounts-settings-card>
+      <template is="dom-if" if="[[showParentalControls_]]">
+        <parental-controls-settings-card
+            prefs="{{prefs}}">
+        </parental-controls-settings-card>
+      </template>
     </div>
   </template>
 

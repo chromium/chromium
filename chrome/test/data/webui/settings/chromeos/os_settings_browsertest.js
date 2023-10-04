@@ -960,6 +960,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'parental_controls_page/parental_controls_page_test.js'
  ],
  [
+   'ParentalControlsSettingsCard',
+   'parental_controls_page/parental_controls_settings_card_test.js'
+ ],
+ [
    'OsPeoplePageAccountManagerSettingsCard',
    'os_people_page/account_manager_settings_card_test.js',
  ],
