@@ -38,17 +38,6 @@ const LayoutObject* PositionFallbackBoundsObject(
       ->FindTargetAnchor(*layout_object->StyleRef().PositionFallbackBounds());
 }
 
-const PaintLayer* ContainingScrollContainerLayer(const PaintLayer& layer) {
-  // Normally, `scroller_layer` is the result. There's only one special case
-  // where `layer` is fixed-positioned and `scroller_layer` is the LayoutView,
-  // then `layer` doesn't actually scroll with `scroller_layer`, and null
-  // should be returned.
-  bool is_fixed_to_view = false;
-  const PaintLayer* scroller_layer =
-      layer.ContainingScrollContainerLayer(&is_fixed_to_view);
-  return is_fixed_to_view ? nullptr : scroller_layer;
-}
-
 const Vector<NonOverflowingScrollRange>* GetNonOverflowingScrollRanges(
     const LayoutObject* layout_object) {
   if (!layout_object || !layout_object->IsOutOfFlowPositioned()) {
@@ -68,15 +57,15 @@ AnchorPositionScrollData::ScrollContainersData GetScrollContainersData(
 
   CHECK(layout_object->IsBox());
   const PaintLayer* starting_layer =
-      anchor_or_bounds->HasLayer()
-          ? ContainingScrollContainerLayer(
-                *To<LayoutBoxModelObject>(anchor_or_bounds)->Layer())
-          : anchor_or_bounds->ContainingScrollContainer()->Layer();
+      anchor_or_bounds->ContainingScrollContainerLayer(
+          true /*ignore_layout_view_for_fixed_pos*/);
   const PaintLayer* bounding_layer =
-      ContainingScrollContainerLayer(*To<LayoutBox>(layout_object)->Layer());
+      layout_object->ContainingScrollContainerLayer(
+          true /*ignore_layout_view_for_fixed_pos*/);
   for (const PaintLayer* layer = starting_layer;
        layer && layer != bounding_layer;
-       layer = ContainingScrollContainerLayer(*layer)) {
+       layer = layer->GetLayoutObject().ContainingScrollContainerLayer(
+           true /*ignore_layout_view_for_fixed_pos*/)) {
     const PaintLayerScrollableArea* scrollable_area =
         layer->GetScrollableArea();
     result.scroll_container_ids.push_back(

@@ -1695,15 +1695,34 @@ const LayoutBlock* LayoutObject::InclusiveContainingBlock() const {
   return layout_block ? layout_block : ContainingBlock();
 }
 
-const LayoutBox* LayoutObject::ContainingScrollContainer() const {
+const PaintLayer* LayoutObject::ContainingScrollContainerLayer(
+    bool ignore_layout_view_for_fixed_pos) const {
   NOT_DESTROYED();
-  if (auto* layer = EnclosingLayer()) {
-    if (auto* box = layer->GetLayoutBox()) {
-      if (box != this && box->IsScrollContainer())
-        return box;
+  const PaintLayer* layer = EnclosingLayer();
+  if (!layer) {
+    return nullptr;
+  }
+  if (auto* box = layer->GetLayoutBox()) {
+    if (box != this && box->IsScrollContainer()) {
+      return layer;
     }
-    if (auto* scroll_container_layer = layer->ContainingScrollContainerLayer())
-      return scroll_container_layer->GetLayoutBox();
+  }
+  bool is_fixed_to_view = false;
+  if (auto* scroll_container_layer =
+          layer->ContainingScrollContainerLayer(&is_fixed_to_view)) {
+    if (!is_fixed_to_view || !ignore_layout_view_for_fixed_pos) {
+      return scroll_container_layer;
+    }
+  }
+  return nullptr;
+}
+
+const LayoutBox* LayoutObject::ContainingScrollContainer(
+    bool ignore_layout_view_for_fixed_pos) const {
+  NOT_DESTROYED();
+  if (const PaintLayer* scroll_container_layer =
+          ContainingScrollContainerLayer(ignore_layout_view_for_fixed_pos)) {
+    return scroll_container_layer->GetLayoutBox();
   }
   return nullptr;
 }

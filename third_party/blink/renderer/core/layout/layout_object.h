@@ -2349,7 +2349,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   const LayoutBlock* InclusiveContainingBlock() const;
 
-  const LayoutBox* ContainingScrollContainer() const;
+  const LayoutBox* ContainingScrollContainer(
+      bool ignore_layout_view_for_fixed_pos = false) const;
+  const PaintLayer* ContainingScrollContainerLayer(
+      bool ignore_layout_view_for_fixed_pos = false) const;
 
   bool CanContainAbsolutePositionObjects() const {
     NOT_DESTROYED();
