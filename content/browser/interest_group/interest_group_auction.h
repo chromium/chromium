@@ -904,7 +904,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // True if all bids have been generated (or decoded from additional_bids) and
   // scored and all config promises resolved.
   bool IsBiddingAndScoringPhaseComplete() const {
-    CHECK(started_bidding_and_scoring_phase_);
+    CHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
     return num_scoring_dependencies_ == 0 && bids_being_scored_ == 0 &&
            unscored_bids_.empty();
   }
@@ -1186,8 +1186,10 @@ class CONTENT_EXPORT InterestGroupAuction
   // AuctionWorkletManager.
   bool seller_worklet_received_ = false;
 
-  // True once we enter the bidding and scoring phase.
-  bool started_bidding_and_scoring_phase_ = false;
+  enum class PhaseState { kBefore, kDuring, kAfter };
+  // Note: this should only be used for real bidding and scoring phase, not
+  // when StartFromServerResponse is used.
+  PhaseState bidding_and_scoring_phase_state_ = PhaseState::kBefore;
 
   // Number of things that are pending that are needed to score everything.
   // This includes bidders that are still attempting to generate bids ---

@@ -130,6 +130,8 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
                    const std::string& content,
                    net::HttpStatusCode status = net::HTTP_OK);
 
+  void EraseResponse(const GURL& url) { responses_.erase(url); }
+
   // Returns true if there is a request for a given URL with a living client
   // that did not produce a response yet. If |request_out| is non-null,
   // it will give a const pointer to the request.
