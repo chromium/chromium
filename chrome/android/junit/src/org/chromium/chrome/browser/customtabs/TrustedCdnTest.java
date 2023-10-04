@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -14,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
@@ -92,7 +94,10 @@ public class TrustedCdnTest {
 
         mCustomTabTrustedCdnPublisherUrlVisibility = new CustomTabTrustedCdnPublisherUrlVisibility(
                 mWindowAndroid, mLifecycleDispatcher, () -> mShouldPackageShowPublisherUrl);
-        TrustedCdn.setPublisherUrlForTesting(mTab, PUBLISHER_URL);
+        doReturn(PUBLISHER_URL)
+                .when(mTrustedCdnNatives)
+                .getPublisherUrl(ArgumentMatchers.anyLong());
+        TrustedCdn.initForTesting(mTab);
     }
 
     @Test
