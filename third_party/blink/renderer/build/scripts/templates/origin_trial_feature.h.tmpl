@@ -3,12 +3,16 @@
 
 {{source_files_for_generated_file(template_file, input_files)}}
 
-module blink.mojom;
+#ifndef {{header_guard}}
+#define {{header_guard}}
 
-// These enum values should not be persisted nor logged to histograms.
-enum OriginTrialFeature {
+#include <cstdint>
+
+namespace blink {
+
+enum class OriginTrialFeature : int32_t {
   // For testing
-  kNonExisting,
+  kNonExisting = 0,
 
   {% for feature in features %}
   {% if feature.origin_trial_feature_name %}
@@ -16,3 +20,7 @@ enum OriginTrialFeature {
   {% endif %}
   {% endfor %}
 };
+
+}  // namespace blink
+
+#endif  // {{header_guard}}

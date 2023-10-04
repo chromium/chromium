@@ -345,7 +345,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual bool RequireTrustedTypes() const;
 
   // FeatureContext override
-  bool FeatureEnabled(mojom::blink::OriginTrialFeature) const override;
+  bool FeatureEnabled(OriginTrialFeature) const override;
 
   // Tests whether the policy-controlled feature is enabled in this frame.
   // Optionally sends a report to any registered reporting observers or

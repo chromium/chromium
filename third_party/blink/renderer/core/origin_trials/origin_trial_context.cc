@@ -17,7 +17,6 @@
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -99,7 +98,7 @@ String ExtractTokenOrQuotedString(const String& header_value, unsigned& pos) {
 // Returns whether the given feature can be activated across navigations. Only
 // features reviewed and approved by security reviewers can be activated across
 // navigations.
-bool IsCrossNavigationFeature(mojom::blink::OriginTrialFeature feature) {
+bool IsCrossNavigationFeature(OriginTrialFeature feature) {
   return origin_trials::FeatureEnabledForNavigation(feature);
 }
 
@@ -221,7 +220,7 @@ void OriginTrialContext::AddTokens(ExecutionContext* context,
 // static
 void OriginTrialContext::ActivateWorkerInheritedFeatures(
     ExecutionContext* context,
-    const Vector<mojom::blink::OriginTrialFeature>* features) {
+    const Vector<OriginTrialFeature>* features) {
   if (!features || features->empty())
     return;
   DCHECK(context && context->GetOriginTrialContext());
@@ -233,7 +232,7 @@ void OriginTrialContext::ActivateWorkerInheritedFeatures(
 // static
 void OriginTrialContext::ActivateNavigationFeaturesFromInitiator(
     ExecutionContext* context,
-    const Vector<mojom::blink::OriginTrialFeature>* features) {
+    const Vector<OriginTrialFeature>* features) {
   if (!features || features->empty())
     return;
   DCHECK(context && context->GetOriginTrialContext());
@@ -262,7 +261,7 @@ std::unique_ptr<Vector<String>> OriginTrialContext::GetTokens(
 }
 
 // static
-std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+std::unique_ptr<Vector<OriginTrialFeature>>
 OriginTrialContext::GetInheritedTrialFeatures(
     ExecutionContext* execution_context) {
   DCHECK(execution_context);
@@ -272,7 +271,7 @@ OriginTrialContext::GetInheritedTrialFeatures(
 }
 
 // static
-std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+std::unique_ptr<Vector<OriginTrialFeature>>
 OriginTrialContext::GetEnabledNavigationFeatures(
     ExecutionContext* execution_context) {
   DCHECK(execution_context);
@@ -281,28 +280,28 @@ OriginTrialContext::GetEnabledNavigationFeatures(
   return context ? context->GetEnabledNavigationFeatures() : nullptr;
 }
 
-std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+std::unique_ptr<Vector<OriginTrialFeature>>
 OriginTrialContext::GetInheritedTrialFeatures() const {
   if (enabled_features_.empty()) {
     return nullptr;
   }
-  std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>> result =
-      std::make_unique<Vector<mojom::blink::OriginTrialFeature>>();
+  std::unique_ptr<Vector<OriginTrialFeature>> result =
+      std::make_unique<Vector<OriginTrialFeature>>();
   // TODO(crbug.com/1083407): Handle features from
   // |navigation_activated_features_| and |feature_expiry_times_| expiry.
-  for (const mojom::blink::OriginTrialFeature& feature : enabled_features_) {
+  for (const OriginTrialFeature& feature : enabled_features_) {
     result->push_back(feature);
   }
   return result;
 }
 
-std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+std::unique_ptr<Vector<OriginTrialFeature>>
 OriginTrialContext::GetEnabledNavigationFeatures() const {
   if (enabled_features_.empty())
     return nullptr;
-  std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>> result =
-      std::make_unique<Vector<mojom::blink::OriginTrialFeature>>();
-  for (const mojom::blink::OriginTrialFeature& feature : enabled_features_) {
+  std::unique_ptr<Vector<OriginTrialFeature>> result =
+      std::make_unique<Vector<OriginTrialFeature>>();
+  for (const OriginTrialFeature& feature : enabled_features_) {
     if (IsCrossNavigationFeature(feature)) {
       result->push_back(feature);
     }
@@ -362,16 +361,16 @@ void OriginTrialContext::AddTokens(const Vector<String>& tokens) {
 }
 
 void OriginTrialContext::ActivateWorkerInheritedFeatures(
-    const Vector<mojom::blink::OriginTrialFeature>& features) {
-  for (const mojom::blink::OriginTrialFeature& feature : features) {
+    const Vector<OriginTrialFeature>& features) {
+  for (const OriginTrialFeature& feature : features) {
     enabled_features_.insert(feature);
   }
   InitializePendingFeatures();
 }
 
 void OriginTrialContext::ActivateNavigationFeaturesFromInitiator(
-    const Vector<mojom::blink::OriginTrialFeature>& features) {
-  for (const mojom::blink::OriginTrialFeature& feature : features) {
+    const Vector<OriginTrialFeature>& features) {
+  for (const OriginTrialFeature& feature : features) {
     if (IsCrossNavigationFeature(feature)) {
       navigation_activated_features_.insert(feature);
     }
@@ -409,11 +408,11 @@ void OriginTrialContext::InitializePendingFeatures() {
 }
 
 bool OriginTrialContext::InstallFeatures(
-    const HashSet<mojom::blink::OriginTrialFeature>& features,
+    const HashSet<OriginTrialFeature>& features,
     Document& document,
     ScriptState* script_state) {
   bool added_binding_features = false;
-  for (mojom::blink::OriginTrialFeature enabled_feature : features) {
+  for (OriginTrialFeature enabled_feature : features) {
     if (installed_features_.Contains(enabled_feature))
       continue;
 
@@ -439,9 +438,9 @@ bool OriginTrialContext::InstallFeatures(
 
 bool OriginTrialContext::InstallSettingFeature(
     Document& document,
-    mojom::blink::OriginTrialFeature enabled_feature) {
+    OriginTrialFeature enabled_feature) {
   switch (enabled_feature) {
-    case mojom::blink::OriginTrialFeature::kAutoDarkMode:
+    case OriginTrialFeature::kAutoDarkMode:
       if (document.GetSettings())
         document.GetSettings()->SetForceDarkModeEnabled(true);
       return true;
@@ -451,19 +450,17 @@ bool OriginTrialContext::InstallSettingFeature(
   }
 }
 
-void OriginTrialContext::AddFeature(mojom::blink::OriginTrialFeature feature) {
+void OriginTrialContext::AddFeature(OriginTrialFeature feature) {
   enabled_features_.insert(feature);
   InitializePendingFeatures();
 }
 
-bool OriginTrialContext::IsFeatureEnabled(
-    mojom::blink::OriginTrialFeature feature) const {
+bool OriginTrialContext::IsFeatureEnabled(OriginTrialFeature feature) const {
   return enabled_features_.Contains(feature) ||
          navigation_activated_features_.Contains(feature);
 }
 
-base::Time OriginTrialContext::GetFeatureExpiry(
-    mojom::blink::OriginTrialFeature feature) {
+base::Time OriginTrialContext::GetFeatureExpiry(OriginTrialFeature feature) {
   if (!IsFeatureEnabled(feature))
     return base::Time();
 
@@ -475,7 +472,7 @@ base::Time OriginTrialContext::GetFeatureExpiry(
 }
 
 bool OriginTrialContext::IsNavigationFeatureActivated(
-    mojom::blink::OriginTrialFeature feature) const {
+    OriginTrialFeature feature) const {
   return navigation_activated_features_.Contains(feature);
 }
 
@@ -560,40 +557,32 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   return true;
 }
 
-Vector<mojom::blink::OriginTrialFeature>
-OriginTrialContext::RestrictedFeaturesForTrial(const String& trial_name) {
+Vector<OriginTrialFeature> OriginTrialContext::RestrictedFeaturesForTrial(
+    const String& trial_name) {
   if (trial_name == "PrivacySandboxAdsAPIs") {
-    Vector<mojom::blink::OriginTrialFeature> restricted;
-    if (!base::FeatureList::IsEnabled(features::kInterestGroupStorage)) {
-      restricted.push_back(mojom::blink::OriginTrialFeature::kFledge);
-    }
-    if (!base::FeatureList::IsEnabled(features::kBrowsingTopics)) {
-      restricted.push_back(mojom::blink::OriginTrialFeature::kTopicsAPI);
-    }
+    Vector<OriginTrialFeature> restricted;
+    if (!base::FeatureList::IsEnabled(features::kInterestGroupStorage))
+      restricted.push_back(OriginTrialFeature::kFledge);
+    if (!base::FeatureList::IsEnabled(features::kBrowsingTopics))
+      restricted.push_back(OriginTrialFeature::kTopicsAPI);
     if (!base::FeatureList::IsEnabled(features::kBrowsingTopics) ||
         !base::FeatureList::IsEnabled(features::kBrowsingTopicsXHR)) {
-      restricted.push_back(mojom::blink::OriginTrialFeature::kTopicsXHR);
+      restricted.push_back(OriginTrialFeature::kTopicsXHR);
     }
     if (!base::FeatureList::IsEnabled(features::kBrowsingTopics) ||
         !base::FeatureList::IsEnabled(features::kBrowsingTopicsDocumentAPI)) {
-      restricted.push_back(
-          mojom::blink::OriginTrialFeature::kTopicsDocumentAPI);
+      restricted.push_back(OriginTrialFeature::kTopicsDocumentAPI);
     }
     if (!base::FeatureList::IsEnabled(
             attribution_reporting::features::kConversionMeasurement)) {
-      restricted.push_back(
-          mojom::blink::OriginTrialFeature::kAttributionReporting);
+      restricted.push_back(OriginTrialFeature::kAttributionReporting);
     }
-    if (!base::FeatureList::IsEnabled(features::kFencedFrames)) {
-      restricted.push_back(mojom::blink::OriginTrialFeature::kFencedFrames);
-    }
-    if (!base::FeatureList::IsEnabled(features::kSharedStorageAPI)) {
-      restricted.push_back(mojom::blink::OriginTrialFeature::kSharedStorageAPI);
-    }
-    if (!base::FeatureList::IsEnabled(features::kFencedFramesAPIChanges)) {
-      restricted.push_back(
-          mojom::blink::OriginTrialFeature::kFencedFramesAPIChanges);
-    }
+    if (!base::FeatureList::IsEnabled(features::kFencedFrames))
+      restricted.push_back(OriginTrialFeature::kFencedFrames);
+    if (!base::FeatureList::IsEnabled(features::kSharedStorageAPI))
+      restricted.push_back(OriginTrialFeature::kSharedStorageAPI);
+    if (!base::FeatureList::IsEnabled(features::kFencedFramesAPIChanges))
+      restricted.push_back(OriginTrialFeature::kFencedFramesAPIChanges);
     return restricted;
   }
 
@@ -603,8 +592,8 @@ OriginTrialContext::RestrictedFeaturesForTrial(const String& trial_name) {
 OriginTrialFeaturesEnabled OriginTrialContext::EnableTrialFromName(
     const String& trial_name,
     base::Time expiry_time) {
-  Vector<mojom::blink::OriginTrialFeature> origin_trial_features =
-      Vector<mojom::blink::OriginTrialFeature>();
+  Vector<OriginTrialFeature> origin_trial_features =
+      Vector<OriginTrialFeature>();
   if (!CanEnableTrialFromName(trial_name)) {
     DVLOG(1) << "EnableTrialFromName: cannot enable trial " << trial_name;
     OriginTrialFeaturesEnabled result = {OriginTrialStatus::kTrialNotAllowed,
@@ -612,11 +601,11 @@ OriginTrialFeaturesEnabled OriginTrialContext::EnableTrialFromName(
     return result;
   }
 
-  Vector<mojom::blink::OriginTrialFeature> restricted =
+  Vector<OriginTrialFeature> restricted =
       RestrictedFeaturesForTrial(trial_name);
 
   bool did_enable_feature = false;
-  for (mojom::blink::OriginTrialFeature feature :
+  for (OriginTrialFeature feature :
        origin_trials::FeaturesForTrial(trial_name.Utf8())) {
     if (!origin_trials::FeatureEnabledForOS(feature)) {
       DVLOG(1) << "EnableTrialFromName: feature " << static_cast<int>(feature)
@@ -640,7 +629,7 @@ OriginTrialFeaturesEnabled OriginTrialContext::EnableTrialFromName(
       feature_expiry_times_.Set(feature, expiry_time);
 
     // Also enable any features implied by this feature.
-    for (mojom::blink::OriginTrialFeature implied_feature :
+    for (OriginTrialFeature implied_feature :
          origin_trials::GetImpliedFeatures(feature)) {
       enabled_features_.insert(implied_feature);
       origin_trial_features.push_back(implied_feature);
@@ -698,7 +687,7 @@ bool OriginTrialContext::EnableTrialFromToken(
         trial_name, token_result.ParsedToken()->expiry_time());
     trial_status = result.status;
     // Go through the features and map them to the token that enabled them.
-    for (mojom::blink::OriginTrialFeature const& feature : result.features) {
+    for (OriginTrialFeature const& feature : result.features) {
       auto feature_iter = feature_to_tokens_.find(feature);
       // A feature may have 0 to many tokens associated with it.
       if (feature_iter == feature_to_tokens_.end()) {

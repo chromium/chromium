@@ -11,7 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "url/origin.h"
 
 namespace content {
@@ -69,11 +69,10 @@ class CONTENT_EXPORT OriginTrialsControllerDelegate {
   // be enabled.
   // TODO(https://crbug.com/1410180): Switch `partition_origin` to use Cookie
   // partitioning.
-  virtual bool IsFeaturePersistedForOrigin(
-      const url::Origin& origin,
-      const url::Origin& partition_origin,
-      blink::mojom::OriginTrialFeature feature,
-      const base::Time current_time) = 0;
+  virtual bool IsFeaturePersistedForOrigin(const url::Origin& origin,
+                                           const url::Origin& partition_origin,
+                                           blink::OriginTrialFeature feature,
+                                           const base::Time current_time) = 0;
 
   // Return the list of persistent origin trials that have been saved for
   // `origin`, partitioned by `partition_origin`, and haven't expired given the

@@ -74,9 +74,8 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
         dedicated_worker_host,
     mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
         back_forward_cache_controller_host) {
-  std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
-      inherited_trial_features =
-          std::move(creation_params->inherited_trial_features);
+  std::unique_ptr<Vector<OriginTrialFeature>> inherited_trial_features =
+      std::move(creation_params->inherited_trial_features);
   BeginFrameProviderParams begin_frame_provider_params =
       creation_params->begin_frame_provider_params;
 
@@ -132,8 +131,7 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     DedicatedWorkerThread* thread,
     base::TimeTicks time_origin,
-    std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
-        inherited_trial_features,
+    std::unique_ptr<Vector<OriginTrialFeature>> inherited_trial_features,
     const BeginFrameProviderParams& begin_frame_provider_params,
     bool parent_cross_origin_isolated_capability,
     bool parent_is_isolated_context,
@@ -156,8 +154,7 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     ParsedCreationParams parsed_creation_params,
     DedicatedWorkerThread* thread,
     base::TimeTicks time_origin,
-    std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
-        inherited_trial_features,
+    std::unique_ptr<Vector<OriginTrialFeature>> inherited_trial_features,
     const BeginFrameProviderParams& begin_frame_provider_params,
     bool parent_cross_origin_isolated_capability,
     bool parent_is_isolated_context,

@@ -17,8 +17,8 @@
 #include "components/origin_trials/common/persisted_trial_token.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 
 namespace url {
 class Origin;
@@ -61,7 +61,7 @@ class OriginTrials : public KeyedService,
       const base::Time current_time) override;
   bool IsFeaturePersistedForOrigin(const url::Origin& origin,
                                    const url::Origin& partition_origin,
-                                   blink::mojom::OriginTrialFeature feature,
+                                   blink::OriginTrialFeature feature,
                                    const base::Time current_time) override;
   base::flat_set<std::string> GetPersistedTrialsForOrigin(
       const url::Origin& origin,
@@ -90,8 +90,8 @@ class OriginTrials : public KeyedService,
       const url::Origin& origin,
       const url::Origin& partition_origin,
       const base::Time current_time,
-      const absl::optional<blink::mojom::OriginTrialFeature>
-          trial_feature_match) const;
+      const absl::optional<blink::OriginTrialFeature> trial_feature_match)
+      const;
 
   // Update the stored tokens for `origin` with the `new_tokens`, partitioned by
   // `partition_site`.
