@@ -10,6 +10,14 @@
 <body>
 <script>
 
+  // This can be used for either iframes or top-level windows.
+  // If there is an opener, this is a top-level window, so
+  // send messages to the opener. Otherwise, this is an iframe,
+  // so send messages to the parent.
+  let message_dest = window.opener;
+  if (!message_dest)
+    message_dest = window.parent;
+
   // Fake Test class that only supports adding cleanup callbacks,
   // primarily to leave interest groups once the test is complete.
   function Test() {
@@ -31,8 +39,9 @@
   };
 
   // Create a bogus test instance that tracks cleanup callbacks. The
-  // parent frame is expected to run test_instance.do_cleanup() and
-  // wait for it to complete before destroying the frame.
+  // main frame managing the test is expected to post a message
+  // to run test_instance.do_cleanup() and wait for it to complete
+  // before destroying the frame.
   let test_instance = new Test();
 
   // Register a message event listener that listens for events with data
@@ -66,11 +75,12 @@
       message.result = e.toString();
     }
     message.messageUuid = event.data.messageUuid;
-    window.parent.postMessage(message, '*');
+
+    message_dest.postMessage(message, '*');
   });
 
-  // Inform parent that the iframe has finished loading.
-  window.parent.postMessage(
+  // Inform "message_dest" that the frame has finished loading.
+  message_dest.postMessage(
       {messageUuid: '{{GET[uuid]}}', result: 'load complete'},
       '*');
 </script>
