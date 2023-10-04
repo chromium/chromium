@@ -3540,7 +3540,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
 
 // Tests that if we combine a desk in overview, the overview applied clipping is
 // removed properly (other portions of the window will not be visible on exiting
-// overview). Regression test for b/282010852.
+// overview). Regression test for http://b/282010852.
 TEST_P(OverviewSessionTest, WindowClippingAfterCombiningDesks) {
   // Need at least two desks to combine them.
   auto* controller = DesksController::Get();
@@ -3568,6 +3568,37 @@ TEST_P(OverviewSessionTest, WindowClippingAfterCombiningDesks) {
   ToggleOverview();
   WaitForOverviewExitAnimation();
   EXPECT_TRUE(normal_window->layer()->clip_rect().IsEmpty());
+}
+
+// Tests that if we tab while the desks bar is sliding out, there is no crash.
+// Regression test for http://b/302708219.
+TEST_P(OverviewSessionTest, TabbingDuringExitAnimation) {
+  ui::ScopedAnimationDurationScaleMode scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  ToggleOverview();
+  WaitForOverviewEnterAnimation();
+
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  const views::Widget* desks_widget = overview_grid->desks_widget();
+
+  // First activate the desks bar by clicking it (but do not click on the desk
+  // preview because that will exit overview). See bug details for why we need
+  // to activate the desks bar first.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->set_current_screen_location(
+      desks_widget->GetWindowBoundsInScreen().origin());
+  generator->ClickLeftButton();
+  ASSERT_TRUE(wm::IsActiveWindow(desks_widget->GetNativeWindow()));
+
+  // Exit overview. This will slide out the desks widget.
+  ToggleOverview();
+
+  // Try tab focus traversal while the animation is in progress. There should be
+  // no crash.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
 }
 
 // If you update the parameterisation of OverviewSessionTest also update the
