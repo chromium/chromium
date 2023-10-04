@@ -32,6 +32,7 @@ class FakeFileSystemInstance;
 }  // namespace arc
 
 namespace content {
+class TestNavigationObserver;
 class WebContents;
 }  // namespace content
 
@@ -349,6 +350,7 @@ class FileManagerBrowserTestBase
   std::unique_ptr<SmbfsTestVolume> smbfs_volume_;
   std::unique_ptr<HiddenTestVolume> hidden_volume_;
   std::unique_ptr<FileSystemProviderTestVolume> file_system_provider_volume_;
+  std::unique_ptr<content::TestNavigationObserver> test_navigation_observer_;
 
   // Map from source path (e.g. sftp://1:2) to volume.
   base::flat_map<std::string, std::unique_ptr<GuestOsTestVolume>>

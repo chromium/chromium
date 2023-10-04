@@ -3616,12 +3616,29 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  // Spawn the open file window, the one which is invoked by Ctrl+O. Since this
+  // window typically is used to navigate the browser to the local file, it
+  // stores the navigation observer, which later could be used via the
+  // `waitForSelectFileDialogNavigation` message.
   if (name == "runSelectFileDialog") {
     browser()->OpenFile();
-    content::TestNavigationObserver observer(
-        browser()->tab_strip_model()->GetActiveWebContents(), 1);
-    observer.Wait();
-    *output = observer.last_navigation_url().spec();
+    test_navigation_observer_ =
+        std::make_unique<content::TestNavigationObserver>(
+            browser()->tab_strip_model()->GetActiveWebContents(), 1);
+    return;
+  }
+
+  // Waits for the navigation which will happen or happened since a stored
+  // navigation observer was created. Return the URL which the browser was
+  // navigated to.
+  if (name == "waitForSelectFileDialogNavigation") {
+    if (!test_navigation_observer_) {
+      *output = "";
+      return;
+    }
+    test_navigation_observer_->Wait();
+    *output = test_navigation_observer_->last_navigation_url().spec();
+    test_navigation_observer_.reset();
     return;
   }
 

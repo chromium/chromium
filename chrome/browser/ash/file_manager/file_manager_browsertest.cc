@@ -1199,8 +1199,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         // TestCase("saveFileDialogDrive").WithBrowser().InIncognito(),
         // TODO(b/194255793): Fix this.
         // TestCase("openFileDialogDriveFromBrowser").WithBrowser(),
-        // TODO(b/194255793): Fix this.
-        // TestCase("openFileDialogDriveHostedDoc").WithBrowser(),
+        TestCase("openFileDialogDriveHostedDoc").WithBrowser(),
         TestCase("openFileDialogDriveHostedNeedsFile").WithBrowser(),
         TestCase("saveFileDialogDriveHostedNeedsFile").WithBrowser(),
         TestCase("openFileDialogDriveCSEGrey").WithBrowser(),
