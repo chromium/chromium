@@ -44,7 +44,7 @@ After writing a test, you can run it by:
 Typically, the "relevant gn target" is simply the target containing the
 other files in the same directory.
  - Rebuild.
- - Run the test using the process described [here](/testing/android/docs/todo.md).
+ - Run the test
 
 ## Instrumentation test features
 
@@ -278,15 +278,10 @@ test cases according to the feature they're testing.
 
 @Feature doesn't have an inherent function, but it can be used to filter tests
 via the test runner's
-[-A/--annotation](/testing/android/docs/todo.md) and
-[-E/--exclude-annotation](/testing/android/docs/todo.md) flags. For example,
-this would run only the tests with @Feature annotations containing at least
-"Sync" in `chrome_public_test_apk`:
+`-A/--annotation` and `-E/--exclude-annotation` flags. For example, this would
+run only the tests with @Feature annotations containing at least "Sync" in
+`chrome_public_test_apk`:
 
 ```bash
 out/Debug/bin/run_chrome_public_test_apk -A Feature=Sync
 ```
-
-## Advanced
-
- - [Creating a component for use in instrumentation tests.](/testing/android/docs/components_for_testing.md)
