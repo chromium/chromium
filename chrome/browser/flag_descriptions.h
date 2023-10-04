@@ -1001,6 +1001,9 @@ extern const char kGalleryAppPdfEditNotificationDescription[];
 extern const char kMediaRemotingWithoutFullscreenName[];
 extern const char kMediaRemotingWithoutFullscreenDescription[];
 
+extern const char kRemotePlaybackBackendName[];
+extern const char kRemotePlaybackBackendDescription[];
+
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kGlobalMediaControlsCrOSUpdatedUIName[];
 extern const char kGlobalMediaControlsCrOSUpdatedUIDescription[];
