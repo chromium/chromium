@@ -1264,8 +1264,10 @@ void DriveIntegrationService::OnGetOfflineFilesSpaceUsage(
 
 void DriveIntegrationService::ClearOfflineFiles(
     base::OnceCallback<void(FileError)> callback) {
-  if (!util::IsDriveFsBulkPinningAvailable(profile_) || !IsMounted() ||
-      !GetDriveFsInterface()) {
+  if ((!util::IsDriveFsBulkPinningAvailable(profile_) &&
+       !base::FeatureList::IsEnabled(
+           ash::features::kFilesGoogleDriveSettingsPage)) ||
+      !IsMounted() || !GetDriveFsInterface()) {
     std::move(callback).Run(FILE_ERROR_SERVICE_UNAVAILABLE);
     return;
   }

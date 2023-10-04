@@ -362,9 +362,8 @@ export class GoogleDriveSettings implements GoogleDriveSettingsInterface {
     this.assertRemainingSpace(freeSpace);
   }
 
-  async assertBulkPinningPinnedSize(expectedPinnedSize: string): Promise<void> {
-    assertTrue(
-        this.googleDriveSubpage_?.contentCacheSize === expectedPinnedSize);
+  async assertContentCacheSize(contentCacheSize: string): Promise<void> {
+    assertTrue(this.googleDriveSubpage_?.contentCacheSize === contentCacheSize);
   }
 
   async clickClearOfflineFilesAndAssertNewSize(newSize: string): Promise<void> {
