@@ -288,10 +288,18 @@ void BindTextDetection(
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-void BindWebNNContextProvider(
+void BindWebNNContextProviderForRenderFrame(
     RenderFrameHost* host,
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
   auto* process_host = static_cast<RenderProcessHostImpl*>(host->GetProcess());
+  process_host->GetGpuClient()->BindWebNNContextProvider(std::move(receiver));
+}
+
+void BindWebNNContextProviderForDedicatedWorker(
+    DedicatedWorkerHost* host,
+    mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
+  auto* process_host =
+      static_cast<RenderProcessHostImpl*>(host->GetProcessHost());
   process_host->GetGpuClient()->BindWebNNContextProvider(std::move(receiver));
 }
 #endif
@@ -917,8 +925,8 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 #if !BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
           webnn::features::kEnableMachineLearningNeuralNetworkService)) {
-    map->Add<webnn::mojom::WebNNContextProvider>(
-        base::BindRepeating(&BindWebNNContextProvider, base::Unretained(host)));
+    map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(
+        &BindWebNNContextProviderForRenderFrame, base::Unretained(host)));
   }
 #endif
 
@@ -1299,6 +1307,16 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
                           host->GetProcessHost()->GetID()),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          webnn::features::kEnableMachineLearningNeuralNetworkService)) {
+    // base::Unretained(host->GetProcessHost()) is safe because the map is owned
+    // by |DedicatedWorkerHost::broker_|.
+    map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(
+        &BindWebNNContextProviderForDedicatedWorker, base::Unretained(host)));
+  }
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   map->Add<blink::mojom::DirectSocketsService>(
