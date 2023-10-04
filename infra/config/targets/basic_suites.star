@@ -5268,6 +5268,12 @@ targets.legacy_basic_suite(
                 shards = 10,
             ),
         ),
+        "extensions_browsertests_network_sandbox": targets.legacy_test_config(
+            test = "extensions_browsertests",
+            args = [
+                "--enable-features=NetworkServiceSandbox",
+            ],
+        ),
         "interactive_ui_tests_network_sandbox": targets.legacy_test_config(
             test = "interactive_ui_tests",
             args = [
