@@ -118,6 +118,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.image_dominant_color = suggestion.entity_info().dominant_color();
   match.image_url = GURL(suggestion.entity_info().image_url());
   match.entity_id = suggestion.entity_info().entity_id();
+  match.website_uri = suggestion.entity_info().website_uri();
 
   match.contents = suggestion.match_contents();
   match.contents_class = suggestion.match_contents_class();

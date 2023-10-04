@@ -713,6 +713,10 @@ struct AutocompleteMatch {
   // is controlled by the `type` and `image_url`.
   std::string entity_id;
 
+  // Optional website URI for entity suggestions. Empty string means no website
+  // URI.
+  std::string website_uri;
+
   // Optional override to use for types that specify an icon sub-type.
   DocumentType document_type = DocumentType::NONE;
 
