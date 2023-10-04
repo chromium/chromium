@@ -34,11 +34,13 @@ const CGFloat kVerticalSpacing = 16.0;
 const CGFloat kTopPadding = 20.0;
 const CGFloat kBottomPadding = 42.0;
 const CGFloat kHorizontalPadding = 16.0;
+const CGFloat kTitleDoneButtonSpacing = 48.0;
 
 // Durations of specific parts of the animation.
 const CGFloat kImagesSlidingOutDuration = 1.0;
 const CGFloat kProgressBarLoadingDuration = 3.25;
 const CGFloat kImagesSlidingInDuration = 1.0;
+const CGFloat kSharingCancelledDuration = 0.5;
 
 // Distance by which the profile images need to be moved when sliding.
 const CGFloat kImagesSlidingOutDistance = 78;
@@ -73,6 +75,9 @@ const CGFloat kImagesSlidingInDistance = 51;
 // Animates progress bar and shield lock disappearing and profile images sliding
 // to the middle.
 @property(nonatomic, strong) UIViewPropertyAnimator* imagesSlidingInAnimation;
+
+// Animates profile images sliding to the middle on cancel button tap.
+@property(nonatomic, strong) UIViewPropertyAnimator* sharingCancelledAnimation;
 
 // Contains the information that sharing is in progress at first and then is
 // modified to convey the result status.
@@ -347,6 +352,22 @@ const CGFloat kImagesSlidingInDistance = 51;
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
         [weakSelf displaySuccessStatus];
       }];
+
+  self.sharingCancelledAnimation = [[UIViewPropertyAnimator alloc]
+      initWithDuration:kSharingCancelledDuration
+                 curve:UIViewAnimationCurveEaseInOut
+            animations:^{
+              shieldLockImage.hidden = YES;
+              progressBarView.hidden = YES;
+              senderImage.center =
+                  CGPointMake(progressBarView.center.x, senderImage.center.y);
+              recipientImage.center = CGPointMake(progressBarView.center.x,
+                                                  recipientImage.center.y);
+            }];
+  [self.sharingCancelledAnimation
+      addCompletion:^(UIViewAnimatingPosition finalPosition) {
+        [weakSelf displayCancelledStatus];
+      }];
 }
 
 // Creates a UITextView with subtitle and footer defaults.
@@ -447,8 +468,43 @@ const CGFloat kImagesSlidingInDistance = 51;
   [view layoutIfNeeded];
 }
 
+// Replaces text of the title label and adds a done button.
+// TODO(crbug.com/1463882): Add test.
+- (void)displayCancelledStatus {
+  UILabel* titleLabel = self.titleLabel;
+  titleLabel.text =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_CANCELLED_TITLE);
+  self.cancelButton.hidden = YES;
+
+  UIView* view = self.view;
+  UIButton* doneButton = [self createDoneButton];
+  [view addSubview:doneButton];
+
+  [NSLayoutConstraint activateConstraints:@[
+    // Constraints for the done button.
+    [doneButton.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor
+                                         constant:kTitleDoneButtonSpacing],
+    [doneButton.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
+                                            constant:-kBottomPadding],
+    [doneButton.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
+                                             constant:kHorizontalPadding],
+    [doneButton.trailingAnchor constraintEqualToAnchor:view.trailingAnchor
+                                              constant:-kHorizontalPadding],
+    [doneButton.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
+  ]];
+
+  [view setNeedsLayout];
+  [view layoutIfNeeded];
+}
+
+// Stops any ongoing animations and starts a new one (profile images sliding to
+// the middle).
 - (void)cancelButtonTapped {
-  // TODO(crbug.com/1463882): Implement.
+  [self.imagesSlidingOutAnimation stopAnimation:YES];
+  [self.progressBarLoadingAnimation stopAnimation:YES];
+  [self.imagesSlidingInAnimation stopAnimation:YES];
+
+  [self.sharingCancelledAnimation startAnimation];
 }
 
 // Handles done buttons clicks by dismissing the view.
