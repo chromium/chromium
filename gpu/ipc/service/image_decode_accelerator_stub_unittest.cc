@@ -378,8 +378,10 @@ class ImageDecodeAcceleratorStubTest
     init_params->active_url = GURL();
     ContextResult result = ContextResult::kTransientFailure;
     Capabilities capabilities;
+    GLCapabilities gl_capabilities;
     CreateCommandBuffer(*channel, std::move(init_params), kCommandBufferRouteId,
-                        GetSharedMemoryRegion(), &result, &capabilities);
+                        GetSharedMemoryRegion(), &result, &capabilities,
+                        &gl_capabilities);
     ASSERT_EQ(ContextResult::kSuccess, result);
     CommandBufferStub* command_buffer =
         channel->LookupCommandBuffer(kCommandBufferRouteId);

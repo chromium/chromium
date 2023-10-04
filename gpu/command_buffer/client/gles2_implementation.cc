@@ -205,6 +205,7 @@ GLES2Implementation::GLES2Implementation(
     : ImplementationBase(helper, transfer_buffer, gpu_control),
       helper_(helper),
       chromium_framebuffer_multisample_(kUnknownExtensionStatus),
+      gl_capabilities_(gpu_control->GetGLCapabilities()),
       pack_alignment_(4),
       pack_row_length_(0),
       pack_skip_pixels_(0),
@@ -284,7 +285,7 @@ gpu::ContextResult GLES2Implementation::Initialize(
   util_.set_num_shader_binary_formats(capabilities_.num_shader_binary_formats);
 
   texture_units_ = std::make_unique<TextureUnit[]>(
-      capabilities_.max_combined_texture_image_units);
+      gl_capabilities_.max_combined_texture_image_units);
 
   buffer_tracker_ = std::make_unique<BufferTracker>(mapped_memory_.get());
   readback_buffer_shadow_tracker_ =
@@ -769,7 +770,7 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       *params = bound_framebuffer_;
       return true;
     case GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS:
-      *params = capabilities_.max_combined_texture_image_units;
+      *params = gl_capabilities_.max_combined_texture_image_units;
       return true;
     case GL_MAX_CUBE_MAP_TEXTURE_SIZE:
       *params = capabilities_.max_cube_map_texture_size;
@@ -4986,7 +4987,7 @@ void GLES2Implementation::ActiveTexture(GLenum texture) {
                      << GLES2Util::GetStringEnum(texture) << ")");
   GLuint texture_index = texture - GL_TEXTURE0;
   if (texture_index >=
-      static_cast<GLuint>(capabilities_.max_combined_texture_image_units)) {
+      static_cast<GLuint>(gl_capabilities_.max_combined_texture_image_units)) {
     SetGLErrorInvalidEnum("glActiveTexture", texture, "texture");
     return;
   }
@@ -5498,7 +5499,7 @@ void GLES2Implementation::DeleteTexturesHelper(GLsizei n,
 void GLES2Implementation::UnbindTexturesHelper(GLsizei n,
                                                const GLuint* textures) {
   for (GLsizei ii = 0; ii < n; ++ii) {
-    for (GLint tt = 0; tt < capabilities_.max_combined_texture_image_units;
+    for (GLint tt = 0; tt < gl_capabilities_.max_combined_texture_image_units;
          ++tt) {
       TextureUnit& unit = texture_units_[tt];
       if (textures[ii] == unit.bound_texture_2d) {

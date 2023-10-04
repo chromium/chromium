@@ -379,6 +379,16 @@ mojom("interfaces") {
     {
       types = [
         {
+          mojom = "gpu.mojom.GLCapabilities"
+          cpp = "::gpu::GLCapabilities"
+        },
+      ]
+      traits_headers = [ "gpu_command_buffer_traits.h" ]
+      traits_public_deps = [ ":command_buffer_traits_sources" ]
+    },
+    {
+      types = [
+        {
           mojom = "gpu.mojom.ContextResult"
           cpp = "::gpu::ContextResult"
         },

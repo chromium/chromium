@@ -1455,6 +1455,13 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   return caps;
 }
 
+gpu::GLCapabilities GLES2DecoderPassthroughImpl::GetGLCapabilities() {
+  CHECK(initialized());
+  GLCapabilities gl_caps;
+  PopulateGLCapabilities(&gl_caps, feature_info_.get());
+  return gl_caps;
+}
+
 void GLES2DecoderPassthroughImpl::RestoreState(const ContextState* prev_state) {
 }
 

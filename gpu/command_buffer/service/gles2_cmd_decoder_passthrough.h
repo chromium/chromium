@@ -234,6 +234,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   Capabilities GetCapabilities() override;
 
+  GLCapabilities GetGLCapabilities() override;
+
   // Restores all of the decoder GL state.
   void RestoreState(const ContextState* prev_state) override;
 

@@ -77,6 +77,8 @@ class GPU_GLES2_EXPORT DecoderContext : public AsyncAPIInterface,
 
   virtual Capabilities GetCapabilities() = 0;
 
+  virtual GLCapabilities GetGLCapabilities() = 0;
+
   virtual const gles2::FeatureInfo* GetFeatureInfo() const = 0;
 
   // Gets the associated GLContext.

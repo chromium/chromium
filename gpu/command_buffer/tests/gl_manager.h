@@ -141,6 +141,7 @@ class GLManager : private GpuControl {
   // GpuControl implementation.
   void SetGpuControlClient(GpuControlClient*) override;
   const Capabilities& GetCapabilities() const override;
+  const GLCapabilities& GetGLCapabilities() const override;
   void SignalQuery(uint32_t query, base::OnceClosure callback) override;
   void CancelAllQueries() override;
   void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override;
@@ -196,6 +197,7 @@ class GLManager : private GpuControl {
   bool use_native_pixmap_memory_buffers_ = false;
 
   Capabilities capabilities_;
+  GLCapabilities gl_capabilities_;
 
   GLuint fbo_ = 0;
 

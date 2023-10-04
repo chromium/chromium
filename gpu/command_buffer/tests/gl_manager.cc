@@ -384,6 +384,7 @@ void GLManager::InitializeWithWorkaroundsImpl(
   // Client side Capabilities queries return reference, service side return
   // value. Here two sides are joined together.
   capabilities_ = decoder_->GetCapabilities();
+  gl_capabilities_ = decoder_->GetGLCapabilities();
 
   // Create the GLES2 helper, which writes the command buffer protocol.
   gles2_helper_.reset(new gles2::GLES2CmdHelper(command_buffer_.get()));
@@ -527,6 +528,10 @@ void GLManager::SetGpuControlClient(GpuControlClient*) {
 
 const Capabilities& GLManager::GetCapabilities() const {
   return capabilities_;
+}
+
+const GLCapabilities& GLManager::GetGLCapabilities() const {
+  return gl_capabilities_;
 }
 
 void GLManager::SignalQuery(uint32_t query, base::OnceClosure callback) {

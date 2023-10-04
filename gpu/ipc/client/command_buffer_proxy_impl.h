@@ -121,6 +121,7 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   // gpu::GpuControl implementation:
   void SetGpuControlClient(GpuControlClient* client) override;
   const gpu::Capabilities& GetCapabilities() const override;
+  const gpu::GLCapabilities& GetGLCapabilities() const override;
   void SignalQuery(uint32_t query, base::OnceClosure callback) override;
   void CancelAllQueries() override;
   void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override;
@@ -282,6 +283,7 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   SignalTaskMap signal_tasks_;
 
   gpu::Capabilities capabilities_;
+  gpu::GLCapabilities gl_capabilities_;
 
   // Cache pointer to EnsureWorkVisibleDuration custom UMA histogram.
   raw_ptr<base::HistogramBase> uma_histogram_ensure_work_visible_duration_ =

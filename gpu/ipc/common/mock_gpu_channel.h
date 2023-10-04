@@ -29,14 +29,15 @@ class MockGpuChannel : public mojom::GpuChannel {
                     mojo::PendingAssociatedReceiver<mojom::CommandBuffer>,
                     mojo::PendingAssociatedRemote<mojom::CommandBufferClient>,
                     CreateCommandBufferCallback));
-  MOCK_METHOD7(CreateCommandBuffer,
+  MOCK_METHOD8(CreateCommandBuffer,
                bool(mojom::CreateCommandBufferParamsPtr,
                     int32_t,
                     base::UnsafeSharedMemoryRegion,
                     mojo::PendingAssociatedReceiver<mojom::CommandBuffer>,
                     mojo::PendingAssociatedRemote<mojom::CommandBufferClient>,
                     ContextResult*,
-                    Capabilities*));
+                    Capabilities*,
+                    GLCapabilities*));
   MOCK_METHOD1(DestroyCommandBuffer, bool(int32_t));
   MOCK_METHOD2(DestroyCommandBuffer,
                void(int32_t, DestroyCommandBufferCallback));

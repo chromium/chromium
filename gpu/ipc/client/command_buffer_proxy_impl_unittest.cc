@@ -90,7 +90,7 @@ class CommandBufferProxyImplTest : public testing::Test {
     // The Initialize() call below synchronously requests a new CommandBuffer
     // using the channel's GpuControl interface.  Simulate success, since we're
     // not actually talking to the service in these tests.
-    EXPECT_CALL(mock_gpu_channel_, CreateCommandBuffer(_, _, _, _, _, _, _))
+    EXPECT_CALL(mock_gpu_channel_, CreateCommandBuffer(_, _, _, _, _, _, _, _))
         .Times(1)
         .WillOnce(Invoke(
             [&](mojom::CreateCommandBufferParamsPtr params, int32_t routing_id,
@@ -98,7 +98,8 @@ class CommandBufferProxyImplTest : public testing::Test {
                 mojo::PendingAssociatedReceiver<mojom::CommandBuffer> receiver,
                 mojo::PendingAssociatedRemote<mojom::CommandBufferClient>
                     client,
-                ContextResult* result, Capabilities* capabilities) -> bool {
+                ContextResult* result, Capabilities* capabilities,
+                GLCapabilities* gl_capabilities) -> bool {
               // There's no real GpuChannel pipe for this endpoint to use, so
               // give it its own dedicated pipe for these tests. This allows the
               // CommandBufferProxyImpl to make calls on its CommandBuffer

@@ -131,6 +131,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     return nullptr;
   }
   Capabilities GetCapabilities() override { return {}; }
+  GLCapabilities GetGLCapabilities() override { return {}; }
   void RestoreGlobalState() const override { NOTREACHED(); }
   void ClearAllAttributes() const override { NOTREACHED(); }
   void RestoreAllAttributes() const override { NOTREACHED(); }

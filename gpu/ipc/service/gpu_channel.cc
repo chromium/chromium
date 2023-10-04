@@ -1002,18 +1002,22 @@ class ScopedCreateCommandBufferResponder {
       mojom::GpuChannel::CreateCommandBufferCallback callback)
       : callback_(std::move(callback)) {}
   ~ScopedCreateCommandBufferResponder() {
-    std::move(callback_).Run(result_, capabilities_);
+    std::move(callback_).Run(result_, capabilities_, gl_capabilities_);
   }
 
   void set_result(ContextResult result) { result_ = result; }
   void set_capabilities(const Capabilities& capabilities) {
     capabilities_ = capabilities;
   }
+  void set_gl_capabilities(const GLCapabilities& gl_capabilities) {
+    gl_capabilities_ = gl_capabilities;
+  }
 
  private:
   mojom::GpuChannel::CreateCommandBufferCallback callback_;
   ContextResult result_ = ContextResult::kFatalFailure;
   Capabilities capabilities_;
+  GLCapabilities gl_capabilities_;
 };
 
 void GpuChannel::CreateCommandBuffer(
@@ -1123,6 +1127,7 @@ void GpuChannel::CreateCommandBuffer(
 
   responder.set_result(ContextResult::kSuccess);
   responder.set_capabilities(stub->decoder_context()->GetCapabilities());
+  responder.set_gl_capabilities(stub->decoder_context()->GetGLCapabilities());
   stubs_[route_id] = std::move(stub);
 }
 

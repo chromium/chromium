@@ -126,6 +126,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   void SetGpuControlClient(GpuControlClient*) override;
   // GetCapabilities() can be called on any thread.
   const Capabilities& GetCapabilities() const override;
+  const GLCapabilities& GetGLCapabilities() const override;
   void SignalQuery(uint32_t query_id, base::OnceClosure callback) override;
   void CancelAllQueries() override;
   void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override;
@@ -179,16 +180,19 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
  private:
   struct InitializeOnGpuThreadParams {
     const raw_ref<const ContextCreationAttribs> attribs;
-    raw_ptr<Capabilities> capabilities;  // Ouptut.
+    raw_ptr<Capabilities> capabilities;       // Output.
+    raw_ptr<GLCapabilities> gl_capabilities;  // Output.
     raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache;
     raw_ptr<GpuProcessShmCount> use_shader_cache_shm_count;
 
     InitializeOnGpuThreadParams(const ContextCreationAttribs& attribs,
                                 Capabilities* capabilities,
+                                GLCapabilities* gl_capabilities,
                                 gpu::raster::GrShaderCache* gr_shader_cache,
                                 GpuProcessShmCount* use_shader_cache_shm_count)
         : attribs(attribs),
           capabilities(capabilities),
+          gl_capabilities(gl_capabilities),
           gr_shader_cache(gr_shader_cache),
           use_shader_cache_shm_count(use_shader_cache_shm_count) {}
   };
@@ -287,6 +291,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   base::Lock last_state_lock_;
   int32_t last_put_offset_ = -1;
   Capabilities capabilities_;
+  GLCapabilities gl_capabilities_;
   uint64_t next_fence_sync_release_ = 1;
   std::vector<SyncToken> next_flush_sync_token_fences_;
   // Sequence checker for client sequence used for initialization, destruction,

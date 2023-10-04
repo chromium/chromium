@@ -452,6 +452,7 @@ class RasterDecoderImpl final : public RasterDecoder,
     return feature_info();
   }
   Capabilities GetCapabilities() override;
+  GLCapabilities GetGLCapabilities() override;
   const gles2::ContextState* GetContextState() override;
 
   // TODO(penghuang): Remove unused context state related methods.
@@ -1284,6 +1285,10 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   caps.supports_yuv_rgb_conversion = !graphite_context();
   caps.supports_yuv_readback = !graphite_context();
   return caps;
+}
+
+GLCapabilities RasterDecoderImpl::GetGLCapabilities() {
+  return GLCapabilities();
 }
 
 const gles2::ContextState* RasterDecoderImpl::GetContextState() {

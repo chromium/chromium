@@ -180,7 +180,9 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
   client_thread_weak_ptr_ = client_thread_weak_ptr_factory_.GetWeakPtr();
 
   Capabilities capabilities;
-  InitializeOnGpuThreadParams params(attribs, &capabilities, gr_shader_cache,
+  GLCapabilities gl_capabilities;
+  InitializeOnGpuThreadParams params(attribs, &capabilities, &gl_capabilities,
+                                     gr_shader_cache,
                                      use_shader_cache_shm_count);
 
   base::OnceCallback<gpu::ContextResult(void)> init_task =
@@ -204,6 +206,7 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
 
   if (result == gpu::ContextResult::kSuccess) {
     capabilities_ = capabilities;
+    gl_capabilities_ = gl_capabilities;
     shared_image_interface_ = std::make_unique<SharedImageInterfaceInProcess>(
         task_sequence_, task_executor_->sync_point_manager(),
         task_executor_->gpu_preferences(),
@@ -453,6 +456,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
   }
 
   *params.capabilities = decoder_->GetCapabilities();
+  *params.gl_capabilities = decoder_->GetGLCapabilities();
 
   return gpu::ContextResult::kSuccess;
 }
@@ -797,6 +801,10 @@ void InProcessCommandBuffer::SetGpuControlClient(GpuControlClient* client) {
 
 const Capabilities& InProcessCommandBuffer::GetCapabilities() const {
   return capabilities_;
+}
+
+const GLCapabilities& InProcessCommandBuffer::GetGLCapabilities() const {
+  return gl_capabilities_;
 }
 
 const GpuFeatureInfo& InProcessCommandBuffer::GetGpuFeatureInfo() const {

@@ -120,7 +120,7 @@ ContextResult CommandBufferProxyImpl::Initialize(
       std::move(params), route_id_, std::move(region),
       command_buffer_.BindNewEndpointAndPassReceiver(channel->io_task_runner()),
       client_receiver_.BindNewEndpointAndPassRemote(callback_thread_), &result,
-      &capabilities_);
+      &capabilities_, &gl_capabilities_);
   if (!sent) {
     command_buffer_.reset();
     client_receiver_.reset();
@@ -408,6 +408,10 @@ void CommandBufferProxyImpl::SetGpuControlClient(GpuControlClient* client) {
 
 const gpu::Capabilities& CommandBufferProxyImpl::GetCapabilities() const {
   return capabilities_;
+}
+
+const gpu::GLCapabilities& CommandBufferProxyImpl::GetGLCapabilities() const {
+  return gl_capabilities_;
 }
 
 void CommandBufferProxyImpl::SetLock(base::Lock* lock) {

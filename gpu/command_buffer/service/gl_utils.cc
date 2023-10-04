@@ -191,8 +191,6 @@ void PopulateNumericCapabilities(Capabilities* caps,
     shader_precision->precision = precision;
   });
 
-  glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
-                &caps->max_combined_texture_image_units);
   glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &caps->max_cube_map_texture_size);
   glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS,
                 &caps->max_fragment_uniform_vectors);
@@ -278,6 +276,13 @@ void PopulateNumericCapabilities(Capabilities* caps,
       feature_info->IsWebGL2OrES3OrHigherContext()) {
     glGetIntegerv(GL_MAX_SAMPLES, &caps->max_samples);
   }
+}
+
+void PopulateGLCapabilities(GLCapabilities* caps,
+                            const FeatureInfo* feature_info) {
+  CHECK(caps);
+  glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
+                &caps->max_combined_texture_image_units);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -689,6 +689,9 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   GLStaticState static_state_;
   ClientContextState state_;
 
+  // GLES specific capabilities.
+  GLCapabilities gl_capabilities_;
+
   // pack alignment as last set by glPixelStorei
   GLint pack_alignment_;
 

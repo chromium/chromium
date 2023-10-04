@@ -203,6 +203,7 @@ class RecordReplayContext : public GpuControl {
                              gles2::DisallowedFeatures(), attrib_helper);
     DCHECK_EQ(result, ContextResult::kSuccess);
     capabilities_ = decoder_->GetCapabilities();
+    gl_capabilities_ = decoder_->GetGLCapabilities();
 
     const SharedMemoryLimits limits;
     gles2_helper_ =
@@ -257,6 +258,10 @@ class RecordReplayContext : public GpuControl {
   void SetGpuControlClient(GpuControlClient*) override {}
 
   const Capabilities& GetCapabilities() const override { return capabilities_; }
+
+  const GLCapabilities& GetGLCapabilities() const override {
+    return gl_capabilities_;
+  }
 
   void SignalQuery(uint32_t query, base::OnceClosure callback) override {
     NOTREACHED();
@@ -331,6 +336,7 @@ class RecordReplayContext : public GpuControl {
   gles2::TraceOutputter outputter_;
   std::unique_ptr<gles2::GLES2Decoder> decoder_;
   gpu::Capabilities capabilities_;
+  gpu::GLCapabilities gl_capabilities_;
 
   std::unique_ptr<gles2::GLES2CmdHelper> gles2_helper_;
   std::unique_ptr<TransferBuffer> transfer_buffer_;

@@ -76,7 +76,6 @@ class RasterImplementationTest : public testing::Test {
       kNumCommandEntries * sizeof(CommandBufferEntry);
   static const uint32_t kTransferBufferSize = 512;
 
-  static const GLint kMaxCombinedTextureImageUnits = 8;
   static const GLint kMaxTextureImageUnits = 8;
   static const GLint kMaxTextureSize = 128;
   static const GLint kNumCompressedTextureFormats = 0;
@@ -108,8 +107,6 @@ class RasterImplementationTest : public testing::Test {
       helper_->Initialize(limits.command_buffer_size);
 
       gpu_control_ = std::make_unique<StrictMock<MockClientGpuControl>>();
-      capabilities_.max_combined_texture_image_units =
-          kMaxCombinedTextureImageUnits;
       capabilities_.max_texture_image_units = kMaxTextureImageUnits;
       capabilities_.max_texture_size = kMaxTextureSize;
       capabilities_.num_compressed_texture_formats =
@@ -329,7 +326,6 @@ const uint8_t RasterImplementationTest::kInitialValue;
 const uint32_t RasterImplementationTest::kNumCommandEntries;
 const uint32_t RasterImplementationTest::kCommandBufferSizeBytes;
 const uint32_t RasterImplementationTest::kTransferBufferSize;
-const GLint RasterImplementationTest::kMaxCombinedTextureImageUnits;
 const GLint RasterImplementationTest::kMaxTextureImageUnits;
 const GLint RasterImplementationTest::kMaxTextureSize;
 const GLint RasterImplementationTest::kNumCompressedTextureFormats;

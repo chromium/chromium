@@ -55,6 +55,7 @@ Graphics3D::~Graphics3D() {
 
 bool Graphics3D::Init(gpu::gles2::GLES2Implementation* share_gles2,
                       const gpu::Capabilities& capabilities,
+                      const gpu::GLCapabilities& gl_capabilities,
                       SerializedHandle shared_state,
                       gpu::CommandBufferId command_buffer_id) {
   PluginDispatcher* dispatcher = PluginDispatcher::GetForResource(this);
@@ -66,7 +67,7 @@ bool Graphics3D::Init(gpu::gles2::GLES2Implementation* share_gles2,
 
   command_buffer_ = std::make_unique<PpapiCommandBufferProxy>(
       host_resource(), &data->flush_info, dispatcher, capabilities,
-      std::move(shared_state), command_buffer_id);
+      gl_capabilities, std::move(shared_state), command_buffer_id);
 
   return CreateGLES2Impl(share_gles2);
 }
@@ -232,19 +233,20 @@ PP_Resource PPB_Graphics3D_Proxy::CreateProxyResource(
 
   HostResource result;
   gpu::Capabilities capabilities;
+  gpu::GLCapabilities gl_capabilities;
   ppapi::proxy::SerializedHandle shared_state;
   gpu::CommandBufferId command_buffer_id;
   dispatcher->Send(new PpapiHostMsg_PPBGraphics3D_Create(
       API_ID_PPB_GRAPHICS_3D, instance, share_host, attrib_helper, &result,
-      &capabilities, &shared_state, &command_buffer_id));
+      &capabilities, &gl_capabilities, &shared_state, &command_buffer_id));
 
   if (result.is_null())
     return 0;
 
   scoped_refptr<Graphics3D> graphics_3d(
       new Graphics3D(result, attrib_helper.offscreen_framebuffer_size));
-  if (!graphics_3d->Init(share_gles2, capabilities, std::move(shared_state),
-                         command_buffer_id)) {
+  if (!graphics_3d->Init(share_gles2, capabilities, gl_capabilities,
+                         std::move(shared_state), command_buffer_id)) {
     return 0;
   }
   return graphics_3d->GetReference();
@@ -292,6 +294,7 @@ void PPB_Graphics3D_Proxy::OnMsgCreate(
     const Graphics3DContextAttribs& context_attribs,
     HostResource* result,
     gpu::Capabilities* capabilities,
+    gpu::GLCapabilities* gl_capabilities,
     SerializedHandle* shared_state,
     gpu::CommandBufferId* command_buffer_id) {
   shared_state->set_null_shmem_region();
@@ -305,7 +308,7 @@ void PPB_Graphics3D_Proxy::OnMsgCreate(
   result->SetHostResource(
       instance, enter.functions()->CreateGraphics3DRaw(
                     instance, share_context.host_resource(), context_attribs,
-                    capabilities, &region, command_buffer_id));
+                    capabilities, gl_capabilities, &region, command_buffer_id));
   if (!result->is_null()) {
     shared_state->set_shmem_region(
         base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(

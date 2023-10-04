@@ -21,6 +21,7 @@
 
 namespace gpu {
 struct Capabilities;
+struct GLCapabilities;
 class CommandBufferProxyImpl;
 class ClientSharedImageInterface;
 }
@@ -35,6 +36,7 @@ class PPB_Graphics3D_Impl : public ppapi::PPB_Graphics3D_Shared,
       PP_Resource share_context,
       const ppapi::Graphics3DContextAttribs& context_attribs,
       gpu::Capabilities* capabilities,
+      gpu::GLCapabilities* gl_capabilities,
       const base::UnsafeSharedMemoryRegion** shared_state_region,
       gpu::CommandBufferId* command_buffer_id);
 
@@ -89,6 +91,7 @@ class PPB_Graphics3D_Impl : public ppapi::PPB_Graphics3D_Shared,
   bool InitRaw(PPB_Graphics3D_API* share_context,
                const ppapi::Graphics3DContextAttribs& requested_attribs,
                gpu::Capabilities* capabilities,
+               gpu::GLCapabilities* gl_capabilities,
                const base::UnsafeSharedMemoryRegion** shared_state_region,
                gpu::CommandBufferId* command_buffer_id);
 

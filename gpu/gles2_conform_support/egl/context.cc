@@ -172,6 +172,10 @@ const gpu::Capabilities& Context::GetCapabilities() const {
   return capabilities_;
 }
 
+const gpu::GLCapabilities& Context::GetGLCapabilities() const {
+  return gl_capabilities_;
+}
+
 void Context::SignalQuery(uint32_t query, base::OnceClosure callback) {
   NOTREACHED();
 }
@@ -313,6 +317,7 @@ bool Context::CreateService(gl::GLSurface* gl_surface) {
   // Client side Capabilities queries return reference, service side return
   // value. Here two sides are joined together.
   capabilities_ = decoder->GetCapabilities();
+  gl_capabilities_ = decoder->GetGLCapabilities();
 
   auto transfer_buffer =
       std::make_unique<gpu::TransferBuffer>(gles2_cmd_helper.get());

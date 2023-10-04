@@ -733,13 +733,14 @@ IPC_MESSAGE_ROUTED1(PpapiHostMsg_PPBCore_ReleaseResource,
                     ppapi::HostResource)
 
 // PPB_Graphics3D.
-IPC_SYNC_MESSAGE_ROUTED3_4(
+IPC_SYNC_MESSAGE_ROUTED3_5(
     PpapiHostMsg_PPBGraphics3D_Create,
     PP_Instance /* instance */,
     ppapi::HostResource /* share_context */,
     ppapi::Graphics3DContextAttribs /* context_attribs */,
     ppapi::HostResource /* result */,
     gpu::Capabilities /* capabilities */,
+    gpu::GLCapabilities /* gl_capabilities */,
     ppapi::proxy::SerializedHandle /* shared_state */,
     gpu::CommandBufferId /* command_buffer_id */)
 IPC_SYNC_MESSAGE_ROUTED2_0(PpapiHostMsg_PPBGraphics3D_SetGetBuffer,

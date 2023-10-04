@@ -93,8 +93,10 @@ class GpuChannelManagerTest : public GpuChannelTestCommon {
 
     ContextResult result = ContextResult::kFatalFailure;
     Capabilities capabilities;
+    GLCapabilities gl_capabilities;
     CreateCommandBuffer(*channel, std::move(init_params), kRouteId,
-                        GetSharedMemoryRegion(), &result, &capabilities);
+                        GetSharedMemoryRegion(), &result, &capabilities,
+                        &gl_capabilities);
     EXPECT_EQ(result, ContextResult::kSuccess);
 
     auto raster_decoder_state =

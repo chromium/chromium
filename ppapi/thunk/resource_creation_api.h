@@ -39,6 +39,7 @@ struct PP_Size;
 
 namespace gpu {
 struct Capabilities;
+struct GLCapabilities;
 }
 
 namespace ppapi {
@@ -140,6 +141,7 @@ class ResourceCreationAPI {
       PP_Resource share_context,
       const Graphics3DContextAttribs& attrib_helper,
       gpu::Capabilities* capabilities,
+      gpu::GLCapabilities* gl_capabilities,
       const base::UnsafeSharedMemoryRegion** shared_state,
       gpu::CommandBufferId* command_buffer_id) = 0;
   virtual PP_Resource CreateHostResolver(PP_Instance instance) = 0;

@@ -90,11 +90,12 @@ PP_Resource ResourceCreationImpl::CreateGraphics3DRaw(
     PP_Resource share_context,
     const ppapi::Graphics3DContextAttribs& context_attribs,
     gpu::Capabilities* capabilities,
+    gpu::GLCapabilities* gl_capabilities,
     const base::UnsafeSharedMemoryRegion** shared_state,
     gpu::CommandBufferId* command_buffer_id) {
-  return PPB_Graphics3D_Impl::CreateRaw(instance, share_context,
-                                        context_attribs, capabilities,
-                                        shared_state, command_buffer_id);
+  return PPB_Graphics3D_Impl::CreateRaw(
+      instance, share_context, context_attribs, capabilities, gl_capabilities,
+      shared_state, command_buffer_id);
 }
 
 PP_Resource ResourceCreationImpl::CreateHostResolver(PP_Instance instance) {

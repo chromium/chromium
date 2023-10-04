@@ -590,6 +590,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
     return feature_info_.get();
   }
   Capabilities GetCapabilities() override;
+  GLCapabilities GetGLCapabilities() override;
   void RestoreState(const ContextState* prev_state) override;
 
   void RestoreActiveTexture() const override { state_.RestoreActiveTexture(); }
@@ -3501,8 +3502,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
     shader_precision->max_range = range[1];
     shader_precision->precision = precision;
   });
-  DoGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
-                &caps.max_combined_texture_image_units, 1);
   DoGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &caps.max_cube_map_texture_size,
                 1);
   DoGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS,
@@ -3690,6 +3689,13 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
 #endif
 
   return caps;
+}
+
+GLCapabilities GLES2DecoderImpl::GetGLCapabilities() {
+  CHECK(initialized());
+  GLCapabilities gl_caps;
+  PopulateGLCapabilities(&gl_caps, feature_info_.get());
+  return gl_caps;
 }
 
 GLint GLES2DecoderImpl::ComputeMaxSamples() {

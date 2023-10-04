@@ -74,7 +74,6 @@ struct GPU_EXPORT Capabilities {
 
   PerStagePrecisions vertex_shader_precisions;
   PerStagePrecisions fragment_shader_precisions;
-  int max_combined_texture_image_units = 0;
   int max_cube_map_texture_size = 0;
   int max_fragment_uniform_vectors = 0;
   int max_renderbuffer_size = 0;
@@ -189,6 +188,10 @@ struct GPU_EXPORT Capabilities {
 
   base::flat_map<uint32_t, std::vector<uint64_t>> drm_formats_and_modifiers;
   std::string drm_render_node;
+};
+
+struct GPU_EXPORT GLCapabilities {
+  int max_combined_texture_image_units = 0;
 };
 
 }  // namespace gpu

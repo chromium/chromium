@@ -152,7 +152,8 @@ interface GpuChannel {
       mojo_base.mojom.UnsafeSharedMemoryRegion shared_state,
       pending_associated_receiver<CommandBuffer> receiver,
       pending_associated_remote<CommandBufferClient> client)
-      => (ContextResult result, Capabilities capabilties);
+      => (ContextResult result, Capabilities capabilties,
+          GLCapabilities gl_capabilities);
 
   // The CommandBufferProxy sends this to the CommandBufferStub in its
   // destructor, so that the stub deletes the actual CommandBufferService

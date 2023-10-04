@@ -211,7 +211,7 @@ class GLES2ImplementationTest : public testing::Test {
             precision->max_range = 5;
             precision->precision = 7;
           });
-      capabilities_.max_combined_texture_image_units =
+      gl_capabilities_.max_combined_texture_image_units =
           kMaxCombinedTextureImageUnits;
       capabilities_.max_cube_map_texture_size = kMaxCubeMapTextureSize;
       capabilities_.max_fragment_uniform_vectors = kMaxFragmentUniformVectors;
@@ -240,6 +240,8 @@ class GLES2ImplementationTest : public testing::Test {
       capabilities_.minor_version = minor_version;
       EXPECT_CALL(*gpu_control_, GetCapabilities())
           .WillOnce(ReturnRef(capabilities_));
+      EXPECT_CALL(*gpu_control_, GetGLCapabilities())
+          .WillOnce(ReturnRef(gl_capabilities_));
 
       {
         InSequence sequence;
@@ -303,6 +305,7 @@ class GLES2ImplementationTest : public testing::Test {
     raw_ptr<CommandBufferEntry> commands_;
     int token_;
     Capabilities capabilities_;
+    GLCapabilities gl_capabilities_;
   };
 
   GLES2ImplementationTest() : commands_(nullptr) {}
