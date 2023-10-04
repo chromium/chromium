@@ -218,12 +218,6 @@ struct CTPolicy {
   array<string> excluded_legacy_spkis;
 };
 
-// Some of the fields below point to sqlite databases. On Android, when the
-// network service is sandboxed, those paths are also tracked by a sqlite
-// SandboxedVFSDelegate so that the browser knows which paths are safe to open
-// databases in. Any new sqlite databases used here will need to similarly
-// update the list of paths the browser can open in a sandboxed network service
-// on Android.
 struct NetworkContextFilePaths {
   // Points to the shared dictionary directory containing the sqlite database
   // file named "db" for metadata and the disk cache directory named "cache".

@@ -331,7 +331,6 @@ component("network_service") {
     "//services/network/trust_tokens",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
-    "//sql",
     "//url",
   ]
 
@@ -366,10 +365,6 @@ component("network_service") {
   }
 
   if (is_android) {
-    sources += [
-      "sandboxed_vfs_delegate.cc",
-      "sandboxed_vfs_delegate.h",
-    ]
     deps += [
       "//crypto",
       "//third_party/boringssl",

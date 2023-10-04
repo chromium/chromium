@@ -673,32 +673,9 @@ NetworkContext::~NetworkContext() {
 
   // May be nullptr in tests.
   if (network_service_) {
-#if BUILDFLAG(IS_ANDROID)
-    if (params_ && params_->file_paths) {
-      base::FilePath path_to_invalidate;
-      if (GetFullDataFilePath(params_->file_paths,
-                              &network::mojom::NetworkContextFilePaths::
-                                  trust_token_database_name,
-                              path_to_invalidate)) {
-        network_service_->InvalidateNetworkContextPath(path_to_invalidate);
-      }
-      if (GetFullDataFilePath(params_->file_paths,
-                              &network::mojom::NetworkContextFilePaths::
-                                  reporting_and_nel_store_database_name,
-                              path_to_invalidate)) {
-        network_service_->InvalidateNetworkContextPath(path_to_invalidate);
-      }
-      if (GetFullDataFilePath(
-              params_->file_paths,
-              &network::mojom::NetworkContextFilePaths::cookie_database_name,
-              path_to_invalidate)) {
-        network_service_->InvalidateNetworkContextPath(path_to_invalidate);
-      }
-    }
-
-#endif
     network_service_->DeregisterNetworkContext(this);
   }
+
   if (domain_reliability_monitor_)
     domain_reliability_monitor_->Shutdown();
   // Because of the order of declaration in the class,

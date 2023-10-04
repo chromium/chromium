@@ -65,10 +65,6 @@
 #include "services/network/public/mojom/ct_log_info.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "services/network/sandboxed_vfs_delegate.h"
-#endif
-
 namespace net {
 class FileNetLogObserver;
 class HostResolverManager;
@@ -141,14 +137,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // NetworkService.
   void RegisterNetworkContext(NetworkContext* network_context);
   void DeregisterNetworkContext(NetworkContext* network_context);
-
-#if BUILDFLAG(IS_ANDROID)
-  void InvalidateNetworkContextPath(const base::FilePath& path);
-  void set_sandboxed_vfs_delegate_ptr_for_testing(
-      SandboxedVfsDelegate* sandboxed_vfs_delegate_ptr) {
-    sandboxed_vfs_delegate_ptr_ = sandboxed_vfs_delegate_ptr;
-  }
-#endif
 
   // Invokes net::CreateNetLogEntriesForActiveObjects(observer) on all
   // URLRequestContext's known to |this|.
@@ -257,10 +245,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void StartNetLogUnbounded(base::File file,
                             net::NetLogCaptureMode capture_mode,
                             base::Value::Dict client_constants);
-#if BUILDFLAG(IS_ANDROID)
-  // Registers a sqlite VFS for use in a sandboxed network service.
-  void SetSandboxedVFS();
-#endif
 
   // Returns an HttpAuthHandlerFactory for the given NetworkContext.
   std::unique_ptr<net::HttpAuthHandlerFactory> CreateHttpAuthHandlerFactory(
@@ -488,10 +472,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   bool ct_enforcement_enabled_ = true;
 #endif
-
-#if BUILDFLAG(IS_ANDROID)
-  raw_ptr<SandboxedVfsDelegate> sandboxed_vfs_delegate_ptr_ = nullptr;
-#endif  // BUILDFLAG(IS_ANDROID)
 
   bool pins_list_updated_ = false;
 
