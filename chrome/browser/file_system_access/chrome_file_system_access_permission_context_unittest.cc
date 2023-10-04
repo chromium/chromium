@@ -66,10 +66,10 @@ using PathType = ChromeFileSystemAccessPermissionContext::PathType;
 using PersistedGrantType =
     ChromeFileSystemAccessPermissionContext::PersistedGrantType;
 using UserAction = ChromeFileSystemAccessPermissionContext::UserAction;
-using PermissionStatus =
-    content::FileSystemAccessPermissionGrant::PermissionStatus;
 using PermissionRequestOutcome =
     content::FileSystemAccessPermissionGrant::PermissionRequestOutcome;
+using PermissionStatus =
+    content::FileSystemAccessPermissionGrant::PermissionStatus;
 using SensitiveDirectoryResult =
     ChromeFileSystemAccessPermissionContext::SensitiveEntryResult;
 using UserActivationState =
@@ -178,7 +178,7 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
     EXPECT_EQ(grant1->GetStatus(), PermissionStatus::GRANTED);
     EXPECT_EQ(grant2->GetStatus(), PermissionStatus::GRANTED);
 
-    // Dormant grants exist after tabs being backgrounded for the amount of time
+    // Dormant grants exist after tabs are backgrounded for the amount of time
     // specified by the extended permissions policy.
     permission_context()->OnAllTabsInBackgroundTimerExpired(
         kTestOrigin,
@@ -186,7 +186,7 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
     EXPECT_EQ(grant1->GetStatus(), PermissionStatus::ASK);
     EXPECT_EQ(grant2->GetStatus(), PermissionStatus::ASK);
 
-    // Restore Permission prompt is triggered by calling
+    // The Restore Permission prompt is triggered by calling
     // `requestPermission()` on the handle of an existing dormant grant.
     base::test::TestFuture<PermissionRequestOutcome> future;
     grant1->RequestPermission(frame_id(), UserActivationState::kNotRequired,
@@ -276,7 +276,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       base::FilePath(FILE_PATH_LITERAL("/foo/bar"));
 #endif
 
-  // Path outside any special directories should be allowed.
+  // Paths outside of any special directories should be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal, kTestPath,
                 HandleType::kFile, UserAction::kOpen),
@@ -293,7 +293,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 UserAction::kOpen),
             SensitiveDirectoryResult::kAllowed);
 
-  // Path outside any special directories via no user action should be allowed.
+  // Paths outside of any special directories with no user action should be
+  // allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal, kTestPath,
                 HandleType::kDirectory, UserAction::kNone),
@@ -305,17 +306,17 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
 
-  // Home directory itself should not be allowed.
+  // The Home directory itself should not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal, home_dir,
                 HandleType::kDirectory, UserAction::kOpen),
             SensitiveDirectoryResult::kAbort);
-  // Parent of home directory should also not be allowed.
+  // The parent of the Home directory should also not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal, temp_dir_.GetPath(),
                 HandleType::kDirectory, UserAction::kOpen),
             SensitiveDirectoryResult::kAbort);
-  // Paths inside home directory should be allowed.
+  // Paths inside of the Home directory should be allowed.
   EXPECT_EQ(
       ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
                                       home_dir.AppendASCII("foo"),
@@ -333,17 +334,17 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::FilePath app_dir = temp_dir_.GetPath().AppendASCII("app");
   base::ScopedPathOverride app_override(base::DIR_EXE, app_dir, true, true);
 
-  // App directory itself should not be allowed.
+  // The App directory itself should not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal, app_dir,
                 HandleType::kDirectory, UserAction::kOpen),
             SensitiveDirectoryResult::kAbort);
-  // Parent of App directory should also not be allowed.
+  // The parent of App directory should also not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal, temp_dir_.GetPath(),
                 HandleType::kDirectory, UserAction::kOpen),
             SensitiveDirectoryResult::kAbort);
-  // Paths inside App directory should also not be allowed.
+  // Paths inside of the App directory should also not be allowed.
   EXPECT_EQ(
       ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
                                       app_dir.AppendASCII("foo"),
@@ -365,12 +366,12 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::ScopedPathOverride download_override(chrome::DIR_DEFAULT_DOWNLOADS,
                                              download_dir, true, true);
 
-  // User Data directory itself should not be allowed.
+  // The User Data directory itself should not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal, user_data_dir,
                 HandleType::kDirectory, UserAction::kOpen),
             SensitiveDirectoryResult::kAbort);
-  // Parent of User Data directory should also not be allowed.
+  // The parent of the User Data directory should also not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal, temp_dir_.GetPath(),
                 HandleType::kDirectory, UserAction::kOpen),
@@ -380,7 +381,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
             ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal, download_dir,
                 HandleType::kDirectory, UserAction::kOpen));
-  // Paths inside the nested Download directory should be allowed.
+  // The paths inside of the nested Download directory should be allowed.
   EXPECT_EQ(
       ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
                                       download_dir.AppendASCII("foo"),
@@ -393,8 +394,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
             SensitiveDirectoryResult::kAllowed);
 
 #if BUILDFLAG(IS_WIN)
-  // DIR_IE_INTERNET_CACHE is an example of a directory where nested directories
-  // are blocked, but nested files should be allowed.
+  // `DIR_IE_INTERNET_CACHE` is an example of a directory where nested
+  // directories are blocked, but nested files should be allowed.
   base::FilePath internet_cache = user_data_dir.AppendASCII("INetCache");
   base::ScopedPathOverride internet_cache_override(base::DIR_IE_INTERNET_CACHE,
                                                    internet_cache, true, true);
@@ -404,13 +405,13 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 permission_context(), PathType::kLocal, internet_cache,
                 HandleType::kDirectory, UserAction::kOpen),
             SensitiveDirectoryResult::kAbort);
-  // Files inside the nested INetCache directory should be allowed.
+  // Files inside of the nested INetCache directory should be allowed.
   EXPECT_EQ(
       ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
                                       internet_cache.AppendASCII("foo"),
                                       HandleType::kFile, UserAction::kOpen),
       SensitiveDirectoryResult::kAllowed);
-  // But directories should be blocked.
+  // The directories should be blocked.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal,
                 internet_cache.AppendASCII("foo"), HandleType::kDirectory,
@@ -424,13 +425,13 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
 
-  // ~/.ssh should be blocked
+  // ~/.ssh should be blocked.
   EXPECT_EQ(
       ConfirmSensitiveEntryAccessSync(
           permission_context(), PathType::kLocal, home_dir.AppendASCII(".ssh"),
           HandleType::kDirectory, UserAction::kOpen),
       SensitiveDirectoryResult::kAbort);
-  // And anything inside ~/.ssh should also be blocked
+  // And anything inside ~/.ssh should also be blocked.
   EXPECT_EQ(
       ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
                                       home_dir.AppendASCII(".ssh/id_rsa"),
@@ -460,7 +461,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 base::FilePath(FILE_PATH_LITERAL("/dev/foo")),
                 HandleType::kFile, UserAction::kOpen),
             SensitiveDirectoryResult::kAbort);
-  // Even if user action is none, a blocklisted path should be blocked.
+  // Even if the user action is none, a blocklisted path should be blocked.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal,
                 base::FilePath(FILE_PATH_LITERAL("/dev")),
@@ -481,7 +482,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
 
-  // Home directory itself should not be allowed.
+  // The Home directory itself should not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal, home_dir,
                 HandleType::kDirectory, UserAction::kOpen),
@@ -651,8 +652,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        CanObtainWritePermission_ContentSettingAllow) {
-  // Note, chrome:// scheme is whitelisted. But we can't set default content
-  // setting here because ALLOW is not an acceptable option.
+  // chrome:// scheme is whitelisted, but we can't set the default content
+  // setting here because `ALLOW` is not an acceptable option.
   EXPECT_TRUE(permission_context()->CanObtainWritePermission(kChromeOrigin));
 }
 
@@ -674,7 +675,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyReadAskForUrls) {
-  // Set the default to "block" so that the policy being tested overrides it.
+  // Set the default to `BLOCK` so that the policy being tested overrides it.
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedDefaultFileSystemReadGuardSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
@@ -697,7 +698,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyReadBlockedForUrls) {
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyWriteAskForUrls) {
-  // Set the default to "block" so that the policy being tested overrides it.
+  // Set the default to `BLOCK` so that the policy being tested overrides it.
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedDefaultFileSystemWriteGuardSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
@@ -757,7 +758,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 .path,
             base::FilePath());
 
-  // SetLastPickedDirectory with `kTestStartingDirectoryId`.
+  // Call `SetLastPickedDirectory` with `kTestStartingDirectoryId`.
   auto type = PathType::kLocal;
   permission_context()->SetLastPickedDirectory(
       kTestOrigin, kTestStartingDirectoryId, kTestPath, type);
@@ -766,7 +767,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(path_info.path, kTestPath);
   EXPECT_EQ(path_info.type, type);
 
-  // SetLastPickedDirectory with an empty (default) ID.
+  // Call `SetLastPickedDirectory` with an empty (default) ID.
   auto new_id = std::string();
   auto new_path = path_info.path.AppendASCII("baz");
   auto new_type = PathType::kExternal;
@@ -777,7 +778,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(new_path_info.path, new_path);
   EXPECT_EQ(new_path_info.type, new_type);
 
-  // Confirm that the original ID can still be retrieved as before.
+  // Confirm that the original ID can still be retrieved as it was previously.
   auto old_path_info = permission_context()->GetLastPickedDirectory(
       kTestOrigin, kTestStartingDirectoryId);
   EXPECT_EQ(old_path_info.path, kTestPath);
@@ -792,7 +793,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, LimitNumberOfIds) {
 
   permission_context()->SetMaxIdsPerOriginForTesting(3);
 
-  // Default path should NOT be evicted.
+  // The default path should NOT be evicted.
   auto default_id = std::string();
   auto default_path = base::FilePath::FromUTF8Unsafe("default");
 
@@ -832,7 +833,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, LimitNumberOfIds) {
   EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id4).path,
             base::FilePath());  // Unset.
 
-  // Once the 4th id has been set, only `id1` should have been evicted.
+  // Once the fourth id has been set, only `id1` should be evicted.
   permission_context()->SetLastPickedDirectory(kTestOrigin, id4, path4,
                                                PathType::kLocal);
   Advance(base::Minutes(1));
@@ -845,7 +846,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, LimitNumberOfIds) {
   EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id4).path,
             path4);
 
-  // Re-set `id1`, evicting `id2`.
+  // Reset `id1`, evicting `id2`.
   permission_context()->SetLastPickedDirectory(kTestOrigin, id1, path1,
                                                PathType::kLocal);
   Advance(base::Minutes(1));
@@ -858,7 +859,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, LimitNumberOfIds) {
   EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id4).path,
             path4);
 
-  // Ensure the default path was never evicted.
+  // Ensure that the default path was not evicted.
   EXPECT_EQ(permission_context()
                 ->GetLastPickedDirectory(kTestOrigin, default_id)
                 .path,
@@ -998,7 +999,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
 
   // Getting a grant for the same file again should also not change the grant,
-  // even now asking for more permissions is blocked globally.
+  // even though asking for more permissions is blocked globally.
   grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
@@ -1015,7 +1016,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   auto grant3 = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
-  // All grants should be the same grant, and be granted and persisted.
+  // All grants should be equivalent, and should be granted and persisted.
   EXPECT_EQ(grant1, grant2);
   EXPECT_EQ(grant1, grant3);
   EXPECT_EQ(grant1->GetStatus(), PermissionStatus::GRANTED);
@@ -1030,8 +1031,8 @@ TEST_F(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
   grant.reset();
-  // After reset grant should go away, so new grant request should be in ASK
-  // state.
+  // After reset, the grant should go be cleared, and the new grant request is
+  // in the `ASK` state.
   grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
@@ -1048,8 +1049,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
 
   grant.reset();
-
-  // Permission should not be granted for |kOpen|.
+  // Permission should not be granted for `kOpen`.
   grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
@@ -1120,26 +1120,26 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto grant2 = permission_context()->GetWritePermissionGrant(
       kTestOrigin2, kTestPath2, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
-  auto initial_granted_objects_origin1 =
-      permission_context()->GetExtendedPersistedObjectsForTesting(kTestOrigin);
-  EXPECT_EQ(initial_granted_objects_origin1.size(), 1UL);
-  auto initial_granted_objects_origin2 =
-      permission_context()->GetExtendedPersistedObjectsForTesting(kTestOrigin2);
-  EXPECT_EQ(initial_granted_objects_origin2.size(), 1UL);
+  ASSERT_THAT(
+      permission_context()->GetExtendedPersistedObjectsForTesting(kTestOrigin),
+      testing::SizeIs(1));
+  ASSERT_THAT(
+      permission_context()->GetExtendedPersistedObjectsForTesting(kTestOrigin2),
+      testing::SizeIs(1));
 
-  // Revoke active grant, but not persisted permission. The granted object for
-  // the given origin is not revoked.
+  // Revoke the active grant, but not the persisted permission. The granted
+  // object for the given origin is not revoked.
   permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
-  auto granted_objects =
-      permission_context()->GetExtendedPersistedObjectsForTesting(kTestOrigin);
-  EXPECT_EQ(granted_objects.size(), 1UL);
+  ASSERT_THAT(
+      permission_context()->GetExtendedPersistedObjectsForTesting(kTestOrigin),
+      testing::SizeIs(1));
 
-  // The granted objects are updated when has all of its permissions revoked.
+  // The granted objects are updated when all of its permissions are revoked.
   permission_context()->RevokeGrants(kTestOrigin);
-  auto updated_granted_objects =
-      permission_context()->GetExtendedPersistedObjectsForTesting(kTestOrigin);
-  EXPECT_TRUE(updated_granted_objects.empty());
+  ASSERT_THAT(
+      permission_context()->GetExtendedPersistedObjectsForTesting(kTestOrigin),
+      testing::IsEmpty());
 
   // An empty vector is returned when an origin does not have extended
   // permissions.
@@ -1212,7 +1212,7 @@ TEST_F(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   auto grant3 = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
-  // All grants should be the same grant, and be denied.
+  // All grants should be equivalent, and have a `DENIED` state.
   EXPECT_EQ(grant1, grant2);
   EXPECT_EQ(grant1, grant3);
   EXPECT_EQ(grant1->GetStatus(), PermissionStatus::DENIED);
@@ -1230,8 +1230,8 @@ TEST_F(
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::DENIED);
   grant.reset();
 
-  // After reset grant should go away, but the new grant request should be in
-  // DENIED state.
+  // After reset, the grant should go away and the new grant request should
+  // have a `DENIED` state.
   grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::DENIED);
@@ -1246,8 +1246,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextNoPersistenceTest,
   auto grant2 = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   // Only one permission grant object is recorded when a given origin has both
-  // read + write access for a given resource.
-  EXPECT_EQ(permission_context()->GetGrantedObjects(kTestOrigin).size(), 1UL);
+  // read and write access for a given resource.
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(1));
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -1264,10 +1265,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
 
-  // Create dormant grants, eligible to be restored.
+  // Create dormant grants that are eligible to be restored.
   // Use a directory handle, which is not auto-granted, so that later it can be
   // demonstrated that a directory handle is not able to trigger the restore
-  // prompt, but the single-file permission prompt.
+  // prompt, and will instead trigger the single-file permission prompt.
   auto grant1 = permission_context()->GetReadPermissionGrant(
       kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
   base::test::TestFuture<PermissionRequestOutcome> grant1_future;
@@ -1300,8 +1301,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(grant1_from_storage->GetStatus(), PermissionStatus::ASK);
   EXPECT_EQ(grant2_from_storage->GetStatus(), PermissionStatus::ASK);
 
-  // `requestPermission()` on a handle from IndxedDB triggers the restore
-  // permission prompt.
+  // `requestPermission()` on a handle from IndxedDB triggers the Restore
+  // Permission prompt.
   base::test::TestFuture<PermissionRequestOutcome> future;
   grant1_from_storage->RequestPermission(
       frame_id(), UserActivationState::kNotRequired, future.GetCallback());
@@ -1315,10 +1316,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
 
-  // Create dormant grants, eligible to be restored.
+  // Create dormant grants that are eligible to be restored.
   // Use a directory handle, which is not auto-granted, so that later it can be
   // demonstrated that a directory handle is not able to trigger the restore
-  // prompt, but only the single-file permission flow.
+  // prompt and can only trigger the single-file permission flow.
   auto grant1 = permission_context()->GetReadPermissionGrant(
       kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
   base::test::TestFuture<PermissionRequestOutcome> grant1_future;
@@ -1368,7 +1369,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
   // The origin only has active grants, and no dormant grants. Therefore, the
-  // origin should not grant permission via the restore prompt.
+  // origin should not grant permission via the Restore Permission prompt.
   base::test::TestFuture<PermissionRequestOutcome> future;
   grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
                            future.GetCallback());
@@ -1386,7 +1387,8 @@ TEST_F(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
 
-  // Dormant grants exist after tabs being backgrounded for a while.
+  // Dormant grants exist after tabs are backgrounded for the amount of time
+  // specified by the extended permissions policy.
   permission_context()->OnAllTabsInBackgroundTimerExpired(
       kTestOrigin,
       OneTimePermissionsTrackerObserver::BackgroundExpiryType::kLongTimeout);
@@ -1412,7 +1414,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
 
-  // Dormant grants exist after tabs being backgrounded for a while.
+  // Dormant grants exist after tabs are backgrounded for the amount of time
+  // specified by the extended permissions policy.
   permission_context()->OnAllTabsInBackgroundTimerExpired(
       kTestOrigin,
       OneTimePermissionsTrackerObserver::BackgroundExpiryType::kLongTimeout);
@@ -1444,7 +1447,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
   // The dormant grants are now extended grants, which can be returned from
   // `GetGrantedObjects()`.
-  EXPECT_EQ(permission_context()->GetGrantedObjects(kTestOrigin).size(), 2UL);
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(2));
 
   // TODO(crbug.com/1011533): Update this test to navigate away from the page,
   // instead of manually resetting the grants.
@@ -1454,7 +1458,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // instead of manually resetting the grants.
   // The granted permission objects remain, even after navigating away from the
   // page.
-  EXPECT_EQ(permission_context()->GetGrantedObjects(kTestOrigin).size(), 2UL);
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(2));
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -1468,7 +1473,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(grant1->GetStatus(), PermissionStatus::GRANTED);
   EXPECT_EQ(grant2->GetStatus(), PermissionStatus::GRANTED);
 
-  // Dormant grants exist after tabs being backgrounded for a while.
+  // Dormant grants exist after tabs are backgrounded for the amount of time
+  // specified by the extended permissions policy.
   permission_context()->OnAllTabsInBackgroundTimerExpired(
       kTestOrigin,
       OneTimePermissionsTrackerObserver::BackgroundExpiryType::kLongTimeout);
@@ -1485,27 +1491,29 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 kTestOrigin.GetURL(), kTestOrigin.GetURL(),
                 ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION),
             ContentSetting::CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(permission_context()->GetGrantedObjects(kTestOrigin).size(), 2UL);
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(2));
 
   // TODO(crbug.com/1011533): Update this test to navigate away from the page,
   // instead of manually resetting the grants.
   permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
   // The granted permissions are cleared after navigating away from the page.
-  EXPECT_EQ(permission_context()->GetGrantedObjects(kTestOrigin).size(), 0UL);
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::IsEmpty());
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RestorePermissionPrompt_Denied) {
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::DENIED);
-  auto result =
-      TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin);
-  EXPECT_EQ(result, PermissionRequestOutcome::kUserDenied);
+  EXPECT_EQ(TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin),
+            PermissionRequestOutcome::kUserDenied);
 
-  // Persisted grants are cleared as a result of restore prompt
-  // rejection, when Extended Permissions is not enabled.
-  // The origin is not embargoed, when the restore prompt is rejected one time.
-  EXPECT_EQ(0UL, permission_context()->GetGrantedObjects(kTestOrigin).size());
+  // Persisted grants are cleared as a result of restore prompt rejection, when
+  // Extended Permissions is not enabled.
+  // The origin is not embargoed when the restore prompt is rejected one time.
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::IsEmpty());
   auto origin_is_embargoed =
       PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(profile()))
@@ -1513,12 +1521,12 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                         ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
   EXPECT_FALSE(origin_is_embargoed);
 
-  //  Check that origin is placed under embargo after being ignored
+  //  Check that the origin is placed under embargo after being ignored
   // `kDefaultDismissalsBeforeBlock` times.
-  result = TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin);
-  EXPECT_EQ(result, PermissionRequestOutcome::kUserDenied);
-  // The origin is not embargoed after being ignored 2 times, when the
-  // limit set by `kDefaultDismissalsBeforeBlock` is 3.
+  EXPECT_EQ(TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin),
+            PermissionRequestOutcome::kUserDenied);
+  // The origin is not embargoed after being ignored two times, when the limit
+  // set by `kDefaultDismissalsBeforeBlock` is three times.
   auto origin_is_embargoed_updated =
       PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(profile()))
@@ -1527,8 +1535,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_FALSE(origin_is_embargoed_updated);
   // The origin is embargoed, after reaching the ignore limit set by
   // `kDefaultDismissalsBeforeBlock`.
-  result = TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin);
-  EXPECT_EQ(result, PermissionRequestOutcome::kUserDenied);
+  EXPECT_EQ(TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin),
+            PermissionRequestOutcome::kUserDenied);
   auto origin_is_embargoed_after_rejection_limit =
       PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(profile()))
@@ -1677,7 +1685,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
   // Persisted grants are cleared by ignoring the restore prompt.
   // The origin is not embargoed on first ignore.
-  EXPECT_EQ(permission_context()->GetGrantedObjects(kTestOrigin).size(), 0UL);
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::IsEmpty());
   auto origin_is_embargoed =
       PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(profile()))
@@ -1691,8 +1700,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(result, PermissionRequestOutcome::kRequestAborted);
   result = TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin);
   EXPECT_EQ(result, PermissionRequestOutcome::kRequestAborted);
-  // The origin is not embargoed after being ignored 3 times, when the
-  // limit set by `kDefaultIgnoresBeforeBlock` is 4.
+  // The origin is not embargoed after being ignored three times, when the
+  // limit set by `kDefaultIgnoresBeforeBlock` is four times.
   auto origin_is_embargoed_updated =
       PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(profile()))
@@ -1775,23 +1784,24 @@ TEST_F(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
 
-  // Revoke active and persisted permissions.
+  // Revoke the active and persisted permissions.
   permission_context()->RevokeGrants(kTestOrigin);
   grant.reset();
   EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
 
-  // After reset grant should go away, but the new grant request should be in
-  // ASK state.
+  // After resetting the grant, the granted object should not exist, and the
+  // new grant request should be in the `ASK` state.
   grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
-  EXPECT_EQ(permission_context()->GetGrantedObjects(kTestOrigin).size(), 0UL);
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::IsEmpty());
 
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
 
-  // After the guard is blocked, the permission status for |grant| should remain
+  // After the guard is blocked, the permission status for the grant is
   // unchanged.
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
   EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
@@ -1810,8 +1820,8 @@ TEST_F(
   EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
 
-  // After reset grant should go away, but the new grant request should be in
-  // ASK state.
+  // After reset, the grant should be cleared and the new grant request should
+  // be in the `ASK` state.
   grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
@@ -1819,8 +1829,8 @@ TEST_F(
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
 
-  // After the guard is blocked, the permission status for |grant| should remain
-  // unchanged.
+  // After the guard is blocked, the permission status for the `grant` should
+  // remain unchanged.
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
   EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
@@ -1843,7 +1853,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kRead));
 
-  // A file in |dir_path|'s directory should be auto-granted permissions.
+  // A file in `dir_path`'s directory should have auto-granted permissions.
   auto file_path = kTestPath.AppendASCII("baz");
   auto file_grant = permission_context()->GetReadPermissionGrant(
       kTestOrigin, file_path, HandleType::kFile, UserAction::kLoadFromStorage);
@@ -1869,7 +1879,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
 
-  // A file in |dir_path|'s directory should be auto-granted permissions.
+  // A file in `dir_path`'s directory should be auto-granted permissions.
   auto file_path = kTestPath.AppendASCII("baz");
   auto file_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, file_path, HandleType::kFile, UserAction::kLoadFromStorage);
@@ -1895,8 +1905,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kRead));
 
-  // |dir_path| has read permission while we're asking for write permission,
-  // so do not auto-grant the permission.
+  // `dir_path` already has read permission while we're asking for write
+  // permission, so the permission is not auto-granted.
   auto file_path = kTestPath.AppendASCII("baz");
   auto file_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, file_path, HandleType::kFile, UserAction::kLoadFromStorage);
@@ -1925,7 +1935,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // Remove the active grant, but not the persisted permission.
   dir_grant.reset();
 
-  // A file in |dir_path|'s directory should not be granted permission until
+  // A file in `dir_path`'s directory should not be granted permission until
   // permission is explicitly requested.
   auto file_path = kTestPath.AppendASCII("baz");
   auto file_grant = permission_context()->GetReadPermissionGrant(
@@ -1962,7 +1972,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // Remove the active grant, but not the persisted permission.
   dir_grant.reset();
 
-  // A file in |dir_path|'s directory should not be granted permission until
+  // A file in `dir_path`'s directory should not be granted permission until
   // permission is explicitly requested.
   auto file_path = kTestPath.AppendASCII("baz");
   auto file_grant = permission_context()->GetWritePermissionGrant(
@@ -1998,7 +2008,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // Remove the active grant, but not the persisted permission.
   dir_grant.reset();
 
-  // |dir_path| has read permission while we're asking for write permission,
+  // `dir_path` has read permission while we're asking for write permission,
   // so do not auto-grant the permission and do not grant via persisted
   // permission.
   auto file_path = kTestPath.AppendASCII("baz");
@@ -2020,7 +2030,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
-  // Revoke active grant, but not persisted permission.
+  // Revoke active grant, but not the persisted permission.
   permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
@@ -2058,8 +2068,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
 
-  // After reset grant should go away, but the new grant request should be in
-  // ASK state.
+  // After reset, the grant should be cleared, and the new grant request should
+  // be in the `ASK` state.
   grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
@@ -2067,8 +2077,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
 
-  // After the guard is blocked, the permission status for |grant| should remain
-  // unchanged, but the persisted permission should not be accessible.
+  // After the guard is blocked, the permission status for the `grant` should
+  // remain unchanged and the persisted permission should not be accessible.
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
   EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
@@ -2092,13 +2102,14 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   read_grant.reset();
 
   // Auto-grant because active permissions exist. This should update the
-  // timestamp of the persisted permission for |write_grant|.
+  // timestamp of the persisted permission for the `write_grant`.
   base::test::TestFuture<PermissionRequestOutcome> future;
   write_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
                                  future.GetCallback());
   EXPECT_EQ(future.Get(), PermissionRequestOutcome::kRequestAborted);
 
-  // Though only |write_grant| was accessed, we should not lose read access.
+  // Even though only the `write_grant` was accessed, we should not lose read
+  // access.
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kRead));
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
@@ -2119,7 +2130,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   grant->RequestPermission(frame_id(), UserActivationState::kRequired,
                            future.GetCallback());
   EXPECT_EQ(future.Get(), PermissionRequestOutcome::kUserDismissed);
-  // Dismissed, so status should not change.
+  // The grant status should change as a result of dismissal.
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
   EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
@@ -2175,7 +2186,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   grant->RequestPermission(frame_id(), UserActivationState::kRequired,
                            future.GetCallback());
   EXPECT_EQ(future.Get(), PermissionRequestOutcome::kNoUserActivation);
-  // No user activation, so status should not change.
+  // The status should not change when there is no user activation.
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
   EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
@@ -2194,7 +2205,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
                            future.GetCallback());
   EXPECT_EQ(future.Get(), PermissionRequestOutcome::kUserGranted);
-  // No user activation, so status should not change.
+  // The status should not change when there is no user activation.
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
@@ -2202,7 +2213,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RequestPermission_AlreadyGranted) {
-  // If the permission has already been granted, a call to RequestPermission()
+  // If the permission has already been granted, a call to `RequestPermission`
   // should call the passed-in callback and return immediately without showing
   // a prompt.
   permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
@@ -2220,8 +2231,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RequestPermission_GlobalGuardBlockedBeforeOpenGrant) {
-  // If the guard content setting is blocked, a call to RequestPermission()
-  // should update the PermissionStatus to DENIED, call the passed-in
+  // If the guard content setting is blocked, a call to `RequestPermission`
+  // should update the `PermissionStatus` to `DENIED`, call the passed-in
   // callback, and return immediately without showing a prompt.
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
@@ -2267,8 +2278,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RequestPermission_GlobalGuardBlockedAfterOpenGrant) {
-  // If the guard content setting is blocked, a call to RequestPermission()
-  // should update the PermissionStatus to DENIED, call the passed-in
+  // If the guard content setting is blocked, a call to `RequestPermission`
+  // should update the `PermissionStatus` to `DENIED`, call the passed-in
   // callback, and return immediately without showing a prompt.
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
@@ -2333,7 +2344,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   allowlist->RegisterAutoGrantedPermission(
       kChromeOrigin, ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
 
-  // Allowlisted origin automatically gets write permission.
+  // An allowlisted origin automatically gets write permission.
   auto grant1 = permission_context()->GetWritePermissionGrant(
       kChromeOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(grant1->GetStatus(), PermissionStatus::GRANTED);
@@ -2348,7 +2359,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
       kChromeOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
 
-  // Other origin should gets blocked.
+  // The other origin should be blocked.
   auto grant3 = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(grant3->GetStatus(), PermissionStatus::DENIED);
@@ -2416,7 +2427,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kRead));
 
   // Requesting a permission grant for a directory which was previously a file
-  // should have revoked the original file permission.
+  // revokes the original file permission.
   EXPECT_EQ(file_grant->GetStatus(), PermissionStatus::DENIED);
   EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kRead));
@@ -2438,7 +2449,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
 
   // Requesting a permission grant for a directory which was previously a file
-  // should have revoked the original file permission.
+  // revokes the original file permission.
   EXPECT_EQ(file_grant->GetStatus(), PermissionStatus::DENIED);
   EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
@@ -2455,14 +2466,14 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, NotifyEntryMoved_File) {
   const auto new_path = kTestPath.DirName().AppendASCII("new_name.txt");
   permission_context()->NotifyEntryMoved(kTestOrigin, kTestPath, new_path);
 
-  // Permissions to the old path should have been revoked.
+  // Permissions to the old path are revoked.
   auto file_grant_at_old_path = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(file_grant_at_old_path->GetStatus(), PermissionStatus::ASK);
   EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
 
-  // Permissions to the new path should have been updated.
+  // Permissions to the new path are updated.
   EXPECT_EQ(file_grant->GetStatus(), PermissionStatus::GRANTED);
   EXPECT_EQ(file_grant->GetPath(), new_path);
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
@@ -2495,14 +2506,14 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   const auto new_path = old_file_path.DirName().AppendASCII("new_name.txt");
   permission_context()->NotifyEntryMoved(kTestOrigin, old_file_path, new_path);
 
-  // Permissions to the parent should not have been affected.
+  // Permissions to the parent are not affected.
   auto parent_grant_copy = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
   EXPECT_EQ(parent_grant_copy->GetStatus(), PermissionStatus::GRANTED);
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
 
-  // Permissions to the old file path should not have been affected.
+  // Permissions to the old file path aer not affected.
   auto file_grant_at_old_path = permission_context()->GetWritePermissionGrant(
       kTestOrigin, old_file_path, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(file_grant_at_old_path->GetStatus(), PermissionStatus::GRANTED);
@@ -2510,7 +2521,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, old_file_path, HandleType::kFile, GrantType::kWrite));
 
-  // Should still have permission at the new path.
   EXPECT_EQ(file_grant->GetStatus(), PermissionStatus::GRANTED);
   EXPECT_EQ(file_grant->GetPath(), new_path);
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
@@ -2544,21 +2554,21 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   const auto new_path = old_file_path.DirName().AppendASCII("new_name.txt");
   permission_context()->NotifyEntryMoved(kTestOrigin, old_file_path, new_path);
 
-  // Permissions to the parent should not have been affected.
+  // Permissions to the parent are not affected.
   auto parent_grant_copy = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
   EXPECT_EQ(parent_grant_copy->GetStatus(), PermissionStatus::GRANTED);
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
 
-  // Permissions to the old file path should not have been affected.
+  // Permissions to the old file path are not affected.
   auto file_grant_at_old_path = permission_context()->GetWritePermissionGrant(
       kTestOrigin, old_file_path, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(file_grant_at_old_path->GetStatus(), PermissionStatus::GRANTED);
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, old_file_path, HandleType::kFile, GrantType::kWrite));
 
-  // Should still have permission at the new path.
+  // Permission should still be granted at the new path.
   EXPECT_EQ(file_grant->GetStatus(), PermissionStatus::GRANTED);
   EXPECT_EQ(file_grant->GetPath(), new_path);
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
