@@ -116,22 +116,15 @@ void AutofillProviderAndroid::OnAskForValuesToFill(
 
   // Focus or field value change will also trigger the query, so it should be
   // ignored if the form is same.
-  if (ShouldStartNewSession(manager, form))
+  if (!IsCurrentlyLinkedForm(form)) {
     StartNewSession(manager, form, field, bounding_box);
+  }
 
   if (field.datalist_values.empty()) {
     return;
   }
   bridge_->ShowDatalistPopup(field.datalist_values, field.datalist_labels,
                              field.text_direction == base::i18n::RIGHT_TO_LEFT);
-}
-
-bool AutofillProviderAndroid::ShouldStartNewSession(
-    AndroidAutofillManager* manager,
-    const FormData& form) {
-  // Only start a new session when form or manager is changed, the change of
-  // manager indicates query from other frame and a new session is needed.
-  return !IsCurrentlyLinkedForm(form) || !IsCurrentlyLinkedManager(manager);
 }
 
 void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
@@ -202,7 +195,7 @@ void AutofillProviderAndroid::OnTextFieldDidScroll(
     const gfx::RectF& bounding_box) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FieldInfo field_info;
-  if (!IsCurrentlyLinkedManager(manager) || !IsCurrentlyLinkedForm(form) ||
+  if (!IsCurrentlyLinkedForm(form) ||
       !form_->GetSimilarFieldIndex(field, &field_info.index)) {
     return;
   }
@@ -220,7 +213,7 @@ void AutofillProviderAndroid::OnSelectControlDidChange(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box) {
-  if (ShouldStartNewSession(manager, form)) {
+  if (!IsCurrentlyLinkedForm(form)) {
     StartNewSession(manager, form, field, bounding_box);
     // TODO(crbug.com/1478934): Return early at this point?
   }
@@ -286,7 +279,7 @@ void AutofillProviderAndroid::OnFocusOnFormField(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   FieldInfo field_info;
-  if (!IsCurrentlyLinkedManager(manager) || !IsCurrentlyLinkedForm(form) ||
+  if (!IsCurrentlyLinkedForm(form) ||
       !form_->GetSimilarFieldIndex(field, &field_info.index)) {
     return;
   }
@@ -303,7 +296,7 @@ void AutofillProviderAndroid::MaybeFireFormFieldDidChange(
     const gfx::RectF& bounding_box) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FieldInfo field_info;
-  if (!IsCurrentlyLinkedManager(manager) || !IsCurrentlyLinkedForm(form) ||
+  if (!IsCurrentlyLinkedForm(form) ||
       !form_->GetSimilarFieldIndex(field, &field_info.index)) {
     return;
   }
@@ -316,7 +309,7 @@ void AutofillProviderAndroid::MaybeFireFormFieldDidChange(
 void AutofillProviderAndroid::MaybeFireFormFieldVisibilitiesDidChange(
     AndroidAutofillManager* manager,
     const FormData& form) {
-  if (!IsCurrentlyLinkedManager(manager) || !IsCurrentlyLinkedForm(form) ||
+  if (!IsCurrentlyLinkedForm(form) ||
       !base::FeatureList::IsEnabled(
           features::kAndroidAutofillSupportVisibilityChanges)) {
     return;
