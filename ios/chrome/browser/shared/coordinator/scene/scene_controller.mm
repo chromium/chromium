@@ -279,6 +279,10 @@ void InjectNTP(Browser* browser) {
   // The scene level component for url loading. Is passed down to
   // browser state level UrlLoadingService instances.
   std::unique_ptr<SceneUrlLoadingService> _sceneURLLoadingService;
+
+  // Map recording the number of tabs in WebStateList before the batch
+  // operation started.
+  std::map<WebStateList*, int> _tabCountBeforeBatchOperation;
 }
 
 // Navigation View controller for the settings.
@@ -3514,23 +3518,13 @@ void InjectNTP(Browser* browser) {
       // Do nothing when a WebState is selected and its status is updated.
       break;
     case WebStateListChange::Type::kDetach: {
-      // Do nothing on initialization.
-      if (!self.currentInterface.browser) {
-        return;
+      // Do nothing during batch operation.
+      if (webStateList->IsBatchInProgress()) {
+        break;
       }
 
-      // Triggers the switcher view when the last WebState is closed on a device
-      // that uses the switcher.
-      const WebStateListChangeDetach& detachChange =
-          change.As<WebStateListChangeDetach>();
       if (webStateList->empty()) {
-        if (detachChange.detached_web_state()
-                ->GetBrowserState()
-                ->IsOffTheRecord()) {
-          [self lastIncognitoTabClosed];
-        } else {
-          [self lastRegularTabClosed];
-        }
+        [self onLastWebStateClosedForWebStateList:webStateList];
       }
       break;
     }
@@ -3543,6 +3537,37 @@ void InjectNTP(Browser* browser) {
     case WebStateListChange::Type::kInsert:
       // Do nothing when a WebState is inserted.
       break;
+  }
+}
+
+- (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
+  _tabCountBeforeBatchOperation.insert(
+      std::make_pair(webStateList, webStateList->count()));
+}
+
+- (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
+  auto iter = _tabCountBeforeBatchOperation.find(webStateList);
+  DCHECK(iter != _tabCountBeforeBatchOperation.end());
+
+  // Triggers the switcher view if the list is empty and at least one tab
+  // was closed (i.e. it was not empty before the batch operation).
+  if (webStateList->empty() && iter->second != 0) {
+    [self onLastWebStateClosedForWebStateList:webStateList];
+  }
+
+  _tabCountBeforeBatchOperation.erase(iter);
+}
+
+#pragma mark - Private methods
+
+// Triggers the switcher view when the last WebState is closed on a device
+// that uses the switcher.
+- (void)onLastWebStateClosedForWebStateList:(WebStateList*)webStateList {
+  DCHECK(webStateList->empty());
+  if (webStateList == self.incognitoInterface.browser->GetWebStateList()) {
+    [self lastIncognitoTabClosed];
+  } else if (webStateList == self.mainInterface.browser->GetWebStateList()) {
+    [self lastRegularTabClosed];
   }
 }
 
