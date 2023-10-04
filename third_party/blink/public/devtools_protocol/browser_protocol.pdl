@@ -824,6 +824,7 @@ experimental domain Audits
       RpPageNotVisible
       SilentMediationFailure
       ThirdPartyCookiesBlocked
+      NotSignedInWithIdp
 
   type FederatedAuthUserInfoRequestIssueDetails extends object
     properties

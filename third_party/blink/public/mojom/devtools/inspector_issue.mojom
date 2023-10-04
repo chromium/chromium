@@ -232,6 +232,7 @@ enum FederatedAuthRequestResult {
   kErrorRpPageNotVisible,
   kErrorSilentMediationFailure,
   kErrorThirdPartyCookiesBlocked,
+  kErrorNotSignedInWithIdp,
   kError,
 };
 

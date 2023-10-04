@@ -230,6 +230,9 @@ std::string GetConsoleErrorMessageFromResult(
              "FedCM without third-party cookies, enable the "
              "#fedcm-without-third-party-cookies flag.";
     }
+    case FederatedAuthRequestResult::kErrorNotSignedInWithIdp: {
+      return "Not signed in with the identity provider.";
+    }
     case FederatedAuthRequestResult::kError: {
       return "Error retrieving a token.";
     }

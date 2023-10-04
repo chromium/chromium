@@ -200,6 +200,7 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kErrorRpPageNotVisible:
     case FederatedAuthRequestResult::kErrorSilentMediationFailure:
     case FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked:
+    case FederatedAuthRequestResult::kErrorNotSignedInWithIdp:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
     }
@@ -231,7 +232,8 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kShouldEmbargo:
     case FederatedAuthRequestResult::kErrorDisabledInSettings:
     case FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked:
-    case FederatedAuthRequestResult::kErrorRpPageNotVisible: {
+    case FederatedAuthRequestResult::kErrorRpPageNotVisible:
+    case FederatedAuthRequestResult::kErrorNotSignedInWithIdp: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kUserFailure;
     }
     case FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound:
@@ -820,10 +822,11 @@ void FederatedAuthRequestImpl::RequestToken(
       if (has_failing_idp_signin_status &&
           webid::GetIdpSigninStatusMode(render_frame_host(), idp_origin) ==
               FedCmIdpSigninStatusMode::ENABLED) {
-        CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                                 TokenStatus::kNotSignedInWithIdp,
-                                 /*token_error=*/absl::nullopt,
-                                 /*should_delay_callback=*/true);
+        CompleteRequestWithError(
+            FederatedAuthRequestResult::kErrorNotSignedInWithIdp,
+            TokenStatus::kNotSignedInWithIdp,
+            /*token_error=*/absl::nullopt,
+            /*should_delay_callback=*/true);
         return;
       }
       // TODO(crbug.com/1383384): Handle auto_reauthn_ for multi IDP.
@@ -1128,10 +1131,11 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
       // of which websites a user visits.
       idp_info->endpoints.metrics = GURL();
 
-      OnFetchDataForIdpFailed(std::move(idp_info),
-                              FederatedAuthRequestResult::kError,
-                              TokenStatus::kNotSignedInWithIdp,
-                              /*should_delay_callback=*/true);
+      OnFetchDataForIdpFailed(
+          std::move(idp_info),
+          FederatedAuthRequestResult::kErrorNotSignedInWithIdp,
+          TokenStatus::kNotSignedInWithIdp,
+          /*should_delay_callback=*/true);
       continue;
     }
 

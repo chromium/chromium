@@ -3330,7 +3330,8 @@ TEST_F(FederatedAuthRequestImplTest,
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
 
   RequestExpectations expectations = {
-      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorNotSignedInWithIdp,
       /*standalone_console_message=*/absl::nullopt,
       /*selected_idp_config_url=*/absl::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);

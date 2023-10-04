@@ -340,6 +340,9 @@ FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked: {
       return FederatedAuthRequestIssueReasonEnum::ThirdPartyCookiesBlocked;
     }
+    case FederatedAuthRequestResult::kErrorNotSignedInWithIdp: {
+      return FederatedAuthRequestIssueReasonEnum::NotSignedInWithIdp;
+    }
     case FederatedAuthRequestResult::kSuccess: {
       NOTREACHED_NORETURN();
     }
