@@ -349,7 +349,7 @@ std::unique_ptr<EndpointFetcher> ParcelsServerProxy::CreateEndpointFetcher(
   return std::make_unique<EndpointFetcher>(
       url_loader_factory_, kOAuthName, url, http_method, kContentType,
       std::vector<std::string>{kOAuthScope}, kTimeoutMs.Get(), post_data,
-      traffic_annotation, identity_manager_, signin::ConsentLevel::kSync);
+      traffic_annotation, identity_manager_, signin::ConsentLevel::kSignin);
 }
 
 void ParcelsServerProxy::ProcessGetParcelStatusResponse(
