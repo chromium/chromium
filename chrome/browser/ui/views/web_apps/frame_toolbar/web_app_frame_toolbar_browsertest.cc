@@ -57,7 +57,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_view_host.h"
@@ -492,25 +491,8 @@ class BorderlessIsolatedWebAppBrowserTest
 
   void GrantWindowManagementPermission() {
     auto* web_contents = browser_view()->GetActiveWebContents();
-    std::string permission_auto_approve_script = R"(
-      const draggable = document.getElementById('draggable');
-      draggable.setAttribute('allow', 'window-management');
-    )";
-    EXPECT_TRUE(ExecJs(web_contents, permission_auto_approve_script,
-                       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-    permissions::PermissionRequestManager::FromWebContents(web_contents)
-        ->set_auto_response_for_test(
-            permissions::PermissionRequestManager::ACCEPT_ALL);
-
-    EXPECT_TRUE(ExecJs(web_contents, "window.getScreenDetails();"));
-
-    std::string permission_query_script = R"(
-      navigator.permissions.query({
-        name: 'window-management'
-      }).then(res => res.state)
-    )";
-    EXPECT_EQ("granted", EvalJs(web_contents, permission_query_script));
+    WebAppFrameToolbarTestHelper::GrantWindowManagementPermission(web_contents,
+                                                                  "draggable");
 
     // It takes some time to udate the borderless mode state. The title is
     // updated on a change event hooked to the window.matchMedia() function,

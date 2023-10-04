@@ -81,6 +81,11 @@ class WebAppFrameToolbarTestHelper {
   // |window_open_script| and returns the |BrowserView| it opened in.
   BrowserView* OpenPopup(const std::string& window_open_script);
 
+  static void GrantWindowManagementPermission(
+      content::WebContents* web_contents,
+      base::StringPiece element_id);
+  void GrantWindowManagementPermission(base::StringPiece element_id);
+
   Browser* app_browser() { return app_browser_; }
   BrowserView* browser_view() { return browser_view_; }
   BrowserNonClientFrameView* frame_view() { return frame_view_; }
