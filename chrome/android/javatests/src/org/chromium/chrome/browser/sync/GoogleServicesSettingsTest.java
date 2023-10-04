@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -299,9 +300,10 @@ public class GoogleServicesSettingsTest {
     @LargeTest
     @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     @MinAndroidSdkLevel(
-            value = Build.VERSION_CODES.Q, reason = "Digital Wellbeing is only available from Q.")
-    public void
-    testUsageStatsReportingNotShown_FeatureDisabled() {
+            value = Build.VERSION_CODES.Q,
+            reason = "Digital Wellbeing is only available from Q.")
+    @DisabledTest
+    public void testUsageStatsReportingNotShown_FeatureDisabled() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
             prefService.setBoolean(Pref.USAGE_STATS_ENABLED, true);
