@@ -253,6 +253,13 @@ symbolset("chrome_product") {
   ]
 }
 
+symbolset("multicolor_chromeball") {
+  sources = [
+    "multicolor_chromeball.symbolset/Contents.json",
+    "multicolor_chromeball.symbolset/multicolor.chromeball.cr.svg",
+  ]
+}
+
 symbolset("tuner") {
   sources = [
     "tuner.symbolset/Contents.json",
