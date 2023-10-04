@@ -1346,7 +1346,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   UIButton* editButton = [UIButton buttonWithType:UIButtonTypeSystem];
   editButton.translatesAutoresizingMaskIntoConstraints = NO;
   UIImage* image = DefaultSymbolTemplateWithPointSize(
-      kSliderHorizontal, kMagicStackEditButtonIconPointSize);
+      kSliderHorizontalSymbol, kMagicStackEditButtonIconPointSize);
   [editButton setImage:image forState:UIControlStateNormal];
   editButton.tintColor = [UIColor colorNamed:kSolidBlackColor];
   editButton.backgroundColor =

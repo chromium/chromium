@@ -100,9 +100,9 @@ enum ItemType : NSInteger {
   [self.tableViewModel addSectionWithIdentifier:SectionIdentifierOptions];
 
   if (IsIOSSetUpListEnabled()) {
-    NSString* listSymbolName = kListBulletRectangle;
+    NSString* listSymbolName = kListBulletRectangleSymbol;
     if (@available(iOS 16.0, *)) {
-      listSymbolName = kListBulletClipboard;
+      listSymbolName = kListBulletClipboardSymbol;
     }
     _setUpListToggle = [self
         switchItemWithType:ItemTypeToggleSetUpList
@@ -117,7 +117,7 @@ enum ItemType : NSInteger {
     _safetyCheckToggle = [self
         switchItemWithType:ItemTypeToggleSafetyCheck
                      title:l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE)
-                    symbol:DefaultSymbolWithPointSize(kCheckmarkShield,
+                    symbol:DefaultSymbolWithPointSize(kCheckmarkShieldSymbol,
                                                       kIconPointSize)];
     _safetyCheckToggle.on = !_safetyCheckDisabled.value;
     [self.tableViewModel addItem:_safetyCheckToggle
@@ -127,7 +127,7 @@ enum ItemType : NSInteger {
     _tabResumptionToggle = [self
         switchItemWithType:ItemTypeToggleTabResumption
                      title:l10n_util::GetNSString(IDS_IOS_TAB_RESUMPTION_TITLE)
-                    symbol:DefaultSymbolWithPointSize(kMacbookAndIPhone,
+                    symbol:DefaultSymbolWithPointSize(kMacbookAndIPhoneSymbol,
                                                       kIconPointSize)];
     _tabResumptionToggle.on = !_tabResumptionDisabled.value;
     [self.tableViewModel addItem:_tabResumptionToggle
