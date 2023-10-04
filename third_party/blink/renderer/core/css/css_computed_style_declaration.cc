@@ -65,16 +65,17 @@ CSSValueID CssIdentifierForFontSizeKeyword(int keyword_size) {
 }
 
 void LogUnimplementedPropertyID(const CSSProperty& property) {
-  DEFINE_STATIC_LOCAL(HashSet<CSSPropertyID>, property_id_set, ());
-  if (property.PropertyID() == CSSPropertyID::kVariable) {
+  if (!DCHECK_IS_ON() || !VLOG_IS_ON(1) ||
+      property.PropertyID() == CSSPropertyID::kVariable) {
     return;
   }
+  DEFINE_STATIC_LOCAL(HashSet<CSSPropertyID>, property_id_set, ());
   if (!property_id_set.insert(property.PropertyID()).is_new_entry) {
     return;
   }
 
-  DLOG(ERROR) << "Blink does not yet implement getComputedStyle for '"
-              << property.GetPropertyName() << "'.";
+  DVLOG(1) << "Blink does not yet implement getComputedStyle for '"
+           << property.GetPropertyName() << "'.";
 }
 
 // Tally counts of animation duration being zero when querying a property on
