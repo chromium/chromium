@@ -162,13 +162,7 @@ id<GREYMatcher> TabPickupPrivacyFooterGoogleServicesLink() {
 }
 
 // Ensures that tab pickup settings links are correctly working.
-// TODO(crbug.com/1487979): Test fails on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testTabPickupSettingsLinks DISABLED_testTabPickupSettingsLinks
-#else
-#define MAYBE_testTabPickupSettingsLinks testTabPickupSettingsLinks
-#endif
-- (void)MAYBE_testTabPickupSettingsLinks {
+- (void)testTabPickupSettingsLinks {
   SignInAndSync();
 
   OpenTabsSettings();
