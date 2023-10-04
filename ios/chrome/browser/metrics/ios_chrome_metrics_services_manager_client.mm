@@ -17,15 +17,15 @@
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h"
-#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/variations/ios_chrome_variations_service_client.h"
-#import "ios/chrome/browser/variations/ios_ui_string_overrider_factory.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_service_client.h"
+#import "ios/chrome/browser/variations/model/ios_ui_string_overrider_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 class IOSChromeMetricsServicesManagerClient::IOSChromeEnabledStateProvider

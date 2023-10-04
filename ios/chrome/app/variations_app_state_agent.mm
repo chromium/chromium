@@ -21,8 +21,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/variations/ios_chrome_variations_seed_fetcher.h"
-#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
 
 // Name of trial and experiment groups.
 const char kIOSChromeVariationsTrialName[] = "kIOSChromeVariationsTrial";

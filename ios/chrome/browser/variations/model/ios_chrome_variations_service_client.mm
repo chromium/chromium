@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/variations/ios_chrome_variations_service_client.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_service_client.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -10,7 +10,7 @@
 #import "components/variations/seed_response.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
 #import "ios/chrome/common/channel_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 

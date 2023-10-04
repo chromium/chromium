@@ -4,7 +4,7 @@
 
 import("//components/variations/service/generate_ui_string_overrider.gni")
 
-source_set("variations") {
+source_set("model") {
   sources = [
     "ios_chrome_variations_service_client.h",
     "ios_chrome_variations_service_client.mm",
@@ -149,9 +149,9 @@ source_set("unit_tests") {
   deps = [
     ":constants",
     ":fetcher",
+    ":model",
     ":store",
     ":store_private",
-    ":variations",
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",

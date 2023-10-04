@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
 
 #import "base/base64.h"
 #import "base/metrics/persistent_histogram_allocator.h"
@@ -19,7 +19,7 @@
 #import "components/variations/variations_switches.h"
 #import "components/variations/variations_test_utils.h"
 #import "ios/chrome/browser/flags/ios_chrome_field_trials.h"
-#import "ios/chrome/browser/variations/ios_chrome_variations_service_client.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_service_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "services/network/test/test_network_connection_tracker.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -28,8 +28,8 @@
 
 // The following headers should be imported after
 // "ios_chrome_variations_seed_store.h".
-#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store+fetcher.h"
-#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store+testing.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store+fetcher.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store+testing.h"
 
 namespace {
 

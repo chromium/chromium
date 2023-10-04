@@ -119,7 +119,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/safe_mode",
-    "//ios/chrome/browser/variations:fetcher",
+    "//ios/chrome/browser/variations/model:fetcher",
     "//ios/chrome/common/app_group",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
@@ -264,8 +264,8 @@ source_set("variations_app_state_agent") {
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/ui/first_run:utils",
-    "//ios/chrome/browser/variations:fetcher",
-    "//ios/chrome/browser/variations:store",
+    "//ios/chrome/browser/variations/model:fetcher",
+    "//ios/chrome/browser/variations/model:store",
     "//ios/chrome/common",
   ]
 }
@@ -529,7 +529,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/ui/webui:webui_internal",
     "//ios/chrome/browser/upgrade",
     "//ios/chrome/browser/url_loading",
-    "//ios/chrome/browser/variations:ios_chrome_ui_string_overrider_factory",
+    "//ios/chrome/browser/variations/model:ios_chrome_ui_string_overrider_factory",
     "//ios/chrome/browser/voice",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:feature_flags",

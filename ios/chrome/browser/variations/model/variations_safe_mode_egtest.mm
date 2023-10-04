@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "build/branding_buildflags.h"
-#import "ios/chrome/browser/variations/variations_app_interface.h"
+#import "ios/chrome/browser/variations/model/variations_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"

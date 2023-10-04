@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
 
 #import "base/no_destructor.h"
 #import "components/variations/seed_response.h"
-#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store+fetcher.h"
-#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store+testing.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store+fetcher.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store+testing.h"
 
 namespace {
 
