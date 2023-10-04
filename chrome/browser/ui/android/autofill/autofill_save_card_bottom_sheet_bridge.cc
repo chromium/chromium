@@ -94,7 +94,6 @@ void AutofillSaveCardBottomSheetBridge::OnUiAccepted(JNIEnv* env) {
         &AutofillSaveCardBottomSheetBridge::ResetSaveCardDelegate,
         base::Unretained(this)));
   }
-  ResetSaveCardDelegate();
 }
 
 void AutofillSaveCardBottomSheetBridge::OnUiCanceled(JNIEnv* env) {
