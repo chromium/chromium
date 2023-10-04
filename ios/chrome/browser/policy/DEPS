@@ -18,7 +18,7 @@ specific_include_rules = {
     "+components/policy/test_support",
   ],
   "^enterprise_policy_test_helper.cc": [
-    "+ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h",
+    "+ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h",
   ]
 }
 

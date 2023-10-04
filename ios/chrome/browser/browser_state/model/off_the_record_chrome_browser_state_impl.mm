@@ -15,7 +15,7 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/user_prefs/user_prefs.h"
 #import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
-#import "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
+#import "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
+#import "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
 
 #import <vector>
 
@@ -26,7 +26,7 @@
 #import "components/sync/base/features.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/pref_service_syncable_factory.h"
-#import "ios/chrome/browser/prefs/ios_chrome_pref_model_associator_client.h"
+#import "ios/chrome/browser/prefs/model/ios_chrome_pref_model_associator_client.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace {

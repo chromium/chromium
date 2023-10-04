@@ -71,7 +71,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/unified_consent",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/prefs",
+    "//ios/chrome/browser/prefs/model",
     "//ios/chrome/browser/settings/sync/utils",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

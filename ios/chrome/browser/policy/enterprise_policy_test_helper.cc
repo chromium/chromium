@@ -12,7 +12,7 @@
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/browser_state_policy_connector.h"
 #include "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
-#include "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
+#include "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

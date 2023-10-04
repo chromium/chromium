@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/prefs/ios_chrome_pref_model_associator_client.h"
+#include "ios/chrome/browser/prefs/model/ios_chrome_pref_model_associator_client.h"
 
 #include "base/no_destructor.h"
 #include "components/content_settings/core/browser/website_settings_info.h"

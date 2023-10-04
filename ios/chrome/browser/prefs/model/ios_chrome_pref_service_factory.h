@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PREFS_IOS_CHROME_PREF_SERVICE_FACTORY_H_
-#define IOS_CHROME_BROWSER_PREFS_IOS_CHROME_PREF_SERVICE_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_PREFS_MODEL_IOS_CHROME_PREF_SERVICE_FACTORY_H_
+#define IOS_CHROME_BROWSER_PREFS_MODEL_IOS_CHROME_PREF_SERVICE_FACTORY_H_
 
 #include <memory>
 
@@ -16,12 +16,12 @@ class PrefStore;
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace policy {
 class BrowserPolicyConnector;
 class PolicyService;
-}
+}  // namespace policy
 
 namespace sync_preferences {
 class PrefServiceSyncable;
@@ -57,4 +57,4 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable>
 CreateIncognitoBrowserStatePrefs(
     sync_preferences::PrefServiceSyncable* main_pref_store);
 
-#endif  // IOS_CHROME_BROWSER_PREFS_IOS_CHROME_PREF_SERVICE_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_PREFS_MODEL_IOS_CHROME_PREF_SERVICE_FACTORY_H_

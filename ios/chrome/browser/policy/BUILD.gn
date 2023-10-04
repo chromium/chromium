@@ -156,7 +156,7 @@ source_set("test_support") {
     "//components/sync_preferences",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy_url_blocking",
-    "//ios/chrome/browser/prefs",
+    "//ios/chrome/browser/prefs/model",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
   ]
@@ -217,7 +217,7 @@ source_set("unit_tests") {
     "//google_apis",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/flags:system_flags",
-    "//ios/chrome/browser/prefs",
+    "//ios/chrome/browser/prefs/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/test",

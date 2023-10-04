@@ -41,7 +41,7 @@
 #import "ios/chrome/browser/policy/browser_state_policy_connector.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector_factory.h"
 #import "ios/chrome/browser/policy/schema_registry_factory.h"
-#import "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
+#import "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths_internal.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"

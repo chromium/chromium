@@ -88,7 +88,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/policy:policy_util",
-    "//ios/chrome/browser/prefs",
+    "//ios/chrome/browser/prefs/model",
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/reading_list/model",
