@@ -5,6 +5,8 @@
 #ifndef MEDIA_BASE_DECODER_BUFFER_SIDE_DATA_H_
 #define MEDIA_BASE_DECODER_BUFFER_SIDE_DATA_H_
 
+#include <stdint.h>
+
 #include <vector>
 
 #include "media/base/media_export.h"
