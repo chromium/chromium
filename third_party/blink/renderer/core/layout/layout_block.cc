@@ -345,7 +345,6 @@ void LayoutBlock::ComputeVisualOverflow() {
   if (VisualOverflowRect() != previous_visual_overflow_rect) {
     InvalidateIntersectionObserverCachedRects();
     SetShouldCheckForPaintInvalidation();
-    GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
   }
 }
 

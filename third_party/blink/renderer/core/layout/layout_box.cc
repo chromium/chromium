@@ -3706,7 +3706,6 @@ void LayoutBox::CopyVisualOverflowFromFragments() {
     return;
   InvalidateIntersectionObserverCachedRects();
   SetShouldCheckForPaintInvalidation();
-  GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
 }
 
 void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {

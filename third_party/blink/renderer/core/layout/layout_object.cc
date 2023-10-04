@@ -1597,6 +1597,7 @@ void LayoutObject::InvalidateIntersectionObserverCachedRects() {
       data->InvalidateCachedRects();
     }
   }
+  GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
 }
 
 static inline bool ShouldInvalidateBeyond(LayoutObject* o) {

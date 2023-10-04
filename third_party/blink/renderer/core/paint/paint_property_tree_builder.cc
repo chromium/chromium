@@ -2959,8 +2959,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocationAndSize(
     }
 
     object_.GetMutableForPainting().InvalidateIntersectionObserverCachedRects();
-    object_.GetFrameView()->SetIntersectionObservationState(
-        LocalFrameView::kDesired);
   }
 
   if (paint_offset_translation)

@@ -483,9 +483,6 @@ void PaintLayer::UpdateDescendantDependentFlags() {
       }
     }
     GetLayoutObject().InvalidateIntersectionObserverCachedRects();
-    GetLayoutObject().GetFrameView()->SetIntersectionObservationState(
-        LocalFrameView::kDesired);
-
     needs_visual_overflow_recalc_ = false;
   }
 
