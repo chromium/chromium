@@ -33,6 +33,8 @@ PlatformClipboard::Data WaylandDataDeviceBase::ReadSelectionData(
     return {};
 
   base::ScopedFD fd = data_offer_->Receive(mime_type);
+  connection_->Flush();
+
   if (!fd.is_valid()) {
     DPLOG(ERROR) << "Failed to open file descriptor.";
     return {};

@@ -259,11 +259,6 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
 }
 
 void WaylandConnection::RoundTripQueue() {
-  if (roundtrip_closure_for_testing_) {
-    roundtrip_closure_for_testing_.Run();
-    return;
-  }
-
   DCHECK(event_source_);
   DCHECK(event_queue_.get());
   event_source_->RoundTripQueue();

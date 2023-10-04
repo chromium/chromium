@@ -14,8 +14,6 @@
 
 namespace ui {
 
-class WaylandConnection;
-
 // Allows tests to override private data in a WaylandConnection.
 class WaylandConnectionTestApi {
  public:
@@ -26,10 +24,6 @@ class WaylandConnectionTestApi {
 
   void SetZcrCursorShapes(std::unique_ptr<WaylandZcrCursorShapes> obj) {
     impl_->zcr_cursor_shapes_ = std::move(obj);
-  }
-
-  void SetRoundtripClosure(base::RepeatingClosure closure) {
-    impl_->roundtrip_closure_for_testing_ = closure;
   }
 
  private:

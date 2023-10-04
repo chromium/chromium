@@ -536,8 +536,6 @@ class WaylandConnection {
   // Global Wayland interfaces available in the current session, with their
   // versions.
   std::vector<std::pair<std::string, uint32_t>> available_globals_;
-
-  base::RepeatingClosure roundtrip_closure_for_testing_;
 };
 
 }  // namespace ui

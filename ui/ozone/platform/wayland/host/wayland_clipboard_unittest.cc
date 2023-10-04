@@ -27,7 +27,6 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
-#include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
@@ -111,21 +110,6 @@ class WaylandClipboardTestBase : public WaylandTest {
     ASSERT_TRUE(connection_->seat()->touch());
     ASSERT_TRUE(connection_->seat()->keyboard());
 
-    // As of now, WaylandClipboard::RequestClipboardData is implemented in a
-    // blocking way, which requires a roundtrip before attempting the data
-    // from the selection fd. As Wayland events polling is single-threaded for
-    // tests, WaylandConnection's roundtrip implementation must be hooked up
-    // here to make sure that the required test compositor calls are done,
-    // otherwise tests will enter in a dead lock.
-    // TODO(crbug.com/443355): Remove once Clipboard API becomes async.
-    WaylandConnectionTestApi(connection_.get())
-        .SetRoundtripClosure(base::BindLambdaForTesting([&]() {
-          wl_display_flush(connection_->display());
-          wl::SyncDisplay(connection_->display_wrapper(),
-                          *connection_->display());
-          base::ThreadPoolInstance::Get()->FlushForTesting();
-        }));
-
     clipboard_ = connection_->clipboard();
     ASSERT_TRUE(clipboard_);
 
@@ -139,8 +123,8 @@ class WaylandClipboardTestBase : public WaylandTest {
 
  protected:
   // Ensure the requests/events are flushed and posted tasks get processed.
-  // Actual clipboard data reading is performed in the ThreadPool. Also,
-  // wl::TestSelection{Source,Offer} currently use ThreadPool task runners.
+  // wl::TestSelection{Source,Offer} use ThreadPool task runners to read/write
+  // selection data, so the pool must be explicitly flushed as well.
   void WaitForClipboardTasks() {
     wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
     base::ThreadPoolInstance::Get()->FlushForTesting();
