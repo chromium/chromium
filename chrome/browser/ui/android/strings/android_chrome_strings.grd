@@ -952,9 +952,6 @@ For example, some websites may respond to this request by showing you ads that a
       </message>
 
       <!-- Privacy Sandbox Settings. Used by //chrome/browser/privacy_sandbox. -->
-      <message name="IDS_PREFS_PRIVACY_SANDBOX" desc="Title for the 'Privacy Sandbox' page. 'Privacy Sandbox' is a noun phrase (title case).">
-        Privacy Sandbox
-      </message>
       <message name="IDS_PRIVACY_SANDBOX_STATUS_ENABLED" desc="Status text, displayed when the Privacy sandbox APIs are enabled.">
         Trial features are on
       </message>
@@ -966,67 +963,6 @@ For example, some websites may respond to this request by showing you ads that a
       </message>
       <message name="IDS_SETTINGS_AD_PRIVACY_RESTRICTED_LINK_ROW_SUB_LABEL" desc="A string that describes 'Ad privacy', the label that appears just above it. This is the version of IDS_SETTINGS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_LABEL for restricted users.">
         Manage info used by sites to measure ad performance
-      </message>
-
-      <message name="IDS_PRIVACY_SANDBOX_TRIALS_TITLE" desc="The title of the settings page on which the user can find all Privacy Sandbox trials. When launched, this page will appear at chrome://settings/privacySandbox. To get there: 1) go to Chrome settings 2) From the main menu (top left of the page) choose “Security and privacy” 3) At the bottom of the page, choose “Privacy Sandbox” There are 3 cards on this page that are presented as features. Only the first includes controls the user can manage, but we want to convey that Privacy Sandbox includes all of the things on this page.">
-        Trials
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION" desc="The page description that appears beneath the page title. * “can” is important: When trials ara on, any site the user visits may or may not be using one of the trial APIs. The chances that the user is in an active trial on any given page are low. * “less cross-site tracking”:  We can’t promise the complete elimination of cross-site tracking. Privacy Sandbox is about blocking cross-site tracking as much as possible, but sites can still use fingerprinting to try and identify users from one site to the next.">
-        With Privacy Sandbox trials, sites can deliver the same browsing experience using less of your data. That means more privacy for you and less cross-site tracking. We’ll add new trials as they’re ready to test.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_ABOUT_AD_PERSONALIZATION_LINK" desc="Learn more link * Unfolds content within the page * The text that appears describes 2 ways in which a site can target ads: the “Topics API” and the “FLEDGE API”. You can see what those are at www.privacysanbox.com or they’re described for the user’s benefit in other text. * “ad personalization” can mean different things in different contexts. Here, we’re using it as a simple noun. In other words, it’s not the name of a control but a descriptive term used to describe the personalization of ads in the Chrome browser. This “ad personalization” shouldn’t be confused with the setting in the Google Account called “Ad personalization”.">
-       About Browser-based ad personalization
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_TITLE" desc="The title of card 1 of 3. * Title of the setting to control “Browser-based ad personalization”.">
-        Ad personalization
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_SUMMARY" desc="The description of card 1 of 3. * “browsing history”: we define this as “a record of sites you’ve visited using Chrome on this device.” By “recent”, we mean the last 3 weeks (also defined later in the UI). * “affects the ads you see”: We think we’re stating the obvious. The ads the user sees are affected by the things they do online, like browsing the web.">
-        Your browsing history affects the ads you see
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DESCRIPTION_TRIALS_ON" desc="A paragraph beneath the card title. Note that this paragraph is written so that it describes both the Topics API and the FLEDGE API. Some things are described slightly differently for this reason. Version 1 of 3 of this paragraph.  1) The first line is written with the assumption that the user a) has Privacy Sandbox trials turned on and b) has been randomly selected by Chrome to be in  an active experiment. As a result of both conditions, this user should have data on this page (a list of interests and a list of sites). 2) NOT THE CASE FOR THIS STRING: A different version of  this first line is written for the case that a user has the Privacy Sandbox trials turned on but they haven’t been randomly selected to be in a trial. 3) NOT THE CASE FOR THIS STRING: A different version of  this first line is written for the case that a user doesn’t have the Privacy Sandbox trials turned on. * “browsing history”:  “a record of sites you’ve visited using Chrome on this device.” * “affects the ads you see and the interests as estimated below”: browsing history leads to Chrome establishing user interests leads to 1) the ads you see are different, and 2) the list of things on this page changes based on what Chrome establishes.* “To protect your privacy”: Today, most data is kept for long periods of time. This new Topics API doesn’t retain estimated topics for more than 3 weeks. The only reason for this feature is to protect the user’s privacy. * “auto”: isn’t strictly necessary, but it conveys that this feature is an ongoing part of the service. This isn’t describing, for example, a one-time deletion. * “rolling basis each month”: Information associated with Topics and FLEDGE are deleted on a rolling basis at least once per month. It’s simpler to talk about “once per month” rather than 3 weeks for Topics and 4 weeks for FLEDGE. * “Interests can refresh…”: We intend for this line to cover both Topics and FLEDGE. It’s slightly messy, because there is a suggestion that this line is more about Topics than FLEDGE (“interests” is more prominent in the Topics subtitle).">
-        Your browsing history affects the ads you see and the interests as estimated below. To protect your privacy, Chrome auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DESCRIPTION_NO_ITEMS" desc="A paragraph beneath the card title. Note that this paragraph is written so that it describes both the Topics API and the FLEDGE API. Some things are described slightly differently for this reason. Version 3 of 3 of this paragraph.  1) NOT THE CASE FOR THIS STRING: A different version of this first line is written for the case that a user has Privacy Sandbox trials turned on AND that they’ve been randomly selected for a trial. 2) NOT THE CASE FOR THIS STRING: A different version of  this first line is written for the case that a user has the Privacy Sandbox trials turned on but they haven’t been randomly selected to be in a trial. 3) The first line is written with the assumption that the user a) doesn’t have Privacy Sandbox trials turned on. b) Because of this, they can’t be randomly selected for a trial. This explains why the user doesn’t have data shown on the page. * “browsing history”:  “a record of sites you’ve visited using Chrome on this device.” * “affects the ads you see and the interests as estimated below”: browsing history leads to Chrome establishing user interests leads to 1) the ads you see are different, and 2) the list of things on this page changes based on what Chrome establishes. * “To protect your privacy”: Today, most data is kept for long periods of time. This new Topics API doesn’t retain estimated topics for more than 3 weeks. The only reason for this feature is to protect the user’s privacy. * “auto”: isn’t strictly necessary, but it conveys that this feature is an ongoing part of the service. This isn’t describing, for example, a one-time deletion. * “rolling basis each month”: Information associated with Topics and FLEDGE are deleted on a rolling basis at least once per month. It’s simpler to talk about “once per month” rather than 3 weeks for Topics and 4 weeks for FLEDGE. * “Interests can refresh…”: We intend for this line to cover both Topics and FLEDGE. It’s slightly messy, because there is a suggestion that this line is more about Topics than FLEDGE (“interests” is more prominent in the Topics subtitle).">
-        If Chrome has randomly placed you in an active trial, your browsing history affects the ads you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month. Interests refresh unless you remove them.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DESCRIPTION_TRIALS_OFF" desc="A paragraph beneath the card title. Note that this paragraph is written so that it describes both the Topics API and the FLEDGE API. Some things are described slightly differently for this reason. Version 2 of 3 of this paragraph.  1) NOT THE CASE FOR THIS STRING: A different version of this first line is written for the case that a user has Privacy Sandbox trials turned on AND that they’ve been randomly selected for a trial. 2) The first line is written with the assumption that the user 1) has Privacy Sandbox trials turned on but 2) has NOT been randomly selected by Chrome to be in  an active experiment. This explains why the user doesn’t have data shown on the page. 3) NOT THE CASE FOR THIS STRING: A different version of  this first line is written for the case that a user doesn’t have the Privacy Sandbox trials turned on. * “browsing history”:  “a record of sites you’ve visited using Chrome on this device.” * “affects the ads you see and the interests as estimated below”: browsing history leads to Chrome establishing user interests leads to 1) the ads you see are different, and 2) the list of things on this page changes based on what Chrome establishes. * “To protect your privacy”: Today, most data is kept for long periods of time. This new Topics API doesn’t retain estimated topics for more than 3 weeks. The only reason for this feature is to protect the user’s privacy. * “auto”: isn’t strictly necessary, but it conveys that this feature is an ongoing part of the service. This isn’t describing, for example, a one-time deletion. * “rolling basis each month”: Information associated with Topics and FLEDGE are deleted on a rolling basis at least once per month. It’s simpler to talk about “once per month” rather than 3 weeks for Topics and 4 weeks for FLEDGE.* “Interests can refresh…”: We intend for this line to cover both Topics and FLEDGE. It’s slightly messy, because there is a suggestion that this line is more about Topics than FLEDGE (“interests” is more prominent in the Topics subtitle).">
-        When trials are on and if Chrome has randomly placed you in an active trial, your browsing history affects the ads you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_TITLE" desc="The title of card 2 of 3. * The title of a Privacy Sandbox API used by advertisers to measure the effectiveness of ads.">
-        Ad measurement
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_DESCRIPTION_TRIALS_ON" desc="A description of the Ad measurement API. * “Ad measurement” is the name of an API in this context. We don’t use “API” with the user, but they need to know that there is something called “A measurement” and what it does. * “sites you visit”: call the API to get information. The actor is the site, not Chrome. * “restricts cross-site tracking”: Today, with 3rd-party cookies, ad measurement technologies can inadvertently (and intentionally) share considerable information from one site to another). This feature restricts that sharing in order to improve the user’s privacy. * “your browsing history”: points to chrome://history/ * “You can control…”: The user can “control” this data by clearing their browser data at chrome://history/">
-        Ad measurement allows sites you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.
-
-When you delete your browsing history — all or for a specific site — you also delete associated measurement info. See <ph name="BEGIN_LINK">&lt;link&gt;</ph>your browsing history<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_DESCRIPTION_TRIALS_OFF" desc="A description of the Ad measurement API. * “Ad measurement” is the name of an API in this context. We don’t use “API” with the user, but they need to know that there is something called “A measurement” and what it does. * “sites you visit”: call the API to get information. The actor is the site, not Chrome. * “restricts cross-site tracking”: Today, with 3rd-party cookies, ad measurement technologies can inadvertently (and intentionally) share considerable information from one site to another). This feature restricts that sharing in order to improve the user’s privacy. * “your browsing history”: points to chrome://history/ * “You can control…”: The user can “control” this data by clearing their browser data at chrome://history/">
-        When trials are on, Ad measurement allows sites you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.
-
-When you delete your browsing history — all or for a specific site — you also delete associated measurement info. See <ph name="BEGIN_LINK">&lt;link&gt;</ph>your browsing history<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_SUMMARY" desc="The description of card 2 of 3 * The description of a Privacy Sandbox API used by advertisers to measure the effectiveness of ads.">
-        Advertisers can understand how ads perform
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_SPAM_FRAUD_TITLE" desc="The title of card 3 of 3. * “reducation”: don’t use a word that sounds more like “elimination”.  We can’t promise the complete removal of spam.">
-        Spam &amp; fraud reduction
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_SPAM_FRAUD_SUMMARY" desc="The description of card 3 of 3. * “help”: This API is one way that sites can fight fraud. Don’t suggest that sites must use this API to fight fraud. * “distinguish bots from people”: This touches on just one aspect of fraud but we hope it helps the user understand the purpose of this API, and that is to distinguish real users from malicious players." >
-        Help sites fight fraud and distinguish bots from people
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_SPAM_FRAUD_DESCRIPTION_TRIALS_ON" desc="The first of 3 paragraphs on the spam &amp; fraud card. This is a behind-the-scenes upgrade to Chrome. There aren’t any user controls or data to interact with, at least not yet. * “private state tokens”: explained in the next paragraph * “help”: This feature is one way that sites can fight fraud. Don’t suggest that sites must use this API to fight fraud. * “distinguish bots from people”: This touches on just one aspect of fraud but we hope it helps the user understand the purpose of this API, and that is to distinguish real users from malicious players. * “interaction”: is broad. It’s not just viewing a site but also how you interact with it, like by signing in * “Later”:  is important to convey the passage of time. We don’t want to convey how much time (it could be tiny). What’s important is that the user understands this is essentially a two-step process. A private state token is issued. Sometime in the future, when hyou visit a different site, that private state token might get used. ">
-        Spam &amp; fraud reduction relies on private state tokens to help sites fight fraud and distinguish bots from people.
-
-Based on your interaction with a site, like regularly signing in to an account, that site can issue a private state token to your browser. Later, if other sites you visit check for and find a valid private state token, they’re more likely to treat you like a person and not a bot.
-
-Private state tokens improve privacy on the web and can’t be used to find out who you are.
-      </message>
-            <message name="IDS_PRIVACY_SANDBOX_SPAM_FRAUD_DESCRIPTION_TRIALS_OFF" desc="The first of 3 paragraphs on the spam &amp; fraud card. This is a behind-the-scenes upgrade to Chrome. There aren’t any user controls or data to interact with, at least not yet. * “private state tokens”: explained in the next paragraph * “help”: This feature is one way that sites can fight fraud. Don’t suggest that sites must use this API to fight fraud. * “distinguish bots from people”: This touches on just one aspect of fraud but we hope it helps the user understand the purpose of this API, and that is to distinguish real users from malicious players. * “interaction”: is broad. It’s not just viewing a site but also how you interact with it, like by signing in * “Later”:  is important to convey the passage of time. We don’t want to convey how much time (it could be tiny). What’s important is that the user understands this is essentially a two-step process. A private state token is issued. Sometime in the future, when hyou visit a different site, that private state token might get used. ">
-        When trials are on, Spam &amp; fraud reduction relies on private state tokens to help sites fight fraud and distinguish bots from people.
-
-Based on your interaction with a site, like regularly signing in to an account, that site can issue a private state token to your browser. Later, if other sites you visit check for and find a valid private state token, they’re more likely to treat you like a person and not a bot.
-
-Private state tokens improve privacy on the web and can’t be used to find out who you are.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_DESCRIPTION_TOPICS_1" desc="TOPICS API Bullet 1 of 3 that appear beneath the “Your interests as estimated by Chrome” subtitle. We break the description into the 3 pieces users most care about: 1) what data, 2) why this data, 3) what can I do about it? * “What data is used:” is bold and serves as a label to help people skimming the page. * “Your browsing history”: The user’s browsing history is available beneath the “History” menu at Chrome’s top level. The Topics API estimates topics of interest based on sites in the user’s browsing history that are participating in the trials.">
         <ph name="BEGIN_BOLD">&lt;b&gt;</ph>What data is used:<ph name="END_BOLD">&lt;/b&gt;</ph> Your browsing history, a record of sites you’ve visited using Chrome on this device.
@@ -1046,65 +982,11 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_DESCRIPTION_FLEDGE_3"  desc="FLEDGE API Bullet 3 of 3 that appear beneath the “Sites you visit that define your interests” subtitle. We break the description into the 3 pieces users most care about: 1) what data, 2) why this data, 3) what can I do about it? * “How you can manage your data:” is bold and serves as a label to help people skimming the page. * “To protect your privacy”: Today, most data is kept for long periods of time. This new Topics API doesn’t retain estimated topics for more than 3 weeks. The only reason for this feature is to protect the user’s privacy. * “auto”: isn’t strictly necessary, but it conveys that this feature is an ongoing part of the service. This isn’t describing, for example, a one-time deletion. * “older than 4 weeks”: We’re trying to convey a rolling delete. Imagine a user opens a browser for the very first time. As the user browses, sites can store info with Chrome for up to 4 weeks. So in week 1, the user visits site A. When week 5 starts, site A is removed from the list of sites. * “a site you visit…”: If a user visits site A every week for months on end, that site will remain on the user’s list of sites for months on end. * “Or you can…”: Say a user strongly dislikes www.siteB.com. But that user might visit siteB.com as part of their job, or just to see how bad it really is. The user can stop siteB from defining interests for them. This block lasts indefinitely.">
         <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How you can manage your data:<ph name="END_BOLD">&lt;/b&gt;</ph> To protect your privacy, we auto-delete sites from the list that are older than 4 weeks. A site you visit again might appear on the list again. Or you can remove a site if you don’t want that site to ever define interests for you.
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_TITLE" desc="Title of the settings page to explain ad personalization in the Privacy Sandbox.">
-        About ad personalization
-      </message>
       <message name="IDS_PRIVACY_SANDBOX_ADD_INTEREST_BUTTON_DESCRIPTION" desc="Content description for button that adds an ad interest for the Topics API of the Privacy Sandbox.">
         Add <ph name="INTEREST">%1$s<ex>Acting and Theater</ex></ph>
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_ADD_SITE_BUTTON_DESCRIPTION" desc="Content description for button that adds an ad interest for the FLEDGE API of the Privacy Sandbox.">
-        Add <ph name="SITE">%1$s<ex>example.com</ex></ph>
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_ADD_INTEREST_SNACKBAR" desc="Text on a snackbar after an ad personalization interest was added to the Topics API of the Privacy Sandbox.">
-        Chrome can consider this interest
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_ADD_SITE_SNACKBAR" desc="Text on a snackbar after an ad personalization interest was added to the FLEDGE API of the Privacy Sandbox.">
-        Site can define interests
-      </message>
       <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_BUTTON_DESCRIPTION" desc="Content description for button that removes an ad interest for the Topics API of the Privacy Sandbox.">
         Remove <ph name="INTEREST">%1$s<ex>Acting and Theater</ex></ph>
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_REMOVE_SITE_BUTTON_DESCRIPTION" desc="Content description for button that removes an ad interest for the FLEDGE API of the Privacy Sandbox.">
-        Remove <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_SNACKBAR" desc="Text on a snackbar after an ad personalization interest was removed from the Topics API of the Privacy Sandbox.">
-        Interest removed
-      </message>
-       <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_TITLE" desc="Title of the settings page to configure interests that were removed from ad personalization in the Privacy Sandbox.">
-        Interests you removed
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_REMOVE_SITE_SNACKBAR" desc="Text on a snackbar after an ad personalization interest was removed from the FLEDGE API of the Privacy Sandbox.">
-        Site removed
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_REMOVE_SITES_TITLE" desc="Title of the settings page to configure sites that were removed from ad personalization in the Privacy Sandbox.">
-        Sites you removed
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_DESCRIPTION" desc="A paragraph beneath the card title. The page title explains why things appear on this page. This string explains why the user might want to “un-remove” or “re-allow” an item from the list. If a user does choose “Allow” for an item, there won’t be any immediate change in the interface because the item simply becomes eligible again. So, for example, the user previously blocked the interest “Horror movies.” Today, they “allow” “Horror movies” because they’ve decided that as about horror movies are actually OK to see. It might take another week or longer, based on the user’s browsing history, for “Horror movies” to appear in the list of interests again as an active interest within the last 3 weeks. * “Allow”: This aligns with the button label titled “allow”. It wouldn’t make much sense if the user couldn’t see the Allow button on the card.">
-        Allow an interest or site if you think ads related to the item would be useful to you
-      </message>
-       <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_SUBTITLE" desc="Subtitle of page where the user controls thier Browser-based ad personalization settings.">
-        Browser-based ad personalization
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_TOPIC_INTERESTS_SUBTITLE" desc="TOPICS API A sub title that describes the first of 2 ways a site can get info from Chrome in order to target ads to the user. Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. * “Your”: we need to convey a sense of ownership, even if the user didn’t explicitly choose the interests we’re talking about. Without the “your”, it could sound like Chrome is simply building a generic library of interests. * “estimated”: It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). * “by Chrome”: This is new behavior for a browser (Chrome) to take an active role in processing user data for the purposes of showing ads. It’s important to convey “chrome”, the actor in this case.">
-        Your interests as estimated by Chrome
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_FLEDGE_INTERESTS_SUBTITLE" desc="FLEDGE API. A sub title that describes the second of 2 ways a site can get info from Chrome in order to target ads to the user.">
-        Sites you visit that define your interests
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_TOPIC_EMPTY_STATE" desc="Summary shown when no interests for ad personlization are available for the Topics API of the Privacy Sandbox.">
-        A list of interests will appear here as you browse the web
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_REMOVED_TOPICS_EMPTY_STATE" desc="Summary shown when no interests for ad personlization were removed from the Topics API of the Privacy Sandbox.">
-        Interests you removed will appear here
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_REMOVED_SITES_EMPTY_STATE" desc="Summary shown when no interests for ad personlization were removed from the FLEDGE API of the Privacy Sandbox.">
-        Sites you removed will appear here
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_FLEDGE_SUBTITLE" desc="FLEDGE API A sub title that describes the second of 2 ways a site can get info from Chrome in order to target ads to the user.">
-        Sites you visit that define your interests
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_FLEDGE_EMPTY_STATE" desc="Summary shown when no interests for ad personlization are available for the FLEDGE API of the Privacy Sandbox.">
-        A list of sites will appear here as you browse the web
       </message>
 
       <!-- Privacy Sandbox dialog. -->
@@ -1164,9 +1046,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       </message>
       <message name="IDS_PRIVACY_SANDBOX_NOTICE_SHEET_TITLE" desc="CONTEXT: there are updates to the Chrome browser each month. Just after the user accepts the latest update, this message will appear. The title of the page. * “Help us” is intended to convey a sense of collaboration. Privacy Sandbox is an ongoing multi-year effort. There are sites participating to help us and we also need users to agree to these trials so that we can measure the effectiveness of the features we're building. * “build” is intended to convey that this is a process. The user is agreeing to an effort rather than a stable set of features. Something like “make” doesn't have the same nuance. * See www.privacysandbox.com for more context.">
         Help us build a better web
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_NOTICE_SHEET_DESCRIPTION" desc="* “Chrome is finding new ways”: “finding” is meant to convey a work in progress, like “build” in the title. The features are live and functional, but still in beta. So we want a verb that’s stronger than “exploring” but weaker than “launching”. * “reduce tracking”: This used to read “reduce cross-site tracking”, but we’ve dropped “cross-site” because it makes the idea unnecessarily complicated. * “estimate your interests”: Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). * “Then” is an important keyword. It suggests some amount of time later. The first step is that interests are generated. Later (minutes or weeks), a different site might request interests.">
-        Chrome is finding new ways to reduce tracking and keep you even safer as you browse. Chrome also <ph name="BEGIN_LINK">&lt;link&gt;</ph>estimates your interests<ph name="END_LINK">&lt;/link&gt;</ph> and enables you to manage them. Then, sites you visit can ask Chrome for your interests to show you ads.
       </message>
 
       <!-- Privacy Sandbox v4 - Consent & Notice Flow -->

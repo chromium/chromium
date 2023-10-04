@@ -149,7 +149,6 @@ public class AdPersonalizationRemovedFragment extends PrivacySandboxSettingsBase
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
             // Override action for the help button.
-            mSettingsLauncher.launchSettingsActivity(getContext(), LearnMoreFragment.class);
             return true;
         }
         return false;

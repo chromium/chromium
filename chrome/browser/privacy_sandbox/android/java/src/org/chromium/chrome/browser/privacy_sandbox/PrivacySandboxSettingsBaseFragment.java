@@ -20,7 +20,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxSettingsFragmentV4;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -54,10 +53,8 @@ public abstract class PrivacySandboxSettingsBaseFragment
             SettingsLauncher settingsLauncher, @PrivacySandboxReferrer int referrer) {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(PRIVACY_SANDBOX_REFERRER, referrer);
-        var fragment = ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
-                ? PrivacySandboxSettingsFragmentV4.class
-                : PrivacySandboxSettingsFragmentV3.class;
-        settingsLauncher.launchSettingsActivity(context, fragment, fragmentArgs);
+        settingsLauncher.launchSettingsActivity(
+                context, PrivacySandboxSettingsFragmentV4.class, fragmentArgs);
     }
 
     public static CharSequence getStatusString(Context context) {
@@ -86,9 +83,7 @@ public abstract class PrivacySandboxSettingsBaseFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
             // Action for the question mark button.
-            openUrlInCct(ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
-                            ? PrivacySandboxSettingsFragmentV4.HELP_CENTER_URL
-                            : PrivacySandboxSettingsFragmentV3.PRIVACY_SANDBOX_URL);
+            openUrlInCct(PrivacySandboxSettingsFragmentV4.HELP_CENTER_URL);
             return true;
         }
         return false;

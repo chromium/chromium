@@ -8,7 +8,6 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.R;
@@ -31,7 +30,6 @@ public class PrivacySandboxSettingsFragmentV4 extends PrivacySandboxSettingsBase
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4);
 
         // This view should not be shown when PS is restricted, unless the
         // isRestrictedNoticeEnabled flag is enabled.
@@ -42,9 +40,9 @@ public class PrivacySandboxSettingsFragmentV4 extends PrivacySandboxSettingsBase
         getActivity().setTitle(R.string.ad_privacy_page_title);
         if (showRestrictedView()) {
             SettingsUtils.addPreferencesFromResource(
-                    this, R.xml.privacy_sandbox_preferences_restricted_v4);
+                    this, R.xml.privacy_sandbox_preferences_restricted);
         } else {
-            SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_sandbox_preferences_v4);
+            SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_sandbox_preferences);
             mTopicsPref = findPreference(TOPICS_PREF);
             mFledgePref = findPreference(FLEDGE_PREF);
         }

@@ -78,11 +78,7 @@ public class PrivacySettings
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         getActivity().setTitle(R.string.prefs_privacy_security);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)) {
-            SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences_v2);
-        } else {
-            SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
-        }
+        SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
 
         Preference sandboxPreference = findPreference(PREF_PRIVACY_SANDBOX);
         // Overwrite the click listener to pass a correct referrer to the fragment.
@@ -287,13 +283,6 @@ public class PrivacySettings
             } else {
                 getPreferenceScreen().removePreference(usageStatsPref);
             }
-        }
-
-        Preference privacySandboxPreference = findPreference(PREF_PRIVACY_SANDBOX);
-        if (privacySandboxPreference != null
-                && !ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)) {
-            privacySandboxPreference.setSummary(
-                    PrivacySandboxSettingsBaseFragment.getStatusString(getContext()));
         }
 
         mIncognitoLockSettings.updateIncognitoReauthPreferenceIfNeeded(getActivity());

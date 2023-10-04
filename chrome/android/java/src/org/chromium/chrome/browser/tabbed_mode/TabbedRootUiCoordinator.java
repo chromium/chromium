@@ -653,28 +653,25 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         boolean didTriggerPromo = false;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)) {
-            String histogramName =
-                    "Startup.Android.PrivacySandbox.DialogNotShownDueToTabLaunchedFromExternalApp";
-            Tab tab = mActivityTabProvider.get();
-            boolean isTabLaunchedFromExternalApp =
-                    tab != null && tab.getLaunchType() == TabLaunchType.FROM_EXTERNAL_APP;
-            boolean shouldSuppressPSDialogForExternalAppLaunches =
-                    ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4,
-                            "suppress-dialog-for-external-app-launches", true);
-            boolean shouldSuppressPSDialog =
-                    isTabLaunchedFromExternalApp && shouldSuppressPSDialogForExternalAppLaunches;
+        String histogramName =
+                "Startup.Android.PrivacySandbox.DialogNotShownDueToTabLaunchedFromExternalApp";
+        Tab tab = mActivityTabProvider.get();
+        boolean isTabLaunchedFromExternalApp =
+                tab != null && tab.getLaunchType() == TabLaunchType.FROM_EXTERNAL_APP;
+        boolean shouldSuppressPSDialogForExternalAppLaunches =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4,
+                        "suppress-dialog-for-external-app-launches", true);
+        boolean shouldSuppressPSDialog =
+                isTabLaunchedFromExternalApp && shouldSuppressPSDialogForExternalAppLaunches;
 
-            if (!shouldSuppressPSDialog) {
-                didTriggerPromo = PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                        mActivity, new SettingsLauncherImpl(),
-                        mTabModelSelectorSupplier.get().isIncognitoSelected(),
-                        getBottomSheetController());
-            }
-            RecordHistogram.recordBooleanHistogram(histogramName, shouldSuppressPSDialog);
+        if (!shouldSuppressPSDialog) {
+            didTriggerPromo = PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
+                    mActivity, new SettingsLauncherImpl(),
+                    mTabModelSelectorSupplier.get().isIncognitoSelected(),
+                    getBottomSheetController());
         }
+        RecordHistogram.recordBooleanHistogram(histogramName, shouldSuppressPSDialog);
 
         if (!didTriggerPromo) {
             Supplier<RationaleDelegate> rationaleUIDelegateSupplier;
@@ -766,12 +763,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
             // TODO(crbug.com/1252965): Investigate locking feature engagement system during
             // "second run promos" to avoid !didTriggerPromo check.
-            Tab tab;
             WebContents webContents;
 
             Profile profile;
-            if ((tab = mActivityTabProvider.get()) != null
-                    && (webContents = tab.getWebContents()) != null) {
+            if (tab != null && (webContents = tab.getWebContents()) != null) {
                 profile = Profile.fromWebContents(webContents);
             } else {
                 profile = Profile.getLastUsedRegularProfile();
@@ -796,7 +791,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (!didTriggerPromo && PageZoomCoordinator.shouldShowMenuItem()) {
             // Page Zoom IPH should only show if the menu item is visible, and not on NTP or CCT.
-            Tab tab = mActivityTabProvider.get();
             if (tab != null && tab.getWebContents() != null && !tab.isNativePage()) {
                 PageZoomIPHController mPageZoomIPHController = new PageZoomIPHController(mActivity,
                         mAppMenuCoordinator.getAppMenuHandler(),

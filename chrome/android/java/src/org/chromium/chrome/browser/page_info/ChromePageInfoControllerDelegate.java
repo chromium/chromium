@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils.OfflinePageLoadUrlDelegate;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
-import org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationFragment;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -231,12 +230,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     @Override
     public void showAdPersonalizationSettings() {
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        if (getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()) {
             PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(mContext,
                     settingsLauncher, PrivacySandboxReferrer.PAGE_INFO_AD_PRIVACY_SECTION);
-        } else {
-            settingsLauncher.launchSettingsActivity(mContext, AdPersonalizationFragment.class);
-        }
     }
 
     @NonNull

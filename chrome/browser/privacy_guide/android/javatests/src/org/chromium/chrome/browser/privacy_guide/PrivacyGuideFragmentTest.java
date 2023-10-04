@@ -718,22 +718,6 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
-    public void testCompletionCard_PrivacySandboxLinkNavigation() {
-        launchPrivacyGuide();
-        goToCard(FragmentType.DONE);
-
-        onViewWaiting(withId(R.id.ps_button)).perform(scrollTo(), click());
-        onViewWaiting(withText(R.string.privacy_sandbox_trials_title))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"PrivacyGuide"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
     public void testCompletionCard_AdPrivacyLinkNavigation() {
         launchPrivacyGuide();
         goToCard(FragmentType.DONE);

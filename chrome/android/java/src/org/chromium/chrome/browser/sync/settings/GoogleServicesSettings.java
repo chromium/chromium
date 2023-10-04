@@ -154,12 +154,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         }
 
         mUsageStatsReporting = findPreference(PREF_USAGE_STATS_REPORTING);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)) {
-            mUsageStatsReporting.setVisible(true);
-        } else {
-            removePreference(getPreferenceScreen(), mUsageStatsReporting);
-            mUsageStatsReporting = null;
-        }
+        mUsageStatsReporting.setVisible(true);
 
         updatePreferences();
     }
