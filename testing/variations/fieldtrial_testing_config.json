@@ -116,6 +116,21 @@
             ]
         }
     ],
+    "AdvancedPeripheralsSupportTabStrip": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AdvancedPeripheralsSupportTabStrip"
+                    ]
+                }
+            ]
+        }
+    ],
     "AggressiveSkiaGpuResourcePurge": [
         {
             "platforms": [
