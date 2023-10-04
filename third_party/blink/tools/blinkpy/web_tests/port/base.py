@@ -982,6 +982,14 @@ class Port(object):
             reftest_list.append((expectation, ref_absolute_path))
         return reftest_list
 
+    def max_allowed_failures(self, num_tests):
+        return (self._options.exit_after_n_failures
+                or max(5000, num_tests // 2))
+
+    def max_allowed_crash_or_timeouts(self, num_tests):
+        return (self._options.exit_after_n_crashes_or_timeouts
+                or max(100, num_tests // 33))
+
     def tests(self, paths=None):
         """Returns all tests or tests matching supplied paths.
 

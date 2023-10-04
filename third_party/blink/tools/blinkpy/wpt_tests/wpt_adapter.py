@@ -134,6 +134,8 @@ class WPTAdapter:
         self.finder = path_finder.PathFinder(self.fs)
         self.options = options
         self.paths = paths
+        self.failure_threshold = 0
+        self.crash_timeout_threshold = 0
 
     @classmethod
     def from_args(cls,
@@ -468,6 +470,11 @@ class WPTAdapter:
             runner_options.test_types = self.options.test_types
             runner_options.retry_unexpected = self.options.num_retries
 
+            self.failure_threshold = self.port.max_allowed_failures(
+                len(include_tests))
+            self.crash_timeout_threshold = self.port.max_allowed_crash_or_timeouts(
+                len(include_tests))
+
             # sharding is done inside wrapper
             runner_options.total_chunks = 1
             runner_options.this_chunk = 1
@@ -593,9 +600,8 @@ class WPTAdapter:
             self.fs,
             self.port,
             artifacts_dir=artifacts_dir,
-            failure_threshold=self.port.get_option('exit_after_n_failures'),
-            crash_timeout_threshold=self.port.get_option(
-                'exit_after_n_crashes_or_timeouts'))
+            failure_threshold=self.failure_threshold,
+            crash_timeout_threshold=self.crash_timeout_threshold)
         with processor.stream_results() as events:
             runner_options.log.add_handler(events.put)
             yield
