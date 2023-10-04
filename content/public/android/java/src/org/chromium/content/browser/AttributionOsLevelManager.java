@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.TimeoutException;
+
 /**
  * Handles passing registrations with Web Attribution Reporting API to the underlying native
  * library.
@@ -96,6 +97,10 @@ public class AttributionOsLevelManager {
         mNativePtr = nativePtr;
     }
 
+    private static boolean supportsAttribution() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
+    }
+
     private MeasurementManagerFutures getManager() {
         if (sManagerForTesting != null) {
             return sManagerForTesting;
@@ -103,7 +108,7 @@ public class AttributionOsLevelManager {
         if (mManager != null) {
             return mManager;
         }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (!supportsAttribution()) {
             return null;
         }
         mManager = MeasurementManagerFutures.from(ContextUtils.getApplicationContext());
@@ -134,7 +139,7 @@ public class AttributionOsLevelManager {
 
     private void addRegistrationFutureCallback(
             int requestId, @RegistrationType int type, ListenableFuture<?> future) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (!supportsAttribution()) {
             return;
         }
         Futures.addCallback(future, new FutureCallback<Object>() {
@@ -179,7 +184,7 @@ public class AttributionOsLevelManager {
     @CalledByNative
     private void registerWebAttributionSource(int requestId, GURL registrationUrl,
             GURL topLevelOrigin, boolean isDebugKeyAllowed, MotionEvent event) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (!supportsAttribution()) {
             onRegistrationCompleted(
                     requestId, RegistrationType.SOURCE, RegistrationResult.ERROR_INTERNAL);
             return;
@@ -205,7 +210,7 @@ public class AttributionOsLevelManager {
      */
     @CalledByNative
     private void registerAttributionSource(int requestId, GURL registrationUrl, MotionEvent event) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (!supportsAttribution()) {
             onRegistrationCompleted(
                     requestId, RegistrationType.SOURCE, RegistrationResult.ERROR_INTERNAL);
             return;
@@ -228,7 +233,7 @@ public class AttributionOsLevelManager {
     @CalledByNative
     private void registerWebAttributionTrigger(
             int requestId, GURL registrationUrl, GURL topLevelOrigin, boolean isDebugKeyAllowed) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (!supportsAttribution()) {
             onRegistrationCompleted(
                     requestId, RegistrationType.TRIGGER, RegistrationResult.ERROR_INTERNAL);
             return;
@@ -253,7 +258,7 @@ public class AttributionOsLevelManager {
      */
     @CalledByNative
     private void registerAttributionTrigger(int requestId, GURL registrationUrl) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (!supportsAttribution()) {
             onRegistrationCompleted(
                     requestId, RegistrationType.TRIGGER, RegistrationResult.ERROR_INTERNAL);
             return;
@@ -282,7 +287,7 @@ public class AttributionOsLevelManager {
     @CalledByNative
     private void deleteRegistrations(int requestId, long startMs, long endMs, GURL[] origins,
             String[] domains, int deletionMode, int matchBehavior) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (!supportsAttribution()) {
             onDataDeletionCompleted(requestId);
             return;
         }
@@ -377,7 +382,7 @@ public class AttributionOsLevelManager {
             return;
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (!supportsAttribution()) {
             AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
             return;
         }
