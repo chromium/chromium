@@ -1,6 +1,6 @@
 Name: libvpx
 URL: https://chromium.googlesource.com/webm/libvpx
-Version: 0
+Version: N/A
 Date: Tuesday September 26 2023
 Revision: 38a707faef72eeff89d669c553e7bfe9e08dba8f
 CPEPrefix: cpe:/a:webmproject:libvpx:1.13.0
@@ -32,7 +32,7 @@ Please follow these steps to update libvpx source code:
      cd third_party/libvpx
      ./generate_gni.sh
 
-   Update 'Version' and 'CPEPrefix' in this file if necessary.
+   Update 'Revision' and 'CPEPrefix' in this file if necessary.
 
 3. Amend the commit created by the first step:
 
