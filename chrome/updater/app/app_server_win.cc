@@ -265,6 +265,12 @@ void AppServerWin::Stop() {
 }
 
 bool AppServerWin::RestoreComInterfaces(bool is_internal) {
+  VLOG(1) << __func__ << ": Subkey count for `Software\\Classes\\Interface`: "
+          << base::win::RegistryKeyIterator(
+                 UpdaterScopeToHKeyRoot(updater_scope()),
+                 L"Software\\Classes\\Interface", 0)
+                 .SubkeyCount();
+
   if (AreComInterfacesPresent(updater_scope(), is_internal)) {
     return true;
   }
