@@ -20,7 +20,6 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -265,53 +264,17 @@ void WebAppFrameToolbarTestHelper::TestDraggableRegions() {
 }
 
 BrowserView* WebAppFrameToolbarTestHelper::OpenPopup(
-    content::WebContents* web_contents,
     const std::string& window_open_script) {
-  content::ExecuteScriptAsync(web_contents, window_open_script);
+  content::ExecuteScriptAsync(browser_view_->GetActiveWebContents(),
+                              window_open_script);
   Browser* popup = ui_test_utils::WaitForBrowserToOpen();
-  DCHECK(popup);
+  EXPECT_NE(app_browser_, popup);
+  EXPECT_TRUE(popup);
 
   BrowserView* popup_browser_view =
       BrowserView::GetBrowserViewForBrowser(popup);
-  DCHECK(content::WaitForRenderFrameReady(
+  EXPECT_TRUE(content::WaitForRenderFrameReady(
       popup_browser_view->GetActiveWebContents()->GetPrimaryMainFrame()));
 
   return popup_browser_view;
-}
-
-BrowserView* WebAppFrameToolbarTestHelper::OpenPopup(
-    const std::string& window_open_script) {
-  return OpenPopup(browser_view()->GetActiveWebContents(), window_open_script);
-}
-
-void WebAppFrameToolbarTestHelper::GrantWindowManagementPermission(
-    content::WebContents* web_contents,
-    base::StringPiece element_id) {
-  std::string permission_auto_approve_script = content::JsReplace(R"(
-      const elem = document.getElementById($1);
-      elem.setAttribute('allow', 'window-management');
-    )",
-                                                                  element_id);
-
-  ASSERT_TRUE(ExecJs(web_contents, permission_auto_approve_script,
-                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-  permissions::PermissionRequestManager::FromWebContents(web_contents)
-      ->set_auto_response_for_test(
-          permissions::PermissionRequestManager::ACCEPT_ALL);
-
-  ASSERT_TRUE(ExecJs(web_contents, "window.getScreenDetails();"));
-
-  constexpr std::string_view permission_query_script = R"(
-      navigator.permissions.query({
-        name: 'window-management'
-      }).then(res => res.state)
-    )";
-  ASSERT_EQ("granted", EvalJs(web_contents, permission_query_script));
-}
-
-void WebAppFrameToolbarTestHelper::GrantWindowManagementPermission(
-    base::StringPiece element_id) {
-  return GrantWindowManagementPermission(browser_view()->GetActiveWebContents(),
-                                         element_id);
 }

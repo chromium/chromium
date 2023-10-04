@@ -57,6 +57,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_view_host.h"
@@ -491,8 +492,25 @@ class BorderlessIsolatedWebAppBrowserTest
 
   void GrantWindowManagementPermission() {
     auto* web_contents = browser_view()->GetActiveWebContents();
-    WebAppFrameToolbarTestHelper::GrantWindowManagementPermission(web_contents,
-                                                                  "draggable");
+    std::string permission_auto_approve_script = R"(
+      const draggable = document.getElementById('draggable');
+      draggable.setAttribute('allow', 'window-management');
+    )";
+    EXPECT_TRUE(ExecJs(web_contents, permission_auto_approve_script,
+                       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+    permissions::PermissionRequestManager::FromWebContents(web_contents)
+        ->set_auto_response_for_test(
+            permissions::PermissionRequestManager::ACCEPT_ALL);
+
+    EXPECT_TRUE(ExecJs(web_contents, "window.getScreenDetails();"));
+
+    std::string permission_query_script = R"(
+      navigator.permissions.query({
+        name: 'window-management'
+      }).then(res => res.state)
+    )";
+    EXPECT_EQ("granted", EvalJs(web_contents, permission_query_script));
 
     // It takes some time to udate the borderless mode state. The title is
     // updated on a change event hooked to the window.matchMedia() function,
@@ -523,6 +541,23 @@ class BorderlessIsolatedWebAppBrowserTest
 
   const net::EmbeddedTestServer& isolated_web_app_dev_server() {
     return *isolated_web_app_dev_server_.get();
+  }
+
+  // Opens a new popup window from `browser_` by running
+  // `window_open_script` and returns the `BrowserView` of the popup it opened.
+  BrowserView* OpenPopup(const std::string& window_open_script) {
+    content::ExecuteScriptAsync(browser_view_->GetActiveWebContents(),
+                                window_open_script);
+    Browser* popup = ui_test_utils::WaitForBrowserToOpen();
+    EXPECT_NE(browser_, popup);
+    EXPECT_TRUE(popup);
+
+    BrowserView* popup_browser_view =
+        BrowserView::GetBrowserViewForBrowser(popup);
+    EXPECT_TRUE(content::WaitForRenderFrameReady(
+        popup_browser_view->GetActiveWebContents()->GetPrimaryMainFrame()));
+
+    return popup_browser_view;
   }
 
   bool IsWindowSizeCorrect(BrowserView* browser_view,
@@ -640,9 +675,8 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
   auto url =
       EvalJs(browser_view()->GetActiveWebContents(), "window.location.href")
           .ExtractString();
-  BrowserView* popup_browser_view = WebAppFrameToolbarTestHelper::OpenPopup(
-      browser_view()->GetActiveWebContents(),
-      "window.open('" + url + "', '_blank', 'popup');");
+  BrowserView* popup_browser_view =
+      OpenPopup("window.open('" + url + "', '_blank', 'popup');");
   EXPECT_TRUE(popup_browser_view->IsBorderlessModeEnabled());
 }
 
@@ -653,9 +687,8 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
   ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
 
   // Popup to any other website outside of the same origin.
-  BrowserView* popup_browser_view = WebAppFrameToolbarTestHelper::OpenPopup(
-      browser_view()->GetActiveWebContents(),
-      "window.open('https://google.com', '_blank', 'popup');");
+  BrowserView* popup_browser_view =
+      OpenPopup("window.open('https://google.com', '_blank', 'popup');");
   EXPECT_FALSE(popup_browser_view->IsBorderlessModeEnabled());
 }
 
@@ -668,12 +701,10 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupSize) {
       EvalJs(browser_view()->GetActiveWebContents(), "window.location.href")
           .ExtractString();
 
-  BrowserView* popup_browser_view = WebAppFrameToolbarTestHelper::OpenPopup(
-      browser_view()->GetActiveWebContents(),
-      "window.open('" + url +
-          "', '', 'location=0, status=0, scrollbars=0, "
-          "left=0, top=0, width=400, height=300');");
-
+  BrowserView* popup_browser_view =
+      OpenPopup("window.open('" + url +
+                "', '', 'location=0, status=0, scrollbars=0, "
+                "left=0, top=0, width=400, height=300');");
   EXPECT_TRUE(popup_browser_view->IsBorderlessModeEnabled());
   auto* popup_web_contents = popup_browser_view->GetActiveWebContents();
 
@@ -717,11 +748,10 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, MAYBE_PopupResize) {
       EvalJs(browser_view()->GetActiveWebContents(), "window.location.href")
           .ExtractString();
 
-  BrowserView* popup_browser_view = WebAppFrameToolbarTestHelper::OpenPopup(
-      browser_view()->GetActiveWebContents(),
-      "window.open('" + url +
-          "', '', 'location=0, status=0, scrollbars=0, "
-          "left=0, top=0, width=400, height=300');");
+  BrowserView* popup_browser_view =
+      OpenPopup("window.open('" + url +
+                "', '', 'location=0, status=0, scrollbars=0, "
+                "left=0, top=0, width=400, height=300');");
 
   EXPECT_TRUE(popup_browser_view->IsBorderlessModeEnabled());
   auto* popup_web_contents = popup_browser_view->GetActiveWebContents();
