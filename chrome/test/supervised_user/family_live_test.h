@@ -8,10 +8,15 @@
 #include <memory>
 #include <string_view>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
-#include "chrome/test/supervised_user/family_member_browser.h"
+#include "chrome/test/supervised_user/family_member.h"
+#include "components/supervised_user/core/common/features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/interaction/interaction_sequence.h"
+#include "url/gurl.h"
 
 namespace supervised_user {
 
@@ -21,27 +26,39 @@ namespace supervised_user {
 // * child.
 class FamilyLiveTest : public signin::test::LiveTest {
  public:
-  FamilyLiveTest();
+  // Navigation will be allowed to extra hosts.
+  explicit FamilyLiveTest(std::vector<std::string> extra_enabled_hosts);
   ~FamilyLiveTest() override;
+
+  // Turns on sync and closes auxiliary tabs.
+  static void TurnOnSyncFor(FamilyMember& member);
 
  protected:
   void SetUp() override;
   void SetUpOnMainThread() override;
+  void SetUpInProcessBrowserTestFixture() override;
 
-  FamilyMemberBrowser& head_of_household() { return *head_of_household_; }
-  FamilyMemberBrowser& child() { return *head_of_household_; }
+  FamilyMember& head_of_household() { return *head_of_household_; }
+  FamilyMember& child() { return *child_; }
 
  private:
+  base::test::ScopedFeatureList features{
+      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS};
+
   // Extracts requested account, which must exist.
   signin::test::TestAccount GetTestAccount(std::string_view account_name) const;
 
   // Creates a new browser signed in to the specified account, which must
   // exist.
-  std::unique_ptr<FamilyMemberBrowser> MakeSignedInBrowser(
+  std::unique_ptr<FamilyMember> MakeSignedInBrowser(
       std::string_view account_name);
 
-  std::unique_ptr<FamilyMemberBrowser> head_of_household_;
-  std::unique_ptr<FamilyMemberBrowser> child_;
+  std::unique_ptr<FamilyMember> head_of_household_;
+  std::unique_ptr<FamilyMember> child_;
+
+  // List of additional hosts that will have host resolution enabled. Host
+  // resolution is configured as part of test startup.
+  std::vector<std::string> extra_enabled_hosts_;
 };
 
 }  // namespace supervised_user

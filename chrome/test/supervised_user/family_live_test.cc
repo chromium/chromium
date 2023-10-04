@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -17,7 +18,9 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
-#include "chrome/test/supervised_user/family_member_browser.h"
+#include "chrome/test/supervised_user/family_member.h"
+#include "net/dns/mock_host_resolver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
@@ -26,8 +29,9 @@ namespace {
 
 // List of accounts specified in
 // chrome/browser/internal/resources/signin/test_accounts.json
-static constexpr std::string_view kHeadOfHouseholdAccountId{"TEST_ACCOUNT_1"};
-static constexpr std::string_view kChildAccountId{"TEST_ACCOUNT_2"};
+static constexpr std::string_view kHeadOfHouseholdAccountId{
+    "FAMILY_HEAD_OF_HOUSEHOLD"};
+static constexpr std::string_view kChildAccountId{"FAMILY_CHILD_1"};
 
 Profile& CreateNewProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -38,8 +42,17 @@ Profile& CreateNewProfile() {
 
 }  // namespace
 
-FamilyLiveTest::FamilyLiveTest() = default;
+FamilyLiveTest::FamilyLiveTest(std::vector<std::string> extra_enabled_hosts)
+    : extra_enabled_hosts_(extra_enabled_hosts) {}
 FamilyLiveTest::~FamilyLiveTest() = default;
+
+/* static */ void FamilyLiveTest::TurnOnSyncFor(FamilyMember& member) {
+  member.TurnOnSync();
+  member.browser()->tab_strip_model()->CloseWebContentsAt(
+      2, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  member.browser()->tab_strip_model()->CloseWebContentsAt(
+      1, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+}
 
 void FamilyLiveTest::SetUp() {
   signin::test::LiveTest::SetUp();
@@ -51,8 +64,16 @@ void FamilyLiveTest::SetUp() {
 void FamilyLiveTest::SetUpOnMainThread() {
   signin::test::LiveTest::SetUpOnMainThread();
 
-  head_of_household_ = MakeSignedInBrowser(kHeadOfHouseholdAccountId);
   child_ = MakeSignedInBrowser(kChildAccountId);
+  head_of_household_ = MakeSignedInBrowser(kHeadOfHouseholdAccountId);
+}
+
+void FamilyLiveTest::SetUpInProcessBrowserTestFixture() {
+  signin::test::LiveTest::SetUpInProcessBrowserTestFixture();
+
+  for (const auto& host : extra_enabled_hosts_) {
+    host_resolver()->AllowDirectLookup(host);
+  }
 }
 
 signin::test::TestAccount FamilyLiveTest::GetTestAccount(
@@ -62,25 +83,21 @@ signin::test::TestAccount FamilyLiveTest::GetTestAccount(
   return account;
 }
 
-std::unique_ptr<FamilyMemberBrowser> FamilyLiveTest::MakeSignedInBrowser(
+std::unique_ptr<FamilyMember> FamilyLiveTest::MakeSignedInBrowser(
     std::string_view account_name) {
   // Managed externally to the test fixture.
   Profile& profile = CreateNewProfile();
   Browser* browser = CreateBrowser(&profile);
   CHECK(browser) << "Expected to create a browser.";
 
-  FamilyMemberBrowser::NewTabCallback new_tab_callback =
-      base::BindLambdaForTesting([this, browser](
-                                     int index, const GURL& url,
-                                     ui::PageTransition transition) -> bool {
+  FamilyMember::NewTabCallback new_tab_callback = base::BindLambdaForTesting(
+      [this, browser](int index, const GURL& url,
+                      ui::PageTransition transition) -> bool {
         return this->AddTabAtIndexToBrowser(browser, index, url, transition);
       });
 
-  std::unique_ptr<FamilyMemberBrowser> family_member_browser =
-      std::make_unique<FamilyMemberBrowser>(GetTestAccount(account_name),
-                                            *browser, new_tab_callback);
-  family_member_browser->SignIn();
-  return family_member_browser;
+  return std::make_unique<FamilyMember>(GetTestAccount(account_name), *browser,
+                                        new_tab_callback);
 }
 
 }  // namespace supervised_user

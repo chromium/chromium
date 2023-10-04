@@ -2696,16 +2696,20 @@ if (!is_android) {
       "interaction/interaction_test_util_browser_browsertest.cc",
       "interaction/interactive_browser_test_browsertest.cc",
       "interaction/webcontents_interaction_test_util_browsertest.cc",
-
-      # TODO(b/301587955): Fix placement of supervised_user/e2e test files and their dependencies.
-      "supervised_user/family_live_test.cc",
-      "supervised_user/family_live_test.h",
-      "supervised_user/family_member_browser.cc",
-      "supervised_user/family_member_browser.h",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
 
     if (enable_supervised_users) {
+      sources += [
+        # TODO(b/301587955): Fix placement of supervised_user/e2e test files and their dependencies.
+        "../browser/supervised_user/url_filter_interactive_uitest.cc",
+        "supervised_user/custom_state_observers.cc",
+        "supervised_user/custom_state_observers.h",
+        "supervised_user/family_live_test.cc",
+        "supervised_user/family_live_test.h",
+        "supervised_user/family_member.cc",
+        "supervised_user/family_member.h",
+      ]
       deps += [ "//components/supervised_user/test_support" ]
     }
 

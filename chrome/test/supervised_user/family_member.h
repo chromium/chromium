@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_SUPERVISED_USER_FAMILY_MEMBER_BROWSER_H_
-#define CHROME_TEST_SUPERVISED_USER_FAMILY_MEMBER_BROWSER_H_
+#ifndef CHROME_TEST_SUPERVISED_USER_FAMILY_MEMBER_H_
+#define CHROME_TEST_SUPERVISED_USER_FAMILY_MEMBER_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -15,17 +15,22 @@
 
 namespace supervised_user {
 
-// Browser associated with a specific user, typically a family member.
-class FamilyMemberBrowser {
+// Family member's actions that can be taken in browser UI.
+class FamilyMember {
  public:
   using NewTabCallback =
       base::RepeatingCallback<bool(int, const GURL&, ui::PageTransition)>;
 
-  FamilyMemberBrowser(signin::test::TestAccount account_,
-                      Browser& browser,
-                      const NewTabCallback add_tab_function);
+  FamilyMember(signin::test::TestAccount account_,
+               Browser& browser,
+               const NewTabCallback add_tab_function);
+  ~FamilyMember();
 
-  void SignIn() { sign_in_functions_.SignInFromWeb(account_, 0); }
+  void TurnOnSync();
+
+  // Url of family member's blocklist settings. Member must be a supervised user
+  // who is a subject to parental controls.
+  GURL GetBlockListUrlFor(FamilyMember& member) const;
 
   // Browsertest apis expect pointer.
   Browser* browser() const { return &browser_.get(); }
@@ -39,4 +44,4 @@ class FamilyMemberBrowser {
 };
 }  // namespace supervised_user
 
-#endif  // CHROME_TEST_SUPERVISED_USER_FAMILY_MEMBER_BROWSER_H_
+#endif  // CHROME_TEST_SUPERVISED_USER_FAMILY_MEMBER_H_
