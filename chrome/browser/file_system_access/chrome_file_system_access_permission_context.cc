@@ -1760,9 +1760,8 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
 
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {
-    // Active grants are a subset of dormant/extended grants, so we also
-    // need to update dormant/extended grants, in case it's not covered by
-    // UpdateGrantPath() above.
+    // Active grants are a subset of persisted grants, so we also need to update
+    // persisted grants, in case it's not covered by `UpdateGrantPath()` above.
     const std::unique_ptr<Object> object =
         GetGrantedObject(origin, PathAsPermissionKey(old_path));
     if (object) {
@@ -1880,8 +1879,6 @@ void ChromeFileSystemAccessPermissionContext::RevokeGrant(
   }
 }
 
-// TODO(https://crbug.com/1011533): Integrate with Safety Hub for site
-// inactivity revocation.
 // TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
 // feature flag checks before launch.
 void ChromeFileSystemAccessPermissionContext::RevokeGrants(
@@ -1894,7 +1891,10 @@ void ChromeFileSystemAccessPermissionContext::RevokeGrants(
           features::kFileSystemAccessPersistentPermissions)) {
     grant_revoked =
         ObjectPermissionContextBase::RevokeObjectPermissions(origin);
-    // TODO(https://crbug.com/1011533): Clear Extended Permission state.
+    content_settings_->SetContentSettingDefaultScope(
+        origin.GetURL(), origin.GetURL(),
+        ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
+        ContentSetting::CONTENT_SETTING_DEFAULT);
   }
 
   if (RevokeActiveGrants(origin)) {
@@ -2006,9 +2006,6 @@ void ChromeFileSystemAccessPermissionContext::OnShutdown() {
 
 void ChromeFileSystemAccessPermissionContext::OnWebAppInstalled(
     const web_app::AppId& app_id) {
-  // TODO(crbug.com/1011533): Replace use of
-  // `extended_permissions_settings_map_` with `ExtendedPermissionPref`
-  // content setting, once implemented.
   auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(profile()));
   const auto& registrar = provider->registrar_unsafe();
@@ -2023,8 +2020,11 @@ void ChromeFileSystemAccessPermissionContext::OnWebAppInstalled(
     return;
   }
   const auto origin = url::Origin::Create(gurl);
-  if (extended_permissions_settings_map_[origin] !=
-      ContentSetting::CONTENT_SETTING_DEFAULT) {
+  auto content_setting_value = content_settings_->GetContentSetting(
+      origin.GetURL(), origin.GetURL(),
+      ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION);
+  if (content_setting_value == ContentSetting::CONTENT_SETTING_ALLOW ||
+      content_setting_value == ContentSetting::CONTENT_SETTING_BLOCK) {
     // The user has already enabled or disabled extended permissions from the
     // Restore Prompt or Page Info bubble. Installing a WebApp should not
     // change the extended permission state.
@@ -2055,8 +2055,11 @@ void ChromeFileSystemAccessPermissionContext::OnWebAppWillBeUninstalled(
     return;
   }
   const auto origin = url::Origin::Create(gurl);
-  if (extended_permissions_settings_map_[origin] !=
-      ContentSetting::CONTENT_SETTING_DEFAULT) {
+  auto content_setting_value = content_settings_->GetContentSetting(
+      origin.GetURL(), origin.GetURL(),
+      ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION);
+  if (content_setting_value == ContentSetting::CONTENT_SETTING_ALLOW ||
+      content_setting_value == ContentSetting::CONTENT_SETTING_BLOCK) {
     // The user has already enabled or disabled extended permissions from the
     // Restore Prompt or Page Info bubble. Uninstalling a WebApp should not
     // change the extended permission state.
@@ -2159,8 +2162,10 @@ void ChromeFileSystemAccessPermissionContext::CleanupPermissions(
 void ChromeFileSystemAccessPermissionContext::
     OnRestorePermissionAllowedEveryTime(const url::Origin& origin) {
   UpdateGrantsOnRestorePermissionAllowed(origin);
-  extended_permissions_settings_map_[origin] =
-      ContentSetting::CONTENT_SETTING_ALLOW;
+  content_settings_->SetContentSettingDefaultScope(
+      origin.GetURL(), origin.GetURL(),
+      ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
+      ContentSetting::CONTENT_SETTING_ALLOW);
 }
 
 void ChromeFileSystemAccessPermissionContext::OnRestorePermissionAllowedOnce(
@@ -2289,6 +2294,7 @@ bool ChromeFileSystemAccessPermissionContext::
   if (origin_is_embargoed) {
     return false;
   }
+
   if (GetPersistedGrantType(origin) != PersistedGrantType::kDormant) {
     return false;
   }
@@ -2347,6 +2353,16 @@ bool ChromeFileSystemAccessPermissionContext::HasPersistedGrantObject(
            obj->value.FindBool(GetGrantKeyFromGrantType(grant_type))
                .value_or(false);
   });
+}
+
+void ChromeFileSystemAccessPermissionContext::
+    SetOriginHasExtendedPermissionForTesting(const url::Origin& origin) {
+  CHECK(base::FeatureList::IsEnabled(
+      features::kFileSystemAccessPersistentPermissions));
+  content_settings_->SetContentSettingDefaultScope(
+      origin.GetURL(), origin.GetURL(),
+      ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
+      ContentSetting::CONTENT_SETTING_ALLOW);
 }
 
 scoped_refptr<content::FileSystemAccessPermissionGrant>
@@ -2432,8 +2448,6 @@ bool ChromeFileSystemAccessPermissionContext::HasExtendedPermission(
 
 // TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
 // feature flag checks before launch.
-// TODO(crbug.com/1011533): Add checks for `PersistentPermissionPref` value
-// once the ContentSetting is implemented.
 bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
     const url::Origin& origin) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -2449,23 +2463,19 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
     return false;
   }
 
-  const auto origin_it = extended_permissions_settings_map_.find(origin);
-  if (origin_it != extended_permissions_settings_map_.end()) {
-    switch (origin_it->second) {
-      case ContentSetting::CONTENT_SETTING_ALLOW:
-        return true;
-      case ContentSetting::CONTENT_SETTING_BLOCK:
-        return false;
-      case ContentSetting::CONTENT_SETTING_DEFAULT:
-        // If user has not set the extended permission preference,
-        // the extended permission state depends on whether the origin has
-        // webapp installed, as checked below.
-        break;
-      default:
-        NOTREACHED();
-    }
+  auto content_setting_value = content_settings_->GetContentSetting(
+      origin.GetURL(), origin.GetURL(),
+      ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION);
+  if (content_setting_value == ContentSetting::CONTENT_SETTING_ALLOW) {
+    return true;
+  }
+  if (content_setting_value == ContentSetting::CONTENT_SETTING_BLOCK) {
+    return false;
   }
 
+  // If user has not set the extended permission preference, the extended
+  // permission state depends on whether the origin has webapp actively
+  // installed.
   DCHECK(profile());
   auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(profile()));

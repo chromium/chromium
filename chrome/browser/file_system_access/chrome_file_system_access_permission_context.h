@@ -201,21 +201,13 @@ class ChromeFileSystemAccessPermissionContext
         features::kFileSystemAccessPersistentPermissions));
     return GetGrantStatus(origin);
   }
-  // This method may only be called when the Persistent Permissions feature
-  // flag is enabled.
-  void SetOriginHasExtendedPermissionForTesting(const url::Origin& origin) {
-    CHECK(base::FeatureList::IsEnabled(
-        features::kFileSystemAccessPersistentPermissions));
-    // TODO(crbug.com/1011533): Refactor to use the registered Content Setting
-    // value, once implemented.
-    extended_permissions_settings_map_[origin] =
-        ContentSetting::CONTENT_SETTING_ALLOW;
-  }
+
   bool RevokeActiveGrantsForTesting(
       const url::Origin& origin,
       base::FilePath file_path = base::FilePath()) {
     return RevokeActiveGrants(origin, std::move(file_path));
   }
+
   std::vector<std::unique_ptr<Object>> GetExtendedPersistedObjectsForTesting(
       const url::Origin& origin) {
     return GetExtendedPersistedObjects(origin);
@@ -246,14 +238,18 @@ class ChromeFileSystemAccessPermissionContext
   // active grants for a given origin.
   void CreatePersistedGrantsFromActiveGrants(const url::Origin& origin);
 
-  // Revokes active and extended grants for the given origin and given file
-  // path.
+  // Revokes `origin`'s active and extended grant for `file_path`. It does not
+  // reset the extended permission state. Currently called from UI (i.e. Site
+  // Settings page).
   void RevokeGrant(const url::Origin& origin, const base::FilePath& file_path);
 
-  // Revokes active and extended grants for the given origin.
+  // Revokes `origin`'s active and extended grants, and resets the extended
+  // permission state. Currently, called from UI (i.e. Site Settings page,
+  // usage icon/bubble).
   void RevokeGrants(const url::Origin& origin);
 
-  // Returns whether active permissions exist for the origin of the given type.
+  // Returns whether active or extended grants exist for the origin of the given
+  // type.
   bool OriginHasReadAccess(const url::Origin& origin);
   bool OriginHasWriteAccess(const url::Origin& origin);
 
@@ -264,6 +260,8 @@ class ChromeFileSystemAccessPermissionContext
   content::BrowserContext* profile() const { return profile_; }
 
   void TriggerTimersForTesting();
+
+  void SetOriginHasExtendedPermissionForTesting(const url::Origin& origin);
 
   scoped_refptr<content::FileSystemAccessPermissionGrant>
   GetExtendedReadPermissionGrantForTesting(const url::Origin& origin,
@@ -431,10 +429,6 @@ class ChromeFileSystemAccessPermissionContext
   // Permission state per origin.
   struct OriginState;
   std::map<url::Origin, OriginState> active_permissions_map_;
-
-  // TODO(crbug.com/1011533): Remove this map once the Persistent Permission
-  // Content Setting is implemented.
-  std::map<url::Origin, ContentSetting> extended_permissions_settings_map_;
 
   bool usage_icon_update_scheduled_ = false;
 

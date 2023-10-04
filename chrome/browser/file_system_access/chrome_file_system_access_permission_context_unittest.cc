@@ -1437,6 +1437,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto result =
       TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin);
   EXPECT_EQ(result, PermissionRequestOutcome::kGrantedByRestorePrompt);
+  EXPECT_EQ(permission_context()->content_settings()->GetContentSetting(
+                kTestOrigin.GetURL(), kTestOrigin.GetURL(),
+                ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION),
+            ContentSetting::CONTENT_SETTING_ALLOW);
 
   // The dormant grants are now extended grants, which can be returned from
   // `GetGrantedObjects()`.
@@ -1477,6 +1481,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   grant1->RequestPermission(frame_id(), UserActivationState::kNotRequired,
                             future.GetCallback());
   EXPECT_EQ(future.Get(), PermissionRequestOutcome::kGrantedByRestorePrompt);
+  EXPECT_NE(permission_context()->content_settings()->GetContentSetting(
+                kTestOrigin.GetURL(), kTestOrigin.GetURL(),
+                ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION),
+            ContentSetting::CONTENT_SETTING_ALLOW);
   EXPECT_EQ(permission_context()->GetGrantedObjects(kTestOrigin).size(), 2UL);
 
   // TODO(crbug.com/1011533): Update this test to navigate away from the page,
