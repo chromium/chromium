@@ -31,7 +31,7 @@ class AccountId;
 
 namespace ash {
 
-class EasyUnlockService;
+class SmartLockService;
 class UserBoardView;
 struct LoginUserInfo;
 class UserContext;
@@ -119,7 +119,7 @@ class UserSelectionScreen
   class DircryptoMigrationChecker;
   class TpmLockedChecker;
 
-  EasyUnlockService* GetEasyUnlockServiceForUser(
+  SmartLockService* GetSmartLockServiceForUser(
       const AccountId& account_id) const;
 
   void OnUserStatusChecked(const AccountId& account_id,

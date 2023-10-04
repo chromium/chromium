@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
+#include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
 
 #include <memory>
 #include <utility>
@@ -20,11 +20,11 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/login/easy_unlock/chrome_proximity_auth_client.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
-#include "chrome/browser/ash/login/easy_unlock/smartlock_feature_usage_metrics.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ash/login/smart_lock/chrome_proximity_auth_client.h"
+#include "chrome/browser/ash/login/smart_lock/smart_lock_feature_usage_metrics.h"
+#include "chrome/browser/ash/login/smart_lock/smart_lock_notification_controller.h"
+#include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
@@ -75,8 +75,9 @@ void SetAuthTypeIfChanged(
   CHECK(lock_handler);
   const proximity_auth::mojom::AuthType existing_auth_type =
       lock_handler->GetAuthType(account_id);
-  if (auth_type == existing_auth_type)
+  if (auth_type == existing_auth_type) {
     return;
+  }
 
   lock_handler->SetAuthType(account_id, auth_type, auth_value);
 }
@@ -84,30 +85,30 @@ void SetAuthTypeIfChanged(
 }  // namespace
 
 // static
-EasyUnlockService* EasyUnlockService::Get(Profile* profile) {
-  return EasyUnlockServiceFactory::GetForBrowserContext(profile);
+SmartLockService* SmartLockService::Get(Profile* profile) {
+  return SmartLockServiceFactory::GetForBrowserContext(profile);
 }
 
 // static
-EasyUnlockService* EasyUnlockService::GetForUser(
-    const user_manager::User& user) {
+SmartLockService* SmartLockService::GetForUser(const user_manager::User& user) {
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(&user);
-  if (!profile)
+  if (!profile) {
     return nullptr;
-  return EasyUnlockService::Get(profile);
+  }
+  return SmartLockService::Get(profile);
 }
 
 // static
-void EasyUnlockService::RegisterProfilePrefs(
+void SmartLockService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kEasyUnlockPairing);
   proximity_auth::ProximityAuthProfilePrefManager::RegisterPrefs(registry);
 }
 
-class EasyUnlockService::PowerMonitor
+class SmartLockService::PowerMonitor
     : public chromeos::PowerManagerClient::Observer {
  public:
-  explicit PowerMonitor(EasyUnlockService* service) : service_(service) {
+  explicit PowerMonitor(SmartLockService* service) : service_(service) {
     chromeos::PowerManagerClient::Get()->AddObserver(this);
   }
 
@@ -137,26 +138,26 @@ class EasyUnlockService::PowerMonitor
 
   void ResetWakingUp() { service_->UpdateAppState(); }
 
-  raw_ptr<EasyUnlockService, ExperimentalAsh> service_;
+  raw_ptr<SmartLockService, ExperimentalAsh> service_;
   base::WeakPtrFactory<PowerMonitor> weak_ptr_factory_{this};
 };
 
-EasyUnlockService::EasyUnlockService(
+SmartLockService::SmartLockService(
     Profile* profile,
     secure_channel::SecureChannelClient* secure_channel_client,
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
-    : EasyUnlockService(
+    : SmartLockService(
           profile,
           secure_channel_client,
-          std::make_unique<EasyUnlockNotificationController>(profile),
+          std::make_unique<SmartLockNotificationController>(profile),
           device_sync_client,
           multidevice_setup_client) {}
 
-EasyUnlockService::EasyUnlockService(
+SmartLockService::SmartLockService(
     Profile* profile,
     secure_channel::SecureChannelClient* secure_channel_client,
-    std::unique_ptr<EasyUnlockNotificationController> notification_controller,
+    std::unique_ptr<SmartLockNotificationController> notification_controller,
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
     : profile_(profile),
@@ -168,9 +169,9 @@ EasyUnlockService::EasyUnlockService(
       device_sync_client_(device_sync_client),
       multidevice_setup_client_(multidevice_setup_client) {}
 
-EasyUnlockService::~EasyUnlockService() = default;
+SmartLockService::~SmartLockService() = default;
 
-bool EasyUnlockService::AttemptAuth(const AccountId& account_id) {
+bool SmartLockService::AttemptAuth(const AccountId& account_id) {
   PA_LOG(VERBOSE) << "User began unlock auth attempt.";
 
   if (auth_attempt_) {
@@ -194,7 +195,7 @@ bool EasyUnlockService::AttemptAuth(const AccountId& account_id) {
     return false;
   }
 
-  auth_attempt_ = std::make_unique<EasyUnlockAuthAttempt>(account_id);
+  auth_attempt_ = std::make_unique<SmartLockAuthAttempt>(account_id);
   if (!auth_attempt_->Start()) {
     RecordAuthResult(
         SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
@@ -215,12 +216,12 @@ bool EasyUnlockService::AttemptAuth(const AccountId& account_id) {
   return true;
 }
 
-void EasyUnlockService::FinalizeUnlock(bool success) {
+void SmartLockService::FinalizeUnlock(bool success) {
   if (!auth_attempt_) {
     return;
   }
 
-  set_will_authenticate_using_easy_unlock(true);
+  set_will_authenticate_using_smart_lock(true);
   auth_attempt_->FinalizeUnlock(GetAccountId(), success);
 
   // If successful, allow |auth_attempt_| to continue until
@@ -229,20 +230,20 @@ void EasyUnlockService::FinalizeUnlock(bool success) {
   // Make sure that the lock screen is updated on failure.
   if (!success) {
     auth_attempt_.reset();
-    RecordEasyUnlockScreenUnlockEvent(EASY_UNLOCK_FAILURE);
+    RecordSmartLockScreenUnlockEvent(SMART_LOCK_FAILURE);
   }
 
   NotifySmartLockAuthResult(success);
 }
 
-AccountId EasyUnlockService::GetAccountId() const {
+AccountId SmartLockService::GetAccountId() const {
   const user_manager::User* const primary_user =
       user_manager::UserManager::Get()->GetPrimaryUser();
   CHECK(primary_user);
   return primary_user->GetAccountId();
 }
 
-SmartLockState EasyUnlockService::GetInitialSmartLockState() const {
+SmartLockState SmartLockService::GetInitialSmartLockState() const {
   if (IsAllowed() && IsEnabled() && proximity_auth_system_ != nullptr) {
     return SmartLockState::kConnectingToPhone;
   }
@@ -250,7 +251,7 @@ SmartLockState EasyUnlockService::GetInitialSmartLockState() const {
   return SmartLockState::kDisabled;
 }
 
-std::string EasyUnlockService::GetLastRemoteStatusUnlockForLogging() {
+std::string SmartLockService::GetLastRemoteStatusUnlockForLogging() {
   if (proximity_auth_system_) {
     return proximity_auth_system_->GetLastRemoteStatusUnlockForLogging();
   }
@@ -258,7 +259,7 @@ std::string EasyUnlockService::GetLastRemoteStatusUnlockForLogging() {
 }
 
 const multidevice::RemoteDeviceRefList
-EasyUnlockService::GetRemoteDevicesForTesting() const {
+SmartLockService::GetRemoteDevicesForTesting() const {
   if (!proximity_auth_system_) {
     return multidevice::RemoteDeviceRefList();
   }
@@ -266,7 +267,7 @@ EasyUnlockService::GetRemoteDevicesForTesting() const {
   return proximity_auth_system_->GetRemoteDevicesForUser(GetAccountId());
 }
 
-void EasyUnlockService::Initialize() {
+void SmartLockService::Initialize() {
   proximity_auth::ScreenlockBridge::Get()->AddObserver(this);
 
   pref_manager_ =
@@ -287,7 +288,7 @@ void EasyUnlockService::Initialize() {
   LoadRemoteDevices();
 }
 
-bool EasyUnlockService::IsAllowed() const {
+bool SmartLockService::IsAllowed() const {
   if (shut_down_) {
     return false;
   }
@@ -318,13 +319,13 @@ bool EasyUnlockService::IsAllowed() const {
   return true;
 }
 
-bool EasyUnlockService::IsEnabled() const {
+bool SmartLockService::IsEnabled() const {
   return multidevice_setup_client_->GetFeatureState(
              multidevice_setup::mojom::Feature::kSmartLock) ==
          multidevice_setup::mojom::FeatureState::kEnabledByUser;
 }
 
-void EasyUnlockService::UpdateSmartLockState(SmartLockState state) {
+void SmartLockService::UpdateSmartLockState(SmartLockState state) {
   if (smart_lock_state_ && state == smart_lock_state_.value()) {
     return;
   }
@@ -370,7 +371,7 @@ void EasyUnlockService::UpdateSmartLockState(SmartLockState state) {
   }
 }
 
-void EasyUnlockService::Shutdown() {
+void SmartLockService::Shutdown() {
   if (shut_down_) {
     return;
   }
@@ -396,14 +397,14 @@ void EasyUnlockService::Shutdown() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void EasyUnlockService::OnScreenDidLock() {
+void SmartLockService::OnScreenDidLock() {
   ShowInitialSmartLockState();
 
-  set_will_authenticate_using_easy_unlock(false);
+  set_will_authenticate_using_smart_lock(false);
   lock_screen_last_shown_timestamp_ = base::TimeTicks::Now();
 }
 
-void EasyUnlockService::OnScreenDidUnlock() {
+void SmartLockService::OnScreenDidUnlock() {
   // If we tried to load remote devices (e.g. after a sync or the
   // service was initialized) while the screen was locked, we can now
   // load the new remote devices.
@@ -424,17 +425,17 @@ void EasyUnlockService::OnScreenDidUnlock() {
 
   // Only record metrics for users who have enabled the feature.
   if (IsEnabled()) {
-    EasyUnlockAuthEvent event = will_authenticate_using_easy_unlock()
-                                    ? EASY_UNLOCK_SUCCESS
-                                    : GetPasswordAuthEvent();
-    RecordEasyUnlockScreenUnlockEvent(event);
+    SmartLockAuthEvent event = will_authenticate_using_smart_lock()
+                                   ? SMART_LOCK_SUCCESS
+                                   : GetPasswordAuthEvent();
+    RecordSmartLockScreenUnlockEvent(event);
 
-    if (will_authenticate_using_easy_unlock()) {
+    if (will_authenticate_using_smart_lock()) {
       SmartLockMetricsRecorder::RecordSmartLockUnlockAuthMethodChoice(
           SmartLockMetricsRecorder::SmartLockAuthMethodChoice::kSmartLock);
       RecordAuthResult(/*failure_reason=*/absl::nullopt);
-      RecordEasyUnlockScreenUnlockDuration(base::TimeTicks::Now() -
-                                           lock_screen_last_shown_timestamp_);
+      RecordSmartLockScreenUnlockDuration(base::TimeTicks::Now() -
+                                          lock_screen_last_shown_timestamp_);
     } else {
       SmartLockMetricsRecorder::RecordSmartLockUnlockAuthMethodChoice(
           SmartLockMetricsRecorder::SmartLockAuthMethodChoice::kOther);
@@ -444,10 +445,10 @@ void EasyUnlockService::OnScreenDidUnlock() {
     }
   }
 
-  set_will_authenticate_using_easy_unlock(false);
+  set_will_authenticate_using_smart_lock(false);
 }
 
-void EasyUnlockService::OnReady() {
+void SmartLockService::OnReady() {
   // If the local device and synced devices are ready for the first time,
   // establish what the unlock keys were before the next sync. This is necessary
   // in order for OnNewDevicesSynced() to determine if new devices were added
@@ -455,13 +456,13 @@ void EasyUnlockService::OnReady() {
   remote_device_unlock_keys_before_sync_ = GetUnlockKeys();
 }
 
-void EasyUnlockService::OnEnrollmentFinished() {
+void SmartLockService::OnEnrollmentFinished() {
   // The local device may be ready for the first time, or it may have been
   // updated, so reload devices.
   LoadRemoteDevices();
 }
 
-void EasyUnlockService::OnNewDevicesSynced() {
+void SmartLockService::OnNewDevicesSynced() {
   std::set<std::string> public_keys_before_sync;
   for (const auto& remote_device : remote_device_unlock_keys_before_sync_) {
     public_keys_before_sync.insert(remote_device.public_key());
@@ -482,14 +483,14 @@ void EasyUnlockService::OnNewDevicesSynced() {
   remote_device_unlock_keys_before_sync_ = remote_device_unlock_keys_after_sync;
 }
 
-void EasyUnlockService::OnFeatureStatesChanged(
+void SmartLockService::OnFeatureStatesChanged(
     const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map) {
   LoadRemoteDevices();
   UpdateAppState();
 }
 
-EasyUnlockAuthEvent EasyUnlockService::GetPasswordAuthEvent() const {
+SmartLockAuthEvent SmartLockService::GetPasswordAuthEvent() const {
   CHECK(IsEnabled());
 
   if (!smart_lock_state_) {
@@ -525,11 +526,11 @@ EasyUnlockAuthEvent EasyUnlockService::GetPasswordAuthEvent() const {
   }
 
   NOTREACHED();
-  return EASY_UNLOCK_AUTH_EVENT_COUNT;
+  return SMART_LOCK_AUTH_EVENT_COUNT;
 }
 
 SmartLockMetricsRecorder::SmartLockAuthEventPasswordState
-EasyUnlockService::GetSmartUnlockPasswordAuthEvent() const {
+SmartLockService::GetSmartUnlockPasswordAuthEvent() const {
   CHECK(IsEnabled());
 
   if (!smart_lock_state_) {
@@ -585,7 +586,7 @@ EasyUnlockService::GetSmartUnlockPasswordAuthEvent() const {
       kUnknownState;
 }
 
-multidevice::RemoteDeviceRefList EasyUnlockService::GetUnlockKeys() {
+multidevice::RemoteDeviceRefList SmartLockService::GetUnlockKeys() {
   multidevice::RemoteDeviceRefList unlock_keys;
   for (const auto& remote_device : device_sync_client_->GetSyncedDevices()) {
     bool unlock_key = remote_device.GetSoftwareFeatureState(
@@ -598,7 +599,7 @@ multidevice::RemoteDeviceRefList EasyUnlockService::GetUnlockKeys() {
   return unlock_keys;
 }
 
-bool EasyUnlockService::IsSmartLockStateValidOnRemoteAuthFailure() const {
+bool SmartLockService::IsSmartLockStateValidOnRemoteAuthFailure() const {
   // Note that NO_PHONE is not valid in this case because the phone may close
   // the connection if the auth challenge sent to it is invalid. This case
   // should be handled as authentication failure.
@@ -611,7 +612,7 @@ bool EasyUnlockService::IsSmartLockStateValidOnRemoteAuthFailure() const {
 // TODO(jhawkins): This method with `has_unlock_keys` == true is the only signal
 // that SmartLock setup has completed successfully. Make this signal more
 // explicit.
-void EasyUnlockService::LoadRemoteDevices() {
+void SmartLockService::LoadRemoteDevices() {
   if (!device_sync_client_->is_ready()) {
     // OnEnrollmentFinished() or OnNewDevicesSynced() will call back on this
     // method once `device_sync_client_` is ready.
@@ -666,7 +667,7 @@ void EasyUnlockService::LoadRemoteDevices() {
   UseLoadedRemoteDevices(GetUnlockKeys());
 }
 
-void EasyUnlockService::NotifySmartLockAuthResult(bool success) {
+void SmartLockService::NotifySmartLockAuthResult(bool success) {
   if (!proximity_auth::ScreenlockBridge::Get()->IsLocked()) {
     return;
   }
@@ -676,19 +677,19 @@ void EasyUnlockService::NotifySmartLockAuthResult(bool success) {
       ->NotifySmartLockAuthResult(GetAccountId(), success);
 }
 
-void EasyUnlockService::OnSuspendDone() {
+void SmartLockService::OnSuspendDone() {
   if (proximity_auth_system_) {
     proximity_auth_system_->OnSuspendDone();
   }
 }
 
-void EasyUnlockService::OnUserEnteredPassword() {
+void SmartLockService::OnUserEnteredPassword() {
   if (proximity_auth_system_) {
     proximity_auth_system_->CancelConnectionAttempt();
   }
 }
 
-void EasyUnlockService::PrepareForSuspend() {
+void SmartLockService::PrepareForSuspend() {
   if (smart_lock_state_ && *smart_lock_state_ != SmartLockState::kInactive) {
     ShowInitialSmartLockState();
   }
@@ -698,7 +699,7 @@ void EasyUnlockService::PrepareForSuspend() {
   }
 }
 
-void EasyUnlockService::RecordAuthResult(
+void SmartLockService::RecordAuthResult(
     absl::optional<SmartLockMetricsRecorder::SmartLockAuthResultFailureReason>
         failure_reason) {
   if (failure_reason.has_value()) {
@@ -711,12 +712,12 @@ void EasyUnlockService::RecordAuthResult(
   }
 }
 
-void EasyUnlockService::ResetSmartLockState() {
+void SmartLockService::ResetSmartLockState() {
   smart_lock_state_.reset();
   auth_attempt_.reset();
 }
 
-void EasyUnlockService::SetProximityAuthDevices(
+void SmartLockService::SetProximityAuthDevices(
     const AccountId& account_id,
     const multidevice::RemoteDeviceRefList& remote_devices,
     absl::optional<multidevice::RemoteDeviceRef> local_device) {
@@ -740,7 +741,7 @@ void EasyUnlockService::SetProximityAuthDevices(
   proximity_auth_system_->Start();
 }
 
-void EasyUnlockService::ShowChromebookAddedNotification() {
+void SmartLockService::ShowChromebookAddedNotification() {
   // The user may have decided to disable Smart Lock or the whole multidevice
   // suite immediately after completing setup, so ensure that Smart Lock is
   // enabled.
@@ -749,7 +750,7 @@ void EasyUnlockService::ShowChromebookAddedNotification() {
   }
 }
 
-void EasyUnlockService::ShowInitialSmartLockState() {
+void SmartLockService::ShowInitialSmartLockState() {
   // Only proceed if the screen is locked to prevent the UI event from not
   // persisting within UpdateSmartLockState().
   //
@@ -766,7 +767,7 @@ void EasyUnlockService::ShowInitialSmartLockState() {
   }
 }
 
-void EasyUnlockService::ShowNotificationIfNewDevicePresent(
+void SmartLockService::ShowNotificationIfNewDevicePresent(
     const std::set<std::string>& public_keys_before_sync,
     const std::set<std::string>& public_keys_after_sync) {
   if (public_keys_before_sync == public_keys_after_sync) {
@@ -775,8 +776,8 @@ void EasyUnlockService::ShowNotificationIfNewDevicePresent(
 
   // Show the appropriate notification if an unlock key is first synced or if it
   // changes an existing key.
-  // Note: We do not show a notification when EasyUnlock is disabled by sync nor
-  // if EasyUnlock was enabled through the setup app.
+  // Note: We do not show a notification when Smart lock is disabled by sync nor
+  // if Smart Lock was enabled through the setup app.
   if (!public_keys_after_sync.empty()) {
     if (public_keys_before_sync.empty()) {
       multidevice_setup::MultiDeviceSetupDialog* multidevice_setup_dialog =
@@ -785,7 +786,7 @@ void EasyUnlockService::ShowNotificationIfNewDevicePresent(
         // Delay showing the "Chromebook added" notification until the
         // MultiDeviceSetupDialog is closed.
         multidevice_setup_dialog->AddOnCloseCallback(
-            base::BindOnce(&EasyUnlockService::ShowChromebookAddedNotification,
+            base::BindOnce(&SmartLockService::ShowChromebookAddedNotification,
                            weak_ptr_factory_.GetWeakPtr()));
         return;
       }
@@ -798,16 +799,16 @@ void EasyUnlockService::ShowNotificationIfNewDevicePresent(
   }
 }
 
-void EasyUnlockService::StartFeatureUsageMetrics() {
+void SmartLockService::StartFeatureUsageMetrics() {
   feature_usage_metrics_ =
       std::make_unique<SmartLockFeatureUsageMetrics>(multidevice_setup_client_);
 }
 
-void EasyUnlockService::StopFeatureUsageMetrics() {
+void SmartLockService::StopFeatureUsageMetrics() {
   feature_usage_metrics_.reset();
 }
 
-void EasyUnlockService::UpdateAppState() {
+void SmartLockService::UpdateAppState() {
   if (IsAllowed()) {
     if (proximity_auth_system_) {
       proximity_auth_system_->Start();
@@ -819,9 +820,9 @@ void EasyUnlockService::UpdateAppState() {
   }
 }
 
-void EasyUnlockService::UseLoadedRemoteDevices(
+void SmartLockService::UseLoadedRemoteDevices(
     const multidevice::RemoteDeviceRefList& remote_devices) {
-  // When EasyUnlock is enabled, only one EasyUnlock host should exist.
+  // When Smart Lock is enabled, only one Smart Lock host should exist.
   if (remote_devices.size() != 1u) {
     PA_LOG(ERROR) << "There should only be 1 Smart Lock host, but there are: "
                   << remote_devices.size();
@@ -834,7 +835,7 @@ void EasyUnlockService::UseLoadedRemoteDevices(
   absl::optional<multidevice::RemoteDeviceRef> local_device =
       device_sync_client_->GetLocalDeviceMetadata();
   if (!local_device) {
-    PA_LOG(ERROR) << "EasyUnlockService::" << __func__
+    PA_LOG(ERROR) << "SmartLockService::" << __func__
                   << ": Local device unexpectedly null.";
     SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
                             absl::nullopt);

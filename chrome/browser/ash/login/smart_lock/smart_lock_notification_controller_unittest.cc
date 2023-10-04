@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
+#include "chrome/browser/ash/login/smart_lock/smart_lock_notification_controller.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,10 +21,10 @@ namespace {
 const char kPhoneName[] = "Nexus 6";
 const char16_t kPhoneName16[] = u"Nexus 6";
 
-class TestableNotificationController : public EasyUnlockNotificationController {
+class TestableNotificationController : public SmartLockNotificationController {
  public:
   explicit TestableNotificationController(Profile* profile)
-      : EasyUnlockNotificationController(profile) {}
+      : SmartLockNotificationController(profile) {}
 
   TestableNotificationController(const TestableNotificationController&) =
       delete;
@@ -33,21 +33,21 @@ class TestableNotificationController : public EasyUnlockNotificationController {
 
   ~TestableNotificationController() override {}
 
-  // EasyUnlockNotificationController:
+  // SmartLockNotificationController:
   MOCK_METHOD0(LaunchMultiDeviceSettings, void());
   MOCK_METHOD0(LockScreen, void());
 };
 
-class EasyUnlockNotificationControllerTest : public BrowserWithTestWindowTest {
+class SmartLockNotificationControllerTest : public BrowserWithTestWindowTest {
  protected:
-  EasyUnlockNotificationControllerTest() {}
+  SmartLockNotificationControllerTest() {}
 
-  EasyUnlockNotificationControllerTest(
-      const EasyUnlockNotificationControllerTest&) = delete;
-  EasyUnlockNotificationControllerTest& operator=(
-      const EasyUnlockNotificationControllerTest&) = delete;
+  SmartLockNotificationControllerTest(
+      const SmartLockNotificationControllerTest&) = delete;
+  SmartLockNotificationControllerTest& operator=(
+      const SmartLockNotificationControllerTest&) = delete;
 
-  ~EasyUnlockNotificationControllerTest() override {}
+  ~SmartLockNotificationControllerTest() override {}
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -64,7 +64,7 @@ class EasyUnlockNotificationControllerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 };
 
-TEST_F(EasyUnlockNotificationControllerTest,
+TEST_F(SmartLockNotificationControllerTest,
        TestShowChromebookAddedNotification) {
   const char kNotificationId[] = "easyunlock_notification_ids.chromebook_added";
 
@@ -84,8 +84,7 @@ TEST_F(EasyUnlockNotificationControllerTest,
   notification->delegate()->Click(absl::nullopt, absl::nullopt);
 }
 
-TEST_F(EasyUnlockNotificationControllerTest,
-       TestShowPairingChangeNotification) {
+TEST_F(SmartLockNotificationControllerTest, TestShowPairingChangeNotification) {
   const char kNotificationId[] = "easyunlock_notification_ids.pairing_change";
 
   notification_controller_->ShowPairingChangeNotification();
@@ -107,7 +106,7 @@ TEST_F(EasyUnlockNotificationControllerTest,
   notification->delegate()->Click(1, absl::nullopt);
 }
 
-TEST_F(EasyUnlockNotificationControllerTest,
+TEST_F(SmartLockNotificationControllerTest,
        TestShowPairingChangeAppliedNotification) {
   const char kNotificationId[] =
       "easyunlock_notification_ids.pairing_change_applied";
@@ -131,7 +130,7 @@ TEST_F(EasyUnlockNotificationControllerTest,
   notification->delegate()->Click(absl::nullopt, absl::nullopt);
 }
 
-TEST_F(EasyUnlockNotificationControllerTest,
+TEST_F(SmartLockNotificationControllerTest,
        PairingAppliedRemovesPairingChange) {
   const char kPairingChangeId[] = "easyunlock_notification_ids.pairing_change";
   const char kPairingAppliedId[] =

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
+#include "chrome/browser/ash/login/smart_lock/smart_lock_notification_controller.h"
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -22,6 +22,8 @@ namespace ash {
 
 namespace {
 
+// These notification IDs refer to Smart Lock with the deprecated "Easy Unlock"
+// name.
 const char kEasyUnlockChromebookAddedNotifierId[] =
     "easyunlock_notification_ids.chromebook_added";
 
@@ -51,13 +53,13 @@ std::unique_ptr<message_center::Notification> CreateNotification(
 
 }  // namespace
 
-EasyUnlockNotificationController::EasyUnlockNotificationController(
+SmartLockNotificationController::SmartLockNotificationController(
     Profile* profile)
     : profile_(profile) {}
 
-EasyUnlockNotificationController::~EasyUnlockNotificationController() {}
+SmartLockNotificationController::~SmartLockNotificationController() {}
 
-void EasyUnlockNotificationController::ShowChromebookAddedNotification() {
+void SmartLockNotificationController::ShowChromebookAddedNotification() {
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons.push_back(
       message_center::ButtonInfo(l10n_util::GetStringUTF16(
@@ -79,7 +81,7 @@ void EasyUnlockNotificationController::ShowChromebookAddedNotification() {
                                weak_ptr_factory_.GetWeakPtr())));
 }
 
-void EasyUnlockNotificationController::ShowPairingChangeNotification() {
+void SmartLockNotificationController::ShowPairingChangeNotification() {
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons.push_back(
       message_center::ButtonInfo(l10n_util::GetStringUTF16(
@@ -104,7 +106,7 @@ void EasyUnlockNotificationController::ShowPairingChangeNotification() {
                                weak_ptr_factory_.GetWeakPtr())));
 }
 
-void EasyUnlockNotificationController::ShowPairingChangeAppliedNotification(
+void SmartLockNotificationController::ShowPairingChangeAppliedNotification(
     const std::string& phone_name) {
   // Remove the pairing change notification if it is still being shown.
   NotificationDisplayService::GetForProfile(profile_)->Close(
@@ -131,7 +133,7 @@ void EasyUnlockNotificationController::ShowPairingChangeAppliedNotification(
                                weak_ptr_factory_.GetWeakPtr())));
 }
 
-void EasyUnlockNotificationController::ShowNotification(
+void SmartLockNotificationController::ShowNotification(
     std::unique_ptr<message_center::Notification> notification) {
   notification->SetSystemPriority();
   NotificationDisplayService::GetForProfile(profile_)->Display(
@@ -139,34 +141,36 @@ void EasyUnlockNotificationController::ShowNotification(
       /*metadata=*/nullptr);
 }
 
-void EasyUnlockNotificationController::LaunchMultiDeviceSettings() {
+void SmartLockNotificationController::LaunchMultiDeviceSettings() {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile_, chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath);
 }
 
-void EasyUnlockNotificationController::LockScreen() {
+void SmartLockNotificationController::LockScreen() {
   proximity_auth::ScreenlockBridge::Get()->Lock();
 }
 
-EasyUnlockNotificationController::NotificationDelegate::NotificationDelegate(
+SmartLockNotificationController::NotificationDelegate::NotificationDelegate(
     const std::string& notification_id,
-    const base::WeakPtr<EasyUnlockNotificationController>&
+    const base::WeakPtr<SmartLockNotificationController>&
         notification_controller)
     : notification_id_(notification_id),
       notification_controller_(notification_controller) {}
 
-EasyUnlockNotificationController::NotificationDelegate::
-    ~NotificationDelegate() {}
+SmartLockNotificationController::NotificationDelegate::~NotificationDelegate() {
+}
 
-void EasyUnlockNotificationController::NotificationDelegate::Click(
+void SmartLockNotificationController::NotificationDelegate::Click(
     const absl::optional<int>& button_index,
     const absl::optional<std::u16string>& reply) {
-  if (!notification_controller_)
+  if (!notification_controller_) {
     return;
+  }
 
   if (notification_id_ == kEasyUnlockPairingChangeNotifierId) {
-    if (!button_index)
+    if (!button_index) {
       return;
+    }
 
     if (*button_index == 0) {
       notification_controller_->LockScreen();

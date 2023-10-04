@@ -61,7 +61,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_content_script_manager_factory.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_lifetime_manager_factory.h"
 #include "chrome/browser/ash/login/osauth/profile_prefs_auth_policy_connector_factory.h"
@@ -75,6 +74,7 @@
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/login/signin/token_handle_fetcher.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
 #include "chrome/browser/ash/multidevice_setup/auth_token_validator_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/ash/multidevice_setup/oobe_completion_tracker_factory.h"
@@ -173,7 +173,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   CupsProxyServiceManagerFactory::GetInstance();
 #endif
   EarlyPrefsExportServiceFactory::GetInstance();
-  EasyUnlockServiceFactory::GetInstance();
   eche_app::EcheAppManagerFactory::GetInstance();
   EventBasedStatusReportingServiceFactory::GetInstance();
   extensions::InputMethodAPI::GetFactoryInstance();
@@ -241,6 +240,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   sharesheet::SharesheetServiceFactory::GetInstance();
   shortcut_ui::ShortcutsAppManagerFactory::GetInstance();
   SigninErrorNotifierFactory::GetInstance();
+  SmartLockServiceFactory::GetInstance();
   smb_client::SmbServiceFactory::GetInstance();
   SyncAppsyncServiceFactory::GetInstance();
   SyncedPrintersManagerFactory::GetInstance();

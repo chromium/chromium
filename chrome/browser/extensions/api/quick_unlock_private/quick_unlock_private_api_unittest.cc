@@ -24,14 +24,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
+#include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -89,26 +89,26 @@ constexpr char kInvalidToken[] = "invalid";
 constexpr char kValidPassword[] = "valid";
 constexpr char kInvalidPassword[] = "invalid";
 
-class FakeEasyUnlockService : public ash::EasyUnlockService {
+class FakeSmartLockService : public ash::SmartLockService {
  public:
-  FakeEasyUnlockService(
+  FakeSmartLockService(
       Profile* profile,
       ash::device_sync::FakeDeviceSyncClient* fake_device_sync_client,
       ash::secure_channel::FakeSecureChannelClient* fake_secure_channel_client,
       ash::multidevice_setup::FakeMultiDeviceSetupClient*
           fake_multidevice_setup_client)
-      : ash::EasyUnlockService(profile,
-                               fake_secure_channel_client,
-                               fake_device_sync_client,
-                               fake_multidevice_setup_client) {}
+      : ash::SmartLockService(profile,
+                              fake_secure_channel_client,
+                              fake_device_sync_client,
+                              fake_multidevice_setup_client) {}
 
-  FakeEasyUnlockService(const FakeEasyUnlockService&) = delete;
-  FakeEasyUnlockService& operator=(const FakeEasyUnlockService&) = delete;
+  FakeSmartLockService(const FakeSmartLockService&) = delete;
+  FakeSmartLockService& operator=(const FakeSmartLockService&) = delete;
 
-  ~FakeEasyUnlockService() override {}
+  ~FakeSmartLockService() override {}
 };
 
-std::unique_ptr<KeyedService> CreateEasyUnlockServiceForTest(
+std::unique_ptr<KeyedService> CreateSmartLockServiceForTest(
     content::BrowserContext* context) {
   static base::NoDestructor<ash::device_sync::FakeDeviceSyncClient>
       fake_device_sync_client;
@@ -117,7 +117,7 @@ std::unique_ptr<KeyedService> CreateEasyUnlockServiceForTest(
   static base::NoDestructor<ash::multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client;
 
-  return std::make_unique<FakeEasyUnlockService>(
+  return std::make_unique<FakeSmartLockService>(
       Profile::FromBrowserContext(context), fake_device_sync_client.get(),
       fake_secure_channel_client.get(), fake_multidevice_setup_client.get());
 }
@@ -297,8 +297,8 @@ class QuickUnlockPrivateUnitTest
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{ash::EasyUnlockServiceFactory::GetInstance(),
-             base::BindRepeating(&CreateEasyUnlockServiceForTest)}};
+    return {{ash::SmartLockServiceFactory::GetInstance(),
+             base::BindRepeating(&CreateSmartLockServiceForTest)}};
   }
 
   // If a mode change event is raised, fail the test.

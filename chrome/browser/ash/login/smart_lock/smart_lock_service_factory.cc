@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
+#include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
 
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
+#include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
@@ -34,20 +34,22 @@ bool IsFeatureAllowed(content::BrowserContext* context) {
 }  // namespace
 
 // static
-EasyUnlockServiceFactory* EasyUnlockServiceFactory::GetInstance() {
-  static base::NoDestructor<EasyUnlockServiceFactory> instance;
+SmartLockServiceFactory* SmartLockServiceFactory::GetInstance() {
+  static base::NoDestructor<SmartLockServiceFactory> instance;
   return instance.get();
 }
 
 // static
-EasyUnlockService* EasyUnlockServiceFactory::GetForBrowserContext(
+SmartLockService* SmartLockServiceFactory::GetForBrowserContext(
     content::BrowserContext* browser_context) {
-  return static_cast<EasyUnlockService*>(
-      EasyUnlockServiceFactory::GetInstance()->GetServiceForBrowserContext(
+  return static_cast<SmartLockService*>(
+      SmartLockServiceFactory::GetInstance()->GetServiceForBrowserContext(
           browser_context, true));
 }
 
-EasyUnlockServiceFactory::EasyUnlockServiceFactory()
+// The keyed service uses the deprecated "EasyUnlockService" name to refer to
+// Smart Lock.
+SmartLockServiceFactory::SmartLockServiceFactory()
     : ProfileKeyedServiceFactory(
           "EasyUnlockService",
           ProfileSelections::Builder()
@@ -62,15 +64,17 @@ EasyUnlockServiceFactory::EasyUnlockServiceFactory()
   DependsOn(multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());
 }
 
-EasyUnlockServiceFactory::~EasyUnlockServiceFactory() = default;
+SmartLockServiceFactory::~SmartLockServiceFactory() = default;
 
-KeyedService* EasyUnlockServiceFactory::BuildServiceInstanceFor(
+KeyedService* SmartLockServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!context)
+  if (!context) {
     return nullptr;
+  }
 
-  if (!IsFeatureAllowed(context))
+  if (!IsFeatureAllowed(context)) {
     return nullptr;
+  }
 
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -79,7 +83,7 @@ KeyedService* EasyUnlockServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  EasyUnlockService* service = new EasyUnlockService(
+  SmartLockService* service = new SmartLockService(
       Profile::FromBrowserContext(context),
       secure_channel::SecureChannelClientProvider::GetInstance()->GetClient(),
       device_sync::DeviceSyncClientFactory::GetForProfile(profile),
@@ -89,20 +93,20 @@ KeyedService* EasyUnlockServiceFactory::BuildServiceInstanceFor(
   return service;
 }
 
-void EasyUnlockServiceFactory::RegisterProfilePrefs(
+void SmartLockServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  EasyUnlockService::RegisterProfilePrefs(registry);
+  SmartLockService::RegisterProfilePrefs(registry);
 #endif
 }
 
-bool EasyUnlockServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+bool SmartLockServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
-bool EasyUnlockServiceFactory::ServiceIsNULLWhileTesting() const {
+bool SmartLockServiceFactory::ServiceIsNULLWhileTesting() const {
   // Don't create the service for TestingProfile used in unit_tests because
-  // EasyUnlockService uses ExtensionSystem::ready().Post, which expects
+  // SmartLockService uses ExtensionSystem::ready().Post, which expects
   // a MessageLoop that does not exit in many unit_tests cases.
   return true;
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_SMARTLOCK_FEATURE_USAGE_METRICS_H_
-#define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_SMARTLOCK_FEATURE_USAGE_METRICS_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SMART_LOCK_SMART_LOCK_FEATURE_USAGE_METRICS_H_
+#define CHROME_BROWSER_ASH_LOGIN_SMART_LOCK_SMART_LOCK_FEATURE_USAGE_METRICS_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
@@ -42,4 +42,4 @@ class SmartLockFeatureUsageMetrics
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_SMARTLOCK_FEATURE_USAGE_METRICS_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SMART_LOCK_SMART_LOCK_FEATURE_USAGE_METRICS_H_

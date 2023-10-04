@@ -31227,9 +31227,9 @@ Called by update_document_policy_enum.py.-->
 <enum name="EasyUnlockAuthEvent">
   <int value="0" label="Smart Lock success"/>
   <int value="1" label="Smart Lock failure"/>
-  <int value="2" label="Password entry: No pairing"/>
-  <int value="3" label="Password entry: Pairing changed"/>
-  <int value="4" label="Password entry: User hardlock"/>
+  <int value="2" label="(Deprecated) Password entry: No pairing"/>
+  <int value="3" label="(Deprecated) Password entry: Pairing changed"/>
+  <int value="4" label="(Deprecated) Password entry: User hardlock"/>
   <int value="5" label="Password entry: Service not active"/>
   <int value="6" label="Password entry: No Bluetooth"/>
   <int value="7" label="Password entry: Bluetooth connecting"/>
@@ -31240,13 +31240,14 @@ Called by update_document_policy_enum.py.-->
   <int value="12" label="Password entry: RSSI too low"/>
   <int value="13" label="(Deprecated) Password entry: Phone not supported"/>
   <int value="14" label="Password entry: Phone authenticated"/>
-  <int value="15" label="Password entry: Tx power too high"/>
-  <int value="16" label="Password entry: Easy sign-in failed"/>
-  <int value="17" label="Password entry: Pairing added"/>
-  <int value="18" label="Password entry: No screenlock state handler"/>
+  <int value="15" label="(Deprecated) Password entry: Tx power too high"/>
+  <int value="16" label="(Deprecated) Password entry: Easy sign-in failed"/>
+  <int value="17" label="(Deprecated) Password entry: Pairing added"/>
+  <int value="18" label="Password entry: No Smart Lock state handler"/>
   <int value="19" label="Password entry: Phone locked and tx power too high"/>
-  <int value="20" label="Password entry: Forced re-auth"/>
-  <int value="21" label="Password entry: Sign-in with Smart Lock disabled"/>
+  <int value="20" label="(Deprecated) Password entry: Forced re-auth"/>
+  <int value="21"
+      label="(Deprecated) Password entry: Sign-in with Smart Lock disabled"/>
   <int value="22" label="Password entry: Primary user absent"/>
 </enum>
 

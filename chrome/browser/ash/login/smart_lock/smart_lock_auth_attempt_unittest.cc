@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_auth_attempt.h"
+#include "chrome/browser/ash/login/smart_lock/smart_lock_auth_attempt.h"
 
 #include <stddef.h>
 
@@ -101,19 +101,19 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   std::string expected_secret_;
 };
 
-class EasyUnlockAuthAttemptUnlockTest : public testing::Test {
+class SmartLockAuthAttemptUnlockTest : public testing::Test {
  public:
-  EasyUnlockAuthAttemptUnlockTest() {}
+  SmartLockAuthAttemptUnlockTest() {}
 
-  EasyUnlockAuthAttemptUnlockTest(const EasyUnlockAuthAttemptUnlockTest&) =
+  SmartLockAuthAttemptUnlockTest(const SmartLockAuthAttemptUnlockTest&) =
       delete;
-  EasyUnlockAuthAttemptUnlockTest& operator=(
-      const EasyUnlockAuthAttemptUnlockTest&) = delete;
+  SmartLockAuthAttemptUnlockTest& operator=(
+      const SmartLockAuthAttemptUnlockTest&) = delete;
 
-  ~EasyUnlockAuthAttemptUnlockTest() override {}
+  ~SmartLockAuthAttemptUnlockTest() override {}
 
   void SetUp() override {
-    auth_attempt_ = std::make_unique<EasyUnlockAuthAttempt>(test_account_id1_);
+    auth_attempt_ = std::make_unique<SmartLockAuthAttempt>(test_account_id1_);
   }
 
   void TearDown() override {
@@ -129,20 +129,20 @@ class EasyUnlockAuthAttemptUnlockTest : public testing::Test {
         lock_handler_.get());
   }
 
-  std::unique_ptr<EasyUnlockAuthAttempt> auth_attempt_;
+  std::unique_ptr<SmartLockAuthAttempt> auth_attempt_;
   std::unique_ptr<TestLockHandler> lock_handler_;
 
   const AccountId test_account_id1_ = AccountId::FromUserEmail(kTestUser1);
   const AccountId test_account_id2_ = AccountId::FromUserEmail(kTestUser2);
 };
 
-TEST_F(EasyUnlockAuthAttemptUnlockTest, StartWhenNotLocked) {
+TEST_F(SmartLockAuthAttemptUnlockTest, StartWhenNotLocked) {
   ASSERT_FALSE(proximity_auth::ScreenlockBridge::Get()->IsLocked());
 
   EXPECT_FALSE(auth_attempt_->Start());
 }
 
-TEST_F(EasyUnlockAuthAttemptUnlockTest, StartWhenAuthTypeIsPassword) {
+TEST_F(SmartLockAuthAttemptUnlockTest, StartWhenAuthTypeIsPassword) {
   InitScreenLock();
   ASSERT_TRUE(proximity_auth::ScreenlockBridge::Get()->IsLocked());
   ASSERT_EQ(TestLockHandler::STATE_ATTEMPTING_UNLOCK, lock_handler_->state());
@@ -155,7 +155,7 @@ TEST_F(EasyUnlockAuthAttemptUnlockTest, StartWhenAuthTypeIsPassword) {
   EXPECT_EQ(TestLockHandler::STATE_UNLOCK_CANCELED, lock_handler_->state());
 }
 
-TEST_F(EasyUnlockAuthAttemptUnlockTest, ResetBeforeFinalizeUnlock) {
+TEST_F(SmartLockAuthAttemptUnlockTest, ResetBeforeFinalizeUnlock) {
   InitScreenLock();
   ASSERT_TRUE(proximity_auth::ScreenlockBridge::Get()->IsLocked());
   ASSERT_EQ(TestLockHandler::STATE_ATTEMPTING_UNLOCK, lock_handler_->state());
@@ -169,7 +169,7 @@ TEST_F(EasyUnlockAuthAttemptUnlockTest, ResetBeforeFinalizeUnlock) {
   EXPECT_EQ(TestLockHandler::STATE_UNLOCK_CANCELED, lock_handler_->state());
 }
 
-TEST_F(EasyUnlockAuthAttemptUnlockTest, FinalizeUnlockFailure) {
+TEST_F(SmartLockAuthAttemptUnlockTest, FinalizeUnlockFailure) {
   InitScreenLock();
   ASSERT_TRUE(proximity_auth::ScreenlockBridge::Get()->IsLocked());
   ASSERT_EQ(TestLockHandler::STATE_ATTEMPTING_UNLOCK, lock_handler_->state());
@@ -183,7 +183,7 @@ TEST_F(EasyUnlockAuthAttemptUnlockTest, FinalizeUnlockFailure) {
   EXPECT_EQ(TestLockHandler::STATE_UNLOCK_CANCELED, lock_handler_->state());
 }
 
-TEST_F(EasyUnlockAuthAttemptUnlockTest, UnlockSucceeds) {
+TEST_F(SmartLockAuthAttemptUnlockTest, UnlockSucceeds) {
   InitScreenLock();
   ASSERT_TRUE(proximity_auth::ScreenlockBridge::Get()->IsLocked());
   ASSERT_EQ(TestLockHandler::STATE_ATTEMPTING_UNLOCK, lock_handler_->state());
@@ -197,7 +197,7 @@ TEST_F(EasyUnlockAuthAttemptUnlockTest, UnlockSucceeds) {
   ASSERT_EQ(TestLockHandler::STATE_UNLOCK_DONE, lock_handler_->state());
 }
 
-TEST_F(EasyUnlockAuthAttemptUnlockTest, FinalizeUnlockCalledForWrongUser) {
+TEST_F(SmartLockAuthAttemptUnlockTest, FinalizeUnlockCalledForWrongUser) {
   InitScreenLock();
   ASSERT_TRUE(proximity_auth::ScreenlockBridge::Get()->IsLocked());
   ASSERT_EQ(TestLockHandler::STATE_ATTEMPTING_UNLOCK, lock_handler_->state());

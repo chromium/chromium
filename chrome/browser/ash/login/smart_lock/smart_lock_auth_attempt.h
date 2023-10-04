@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_AUTH_ATTEMPT_H_
-#define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_AUTH_ATTEMPT_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SMART_LOCK_SMART_LOCK_AUTH_ATTEMPT_H_
+#define CHROME_BROWSER_ASH_LOGIN_SMART_LOCK_SMART_LOCK_AUTH_ATTEMPT_H_
 
 #include "base/functional/callback.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
 
-// Class responsible for handling easy unlock auth attempts. The auth protocol
+// Class responsible for handling Smart Lock auth attempts. The auth protocol
 // is started by calling `Start`, which creates a connection to
 // ScreenLockBridge. When the auth result is available, `FinalizeUnlock` should
 // be called. To cancel the in progress auth attempt, delete the
-// `EasyUnlockAuthAttempt` object.
-class EasyUnlockAuthAttempt {
+// `SmartLockAuthAttempt` object.
+class SmartLockAuthAttempt {
  public:
-  explicit EasyUnlockAuthAttempt(const AccountId& account_id);
+  explicit SmartLockAuthAttempt(const AccountId& account_id);
 
-  EasyUnlockAuthAttempt(const EasyUnlockAuthAttempt&) = delete;
-  EasyUnlockAuthAttempt& operator=(const EasyUnlockAuthAttempt&) = delete;
+  SmartLockAuthAttempt(const SmartLockAuthAttempt&) = delete;
+  SmartLockAuthAttempt& operator=(const SmartLockAuthAttempt&) = delete;
 
-  ~EasyUnlockAuthAttempt();
+  ~SmartLockAuthAttempt();
 
   // Ensures the device is currently locked and the unlock process is being
   // initiated by AuthType::USER_CLICK.
@@ -46,4 +46,4 @@ class EasyUnlockAuthAttempt {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_AUTH_ATTEMPT_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SMART_LOCK_SMART_LOCK_AUTH_ATTEMPT_H_

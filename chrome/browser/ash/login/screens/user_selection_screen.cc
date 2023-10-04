@@ -27,7 +27,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/lock_screen_utils.h"
@@ -36,6 +35,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
+#include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/views/user_board_view.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
@@ -807,7 +807,7 @@ void UserSelectionScreen::OnOnlineSigninEnforced(const AccountId& account_id) {
 }
 
 void UserSelectionScreen::AttemptEasyUnlock(const AccountId& account_id) {
-  EasyUnlockService* service = GetEasyUnlockServiceForUser(account_id);
+  SmartLockService* service = GetSmartLockServiceForUser(account_id);
   if (!service) {
     return;
   }
@@ -856,10 +856,10 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     user_info.fingerprint_state = quick_unlock::GetFingerprintStateForUser(
         user, quick_unlock::Purpose::kUnlock);
 
-    auto* easy_unlock_service = GetEasyUnlockServiceForUser(account_id);
-    if (easy_unlock_service) {
+    auto* smart_lock_service = GetSmartLockServiceForUser(account_id);
+    if (smart_lock_service) {
       user_info.smart_lock_state =
-          easy_unlock_service->GetInitialSmartLockState();
+          smart_lock_service->GetInitialSmartLockState();
     }
 
     user_info.show_pin_pad_for_password = false;
@@ -968,7 +968,7 @@ void UserSelectionScreen::SetUsersLoaded(bool loaded) {
   users_loaded_ = loaded;
 }
 
-EasyUnlockService* UserSelectionScreen::GetEasyUnlockServiceForUser(
+SmartLockService* UserSelectionScreen::GetSmartLockServiceForUser(
     const AccountId& account_id) const {
   if (GetScreenType() == OTHER_SCREEN) {
     return nullptr;
@@ -1000,7 +1000,7 @@ EasyUnlockService* UserSelectionScreen::GetEasyUnlockServiceForUser(
     profile = profile_helper->GetSigninProfile();
   }
 
-  return EasyUnlockService::Get(profile);
+  return SmartLockService::Get(profile);
 }
 
 }  // namespace ash
