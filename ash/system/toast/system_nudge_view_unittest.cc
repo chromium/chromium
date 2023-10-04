@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/system/toast/nudge_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
@@ -16,11 +17,6 @@
 namespace ash {
 
 namespace {
-
-constexpr int kLabelMaxWidth_TextOnlyNudge = 300;
-constexpr int kLabelMaxWidth_NudgeWithoutLeadingImage = 292;
-constexpr int kLabelMaxWidth_NudgeWithLeadingImage = 276;
-constexpr int kImageViewSize = 64;
 
 // Creates an `AnchoredNudgeData` object with only the required elements.
 AnchoredNudgeData CreateBaseNudgeData(views::View* contents_view) {
@@ -65,7 +61,7 @@ TEST_F(SystemNudgeViewTest, TextOnly) {
   EXPECT_FALSE(system_nudge_view->second_button());
 
   // Test that text labels max width is set correctly.
-  EXPECT_EQ(kLabelMaxWidth_TextOnlyNudge,
+  EXPECT_EQ(kNudgeLabelWidth_TextOnlyNudge,
             system_nudge_view->body_label()->GetMaximumWidth());
 }
 
@@ -90,8 +86,8 @@ TEST_F(SystemNudgeViewTest, WithButtons) {
   EXPECT_TRUE(system_nudge_view->second_button());
 
   // Test that text labels max width is set correctly.
-  EXPECT_EQ(kLabelMaxWidth_NudgeWithoutLeadingImage,
-            system_nudge_view->body_label()->GetMaximumWidth());
+  EXPECT_EQ(kNudgeLabelWidth_NudgeWithoutLeadingImage,
+            system_nudge_view->body_label()->GetFixedWidth());
 }
 
 TEST_F(SystemNudgeViewTest, TitleAndLeadingImage) {
@@ -103,7 +99,7 @@ TEST_F(SystemNudgeViewTest, TitleAndLeadingImage) {
   auto nudge_data = CreateBaseNudgeData(contents_view);
   nudge_data.title_text = u"Title";
   nudge_data.image_model = ui::ImageModel::FromVectorIcon(
-      vector_icons::kDogfoodIcon, kColorAshIconColorPrimary, kImageViewSize);
+      vector_icons::kDogfoodIcon, kColorAshIconColorPrimary, /*icon_size=*/60);
 
   auto* system_nudge_view = contents_view->AddChildView(
       std::make_unique<SystemNudgeView>(nudge_data));
@@ -116,8 +112,8 @@ TEST_F(SystemNudgeViewTest, TitleAndLeadingImage) {
   EXPECT_FALSE(system_nudge_view->second_button());
 
   // Test that text labels max width is set correctly.
-  EXPECT_EQ(kLabelMaxWidth_NudgeWithLeadingImage,
-            system_nudge_view->body_label()->GetMaximumWidth());
+  EXPECT_EQ(kNudgeLabelWidth_NudgeWithLeadingImage,
+            system_nudge_view->body_label()->GetFixedWidth());
 }
 
 }  // namespace ash

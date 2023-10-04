@@ -284,10 +284,11 @@ void HandleShowToast() {
 // 4. Image, title, body text and buttons
 void HandleShowSystemNudge() {
   static int index = 0;
-  bool has_buttons = index > 0;
-  bool has_title = index > 1;
-  bool has_image = index > 2;
-  ++index %= 4;
+  bool use_long_text = index > 0;
+  bool has_buttons = index > 1;
+  bool has_title = index > 2;
+  bool has_image = index > 3;
+  ++index %= 5;
 
   const std::u16string title_text = u"Title text";
   const std::u16string short_body_text = u"Nudge body text";
@@ -295,8 +296,9 @@ void HandleShowSystemNudge() {
       u"Nudge body text should be clear, short and succint (80 characters "
       u"recommended)";
 
-  AnchoredNudgeData nudge_data(/*id=*/"id", NudgeCatalogName::kTestCatalogName,
-                               has_title ? long_body_text : short_body_text);
+  AnchoredNudgeData nudge_data(
+      /*id=*/"id", NudgeCatalogName::kTestCatalogName,
+      use_long_text ? long_body_text : short_body_text);
 
   if (has_title) {
     nudge_data.title_text = title_text;
@@ -305,7 +307,7 @@ void HandleShowSystemNudge() {
   if (has_image) {
     nudge_data.image_model = ui::ImageModel::FromVectorIcon(
         vector_icons::kDogfoodIcon, kColorAshIconColorPrimary,
-        /*icon_size=*/64);
+        /*icon_size=*/60);
   }
 
   if (has_buttons) {

@@ -43,7 +43,7 @@ base::TimeDelta GetNudgeDuration(NudgeDuration duration) {
       return AnchoredNudgeManagerImpl::kNudgeDefaultDuration;
     case NudgeDuration::kMediumDuration:
       return AnchoredNudgeManagerImpl::kNudgeMediumDuration;
-    case ash::NudgeDuration::kLongDuration:
+    case NudgeDuration::kLongDuration:
       return AnchoredNudgeManagerImpl::kNudgeLongDuration;
   }
 }

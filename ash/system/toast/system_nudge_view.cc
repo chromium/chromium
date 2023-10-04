@@ -14,6 +14,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
+#include "ash/system/toast/nudge_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -31,18 +32,16 @@ namespace ash {
 
 namespace {
 
-// Default style nudge constants
-constexpr gfx::Insets kNudgeInteriorMargin = gfx::Insets::VH(20, 24);
+// Nudge constants
+constexpr gfx::Insets kNudgeInteriorMargin = gfx::Insets::VH(20, 20);
 constexpr gfx::Insets kTextOnlyNudgeInteriorMargin = gfx::Insets::VH(12, 20);
 constexpr float kNudgeCornerRadius = 24.0f;
 
 // Label constants
-constexpr int kLabelMaxWidth_TextOnlyNudge = 300;
-constexpr int kLabelMaxWidth_NudgeWithoutLeadingImage = 292;
-constexpr int kLabelMaxWidth_NudgeWithLeadingImage = 276;
+constexpr int kBodyLabelMaxLines = 3;
 
 // Image constants
-constexpr int kImageViewSize = 64;
+constexpr int kImageViewSize = 60;
 constexpr int kImageViewCornerRadius = 12;
 
 // Button constants
@@ -50,8 +49,8 @@ constexpr gfx::Insets kButtonsMargins = gfx::Insets::VH(0, 8);
 
 // Padding constants
 constexpr int kButtonContainerTopPadding = 16;
-constexpr int kImageViewTrailingPadding = 20;
-constexpr int kTitleBottomPadding = 8;
+constexpr int kImageViewTrailingPadding = 16;
+constexpr int kTitleBottomPadding = 4;
 
 // Shadow constants
 constexpr gfx::Point kShadowOrigin = gfx::Point(8, 8);
@@ -78,9 +77,7 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kNudgeCornerRadius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1));
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
   // Since nudges have a large corner radius, we use the shadow on texture
   // layer. Refer to `ash::SystemShadowOnTextureLayer` for more details.
@@ -115,6 +112,10 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
           .SetOrientation(views::LayoutOrientation::kVertical)
           .Build());
 
+  auto label_width = nudge_data.image_model.IsEmpty()
+                         ? kNudgeLabelWidth_NudgeWithoutLeadingImage
+                         : kNudgeLabelWidth_NudgeWithLeadingImage;
+
   if (!nudge_data.title_text.empty()) {
     title_label_ = text_container->AddChildView(
         views::Builder<views::Label>()
@@ -125,7 +126,8 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
             .SetAutoColorReadabilityEnabled(false)
             .SetSubpixelRenderingEnabled(false)
             .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-                TypographyToken::kCrosTitle1))
+                TypographyToken::kCrosButton1))
+            .SetMaximumWidthSingleLine(label_width)
             .Build());
 
     AddPaddingView(text_container, title_label_->width(), kTitleBottomPadding);
@@ -140,23 +142,22 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
           .SetAutoColorReadabilityEnabled(false)
           .SetSubpixelRenderingEnabled(false)
           .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-              TypographyToken::kCrosBody2))
+              TypographyToken::kCrosAnnotation1))
           .SetMultiLine(true)
-          .SetMaxLines(2)
+          .SetMaxLines(kBodyLabelMaxLines)
+          .SizeToFit(label_width)
           .Build());
-
-  SetLabelsMaxWidth(nudge_data.image_model.IsEmpty()
-                        ? kLabelMaxWidth_NudgeWithoutLeadingImage
-                        : kLabelMaxWidth_NudgeWithLeadingImage);
 
   // Return early if there are no buttons.
   if (nudge_data.first_button_text.empty()) {
     CHECK(nudge_data.second_button_text.empty());
 
-    // Update nudge margins and labels max width if nudge only has text.
+    // Update nudge margins and body label max width if nudge only has text.
     if (nudge_data.title_text.empty() && nudge_data.image_model.IsEmpty()) {
       SetInteriorMargin(kTextOnlyNudgeInteriorMargin);
-      SetLabelsMaxWidth(kLabelMaxWidth_TextOnlyNudge);
+      // `SizeToFit` is reset to zero so a maximum width can be set.
+      body_label_->SizeToFit(0);
+      body_label_->SetMaximumWidth(kNudgeLabelWidth_TextOnlyNudge);
     }
     return;
   }
@@ -213,13 +214,6 @@ void SystemNudgeView::AddedToWidget() {
 
   widget_layer->Add(shadow_layer);
   widget_layer->StackAtBottom(shadow_layer);
-}
-
-void SystemNudgeView::SetLabelsMaxWidth(int max_width) {
-  if (title_label_) {
-    title_label_->SetMaximumWidthSingleLine(max_width);
-  }
-  body_label_->SetMaximumWidth(max_width);
 }
 
 BEGIN_METADATA(SystemNudgeView, views::View)

@@ -55,9 +55,6 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
 
   // views::View:
   void AddedToWidget() override;
-
-  // Sets the maximum width for `title_label_` and `body_label_`.
-  void SetLabelsMaxWidth(int max_width);
 };
 
 }  // namespace ash
