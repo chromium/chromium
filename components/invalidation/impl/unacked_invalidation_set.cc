@@ -30,7 +30,6 @@ void UnackedInvalidationSet::Add(
   SingleTopicInvalidationSet set;
   set.Insert(invalidation);
   AddSet(set);
-  Truncate(kMaxBufferedInvalidations);
 }
 
 void UnackedInvalidationSet::AddSet(
@@ -67,23 +66,9 @@ void UnackedInvalidationSet::Acknowledge(const AckHandle& handle) {
 void UnackedInvalidationSet::Truncate(size_t max_size) {
   DCHECK_GT(max_size, 0U);
 
-  if (invalidations_.size() <= max_size) {
-    return;
-  }
-
   while (invalidations_.size() > max_size) {
     invalidations_.erase(*invalidations_.begin());
   }
-
-  // We dropped some invalidations.  We remember the fact that an unknown
-  // amount of information has been lost by ensuring this list begins with
-  // an UnknownVersion invalidation.  We remove the oldest remaining
-  // invalidation to make room for it.
-  Topic topic = invalidations_.begin()->topic();
-  invalidations_.erase(*invalidations_.begin());
-
-  Invalidation unknown_version = Invalidation::InitUnknownVersion(topic);
-  invalidations_.insert(unknown_version);
 }
 
 }  // namespace invalidation

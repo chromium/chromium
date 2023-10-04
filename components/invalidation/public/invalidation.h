@@ -28,6 +28,7 @@ class INVALIDATION_EXPORT Invalidation {
   static Invalidation Init(const Topic& topic,
                            int64_t version,
                            const std::string& payload);
+  // Deprecated: Only used in tests. Should not be used in new code.
   static Invalidation InitUnknownVersion(const Topic& topic);
 
   Invalidation(const Invalidation& other);

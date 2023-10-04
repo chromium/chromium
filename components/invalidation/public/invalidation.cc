@@ -4,6 +4,7 @@
 
 #include "components/invalidation/public/invalidation.h"
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
@@ -35,6 +36,7 @@ Invalidation Invalidation::Init(const Topic& topic,
 
 // static
 Invalidation Invalidation::InitUnknownVersion(const Topic& topic) {
+  CHECK_IS_TEST();
   return Invalidation(topic, /*is_unknown_version=*/true, kInvalidVersion,
                       std::string(), AckHandle::CreateUnique());
 }
