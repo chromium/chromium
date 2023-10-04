@@ -25,11 +25,25 @@
 namespace ash {
 
 namespace {
+
 constexpr char kTestSupportPath[] =
     "chrome/browser/resources/chromeos/accessibility/common/"
     "automation_test_support.js";
 
+gfx::Rect StringToRect(const std::string& script_result) {
+  std::vector<std::string> tokens = base::SplitString(
+      script_result, ",;", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  CHECK_EQ(tokens.size(), 4u);
+  int x, y, width, height;
+  base::StringToInt(tokens[0], &x);
+  base::StringToInt(tokens[1], &y);
+  base::StringToInt(tokens[2], &width);
+  base::StringToInt(tokens[3], &height);
+  return gfx::Rect(x, y, width, height);
 }
+
+}  // namespace
+
 AutomationTestUtils::AutomationTestUtils(const std::string& extension_id)
     : extension_id_(extension_id) {}
 
@@ -55,23 +69,23 @@ void AutomationTestUtils::WaitForPageLoad(const std::string& url) {
 gfx::Rect AutomationTestUtils::GetNodeBoundsInRoot(const std::string& name,
                                                    const std::string& role) {
   std::string script_result = ExecuteScriptInExtensionPage(base::StringPrintf(
-      R"JS(globalThis.automationTestSupport.getBoundsForNode(`%s`, "%s"))JS",
+      R"JS(globalThis.automationTestSupport.getBoundsForNode(`%s`, `%s`))JS",
       name.c_str(), role.c_str()));
-  std::vector<std::string> tokens = base::SplitString(
-      script_result, ",;", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  CHECK_EQ(tokens.size(), 4u);
-  int x, y, width, height;
-  base::StringToInt(tokens[0], &x);
-  base::StringToInt(tokens[1], &y);
-  base::StringToInt(tokens[2], &width);
-  base::StringToInt(tokens[3], &height);
-  return gfx::Rect(x, y, width, height);
+  return StringToRect(script_result);
+}
+
+gfx::Rect AutomationTestUtils::GetBoundsForNodeInRootByClassName(
+    const std::string& class_name) {
+  std::string script_result = ExecuteScriptInExtensionPage(base::StringPrintf(
+      R"JS(globalThis.automationTestSupport.getBoundsForNodeByClassName(`%s`))JS",
+      class_name.c_str()));
+  return StringToRect(script_result);
 }
 
 void AutomationTestUtils::SetFocusOnNode(const std::string& name,
                                          const std::string& role) {
   ExecuteScriptInExtensionPage(base::StringPrintf(
-      R"JS(globalThis.automationTestSupport.setFocusOnNode(`%s`, "%s"))JS",
+      R"JS(globalThis.automationTestSupport.setFocusOnNode(`%s`, `%s`))JS",
       name.c_str(), role.c_str()));
 }
 

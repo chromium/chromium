@@ -117,7 +117,8 @@ class SelectToSpeakTest : public InProcessBrowserTest {
     std::ignore = waiter.WaitForNotification();
 
     if (!AccessibilityManager::Get()->IsSelectToSpeakEnabled()) {
-      sts_test_utils::TurnOnSelectToSpeakForTest(browser());
+      sts_test_utils::TurnOnSelectToSpeakForTest(
+          AccessibilityManager::Get()->profile());
     }
   }
 
@@ -231,7 +232,8 @@ class SelectToSpeakTestWithVoiceSwitching : public SelectToSpeakTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SpeakStatusTray) {
-  sts_test_utils::TurnOnSelectToSpeakForTest(browser());
+  sts_test_utils::TurnOnSelectToSpeakForTest(
+      AccessibilityManager::Get()->profile());
   gfx::Rect tray_bounds = Shell::Get()
                               ->GetPrimaryRootWindowController()
                               ->GetStatusAreaWidget()
@@ -326,7 +328,8 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
       GURL("data:text/html;charset=utf-8,<p>This is some text</p>")));
   std::ignore = waiter.WaitForNotification();
 
-  sts_test_utils::TurnOnSelectToSpeakForTest(browser());
+  sts_test_utils::TurnOnSelectToSpeakForTest(
+      AccessibilityManager::Get()->profile());
   base::RepeatingCallback<void()> callback = base::BindRepeating(
       &SelectToSpeakTest::SetSelectToSpeakState, GetWeakPtr());
   AccessibilityManager::Get()->SetSelectToSpeakStateObserverForTest(callback);
@@ -348,7 +351,8 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SelectToSpeakTrayNotSpoken) {
-  sts_test_utils::TurnOnSelectToSpeakForTest(browser());
+  sts_test_utils::TurnOnSelectToSpeakForTest(
+      AccessibilityManager::Get()->profile());
   base::RepeatingCallback<void()> callback = base::BindRepeating(
       &SelectToSpeakTest::SetSelectToSpeakState, GetWeakPtr());
   AccessibilityManager::Get()->SetSelectToSpeakStateObserverForTest(callback);
@@ -667,7 +671,8 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, WorksWithStickyKeys) {
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
                        SelectToSpeakDoesNotDismissTrayBubble) {
-  sts_test_utils::TurnOnSelectToSpeakForTest(browser());
+  sts_test_utils::TurnOnSelectToSpeakForTest(
+      AccessibilityManager::Get()->profile());
 
   // Open tray bubble menu.
   tray_test_api_->ShowBubble();

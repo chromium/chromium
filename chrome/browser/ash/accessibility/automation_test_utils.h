@@ -34,6 +34,11 @@ class AutomationTestUtils {
   gfx::Rect GetNodeBoundsInRoot(const std::string& name,
                                 const std::string& role);
 
+  // Gets the bounds of the automation node with the given
+  // `class_name` in density-independent pixels. Will wait
+  // for the node to exist if it does not exist already.
+  gfx::Rect GetBoundsForNodeInRootByClassName(const std::string& class_name);
+
   // Sets focus on the automation node with the given `name` and `role`.
   // Will wait for the node to exist if it does not exist already.
   void SetFocusOnNode(const std::string& name, const std::string& role);

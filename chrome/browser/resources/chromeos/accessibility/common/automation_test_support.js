@@ -40,13 +40,17 @@ class AutomationTestSupport {
    */
   async getBoundsForNode(name, role) {
     const findParams = {role, attributes: {name}};
-    const node = await this.findNode_(findParams);
-    if (!node || !node.location) {
-      // Failed.
-      return;
-    }
-    this.notifyCcTests_(`${node.location.left},${node.location.top},${
-        node.location.width},${node.location.height}`);
+    await this.getBoundsForNodeWithParams_(findParams);
+  }
+
+  /**
+   * Gets the bounds for the automation node with the given `className`.
+   * Waits for the node to exist if it does not yet.
+   * @param {string} className
+   */
+  async getBoundsForNodeByClassName(className) {
+    const findParams = {attributes: {className}};
+    await this.getBoundsForNodeWithParams_(findParams);
   }
 
   /**
@@ -65,6 +69,20 @@ class AutomationTestSupport {
     }
     node.focus();
     this.notifyCcTests_('ready');
+  }
+
+  /**
+   * @param {chrome.automation.FindParams} findParams
+   * @private
+   */
+  async getBoundsForNodeWithParams_(findParams) {
+    const node = await this.findNode_(findParams);
+    if (!node || !node.location) {
+      // Failed.
+      return;
+    }
+    this.notifyCcTests_(`${node.location.left},${node.location.top},${
+        node.location.width},${node.location.height}`);
   }
 
   /**

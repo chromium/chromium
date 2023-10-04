@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SELECT_TO_SPEAK_TEST_UTILS_H_
 
 class Browser;
+class Profile;
 
 namespace ui::test {
 class EventGenerator;
@@ -16,7 +17,7 @@ namespace ash::sts_test_utils {
 
 // Turns on Select to Speak and waits for the extension to signal it is ready.
 // Disables enhanced network voices dialog so that it will not block UI.
-void TurnOnSelectToSpeakForTest(Browser* browser);
+void TurnOnSelectToSpeakForTest(Profile* profile);
 
 // Hold down Search and drag over the web contents to select everything.
 void StartSelectToSpeakInBrowserWindow(Browser* browser,

@@ -511,7 +511,8 @@ IN_PROC_BROWSER_TEST_P(DictationTest, WorksWithSelectToSpeak) {
   // Set up Select to Speak.
   test::SpeechMonitor sm;
   EXPECT_FALSE(GetManager()->IsSelectToSpeakEnabled());
-  sts_test_utils::TurnOnSelectToSpeakForTest(browser());
+  sts_test_utils::TurnOnSelectToSpeakForTest(
+      AccessibilityManager::Get()->profile());
 
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();

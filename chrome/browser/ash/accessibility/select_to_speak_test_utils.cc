@@ -17,13 +17,13 @@
 namespace ash {
 namespace sts_test_utils {
 
-void TurnOnSelectToSpeakForTest(Browser* browser) {
+void TurnOnSelectToSpeakForTest(Profile* profile) {
   // Pretend that enhanced network voices dialog has been accepted so that the
   // dialog does not block.
-  browser->profile()->GetPrefs()->SetBoolean(
+  profile->GetPrefs()->SetBoolean(
       prefs::kAccessibilitySelectToSpeakEnhancedVoicesDialogShown, true);
   extensions::ExtensionHostTestHelper host_helper(
-      browser->profile(), extension_misc::kSelectToSpeakExtensionId);
+      profile, extension_misc::kSelectToSpeakExtensionId);
   AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
   host_helper.WaitForHostCompletedFirstLoad();
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -40,8 +40,7 @@ void TurnOnSelectToSpeakForTest(Browser* browser) {
     )JS");
   base::Value result =
       extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-          browser->profile(), extension_misc::kSelectToSpeakExtensionId,
-          script);
+          profile, extension_misc::kSelectToSpeakExtensionId, script);
   CHECK_EQ("ready", result);
 }
 
