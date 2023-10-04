@@ -7433,7 +7433,7 @@ TEST_F(AuctionRunnerTest, PromiseAndNetworkErrors) {
 }
 
 // Test what happens when a component auction has a network error on bidder
-// JS (kBidder2Url), then seller JS (kComponentSeller2Url(, then a promise
+// JS (kBidder2Url), then seller JS (kComponentSeller2Url), then a promise
 // coming in.
 //
 // See https://crbug.com/1488417
