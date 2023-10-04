@@ -410,17 +410,23 @@ class CSSProperties(object):
                 'Shorthand' if aliased_property.longhands else 'Longhand'
             self._aliases[i] = updated_alias
 
-        # The above loop produces an "updated" alias for each (incoming) alias.
-        # The alternative_of/alternative references must be updated to point to
-        # the respective "updated" aliases.
         updated_aliases_by_name = {a.name: a for a in self._aliases}
-        for alias in self._aliases:
-            if alias.alternative_of:
-                alias.alternative_of = updated_aliases_by_name[
-                    alias.alternative_of.name]
-            if alias.alternative:
-                alias.alternative = updated_aliases_by_name[
-                    alias.alternative.name]
+
+        # The above loop produces an "updated" alias for each (incoming) alias.
+        # Any alternative_of/alternative references that point to aliases
+        # must be updated to point to the respective "updated" aliases.
+        def update_alternatives(properties):
+            for _property in properties:
+                if _property.alternative_of and _property.alternative_of.alias_for:
+                    _property.alternative_of = updated_aliases_by_name[
+                        _property.alternative_of.name]
+                if _property.alternative and _property.alternative.alias_for:
+                    _property.alternative = updated_aliases_by_name[
+                        _property.alternative.name]
+
+        update_alternatives(self.longhands)
+        update_alternatives(self.shorthands)
+        update_alternatives(self.aliases)
 
     def set_derived_attributes(self, property_):
         """Set new attributes on 'property_', based on existing attribute values
