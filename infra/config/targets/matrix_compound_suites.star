@@ -1332,17 +1332,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "model_validation_tests_trunk",
-    basic_suites = {
-        "model_validation_tests": targets.legacy_matrix_config(
-            variants = [
-                "MODEL_VALIDATION_TRUNK",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "webview_trichrome_10_cts_tests_gtest",
     basic_suites = {
         "webview_trichrome_cts_tests": targets.legacy_matrix_config(

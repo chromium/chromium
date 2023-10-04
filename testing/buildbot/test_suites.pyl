@@ -4432,10 +4432,9 @@
 
     'model_validation_tests': {
       'model_validation_tests': {
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single',
-        },
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
       },
     },
 
@@ -7807,14 +7806,6 @@
       'model_validation_tests': {
         'variants': [
           'MODEL_VALIDATION_BASE',
-          'MODEL_VALIDATION_TRUNK',
-        ],
-      },
-    },
-
-    'model_validation_tests_trunk': {
-      'model_validation_tests': {
-        'variants': [
           'MODEL_VALIDATION_TRUNK',
         ],
       },

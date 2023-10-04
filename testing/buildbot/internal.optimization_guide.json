@@ -233,7 +233,7 @@
         "name": "model_validation_tests MODEL_VALIDATION_BASE",
         "resultdb": {
           "enable": true,
-          "result_format": "single"
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
@@ -259,7 +259,7 @@
         "name": "model_validation_tests MODEL_VALIDATION_TRUNK",
         "resultdb": {
           "enable": true,
-          "result_format": "single"
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
@@ -333,6 +333,27 @@
     ],
     "isolated_scripts": [
       {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "model_validation_tests MODEL_VALIDATION_BASE",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-10.15",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "model_validation_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
+        "variant_id": "MODEL_VALIDATION_BASE"
+      },
+      {
         "args": [
           "--chromedriver",
           "chromedriver",
@@ -345,7 +366,7 @@
         "name": "model_validation_tests MODEL_VALIDATION_TRUNK",
         "resultdb": {
           "enable": true,
-          "result_format": "single"
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
@@ -423,7 +444,7 @@
         "name": "model_validation_tests MODEL_VALIDATION_BASE",
         "resultdb": {
           "enable": true,
-          "result_format": "single"
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
@@ -443,7 +464,7 @@
         "name": "model_validation_tests MODEL_VALIDATION_TRUNK",
         "resultdb": {
           "enable": true,
-          "result_format": "single"
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
@@ -520,7 +541,7 @@
         "name": "model_validation_tests MODEL_VALIDATION_BASE",
         "resultdb": {
           "enable": true,
-          "result_format": "single"
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
@@ -540,7 +561,7 @@
         "name": "model_validation_tests MODEL_VALIDATION_TRUNK",
         "resultdb": {
           "enable": true,
-          "result_format": "single"
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {

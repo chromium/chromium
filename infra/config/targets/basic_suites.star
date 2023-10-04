@@ -5239,10 +5239,9 @@ targets.legacy_basic_suite(
     name = "model_validation_tests",
     tests = {
         "model_validation_tests": targets.legacy_test_config(
-            resultdb = targets.resultdb(
-                enable = True,
-                result_format = "single",
-            ),
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
         ),
     },
 )

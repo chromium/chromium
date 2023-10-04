@@ -6937,7 +6937,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_gtests',
-           'isolated_scripts': 'model_validation_tests_trunk',
+           'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'mac',
       },
