@@ -6,9 +6,9 @@
 
 #include <inttypes.h>
 
-#include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 
 namespace gpu {
 
@@ -18,36 +18,40 @@ BASE_FEATURE(kGrCacheLimitsFeature,
              "GrCacheLimitsFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<int> kMaxGaneshResourceCacheBytes(
-    &kGrCacheLimitsFeature,
-    "MaxGaneshResourceCacheBytes",
-    96 * 1024 * 1024);
-constexpr base::FeatureParam<int> kMaxDefaultGlyphCacheTextureBytes(
-    &kGrCacheLimitsFeature,
-    "MaxDefaultGlyphCacheTextureBytes",
-    2048 * 1024 * 4);
+MIRACLE_PARAMETER_FOR_INT(GetMaxGaneshResourceCacheBytes,
+                          kGrCacheLimitsFeature,
+                          "MaxGaneshResourceCacheBytes",
+                          96 * 1024 * 1024)
+
+MIRACLE_PARAMETER_FOR_INT(GetMaxDefaultGlyphCacheTextureBytes,
+                          kGrCacheLimitsFeature,
+                          "MaxDefaultGlyphCacheTextureBytes",
+                          2048 * 1024 * 4)
 
 #if !BUILDFLAG(IS_NACL)
 // The limit of the bytes allocated toward GPU resources in the GrContext's
 // GPU cache.
-constexpr base::FeatureParam<int> kMaxLowEndGaneshResourceCacheBytes(
-    &kGrCacheLimitsFeature,
-    "MaxLowEndGaneshResourceCacheBytes",
-    48 * 1024 * 1024);
-constexpr base::FeatureParam<int> kMaxHighEndGaneshResourceCacheBytes(
-    &kGrCacheLimitsFeature,
-    "MaxHighEndGaneshResourceCacheBytes",
-    256 * 1024 * 1024);
+MIRACLE_PARAMETER_FOR_INT(GetMaxLowEndGaneshResourceCacheBytes,
+                          kGrCacheLimitsFeature,
+                          "MaxLowEndGaneshResourceCacheBytes",
+                          48 * 1024 * 1024)
+
+MIRACLE_PARAMETER_FOR_INT(GetMaxHighEndGaneshResourceCacheBytes,
+                          kGrCacheLimitsFeature,
+                          "MaxHighEndGaneshResourceCacheBytes",
+                          256 * 1024 * 1024)
+
 // Limits for glyph cache textures.
-constexpr base::FeatureParam<int> kMaxLowEndGlyphCacheTextureBytes(
-    &kGrCacheLimitsFeature,
-    "MaxLowEndGlyphCacheTextureBytes",
-    1024 * 512 * 4);
+MIRACLE_PARAMETER_FOR_INT(GetMaxLowEndGlyphCacheTextureBytes,
+                          kGrCacheLimitsFeature,
+                          "MaxLowEndGlyphCacheTextureBytes",
+                          1024 * 512 * 4)
+
 // High-end / low-end memory cutoffs.
-constexpr base::FeatureParam<int> kHighEndMemoryThresholdMB(
-    &kGrCacheLimitsFeature,
-    "HighEndMemoryThresholdMB",
-    4096);
+MIRACLE_PARAMETER_FOR_INT(GetHighEndMemoryThresholdMB,
+                          kGrCacheLimitsFeature,
+                          "HighEndMemoryThresholdMB",
+                          4096)
 #endif
 
 }  // namespace
@@ -66,17 +70,17 @@ void DetermineGrCacheLimitsFromAvailableMemory(
     size_t* max_resource_cache_bytes,
     size_t* max_glyph_cache_texture_bytes) {
   // Default limits.
-  *max_resource_cache_bytes = kMaxGaneshResourceCacheBytes.Get();
-  *max_glyph_cache_texture_bytes = kMaxDefaultGlyphCacheTextureBytes.Get();
+  *max_resource_cache_bytes = GetMaxGaneshResourceCacheBytes();
+  *max_glyph_cache_texture_bytes = GetMaxDefaultGlyphCacheTextureBytes();
 
 // We can't call AmountOfPhysicalMemory under NACL, so leave the default.
 #if !BUILDFLAG(IS_NACL)
   if (base::SysInfo::IsLowEndDevice()) {
-    *max_resource_cache_bytes = kMaxLowEndGaneshResourceCacheBytes.Get();
-    *max_glyph_cache_texture_bytes = kMaxLowEndGlyphCacheTextureBytes.Get();
+    *max_resource_cache_bytes = GetMaxLowEndGaneshResourceCacheBytes();
+    *max_glyph_cache_texture_bytes = GetMaxLowEndGlyphCacheTextureBytes();
   } else if (base::SysInfo::AmountOfPhysicalMemoryMB() >=
-             kHighEndMemoryThresholdMB.Get()) {
-    *max_resource_cache_bytes = kMaxHighEndGaneshResourceCacheBytes.Get();
+             GetHighEndMemoryThresholdMB()) {
+    *max_resource_cache_bytes = GetMaxHighEndGaneshResourceCacheBytes();
   }
 #endif
 }

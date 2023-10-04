@@ -1,5 +1,6 @@
 include_rules = [
   "+components/crash/core/common/crash_key.h",
+  "+components/miracle_parameter",
   "+media/media_buildflags.h",
   "+skia/buildflags.h",
   "+third_party/skia",

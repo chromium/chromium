@@ -183,6 +183,7 @@ source_set("config_sources") {
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
+    "//components/miracle_parameter/common",
     "//gpu/command_buffer/common:common_sources",
     "//gpu/ipc/common:gpu_preferences_interface",
     "//gpu/vulkan:buildflags",
