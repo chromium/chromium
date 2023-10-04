@@ -2546,6 +2546,8 @@ if (!is_android) {
       "../browser/ui/tabs/pinned_tab_service_browsertest.cc",
       "../browser/ui/tabs/tab_strip_model_browsertest.cc",
       "../browser/ui/test/browser_ui_browsertest.cc",
+      "../browser/ui/test/browser_ui_test_base.cc",
+      "../browser/ui/test/browser_ui_test_base.h",
       "../browser/ui/test/popup_browsertest.cc",
       "../browser/ui/test/popup_fullscreen_browsertest.cc",
       "../browser/ui/test/test_browser_dialog.cc",
@@ -10366,6 +10368,9 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/signin/signin_view_controller_interactive_uitest.cc",
       "../browser/ui/startup/invalid_user_data_dir_interactive_uitest.cc",
       "../browser/ui/startup/startup_browser_creator_interactive_uitest.cc",
+      "../browser/ui/test/browser_ui_interactive_uitest.cc",
+      "../browser/ui/test/browser_ui_test_base.cc",
+      "../browser/ui/test/browser_ui_test_base.h",
       "../browser/ui/test/popup_multiscreen_interactive_uitest.cc",
       "../browser/ui/test/test_browser_dialog.cc",
       "../browser/ui/test/test_browser_dialog.h",
@@ -10864,7 +10869,8 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (is_chromeos_lacros) {
-      sources += [ "../browser/lacros/browser_interactive_uitest.cc" ]
+      sources +=
+          [ "../browser/lacros/browser_activation_interactive_uitest.cc" ]
 
       # These tests require a MessageCenter which isn't available on Lacros.
       sources -=

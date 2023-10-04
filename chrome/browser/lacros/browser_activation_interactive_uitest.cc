@@ -10,11 +10,11 @@
 
 namespace {
 
-using BrowserInteractiveUiTest = InProcessBrowserTest;
+using BrowserActivationTest = InProcessBrowserTest;
 
 // Verifies that the Lacros browser can activate one of its own windows.
 // Regression test for https://crbug.com/1172448
-IN_PROC_BROWSER_TEST_F(BrowserInteractiveUiTest, LacrosWindowActivation) {
+IN_PROC_BROWSER_TEST_F(BrowserActivationTest, LacrosWindowActivation) {
   Browser* first_browser = browser();
 
   // Ensure the initial window is active.

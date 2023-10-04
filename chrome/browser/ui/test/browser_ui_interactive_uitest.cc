@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-using BrowserUiTest = BrowserUiTestBase;
+using BrowserInteractiveUiTest = BrowserUiTestBase;
 
-TEST_F(BrowserUiTest, Invoke) {
+TEST_F(BrowserInteractiveUiTest, Invoke) {
   Invoke();
 }
