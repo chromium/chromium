@@ -27,6 +27,7 @@ include_rules = [
   "+components/link_header_util",
   "+components/metrics",
   "+components/metrics:single_sample_metrics",
+  "+components/miracle_parameter",
   "+components/network_session_configurator/common",
   "+components/offline_pages/buildflags/buildflags.h",
   "+components/offline_pages/core/request_header",

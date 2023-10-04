@@ -85,6 +85,7 @@ source_set("browser") {
     "//components/link_header_util",
     "//components/metrics",
     "//components/metrics:single_sample_metrics",
+    "//components/miracle_parameter/common",
     "//components/ml/mojom",
     "//components/ml/webnn:features",
     "//components/network_session_configurator/browser",
