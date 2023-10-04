@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleIdentifier</key>
-	<string>${IOS_BUNDLE_ID_PREFIX}.googletest.${GTEST_BUNDLE_ID_SUFFIX:rfc1034identifier}</string>
+	<string>${IOS_BUNDLE_ID_PREFIX}.${GTEST_BUNDLE_ID_SUFFIX:rfc1034identifier}</string>
 	<key>UIApplicationDelegate</key>
 	<string>CrashpadUnitTestDelegate</string>
 </dict>
