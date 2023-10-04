@@ -57,10 +57,13 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <owner>zentaro@chromium.org</owner>
     <owner>cros-peripherals@google.com</owner>
   </variant>
-  <variant name="ESim" summary="esim">
-    <owner>azeemarshad@chromium.org</owner>
+  <variant name="EnterpriseESim" summary="enterprise eSIM">
+    <owner>chadduffin@chromium.org</owner>
     <owner>cros-connectivity@google.com</owner>
+  </variant>
+  <variant name="ESim" summary="eSIM">
     <owner>hsuregan@chromium.org</owner>
+    <owner>cros-connectivity@google.com</owner>
   </variant>
   <variant name="FakeKeyboardHeuristic" summary="Fake Keyboard Heuristic">
     <owner>wmahon@chromium.org</owner>

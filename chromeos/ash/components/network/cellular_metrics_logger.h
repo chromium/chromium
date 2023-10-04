@@ -25,6 +25,7 @@ namespace ash {
 class CellularESimProfileHandler;
 class CellularMetricsLoggerTest;
 class ESimFeatureUsageMetrics;
+class EnterpriseESimFeatureUsageMetrics;
 class NetworkConnectionHandler;
 class NetworkState;
 
@@ -226,7 +227,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     kMaxValue = kUnknown
   };
 
-  // Profile status for ESim cellular network.
+  // Profile status for eSIM cellular network.
   // These values are persisted to logs. Entries should not be renumbered
   // and numeric values should never be reused.
   enum class ESimProfileStatus {
@@ -373,7 +374,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // if |is_psim_activation_state_logged_| is false.
   void CheckForPSimActivationStateMetric();
 
-  // Tracks the activation state of ESim cellular networks if available and
+  // Tracks the activation state of eSIM cellular networks if available and
   // if |is_esim_profile_status_logged_| is false.
   void CheckForESimProfileStatusMetric();
 
@@ -389,10 +390,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // networks are available on the device if |is_service_count_logged_| is true.
   void CheckForCellularServiceCountMetric();
 
-  // Handles ESim Standard Feature Usage Logging metrics when the cellular usage
-  // changes for an ESim network.
+  // Handles eSIM Standard Feature Usage Logging metrics when the cellular usage
+  // changes for an eSIM network.
   void HandleESimFeatureUsageChange(CellularUsage last_esim_cellular_usage,
-                                    CellularUsage current_usage);
+                                    CellularUsage current_usage,
+                                    bool is_managed_by_policy);
 
   // Returns the ConnectionInfo for given |cellular_network_guid|.
   ConnectionInfo* GetConnectionInfoForCellularNetwork(
@@ -407,13 +409,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // Tracks the last time the PSim network's cellular usage changed.
   absl::optional<base::ElapsedTimer> psim_usage_elapsed_timer_;
 
-  // Tracks the last ESim cellular network usage state.
+  // Tracks the last eSIM cellular network usage state.
   absl::optional<CellularUsage> last_esim_cellular_usage_;
 
-  // Tracks the last time ESim network's cellular usage is managed or not.
+  // Tracks the last time eSIM network's cellular usage is managed or not.
   bool last_managed_by_policy_ = false;
 
-  // Tracks the last time the ESim network's cellular usage changed.
+  // Tracks the last time the eSIM network's cellular usage changed.
   absl::optional<base::ElapsedTimer> esim_usage_elapsed_timer_;
 
   // Tracks whether cellular device is available or not.
@@ -445,7 +447,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // session.
   bool is_psim_activation_state_logged_ = false;
 
-  // Tracks whether the ESim profile status is already logged for this
+  // Tracks whether the eSIM profile status is already logged for this
   // session.
   bool is_esim_profile_status_logged_ = false;
 
@@ -458,8 +460,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
 
   bool initialized_ = false;
 
-  // Tracks ESim feature usage for the Standard Feature Usage Logging Framework.
+  // Tracks eSIM feature usage for the Standard Feature Usage Logging Framework.
   std::unique_ptr<ESimFeatureUsageMetrics> esim_feature_usage_metrics_;
+
+  // Tracks enterprise eSIM feature usage for the Standard Feature Usage Logging
+  // Framework.
+  std::unique_ptr<EnterpriseESimFeatureUsageMetrics>
+      enterprise_esim_feature_usage_metrics_;
 };
 
 }  // namespace ash

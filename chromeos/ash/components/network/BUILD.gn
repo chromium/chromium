@@ -289,6 +289,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/feature_usage",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network/metrics:test_support",
     "//chromeos/ash/components/network/metrics:unit_tests",
