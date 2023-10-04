@@ -105,7 +105,7 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
           createRawSiteException(origin1, {
             setting: ContentSetting.BLOCK,
             source: SiteSettingSource.EMBARGO,
-            type: ContentSettingsTypes.MIDI,
+            type: ContentSettingsTypes.MIDI_DEVICES,
           }),
         ],
       },

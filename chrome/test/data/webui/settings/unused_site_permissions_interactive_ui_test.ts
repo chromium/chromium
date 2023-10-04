@@ -23,7 +23,7 @@ suite('CrSettingsUnusedSitePermissionsInteractiveUITest', function() {
     ContentSettingsTypes.GEOLOCATION,
     ContentSettingsTypes.MIC,
     ContentSettingsTypes.CAMERA,
-    ContentSettingsTypes.MIDI,
+    ContentSettingsTypes.MIDI_DEVICES,
   ];
 
   const mockData = [1, 2, 3, 4].map(
