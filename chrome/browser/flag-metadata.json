@@ -5031,7 +5031,7 @@
   {
     "name": "insecure-download-warnings",
     "owners": [ "jdeblasio", "trusty-transport@chromium.org" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "install-isolated-web-app-from-url",
