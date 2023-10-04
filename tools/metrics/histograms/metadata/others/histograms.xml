@@ -6721,6 +6721,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FirstPartySets.Initialization.SitesToClear.Count"
+    units="sites" expires_after="M129">
+  <owner>cfredric@chromium.org</owner>
+  <owner>kaustubhag@chromium.org</owner>
+  <summary>
+    Counts the number of sites whose data should be cleared during Related
+    Website Sets initialization. (Note: this doesn't record the number of sites
+    whose data *was* cleared.)
+
+    Recorded once per profile during profile login.
+  </summary>
+</histogram>
+
 <histogram name="FirstPartySets.NavigationThrottle.ResumeDelta" units="ms"
     expires_after="M124">
   <owner>shuuran@google.com</owner>
