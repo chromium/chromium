@@ -919,8 +919,13 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     g_observer->OnTransportAvailabilityEnumerated(this, &data);
   }
 
-  if (disable_ui_ || dialog_model_->current_step() !=
-                         AuthenticatorRequestDialogModel::Step::kNotStarted) {
+  if (disable_ui_) {
+    return;
+  }
+
+  if (dialog_model_->current_step() !=
+      AuthenticatorRequestDialogModel::Step::kNotStarted) {
+    dialog_model_->OnTransportAvailabilityChanged(std::move(data));
     return;
   }
 

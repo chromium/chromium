@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/strong_alias.h"
@@ -22,10 +23,12 @@
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/observable_authenticator_list.h"
+#include "components/webauthn/core/browser/passkey_model.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_types.h"
@@ -54,7 +57,8 @@ struct VectorIcon;
 // Ultimately, this will become an observer of the AuthenticatorRequest, and
 // contain the logic to figure out which steps the user needs to take, in which
 // order, to complete the authentication flow.
-class AuthenticatorRequestDialogModel {
+class AuthenticatorRequestDialogModel
+    : public webauthn::PasskeyModel::Observer {
  public:
   using RequestCallback = device::FidoRequestHandlerBase::RequestCallback;
   using TransportAvailabilityInfo =
@@ -255,7 +259,7 @@ class AuthenticatorRequestDialogModel {
   AuthenticatorRequestDialogModel& operator=(
       const AuthenticatorRequestDialogModel&) = delete;
 
-  virtual ~AuthenticatorRequestDialogModel();
+  ~AuthenticatorRequestDialogModel() override;
 
   Step current_step() const { return current_step_; }
 
@@ -330,6 +334,10 @@ class AuthenticatorRequestDialogModel {
   // actives the platform authenticator of the given type.
   void HideDialogAndDispatchToPlatformAuthenticator(
       absl::optional<device::AuthenticatorType> type = absl::nullopt);
+
+  // Called when the transport availability info changes.
+  void OnTransportAvailabilityChanged(
+      TransportAvailabilityInfo transport_availability);
 
   // Called when an attempt to contact a phone failed.
   void OnPhoneContactFailed(const std::string& name);
@@ -765,6 +773,9 @@ class AuthenticatorRequestDialogModel {
   std::vector<device::DiscoverableCredentialMetadata> RecognizedCredentialsFor(
       device::AuthenticatorType source);
 
+  // webauthn::PasskeyModel::Observer:
+  void OnPasskeysChanged() override;
+
   // Identifier for the RenderFrameHost of the frame that initiated the current
   // request.
   content::GlobalRenderFrameHostId frame_host_id_;
@@ -916,6 +927,10 @@ class AuthenticatorRequestDialogModel {
   // present (e.g. a Mac Mini) or because it's a laptop in clamshell mode.
   absl::optional<bool> local_biometrics_override_for_testing_;
 #endif
+
+  base::ScopedObservation<webauthn::PasskeyModel,
+                          webauthn::PasskeyModel::Observer>
+      passkey_model_observation_{this};
 
   base::WeakPtrFactory<AuthenticatorRequestDialogModel> weak_factory_{this};
 };

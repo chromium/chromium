@@ -32,7 +32,9 @@
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/webauthn/core/browser/passkey_model.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
@@ -2004,6 +2006,63 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIPhonePasskey) {
   model->OnAccountPreselected(kCred1.cred_id);
   EXPECT_EQ(model->current_step(), Step::kCableActivate);
   EXPECT_EQ(phone_name, kNewSyncedPhoneName);
+}
+
+// Tests that if GPM passkeys change during a conditional UI request, the
+// request is restarted.
+TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIPhonePasskeyUpdated) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {device::kWebAuthnListSyncedPasskeys, syncer::kSyncWebauthnCredentials},
+      /*disabled_features=*/{});
+  auto model = std::make_unique<AuthenticatorRequestDialogModel>(main_rfh());
+  model->StartFlow(TransportAvailabilityInfo(),
+                   /*is_conditional_mediation=*/true);
+  ASSERT_EQ(model->current_step(),
+            AuthenticatorRequestDialogModel::Step::kConditionalMediation);
+  testing::NiceMock<MockDialogModelObserver> mock_observer;
+  model->AddObserver(&mock_observer);
+
+  // Notifying that passkeys changed during a conditional request should restart
+  // it.
+  EXPECT_CALL(mock_observer, OnStartOver());
+  static_cast<webauthn::PasskeyModel::Observer*>(model.get())
+      ->OnPasskeysChanged();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Notifying that passkeys changed during any other step should be ignored.
+  model->SetCurrentStepForTesting(Step::kUsbInsertAndActivate);
+  static_cast<webauthn::PasskeyModel::Observer*>(model.get())
+      ->OnPasskeysChanged();
+  EXPECT_CALL(mock_observer, OnStartOver()).Times(0);
+  model->RemoveObserver(&mock_observer);
+}
+
+// Tests that if the transport availability is updated during a conditional UI
+// request, the list of passkeys is updated.
+TEST_F(AuthenticatorRequestDialogModelTest,
+       ConditionalUITransportAvailabilityUpdated) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {device::kWebAuthnListSyncedPasskeys, syncer::kSyncWebauthnCredentials},
+      /*disabled_features=*/{});
+
+  NavigateAndCommit(GURL("rp.com"));
+  ChromeWebAuthnCredentialsDelegate* delegate =
+      ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
+          ->GetDelegateForFrame(web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(delegate);
+
+  auto model = std::make_unique<AuthenticatorRequestDialogModel>(main_rfh());
+  TransportAvailabilityInfo transports_info;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.recognized_credentials = {};
+  model->StartFlow(transports_info, /*is_conditional_mediation=*/true);
+  EXPECT_TRUE(delegate->GetPasskeys()->empty());
+
+  transports_info.recognized_credentials = {kCred1};
+  model->OnTransportAvailabilityChanged(transports_info);
+  EXPECT_FALSE(delegate->GetPasskeys()->empty());
 }
 
 // Tests that if the stored preference for the most recently used phone is not
