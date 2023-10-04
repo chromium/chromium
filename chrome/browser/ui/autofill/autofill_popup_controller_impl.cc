@@ -211,8 +211,7 @@ void AutofillPopupControllerImpl::Show(
         ->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                    !suggestions_.empty());
 #endif
-    if (!view_.Call(&AutofillPopupView::Show, autoselect_first_suggestion)
-             .value_or(false)) {
+    if (!view_ || !view_->Show(autoselect_first_suggestion)) {
       return;
     }
 
@@ -344,14 +343,7 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
     return true;
   }
 
-  // If there is a view, give it the opportunity to handle key press events
-  // first.
-  if (view_.Call(&AutofillPopupView::HandleKeyPressEvent, event)
-          .value_or(false)) {
-    return true;
-  }
-
-  return false;
+  return view_ && view_->HandleKeyPressEvent(event);
 }
 
 void AutofillPopupControllerImpl::OnSuggestionsChanged() {
@@ -363,8 +355,9 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
                                  /*has_suggestions=*/true);
 #endif
 
-  // Platform-specific draw call.
-  std::ignore = view_.Call(&AutofillPopupView::OnSuggestionsChanged);
+  if (view_) {
+    view_->OnSuggestionsChanged();
+  }
 }
 
 void AutofillPopupControllerImpl::AcceptSuggestion(int index,
@@ -431,8 +424,8 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index,
 
   absl::optional<std::u16string> announcement =
       suggestion.acceptance_a11y_announcement;
-  if (announcement) {
-    std::ignore = view_.Call(&AutofillPopupView::AxAnnounce, *announcement);
+  if (announcement && view_) {
+    view_->AxAnnounce(*announcement);
   }
 
   delegate_->DidAcceptSuggestion(suggestion, index, trigger_source_);
@@ -508,7 +501,7 @@ bool AutofillPopupControllerImpl::IsRootPopup() const {
 }
 
 void AutofillPopupControllerImpl::OnEnterPictureInPicture() {
-  if (view_.Call(&AutofillPopupView::OverlapsWithPictureInPictureWindow)) {
+  if (view_ && view_->OverlapsWithPictureInPictureWindow()) {
     Hide(PopupHidingReason::kOverlappingWithPictureInPictureWindow);
   }
 }
@@ -566,11 +559,10 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
           suggestions_[list_index].GetPayload<Suggestion::BackendId>())) {
     return false;
   }
-  if (suggestion_type == PopupItemId::kAutocompleteEntry) {
-    const std::u16string announcement = l10n_util::GetStringFUTF16(
+  if (suggestion_type == PopupItemId::kAutocompleteEntry && view_) {
+    view_->AxAnnounce(l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_AUTOCOMPLETE_ENTRY_DELETED_A11Y_HINT,
-        suggestions_[list_index].main_text.value);
-    std::ignore = view_.Call(&AutofillPopupView::AxAnnounce, announcement);
+        suggestions_[list_index].main_text.value));
   }
 
   // Remove the deleted element.
@@ -659,8 +651,7 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
   if (view_) {
     // We need to fire the event while view is not deleted yet.
     FireControlsChangedEvent(false);
-    // Deletes the pointer wrapped in `view_`.
-    std::ignore = view_.Call(&AutofillPopupView::Hide);
+    view_->Hide();
     view_ = nullptr;
   }
 
@@ -686,9 +677,7 @@ bool AutofillPopupControllerImpl::IsMouseLocked() const {
 base::WeakPtr<AutofillPopupView>
 AutofillPopupControllerImpl::CreateSubPopupView(
     base::WeakPtr<AutofillPopupController> controller) {
-  auto sub_view =
-      view_.Call(&AutofillPopupView::CreateSubPopupView, controller);
-  return sub_view.value_or(nullptr);
+  return view_ ? view_->CreateSubPopupView(controller) : nullptr;
 }
 
 void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
@@ -720,17 +709,22 @@ void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
   // Now get the target node from its tree ID and node ID.
   ui::AXPlatformNode* target_node =
       root_platform_node_delegate->GetFromTreeIDAndNodeID(tree_id, node_id);
-  absl::optional<absl::optional<int32_t>> popup_ax_id =
-      view_.Call(&AutofillPopupView::GetAxUniqueId);
-  if (!target_node || !popup_ax_id || !*popup_ax_id)
+  if (!target_node || !view_) {
     return;
+  }
+
+  absl::optional<int32_t> popup_ax_id = view_->GetAxUniqueId();
+  if (!popup_ax_id) {
+    return;
+  }
 
   // All the conditions are valid, raise the accessibility event and set global
   // popup ax unique id.
-  if (is_show)
-    ui::SetActivePopupAxUniqueId(*popup_ax_id);
-  else
+  if (is_show) {
+    ui::SetActivePopupAxUniqueId(popup_ax_id);
+  } else {
     ui::ClearActivePopupAxUniqueId();
+  }
 
   target_node->NotifyAccessibilityEvent(ax::mojom::Event::kControlsChanged);
 }
@@ -754,11 +748,5 @@ AutofillPopupControllerImpl::GetRootAXPlatformNodeForWebContents() {
   // NativeViewAccessible corresponds to an AXPlatformNode.
   return ui::AXPlatformNode::FromNativeViewAccessible(native_view_accessible);
 }
-
-AutofillPopupControllerImpl::AutofillPopupViewPtr::AutofillPopupViewPtr() =
-    default;
-
-AutofillPopupControllerImpl::AutofillPopupViewPtr::~AutofillPopupViewPtr() =
-    default;
 
 }  // namespace autofill

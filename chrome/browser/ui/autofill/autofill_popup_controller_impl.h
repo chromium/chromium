@@ -6,12 +6,8 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_IMPL_H_
 
 #include <string>
-#include <type_traits>
 #include <vector>
 
-#include "base/functional/invoke.h"
-#include "base/gtest_prod_util.h"
-#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -209,45 +205,6 @@ class AutofillPopupControllerImpl
   virtual void HideViewAndDie();
 
  private:
-  // Wraps a raw AutofillPopupView pointer and checks for nullptr before any
-  // dereference. This is useful because AutofillPopupView may be synchronously
-  // deleted and set to nullptr by many calls in AutofillPopupControllerImpl,
-  // which easily leads to segfaults. See crbug.com/1277218 for the lifecycle
-  // management issue in AutofillPopupView.
-  class AutofillPopupViewPtr {
-   public:
-    AutofillPopupViewPtr();
-    AutofillPopupViewPtr(const AutofillPopupViewPtr&) = delete;
-    AutofillPopupViewPtr& operator=(const AutofillPopupViewPtr&) = delete;
-    ~AutofillPopupViewPtr();
-
-    AutofillPopupViewPtr& operator=(base::WeakPtr<AutofillPopupView> ptr) {
-      ptr_ = std::move(ptr);
-      return *this;
-    }
-
-    explicit operator bool() const { return !!ptr_; }
-
-    // If `ptr_ == nullptr`, returns something that converts to false.
-    // If `ptr_ != nullptr`, calls `ptr_->func(args...)` and, if that returns a
-    // value, returns this value wrapped in an `absl::optional`, otherwise
-    // returns true.
-    template <typename Func, typename... Args>
-    [[nodiscard]] auto Call(Func&& func, Args... args) {
-      using ReturnType = decltype(base::invoke(func, *ptr_, args...));
-      if constexpr (!std::is_void_v<ReturnType>) {
-        return ptr_ ? absl::optional<ReturnType>(
-                          base::invoke(func, *ptr_, args...))
-                    : absl::optional<ReturnType>();
-      } else {
-        return ptr_ ? base::invoke(func, *ptr_, args...), true : false;
-      }
-    }
-
-   private:
-    base::WeakPtr<AutofillPopupView> ptr_;
-  };
-
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void DidFinishNavigation(
@@ -277,7 +234,7 @@ class AutofillPopupControllerImpl
   bool IsRootPopup() const;
 
   PopupControllerCommon controller_common_;
-  AutofillPopupViewPtr view_;
+  base::WeakPtr<AutofillPopupView> view_;
   base::WeakPtr<AutofillPopupDelegate> delegate_;
 
   struct {
