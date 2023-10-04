@@ -1687,13 +1687,6 @@ void UnpinWindow() {
 void VolumeDown() {
   auto* audio_handler = CrasAudioHandler::Get();
   if (features::IsQsRevampEnabled()) {
-    if (audio_handler->IsOutputMuted() &&
-        !audio_handler->IsOutputVolumeBelowDefaultMuteLevel()) {
-      // The output node can be muted while the previous level is preserved.
-      // First update the mute state to update the slider style if the level is
-      // greater than `kMuteThresholdPercent`, and then adjust the volume level.
-      audio_handler->SetOutputMute(false);
-    }
     // Only plays the audio if unmuted.
     if (!audio_handler->IsOutputMuted()) {
       AcceleratorController::PlayVolumeAdjustmentSound();
