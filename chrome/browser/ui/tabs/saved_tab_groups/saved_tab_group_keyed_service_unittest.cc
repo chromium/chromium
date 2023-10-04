@@ -727,8 +727,9 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
       saved_group->saved_guid(),
       saved_group->saved_tabs().at(0).saved_tab_guid());
 
-  // It should have been removed from the local group too.
-  EXPECT_EQ(1, tabstrip->count());
+  // The local tab in the group should still be in the tabstrip but no longer in
+  // the group.
+  EXPECT_EQ(2, tabstrip->count());
   // The local group should also have been closed, since it's now empty.
   EXPECT_FALSE(tabstrip->group_model()->ContainsTabGroup(group_id));
 }
@@ -752,8 +753,9 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // The local group should have been closed.
   EXPECT_FALSE(tabstrip->group_model()->ContainsTabGroup(group_id));
-  // The local tab in the group should have been removed too.
-  EXPECT_EQ(1, tabstrip->count());
+  // The local tab in the group should still be in the tabstrip but no longer in
+  // the group.
+  EXPECT_EQ(2, tabstrip->count());
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
