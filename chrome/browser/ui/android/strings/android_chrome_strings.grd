@@ -6044,6 +6044,17 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Loading…
       </message>
 
+      <!-- Add username dialog -->
+      <message name="IDS_ADD_USERNAME_DIALOG_TITLE" desc="Title of the dialog, which proposes the user to add a username when the password is being automatically saved and the username could not be captured.">
+        Add your username
+      </message>
+      <message name="IDS_ADD_USERNAME_DIALOG_ADD_USERNAME" desc="The positive button caption for the user to save the username entered in the dialog. The dialog is displayed when the password is being automatically saved and the username could not be captured.">
+        Add username
+      </message>
+      <message name="IDS_ADD_USERNAME_DIALOG_CANCEL" desc="The negative button caption in the dialog. The dialog is displayed when the password is being automatically saved and the username could not be captured.">
+        Cancel
+      </message>
+
       <!-- Touch To Fill No Passkeys Sheet -->
       <message name="IDS_NO_PASSKEYS_SHEET_CONTENT_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Accessibility string read when the no passkeys sheet is opened. It describes the bottom sheet informing users that no passkeys are available.">
         No passkeys sheet
