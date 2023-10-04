@@ -477,6 +477,9 @@ void ReadAnythingAppController::Distill() {
   ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>
       serializer(tree_source.get());
   ui::AXTreeUpdate snapshot;
+  if (!tree->root()) {
+    return;
+  }
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
   model_.SetDistillationInProgress(true);
   distiller_->Distill(*tree, snapshot, model_.active_ukm_source_id());
@@ -700,6 +703,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
 ui::AXNodeID ReadAnythingAppController::RootId() const {
   ui::AXSerializableTree* tree =
       model_.GetTreeFromId(model_.active_tree_id()).get();
+  DCHECK(tree->root());
   return tree->root()->id();
 }
 
