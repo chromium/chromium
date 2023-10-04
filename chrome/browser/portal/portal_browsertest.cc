@@ -31,6 +31,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -465,6 +466,13 @@ class PortalSafeBrowsingBrowserTest : public PortalBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(PortalSafeBrowsingBrowserTest,
                        MAYBE_EmbedderOfDangerousPortalConsideredDangerous) {
+  // If |kSafeBrowsingSkipSubresources| is enabled, skip this test.
+  // See https://crbug.com/1487858
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -520,14 +528,27 @@ IN_PROC_BROWSER_TEST_F(PortalSafeBrowsingBrowserTest,
 
   content::TestNavigationObserver error_observer(contents,
                                                  net::ERR_BLOCKED_BY_CLIENT);
+  content::TestNavigationObserver portal_observer(portal_contents);
+
   ASSERT_TRUE(content::ExecJs(
       portal_contents,
       content::JsReplace("let iframe = document.createElement('iframe');"
                          "iframe.src = $1;"
                          "document.body.appendChild(iframe);",
                          dangerous_url)));
-  error_observer.WaitForNavigationFinished();
-  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+
+  bool check_subresources = !base::FeatureList::IsEnabled(
+      safe_browsing::kSafeBrowsingSkipSubresources);
+  if (check_subresources) {
+    error_observer.WaitForNavigationFinished();
+  } else {
+    portal_observer.WaitForNavigationFinished();
+  }
+
+  bool warning_shown =
+      chrome_browser_interstitials::IsShowingInterstitial(contents);
+  // If checking subresources, warning should be shown; otherwise not shown.
+  EXPECT_EQ(check_subresources, warning_shown);
 }
 
 IN_PROC_BROWSER_TEST_F(PortalSafeBrowsingBrowserTest, DangerousOrphanedPortal) {
@@ -563,15 +584,28 @@ IN_PROC_BROWSER_TEST_F(PortalSafeBrowsingBrowserTest, DangerousOrphanedPortal) {
       portal_contents, "window.onportalactivate = e => { while(true) {} };"));
 
   // Since the portal contents becomes the top level contents from the following
-  // activation, it's the contents where we show the interstitial.
-  content::TestNavigationObserver error_observer(portal_contents,
-                                                 net::ERR_BLOCKED_BY_CLIENT);
+  // activation, it's the contents where we show the interstitial, if
+  // |kSafeBrowsingSkipSubresources| is disabled.
+  content::TestNavigationObserver portal_observer(portal_contents,
+                                                  net::ERR_BLOCKED_BY_CLIENT);
+  content::TestNavigationObserver observer(contents);
+
   ASSERT_TRUE(content::ExecJs(
       contents,
       content::JsReplace("document.querySelector('portal').activate();"
                          "window.location.href = $1;",
                          dangerous_url)));
-  error_observer.WaitForNavigationFinished();
-  EXPECT_TRUE(
-      chrome_browser_interstitials::IsShowingInterstitial(portal_contents));
+
+  bool check_subresources = !base::FeatureList::IsEnabled(
+      safe_browsing::kSafeBrowsingSkipSubresources);
+  if (check_subresources) {
+    portal_observer.WaitForNavigationFinished();
+  } else {
+    observer.WaitForNavigationFinished();
+  }
+
+  bool warning_shown =
+      chrome_browser_interstitials::IsShowingInterstitial(portal_contents);
+  // If checking subresources, warning should be shown; otherwise not shown.
+  EXPECT_EQ(check_subresources, warning_shown);
 }

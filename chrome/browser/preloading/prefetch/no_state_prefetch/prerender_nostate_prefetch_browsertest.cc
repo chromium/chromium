@@ -50,6 +50,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1510,6 +1511,13 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServerRedirect) {
 // If a subresource is unsafe, the corresponding request is cancelled.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
                        PrerenderSafeBrowsingSubresource) {
+  // If |kSafeBrowsingSkipSubresources| is enabled, skip this test.
+  // See https://crbug.com/1487858
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   GURL url = src_server()->GetURL(kPrefetchScript);
   GetFakeSafeBrowsingDatabaseManager()->AddDangerousUrl(
       url, safe_browsing::SB_THREAT_TYPE_URL_MALWARE);
