@@ -156,11 +156,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     private boolean mIsRendererUnresponsive;
 
     /**
-     * Listens for views related to the tab to be attached or detached.
-     */
-    public final OnAttachStateChangeListener mAttachStateChangeListener;
-
-    /**
      * Whether the tab can currently be interacted with.
      */
     private boolean mInteractableState;
@@ -209,23 +204,8 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     private ArkTabImpl(ChildTab tab) {
-
         mTab = tab;
         mTabInfo = tab.getTabInfo();
-
-        mAttachStateChangeListener = new OnAttachStateChangeListener() {
-            @Override
-            public void onViewAttachedToWindow(View view) {
-                mIsViewAttachedToWindow = true;
-                updateInteractableState();
-            }
-
-            @Override
-            public void onViewDetachedFromWindow(View view) {
-                mIsViewAttachedToWindow = false;
-                updateInteractableState();
-            }
-        };
         mTabViewManager = new ArkTabViewManagerImpl(this);
         mThemeColorHelper = new TabThemeColorHelper(this, this::updateThemeColor);
         mThemeColor = TabState.UNSPECIFIED_THEME_COLOR;
@@ -454,14 +434,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         if (mArkWeb != null) {
             if (mWindowAndroid == null) {
                 mArkWeb.detach(this);
-                TabJni.get().releaseWebContents(mNativeTabAndroid);
-                mArkWeb.reset();
-                mArkWeb = null;
             } else {
                 mArkWeb.attach(this);
-                notifyContentChanged();
             }
-//            mArkWeb.setTopLevelNativeWindow(window);
+            notifyContentChanged();
         }
 
         if (tabDelegateFactory == null) {
@@ -1462,12 +1438,24 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      */
     private void updateInteractableState() {
         boolean currentState = !mIsHidden && !isFrozen()
-                && mIsViewAttachedToWindow
                 && !isDetached(this);
+        ArkLogger.e(TAG, "updateInteractableState mIsHidden=" + mIsHidden
+                + " isFrozen=" + isFrozen()
+                + " mIsViewAttachedToWindow=" + mIsViewAttachedToWindow + " isDetached=" + isDetached(this));
+
+        if (currentState) {
+            ContentView contentView = getContentView();
+            if (contentView == null) {
+                currentState = false;
+            } else {
+                currentState = contentView.isAttachedToWindow();
+            }
+        }
 
         if (currentState == mInteractableState) return;
 
         mInteractableState = currentState;
+        ArkLogger.e(TAG, "updateInteractableState mInteractableState=" + mInteractableState);
         for (TabObserver observer : mObservers) {
             observer.onInteractabilityChanged(this, currentState);
         }

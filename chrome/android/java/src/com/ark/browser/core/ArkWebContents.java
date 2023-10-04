@@ -15,6 +15,7 @@ import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.MultiThumbnailCardProvider;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.ThumbnailProvider;
 import com.ark.browser.tab.core.IPage;
@@ -423,6 +424,9 @@ public class ArkWebContents {
         String title = mPageInfo.getTitle();
         if (TextUtils.isEmpty(title)) {
             title = mWebContents.getTitle();
+            if (!TextUtils.isEmpty(title)) {
+                mPageInfo.setTitle(title);
+            }
         }
 
         if (TextUtils.isEmpty(title)) {
@@ -500,10 +504,17 @@ public class ArkWebContents {
         return mLastVisitTime;
     }
 
-    //    public void destroy() {
-//        // TODO
-////        ArkWebManager.getInstance().remove()
-//    }
+    public void destroy() {
+        int tabId = mPageInfo.getTabId();
+        ArkTabImpl tab = (ArkTabImpl) TabCacheManager.getInstance().findTab(tabId);
+        if (tab != null && !tab.isDestroyed() && tab.getArkWeb() == this) {
+            TabCacheManager.getInstance().removeTab(tabId);
+        }
+        if (mWebContents.isDestroyed()) {
+            return;
+        }
+        mWebContents.destroy();
+    }
 
     public boolean isDestroyed() {
         return mWebContents.isDestroyed();

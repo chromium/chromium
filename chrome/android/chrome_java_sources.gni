@@ -22,6 +22,7 @@ chrome_java_sources = [
 
   "java/src/com/ark/browser/core/ArkCompositorViewHolder.java",
   "java/src/com/ark/browser/core/ArkContentView.java",
+  "java/src/com/ark/browser/core/ArkFullscreenHtmlApiHandler.java",
   "java/src/com/ark/browser/core/ArkLayoutManager.java",
   "java/src/com/ark/browser/core/ArkNavigationHandler.java",
   "java/src/com/ark/browser/core/ArkStaticLayout.java",

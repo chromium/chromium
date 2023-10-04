@@ -90,7 +90,9 @@ public final class ViewEventSinkImpl implements ViewEventSink, ActivityStateObse
             // To request layout has side effect, but it seems OK as it only happen in
             // onConfigurationChange and layout has to be changed in most case.
             ViewAndroidDelegate delegate = mWebContents.getViewAndroidDelegate();
-            if (delegate != null) delegate.getContainerView().requestLayout();
+            if (delegate != null && delegate.getContainerView() != null) {
+                delegate.getContainerView().requestLayout();
+            }
         } finally {
             TraceEvent.end("ViewEventSink.onConfigurationChanged");
         }

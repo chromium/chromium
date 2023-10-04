@@ -40,6 +40,7 @@ import com.ark.browser.ui.fragment.search.SearchFragment;
 import com.ark.browser.ui.fragment.settings.SettingsFragment;
 import com.ark.browser.ui.widget.BottomControlBar;
 import com.ark.browser.ui.widget.BottomController;
+import com.ark.browser.ui.widget.StatusBarView;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.PrefsHelper;
 import com.ark.browser.utils.ThreadPool;
@@ -51,6 +52,8 @@ import com.zpj.utils.StatusBarUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -64,9 +67,11 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     private final Context mContext;
     private final ArkCompositorViewHolder mViewHolder;
     private final View mBrowserLayout;
+    private final StatusBarView mStatusBarView;
     private final ArkLauncherLayout mLauncherLayout;
     private final TabSwitcherLayout mTabSwitcherLayout;
     private final SwitcherRecyclerLayout mSwitcher;
+    private final BottomControlBar mBottomControlBar;
     private final BottomController mBottomController;
     private final WindowDisplayFrameObserver mWindowDisplayFrameObserver;
     private final SharedPreferences.OnSharedPreferenceChangeListener mUserAgentChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -90,13 +95,14 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         mViewHolder.setRootView(rootView);
         mLauncherLayout = rootView.findViewById(R.id.launcher_layout);
         mBrowserLayout = rootView.findViewById(R.id.browser_layout);
+        mStatusBarView = rootView.findViewById(R.id.space_status_bar);
         mTabSwitcherLayout = rootView.findViewById(R.id.tab_switcher_layout);
         mSwitcher = mTabSwitcherLayout.getSwitcher();
         mSwitcher.addCallback(this);
         mSwitcher.setAdapter(new ArkTabAdapter(mContext, mViewHolder.getTabContentManager()));
 
-        BottomControlBar bottomControlBar = rootView.findViewById(R.id.bottom_control_bar);
-        bottomControlBar.setSwitcherManager(this);
+        mBottomControlBar = rootView.findViewById(R.id.bottom_control_bar);
+        mBottomControlBar.setSwitcherManager(this);
         mBottomController = new BottomController(rootView);
 
         mLauncherLayout.init(savedInstanceState);
@@ -202,16 +208,16 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
                     int diff = rootView.getHeight() - rect.bottom - navBarHeight;
                     if (diff > 0) {
                         // TODO find bar
-                        int barHeight = bottomControlBar.getHeight() - bottomControlBar.getPaddingBottom();
+                        int barHeight = mBottomControlBar.getHeight() - mBottomControlBar.getPaddingBottom();
                         if (diff < barHeight) {
-                            if (bottomControlBar.getPaddingBottom() != diff) {
-                                bottomControlBar.setPadding(0, 0, 0, diff);
+                            if (mBottomControlBar.getPaddingBottom() != diff) {
+                                mBottomControlBar.setPadding(0, 0, 0, diff);
                             }
-                        } else if (bottomControlBar.getHeight() != diff) {
-                            bottomControlBar.setPadding(0, 0, 0, diff - barHeight);
+                        } else if (mBottomControlBar.getHeight() != diff) {
+                            mBottomControlBar.setPadding(0, 0, 0, diff - barHeight);
                         }
                     } else {
-                        bottomControlBar.setPadding(0, 0, 0, 0);
+                        mBottomControlBar.setPadding(0, 0, 0, 0);
                     }
                 }
             }
@@ -286,6 +292,22 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
             }
         });
         mViewHolder.onStart();
+
+
+        mViewHolder.getFullscreenManager().addObserver(new FullscreenManager.Observer() {
+            @Override
+            public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+                mBottomControlBar.setVisibility(View.GONE);
+                mStatusBarView.setVisibility(View.GONE);
+
+            }
+
+            @Override
+            public void onExitFullscreen(Tab tab) {
+                mBottomControlBar.setVisibility(View.VISIBLE);
+                mStatusBarView.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     public BottomController getBottomController() {

@@ -60,6 +60,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorView;
@@ -122,7 +123,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     private static final String TAG = "ArkCompositorViewHolder";
 
-    private static final long SYSTEM_UI_VIEWPORT_UPDATE_DELAY_MS = 500;
+    private static final long SYSTEM_UI_VIEWPORT_UPDATE_DELAY_MS = 0;
 
     /**
      * Initializer interface used to decouple initialization from the class that owns
@@ -137,6 +138,8 @@ public class ArkCompositorViewHolder extends FrameLayout
 
 
     protected ArkWindowAndroid mWindowAndroid;
+
+    protected ArkFullscreenHtmlApiHandler mHtmlApiHandler;
 
     protected ArkLayoutManager mLayoutManager;
     protected final TabContentManager mTabContentManager = TabGroupManager.global().getTabContentManager();
@@ -153,6 +156,11 @@ public class ArkCompositorViewHolder extends FrameLayout
         }
 
         @Override
+        public void onHidden(Tab tab, int reason) {
+            mHtmlApiHandler.exitPersistentFullscreenMode();
+        }
+
+        @Override
         public void onShown(Tab tab, @TabSelectionType int type) {
             mLayoutManager.mStaticLayout.onShown(tab);
         }
@@ -161,6 +169,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         public void onContentChanged(Tab tab) {
             mLayoutManager.initLayoutTabFromHost(tab.getId());
             setTab(tab);
+            mHtmlApiHandler.setContentView(mWindowAndroid.getCompositorViewHolder().getContentView());
         }
 
         @Override
@@ -244,12 +253,26 @@ public class ArkCompositorViewHolder extends FrameLayout
         }
 
         @Override
-        public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
+        public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
+            if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()) {
+                if (tab == mTabVisible) {
+                    mHtmlApiHandler.exitPersistentFullscreenMode();
+                }
+            }
             if (tab != mSwipeRefreshHandler.getTab()) {
                 return;
             }
-            if (navigationHandle.isInPrimaryMainFrame()) {
+            if (navigation.isInPrimaryMainFrame()) {
                 mSwipeRefreshHandler.didStopRefreshing();
+            }
+        }
+
+        @Override
+        public void onInteractabilityChanged(Tab tab, boolean interactable) {
+            if (!interactable || tab != mTabVisible) return;
+            Runnable enterFullscreen = mHtmlApiHandler.getEnterFullscreenRunnable(tab);
+            if (enterFullscreen != null) {
+                enterFullscreen.run();
             }
         }
     };
@@ -1305,7 +1328,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     @Override
     public FullscreenManager getFullscreenManager() {
-        return null;
+        return mHtmlApiHandler;
     }
 
     @Override
@@ -1374,6 +1397,10 @@ public class ArkCompositorViewHolder extends FrameLayout
     }
 
     public boolean onBackPressed() {
+        if (mHtmlApiHandler != null && mHtmlApiHandler.getPersistentFullscreenMode()) {
+            mHtmlApiHandler.exitFullscreen();
+            return true;
+        }
         if (mTabVisible != null && mTabVisible.canGoBack()) {
             mTabVisible.goBack();
             onBackPressedCallback.setEnabled(mTabVisible.canGoBack());
@@ -1388,6 +1415,14 @@ public class ArkCompositorViewHolder extends FrameLayout
      */
     public void initCompositor(ArkWindowAndroid window, Callback callback) {
         mWindowAndroid = window;
+
+        ObservableSupplierImpl<Boolean> areControlsHidden = new ObservableSupplierImpl<>();
+        areControlsHidden.set(true);
+        mHtmlApiHandler = new ArkFullscreenHtmlApiHandler(window.getActivity().get(),
+                areControlsHidden, true);
+
+        mHtmlApiHandler.initialize();
+
         this.mCallback = callback;
         Activity activity = window.getActivity().get();
         ((FragmentActivity) activity).getOnBackPressedDispatcher()
@@ -1647,6 +1682,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         }
 
         mSwipeRefreshHandler.setTab((ArkTabImpl) mTabVisible);
+        mHtmlApiHandler.setTab(mTabVisible);
         if (mTabVisible != null) {
             mContentView.setWebContents(mTabVisible.getWebContents());
             initializeTab(mTabVisible);

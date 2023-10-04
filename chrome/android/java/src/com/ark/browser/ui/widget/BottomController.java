@@ -23,6 +23,7 @@ import com.ark.browser.ui.fragment.dialog.ToolsDialog;
 import com.ark.browser.ui.fragment.search.SearchFragment;
 import com.ark.browser.ui.widget.indicator.CoolIndicator;
 import com.ark.browser.utils.ArkLogger;
+import com.ark.browser.utils.ThreadPool;
 import com.zpj.utils.KeyboardUtils;
 import com.zpj.utils.ScreenUtils;
 
@@ -164,6 +165,7 @@ public class BottomController {
 
             @Override
             public void onCrash(Tab tab) {
+                ArkLogger.e(TAG, "onCrash");
                 updateLoadingState(false);
             }
 
@@ -174,6 +176,7 @@ public class BottomController {
 
             @Override
             public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                ArkLogger.e(TAG, "onLoadUrl params=" + params);
                 updateStarButton(tab);
                 updateLoadingState(tab.isLoading());
             }
@@ -197,6 +200,7 @@ public class BottomController {
 
             @Override
             public void onLoadFinished(Tab tab, boolean toDifferentDocument) {
+                ArkLogger.e(TAG, "onLoadFinished");
                 updateLoadingState(false);
             }
 
@@ -207,11 +211,13 @@ public class BottomController {
 
             @Override
             public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+                ArkLogger.e(TAG, "didFirstVisuallyNonEmptyPaint");
                 updateLoadingState(false);
             }
 
             @Override
             public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
+                ArkLogger.e(TAG, "onLoadStopped");
                 if (TextUtils.isEmpty(tab.getTitle())) {
                     setLoadingTitle(tab.getUrl().toString());
                 } else {
@@ -249,6 +255,14 @@ public class BottomController {
         };
     }
 
+    public void show() {
+
+    }
+
+    public void hide() {
+
+    }
+
     public void updateStarButton() {
         updateStarButton(mTab);
     }
@@ -268,9 +282,25 @@ public class BottomController {
             mBookmarkModel.finishLoadingBookmarkModel(() -> updateStarButton(tab));
             return;
         }
-        if (tab != null && (mBookmarkModel.hasBookmarkIdForTab(tab)
-                || HomepageManager.getFavoriteByUrl(tab.getUrl().getSpec()) != null)) {
-            starButton.setImageResource(R.drawable.ic_bookmark_added);
+
+        if (tab != null) {
+            if (mBookmarkModel.hasBookmarkIdForTab(tab)) {
+                starButton.setImageResource(R.drawable.ic_bookmark_added);
+            } else {
+                ThreadPool.executeIO(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mTab != tab) {
+                            return;
+                        }
+                        if (HomepageManager.getFavoriteByUrl(tab.getUrl().getSpec()) != null) {
+                            starButton.setImageResource(R.drawable.ic_bookmark_added);
+                        } else {
+                            starButton.setImageResource(R.drawable.ic_add_bookmark);
+                        }
+                    }
+                });
+            }
         } else {
             starButton.setImageResource(R.drawable.ic_add_bookmark);
         }

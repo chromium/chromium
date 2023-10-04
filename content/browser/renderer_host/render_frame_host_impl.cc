@@ -3372,7 +3372,14 @@ void RenderFrameHostImpl::DidAddMessageToConsole(
     uint32_t line_no,
     const absl::optional<std::u16string>& source_id,
     const absl::optional<std::u16string>& untrusted_stack_trace) {
-  LOG(ERROR) << "RenderFrameHostImpl::DidAddMessageToConsole message=" << message << " line_no=" << line_no;
+  LOG(ERROR) << "RenderFrameHostImpl::DidAddMessageToConsole message=" << message
+    << " line_no=" << line_no;
+  if (source_id) {
+    LOG(ERROR) << "RenderFrameHostImpl::DidAddMessageToConsole source_id=" << *source_id;
+  }
+  if (untrusted_stack_trace) {
+    LOG(ERROR) << "RenderFrameHostImpl::DidAddMessageToConsole untrusted_stack_trace=" << *untrusted_stack_trace;
+  }
   std::u16string updated_source_id;
   if (source_id.has_value())
     updated_source_id = *source_id;
@@ -6853,7 +6860,8 @@ void RenderFrameHostImpl::CreateNewWindow(
   // If this frame isn't allowed to create a window, return early (before we
   // consume transient user activation).
   if (!can_create_window) {
-    std::move(callback).Run(mojom::CreateNewWindowStatus::kBlocked, nullptr);
+    LOG(ERROR) << "RenderFrameHostImpl::CreateNewWindow !can_create_window";
+    std::move(callback).Run(mojom::CreateNewWindowStatus::kReuse, nullptr);
     return;
   }
 

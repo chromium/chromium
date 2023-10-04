@@ -47,7 +47,7 @@ public class ArkWebManager {
             if (arkWeb.isDestroyed()) {
                 arkWeb = null;
             } else {
-                arkWeb.getWebContents().destroy();
+                arkWeb.destroy();
             }
         }
         return arkWeb;
@@ -57,7 +57,7 @@ public class ArkWebManager {
         for (int i = 0; i < PAGE_CACHE.size(); i++) {
             ArkWebContents web = PAGE_CACHE.valueAt(i);
             if (web != null && !web.isDestroyed()) {
-                web.getWebContents().destroy();
+                web.destroy();
             }
         }
         PAGE_CACHE.clear();

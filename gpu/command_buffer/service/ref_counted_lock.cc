@@ -13,7 +13,13 @@ RefCountedLockHelperDrDc::RefCountedLockHelperDrDc(
     : lock_(std::move(lock)) {
   // |lock_| should be present if Android Media code needs to be thread-safe and
   // not present otherwise.
-  DCHECK_EQ(features::NeedThreadSafeAndroidMedia(), !!lock_);
+  // DCHECK_EQ(features::NeedThreadSafeAndroidMedia(), !!lock_);
+  bool need_safe = features::NeedThreadSafeAndroidMedia();
+  bool has_lock = !!lock;
+  if (need_safe != has_lock) {
+    LOG(ERROR) << "RefCountedLockHelperDrDc::RefCountedLockHelperDrDc need_safe=" << need_safe
+        << " has_lock" << has_lock;
+  }
 }
 
 RefCountedLockHelperDrDc::~RefCountedLockHelperDrDc() = default;

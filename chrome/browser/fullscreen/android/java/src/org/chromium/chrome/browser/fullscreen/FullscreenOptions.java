@@ -29,11 +29,11 @@ public class FullscreenOptions {
         this.showStatusBar = showStatusBar;
     }
 
-    void setCanceled() {
+    public void setCanceled() {
         mCanceled = true;
     }
 
-    boolean canceled() {
+    public boolean canceled() {
         return mCanceled;
     }
 

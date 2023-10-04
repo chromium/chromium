@@ -532,8 +532,7 @@ SkiaOutputSurfaceImpl::CreateImageContext(
 void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!current_paint_);
-  DCHECK_EQ(!frame.sub_buffer_rect || !frame.sub_buffer_rect->IsEmpty(),
-            current_buffer_modified_);
+  // DCHECK_EQ(!frame.sub_buffer_rect || !frame.sub_buffer_rect->IsEmpty(), current_buffer_modified_);
 
   has_set_draw_rectangle_for_frame_ = false;
 

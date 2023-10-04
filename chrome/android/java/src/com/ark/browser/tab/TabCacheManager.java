@@ -108,10 +108,6 @@ public class TabCacheManager {
         tab.destroy();
     }
 
-    public void removeTab(IPage page) {
-        removeTab(page.getId());
-    }
-
     public void removeTab(int id) {
         Tab tab = tabCache.get(id);
         if (tab != null) {
