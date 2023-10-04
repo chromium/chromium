@@ -581,7 +581,11 @@ void NativeWidgetAura::SetBoundsInternal(const gfx::Rect& bounds,
       !screen->GetDisplayWithDisplayId(display_id.value(), &dst_display)) {
     dst_display = screen->GetDisplayMatching(bounds);
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  // `dst_display` is not used on desktop chrome, and `GetDisplayMatching` above
+  // may return invalid display on Windows.
   CHECK(dst_display.is_valid());
+#endif
   window_->SetBoundsInScreen(bounds, dst_display);
 }
 
