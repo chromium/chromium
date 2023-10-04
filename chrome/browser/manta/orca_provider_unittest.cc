@@ -7,13 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/manta/manta_status.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -21,11 +19,8 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
-#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace manta {
@@ -71,8 +66,7 @@ class FakeOrcaProvider : public OrcaProvider {
 class OrcaProviderTest : public testing::Test {
  public:
   OrcaProviderTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   OrcaProviderTest(const OrcaProviderTest&) = delete;
   OrcaProviderTest& operator=(const OrcaProviderTest&) = delete;
@@ -83,8 +77,6 @@ class OrcaProviderTest : public testing::Test {
     identity_test_env_.MakePrimaryAccountAvailable(kEmail,
                                                    signin::ConsentLevel::kSync);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
-    in_process_data_decoder_ =
-        std::make_unique<data_decoder::test::InProcessDataDecoder>();
   }
 
   void SetEndpointMockResponse(const GURL& request_url,
@@ -117,9 +109,6 @@ class OrcaProviderTest : public testing::Test {
  private:
   signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  TestingProfileManager profile_manager_;
-  std::unique_ptr<data_decoder::test::InProcessDataDecoder>
-      in_process_data_decoder_;
 };
 
 // Test OrcaProvider rejects invalid input data. Currently we require the

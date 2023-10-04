@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "chrome/browser/manta/manta_service_callbacks.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
