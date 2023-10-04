@@ -80,6 +80,22 @@ GetTestIdentifiers(const std::string& tracking_id) {
   return result;
 }
 
+void ExpectGetParcelsCallback(
+    bool expected_success,
+    const std::vector<ParcelTrackingStatus>& expected_parcel_status,
+    bool success,
+    std::unique_ptr<std::vector<ParcelTrackingStatus>> parcel_status) {
+  ASSERT_EQ(success, expected_success);
+  ASSERT_EQ(expected_parcel_status.size(), parcel_status->size());
+  for (size_t i = 0; i < expected_parcel_status.size(); ++i) {
+    auto status = (*parcel_status)[i];
+    auto expected_status = expected_parcel_status[i];
+    ASSERT_EQ(expected_status.tracking_id, status.tracking_id);
+    ASSERT_EQ(expected_status.carrier, status.carrier);
+    ASSERT_EQ(expected_status.state, status.state);
+  }
+}
+
 class MockServerProxy : public ParcelsServerProxy {
  public:
   MockServerProxy()
@@ -305,6 +321,31 @@ TEST_F(ParcelsManagerTest,
       },
       &run_loop));
   run_loop.Run();
+}
+
+TEST_F(ParcelsManagerTest,
+       TestGetAllParcelStatusesCalledTwice_LocalStorageHasFreshStatus) {
+  EXPECT_CALL(*mock_storage_, Init(_)).Times(1);
+  mock_storage_->MockGetAllParcelTrackingContents(kTestTrackingId,
+                                                  ParcelStatus::NEW);
+  mock_server_proxy_->MockParcelStatusResponses(true, kTestTrackingId,
+                                                ParcelStatus::PICKED_UP);
+  mock_storage_->MockInitCallback(true);
+
+  EXPECT_CALL(*mock_server_proxy_, GetParcelStatus(_, _)).Times(0);
+  EXPECT_CALL(*mock_storage_, GetAllParcelTrackingContents()).Times(2);
+  EXPECT_CALL(*mock_storage_, UpdateParcelStatus(_, _)).Times(0);
+  std::vector<ParcelTrackingStatus> expected;
+  ParcelTrackingStatus expected_status;
+  expected_status.carrier = commerce::ParcelIdentifier::UPS;
+  expected_status.state = ParcelStatus::NEW;
+  expected_status.tracking_id = kTestTrackingId;
+  expected.emplace_back(expected_status);
+  parcels_manager_->GetAllParcelStatuses(
+      base::BindOnce(&ExpectGetParcelsCallback, true, expected));
+  parcels_manager_->GetAllParcelStatuses(
+      base::BindOnce(&ExpectGetParcelsCallback, true, expected));
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(ParcelsManagerTest,
