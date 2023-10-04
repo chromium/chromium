@@ -108,42 +108,32 @@ class ProxyImplBase {
         if (hr != E_NOINTERFACE) {
           return;
         }
+
         static bool dumped_once = false;
         if (dumped_once) {
           return;
         }
         dumped_once = true;
 
-        base::ThreadPool::PostTask(
-            FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
-            base::BindOnce(
-                [](const std::wstring& hkey_root, const std::wstring& path,
-                   const std::vector<IID>& interface_iids) {
-                  for (const auto& iid : interface_iids) {
-                    const std::wstring interface_iid =
-                        base::win::WStringFromGUID(iid);
-                    const auto reg_key =
-                        base::StrCat({hkey_root, path, interface_iid});
-                    absl::optional<std::wstring> contents =
-                        GetRegKeyContents(reg_key);
-                    LOG(ERROR)
-                        << reg_key << ": "
-                        << (contents && !base::ContainsOnlyChars(
-                                            *contents, base::kWhitespaceWide)
-                                ? *contents
-                                : L"*Missing*");
-                  }
-                  DUMP_WILL_BE_CHECK(false);
-                },
-                IsSystemInstall(scope_) ? L"HKLM" : L"HKCU",
-                IsSystemInstall(scope_) ? L"\\SOFTWARE\\WOW6432Node\\Classes"
-                                          L"\\Interface\\"
-                                        : L"\\SOFTWARE\\Classes\\WOW6432Node"
-                                          L"\\Interface\\",
-                iids_));
-
-        base::PlatformThread::Sleep(base::Seconds(10));
+        const wchar_t* hkey_root = IsSystemInstall(scope_) ? L"HKLM" : L"HKCU";
+        const wchar_t* path = IsSystemInstall(scope_)
+                                  ? L"\\SOFTWARE\\WOW6432Node\\Classes"
+                                    L"\\Interface\\"
+                                  : L"\\SOFTWARE\\Classes\\WOW6432Node"
+                                    L"\\Interface\\";
+        for (const auto& iid : iids_) {
+          const std::wstring reg_key =
+              base::StrCat({hkey_root, path, base::win::WStringFromGUID(iid)});
+          absl::optional<std::wstring> contents = GetRegKeyContents(reg_key);
+          LOG(ERROR) << reg_key << ": "
+                     << (contents && !base::ContainsOnlyChars(
+                                         *contents, base::kWhitespaceWide)
+                             ? *contents
+                             : L"*Missing*");
+        }
+        DUMP_WILL_BE_CHECK(false);
       }();
+
       return base::unexpected(hr);
     }
 
@@ -180,7 +170,8 @@ class ProxyImplBase {
   scoped_refptr<base::SequencedTaskRunner> task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
+           base::WithBaseSyncPrimitives(), base::MayBlock()});
 
   const UpdaterScope scope_;
   const std::vector<IID> iids_;
