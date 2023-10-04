@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/device_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/device_section.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -17,12 +17,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/device_display_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/device_keyboard_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/device_pointer_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/device_stylus_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/printing_section.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/settings/ash/device_display_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/device_keyboard_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/device_pointer_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/device_stylus_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"

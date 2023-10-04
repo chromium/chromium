@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/device_pointer_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/device_pointer_handler.h"
 
 #include "base/functional/bind.h"
 #include "base/values.h"

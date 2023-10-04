@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/device_keyboard_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/device_keyboard_handler.h"
 
 #include <memory>
 #include <string>
@@ -79,8 +79,9 @@ class KeyboardHandlerTest : public ChromeAshTestBase {
 
       for (const auto& pair : path_to_out_param) {
         auto* found = keyboard_params.Find(pair.first);
-        if (!found)
+        if (!found) {
           return false;
+        }
 
         *(pair.second) = found->GetBool();
       }

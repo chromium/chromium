@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerator_actions.h"
@@ -10,7 +10,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
-#include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.mojom-forward.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom-forward.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"

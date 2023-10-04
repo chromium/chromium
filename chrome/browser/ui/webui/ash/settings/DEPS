@@ -7,6 +7,15 @@ specific_include_rules = {
     '+ash/color_enhancement/color_enhancement_controller.h',
     '+content/public/browser/tts_controller.h',
   ],
+  'device_keyboard_handler\.cc': [
+    '+ash/shell.h',
+  ],
+  'device_keyboard_handler_unittest\.cc': [
+    '+device/udev_linux/fake_udev_loader.h',
+  ],
+  'device_section\.cc': [
+    '+ash/shell.h',
+  ],
   'fast_pair_.*': [
     "+ash/quick_pair",
   ],

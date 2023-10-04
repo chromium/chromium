@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_KEYBOARD_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_KEYBOARD_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_DEVICE_DEVICE_KEYBOARD_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_DEVICE_DEVICE_KEYBOARD_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -14,9 +14,8 @@
 namespace ash::settings {
 
 // Chrome OS "Keyboard" settings page UI handler.
-class KeyboardHandler
-    : public ::settings::SettingsPageUIHandler,
-      public ui::InputDeviceEventObserver {
+class KeyboardHandler : public ::settings::SettingsPageUIHandler,
+                        public ui::InputDeviceEventObserver {
  public:
   // Name of the message sent to WebUI when the keys that should be shown
   // change.
@@ -75,4 +74,4 @@ class KeyboardHandler
 
 }  // namespace ash::settings
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_KEYBOARD_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_DEVICE_DEVICE_KEYBOARD_HANDLER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/device_stylus_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/device_stylus_handler.h"
 
 #include <memory>
 #include <string>
@@ -75,8 +75,9 @@ void StylusHandler::OnAvailableNoteTakingAppsUpdated() {
 }
 
 void StylusHandler::OnPreferredNoteTakingAppUpdated(Profile* profile) {
-  if (Profile::FromWebUI(web_ui()) == profile)
+  if (Profile::FromWebUI(web_ui()) == profile) {
     UpdateNoteTakingApps();
+  }
 }
 
 void StylusHandler::OnDeviceListsComplete() {
@@ -145,8 +146,9 @@ void StylusHandler::HandleSetPreferredNoteTakingAppEnabledOnLockScreen(
 
 void StylusHandler::HandleInitialize(const base::Value::List& args) {
   AllowJavascript();
-  if (ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete())
+  if (ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete()) {
     SendHasStylus();
+  }
 }
 
 void StylusHandler::SendHasStylus() {
