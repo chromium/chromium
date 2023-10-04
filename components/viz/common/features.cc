@@ -183,6 +183,12 @@ BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
              "AllowUndamagedNonrootRenderPassToSkip",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allow SurfaceAggregator to merge render passes when they contain quads that
+// require overlay (e.g. protected video). See usage in |EmitSurfaceContent|.
+BASE_FEATURE(kAllowForceMergeRenderPassWithRequireOverlayQuads,
+             "AllowForceMergeRenderPassWithRequireOverlayQuads",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether to:
 // - Perform periodic inactive frame culling.
 // - Cull *all* frames in case of critical memory pressure, rather than keeping

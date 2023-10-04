@@ -17,6 +17,7 @@
 #include "components/viz/service/display/aggregated_frame.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
+#include "ui/gfx/video_types.h"
 #include "ui/latency/latency_info.h"
 
 namespace viz {
@@ -51,6 +52,8 @@ struct TextureQuadParams {
   bool flipped = false;
   bool nearest_neighbor = false;
   bool secure_output_only = false;
+  gfx::ProtectedVideoType protected_video_type =
+      gfx::ProtectedVideoType::kClear;
 };
 
 // Helper to build a CompositorRenderPass and add quads to it. By default the

@@ -2079,6 +2079,185 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ASSERT_EQ(0u, aggregated_frame.render_pass_list[0]->copy_requests.size());
 }
 
+// Check that a copy request does not prevent protected quads from being
+// displayed. Protected quads must merge to the root render pass to be
+// considered for overlay promotion, which is required for their display.
+TEST_F(SurfaceAggregatorValidSurfaceTest,
+       CopyRequestOnEmbeddedSurfaceWithProtectedQuads) {
+  auto embedded_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryFrameSinkId2, /*is_root=*/false);
+  TestSurfaceIdAllocator embedded_surface_id(embedded_support->frame_sink_id());
+
+  {
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(kSurfaceSize)
+                    .AddTextureQuad(
+                        gfx::Rect(20, 20), ResourceId(1),
+                        TextureQuadParams{
+                            .protected_video_type =
+                                gfx::ProtectedVideoType::kHardwareProtected})
+                    .AddSolidColorQuad(gfx::Rect(kSurfaceSize),
+                                       SkColors::kGreen))
+            .Build();
+    PopulateTransferableResources(frame);
+
+    embedded_support->SubmitCompositorFrame(
+        embedded_surface_id.local_surface_id(), std::move(frame));
+
+    auto copy_request = CopyOutputRequest::CreateStubForTesting();
+    embedded_support->RequestCopyOfOutput(
+        {embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+         std::move(copy_request)});
+  }
+
+  {
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                    .AddSurfaceQuad(
+                        gfx::Rect(kSurfaceSize),
+                        SurfaceRange(embedded_surface_id),
+                        {.default_background_color = SkColors::kYellow}))
+            .Build();
+
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
+  }
+
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+  VerifyExpectedSurfaceIds({root_surface_id_, embedded_surface_id});
+
+  EXPECT_TRUE(aggregated_frame.has_copy_requests);
+
+  // We expect two render passes:
+  //   - embedded surface's root pass with the copy request.
+  //   - root pass with the embedded surface's quads merged, no copy requests.
+  auto& render_pass_list = aggregated_frame.render_pass_list;
+  ASSERT_EQ(2u, render_pass_list.size());
+
+  // Embedded surface
+  EXPECT_THAT(render_pass_list[0]->quad_list,
+              ElementsAre(IsTextureQuad(), IsSolidColorQuad(SkColors::kGreen)));
+  EXPECT_THAT(render_pass_list[0]->copy_requests, testing::SizeIs(1u));
+
+  // Root pass
+  EXPECT_THAT(render_pass_list[1]->quad_list,
+              ElementsAre(IsTextureQuad(), IsSolidColorQuad(SkColors::kGreen)));
+  EXPECT_THAT(render_pass_list[1]->copy_requests, testing::IsEmpty());
+
+  // Ensure copy requests have been removed from the embedded surface.
+  const CompositorFrame& original_frame =
+      manager_.surface_manager()
+          ->GetSurfaceForId(embedded_surface_id)
+          ->GetActiveFrame();
+  const auto& original_pass_list = original_frame.render_pass_list;
+  ASSERT_EQ(1u, original_pass_list.size());
+  EXPECT_THAT(original_pass_list[0]->copy_requests, testing::IsEmpty());
+}
+
+// This is the same test as CopyRequestOnEmbeddedSurfaceWithProtectedQuads, but
+// ensures that we can still merge the render pass with the copy request even if
+// it does not directly contain the protected quad and transitively embeds it.
+TEST_F(SurfaceAggregatorValidSurfaceTest,
+       CopyRequestOnSurfaceEmbeddingSurfaceWithProtectedQuads) {
+  auto video_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryFrameSinkId2, /*is_root=*/false);
+  TestSurfaceIdAllocator video_surface_id(video_support->frame_sink_id());
+
+  auto embedded_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryFrameSinkId3, /*is_root=*/false);
+  TestSurfaceIdAllocator embedded_surface_id(embedded_support->frame_sink_id());
+
+  {
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(kSurfaceSize)
+                    .AddTextureQuad(
+                        gfx::Rect(20, 20), ResourceId(1),
+                        TextureQuadParams{
+                            .protected_video_type =
+                                gfx::ProtectedVideoType::kHardwareProtected})
+                    .AddSolidColorQuad(gfx::Rect(kSurfaceSize),
+                                       SkColors::kGreen))
+            .Build();
+    PopulateTransferableResources(frame);
+
+    video_support->SubmitCompositorFrame(video_surface_id.local_surface_id(),
+                                         std::move(frame));
+  }
+
+  {
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(kSurfaceSize)
+                    .AddSurfaceQuad(
+                        gfx::Rect(kSurfaceSize), SurfaceRange(video_surface_id),
+                        {.default_background_color = SkColors::kYellow}))
+            .Build();
+
+    embedded_support->SubmitCompositorFrame(
+        embedded_surface_id.local_surface_id(), std::move(frame));
+
+    auto copy_request = CopyOutputRequest::CreateStubForTesting();
+    embedded_support->RequestCopyOfOutput(
+        {embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+         std::move(copy_request)});
+  }
+
+  {
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                    .AddSurfaceQuad(
+                        gfx::Rect(kSurfaceSize),
+                        SurfaceRange(embedded_surface_id),
+                        {.default_background_color = SkColors::kYellow}))
+            .Build();
+
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
+  }
+
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+  VerifyExpectedSurfaceIds(
+      {root_surface_id_, embedded_surface_id, video_surface_id});
+
+  EXPECT_TRUE(aggregated_frame.has_copy_requests);
+
+  // We expect two render passes:
+  //   - embedded surface with the video surface merged and a copy request.
+  //   - root pass with everything merged, no copy requests.
+  auto& render_pass_list = aggregated_frame.render_pass_list;
+  ASSERT_EQ(2u, render_pass_list.size());
+
+  // Embedded surface pass, with the video surface merged
+  EXPECT_THAT(render_pass_list[0]->quad_list,
+              ElementsAre(IsTextureQuad(), IsSolidColorQuad(SkColors::kGreen)));
+  EXPECT_THAT(render_pass_list[0]->copy_requests, testing::SizeIs(1u));
+
+  // Root pass, with everything merged
+  EXPECT_THAT(render_pass_list[1]->quad_list,
+              ElementsAre(IsTextureQuad(), IsSolidColorQuad(SkColors::kGreen)));
+  EXPECT_THAT(render_pass_list[1]->copy_requests, testing::IsEmpty());
+
+  // Ensure copy requests have been removed from the embedded surface.
+  const CompositorFrame& original_frame =
+      manager_.surface_manager()
+          ->GetSurfaceForId(root_surface_id_)
+          ->GetActiveFrame();
+  const auto& original_pass_list = original_frame.render_pass_list;
+  ASSERT_EQ(1u, original_pass_list.size());
+  EXPECT_THAT(original_pass_list[0]->copy_requests, testing::IsEmpty());
+}
+
 // Root surface may contain copy requests.
 TEST_F(SurfaceAggregatorValidSurfaceTest, RootCopyRequest) {
   constexpr gfx::Rect quad_rect(5, 5);
