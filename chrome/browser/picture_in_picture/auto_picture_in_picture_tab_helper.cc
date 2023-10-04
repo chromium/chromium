@@ -8,11 +8,9 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_strip_observer_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
@@ -35,11 +33,13 @@ AutoPictureInPictureTabHelper::AutoPictureInPictureTabHelper(
           *web_contents),
       host_content_settings_map_(HostContentSettingsMapFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
-  // TODO(https://crbug.com/1465988): Instead of observing all tabstrips at all
-  // times, only observe |web_contents()|'s current tabstrip and only while
-  // kEnterAutoPictureInPicture is available.
-  browser_tab_strip_tracker_.Init();
-  UpdateIsTabActivated();
+  // `base::Unretained` is safe here since we own `tab_strip_observer_helper_`.
+  tab_strip_observer_helper_ =
+      std::make_unique<AutoPictureInPictureTabStripObserverHelper>(
+          web_contents,
+          base::BindRepeating(
+              &AutoPictureInPictureTabHelper::OnTabActivatedChanged,
+              base::Unretained(this)));
 
   // Connect to receive audio focus events.
   mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote;
@@ -74,6 +74,7 @@ void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
 
   if (!is_in_picture_in_picture_) {
     is_in_auto_picture_in_picture_ = false;
+    MaybeStartOrStopObservingTabStrip();
     return;
   }
 
@@ -89,16 +90,9 @@ void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
   }
 }
 
-void AutoPictureInPictureTabHelper::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  const bool old_is_tab_activated = is_tab_activated_;
-  UpdateIsTabActivated();
-  if (is_tab_activated_ == old_is_tab_activated) {
-    return;
-  }
-
+void AutoPictureInPictureTabHelper::OnTabActivatedChanged(
+    bool is_tab_activated) {
+  is_tab_activated_ = is_tab_activated;
   if (is_tab_activated_) {
     MaybeExitAutoPictureInPicture();
   } else {
@@ -152,6 +146,7 @@ void AutoPictureInPictureTabHelper::MediaSessionActionsChanged(
   if (is_enter_auto_picture_in_picture_available_) {
     has_ever_registered_for_auto_picture_in_picture_ = true;
   }
+  MaybeStartOrStopObservingTabStrip();
 }
 
 void AutoPictureInPictureTabHelper::MaybeEnterAutoPictureInPicture() {
@@ -170,6 +165,15 @@ void AutoPictureInPictureTabHelper::MaybeExitAutoPictureInPicture() {
   is_in_auto_picture_in_picture_ = false;
 
   PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
+}
+
+void AutoPictureInPictureTabHelper::MaybeStartOrStopObservingTabStrip() {
+  if (is_enter_auto_picture_in_picture_available_ ||
+      is_in_auto_picture_in_picture_) {
+    tab_strip_observer_helper_->StartObserving();
+  } else {
+    tab_strip_observer_helper_->StopObserving();
+  }
 }
 
 bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() const {
@@ -200,23 +204,6 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() const {
   }
 
   return true;
-}
-
-void AutoPictureInPictureTabHelper::UpdateIsTabActivated() {
-  auto* tab_strip = GetCurrentTabStripModel();
-  if (tab_strip) {
-    is_tab_activated_ = tab_strip->GetActiveWebContents() == web_contents();
-  }
-}
-
-TabStripModel* AutoPictureInPictureTabHelper::GetCurrentTabStripModel() const {
-  // If this WebContents isn't in a normal browser window, then auto
-  // picture-in-picture is not supported.
-  auto* browser = chrome::FindBrowserWithWebContents(web_contents());
-  if (!browser || !browser->is_type_normal()) {
-    return nullptr;
-  }
-  return browser->tab_strip_model();
 }
 
 bool AutoPictureInPictureTabHelper::HasSufficientPlayback() const {

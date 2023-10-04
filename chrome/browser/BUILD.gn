@@ -4194,6 +4194,8 @@ static_library("browser") {
       "permissions/one_time_permissions_tracker_observer.h",
       "picture_in_picture/auto_picture_in_picture_tab_helper.cc",
       "picture_in_picture/auto_picture_in_picture_tab_helper.h",
+      "picture_in_picture/auto_picture_in_picture_tab_strip_observer_helper.cc",
+      "picture_in_picture/auto_picture_in_picture_tab_strip_observer_helper.h",
       "policy/browsing_history_policy_handler.cc",
       "policy/browsing_history_policy_handler.h",
       "policy/developer_tools_policy_handler.cc",
