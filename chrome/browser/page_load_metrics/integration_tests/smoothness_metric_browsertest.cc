@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 
 #include "chrome/test/base/ui_test_utils.h"
@@ -33,7 +34,13 @@ bool ExtractUKMSmoothnessMetric(const ukm::TestUkmRecorder& ukm_recorder,
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, BasicSmoothnessAverage) {
+// TODO(crbug.com/1489113): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BasicSmoothnessAverage DISABLED_BasicSmoothnessAverage
+#else
+#define MAYBE_BasicSmoothnessAverage BasicSmoothnessAverage
+#endif
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_BasicSmoothnessAverage) {
   LoadHTML(R"HTML(<div id='animate' style='width: 20px; height: 20px'></div>
     <img src="images/lcp-16x16.png"></img>
     <script>
