@@ -694,7 +694,7 @@ Element& Element::CloneWithChildren(
 
   clone.CloneAttributesFrom(*this);
   clone.CloneNonAttributePropertiesFrom(*this, data);
-  clone.ClonePartsFrom(*this, data);
+  PartRoot::CloneParts(*this, clone, data);
 
   // - (With OptimizedNodeCloneOrder enabled) Append the clone to its parent
   //   first, before cloning children. If this is done in the reverse order,
@@ -728,7 +728,7 @@ Element& Element::CloneWithoutChildren(NodeCloningData& data,
 
   clone.CloneAttributesFrom(*this);
   clone.CloneNonAttributePropertiesFrom(*this, data);
-  clone.ClonePartsFrom(*this, data);
+  PartRoot::CloneParts(*this, clone, data);
   return clone;
 }
 

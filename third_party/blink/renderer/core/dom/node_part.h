@@ -43,7 +43,7 @@ class CORE_EXPORT NodePart : public Part {
     return Part::IsValid() && node_;
   }
   Node* NodeToSortBy() const override;
-  Part* ClonePart(NodeCloningData&) const override;
+  Part* ClonePart(NodeCloningData&, Node&) const override;
   Document& GetDocument() const override;
 
   // NodePart API

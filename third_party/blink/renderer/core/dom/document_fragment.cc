@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -68,10 +69,17 @@ Node* DocumentFragment::Clone(Document& factory,
   DCHECK_EQ(append_to, nullptr)
       << "DocumentFragment::Clone() doesn't support append_to";
   DocumentFragment* clone = Create(factory);
-  clone->ClonePartsFrom(*this, data);
+  DocumentPartRoot* part_root = nullptr;
+  if (data.Has(CloneOption::kPreserveDOMParts)) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    part_root = &clone->getPartRoot();
+    data.PushPartRoot(*part_root);
+  }
+  PartRoot::CloneParts(*this, *clone, data);
   if (data.Has(CloneOption::kIncludeDescendants)) {
     clone->CloneChildNodesFrom(*this, data);
   }
+  DCHECK(!part_root || &data.CurrentPartRoot() == part_root);
   return clone;
 }
 

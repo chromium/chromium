@@ -83,6 +83,7 @@ void Part::MoveToRoot(PartRoot* new_root) {
     root_->RemovePart(*this);
   }
   root_ = new_root;
+  is_valid_ = root_ && connected_;
   if (new_root) {
     new_root->AddPart(*this);
   }
@@ -94,12 +95,13 @@ void Part::Trace(Visitor* visitor) const {
 }
 
 void Part::disconnect() {
-  CHECK(!disconnected_) << "disconnect should be overridden";
+  CHECK(connected_) << "disconnect should be overridden";
   if (root_) {
     root_->MarkPartsDirty();
     root_ = nullptr;
   }
-  disconnected_ = true;
+  connected_ = false;
+  is_valid_ = false;
 }
 
 PartRootUnion* Part::rootForBindings() const {

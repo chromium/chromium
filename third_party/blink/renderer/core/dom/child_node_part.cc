@@ -38,7 +38,7 @@ ChildNodePart::ChildNodePart(PartRoot& root,
 }
 
 void ChildNodePart::disconnect() {
-  if (disconnected_) {
+  if (!IsConnected()) {
     CHECK(!previous_sibling_ && !next_sibling_);
     return;
   }
@@ -66,7 +66,8 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
   auto& document = GetDocument();
   auto* fragment = To<DocumentFragment>(DocumentFragment::Create(document));
   NodeCloningData data{CloneOption::kPreserveDOMParts};
-  data.ConnectPartRootToClone(*root(), fragment->getPartRoot());
+  auto& fragment_part_root = fragment->getPartRoot();
+  data.PushPartRoot(fragment_part_root);
   ContainerNode* new_parent = To<ContainerNode>(
       parentNode()->Clone(document, data, fragment, exception_state));
   if (exception_state.HadException()) {
@@ -74,21 +75,23 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
   }
   data.Put(CloneOption::kIncludeDescendants);
   Node* node = previous_sibling_;
+  ChildNodePart* part_root = nullptr;
   while (true) {
+    bool final_node = node == next_sibling_;
+    if (final_node) {
+      part_root = static_cast<ChildNodePart*>(&data.CurrentPartRoot());
+    }
     node->Clone(document, data, new_parent, exception_state);
     if (exception_state.HadException()) {
       return nullptr;
     }
-    if (node == next_sibling_) {
+    if (final_node) {
       break;
     }
     node = node->nextSibling();
     CHECK(node) << "IsValid should detect invalid siblings";
   }
-  NodeMoveScope node_move_scope(*new_parent, NodeMoveScopeType::kClone);
-  data.Finalize();
-  ChildNodePart* part_root =
-      static_cast<ChildNodePart*>(data.ClonedPartRootFor(*this));
+  DCHECK_EQ(&data.CurrentPartRoot(), &fragment_part_root);
   return PartRoot::GetUnionFromPartRoot(part_root);
 }
 
@@ -175,22 +178,11 @@ ContainerNode* ChildNodePart::rootContainer() const {
   return IsValid() ? parentNode() : nullptr;
 }
 
-Part* ChildNodePart::ClonePart(NodeCloningData& data) const {
+Part* ChildNodePart::ClonePart(NodeCloningData& data, Node& node_clone) const {
   DCHECK(IsValid());
-  PartRoot* new_part_root = data.ClonedPartRootFor(*root());
-  // TODO(crbug.com/1453291) Eventually it should *not* be possible to construct
-  // Parts that get cloned without their PartRoots. But as-is, that can happen
-  // if, for example, a ChildNodePart contains child Nodes that are part of
-  // other ChildNodeParts or NodeParts whose `root` is not this ChildNodePart.
-  if (!new_part_root) {
-    return nullptr;
-  }
-  Node* new_previous = data.ClonedNodeFor(*previous_sibling_);
-  Node* new_next = data.ClonedNodeFor(*next_sibling_);
-  CHECK(new_previous && new_next);
   ChildNodePart* clone = MakeGarbageCollected<ChildNodePart>(
-      *new_part_root, *new_previous, *new_next, metadata());
-  data.ConnectPartRootToClone(*this, *clone);
+      data.CurrentPartRoot(), node_clone, node_clone, metadata());
+  data.PushPartRoot(*clone);
   return clone;
 }
 

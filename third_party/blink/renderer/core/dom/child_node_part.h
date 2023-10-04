@@ -50,7 +50,7 @@ class CORE_EXPORT ChildNodePart : public Part, public PartRoot {
   void Trace(Visitor* visitor) const override;
   bool IsValid() const override;
   Node* NodeToSortBy() const override;
-  Part* ClonePart(NodeCloningData&) const override;
+  Part* ClonePart(NodeCloningData&, Node&) const override;
   PartRoot* GetAsPartRoot() const override {
     return const_cast<ChildNodePart*>(this);
   }

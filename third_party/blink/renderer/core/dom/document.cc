@@ -4984,11 +4984,18 @@ Node* Document::Clone(Document& factory,
   if (!execution_context_)
     return nullptr;
   Document* clone = CloneDocumentWithoutChildren();
+  DocumentPartRoot* part_root = nullptr;
+  if (data.Has(CloneOption::kPreserveDOMParts)) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    part_root = &clone->getPartRoot();
+    data.PushPartRoot(*part_root);
+  }
   clone->CloneDataFromDocument(*this);
-  clone->ClonePartsFrom(*this, data);
+  PartRoot::CloneParts(*this, *clone, data);
   if (data.Has(CloneOption::kIncludeDescendants)) {
     clone->CloneChildNodesFrom(*this, data);
   }
+  DCHECK(!part_root || &data.CurrentPartRoot() == part_root);
   return clone;
 }
 

@@ -37,7 +37,6 @@ PartRootUnion* DocumentPartRoot::clone(ExceptionState&) {
       clone->IsDocumentNode() ? &To<Document>(clone)->getPartRoot()
                               : &To<DocumentFragment>(clone)->getPartRoot();
   NodeMoveScope node_move_scope(*clone, NodeMoveScopeType::kClone);
-  data.Finalize();
   return PartRoot::GetUnionFromPartRoot(new_part_root);
 }
 

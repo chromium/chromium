@@ -7,6 +7,7 @@
 
 #include "base/containers/enum_set.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/child_node_part.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/part_root.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -34,32 +35,41 @@ class CORE_EXPORT NodeCloningData final {
   STACK_ALLOCATED();
 
  public:
-  NodeCloningData() = default;
+  NodeCloningData() : NodeCloningData({}) {}
   NodeCloningData(std::initializer_list<CloneOption> values)
       : clone_options_(values) {}
   NodeCloningData(const NodeCloningData&) = delete;
   NodeCloningData& operator=(const NodeCloningData&) = delete;
-  ~NodeCloningData();
+  ~NodeCloningData() {}
 
   bool Has(CloneOption option) const { return clone_options_.Has(option); }
   void Put(CloneOption option) { clone_options_.Put(option); }
-  void ConnectNodeToClone(const Node& node, Node& clone);
-  Node* ClonedNodeFor(const Node& node) const;
-  void ConnectPartRootToClone(const PartRoot& part_root, PartRoot& clone);
-  PartRoot* ClonedPartRootFor(const PartRoot& part_root) const;
-  void QueueForCloning(const Part& to_clone);
+  void PushPartRoot(PartRoot& clone) {
+    cloned_part_root_stack_.push_back(&clone);
+  }
+  void PopPartRoot(ChildNodePart& expected_top_of_stack) {
+    if (PartRootStackInvalid()) {
+      return;
+    }
+    PartRoot& top_of_stack = CurrentPartRoot();
+    if (&top_of_stack != &expected_top_of_stack) {
+      // Mis-nested ChildNodeParts invalidate the clone entirely.
+      cloned_part_root_stack_.clear();
+      return;
+    }
 
-  // Finalizes the Clone() operation, including cloning any DOM Parts found in
-  // the tree.
-  void Finalize();
+    cloned_part_root_stack_.pop_back();
+  }
+  bool PartRootStackInvalid() const { return cloned_part_root_stack_.empty(); }
+
+  PartRoot& CurrentPartRoot() const {
+    DCHECK(!PartRootStackInvalid());
+    return *cloned_part_root_stack_.back();
+  }
 
  private:
   CloneOptionSet clone_options_;
-  HeapHashMap<WeakMember<const Node>, WeakMember<Node>> cloned_node_map_;
-  HeapHashMap<WeakMember<const PartRoot>, WeakMember<PartRoot>>
-      cloned_part_root_map_;
-  HeapVector<Member<const Part>> part_queue_;
-  bool finalized_{false};
+  HeapVector<Member<PartRoot>> cloned_part_root_stack_;
 };
 
 }  // namespace blink

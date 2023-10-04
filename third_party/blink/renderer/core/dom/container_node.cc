@@ -1111,30 +1111,6 @@ bool ContainerNode::ChildrenChangedAllChildrenRemovedNeedsList() const {
   return false;
 }
 
-void ContainerNode::ClonePartsFrom(const ContainerNode& node,
-                                   NodeCloningData& data) {
-  if (!data.Has(CloneOption::kPreserveDOMParts)) {
-    return;
-  }
-  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  if (auto* document = DynamicTo<Document>(const_cast<ContainerNode&>(node))) {
-    data.ConnectPartRootToClone(document->getPartRoot(),
-                                To<Document>(this)->getPartRoot());
-  } else if (auto* document_fragment = DynamicTo<DocumentFragment>(
-                 const_cast<ContainerNode&>(node))) {
-    data.ConnectPartRootToClone(document_fragment->getPartRoot(),
-                                To<DocumentFragment>(this)->getPartRoot());
-  }
-  if (auto* parts = node.GetDOMParts()) {
-    data.ConnectNodeToClone(node, *this);
-    for (Part* part : *parts) {
-      if (part->NodeToSortBy() == node) {
-        data.QueueForCloning(*part);
-      }
-    }
-  }
-}
-
 void ContainerNode::CloneChildNodesFrom(const ContainerNode& node,
                                         NodeCloningData& data) {
   CHECK(data.Has(CloneOption::kIncludeDescendants));
