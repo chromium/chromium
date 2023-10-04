@@ -285,22 +285,25 @@ class CreditCardSaveManagerTest : public testing::Test {
         url::Origin::Create(GURL(scheme + root_host + form_path));
 
     if (options.split_names) {
-      form.fields.push_back(CreateTestFormField("First Name on Card",
-                                                "firstnameoncard", "", "text",
-                                                "cc-given-name"));
-      form.fields.push_back(CreateTestFormField(
-          "Last Name on Card", "lastnameoncard", "", "text", "cc-family-name"));
-    } else {
       form.fields.push_back(
-          CreateTestFormField("Name on Card", "nameoncard", "", "text"));
+          CreateTestFormField("First Name on Card", "firstnameoncard", "",
+                              FormControlType::kInputText, "cc-given-name"));
+      form.fields.push_back(
+          CreateTestFormField("Last Name on Card", "lastnameoncard", "",
+                              FormControlType::kInputText, "cc-family-name"));
+    } else {
+      form.fields.push_back(CreateTestFormField(
+          "Name on Card", "nameoncard", "", FormControlType::kInputText));
     }
-    form.fields.push_back(
-        CreateTestFormField("Card Number", "cardnumber", "", "text", ""));
+    form.fields.push_back(CreateTestFormField("Card Number", "cardnumber", "",
+                                              FormControlType::kInputText, ""));
     form.fields.back().is_focusable = !options.is_from_non_focusable_form;
+    form.fields.push_back(CreateTestFormField("Expiration Date", "ccmonth", "",
+                                              FormControlType::kInputText));
     form.fields.push_back(
-        CreateTestFormField("Expiration Date", "ccmonth", "", "text"));
-    form.fields.push_back(CreateTestFormField("", "ccyear", "", "text"));
-    form.fields.push_back(CreateTestFormField("CVC", "cvc", "", "text"));
+        CreateTestFormField("", "ccyear", "", FormControlType::kInputText));
+    form.fields.push_back(
+        CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText));
     return form;
   }
 
@@ -981,12 +984,17 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MultipleCvcFields) {
   credit_card_form.main_frame_origin =
       url::Origin::Create(GURL("http://myform_root.com/form.html"));
   credit_card_form.fields = {
-      CreateTestFormField("Card Name", "cardname", "", "text"),
-      CreateTestFormField("Card Number", "cardnumber", "", "text"),
-      CreateTestFormField("Expiration Month", "ccmonth", "", "text"),
-      CreateTestFormField("Expiration Year", "ccyear", "", "text"),
-      CreateTestFormField("CVC (hidden)", "cvc1", "", "text"),
-      CreateTestFormField("CVC", "cvc2", "", "text")};
+      CreateTestFormField("Card Name", "cardname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Card Number", "cardnumber", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Expiration Month", "ccmonth", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Expiration Year", "ccyear", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("CVC (hidden)", "cvc1", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("CVC", "cvc2", "", FormControlType::kInputText)};
 
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
@@ -1032,10 +1040,14 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoCvcFieldOnForm) {
   credit_card_form.main_frame_origin =
       url::Origin::Create(GURL("http://myform_root.com/form.html"));
   credit_card_form.fields = {
-      CreateTestFormField("Card Name", "cardname", "", "text"),
-      CreateTestFormField("Card Number", "cardnumber", "", "text"),
-      CreateTestFormField("Expiration Month", "ccmonth", "", "text"),
-      CreateTestFormField("Expiration Year", "ccyear", "", "text")};
+      CreateTestFormField("Card Name", "cardname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Card Number", "cardnumber", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Expiration Month", "ccmonth", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Expiration Year", "ccyear", "",
+                          FormControlType::kInputText)};
 
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
@@ -1083,11 +1095,16 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_form.main_frame_origin =
       url::Origin::Create(GURL("http://myform_root.com/form.html"));
   credit_card_form.fields = {
-      CreateTestFormField("Card Name", "cardname", "", "text"),
-      CreateTestFormField("Card Number", "cardnumber", "", "text"),
-      CreateTestFormField("Expiration Month", "ccmonth", "", "text"),
-      CreateTestFormField("Expiration Year", "ccyear", "", "text"),
-      CreateTestFormField("Random Field", "random", "", "text")};
+      CreateTestFormField("Card Name", "cardname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Card Number", "cardnumber", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Expiration Month", "ccmonth", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Expiration Year", "ccyear", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Random Field", "random", "",
+                          FormControlType::kInputText)};
 
   FormsSeen({credit_card_form});
 
@@ -1136,11 +1153,16 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_form.main_frame_origin =
       url::Origin::Create(GURL("http://myform_root.com/form.html"));
   credit_card_form.fields = {
-      CreateTestFormField("Card Name", "cardname", "", "text"),
-      CreateTestFormField("Card Number", "cardnumber", "", "text"),
-      CreateTestFormField("Expiration Month", "ccmonth", "", "text"),
-      CreateTestFormField("Expiration Year", "ccyear", "", "text"),
-      CreateTestFormField("Random Field", "random", "", "text")};
+      CreateTestFormField("Card Name", "cardname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Card Number", "cardnumber", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Expiration Month", "ccmonth", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Expiration Year", "ccyear", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Random Field", "random", "",
+                          FormControlType::kInputText)};
 
   FormsSeen({credit_card_form});
 
@@ -1191,11 +1213,16 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_form.main_frame_origin =
       url::Origin::Create(GURL("http://myform_root.com/form.html"));
   credit_card_form.fields = {
-      CreateTestFormField("Card Name", "cardname", "", "text"),
-      CreateTestFormField("Card Number", "cardnumber", "", "text"),
-      CreateTestFormField("Expiration Month", "ccmonth", "", "text"),
-      CreateTestFormField("Expiration Year", "ccyear", "", "text"),
-      CreateTestFormField("Address Line 1", "addr1", "", "text")};
+      CreateTestFormField("Card Name", "cardname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Card Number", "cardnumber", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Expiration Month", "ccmonth", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Expiration Year", "ccyear", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Address Line 1", "addr1", "",
+                          FormControlType::kInputText)};
 
   FormsSeen({credit_card_form});
 

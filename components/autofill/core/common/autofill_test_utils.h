@@ -145,17 +145,17 @@ inline constexpr char kIbanValue_2[] = "CH93 0076 2011 6238 5295 7";
 [[nodiscard]] FormFieldData CreateTestFormField(std::string_view label,
                                                 std::string_view name,
                                                 std::string_view value,
-                                                std::string_view type);
+                                                FormControlType type);
 
 [[nodiscard]] FormFieldData CreateTestFormField(std::string_view label,
                                                 std::string_view name,
                                                 std::string_view value,
-                                                std::string_view type,
+                                                FormControlType type,
                                                 std::string_view autocomplete);
 [[nodiscard]] FormFieldData CreateTestFormField(std::string_view label,
                                                 std::string_view name,
                                                 std::string_view value,
-                                                std::string_view type,
+                                                FormControlType type,
                                                 std::string_view autocomplete,
                                                 uint64_t max_length);
 
@@ -185,7 +185,7 @@ inline constexpr char kIbanValue_2[] = "CH93 0076 2011 6238 5295 7";
     std::string_view autocomplete,
     const std::vector<const char*>& values,
     const std::vector<const char*>& contents,
-    std::string_view field_type);
+    FormControlType type);
 
 // Provides a quick way to populate a datalist field.
 [[nodiscard]] FormFieldData CreateTestDatalistField(

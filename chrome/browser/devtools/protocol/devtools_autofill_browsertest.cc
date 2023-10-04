@@ -403,8 +403,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   // First field. Please note that we only use `form_field_data` to grab the
   // field value, everything else comes from `autofill_field`.
   // TODO(crbug.com/1331312): Get rid of FormFieldData.
-  FormFieldData form_field_data =
-      test::CreateTestFormField(/*label*/ "", "name_1", "value_1", "text");
+  FormFieldData form_field_data = test::CreateTestFormField(
+      /*label*/ "", "name_1", "value_1", FormControlType::kInputText);
   form_field_data.id_attribute = u"id_1";
   AutofillField autofill_field(form_field_data);
   // set `autofill_field_2` to empty to assert that we always use
@@ -415,8 +415,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   autofill_field.SetHtmlType(autofill::mojom::HtmlFieldType::kName,
                              autofill::mojom::HtmlFieldMode::kShipping);
   // Second field.
-  FormFieldData form_field_data_2 =
-      test::CreateTestFormField(/*label*/ "", "name_2", "value_2", "text");
+  FormFieldData form_field_data_2 = test::CreateTestFormField(
+      /*label*/ "", "name_2", "value_2", FormControlType::kInputText);
   form_field_data_2.id_attribute = u"id_2";
   AutofillField autofill_field_2(form_field_data_2);
   // set `autofill_field_2` to empty to assert that we always use

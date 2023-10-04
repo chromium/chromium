@@ -227,9 +227,9 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest, TryToShowTouchToFillSucceeds) {
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
        TryToShowTouchToFillFailsIfNotCreditCardField) {
-  form_.fields.insert(
-      form_.fields.begin(),
-      test::CreateTestFormField("Arbitrary", "arbitrary", "", "text"));
+  form_.fields.insert(form_.fields.begin(),
+                      test::CreateTestFormField("Arbitrary", "arbitrary", "",
+                                                FormControlType::kInputText));
 
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 

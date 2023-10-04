@@ -100,6 +100,7 @@ using autofill::CalculateFormSignature;
 using autofill::ContentAutofillClient;
 using autofill::ContentAutofillDriver;
 using autofill::FieldRendererId;
+using autofill::FormControlType;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::mojom::FocusedFieldType;
@@ -601,9 +602,10 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
   ASSERT_TRUE(autofill_driver);
 
   FormData form = CreateFormForRenderHost(
-      *main_rfh(),
-      {CreateTestFormField("Username", "username", "", "text"),
-       CreateTestFormField("Password", "password", "", "password")});
+      *main_rfh(), {CreateTestFormField("Username", "username", "",
+                                        FormControlType::kInputText),
+                    CreateTestFormField("Password", "password", "",
+                                        FormControlType::kInputPassword)});
   form.name = u"login";
 
   {
@@ -648,11 +650,13 @@ TEST_F(ChromePasswordManagerClientTest,
   ASSERT_TRUE(child_driver);
 
   FormData main_form = CreateFormForRenderHost(
-      *main_rfh(),
-      {CreateTestFormField("Username", "username", "", "text"),
-       CreateTestFormField("Password", "password", "", "password")});
+      *main_rfh(), {CreateTestFormField("Username", "username", "",
+                                        FormControlType::kInputText),
+                    CreateTestFormField("Password", "password", "",
+                                        FormControlType::kInputPassword)});
   FormData child_form = CreateFormForRenderHost(
-      *child_rfh, {CreateTestFormField("OTP", "OTP", "", "text")});
+      *child_rfh,
+      {CreateTestFormField("OTP", "OTP", "", FormControlType::kInputText)});
 
   // Ensure that the child frame is picked up as a child frame of `main_form`.
   {

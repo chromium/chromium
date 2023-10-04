@@ -2032,8 +2032,8 @@ TEST_P(PasswordFormManagerTest, HasObservedFormChangedFieldsNumber) {
   base::HistogramTester histogram_tester;
 
   FormData form = observed_form_;
-  form.fields.push_back(
-      autofill::test::CreateTestFormField("label", "new field", "", "text"));
+  form.fields.push_back(autofill::test::CreateTestFormField(
+      "label", "new field", "", autofill::FormControlType::kInputText));
   EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
   form_manager_.reset();
 

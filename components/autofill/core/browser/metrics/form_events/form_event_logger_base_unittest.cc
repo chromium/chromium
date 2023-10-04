@@ -41,10 +41,11 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
   // Create a profile.
   RecreateProfile(/*is_server=*/false);
 
-  FormData form =
-      CreateForm({CreateTestFormField("State", "state", "", "text"),
-                  CreateTestFormField("City", "city", "", "text"),
-                  CreateTestFormField("Street", "street", "", "text")});
+  FormData form = CreateForm(
+      {CreateTestFormField("State", "state", "", FormControlType::kInputText),
+       CreateTestFormField("City", "city", "", FormControlType::kInputText),
+       CreateTestFormField("Street", "street", "",
+                           FormControlType::kInputText)});
   std::vector<ServerFieldType> field_types = {
       ADDRESS_HOME_STATE, ADDRESS_HOME_CITY, ADDRESS_HOME_STREET_ADDRESS};
 
@@ -183,10 +184,11 @@ TEST_F(FormEventLoggerBaseFunnelTest, AblationState) {
   // Create a profile.
   RecreateProfile(/*is_server=*/false);
 
-  FormData form =
-      CreateForm({CreateTestFormField("State", "state", "", "text"),
-                  CreateTestFormField("City", "city", "", "text"),
-                  CreateTestFormField("Street", "street", "", "text")});
+  FormData form = CreateForm(
+      {CreateTestFormField("State", "state", "", FormControlType::kInputText),
+       CreateTestFormField("City", "city", "", FormControlType::kInputText),
+       CreateTestFormField("Street", "street", "",
+                           FormControlType::kInputText)});
   std::vector<ServerFieldType> field_types = {
       ADDRESS_HOME_STATE, ADDRESS_HOME_CITY, ADDRESS_HOME_STREET_ADDRESS};
 
@@ -242,9 +244,10 @@ void FormEventLoggerBaseKeyMetricsTest::SetUp() {
 
   // Load a fillable form.
   form_ = CreateEmptyForm();
-  form_.fields = {CreateTestFormField("State", "state", "", "text"),
-                  CreateTestFormField("City", "city", "", "text"),
-                  CreateTestFormField("Street", "street", "", "text")};
+  form_.fields = {
+      CreateTestFormField("State", "state", "", FormControlType::kInputText),
+      CreateTestFormField("City", "city", "", FormControlType::kInputText),
+      CreateTestFormField("Street", "street", "", FormControlType::kInputText)};
   std::vector<ServerFieldType> field_types = {
       ADDRESS_HOME_STATE, ADDRESS_HOME_CITY, ADDRESS_HOME_STREET_ADDRESS};
 

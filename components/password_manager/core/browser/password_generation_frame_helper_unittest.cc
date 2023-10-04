@@ -280,11 +280,12 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
     SCOPED_TRACE(test.name);
     ++test_counter;
 
-    autofill::FormFieldData username = CreateTestFormField(
-        /*label=*/"", /*name=*/"login", /*value=*/"", /*type=*/"text");
+    autofill::FormFieldData username =
+        CreateTestFormField(/*label=*/"", /*name=*/"login", /*value=*/"",
+                            autofill::FormControlType::kInputText);
     autofill::FormFieldData password = CreateTestFormField(
         /*label=*/"", /*name=*/base::StringPrintf("password%d", test_counter),
-        /*value=*/"", /*type=*/"password");
+        /*value=*/"", autofill::FormControlType::kInputPassword);
 
     // Configure the last committed entry URL with some magic constants for
     // which the FakePasswordRequirementsFetcher is configured to respond

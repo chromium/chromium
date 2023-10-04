@@ -81,8 +81,9 @@ class SingleFieldFormFillRouterTest : public testing::Test {
         std::make_unique<SingleFieldFormFillRouter>(
             autocomplete_history_manager_.get(), iban_manager_.get(),
             merchant_promo_code_manager_.get());
-    test_field_ = test::CreateTestFormField(/*label=*/"", "Some Field Name",
-                                            "SomePrefix", "SomeType");
+    test_field_ =
+        test::CreateTestFormField(/*label=*/"", "Some Field Name", "SomePrefix",
+                                  FormControlType::kInputText);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;

@@ -35,8 +35,8 @@ class AutofillTypeServerPredictionTest : public ::testing::Test {
 };
 
 TEST_F(AutofillTypeServerPredictionTest, PredictionFromAutofillField) {
-  AutofillField field = AutofillField(
-      test::CreateTestFormField("label", "name", "value", /*type=*/"text"));
+  AutofillField field = AutofillField(test::CreateTestFormField(
+      "label", "name", "value", /*type=*/FormControlType::kInputText));
   field.set_server_predictions(
       {test::CreateFieldPrediction(ServerFieldType::EMAIL_ADDRESS),
        test::CreateFieldPrediction(ServerFieldType::USERNAME)});

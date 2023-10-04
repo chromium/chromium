@@ -870,19 +870,21 @@ class BrowserAutofillManagerTest : public testing::Test {
       form->action = GURL("http://myform.com/submit.html");
     }
 
-    form->fields.push_back(
-        CreateTestFormField("Name on Card", "nameoncard", "", "text"));
-    form->fields.push_back(
-        CreateTestFormField("Card Number", "cardnumber", "", "text"));
+    form->fields.push_back(CreateTestFormField("Name on Card", "nameoncard", "",
+                                               FormControlType::kInputText));
+    form->fields.push_back(CreateTestFormField("Card Number", "cardnumber", "",
+                                               FormControlType::kInputText));
     if (use_month_type) {
-      form->fields.push_back(
-          CreateTestFormField("Expiration Date", "ccmonth", "", "month"));
+      form->fields.push_back(CreateTestFormField(
+          "Expiration Date", "ccmonth", "", FormControlType::kInputMonth));
     } else {
+      form->fields.push_back(CreateTestFormField(
+          "Expiration Date", "ccmonth", "", FormControlType::kInputText));
       form->fields.push_back(
-          CreateTestFormField("Expiration Date", "ccmonth", "", "text"));
-      form->fields.push_back(CreateTestFormField("", "ccyear", "", "text"));
+          CreateTestFormField("", "ccyear", "", FormControlType::kInputText));
     }
-    form->fields.push_back(CreateTestFormField("CVC", "cvc", "", "text"));
+    form->fields.push_back(
+        CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText));
   }
 
   void PrepareForRealPanResponse(FormData* form, CreditCard* card) {
@@ -1395,9 +1397,12 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
   form2.name = u"MyForm";
   form2.url = GURL("https://myform.com/form.html");
   form2.action = GURL("https://myform.com/submit.html");
-  form2.fields = {CreateTestFormField("First Name", "firstname", "", "text"),
-                  CreateTestFormField("Last Name", "lastname", "", "text"),
-                  CreateTestFormField("Email", "email", "", "text")};
+  form2.fields = {
+      CreateTestFormField("First Name", "firstname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Last Name", "lastname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Email", "email", "", FormControlType::kInputText)};
 
   FormsSeen({form2});
   histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
@@ -1447,7 +1452,8 @@ TEST_F(BrowserAutofillManagerTest,
   form2.name = u"NonQueryable";
   form2.url = form1.url;
   form2.action = GURL("https://myform.com/submit.html");
-  form2.fields = {CreateTestFormField("Querty", "qwerty", "", "text")};
+  form2.fields = {
+      CreateTestFormField("Querty", "qwerty", "", FormControlType::kInputText)};
 
   // Package the forms for observation.
 
@@ -1471,7 +1477,8 @@ TEST_F(BrowserAutofillManagerTest,
   form2.name = u"NonQueryable";
   form2.url = form1.url;
   form2.action = GURL("https://myform.com/submit.html");
-  form2.fields = {CreateTestFormField("Querty", "qwerty", "", "text")};
+  form2.fields = {
+      CreateTestFormField("Querty", "qwerty", "", FormControlType::kInputText)};
 
   // Set up expectations.
   EXPECT_CALL(*autofill_driver_, SendFieldsEligibleForManualFillingToRenderer)
@@ -1490,11 +1497,14 @@ TEST_F(BrowserAutofillManagerTest,
   form.action = GURL("https://myform.com/submit.html");
   form.fields = {
       // Set a valid autocomplete attribute for the first name.
-      CreateTestFormField("First name", "firstname", "", "text", "given-name"),
+      CreateTestFormField("First name", "firstname", "",
+                          FormControlType::kInputText, "given-name"),
       // Set no autocomplete attribute for the middle name.
-      CreateTestFormField("Middle name", "middle", "", "text", ""),
+      CreateTestFormField("Middle name", "middle", "",
+                          FormControlType::kInputText, ""),
       // Set an unrecognized autocomplete attribute for the last name.
-      CreateTestFormField("Last Name", "lastname", "", "text", "unrecognized")};
+      CreateTestFormField("Last Name", "lastname", "",
+                          FormControlType::kInputText, "unrecognized")};
   FormsSeen({form});
 
   // Ensure that the SingleFieldFormFillRouter is not called for
@@ -1589,8 +1599,10 @@ TEST_F(BrowserAutofillManagerTest,
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {CreateTestFormField("First Name", "firstname", "", "text"),
-                 CreateTestFormField("Last Name", "lastname", "", "text")};
+  form.fields = {CreateTestFormField("First Name", "firstname", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Last Name", "lastname", "",
+                                     FormControlType::kInputText)};
 
   FormsSeen({form});
 
@@ -1615,9 +1627,10 @@ TEST_F(BrowserAutofillManagerTest,
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {
-      CreateTestFormField("First Name", "firstname", "", "text", "given-name"),
-      CreateTestFormField("Last Name", "lastname", "", "text", "")};
+  form.fields = {CreateTestFormField("First Name", "firstname", "",
+                                     FormControlType::kInputText, "given-name"),
+                 CreateTestFormField("Last Name", "lastname", "",
+                                     FormControlType::kInputText, "")};
 
   FormsSeen({form});
 
@@ -1645,8 +1658,10 @@ TEST_F(BrowserAutofillManagerTest,
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.fields = {
-      CreateTestFormField("First Name", "firstname", "", "text", "given-name"),
-      CreateTestFormField("Last Name", "lastname", "", "text", "family-name")};
+      CreateTestFormField("First Name", "firstname", "",
+                          FormControlType::kInputText, "given-name"),
+      CreateTestFormField("Last Name", "lastname", "",
+                          FormControlType::kInputText, "family-name")};
 
   FormsSeen({form});
 
@@ -1790,8 +1805,8 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_MatchCharacter) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  FormFieldData field =
-      CreateTestFormField("First Name", "firstname", "E", "text");
+  FormFieldData field = CreateTestFormField("First Name", "firstname", "E",
+                                            FormControlType::kInputText);
   GetAutofillSuggestions(form, field);
 
   std::string label;
@@ -1846,8 +1861,8 @@ TEST_P(SuggestionMatchingTest,
   profile3.SetInfo(ADDRESS_HOME_LINE1, u"1600 Amphitheater pkwy", "en-US");
   personal_data().AddProfile(profile3);
 
-  FormFieldData field =
-      CreateTestFormField("Last Name", "lastname", "G", "text");
+  FormFieldData field = CreateTestFormField("Last Name", "lastname", "G",
+                                            FormControlType::kInputText);
   GetAutofillSuggestions(form, field);
   CheckSuggestions(field.global_id(),
                    Suggestion("Googler", "1600 Amphitheater pkwy",
@@ -1868,8 +1883,8 @@ TEST_P(SuggestionMatchingTest,
   // "already autofilled".
   form.fields[0].is_autofilled = true;
 
-  FormFieldData field =
-      CreateTestFormField("First Name", "firstname", "E", "text");
+  FormFieldData field = CreateTestFormField("First Name", "firstname", "E",
+                                            FormControlType::kInputText);
   GetAutofillSuggestions(form, field);
 
   std::string label;
@@ -1896,10 +1911,13 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_UnknownFields) {
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {CreateTestFormField("Username", "username", "", "text"),
-                 CreateTestFormField("Password", "password", "", "password"),
-                 CreateTestFormField("Quest", "quest", "", "quest"),
-                 CreateTestFormField("Color", "color", "", "text")};
+  form.fields = {
+      CreateTestFormField("Username", "username", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Password", "password", "",
+                          FormControlType::kInputPassword),
+      CreateTestFormField("Quest", "quest", "", FormControlType::kInputText),
+      CreateTestFormField("Color", "color", "", FormControlType::kInputText)};
 
   FormsSeen({form});
 
@@ -2152,8 +2170,8 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_MatchCharacter) {
   FormData form = CreateTestCreditCardFormData(true, false);
   FormsSeen({form});
 
-  FormFieldData field =
-      CreateTestFormField("Card Number", "cardnumber", "78", "text");
+  FormFieldData field = CreateTestFormField("Card Number", "cardnumber", "78",
+                                            FormControlType::kInputText);
   GetAutofillSuggestions(form, field);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -2742,8 +2760,8 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
                    Suggestion("Elvis", label2, kAddressEntryIcon,
                               PopupItemId::kAddressEntry));
 
-  FormFieldData field =
-      CreateTestFormField("Card Number", "cardnumber", "", "text");
+  FormFieldData field = CreateTestFormField("Card Number", "cardnumber", "",
+                                            FormControlType::kInputText);
   GetAutofillSuggestions(form, field);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -2778,8 +2796,8 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestionsNonHttps) {
   // Verify that suggestions are returned.
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 
-  FormFieldData field =
-      CreateTestFormField("Card Number", "cardnumber", "", "text");
+  FormFieldData field = CreateTestFormField("Card Number", "cardnumber", "",
+                                            FormControlType::kInputText);
   GetAutofillSuggestions(form, field);
 
   // Test that we sent the right values to the external delegate.
@@ -3260,8 +3278,10 @@ TEST_F(BrowserAutofillManagerTest, DetermineStateFieldTypeForUpload) {
   for (const char* valid_match : kValidMatches) {
     SCOPED_TRACE(valid_match);
     FormData form;
-    form.fields = {CreateTestFormField("Name", "Name", "Test", "text"),
-                   CreateTestFormField("State", "state", valid_match, "text")};
+    form.fields = {CreateTestFormField("Name", "Name", "Test",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("State", "state", valid_match,
+                                       FormControlType::kInputText)};
 
     FormStructure form_structure(form);
     EXPECT_EQ(form_structure.field_count(), 2U);
@@ -3276,9 +3296,10 @@ TEST_F(BrowserAutofillManagerTest, DetermineStateFieldTypeForUpload) {
   for (const char* invalid_match : kInvalidMatches) {
     SCOPED_TRACE(invalid_match);
     FormData form;
-    form.fields = {
-        CreateTestFormField("Name", "Name", "Test", "text"),
-        CreateTestFormField("State", "state", invalid_match, "text")};
+    form.fields = {CreateTestFormField("Name", "Name", "Test",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("State", "state", invalid_match,
+                                       FormControlType::kInputText)};
 
     FormStructure form_structure(form);
     EXPECT_EQ(form_structure.field_count(), 2U);
@@ -3298,8 +3319,9 @@ TEST_F(BrowserAutofillManagerTest, DetermineStateFieldTypeForUpload) {
                        "", "US", "");
 
   FormData form;
-  form.fields = {CreateTestFormField("Name", "Name", "Test", "text"),
-                 CreateTestFormField("State", "state", "CA", "text")};
+  form.fields = {
+      CreateTestFormField("Name", "Name", "Test", FormControlType::kInputText),
+      CreateTestFormField("State", "state", "CA", FormControlType::kInputText)};
 
   FormStructure form_structure(form);
   EXPECT_EQ(form_structure.field_count(), 2U);
@@ -3396,7 +3418,8 @@ TEST_F(BrowserAutofillManagerTest,
        GetFieldSuggestionsForSingleFieldFormFillOnly) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
-  form.fields = {CreateTestFormField("Some Field", "somefield", "", "text")};
+  form.fields = {CreateTestFormField("Some Field", "somefield", "",
+                                     FormControlType::kInputText)};
   FormsSeen({form});
 
   GetAutofillSuggestions(form, form.fields.back());
@@ -3544,8 +3567,8 @@ TEST_F(BrowserAutofillManagerTest,
 
   for (const auto& test_field : test_fields) {
     form.fields.push_back(CreateTestFormField(test_field.label, test_field.name,
-                                              "", "text", "",
-                                              test_field.max_length));
+                                              "", FormControlType::kInputText,
+                                              "", test_field.max_length));
   }
 
   FormsSeen({form});
@@ -3616,8 +3639,9 @@ TEST_F(BrowserAutofillManagerTest,
                      {"Password", "password", 30, "new-password"}};
 
   for (const auto& test_field : test_fields) {
-    const char* const field_type =
-        strcmp(test_field.name, "password") == 0 ? "password" : "text";
+    FormControlType field_type = strcmp(test_field.name, "password") == 0
+                                     ? FormControlType::kInputPassword
+                                     : FormControlType::kInputText;
     form.fields.push_back(CreateTestFormField(
         test_field.label, test_field.name, "", field_type,
         test_field.autocomplete_attribute, test_field.max_length));
@@ -3989,17 +4013,21 @@ TEST_F(BrowserAutofillManagerTest,
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {CreateTestFormField("Card Name", "cardname", "", "text"),
-                 CreateTestFormField("Last Name", "cardlastname", "", "text")};
+  form.fields = {CreateTestFormField("Card Name", "cardname", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Last Name", "cardlastname", "",
+                                     FormControlType::kInputText)};
 
   // Add 20 credit card number fields with distinct names.
   for (int i = 0; i < 20; i++) {
     std::u16string field_name = u"Card Number " + base::NumberToString16(i + 1);
-    form.fields.push_back(CreateTestFormField(
-        base::UTF16ToASCII(field_name).c_str(), "cardnumber", "", "text"));
+    form.fields.push_back(
+        CreateTestFormField(base::UTF16ToASCII(field_name).c_str(),
+                            "cardnumber", "", FormControlType::kInputText));
   }
 
-  form.fields.push_back(CreateTestFormField("CVC", "cvc", "", "text"));
+  form.fields.push_back(
+      CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText));
 
   FormsSeen({form});
 
@@ -4034,15 +4062,18 @@ TEST_F(BrowserAutofillManagerTest,
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {CreateTestFormField("Card Name", "cardname", "", "text"),
-                 CreateTestFormField("Last Name", "cardlastname", "", "text")};
+  form.fields = {CreateTestFormField("Card Name", "cardname", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Last Name", "cardlastname", "",
+                                     FormControlType::kInputText)};
 
   // Add 20 identical card number fields.
   for (int i = 0; i < 20; i++) {
-    form.fields.push_back(
-        CreateTestFormField("Card Number", "cardnumber", "", "text"));
+    form.fields.push_back(CreateTestFormField("Card Number", "cardnumber", "",
+                                              FormControlType::kInputText));
   }
-  form.fields.push_back(CreateTestFormField("CVC", "cvc", "", "text"));
+  form.fields.push_back(
+      CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText));
 
   FormsSeen({form});
 
@@ -4073,19 +4104,22 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardNumberIntoSingleDigitFields) {
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {CreateTestFormField("Card Name", "cardname", "", "text"),
-                 CreateTestFormField("Last Name", "cardlastname", "", "text")};
+  form.fields = {CreateTestFormField("Card Name", "cardname", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Last Name", "cardlastname", "",
+                                     FormControlType::kInputText)};
 
   // Add 20 identical card number fields.
   for (int i = 0; i < 20; i++) {
-    FormFieldData field =
-        CreateTestFormField("Card Number", "cardnumber", "", "text");
+    FormFieldData field = CreateTestFormField("Card Number", "cardnumber", "",
+                                              FormControlType::kInputText);
     field.host_frame = form.host_frame;
     field.host_form_id = form.unique_renderer_id;
     field.max_length = i < 19 ? 1 : std::numeric_limits<int>::max();
     form.fields.push_back(std::move(field));
   }
-  form.fields.push_back(CreateTestFormField("CVC", "cvc", "", "text"));
+  form.fields.push_back(
+      CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText));
 
   FormsSeen({form});
 
@@ -4122,10 +4156,14 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_SplitName) {
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {CreateTestFormField("Card Name", "cardname", "", "text"),
-                 CreateTestFormField("Last Name", "cardlastname", "", "text"),
-                 CreateTestFormField("Card Number", "cardnumber", "", "text"),
-                 CreateTestFormField("CVC", "cvc", "", "text")};
+  form.fields = {
+      CreateTestFormField("Card Name", "cardname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Last Name", "cardlastname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Card Number", "cardnumber", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText)};
 
   FormsSeen({form});
 
@@ -4152,9 +4190,12 @@ TEST_F(BrowserAutofillManagerTest,
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {CreateTestFormField("First Name", "firstname", "", "text"),
-                 CreateTestFormField("Middle Name", "middlename", "", "text"),
-                 CreateTestFormField("Last Name", "lastname", "", "text"),
+  form.fields = {CreateTestFormField("First Name", "firstname", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Middle Name", "middlename", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Last Name", "lastname", "",
+                                     FormControlType::kInputText),
 
                  // Create a selection box for the state that hat the correct
                  // entry to be filled with user data. Note, TN is the official
@@ -4427,14 +4468,16 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_ExpiredCard) {
   std::vector<const char*> kCreditCardTypes = {"Visa", "Mastercard", "AmEx",
                                                "discover"};
   form.fields = {
-      CreateTestFormField("Name on Card", "nameoncard", "", "text", "cc-name"),
+      CreateTestFormField("Name on Card", "nameoncard", "",
+                          FormControlType::kInputText, "cc-name"),
       CreateTestSelectField("Card Type", "cardtype", "", "cc-type",
                             kCreditCardTypes, kCreditCardTypes),
-      CreateTestFormField("Card Number", "cardnumber", "", "text", "cc-number"),
-      CreateTestFormField("Expiration Month", "ccmonth", "", "text",
-                          "cc-exp-month"),
-      CreateTestFormField("Expiration Year", "ccyear", "", "text",
-                          "cc-exp-year")};
+      CreateTestFormField("Card Number", "cardnumber", "",
+                          FormControlType::kInputText, "cc-number"),
+      CreateTestFormField("Expiration Month", "ccmonth", "",
+                          FormControlType::kInputText, "cc-exp-month"),
+      CreateTestFormField("Expiration Year", "ccyear", "",
+                          FormControlType::kInputText, "cc-exp-year")};
   FormsSeen({form});
 
   FormData response_data = FillAutofillFormDataAndGetResults(
@@ -4495,23 +4538,25 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillUnfocusableFieldsExceptForSelect) {
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {CreateTestFormField("First Name", "firstname", "", "text"),
-                 CreateTestFormField("", "lastname", "", "text"),
-                 CreateTestFormField("Postal Code", "postal_code", "", "text")};
+  form.fields = {
+      CreateTestFormField("First Name", "firstname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("", "lastname", "", FormControlType::kInputText),
+      CreateTestFormField("Postal Code", "postal_code", "",
+                          FormControlType::kInputText)};
   form.fields.back().is_focusable = false;
 
   form.fields.push_back(CreateTestSelectOrSelectListField(
       "Country", "country", "", "", {"CA", "US"}, {"Canada", "United States"},
-      "selectlist"));
+      FormControlType::kSelectList));
   form.fields.back().is_focusable = false;
 
   form.fields.push_back(CreateTestSelectOrSelectListField(
       "Country", "country", "", "", {"CA", "US"}, {"Canada", "United States"},
-      "selectlist"));
-
+      FormControlType::kSelectList));
   form.fields.push_back(CreateTestSelectOrSelectListField(
       "Country", "country", "", "", {"CA", "US"}, {"Canada", "United States"},
-      "select-one"));
+      FormControlType::kSelectOne));
   form.fields.back().is_focusable = false;
 
   FormsSeen({form});
@@ -4542,13 +4587,17 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithNonFocusableFields) {
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {CreateTestFormField("First Name", "firstname", "", "text"),
-                 CreateTestFormField("", "lastname", "", "text"),
-                 CreateTestFormField("", "email", "", "text"),
-                 CreateTestFormField("Phone Number", "phonenumber", "", "tel"),
-                 CreateTestFormField("", "email_", "", "text")};
+  form.fields = {
+      CreateTestFormField("First Name", "firstname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("", "lastname", "", FormControlType::kInputText),
+      CreateTestFormField("", "email", "", FormControlType::kInputText),
+      CreateTestFormField("Phone Number", "phonenumber", "",
+                          FormControlType::kInputTelephone),
+      CreateTestFormField("", "email_", "", FormControlType::kInputText)};
   form.fields.back().is_focusable = false;
-  form.fields.push_back(CreateTestFormField("Country", "country", "", "text"));
+  form.fields.push_back(CreateTestFormField("Country", "country", "",
+                                            FormControlType::kInputText));
 
   FormsSeen({form});
 
@@ -4641,19 +4690,28 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithAuthorSpecifiedSections) {
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.fields = {
-      CreateTestFormField("", "country", "", "text", "section-billing country"),
-      CreateTestFormField("", "firstname", "", "text", "given-name"),
-      CreateTestFormField("", "lastname", "", "text", "family-name"),
-      CreateTestFormField("", "address", "", "text",
+      CreateTestFormField("", "country", "", FormControlType::kInputText,
+                          "section-billing country"),
+      CreateTestFormField("", "firstname", "", FormControlType::kInputText,
+                          "given-name"),
+      CreateTestFormField("", "lastname", "", FormControlType::kInputText,
+                          "family-name"),
+      CreateTestFormField("", "address", "", FormControlType::kInputText,
                           "section-billing address-line1"),
-      CreateTestFormField("", "city", "", "text", "section-billing locality"),
-      CreateTestFormField("", "state", "", "text", "section-billing region"),
-      CreateTestFormField("", "zip", "", "text", "section-billing postal-code"),
-      CreateTestFormField("", "ccname", "", "text", "section-billing cc-name"),
-      CreateTestFormField("", "ccnumber", "", "text",
+      CreateTestFormField("", "city", "", FormControlType::kInputText,
+                          "section-billing locality"),
+      CreateTestFormField("", "state", "", FormControlType::kInputText,
+                          "section-billing region"),
+      CreateTestFormField("", "zip", "", FormControlType::kInputText,
+                          "section-billing postal-code"),
+      CreateTestFormField("", "ccname", "", FormControlType::kInputText,
+                          "section-billing cc-name"),
+      CreateTestFormField("", "ccnumber", "", FormControlType::kInputText,
                           "section-billing cc-number"),
-      CreateTestFormField("", "ccexp", "", "text", "section-billing cc-exp"),
-      CreateTestFormField("", "email", "", "text", "email")};
+      CreateTestFormField("", "ccexp", "", FormControlType::kInputText,
+                          "section-billing cc-exp"),
+      CreateTestFormField("", "email", "", FormControlType::kInputText,
+                          "email")};
 
   FormsSeen({form});
 
@@ -4765,8 +4823,8 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithAuthorSpecifiedSections) {
 TEST_F(BrowserAutofillManagerTest, FillFormWithMultipleEmails) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
-  form.fields.push_back(
-      CreateTestFormField("Confirm email", "email2", "", "text"));
+  form.fields.push_back(CreateTestFormField("Confirm email", "email2", "",
+                                            FormControlType::kInputText));
 
   FormsSeen({form});
 
@@ -4942,9 +5000,9 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
 
   constexpr uint64_t default_max_length = 0;
   for (const auto& test_field : test_fields) {
-    FormFieldData field =
-        CreateTestFormField(test_field.label, test_field.name, "", "text", "",
-                            test_field.max_length);
+    FormFieldData field = CreateTestFormField(test_field.label, test_field.name,
+                                              "", FormControlType::kInputText,
+                                              "", test_field.max_length);
     form_with_us_number_max_length.fields.push_back(field);
 
     field.max_length = default_max_length;
@@ -5030,18 +5088,22 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_ComponentizedNumbers) {
   form_with_multiple_componentized_phone_fields.name =
       u"multiple_componentized_number_fields";
   form_with_multiple_componentized_phone_fields.fields = {
-      CreateTestFormField("Full Name", "full_name", "", "text", "", kMaxLength),
-      CreateTestFormField("country code", "country_code", "", "text", "",
-                          kMaxLength),
-      CreateTestFormField("area code", "area_code", "", "text", "", kMaxLength),
-      CreateTestFormField("number", "phone_number", "", "text", "", kMaxLength),
-      CreateTestFormField("extension", "extension", "", "text", "", kMaxLength),
+      CreateTestFormField("Full Name", "full_name", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("country code", "country_code", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("area code", "area_code", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("number", "phone_number", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("extension", "extension", "",
+                          FormControlType::kInputText, "", kMaxLength),
       CreateTestFormField("shipping country code", "shipping_country_code", "",
-                          "text", "", kMaxLength),
+                          FormControlType::kInputText, "", kMaxLength),
       CreateTestFormField("shipping area code", "shipping_area_code", "",
-                          "text", "", kMaxLength),
+                          FormControlType::kInputText, "", kMaxLength),
       CreateTestFormField("shipping number", "shipping_phone_number", "",
-                          "text", "", kMaxLength)};
+                          FormControlType::kInputText, "", kMaxLength)};
 
   FormsSeen({form_with_multiple_componentized_phone_fields});
   FormData response_data = FillAutofillFormDataAndGetResults(
@@ -5076,11 +5138,14 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_WholeNumbers) {
   constexpr uint64_t kMaxLength = 10;
   form_with_multiple_whole_number_fields.name = u"multiple_whole_number_fields";
   form_with_multiple_whole_number_fields.fields = {
-      CreateTestFormField("Full Name", "full_name", "", "text", "", kMaxLength),
-      CreateTestFormField("number", "phone_number", "", "text", "", kMaxLength),
-      CreateTestFormField("extension", "extension", "", "text", "", kMaxLength),
+      CreateTestFormField("Full Name", "full_name", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("number", "phone_number", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("extension", "extension", "",
+                          FormControlType::kInputText, "", kMaxLength),
       CreateTestFormField("shipping number", "shipping_phone_number", "",
-                          "text", "", kMaxLength)};
+                          FormControlType::kInputText, "", kMaxLength)};
 
   FormsSeen({form_with_multiple_whole_number_fields});
   FormData response_data = FillAutofillFormDataAndGetResults(
@@ -5115,19 +5180,23 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_FillPartsOnceOnly) {
   form_with_multiple_componentized_phone_fields.name =
       u"multiple_componentized_number_fields";
   form_with_multiple_componentized_phone_fields.fields = {
-      CreateTestFormField("Full Name", "full_name", "", "text", "", kMaxLength),
-      CreateTestFormField("country code", "country_code", "", "text", "",
+      CreateTestFormField("Full Name", "full_name", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("country code", "country_code", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("area code", "area_code", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("number", "phone_number", "",
+                          FormControlType::kInputText, "tel-national",
                           kMaxLength),
-      CreateTestFormField("area code", "area_code", "", "text", "", kMaxLength),
-      CreateTestFormField("number", "phone_number", "", "text", "tel-national",
-                          kMaxLength),
-      CreateTestFormField("extension", "extension", "", "text", "", kMaxLength),
+      CreateTestFormField("extension", "extension", "",
+                          FormControlType::kInputText, "", kMaxLength),
       CreateTestFormField("shipping country code", "shipping_country_code", "",
-                          "text", "", kMaxLength),
+                          FormControlType::kInputText, "", kMaxLength),
       CreateTestFormField("shipping area code", "shipping_area_code", "",
-                          "text", "", kMaxLength),
+                          FormControlType::kInputText, "", kMaxLength),
       CreateTestFormField("shipping number", "shipping_phone_number", "",
-                          "text", "", kMaxLength)};
+                          FormControlType::kInputText, "", kMaxLength)};
 
   FormsSeen({form_with_multiple_componentized_phone_fields});
   FormData response_data = FillAutofillFormDataAndGetResults(
@@ -5167,15 +5236,17 @@ TEST_F(BrowserAutofillManagerTest,
   form_with_misclassified_extension.name =
       u"complete_phone_form_with_extension";
   form_with_misclassified_extension.fields = {
-      CreateTestFormField("Full Name", "full_name", "", "text", "name",
+      CreateTestFormField("Full Name", "full_name", "",
+                          FormControlType::kInputText, "name", kMaxLength),
+      CreateTestFormField("address", "address", "", FormControlType::kInputText,
+                          "addresses", kMaxLength),
+      CreateTestFormField("area code", "area_code", "",
+                          FormControlType::kInputText, "tel-area-code",
                           kMaxLength),
-      CreateTestFormField("address", "address", "", "text", "addresses",
-                          kMaxLength),
-      CreateTestFormField("area code", "area_code", "", "text", "tel-area-code",
-                          kMaxLength),
-      CreateTestFormField("number", "phone_number", "", "text", "tel-local",
-                          kMaxLength),
-      CreateTestFormField("extension", "extension", "", "text", "tel-local",
+      CreateTestFormField("number", "phone_number", "",
+                          FormControlType::kInputText, "tel-local", kMaxLength),
+      CreateTestFormField("extension", "extension", "",
+                          FormControlType::kInputText, "tel-local",
                           kMaxLength)};
 
   FormsSeen({form_with_misclassified_extension});
@@ -5211,13 +5282,15 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_BestEffortFilling) {
   constexpr uint64_t kMaxLength = 10;
   form_with_no_complete_number.name = u"no_complete_phone_form";
   form_with_no_complete_number.fields = {
-      CreateTestFormField("Full Name", "full_name", "", "text", "name",
+      CreateTestFormField("Full Name", "full_name", "",
+                          FormControlType::kInputText, "name", kMaxLength),
+      CreateTestFormField("address", "address", "", FormControlType::kInputText,
+                          "address", kMaxLength),
+      CreateTestFormField("area code", "area_code", "",
+                          FormControlType::kInputText, "tel-area-code",
                           kMaxLength),
-      CreateTestFormField("address", "address", "", "text", "address",
-                          kMaxLength),
-      CreateTestFormField("area code", "area_code", "", "text", "tel-area-code",
-                          kMaxLength),
-      CreateTestFormField("extension", "extension", "", "text", "extension",
+      CreateTestFormField("extension", "extension", "",
+                          FormControlType::kInputText, "extension",
                           kMaxLength)};
 
   FormsSeen({form_with_no_complete_number});
@@ -5253,11 +5326,14 @@ TEST_F(BrowserAutofillManagerTest,
   constexpr uint64_t kMaxLength = 10;
   form_with_multiple_whole_number_fields.name = u"multiple_whole_number_fields";
   form_with_multiple_whole_number_fields.fields = {
-      CreateTestFormField("Full Name", "full_name", "", "text", "", kMaxLength),
-      CreateTestFormField("number", "phone_number", "", "text", "", kMaxLength),
-      CreateTestFormField("extension", "extension", "", "text", "", kMaxLength),
+      CreateTestFormField("Full Name", "full_name", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("number", "phone_number", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("extension", "extension", "",
+                          FormControlType::kInputText, "", kMaxLength),
       CreateTestFormField("shipping number", "shipping_phone_number", "",
-                          "text", "", kMaxLength)};
+                          FormControlType::kInputText, "", kMaxLength)};
 
   FormsSeen({form_with_multiple_whole_number_fields});
   auto it = form_with_multiple_whole_number_fields.fields.begin();
@@ -5292,14 +5368,17 @@ TEST_F(BrowserAutofillManagerTest,
   constexpr uint64_t kMaxLength = 10;
   form_with_multiple_whole_number_fields.name = u"multiple_whole_number_fields";
   form_with_multiple_whole_number_fields.fields = {
-      CreateTestFormField("Full Name", "full_name", "", "text", "", kMaxLength),
-      CreateTestFormField("number", "phone_number", "", "text", "",
-                          kMaxLength)};
+      CreateTestFormField("Full Name", "full_name", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("number", "phone_number", "",
+                          FormControlType::kInputText, "", kMaxLength)};
   form_with_multiple_whole_number_fields.fields.back().is_focusable = false;
-  form_with_multiple_whole_number_fields.fields.push_back(CreateTestFormField(
-      "extension", "extension", "", "text", "", kMaxLength));
-  form_with_multiple_whole_number_fields.fields.push_back(CreateTestFormField(
-      "shipping number", "shipping_phone_number", "", "text", "", kMaxLength));
+  form_with_multiple_whole_number_fields.fields.push_back(
+      CreateTestFormField("extension", "extension", "",
+                          FormControlType::kInputText, "", kMaxLength));
+  form_with_multiple_whole_number_fields.fields.push_back(
+      CreateTestFormField("shipping number", "shipping_phone_number", "",
+                          FormControlType::kInputText, "", kMaxLength));
 
   FormsSeen({form_with_multiple_whole_number_fields});
   FormData response_data = FillAutofillFormDataAndGetResults(
@@ -5323,8 +5402,10 @@ TEST_F(BrowserAutofillManagerTest, FormWithHiddenOrPresentationalSelects) {
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {CreateTestFormField("First name", "firstname", "", "text"),
-                 CreateTestFormField("Last name", "lastname", "", "text")};
+  form.fields = {CreateTestFormField("First name", "firstname", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Last name", "lastname", "",
+                                     FormControlType::kInputText)};
 
   {
     const std::vector<const char*> values{"CA", "US", "BR"};
@@ -5343,10 +5424,11 @@ TEST_F(BrowserAutofillManagerTest, FormWithHiddenOrPresentationalSelects) {
     form.fields.back().role = FormFieldData::RoleAttribute::kPresentation;
   }
 
-  form.fields.push_back(CreateTestFormField("City", "city", "", "text"));
-  form.fields.back().is_focusable = false;
   form.fields.push_back(
-      CreateTestFormField("Street Address", "address", "", "text"));
+      CreateTestFormField("City", "city", "", FormControlType::kInputText));
+  form.fields.back().is_focusable = false;
+  form.fields.push_back(CreateTestFormField("Street Address", "address", "",
+                                            FormControlType::kInputText));
   form.fields.back().role = FormFieldData::RoleAttribute::kPresentation;
 
   FormsSeen({form});
@@ -5388,20 +5470,25 @@ TEST_F(BrowserAutofillManagerTest,
   constexpr uint64_t kMaxLength = 10;
   form_with_multiple_sections.name = u"multiple_section_fields";
   form_with_multiple_sections.fields = {
-      CreateTestFormField("Full Name", "full_name", "", "text", "", kMaxLength),
-      CreateTestFormField("Address", "address", "", "text", "", kMaxLength),
-      CreateTestFormField("number", "phone_number", "", "text", "", kMaxLength),
-      CreateTestFormField("other number", "other_phone_number", "", "text", "",
-                          kMaxLength),
-      CreateTestFormField("extension", "extension", "", "text", "", kMaxLength),
-      CreateTestFormField("Full Name", "full_name", "", "text", "", kMaxLength),
-      CreateTestFormField("Shipping Address", "shipping_address", "", "text",
+      CreateTestFormField("Full Name", "full_name", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("Address", "address", "", FormControlType::kInputText,
                           "", kMaxLength),
+      CreateTestFormField("number", "phone_number", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("other number", "other_phone_number", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("extension", "extension", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("Full Name", "full_name", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("Shipping Address", "shipping_address", "",
+                          FormControlType::kInputText, "", kMaxLength),
       CreateTestFormField("shipping number", "shipping_phone_number", "",
-                          "text", "", kMaxLength),
+                          FormControlType::kInputText, "", kMaxLength),
       CreateTestFormField("other shipping number",
-                          "other_shipping_phone_number", "", "text", "",
-                          kMaxLength)};
+                          "other_shipping_phone_number", "",
+                          FormControlType::kInputText, "", kMaxLength)};
 
   FormsSeen({form_with_multiple_sections});
   // Fill first sections.
@@ -5447,8 +5534,9 @@ TEST_F(BrowserAutofillManagerTest, FormChangesRemoveField) {
   FormData form = CreateTestAddressFormData();
 
   // Add a field -- we'll remove it again later.
-  form.fields.insert(form.fields.begin() + 3,
-                     CreateTestFormField("Some", "field", "", "text"));
+  form.fields.insert(
+      form.fields.begin() + 3,
+      CreateTestFormField("Some", "field", "", FormControlType::kInputText));
 
   FormsSeen({form});
 
@@ -5499,14 +5587,17 @@ TEST_F(BrowserAutofillManagerTest, FormChangesVisibilityOfFields) {
   constexpr uint64_t kMaxLength = 10;
   form.name = u"multiple_groups_fields";
   form.fields = {
-      CreateTestFormField("First Name", "first_name", "", "text", "",
-                          kMaxLength),
-      CreateTestFormField("Last Name", "last_name", "", "text", "", kMaxLength),
-      CreateTestFormField("Address", "address", "", "text", "", kMaxLength),
-      CreateTestFormField("Postal Code", "postal_code", "", "text", "",
-                          kMaxLength)};
+      CreateTestFormField("First Name", "first_name", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("Last Name", "last_name", "",
+                          FormControlType::kInputText, "", kMaxLength),
+      CreateTestFormField("Address", "address", "", FormControlType::kInputText,
+                          "", kMaxLength),
+      CreateTestFormField("Postal Code", "postal_code", "",
+                          FormControlType::kInputText, "", kMaxLength)};
   form.fields.back().is_focusable = false;
-  form.fields.push_back(CreateTestFormField("Country", "country", "", "text"));
+  form.fields.push_back(CreateTestFormField("Country", "country", "",
+                                            FormControlType::kInputText));
   form.fields.back().is_focusable = false;
 
   FormsSeen({form});
@@ -6113,12 +6204,16 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.fields = {
-      CreateTestFormField("First Name", "firstname", "", "text", "given-name"),
-      CreateTestFormField("Last Name", "lastname", "", "text", "family-name"),
+      CreateTestFormField("First Name", "firstname", "",
+                          FormControlType::kInputText, "given-name"),
+      CreateTestFormField("Last Name", "lastname", "",
+                          FormControlType::kInputText, "family-name"),
       // Set no autocomplete attribute for the middle name.
-      CreateTestFormField("Middle name", "middle", "", "text", ""),
+      CreateTestFormField("Middle name", "middle", "",
+                          FormControlType::kInputText, ""),
       // Set an unrecognized autocomplete attribute for the last name.
-      CreateTestFormField("Email", "email", "", "text", "unrecognized")};
+      CreateTestFormField("Email", "email", "", FormControlType::kInputText,
+                          "unrecognized")};
 
   // Simulate having seen this form on page load.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
@@ -6166,16 +6261,16 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.fields = {
-      CreateTestFormField(/*label=*/"Name", /*name=*/"name",
-                          /*value=*/"", /*type=*/"text"),
-      CreateTestFormField(/*label=*/"Street", /*name=*/"Street",
-                          /*value=*/"", /*type=*/"text"),
-      CreateTestFormField(/*label=*/"City", /*name=*/"city",
-                          /*value=*/"", /*type=*/"text"),
-      CreateTestFormField(/*label=*/"State", /*name=*/"state",
-                          /*value=*/"", /*type=*/"text"),
+      CreateTestFormField(/*label=*/"Name", /*name=*/"name", /*value=*/"",
+                          /*type=*/FormControlType::kInputText),
+      CreateTestFormField(/*label=*/"Street", /*name=*/"Street", /*value=*/"",
+                          /*type=*/FormControlType::kInputText),
+      CreateTestFormField(/*label=*/"City", /*name=*/"city", /*value=*/"",
+                          /*type=*/FormControlType::kInputText),
+      CreateTestFormField(/*label=*/"State", /*name=*/"state", /*value=*/"",
+                          /*type=*/FormControlType::kInputText),
       CreateTestFormField(/*label=*/"Postal Code", /*name=*/"zipcode",
-                          /*value=*/"", /*type=*/"text")};
+                          /*value=*/"", /*type=*/FormControlType::kInputText)};
 
   // Simulate having seen this form on page load.
   // |form_structure_instance| will be owned by |browser_autofill_manager_|.
@@ -6279,14 +6374,15 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {CreateTestFormField(/*label=*/"Full Name", /*name=*/"fullName",
-                                     /*value=*/"", /*type=*/"text"),
-                 CreateTestFormField(/*label=*/"Address", /*name=*/"address",
-                                     /*value=*/"", /*type=*/"text"),
-                 CreateTestFormField(/*label=*/"Address", /*name=*/"address",
-                                     /*value=*/"", /*type=*/"text"),
-                 CreateTestFormField(/*label=*/"City", /*name=*/"city",
-                                     /*value=*/"", /*type=*/"text")};
+  form.fields = {
+      CreateTestFormField(/*label=*/"Full Name", /*name=*/"fullName",
+                          /*value=*/"", /*type=*/FormControlType::kInputText),
+      CreateTestFormField(/*label=*/"Address", /*name=*/"address", /*value=*/"",
+                          /*type=*/FormControlType::kInputText),
+      CreateTestFormField(/*label=*/"Address", /*name=*/"address", /*value=*/"",
+                          /*type=*/FormControlType::kInputText),
+      CreateTestFormField(/*label=*/"City", /*name=*/"city", /*value=*/"",
+                          /*type=*/FormControlType::kInputText)};
 
   // Simulate having seen this form on page load.
   // |form_structure_instance| will be owned by |browser_autofill_manager_|.
@@ -6388,8 +6484,9 @@ TEST_F(BrowserAutofillManagerTest, ValuePatternsMetric) {
     form.name = u"my-form";
     form.url = GURL("https://myform.com/form.html");
     form.action = GURL("https://myform.com/submit.html");
-    form.fields = {
-        CreateTestFormField("Some label", "my-field", test_case.value, "text")};
+    form.fields = {CreateTestFormField("Some label", "my-field",
+                                       test_case.value,
+                                       FormControlType::kInputText)};
     FormsSeen({form});
 
     base::HistogramTester histogram_tester;
@@ -6447,8 +6544,8 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   // No suggestions matching "donkey".
-  FormFieldData field =
-      CreateTestFormField("Email", "email", "donkey", "email");
+  FormFieldData field = CreateTestFormField("Email", "email", "donkey",
+                                            FormControlType::kInputEmail);
 
   // Single field form fill manager is called for suggestions because Autofill
   // is empty.
@@ -6528,8 +6625,8 @@ TEST_F(
   FormsSeen({form});
 
   // No suggestions matching "donkey".
-  FormFieldData field =
-      CreateTestFormField("Email", "email", "donkey", "email");
+  FormFieldData field = CreateTestFormField("Email", "email", "donkey",
+                                            FormControlType::kInputEmail);
   field.should_autocomplete = false;
 
   // Autocomplete is set to off, so suggestions should not get returned from
@@ -6601,12 +6698,12 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.fields = {
-      CreateTestFormField(/*label=*/"City", /*name=*/"city",
-                          /*value=*/"", /*type=*/"text"),
-      CreateTestFormField(/*label=*/"State", /*name=*/"state",
-                          /*value=*/"", /*type=*/"text"),
+      CreateTestFormField(/*label=*/"City", /*name=*/"city", /*value=*/"",
+                          /*type=*/FormControlType::kInputText),
+      CreateTestFormField(/*label=*/"State", /*name=*/"state", /*value=*/"",
+                          /*type=*/FormControlType::kInputText),
       CreateTestFormField(/*label=*/"Postal Code", /*name=*/"zipcode",
-                          /*value=*/"", /*type=*/"text")};
+                          /*value=*/"", /*type=*/FormControlType::kInputText)};
   // Simulate having seen this form on page load.
   // |form_structure_instance| will be owned by |browser_autofill_manager_|.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
@@ -6624,9 +6721,12 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   form2.name = u"MyForm2";
   form2.url = GURL("https://myform.com/form.html");
   form2.action = GURL("https://myform.com/submit.html");
-  form2.fields = {CreateTestFormField("Last Name", "lastname", "", "text"),
-                  CreateTestFormField("Middle Name", "middlename", "", "text"),
-                  CreateTestFormField("Postal Code", "zipcode", "", "text")};
+  form2.fields = {CreateTestFormField("Last Name", "lastname", "",
+                                      FormControlType::kInputText),
+                  CreateTestFormField("Middle Name", "middlename", "",
+                                      FormControlType::kInputText),
+                  CreateTestFormField("Postal Code", "zipcode", "",
+                                      FormControlType::kInputText)};
   auto form_structure_instance2 = std::make_unique<FormStructure>(form2);
   // This pointer is valid as long as autofill manager lives.
   FormStructure* form_structure2 = form_structure_instance2.get();
@@ -6740,12 +6840,16 @@ TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
   // Set up our form data.
   FormData form;
   form.url = GURL("https://www.myform.com");
-  form.fields = {
-      CreateTestFormField("First Name", "firstname", "", "text"),
-      CreateTestFormField("Last Name", "lastname", "", "text"),
-      CreateTestFormField("Card Number", "cardnumber", "", "text"),
-      CreateTestFormField("Expiration Year", "exp_year", "", "text"),
-      CreateTestFormField("Expiration Month", "exp_month", "", "text")};
+  form.fields = {CreateTestFormField("First Name", "firstname", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Last Name", "lastname", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Card Number", "cardnumber", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Expiration Year", "exp_year", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Expiration Month", "exp_month", "",
+                                     FormControlType::kInputText)};
 
   // Simulate having seen this form on page load.
   // |form_structure| will be owned by |browser_autofill_manager_|.
@@ -6913,7 +7017,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectListWithDefaultValue) {
 
 void DoTestFormSubmittedNonAddressControlWithDefaultValue(
     BrowserAutofillManagerTest* test,
-    const std::string& form_control_type) {
+    FormControlType form_control_type) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
 
@@ -6928,7 +7032,8 @@ void DoTestFormSubmittedNonAddressControlWithDefaultValue(
                                             form_control_type,
                                             "tel-country-code"));
   form.fields.push_back(CreateTestFormField("Phone Number", "phonenumber", "",
-                                            "text", "tel-national"));
+                                            FormControlType::kInputText,
+                                            "tel-national"));
 
   test->FormsSeen({form});
 
@@ -6954,14 +7059,16 @@ void DoTestFormSubmittedNonAddressControlWithDefaultValue(
 // form contains the default value.
 TEST_F(BrowserAutofillManagerTest,
        FormSubmittedNonAddressSelectWithDefaultValue) {
-  DoTestFormSubmittedNonAddressControlWithDefaultValue(this, "select-one");
+  DoTestFormSubmittedNonAddressControlWithDefaultValue(
+      this, FormControlType::kSelectOne);
 }
 
 // Test that we save form data when a non-country, non-state <selectlist> in the
 // form contains the default value.
 TEST_F(BrowserAutofillManagerTest,
        FormSubmittedNonAddressSelectListWithDefaultValue) {
-  DoTestFormSubmittedNonAddressControlWithDefaultValue(this, "selectlist");
+  DoTestFormSubmittedNonAddressControlWithDefaultValue(
+      this, FormControlType::kSelectList);
 }
 
 struct ProfileMatchingTypesTestCase {
@@ -7116,8 +7223,8 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields.push_back(
-      CreateTestFormField("", "1", test_case.input_value, "text"));
+  form.fields.push_back(CreateTestFormField("", "1", test_case.input_value,
+                                            FormControlType::kInputText));
 
   FormStructure form_structure(form);
 
@@ -7141,7 +7248,7 @@ class DeterminePossibleFieldTypesForUploadOfSelectTest
 
 void DoTestDeterminePossibleFieldTypesForUploadOfSelect(
     bool enable_autofill_vote_for_select_option_values,
-    const char* field_type) {
+    FormControlType field_type) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatureState(features::kAutofillVoteForSelectOptionValues,
                                 enable_autofill_vote_for_select_option_values);
@@ -7172,8 +7279,8 @@ void DoTestDeterminePossibleFieldTypesForUploadOfSelect(
   // recognized as a country field.
   FormFieldData phone_country_code_field = CreateTestSelectOrSelectListField(
       "label", "name", /*value=*/"US", /*autocomplete=*/"",
-      /*values=*/{"US", "DE"},
-      /*contents=*/{"USA (+1)", "Germany (+49)"}, field_type);
+      /*values=*/{"US", "DE"}, /*contents=*/{"USA (+1)", "Germany (+49)"},
+      field_type);
 
   form.fields = {city_field, phone_country_code_field};
 
@@ -7208,7 +7315,7 @@ TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
        DeterminePossibleFieldTypesForUploadOfSelect) {
   DoTestDeterminePossibleFieldTypesForUploadOfSelect(
       /*enable_autofill_vote_for_select_option_values=*/GetParam(),
-      "select-one");
+      FormControlType::kSelectOne);
 }
 
 // Tests that DeterminePossibleFieldTypesForUpload considers both the value
@@ -7221,7 +7328,7 @@ TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
        DeterminePossibleFieldTypesForUploadOfSelectList) {
   DoTestDeterminePossibleFieldTypesForUploadOfSelect(
       /*enable_autofill_vote_for_select_option_values=*/GetParam(),
-      "selectlist");
+      FormControlType::kSelectList);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -7246,19 +7353,22 @@ TEST_F(BrowserAutofillManagerTest,
   expected_values.push_back(u"Elvis");
   types.clear();
   types.insert(NAME_FIRST);
-  form.fields.push_back(CreateTestFormField("", "1", "", "text"));
+  form.fields.push_back(
+      CreateTestFormField("", "1", "", FormControlType::kInputText));
   expected_types.push_back(types);
 
   expected_values.push_back(u"Aaron");
   types.clear();
   types.insert(NAME_MIDDLE);
-  form.fields.push_back(CreateTestFormField("", "2", "", "text"));
+  form.fields.push_back(
+      CreateTestFormField("", "2", "", FormControlType::kInputText));
   expected_types.push_back(types);
 
   expected_values.push_back(u"A");
   types.clear();
   types.insert(NAME_MIDDLE_INITIAL);
-  form.fields.push_back(CreateTestFormField("", "3", "", "text"));
+  form.fields.push_back(
+      CreateTestFormField("", "3", "", FormControlType::kInputText));
   expected_types.push_back(types);
 
   // Make sure the form is in the cache so that it is processed for Autofill
@@ -7407,8 +7517,8 @@ TEST_F(BrowserAutofillManagerTest, DisambiguateUploadTypes) {
 
     // Create the form fields specified in the test case.
     for (const TestFieldData& test_field : test_fields) {
-      form.fields.push_back(
-          CreateTestFormField("", "1", test_field.input_value, "text"));
+      form.fields.push_back(CreateTestFormField("", "1", test_field.input_value,
+                                                FormControlType::kInputText));
     }
 
     // Assign the specified predicted type for each field in the test case.
@@ -7471,8 +7581,10 @@ TEST_F(BrowserAutofillManagerTest, CrowdsourceUPIVPA) {
   std::vector<CreditCard> credit_cards;
 
   FormData form;
-  form.fields = {CreateTestFormField("", "name1", "1234@indianbank", "text"),
-                 CreateTestFormField("", "name2", "not-upi@gmail.com", "text")};
+  form.fields = {CreateTestFormField("", "name1", "1234@indianbank",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("", "name2", "not-upi@gmail.com",
+                                     FormControlType::kInputText)};
   FormStructure form_structure(form);
 
   BrowserAutofillManagerTestApi::DeterminePossibleFieldTypesForUpload(
@@ -7497,13 +7609,15 @@ TEST_F(BrowserAutofillManagerTest, CrowdsourceCVCFieldByValue) {
 
   FormData form;
   form.fields = {
-      CreateTestFormField("number", "number", kCreditCardNumber, "text"),
+      CreateTestFormField("number", "number", kCreditCardNumber,
+                          FormControlType::kInputText),
       // This field would not be detected as CVC heuristically if the CVC value
       // wouldn't be known.
-      CreateTestFormField("not_cvc", "not_cvc", kFourDigitButNotCvc, "text"),
+      CreateTestFormField("not_cvc", "not_cvc", kFourDigitButNotCvc,
+                          FormControlType::kInputText),
       // This field has the CVC value used to unlock the card and should be
       // detected as the CVC field.
-      CreateTestFormField("c_v_c", "c_v_c", kCvc, "text")};
+      CreateTestFormField("c_v_c", "c_v_c", kCvc, FormControlType::kInputText)};
 
   FormStructure form_structure(form);
   form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
@@ -7526,14 +7640,16 @@ TEST_F(BrowserAutofillManagerTest,
   constexpr char cvc[] = "1234";
 
   FormData form;
-  form.fields = {
-      CreateTestFormField("number", "number", credit_card_number, "text"),
-      // Expiration date, but is not the expiration date of the used credit
-      // card.
-      CreateTestFormField("exp_year", "exp_year",
-                          user_entered_credit_card_exp_year, "text"),
-      // Must be CVC since expiration date was already identified.
-      CreateTestFormField("cvc_number", "cvc_number", cvc, "text")};
+  form.fields = {CreateTestFormField("number", "number", credit_card_number,
+                                     FormControlType::kInputText),
+                 // Expiration date, but is not the expiration date of the used
+                 // credit card.
+                 CreateTestFormField("exp_year", "exp_year",
+                                     user_entered_credit_card_exp_year,
+                                     FormControlType::kInputText),
+                 // Must be CVC since expiration date was already identified.
+                 CreateTestFormField("cvc_number", "cvc_number", cvc,
+                                     FormControlType::kInputText)};
 
   FormStructure form_structure(form);
 
@@ -7572,12 +7688,15 @@ TEST_F(BrowserAutofillManagerTest,
 
   FormData form;
   form.fields = {
-      CreateTestFormField("number", "number", credit_card_number, "text"),
+      CreateTestFormField("number", "number", credit_card_number,
+                          FormControlType::kInputText),
       // Expiration date, that is the expiration date of the used credit card.
       CreateTestFormField("date_or_cvc1", "date_or_cvc1",
-                          actual_credit_card_exp_year, "text"),
+                          actual_credit_card_exp_year,
+                          FormControlType::kInputText),
       // Must be CVC since expiration date was already identified.
-      CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc, "text")};
+      CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
+                          FormControlType::kInputText)};
 
   FormStructure form_structure(form);
 
@@ -7614,14 +7733,16 @@ TEST_F(BrowserAutofillManagerTest,
   constexpr char user_entered_credit_card_exp_year[] = "2031";
 
   FormData form;
-  form.fields = {
-      CreateTestFormField("number", "number", credit_card_number, "text"),
-      // Must be CVC since it is an implausible expiration date.
-      CreateTestFormField("date_or_cvc2", "date_or_cvc2", "2130", "text"),
-      // A field which is filled with a plausible expiration date which is not
-      // the date of the credit card.
-      CreateTestFormField("date_or_cvc1", "date_or_cvc1",
-                          user_entered_credit_card_exp_year, "text")};
+  form.fields = {CreateTestFormField("number", "number", credit_card_number,
+                                     FormControlType::kInputText),
+                 // Must be CVC since it is an implausible expiration date.
+                 CreateTestFormField("date_or_cvc2", "date_or_cvc2", "2130",
+                                     FormControlType::kInputText),
+                 // A field which is filled with a plausible expiration date
+                 // which is not the date of the credit card.
+                 CreateTestFormField("date_or_cvc1", "date_or_cvc1",
+                                     user_entered_credit_card_exp_year,
+                                     FormControlType::kInputText)};
 
   FormStructure form_structure(form);
 
@@ -7659,13 +7780,15 @@ TEST_F(BrowserAutofillManagerTest,
   constexpr char cvc[] = "2031";
 
   FormData form;
-  form.fields = {
-      CreateTestFormField("number", "number", credit_card_number, "text"),
-      // Server predicted as expiration year.
-      CreateTestFormField("date_or_cvc1", "date_or_cvc1",
-                          user_entered_credit_card_exp_year, "text"),
-      // Must be CVC since expiration date was already identified.
-      CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc, "text")};
+  form.fields = {CreateTestFormField("number", "number", credit_card_number,
+                                     FormControlType::kInputText),
+                 // Server predicted as expiration year.
+                 CreateTestFormField("date_or_cvc1", "date_or_cvc1",
+                                     user_entered_credit_card_exp_year,
+                                     FormControlType::kInputText),
+                 // Must be CVC since expiration date was already identified.
+                 CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
+                                     FormControlType::kInputText)};
 
   FormStructure form_structure(form);
 
@@ -7699,12 +7822,14 @@ TEST_F(BrowserAutofillManagerTest, CrowdsourceNoCVCDueToInvalidCandidateValue) {
 
   FormData form;
   form.fields = {
-      CreateTestFormField("number", "number", credit_card_number, "text"),
+      CreateTestFormField("number", "number", credit_card_number,
+                          FormControlType::kInputText),
       // Server predicted as expiration year.
       CreateTestFormField("date_or_cvc1", "date_or_cvc1", credit_card_exp_year,
-                          "text"),
+                          FormControlType::kInputText),
       // Must be CVC since expiration date was already identified.
-      CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc, "text")};
+      CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
+                          FormControlType::kInputText)};
 
   FormStructure form_structure(form);
 
@@ -7778,19 +7903,20 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
   std::vector<ServerFieldTypeSet> expected_types;
   ServerFieldTypeSet types;
 
-  form.fields.push_back(
-      CreateTestFormField("First Name", "firstname", "", "text"));
+  form.fields.push_back(CreateTestFormField("First Name", "firstname", "",
+                                            FormControlType::kInputText));
   types.insert(NAME_FIRST);
   expected_types.push_back(types);
 
-  form.fields.push_back(
-      CreateTestFormField("Last Name", "lastname", "", "text"));
+  form.fields.push_back(CreateTestFormField("Last Name", "lastname", "",
+                                            FormControlType::kInputText));
   types.clear();
   types.insert(NAME_LAST);
   types.insert(NAME_LAST_SECOND);
   expected_types.push_back(types);
 
-  form.fields.push_back(CreateTestFormField("Email", "email", "", "text"));
+  form.fields.push_back(
+      CreateTestFormField("Email", "email", "", FormControlType::kInputText));
   types.clear();
   types.insert(EMAIL_ADDRESS);
   expected_types.push_back(types);
@@ -7827,19 +7953,20 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
   std::vector<ServerFieldTypeSet> expected_types;
   ServerFieldTypeSet types;
 
-  form.fields.push_back(
-      CreateTestFormField("First Name", "firstname", "", "text"));
+  form.fields.push_back(CreateTestFormField("First Name", "firstname", "",
+                                            FormControlType::kInputText));
   types.insert(NAME_FIRST);
   expected_types.push_back(types);
 
-  form.fields.push_back(
-      CreateTestFormField("Last Name", "lastname", "", "text"));
+  form.fields.push_back(CreateTestFormField("Last Name", "lastname", "",
+                                            FormControlType::kInputText));
   types.clear();
   types.insert(NAME_LAST_SECOND);
   types.insert(NAME_LAST);
   expected_types.push_back(types);
 
-  form.fields.push_back(CreateTestFormField("Email", "email", "", "text"));
+  form.fields.push_back(
+      CreateTestFormField("Email", "email", "", FormControlType::kInputText));
   types.clear();
   types.insert(EMAIL_ADDRESS);
   expected_types.push_back(types);
@@ -7877,19 +8004,20 @@ TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
 
   // These fields should all match.
   ServerFieldTypeSet types;
-  form.fields.push_back(
-      CreateTestFormField("First Name", "firstname", "", "text"));
+  form.fields.push_back(CreateTestFormField("First Name", "firstname", "",
+                                            FormControlType::kInputText));
   types.insert(NAME_FIRST);
   expected_types.push_back(types);
 
-  form.fields.push_back(
-      CreateTestFormField("Last Name", "lastname", "", "text"));
+  form.fields.push_back(CreateTestFormField("Last Name", "lastname", "",
+                                            FormControlType::kInputText));
   types.clear();
   types.insert(NAME_LAST_SECOND);
   types.insert(NAME_LAST);
   expected_types.push_back(types);
 
-  form.fields.push_back(CreateTestFormField("Email", "email", "", "text"));
+  form.fields.push_back(
+      CreateTestFormField("Email", "email", "", FormControlType::kInputText));
   types.clear();
   types.insert(EMAIL_ADDRESS);
   expected_types.push_back(types);
@@ -7924,12 +8052,14 @@ TEST_F(BrowserAutofillManagerTest,
   form.action = GURL("https://myform.com/submit.html");
   form.fields = {
       // Set a valid autocomplete attribute on the card name.
-      CreateTestFormField("Name on Card", "nameoncard", "", "text", "cc-name"),
+      CreateTestFormField("Name on Card", "nameoncard", "",
+                          FormControlType::kInputText, "cc-name"),
       // Set no autocomplete attribute on the card number.
-      CreateTestFormField("Card Number", "cardnumber", "", "text"),
+      CreateTestFormField("Card Number", "cardnumber", "",
+                          FormControlType::kInputText),
       // Set an unrecognized autocomplete attribute on the expiration month.
-      CreateTestFormField("Expiration Date", "ccmonth", "", "text",
-                          "unrecognized")};
+      CreateTestFormField("Expiration Date", "ccmonth", "",
+                          FormControlType::kInputText, "unrecognized")};
   FormsSeen({form});
 
   // Suggestions should be returned for the first two fields
@@ -7953,22 +8083,25 @@ TEST_F(BrowserAutofillManagerTest,
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {CreateTestFormField("Name on Card", "nameoncard", "", "text")};
+  form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
+                                     FormControlType::kInputText)};
 
   // Add new 4 |card_number_field|s to the |form|.
   constexpr uint64_t kMaxLength = 4;
   form.fields.push_back(CreateTestFormField("Card Number", "cardnumber_1", "",
-                                            "text", "", kMaxLength));
-  form.fields.push_back(
-      CreateTestFormField("", "cardnumber_2", "", "text", "", kMaxLength));
-  form.fields.push_back(
-      CreateTestFormField("", "cardnumber_3", "", "text", "", kMaxLength));
-  form.fields.push_back(
-      CreateTestFormField("", "cardnumber_4", "", "text", "", kMaxLength));
+                                            FormControlType::kInputText, "",
+                                            kMaxLength));
+  form.fields.push_back(CreateTestFormField(
+      "", "cardnumber_2", "", FormControlType::kInputText, "", kMaxLength));
+  form.fields.push_back(CreateTestFormField(
+      "", "cardnumber_3", "", FormControlType::kInputText, "", kMaxLength));
+  form.fields.push_back(CreateTestFormField(
+      "", "cardnumber_4", "", FormControlType::kInputText, "", kMaxLength));
 
+  form.fields.push_back(CreateTestFormField("Expiration Date", "ccmonth", "",
+                                            FormControlType::kInputText));
   form.fields.push_back(
-      CreateTestFormField("Expiration Date", "ccmonth", "", "text"));
-  form.fields.push_back(CreateTestFormField("", "ccyear", "", "text"));
+      CreateTestFormField("", "ccyear", "", FormControlType::kInputText));
 
   FormsSeen({form});
 
@@ -8020,7 +8153,8 @@ TEST_F(BrowserAutofillManagerTest, DontSaveCvcInAutocompleteHistory) {
 
   for (const auto& test_field : test_fields) {
     form.fields.push_back(CreateTestFormField(test_field.label, test_field.name,
-                                              test_field.value, "text"));
+                                              test_field.value,
+                                              FormControlType::kInputText));
   }
 
   FormsSeen({form});
@@ -8095,8 +8229,9 @@ TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotSuggest) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  GetAutofillSuggestions(form,
-                         CreateTestFormField("Email", "email", "", "email"));
+  GetAutofillSuggestions(
+      form,
+      CreateTestFormField("Email", "email", "", FormControlType::kInputEmail));
   // Expect no suggestions as autofill and autocomplete are disabled for
   // addresses.
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
@@ -8123,8 +8258,9 @@ TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotSuggest) {
   FormData form = CreateTestCreditCardFormData(true, false);
   FormsSeen({form});
 
-  GetAutofillSuggestions(
-      form, CreateTestFormField("Name on Card", "nameoncard", "", "text"));
+  GetAutofillSuggestions(form,
+                         CreateTestFormField("Name on Card", "nameoncard", "",
+                                             FormControlType::kInputText));
   // Expect no suggestions as autofill and autocomplete are disabled for credit
   // cards.
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
@@ -8177,12 +8313,14 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
       browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Add a field to the form.
-  form.fields.push_back(CreateTestFormField("Name", "name", "", "text"));
+  form.fields.push_back(
+      CreateTestFormField("Name", "name", "", FormControlType::kInputText));
 
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Add a second field to the form.
-  form.fields.push_back(CreateTestFormField("Email", "email", "", "text"));
+  form.fields.push_back(
+      CreateTestFormField("Email", "email", "", FormControlType::kInputText));
 
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
@@ -8194,8 +8332,8 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Has more than 3 fields, no autocomplete attribute.
-  form.fields.push_back(
-      CreateTestFormField("Country", "country", "", "text", ""));
+  form.fields.push_back(CreateTestFormField("Country", "country", "",
+                                            FormControlType::kInputText, ""));
   FormStructure form_structure_3(form);
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
@@ -8214,7 +8352,8 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Has one field which is appears to be a password field.
-  form.fields = {CreateTestFormField("Password", "password", "", "password")};
+  form.fields = {CreateTestFormField("Password", "password", "",
+                                     FormControlType::kInputPassword)};
 
   // With min required fields disabled.
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
@@ -8236,13 +8375,13 @@ TEST_F(BrowserAutofillManagerTest,
   mixed_form.name = u"MyForm";
   mixed_form.url = GURL("https://myform.com/form.html");
   mixed_form.action = GURL("https://myform.com/submit.html");
-  mixed_form.fields.push_back(
-      CreateTestFormField("First name", "firstname", "", "text"));
+  mixed_form.fields.push_back(CreateTestFormField("First name", "firstname", "",
+                                                  FormControlType::kInputText));
   mixed_form.fields.back().should_autocomplete = false;
-  mixed_form.fields.push_back(
-      CreateTestFormField("Last name", "lastname", "", "text"));
-  mixed_form.fields.push_back(
-      CreateTestFormField("Address", "address", "", "text"));
+  mixed_form.fields.push_back(CreateTestFormField("Last name", "lastname", "",
+                                                  FormControlType::kInputText));
+  mixed_form.fields.push_back(CreateTestFormField("Address", "address", "",
+                                                  FormControlType::kInputText));
   FormsSeen({mixed_form});
 
   // Suggestions should be displayed on desktop for this field in all
@@ -8266,13 +8405,13 @@ TEST_F(BrowserAutofillManagerTest,
   mixed_form.name = u"MyForm";
   mixed_form.url = GURL("https://myform.com/form.html");
   mixed_form.action = GURL("https://myform.com/submit.html");
-  mixed_form.fields = {
-      CreateTestFormField("Name on Card", "nameoncard", "", "text")};
+  mixed_form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
+                                           FormControlType::kInputText)};
   mixed_form.fields.back().should_autocomplete = false;
-  mixed_form.fields.push_back(
-      CreateTestFormField("Card Number", "cardnumber", "", "text"));
-  mixed_form.fields.push_back(
-      CreateTestFormField("Expiration Month", "ccexpiresmonth", "", "text"));
+  mixed_form.fields.push_back(CreateTestFormField(
+      "Card Number", "cardnumber", "", FormControlType::kInputText));
+  mixed_form.fields.push_back(CreateTestFormField(
+      "Expiration Month", "ccexpiresmonth", "", FormControlType::kInputText));
   mixed_form.fields.back().should_autocomplete = false;
   FormsSeen({mixed_form});
 
@@ -8300,9 +8439,11 @@ TEST_F(BrowserAutofillManagerTest,
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {CreateTestFormField("Field 1", "field1", "", "text"),
-                 CreateTestFormField("Field 2", "field2", "", "text"),
-                 CreateTestFormField("Field 3", "field3", "", "text")};
+  form.fields = {
+      CreateTestFormField("Field 1", "field1", "", FormControlType::kInputText),
+      CreateTestFormField("Field 2", "field2", "", FormControlType::kInputText),
+      CreateTestFormField("Field 3", "field3", "",
+                          FormControlType::kInputText)};
 
   auto form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -8505,7 +8646,8 @@ TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogAutocompleteShownMetric) {
   FormData form;
   form.name = u"NothingSpecial";
-  form.fields = {CreateTestFormField("Something", "something", "", "text")};
+  form.fields = {CreateTestFormField("Something", "something", "",
+                                     FormControlType::kInputText)};
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -8564,9 +8706,12 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_AddressOnly) {
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-  form.fields = {CreateTestFormField("First Name", "firstname", "", "text"),
-                 CreateTestFormField("Last Name", "lastname", "", "text"),
-                 CreateTestFormField("Address Line 1", "addr1", "", "text")};
+  form.fields = {CreateTestFormField("First Name", "firstname", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Last Name", "lastname", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Address Line 1", "addr1", "",
+                                     FormControlType::kInputText)};
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -8605,9 +8750,12 @@ TEST_F(BrowserAutofillManagerTest,
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-  form.fields = {CreateTestFormField("Address Line 1", "addr1", "", "text"),
-                 CreateTestFormField("Address Line 2", "addr2", "", "text"),
-                 CreateTestFormField("Postal Code", "zipcode", "", "text")};
+  form.fields = {CreateTestFormField("Address Line 1", "addr1", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Address Line 2", "addr2", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Postal Code", "zipcode", "",
+                                     FormControlType::kInputText)};
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -8645,9 +8793,12 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_ContactOnly) {
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-  form.fields = {CreateTestFormField("First Name", "firstname", "", "text"),
-                 CreateTestFormField("Last Name", "lastname", "", "text"),
-                 CreateTestFormField("Email", "email", "", "email")};
+  form.fields = {
+      CreateTestFormField("First Name", "firstname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Last Name", "lastname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Email", "email", "", FormControlType::kInputEmail)};
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -8685,11 +8836,13 @@ TEST_F(BrowserAutofillManagerTest,
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-  form.fields = {CreateTestFormField("Phone Number", "phonenumber1", "", "tel",
-                                     "tel-country-code"),
-                 CreateTestFormField("Phone Number", "phonenumber2", "", "tel",
-                                     "tel-national"),
-                 CreateTestFormField("Email", "email", "", "email", "email")};
+  form.fields = {
+      CreateTestFormField("Phone Number", "phonenumber1", "",
+                          FormControlType::kInputTelephone, "tel-country-code"),
+      CreateTestFormField("Phone Number", "phonenumber2", "",
+                          FormControlType::kInputTelephone, "tel-national"),
+      CreateTestFormField("Email", "email", "", FormControlType::kInputEmail,
+                          "email")};
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -8726,12 +8879,13 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_PhoneOnly) {
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-  form.fields = {CreateTestFormField("Phone Number", "phonenumber", "", "tel",
-                                     "tel-country-code"),
-                 CreateTestFormField("Phone Number", "phonenumber", "", "tel",
-                                     "tel-area-code"),
-                 CreateTestFormField("Phone Number", "phonenumber", "", "tel",
-                                     "tel-local")};
+  form.fields = {
+      CreateTestFormField("Phone Number", "phonenumber", "",
+                          FormControlType::kInputTelephone, "tel-country-code"),
+      CreateTestFormField("Phone Number", "phonenumber", "",
+                          FormControlType::kInputTelephone, "tel-area-code"),
+      CreateTestFormField("Phone Number", "phonenumber", "",
+                          FormControlType::kInputTelephone, "tel-local")};
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -8768,9 +8922,12 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_Other) {
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-  form.fields = {CreateTestFormField("First Name", "firstname", "", "text"),
-                 CreateTestFormField("Middle Name", "middlename", "", "text"),
-                 CreateTestFormField("Last Name", "lastname", "", "text")};
+  form.fields = {CreateTestFormField("First Name", "firstname", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Middle Name", "middlename", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Last Name", "lastname", "",
+                                     FormControlType::kInputText)};
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -8808,10 +8965,14 @@ TEST_F(BrowserAutofillManagerTest,
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-  form.fields = {CreateTestFormField("First Name", "firstname", "", "text"),
-                 CreateTestFormField("Last Name", "lastname", "", "text"),
-                 CreateTestFormField("Address Line 1", "addr1", "", "text"),
-                 CreateTestFormField("Email", "email", "", "email")};
+  form.fields = {
+      CreateTestFormField("First Name", "firstname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Last Name", "lastname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Address Line 1", "addr1", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Email", "email", "", FormControlType::kInputEmail)};
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -8854,9 +9015,12 @@ TEST_F(BrowserAutofillManagerTest,
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-  form.fields = {CreateTestFormField("Address Line 1", "addr1", "", "text"),
-                 CreateTestFormField("Address Line 2", "addr2", "", "text"),
-                 CreateTestFormField("Email", "email", "", "email")};
+  form.fields = {
+      CreateTestFormField("Address Line 1", "addr1", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Address Line 2", "addr2", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Email", "email", "", FormControlType::kInputEmail)};
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -8899,10 +9063,14 @@ TEST_F(BrowserAutofillManagerTest,
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-  form.fields = {CreateTestFormField("First Name", "firstname", "", "text"),
-                 CreateTestFormField("Last Name", "lastname", "", "text"),
-                 CreateTestFormField("Address Line 1", "addr1", "", "text"),
-                 CreateTestFormField("Phone Number", "phonenumber", "", "tel")};
+  form.fields = {CreateTestFormField("First Name", "firstname", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Last Name", "lastname", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Address Line 1", "addr1", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Phone Number", "phonenumber", "",
+                                     FormControlType::kInputTelephone)};
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -8945,9 +9113,12 @@ TEST_F(BrowserAutofillManagerTest,
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-  form.fields = {CreateTestFormField("Address Line 1", "addr1", "", "text"),
-                 CreateTestFormField("Address Line 2", "addr2", "", "text"),
-                 CreateTestFormField("Phone Number", "phonenumber", "", "tel")};
+  form.fields = {CreateTestFormField("Address Line 1", "addr1", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Address Line 2", "addr2", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Phone Number", "phonenumber", "",
+                                     FormControlType::kInputTelephone)};
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -8990,11 +9161,16 @@ TEST_F(BrowserAutofillManagerTest,
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-  form.fields = {CreateTestFormField("First Name", "firstname", "", "text"),
-                 CreateTestFormField("Last Name", "lastname", "", "text"),
-                 CreateTestFormField("Address Line 1", "addr1", "", "text"),
-                 CreateTestFormField("Phone Number", "phonenumber", "", "tel"),
-                 CreateTestFormField("Email", "email", "", "email")};
+  form.fields = {
+      CreateTestFormField("First Name", "firstname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Last Name", "lastname", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Address Line 1", "addr1", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Phone Number", "phonenumber", "",
+                          FormControlType::kInputTelephone),
+      CreateTestFormField("Email", "email", "", FormControlType::kInputEmail)};
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -9036,9 +9212,12 @@ TEST_F(BrowserAutofillManagerTest,
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-  form.fields = {CreateTestFormField("Address Line 1", "addr1", "", "text"),
-                 CreateTestFormField("Phone Number", "phonenumber", "", "tel"),
-                 CreateTestFormField("Email", "email", "", "email")};
+  form.fields = {
+      CreateTestFormField("Address Line 1", "addr1", "",
+                          FormControlType::kInputText),
+      CreateTestFormField("Phone Number", "phonenumber", "",
+                          FormControlType::kInputTelephone),
+      CreateTestFormField("Email", "email", "", FormControlType::kInputEmail)};
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -9226,8 +9405,8 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
   std::vector<ServerFieldType> heuristic_types, server_types;
   for (const char* autocomplete : kAutocompleteValues) {
     for (const auto& types : kTypeClasses) {
-      form.fields.push_back(
-          CreateTestFormField("", "", "", "text", autocomplete));
+      form.fields.push_back(CreateTestFormField(
+          "", "", "", FormControlType::kInputText, autocomplete));
       heuristic_types.push_back(types[0]);
       server_types.push_back(types[1]);
     }
@@ -9316,7 +9495,7 @@ TEST_P(BrowserAutofillManagerContextMenuImpressionsTest,
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {CreateTestFormField("", "", "", "text",
+  form.fields = {CreateTestFormField("", "", "", FormControlType::kInputText,
                                      test_case.autocomplete_attribute_value)};
 
   // Override the types and simulate seeing the form on page load.
@@ -9355,7 +9534,8 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedForm) {
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
-  form.fields = {CreateTestFormField("Name on Card", "nameoncard", "", "text")};
+  form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
+                                     FormControlType::kInputText)};
 
   GetAutofillSuggestions(form, form.fields[0]);
 
@@ -9378,7 +9558,8 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormOptOutPolicy) {
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
-  form.fields = {CreateTestFormField("Name on Card", "nameoncard", "", "text")};
+  form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
+                                     FormControlType::kInputText)};
   GetAutofillSuggestions(form, form.fields[0]);
 
   // Check there is no warning.
@@ -9392,7 +9573,8 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormUserTyped) {
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
-  form.fields = {CreateTestFormField("Name on Card", "nameoncard", "", "text")};
+  form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
+                                     FormControlType::kInputText)};
 
   GetAutofillSuggestions(form, form.fields[0]);
 
@@ -9417,7 +9599,8 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_JavascriptUrlTarget) {
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("javascript:alert('hello');");
-  form.fields = {CreateTestFormField("Name on Card", "nameoncard", "", "text")};
+  form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
+                                     FormControlType::kInputText)};
   GetAutofillSuggestions(form, form.fields[0]);
 
   // Check there is no warning.
@@ -9431,7 +9614,8 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_AboutBlankTarget) {
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("about:blank");
-  form.fields = {CreateTestFormField("Name on Card", "nameoncard", "", "text")};
+  form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
+                                     FormControlType::kInputText)};
   GetAutofillSuggestions(form, form.fields[0]);
 
   // Check there is no warning.
@@ -9452,14 +9636,18 @@ TEST_F(BrowserAutofillManagerTest,
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("about:blank");
   form.fields = {
-      CreateTestFormField("Name", "name", "", "text"),
-      CreateTestFormField("City", "city", "Test City", "text"),
+      CreateTestFormField("Name", "name", "", FormControlType::kInputText),
+      CreateTestFormField("City", "city", "Test City",
+                          FormControlType::kInputText),
       CreateTestSelectField("State", "state", "California",
                             {"Washington", "Tennessee", "California"},
                             {"DC", "TN", "CA"}),
-      CreateTestFormField("Country", "country", "Test Country", "text"),
-      CreateTestFormField("Phone Number", "phonenumber", "12345678901", "tel"),
-      CreateTestFormField("Zip Code", "zipcode", "_____", "text")};
+      CreateTestFormField("Country", "country", "Test Country",
+                          FormControlType::kInputText),
+      CreateTestFormField("Phone Number", "phonenumber", "12345678901",
+                          FormControlType::kInputTelephone),
+      CreateTestFormField("Zip Code", "zipcode", "_____",
+                          FormControlType::kInputText)};
   FormsSeen({form});
 
   FormData response_data =
@@ -9534,12 +9722,15 @@ TEST_F(BrowserAutofillManagerTest, DISABLED_AutofillOverridePrefilledValue) {
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("about:blank");
   form.fields = {
-      CreateTestFormField("Name", "name", "Test Name", "text"),
-      CreateTestFormField("City", "city", "Test City", "text"),
+      CreateTestFormField("Name", "name", "Test Name",
+                          FormControlType::kInputText),
+      CreateTestFormField("City", "city", "Test City",
+                          FormControlType::kInputText),
       CreateTestSelectField("State", "state", "California",
                             {"Washington", "Tennessee", "California"},
                             {"DC", "TN", "CA"}),
-      CreateTestFormField("Country", "country", "Test Country", "text"),
+      CreateTestFormField("Country", "country", "Test Country",
+                          FormControlType::kInputText),
   };
   FormsSeen({form});
 
@@ -9960,9 +10151,11 @@ TEST_P(OnFocusOnFormFieldTest, AddressSuggestions) {
   form.action = GURL("https://myform.com/submit.html");
   form.fields = {
       // Set a valid autocomplete attribute for the first name.
-      CreateTestFormField("First name", "firstname", "", "text", "given-name"),
+      CreateTestFormField("First name", "firstname", "",
+                          FormControlType::kInputText, "given-name"),
       // Set an unrecognized autocomplete attribute for the last name.
-      CreateTestFormField("Last Name", "lastname", "", "text", "unrecognized")};
+      CreateTestFormField("Last Name", "lastname", "",
+                          FormControlType::kInputText, "unrecognized")};
   FormsSeen({form});
 
   // Suggestions should be returned for the first field.
@@ -9984,9 +10177,11 @@ TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_AutocompleteOffNotRespected) {
   form.action = GURL("https://myform.com/submit.html");
   form.fields = {
       // Set a valid autocomplete attribute for the first name.
-      CreateTestFormField("First name", "firstname", "", "text", "given-name"),
+      CreateTestFormField("First name", "firstname", "",
+                          FormControlType::kInputText, "given-name"),
       // Set an autocomplete=off attribute for the last name.
-      CreateTestFormField("Last Name", "lastname", "", "text", "given-name")};
+      CreateTestFormField("Last Name", "lastname", "",
+                          FormControlType::kInputText, "given-name")};
   form.fields.back().should_autocomplete = false;
   FormsSeen({form});
 
@@ -10229,10 +10424,12 @@ TEST_P(BrowserAutofillManagerRefillTest,
   FormData form;
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  form.fields = {
-      CreateTestFormField("Name on Card", "nameoncard", "", "text"),
-      CreateTestFormField("Card Number", "cardnumber", "", "text"),
-      CreateTestFormField("Expiration date", "exp_date", "", "text")};
+  form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Card Number", "cardnumber", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Expiration date", "exp_date", "",
+                                     FormControlType::kInputText)};
 
   // Notify BrowserAutofillManager of the form.
   FormsSeen({form});
@@ -10337,10 +10534,12 @@ class BrowserAutofillManagerClearFieldTest : public BrowserAutofillManagerTest {
     FormData form;
     form.url = GURL("https://myform.com/form.html");
     form.action = GURL("https://myform.com/submit.html");
-    form.fields = {
-        CreateTestFormField("Name on Card", "nameoncard", "", "text"),
-        CreateTestFormField("Card Number", "cardnumber", "", "text"),
-        CreateTestFormField("Expiration date", "exp_date", "", "text")};
+    form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Card Number", "cardnumber", "",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Expiration date", "exp_date", "",
+                                       FormControlType::kInputText)};
 
     // Notify BrowserAutofillManager of the form.
     FormsSeen({form});
@@ -10431,10 +10630,11 @@ class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
     form_.name = u"MyForm";
     form_.url = GURL("https://myform.com/form.html");
     form_.action = GURL("https://myform.com/submit.html");
-    form_.fields = {CreateTestFormField("First Name", "firstname", "", "text",
-                                        "given-name"),
-                    CreateTestFormField("Last Name", "lastname", "", "text",
-                                        "family-name")};
+    form_.fields = {
+        CreateTestFormField("First Name", "firstname", "",
+                            FormControlType::kInputText, "given-name"),
+        CreateTestFormField("Last Name", "lastname", "",
+                            FormControlType::kInputText, "family-name")};
 
     // Set up our form data.
     FormsSeen({form_});
@@ -10503,8 +10703,8 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
   // 5. Grow the form by one field, which changes the form signature.
-  form_.fields.push_back(
-      CreateTestFormField("Zip code", "zip", "", "text", "postal-code"));
+  form_.fields.push_back(CreateTestFormField(
+      "Zip code", "zip", "", FormControlType::kInputText, "postal-code"));
   FormsSeen({form_});
 
   // 6. Ensure that a form submission triggers votes for the new form.

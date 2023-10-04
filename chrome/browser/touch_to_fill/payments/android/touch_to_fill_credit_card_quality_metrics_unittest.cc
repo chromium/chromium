@@ -59,20 +59,21 @@ class TouchToFillForCreditCardsTest
     for (const auto& type : field_types) {
       switch (type) {
         case CREDIT_CARD_NAME_FULL:
-          fields_to_return.emplace_back(
-              CreateTestFormField("Name on card", "cardName", "", "text"));
+          fields_to_return.emplace_back(CreateTestFormField(
+              "Name on card", "cardName", "", FormControlType::kInputText));
           break;
         case CREDIT_CARD_NUMBER:
-          fields_to_return.emplace_back(CreateTestFormField(
-              "Credit card number", "cardNumber", "", "text"));
+          fields_to_return.emplace_back(
+              CreateTestFormField("Credit card number", "cardNumber", "",
+                                  FormControlType::kInputText));
           break;
         case CREDIT_CARD_EXP_MONTH:
-          fields_to_return.push_back(
-              CreateTestFormField("Expiration date", "cc_exp", "", "text"));
+          fields_to_return.push_back(CreateTestFormField(
+              "Expiration date", "cc_exp", "", FormControlType::kInputText));
           break;
         case CREDIT_CARD_VERIFICATION_CODE:
-          fields_to_return.emplace_back(
-              CreateTestFormField("CVC", "CVC", "", "text"));
+          fields_to_return.emplace_back(CreateTestFormField(
+              "CVC", "CVC", "", FormControlType::kInputText));
           break;
         default:
           NOTREACHED();

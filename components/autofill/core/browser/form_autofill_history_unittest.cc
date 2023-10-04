@@ -35,7 +35,7 @@ class FormAutofillHistoryTest : public testing::Test {
   FieldGlobalId AddNewFieldFilling(std::string_view label,
                                    std::string_view name,
                                    std::string_view value,
-                                   std::string_view type,
+                                   FormControlType type,
                                    ServerFieldType field_type,
                                    bool is_autofilled = false) {
     FormFieldData field = test::CreateTestFormField(label, name, value, type);
@@ -63,8 +63,9 @@ class FormAutofillHistoryTest : public testing::Test {
 
 // Tests the function FormAutofillHistory::AddFormFillEntry upon a normal fill.
 TEST_F(FormAutofillHistoryTest, AddFormFillEntry_NormalFill) {
-  FieldGlobalId first_name_id = AddNewFieldFilling(
-      "first name", "first name", "some-value", "text", NAME_FIRST);
+  FieldGlobalId first_name_id =
+      AddNewFieldFilling("first name", "first name", "some-value",
+                         FormControlType::kInputText, NAME_FIRST);
   AddFormFilling(/*is_refill=*/false);
 
   EXPECT_TRUE(form_autofill_history_.HasHistory(first_name_id));
@@ -81,15 +82,16 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_NormalFill) {
 
 // Tests the function FormAutofillHistory::AddFormFillEntry upon a refill.
 TEST_F(FormAutofillHistoryTest, AddFormFillEntry_Refill) {
-  FieldGlobalId first_name_id = AddNewFieldFilling(
-      "first name", "first name", "some-first-name", "text", NAME_FIRST);
+  FieldGlobalId first_name_id =
+      AddNewFieldFilling("first name", "first name", "some-first-name",
+                         FormControlType::kInputText, NAME_FIRST);
   AddFormFilling(/*is_refill=*/false);
 
   // Modify the first name filling to simulate a refill.
   filled_fields_[0].first.value = u"some-other-first-name";
-  FieldGlobalId last_name_id =
-      AddNewFieldFilling("last name", "last name", "some-other-last-name",
-                         "text", NAME_LAST, /*is_autofilled=*/true);
+  FieldGlobalId last_name_id = AddNewFieldFilling(
+      "last name", "last name", "some-other-last-name",
+      FormControlType::kInputText, NAME_LAST, /*is_autofilled=*/true);
   AddFormFilling(/*is_refill=*/true);
 
   EXPECT_TRUE(form_autofill_history_.HasHistory(first_name_id));
@@ -120,7 +122,7 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_HistoryLimit) {
     fields_id[i] =
         AddNewFieldFilling(("field-label" + base::NumberToString(i)).c_str(),
                            ("field-name" + base::NumberToString(i)).c_str(), "",
-                           "text", UNKNOWN_TYPE);
+                           FormControlType::kInputText, UNKNOWN_TYPE);
   }
   AddFormFilling(/*is_refill=*/false);
   for (FieldGlobalId& field_id : fields_id) {
@@ -130,7 +132,8 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_HistoryLimit) {
   // Adding an extra entry that will make the history size exceed the limit.
   filled_fields_.clear();
   FieldGlobalId extra_field_id =
-      AddNewFieldFilling("extra-label", "extra-name", "", "text", UNKNOWN_TYPE);
+      AddNewFieldFilling("extra-label", "extra-name", "",
+                         FormControlType::kInputText, UNKNOWN_TYPE);
   AddFormFilling(/*is_refill=*/false);
 
   EXPECT_EQ(form_autofill_history_.size(), 1u);
@@ -147,7 +150,7 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_FormBiggerThanLimit) {
   for (int i = 0; i < 5; ++i) {
     AddNewFieldFilling(("field-label" + base::NumberToString(i)).c_str(),
                        ("field-name" + base::NumberToString(i)).c_str(), "",
-                       "text", UNKNOWN_TYPE);
+                       FormControlType::kInputText, UNKNOWN_TYPE);
     AddFormFilling(/*is_refill=*/false);
     filled_fields_.clear();
   }
@@ -158,7 +161,7 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_FormBiggerThanLimit) {
     fields_id[i] =
         AddNewFieldFilling(("field-label" + base::NumberToString(i)).c_str(),
                            ("field-name" + base::NumberToString(i)).c_str(), "",
-                           "text", UNKNOWN_TYPE);
+                           FormControlType::kInputText, UNKNOWN_TYPE);
   }
   AddFormFilling(/*is_refill=*/false);
   // Expected behavior is that all entries will be dropped from the history,
@@ -173,8 +176,8 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_ReuseEmptyFillEntries) {
   AddFormFilling(/*is_refill=*/false);
   EXPECT_EQ(form_autofill_history_.size(), 1u);
 
-  FieldGlobalId field_id =
-      AddNewFieldFilling("label", "name", "", "text", UNKNOWN_TYPE);
+  FieldGlobalId field_id = AddNewFieldFilling(
+      "label", "name", "", FormControlType::kInputText, UNKNOWN_TYPE);
   AddFormFilling(/*is_refill=*/false);
   EXPECT_EQ(form_autofill_history_.size(), 1u);
   EXPECT_TRUE(form_autofill_history_.HasHistory(field_id));
@@ -189,14 +192,14 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_RefillOnEmptyHistory) {
     fields_id[i] =
         AddNewFieldFilling(("field-label" + base::NumberToString(i)).c_str(),
                            ("field-name" + base::NumberToString(i)).c_str(), "",
-                           "text", UNKNOWN_TYPE);
+                           FormControlType::kInputText, UNKNOWN_TYPE);
   }
   AddFormFilling(/*is_refill=*/false);
   EXPECT_TRUE(form_autofill_history_.empty());
 
   filled_fields_.clear();
-  FieldGlobalId field_id =
-      AddNewFieldFilling("label", "name", "", "text", UNKNOWN_TYPE);
+  FieldGlobalId field_id = AddNewFieldFilling(
+      "label", "name", "", FormControlType::kInputText, UNKNOWN_TYPE);
   AddFormFilling(/*is_refill=*/true);
   EXPECT_EQ(form_autofill_history_.size(), 1u);
   EXPECT_TRUE(form_autofill_history_.HasHistory(field_id));

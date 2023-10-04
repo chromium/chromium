@@ -213,7 +213,8 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
             .client();
     EXPECT_TRUE(autocomplete_history_manager()->OnGetSingleFieldSuggestions(
         AutofillSuggestionTriggerSource::kFormControlElementClicked,
-        test::CreateTestFormField(/*label=*/"", input_name, prefix, "input"),
+        test::CreateTestFormField(/*label=*/"", input_name, prefix,
+                                  FormControlType::kInputText),
         autofill_client, handler.GetWeakPtr(), SuggestionsContext()));
 
     // Make sure the DB task gets executed.

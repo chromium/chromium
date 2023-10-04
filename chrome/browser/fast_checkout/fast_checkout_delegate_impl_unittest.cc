@@ -87,7 +87,7 @@ TEST_F(FastCheckoutDelegateImplTest, IntendsToShowFastCheckout) {
   autofill::FormData form = CreateTestAddressFormData();
   autofill::FormFieldData& field = form.fields[0];
   autofill::FormFieldData non_seen_field = autofill::test::CreateTestFormField(
-      "First Name", "firstname", "", "text");
+      "First Name", "firstname", "", autofill::FormControlType::kInputText);
   autofill_manager()->OnFormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{});

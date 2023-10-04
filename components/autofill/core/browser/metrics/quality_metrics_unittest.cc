@@ -168,17 +168,22 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
 // only_fill_when_focused and are supposed to log RATIONALIZATION_OK.
 TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationOk) {
   FormData form = CreateForm(
-      {CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text"),
+      {CreateTestFormField("Name", "name", "Elvis Aaron Presley",
+                           FormControlType::kInputText),
        CreateTestFormField("Address", "address", "3734 Elvis Presley Blvd.",
-                           "text"),
-       CreateTestFormField("Phone", "phone", "2345678901", "text"),
+                           FormControlType::kInputText),
+       CreateTestFormField("Phone", "phone", "2345678901",
+                           FormControlType::kInputText),
        // RATIONALIZATION_OK because it's ambiguous value.
-       CreateTestFormField("Phone1", "phone1", "nonsense value", "text"),
+       CreateTestFormField("Phone1", "phone1", "nonsense value",
+                           FormControlType::kInputText),
        // RATIONALIZATION_OK because it's same type but different to what is in
        // the profile.
-       CreateTestFormField("Phone2", "phone2", "2345678902", "text"),
+       CreateTestFormField("Phone2", "phone2", "2345678902",
+                           FormControlType::kInputText),
        // RATIONALIZATION_OK because it's a type mismatch.
-       CreateTestFormField("Phone3", "phone3", "Elvis Aaron Presley", "text")});
+       CreateTestFormField("Phone3", "phone3", "Elvis Aaron Presley",
+                           FormControlType::kInputText)});
   form.fields[2].is_autofilled = true;
 
   std::vector<ServerFieldType> heuristic_types = {NAME_FULL,
@@ -218,12 +223,15 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationOk) {
 // only_fill_when_focused and are supposed to log RATIONALIZATION_GOOD.
 TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationGood) {
   FormData form = CreateForm(
-      {CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text"),
+      {CreateTestFormField("Name", "name", "Elvis Aaron Presley",
+                           FormControlType::kInputText),
        CreateTestFormField("Address", "address", "3734 Elvis Presley Blvd.",
-                           "text"),
-       CreateTestFormField("Phone", "phone", "2345678901", "text"),
+                           FormControlType::kInputText),
+       CreateTestFormField("Phone", "phone", "2345678901",
+                           FormControlType::kInputText),
        // RATIONALIZATION_GOOD because it's empty.
-       CreateTestFormField("Phone1", "phone1", "", "text")});
+       CreateTestFormField("Phone1", "phone1", "",
+                           FormControlType::kInputText)});
   form.fields[2].is_autofilled = true;
 
   std::vector<ServerFieldType> field_types = {NAME_FULL, ADDRESS_HOME_LINE1,
@@ -254,13 +262,16 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationGood) {
 // only_fill_when_focused and are supposed to log RATIONALIZATION_BAD.
 TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationBad) {
   FormData form = CreateForm({
-      CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text"),
+      CreateTestFormField("Name", "name", "Elvis Aaron Presley",
+                          FormControlType::kInputText),
       CreateTestFormField("Address", "address", "3734 Elvis Presley Blvd.",
-                          "text"),
-      CreateTestFormField("Phone", "phone", "2345678901", "text"),
+                          FormControlType::kInputText),
+      CreateTestFormField("Phone", "phone", "2345678901",
+                          FormControlType::kInputText),
       // RATIONALIZATION_BAD because it's filled with the same value as filled
       // previously.
-      CreateTestFormField("Phone1", "phone1", "2345678901", "text"),
+      CreateTestFormField("Phone1", "phone1", "2345678901",
+                          FormControlType::kInputText),
   });
   form.fields[2].is_autofilled = true;
 
@@ -296,18 +307,22 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationBad) {
 TEST_F(QualityMetricsTest, LoggedCorrecltyForOnlyFillWhenFocusedField) {
   FormData form = CreateForm(
       {// TRUE_POSITIVE + no rationalization logging
-       CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text"),
+       CreateTestFormField("Name", "name", "Elvis Aaron Presley",
+                           FormControlType::kInputText),
        // TRUE_POSITIVE + no rationalization logging
        CreateTestFormField("Address", "address", "3734 Elvis Presley Blvd.",
-                           "text"),
+                           FormControlType::kInputText),
        // TRUE_POSITIVE + no rationalization logging
-       CreateTestFormField("Phone", "phone", "2345678901", "text"),
+       CreateTestFormField("Phone", "phone", "2345678901",
+                           FormControlType::kInputText),
        // TRUE_NEGATIVE_EMPTY + RATIONALIZATION_GOOD
-       CreateTestFormField("Phone1", "phone1", "", "text"),
+       CreateTestFormField("Phone1", "phone1", "", FormControlType::kInputText),
        // TRUE_POSITIVE + RATIONALIZATION_BAD
-       CreateTestFormField("Phone2", "phone2", "2345678901", "text"),
+       CreateTestFormField("Phone2", "phone2", "2345678901",
+                           FormControlType::kInputText),
        // FALSE_NEGATIVE_MISMATCH + RATIONALIZATION_OK
-       CreateTestFormField("Phone3", "phone3", "Elvis Aaron Presley", "text")});
+       CreateTestFormField("Phone3", "phone3", "Elvis Aaron Presley",
+                           FormControlType::kInputText)});
   form.fields[2].is_autofilled = true;
 
   std::vector<ServerFieldType> heuristic_types = {NAME_FULL,
@@ -534,10 +549,13 @@ TEST_P(PredictionQualityMetricsTest, Classification) {
            << "Actual: " << FieldTypeToStringPiece(actual_field_type);
 
   FormData form = CreateForm(
-      {CreateTestFormField("first", "first", ValueForType(NAME_FIRST), "text"),
-       CreateTestFormField("last", "last", ValueForType(NAME_LAST), "text"),
+      {CreateTestFormField("first", "first", ValueForType(NAME_FIRST),
+                           FormControlType::kInputText),
+       CreateTestFormField("last", "last", ValueForType(NAME_LAST),
+                           FormControlType::kInputText),
        CreateTestFormField("Unknown", "Unknown",
-                           ValueForType(actual_field_type), "text")});
+                           ValueForType(actual_field_type),
+                           FormControlType::kInputText)});
 
   // Resolve any field type ambiguity.
   if (actual_field_type == AMBIGUOUS_TYPE) {
@@ -686,13 +704,17 @@ INSTANTIATE_TEST_SUITE_P(
 // but no submission event is sent.
 TEST_F(QualityMetricsTest, NoSubmission) {
   FormData form = CreateForm(
-      {CreateTestFormField("Autofilled", "autofilled", "Elvis", "text"),
+      {CreateTestFormField("Autofilled", "autofilled", "Elvis",
+                           FormControlType::kInputText),
        CreateTestFormField("Autofill Failed", "autofillfailed",
-                           "buddy@gmail.com", "text"),
-       CreateTestFormField("Empty", "empty", "", "text"),
-       CreateTestFormField("Unknown", "unknown", "garbage", "text"),
-       CreateTestFormField("Select", "select", "USA", "select-one"),
-       CreateTestFormField("Phone", "phone", "2345678901", "tel")});
+                           "buddy@gmail.com", FormControlType::kInputText),
+       CreateTestFormField("Empty", "empty", "", FormControlType::kInputText),
+       CreateTestFormField("Unknown", "unknown", "garbage",
+                           FormControlType::kInputText),
+       CreateTestFormField("Select", "select", "USA",
+                           FormControlType::kSelectOne),
+       CreateTestFormField("Phone", "phone", "2345678901",
+                           FormControlType::kInputTelephone)});
   form.fields.front().is_autofilled = true;
   form.fields.back().is_autofilled = true;
 
@@ -770,15 +792,17 @@ TEST_F(QualityMetricsTest, NoSubmission) {
 TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
   FormData form = CreateForm(
       {// Heuristic value will match with Autocomplete attribute.
-       CreateTestFormField("Last Name", "lastname", "", "text", "family-name"),
+       CreateTestFormField("Last Name", "lastname", "",
+                           FormControlType::kInputText, "family-name"),
        // Heuristic value will NOT match with Autocomplete attribute.
-       CreateTestFormField("First Name", "firstname", "", "text",
-                           "additional-name"),
+       CreateTestFormField("First Name", "firstname", "",
+                           FormControlType::kInputText, "additional-name"),
        // Heuristic value will be unknown.
-       CreateTestFormField("Garbage label", "garbage", "", "text",
-                           "postal-code"),
+       CreateTestFormField("Garbage label", "garbage", "",
+                           FormControlType::kInputText, "postal-code"),
        // No autocomplete attribute. No metric logged.
-       CreateTestFormField("Address", "address", "", "text", "")});
+       CreateTestFormField("Address", "address", "",
+                           FormControlType::kInputText, "")});
 
   std::unique_ptr<FormStructure> form_structure =
       std::make_unique<FormStructure>(form);

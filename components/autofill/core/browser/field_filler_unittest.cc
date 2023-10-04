@@ -1909,7 +1909,7 @@ class AutofillFillAugmentedPhoneCountryCodeTest
 
 void DoTestFillAugmentedPhoneCountryCodeField(
     const FillAugmentedPhoneCountryCodeTestCase& test_case,
-    const char* field_type) {
+    FormControlType field_type) {
   AutofillField field(test::CreateTestSelectOrSelectListField(
       /*label=*/"", /*name=*/"", /*value=*/"", /*autocomplete=*/"",
       test_case.phone_country_code_selection_options,
@@ -1928,12 +1928,14 @@ void DoTestFillAugmentedPhoneCountryCodeField(
 
 TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
        FillAugmentedPhoneCountryCodeField) {
-  DoTestFillAugmentedPhoneCountryCodeField(GetParam(), "select-one");
+  DoTestFillAugmentedPhoneCountryCodeField(GetParam(),
+                                           FormControlType::kSelectOne);
 }
 
 TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
        FillAugmentedPhoneCountryCodeSelectListField) {
-  DoTestFillAugmentedPhoneCountryCodeField(GetParam(), "selectlist");
+  DoTestFillAugmentedPhoneCountryCodeField(GetParam(),
+                                           FormControlType::kSelectList);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2041,7 +2043,8 @@ TEST_F(AutofillFieldFillerTest, FillStateAbbreviationInTextField) {
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting();
 
-  AutofillField field(CreateTestFormField("State", "state", "", "text"));
+  AutofillField field(
+      CreateTestFormField("State", "state", "", FormControlType::kInputText));
   field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_STATE);
   field.max_length = 4;
 
@@ -2127,7 +2130,8 @@ TEST_F(AutofillFieldFillerTest, FillUpperCaseAbbreviationInStateTextField) {
                                                     .abbreviations = {"by"},
                                                     .alternative_names = {}}});
 
-  AutofillField field{CreateTestFormField("State", "state", "", "text")};
+  AutofillField field{
+      CreateTestFormField("State", "state", "", FormControlType::kInputText)};
   field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_STATE);
   field.max_length = 4;
 

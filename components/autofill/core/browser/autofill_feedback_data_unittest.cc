@@ -109,11 +109,12 @@ FormData CreateFeedbackTestFormData() {
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form.fields = {CreateTestFormField("First Name on Card", "firstnameoncard",
-                                     "", "text", "cc-given-name"),
-                 CreateTestFormField("Last Name on Card", "lastnameoncard", "",
-                                     "text", "cc-family-name"),
-                 CreateTestFormField("Email", "email", "", "email")};
+  form.fields = {
+      CreateTestFormField("First Name on Card", "firstnameoncard", "",
+                          FormControlType::kInputText, "cc-given-name"),
+      CreateTestFormField("Last Name on Card", "lastnameoncard", "",
+                          FormControlType::kInputText, "cc-family-name"),
+      CreateTestFormField("Email", "email", "", FormControlType::kInputEmail)};
   for (FormFieldData& field : form.fields) {
     field.host_frame = form.host_frame;
   }
