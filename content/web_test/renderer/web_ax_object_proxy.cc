@@ -1796,8 +1796,8 @@ WebAXObjectProxyList::~WebAXObjectProxyList() {
 void WebAXObjectProxyList::Clear() {
   v8::HandleScope handle_scope(isolate_);
 
-  for (auto& persistent : elements_) {
-    auto local = v8::Local<v8::Object>::New(isolate_, persistent);
+  for (auto& persistent : ax_objects_) {
+    auto local = v8::Local<v8::Object>::New(isolate_, persistent.second);
 
     WebAXObjectProxy* proxy = nullptr;
     bool ok = gin::ConvertFromV8(isolate_, local, &proxy);
@@ -1811,24 +1811,28 @@ void WebAXObjectProxyList::Clear() {
     proxy->Reset();
   }
 
-  elements_.clear();
+  ax_objects_.clear();
 }
 
 v8::Local<v8::Object> WebAXObjectProxyList::GetOrCreate(
     const blink::WebAXObject& object) {
-  if (object.IsNull())
+  if (object.IsNull() || object.IsDetached()) {
     return v8::Local<v8::Object>();
+  }
 
   // Return existing object if there is a match.
-  for (const auto& persistent : elements_) {
-    auto local = v8::Local<v8::Object>::New(isolate_, persistent);
+  auto persistent = ax_objects_.find(object.AxID());
+  if (persistent != ax_objects_.end()) {
+    auto local = v8::Local<v8::Object>::New(isolate_, persistent->second);
 
+#if DCHECK_IS_ON()
     WebAXObjectProxy* proxy = nullptr;
     bool ok = gin::ConvertFromV8(isolate_, local, &proxy);
     DCHECK(ok);
+    DCHECK(proxy->IsEqualToObject(object));
+#endif
 
-    if (proxy->IsEqualToObject(object))
-      return local;
+    return local;
   }
 
   // Create a new object.
@@ -1840,7 +1844,7 @@ v8::Local<v8::Object> WebAXObjectProxyList::GetOrCreate(
     return {};
   }
 
-  elements_.emplace_back(isolate_, handle);
+  ax_objects_.emplace(object.AxID(), v8::Global<v8::Object>(isolate_, handle));
   return handle;
 }
 

@@ -271,7 +271,8 @@ class WebAXObjectProxyList : public WebAXObjectProxy::Factory {
 
  private:
   raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
-  std::vector<v8::Global<v8::Object>> elements_;
+  // Maps from AxID to corresponding v8 wrapper object for an AX object..
+  std::unordered_map<unsigned, v8::Global<v8::Object>> ax_objects_;
   const raw_ptr<blink::WebAXContext, ExperimentalRenderer> ax_context_;
 };
 
