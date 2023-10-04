@@ -201,4 +201,20 @@ public interface RenderFrameHost {
      *     which will be true if the visual state update was successful or false if it was aborted.
      */
     void insertVisualStateCallback(Callback<Boolean> callback);
+
+    /**
+     * Injects the passed Javascript code in the current page and evaluates it in an
+     * isolated world. If a result is required, pass in a callback.
+     * The caller should ensure the frame host hasn't been destroyed on the native side
+     * before calling this method.
+     *
+     * @param script   The Javascript to execute.
+     * @param worldId  Id of the isolated world.
+     * @param callback The callback to be fired off when a result is ready. The
+     *                 script's result will be json encoded and passed as the
+     *                 parameter, and the call will be made on the main thread.
+     *                 If no result is required, pass null.
+     */
+    void executeJavaScriptInIsolatedWorld(
+            String script, int worldId, @Nullable JavaScriptCallback callback);
 }

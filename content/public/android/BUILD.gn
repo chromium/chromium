@@ -124,6 +124,7 @@ android_library("content_main_dex_java") {
     "java/src/org/chromium/content_public/browser/TracingControllerAndroid.java",
     "java/src/org/chromium/content_public/common/ContentProcessInfo.java",
     "java/src/org/chromium/content_public/common/ContentUrlConstants.java",
+    "java/src/org/chromium/content_public/common/IsolatedWorldIds.java",
     "java/src/org/chromium/content_public/common/Referrer.java",
     "java/src/org/chromium/content_public/common/ResourceRequestBody.java",
     "java/src/org/chromium/content_public/common/ScreenOrientationConstants.java",

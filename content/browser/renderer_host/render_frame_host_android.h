@@ -112,6 +112,12 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcallback);
 
+  void ExecuteJavaScriptInIsolatedWorld(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& jstring,
+      jint jworldId,
+      const base::android::JavaParamRef<jobject>& jcallback);
+
   RenderFrameHostImpl* render_frame_host() const { return render_frame_host_; }
 
  private:
