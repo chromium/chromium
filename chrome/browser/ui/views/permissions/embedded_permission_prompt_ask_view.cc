@@ -13,8 +13,7 @@
 
 EmbeddedPermissionPromptAskView::EmbeddedPermissionPromptAskView(
     Browser* browser,
-    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
-    bool is_permission_allowed)
+    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate)
     : EmbeddedPermissionPromptBaseView(browser, delegate) {}
 
 EmbeddedPermissionPromptAskView::~EmbeddedPermissionPromptAskView() = default;

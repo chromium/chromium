@@ -24,30 +24,46 @@ class EmbeddedPermissionPrompt : public PermissionPromptDesktop {
   EmbeddedPermissionPrompt& operator=(const EmbeddedPermissionPrompt&) = delete;
 
   // Prompt views shown after the user clicks on the embedded permission prompt.
-  enum Variant {
-    // Permission prompt that asks the user for site-level permission.
-    kAsk,
+  // The values represent the priority of each variant, higher number means
+  // higher priority.
+  enum class Variant {
+    // Default when conditions are not met to show any of the permission views.
+    kUninitialized = 0,
+    // Informs the user that the permission was allowed by their administrator.
+    kAdministratorGranted = 1,
     // Permission prompt that informs the user they already granted permission.
     // Offers additional options to modify the permission decision.
-    kPreviouslyGranted,
+    kPreviouslyGranted = 2,
+    // Informs the user that they need to go to OS system settings to grant
+    // access to Chrome.
+    kOsSystemSettings = 3,
+    // Informs the user that Chrome needs permission from the OS level, in order
+    // for the site to be able to access a permission.
+    kOsPrompt = 4,
+    // Permission prompt that asks the user for site-level permission.
+    kAsk = 5,
     // Permission prompt that additionally informs the user that they have
     // previously denied permission to the site. May offer different options
     // (buttons) to the site-level prompt |kAsk|.
-    kPreviouslyDenied,
-    // Informs the user that the permission was blocked by their administrator.
-    kBlockedByAdministrator,
-    // Informs the user that Chrome needs permission from the OS level, in order
-    // for the site to be able to access a permission.
-    kOsPrompt,
-    // Informs the user that they need to go to OS system settings to grant
-    // access to Chrome.
-    kOsSystemSettings,
+    kPreviouslyDenied = 6,
+    // Informs the user that the permission was denied by their administrator.
+    kAdministratorDenied = 7,
   };
 
   // permissions::PermissionPrompt:
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override;
+
+ private:
+  static Variant DeterminePromptVariant(
+      ContentSetting setting,
+      const content_settings::SettingInfo& info);
+
+  Variant embedded_prompt_variant_;
+  raw_ptr<EmbeddedPermissionPromptBaseView> prompt_view_;
+
+  raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_H_

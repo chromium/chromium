@@ -14,8 +14,7 @@
 EmbeddedPermissionPromptPreviouslyGrantedView::
     EmbeddedPermissionPromptPreviouslyGrantedView(
         Browser* browser,
-        base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
-        bool is_permission_allowed)
+        base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate)
     : EmbeddedPermissionPromptBaseView(browser, delegate) {}
 
 EmbeddedPermissionPromptPreviouslyGrantedView::
