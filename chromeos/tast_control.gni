@@ -177,6 +177,9 @@ tast_disabled_tests_from_chrome_all = [
   # b/300008090
   "filemanager.Deletion",
 
+  # b/302415044: Until LKGM 15631 onward lands
+  "crostini.BackupRestore.bullseye_stable",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
