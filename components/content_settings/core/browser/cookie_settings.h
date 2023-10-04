@@ -209,6 +209,9 @@ class CookieSettings
   ~CookieSettings() override;
 
  private:
+  // TrackingProtectionSettingsObserver:
+  void OnBlockAllThirdPartyCookiesChanged() override;
+
   // Evaluates if third-party cookies are blocked. Should only be called
   // when the preference changes to update the internal state.
   bool ShouldBlockThirdPartyCookiesInternal();
@@ -236,6 +239,12 @@ class CookieSettings
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsTypeSet content_type_set) override;
+
+  // Indicates whether the current user profile has been onboarded to 3PCD.
+  //
+  // TODO(http://b/302524567): Remove this function in the future and just use
+  // `TrackingProtectionSettings::IsTrackingProtection3pcdEnabled()`.
+  bool IsTrackingProtection3pcdEnabled();
 
   base::ThreadChecker thread_checker_;
   base::ObserverList<Observer> observers_;

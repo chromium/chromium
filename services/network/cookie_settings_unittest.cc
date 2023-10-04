@@ -608,6 +608,7 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdUnblocks) {
   settings.set_content_settings(
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
+  settings.set_mitigations_enabled_for_3pcd(true);
 
   settings.set_content_settings_for_3pcd(
       {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
@@ -649,6 +650,7 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdUnblocks) {
   // possible override to allow 3PCs.
   {
     settings.set_block_third_party_cookies(true);
+    settings.set_mitigations_enabled_for_3pcd(true);
     base::HistogramTester histogram_tester_2;
     EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                         GetCookieSettingOverrides(), nullptr),
@@ -663,6 +665,7 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdUnblocks) {
     settings.set_content_settings(
         {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
     settings.set_block_third_party_cookies(true);
+    settings.set_mitigations_enabled_for_3pcd(true);
     base::HistogramTester histogram_tester_2;
     EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                         GetCookieSettingOverrides(), nullptr),
@@ -680,6 +683,9 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdRespectsSettings) {
   GURL url = GURL(kOtherURL);
 
   CookieSettings settings;
+  settings.set_block_third_party_cookies(true);
+  settings.set_mitigations_enabled_for_3pcd(true);
+
   settings.set_content_settings(
       {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
 
@@ -710,6 +716,7 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdFeatureDisabled) {
   settings.set_content_settings(
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
+  settings.set_mitigations_enabled_for_3pcd(true);
 
   settings.set_content_settings_for_3pcd(
       {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});

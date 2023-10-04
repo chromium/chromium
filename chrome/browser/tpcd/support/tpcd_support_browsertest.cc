@@ -12,9 +12,11 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -93,7 +95,8 @@ class TpcdSupportBrowserTest : public PlatformBrowserTest {
   void SetUp() override {
     features_.InitWithFeaturesAndParameters(
         {{::features::kPersistentOriginTrials, {}},
-         {net::features::kTpcdSupportSettings, {}}},
+         {net::features::kTpcdSupportSettings, {}},
+         {content_settings::features::kTrackingProtection3pcd, {}}},
         {});
 
     PlatformBrowserTest::SetUp();
@@ -119,11 +122,7 @@ class TpcdSupportBrowserTest : public PlatformBrowserTest {
               return OnRequest(params);
             }));
 
-    // Set 3PC blocking.
-    GetPrefs()->SetInteger(
-        prefs::kCookieControlsMode,
-        static_cast<int>(
-            content_settings::CookieControlsMode::kBlockThirdParty));
+    GetPrefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
   }
 
   void TearDownOnMainThread() override {
