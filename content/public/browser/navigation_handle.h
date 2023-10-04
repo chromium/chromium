@@ -175,9 +175,6 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual bool IsRendererInitiated() = 0;
 
   // The navigation initiator's user activation and ad status.
-  //
-  // TODO(yaoxia): this will be used for recording a page load UKM
-  // (https://crrev.com/c/4080612).
   virtual blink::mojom::NavigationInitiatorActivationAndAdStatus
   GetNavigationInitiatorActivationAndAdStatus() = 0;
 
