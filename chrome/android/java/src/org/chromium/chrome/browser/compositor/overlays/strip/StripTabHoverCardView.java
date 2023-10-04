@@ -35,6 +35,7 @@ public class StripTabHoverCardView extends LinearLayout {
     // The max width of the tab hover card in terms of the enclosing window width percent.
     static final float HOVER_CARD_MAX_WIDTH_PERCENT = 0.9f;
     static final int INVALID_TAB_ID = -1;
+    private static final String PARAM_SHOW_THUMBNAIL = "show_thumbnail";
 
     private TextView mTitleView;
     private TextView mUrlView;
@@ -71,26 +72,7 @@ public class StripTabHoverCardView extends LinearLayout {
         if (hoveredTab == null) return;
         mLastHoveredTabId = hoveredTab.getId();
         mIsShowing = true;
-
-        var thumbnailSize = new Size(
-                Math.round(getContext().getResources().getDimension(R.dimen.tab_hover_card_width)),
-                Math.round(getContext().getResources().getDimension(
-                        R.dimen.tab_hover_card_thumbnail_height)));
-        mTabContentManager.getTabThumbnailWithCallback(
-                hoveredTab.getId(), thumbnailSize, thumbnail -> {
-                    // Thumbnail request was for a previous hover.
-                    if (hoveredTab.getId() != mLastHoveredTabId) return;
-                    // View is not visible any more.
-                    if (!mIsShowing) return;
-                    if (thumbnail != null) {
-                        TabUtils.setBitmapAndUpdateImageMatrix(
-                                mThumbnailView, thumbnail, thumbnailSize);
-                    } else {
-                        // Always use the unselected tab version of the thumbnail placeholder.
-                        mThumbnailView.updateThumbnailPlaceholder(
-                                hoveredTab.isIncognito(), /* isSelected= */ false);
-                    }
-                }, false, false);
+        updateThumbnail(hoveredTab);
 
         mTitleView.setText(hoveredTab.getTitle());
         String url = hoveredTab.getUrl().getHost();
@@ -238,6 +220,45 @@ public class StripTabHoverCardView extends LinearLayout {
         }
 
         return new float[] {hoverCardXDp * displayDensity, hoverCardYDp * displayDensity};
+    }
+
+    private void updateThumbnail(Tab hoveredTab) {
+        boolean showThumbnail =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP,
+                        PARAM_SHOW_THUMBNAIL,
+                        true);
+        if (!showThumbnail) return;
+        var thumbnailSize =
+                new Size(
+                        Math.round(
+                                getContext()
+                                        .getResources()
+                                        .getDimension(R.dimen.tab_hover_card_width)),
+                        Math.round(
+                                getContext()
+                                        .getResources()
+                                        .getDimension(R.dimen.tab_hover_card_thumbnail_height)));
+        mTabContentManager.getTabThumbnailWithCallback(
+                hoveredTab.getId(),
+                thumbnailSize,
+                thumbnail -> {
+                    // Thumbnail request was for a previous hover.
+                    if (hoveredTab.getId() != mLastHoveredTabId) return;
+                    // View is not visible any more.
+                    if (!mIsShowing) return;
+                    if (thumbnail != null) {
+                        TabUtils.setBitmapAndUpdateImageMatrix(
+                                mThumbnailView, thumbnail, thumbnailSize);
+                    } else {
+                        // Always use the unselected tab version of the thumbnail placeholder.
+                        mThumbnailView.updateThumbnailPlaceholder(
+                                hoveredTab.isIncognito(), /* isSelected= */ false);
+                    }
+                    mThumbnailView.setVisibility(VISIBLE);
+                },
+                false,
+                false);
     }
 
     TabModelSelectorObserver getTabModelSelectorObserverForTesting() {

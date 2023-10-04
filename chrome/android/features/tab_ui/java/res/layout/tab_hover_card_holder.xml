@@ -21,6 +21,7 @@ found in the LICENSE file.
     android:id="@+id/thumbnail"
     android:layout_width="match_parent"
     android:layout_height="@dimen/tab_hover_card_thumbnail_height"
+    android:visibility="gone"
     android:gravity="center_horizontal"
     android:scaleType="fitCenter"
     android:importantForAccessibility="no"
