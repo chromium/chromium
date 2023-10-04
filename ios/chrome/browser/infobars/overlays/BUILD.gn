@@ -120,7 +120,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/translate:test_support",
+    "//ios/chrome/browser/translate/model:test_support",
     "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/translate/language_detection_model_service_factory.h"
+#import "ios/chrome/browser/translate/model/language_detection_model_service_factory.h"
 
 #import "base/memory/scoped_refptr.h"
 #import "base/no_destructor.h"
@@ -15,7 +15,7 @@
 #import "components/translate/ios/browser/language_detection_model_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/translate/translate_model_service_factory.h"
+#import "ios/chrome/browser/translate/model/translate_model_service_factory.h"
 
 // static
 LanguageDetectionModelServiceFactory*
@@ -44,8 +44,9 @@ LanguageDetectionModelServiceFactory::~LanguageDetectionModelServiceFactory() {}
 std::unique_ptr<KeyedService>
 LanguageDetectionModelServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!translate::IsTFLiteLanguageDetectionEnabled())
+  if (!translate::IsTFLiteLanguageDetectionEnabled()) {
     return nullptr;
+  }
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =

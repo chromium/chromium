@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/translate/fake_translate_infobar_delegate.h"
+#import "ios/chrome/browser/translate/model/fake_translate_infobar_delegate.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_translate_modal_consumer.h"
 #import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_translate_modal_consumer.h"
 #import "testing/gmock/include/gmock/gmock.h"

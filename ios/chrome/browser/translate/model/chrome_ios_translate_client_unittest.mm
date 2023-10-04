@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "base/files/file_util.h"
 #import "base/metrics/metrics_hashes.h"
 #import "base/path_service.h"
@@ -20,9 +20,9 @@
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/translate/language_detection_model_service_factory.h"
-#import "ios/chrome/browser/translate/translate_model_service_factory.h"
-#import "ios/chrome/browser/translate/translate_ranker_factory.h"
+#import "ios/chrome/browser/translate/model/language_detection_model_service_factory.h"
+#import "ios/chrome/browser/translate/model/translate_model_service_factory.h"
+#import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"

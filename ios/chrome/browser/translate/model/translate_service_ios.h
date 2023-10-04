@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TRANSLATE_TRANSLATE_SERVICE_IOS_H_
-#define IOS_CHROME_BROWSER_TRANSLATE_TRANSLATE_SERVICE_IOS_H_
+#ifndef IOS_CHROME_BROWSER_TRANSLATE_MODEL_TRANSLATE_SERVICE_IOS_H_
+#define IOS_CHROME_BROWSER_TRANSLATE_MODEL_TRANSLATE_SERVICE_IOS_H_
 
 #include <string>
 
@@ -49,4 +49,4 @@ class TranslateServiceIOS
       resource_request_allowed_notifier_;
 };
 
-#endif  // IOS_CHROME_BROWSER_TRANSLATE_TRANSLATE_SERVICE_IOS_H_
+#endif  // IOS_CHROME_BROWSER_TRANSLATE_MODEL_TRANSLATE_SERVICE_IOS_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/translate/translate_ranker_factory.h"
+#import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/core/keyed_service.h"

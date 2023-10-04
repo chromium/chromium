@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/language/language_model_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
-#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/settings/language/cells/language_item.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_mediator.h"

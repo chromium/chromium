@@ -74,7 +74,7 @@ source_set("tab_helper") {
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/translate/model",
     "//ios/web",
     "//ui/base",
     "//url",

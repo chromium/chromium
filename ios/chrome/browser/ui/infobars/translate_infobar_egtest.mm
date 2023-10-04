@@ -14,7 +14,7 @@
 #import "components/translate/core/common/translate_constants.h"
 #import "components/translate/core/common/translate_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/translate/translate_app_interface.h"
+#import "ios/chrome/browser/translate/model/translate_app_interface.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"

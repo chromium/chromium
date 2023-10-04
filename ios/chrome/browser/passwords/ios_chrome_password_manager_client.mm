@@ -45,7 +45,7 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "net/cert/cert_status_flags.h"
 #import "services/metrics/public/cpp/ukm_recorder.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"

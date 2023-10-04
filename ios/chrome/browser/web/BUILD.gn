@@ -297,7 +297,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/signin:signin_util",
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/supervised_user",
-    "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/browser/web/font_size",

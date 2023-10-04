@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/translate/translate_infobar_metrics_recorder.h"
+#import "ios/chrome/browser/translate/model/translate_infobar_metrics_recorder.h"
 
 #import "base/metrics/histogram_macros.h"
 

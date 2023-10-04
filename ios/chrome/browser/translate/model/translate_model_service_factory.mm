@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/translate/translate_model_service_factory.h"
+#import "ios/chrome/browser/translate/model/translate_model_service_factory.h"
 
 #import "base/memory/scoped_refptr.h"
 #import "base/no_destructor.h"
@@ -46,8 +46,9 @@ std::unique_ptr<KeyedService>
 TranslateModelServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   if (!translate::IsTFLiteLanguageDetectionEnabled() ||
-      !optimization_guide::features::IsOptimizationTargetPredictionEnabled())
+      !optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
     return nullptr;
+  }
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   // The optimization guide service must be available for the translate model

@@ -88,7 +88,7 @@ source_set("passwords") {
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model/glue",
-    "//ios/chrome/browser/translate:translate",
+    "//ios/chrome/browser/translate/model:model",
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/web",

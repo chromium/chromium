@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/translate/language_selection_context.h"
+#import "ios/chrome/browser/translate/model/language_selection_context.h"
 
 @interface LanguageSelectionContext ()
 // Redeclare public properties readwrite.

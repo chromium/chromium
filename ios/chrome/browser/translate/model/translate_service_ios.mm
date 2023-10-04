@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/translate/translate_service_ios.h"
+#import "ios/chrome/browser/translate/model/translate_service_ios.h"
 
 #import "base/functional/bind.h"
 #import "base/notreached.h"
@@ -12,14 +12,14 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "url/gurl.h"
 
 namespace {
 // The singleton instance of TranslateServiceIOS.
 TranslateServiceIOS* g_translate_service = nullptr;
-}
+}  // namespace
 
 TranslateServiceIOS::TranslateServiceIOS()
     : resource_request_allowed_notifier_(
@@ -34,8 +34,9 @@ TranslateServiceIOS::~TranslateServiceIOS() {}
 
 // static
 void TranslateServiceIOS::Initialize() {
-  if (g_translate_service)
+  if (g_translate_service) {
     return;
+  }
 
   g_translate_service = new TranslateServiceIOS;
   // Initialize the allowed state for resource requests.

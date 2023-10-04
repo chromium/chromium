@@ -112,7 +112,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/shared/ui/util:eg_app_support+eg2",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/translate:eg_app_support+eg2",
+    "//ios/chrome/browser/translate/model:eg_app_support+eg2",
     "//ios/chrome/browser/ui/authentication:eg_app_support+eg2",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin:constants",

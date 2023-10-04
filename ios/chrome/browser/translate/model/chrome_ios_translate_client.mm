@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 
 #import <utility>
 #import <vector>
@@ -28,10 +28,10 @@
 #import "ios/chrome/browser/language/language_model_manager_factory.h"
 #import "ios/chrome/browser/language/url_language_histogram_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/translate/language_detection_model_service_factory.h"
-#import "ios/chrome/browser/translate/translate_model_service_factory.h"
-#import "ios/chrome/browser/translate/translate_ranker_factory.h"
-#import "ios/chrome/browser/translate/translate_service_ios.h"
+#import "ios/chrome/browser/translate/model/language_detection_model_service_factory.h"
+#import "ios/chrome/browser/translate/model/translate_model_service_factory.h"
+#import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
+#import "ios/chrome/browser/translate/model/translate_service_ios.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -94,8 +94,9 @@ bool ChromeIOSTranslateClient::ShowTranslateUI(
     translate::TranslateErrors error_type,
     bool triggered_from_menu) {
   DCHECK(web_state_);
-  if (error_type != translate::TranslateErrors::NONE)
+  if (error_type != translate::TranslateErrors::NONE) {
     step = translate::TRANSLATE_STEP_TRANSLATE_ERROR;
+  }
 
   // Infobar UI.
   translate::TranslateInfoBarDelegate::Create(
@@ -144,8 +145,9 @@ bool ChromeIOSTranslateClient::IsTranslatableURL(const GURL& url) {
 void ChromeIOSTranslateClient::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (navigation_context->IsSameDocument())
+  if (navigation_context->IsSameDocument()) {
     return;
+  }
 
   DidPageLoadComplete();
   if (!IsTranslatableURL(navigation_context->GetUrl())) {
@@ -179,13 +181,15 @@ void ChromeIOSTranslateClient::DidFinishNavigation(
 }
 
 void ChromeIOSTranslateClient::WasShown(web::WebState* web_state) {
-  if (translate_metrics_logger_)
+  if (translate_metrics_logger_) {
     translate_metrics_logger_->OnForegroundChange(true);
+  }
 }
 
 void ChromeIOSTranslateClient::WasHidden(web::WebState* web_state) {
-  if (translate_metrics_logger_)
+  if (translate_metrics_logger_) {
     translate_metrics_logger_->OnForegroundChange(false);
+  }
 }
 
 void ChromeIOSTranslateClient::WebStateDestroyed(web::WebState* web_state) {

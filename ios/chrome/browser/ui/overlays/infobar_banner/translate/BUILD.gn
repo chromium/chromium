@@ -58,7 +58,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/translate:test_support",
+    "//ios/chrome/browser/translate/model:test_support",
     "//ios/chrome/browser/ui/infobars/banners/test",
     "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/browser/ui/overlays:coordinators",

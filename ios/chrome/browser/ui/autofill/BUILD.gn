@@ -43,7 +43,7 @@ source_set("autofill") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/translate:translate",
+    "//ios/chrome/browser/translate/model:model",
     "//ios/chrome/browser/ui/autofill/cells",
     "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill",
     "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill_ui",

@@ -17,7 +17,7 @@ source_set("language") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/ui/settings/language/cells",
     "//ios/chrome/browser/ui/settings/utils",
     "//ui/base",
@@ -88,7 +88,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/language",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
-    "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/ui/settings/language",
     "//ios/chrome/browser/ui/settings/language/cells",
     "//testing/gmock",
@@ -107,7 +107,7 @@ source_set("eg_app_support+eg2") {
     "//components/language/core/browser",
     "//components/translate/core/browser",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/translate/model",
     "//ios/chrome/test/app:test_support",
   ]
 }

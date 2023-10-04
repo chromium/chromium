@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/translate/fake_translate_infobar_delegate.h"
+#import "ios/chrome/browser/translate/model/fake_translate_infobar_delegate.h"
 
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/translate/core/browser/mock_translate_client.h"
 #import "components/translate/core/browser/mock_translate_infobar_delegate.h"
 #import "components/translate/core/browser/mock_translate_ranker.h"
 
+using translate::testing::MockLanguageModel;
 using translate::testing::MockTranslateClient;
 using translate::testing::MockTranslateRanker;
-using translate::testing::MockLanguageModel;
 
 FakeTranslateInfoBarDelegate::FakeTranslateInfoBarDelegate(
     const base::WeakPtr<translate::TranslateManager>& translate_manager,

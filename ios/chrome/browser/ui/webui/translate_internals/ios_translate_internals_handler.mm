@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
-#import "ios/chrome/browser/translate/translate_service_ios.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/translate/model/translate_service_ios.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 
 IOSTranslateInternalsHandler::IOSTranslateInternalsHandler() = default;

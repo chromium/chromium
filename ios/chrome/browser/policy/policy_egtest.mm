@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/translate/translate_app_interface.h"
+#import "ios/chrome/browser/translate/model/translate_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"

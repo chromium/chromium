@@ -119,7 +119,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/store_kit/model",
     "//ios/chrome/browser/sync/model:sync_error_browser_agent",
     "//ios/chrome/browser/tab_insertion/model",
-    "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/ui/app_store_rating:features",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication:signin_presenter",

@@ -14,7 +14,7 @@ source_set("public") {
   ]
 }
 
-source_set("translate") {
+source_set("model") {
   sources = [
     "chrome_ios_translate_client.h",
     "chrome_ios_translate_client.mm",
@@ -75,8 +75,8 @@ source_set("unit_tests") {
     "translate_service_ios_unittest.cc",
   ]
   deps = [
+    ":model",
     ":public",
-    ":translate",
     ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
@@ -136,7 +136,7 @@ source_set("eg_app_support+eg2") {
     "//components/translate/core/common:common",
     "//components/translate/ios/browser:browser",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/translate:translate",
+    "//ios/chrome/browser/translate/model:model",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/fakes:fakes",
     "//ios/web/public/js_messaging",

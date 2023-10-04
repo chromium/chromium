@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/translate/translate_service_ios.h"
+#include "ios/chrome/browser/translate/model/translate_service_ios.h"
 
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"

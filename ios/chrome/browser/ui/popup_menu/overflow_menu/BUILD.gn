@@ -69,7 +69,7 @@ source_set("overflow_menu") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/bookmarks:utils",
     "//ios/chrome/browser/ui/browser_container:ui",
