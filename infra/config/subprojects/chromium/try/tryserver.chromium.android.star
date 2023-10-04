@@ -658,7 +658,7 @@ try_.orchestrator_builder(
     # TODO(crbug.com/1487812): Enable CQ and remove experiment_percentage
     # after cache is warmed up.
     tryjob = try_.job(
-        experiment_percentage = 3,
+        experiment_percentage = 100,
     ),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
