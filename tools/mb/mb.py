@@ -1005,6 +1005,8 @@ class MetaBuildWrapper:
       locations_file_abs_path = os.path.join(
           os.path.dirname(self.args.config_file),
           os.path.normpath(gn_args_locations_file))
+      if not self.Exists(locations_file_abs_path):
+        continue
       gn_args_locations = json.loads(self.ReadFile(locations_file_abs_path))
       gn_args_file = gn_args_locations.get(self.args.builder_group,
                                            {}).get(self.args.builder, None)

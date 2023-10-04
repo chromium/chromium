@@ -10,7 +10,7 @@ import json
 import os
 import re
 import sys
-import tempfile
+import textwrap
 import unittest
 
 sys.path.insert(
@@ -348,6 +348,10 @@ TRYSERVER_CONFIG = """\
 """
 
 
+def is_win():
+  return sys.platform == 'win32'
+
+
 class UnitTest(unittest.TestCase):
   maxDiff = None
 
@@ -392,6 +396,11 @@ class UnitTest(unittest.TestCase):
     if err is not None:
       self.assertEqual(mbw.err, err)
     return mbw
+
+  def path(self, p):
+    if is_win():
+      return 'c:' + p.replace('/', '\\')
+    return p
 
   def test_analyze(self):
     files = {'/tmp/in.json': '''{\
@@ -926,23 +935,17 @@ class UnitTest(unittest.TestCase):
                     '/fake_src/buildtools/linux64/gn gen _path_\n'))
 
   def gen_starlark_gn_args_mbw(self, gn_args_json):
-    is_win = sys.platform == 'win32'
-    paths = [
-        '/fake_src/tools/mb/mb_config.pyl',
-        '/fake_src/tools/mb/../../infra/config/generated/builders/'
-        'gn_args_locations.json',
-        '/fake_src/tools/mb/../../infra/config/generated/builders/'
-        'ci/linux-official/gn-args.json',
-    ]
     files = {
-        'c:' + paths[0].replace('/', '\\') if is_win else paths[0]:
+        self.path('/fake_src/tools/mb/mb_config.pyl'):
         CONFIG_STARLARK_GN_ARGS,
-        'c:' + paths[1].replace('/', '\\') if is_win else paths[1]:
+        self.path('/fake_src/tools/mb/../../infra/config/generated/builders/'
+                  'gn_args_locations.json'):
         TEST_GN_ARGS_LOCATIONS_JSON,
-        'c:' + paths[2].replace('/', '\\') if is_win else paths[2]:
+        self.path('/fake_src/tools/mb/../../infra/config/generated/builders/'
+                  'ci/linux-official/gn-args.json'):
         gn_args_json,
     }
-    return self.fake_mbw(files=files, win32=is_win)
+    return self.fake_mbw(files=files, win32=is_win())
 
   def test_lookup_starlark_gn_args(self):
     mbw = self.gen_starlark_gn_args_mbw(TEST_GN_ARGS_JSON)
@@ -1008,6 +1011,31 @@ class UnitTest(unittest.TestCase):
     self.assertIn(
         'MBErr: Phase phase_3 doesn\'t exist for linux-official on chromium',
         mbw.out)
+
+  def test_lookup_gn_args_with_non_existent_gn_args_location_file(self):
+    files = {
+        self.path('/fake_src/tools/mb/mb_config.pyl'):
+        textwrap.dedent("""\
+            {
+              'gn_args_locations_files': [
+                '../../infra/config/generated/builders/gn_args_locations.json',
+              ],
+              'builder_groups': {
+                'fake-group': {
+                  'fake-builder': 'fake-config',
+                },
+              },
+              'configs': {
+                'fake-config': [],
+              },
+              'mixins': {},
+            }
+        """)
+    }
+    mbw = self.fake_mbw(files=files, win32=is_win())
+    self.check(['lookup', '-m', 'fake-group', '-b', 'fake-builder'],
+               mbw=mbw,
+               ret=0)
 
   def test_quiet_lookup(self):
     self.check(['lookup', '-c', 'debug_goma', '--quiet'], ret=0,
