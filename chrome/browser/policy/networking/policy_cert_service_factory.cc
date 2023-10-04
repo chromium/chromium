@@ -26,6 +26,10 @@
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/profiles/incognito_helpers.h"
+#endif
+
 namespace policy {
 namespace {
 
@@ -104,9 +108,17 @@ std::unique_ptr<KeyedService> BuildServiceInstanceLacros(
   if (!policy_certificate_provider)
     return nullptr;
 
+  Profile* original_profile = Profile::FromBrowserContext(
+      chrome::GetBrowserContextRedirectedInIncognito(profile));
+  // Only allow trusted policy-provided certificates for non-guest primary
+  // users. Guest users don't have user policy, but set
+  // `may_use_profile_wide_trust_anchors`=false for them out of caution against
+  // future changes.
+  bool may_use_profile_wide_trust_anchors =
+      original_profile->IsMainProfile() && !original_profile->IsGuestSession();
+
   return std::make_unique<PolicyCertService>(
-      profile, policy_certificate_provider,
-      /*may_use_profile_wide_trust_anchors=*/profile->IsMainProfile());
+      profile, policy_certificate_provider, may_use_profile_wide_trust_anchors);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

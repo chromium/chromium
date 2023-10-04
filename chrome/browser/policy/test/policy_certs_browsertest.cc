@@ -438,6 +438,21 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest, TrustAnchorApplied) {
                                  user_policy_certs_helper_.server_cert()));
 }
 
+// Test that policy provided trust anchors are available in Incognito mode.
+IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
+                       TrustAnchorAppliedInIncognito) {
+  user_policy_certs_helper_.SetRootCertONCUserPolicy(
+      multi_profile_policy_helper_.profile_1(),
+      multi_profile_policy_helper_.policy_for_profile_1());
+
+  Profile* otr_profile =
+      multi_profile_policy_helper_.profile_1()->GetPrimaryOTRProfile(
+          /*create_if_needed=*/true);
+
+  EXPECT_EQ(net::OK, VerifyTestServerCert(
+                         otr_profile, user_policy_certs_helper_.server_cert()));
+}
+
 IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
                        PrimaryProfileTrustAnchorDoesNotLeak) {
   ASSERT_NO_FATAL_FAILURE(multi_profile_policy_helper_.CreateSecondProfile());
