@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/gpu_preferences.mojom.h"
 
@@ -35,14 +36,16 @@ BASE_FEATURE(kDefaultGpuDiskCacheSize,
              "DefaultGpuDiskCacheSize",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<int> kGpuDefaultMaxProgramCacheMemoryBytes{
-    &kDefaultGpuDiskCacheSize, "GpuDefaultMaxProgramCacheMemoryBytes",
-    kDefaultMaxProgramCacheMemoryBytes};
+MIRACLE_PARAMETER_FOR_INT(GetGpuDefaultMaxProgramCacheMemoryBytes,
+                          kDefaultGpuDiskCacheSize,
+                          "GpuDefaultMaxProgramCacheMemoryBytes",
+                          kDefaultMaxProgramCacheMemoryBytes)
 
 #if BUILDFLAG(IS_ANDROID)
-constexpr base::FeatureParam<int> kGpuLowEndMaxProgramCacheMemoryBytes{
-    &kDefaultGpuDiskCacheSize, "GpuLowEndMaxProgramCacheMemoryBytes",
-    kLowEndMaxProgramCacheMemoryBytes};
+MIRACLE_PARAMETER_FOR_INT(GetGpuLowEndMaxProgramCacheMemoryBytes,
+                          kDefaultGpuDiskCacheSize,
+                          "GpuLowEndMaxProgramCacheMemoryBytes",
+                          kLowEndMaxProgramCacheMemoryBytes)
 #endif
 
 }  // namespace
@@ -53,12 +56,12 @@ size_t GetDefaultGpuDiskCacheSize() {
       GetCustomGpuCacheSizeBytesIfExists(switches::kGpuDiskCacheSizeKB);
   if (custom_cache_size)
     return custom_cache_size;
-  return kGpuDefaultMaxProgramCacheMemoryBytes.Get();
+  return GetGpuDefaultMaxProgramCacheMemoryBytes();
 #else   // !BUILDFLAG(IS_ANDROID)
   if (!base::SysInfo::IsLowEndDevice())
-    return kGpuDefaultMaxProgramCacheMemoryBytes.Get();
+    return GetGpuDefaultMaxProgramCacheMemoryBytes();
   else
-    return kGpuLowEndMaxProgramCacheMemoryBytes.Get();
+    return GetGpuLowEndMaxProgramCacheMemoryBytes();
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
