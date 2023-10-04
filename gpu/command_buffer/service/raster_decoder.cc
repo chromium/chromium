@@ -746,6 +746,7 @@ class RasterDecoderImpl final : public RasterDecoder,
                              MsaaMode msaa_mode,
                              GLboolean can_use_lcd_text,
                              GLboolean visible,
+                             GLfloat hdr_headroom,
                              const volatile GLbyte* key);
   void DoRasterCHROMIUM(GLuint raster_shm_id,
                         GLuint raster_shm_offset,
@@ -2888,6 +2889,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
                                               MsaaMode msaa_mode,
                                               GLboolean can_use_lcd_text,
                                               GLboolean visible,
+                                              GLfloat hdr_headroom,
                                               const volatile GLbyte* key) {
   // Workaround for https://crbug.com/906453: Flush before BeginRaster (the
   // commands between BeginRaster and EndRaster will not flush).
@@ -3021,6 +3023,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
   }
 
   sk_surface_ = scoped_shared_image_write_->surface();
+  // TODO(https://crbug.com/1483235): Save `hdr_headroom`.
 
   if (!begin_semaphores.empty()) {
     bool result =

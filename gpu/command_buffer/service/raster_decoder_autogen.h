@@ -121,6 +121,7 @@ error::Error RasterDecoderImpl::HandleBeginRasterCHROMIUMImmediate(
       static_cast<gpu::raster::MsaaMode>(c.msaa_mode);
   GLboolean can_use_lcd_text = static_cast<GLboolean>(c.can_use_lcd_text);
   GLboolean visible = static_cast<GLboolean>(c.visible);
+  GLfloat hdr_headroom = static_cast<GLfloat>(c.hdr_headroom);
   uint32_t mailbox_size;
   if (!gles2::GLES2Util::ComputeDataSize<GLbyte, 16>(1, &mailbox_size)) {
     return error::kOutOfBounds;
@@ -135,7 +136,7 @@ error::Error RasterDecoderImpl::HandleBeginRasterCHROMIUMImmediate(
     return error::kOutOfBounds;
   }
   DoBeginRasterCHROMIUM(r, g, b, a, needs_clear, msaa_sample_count, msaa_mode,
-                        can_use_lcd_text, visible, mailbox);
+                        can_use_lcd_text, visible, hdr_headroom, mailbox);
   return error::kNoError;
 }
 

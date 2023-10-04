@@ -395,6 +395,7 @@ struct BeginRasterCHROMIUMImmediate {
             gpu::raster::MsaaMode _msaa_mode,
             GLboolean _can_use_lcd_text,
             GLboolean _visible,
+            GLfloat _hdr_headroom,
             const GLbyte* _mailbox) {
     SetHeader();
     r = _r;
@@ -406,6 +407,7 @@ struct BeginRasterCHROMIUMImmediate {
     msaa_mode = _msaa_mode;
     can_use_lcd_text = _can_use_lcd_text;
     visible = _visible;
+    hdr_headroom = _hdr_headroom;
     memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
   }
 
@@ -419,10 +421,11 @@ struct BeginRasterCHROMIUMImmediate {
             gpu::raster::MsaaMode _msaa_mode,
             GLboolean _can_use_lcd_text,
             GLboolean _visible,
+            GLfloat _hdr_headroom,
             const GLbyte* _mailbox) {
-    static_cast<ValueType*>(cmd)->Init(_r, _g, _b, _a, _needs_clear,
-                                       _msaa_sample_count, _msaa_mode,
-                                       _can_use_lcd_text, _visible, _mailbox);
+    static_cast<ValueType*>(cmd)->Init(
+        _r, _g, _b, _a, _needs_clear, _msaa_sample_count, _msaa_mode,
+        _can_use_lcd_text, _visible, _hdr_headroom, _mailbox);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
@@ -437,10 +440,11 @@ struct BeginRasterCHROMIUMImmediate {
   uint32_t msaa_mode;
   uint32_t can_use_lcd_text;
   uint32_t visible;
+  float hdr_headroom;
 };
 
-static_assert(sizeof(BeginRasterCHROMIUMImmediate) == 40,
-              "size of BeginRasterCHROMIUMImmediate should be 40");
+static_assert(sizeof(BeginRasterCHROMIUMImmediate) == 44,
+              "size of BeginRasterCHROMIUMImmediate should be 44");
 static_assert(offsetof(BeginRasterCHROMIUMImmediate, header) == 0,
               "offset of BeginRasterCHROMIUMImmediate header should be 0");
 static_assert(offsetof(BeginRasterCHROMIUMImmediate, r) == 4,
@@ -464,6 +468,9 @@ static_assert(
     "offset of BeginRasterCHROMIUMImmediate can_use_lcd_text should be 32");
 static_assert(offsetof(BeginRasterCHROMIUMImmediate, visible) == 36,
               "offset of BeginRasterCHROMIUMImmediate visible should be 36");
+static_assert(
+    offsetof(BeginRasterCHROMIUMImmediate, hdr_headroom) == 40,
+    "offset of BeginRasterCHROMIUMImmediate hdr_headroom should be 40");
 
 struct RasterCHROMIUM {
   typedef RasterCHROMIUM ValueType;

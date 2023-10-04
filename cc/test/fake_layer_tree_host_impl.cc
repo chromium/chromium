@@ -80,6 +80,12 @@ void FakeLayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile) {
   notify_tile_state_changed_called_ = true;
 }
 
+TargetColorParams FakeLayerTreeHostImpl::GetTargetColorParams(
+    gfx::ContentColorUsage content_color_usage) const {
+  return target_color_params_.value_or(
+      LayerTreeHostImpl::GetTargetColorParams(content_color_usage));
+}
+
 const viz::BeginFrameArgs& FakeLayerTreeHostImpl::CurrentBeginFrameArgs()
     const {
   return current_begin_frame_tracker_.DangerousMethodCurrentOrLast();

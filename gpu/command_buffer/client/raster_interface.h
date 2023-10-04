@@ -116,6 +116,7 @@ class RasterInterface : public InterfaceBase {
                                    GLboolean can_use_lcd_text,
                                    GLboolean visible,
                                    const gfx::ColorSpace& color_space,
+                                   float hdr_headroom,
                                    const GLbyte* mailbox) = 0;
 
   // Heuristic decided on UMA data. This covers 85% of the cases where we need

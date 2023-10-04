@@ -216,7 +216,7 @@ class OopPixelTest : public testing::Test,
           /*needs_clear=*/options.preclear, options.msaa_sample_count,
           msaa_mode, options.use_lcd_text,
           /*visible=*/true, options.target_color_params.color_space,
-          mailbox.name);
+          options.target_color_params.hdr_max_luminance_relative, mailbox.name);
       ri->EndRasterCHROMIUM();
     }
 
@@ -229,7 +229,7 @@ class OopPixelTest : public testing::Test,
         /*needs_clear=*/!options.preclear, options.msaa_sample_count, msaa_mode,
         options.use_lcd_text,
         /*visible=*/true, options.target_color_params.color_space,
-        mailbox.name);
+        options.target_color_params.hdr_max_luminance_relative, mailbox.name);
     size_t max_op_size_limit =
         gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
     ri->RasterCHROMIUM(display_item_list.get(), &image_provider,

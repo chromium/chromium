@@ -23,7 +23,7 @@ GL_APICALL void         GL_APIENTRY glLoseContextCHROMIUM (GLenumResetStatus cur
 GL_APICALL GLenum	GL_APIENTRY glGetGraphicsResetStatusKHR (void);
 
 // Extension CHROMIUM_raster_transport
-GL_APICALL void         GL_APIENTRY glBeginRasterCHROMIUM (GLfloat r, GLfloat g, GLfloat b, GLfloat a, GLboolean needs_clear, GLuint msaa_sample_count, gpu::raster::MsaaMode msaa_mode, GLboolean can_use_lcd_text, GLboolean visible, const GLbyte* mailbox);
+GL_APICALL void         GL_APIENTRY glBeginRasterCHROMIUM (GLfloat r, GLfloat g, GLfloat b, GLfloat a, GLboolean needs_clear, GLuint msaa_sample_count, gpu::raster::MsaaMode msaa_mode, GLboolean can_use_lcd_text, GLboolean visible, GLfloat hdr_headroom, const GLbyte* mailbox);
 GL_APICALL void         GL_APIENTRY glRasterCHROMIUM (GLuint raster_shm_id, GLuint raster_shm_offset, GLuint raster_shm_size, GLuint font_shm_id, GLuint font_shm_offset, GLuint font_shm_size);
 GL_APICALL void         GL_APIENTRY glEndRasterCHROMIUM (void);
 GL_APICALL void         GL_APIENTRY glCreateTransferCacheEntryINTERNAL (GLuint entry_type, GLuint entry_id, GLuint handle_shm_id, GLuint handle_shm_offset, GLuint data_shm_id, GLuint data_shm_offset, GLuint data_size);

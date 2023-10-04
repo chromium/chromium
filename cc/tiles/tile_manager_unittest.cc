@@ -97,15 +97,24 @@ class SynchronousSimpleTaskRunner : public base::TestSimpleTaskRunner {
 
 class FakeRasterBuffer : public RasterBuffer {
  public:
+  FakeRasterBuffer() = default;
+  explicit FakeRasterBuffer(float expected_hdr_headroom)
+      : expected_hdr_headroom_(expected_hdr_headroom) {}
+
   void Playback(const RasterSource* raster_source,
                 const gfx::Rect& raster_full_rect,
                 const gfx::Rect& raster_dirty_rect,
                 uint64_t new_content_id,
                 const gfx::AxisTransform2d& transform,
                 const RasterSource::PlaybackSettings& playback_settings,
-                const GURL& url) override {}
+                const GURL& url) override {
+    EXPECT_EQ(expected_hdr_headroom_, playback_settings.hdr_headroom);
+  }
 
   bool SupportsBackgroundThreadPriority() const override { return true; }
+
+ private:
+  const float expected_hdr_headroom_ = 1.f;
 };
 
 class TileManagerTilePriorityQueueTest : public TestLayerTreeHostBase {
@@ -2566,6 +2575,10 @@ class MockReadyToDrawRasterBufferProviderImpl
           base::OnceClosure callback,
           uint64_t pending_callback_id));
 
+  void set_expected_hdr_headroom(float expected_hdr_headroom) {
+    expected_hdr_headroom_ = expected_hdr_headroom;
+  }
+
   std::unique_ptr<RasterBuffer> AcquireBufferForRaster(
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
@@ -2575,8 +2588,11 @@ class MockReadyToDrawRasterBufferProviderImpl
       bool depends_on_hardware_accelerated_webp_candidates) override {
     if (!resource.software_backing())
       resource.set_software_backing(std::make_unique<TestSoftwareBacking>());
-    return std::make_unique<FakeRasterBuffer>();
+    return std::make_unique<FakeRasterBuffer>(expected_hdr_headroom_);
   }
+
+ private:
+  float expected_hdr_headroom_ = 1.f;
 };
 
 class TileManagerReadyToDrawTest : public TileManagerTest {
@@ -2700,6 +2716,25 @@ TEST_F(TileManagerReadyToDrawTest, NonSmoothActivationDoesNotWaitOnCallback) {
 
   // We're using a StrictMock on the RasterBufferProvider, so any function call
   // will cause a test failure.
+  base::RunLoop run_loop;
+
+  host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+  EXPECT_CALL(MockHostImpl(), NotifyReadyToActivate())
+      .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
+
+  EXPECT_TRUE(host_impl()->tile_manager()->IsReadyToDraw());
+  EXPECT_TRUE(host_impl()->tile_manager()->IsReadyToActivate());
+}
+
+TEST_F(TileManagerReadyToDrawTest, HdrHeadroomPropagated) {
+  constexpr float kTestHdrHeadroom = 4.f;
+  TargetColorParams target_color_params;
+  target_color_params.hdr_max_luminance_relative = kTestHdrHeadroom;
+  host_impl()->set_target_color_params(target_color_params);
+  mock_raster_buffer_provider()->set_expected_hdr_headroom(kTestHdrHeadroom);
+
+  SetupTreesWithPendingTreeTiles();
   base::RunLoop run_loop;
 
   host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());

@@ -55,6 +55,9 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
     // Visible hint, GPU may use it as a hint to schedule raster tasks.
     bool visible = false;
 
+    // The HDR headroom to use when tone mapping content.
+    float hdr_headroom = 1.f;
+
     raw_ptr<ImageProvider> image_provider = nullptr;
   };
   constexpr static int kDefault = 1;
