@@ -9,11 +9,13 @@
 #include <limits>
 
 #include "base/containers/contains.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 
 namespace {
@@ -652,6 +654,9 @@ TEST_F(PointerEventFactoryTest, MousePointerKeyStates) {
 
 class PointerEventFactoryDeviceIdTest : public SimTest {
  protected:
+  PointerEventFactoryDeviceIdTest() {
+    feature_list_.InitAndEnableFeature(features::kPointerEventDeviceId);
+  }
   PointerEvent* CreatePointerEvent(
       WebPointerProperties::PointerType pointer_type,
       int raw_id,
@@ -695,6 +700,7 @@ class PointerEventFactoryDeviceIdTest : public SimTest {
   }
 
   PointerEventFactory pointer_event_factory_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // This test validates that the unique device id provided to blink is reset upon
@@ -778,6 +784,25 @@ TEST_F(PointerEventFactoryDeviceIdTest, DeviceIdForMousePointerType) {
       /* Device id */ -1);
   ASSERT_EQ(1, blink_device_id_6);
   pointer_event_factory_.Clear();
+}
+
+TEST_F(PointerEventFactoryDeviceIdTest, DeviceIdUseCounterUpdated) {
+  // CreatePointerEventAndGetDeviceId invokes deviceIdForBindings() so make
+  // sure that the use counter is updated.
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kV8PointerEvent_DeviceId_AttributeGetter));
+
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  ClassicScript::CreateUnspecifiedScript(
+      "const pe = new PointerEvent(\"pointermove\");"
+      "pe.deviceId();")
+      ->RunScript(GetDocument().domWindow());
+
+  CreatePointerEventAndGetDeviceId(WebPointerProperties::PointerType::kPen,
+                                   /* Raw pointer id */ 0,
+                                   /* Device id */ kBrowserDeviceId0);
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kV8PointerEvent_DeviceId_AttributeGetter));
 }
 
 }  // namespace blink
