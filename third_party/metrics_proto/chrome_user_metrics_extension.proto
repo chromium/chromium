@@ -40,7 +40,7 @@ message ChromeUserMetricsExtension {
     // Cast Assistant
     CAST_ASSISTANT = 25;
 
-    // Cast receivers, e.g. Chromecast
+    // Devices such as Chromecast, Android TVs, and smart speakers and displays.
     CAST = 35;
 
     // UMA metrics from Android WebLayer.

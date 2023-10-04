@@ -998,7 +998,9 @@ message SystemProfileProto {
     STATE_EXPIRED = 3;
   }
 
-  // Information about AntiVirus products installed.
+  // Information about installed antivirus products. Windows only. See
+  // https://cs.chromium.org/chromium/src/chrome/browser/metrics/antivirus_metrics_provider_win.cc.
+  //
   // Next Tag: 6
   message AntiVirusProduct {
     // The product name e.g. "System Center Endpoint Protection". This might not
@@ -1145,12 +1147,13 @@ message SystemProfileProto {
     SERVER_SIDE_FILTER_UNSPECIFIED = 0;
     // Indicates the package name filtering should occur on the server-side
     SERVER_SIDE_FILTER_REQUIRED = 1;
-    // Indicates the `app_package_name` does not need filtering since filtering
-    // occurred on the client-side.
-    NO_SERVER_SIDE_FILTER_REQUIRED_DUE_TO_CLIENT_FILTERING = 2;
     // Indicates the `app_package_name` does not need filtering since it is
     // a system app.
     NO_SERVER_SIDE_FILTER_REQUIRED_FOR_SYSTEM_APPS = 3;
+
+    // Removed in cl/567086405:
+    reserved 2;
+    reserved "NO_SERVER_SIDE_FILTER_REQUIRED_DUE_TO_CLIENT_FILTERING";
   }
 
   optional AppPackageNameAllowlistFilter app_package_name_allowlist_filter = 42;
