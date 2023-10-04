@@ -3857,6 +3857,10 @@
       name: "UnownedAnimationsSkipCSSEvents",
       status: "stable",
     },
+    {
+      name: "UnrestrictedMeasureUserAgentSpecificMemory",
+      base_feature: "none",
+    },
     // This is a reverse OT used for a phased deprecation, on desktop
     // https://crbug.com/1071424
     {

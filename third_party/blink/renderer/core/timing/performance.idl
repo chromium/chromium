@@ -69,7 +69,7 @@ interface Performance : EventTarget {
 
     // The API is not exposed to DedicatedWorker because the memory usage of
     // a dedicated worker is included in the result of the API call in Window.
-    [MeasureAs=MeasureMemory, Exposed=(Window,ServiceWorker,SharedWorker), CallWith=ScriptState, RuntimeEnabled=MeasureMemory, RaisesException, CrossOriginIsolated] Promise<MemoryMeasurement> measureUserAgentSpecificMemory();
+    [MeasureAs=MeasureMemory, Exposed=(Window,ServiceWorker,SharedWorker), CallWith=ScriptState, RuntimeEnabled=MeasureMemory, RaisesException, CrossOriginIsolatedOrRuntimeEnabled=UnrestrictedMeasureUserAgentSpecificMemory] Promise<MemoryMeasurement> measureUserAgentSpecificMemory();
 
     // Event Timing
     [Exposed=Window, SameObject, SaveSameObject] readonly attribute EventCounts eventCounts;
