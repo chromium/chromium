@@ -379,7 +379,8 @@ VideoDecoderPipeline::VideoDecoderPipeline(
     bool uses_oop_video_decoder)
     : gpu_workarounds_(gpu_workarounds),
       client_task_runner_(std::move(client_task_runner)),
-      decoder_task_runner_(GetDecoderTaskRunner()),
+      decoder_task_runner_(uses_oop_video_decoder ? client_task_runner_
+                                                  : GetDecoderTaskRunner()),
       main_frame_pool_(std::move(frame_pool)),
       frame_converter_(std::move(frame_converter)),
       renderable_fourccs_(std::move(renderable_fourccs)),
