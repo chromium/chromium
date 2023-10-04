@@ -204,6 +204,11 @@ export class AppManagementAppDetailsItem extends
         return '';
     }
   }
+
+  private getTooltipA11yText_(app: App): string {
+    return this.i18n(
+        'appManagementAppDetailsTooltipWebA11y', this.getTooltipText_(app));
+  }
 }
 
 declare global {

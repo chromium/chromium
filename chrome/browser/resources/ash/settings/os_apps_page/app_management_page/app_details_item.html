@@ -1,13 +1,8 @@
 <style include="app-management-cros-shared-style settings-shared">
-  #infoIconTooltip {
-    --paper-tooltip-min-width: max-content;
-  }
 
   #infoIcon {
-    --iron-icon-fill-color: var(--cros-icon-color-secondary);
-    height: var(--help-icon-size);
-    margin-inline-start: 6px;
-    width: var(--help-icon-size);
+    --paper-tooltip-min-width: max-content;
+    margin-inline-start: 3px;
   }
 
   #launchIcon {
@@ -52,17 +47,12 @@
     </cr-icon-button>
   </template>
   <template is="dom-if" if="[[shouldShowInfoIcon_(app)]]" restamp>
-    <div id="browserLinkInfo">
-      <iron-icon id="infoIcon"
-        icon="app-management:info"
-        aria-label="info icon">
-      </iron-icon>
-      <paper-tooltip id="infoIconTooltip"
-        for="infoIcon">
-        <div id="tooltipText">
-          [[getTooltipText_(app)]]
-        </div>
-      </paper-tooltip>
+    <div id="infoIcon">
+      <cr-tooltip-icon
+        tooltip-text="[[getTooltipText_(app)]]"
+        icon-class="cr:info-outline"
+        icon-aria-label="[[getTooltipA11yText_(app)]]">
+      </cr-tooltip-icon>
     </div>
   </template>
 </div>

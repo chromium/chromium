@@ -80,11 +80,9 @@ suite('<app-management-app-details-item>', () => {
         typeAndSourceText.textContent!.trim());
 
     const infoIconTooltip =
-        appDetailsItem.shadowRoot!.querySelector('#infoIconTooltip');
+        appDetailsItem.shadowRoot!.querySelector('cr-tooltip-icon');
     assertTrue(!!infoIconTooltip);
-    const tooltipText = infoIconTooltip.querySelector('#tooltipText');
-    assertTrue(!!tooltipText);
-    assertEquals(publisherId, tooltipText.textContent!.trim());
+    assertEquals(publisherId, infoIconTooltip.tooltipText!.trim());
   });
 
   test('Android type', async () => {
