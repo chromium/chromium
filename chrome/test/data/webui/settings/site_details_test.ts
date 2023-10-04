@@ -97,7 +97,7 @@ suite('SiteDetails', function() {
               ContentSettingsTypes.BACKGROUND_SYNC,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
-              ContentSettingsTypes.MIDI_DEVICES,
+              ContentSettingsTypes.MIDI,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.PROTECTED_CONTENT,
