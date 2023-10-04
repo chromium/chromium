@@ -52,8 +52,17 @@ bool IsGaiaCredentialPage(const std::string& signon_realm);
 bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
                                       const PrefService& prefs);
 
-// If syncing passwords is enabled in settings.
-bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service);
+// If the user turned sync-the-feature on and syncing of passwords is enabled in
+// settings.
+//
+// IMPORTANT NOTE: this function returns false for signed-in-not-syncing users,
+// even if account passwords are enabled. On some platforms, e.g. iOS, this can
+// be the majority of users (eventually all), so please avoid integrating with
+// this function if possible.
+// TODO(crbug.com/1462552): Remove this function once IsSyncFeatureEnabled() is
+// fully deprecated, see ConsentLevel::kSync documentation for details.
+bool IsSyncFeatureEnabledIncludingPasswords(
+    const syncer::SyncService* sync_service);
 
 // If passwords are actively syncing.
 bool IsPasswordSyncActive(const syncer::SyncService* sync_service);

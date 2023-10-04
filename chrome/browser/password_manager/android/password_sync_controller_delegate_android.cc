@@ -20,7 +20,8 @@ namespace password_manager {
 
 namespace {
 
-using sync_util::IsPasswordSyncEnabled;
+// TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on Android.
+using sync_util::IsSyncFeatureEnabledIncludingPasswords;
 
 std::string BuildCredentialManagerNotificationMetricName(
     const std::string& suffix) {
@@ -54,7 +55,10 @@ PasswordSyncControllerDelegateAndroid::CreateProxyModelControllerDelegate() {
 void PasswordSyncControllerDelegateAndroid::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_observation_.Observe(sync_service);
-  is_sync_enabled_ = IsSyncEnabled(IsPasswordSyncEnabled(sync_service));
+  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  is_sync_enabled_ =
+      IsSyncEnabled(IsSyncFeatureEnabledIncludingPasswords(sync_service));
   UpdateCredentialManagerSyncStatus(sync_service);
 }
 
@@ -162,7 +166,10 @@ void PasswordSyncControllerDelegateAndroid::OnCredentialManagerError(
 
 void PasswordSyncControllerDelegateAndroid::UpdateCredentialManagerSyncStatus(
     syncer::SyncService* sync_service) {
-  IsSyncEnabled is_enabled = IsSyncEnabled(IsPasswordSyncEnabled(sync_service));
+  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  IsSyncEnabled is_enabled =
+      IsSyncEnabled(IsSyncFeatureEnabledIncludingPasswords(sync_service));
   if (credential_manager_sync_setting_.has_value() &&
       credential_manager_sync_setting_ == is_enabled) {
     return;

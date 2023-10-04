@@ -112,7 +112,13 @@ std::u16string CredentialManagerDialogControllerImpl::GetAutoSigninText()
 bool CredentialManagerDialogControllerImpl::ShouldShowFooter() const {
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
-  return password_manager::sync_util::IsPasswordSyncEnabled(sync_service);
+  // TODO(crbug.com/1464264): Migrate away from `ConsentLevel::kSync` on desktop
+  // platforms and remove #ifdef below.
+#if BUILDFLAG(IS_ANDROID)
+#error If this code is built on Android, please update TODO above.
+#endif  // BUILDFLAG(IS_ANDROID)
+  return password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
+      sync_service);
 }
 
 void CredentialManagerDialogControllerImpl::OnChooseCredentials(

@@ -342,8 +342,11 @@ void PasswordsPrivateDelegateImpl::GetSavedPasswordsList(
 PasswordsPrivateDelegate::CredentialsGroups
 PasswordsPrivateDelegateImpl::GetCredentialGroups() {
   std::vector<api::passwords_private::CredentialGroup> groups;
-  bool sync_enabled = password_manager::sync_util::IsPasswordSyncEnabled(
-      SyncServiceFactory::GetForProfile(profile_));
+  // TODO(crbug.com/1464264): Migrate away from `ConsentLevel::kSync` on desktop
+  // platforms.
+  bool sync_enabled =
+      password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
+          SyncServiceFactory::GetForProfile(profile_));
   for (const password_manager::AffiliatedGroup& group :
        saved_passwords_presenter_.GetAffiliatedGroups()) {
     api::passwords_private::CredentialGroup group_api;

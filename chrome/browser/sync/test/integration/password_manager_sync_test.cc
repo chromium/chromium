@@ -990,7 +990,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
   ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(
-      password_manager::sync_util::IsPasswordSyncEnabled(GetSyncService(0)));
+      password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
+          GetSyncService(0)));
   EXPECT_TRUE(
       password_manager::sync_util::IsPasswordSyncActive(GetSyncService(0)));
   EXPECT_NE(absl::nullopt,
@@ -1017,7 +1018,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
   // In the current implementation, the APIs below treat sync as enabled/active
   // even while paused.
   EXPECT_TRUE(
-      password_manager::sync_util::IsPasswordSyncEnabled(GetSyncService(0)));
+      password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
+          GetSyncService(0)));
   EXPECT_NE(absl::nullopt,
             password_manager::sync_util::GetSyncingAccount(GetSyncService(0)));
   EXPECT_EQ(password_manager::sync_util::GetSyncUsernameIfSyncingPasswords(

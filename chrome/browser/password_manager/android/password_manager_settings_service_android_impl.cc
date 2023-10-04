@@ -24,7 +24,7 @@
 
 using password_manager::PasswordManagerSetting;
 using password_manager::PasswordSettingsUpdaterAndroidBridgeHelper;
-using password_manager::sync_util::IsPasswordSyncEnabled;
+using password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords;
 
 namespace {
 
@@ -145,7 +145,9 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
     return regular_pref->GetValue()->GetBool();
   }
 
-  if (!IsPasswordSyncEnabled(sync_service_)) {
+  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  if (!IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
     return regular_pref->GetValue()->GetBool();
   }
 
@@ -165,14 +167,19 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
 
 void PasswordManagerSettingsServiceAndroidImpl::RequestSettingsFromBackend() {
   // Backend has settings data only if passwords are synced.
-  if (bridge_helper_ && IsPasswordSyncEnabled(sync_service_) &&
+  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  if (bridge_helper_ && IsSyncFeatureEnabledIncludingPasswords(sync_service_) &&
       !IsUnenrolledFromUPM(pref_service_)) {
     FetchSettings();
   }
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
-  if (!bridge_helper_ || !IsPasswordSyncEnabled(sync_service_) ||
+  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  if (!bridge_helper_ ||
+      !IsSyncFeatureEnabledIncludingPasswords(sync_service_) ||
       IsUnenrolledFromUPM(pref_service_)) {
     pref_service_->SetBoolean(
         password_manager::prefs::kCredentialsEnableAutosignin, false);
@@ -198,7 +205,10 @@ void PasswordManagerSettingsServiceAndroidImpl::Init() {
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
       &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
       weak_ptr_factory_.GetWeakPtr()));
-  is_password_sync_enabled_ = IsPasswordSyncEnabled(sync_service_);
+  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  is_password_sync_enabled_ =
+      IsSyncFeatureEnabledIncludingPasswords(sync_service_);
   if (sync_service_) {
     // The `sync_service_` can be null when --disable-sync has been passed in as
     // a command line flag.
@@ -223,8 +233,10 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueFetched(
     PasswordManagerSetting setting,
     bool value) {
   UpdateSettingFetchState(setting);
+  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // Android.
   if (!fetch_after_sync_status_change_in_progress_ &&
-      !IsPasswordSyncEnabled(sync_service_)) {
+      !IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
     return;
   }
 
@@ -239,8 +251,11 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
   if (IsUnenrolledFromUPM(pref_service_))
     return;
 
-  if (!IsPasswordSyncEnabled(sync_service_))
+  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  if (!IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
     return;
+  }
 
   // This code is currently called only for syncing users. If the setting value
   // is absent in GMSCore, the cached setting value is set to the default value,
@@ -284,10 +299,16 @@ void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
     return;
 
   // Return early if the setting didn't change and no sync errors were resolved.
-  if (IsPasswordSyncEnabled(sync) == is_password_sync_enabled_)
+  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  if (IsSyncFeatureEnabledIncludingPasswords(sync) ==
+      is_password_sync_enabled_) {
     return;
+  }
 
-  is_password_sync_enabled_ = IsPasswordSyncEnabled(sync);
+  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  is_password_sync_enabled_ = IsSyncFeatureEnabledIncludingPasswords(sync);
 
   // Fetch settings from the backend to align values stored in GMS Core and
   // Chrome.

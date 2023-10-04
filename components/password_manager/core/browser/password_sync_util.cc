@@ -103,21 +103,25 @@ bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
   return false;
 }
 
-bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service) {
+bool IsSyncFeatureEnabledIncludingPasswords(
+    const syncer::SyncService* sync_service) {
+  // TODO(crbug.com/1462552): Remove this function once IsSyncFeatureEnabled()
+  // is fully deprecated, see ConsentLevel::kSync documentation for details.
   return sync_service && sync_service->IsSyncFeatureEnabled() &&
          sync_service->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kPasswords);
 }
 
 bool IsPasswordSyncActive(const syncer::SyncService* sync_service) {
-  return IsPasswordSyncEnabled(sync_service) &&
+  return IsSyncFeatureEnabledIncludingPasswords(sync_service) &&
          sync_service->GetActiveDataTypes().Has(syncer::PASSWORDS);
 }
 
 absl::optional<std::string> GetSyncingAccount(
     const syncer::SyncService* sync_service) {
-  if (!sync_service || !IsPasswordSyncEnabled(sync_service))
+  if (!sync_service || !IsSyncFeatureEnabledIncludingPasswords(sync_service)) {
     return absl::nullopt;
+  }
   return sync_service->GetAccountInfo().email;
 }
 
@@ -127,7 +131,7 @@ absl::optional<std::string> GetAccountForSaving(
   if (!sync_service) {
     return absl::nullopt;
   }
-  if (IsPasswordSyncEnabled(sync_service) ||
+  if (IsSyncFeatureEnabledIncludingPasswords(sync_service) ||
       features_util::IsOptedInForAccountStorage(pref_service, sync_service)) {
     return sync_service->GetAccountInfo().email;
   }
