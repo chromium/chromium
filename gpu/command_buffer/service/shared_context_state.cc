@@ -892,7 +892,6 @@ absl::optional<error::ContextLostReason> SharedContextState::GetResetStatus(
     bool needs_gl) {
   DCHECK(!context_lost());
 
-  // TODO(crbug.com/1434131): Check context loss for Graphite Dawn/Metal.
   if (gr_context_) {
     // Maybe Skia detected VK_ERROR_DEVICE_LOST.
     if (gr_context_->abandoned()) {
@@ -905,6 +904,13 @@ absl::optional<error::ContextLostReason> SharedContextState::GetResetStatus(
       return error::kOutOfMemory;
     }
   }
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+  if (gr_context_type_ == GrContextType::kGraphiteDawn &&
+      dawn_context_provider_) {
+    return dawn_context_provider_->GetResetStatus();
+  }
+#endif
 
   // Not using GL.
   if (!GrContextIsGL() && !needs_gl)

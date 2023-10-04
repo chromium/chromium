@@ -41,18 +41,17 @@ void LogInfo(WGPULoggingType type, char const* message, void* userdata) {
 }
 
 void LogError(WGPUErrorType type, char const* message, void* userdata) {
-  LOG(ERROR) << message;
-  static crash_reporter::CrashKeyString<1024> error_key(
-      "dawn-validation-error");
-  error_key.Set(message);
-  base::debug::DumpWithoutCrashing();
+  if (type != WGPUErrorType_NoError) {
+    static_cast<DawnContextProvider*>(userdata)->OnError(type, message);
+  }
 }
 
 void LogDeviceLost(WGPUDeviceLostReason reason,
                    char const* message,
                    void* userdata) {
   if (reason != WGPUDeviceLostReason_Destroyed) {
-    LOG(FATAL) << message;
+    static_cast<DawnContextProvider*>(userdata)->OnError(
+        WGPUErrorType_DeviceLost, message);
   }
 }
 
@@ -171,7 +170,14 @@ bool DawnContextProvider::DefaultForceFallbackAdapter() {
 DawnContextProvider::DawnContextProvider(
     webgpu::DawnCachingInterfaceFactory* caching_interface_factory)
     : caching_interface_factory_(caching_interface_factory) {}
-DawnContextProvider::~DawnContextProvider() = default;
+
+DawnContextProvider::~DawnContextProvider() {
+  if (device_) {
+    device_.SetUncapturedErrorCallback(nullptr, nullptr);
+    device_.SetDeviceLostCallback(nullptr, nullptr);
+    device_.SetLoggingCallback(nullptr, nullptr);
+  }
+}
 
 bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
                                      bool force_fallback_adapter,
@@ -297,8 +303,8 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
     return false;
   }
 
-  device.SetUncapturedErrorCallback(&LogError, nullptr);
-  device.SetDeviceLostCallback(&LogDeviceLost, nullptr);
+  device.SetUncapturedErrorCallback(&LogError, static_cast<void*>(this));
+  device.SetDeviceLostCallback(&LogDeviceLost, static_cast<void*>(this));
   device.SetLoggingCallback(&LogInfo, nullptr);
   device_ = std::move(device);
 
@@ -348,5 +354,33 @@ Microsoft::WRL::ComPtr<ID3D11Device> DawnContextProvider::GetD3D11Device()
   return nullptr;
 }
 #endif
+
+absl::optional<error::ContextLostReason> DawnContextProvider::GetResetStatus()
+    const {
+  base::AutoLock auto_lock(context_lost_lock_);
+  return context_lost_reason_;
+}
+
+void DawnContextProvider::OnError(WGPUErrorType error_type,
+                                  const char* message) {
+  LOG(ERROR) << message;
+
+  static crash_reporter::CrashKeyString<1024> error_key("dawn-error");
+  error_key.Set(message);
+  base::debug::DumpWithoutCrashing();
+
+  base::AutoLock auto_lock(context_lost_lock_);
+  if (context_lost_reason_.has_value()) {
+    return;
+  }
+
+  if (error_type == WGPUErrorType_OutOfMemory) {
+    context_lost_reason_ = error::kOutOfMemory;
+  } else if (error_type == WGPUErrorType_Validation) {
+    context_lost_reason_ = error::kGuilty;
+  } else {
+    context_lost_reason_ = error::kUnknown;
+  }
+}
 
 }  // namespace gpu
