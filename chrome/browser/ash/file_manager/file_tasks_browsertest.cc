@@ -1611,6 +1611,21 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
   ASSERT_EQ(1u, launches.size());
   CHECK_EQ(launches[0].app_id, web_app::kMicrosoft365AppId);
   CHECK_EQ(launches[0].intent_url, kODFSSampleUrl);
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
+      static_cast<int>(
+          ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive),
+      1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTransferRequiredMetric,
+      OfficeFilesTransferRequired::kNotRequired, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kOpened, 1);
+  histogram_.ExpectUniqueSample(
+      kOneDriveErrorMetricName,
+      ash::cloud_upload::OfficeOneDriveOpenErrors::kSuccess, 1);
 }
 
 // Test to check that the test file fails to open when the system is offline and
@@ -1658,10 +1673,17 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
                          ash::office_fallback::FallbackReason::kOffline);
 
   ASSERT_EQ(0u, web_app_publisher_->GetLaunches().size());
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback, 1);
+  histogram_.ExpectUniqueSample(
+      kOneDriveErrorMetricName,
+      ash::cloud_upload::OfficeOneDriveOpenErrors::kOffline, 1);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-// Test that OpenOrMoveFiles() will open a ODFS office file when the cloud
+// Test that OpenOrMoveFiles() will open an ODFS office file when the cloud
 // provider specified is OneDrive.
 IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromODFS) {
   // Creates a fake ODFS with a test file.
@@ -1681,6 +1703,21 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromODFS) {
   ASSERT_EQ(1u, launches.size());
   CHECK_EQ(launches[0].app_id, web_app::kMicrosoft365AppId);
   CHECK_EQ(launches[0].intent_url, kODFSSampleUrl);
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
+      static_cast<int>(
+          ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive),
+      1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTransferRequiredMetric,
+      OfficeFilesTransferRequired::kNotRequired, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kOpened, 1);
+  histogram_.ExpectUniqueSample(
+      kOneDriveErrorMetricName,
+      ash::cloud_upload::OfficeOneDriveOpenErrors::kSuccess, 1);
 }
 
 // Test that OpenOrMoveFiles() will open the Move Confirmation dialog when the
@@ -1704,9 +1741,16 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileNotFromODFS) {
       modal_parent, std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
 
-  // Wait for setup flow dialog to open.
+  // Wait for Move Confirmation dialog to open.
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
+      VolumeType::VOLUME_TYPE_DOWNLOADS_DIRECTORY, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTransferRequiredMetric,
+      OfficeFilesTransferRequired::kMove, 1);
 }
 
 // Test that when opening a file from ODFS fails due reauthentication to
@@ -1736,6 +1780,22 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   // Expect that the reauthentication required notification was shown.
   EXPECT_EQ(notification_message_,
             ash::cloud_upload::GetReauthenticationRequiredMessage());
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
+      static_cast<int>(
+          ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive),
+      1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTransferRequiredMetric,
+      OfficeFilesTransferRequired::kNotRequired, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kFailedToOpen, 1);
+  histogram_.ExpectUniqueSample(
+      kOneDriveErrorMetricName,
+      ash::cloud_upload::OfficeOneDriveOpenErrors::kGetActionsReauthRequired,
+      1);
 
   NotificationDisplayService::GetForProfile(browser()->profile())
       ->RemoveObserver(this);
@@ -1768,6 +1828,21 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
   EXPECT_FALSE(notification_message_.empty());
   // Expect that the reauthentication required notification was shown.
   EXPECT_EQ(notification_message_, ash::cloud_upload::GetGenericErrorMessage());
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
+      static_cast<int>(
+          ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive),
+      1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTransferRequiredMetric,
+      OfficeFilesTransferRequired::kNotRequired, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kFailedToOpen, 1);
+  histogram_.ExpectUniqueSample(
+      kOneDriveErrorMetricName,
+      ash::cloud_upload::OfficeOneDriveOpenErrors::kGetActionsAccessDenied, 1);
 
   NotificationDisplayService::GetForProfile(browser()->profile())
       ->RemoveObserver(this);
@@ -1805,6 +1880,24 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromAndroidOneDriveViaODFS) {
   CHECK_EQ(launches[0].app_id, web_app::kMicrosoft365AppId);
   // Check that the ODFS URL was opened.
   CHECK_EQ(launches[0].intent_url, kODFSSampleUrl);
+
+  // Expect the source volume not to be ODFS. Logged as kUnknown because would
+  // need to actually mount Android OneDrive Documents Provider for
+  // VOLUME_TYPE_DOCUMENTS_PROVIDER to be logged in the test.
+  histogram_.ExpectBucketCount(
+      ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
+      static_cast<int>(
+          ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive),
+      0);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTransferRequiredMetric,
+      OfficeFilesTransferRequired::kNotRequired, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kOpened, 1);
+  histogram_.ExpectUniqueSample(
+      kOneDriveErrorMetricName,
+      ash::cloud_upload::OfficeOneDriveOpenErrors::kSuccess, 1);
 }
 
 // Test that OpenOrMoveFiles() will not open an Android OneDrive office file via
