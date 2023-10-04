@@ -4397,9 +4397,6 @@ const char kSiteIsolationForPasswordSitesDescription[] =
     "Security mode that enables site isolation for sites based on "
     "password-oriented heuristics, such as a user typing in a password.";
 
-const char kSlimCompositorName[] = "Slim browser compositor";
-const char kSlimCompositorDescription[] = "Use new simpler browser compositor";
-
 const char kSmartZoomName[] = "Smart Zoom";
 const char kSmartZoomDescription[] =
     "Enable the Smart Zoom accessibility feature as an alternative approach "

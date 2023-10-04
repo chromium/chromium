@@ -238,7 +238,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "cc/slim/features.h"  // nogncheck
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
@@ -10546,10 +10545,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"thumbnail-cache-refactor", flag_descriptions::kThumbnailCacheRefactorName,
      flag_descriptions::kThumbnailCacheRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(thumbnail::kThumbnailCacheRefactor)},
-
-    {"slim-compositor", flag_descriptions::kSlimCompositorName,
-     flag_descriptions::kSlimCompositorDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kSlimCompositor)},
 
     {"surface-control-magnifier",
      flag_descriptions::kSurfaceControlMagnifierName,
