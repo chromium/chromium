@@ -319,23 +319,9 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
     const NGBlockNode& container_node,
     const NGConstraintSpace& container_space,
     NGBoxFragmentBuilder* container_builder)
-    : NGOutOfFlowLayoutPart(container_node.IsAbsoluteContainer(),
-                            container_node.IsFixedContainer(),
-                            container_node.IsGrid(),
-                            container_space,
-                            container_builder,
-                            InitialContainingBlockFixedSize(container_node)) {}
-
-NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
-    bool is_absolute_container,
-    bool is_fixed_container,
-    bool is_grid_container,
-    const NGConstraintSpace& container_space,
-    NGBoxFragmentBuilder* container_builder,
-    absl::optional<LogicalSize> initial_containing_block_fixed_size)
     : container_builder_(container_builder),
-      is_absolute_container_(is_absolute_container),
-      is_fixed_container_(is_fixed_container),
+      is_absolute_container_(container_node.IsAbsoluteContainer()),
+      is_fixed_container_(container_node.IsFixedContainer()),
       has_block_fragmentation_(
           InvolvedInBlockFragmentation(*container_builder)) {
   // TODO(almaher): Should we early return here in the case of block
@@ -352,7 +338,8 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
   const NGBoxStrut border_scrollbar =
       container_builder->Borders() + container_builder->Scrollbar();
   allow_first_tier_oof_cache_ = border_scrollbar.IsEmpty() &&
-                                !is_grid_container && !has_block_fragmentation_;
+                                !container_node.IsGrid() &&
+                                !has_block_fragmentation_;
   default_containing_block_info_for_absolute_.writing_direction =
       ConstraintSpace().GetWritingDirection();
   default_containing_block_info_for_fixed_.writing_direction =
@@ -361,9 +348,8 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
     default_containing_block_info_for_absolute_.rect.size =
         ShrinkLogicalSize(container_builder_->Size(), border_scrollbar);
     default_containing_block_info_for_fixed_.rect.size =
-        initial_containing_block_fixed_size
-            ? *initial_containing_block_fixed_size
-            : default_containing_block_info_for_absolute_.rect.size;
+        InitialContainingBlockFixedSize(container_node)
+            .value_or(default_containing_block_info_for_absolute_.rect.size);
   }
   LogicalOffset container_offset = {border_scrollbar.inline_start,
                                     border_scrollbar.block_start};
