@@ -262,6 +262,11 @@ bool InterestGroup::IsValid() const {
     return false;
   }
 
+  if (aggregation_coordinator_origin &&
+      aggregation_coordinator_origin->scheme() != url::kHttpsScheme) {
+    return false;
+  }
+
   return EstimateSize() < blink::mojom::kMaxInterestGroupSize;
 }
 

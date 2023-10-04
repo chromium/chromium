@@ -1193,9 +1193,6 @@ TEST_F(ValidateBlinkInterestGroupTest, AggregationCoordinatorNotHTTPS) {
   blink_interest_group->aggregation_coordinator_origin =
       SecurityOrigin::CreateFromString("http://coordinator.test");
 
-  // We specifically don't check deserialization because that would cause a
-  // LOG(FATAL), because the fixed-size additional_bid_key array would not be
-  // of the expected size.
   ExpectInterestGroupIsNotValid(
       blink_interest_group,
       /*expected_error_field_name=*/
@@ -1203,8 +1200,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AggregationCoordinatorNotHTTPS) {
       /*expected_error_field_value=*/
       String::FromUTF8("http://coordinator.test"),
       /*expected_error=*/
-      String::FromUTF8("aggregationCoordinatorOrigin origin must be HTTPS."),
-      /*check_deserialization=*/false);
+      String::FromUTF8("aggregationCoordinatorOrigin origin must be HTTPS."));
 }
 
 TEST_F(ValidateBlinkInterestGroupTest, AggregationCoordinatorInvalid) {
@@ -1213,17 +1209,13 @@ TEST_F(ValidateBlinkInterestGroupTest, AggregationCoordinatorInvalid) {
   blink_interest_group->aggregation_coordinator_origin =
       SecurityOrigin::CreateFromString("http://invalid^&");
 
-  // We specifically don't check deserialization because that would cause a
-  // LOG(FATAL), because the fixed-size additional_bid_key array would not be
-  // of the expected size.
   ExpectInterestGroupIsNotValid(
       blink_interest_group,
       /*expected_error_field_name=*/
       String::FromUTF8("aggregationCoordinatorOrigin"),
       /*expected_error_field_value=*/String::FromUTF8("null"),
       /*expected_error=*/
-      String::FromUTF8("aggregationCoordinatorOrigin origin must be HTTPS."),
-      /*check_deserialization=*/false);
+      String::FromUTF8("aggregationCoordinatorOrigin origin must be HTTPS."));
 }
 
 TEST_F(ValidateBlinkInterestGroupTest,

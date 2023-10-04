@@ -59,7 +59,7 @@ class InterestGroupStorageTest : public testing::Test {
          {"max_groups_per_owner", "10"},
          {"max_negative_groups_per_owner", "30"},
          {"max_ops_before_maintenance", "100"},
-         {"max_storage_per_owner", "2048"}});
+         {"max_storage_per_owner", "4096"}});
   }
 
   // Returns a summary of all interest groups. Each interest group is returned
@@ -181,6 +181,8 @@ class InterestGroupStorageTest : public testing::Test {
             .SetAuctionServerRequestFlags(
                 {blink::AuctionServerRequestFlagsEnum::kOmitAds,
                  blink::AuctionServerRequestFlagsEnum::kIncludeFullAds})
+            .SetAggregationCoordinatorOrigin(
+                url::Origin::Create(GURL("https://coordinator.test/")))
             .Build();
 
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();

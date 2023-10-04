@@ -144,9 +144,8 @@ If modifying InterestGroup fields, make sure to also modify:
 * interest_group_mojom_traits[.h/.cc/.test]
 * bidder_worklet.cc (to pass the InterestGroup to generateBid())
 
-In interest_group_storage.cc, add the new field and any respective indices,
-update `ClearExcessiveStorage()`, add a new database version and migration, and
-migration test.
+In interest_group_storage.cc, add the new field and any respective indices, add
+a new database version and migration, and migration test.
 
 If the new field is to be updatable via dailyUpdateUrl, also update *all* of
 these:

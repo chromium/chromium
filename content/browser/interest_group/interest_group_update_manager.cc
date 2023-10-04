@@ -102,11 +102,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     const blink::InterestGroupKey& group_key,
     const base::Value::Dict& dict) {
   const std::string* maybe_owner = dict.FindString("owner");
-  if (maybe_owner && url::Origin::Create(GURL(*maybe_owner)) != group_key.owner)
+  if (maybe_owner &&
+      url::Origin::Create(GURL(*maybe_owner)) != group_key.owner) {
     return false;
+  }
   const std::string* maybe_name = dict.FindString("name");
-  if (maybe_name && *maybe_name != group_key.name)
+  if (maybe_name && *maybe_name != group_key.name) {
     return false;
+  }
   return true;
 }
 
@@ -116,10 +119,12 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     const base::Value::Dict& dict,
     absl::optional<base::flat_map<std::string, double>>& priority_vector) {
   const base::Value* maybe_dict = dict.Find("priorityVector");
-  if (!maybe_dict)
+  if (!maybe_dict) {
     return true;
-  if (!maybe_dict->is_dict())
+  }
+  if (!maybe_dict->is_dict()) {
     return false;
+  }
 
   // Extract all key/value pairs to a vector before writing to a flat_map, since
   // flat_map insertion is O(n).
@@ -145,10 +150,12 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     absl::optional<base::flat_map<std::string, absl::optional<double>>>&
         priority_signals_overrides) {
   const base::Value* maybe_dict = dict.Find("prioritySignalsOverrides");
-  if (!maybe_dict)
+  if (!maybe_dict) {
     return true;
-  if (!maybe_dict->is_dict())
+  }
+  if (!maybe_dict->is_dict()) {
     return false;
+  }
 
   std::vector<std::pair<std::string, absl::optional<double>>> pairs;
   for (const std::pair<const std::string&, const base::Value&> pair :
@@ -175,21 +182,25 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     const base::Value::Dict& dict,
     InterestGroupUpdate& interest_group_update) {
   const base::Value* maybe_dict = dict.Find("sellerCapabilities");
-  if (!maybe_dict)
+  if (!maybe_dict) {
     return true;
-  if (!maybe_dict->is_dict())
+  }
+  if (!maybe_dict->is_dict()) {
     return false;
+  }
 
   std::vector<std::pair<url::Origin, blink::SellerCapabilitiesType>>
       seller_capabilities_vec;
   for (const std::pair<const std::string&, const base::Value&> pair :
        maybe_dict->GetDict()) {
-    if (!pair.second.is_list())
+    if (!pair.second.is_list()) {
       return false;
+    }
     blink::SellerCapabilitiesType capabilities;
     for (const base::Value& maybe_capability : pair.second.GetList()) {
-      if (!maybe_capability.is_string())
+      if (!maybe_capability.is_string()) {
         return false;
+      }
       const std::string& capability = maybe_capability.GetString();
       base::UmaHistogramBoolean(
           "Ads.InterestGroup.EnumNaming.Update.SellerCapabilities",
@@ -211,8 +222,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           url::Origin::Create(GURL(pair.first)), capabilities);
     }
   }
-  if (!seller_capabilities_vec.empty())
+  if (!seller_capabilities_vec.empty()) {
     interest_group_update.seller_capabilities.emplace(seller_capabilities_vec);
+  }
   return true;
 }
 
@@ -222,8 +234,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     const base::Value::Dict& dict,
     InterestGroupUpdate& interest_group_update) {
   const std::string* maybe_execution_mode = dict.FindString("executionMode");
-  if (!maybe_execution_mode)
+  if (!maybe_execution_mode) {
     return true;
+  }
   base::UmaHistogramBoolean(
       "Ads.InterestGroup.EnumNaming.Update.WorkletExecutionMode",
       *maybe_execution_mode == "groupByOrigin");
@@ -246,14 +259,16 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     InterestGroupUpdate& interest_group_update) {
   const base::Value::List* maybe_update_trusted_bidding_signals_keys =
       dict.FindList("trustedBiddingSignalsKeys");
-  if (!maybe_update_trusted_bidding_signals_keys)
+  if (!maybe_update_trusted_bidding_signals_keys) {
     return true;
+  }
   std::vector<std::string> trusted_bidding_signals_keys;
   for (const base::Value& keys_value :
        *maybe_update_trusted_bidding_signals_keys) {
     const std::string* maybe_key = keys_value.GetIfString();
-    if (!maybe_key)
+    if (!maybe_key) {
       return false;
+    }
     trusted_bidding_signals_keys.push_back(*maybe_key);
   }
   interest_group_update.trusted_bidding_signals_keys =
@@ -268,8 +283,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   std::vector<blink::InterestGroup::Ad> ads;
   for (const base::Value& ads_value : ads_list) {
     const base::Value::Dict* ads_dict = ads_value.GetIfDict();
-    if (!ads_dict)
+    if (!ads_dict) {
       return absl::nullopt;
+    }
     const std::string* maybe_render_url = ads_dict->FindString("renderURL");
     const std::string* maybe_render_url_deprecated =
         ads_dict->FindString("renderUrl");
@@ -282,8 +298,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         maybe_render_url = maybe_render_url_deprecated;
       }
     }
-    if (!maybe_render_url)
+    if (!maybe_render_url) {
       return absl::nullopt;
+    }
     blink::InterestGroup::Ad ad;
     ad.render_url = GURL(*maybe_render_url);
     const std::string* maybe_size_group = ads_dict->FindString("sizeGroup");
@@ -339,12 +356,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 [[nodiscard]] bool TryToCopyAds(const base::Value::Dict& dict,
                                 InterestGroupUpdate& interest_group_update) {
   const base::Value::List* maybe_ads = dict.FindList("ads");
-  if (!maybe_ads)
+  if (!maybe_ads) {
     return true;
+  }
   absl::optional<std::vector<blink::InterestGroup::Ad>> maybe_extracted_ads =
       ExtractAds(*maybe_ads, /*for_components=*/false);
-  if (!maybe_extracted_ads)
+  if (!maybe_extracted_ads) {
     return false;
+  }
   interest_group_update.ads = std::move(*maybe_extracted_ads);
   return true;
 }
@@ -355,12 +374,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     const base::Value::Dict& dict,
     InterestGroupUpdate& interest_group_update) {
   const base::Value::List* maybe_ads = dict.FindList("adComponents");
-  if (!maybe_ads)
+  if (!maybe_ads) {
     return true;
+  }
   absl::optional<std::vector<blink::InterestGroup::Ad>> maybe_extracted_ads =
       ExtractAds(*maybe_ads, /*for_components=*/true);
-  if (!maybe_extracted_ads)
+  if (!maybe_extracted_ads) {
     return false;
+  }
   interest_group_update.ad_components = std::move(*maybe_extracted_ads);
   return true;
 }
@@ -475,8 +496,9 @@ absl::optional<InterestGroupUpdate> ParseUpdateJson(
       dict->Find("enableBiddingSignalsPrioritization");
   if (maybe_enable_bidding_signals_prioritization) {
     // If the field is specified, it must be a bool.
-    if (!maybe_enable_bidding_signals_prioritization->is_bool())
+    if (!maybe_enable_bidding_signals_prioritization->is_bool()) {
       return absl::nullopt;
+    }
     interest_group_update.enable_bidding_signals_prioritization =
         maybe_enable_bidding_signals_prioritization->GetBool();
   }
@@ -564,6 +586,12 @@ absl::optional<InterestGroupUpdate> ParseUpdateJson(
   if (!TryToCopyAuctionServerRequestFlags(*dict, interest_group_update)) {
     return absl::nullopt;
   }
+  const std::string* maybe_aggregation_coordinator_origin =
+      dict->FindString("aggregationCoordinatorOrigin");
+  if (maybe_aggregation_coordinator_origin) {
+    interest_group_update.aggregation_coordinator_origin =
+        url::Origin::Create(GURL(*maybe_aggregation_coordinator_origin));
+  }
   return interest_group_update;
 }
 
@@ -649,8 +677,9 @@ void InterestGroupUpdateManager::OwnersToUpdate::Clear() {
 }
 
 void InterestGroupUpdateManager::MaybeContinueUpdatingCurrentOwner() {
-  if (num_in_flight_updates_ > 0 || waiting_on_db_read_)
+  if (num_in_flight_updates_ > 0 || waiting_on_db_read_) {
     return;
+  }
 
   if (owners_to_update_.Empty()) {
     // This update round is finished, there's no more work to do.
@@ -847,8 +876,9 @@ void InterestGroupUpdateManager::ReportUpdateFailed(
     // To avoid violating the invariant that we're always updating the front of
     // the queue, only clear we encounter this error on the last in-flight
     // update.
-    if (num_in_flight_updates_ == 1)
+    if (num_in_flight_updates_ == 1) {
       owners_to_update_.Clear();
+    }
   }
 
   OnOneUpdateCompleted();

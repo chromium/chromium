@@ -164,4 +164,11 @@ TestInterestGroupBuilder& TestInterestGroupBuilder::SetAdditionalBidKey(
   return *this;
 }
 
+TestInterestGroupBuilder&
+TestInterestGroupBuilder::SetAggregationCoordinatorOrigin(
+    absl::optional<url::Origin> agg_coordinator_origin) {
+  interest_group_.aggregation_coordinator_origin = agg_coordinator_origin;
+  return *this;
+}
+
 }  // namespace blink
