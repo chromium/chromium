@@ -24,6 +24,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view_class_properties.h"
@@ -161,11 +162,20 @@ void PopupRowView::SetCellPermanentlyHighlighted(CellType type,
   UpdateBackground();
 }
 
-gfx::RectF PopupRowView::GetCellBounds(CellType cell) const {
-  const PopupCellView* view = GetCellView(cell);
+gfx::RectF PopupRowView::GetControlCellBounds() const {
+  const PopupCellView* view = GetCellView(CellType::kControl);
   // The view is expected to be present.
   gfx::RectF bounds = gfx::RectF(view->GetBoundsInScreen());
-  bounds.Outset(GetHorizontalMargin());
+
+  // Depending on the RTL expand the bounds on the outer side only, so that
+  // the inner sides don't have gaps which may cause unnecessary mouse events
+  // on the parent in case of overlapping by its sub-popup.
+  gfx::OutsetsF extension =
+      base::i18n::IsRTL()
+          ? gfx::OutsetsF::TLBR(0, /*left=*/GetHorizontalMargin(), 0, 0)
+          : gfx::OutsetsF::TLBR(0, 0, 0, /*right=*/GetHorizontalMargin());
+  bounds.Outset(extension);
+
   return bounds;
 }
 

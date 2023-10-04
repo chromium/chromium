@@ -866,7 +866,7 @@ void PopupViewViews::SetCellWithOpenSubPopup(
 
     PopupRowView& row = GetPopupRowViewAt(cell_index->first);
     if (controller_->OpenSubPopup(
-            row.GetCellBounds(cell_index->second), suggestion.children,
+            row.GetControlCellBounds(), suggestion.children,
             AutoselectFirstSuggestion(selection_source ==
                                       PopupCellSelectionSource::kKeyboard))) {
       row.SetCellPermanentlyHighlighted(cell_index->second, true);

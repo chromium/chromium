@@ -88,8 +88,8 @@ class PopupRowView : public views::View {
   // Sets the highlighted state on the cell of specified type.
   void SetCellPermanentlyHighlighted(CellType cell, bool highlighted);
 
-  // Returns the cell's bounds, the cell of the requested type must be present.
-  gfx::RectF GetCellBounds(CellType cell) const;
+  // Returns the control cell's bounds. The cell must be present.
+  gfx::RectF GetControlCellBounds() const;
 
   // Attempts to process a key press `event`. Returns true if it did (and the
   // parent no longer needs to handle it).
