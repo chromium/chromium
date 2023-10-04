@@ -1337,7 +1337,7 @@ deps = {
     Var('chromium_git') + '/chromium/deps/flac.git' + '@' + '689da3a7ed50af7448c3f1961d1791c7c1d9c85c',
 
   'src/third_party/flatbuffers/src':
-    Var('chromium_git') + '/external/github.com/google/flatbuffers.git' + '@' + '0343396e49d1c0bf4ca1058130efd9585ecb3c8f',
+    Var('chromium_git') + '/external/github.com/google/flatbuffers.git' + '@' + 'bcb9ef187628fe07514e57756d05e6a6296f7dc5',
 
   # Used for embedded builds. CrOS & Linux use the system version.
   'src/third_party/fontconfig/src': {
@@ -1922,7 +1922,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'edf7215123c67d76199d099779137b974b6e1293',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '85a1b2f83ce8075b9f1ca23ed6857784ede9965c',
 
   'src/third_party/turbine': {
       'packages': [
