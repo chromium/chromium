@@ -144,11 +144,16 @@ const char kClipboardMaximumAgeName[] = "Clipboard maximum age";
 const char kClipboardMaximumAgeDescription[] =
     "Limit the maximum age for recent clipboard content";
 
-const char kClipboardUnsanitizedContentName[] =
-    "Clipboard unsanitized read and write";
+const char kClipboardUnsanitizedContentName[] = "Clipboard unsanitized read";
 const char kClipboardUnsanitizedContentDescription[] =
-    "Allows reading/writing unsanitized content from/to the clipboard. "
+    "Allows reading unsanitized content from the clipboard. "
     "Currently, it is only applicable to HTML format. See crbug.com/1268679.";
+
+const char kClipboardWellFormedHtmlSanitizationWriteName[] =
+    "Clipboard well-formed HTML sanitized write";
+const char kClipboardWellFormedHtmlSanitizationWriteDescription[] =
+    "New sanitization routine when writing HTML to clipboard with the async "
+    "clipboard web API.";
 
 const char kChromeRootStoreEnabledName[] = "Chrome Root Store";
 const char kChromeRootStoreEnabledDescription[] =

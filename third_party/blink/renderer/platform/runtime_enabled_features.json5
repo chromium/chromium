@@ -629,6 +629,10 @@
       base_feature: "none",
     },
     {
+      name: "ClipboardWellFormedHtmlSanitizationWrite",
+      status: "experimental",
+    },
+    {
       // https://drafts.fxtf.org/css-masking/#typedef-geometry-box
       name: "ClipPathGeometryBox",
       status: "stable",

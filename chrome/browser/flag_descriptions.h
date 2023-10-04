@@ -122,6 +122,9 @@ extern const char kClickToCallDescription[];
 extern const char kClipboardUnsanitizedContentName[];
 extern const char kClipboardUnsanitizedContentDescription[];
 
+extern const char kClipboardWellFormedHtmlSanitizationWriteName[];
+extern const char kClipboardWellFormedHtmlSanitizationWriteDescription[];
+
 extern const char kClipboardMaximumAgeName[];
 extern const char kClipboardMaximumAgeDescription[];
 

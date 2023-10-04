@@ -64221,6 +64221,8 @@ from previous Chrome versions.
   <int value="-419733676" label="IsolatePrerendersMustProbeOrigin:disabled"/>
   <int value="-419659180" label="ContextualSearchDelayedIntelligence:disabled"/>
   <int value="-418868128" label="enable-experimental-web-platform-features"/>
+  <int value="-418717972"
+      label="ClipboardWellFormedHtmlSanitizationWrite:enabled"/>
   <int value="-418676305" label="ScanningUI:enabled"/>
   <int value="-417633330" label="MessagesForAndroidInfrastructure:enabled"/>
   <int value="-416660617" label="EnforceTLS13Downgrade:disabled"/>
@@ -67402,6 +67404,8 @@ from previous Chrome versions.
   <int value="1158333871" label="QueryTilesEnableQueryEditing:enabled"/>
   <int value="1159760152"
       label="ContextMenuSearchAndShopWithGoogleLens:disabled"/>
+  <int value="1161105475"
+      label="ClipboardWellFormedHtmlSanitizationWrite:disabled"/>
   <int value="1161822401" label="LoginDetection:enabled"/>
   <int value="1162420462" label="ShelfLauncherNudge:disabled"/>
   <int value="1162622865" label="EarlyCodeCache:disabled"/>

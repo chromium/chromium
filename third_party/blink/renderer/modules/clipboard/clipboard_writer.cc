@@ -163,16 +163,12 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
     if (!local_frame || !execution_context) {
       return;
     }
-    execution_context->CountUse(
-        RuntimeEnabledFeatures::ClipboardUnsanitizedContentEnabled()
-            ? WebFeature::kHtmlClipboardApiUnsanitizedWrite
-            : WebFeature::kHtmlClipboardApiWrite);
-
     String html_string =
         String::FromUTF8(reinterpret_cast<const LChar*>(html_data->Data()),
                          html_data->ByteLength());
     const KURL& url = local_frame->GetDocument()->Url();
-    if (RuntimeEnabledFeatures::ClipboardUnsanitizedContentEnabled()) {
+    if (RuntimeEnabledFeatures::
+            ClipboardWellFormedHtmlSanitizationWriteEnabled()) {
       Write(html_string, url);
       return;
     }
