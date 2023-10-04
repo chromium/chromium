@@ -219,8 +219,8 @@ def expr_from_exposure(exposure,
 
     def ref_selected(features):
         feature_tokens = map(
-            lambda feature: "OriginTrialFeature::k{}".format(feature),
-            features)
+            lambda feature: "mojom::blink::OriginTrialFeature::k{}".format(
+                feature), features)
         return _Expr("${{feature_selector}}.IsAnyOf({})".format(
             ", ".join(feature_tokens)))
 

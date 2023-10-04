@@ -47,8 +47,8 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -359,7 +359,7 @@ void CheckXrwOriginTrialOnUiThread(GURL request_url,
 
   result_args->xrw_origin_trial_enabled = delegate->IsFeaturePersistedForOrigin(
       url::Origin::Create(request_url), partition_origin,
-      blink::OriginTrialFeature::kWebViewXRequestedWithDeprecation,
+      blink::mojom::OriginTrialFeature::kWebViewXRequestedWithDeprecation,
       base::Time::Now());
   base::UmaHistogramBoolean(
       "Android.WebView.RequestedWithHeader.OriginTrialEnabled",

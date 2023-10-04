@@ -13,6 +13,7 @@ include_rules = [
   "+net/base/schemeful_site.h",
 
   "+third_party/blink/public/common/origin_trials",
+  "+third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h",
 ]
 
 specific_include_rules = {

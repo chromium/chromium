@@ -46,8 +46,9 @@ RuntimeEnabledFeatures::Backup* g_features_backup = nullptr;
 InstallPropertiesPerFeatureFuncType
     g_original_install_properties_per_feature_func;
 
-void InstallPropertiesPerFeatureForTesting(ScriptState* script_state,
-                                           OriginTrialFeature feature) {
+void InstallPropertiesPerFeatureForTesting(
+    ScriptState* script_state,
+    mojom::blink::OriginTrialFeature feature) {
   bindings::InstallPropertiesPerFeatureForTesting(script_state, feature);
   if (g_original_install_properties_per_feature_func)
     g_original_install_properties_per_feature_func(script_state, feature);

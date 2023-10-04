@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 
 // For testing. See OriginTrialsSampleAPIInvalidOS.
 #define BUILDFLAG_INTERNAL_IS_INVALID() (0)
@@ -26,13 +26,13 @@ static constexpr size_t kMaxFeaturesPerTrial = {{max_features_per_trial}};
 static constexpr struct TrialToFeature {
   const char* trial_name;
   unsigned feature_count;
-  std::array<OriginTrialFeature, kMaxFeaturesPerTrial> features;
+  std::array<mojom::OriginTrialFeature, kMaxFeaturesPerTrial> features;
 } kTrialToFeaturesMap[] = {
     {% for trial_name, features_list in trial_to_features_map.items() %}
-    { "{{trial_name}}", {{features_list|length}}, { {%- for trial_feature in features_list %}OriginTrialFeature::k{{trial_feature.name}}, {%- endfor %} } },
+    { "{{trial_name}}", {{features_list|length}}, { {%- for trial_feature in features_list %}mojom::OriginTrialFeature::k{{trial_feature.name}}, {%- endfor %} } },
     {% endfor %}
     // For testing
-    { "This trial does not exist", 1, { OriginTrialFeature::kNonExisting } },
+    { "This trial does not exist", 1, { mojom::OriginTrialFeature::kNonExisting } },
 };
 
 } // namespace
@@ -83,10 +83,10 @@ bool origin_trials::IsDeprecationTrial(base::StringPiece trial_name) {
   return false;
 }
 
-OriginTrialType origin_trials::GetTrialType(OriginTrialFeature feature) {
+OriginTrialType origin_trials::GetTrialType(mojom::OriginTrialFeature feature) {
   switch (feature) {
     {% for feature in origin_trial_features if feature.origin_trial_type %}
-    case OriginTrialFeature::k{{feature.name}}:
+    case mojom::OriginTrialFeature::k{{feature.name}}:
       return OriginTrialType::k{{feature.origin_trial_type}};
     {% endfor %}
     default:
@@ -95,7 +95,7 @@ OriginTrialType origin_trials::GetTrialType(OriginTrialFeature feature) {
 }
 
 
-base::span<const OriginTrialFeature> origin_trials::FeaturesForTrial(
+base::span<const mojom::OriginTrialFeature> origin_trials::FeaturesForTrial(
     base::StringPiece trial_name) {
   auto it = base::ranges::find(kTrialToFeaturesMap, trial_name,
                                &TrialToFeature::trial_name);
@@ -103,13 +103,13 @@ base::span<const OriginTrialFeature> origin_trials::FeaturesForTrial(
   return {it->features.begin(), it->feature_count};
 }
 
-base::span<const OriginTrialFeature> origin_trials::GetImpliedFeatures(
-    OriginTrialFeature feature) {
+base::span<const mojom::OriginTrialFeature> origin_trials::GetImpliedFeatures(
+    mojom::OriginTrialFeature feature) {
 {% for implied_by_name, implied_set in implied_origin_trial_features.items() %}
-  if (feature == OriginTrialFeature::k{{implied_by_name}}) {
-    static constexpr OriginTrialFeature implied_features[] = {
+  if (feature == mojom::OriginTrialFeature::k{{implied_by_name}}) {
+    static constexpr mojom::OriginTrialFeature implied_features[] = {
 {%- for implied_name in implied_set|sort %}
-OriginTrialFeature::k{{implied_name}},
+mojom::OriginTrialFeature::k{{implied_name}},
 {%- endfor %}
 };
     return implied_features;
@@ -118,11 +118,11 @@ OriginTrialFeature::k{{implied_name}},
   return {};
 }
 
-bool origin_trials::FeatureEnabledForOS(OriginTrialFeature feature) {
+bool origin_trials::FeatureEnabledForOS(mojom::OriginTrialFeature feature) {
   switch (feature) {
     {% for feature in features %}
     {% if feature.origin_trial_feature_name %}
-    case OriginTrialFeature::k{{feature.name}}:
+    case mojom::OriginTrialFeature::k{{feature.name}}:
       {% if feature.origin_trial_os %}
 #if
   {%- for os in feature.origin_trial_os %}
@@ -140,7 +140,7 @@ bool origin_trials::FeatureEnabledForOS(OriginTrialFeature feature) {
     {% endif %}
     {% endfor %}
     // For testing
-    case OriginTrialFeature::kNonExisting:
+    case mojom::OriginTrialFeature::kNonExisting:
       return true;
   }
 }

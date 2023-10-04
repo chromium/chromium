@@ -11,7 +11,6 @@
 #include "base/containers/flat_set.h"
 #include "components/origin_trials/common/persisted_trial_token.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
@@ -46,7 +45,7 @@ base::flat_set<std::string> OriginTrials::GetPersistedTrialsForOrigin(
 bool OriginTrials::IsFeaturePersistedForOrigin(
     const url::Origin& origin,
     const url::Origin& partition_origin,
-    blink::OriginTrialFeature feature,
+    blink::mojom::OriginTrialFeature feature,
     const base::Time current_time) {
   return !GetPersistedTrialsForOriginWithMatch(origin, partition_origin,
                                                current_time, feature)
@@ -116,7 +115,7 @@ void OriginTrials::PersistTokensInternal(
       // TODO(crbug.com/1418340): Support for all third-party tokens.
       // Only accept deprecation trials as third-party for now.
       bool deprecation_trial = false;
-      for (const blink::OriginTrialFeature feature :
+      for (const blink::mojom::OriginTrialFeature feature :
            blink::origin_trials::FeaturesForTrial(
                parsed_token->feature_name())) {
         deprecation_trial |= blink::origin_trials::GetTrialType(feature) ==
@@ -145,7 +144,8 @@ base::flat_set<std::string> OriginTrials::GetPersistedTrialsForOriginWithMatch(
     const url::Origin& origin,
     const url::Origin& partition_origin,
     const base::Time current_time,
-    const absl::optional<blink::OriginTrialFeature> trial_feature_match) const {
+    const absl::optional<blink::mojom::OriginTrialFeature> trial_feature_match)
+    const {
   if (origin.opaque())
     return {};
 
