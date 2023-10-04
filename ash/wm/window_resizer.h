@@ -94,6 +94,10 @@ class ASH_EXPORT WindowResizer {
   // should not be called as the result of a revert.
   void SetBoundsDuringResize(const gfx::Rect& bounds);
 
+  // Called during an active resize to change the transform of the
+  // window.
+  void SetTransformDuringResize(const gfx::Transform& transform);
+
   void SetPresentationTimeRecorder(
       std::unique_ptr<PresentationTimeRecorder> recorder);
 

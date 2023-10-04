@@ -284,6 +284,28 @@ void WindowResizer::SetBoundsDuringResize(const gfx::Rect& bounds) {
     recorder_->RequestNext();
 }
 
+void WindowResizer::SetTransformDuringResize(const gfx::Transform& transform) {
+  aura::Window* window = GetTarget();
+  DCHECK(window);
+
+  const gfx::Transform original_transform = window->transform();
+
+  // Prepare to record presentation time (e.g. tracking Configure).
+  if (recorder_) {
+    recorder_->PrepareToRecord();
+  }
+
+  window->SetTransform(transform);
+
+  if (window->transform() == original_transform) {
+    return;
+  }
+
+  if (recorder_) {
+    recorder_->RequestNext();
+  }
+}
+
 void WindowResizer::SetPresentationTimeRecorder(
     std::unique_ptr<PresentationTimeRecorder> recorder) {
   recorder_ = std::move(recorder);

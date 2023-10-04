@@ -21,6 +21,8 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/resize_utils.h"
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -42,6 +44,9 @@ const int kPipMovementFlingThresholdSquared = 1000 * 1000;
 // Threshold for considering a swipe off the side of the screen a dismissal
 // even if less than |kPipDismissFraction| of the PIP window is off-screen.
 const int kPipSwipeToDismissFlingThresholdSquared = 800 * 800;
+// The width ratio of up to how much the PiP window size can expand or
+// shrink beyond the maximum or the minimum size during pinch gesture.
+constexpr float kPipPinchToResizeScaleFraction = 0.15;
 
 bool IsAtTopOrBottomEdge(const gfx::Rect& bounds, const gfx::Rect& area) {
   return (bounds.y() < area.y() + kPipDismissSlop && bounds.y() >= area.y()) ||
@@ -182,9 +187,15 @@ void PipWindowResizer::Drag(const gfx::PointF& location_in_parent,
 void PipWindowResizer::Pinch(const gfx::PointF& location_in_parent,
                              const float scale) {
   accumulated_scale_ *= scale;
-  gfx::Rect new_bounds = CalculateBoundsForPinch(
-      window_state_->window(), details().initial_location_in_parent,
-      details().initial_bounds_in_parent, location_in_parent);
+
+  // If the user is trying to enlarge the window further than the limit,
+  // we use `gfx::Transform` to visually scale the window to up to 115%
+  // of the limit size. The window size will return to the limit size
+  // with `CompleteDrag()`. The same goes for when the user tries to
+  // shrink the window.
+  SetTransformDuringResize(CalculateTransformForPinch());
+
+  gfx::Rect new_bounds = CalculateBoundsForPinch(location_in_parent);
 
   // We do everything in screen coordinates, so convert here.
   wm::ConvertPointToScreen(GetTarget()->parent(), &last_location_in_screen_);
@@ -206,27 +217,27 @@ void PipWindowResizer::Pinch(const gfx::PointF& location_in_parent,
 }
 
 gfx::Rect PipWindowResizer::CalculateBoundsForPinch(
-    const aura::Window* window,
-    const gfx::PointF& initial_location,
-    const gfx::Rect& initial_bounds,
-    const gfx::PointF& location) const {
+    const gfx::PointF& location_in_parent) const {
+  const gfx::PointF initial_location = details().initial_location_in_parent;
+  const gfx::Rect initial_bounds = details().initial_bounds_in_parent;
+
   gfx::Size size =
       gfx::ScaleToRoundedSize(initial_bounds.size(), accumulated_scale_);
 
-  gfx::Size max_size = window->delegate()->GetMaximumSize();
-  gfx::Size min_size = window->delegate()->GetMinimumSize();
+  gfx::Size max_size = GetTarget()->delegate()->GetMaximumSize();
+  gfx::Size min_size = GetTarget()->delegate()->GetMinimumSize();
   size.SetToMin(max_size);
   size.SetToMax(min_size);
 
   gfx::SizeF* aspect_ratio_size =
-      window->GetProperty(aura::client::kAspectRatio);
+      GetTarget()->GetProperty(aura::client::kAspectRatio);
   // Aspect ratio must be set for pinch-to-resize to change window bounds.
   if (!aspect_ratio_size) {
     return initial_bounds;
   }
   float aspect_ratio = aspect_ratio_size->width() / aspect_ratio_size->height();
 
-  gfx::Rect new_bounds(window->bounds().origin(), size);
+  gfx::Rect new_bounds(GetTarget()->bounds().origin(), size);
   gfx::SizeRectToAspectRatio(gfx::ResizeEdge::kBottom, aspect_ratio, min_size,
                              max_size, &new_bounds);
 
@@ -237,10 +248,44 @@ gfx::Rect PipWindowResizer::CalculateBoundsForPinch(
       (initial_location.x() - initial_bounds.x()) / initial_bounds.width();
   float top_ratio =
       (initial_location.y() - initial_bounds.y()) / initial_bounds.height();
-  new_bounds.set_x(location.x() - new_bounds.width() * left_ratio);
-  new_bounds.set_y(location.y() - new_bounds.height() * top_ratio);
+  new_bounds.set_x(location_in_parent.x() -
+                   new_bounds.width() *
+                       GetTarget()->transform().To2dScale().x() * left_ratio);
+  new_bounds.set_y(location_in_parent.y() -
+                   new_bounds.height() *
+                       GetTarget()->transform().To2dScale().y() * top_ratio);
 
   return new_bounds;
+}
+
+gfx::Transform PipWindowResizer::CalculateTransformForPinch() const {
+  // This is the window size that does not consider the size limits.
+  const gfx::SizeF naive_size =
+      gfx::ScaleSize(gfx::SizeF(details().initial_bounds_in_parent.size()),
+                     accumulated_scale_);
+
+  const gfx::Size max_size = GetTarget()->delegate()->GetMaximumSize();
+  const gfx::Size min_size = GetTarget()->delegate()->GetMinimumSize();
+  const float ratio_to_max_size = naive_size.width() / max_size.width();
+  const float ratio_to_min_size = naive_size.width() / min_size.width();
+
+  // If the pinch gesture is attempting to expand or shrink the window
+  // beyond its limits, we use a curve to calculate appropriate scale
+  // and apply scale transform to the window. The curve tapers off at
+  // 1.15 (1 + `kPipPinchToResizeScaleFraction`) for pinch zoom in and
+  // 0.85 (1 - `kPipPinchToResizeScaleFraction`) for pinch zoom out.
+  float scale = 1.f;
+  if (ratio_to_max_size > 1.f) {
+    scale = (1.f + kPipPinchToResizeScaleFraction) -
+            kPipPinchToResizeScaleFraction * kPipPinchToResizeScaleFraction /
+                (ratio_to_max_size + kPipPinchToResizeScaleFraction - 1.f);
+  } else if (ratio_to_min_size < 1.f) {
+    scale = (1.f - kPipPinchToResizeScaleFraction) -
+            kPipPinchToResizeScaleFraction * kPipPinchToResizeScaleFraction /
+                (ratio_to_min_size - kPipPinchToResizeScaleFraction - 1.f);
+  }
+
+  return gfx::Transform::MakeScale(scale);
 }
 
 void PipWindowResizer::CompleteDrag() {
@@ -273,6 +318,21 @@ void PipWindowResizer::CompleteDrag() {
       bounds = GetTarget()->GetBoundsInScreen();
     }
 
+    // The origin includes the compensation for the scaling effect with
+    // transform's scale (to expand the window around the pinch center).
+    // It has to be centered around the finger when the window goes back
+    // to the limit size.
+    const gfx::Vector2dF scale = GetTarget()->transform().To2dScale();
+    const gfx::PointF initial_location = details().initial_location_in_parent;
+    const gfx::Rect initial_bounds = details().initial_bounds_in_parent;
+    const float left_ratio =
+        (initial_location.x() - initial_bounds.x()) / initial_bounds.width();
+    const float top_ratio =
+        (initial_location.y() - initial_bounds.y()) / initial_bounds.height();
+    bounds.Offset(
+        gfx::Vector2d(bounds.width() * (scale.x() - 1.f) * left_ratio,
+                      bounds.height() * (scale.y() - 1.f) * top_ratio));
+
     // Compute resting position even if it was a fling to avoid obstacles.
     bounds = CollisionDetectionUtils::GetRestingPosition(
         window_state()->GetDisplay(), bounds,
@@ -284,13 +344,18 @@ void PipWindowResizer::CompleteDrag() {
     SetBoundsWMEvent event(bounds, /*animate=*/true, duration);
     window_state()->OnWMEvent(&event);
 
-    // Animate opacity back to normal opacity:
     ui::Layer* layer = GetTarget()->layer();
     ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
     settings.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
     settings.SetTransitionDuration(duration);
+
+    // Animate opacity back to normal opacity.
     layer->SetOpacity(1.f);
+
+    // Animate the size back to its limit size if it has expanded or
+    // shrunk beyond it.
+    layer->SetTransform(gfx::Transform());
 
     // If the pip work area changes (e.g. message center, virtual keyboard),
     // we want to restore to the last explicitly set position.

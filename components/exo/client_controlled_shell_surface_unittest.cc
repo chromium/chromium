@@ -54,6 +54,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -2025,8 +2026,12 @@ TEST_P(ClientControlledShellSurfaceTest, PipWindowDragDoesNotAnimate) {
     EXPECT_FALSE(window->layer()->GetAnimator()->is_animating());
     EXPECT_EQ(gfx::Rect(18, 18, 256, 256), window->layer()->GetTargetBounds());
     EXPECT_EQ(gfx::Rect(18, 18, 256, 256), window->layer()->bounds());
+
+    // End drag and wait for the animation to end.
     resizer->CompleteDrag();
+    ui::LayerAnimationStoppedWaiter().Wait(window->layer());
   }
+
   {
     // Resize the window with a drag.
     std::unique_ptr<ash::WindowResizer> resizer(ash::CreateWindowResizer(
