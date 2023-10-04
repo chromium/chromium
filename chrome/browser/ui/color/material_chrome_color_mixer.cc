@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
@@ -278,4 +279,19 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarTextDisabledDefault] = {ui::kColorSysStateDisabled};
 
   mixer[kColorWebAuthnIconColor] = {ui::kColorSysPrimary};
+
+  if (base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
+    // Compose colors.
+    mixer[kColorComposeDialogBackground] = {ui::kColorSysSurface};
+    mixer[kColorComposeDialogTitle] = {ui::kColorSysOnSurface};
+    mixer[kColorComposeDialogTextarea] = {ui::kColorSysOnSurface};
+    mixer[kColorComposeDialogTextareaOutline] = {ui::kColorSysNeutralOutline};
+    mixer[kColorComposeDialogTextareaPlaceholder] = {
+        ui::kColorSysOnSurfaceSecondary};
+    mixer[kColorComposeDialogTextareaReadonlyBackground] = {
+        ui::kColorSysNeutralContainer};
+    mixer[kColorComposeDialogTextareaReadonlyForeground] = {
+        ui::kColorSysOnSurface};
+    mixer[kColorComposeDialogTextareaIcon] = {ui::kColorSysOnSurfaceSubtle};
+  }
 }

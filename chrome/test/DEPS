@@ -16,6 +16,7 @@ include_rules = [
   "+components/captive_portal",
   "+components/commerce/core",
   "+components/component_updater",
+  "+components/compose/core/browser",
   "+components/constrained_window",
   "+components/content_settings/core/browser",
   "+components/contextual_search/core/browser",

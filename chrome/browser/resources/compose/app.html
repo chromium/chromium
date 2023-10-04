@@ -1,1 +1,39 @@
-app
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  #heading {
+    display: flex;
+    height: 24px;
+    margin-block-end: 21px;
+    align-items: center;
+  }
+
+  h1 {
+    color: var(--color-compose-dialog-title);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    margin: 0;
+    margin-inline-end: auto;
+  }
+
+  cr-icon-button {
+    margin: 0;
+    margin-inline-end: -6px;
+  }
+</style>
+
+<div id="heading">
+  <h1>Autofill</h1>
+  <cr-icon-button iron-icon="cr:close"></cr-icon-button>
+</div>
+
+<compose-textarea></compose-textarea>
+<compose-textarea value="Some input string"></compose-textarea>
+<compose-textarea value="Some input string" readonly></compose-textarea>
+<compose-textarea value="Some input string" readonly
+    allow-exiting-readonly-mode></compose-textarea>

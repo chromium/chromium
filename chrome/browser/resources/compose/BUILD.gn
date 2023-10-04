@@ -7,7 +7,11 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "compose"
   static_files = [ "compose.html" ]
-  web_component_files = [ "app.ts" ]
+  web_component_files = [
+    "app.ts",
+    "textarea.ts",
+  ]
+  ts_composite = true
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",

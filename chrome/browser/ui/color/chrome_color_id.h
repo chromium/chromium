@@ -706,6 +706,15 @@
   E_CPONLY(kColorPreviousReadAloudHighlightDark) \
   E_CPONLY(kColorPreviousReadAloudHighlightLight) \
   E_CPONLY(kColorPreviousReadAloudHighlightYellow) \
+  /* Compose colors */ \
+  E_CPONLY(kColorComposeDialogBackground) \
+  E_CPONLY(kColorComposeDialogTitle) \
+  E_CPONLY(kColorComposeDialogTextarea) \
+  E_CPONLY(kColorComposeDialogTextareaOutline) \
+  E_CPONLY(kColorComposeDialogTextareaPlaceholder) \
+  E_CPONLY(kColorComposeDialogTextareaReadonlyBackground) \
+  E_CPONLY(kColorComposeDialogTextareaReadonlyForeground) \
+  E_CPONLY(kColorComposeDialogTextareaIcon) \
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define CHROME_PLATFORM_SPECIFIC_COLOR_IDS \

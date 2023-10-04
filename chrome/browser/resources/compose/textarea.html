@@ -1,0 +1,75 @@
+<style include="cr-hidden-style">
+  #container {
+    display: flex;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: solid 1px var(--color-compose-dialog-textarea-outline);
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--color-compose-dialog-textarea);
+    width: 100%;
+    padding: 12px 15px;
+  }
+
+  :host([readonly]) #container {
+    background: var(--color-compose-dialog-textarea-readonly-background);
+    color: var(--color-compose-dialog-textarea-readonly-foreground)
+  }
+
+  textarea {
+    appearance: none;
+    background: transparent;
+    border: none;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    resize: none;
+    outline: none;
+    width: 100%;
+    height: 4lh;
+  }
+
+  textarea::placeholder {
+    color: var(--color-compose-dialog-textarea-placeholder);
+  }
+
+  #container:has(textarea:focus) {
+    outline: solid 2px var(--cr-focus-outline-color);
+    outline-offset: -2px;
+  }
+
+  #readonlyText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  #editButtonContainer {
+    --cr-icon-button-icon-size: var(--cr-icon-size);
+    width: var(--cr-icon-size);
+    height: var(--cr-icon-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-inline-start: 16px;
+  }
+
+  cr-icon-button {
+    margin: 0;
+  }
+</style>
+
+<div id="container">
+  <textarea id="input"
+      hidden$="[[readonly]]"
+      placeholder="Some placeholder text"
+      value="{{value::input}}">
+  </textarea>
+
+  <div id="readonlyText" hidden$="[[!readonly]]">[[value]]</div>
+  <div id="editButtonContainer"
+      hidden$="[[!shouldShowEditIcon_(readonly, allowExitingReadonlyMode)]]">
+    <cr-icon-button iron-icon="cr:create" title="Edit"></cr-icon-button>
+  </div>
+</div>
