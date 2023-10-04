@@ -58,9 +58,6 @@ class FakeMBW(mb.MetaBuildWrapper):
     self.err = ''
     self.rmdirs = []
 
-  def ExpandUser(self, path):
-    return '$HOME/%s' % path
-
   def Exists(self, path):
     abs_path = self._AbsPath(path)
     return (self.files.get(abs_path) is not None or abs_path in self.dirs)
