@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
@@ -26,6 +26,7 @@ class GURL;
 
 namespace base {
 class OneShotTimer;
+class Time;
 }
 
 namespace url {
@@ -39,14 +40,19 @@ class AuthCredentials;
 class HttpRequestHeaders;
 class HttpResponseHeaders;
 class IPEndPoint;
+class IsolationInfo;
 class NetLogWithSource;
+class SSLInfo;
+class SiteForCookies;
 class URLRequest;
 class URLRequestContext;
-struct WebSocketFrame;
 class WebSocketBasicHandshakeStream;
 class WebSocketHttp2HandshakeStream;
 class WebSocketHttp3HandshakeStream;
 struct NetworkTrafficAnnotationTag;
+struct WebSocketFrame;
+struct WebSocketHandshakeRequestInfo;
+struct WebSocketHandshakeResponseInfo;
 
 // WebSocketStreamRequest is the caller's handle to the process of creation of a
 // WebSocketStream. Deleting the object before the ConnectDelegate OnSuccess or

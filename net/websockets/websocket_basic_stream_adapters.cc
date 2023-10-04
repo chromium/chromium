@@ -4,22 +4,31 @@
 
 #include "net/websockets/websocket_basic_stream_adapters.h"
 
-#include <algorithm>
 #include <cstring>
+#include <ostream>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/socket/client_socket_handle.h"
-#include "net/socket/socket.h"
+#include "net/socket/stream_socket.h"
 #include "net/spdy/spdy_buffer.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_stream.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/quic_header_list.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/spdy_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_ack_listener_interface.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_error_codes.h"
 #include "net/websockets/websocket_quic_spdy_stream.h"
 
 namespace net {
+struct NetworkTrafficAnnotationTag;
 
 WebSocketClientSocketHandleAdapter::WebSocketClientSocketHandleAdapter(
     std::unique_ptr<ClientSocketHandle> connection)

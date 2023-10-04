@@ -17,6 +17,7 @@
 #include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_with_source.h"
@@ -28,20 +29,22 @@
 
 namespace net {
 
-struct LoadTimingInfo;
-class SSLInfo;
-class IOBuffer;
-class SSLCertRequestInfo;
-class IPEndPoint;
 class HttpNetworkSession;
-struct NetErrorDetails;
-class HttpStream;
+class HttpRequestHeaders;
 class HttpResponseHeaders;
-struct HttpRequestInfo;
 class HttpResponseInfo;
+class HttpStream;
+class IOBuffer;
+class IPEndPoint;
+class SSLCertRequestInfo;
+class SSLInfo;
 class SpdySession;
-struct AlternativeService;
+class SpdyStream;
 class SpdyStreamRequest;
+struct AlternativeService;
+struct HttpRequestInfo;
+struct LoadTimingInfo;
+struct NetErrorDetails;
 struct WebSocketExtensionParams;
 
 class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream

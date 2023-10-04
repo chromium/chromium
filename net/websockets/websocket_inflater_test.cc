@@ -4,7 +4,6 @@
 
 #include "net/websockets/websocket_inflater.h"
 
-#include <stdint.h>
 #include <string>
 #include <vector>
 

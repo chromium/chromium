@@ -4,6 +4,8 @@
 
 #include "net/websockets/websocket_handshake_stream_base.h"
 
+#include <stddef.h>
+
 #include <unordered_set>
 
 #include "base/metrics/histogram_macros.h"

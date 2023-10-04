@@ -3,24 +3,31 @@
 // found in the LICENSE file.
 
 #include "net/websockets/websocket_stream_create_test_base.h"
-#include "base/memory/raw_ptr.h"
+
+#include <stddef.h>
 
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "net/base/ip_endpoint.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/timer/timer.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/log/net_log_with_source.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "net/websockets/websocket_basic_handshake_stream.h"
 #include "net/websockets/websocket_handshake_request_info.h"
 #include "net/websockets/websocket_handshake_response_info.h"
 #include "net/websockets/websocket_stream.h"
-#include "url/gurl.h"
-#include "url/origin.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace net {
+class IPEndPoint;
+class SiteForCookies;
 
 using HeaderKeyValuePair = WebSocketStreamCreateTestBase::HeaderKeyValuePair;
 

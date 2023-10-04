@@ -6,28 +6,31 @@
 
 #include <limits.h>  // for INT_MAX
 #include <stddef.h>
+#include <string.h>
 
+#include <algorithm>
+#include <iterator>
+#include <ostream>
 #include <utility>
 #include <vector>
 
 #include "base/big_endian.h"
-#include "base/containers/circular_deque.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "net/base/auth.h"
+#include "base/values.h"
 #include "net/base/io_buffer.h"
-#include "net/base/ip_endpoint.h"
-#include "net/http/http_request_headers.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
-#include "net/http/http_util.h"
+#include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_errors.h"
@@ -36,9 +39,11 @@
 #include "net/websockets/websocket_handshake_request_info.h"
 #include "net/websockets/websocket_handshake_response_info.h"
 #include "net/websockets/websocket_stream.h"
-#include "url/origin.h"
 
 namespace net {
+class AuthChallengeInfo;
+class AuthCredentials;
+class SSLInfo;
 
 namespace {
 

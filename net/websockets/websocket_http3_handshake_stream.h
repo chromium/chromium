@@ -15,10 +15,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_with_source.h"
+#include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_stream_factory.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/websockets/websocket_basic_stream_adapters.h"
@@ -29,6 +32,7 @@
 namespace net {
 
 class HttpNetworkSession;
+class HttpRequestHeaders;
 class HttpResponseHeaders;
 class HttpResponseInfo;
 class HttpStream;
@@ -36,6 +40,7 @@ class IOBuffer;
 class IPEndPoint;
 class SSLCertRequestInfo;
 class SSLInfo;
+struct AlternativeService;
 struct HttpRequestInfo;
 struct LoadTimingInfo;
 struct NetErrorDetails;

@@ -7,26 +7,29 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/websockets/websocket_deflate_parameters.h"
 #include "net/websockets/websocket_deflate_predictor.h"
 #include "net/websockets/websocket_deflater.h"
-#include "net/websockets/websocket_errors.h"
 #include "net/websockets/websocket_frame.h"
 #include "net/websockets/websocket_inflater.h"
 #include "net/websockets/websocket_stream.h"
 
-class GURL;
-
 namespace net {
+class NetLogWithSource;
 
 namespace {
 

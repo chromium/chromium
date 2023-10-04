@@ -13,24 +13,38 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
+#include "net/base/request_priority.h"
 #include "net/http/http_basic_state.h"
 #include "net/log/net_log_with_source.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
+#include "net/websockets/websocket_stream.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
 
 class ClientSocketHandle;
+class HttpNetworkSession;
+class HttpRequestHeaders;
 class HttpResponseHeaders;
 class HttpResponseInfo;
+class HttpStream;
 class HttpStreamParser;
+class IOBuffer;
+class IPEndPoint;
+class SSLCertRequestInfo;
+class SSLInfo;
 class WebSocketEndpointLockManager;
-struct WebSocketExtensionParams;
 class WebSocketStreamRequestAPI;
+struct AlternativeService;
+struct HttpRequestInfo;
+struct LoadTimingInfo;
+struct NetErrorDetails;
+struct WebSocketExtensionParams;
 
 class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
     : public WebSocketHandshakeStreamBase {
@@ -51,7 +65,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
 
   ~WebSocketBasicHandshakeStream() override;
 
-  // HttpStreamBase methods
+  // HttpStream methods
   void RegisterRequest(const HttpRequestInfo* request_info) override;
   int InitializeStream(bool can_send_early,
                        RequestPriority priority,

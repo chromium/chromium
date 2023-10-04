@@ -5,16 +5,22 @@
 #include "net/websockets/websocket_test_util.h"
 
 #include <stddef.h>
+
 #include <algorithm>
+#include <sstream>
 #include <utility>
 
+#include "base/check.h"
+#include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "net/base/ip_endpoint.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_network_session.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
+#include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/socket/socket_test_util.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
@@ -23,6 +29,11 @@
 #include "url/origin.h"
 
 namespace net {
+class AuthChallengeInfo;
+class AuthCredentials;
+class HttpResponseHeaders;
+class WebSocketHttp2HandshakeStream;
+class WebSocketHttp3HandshakeStream;
 
 namespace {
 

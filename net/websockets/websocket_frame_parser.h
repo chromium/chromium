@@ -17,6 +17,8 @@
 #include "net/websockets/websocket_frame.h"
 
 namespace net {
+struct WebSocketFrameChunk;
+struct WebSocketFrameHeader;
 
 // Parses WebSocket frames from byte stream.
 //

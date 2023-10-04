@@ -10,9 +10,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
+#include "net/base/auth.h"
+#include "net/base/net_errors.h"
 #include "net/socket/socket_test_util.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/test_with_task_environment.h"
@@ -22,11 +25,20 @@
 
 class GURL;
 
+namespace base {
+class OneShotTimer;
+}  // namespace base
+
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace net {
 
 class HttpRequestHeaders;
 class HttpResponseHeaders;
 class IsolationInfo;
+class SiteForCookies;
 class URLRequest;
 class WebSocketStream;
 class WebSocketStreamRequest;

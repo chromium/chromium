@@ -4,18 +4,25 @@
 
 #include "net/websockets/websocket_stream.h"
 
+#include <ostream>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "net/base/ip_endpoint.h"
+#include "net/base/auth.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
+#include "net/base/request_priority.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -27,9 +34,9 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/websocket_handshake_userdata_key.h"
 #include "net/websockets/websocket_basic_handshake_stream.h"
-#include "net/websockets/websocket_errors.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_handshake_constants.h"
+#include "net/websockets/websocket_handshake_response_info.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
 #include "net/websockets/websocket_handshake_stream_create_helper.h"
 #include "net/websockets/websocket_http2_handshake_stream.h"
@@ -39,6 +46,10 @@
 #include "url/origin.h"
 
 namespace net {
+class SSLCertRequestInfo;
+class SSLInfo;
+class SiteForCookies;
+
 namespace {
 
 // The timeout duration of WebSocket handshake.

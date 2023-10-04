@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
+#include "net/quic/quic_chromium_client_session.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
 #include "net/websockets/websocket_stream.h"
 
@@ -21,6 +23,7 @@ class WebSocketStreamRequestAPI;
 class SpdySession;
 class WebSocketBasicHandshakeStream;
 class WebSocketEndpointLockManager;
+class ClientSocketHandle;
 
 // Implementation of WebSocketHandshakeStreamBase::CreateHelper. This class is
 // used in the implementation of WebSocketStream::CreateAndConnectStream() and

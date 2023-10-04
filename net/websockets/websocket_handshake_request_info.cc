@@ -5,7 +5,6 @@
 #include "net/websockets/websocket_handshake_request_info.h"
 
 #include "base/time/time.h"
-#include "url/gurl.h"
 
 namespace net {
 

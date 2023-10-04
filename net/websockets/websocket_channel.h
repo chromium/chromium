@@ -5,6 +5,7 @@
 #ifndef NET_WEBSOCKETS_WEBSOCKET_CHANNEL_H_
 #define NET_WEBSOCKETS_WEBSOCKET_CHANNEL_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
@@ -12,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/i18n/streaming_utf8_validator.h"
 #include "base/memory/raw_ptr.h"
@@ -31,17 +33,21 @@ class Origin;
 
 namespace net {
 
+class AuthChallengeInfo;
+class AuthCredentials;
 class HttpRequestHeaders;
+class HttpResponseHeaders;
 class IOBuffer;
 class IPEndPoint;
-class NetLogWithSource;
 class IsolationInfo;
+class NetLogWithSource;
+class SSLInfo;
 class SiteForCookies;
 class URLRequest;
 class URLRequestContext;
+struct NetworkTrafficAnnotationTag;
 struct WebSocketHandshakeRequestInfo;
 struct WebSocketHandshakeResponseInfo;
-struct NetworkTrafficAnnotationTag;
 
 // Transport-independent implementation of WebSockets. Implements protocol
 // semantics that do not depend on the underlying transport. Provides the
@@ -340,6 +346,7 @@ class NET_EXPORT WebSocketChannel {
   // A data structure containing a vector of frames to be sent and the total
   // number of bytes contained in the vector.
   class SendBuffer;
+
   // Data that is currently pending write, or NULL if no write is pending.
   std::unique_ptr<SendBuffer> data_being_sent_;
   // Data that is queued up to write after the current write completes.

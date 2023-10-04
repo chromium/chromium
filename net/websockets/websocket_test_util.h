@@ -12,13 +12,17 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/http/http_basic_state.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_stream_parser.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_test_util.h"
+#include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_handshake_stream_create_helper.h"
 #include "net/websockets/websocket_stream.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,14 +32,23 @@ class Origin;
 }  // namespace url
 
 namespace net {
+class AuthChallengeInfo;
+class AuthCredentials;
+class HttpResponseHeaders;
+class IPEndPoint;
+class MockClientSocketFactory;
+class SSLInfo;
+class SequencedSocketData;
+class URLRequest;
+class URLRequestContextBuilder;
+class WebSocketBasicHandshakeStream;
+class WebSocketHttp2HandshakeStream;
+class WebSocketHttp3HandshakeStream;
+struct SSLSocketDataProvider;
+struct WebSocketHandshakeRequestInfo;
+struct WebSocketHandshakeResponseInfo;
 
 using WebSocketExtraHeaders = std::vector<std::pair<std::string, std::string>>;
-
-class MockClientSocketFactory;
-class WebSocketBasicHandshakeStream;
-class SequencedSocketData;
-class IPEndPoint;
-struct SSLSocketDataProvider;
 
 class LinearCongruentialGenerator {
  public:

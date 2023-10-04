@@ -7,9 +7,11 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <iterator>
+#include <string>
 #include <vector>
 
-#include "net/base/io_buffer.h"
+#include "net/websockets/websocket_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
