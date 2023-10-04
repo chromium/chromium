@@ -6104,7 +6104,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kPhoneHubOnboardingNotifierRevamp)},
     {"local-printer-observing", flag_descriptions::kLocalPrinterObservingName,
      flag_descriptions::kLocalPrinterObservingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPrintManagementJelly)},
+     FEATURE_VALUE_TYPE(ash::features::kLocalPrinterObserving)},
     {"print-management-jelly", flag_descriptions::kPrintManagementJellyName,
      flag_descriptions::kPrintManagementJellyDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPrintManagementJelly)},
