@@ -498,6 +498,10 @@ void Label::SetHandlesTooltips(bool enabled) {
   OnPropertyChanged(&handles_tooltips_, kPropertyEffectsNone);
 }
 
+int Label::GetFixedWidth() const {
+  return fixed_width_;
+}
+
 void Label::SizeToFit(int fixed_width) {
   DCHECK(GetMultiLine());
   DCHECK_EQ(0, max_width_);

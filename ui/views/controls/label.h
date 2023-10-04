@@ -260,6 +260,7 @@ class VIEWS_EXPORT Label : public View,
   // text contains several lines separated with \n.
   // |fixed_width| is the fixed width that will be used (longer lines will be
   // wrapped).  If 0, no fixed width is enforced.
+  int GetFixedWidth() const;
   void SizeToFit(int fixed_width);
 
   // Like SizeToFit, but uses a smaller width if possible.
@@ -539,6 +540,7 @@ VIEW_BUILDER_PROPERTY(gfx::ElideBehavior, ElideBehavior)
 VIEW_BUILDER_PROPERTY(const std::u16string&, TooltipText)
 VIEW_BUILDER_PROPERTY(bool, HandlesTooltips)
 VIEW_BUILDER_PROPERTY(int, MaximumWidth)
+VIEW_BUILDER_PROPERTY(int, MaximumWidthSingleLine)
 VIEW_BUILDER_PROPERTY(bool, CollapseWhenHidden)
 VIEW_BUILDER_PROPERTY(bool, Selectable)
 VIEW_BUILDER_METHOD(SizeToFit, int)
