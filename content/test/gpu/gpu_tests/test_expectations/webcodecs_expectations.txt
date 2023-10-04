@@ -138,6 +138,7 @@ crbug.com/1474916 [ android-nexus-5x ] WebCodecs_EncodeColorSpace_avc1.42001E_pr
 
 crbug.com/1486660 [ chromeos chromeos-board-jacuzzi ] WebCodecs_copyTo_sw_decoder [ Failure ]
 crbug.com/1486660 [ chromeos chromeos-board-jacuzzi ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
+crbug.com/1486660 [ chromeos chromeos-board-jacuzzi ] WebCodecs_copyTo_hw_decoder [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
