@@ -426,14 +426,6 @@ namespace autotestPrivate {
 
   callback GetAllInstalledAppsCallback = void (App[] apps);
 
-  dictionary CryptohomeRecoveryDataDict {
-    DOMString reauthProofToken;
-    DOMString refreshToken;
-  };
-
-  callback GetCryptohomeRecoveryDataCallback = void (
-    CryptohomeRecoveryDataDict dict);
-
   dictionary ShelfItem {
     DOMString appId;
     DOMString launchId;
@@ -949,10 +941,6 @@ namespace autotestPrivate {
     [supportsPromises] static void getArcPackage(
         DOMString packageName,
         GetArcPackageCallback callback);
-
-    // Gets the data needed for Cryptohome Recovery.
-    [supportsPromises] static void getCryptohomeRecoveryData(
-        GetCryptohomeRecoveryDataCallback callback);
 
     // Waits for system web apps to complete the installation.
     [supportsPromises] static void waitForSystemWebAppsInstall(
