@@ -6,8 +6,8 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
-import * as SourcesModule from 'devtools/panels/sources/sources.js';
-import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(
@@ -34,9 +34,9 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
       }());
   `);
 
-  var watchExpressionsPane = SourcesModule.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
-  self.UI.panels.sources.sidebarPaneStack
-      .showView(self.UI.panels.sources.watchSidebarPane)
+  var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
+  Sources.SourcesPanel.SourcesPanel.instance().sidebarPaneStack
+      .showView(Sources.SourcesPanel.SourcesPanel.instance().watchSidebarPane)
       .then(() => {
         watchExpressionsPane.doUpdate();
         watchExpressionsPane.createWatchExpression('globalObject');
@@ -69,7 +69,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   }
 
   function dumpWatchExpressions() {
-    var pane = SourcesModule.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
+    var pane = Sources.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
 
     for (var i = 0; i < pane.watchExpressions.length; i++) {
       var watch = pane.watchExpressions[i];
@@ -97,7 +97,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   function expandProperties(watchExpressionTreeElement, path, callback) {
     const treeOutline = watchExpressionTreeElement.treeOutline;
     treeOutline.addEventListener(
-        UIModule.TreeOutline.Events.ElementAttached, elementAttached);
+        UI.TreeOutline.Events.ElementAttached, elementAttached);
     watchExpressionTreeElement.expand();
 
     function elementAttached(event) {
@@ -118,13 +118,13 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
       }
 
       treeOutline.removeEventListener(
-          UIModule.TreeOutline.Events.ElementAttached, elementAttached);
+          UI.TreeOutline.Events.ElementAttached, elementAttached);
       callback();
     }
   }
 
   function expandWatchExpression(path, callback) {
-    var pane = SourcesModule.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
+    var pane = Sources.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
     var expression = path.shift();
     for (var i = 0; i < pane.watchExpressions.length; i++) {
       var watch = pane.watchExpressions[i];

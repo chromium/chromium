@@ -7,6 +7,8 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+
 (async function() {
   await TestRunner.showPanel('elements');
   await TestRunner.showPanel('sources');
@@ -16,7 +18,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   TestRunner.addResult('Testing accessibility in the DOM breakpoints pane.');
 
   // Expand the DOM Breakpoints container
-  const domBreakpointContainer = self.UI.panels.sources.sidebarPaneStack.expandableContainers.get('sources.domBreakpoints');
+  const domBreakpointContainer = Sources.SourcesPanel.SourcesPanel.instance().sidebarPaneStack.expandableContainers.get('sources.domBreakpoints');
   await domBreakpointContainer.expand();
 
   TestRunner.addResult('Setting DOM breakpoints.');

@@ -32,7 +32,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
 
     sourcesNavigatorView.show(UI.InspectorView.InspectorView.instance().element);
     SourcesTestRunner.dumpNavigatorView(sourcesNavigatorView);
-    const element = self.UI.panels.sources.navigatorTabbedLocation.tabbedPane().element;
+    const element = Sources.SourcesPanel.SourcesPanel.instance().navigatorTabbedLocation.tabbedPane().element;
     await AxeCoreTestRunner.runValidation(element, ruleSet);
   }
 })();

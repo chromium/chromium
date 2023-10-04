@@ -6,8 +6,8 @@ import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
-import * as UIModule from 'devtools/ui/legacy/legacy.js';
-import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Timeline from 'devtools/panels/timeline/timeline.js';
 import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js';
 
 (async function() {
@@ -565,10 +565,10 @@ import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js
     }
   ];
 
-  var timeline = self.UI.panels.timeline;
+  var timeline = Timeline.TimelinePanel.TimelinePanel.instance();
   timeline.setModel(await PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
 
-  var groupByEnum = TimelineModule.TimelineTreeView.AggregatedTimelineTreeView.GroupBy;
+  var groupByEnum = Timeline.TimelineTreeView.AggregatedTimelineTreeView.GroupBy;
   for (var grouping of Object.values(groupByEnum)) {
     testEventTree('CallTree', grouping);
     testEventTree('BottomUp', grouping);
@@ -605,8 +605,8 @@ import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js
       name = treeView.displayInfoForGroupNode(node).name;
     } else {
       name = node.event.name === TimelineModel.TimelineModel.RecordType.JSFrame ?
-          UIModule.UIUtils.beautifyFunctionName(node.event.args['data']['functionName']) :
-          TimelineModule.TimelineUIUtils.TimelineUIUtils.eventTitle(node.event);
+          UI.UIUtils.beautifyFunctionName(node.event.args['data']['functionName']) :
+          Timeline.TimelineUIUtils.TimelineUIUtils.eventTitle(node.event);
     }
     TestRunner.addResult('  '.repeat(padding) + `${name}: ${node.selfTime.toFixed(3)}  ${node.totalTime.toFixed(3)}`);
     node.children().forEach(printEventTree.bind(null, padding + 1));

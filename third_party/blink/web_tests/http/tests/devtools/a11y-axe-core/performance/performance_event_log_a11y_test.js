@@ -6,21 +6,21 @@ import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
-import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
+import * as Timeline from 'devtools/panels/timeline/timeline.js';
 
 (async function() {
 
   await TestRunner.showPanel('timeline');
   TestRunner.addResult('Performance panel loaded.');
 
-  const tabbedPane = self.UI.panels.timeline.flameChart.detailsView.tabbedPane;
-  tabbedPane.selectTab(TimelineModule.TimelineDetailsView.Tab.EventLog);
+  const tabbedPane = Timeline.TimelinePanel.TimelinePanel.instance().flameChart.detailsView.tabbedPane;
+  tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.EventLog);
 
   TestRunner.addResult('Loading a performance model.');
   const view = tabbedPane.visibleView;
   const model = await PerformanceTestRunner.createPerformanceModelWithEvents([{}]);
   view.setModel(model, PerformanceTestRunner.mainTrack());
-  view.updateContents(TimelineModule.TimelineSelection.TimelineSelection.fromRange(
+  view.updateContents(Timeline.TimelineSelection.TimelineSelection.fromRange(
     model.timelineModel().minimumRecordTime(), model.timelineModel().maximumRecordTime()));
 
   TestRunner.addResult('Running aXe on the event log pane.');

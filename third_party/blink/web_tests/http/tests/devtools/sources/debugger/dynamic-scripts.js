@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that scripts for dynamically added script elements are shown in sources panel if loaded with inspector open.\n`);
@@ -51,7 +53,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   function step3() {
-    var panel = self.UI.panels.sources;
+    var panel = Sources.SourcesPanel.SourcesPanel.instance();
     var uiSourceCodes = Workspace.workspace.uiSourceCodesForProjectType(Workspace.projectTypes.Network);
     var urls = uiSourceCodes.map(function(uiSourceCode) {
       return uiSourceCode.name();

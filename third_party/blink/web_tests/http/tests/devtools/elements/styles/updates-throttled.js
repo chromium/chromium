@@ -22,7 +22,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', selectCallback);
   function selectCallback() {
     TestRunner.addSniffer(Elements.StylesSidebarPane.StylesSidebarPane.prototype, 'innerRebuildUpdate', sniffRebuild, true);
-    var stylesPane = self.UI.panels.elements.stylesWidget;
+    var stylesPane = Elements.ElementsPanel.ElementsPanel.instance().stylesWidget;
     for (var i = 0; i < UPDATE_COUNT; ++i)
       UI.Context.Context.instance().setFlavor(SDK.DOMModel.DOMNode, stylesPane.node());
 

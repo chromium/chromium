@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {LayersTestRunner} from 'layers_test_runner';
 
+import * as Layers from 'devtools/panels/layers/layers.js';
+
 (async function() {
   TestRunner.addResult(`Tests hit testing in Layers3DView\n`);
 
@@ -58,7 +60,7 @@ import {LayersTestRunner} from 'layers_test_runner';
   }
 
   function initSizes() {
-    canvas = self.UI.panels.layers._layers3DView._canvasElement;
+    canvas = Layers.LayersPanel.LayersPanel.instance()._layers3DView._canvasElement;
     var canvasWidth = canvas.offsetWidth;
     var canvasHeight = canvas.offsetHeight;
     var rootWidth = 800;
@@ -86,10 +88,10 @@ import {LayersTestRunner} from 'layers_test_runner';
 
   function dumpStateForOutlineType(type) {
     var outlined = 'none';
-    self.UI.panels.layers._update();
+    Layers.LayersPanel.LayersPanel.instance()._update();
 
     function checkLayer(layerInfo) {
-      var l3dview = self.UI.panels.layers._layers3DView;
+      var l3dview = Layers.LayersPanel.LayersPanel.instance()._layers3DView;
       if (l3dview._lastSelection[type] && layerInfo.layer.id() === l3dview._lastSelection[type].layer().id())
         outlined = layerInfo.name;
     }

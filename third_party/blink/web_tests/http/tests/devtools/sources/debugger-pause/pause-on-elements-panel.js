@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(
@@ -38,7 +39,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   }
 
   function step4(node) {
-    TestRunner.assertTrue(!self.UI.panels.sources.paused());
+    TestRunner.assertTrue(!Sources.SourcesPanel.SourcesPanel.instance().paused());
     SourcesTestRunner.togglePause();
 
     // This used to skip the pause request (the test used to timeout).

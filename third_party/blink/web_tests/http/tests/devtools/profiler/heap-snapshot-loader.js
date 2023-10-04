@@ -7,8 +7,8 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
-import * as UIModule from 'devtools/ui/legacy/legacy.js';
-import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Profiler from 'devtools/panels/profiler/profiler.js';
 
 (async function() {
   TestRunner.addResult(`This test checks HeapSnapshots loader.\n`);
@@ -20,10 +20,10 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 
   async function injectMockProfile(callback) {
     var heapProfilerModel = TestRunner.mainTarget.model(SDK.HeapProfilerModel.HeapProfilerModel);
-    var panel = self.UI.panels.heap_profiler;
+    var panel = Profiler.HeapProfilerPanel.HeapProfilerPanel.instance();
     panel.reset();
 
-    var profileType = ProfilerModule.ProfileTypeRegistry.instance.heapSnapshotProfileType;
+    var profileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
 
     TestRunner.override(TestRunner.HeapProfilerAgent, 'invoke_takeHeapSnapshot', takeHeapSnapshotMock);
     function takeHeapSnapshotMock(reportProgress) {
@@ -44,10 +44,10 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
       callback(this);
     }
     TestRunner.addSniffer(
-        ProfilerModule.HeapSnapshotView.HeapProfileHeader.prototype, 'didWriteToTempFile',
+        Profiler.HeapSnapshotView.HeapProfileHeader.prototype, 'didWriteToTempFile',
         tempFileReady);
-    if (!UIModule.Context.Context.instance().flavor(SDK.HeapProfilerModel.HeapProfilerModel)) {
-      await new Promise(resolve => UIModule.Context.Context.instance().addFlavorChangeListener(SDK.HeapProfilerModel.HeapProfilerModel, resolve));
+    if (!UI.Context.Context.instance().flavor(SDK.HeapProfilerModel.HeapProfilerModel)) {
+      await new Promise(resolve => UI.Context.Context.instance().addFlavorChangeListener(SDK.HeapProfilerModel.HeapProfilerModel, resolve));
     }
     profileType.takeHeapSnapshot();
   }
@@ -85,11 +85,11 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
     },
 
     function heapSnapshotLoadFromFileTest(next) {
-      var panel = self.UI.panels.heap_profiler;
+      var panel = Profiler.HeapProfilerPanel.HeapProfilerPanel.instance();
       var file = new File(
           [sourceStringified], 'mock.heapsnapshot', {type: 'text/plain'});
       TestRunner.addSniffer(
-          ProfilerModule.HeapSnapshotView.HeapProfileHeader.prototype, 'snapshotReceived', next);
+          Profiler.HeapSnapshotView.HeapProfileHeader.prototype, 'snapshotReceived', next);
       panel.loadFromFile(file);
     },
 
@@ -98,7 +98,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
         if (profileHeader.canSaveToFile())
           next();
         else
-          profileHeader.addEventListener(ProfilerModule.ProfileHeader.Events.ProfileReceived, onCanSaveProfile, this);
+          profileHeader.addEventListener(Profiler.ProfileHeader.Events.ProfileReceived, onCanSaveProfile, this);
         function onCanSaveProfile() {
           TestRunner.assertTrue(profileHeader.canSaveToFile());
           next();

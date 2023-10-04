@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(
       `Verify that tabbed editor doesn't shuffle tabs when bindings are dropped and then re-added during reload.\n`);
@@ -59,7 +61,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
   ]);
 
   function dumpTabs(title) {
-    var tabbedPane = self.UI.panels.sources.sourcesView().editorContainer.tabbedPane;
+    var tabbedPane = Sources.SourcesPanel.SourcesPanel.instance().sourcesView().editorContainer.tabbedPane;
     var tabs = tabbedPane.tabs;
     TestRunner.addResult(title);
     for (var i = 0; i < tabs.length; ++i) {

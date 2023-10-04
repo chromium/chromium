@@ -5,7 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
-import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Tests that "Show Function Definition" jumps to the correct location.\n`);
@@ -19,12 +20,12 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
       }
   `);
 
-  var panel = self.UI.panels.sources;
+  var panel = Sources.SourcesPanel.SourcesPanel.instance();
 
   TestRunner.runTestSuite([
     function testRevealFunctionDefinition(next) {
       TestRunner.addSniffer(panel, 'showUISourceCode', showUISourceCodeHook);
-      UIModule.Context.Context.instance().flavor(SDK.ExecutionContext).evaluate({expression: 'jumpToMe', silent: true}).then(didGetFunction);
+      UI.Context.Context.instance().flavor(SDK.ExecutionContext).evaluate({expression: 'jumpToMe', silent: true}).then(didGetFunction);
 
       function didGetFunction(result) {
         var error = !result.object || !!result.exceptionDetails;

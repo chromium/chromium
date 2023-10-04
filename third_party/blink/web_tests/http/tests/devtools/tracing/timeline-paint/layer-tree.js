@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 import {LayersTestRunner} from 'layers_test_runner';
 
+import * as Timeline from 'devtools/panels/timeline/timeline.js';
+
 (async function() {
   TestRunner.addResult(`Tests that LayerTreeModel successfully imports layers from a trace.\n`);
   await TestRunner.showPanel('timeline');
@@ -33,7 +35,7 @@ import {LayersTestRunner} from 'layers_test_runner';
       }
   `);
 
-  self.UI.panels.timeline._captureLayersAndPicturesSetting.set(true);
+  Timeline.TimelinePanel.TimelinePanel.instance()._captureLayersAndPicturesSetting.set(true);
 
   await PerformanceTestRunner.invokeAsyncWithTimeline('doActions');
   const frames = PerformanceTestRunner.timelineFrameModel().frames();

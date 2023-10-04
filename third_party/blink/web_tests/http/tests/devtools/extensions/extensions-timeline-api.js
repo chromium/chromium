@@ -14,7 +14,7 @@ import * as Timeline from 'devtools/panels/timeline/timeline.js';
   TestRunner.enableTimelineExtensionAndStart = function(callback) {
     const traceProviders = Extensions.extensionServer.traceProviders();
     const provider = traceProviders[traceProviders.length - 1];
-    const timelinePanel = self.UI.panels.timeline;
+    const timelinePanel = Timeline.TimelinePanel.TimelinePanel.instance();
     const setting = Timeline.TimelinePanel.TimelinePanel.settingForTraceProvider(provider);
     setting.set(true);
     TestRunner.addResult(`Provider short display name: ${provider.shortDisplayName()}`);

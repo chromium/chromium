@@ -5,15 +5,15 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
-import * as SourcesModule from 'devtools/panels/sources/sources.js';
 import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Tests live edit feature.\n`);
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/edit-me-when-paused-no-reveal.js');
 
-  var panel = self.UI.panels.sources;
+  var panel = Sources.SourcesPanel.SourcesPanel.instance();
   var sourceFrame;
 
   function didStepInto() {
@@ -79,7 +79,7 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 
     function didEditScriptSource() {
       TestRunner.addResult('Stepping into...');
-      TestRunner.addSniffer(SourcesModule.SourcesView.SourcesView.prototype, 'showSourceLocation', didRevealAfterStepInto);
+      TestRunner.addSniffer(Sources.SourcesView.SourcesView.prototype, 'showSourceLocation', didRevealAfterStepInto);
       panel._lastModificationTimeoutPassedForTest();
       SourcesTestRunner.stepInto();
     }

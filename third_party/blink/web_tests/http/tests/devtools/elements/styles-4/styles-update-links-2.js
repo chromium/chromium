@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Elements from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests that links are updated properly when editing selector.\n`);
   await TestRunner.showPanel('elements');
@@ -45,7 +47,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
     function testEditSelector(next) {
       var section =
-          self.UI.panels.elements.stylesWidget.sectionBlocks[0].sections[3];
+          Elements.ElementsPanel.ElementsPanel.instance().stylesWidget.sectionBlocks[0].sections[3];
       section.startEditingSelector();
       section.selectorElement.textContent = '.should-change, .INSERTED-OTHER-SELECTOR';
       ElementsTestRunner.waitForSelectorCommitted(onSelectorEdited);

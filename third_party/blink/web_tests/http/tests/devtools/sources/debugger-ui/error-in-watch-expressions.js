@@ -4,7 +4,7 @@
 
 import {TestRunner} from 'test_runner';
 
-import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Tests that watches pane renders errors in red.\n`);
@@ -13,8 +13,8 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
       var foo = 123
   `);
 
-  var watchExpressionsPane = SourcesModule.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
-  self.UI.panels.sources.sidebarPaneStack.showView(UI.panels.sources.watchSidebarPane).then(() => {
+  var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
+  Sources.SourcesPanel.SourcesPanel.instance().sidebarPaneStack.showView(Sources.SourcesPanel.SourcesPanel.instance().watchSidebarPane).then(() => {
     watchExpressionsPane.doUpdate();
     watchExpressionsPane.createWatchExpression('#$%');
     watchExpressionsPane.saveExpressions();

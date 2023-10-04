@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Application from 'devtools/panels/application/application.js';
 
 (async function() {
   TestRunner.addResult('Tests accessibility in the Storage view using the axe-core linter.');
@@ -13,10 +14,10 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   await TestRunner.showPanel('resources');
   await UI.ViewManager.ViewManager.instance().showView('resources');
 
-  const parent = self.UI.panels.resources.sidebar.applicationTreeElement;
+  const parent = Application.ResourcesPanel.ResourcesPanel.instance().sidebar.applicationTreeElement;
   const storageElement = parent.children().find(child => child.title === 'Storage');
   storageElement.select();
-  const storageView = self.UI.panels.resources.visibleView;
+  const storageView = Application.ResourcesPanel.ResourcesPanel.instance().visibleView;
   TestRunner.addResult('Storage view is visible: ' + ApplicationTestRunner.isStorageView(storageView));
 
   async function writeArray() {

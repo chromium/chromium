@@ -6,7 +6,7 @@ import {TestRunner} from 'test_runner';
 import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
 import * as HeapSnapshotModel from 'devtools/models/heap_snapshot_model/heap_snapshot_model.js';
-import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
+import * as Profiler from 'devtools/panels/profiler/profiler.js';
 
 (async function() {
   TestRunner.addResult(
@@ -23,8 +23,8 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
       new EventListenerWrapperTest();
   `);
 
-  var heapProfileType = ProfilerModule.ProfileTypeRegistry.instance.heapSnapshotProfileType;
-  heapProfileType.addEventListener(ProfilerModule.HeapSnapshotView.HeapSnapshotProfileType.SnapshotReceived, finishHeapSnapshot);
+  var heapProfileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
+  heapProfileType.addEventListener(Profiler.HeapSnapshotView.HeapSnapshotProfileType.SnapshotReceived, finishHeapSnapshot);
   TestRunner.addSniffer(heapProfileType, 'snapshotReceived', snapshotReceived);
   heapProfileType.takeHeapSnapshot();
 
@@ -38,7 +38,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
       return clear('FAILED: wrong number of recorded profiles was found. profiles.length = ' + profiles.length);
 
     var profile = profiles[profiles.length - 1];
-    self.UI.panels.heap_profiler.showProfile(profile);
+    Profiler.HeapProfilerPanel.HeapProfilerPanel.instance().showProfile(profile);
   }
 
   async function snapshotReceived(profile) {

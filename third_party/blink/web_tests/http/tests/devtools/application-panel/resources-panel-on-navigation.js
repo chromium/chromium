@@ -8,6 +8,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Application from 'devtools/panels/application/application.js';
 
 (async function() {
   TestRunner.addResult(`Tests Application Panel response to a main frame navigation.\n`);
@@ -38,7 +39,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   }
 
   function dumpCurrentState(label) {
-    var view = self.UI.panels.resources;
+    var view = Application.ResourcesPanel.ResourcesPanel.instance();
     TestRunner.addResult(label);
     dump(view.sidebar.sidebarTree.rootElement(), '');
     TestRunner.addResult('Visible view is a query view: ' + (view.visibleView instanceof Resources.DatabaseQueryView));

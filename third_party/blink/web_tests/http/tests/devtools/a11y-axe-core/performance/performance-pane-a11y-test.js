@@ -6,7 +6,7 @@ import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
-import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
+import * as Timeline from 'devtools/panels/timeline/timeline.js';
 (async function() {
   await TestRunner.showPanel('timeline');
 
@@ -43,7 +43,7 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
   // create dummy data for test
   const model = await PerformanceTestRunner.createPerformanceModelWithEvents(testData);
 
-  const detailsView = self.UI.panels.timeline.flameChart.detailsView;
+  const detailsView = Timeline.TimelinePanel.TimelinePanel.instance().flameChart.detailsView;
 
   async function testDetailsView() {
     TestRunner.addResult('Tests accessibility in performance Details view using the axe-core linter');
@@ -54,7 +54,7 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
     detailsView.setModel(model, null, PerformanceTestRunner.mainTrackEvents());
 
     const tabbedPane = detailsView.tabbedPane;
-    tabbedPane.selectTab(TimelineModule.TimelineDetailsView.Tab.Details);
+    tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.Details);
     const detailsTab = tabbedPane.visibleView;
 
     await AxeCoreTestRunner.runValidation(detailsTab.element);
@@ -68,7 +68,7 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
 
     // update child views with the same test data
     detailsTab.setModel(model, PerformanceTestRunner.mainTrack());
-    detailsTab.updateContents(TimelineModule.TimelineSelection.TimelineSelection.fromRange(
+    detailsTab.updateContents(Timeline.TimelineSelection.TimelineSelection.fromRange(
         model.timelineModel().minimumRecordTime(),
         model.timelineModel().maximumRecordTime()));
 
@@ -76,11 +76,11 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
   }
 
   function testBottomUpView() {
-    return testViewWithName(TimelineModule.TimelineDetailsView.Tab.BottomUp);
+    return testViewWithName(Timeline.TimelineDetailsView.Tab.BottomUp);
   }
 
   function testCallTreeView() {
-    return testViewWithName(TimelineModule.TimelineDetailsView.Tab.CallTree);
+    return testViewWithName(Timeline.TimelineDetailsView.Tab.CallTree);
   }
 
   TestRunner.runAsyncTestSuite([

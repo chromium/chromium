@@ -49,8 +49,8 @@ import * as Network from 'devtools/panels/network/network.js';
   function networkItemSelected() {
     return new Promise(resolve => {
       function checkSelected() {
-        if (self.UI.panels.network.networkLogView.dataGrid.selectedNode)
-          resolve(self.UI.panels.network.networkLogView.dataGrid.selectedNode);
+        if (Network.NetworkPanel.NetworkPanel.instance().networkLogView.dataGrid.selectedNode)
+          resolve(Network.NetworkPanel.NetworkPanel.instance().networkLogView.dataGrid.selectedNode);
         else
           setTimeout(checkSelected, 0);
       }

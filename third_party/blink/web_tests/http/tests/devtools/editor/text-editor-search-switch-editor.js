@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that switching editor tabs after searching does not affect editor selection and viewport.\n`);
@@ -14,7 +16,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
   var textEditor;
   var searchString = 'FINDME';
-  var searchableView = self.UI.panels.sources.searchableView();
+  var searchableView = Sources.SourcesPanel.SourcesPanel.instance().searchableView();
   var sourceFrame;
   SourcesTestRunner.showScriptSource('search-me.js', didShowScriptSource);
 

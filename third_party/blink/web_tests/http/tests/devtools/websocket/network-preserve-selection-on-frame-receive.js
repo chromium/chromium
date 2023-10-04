@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as Network from 'devtools/panels/network/network.js';
+
 (async function() {
   TestRunner.addResult(`Tests that WebSocket network requests do not loose focus on frame being received.\n`);
   await TestRunner.showPanel('network');
@@ -12,7 +14,7 @@ import {NetworkTestRunner} from 'network_test_runner';
   NetworkTestRunner.recordNetwork();
 
   const wsUrl = 'ws://localhost:8880/echo';
-  const networkLogView = self.UI.panels.network.networkLogView;
+  const networkLogView = Network.NetworkPanel.NetworkPanel.instance().networkLogView;
   const dataGrid = networkLogView.dataGrid;
   await TestRunner.evaluateInPagePromise('ws = new WebSocket(\'' + wsUrl + '\')');
   var websocketRequest = NetworkTestRunner.findRequestsByURLPattern(createPlainTextSearchRegex(wsUrl))[0];

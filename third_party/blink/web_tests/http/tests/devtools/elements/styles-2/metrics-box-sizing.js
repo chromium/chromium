@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Elements from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that content-box and border-box content area dimensions are handled property by the Metrics pane.\n`);
@@ -84,7 +86,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     return event;
   }
 
-  var section = self.UI.panels.elements.metricsWidget;
+  var section = Elements.ElementsPanel.ElementsPanel.instance().metricsWidget;
 
   TestRunner.runTestSuite([
     function testBorderBoxInit1(next) {

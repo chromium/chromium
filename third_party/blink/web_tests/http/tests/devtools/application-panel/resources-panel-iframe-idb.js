@@ -7,6 +7,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Application from 'devtools/panels/application/application.js';
 
 (async function() {
   TestRunner.addResult(`Tests Application Panel's handling of storages in iframes.\n`);
@@ -42,13 +43,13 @@ import * as Common from 'devtools/core/common/common.js';
   // for the iframe in the frame tree.
   await TestRunner.addIframe('http://devtools.oopif.test:8000/devtools/application-panel/resources/indexeddb-in-iframe.html', {'id': 'indexeddb_page'});
 
-  await TestRunner.addSnifferPromise(self.UI.panels.resources.sidebar.indexedDBListTreeElement, 'indexedDBLoadedForTest');
+  await TestRunner.addSnifferPromise(Application.ResourcesPanel.ResourcesPanel.instance().sidebar.indexedDBListTreeElement, 'indexedDBLoadedForTest');
 
   // create IndexedDB in main frame
   await new Promise(createIndexedDBInMainFrame);
-  await TestRunner.addSnifferPromise(self.UI.panels.resources.sidebar.indexedDBListTreeElement, 'indexedDBLoadedForTest');
+  await TestRunner.addSnifferPromise(Application.ResourcesPanel.ResourcesPanel.instance().sidebar.indexedDBListTreeElement, 'indexedDBLoadedForTest');
 
-  const view = self.UI.panels.resources;
+  const view = Application.ResourcesPanel.ResourcesPanel.instance();
 
   TestRunner.addResult('Initial tree...\n');
 
@@ -66,7 +67,7 @@ import * as Common from 'devtools/core/common/common.js';
 
   TestRunner.addResult('\nAdd iframe to page again...\n');
   await TestRunner.addIframe('http://devtools.oopif.test:8000/devtools/application-panel/resources/indexeddb-in-iframe.html', {'id': 'indexeddb_page'});
-  await TestRunner.addSnifferPromise(self.UI.panels.resources.sidebar.indexedDBListTreeElement, 'indexedDBLoadedForTest');
+  await TestRunner.addSnifferPromise(Application.ResourcesPanel.ResourcesPanel.instance().sidebar.indexedDBListTreeElement, 'indexedDBLoadedForTest');
 
   dumpTree(view.sidebar.sidebarTree.rootElement(), 0);
 

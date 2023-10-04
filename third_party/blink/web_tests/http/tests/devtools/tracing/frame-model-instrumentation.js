@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
+import * as Timeline from 'devtools/panels/timeline/timeline.js';
+
 (async function() {
   await TestRunner.loadHTML('ABC');
   await TestRunner.showPanel('timeline');
@@ -13,7 +15,7 @@ import {PerformanceTestRunner} from 'performance_test_runner';
     return generateFrames(3);
   }`);
 
-  self.UI.panels.timeline.captureLayersAndPicturesSetting.set(true);
+  Timeline.TimelinePanel.TimelinePanel.instance().captureLayersAndPicturesSetting.set(true);
   await PerformanceTestRunner.invokeAsyncWithTimeline('doActions');
   const frames = PerformanceTestRunner.timelineFrameModel().getFrames();
   const lastFrame = frames[frames.length - 1];

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as Network from 'devtools/panels/network/network.js';
+
 (async function() {
   TestRunner.addResult(`Test network status of non http request.\n`);
   await TestRunner.showPanel('network');
@@ -31,7 +33,7 @@ import {NetworkTestRunner} from 'network_test_runner';
   var seenRequests = 0;
 
   function dumpRequests() {
-    var logView = self.UI.panels.network.networkLogView;
+    var logView = Network.NetworkPanel.NetworkPanel.instance().networkLogView;
     logView.refresh();
     var dataGrid = logView.element.querySelector('table.data');
     var urls = document.evaluate(

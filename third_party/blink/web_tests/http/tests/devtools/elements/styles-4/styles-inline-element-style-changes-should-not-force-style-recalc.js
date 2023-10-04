@@ -25,6 +25,6 @@ import * as Timeline from 'devtools/panels/timeline/timeline.js';
       }
   `);
 
-  UI.Context.Context.instance().setFlavor(Timeline.TimelinePanel.TimelinePanel, self.UI.panels.timeline);
+  UI.Context.Context.instance().setFlavor(Timeline.TimelinePanel.TimelinePanel, Timeline.TimelinePanel.TimelinePanel.instance());
   PerformanceTestRunner.performActionsAndPrint('performActions()', 'RecalculateStyles');
 })();

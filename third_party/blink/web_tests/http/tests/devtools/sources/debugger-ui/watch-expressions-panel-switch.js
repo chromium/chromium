@@ -6,7 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
-import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(
@@ -26,8 +26,8 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
     'x', 'y.foo'
   ]);
   await SourcesTestRunner.startDebuggerTestPromise();
-  self.UI.panels.sources.sidebarPaneStack.showView(
-      self.UI.panels.sources.watchSidebarPane);
+  Sources.SourcesPanel.SourcesPanel.instance().sidebarPaneStack.showView(
+      Sources.SourcesPanel.SourcesPanel.instance().watchSidebarPane);
   TestRunner.addResult('Watches before running testFunction:');
   await waitForUpdate();
   TestRunner.evaluateInPagePromise('testFunction()');
@@ -38,7 +38,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
   function waitForUpdate() {
     return new Promise(resolve => {
       TestRunner.addSniffer(
-          SourcesModule.WatchExpressionsSidebarPane.WatchExpression.prototype, 'createWatchExpression',
+          Sources.WatchExpressionsSidebarPane.WatchExpression.prototype, 'createWatchExpression',
           watchExpressionsUpdated);
       let updateCount = 2;
       function watchExpressionsUpdated(result, wasThrown) {
@@ -50,7 +50,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
           }
         }
         TestRunner.addSniffer(
-            SourcesModule.WatchExpressionsSidebarPane.WatchExpression.prototype, 'createWatchExpression',
+            Sources.WatchExpressionsSidebarPane.WatchExpression.prototype, 'createWatchExpression',
             watchExpressionsUpdated);
       }
     });

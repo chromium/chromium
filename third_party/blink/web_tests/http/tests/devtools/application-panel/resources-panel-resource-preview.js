@@ -9,6 +9,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Common from 'devtools/core/common/common.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Application from 'devtools/panels/application/application.js';
 
 (async function() {
   TestRunner.addResult(`Tests Application Panel preview for resources of different types.\n`);
@@ -41,7 +42,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
       [SourceFrame.ResourceSourceFrame, 'source'], [SourceFrame.ImageView, 'image'], [SourceFrame.JSONView, 'json']
     ]);
 
-    var view = self.UI.panels.resources;
+    var view = Application.ResourcesPanel.ResourcesPanel.instance();
     TestRunner.addResult(label);
     dump(view.sidebar.sidebarTree.rootElement(), '');
     var visibleView = view.visibleView;

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Elements from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Verifies that filtering in StylesSidebarPane hides sidebar separators.\n`);
   await TestRunner.showPanel('elements');
@@ -72,7 +74,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   ]);
 
   function dumpSidebarSeparators() {
-    var separators = self.UI.panels.elements.stylesWidget.contentElement.querySelectorAll('.sidebar-separator');
+    var separators = Elements.ElementsPanel.ElementsPanel.instance().stylesWidget.contentElement.querySelectorAll('.sidebar-separator');
     for (var i = 0; i < separators.length; ++i) {
       var separator = separators[i];
       var hidden = separator.classList.contains('hidden');

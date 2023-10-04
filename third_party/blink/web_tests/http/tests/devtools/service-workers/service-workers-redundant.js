@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 (async function() {
   TestRunner.addResult(`ServiceWorkers must be shown correctly even if there is a redundant worker.\n`);
   await TestRunner.loadLegacyModule('console');
@@ -61,6 +63,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
       TestRunner.completeTest();
     }
   }
-  self.UI.panels.resources.sidebar.serviceWorkersTreeElement.select();
+  Application.ResourcesPanel.ResourcesPanel.instance().sidebar.serviceWorkersTreeElement.select();
   ApplicationTestRunner.registerServiceWorker(scriptURL, scope);
 })();

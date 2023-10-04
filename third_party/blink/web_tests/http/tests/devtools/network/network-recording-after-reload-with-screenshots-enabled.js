@@ -14,7 +14,7 @@ import * as Network from 'devtools/panels/network/network.js';
       <p id="test"></p>
     `);
 
-  self.UI.panels.network.networkRecordFilmStripSetting.set(true);
+  Network.NetworkPanel.NetworkPanel.instance().networkRecordFilmStripSetting.set(true);
 
   Network.NetworkPanel.NetworkPanel.displayScreenshotDelay = 0;
 
@@ -23,7 +23,7 @@ import * as Network from 'devtools/panels/network/network.js';
   TestRunner.resourceTreeModel.reloadPage();
 
   function checkRecording() {
-    TestRunner.addResult(self.UI.panels.network.networkLogView.recording ? 'Still recording' : 'Not recording');
+    TestRunner.addResult(Network.NetworkPanel.NetworkPanel.instance().networkLogView.recording ? 'Still recording' : 'Not recording');
 
     TestRunner.completeTest();
   }

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 (async function() {
 
   TestRunner.addResult('Tests accessibility of AppManifestView on application panel.');
@@ -24,7 +26,7 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
   }`;
 
   await TestRunner.showPanel('resources');
-  const manifestView = self.UI.panels.resources.visibleView;
+  const manifestView = Application.ResourcesPanel.ResourcesPanel.instance().visibleView;
   await manifestView.renderManifest('test_manifest', manifest, [], []);
   await AxeCoreTestRunner.runValidation(manifestView.contentElement);
   TestRunner.completeTest();

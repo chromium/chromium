@@ -7,6 +7,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Elements from 'devtools/panels/elements/elements.js';
 
 (async function() {
   TestRunner.addResult(`Tests that $0 works with shadow dom.\n`);
@@ -33,7 +34,7 @@ import * as Common from 'devtools/core/common/common.js';
   }
 
   function step4(node) {
-    self.UI.panels.elements.revealAndSelectNode(node.shadowRoots()[0]);
+    Elements.ElementsPanel.ElementsPanel.instance().revealAndSelectNode(node.shadowRoots()[0]);
     ConsoleTestRunner.evaluateInConsoleAndDump('\'User agent shadow host: \' + $0.id', step5);
   }
 

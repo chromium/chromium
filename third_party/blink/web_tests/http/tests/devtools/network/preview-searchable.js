@@ -80,7 +80,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
 
 
   function trySearches(request, searches, callback) {
-    var networkPanel = self.UI.panels.network;
+    var networkPanel = Network.NetworkPanel.NetworkPanel.instance();
     TestRunner.addSniffer(Network.RequestPreviewView.RequestPreviewView.prototype, 'doShowPreview', async function() {
       previewViewHandled(searches, callback, await this.contentViewPromise);
       networkPanel.hideRequestPanel();

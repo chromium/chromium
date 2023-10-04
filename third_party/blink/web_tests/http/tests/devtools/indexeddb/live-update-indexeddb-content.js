@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 (async function() {
   TestRunner.addResult(`Tests that the IndexedDB database content live updates.\n`);
   await TestRunner.loadLegacyModule('console');
@@ -23,7 +25,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
   function isMarkedNeedsRefresh() {
     if (!objectStore) {
-      objectStore = self.UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0].childAt(0);
+      objectStore = Application.ResourcesPanel.ResourcesPanel.instance().sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0].childAt(0);
       objectStore.onselect(false);
       objectStore.childAt(0).onselect(false);
       objectStoreView = objectStore.view;

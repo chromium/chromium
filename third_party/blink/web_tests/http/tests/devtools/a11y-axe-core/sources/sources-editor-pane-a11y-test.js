@@ -8,6 +8,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult('Tests accessibility in the editor pane in sources panel using the axe-core linter.');
@@ -46,7 +47,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
 
   async function runTest() {
     // Verify contents of the TabHeader to make sure files are open
-    const tabbedPane = self.UI.panels.sources.sourcesView().editorContainer.tabbedPane;
+    const tabbedPane = Sources.SourcesPanel.SourcesPanel.instance().sourcesView().editorContainer.tabbedPane;
     const tabs = tabbedPane.tabs;
     TestRunner.addResult('All tabs:');
     tabs.forEach(tab => TestRunner.addResult(tab.title));
@@ -57,7 +58,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
 
   async function runA11yTest() {
     await UI.ViewManager.ViewManager.instance().showView('sources');
-    const element = self.UI.panels.sources.sourcesView().contentElement;
+    const element = Sources.SourcesPanel.SourcesPanel.instance().sourcesView().contentElement;
     await AxeCoreTestRunner.runValidation(element, NO_REQUIRED_CHILDREN_RULESET);
   }
 })();

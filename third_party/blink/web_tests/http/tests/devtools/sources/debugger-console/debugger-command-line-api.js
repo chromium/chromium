@@ -8,6 +8,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Common from 'devtools/core/common/common.js';
+import * as Elements from 'devtools/panels/elements/elements.js';
 
 (async function() {
   TestRunner.addResult(`Tests that inspect() command line api works while on breakpoint.\n`);
@@ -35,7 +36,7 @@ import * as Common from 'devtools/core/common/common.js';
   });
 
   function updateFocusedNode() {
-    TestRunner.addResult('Selected node id: \'' + self.UI.panels.elements.selectedDOMNode().getAttribute('id') + '\'.');
+    TestRunner.addResult('Selected node id: \'' + Elements.ElementsPanel.ElementsPanel.instance().selectedDOMNode().getAttribute('id') + '\'.');
     SourcesTestRunner.completeDebuggerTest();
   }
 

@@ -5,7 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
-import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
+import * as Timeline from 'devtools/panels/timeline/timeline.js';
 import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js';
 
 (async function() {
@@ -38,7 +38,7 @@ import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js
       }
   `);
 
-  const panel = self.UI.panels.timeline;
+  const panel = Timeline.TimelinePanel.TimelinePanel.instance();
   panel.captureLayersAndPicturesSetting.set(true);
   panel.onModeChanged();
 
@@ -61,12 +61,12 @@ import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js
 
   TestRunner.addSniffer(
       panel.flameChart.detailsView, 'appendDetailsTabsForTraceEventAndShowDetails', onRecordDetailsReady, false);
-  panel.select(TimelineModule.TimelineSelection.TimelineSelection.fromTraceEvent(paintEvents[0]));
+  panel.select(Timeline.TimelineSelection.TimelineSelection.fromTraceEvent(paintEvents[0]));
 
   function onRecordDetailsReady() {
     var updateCount = 0;
 
-    panel.flameChart.detailsView.tabbedPane.selectTab(TimelineModule.TimelineDetailsView.Tab.PaintProfiler, true);
+    panel.flameChart.detailsView.tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.PaintProfiler, true);
     var paintProfilerView = panel.flameChart.detailsView.lazyPaintProfilerView.paintProfilerView;
     TestRunner.addSniffer(paintProfilerView, 'update', onPaintProfilerUpdate, true);
 
@@ -80,7 +80,7 @@ import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js
         TestRunner.completeTest();
       else
         panel.select(
-            TimelineModule.TimelineSelection.TimelineSelection.fromTraceEvent(paintEvents[1]), TimelineModule.TimelineDetailsView.Tab.PaintProfiler);
+            Timeline.TimelineSelection.TimelineSelection.fromTraceEvent(paintEvents[1]), Timeline.TimelineDetailsView.Tab.PaintProfiler);
     }
   }
 })();

@@ -5,7 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
-import * as ElementsModule from 'devtools/panels/elements/elements.js';
+import * as Elements from 'devtools/panels/elements/elements.js';
 
 (async function() {
   TestRunner.addResult(
@@ -38,15 +38,15 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
   }
 
   function rebuildUpdate() {
-    if (self.UI.panels.elements.stylesWidget.node === treeOutline.selectedDOMNode())
+    if (Elements.ElementsPanel.ElementsPanel.instance().stylesWidget.node === treeOutline.selectedDOMNode())
       seenRebuildUpdate = true;
   }
 
   function step1() {
-    TestRunner.addSniffer(ElementsModule.StylesSidebarPane.StylesSidebarPane.prototype, 'doUpdate', rebuildUpdate);
+    TestRunner.addSniffer(Elements.StylesSidebarPane.StylesSidebarPane.prototype, 'doUpdate', rebuildUpdate);
     TestRunner.domModel.addEventListener(SDK.DOMModel.Events.AttrModified, attributeChanged, this);
     // Click "Add new rule".
-    self.UI.panels.elements.stylesWidget.contentElement.querySelector('.styles-pane-toolbar')
+    Elements.ElementsPanel.ElementsPanel.instance().stylesWidget.contentElement.querySelector('.styles-pane-toolbar')
         .shadowRoot.querySelector('.largeicon-add')
         .click();
     TestRunner.evaluateInPage('addStyleClass()', step2);

@@ -6,7 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
-import * as ElementsModule from 'devtools/panels/elements/elements.js';
+import * as Elements from 'devtools/panels/elements/elements.js';
 
 (async function() {
   TestRunner.addResult(
@@ -25,7 +25,7 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
     `);
 
   ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-      ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, selectedNodeChanged);
+      Elements.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, selectedNodeChanged);
 
   var nodeChangesRemaining = 2;
   function selectedNodeChanged(event) {
@@ -49,10 +49,10 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
     function childrenCallback(children) {
       var shadowDiv = children[0];
       TestRunner.addResult('User-agent shadow DOM hidden:');
-      self.UI.panels.elements.revealAndSelectNode(shadowDiv).then(() => {
+      Elements.ElementsPanel.ElementsPanel.instance().revealAndSelectNode(shadowDiv).then(() => {
         Common.Settings.settingForTest('showUAShadowDOM').set(true);
         TestRunner.addResult('User-agent shadow DOM shown:');
-        self.UI.panels.elements.revealAndSelectNode(shadowDiv);
+        Elements.ElementsPanel.ElementsPanel.instance().revealAndSelectNode(shadowDiv);
       });
     }
   });

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 (async function() {
   TestRunner.addResult(`Tests object store and index entry deletion.\n`);
   await TestRunner.loadLegacyModule('console');
@@ -22,7 +24,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
   function dumpObjectStores() {
     TestRunner.addResult('Dumping ObjectStore data:');
-    var idbDatabaseTreeElement = self.UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
+    var idbDatabaseTreeElement = Application.ResourcesPanel.ResourcesPanel.instance().sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
     for (var objectStoreTreeElement of idbDatabaseTreeElement.children()) {
       objectStoreTreeElement.select();
       TestRunner.addResult(`    Object store: ${objectStoreTreeElement.title}`);
@@ -37,10 +39,10 @@ import {ApplicationTestRunner} from 'application_test_runner';
   await TestRunner.showPanel('resources');
   var databaseAddedPromise = TestRunner.addSnifferPromise(Resources.IndexedDBTreeElement.prototype, 'addIndexedDB');
   await ApplicationTestRunner.createDatabaseAsync('database1');
-  self.UI.panels.resources.sidebar.indexedDBListTreeElement.refreshIndexedDB();
+  Application.ResourcesPanel.ResourcesPanel.instance().sidebar.indexedDBListTreeElement.refreshIndexedDB();
   await databaseAddedPromise;
 
-  var idbDatabaseTreeElement = self.UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
+  var idbDatabaseTreeElement = Application.ResourcesPanel.ResourcesPanel.instance().sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
   await ApplicationTestRunner.createObjectStoreAsync('database1', 'objectStore1', 'index1');
   idbDatabaseTreeElement.refreshIndexedDB();
   await TestRunner.addSnifferPromise(Resources.IDBIndexTreeElement.prototype, 'updateTooltip');

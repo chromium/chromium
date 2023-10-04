@@ -13,7 +13,7 @@ import * as Network from 'devtools/panels/network/network.js';
   TestRunner.addResult(`Tests curl command generation\n`);
   await TestRunner.showPanel('network');
 
-  var logView = self.UI.panels.network.networkLogView;
+  var logView = Network.NetworkPanel.NetworkPanel.instance().networkLogView;
   const BROWSER = 0;
   const NODE_JS = 1;
 

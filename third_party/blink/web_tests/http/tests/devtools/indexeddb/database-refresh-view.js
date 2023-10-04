@@ -7,6 +7,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Application from 'devtools/panels/application/application.js';
 
 (async function() {
   TestRunner.addResult(`Tests refreshing the database information and data views.\n`);
@@ -32,7 +33,7 @@ import * as Common from 'devtools/core/common/common.js';
   var databaseId;
 
   function waitRefreshDatabase() {
-    var view = self.UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0].view;
+    var view = Application.ResourcesPanel.ResourcesPanel.instance().sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0].view;
 
     view.getComponent().refreshDatabaseButtonClicked();
     return indexedDBModel.once(Resources.IndexedDBModel.Events.DatabaseLoaded);
@@ -61,7 +62,7 @@ import * as Common from 'devtools/core/common/common.js';
       Common.EventTarget.removeEventListeners([event]);
       callback();
     });
-    self.UI.panels.resources.sidebar.indexedDBListTreeElement.refreshIndexedDB();
+    Application.ResourcesPanel.ResourcesPanel.instance().sidebar.indexedDBListTreeElement.refreshIndexedDB();
   }
 
   // Initial tree
@@ -70,7 +71,7 @@ import * as Common from 'devtools/core/common/common.js';
   // Create database
   ApplicationTestRunner.createDatabaseAsync(databaseName);
   await new Promise(waitDatabaseAdded);
-  var idbDatabaseTreeElement = self.UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
+  var idbDatabaseTreeElement = Application.ResourcesPanel.ResourcesPanel.instance().sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
   databaseId = idbDatabaseTreeElement.databaseId;
   TestRunner.addResult('Created database.');
   ApplicationTestRunner.dumpIndexedDBTree();

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 (async function() {
   TestRunner.addResult(
       `Test that storage panel is present and that it contains correct data for local and session DOM storages.\n`);
@@ -53,11 +55,11 @@ import {ApplicationTestRunner} from 'application_test_runner';
       TestRunner.completeTest();
       return;
     }
-    self.UI.panels.resources.showDOMStorage(storage);
+    Application.ResourcesPanel.ResourcesPanel.instance().showDOMStorage(storage);
     TestRunner.addResult('Did show: ' + name(storage));
     TestRunner.deprecatedRunAfterPendingDispatches(function() {
       TestRunner.addResult(name(storage) + ' content: ');
-      var view = self.UI.panels.resources.domStorageView;
+      var view = Application.ResourcesPanel.ResourcesPanel.instance().domStorageView;
       dumpDataGridContent(view.dataGrid);
       TestRunner.deprecatedRunAfterPendingDispatches(() => testStorageInView(storages));
     });

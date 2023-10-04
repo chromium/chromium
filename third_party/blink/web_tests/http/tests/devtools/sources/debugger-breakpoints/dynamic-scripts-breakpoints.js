@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that there is no exception in front-end on page reload when breakpoint is set in HTML document and some dynamic scripts are loaded before the script with the breakpoint is loaded.`);
@@ -13,7 +15,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
       'resources/dynamic-scripts-breakpoints.html');
 
   Bindings.breakpointManager.storage.breakpoints = new Map();
-  var panel = self.UI.panels.sources;
+  var panel = Sources.SourcesPanel.SourcesPanel.instance();
 
   SourcesTestRunner.startDebuggerTest();
 

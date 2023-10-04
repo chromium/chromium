@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 (async function() {
   TestRunner.addResult(
       `Test that storage panel is present and that it contains correct data whenever localStorage is updated.\n`);
@@ -71,8 +73,8 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
       TestRunner.assertTrue(!!storage, 'Local storage not found.');
 
-      self.UI.panels.resources.showDOMStorage(storage);
-      view = self.UI.panels.resources.domStorageView;
+      Application.ResourcesPanel.ResourcesPanel.instance().showDOMStorage(storage);
+      view = Application.ResourcesPanel.ResourcesPanel.instance().domStorageView;
       TestRunner.addSniffer(view, 'showDOMStorageItems', viewUpdated);
     },
 

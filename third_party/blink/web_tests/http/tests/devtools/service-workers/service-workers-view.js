@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 (async function() {
   TestRunner.addResult(`Tests ServiceWorkersView on resources panel.\n`);
   await TestRunner.loadLegacyModule('console');
@@ -49,7 +51,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   TestRunner.addResult('Select ServiceWorkers tree element.');
-  self.UI.panels.resources.sidebar.serviceWorkersTreeElement.select();
+  Application.ResourcesPanel.ResourcesPanel.instance().sidebar.serviceWorkersTreeElement.select();
   TestRunner.addResult('Register ServiceWorker for scope1');
   ApplicationTestRunner.registerServiceWorker(scriptURL, scope1);
 })();

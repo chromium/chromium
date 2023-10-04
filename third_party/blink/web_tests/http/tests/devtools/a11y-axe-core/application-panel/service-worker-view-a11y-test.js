@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 (async function() {
   TestRunner.addResult('Tests accessibility of ServiceWorkersView on application panel.');
   await ApplicationTestRunner.resetState();
@@ -17,10 +19,10 @@ import {ApplicationTestRunner} from 'application_test_runner';
   const scope2 = 'http://127.0.0.1:8000/devtools/service-workers/resources/scope2/';
   Resources.ServiceWorkersView.setThrottleDisabledForDebugging = true;
 
-  self.UI.panels.resources.sidebar.serviceWorkersTreeElement.select();
+  Application.ResourcesPanel.ResourcesPanel.instance().sidebar.serviceWorkersTreeElement.select();
   await ApplicationTestRunner.registerServiceWorker(scriptURL, scope1);
   await ApplicationTestRunner.registerServiceWorker(scriptURL, scope2);
-  const element = self.UI.panels.resources.visibleView.contentElement;
+  const element = Application.ResourcesPanel.ResourcesPanel.instance().visibleView.contentElement;
 
   await AxeCoreTestRunner.runValidation(element);
   TestRunner.completeTest();
