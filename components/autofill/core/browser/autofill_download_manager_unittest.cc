@@ -865,8 +865,8 @@ TEST_F(AutofillDownloadManagerTest, UploadWithRawMetadata) {
     if (is_raw_metadata_uploading_enabled) {
       EXPECT_EQ(form.name, UTF8ToUTF16(upload.form_name()));
       EXPECT_EQ(form.fields[0].name, UTF8ToUTF16(upload.field()[0].name()));
-      EXPECT_EQ(form.fields[1].form_control_type,
-                StringToFormControlType(upload.field()[1].type()));
+      EXPECT_EQ(FormControlTypeToString(form.fields[1].form_control_type),
+                upload.field()[1].type());
     }
 
     test_url_loader_factory_.SimulateResponseForPendingRequest(

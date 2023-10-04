@@ -17,12 +17,11 @@ namespace {
 using autofill::FormData;
 using autofill::FormFieldData;
 
-FormFieldData CreateFormField(std::string form_control_type,
+FormFieldData CreateFormField(autofill::FormControlType form_control_type,
                               std::string autocomplete_attribute) {
   // TODO(1465839): Use autofill helpers once they are accessible to /common.
   FormFieldData field;
-  field.form_control_type =
-      autofill::StringToFormControlType(form_control_type);
+  field.form_control_type = form_control_type;
   field.autocomplete_attribute = std::move(autocomplete_attribute);
 
   return field;
@@ -32,25 +31,29 @@ TEST(PasswordsManagerUtilTest,
      IsRendererRecognizedCredentialFormWithPasswordField) {
   FormData form;
   form.fields.push_back(
-      CreateFormField("password", /*autocomplete_attribute=*/""));
+      CreateFormField(autofill::FormControlType::kInputPassword,
+                      /*autocomplete_attribute=*/""));
   EXPECT_TRUE(IsRendererRecognizedCredentialForm(form));
 }
 
 TEST(PasswordsManagerUtilTest,
      IsRendererRecognizedCredentialFormWithUsernameAutocompleteAttribute) {
   FormData form;
-  form.fields.push_back(CreateFormField("text", /*autocomplete_attribute=*/""));
-  form.fields.push_back(
-      CreateFormField("text", /*autocomplete_attribute=*/"username"));
+  form.fields.push_back(CreateFormField(autofill::FormControlType::kInputText,
+                                        /*autocomplete_attribute=*/""));
+  form.fields.push_back(CreateFormField(autofill::FormControlType::kInputText,
+                                        /*autocomplete_attribute=*/"username"));
   EXPECT_TRUE(IsRendererRecognizedCredentialForm(form));
 }
 
 TEST(PasswordsManagerUtilTest,
      IsRendererRecognizedCredentialFormWithFamilyNameAutocompleteAttribute) {
   FormData form;
-  form.fields.push_back(CreateFormField("text", /*autocomplete_attribute=*/""));
+  form.fields.push_back(CreateFormField(autofill::FormControlType::kInputText,
+                                        /*autocomplete_attribute=*/""));
   form.fields.push_back(
-      CreateFormField("text", /*autocomplete_attribute=*/"family-name"));
+      CreateFormField(autofill::FormControlType::kInputText,
+                      /*autocomplete_attribute=*/"family-name"));
   EXPECT_FALSE(IsRendererRecognizedCredentialForm(form));
 }
 

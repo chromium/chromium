@@ -63,7 +63,7 @@ namespace autofill::form_util {
 namespace {
 
 struct AutofillFieldCase {
-  const char* const form_control_type;
+  FormControlType form_control_type;
   const char* const id_attribute;
   const char* const initial_value;
   const char* const autocomplete_attribute;  // The autocomplete attribute of
@@ -449,8 +449,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     for (size_t i = 0; i < number_of_field_cases; ++i) {
       SCOPED_TRACE(base::StringPrintf("Verify initial value for field %s",
                                       field_cases[i].id_attribute));
-      expected.form_control_type =
-          StringToFormControlType(field_cases[i].form_control_type);
+      expected.form_control_type = field_cases[i].form_control_type;
       expected.max_length =
           (expected.form_control_type == FormControlType::kInputText ||
            expected.form_control_type == FormControlType::kTextArea)
@@ -532,66 +531,57 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
   void TestFillForm(const char* html, bool unowned, const char* url_override) {
     static const AutofillFieldCase field_cases[] = {
-      // fields: form_control_type, name, initial_value, autocomplete_attribute,
-      //         should_be_autofilled, autofill_value, expected_value
-
-      // Regular empty fields (firstname & lastname) should be autofilled.
-      {"text",
-        "firstname",
-        "",
-        "",
-        true,
-        "filled firstname",
-        "filled firstname"},
-      {"text", "lastname", "", "", true, "filled lastname", "filled lastname"},
-      // hidden fields should not be extracted to form_data.
-      // Non empty fields should not be autofilled.
-      {"text", "notempty", "Hi", "", false, "filled notempty", "Hi"},
-      {"text",
-        "noautocomplete",
-        "",
-        "off",
-        true,
-        "filled noautocomplete",
-        "filled noautocomplete"},
-      // Disabled fields should not be autofilled.
-      {"text", "notenabled", "", "", false, "filled notenabled", ""},
-      // Readonly fields should not be autofilled.
-      {"text", "readonly", "", "", false, "filled readonly", ""},
-      // Fields with "visibility: hidden" should not be autofilled.
-      {"text", "invisible", "", "", false, "filled invisible", ""},
-      // Fields with "display:none" should not be autofilled.
-      {"text", "displaynone", "", "", false, "filled displaynone", ""},
-      // Regular <input type="month"> should be autofilled.
-      {"month", "month", "", "", true, "2017-11", "2017-11"},
-      // Non-empty <input type="month"> should not be autofilled.
-      {"month", "month-nonempty", "2011-12", "", false, "2017-11", "2011-12"},
-      // Regular select fields should be autofilled.
-      {"select-one", "select", "", "", true, "TX", "TX"},
-      // Select fields should be autofilled even if they already have a
-      // non-empty value.
-      {"select-one", "select-nonempty", "CA", "", true, "TX", "TX"},
-      // Select fields should not be autofilled if no new value is passed from
-      // autofill profile. The existing value should not be overriden.
-      {"select-one", "select-unchanged", "CA", "", false, "CA", "CA"},
-      // Select fields that are not focusable should always be filled.
-      {"select-one", "select-displaynone", "CA", "", true, "CA", "CA"},
-      // Regular textarea elements should be autofilled.
-      {"textarea",
-        "textarea",
-        "",
-        "",
-        true,
-        "some multi-\nline value",
-        "some multi-\nline value"},
-      // Non-empty textarea elements should not be autofilled.
-      {"textarea",
-        "textarea-nonempty",
-        "Go\naway!",
-        "",
-        false,
-        "some multi-\nline value",
-        "Go\naway!"},
+        // Fields: form_control_type, name, initial_value,
+        // autocomplete_attribute, should_be_autofilled, autofill_value,
+        // expected_value.
+        // Regular empty fields (firstname & lastname) should be autofilled.
+        {FormControlType::kInputText, "firstname", "", "", true,
+         "filled firstname", "filled firstname"},
+        {FormControlType::kInputText, "lastname", "", "", true,
+         "filled lastname", "filled lastname"},
+        // hidden fields should not be extracted to form_data.
+        // Non empty fields should not be autofilled.
+        {FormControlType::kInputText, "notempty", "Hi", "", false,
+         "filled notempty", "Hi"},
+        {FormControlType::kInputText, "noautocomplete", "", "off", true,
+         "filled noautocomplete", "filled noautocomplete"},
+        // Disabled fields should not be autofilled.
+        {FormControlType::kInputText, "notenabled", "", "", false,
+         "filled notenabled", ""},
+        // Readonly fields should not be autofilled.
+        {FormControlType::kInputText, "readonly", "", "", false,
+         "filled readonly", ""},
+        // Fields with "visibility: hidden" should not be autofilled.
+        {FormControlType::kInputText, "invisible", "", "", false,
+         "filled invisible", ""},
+        // Fields with "display:none" should not be autofilled.
+        {FormControlType::kInputText, "displaynone", "", "", false,
+         "filled displaynone", ""},
+        // Regular <input type="month"> should be autofilled.
+        {FormControlType::kInputMonth, "month", "", "", true, "2017-11",
+         "2017-11"},
+        // Non-empty <input type="month"> should not be autofilled.
+        {FormControlType::kInputMonth, "month-nonempty", "2011-12", "", false,
+         "2017-11", "2011-12"},
+        // Regular select fields should be autofilled.
+        {FormControlType::kSelectOne, "select", "", "", true, "TX", "TX"},
+        // Select fields should be autofilled even if they already have a
+        // non-empty value.
+        {FormControlType::kSelectOne, "select-nonempty", "CA", "", true, "TX",
+         "TX"},
+        // Select fields should not be autofilled if no new value is passed from
+        // autofill profile. The existing value should not be overriden.
+        {FormControlType::kSelectOne, "select-unchanged", "CA", "", false, "CA",
+         "CA"},
+        // Select fields that are not focusable should always be filled.
+        {FormControlType::kSelectOne, "select-displaynone", "CA", "", true,
+         "CA", "CA"},
+        // Regular textarea elements should be autofilled.
+        {FormControlType::kTextArea, "textarea", "", "", true,
+         "some multi-\nline value", "some multi-\nline value"},
+        // Non-empty textarea elements should not be autofilled.
+        {FormControlType::kTextArea, "textarea-nonempty", "Go\naway!", "",
+         false, "some multi-\nline value", "Go\naway!"},
     };
     TestFormFillFunctions(
         html, unowned, url_override, field_cases, std::size(field_cases),
@@ -605,69 +595,54 @@ class FormAutofillTest : public ChromeRenderViewTest {
   void TestPreviewForm(const char* html, bool unowned,
                        const char* url_override) {
     static const AutofillFieldCase field_cases[] = {
-      // Normal empty fields should be previewed.
-      {"text",
-        "firstname",
-        "",
-        "",
-        true,
-        "suggested firstname",
-        "suggested firstname"},
-      {"text",
-        "lastname",
-        "",
-        "",
-        true,
-        "suggested lastname",
-        "suggested lastname"},
-      // Hidden fields should not be extracted to form_data.
-      // Non empty fields should not be previewed.
-      {"text", "notempty", "Hi", "", false, "suggested notempty", ""},
-      {"text",
-        "noautocomplete",
-        "",
-        "off",
-        true,
-        "filled noautocomplete",
-        "filled noautocomplete"},
-      // Disabled fields should not be previewed.
-      {"text", "notenabled", "", "", false, "suggested notenabled", ""},
-      // Readonly fields should not be previewed.
-      {"text", "readonly", "", "", false, "suggested readonly", ""},
-      // Fields with "visibility: hidden" should not be previewed.
-      {"text", "invisible", "", "", false, "suggested invisible", ""},
-      // Fields with "display:none" should not previewed.
-      {"text", "displaynone", "", "", false, "suggested displaynone", ""},
-      // Regular <input type="month"> should be previewed.
-      {"month", "month", "", "", true, "2017-11", "2017-11"},
-      // Non-empty <input type="month"> should not be previewed.
-      {"month", "month-nonempty", "2011-12", "", false, "2017-11", ""},
-      // Regular select fields should be previewed.
-      {"select-one", "select", "", "", true, "TX", "TX"},
-      // Select fields should be previewed even if they already have a
-      // non-empty value.
-      {"select-one", "select-nonempty", "CA", "", true, "TX", "TX"},
-      // Select fields should not be previewed if no suggestion is passed from
-      // autofill profile.
-      {"select-one", "select-unchanged", "CA", "", false, "", ""},
-      // Select fields that are not focusable should always be filled.
-      {"select-one", "select-displaynone", "CA", "", true, "CA", "CA"},
-      // Normal textarea elements should be previewed.
-      {"textarea",
-        "textarea",
-        "",
-        "",
-        true,
-        "suggested multi-\nline value",
-        "suggested multi-\nline value"},
-      // Nonempty textarea elements should not be previewed.
-      {"textarea",
-        "textarea-nonempty",
-        "Go\naway!",
-        "",
-        false,
-        "suggested multi-\nline value",
-        ""},
+        // Normal empty fields should be previewed.
+        {FormControlType::kInputText, "firstname", "", "", true,
+         "suggested firstname", "suggested firstname"},
+        {FormControlType::kInputText, "lastname", "", "", true,
+         "suggested lastname", "suggested lastname"},
+        // Hidden fields should not be extracted to form_data.
+        // Non empty fields should not be previewed.
+        {FormControlType::kInputText, "notempty", "Hi", "", false,
+         "suggested notempty", ""},
+        {FormControlType::kInputText, "noautocomplete", "", "off", true,
+         "filled noautocomplete", "filled noautocomplete"},
+        // Disabled fields should not be previewed.
+        {FormControlType::kInputText, "notenabled", "", "", false,
+         "suggested notenabled", ""},
+        // Readonly fields should not be previewed.
+        {FormControlType::kInputText, "readonly", "", "", false,
+         "suggested readonly", ""},
+        // Fields with "visibility: hidden" should not be previewed.
+        {FormControlType::kInputText, "invisible", "", "", false,
+         "suggested invisible", ""},
+        // Fields with "display:none" should not previewed.
+        {FormControlType::kInputText, "displaynone", "", "", false,
+         "suggested displaynone", ""},
+        // Regular <input type="month"> should be previewed.
+        {FormControlType::kInputMonth, "month", "", "", true, "2017-11",
+         "2017-11"},
+        // Non-empty <input type="month"> should not be previewed.
+        {FormControlType::kInputMonth, "month-nonempty", "2011-12", "", false,
+         "2017-11", ""},
+        // Regular select fields should be previewed.
+        {FormControlType::kSelectOne, "select", "", "", true, "TX", "TX"},
+        // Select fields should be previewed even if they already have a
+        // non-empty value.
+        {FormControlType::kSelectOne, "select-nonempty", "CA", "", true, "TX",
+         "TX"},
+        // Select fields should not be previewed if no suggestion is passed from
+        // autofill profile.
+        {FormControlType::kSelectOne, "select-unchanged", "CA", "", false, "",
+         ""},
+        // Select fields that are not focusable should always be filled.
+        {FormControlType::kSelectOne, "select-displaynone", "CA", "", true,
+         "CA", "CA"},
+        // Normal textarea elements should be previewed.
+        {FormControlType::kTextArea, "textarea", "", "", true,
+         "suggested multi-\nline value", "suggested multi-\nline value"},
+        // Nonempty textarea elements should not be previewed.
+        {FormControlType::kTextArea, "textarea-nonempty", "Go\naway!", "",
+         false, "suggested multi-\nline value", ""},
     };
     TestFormFillFunctions(
         html, unowned, url_override, field_cases, std::size(field_cases),
@@ -2741,35 +2716,35 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompletetype) {
 
   struct TestCase {
     const std::string element_id;
-    const std::string form_control_type;
+    FormControlType form_control_type;
     const std::string autocomplete_attribute;
   };
   TestCase test_cases[] = {
-    // An absent attribute is equivalent to an empty one.
-    { "absent", "text", "" },
-    // Make sure there are no issues parsing an empty attribute.
-    { "empty", "text", "" },
-    // Make sure there are no issues parsing an attribute value that isn't a
-    // type hint.
-    { "off", "text", "off" },
-    // Common case: exactly one type specified.
-    { "regular", "text", "email" },
-    // Verify that we correctly extract multiple tokens as well.
-    { "multi-valued", "text", "billing email" },
-    // Verify that <input type="month"> fields are supported.
-    { "month", "month", "cc-exp" },
-    // We previously extracted this data from the experimental
-    // 'x-autocompletetype' attribute.  Now that the field type hints are part
-    // of the spec under the autocomplete attribute, we no longer support the
-    // experimental version.
-    { "experimental", "text", "" },
-    // <select> elements should behave no differently from text fields here.
-    { "select", "select-one", "state" },
-    // <textarea> elements should also behave no differently from text fields.
-    { "textarea", "textarea", "street-address" },
-    // Very long attribute values should be replaced by a default string, to
-    // prevent malicious websites from DOSing the browser process.
-    { "malicious", "text", "x-max-data-length-exceeded" },
+      // An absent attribute is equivalent to an empty one.
+      {"absent", FormControlType::kInputText, ""},
+      // Make sure there are no issues parsing an empty attribute.
+      {"empty", FormControlType::kInputText, ""},
+      // Make sure there are no issues parsing an attribute value that isn't a
+      // type hint.
+      {"off", FormControlType::kInputText, "off"},
+      // Common case: exactly one type specified.
+      {"regular", FormControlType::kInputText, "email"},
+      // Verify that we correctly extract multiple tokens as well.
+      {"multi-valued", FormControlType::kInputText, "billing email"},
+      // Verify that <input type="month"> fields are supported.
+      {"month", FormControlType::kInputMonth, "cc-exp"},
+      // We previously extracted this data from the experimental
+      // 'x-autocompletetype' attribute.  Now that the field type hints are part
+      // of the spec under the autocomplete attribute, we no longer support the
+      // experimental version.
+      {"experimental", FormControlType::kInputText, ""},
+      // <select> elements should behave no differently from text fields here.
+      {"select", FormControlType::kSelectOne, "state"},
+      // <textarea> elements should also behave no differently from text fields.
+      {"textarea", FormControlType::kTextArea, "street-address"},
+      // Very long attribute values should be replaced by a default string, to
+      // prevent malicious websites from DOSing the browser process.
+      {"malicious", FormControlType::kInputText, "x-max-data-length-exceeded"},
   };
 
   WebDocument document = frame->GetDocument();
@@ -2783,12 +2758,12 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompletetype) {
     FormFieldData expected;
     expected.id_attribute = ASCIIToUTF16(test_case.element_id);
     expected.name = expected.id_attribute;
-    expected.form_control_type =
-        autofill::StringToFormControlType(test_case.form_control_type);
-    expected.max_length = test_case.form_control_type == "text" ||
-                                  test_case.form_control_type == "textarea"
-                              ? FormFieldData::kDefaultMaxLength
-                              : 0;
+    expected.form_control_type = test_case.form_control_type;
+    expected.max_length =
+        (test_case.form_control_type == FormControlType::kInputText ||
+         test_case.form_control_type == FormControlType::kTextArea)
+            ? FormFieldData::kDefaultMaxLength
+            : 0;
     expected.autocomplete_attribute = test_case.autocomplete_attribute;
     expected.parsed_autocomplete =
         ParseAutocompleteAttribute(test_case.autocomplete_attribute);

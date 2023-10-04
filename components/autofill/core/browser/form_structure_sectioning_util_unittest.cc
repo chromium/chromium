@@ -45,7 +45,7 @@ constexpr char kFieldsPerSectionHistogram[] =
 // unittest.
 struct FieldTemplate {
   ServerFieldType field_type = UNKNOWN_TYPE;
-  std::string form_control_type = "text";
+  FormControlType form_control_type = FormControlType::kInputText;
   std::string autocomplete_section = "";
   HtmlFieldMode autocomplete_mode = HtmlFieldMode::kNone;
   bool is_focusable = true;
@@ -60,7 +60,7 @@ std::vector<std::unique_ptr<AutofillField>> CreateFields(
     const auto& f =
         result.emplace_back(std::make_unique<AutofillField>(FormFieldData()));
     f->unique_renderer_id = test::MakeFieldRendererId();
-    f->form_control_type = StringToFormControlType(t.form_control_type);
+    f->form_control_type = t.form_control_type;
     f->SetTypeTo(AutofillType(t.field_type));
     DCHECK_EQ(f->Type().GetStorableType(), t.field_type);
     if (!t.autocomplete_section.empty() ||
@@ -283,13 +283,13 @@ TEST_F(FormStructureSectioningTest,
                     {.field_type = ADDRESS_HOME_LINE1, .is_focusable = false},
                     {.field_type = ADDRESS_HOME_LINE2, .is_focusable = false},
                     {.field_type = ADDRESS_HOME_COUNTRY,
-                     .form_control_type = "select-one",
+                     .form_control_type = FormControlType::kSelectOne,
                      .is_focusable = false},
                     {.field_type = NAME_FULL},
                     {.field_type = ADDRESS_HOME_LINE1},
                     {.field_type = ADDRESS_HOME_LINE2},
                     {.field_type = ADDRESS_HOME_COUNTRY,
-                     .form_control_type = "select-one"}});
+                     .form_control_type = FormControlType::kSelectOne}});
 
   base::HistogramTester histogram_tester;
   AssignSectionsAndLogMetrics(fields);

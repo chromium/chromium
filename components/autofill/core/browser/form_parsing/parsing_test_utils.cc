@@ -38,7 +38,7 @@ FormFieldTestBase::FormFieldTestBase(
 
 FormFieldTestBase::~FormFieldTestBase() = default;
 
-void FormFieldTestBase::AddFormFieldData(std::string control_type,
+void FormFieldTestBase::AddFormFieldData(FormControlType control_type,
                                          std::string name,
                                          std::string label,
                                          ServerFieldType expected_type) {
@@ -47,13 +47,13 @@ void FormFieldTestBase::AddFormFieldData(std::string control_type,
 }
 
 void FormFieldTestBase::AddFormFieldDataWithLength(
-    std::string control_type,
+    FormControlType control_type,
     std::string name,
     std::string label,
     int max_length,
     ServerFieldType expected_type) {
   FormFieldData field_data;
-  field_data.form_control_type = StringToFormControlType(control_type);
+  field_data.form_control_type = control_type;
   field_data.name = base::UTF8ToUTF16(name);
   field_data.label = base::UTF8ToUTF16(label);
   field_data.max_length = max_length;
@@ -68,17 +68,16 @@ void FormFieldTestBase::AddSelectOneFormFieldData(
     std::string label,
     const std::vector<SelectOption>& options,
     ServerFieldType expected_type) {
-  AddFormFieldData("select-one", name, label, expected_type);
+  AddFormFieldData(FormControlType::kSelectOne, name, label, expected_type);
   FormFieldData* field_data = list_.back().get();
   field_data->options = options;
 }
 
 // Convenience wrapper for text control elements.
-void FormFieldTestBase::AddTextFormFieldData(
-    std::string name,
-    std::string label,
-    ServerFieldType expected_classification) {
-  AddFormFieldData("text", name, label, expected_classification);
+void FormFieldTestBase::AddTextFormFieldData(std::string name,
+                                             std::string label,
+                                             ServerFieldType expected_type) {
+  AddFormFieldData(FormControlType::kInputText, name, label, expected_type);
 }
 
 // Apply parsing and verify the expected types.

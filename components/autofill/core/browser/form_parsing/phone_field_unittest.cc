@@ -27,10 +27,10 @@ namespace autofill {
 
 namespace {
 
-const char* const kFieldTypes[] = {
-    "text",
-    "tel",
-    "number",
+const FormControlType kFieldTypes[] = {
+    FormControlType::kInputText,
+    FormControlType::kInputTelephone,
+    FormControlType::kInputNumber,
 };
 
 }  // namespace
@@ -73,13 +73,13 @@ class PhoneFieldTest
   void CheckField(const FieldGlobalId id, ServerFieldType expected_type) const;
 
   struct TestFieldData {
-    std::string type;
+    FormControlType type;
     std::u16string label;
     std::u16string name;
     ServerFieldType expected_type;
     // Rarely used fields. Placed at the end to simplify common use cases.
     uint64_t max_length = 0;
-    // Options of a "select-one" `type` element.
+    // Options of a FormControlType::kSelectOne `type` element.
     std::vector<const char*> options;
   };
 
@@ -119,7 +119,7 @@ void PhoneFieldTest::CheckField(const FieldGlobalId id,
 autofill::FieldGlobalId PhoneFieldTest::AppendField(
     const TestFieldData& field_data) {
   FormFieldData field;
-  field.form_control_type = StringToFormControlType(field_data.type);
+  field.form_control_type = field_data.type;
   field.label = field_data.label;
   field.name = field_data.name;
   field.max_length = field_data.max_length;
@@ -184,7 +184,7 @@ TEST_P(PhoneFieldTest, ParseOneLinePhoneWithoutDefaultToCityAndNumber) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kAutofillDefaultToCityAndNumber);
-  for (const char* field_type : kFieldTypes) {
+  for (FormControlType field_type : kFieldTypes) {
     RunParsingTest({{field_type, u"Phone", u"phone", PHONE_HOME_WHOLE_NUMBER}});
   }
 }
@@ -192,19 +192,19 @@ TEST_P(PhoneFieldTest, ParseOneLinePhoneWithoutDefaultToCityAndNumber) {
 TEST_P(PhoneFieldTest, ParseOneLinePhoneWithDefaultToCityAndNumber) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillDefaultToCityAndNumber};
-  for (const char* field_type : kFieldTypes) {
+  for (FormControlType field_type : kFieldTypes) {
     RunParsingTest(
         {{field_type, u"Phone", u"phone", PHONE_HOME_CITY_AND_NUMBER}});
   }
 
-  for (const char* field_type : kFieldTypes) {
+  for (FormControlType field_type : kFieldTypes) {
     RunParsingTest({{field_type, u"Phone (e.g. +49...)", u"phone",
                      PHONE_HOME_WHOLE_NUMBER}});
   }
 }
 
 TEST_P(PhoneFieldTest, ParseTwoLinePhone) {
-  for (const char* field_type : kFieldTypes) {
+  for (FormControlType field_type : kFieldTypes) {
     RunParsingTest(
         {{field_type, u"Area Code", u"area code", PHONE_HOME_CITY_CODE},
          {field_type, u"Phone", u"phone", PHONE_HOME_NUMBER}});
@@ -217,7 +217,7 @@ TEST_P(PhoneFieldTest, ParseTwoLinePhone) {
 // size: <prefix> is no bigger than 3 characters, and <suffix> is no bigger
 // than 4.
 TEST_P(PhoneFieldTest, ThreePartPhoneNumber) {
-  for (const char* field_type : kFieldTypes) {
+  for (FormControlType field_type : kFieldTypes) {
     RunParsingTest(
         {{field_type, u"Phone:", u"dayphone1", PHONE_HOME_CITY_CODE},
          {field_type, u"-", u"dayphone2", PHONE_HOME_NUMBER_PREFIX,
@@ -232,7 +232,7 @@ TEST_P(PhoneFieldTest, ThreePartPhoneNumber) {
 // encountered in http://crbug.com/40694 with page
 // https://www.wrapables.com/jsp/Signup.jsp.
 TEST_P(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix) {
-  for (const char* field_type : kFieldTypes) {
+  for (FormControlType field_type : kFieldTypes) {
     RunParsingTest({{field_type, u"Phone:", u"area", PHONE_HOME_CITY_CODE},
                     {field_type, u"", u"prefix", PHONE_HOME_NUMBER_PREFIX},
                     {field_type, u"", u"suffix", PHONE_HOME_NUMBER_SUFFIX,
@@ -241,7 +241,7 @@ TEST_P(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix) {
 }
 
 TEST_P(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix2) {
-  for (const char* field_type : kFieldTypes) {
+  for (FormControlType field_type : kFieldTypes) {
     RunParsingTest(
         {{field_type, u"(", u"phone1", PHONE_HOME_CITY_CODE, /*max_length=*/3},
          {field_type, u")", u"phone2", PHONE_HOME_NUMBER_PREFIX,
@@ -253,7 +253,7 @@ TEST_P(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix2) {
 
 // Phone in format <country code> - <city and number>
 TEST_P(PhoneFieldTest, CountryAndCityAndPhoneNumber) {
-  for (const char* field_type : kFieldTypes) {
+  for (FormControlType field_type : kFieldTypes) {
     RunParsingTest({{field_type, u"Phone Number", u"CountryCode",
                      PHONE_HOME_COUNTRY_CODE, /*max_length=*/3},
                     {field_type, u"Phone Number", u"PhoneNumber",
@@ -267,13 +267,15 @@ TEST_P(PhoneFieldTest, EmptyLabels) {
       features::kAutofillEnableParsingEmptyPhoneNumberLabels);
 
   // Phone: <input><input>
-  RunParsingTest({{"text", u"Phone", u"", PHONE_HOME_COUNTRY_CODE},
-                  {"text", u"", u"", PHONE_HOME_CITY_AND_NUMBER}});
+  RunParsingTest(
+      {{FormControlType::kInputText, u"Phone", u"", PHONE_HOME_COUNTRY_CODE},
+       {FormControlType::kInputText, u"", u"", PHONE_HOME_CITY_AND_NUMBER}});
 
   // Phone: <input><input><input>
-  RunParsingTest({{"text", u"Phone", u"", PHONE_HOME_COUNTRY_CODE},
-                  {"text", u"", u"", PHONE_HOME_CITY_CODE},
-                  {"text", u"", u"", PHONE_HOME_NUMBER}});
+  RunParsingTest(
+      {{FormControlType::kInputText, u"Phone", u"", PHONE_HOME_COUNTRY_CODE},
+       {FormControlType::kInputText, u"", u"", PHONE_HOME_CITY_CODE},
+       {FormControlType::kInputText, u"", u"", PHONE_HOME_NUMBER}});
 }
 
 // Tests that when a phone field is parsed, a metric indicating the used grammar
@@ -284,7 +286,7 @@ TEST_P(PhoneFieldTest, GrammarMetrics) {
   base::HistogramTester histogram_tester;
   bool default_to_city_and_number =
       base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber);
-  RunParsingTest({{"text", u"Phone", u"phone",
+  RunParsingTest({{FormControlType::kInputText, u"Phone", u"phone",
                    default_to_city_and_number ? PHONE_HOME_CITY_AND_NUMBER
                                               : PHONE_HOME_WHOLE_NUMBER}});
   EXPECT_THAT(histogram_tester.GetAllSamples(
@@ -295,11 +297,13 @@ TEST_P(PhoneFieldTest, GrammarMetrics) {
 // Tests if the country code, city code and phone number fields are correctly
 // classified by the heuristic when the phone code is a select element.
 TEST_P(PhoneFieldTest, CountryCodeIsSelectElement) {
-  RunParsingTest(
-      {{"select-one", u"Phone Country Code", u"ccode", PHONE_HOME_COUNTRY_CODE},
-       {"text", u"Phone City Code", u"areacode", PHONE_HOME_CITY_CODE,
-        /*max_length=*/3},
-       {"text", u"Phone Number", u"phonenumber", PHONE_HOME_NUMBER}});
+  RunParsingTest({{FormControlType::kSelectOne, u"Phone Country Code", u"ccode",
+                   PHONE_HOME_COUNTRY_CODE},
+                  {FormControlType::kInputText, u"Phone City Code", u"areacode",
+                   PHONE_HOME_CITY_CODE,
+                   /*max_length=*/3},
+                  {FormControlType::kInputText, u"Phone Number", u"phonenumber",
+                   PHONE_HOME_NUMBER}});
 }
 
 // Tests if the country code, city code and phone number fields are correctly
@@ -311,11 +315,12 @@ TEST_P(PhoneFieldTest, CountryCodeWithOptions) {
       "(+91) India",     "(+49) Germany",  "(+1) United States", "(+20) Egypt",
       "(+1242) Bahamas", "(+593) Ecuador", "(+7) Russia"};
 
-  RunParsingTest(
-      {{"select-one", u"PC", u"PC", PHONE_HOME_COUNTRY_CODE, 0,
-        augmented_field_options_list},
-       {"text", u"Phone City Code", u"areacode", PHONE_HOME_CITY_CODE},
-       {"text", u"Phone Number", u"phonenumber", PHONE_HOME_NUMBER}});
+  RunParsingTest({{FormControlType::kSelectOne, u"PC", u"PC",
+                   PHONE_HOME_COUNTRY_CODE, 0, augmented_field_options_list},
+                  {FormControlType::kInputText, u"Phone City Code", u"areacode",
+                   PHONE_HOME_CITY_CODE},
+                  {FormControlType::kInputText, u"Phone Number", u"phonenumber",
+                   PHONE_HOME_NUMBER}});
 }
 
 // Tests if the country code field is correctly classified by the heuristic when
@@ -378,10 +383,11 @@ TEST_P(PhoneFieldTest, IsPhoneCountryCodeField) {
       continue;
 
     SCOPED_TRACE(testing::Message() << "i = " << i);
-    RunParsingTest({{"select-one", u"PC", u"PC", PHONE_HOME_COUNTRY_CODE, 0,
-                     augmented_field_options_list[i]},
-                    {"text", u"Phone Number", u"phonenumber",
-                     PHONE_HOME_CITY_AND_NUMBER}});
+    RunParsingTest(
+        {{FormControlType::kSelectOne, u"PC", u"PC", PHONE_HOME_COUNTRY_CODE, 0,
+          augmented_field_options_list[i]},
+         {FormControlType::kInputText, u"Phone Number", u"phonenumber",
+          PHONE_HOME_CITY_AND_NUMBER}});
   }
 }
 
@@ -399,10 +405,11 @@ TEST_P(PhoneFieldTest, IsMonthField) {
   for (size_t i = 0; i < augmented_field_options_list.size(); ++i) {
     SCOPED_TRACE(testing::Message() << "i = " << i);
     // Expected types don't matter, as parsing is expected to be unsuccessful.
-    RunParsingTest({{"select-one", u"Month", u"Month", UNKNOWN_TYPE, 0,
-                     augmented_field_options_list[i]},
-                    {"text", u"Phone Number", u"phonenumber"}},
-                   /*expect_success=*/false);
+    RunParsingTest(
+        {{FormControlType::kSelectOne, u"Month", u"Month", UNKNOWN_TYPE, 0,
+          augmented_field_options_list[i]},
+         {FormControlType::kInputText, u"Phone Number", u"phonenumber"}},
+        /*expect_success=*/false);
   }
 }
 
@@ -450,10 +457,11 @@ TEST_P(PhoneFieldTest, IsDayField) {
   for (size_t i = 0; i < augmented_field_options_list.size(); ++i) {
     SCOPED_TRACE(testing::Message() << "i = " << i);
     // Expected types don't matter, as parsing is expected to be unsuccessful.
-    RunParsingTest({{"select-one", u"Field", u"Field", UNKNOWN_TYPE, 0,
-                     augmented_field_options_list[i]},
-                    {"text", u"Phone Number", u"phonenumber"}},
-                   /*expect_success=*/false);
+    RunParsingTest(
+        {{FormControlType::kSelectOne, u"Field", u"Field", UNKNOWN_TYPE, 0,
+          augmented_field_options_list[i]},
+         {FormControlType::kInputText, u"Phone Number", u"phonenumber"}},
+        /*expect_success=*/false);
   }
 }
 
@@ -487,10 +495,11 @@ TEST_P(PhoneFieldTest, IsYearField) {
   for (size_t i = 0; i < augmented_field_options_list.size(); ++i) {
     SCOPED_TRACE(testing::Message() << "i = " << i);
     // Expected types don't matter, as parsing is expected to be unsuccessful.
-    RunParsingTest({{"select-one", u"Field", u"Field", UNKNOWN_TYPE, 0,
-                     augmented_field_options_list[i]},
-                    {"text", u"Phone Number", u"phonenumber"}},
-                   /*expect_success=*/false);
+    RunParsingTest(
+        {{FormControlType::kSelectOne, u"Field", u"Field", UNKNOWN_TYPE, 0,
+          augmented_field_options_list[i]},
+         {FormControlType::kInputText, u"Phone Number", u"phonenumber"}},
+        /*expect_success=*/false);
   }
 }
 
@@ -510,10 +519,11 @@ TEST_P(PhoneFieldTest, IsTimeZoneField) {
   for (size_t i = 0; i < augmented_field_options_list.size(); ++i) {
     SCOPED_TRACE(testing::Message() << "i = " << i);
     // Expected types don't matter, as parsing is expected to be unsuccessful.
-    RunParsingTest({{"select-one", u"Time Zone", u"TimeZone", UNKNOWN_TYPE, 0,
-                     augmented_field_options_list[i]},
-                    {"text", u"Phone Number", u"phonenumber"}},
-                   /*expect_success=*/false);
+    RunParsingTest(
+        {{FormControlType::kSelectOne, u"Time Zone", u"TimeZone", UNKNOWN_TYPE,
+          0, augmented_field_options_list[i]},
+         {FormControlType::kInputText, u"Phone Number", u"phonenumber"}},
+        /*expect_success=*/false);
   }
 }
 

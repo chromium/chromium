@@ -66,7 +66,7 @@ TEST_P(AddressFieldTest, ParseThreeLineAddress) {
 }
 
 TEST_P(AddressFieldTest, ParseStreetAddressFromTextArea) {
-  AddFormFieldData("textarea", "address", "Address",
+  AddFormFieldData(FormControlType::kTextArea, "address", "Address",
                    ADDRESS_HOME_STREET_ADDRESS);
   ClassifyAndVerify();
 }
@@ -319,7 +319,7 @@ TEST_P(AddressFieldTest, ParseAddressComponentsSequenceAsAddressLine1) {
 // Tests that the address components sequence in a label is classified
 // as |ADDRESS_HOME_STREET_ADDRESS|.
 TEST_P(AddressFieldTest, ParseAddressComponentsSequenceAsStreetAddress) {
-  AddFormFieldData("textarea", "detail",
+  AddFormFieldData(FormControlType::kTextArea, "detail",
                    "Mahalle, sokak, cadde ve diğer bilgilerinizi girin",
                    ADDRESS_HOME_STREET_ADDRESS);
   ClassifyAndVerify(ParseResult::PARSED, LanguageCode("tr"));

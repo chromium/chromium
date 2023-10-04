@@ -27,6 +27,7 @@ using autofill::CONFIRMATION_PASSWORD;
 using autofill::CREDIT_CARD_VERIFICATION_CODE;
 using autofill::EMAIL_ADDRESS;
 using autofill::FieldGlobalId;
+using autofill::FormControlType;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::NEW_PASSWORD;
@@ -50,31 +51,43 @@ namespace {
 TEST(FormPredictionsTest, ConvertToFormPredictions) {
   struct TestField {
     std::string name;
-    std::string form_control_type;
+    FormControlType form_control_type;
     ServerFieldType input_type;
     ServerFieldType expected_type;
     bool may_use_prefilled_placeholder;
     std::vector<ServerFieldType> additional_types;
   } test_fields[] = {
-      {"full_name", "text", UNKNOWN_TYPE, UNKNOWN_TYPE, false},
+      {"full_name", FormControlType::kInputText, UNKNOWN_TYPE, UNKNOWN_TYPE,
+       false},
       // Password Manager is interested only in credential related types.
-      {"Email", "email", EMAIL_ADDRESS, EMAIL_ADDRESS, false},
-      {"username", "text", USERNAME, USERNAME, true},
-      {"Password", "password", PASSWORD, PASSWORD, false},
-      {"confirm_password", "password", CONFIRMATION_PASSWORD,
-       CONFIRMATION_PASSWORD, true},
+      {"Email", FormControlType::kInputEmail, EMAIL_ADDRESS, EMAIL_ADDRESS,
+       false},
+      {"username", FormControlType::kInputText, USERNAME, USERNAME, true},
+      {"Password", FormControlType::kInputPassword, PASSWORD, PASSWORD, false},
+      {"confirm_password", FormControlType::kInputPassword,
+       CONFIRMATION_PASSWORD, CONFIRMATION_PASSWORD, true},
       // username in |additional_types| takes precedence if the feature is
       // enabled.
-      {"email", "text", EMAIL_ADDRESS, USERNAME, false, {USERNAME}},
+      {"email",
+       FormControlType::kInputText,
+       EMAIL_ADDRESS,
+       USERNAME,
+       false,
+       {USERNAME}},
       // cvc in |additional_types| takes precedence if the feature is enabled.
       {"cvc",
-       "password",
+       FormControlType::kInputPassword,
        PASSWORD,
        CREDIT_CARD_VERIFICATION_CODE,
        false,
        {CREDIT_CARD_VERIFICATION_CODE}},
       // non-password, non-cvc types in |additional_types| are ignored.
-      {"email", "text", UNKNOWN_TYPE, UNKNOWN_TYPE, false, {EMAIL_ADDRESS}},
+      {"email",
+       FormControlType::kInputText,
+       UNKNOWN_TYPE,
+       UNKNOWN_TYPE,
+       false,
+       {EMAIL_ADDRESS}},
   };
 
   FormData form_data;
@@ -84,8 +97,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     FormFieldData field;
     field.unique_renderer_id = autofill::FieldRendererId(i + 1000);
     field.name = ASCIIToUTF16(test_fields[i].name);
-    field.form_control_type =
-        autofill::StringToFormControlType(test_fields[i].form_control_type);
+    field.form_control_type = test_fields[i].form_control_type;
 
     AutofillType::ServerPrediction prediction;
     prediction.server_predictions.push_back(
@@ -123,31 +135,31 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
 TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
   struct TestField {
     std::string name;
-    std::string form_control_type;
+    FormControlType form_control_type;
     ServerFieldType input_type;
     ServerFieldType expected_type;
   };
   const std::vector<TestField> kTestForms[] = {
       {
-          {"username", "text", USERNAME, USERNAME},
-          {"new password", "password", ACCOUNT_CREATION_PASSWORD,
-           ACCOUNT_CREATION_PASSWORD},
+          {"username", FormControlType::kInputText, USERNAME, USERNAME},
+          {"new password", FormControlType::kInputPassword,
+           ACCOUNT_CREATION_PASSWORD, ACCOUNT_CREATION_PASSWORD},
           // Same name and type means same signature. As a second new-password
           // field with this signature, the next field should be re-classified
           // to confirmation password.
-          {"new password", "password", ACCOUNT_CREATION_PASSWORD,
-           CONFIRMATION_PASSWORD},
+          {"new password", FormControlType::kInputPassword,
+           ACCOUNT_CREATION_PASSWORD, CONFIRMATION_PASSWORD},
       },
       {
-          {"username", "text", USERNAME, USERNAME},
-          {"new password duplicate", "password", ACCOUNT_CREATION_PASSWORD,
-           ACCOUNT_CREATION_PASSWORD},
+          {"username", FormControlType::kInputText, USERNAME, USERNAME},
+          {"new password duplicate", FormControlType::kInputPassword,
+           ACCOUNT_CREATION_PASSWORD, ACCOUNT_CREATION_PASSWORD},
           // An explicit confirmation password above should override the
           // 2-new-passwords heuristic.
-          {"new password duplicate", "password", ACCOUNT_CREATION_PASSWORD,
-           ACCOUNT_CREATION_PASSWORD},
-          {"confirm_password", "password", CONFIRMATION_PASSWORD,
-           CONFIRMATION_PASSWORD},
+          {"new password duplicate", FormControlType::kInputPassword,
+           ACCOUNT_CREATION_PASSWORD, ACCOUNT_CREATION_PASSWORD},
+          {"confirm_password", FormControlType::kInputPassword,
+           CONFIRMATION_PASSWORD, CONFIRMATION_PASSWORD},
       },
   };
 
@@ -159,8 +171,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
       FormFieldData field;
       field.unique_renderer_id = autofill::FieldRendererId(i + 1000);
       field.name = ASCIIToUTF16(test_form[i].name);
-      field.form_control_type =
-          autofill::StringToFormControlType(test_form[i].form_control_type);
+      field.form_control_type = test_form[i].form_control_type;
 
       AutofillType::ServerPrediction new_prediction;
       new_prediction.server_predictions = {
@@ -175,12 +186,14 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
         /*driver_id=*/0, form_data, autofill_predictions);
 
     for (size_t i = 0; i < form_data.fields.size(); ++i) {
-      SCOPED_TRACE(testing::Message()
-                   << "field description: name=" << test_form[i].name
-                   << ", form control type=" << test_form[i].form_control_type
-                   << ", input type=" << test_form[i].input_type
-                   << ", expected type=" << test_form[i].expected_type
-                   << ", synthesised FormFieldData=" << form_data.fields[i]);
+      SCOPED_TRACE(
+          testing::Message()
+          << "field description: name=" << test_form[i].name
+          << ", form control type="
+          << autofill::FormControlTypeToString(test_form[i].form_control_type)
+          << ", input type=" << test_form[i].input_type
+          << ", expected type=" << test_form[i].expected_type
+          << ", synthesised FormFieldData=" << form_data.fields[i]);
       EXPECT_EQ(test_form[i].expected_type, actual_predictions.fields[i].type);
     }
   }

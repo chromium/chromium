@@ -131,7 +131,8 @@ TEST_P(MatchTest, Match) {
 
 // Test that we ignore checkable elements.
 TEST_P(FormFieldTest, ParseFormFieldsIgnoreCheckableElements) {
-  AddFormFieldData("checkbox", "", "Is PO Box", UNKNOWN_TYPE);
+  AddFormFieldData(FormControlType::kInputCheckbox, "", "Is PO Box",
+                   UNKNOWN_TYPE);
   // Add 3 dummy fields to reach kMinRequiredFieldsForHeuristics = 3.
   AddTextFormFieldData("", "Address line 1", ADDRESS_HOME_LINE1);
   AddTextFormFieldData("", "Address line 2", ADDRESS_HOME_LINE2);

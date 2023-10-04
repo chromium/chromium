@@ -52,13 +52,13 @@ class FormFieldTestBase {
  protected:
   // Add a field with |control_type|, the |name|, the |label| the expected
   // parsed type |expected_type|.
-  void AddFormFieldData(std::string control_type,
+  void AddFormFieldData(FormControlType control_type,
                         std::string name,
                         std::string label,
                         ServerFieldType expected_type);
 
   // Convenience wrapper for text control elements with a maximal length.
-  void AddFormFieldDataWithLength(std::string control_type,
+  void AddFormFieldDataWithLength(FormControlType control_type,
                                   std::string name,
                                   std::string label,
                                   int max_length,
@@ -67,7 +67,7 @@ class FormFieldTestBase {
   // Convenience wrapper for text control elements.
   void AddTextFormFieldData(std::string name,
                             std::string label,
-                            ServerFieldType expected_classification);
+                            ServerFieldType expected_type);
 
   // Convenience wrapper for 'select-one' elements.
   void AddSelectOneFormFieldData(std::string name,

@@ -3266,12 +3266,12 @@ void DoDynamicChangingFormFill_SelectUpdated(
 
   // Check that the test page correctly parsed the 'is_selectlist' GET parameter
   // by checking type of the inserted field.
-  auto has_n_controls_of_type = [](const std::string& control_type,
+  auto has_n_controls_of_type = [](FormControlType control_type,
                                    size_t expected_number,
                                    const FormStructure& form) {
     size_t num_found = 0u;
     for (const std::unique_ptr<AutofillField>& field : form.fields()) {
-      if (field->form_control_type == StringToFormControlType(control_type)) {
+      if (field->form_control_type == control_type) {
         ++num_found;
       }
     }
@@ -3280,8 +3280,10 @@ void DoDynamicChangingFormFill_SelectUpdated(
   ASSERT_TRUE(WaitForMatchingForm(
       test->GetBrowserAutofillManager(),
       should_test_selectlist
-          ? base::BindRepeating(has_n_controls_of_type, "selectlist", 1)
-          : base::BindRepeating(has_n_controls_of_type, "select-one", 2)));
+          ? base::BindRepeating(has_n_controls_of_type,
+                                FormControlType::kSelectList, 1)
+          : base::BindRepeating(has_n_controls_of_type,
+                                FormControlType::kSelectOne, 2)));
 
   ValueWaiter refill = test->ListenForRefill("state");
   // Trigger first fill.

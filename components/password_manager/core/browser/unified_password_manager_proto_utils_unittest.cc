@@ -26,10 +26,12 @@ constexpr char kTestFormName[] = "login_form";
 const std::u16string kTestFormName16(u"login_form");
 constexpr char kTestUsernameElementName[] = "username_element";
 const std::u16string kTestUsernameElementName16(u"username_element");
-constexpr char kTestUsernameElementType[] = "text";
+constexpr autofill::FormControlType kTestUsernameElementType =
+    autofill::FormControlType::kInputText;
 constexpr char kTestPasswordElementName[] = "password_element";
 const std::u16string kTestPasswordElementName16(u"password_element");
-constexpr char kTestPasswordElementType[] = "password";
+constexpr autofill::FormControlType kTestPasswordElementType =
+    autofill::FormControlType::kInputPassword;
 
 sync_pb::PasswordSpecificsData CreateSpecificsData(
     const std::string& origin,
@@ -84,11 +86,15 @@ TEST(UnifiedPasswordManagerProtoUtilsTest,
       kTestPasswordElementName, "signon_realm");
   (*password_data.mutable_local_data())
       .set_previously_associated_sync_account_email("test@gmail.com");
+  const std::string kTestUsernameElementTypeStr(
+      autofill::FormControlTypeToString(kTestUsernameElementType));
+  const std::string kTestPasswordElementTypeStr(
+      autofill::FormControlTypeToString(kTestPasswordElementType));
   std::string opaque_metadata =
       "{\"form_data\":{\"action\":\"" + std::string(kTestAction) +
-      "\",\"fields\":[{\"form_control_type\":\"" + kTestUsernameElementType +
+      "\",\"fields\":[{\"form_control_type\":\"" + kTestUsernameElementTypeStr +
       "\",\"name\":\"" + kTestUsernameElementName +
-      "\"},{\"form_control_type\":\"" + kTestPasswordElementType +
+      "\"},{\"form_control_type\":\"" + kTestPasswordElementTypeStr +
       "\",\"name\":\"" + kTestPasswordElementName + "\"}],\"name\":\"" +
       kTestFormName + "\",\"url\":\"" + kTestOrigin +
       "\"},\"skip_zero_click\":false}";
@@ -107,10 +113,10 @@ TEST(UnifiedPasswordManagerProtoUtilsTest,
   ASSERT_EQ(form.form_data.fields.size(), 2u);
   EXPECT_EQ(form.form_data.fields[0].name, kTestUsernameElementName16);
   EXPECT_EQ(form.form_data.fields[0].form_control_type,
-            autofill::StringToFormControlType(kTestUsernameElementType));
+            kTestUsernameElementType);
   EXPECT_EQ(form.form_data.fields[1].name, kTestPasswordElementName16);
   EXPECT_EQ(form.form_data.fields[1].form_control_type,
-            autofill::StringToFormControlType(kTestPasswordElementType));
+            kTestPasswordElementType);
 
   PasswordWithLocalData password_data_converted_back =
       PasswordWithLocalDataFromPassword(form);

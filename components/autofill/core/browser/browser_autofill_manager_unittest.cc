@@ -401,14 +401,13 @@ CreditCard FillDataToCreditCardInfo(const TestCardFillData& data) {
 void ExpectFilledField(const char* expected_label,
                        const char* expected_name,
                        const char* expected_value,
-                       const char* expected_form_control_type,
+                       FormControlType expected_form_control_type,
                        const FormFieldData& field) {
   SCOPED_TRACE(expected_label);
   EXPECT_EQ(UTF8ToUTF16(expected_label), field.label);
   EXPECT_EQ(UTF8ToUTF16(expected_name), field.name);
   EXPECT_EQ(UTF8ToUTF16(expected_value), field.value);
-  EXPECT_EQ(StringToFormControlType(expected_form_control_type),
-            field.form_control_type);
+  EXPECT_EQ(expected_form_control_type, field.form_control_type);
 }
 
 // Verifies that the |filled_form| has been filled with the given data.
@@ -441,36 +440,37 @@ void ExpectFilledForm(
 
   if (address_fill_data) {
     ExpectFilledField("First Name", "firstname", address_fill_data->first,
-                      "text", filled_form.fields[0]);
+                      FormControlType::kInputText, filled_form.fields[0]);
     ExpectFilledField("Middle Name", "middlename", address_fill_data->middle,
-                      "text", filled_form.fields[1]);
-    ExpectFilledField("Last Name", "lastname", address_fill_data->last, "text",
-                      filled_form.fields[2]);
+                      FormControlType::kInputText, filled_form.fields[1]);
+    ExpectFilledField("Last Name", "lastname", address_fill_data->last,
+                      FormControlType::kInputText, filled_form.fields[2]);
     ExpectFilledField("Address Line 1", "addr1", address_fill_data->address1,
-                      "text", filled_form.fields[3]);
+                      FormControlType::kInputText, filled_form.fields[3]);
     ExpectFilledField("Address Line 2", "addr2", address_fill_data->address2,
-                      "text", filled_form.fields[4]);
-    ExpectFilledField("City", "city", address_fill_data->city, "text",
-                      filled_form.fields[5]);
-    ExpectFilledField("State", "state", address_fill_data->state, "text",
-                      filled_form.fields[6]);
+                      FormControlType::kInputText, filled_form.fields[4]);
+    ExpectFilledField("City", "city", address_fill_data->city,
+                      FormControlType::kInputText, filled_form.fields[5]);
+    ExpectFilledField("State", "state", address_fill_data->state,
+                      FormControlType::kInputText, filled_form.fields[6]);
     ExpectFilledField("Postal Code", "zipcode", address_fill_data->postal_code,
-                      "text", filled_form.fields[7]);
-    ExpectFilledField("Country", "country", address_fill_data->country, "text",
-                      filled_form.fields[8]);
+                      FormControlType::kInputText, filled_form.fields[7]);
+    ExpectFilledField("Country", "country", address_fill_data->country,
+                      FormControlType::kInputText, filled_form.fields[8]);
     ExpectFilledField("Phone Number", "phonenumber", address_fill_data->phone,
-                      "tel", filled_form.fields[9]);
-    ExpectFilledField("Email", "email", address_fill_data->email, "email",
-                      filled_form.fields[10]);
+                      FormControlType::kInputTelephone, filled_form.fields[9]);
+    ExpectFilledField("Email", "email", address_fill_data->email,
+                      FormControlType::kInputEmail, filled_form.fields[10]);
   }
 
   if (card_fill_data) {
     size_t offset = address_fill_data ? kAddressFormSize : 0;
     ExpectFilledField("Name on Card", "nameoncard",
-                      card_fill_data->name_on_card, "text",
+                      card_fill_data->name_on_card, FormControlType::kInputText,
                       filled_form.fields[offset + 0]);
     ExpectFilledField("Card Number", "cardnumber", card_fill_data->card_number,
-                      "text", filled_form.fields[offset + 1]);
+                      FormControlType::kInputText,
+                      filled_form.fields[offset + 1]);
     if (card_fill_data->use_month_type) {
       std::string exp_year = card_fill_data->expiration_year;
       std::string exp_month = card_fill_data->expiration_month;
@@ -478,13 +478,15 @@ void ExpectFilledForm(
       if (!exp_year.empty() && !exp_month.empty())
         date = exp_year + "-" + exp_month;
 
-      ExpectFilledField("Expiration Date", "ccmonth", date.c_str(), "month",
+      ExpectFilledField("Expiration Date", "ccmonth", date.c_str(),
+                        FormControlType::kInputMonth,
                         filled_form.fields[offset + 2]);
     } else {
-      ExpectFilledField("Expiration Date", "ccmonth",
-                        card_fill_data->expiration_month, "text",
-                        filled_form.fields[offset + 2]);
-      ExpectFilledField("", "ccyear", card_fill_data->expiration_year, "text",
+      ExpectFilledField(
+          "Expiration Date", "ccmonth", card_fill_data->expiration_month,
+          FormControlType::kInputText, filled_form.fields[offset + 2]);
+      ExpectFilledField("", "ccyear", card_fill_data->expiration_year,
+                        FormControlType::kInputText,
                         filled_form.fields[offset + 3]);
     }
   }
@@ -4003,23 +4005,25 @@ TEST_F(BrowserAutofillManagerTest,
 
   FormData response_data = FillAutofillFormDataAndGetResults(
       form, *form.fields.begin(), MakeGuid(4));
-  ExpectFilledField("Card Name", "cardname", "Elvis", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("Last Name", "cardlastname", "Presley", "text",
-                    response_data.fields[1]);
+  ExpectFilledField("Card Name", "cardname", "Elvis",
+                    FormControlType::kInputText, response_data.fields[0]);
+  ExpectFilledField("Last Name", "cardlastname", "Presley",
+                    FormControlType::kInputText, response_data.fields[1]);
 
   // Verify that the first 19 credit card number fields are filled.
   for (int i = 0; i < 19; i++) {
     std::u16string field_name = u"Card Number " + base::NumberToString16(i + 1);
     ExpectFilledField(base::UTF16ToASCII(field_name).c_str(), "cardnumber",
-                      "4234567890123456", "text", response_data.fields[2 + i]);
+                      "4234567890123456", FormControlType::kInputText,
+                      response_data.fields[2 + i]);
   }
 
   // Verify that the 20th. credit card number field is not filled.
-  ExpectFilledField("Card Number 20", "cardnumber", "", "text",
-                    response_data.fields[21]);
+  ExpectFilledField("Card Number 20", "cardnumber", "",
+                    FormControlType::kInputText, response_data.fields[21]);
 
-  ExpectFilledField("CVC", "cvc", "", "text", response_data.fields[22]);
+  ExpectFilledField("CVC", "cvc", "", FormControlType::kInputText,
+                    response_data.fields[22]);
 }
 
 // Test that only the first 16 of identical fields are filled.
@@ -4044,21 +4048,22 @@ TEST_F(BrowserAutofillManagerTest,
 
   FormData response_data = FillAutofillFormDataAndGetResults(
       form, *form.fields.begin(), MakeGuid(4));
-  ExpectFilledField("Card Name", "cardname", "Elvis", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("Last Name", "cardlastname", "Presley", "text",
-                    response_data.fields[1]);
+  ExpectFilledField("Card Name", "cardname", "Elvis",
+                    FormControlType::kInputText, response_data.fields[0]);
+  ExpectFilledField("Last Name", "cardlastname", "Presley",
+                    FormControlType::kInputText, response_data.fields[1]);
 
   // Verify that the first 19 card number fields are filled.
   for (int i = 0; i < 19; i++) {
-    ExpectFilledField("Card Number", "cardnumber", "4234567890123456", "text",
-                      response_data.fields[2 + i]);
+    ExpectFilledField("Card Number", "cardnumber", "4234567890123456",
+                      FormControlType::kInputText, response_data.fields[2 + i]);
   }
   // Verify that the 20th. card number field is not filled.
-  ExpectFilledField("Card Number", "cardnumber", "", "text",
-                    response_data.fields[21]);
+  ExpectFilledField("Card Number", "cardnumber", "",
+                    FormControlType::kInputText, response_data.fields[21]);
 
-  ExpectFilledField("CVC", "cvc", "", "text", response_data.fields[22]);
+  ExpectFilledField("CVC", "cvc", "", FormControlType::kInputText,
+                    response_data.fields[22]);
 }
 
 // Test the credit card number is filled correctly into single-digit fields.
@@ -4086,10 +4091,10 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardNumberIntoSingleDigitFields) {
 
   FormData response_data = FillAutofillFormDataAndGetResults(
       form, *form.fields.begin(), MakeGuid(4));
-  ExpectFilledField("Card Name", "cardname", "Elvis", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("Last Name", "cardlastname", "Presley", "text",
-                    response_data.fields[1]);
+  ExpectFilledField("Card Name", "cardname", "Elvis",
+                    FormControlType::kInputText, response_data.fields[0]);
+  ExpectFilledField("Last Name", "cardlastname", "Presley",
+                    FormControlType::kInputText, response_data.fields[1]);
 
   // Verify that the first 19 card number fields are filled.
   std::u16string card_number = u"4234567890123456";
@@ -4098,14 +4103,15 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardNumberIntoSingleDigitFields) {
                       i < card_number.length()
                           ? base::UTF16ToASCII(card_number.substr(i, 1)).c_str()
                           : "4234567890123456",
-                      "text", response_data.fields[2 + i]);
+                      FormControlType::kInputText, response_data.fields[2 + i]);
   }
 
   // Verify that the 20th. card number field is contains the full value.
-  ExpectFilledField("Card Number", "cardnumber", "", "text",
-                    response_data.fields[21]);
+  ExpectFilledField("Card Number", "cardnumber", "",
+                    FormControlType::kInputText, response_data.fields[21]);
 
-  ExpectFilledField("CVC", "cvc", "", "text", response_data.fields[22]);
+  ExpectFilledField("CVC", "cvc", "", FormControlType::kInputText,
+                    response_data.fields[22]);
 }
 
 // Test that we correctly fill a credit card form with first and last cardholder
@@ -4125,12 +4131,12 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_SplitName) {
 
   FormData response_data = FillAutofillFormDataAndGetResults(
       form, *form.fields.begin(), MakeGuid(4));
-  ExpectFilledField("Card Name", "cardname", "Elvis", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("Last Name", "cardlastname", "Presley", "text",
-                    response_data.fields[1]);
-  ExpectFilledField("Card Number", "cardnumber", "4234567890123456", "text",
-                    response_data.fields[2]);
+  ExpectFilledField("Card Name", "cardname", "Elvis",
+                    FormControlType::kInputText, response_data.fields[0]);
+  ExpectFilledField("Last Name", "cardlastname", "Presley",
+                    FormControlType::kInputText, response_data.fields[1]);
+  ExpectFilledField("Card Number", "cardnumber", "4234567890123456",
+                    FormControlType::kInputText, response_data.fields[2]);
 }
 
 // Test that only filled selection boxes are counted for the type filling limit.
@@ -4189,34 +4195,35 @@ TEST_F(BrowserAutofillManagerTest,
       form, *form.fields.begin(), MakeGuid(123));
 
   // Verify the correct filling of the name entries.
-  ExpectFilledField("First Name", "firstname", "Elvis", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("Middle Name", "middlename", "Aaron", "text",
-                    response_data.fields[1]);
-  ExpectFilledField("Last Name", "lastname", "Presley", "text",
-                    response_data.fields[2]);
+  ExpectFilledField("First Name", "firstname", "Elvis",
+                    FormControlType::kInputText, response_data.fields[0]);
+  ExpectFilledField("Middle Name", "middlename", "Aaron",
+                    FormControlType::kInputText, response_data.fields[1]);
+  ExpectFilledField("Last Name", "lastname", "Presley",
+                    FormControlType::kInputText, response_data.fields[2]);
 
   // Verify that the first selection box is correctly filled.
-  ExpectFilledField("State", "state", "TN", "select-one",
+  ExpectFilledField("State", "state", "TN", FormControlType::kSelectOne,
                     response_data.fields[3]);
 
   // Verify that the next 20 selection boxes are not filled.
   for (int i = 0; i < 20; i++) {
-    ExpectFilledField("State", "state", "", "select-one",
+    ExpectFilledField("State", "state", "", FormControlType::kSelectOne,
                       response_data.fields[4 + i]);
   }
 
   // Verify that the remaining selection boxes are correctly filled again
   // because there's no limit on filling ADDRESS_HOME_STATE fields.
   for (int i = 0; i < 20; i++) {
-    ExpectFilledField("State", "state", "TN", "select-one",
+    ExpectFilledField("State", "state", "TN", FormControlType::kSelectOne,
                       response_data.fields[24 + i]);
   }
 
   // Verify that only the first 9 of the remaining selection boxes are
   // correctly filled due to the limit on filling ADDRESS_HOME_COUNTRY fields.
   for (int i = 0; i < 20; i++) {
-    ExpectFilledField("Country", "country", i < 9 ? "US" : "", "select-one",
+    ExpectFilledField("Country", "country", i < 9 ? "US" : "",
+                      FormControlType::kSelectOne,
                       response_data.fields[44 + i]);
   }
 }
@@ -4367,7 +4374,8 @@ TEST_P(AutofillSimpleFormTest, FillSimpleForm) {
   for (size_t i = 0; i < response_data.fields.size(); ++i) {
     SCOPED_TRACE(params.test_name + ", fields expectations");
     const auto& [label, name, value] = params.expected_form_fields[i];
-    ExpectFilledField(label, name, value, "text", response_data.fields[i]);
+    ExpectFilledField(label, name, value, FormControlType::kInputText,
+                      response_data.fields[i]);
   }
 }
 
@@ -4433,18 +4441,18 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_ExpiredCard) {
       form, *form.fields.begin(), MakeGuid(9));
 
   // The credit card name, type and number should be filled.
-  ExpectFilledField("Name on Card", "nameoncard", "Homer Simpson", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("Card Type", "cardtype", "Visa", "select-one",
-                    response_data.fields[1]);
-  ExpectFilledField("Card Number", "cardnumber", "4234567890654321", "text",
-                    response_data.fields[2]);
+  ExpectFilledField("Name on Card", "nameoncard", "Homer Simpson",
+                    FormControlType::kInputText, response_data.fields[0]);
+  ExpectFilledField("Card Type", "cardtype", "Visa",
+                    FormControlType::kSelectOne, response_data.fields[1]);
+  ExpectFilledField("Card Number", "cardnumber", "4234567890654321",
+                    FormControlType::kInputText, response_data.fields[2]);
 
   // The expiration month and year should not be filled.
-  ExpectFilledField("Expiration Month", "ccmonth", "", "text",
-                    response_data.fields[3]);
-  ExpectFilledField("Expiration Year", "ccyear", "", "text",
-                    response_data.fields[4]);
+  ExpectFilledField("Expiration Month", "ccmonth", "",
+                    FormControlType::kInputText, response_data.fields[3]);
+  ExpectFilledField("Expiration Year", "ccyear", "",
+                    FormControlType::kInputText, response_data.fields[4]);
 }
 
 TEST_F(BrowserAutofillManagerTest, PreviewCreditCardForm_VirtualCard) {
@@ -4512,16 +4520,17 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillUnfocusableFieldsExceptForSelect) {
       FillAutofillFormDataAndGetResults(form, form.fields[0], MakeGuid(1));
 
   ASSERT_EQ(6U, response_data.fields.size());
-  ExpectFilledField("First Name", "firstname", "Elvis", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("", "lastname", "Presley", "text", response_data.fields[1]);
-  ExpectFilledField("Postal Code", "postal_code", "", "text",
-                    response_data.fields[2]);
-  ExpectFilledField("Country", "country", "", "selectlist",
+  ExpectFilledField("First Name", "firstname", "Elvis",
+                    FormControlType::kInputText, response_data.fields[0]);
+  ExpectFilledField("", "lastname", "Presley", FormControlType::kInputText,
+                    response_data.fields[1]);
+  ExpectFilledField("Postal Code", "postal_code", "",
+                    FormControlType::kInputText, response_data.fields[2]);
+  ExpectFilledField("Country", "country", "", FormControlType::kSelectList,
                     response_data.fields[3]);
-  ExpectFilledField("Country", "country", "US", "selectlist",
+  ExpectFilledField("Country", "country", "US", FormControlType::kSelectList,
                     response_data.fields[4]);
-  ExpectFilledField("Country", "country", "US", "select-one",
+  ExpectFilledField("Country", "country", "US", FormControlType::kSelectOne,
                     response_data.fields[5]);
 }
 
@@ -4550,16 +4559,18 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithNonFocusableFields) {
   // All the visible fields should be filled as all the fields belong to the
   // same logical section.
   ASSERT_EQ(6U, response_data.fields.size());
-  ExpectFilledField("First Name", "firstname", "Elvis", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("", "lastname", "Presley", "text", response_data.fields[1]);
-  ExpectFilledField("", "email", "theking@gmail.com", "text",
-                    response_data.fields[2]);
-  ExpectFilledField("Phone Number", "phonenumber", "12345678901", "tel",
-                    response_data.fields[3]);
-  ExpectFilledField("", "email_", "", "text", response_data.fields[4]);
-  ExpectFilledField("Country", "country", "United States", "text",
-                    response_data.fields[5]);
+  ExpectFilledField("First Name", "firstname", "Elvis",
+                    FormControlType::kInputText, response_data.fields[0]);
+  ExpectFilledField("", "lastname", "Presley", FormControlType::kInputText,
+                    response_data.fields[1]);
+  ExpectFilledField("", "email", "theking@gmail.com",
+                    FormControlType::kInputText, response_data.fields[2]);
+  ExpectFilledField("Phone Number", "phonenumber", "12345678901",
+                    FormControlType::kInputTelephone, response_data.fields[3]);
+  ExpectFilledField("", "email_", "", FormControlType::kInputText,
+                    response_data.fields[4]);
+  ExpectFilledField("Country", "country", "United States",
+                    FormControlType::kInputText, response_data.fields[5]);
 }
 
 // Test that we correctly fill a form that has multiple logical sections, e.g.
@@ -4656,20 +4667,28 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithAuthorSpecifiedSections) {
     EXPECT_EQ(GURL("https://myform.com/submit.html"), response_data.action);
     ASSERT_EQ(11U, response_data.fields.size());
 
-    ExpectFilledField("", "country", "", "text", response_data.fields[0]);
-    ExpectFilledField("", "firstname", "Elvis", "text",
+    ExpectFilledField("", "country", "", FormControlType::kInputText,
+                      response_data.fields[0]);
+    ExpectFilledField("", "firstname", "Elvis", FormControlType::kInputText,
                       response_data.fields[1]);
-    ExpectFilledField("", "lastname", "Presley", "text",
+    ExpectFilledField("", "lastname", "Presley", FormControlType::kInputText,
                       response_data.fields[2]);
-    ExpectFilledField("", "address", "", "text", response_data.fields[3]);
-    ExpectFilledField("", "city", "", "text", response_data.fields[4]);
-    ExpectFilledField("", "state", "", "text", response_data.fields[5]);
-    ExpectFilledField("", "zip", "", "text", response_data.fields[6]);
-    ExpectFilledField("", "ccname", "", "text", response_data.fields[7]);
-    ExpectFilledField("", "ccnumber", "", "text", response_data.fields[8]);
-    ExpectFilledField("", "ccexp", "", "text", response_data.fields[9]);
-    ExpectFilledField("", "email", "theking@gmail.com", "text",
-                      response_data.fields[10]);
+    ExpectFilledField("", "address", "", FormControlType::kInputText,
+                      response_data.fields[3]);
+    ExpectFilledField("", "city", "", FormControlType::kInputText,
+                      response_data.fields[4]);
+    ExpectFilledField("", "state", "", FormControlType::kInputText,
+                      response_data.fields[5]);
+    ExpectFilledField("", "zip", "", FormControlType::kInputText,
+                      response_data.fields[6]);
+    ExpectFilledField("", "ccname", "", FormControlType::kInputText,
+                      response_data.fields[7]);
+    ExpectFilledField("", "ccnumber", "", FormControlType::kInputText,
+                      response_data.fields[8]);
+    ExpectFilledField("", "ccexp", "", FormControlType::kInputText,
+                      response_data.fields[9]);
+    ExpectFilledField("", "email", "theking@gmail.com",
+                      FormControlType::kInputText, response_data.fields[10]);
   }
 
   // Fill the address portion of the billing section.
@@ -4682,19 +4701,28 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithAuthorSpecifiedSections) {
     EXPECT_EQ(GURL("https://myform.com/submit.html"), response_data.action);
     ASSERT_EQ(11U, response_data.fields.size());
 
-    ExpectFilledField("", "country", "US", "text", response_data.fields[0]);
-    ExpectFilledField("", "firstname", "", "text", response_data.fields[1]);
-    ExpectFilledField("", "lastname", "", "text", response_data.fields[2]);
-    ExpectFilledField("", "address", "3734 Elvis Presley Blvd.", "text",
-                      response_data.fields[3]);
-    ExpectFilledField("", "city", "Memphis", "text", response_data.fields[4]);
-    ExpectFilledField("", "state", "Tennessee", "text",
+    ExpectFilledField("", "country", "US", FormControlType::kInputText,
+                      response_data.fields[0]);
+    ExpectFilledField("", "firstname", "", FormControlType::kInputText,
+                      response_data.fields[1]);
+    ExpectFilledField("", "lastname", "", FormControlType::kInputText,
+                      response_data.fields[2]);
+    ExpectFilledField("", "address", "3734 Elvis Presley Blvd.",
+                      FormControlType::kInputText, response_data.fields[3]);
+    ExpectFilledField("", "city", "Memphis", FormControlType::kInputText,
+                      response_data.fields[4]);
+    ExpectFilledField("", "state", "Tennessee", FormControlType::kInputText,
                       response_data.fields[5]);
-    ExpectFilledField("", "zip", "38116", "text", response_data.fields[6]);
-    ExpectFilledField("", "ccname", "", "text", response_data.fields[7]);
-    ExpectFilledField("", "ccnumber", "", "text", response_data.fields[8]);
-    ExpectFilledField("", "ccexp", "", "text", response_data.fields[9]);
-    ExpectFilledField("", "email", "", "text", response_data.fields[10]);
+    ExpectFilledField("", "zip", "38116", FormControlType::kInputText,
+                      response_data.fields[6]);
+    ExpectFilledField("", "ccname", "", FormControlType::kInputText,
+                      response_data.fields[7]);
+    ExpectFilledField("", "ccnumber", "", FormControlType::kInputText,
+                      response_data.fields[8]);
+    ExpectFilledField("", "ccexp", "", FormControlType::kInputText,
+                      response_data.fields[9]);
+    ExpectFilledField("", "email", "", FormControlType::kInputText,
+                      response_data.fields[10]);
   }
 
   // Fill the credit card portion of the billing section.
@@ -4707,19 +4735,28 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithAuthorSpecifiedSections) {
     EXPECT_EQ(GURL("https://myform.com/submit.html"), response_data.action);
     ASSERT_EQ(11U, response_data.fields.size());
 
-    ExpectFilledField("", "country", "", "text", response_data.fields[0]);
-    ExpectFilledField("", "firstname", "", "text", response_data.fields[1]);
-    ExpectFilledField("", "lastname", "", "text", response_data.fields[2]);
-    ExpectFilledField("", "address", "", "text", response_data.fields[3]);
-    ExpectFilledField("", "city", "", "text", response_data.fields[4]);
-    ExpectFilledField("", "state", "", "text", response_data.fields[5]);
-    ExpectFilledField("", "zip", "", "text", response_data.fields[6]);
-    ExpectFilledField("", "ccname", "Elvis Presley", "text",
-                      response_data.fields[7]);
-    ExpectFilledField("", "ccnumber", "4234567890123456", "text",
-                      response_data.fields[8]);
-    ExpectFilledField("", "ccexp", "04/2999", "text", response_data.fields[9]);
-    ExpectFilledField("", "email", "", "text", response_data.fields[10]);
+    ExpectFilledField("", "country", "", FormControlType::kInputText,
+                      response_data.fields[0]);
+    ExpectFilledField("", "firstname", "", FormControlType::kInputText,
+                      response_data.fields[1]);
+    ExpectFilledField("", "lastname", "", FormControlType::kInputText,
+                      response_data.fields[2]);
+    ExpectFilledField("", "address", "", FormControlType::kInputText,
+                      response_data.fields[3]);
+    ExpectFilledField("", "city", "", FormControlType::kInputText,
+                      response_data.fields[4]);
+    ExpectFilledField("", "state", "", FormControlType::kInputText,
+                      response_data.fields[5]);
+    ExpectFilledField("", "zip", "", FormControlType::kInputText,
+                      response_data.fields[6]);
+    ExpectFilledField("", "ccname", "Elvis Presley",
+                      FormControlType::kInputText, response_data.fields[7]);
+    ExpectFilledField("", "ccnumber", "4234567890123456",
+                      FormControlType::kInputText, response_data.fields[8]);
+    ExpectFilledField("", "ccexp", "04/2999", FormControlType::kInputText,
+                      response_data.fields[9]);
+    ExpectFilledField("", "email", "", FormControlType::kInputText,
+                      response_data.fields[10]);
   }
 }
 
@@ -5321,17 +5358,18 @@ TEST_F(BrowserAutofillManagerTest, FormWithHiddenOrPresentationalSelects) {
   histogram_tester.ExpectTotalCount(
       "Autofill.HiddenOrPresentationalSelectFieldsFilled", 2);
 
-  ExpectFilledField("First name", "firstname", "Elvis", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("Last name", "lastname", "Presley", "text",
-                    response_data.fields[1]);
-  ExpectFilledField("Country", "country", "US", "select-one",
+  ExpectFilledField("First name", "firstname", "Elvis",
+                    FormControlType::kInputText, response_data.fields[0]);
+  ExpectFilledField("Last name", "lastname", "Presley",
+                    FormControlType::kInputText, response_data.fields[1]);
+  ExpectFilledField("Country", "country", "US", FormControlType::kSelectOne,
                     response_data.fields[2]);
-  ExpectFilledField("State", "state", "TN", "select-one",
+  ExpectFilledField("State", "state", "TN", FormControlType::kSelectOne,
                     response_data.fields[3]);
-  ExpectFilledField("City", "city", "", "text", response_data.fields[4]);
-  ExpectFilledField("Street Address", "address", "", "text",
-                    response_data.fields[5]);
+  ExpectFilledField("City", "city", "", FormControlType::kInputText,
+                    response_data.fields[4]);
+  ExpectFilledField("Street Address", "address", "",
+                    FormControlType::kInputText, response_data.fields[5]);
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -5479,15 +5517,16 @@ TEST_F(BrowserAutofillManagerTest, FormChangesVisibilityOfFields) {
       FillAutofillFormDataAndGetResults(form, form.fields[0], MakeGuid(1));
 
   ASSERT_EQ(5U, response_data.fields.size());
-  ExpectFilledField("First Name", "first_name", "Elvis", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("Last Name", "last_name", "Presley", "text",
-                    response_data.fields[1]);
-  ExpectFilledField("Address", "address", "3734 Elvis Presley Blvd.", "text",
-                    response_data.fields[2]);
-  ExpectFilledField("Postal Code", "postal_code", "", "text",
-                    response_data.fields[3]);
-  ExpectFilledField("Country", "country", "", "text", response_data.fields[4]);
+  ExpectFilledField("First Name", "first_name", "Elvis",
+                    FormControlType::kInputText, response_data.fields[0]);
+  ExpectFilledField("Last Name", "last_name", "Presley",
+                    FormControlType::kInputText, response_data.fields[1]);
+  ExpectFilledField("Address", "address", "3734 Elvis Presley Blvd.",
+                    FormControlType::kInputText, response_data.fields[2]);
+  ExpectFilledField("Postal Code", "postal_code", "",
+                    FormControlType::kInputText, response_data.fields[3]);
+  ExpectFilledField("Country", "country", "", FormControlType::kInputText,
+                    response_data.fields[4]);
 
   // Two other fields will show up. Select the second profile. The fields that
   // were already filled, would be left unchanged, and the rest would be filled
@@ -5499,16 +5538,16 @@ TEST_F(BrowserAutofillManagerTest, FormChangesVisibilityOfFields) {
   FormData later_response_data = FillAutofillFormDataAndGetResults(
       response_data, response_data.fields[4], MakeGuid(2));
   ASSERT_EQ(5U, later_response_data.fields.size());
-  ExpectFilledField("First Name", "first_name", "Elvis", "text",
-                    later_response_data.fields[0]);
-  ExpectFilledField("Last Name", "last_name", "Presley", "text",
-                    later_response_data.fields[1]);
-  ExpectFilledField("Address", "address", "3734 Elvis Presley Blvd.", "text",
-                    later_response_data.fields[2]);
-  ExpectFilledField("Postal Code", "postal_code", "79401", "text",
-                    later_response_data.fields[3]);
-  ExpectFilledField("Country", "country", "United States", "text",
-                    later_response_data.fields[4]);
+  ExpectFilledField("First Name", "first_name", "Elvis",
+                    FormControlType::kInputText, later_response_data.fields[0]);
+  ExpectFilledField("Last Name", "last_name", "Presley",
+                    FormControlType::kInputText, later_response_data.fields[1]);
+  ExpectFilledField("Address", "address", "3734 Elvis Presley Blvd.",
+                    FormControlType::kInputText, later_response_data.fields[2]);
+  ExpectFilledField("Postal Code", "postal_code", "79401",
+                    FormControlType::kInputText, later_response_data.fields[3]);
+  ExpectFilledField("Country", "country", "United States",
+                    FormControlType::kInputText, later_response_data.fields[4]);
 }
 
 // Test that the importing logic is called on form submit.
@@ -6832,7 +6871,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
 
 void DoTestFormSubmittedControlWithDefaultValue(
     BrowserAutofillManagerTest* test,
-    const std::string& form_control_type) {
+    FormControlType form_control_type) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
 
@@ -6840,7 +6879,7 @@ void DoTestFormSubmittedControlWithDefaultValue(
   // reject default values for text fields.
   FormFieldData* state_field = form.FindFieldByName(u"state");
   ASSERT_TRUE(state_field != nullptr);
-  state_field->form_control_type = StringToFormControlType(form_control_type);
+  state_field->form_control_type = form_control_type;
   state_field->value = base::UTF8ToUTF16(kElvisAddressFillData.state);
 
   test->FormsSeen({form});
@@ -6862,13 +6901,14 @@ void DoTestFormSubmittedControlWithDefaultValue(
 // Test that we save form data when a <select> in the form contains the
 // default value.
 TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectWithDefaultValue) {
-  DoTestFormSubmittedControlWithDefaultValue(this, "select-one");
+  DoTestFormSubmittedControlWithDefaultValue(this, FormControlType::kSelectOne);
 }
 
 // Test that we save form data when a <selectlist> in the form contains the
 // default value.
 TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectListWithDefaultValue) {
-  DoTestFormSubmittedControlWithDefaultValue(this, "selectlist");
+  DoTestFormSubmittedControlWithDefaultValue(this,
+                                             FormControlType::kSelectList);
 }
 
 void DoTestFormSubmittedNonAddressControlWithDefaultValue(
@@ -9855,8 +9895,8 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
   ON_CALL(autofill_client_, GetComposeManager)
       .WillByDefault(Return(&compose_manager));
 
-  FormData form =
-      test::GetFormData({.fields = {{.form_control_type = "textarea"}}});
+  FormData form = test::GetFormData(
+      {.fields = {{.form_control_type = FormControlType::kTextArea}}});
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
@@ -10201,12 +10241,12 @@ TEST_P(BrowserAutofillManagerRefillTest,
   FormData first_fill_data = FillAutofillFormDataAndGetResults(
       form, *form.fields.begin(), MakeGuid(4));
   ASSERT_EQ(3u, first_fill_data.fields.size());
-  ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley", "text",
-                    first_fill_data.fields[0]);
-  ExpectFilledField("Card Number", "cardnumber", "4234567890123456", "text",
-                    first_fill_data.fields[1]);
-  ExpectFilledField("Expiration date", "exp_date", "04/2999", "text",
-                    first_fill_data.fields[2]);
+  ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley",
+                    FormControlType::kInputText, first_fill_data.fields[0]);
+  ExpectFilledField("Card Number", "cardnumber", "4234567890123456",
+                    FormControlType::kInputText, first_fill_data.fields[1]);
+  ExpectFilledField("Expiration date", "exp_date", "04/2999",
+                    FormControlType::kInputText, first_fill_data.fields[2]);
 
   FormData refilled_form;
   if (test_case.triggers_refill) {
@@ -10230,14 +10270,14 @@ TEST_P(BrowserAutofillManagerRefillTest,
 
   if (test_case.triggers_refill) {
     ASSERT_EQ(3u, refilled_form.fields.size());
-    ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley", "text",
-                      refilled_form.fields[0]);
+    ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley",
+                      FormControlType::kInputText, refilled_form.fields[0]);
     EXPECT_FALSE(refilled_form.fields[0].force_override);
-    ExpectFilledField("Card Number", "cardnumber", "4234567890123456", "text",
-                      refilled_form.fields[1]);
+    ExpectFilledField("Card Number", "cardnumber", "4234567890123456",
+                      FormControlType::kInputText, refilled_form.fields[1]);
     EXPECT_FALSE(refilled_form.fields[1].force_override);
     ExpectFilledField("Expiration date", "exp_date",
-                      test_case.refilled_exp_date, "text",
+                      test_case.refilled_exp_date, FormControlType::kInputText,
                       refilled_form.fields[2]);
     EXPECT_TRUE(refilled_form.fields[2].force_override);
   }
@@ -10309,12 +10349,12 @@ class BrowserAutofillManagerClearFieldTest : public BrowserAutofillManagerTest {
     fill_data_ = FillAutofillFormDataAndGetResults(form, *form.fields.begin(),
                                                    MakeGuid(4));
     ASSERT_EQ(3u, fill_data_.fields.size());
-    ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley", "text",
-                      fill_data_.fields[0]);
-    ExpectFilledField("Card Number", "cardnumber", "4234567890123456", "text",
-                      fill_data_.fields[1]);
-    ExpectFilledField("Expiration date", "exp_date", "04/2999", "text",
-                      fill_data_.fields[2]);
+    ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley",
+                      FormControlType::kInputText, fill_data_.fields[0]);
+    ExpectFilledField("Card Number", "cardnumber", "4234567890123456",
+                      FormControlType::kInputText, fill_data_.fields[1]);
+    ExpectFilledField("Expiration date", "exp_date", "04/2999",
+                      FormControlType::kInputText, fill_data_.fields[2]);
   }
 
   void SimulateOverrideFieldByJavaScript(size_t field_index,

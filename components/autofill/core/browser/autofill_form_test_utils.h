@@ -52,7 +52,7 @@ struct FieldDescription {
   absl::optional<std::u16string> placeholder;
   const std::string autocomplete_attribute;
   absl::optional<AutocompleteParsingResult> parsed_autocomplete;
-  const std::string form_control_type = "text";
+  const FormControlType form_control_type = FormControlType::kInputText;
   bool should_autocomplete = true;
   absl::optional<bool> is_autofilled;
   absl::optional<url::Origin> origin;

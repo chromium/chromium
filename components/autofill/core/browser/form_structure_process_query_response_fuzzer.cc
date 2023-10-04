@@ -21,13 +21,12 @@ using ::base::ASCIIToUTF16;
 
 void AddField(const std::string& label,
               const std::string& name,
-              const std::string& control_type,
+              FormControlType control_type,
               FormData* form_data) {
   FormFieldData field;
   field.label = ASCIIToUTF16(label);
   field.name = ASCIIToUTF16(name);
-  field.form_control_type = StringToFormControlType(control_type);
-
+  field.form_control_type = control_type;
   form_data->fields.push_back(field);
 }
 
@@ -41,8 +40,8 @@ DEFINE_BINARY_PROTO_FUZZER(const AutofillQueryResponse& response) {
       response, forms, test::GetEncodedSignatures(forms), nullptr);
 
   FormData form_data;
-  AddField("username", "username", "text", &form_data);
-  AddField("password", "password", "password", &form_data);
+  AddField("username", "username", FormControlType::kInputText, &form_data);
+  AddField("password", "password", FormControlType::kInputPassword, &form_data);
 
   FormStructure form(form_data);
   forms.push_back(&form);

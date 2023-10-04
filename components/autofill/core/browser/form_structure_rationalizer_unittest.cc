@@ -51,7 +51,7 @@ struct FieldTemplate {
   ServerFieldType field_type = UNKNOWN_TYPE;
   // Section name of a field.
   base::StringPiece section = "";
-  base::StringPiece form_control_type = "text";
+  FormControlType form_control_type = FormControlType::kInputText;
   absl::optional<AutocompleteParsingResult> parsed_autocomplete = absl::nullopt;
   bool is_focusable = true;
   size_t max_length = std::numeric_limits<int>::max();
@@ -73,7 +73,7 @@ FieldTemplate ToNotFocusable(FieldTemplate field_template) {
 }
 
 FieldTemplate ToSelectOne(FieldTemplate field_template) {
-  field_template.form_control_type = "select-one";
+  field_template.form_control_type = FormControlType::kSelectOne;
   return field_template;
 }
 
@@ -99,8 +99,7 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
       field.section = Section::FromAutocomplete(
           {.section = std::string(field_template.section)});
     }
-    field.form_control_type =
-        StringToFormControlType(field_template.form_control_type);
+    field.form_control_type = field_template.form_control_type;
     field.is_focusable = field_template.is_focusable;
     field.max_length = field_template.max_length;
     field.parsed_autocomplete = field_template.parsed_autocomplete;

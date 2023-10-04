@@ -98,7 +98,7 @@ FormData GetFormData(const FormDescription& d) {
   f.is_form_tag = d.is_form_tag;
   for (const FieldDescription& dd : d.fields) {
     FormFieldData ff = CreateFieldByRole(dd.role);
-    ff.form_control_type = StringToFormControlType(dd.form_control_type);
+    ff.form_control_type = dd.form_control_type;
     if (ff.form_control_type == FormControlType::kSelectOne &&
         !dd.select_options.empty()) {
       ff.options = dd.select_options;

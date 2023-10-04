@@ -53,6 +53,7 @@ namespace autofill {
 
 namespace {
 
+using ::autofill::FormControlType;
 using ::autofill::features::kAutofillLabelAffixRemoval;
 using ::autofill::mojom::SubmissionIndicatorEvent;
 using ::autofill::mojom::SubmissionSource;
@@ -254,22 +255,23 @@ INSTANTIATE_TEST_SUITE_P(FormStructureTest,
                          ::testing::ValuesIn(kAllPatternSources));
 
 TEST_F(FormStructureTestImpl, FieldCount) {
-  CheckFormStructureTestData({{{.description_for_logging = "FieldCount",
-                                .fields = {{.role = ServerFieldType::USERNAME},
-                                           {.label = u"Password",
-                                            .name = u"password",
-                                            .form_control_type = "password"},
-                                           {.label = u"Submit",
-                                            .name = u"",
-                                            .form_control_type = "submit"},
-                                           {.label = u"address1",
-                                            .name = u"address1",
-                                            .should_autocomplete = false}}},
-                               {
-                                   .determine_heuristic_type = true,
-                                   .field_count = 4,
-                               },
-                               {}}});
+  CheckFormStructureTestData(
+      {{{.description_for_logging = "FieldCount",
+         .fields = {{.role = ServerFieldType::USERNAME},
+                    {.label = u"Password",
+                     .name = u"password",
+                     .form_control_type = FormControlType::kInputPassword},
+                    {.label = u"Submit",
+                     .name = u"",
+                     .form_control_type = FormControlType::kInputText},
+                    {.label = u"address1",
+                     .name = u"address1",
+                     .should_autocomplete = false}}},
+        {
+            .determine_heuristic_type = true,
+            .field_count = 4,
+        },
+        {}}});
 }
 
 TEST_F(FormStructureTestImpl, AutofillCount) {
@@ -278,14 +280,14 @@ TEST_F(FormStructureTestImpl, AutofillCount) {
          .fields = {{.role = ServerFieldType::USERNAME},
                     {.label = u"Password",
                      .name = u"password",
-                     .form_control_type = "password"},
+                     .form_control_type = FormControlType::kInputPassword},
                     {.role = ServerFieldType::EMAIL_ADDRESS},
                     {.role = ServerFieldType::ADDRESS_HOME_CITY},
                     {.role = ServerFieldType::ADDRESS_HOME_STATE,
-                     .form_control_type = "select-one"},
+                     .form_control_type = FormControlType::kSelectOne},
                     {.label = u"Submit",
                      .name = u"",
-                     .form_control_type = "submit"}}},
+                     .form_control_type = FormControlType::kInputText}}},
         {
             .determine_heuristic_type = true,
             .autofill_count = 3,
@@ -293,19 +295,20 @@ TEST_F(FormStructureTestImpl, AutofillCount) {
         {}},
 
        {{.description_for_logging = "AutofillCountWithNonFillableField",
-         .fields =
-             {{.role = ServerFieldType::USERNAME},
-              {.label = u"Password",
-               .name = u"password",
-               .form_control_type = "password"},
-              {.role = ServerFieldType::EMAIL_ADDRESS},
-              {.role = ServerFieldType::ADDRESS_HOME_CITY},
-              {.role = ServerFieldType::ADDRESS_HOME_STATE,
-               .form_control_type = "select-one"},
-              {.label = u"Submit", .name = u"", .form_control_type = "submit"},
-              {.label = u"address1",
-               .name = u"address1",
-               .should_autocomplete = false}}},
+         .fields = {{.role = ServerFieldType::USERNAME},
+                    {.label = u"Password",
+                     .name = u"password",
+                     .form_control_type = FormControlType::kInputPassword},
+                    {.role = ServerFieldType::EMAIL_ADDRESS},
+                    {.role = ServerFieldType::ADDRESS_HOME_CITY},
+                    {.role = ServerFieldType::ADDRESS_HOME_STATE,
+                     .form_control_type = FormControlType::kSelectOne},
+                    {.label = u"Submit",
+                     .name = u"",
+                     .form_control_type = FormControlType::kInputText},
+                    {.label = u"address1",
+                     .name = u"address1",
+                     .should_autocomplete = false}}},
         {
             .determine_heuristic_type = true,
             .autofill_count = 4,
@@ -705,7 +708,7 @@ TEST_F(FormStructureTestImpl, DetermineHeuristicTypes_AutocompleteFalse) {
               {.role = ServerFieldType::ADDRESS_HOME_STATE,
                .autocomplete_attribute = "false",
                .parsed_autocomplete = ParseAutocompleteAttribute("false"),
-               .form_control_type = "select-one"}}},
+               .form_control_type = FormControlType::kSelectOne}}},
         {
             .determine_heuristic_type = true,
             .should_be_parsed = true,
@@ -728,7 +731,7 @@ TEST_F(FormStructureTestImpl, HeuristicsContactInfo) {
                     {.role = ServerFieldType::ADDRESS_HOME_ZIP},
                     {.label = u"Submit",
                      .name = u"",
-                     .form_control_type = "submit"}}},
+                     .form_control_type = FormControlType::kInputText}}},
         {
             .determine_heuristic_type = true,
             .field_count = 9,
@@ -794,7 +797,7 @@ TEST_F(FormStructureTestImpl, StripCommonNamePrefix) {
                .name = u"ctl01$ctl00$ShippingAddressCreditPhone$phone"},
               {.label = u"Submit",
                .name = u"ctl01$ctl00$ShippingAddressCreditPhone$submit",
-               .form_control_type = "submit"}}},
+               .form_control_type = FormControlType::kInputText}}},
         {.determine_heuristic_type = true,
          .is_autofillable = true,
          .field_count = 5,
@@ -840,7 +843,7 @@ TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_Full) {
                     {.label = u"Verification", .name = u"verification"},
                     {.label = u"Submit",
                      .name = u"submit",
-                     .form_control_type = "submit"}}},
+                     .form_control_type = FormControlType::kInputText}}},
         {.determine_heuristic_type = true,
          .is_complete_credit_card_form = true},
         {}}});
