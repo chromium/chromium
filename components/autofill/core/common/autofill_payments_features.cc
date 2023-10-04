@@ -235,11 +235,6 @@ BASE_FEATURE(kAutofillUpstreamAllowAllEmailDomains,
              "AutofillUpstreamAllowAllEmailDomains",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, we use the Elo regex to match the BIN ranges.
-BASE_FEATURE(kAutofillUseEloRegexForBinMatching,
-             "AutofillUseEloRegexForBinMatching_LAUNCHED",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
 // When enabled, use two '•' when displaying the last four digits of a credit
 // card number. (E.g., '•• 8888' rather than '•••• 8888').

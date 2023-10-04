@@ -1963,10 +1963,6 @@ class GetCardNetworkTestBatch5
     : public testing::TestWithParam<GetCardNetworkTestCase> {};
 
 TEST_P(GetCardNetworkTestBatch5, GetCardNetwork) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillUseEloRegexForBinMatching);
-
   auto test_case = GetParam();
   std::u16string card_number = ASCIIToUTF16(test_case.card_number);
   SCOPED_TRACE(card_number);
@@ -2008,56 +2004,6 @@ INSTANTIATE_TEST_SUITE_P(
                     GetCardNetworkTestCase{"6550361446391275", kEloCard, true},
                     GetCardNetworkTestCase{"6550511446391275", kEloCard,
                                            true}));
-
-class GetCardNetworkTestBatch6
-    : public testing::TestWithParam<GetCardNetworkTestCase> {};
-
-TEST_P(GetCardNetworkTestBatch6, GetCardNetwork) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillUseEloRegexForBinMatching);
-
-  auto test_case = GetParam();
-  std::u16string card_number = ASCIIToUTF16(test_case.card_number);
-  SCOPED_TRACE(card_number);
-  EXPECT_EQ(test_case.issuer_network, CreditCard::GetCardNetwork(card_number));
-  EXPECT_EQ(test_case.is_valid, IsValidCreditCardNumber(card_number));
-}
-
-// These are the cards that would be wrongly displayed as Discover if the flag
-// to use regex for Elo is disabled.
-INSTANTIATE_TEST_SUITE_P(
-    CreditCardTest,
-    GetCardNetworkTestBatch6,
-    testing::Values(
-        GetCardNetworkTestCase{"6500311446391271", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6500401446391270", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6500691446391276", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6500701446391273", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6504061446391278", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6504101446391272", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6504221446391278", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6504301446391278", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6505804463912719", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6504901446391275", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6505001446391273", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6505101446391271", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6505201446391279", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6505301446391277", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6505521446391270", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6505601446391270", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6505701446391278", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6505801446391276", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6505901446391274", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6516521446391277", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6516601446391277", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6516701446391275", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6516881446391275", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6550001446391277", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6550121446391273", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6550261446391277", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6550361446391275", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6550511446391275", kDiscoverCard, true}));
 
 TEST(CreditCardTest, LastFourDigits) {
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),

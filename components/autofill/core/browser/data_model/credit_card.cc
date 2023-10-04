@@ -357,18 +357,8 @@ const char* CreditCard::GetCardNetwork(const std::u16string& number) {
     if (!base::StringToInt(stripped_number.substr(0, 6), &first_six_digits))
       return kGenericCard;
 
-    // This is a flag controlled rollout to update the way we recognize Elo BIN.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillUseEloRegexForBinMatching) &&
-        MatchesRegex<kEloRegexPattern>(
+    if (MatchesRegex<kEloRegexPattern>(
             base::NumberToString16(first_six_digits))) {
-      return kEloCard;
-    }
-
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillUseEloRegexForBinMatching) &&
-        (first_six_digits == 431274 || first_six_digits == 451416 ||
-         first_six_digits == 627780 || first_six_digits == 636297)) {
       return kEloCard;
     }
   }
@@ -402,12 +392,6 @@ const char* CreditCard::GetCardNetwork(const std::u16string& number) {
 
     if (first_four_digits >= 3528 && first_four_digits <= 3589)
       return kJCBCard;
-
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillUseEloRegexForBinMatching) &&
-        (first_four_digits == 5067 || first_four_digits == 5090)) {
-      return kEloCard;
-    }
 
     if (first_four_digits == 6011)
       return kDiscoverCard;
