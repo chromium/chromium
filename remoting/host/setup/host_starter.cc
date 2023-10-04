@@ -24,6 +24,9 @@ const int kMaxGetTokensRetries = 3;
 
 namespace remoting {
 
+HostStarter::Params::Params() = default;
+HostStarter::Params::~Params() = default;
+
 HostStarter::HostStarter(
     std::unique_ptr<gaia::GaiaOAuthClient> oauth_client,
     std::unique_ptr<remoting::ServiceClient> service_client,
@@ -52,32 +55,27 @@ std::unique_ptr<HostStarter> HostStarter::Create(
           controller)));
 }
 
-void HostStarter::StartHost(const std::string& host_id,
-                            const std::string& host_name,
-                            const std::string& host_pin,
-                            const std::string& host_owner,
+void HostStarter::StartHost(const Params& params,
                             bool consent_to_data_collection,
-                            const std::string& auth_code,
-                            const std::string& redirect_url,
                             CompletionCallback on_done) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DCHECK(!on_done_);
 
-  host_id_ = host_id;
-  host_name_ = host_name;
-  host_pin_ = host_pin;
-  host_owner_ = host_owner;
+  host_id_ = params.host_id;
+  host_name_ = params.host_name;
+  host_pin_ = params.host_pin;
+  host_owner_ = params.host_owner;
   consent_to_data_collection_ = consent_to_data_collection;
   on_done_ = std::move(on_done);
   oauth_client_info_.client_id =
       google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING);
   oauth_client_info_.client_secret =
       google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING);
-  oauth_client_info_.redirect_uri = redirect_url;
+  oauth_client_info_.redirect_uri = params.redirect_url;
   // Map the authorization code to refresh and access tokens.
   DCHECK_EQ(pending_get_tokens_, GET_TOKENS_NONE);
   pending_get_tokens_ = GET_TOKENS_DIRECTORY;
-  oauth_client_->GetTokensFromAuthCode(oauth_client_info_, auth_code,
+  oauth_client_->GetTokensFromAuthCode(oauth_client_info_, params.auth_code,
                                        kMaxGetTokensRetries, this);
 }
 
