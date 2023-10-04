@@ -1666,10 +1666,9 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
       text_zoom_factor_(ParentTextZoomFactor(this)),
       inspector_task_runner_(InspectorTaskRunner::Create(
           GetTaskRunner(TaskType::kInternalInspector))),
-      interface_registry_(interface_registry
-                              ? interface_registry
-                              : InterfaceRegistry::GetEmptyInterfaceRegistry()),
-      lifecycle_state_(mojom::FrameLifecycleState::kRunning) {
+      interface_registry_(
+          interface_registry ? interface_registry
+                             : InterfaceRegistry::GetEmptyInterfaceRegistry()) {
   auto frame_tracking_result =
       GetLocalFramesMap().insert(FrameToken::Hasher()(GetFrameToken()), this);
   CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";
