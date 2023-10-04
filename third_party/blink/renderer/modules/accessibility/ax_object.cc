@@ -4048,29 +4048,6 @@ bool AXObject::CanSetValueAttribute() const {
   }
 }
 
-bool AXObject::IsFocusableStyleUsingBestAvailableState() const {
-  auto* element = GetElement();
-  DCHECK(element);
-
-  // If this element's layout tree does not need an update, it means that we can
-  // rely on Element's IsFocusableStyle directly, which is the best available
-  // source of information.
-  // Note that we also allow this to be used if we're in a style recalc, since
-  // we might get here through layout object attachment. In that case, the dirty
-  // bits may not have been cleared yet, but all relevant style and layout tree
-  // should be up to date. Note that this quirk can be fixed by deferring AX
-  // tree updates to happen after the layout tree attachment has finished.
-  if (GetDocument()->InStyleRecalc() ||
-      !GetDocument()->NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
-          *element)) {
-    return element->IsFocusableStyle();
-  }
-
-  // The best available source of information is now the AX tree, so use that to
-  // figure out whether we have focusable style.
-  return element->IsBaseElementFocusableStyle();
-}
-
 bool AXObject::CanSetFocusAttribute() const {
   CHECK(CanAccessCachedValues());
 
@@ -4146,60 +4123,25 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
     return false;
   }
 
-  // At this point, all nodes should have updated style. If they don't, it can
-  // cause crashes such as the one at crbug.com/1485059 when
-  // Element::SupportsFocus() calls IsFocusableStyleAfterUpdate() and
-  // the element doesn't have updated style yet, causing layout to update,
-  // resulting in unwanted recursion into ProcessDeferredAccessibilityEvents().
+  // At this point, all nodes should have updated style, which means it is safe
+  // to call Element::SupportsFocus(), Element::IsKeyboardFocusable(), and
+  // Element::IsFocusableStyle() without causing an update.
+  // Updates are problematic when we are expecting the tree to be frozen,
+  // or are in the middle of ProcessDeferredAccessibilityEvents(), where an
+  // update would cause unwanted recursion.
   CHECK(!elem->NeedsStyleRecalc());
 
   // NOT focusable: hidden elements.
-  // TODO(aleventhal) Consider caching visibility when it's safe to compute.
-  if (!IsA<HTMLAreaElement>(elem) && !IsFocusableStyleUsingBestAvailableState())
+  if (!IsA<HTMLAreaElement>(elem) && !elem->IsFocusableStyle()) {
     return false;
+  }
 
   // Focusable: element supports focus.
-  if (elem->SupportsFocus())
-    return true;
-
-  // NOT focusable: everything else.
-  return false;
+  return elem->SupportsFocus();
 }
 
 bool AXObject::IsKeyboardFocusable() const {
-  auto* document = GetDocument();
-  auto* element = GetElement();
-  if (!document || !element) {
-    return false;
-  }
-  DocumentLifecycle::DisallowTransitionScope scope(document->Lifecycle());
-  if (IsA<HTMLFrameOwnerElement>(element)) {
-    // TODO(crbug.com/1444450) Frame owner elements return true for
-    // IsFocusable(), because the logic in focus_controller.cc requires them to
-    // be focusable in order to find them and navigate to their contents.
-    // However, frames are not actually focusable. Remove this special-case once
-    // frame owner elements have SupportsFocus() == false.
-    return false;
-  }
-
-  // Invisible/inert nodes are never focusable.
-  // We already have these cached, so it's a very quick check.
-  // This also prevents implementations of Element::IsKeyboardFocusable()
-  // from trying to update style on descendants of content-visibility:hidden
-  // nodes, or display:none nodes, which are the only nodes that don't have
-  // updated style at this point.
-  if (IsHiddenViaStyle() || IsInert()) {
-    return false;
-  }
-
-  // At this point, all nodes should have updated style. If they don't, it can
-  // cause crashes such as the one at crbug.com/1485059 when
-  // Element::IsKeyboardFocusable() calls IsFocusableStyleAfterUpdate() and
-  // the element doesn't have updated style yet, causing layout to update,
-  // resulting in unwanted recursion into ProcessDeferredAccessibilityEvents().
-  CHECK(!element->NeedsStyleRecalc());
-
-  return element->IsKeyboardFocusable();
+  return CanSetFocusAttribute() && GetElement()->IsKeyboardFocusable();
 }
 
 bool AXObject::CanSetSelectedAttribute() const {

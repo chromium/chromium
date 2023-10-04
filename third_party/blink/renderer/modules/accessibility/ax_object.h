@@ -1528,13 +1528,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool RequestExpandAction();
   bool RequestCollapseAction();
 
-  // This returns true if the element associated with this AXObject is has
-  // focusable style, meaning that it is visible. Note that we prefer to rely on
-  // `Element::IsFocusableStyle()` for this, but sometimes it isn't available
-  // because the style or layout tree needs an update. In these situations, we
-  // use the cached AX state to compute the same value.
-  bool IsFocusableStyleUsingBestAvailableState() const;
-
   // Returns an updated layout object to be used in a native scroll action. Note
   // that this updates style for `GetNode()` as well as layout for any layout
   // objects generated. Returns nullptr if a native scroll action to the node is
