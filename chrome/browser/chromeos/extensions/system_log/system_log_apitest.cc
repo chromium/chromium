@@ -102,7 +102,8 @@ IN_PROC_BROWSER_TEST_P(SystemLogApitest, AddLogWithImprivata) {
 
 // Other extension logs go to device event logs with an EVENT log level and are
 // added to the feedback report fetched data.
-IN_PROC_BROWSER_TEST_P(SystemLogApitest, AddLogWithOtherExtension) {
+// TODO(crbug.com/1485062): Re-enable this test
+IN_PROC_BROWSER_TEST_P(SystemLogApitest, DISABLED_AddLogWithOtherExtension) {
   // Remove extension from Imprivata behavior feature. kAllowlistedExtensionID
   // is adding it to both the systemLog permission allowlist, and the Imprivata
   // behaviors.
