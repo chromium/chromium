@@ -3284,23 +3284,20 @@ void AttributionStorageSql::AssignTriggerVerificationData(
   delegate_->ShuffleTriggerVerifications(verifications);
 
   for (size_t i = 0; i < verifications.size() && i < reports.size(); ++i) {
-    network::TriggerVerification& verification = verifications.at(i);
+    const network::TriggerVerification& verification = verifications.at(i);
     AttributionReport& report = reports.at(i);
 
-    report.set_external_report_id(
-        std::move(verification.aggregatable_report_id()));
+    report.set_external_report_id(verification.aggregatable_report_id());
     absl::visit(
         base::Overloaded{
             [](const AttributionReport::EventLevelData&) {
               NOTREACHED_NORETURN();
             },
             [&](AttributionReport::AggregatableAttributionData& data) {
-              data.common_data.verification_token =
-                  std::move(verification.token());
+              data.common_data.verification_token = verification.token();
             },
             [&](AttributionReport::NullAggregatableData& data) {
-              data.common_data.verification_token =
-                  std::move(verification.token());
+              data.common_data.verification_token = verification.token();
             }},
         report.data());
   }
