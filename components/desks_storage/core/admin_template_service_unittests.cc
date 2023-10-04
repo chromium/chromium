@@ -14,7 +14,9 @@
 #include "base/test/task_environment.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/restore_data.h"
+#include "components/desks_storage/core/desk_template_util.h"
 #include "components/desks_storage/core/desk_test_util.h"
+#include "components/desks_storage/core/saved_desk_builder.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
@@ -30,6 +32,103 @@ base::Value ParsePolicyFromString(base::StringPiece policy) {
   CHECK(parsed_json->is_list());
 
   return std::move(parsed_json.value());
+}
+
+base::Time GetTimeFromLiteral(int64_t time_usec) {
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(time_usec));
+}
+
+// Returns the first admin template that is defined in the list of templates
+// in `desk_test_util::kAdminTemplatePolicy`
+std::unique_ptr<ash::DeskTemplate> GetFirstAdminTemplate() {
+  const auto policy_value =
+      ParsePolicyFromString(desk_test_util::kAdminTemplatePolicy);
+  return SavedDeskBuilder()
+      .SetUuid("27ea906b-a7d3-40b1-8c36-76d332d7f184")
+      .SetName("App Launch Automation 1")
+      .SetCreatedTime(GetTimeFromLiteral(13320917261678808))
+      .SetUpdatedTime(GetTimeFromLiteral(13320917261678808))
+      .SetPolicyValue(policy_value)
+      .SetPolicyShouldLaunchOnStartup(true)
+      .SetSource(ash::DeskTemplateSource::kPolicy)
+      .AddAppWindow(
+          SavedDeskBrowserBuilder()
+              .SetUrls({GURL("https://www.chromium.org/")})
+              .SetGenericBuilder(
+                  SavedDeskGenericAppBuilder().SetWindowId(3000).SetEventFlag(
+                      0))
+              .Build())
+      .AddAppWindow(
+          SavedDeskBrowserBuilder()
+              .SetUrls({GURL("chrome://version/"),
+                        GURL("https://dev.chromium.org/")})
+              .SetGenericBuilder(
+                  SavedDeskGenericAppBuilder().SetWindowId(30001).SetEventFlag(
+                      0))
+              .Build())
+      .Build();
+}
+
+// Returns the second admin template that is defined in the list of templates
+// in `desk_test_util::kAdminTemplatePolicy`
+std::unique_ptr<ash::DeskTemplate> GetSecondAdminTemplate() {
+  const auto policy_value =
+      ParsePolicyFromString(desk_test_util::kAdminTemplatePolicy);
+  return SavedDeskBuilder()
+      .SetUuid("3aa30d88-576e-48ea-ab26-cbdd2cbe43a1")
+      .SetName("App Launch Automation 2")
+      .SetCreatedTime(GetTimeFromLiteral(13320917271679905))
+      .SetUpdatedTime(GetTimeFromLiteral(13320917271679905))
+      .SetPolicyValue(policy_value)
+      .SetPolicyShouldLaunchOnStartup(false)
+      .SetSource(ash::DeskTemplateSource::kPolicy)
+      .AddAppWindow(
+          SavedDeskBrowserBuilder()
+              .SetUrls({GURL("https://www.google.com/"),
+                        GURL("https://www.youtube.com/")})
+              .SetGenericBuilder(
+                  SavedDeskGenericAppBuilder().SetWindowId(30001).SetEventFlag(
+                      0))
+              .Build())
+      .Build();
+}
+
+// Returns the template vector that is expected to be returned when parsing
+// desk_test_util::kAdminTemplatePolicy.
+std::vector<std::unique_ptr<ash::DeskTemplate>>
+GetDefaultAdminTemplatePolicyTemplates() {
+  std::vector<std::unique_ptr<ash::DeskTemplate>> desk_templates;
+
+  desk_templates.push_back(GetFirstAdminTemplate());
+  desk_templates.push_back(GetSecondAdminTemplate());
+  return desk_templates;
+}
+
+// Returns the template vector that is expected to be returned when parsing
+// desk_test_util::kAdminTemplatePolicyWithOneTemplate.  This policy is
+// the same as the regular policy but it only contains the first template.
+std::vector<std::unique_ptr<ash::DeskTemplate>>
+GetAdminTemplatePolicyTemplateWithOneTemplate() {
+  std::vector<std::unique_ptr<ash::DeskTemplate>> desk_templates;
+
+  desk_templates.push_back(GetFirstAdminTemplate());
+  return desk_templates;
+}
+
+// Verifies that the two vectors contain equal contents.
+void ExpectTemplateVectorsEqual(
+    const std::vector<std::unique_ptr<ash::DeskTemplate>>& expected_templates,
+    const std::vector<const ash::DeskTemplate*>& got_templates) {
+  EXPECT_EQ(expected_templates.size(), got_templates.size());
+
+  // We expect the order of the templates to be the same as the expected
+  // templates.
+  size_t i = 0;
+  for (const auto& expected_template : expected_templates) {
+    EXPECT_TRUE(desk_template_util::AreDeskTemplatesEqual(
+        expected_template.get(), got_templates[i]));
+    ++i;
+  }
 }
 
 }  // namespace
@@ -130,7 +229,14 @@ TEST_F(AdminTemplateServiceTest, AppliesPolicySettingCorrectly) {
   auto* admin_service = GetAdminService();
   ASSERT_TRUE(admin_service != nullptr);
 
-  EXPECT_EQ(admin_service->GetFullDeskModel()->GetEntryCount(), 2UL);
+  auto get_all_entries_result =
+      admin_service->GetFullDeskModel()->GetAllEntries();
+  ASSERT_EQ(get_all_entries_result.status, DeskModel::GetAllEntriesStatus::kOk);
+
+  std::vector<std::unique_ptr<ash::DeskTemplate>> expected_templates =
+      GetDefaultAdminTemplatePolicyTemplates();
+  ExpectTemplateVectorsEqual(expected_templates,
+                             get_all_entries_result.entries);
 }
 
 TEST_F(AdminTemplateServiceTest, AppliesModifiedPolicySettingCorrectly) {
@@ -142,7 +248,14 @@ TEST_F(AdminTemplateServiceTest, AppliesModifiedPolicySettingCorrectly) {
   auto* admin_service = GetAdminService();
   ASSERT_TRUE(admin_service != nullptr);
 
-  EXPECT_EQ(admin_service->GetFullDeskModel()->GetEntryCount(), 1UL);
+  auto get_all_entries_result =
+      admin_service->GetFullDeskModel()->GetAllEntries();
+  ASSERT_EQ(get_all_entries_result.status, DeskModel::GetAllEntriesStatus::kOk);
+
+  std::vector<std::unique_ptr<ash::DeskTemplate>> expected_templates =
+      GetAdminTemplatePolicyTemplateWithOneTemplate();
+  ExpectTemplateVectorsEqual(expected_templates,
+                             get_all_entries_result.entries);
 }
 
 TEST_F(AdminTemplateServiceTest, AppliesEmptyPolicySettingCorrectly) {
@@ -165,7 +278,14 @@ TEST_F(AdminTemplateServiceTest, AppliesAdditionalPolicySettingCorrectly) {
   auto* admin_service = GetAdminService();
   ASSERT_TRUE(admin_service != nullptr);
 
-  EXPECT_EQ(admin_service->GetFullDeskModel()->GetEntryCount(), 2UL);
+  auto get_all_entries_result =
+      admin_service->GetFullDeskModel()->GetAllEntries();
+  ASSERT_EQ(get_all_entries_result.status, DeskModel::GetAllEntriesStatus::kOk);
+
+  std::vector<std::unique_ptr<ash::DeskTemplate>> expected_templates =
+      GetDefaultAdminTemplatePolicyTemplates();
+  ExpectTemplateVectorsEqual(expected_templates,
+                             get_all_entries_result.entries);
 }
 
 TEST_F(AdminTemplateServiceTest, WaitsForAppsCacheBeforeParsingPolicy) {
@@ -190,13 +310,9 @@ TEST_F(AdminTemplateServiceTest, WaitsForAppsCacheBeforeParsingPolicy) {
   EXPECT_EQ(all_entries_result.status, DeskModel::GetAllEntriesStatus::kOk);
   std::vector<const ash::DeskTemplate*>& entries = all_entries_result.entries;
 
-  EXPECT_EQ(entries.size(), 2UL);
-
-  // Finally we verify that the restore data is populated.
-  for (const auto* entry : entries) {
-    // When we support other types we will make this check more comprehensive.
-    EXPECT_TRUE(entry->desk_restore_data()->HasBrowser());
-  }
+  std::vector<std::unique_ptr<ash::DeskTemplate>> expected_templates =
+      GetDefaultAdminTemplatePolicyTemplates();
+  ExpectTemplateVectorsEqual(expected_templates, entries);
 }
 
 TEST_F(AdminTemplateServiceTest,
@@ -225,13 +341,9 @@ TEST_F(AdminTemplateServiceTest,
   EXPECT_EQ(all_entries_result.status, DeskModel::GetAllEntriesStatus::kOk);
   std::vector<const ash::DeskTemplate*>& entries = all_entries_result.entries;
 
-  EXPECT_EQ(entries.size(), 2UL);
-
-  // Finally we verify that the restore data is populated.
-  for (const auto* entry : entries) {
-    // When we support other types we will make this check more comprehensive.
-    EXPECT_TRUE(entry->desk_restore_data()->HasBrowser());
-  }
+  std::vector<std::unique_ptr<ash::DeskTemplate>> expected_templates =
+      GetDefaultAdminTemplatePolicyTemplates();
+  ExpectTemplateVectorsEqual(expected_templates, entries);
 }
 
 }  // namespace desks_storage

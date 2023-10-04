@@ -114,6 +114,12 @@ SavedDeskGenericAppBuilder& SavedDeskGenericAppBuilder::SetSnapPercentage(
   return *this;
 }
 
+SavedDeskGenericAppBuilder& SavedDeskGenericAppBuilder::SetEventFlag(
+    int32_t event_flag) {
+  event_flag_ = event_flag;
+  return *this;
+}
+
 BuiltApp SavedDeskGenericAppBuilder::Build() {
   if (!window_id_)
     return BuiltApp(BuiltApp::Status::kNoWindowId, nullptr, nullptr);
@@ -142,8 +148,13 @@ BuiltApp SavedDeskGenericAppBuilder::Build() {
         absl::optional<int32_t>(static_cast<int32_t>(disposition_.value()));
   }
 
+  if (event_flag_) {
+    app_launch_info->event_flag = event_flag_.value();
+  }
+
   app_launch_info->app_name = name_;
   app_launch_info->window_id = window_id_;
+  // app_launch_info->event_flag = event_flag_.value_or(0);
 
   return BuiltApp(BuiltApp::Status::kOk, std::move(window_info),
                   std::move(app_launch_info));
@@ -344,12 +355,18 @@ SavedDeskBuilder::SavedDeskBuilder()
       desk_type_(ash::DeskTemplateType::kTemplate) {
   desk_uuid_ = base::Uuid::GenerateRandomV4();
   created_time_ = base::Time::Now();
+  updated_time_ = created_time_;
 }
 SavedDeskBuilder::~SavedDeskBuilder() = default;
 
 std::unique_ptr<ash::DeskTemplate> SavedDeskBuilder::Build() {
   auto desk_template = std::make_unique<ash::DeskTemplate>(
-      desk_uuid_, desk_source_, desk_name_, created_time_, desk_type_);
+      desk_uuid_, desk_source_, desk_name_, created_time_, desk_type_,
+      policy_should_launch_on_startup_, policy_value_.Clone());
+
+  if (has_updated_time_) {
+    desk_template->set_updated_time(updated_time_);
+  }
 
   auto restore_data = std::make_unique<app_restore::RestoreData>();
 
@@ -382,8 +399,28 @@ SavedDeskBuilder& SavedDeskBuilder::SetSource(
   return *this;
 }
 
-SavedDeskBuilder& SavedDeskBuilder::SetCreatedTime(base::Time& created_time) {
+SavedDeskBuilder& SavedDeskBuilder::SetCreatedTime(
+    const base::Time& created_time) {
   created_time_ = created_time;
+
+  return *this;
+}
+
+SavedDeskBuilder& SavedDeskBuilder::SetUpdatedTime(
+    const base::Time& updated_time) {
+  has_updated_time_ = true;
+  updated_time_ = updated_time;
+  return *this;
+}
+
+SavedDeskBuilder& SavedDeskBuilder::SetPolicyValue(const base::Value& value) {
+  policy_value_ = value.Clone();
+  return *this;
+}
+
+SavedDeskBuilder& SavedDeskBuilder::SetPolicyShouldLaunchOnStartup(
+    bool should_launch_on_startup) {
+  policy_should_launch_on_startup_ = should_launch_on_startup;
   return *this;
 }
 
