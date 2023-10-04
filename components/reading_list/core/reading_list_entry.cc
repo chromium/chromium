@@ -224,8 +224,8 @@ bool ReadingListEntry::HasBeenSeen() const {
 
 bool ReadingListEntry::IsSpecificsValid(
     const sync_pb::ReadingListSpecifics& pb_entry) {
-  // TODO(crbug.com/1402196): Make sure that the entry_id field is valid too.
-  if (!pb_entry.has_url()) {
+  if (!pb_entry.has_entry_id() || !pb_entry.has_url() ||
+      pb_entry.entry_id() != pb_entry.url()) {
     return false;
   }
   GURL url(pb_entry.url());

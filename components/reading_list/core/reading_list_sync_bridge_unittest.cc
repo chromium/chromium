@@ -580,6 +580,33 @@ TEST_F(ReadingListSyncBridgeTest, EntityDataShouldBeValid) {
   EXPECT_TRUE(bridge()->IsEntityDataValid(data));
 }
 
+TEST_F(ReadingListSyncBridgeTest,
+       EntityDataShouldBeNotValidIfItHasEmptyEntryId) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", AdvanceAndGetTime(&clock_));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  *specifics->mutable_entry_id() = "";
+  syncer::EntityData data;
+  *data.specifics.mutable_reading_list() = *specifics;
+
+  EXPECT_FALSE(bridge()->IsEntityDataValid(data));
+}
+
+TEST_F(ReadingListSyncBridgeTest,
+       EntityDataShouldBeNotValidIfItHasUnequalEntryIdAndUrl) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://EntryUrl.com/"), "example title",
+      AdvanceAndGetTime(&clock_));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  *specifics->mutable_entry_id() = "http://UnequalEntryIdAndUrl.com/";
+  syncer::EntityData data;
+  *data.specifics.mutable_reading_list() = *specifics;
+
+  EXPECT_FALSE(bridge()->IsEntityDataValid(data));
+}
+
 TEST_F(ReadingListSyncBridgeTest, EntityDataShouldBeNotValidIfItHasEmptyUrl) {
   auto entry = base::MakeRefCounted<ReadingListEntry>(
       GURL("http://example.com/"), "example title", AdvanceAndGetTime(&clock_));
@@ -619,6 +646,26 @@ TEST_F(ReadingListSyncBridgeTest,
 
 // TODO(crbug.com/1484570): The below tests should be removed once the invalid
 // specifics get filtered earlier before reaching the bridge.
+
+TEST_F(ReadingListSyncBridgeTest,
+       ShouldIgnoreEmptyEntryIdInIncrementalSyncChanges) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", AdvanceAndGetTime(&clock_));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  *specifics->mutable_entry_id() = "";
+  syncer::EntityData data;
+  *data.specifics.mutable_reading_list() = *specifics;
+
+  syncer::EntityChangeList add_changes;
+  add_changes.push_back(syncer::EntityChange::CreateAdd("", std::move(data)));
+
+  ASSERT_EQ(0ul, model_->size());
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(add_changes));
+  EXPECT_EQ(0ul, model_->size());
+}
+
 TEST_F(ReadingListSyncBridgeTest,
        ShouldIgnoreEmptyUrlInIncrementalSyncChanges) {
   auto entry = base::MakeRefCounted<ReadingListEntry>(
@@ -626,6 +673,25 @@ TEST_F(ReadingListSyncBridgeTest,
   std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
       entry->AsReadingListSpecifics();
   *specifics->mutable_url() = "";
+  syncer::EntityData data;
+  *data.specifics.mutable_reading_list() = *specifics;
+
+  syncer::EntityChangeList add_changes;
+  add_changes.push_back(syncer::EntityChange::CreateAdd("", std::move(data)));
+
+  ASSERT_EQ(0ul, model_->size());
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(add_changes));
+  EXPECT_EQ(0ul, model_->size());
+}
+
+TEST_F(ReadingListSyncBridgeTest,
+       ShouldIgnoreUnequalEntryIdAndUrlInIncrementalSyncChanges) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", AdvanceAndGetTime(&clock_));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  *specifics->mutable_entry_id() = "http://UnequalEntryIdAndUrl.com/";
   syncer::EntityData data;
   *data.specifics.mutable_reading_list() = *specifics;
 

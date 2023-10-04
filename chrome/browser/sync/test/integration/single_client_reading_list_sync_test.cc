@@ -402,6 +402,42 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientReadingListSyncTest,
+    ShouldFilterEntriesWithEmptyEntryIdUponIncrementalRemoteCreation) {
+  ASSERT_TRUE(SetupClients());
+
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  EXPECT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  const GURL kEntryWithCorruptId("http://EntryWithCorruptId.com/");
+  std::unique_ptr<syncer::LoopbackServerEntity> kCorruptEntry =
+      CreateTestReadingListEntity(kEntryWithCorruptId, "entry_title");
+  sync_pb::EntitySpecifics specifics = kCorruptEntry->GetSpecifics();
+  // An empty entry id makes it an invalid reading list specifics.
+  *specifics.mutable_reading_list()->mutable_entry_id() = "";
+  ASSERT_FALSE(ReadingListEntry::IsSpecificsValid(specifics.reading_list()));
+  kCorruptEntry->SetSpecifics(specifics);
+  fake_server_->InjectEntity(std::move(kCorruptEntry));
+
+  const GURL kUrl("http://url.com/");
+  fake_server_->InjectEntity(CreateTestReadingListEntity(kUrl, "entry_title"));
+
+  ASSERT_TRUE(ServerReadingListURLsEqualityChecker(
+                  {kUrl, GURL("http://EntryWithCorruptId.com/")})
+                  .Wait());
+  EXPECT_TRUE(LocalReadingListURLsEqualityChecker(model(), {kUrl}).Wait());
+
+  EXPECT_THAT(model()->size(), Eq(1ul));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientReadingListSyncTest,
     ShouldFilterEntriesWithEmptyUrlUponIncrementalRemoteCreation) {
   ASSERT_TRUE(SetupClients());
 
@@ -429,6 +465,43 @@ IN_PROC_BROWSER_TEST_F(
   fake_server_->InjectEntity(CreateTestReadingListEntity(kUrl, "entry_title"));
 
   ASSERT_TRUE(ServerReadingListURLsEqualityChecker({kUrl, GURL("")}).Wait());
+  EXPECT_TRUE(LocalReadingListURLsEqualityChecker(model(), {kUrl}).Wait());
+
+  EXPECT_THAT(model()->size(), Eq(1ul));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientReadingListSyncTest,
+    ShouldFilterEntriesWithUnequalEntryIdAndUrlUponIncrementalRemoteCreation) {
+  ASSERT_TRUE(SetupClients());
+
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  EXPECT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  std::unique_ptr<syncer::LoopbackServerEntity> kCorruptEntry =
+      CreateTestReadingListEntity(GURL("http://CorruptEntry.com/"),
+                                  "corrupt_entry_title");
+  sync_pb::EntitySpecifics specifics = kCorruptEntry->GetSpecifics();
+  // Unequal entry id and url makes it an invalid reading list specifics.
+  *specifics.mutable_reading_list()->mutable_entry_id() =
+      "http://UnequalEntryIdAndUrl.com/";
+  ASSERT_FALSE(ReadingListEntry::IsSpecificsValid(specifics.reading_list()));
+  kCorruptEntry->SetSpecifics(specifics);
+  fake_server_->InjectEntity(std::move(kCorruptEntry));
+
+  const GURL kUrl("http://url.com/");
+  fake_server_->InjectEntity(CreateTestReadingListEntity(kUrl, "entry_title"));
+
+  ASSERT_TRUE(ServerReadingListURLsEqualityChecker(
+                  {kUrl, GURL("http://CorruptEntry.com/")})
+                  .Wait());
   EXPECT_TRUE(LocalReadingListURLsEqualityChecker(model(), {kUrl}).Wait());
 
   EXPECT_THAT(model()->size(), Eq(1ul));
@@ -472,6 +545,51 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientReadingListSyncTest,
+    ShouldFilterEntriesWithEmptyEntryIdUponIncrementalRemoteUpdate) {
+  ASSERT_TRUE(SetupClients());
+
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  const GURL kEntryWithCorruptRemoteUpdateId(
+      "http://EntryThatWillHaveCorruptRemoteUpdate.com/");
+  fake_server_->InjectEntity(CreateTestReadingListEntity(
+      kEntryWithCorruptRemoteUpdateId, "entry_title"));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  EXPECT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+
+  ASSERT_THAT(model()->size(), Eq(1ul));
+
+  std::unique_ptr<syncer::LoopbackServerEntity> kCorruptRemoteUpdate =
+      CreateTestReadingListEntity(kEntryWithCorruptRemoteUpdateId,
+                                  "corrupt_entry_title");
+  sync_pb::EntitySpecifics specifics = kCorruptRemoteUpdate->GetSpecifics();
+  // An empty entry id makes it an invalid reading list specifics.
+  *specifics.mutable_reading_list()->mutable_entry_id() = "";
+  ASSERT_FALSE(ReadingListEntry::IsSpecificsValid(specifics.reading_list()));
+  kCorruptRemoteUpdate->SetSpecifics(specifics);
+  fake_server_->InjectEntity(std::move(kCorruptRemoteUpdate));
+
+  const GURL kUrl("http://url.com/");
+  fake_server_->InjectEntity(CreateTestReadingListEntity(kUrl, "entry_title"));
+
+  ASSERT_TRUE(ServerReadingListURLsEqualityChecker(
+                  {kUrl, kEntryWithCorruptRemoteUpdateId})
+                  .Wait());
+  EXPECT_TRUE(LocalReadingListURLsEqualityChecker(
+                  model(), {kUrl, kEntryWithCorruptRemoteUpdateId})
+                  .Wait());
+
+  EXPECT_THAT(model()->size(), Eq(2ul));
+  EXPECT_THAT(model()->GetEntryByURL(kEntryWithCorruptRemoteUpdateId)->Title(),
+              Eq("entry_title"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientReadingListSyncTest,
     ShouldFilterEntriesWithEmptyUrlUponIncrementalRemoteUpdate) {
   ASSERT_TRUE(SetupClients());
 
@@ -510,6 +628,52 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_THAT(model()->size(), Eq(2ul));
   EXPECT_THAT(model()->GetEntryByURL(kEntryWithCorruptRemoteUpdateUrl)->Title(),
+              Eq("entry_title"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientReadingListSyncTest,
+    ShouldFilterEntriesWithUnequalEntryIdAndUrlUponIncrementalRemoteUpdate) {
+  ASSERT_TRUE(SetupClients());
+
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  const GURL kEntryWithCorruptRemoteUpdateId(
+      "http://EntryThatWillHaveCorruptRemoteUpdate.com/");
+  fake_server_->InjectEntity(CreateTestReadingListEntity(
+      kEntryWithCorruptRemoteUpdateId, "entry_title"));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  EXPECT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+
+  ASSERT_THAT(model()->size(), Eq(1ul));
+
+  std::unique_ptr<syncer::LoopbackServerEntity> kCorruptRemoteUpdate =
+      CreateTestReadingListEntity(kEntryWithCorruptRemoteUpdateId,
+                                  "corrupt_entry_title");
+  sync_pb::EntitySpecifics specifics = kCorruptRemoteUpdate->GetSpecifics();
+  // Unequal entry id and url makes it an invalid reading list specifics.
+  *specifics.mutable_reading_list()->mutable_entry_id() =
+      "http://UnequalEntryIdAndUrl.com/";
+  ASSERT_FALSE(ReadingListEntry::IsSpecificsValid(specifics.reading_list()));
+  kCorruptRemoteUpdate->SetSpecifics(specifics);
+  fake_server_->InjectEntity(std::move(kCorruptRemoteUpdate));
+
+  const GURL kUrl("http://url.com/");
+  fake_server_->InjectEntity(CreateTestReadingListEntity(kUrl, "entry_title"));
+
+  ASSERT_TRUE(ServerReadingListURLsEqualityChecker(
+                  {kUrl, kEntryWithCorruptRemoteUpdateId})
+                  .Wait());
+  EXPECT_TRUE(LocalReadingListURLsEqualityChecker(
+                  model(), {kUrl, kEntryWithCorruptRemoteUpdateId})
+                  .Wait());
+
+  EXPECT_THAT(model()->size(), Eq(2ul));
+  EXPECT_THAT(model()->GetEntryByURL(kEntryWithCorruptRemoteUpdateId)->Title(),
               Eq("entry_title"));
 }
 
