@@ -11,10 +11,12 @@ import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -57,6 +59,9 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
                 LayoutInflater.from(mContext).inflate(R.layout.no_passkeys_bottom_sheet, null);
         contentView.setLayoutDirection(LocalizationUtils.isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL
                                                                        : View.LAYOUT_DIRECTION_LTR);
+        ImageView headerImage = contentView.findViewById(R.id.no_passkeys_sheet_header_image);
+        headerImage.setImageResource(
+                PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon());
         contentView.findViewById(R.id.no_passkeys_ok_button)
                 .setOnClickListener(v -> mDelegate.onClickOk());
         contentView.findViewById(R.id.no_passkeys_use_another_device_button)
