@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
+#include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
@@ -1197,6 +1198,7 @@ class DriveTest : public TestAccountBrowserTest {
       "https://docs.google.com/document/d/smalldocxid?rtpof=true&usp=drive_fs";
   FileSystemURL drive_test_file_url_;
   std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics_;
+  base::HistogramTester histogram_;
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -1216,8 +1218,8 @@ class DriveTest : public TestAccountBrowserTest {
 };
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Test to check that the test file fails to open when the system is offline but
-// is successfully opened with a "try-again" dialog choice after the
+// Test to check that a DriveFS test file fails to open when the system is
+// offline but is successfully opened with a "try-again" dialog choice after the
 // systems comes online.
 IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
   // Add test file to fake DriveFs.
@@ -1266,6 +1268,17 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
 
   // Wait for file to open in web drive office.
   navigation_observer_office.Wait();
+
+  histogram_.ExpectUniqueSample(ash::cloud_upload::kDriveOpenSourceVolumeMetric,
+                                VolumeType::VOLUME_TYPE_GOOGLE_DRIVE, 1);
+  histogram_.ExpectUniqueSample(ash::cloud_upload::kDriveTransferRequiredMetric,
+                                OfficeFilesTransferRequired::kNotRequired, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kOpened, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveErrorMetricName,
+      ash::cloud_upload::OfficeDriveOpenErrors::kSuccess, 1);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -1292,6 +1305,17 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OpenFileInDrive) {
 
   // Wait for file to open in web drive office.
   navigation_observer_office.Wait();
+
+  histogram_.ExpectUniqueSample(ash::cloud_upload::kDriveOpenSourceVolumeMetric,
+                                VolumeType::VOLUME_TYPE_GOOGLE_DRIVE, 1);
+  histogram_.ExpectUniqueSample(ash::cloud_upload::kDriveTransferRequiredMetric,
+                                OfficeFilesTransferRequired::kNotRequired, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kOpened, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveErrorMetricName,
+      ash::cloud_upload::OfficeDriveOpenErrors::kSuccess, 1);
 }
 
 // Test that the setup flow for office files, that has never been run before,
