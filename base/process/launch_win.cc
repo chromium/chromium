@@ -57,7 +57,7 @@ bool GetAppOutputInternal(CommandLine::StringPieceType cl,
 
   // Create the pipe for the child process's STDOUT.
   if (!CreatePipe(&out_read, &out_write, &sa_attr, 0)) {
-    NOTREACHED() << "Failed to create pipe";
+    DPLOG(ERROR) << "Failed to create pipe";
     return false;
   }
 
@@ -67,7 +67,7 @@ bool GetAppOutputInternal(CommandLine::StringPieceType cl,
 
   // Ensure the read handles to the pipes are not inherited.
   if (!SetHandleInformation(out_read, HANDLE_FLAG_INHERIT, 0)) {
-    NOTREACHED() << "Failed to disabled pipe inheritance";
+    DPLOG(ERROR) << "Failed to disabled pipe inheritance";
     return false;
   }
 
@@ -92,7 +92,7 @@ bool GetAppOutputInternal(CommandLine::StringPieceType cl,
                      nullptr,
                      TRUE,  // Handles are inherited.
                      0, nullptr, nullptr, &start_info, &temp_process_info)) {
-    NOTREACHED() << "Failed to start process";
+    DPLOG(ERROR) << "Failed to start process";
     return false;
   }
 
