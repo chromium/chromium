@@ -106,7 +106,7 @@ public class AccountTrackerService implements AccountsChangeObserver {
      */
     @MainThread
     public void seedAccountsIfNeeded(Runnable onAccountsSeeded) {
-        ThreadUtils.assertOnUiThread();
+        ThreadUtils.checkUiThread();
         switch (mAccountsSeedingStatus) {
             case AccountsSeedingStatus.NOT_STARTED:
                 mRunnablesWaitingForAccountsSeeding.add(onAccountsSeeded);
@@ -154,7 +154,7 @@ public class AccountTrackerService implements AccountsChangeObserver {
      * triggered again from SigninChecker.
      */
     private void seedAccounts(boolean accountsChanged) {
-        ThreadUtils.assertOnUiThread();
+        ThreadUtils.checkUiThread();
         assert mAccountsSeedingStatus
                 != AccountsSeedingStatus.IN_PROGRESS : "There is already a seeding in progress!";
         mAccountsSeedingStatus = AccountsSeedingStatus.IN_PROGRESS;
@@ -172,6 +172,7 @@ public class AccountTrackerService implements AccountsChangeObserver {
 
     private void finishSeedingAccounts(
             List<CoreAccountInfo> coreAccountInfos, boolean accountsChanged) {
+        ThreadUtils.checkUiThread();
         AccountTrackerServiceJni.get().seedAccountsInfo(
                 mNativeAccountTrackerService, coreAccountInfos.toArray(new CoreAccountInfo[0]));
         mAccountsSeedingStatus = AccountsSeedingStatus.DONE;
