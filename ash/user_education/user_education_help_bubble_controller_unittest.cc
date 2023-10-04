@@ -324,6 +324,43 @@ TEST_F(UserEducationHelpBubbleControllerTest, CreateHelpBubble) {
   EXPECT_FALSE(controller()->GetHelpBubbleId(kElementId, ui::ElementContext()));
 }
 
+// Verifies that `CreateScopedHelpBubble()` will create a help bubble that
+// closes when the returned `base::ScopedClosureRunner` falls out of scope.
+TEST_F(UserEducationHelpBubbleControllerTest, CreateScopedHelpBubble) {
+  // Cache the `element_context` to use for help bubble anchors.
+  const ui::ElementContext element_context = help_bubble_anchor_context();
+
+  HelpBubble* help_bubble = nullptr;
+  EXPECT_CALL(*user_education_delegate(),
+              CreateHelpBubble(Eq(primary_user_account_id()),
+                               Eq(HelpBubbleId::kTest), A<HelpBubbleParams>(),
+                               Eq(kElementId), Eq(element_context)))
+      .WillOnce(WithArgs<2>(InvokeAndCopyResultAddressTo(
+          this, &UserEducationHelpBubbleControllerTest::CreateHelpBubble,
+          &help_bubble)));
+
+  // Create scoped help bubble within a nested scope.
+  {
+    auto scoped_bubble_closer = controller()->CreateScopedHelpBubble(
+        HelpBubbleId::kTest,
+        [] {
+          HelpBubbleParams params;
+          params.timeout = base::TimeDelta();
+          return params;
+        }(),
+        kElementId, element_context);
+    EXPECT_TRUE(scoped_bubble_closer);
+
+    Mock::VerifyAndClearExpectations(user_education_delegate());
+    EXPECT_TRUE(help_bubble);
+    EXPECT_TRUE(controller()->GetHelpBubbleId(kElementId, element_context));
+  }
+
+  // Help bubble should be closed now that `scoped_bubble_closer` has fallen
+  // out of scope.
+  EXPECT_FALSE(controller()->GetHelpBubbleId(kElementId, element_context));
+}
+
 // Verifies that the `UserEducationHelpBubbleController` tracks/exposes metadata
 // for currently showing help bubbles as intended.
 TEST_F(UserEducationHelpBubbleControllerTest, Metadata) {

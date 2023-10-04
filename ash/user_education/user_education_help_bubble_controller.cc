@@ -11,6 +11,7 @@
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/views/help_bubble_factory_views_ash.h"
 #include "ash/user_education/views/help_bubble_view_ash.h"
+#include "base/cancelable_callback.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "components/account_id/account_id.h"
@@ -72,9 +73,28 @@ bool UserEducationHelpBubbleController::CreateHelpBubble(
     ui::ElementIdentifier element_id,
     ui::ElementContext element_context,
     base::OnceClosure close_callback) {
+  auto scoped_help_bubble_closer = CreateScopedHelpBubble(
+      help_bubble_id, std::move(help_bubble_params), element_id,
+      element_context, std::move(close_callback));
+
+  if (scoped_help_bubble_closer) {
+    std::ignore = scoped_help_bubble_closer.Release();
+    return true;
+  }
+
+  return false;
+}
+
+base::ScopedClosureRunner
+UserEducationHelpBubbleController::CreateScopedHelpBubble(
+    HelpBubbleId help_bubble_id,
+    user_education::HelpBubbleParams help_bubble_params,
+    ui::ElementIdentifier element_id,
+    ui::ElementContext element_context,
+    base::OnceClosure close_callback) {
   // Prohibit showing multiple help bubbles concurrently.
   if (help_bubble_) {
-    return false;
+    return base::ScopedClosureRunner();
   }
 
   // NOTE: User education in Ash is currently only supported for the primary
@@ -90,15 +110,24 @@ bool UserEducationHelpBubbleController::CreateHelpBubble(
   // The `delegate_` may opt *not* to create a `help_bubble_` in certain
   // circumstances, e.g. when there is an ongoing tutorial.
   if (!help_bubble_) {
-    return false;
+    return base::ScopedClosureRunner();
   }
 
+  auto close_help_bubble_closure =
+      std::make_unique<base::CancelableOnceClosure>(base::BindOnce(
+          [](user_education::HelpBubble* help_bubble) { help_bubble->Close(); },
+          base::Unretained(help_bubble_.get())));
+
+  base::ScopedClosureRunner scoped_help_bubble_closer(
+      close_help_bubble_closure->callback());
+
   // Subscribe to be notified when the `help_bubble_` closes. Once closed, free
-  // `help_bubble_` related memory and run the provided `close_callback`.
+  // `help_bubble_` related memory, cancel the callback to close the bubble, and
+  // run the provided `close_callback`.
   help_bubble_close_subscription_ =
       help_bubble_->AddOnCloseCallback(base::BindOnce(
           [](UserEducationHelpBubbleController* self,
-             base::OnceClosure close_callback,
+             base::OnceClosure close_callback, base::CancelableOnceClosure*,
              user_education::HelpBubble* help_bubble) {
             CHECK_EQ(self->help_bubble_.get(), help_bubble);
             self->help_bubble_.reset();
@@ -106,10 +135,10 @@ bool UserEducationHelpBubbleController::CreateHelpBubble(
                 base::CallbackListSubscription();
             std::move(close_callback).Run();
           },
-          base::Unretained(this), std::move(close_callback)));
+          base::Unretained(this), std::move(close_callback),
+          base::Owned(std::move(close_help_bubble_closure))));
 
-  // Indicate success.
-  return true;
+  return scoped_help_bubble_closer;
 }
 
 absl::optional<HelpBubbleId> UserEducationHelpBubbleController::GetHelpBubbleId(
