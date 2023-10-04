@@ -6,6 +6,7 @@ package org.chromium.chrome.modules.readaloud;
 
 import android.view.ViewStub;
 
+import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** Interface for creating ReadAloud playback. */
@@ -57,5 +58,10 @@ public interface ReadAloudPlaybackHooks {
      */
     default Player createPlayer(ViewStub miniPlayerViewStub, Player.Delegate delegate) {
         return new Player() {};
+    }
+
+    /** Creates the Highlighter. */
+    default Highlighter createHighlighter() {
+        return new Highlighter() {};
     }
 }

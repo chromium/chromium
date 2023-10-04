@@ -13,12 +13,15 @@ android_library("java") {
     "java/src/org/chromium/chrome/modules/readaloud/Player.java",
     "java/src/org/chromium/chrome/modules/readaloud/ReadAloudPlaybackHooks.java",
     "java/src/org/chromium/chrome/modules/readaloud/ReadAloudPlaybackHooksProvider.java",
+    "java/src/org/chromium/chrome/modules/readaloud/contentjs/Highlighter.java",
   ]
   deps = [
     "//base:base_java",
     "//chrome/browser/android/httpclient/public:java",
     "//chrome/browser/readaloud/android:player_state_java",
+    "//chrome/browser/tab:java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
