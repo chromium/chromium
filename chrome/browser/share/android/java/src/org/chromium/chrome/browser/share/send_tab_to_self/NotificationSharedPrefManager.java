@@ -23,7 +23,7 @@ import java.util.regex.PatternSyntaxException;
  * the version should be incremented and the new serialization format should be incorporated along
  * with all previous versions.
  */
-public class NotificationSharedPrefManager {
+class NotificationSharedPrefManager {
     // Any time the serialization of the ActiveNotification needs to change, increment this version.
     private static final int VERSION = 1;
 

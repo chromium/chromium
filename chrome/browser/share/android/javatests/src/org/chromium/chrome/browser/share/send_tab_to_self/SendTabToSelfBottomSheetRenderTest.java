@@ -138,9 +138,6 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
         onView(withText(account.getEmail())).check(doesNotExist());
     }
 
-    // TODO(crbug.com/1219434): This duplicates the account in AccountManagerTestRule, so tests can
-    // later adopt the rule without failing the golden diffs. That's not done now because it
-    // requires changing the device picker to depend on ProfileDataCache instead of IdentityManager.
     private AccountInfo createFakeAccount() {
         return createFakeAccount(new AccountCapabilities(new HashMap<>()));
     }

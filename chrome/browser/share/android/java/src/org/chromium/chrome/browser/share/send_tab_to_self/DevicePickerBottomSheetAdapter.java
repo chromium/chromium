@@ -23,10 +23,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Adapter to populate the Target Device Picker sheet.
- */
-public class DevicePickerBottomSheetAdapter extends BaseAdapter {
+/** Adapter to populate the Target Device Picker sheet. */
+class DevicePickerBottomSheetAdapter extends BaseAdapter {
     private final List<TargetDeviceInfo> mTargetDevices;
 
     public DevicePickerBottomSheetAdapter(List<TargetDeviceInfo> targetDevices) {

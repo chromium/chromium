@@ -11,7 +11,6 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
 /**
  * This interface abstracts the sign-in logic for the account picker bottom sheet. There is one
  * implementation per {@link EntryPoint}.
- * TODO(crbug.com/1219434): Nest this in the coordinator.
  */
 public interface AccountPickerDelegate {
     /** Releases resources used by this class. */

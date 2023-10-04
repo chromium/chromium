@@ -17,7 +17,6 @@ namespace send_tab_to_self {
 
 class SendTabToSelfBubbleController;
 
-// TODO(crbug.com/1219433): Rename all platforms not to mention "link".
 // Creates a view displaying the avatar and email of the signed-in account.
 // If |show_link| is true, it also shows a link to the list of known devices for
 // this account.

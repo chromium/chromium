@@ -14,7 +14,7 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Content shown if the send-tab-to-self feature is ready but there are no target devices. */
-public class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
+class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
 
     public NoTargetDeviceBottomSheetContent(Context context) {

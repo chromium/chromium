@@ -33,7 +33,7 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** View containing the sharing account's avatar, email and a link to manage its target devices. */
-public class ManageAccountDevicesLinkView extends LinearLayout {
+class ManageAccountDevicesLinkView extends LinearLayout {
     private static final int ACCOUNT_AVATAR_SIZE_DP = 24;
 
     private final boolean mShowLink;

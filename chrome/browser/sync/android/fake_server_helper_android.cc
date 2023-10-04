@@ -29,6 +29,7 @@
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "components/sync/test/fake_server_verifier.h"
 #include "components/sync/test/nigori_test_utils.h"
+#include "components/sync_device_info/device_info_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/android/gurl_android.h"
@@ -221,6 +222,45 @@ static void JNI_FakeServerHelper_ModifyEntitySpecifics(
 
   fake_server_ptr->ModifyEntitySpecifics(
       base::android::ConvertJavaStringToUTF8(env, id), entity_specifics);
+}
+
+static void JNI_FakeServerHelper_InjectDeviceInfoEntity(
+    JNIEnv* env,
+    jlong fake_server,
+    const JavaParamRef<jstring>& cache_guid,
+    const JavaParamRef<jstring>& client_name,
+    jlong creation_timestamp,
+    jlong last_updated_timestamp) {
+  CHECK_LE(creation_timestamp, last_updated_timestamp);
+
+  sync_pb::EntitySpecifics entity_specifics;
+  sync_pb::DeviceInfoSpecifics* specifics =
+      entity_specifics.mutable_device_info();
+  specifics->set_cache_guid(
+      base::android::ConvertJavaStringToUTF8(env, cache_guid));
+  specifics->set_client_name(
+      base::android::ConvertJavaStringToUTF8(env, client_name));
+  specifics->set_last_updated_timestamp(syncer::TimeToProtoTime(
+      base::Time::FromJavaTime(last_updated_timestamp)));
+  // Every client supports send-tab-to-self these days.
+  specifics->mutable_feature_fields()->set_send_tab_to_self_receiving_enabled(
+      true);
+  specifics->set_device_type(
+      sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_PHONE);
+  specifics->set_sync_user_agent("UserAgent");
+  specifics->set_chrome_version("1.0");
+  specifics->set_signin_scoped_device_id("id");
+
+  reinterpret_cast<fake_server::FakeServer*>(fake_server)
+      ->InjectEntity(
+          syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+              /*non_unique_name=*/specifics->client_name(),
+              syncer::DeviceInfoUtil::SpecificsToTag(*specifics),
+              entity_specifics,
+              syncer::TimeToProtoTime(
+                  base::Time::FromJavaTime(creation_timestamp)),
+              syncer::TimeToProtoTime(
+                  base::Time::FromJavaTime(last_updated_timestamp))));
 }
 
 static void JNI_FakeServerHelper_InjectBookmarkEntity(

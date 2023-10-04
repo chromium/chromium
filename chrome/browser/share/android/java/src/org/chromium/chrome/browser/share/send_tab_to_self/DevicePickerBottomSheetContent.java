@@ -25,11 +25,10 @@ import org.chromium.ui.widget.Toast;
 import java.util.List;
 
 /**
- * Bottom sheet content to display a list of devices a user can send a tab to after they have
- * chosen to share it with themselves through the send-tab-to-self feature.
- * TODO(crbug.com/1219434): Make this and other helper UI bits package-private.
+ * Bottom sheet content to display a list of devices a user can send a tab to after they have chosen
+ * to share it with themselves through the send-tab-to-self feature.
  */
-public class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickListener {
+class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickListener {
     private final Context mContext;
     private final BottomSheetController mController;
     private ViewGroup mToolbarView;

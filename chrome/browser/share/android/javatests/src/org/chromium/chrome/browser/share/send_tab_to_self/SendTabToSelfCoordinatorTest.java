@@ -26,10 +26,6 @@ import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
-import org.chromium.components.sync.protocol.DeviceInfoSpecifics;
-import org.chromium.components.sync.protocol.EntitySpecifics;
-import org.chromium.components.sync.protocol.FeatureSpecificFields;
-import org.chromium.components.sync.protocol.SyncEnums.DeviceType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -44,7 +40,10 @@ public class SendTabToSelfCoordinatorTest {
 
     @Before
     public void setUp() {
-        addTargetDeviceToSyncServer();
+        // Setting a recent timestamp here is necessary, otherwise the device will be considered
+        // expired and won't be displayed.
+        long now = System.currentTimeMillis();
+        mSyncTestRule.getFakeServerHelper().injectDeviceInfoEntity("CacheGuid", "Device", now, now);
     }
 
     @Test
@@ -83,29 +82,6 @@ public class SendTabToSelfCoordinatorTest {
         });
 
         waitForViewShown(R.id.device_picker_list);
-    }
-
-    private void addTargetDeviceToSyncServer() {
-        FeatureSpecificFields features =
-                FeatureSpecificFields.newBuilder().setSendTabToSelfReceivingEnabled(true).build();
-        // Setting a recent timestamp here is necessary, otherwise the device will be considered
-        // expired and won't be displayed.
-        DeviceInfoSpecifics deviceInfo =
-                DeviceInfoSpecifics.newBuilder()
-                        .setCacheGuid("CacheGuid")
-                        .setClientName("Device")
-                        .setDeviceType(DeviceType.TYPE_PHONE)
-                        .setSyncUserAgent("UserAgent")
-                        .setChromeVersion("1.0")
-                        .setSigninScopedDeviceId("Id")
-                        .setLastUpdatedTimestamp(System.currentTimeMillis())
-                        .setFeatureFields(features)
-                        .build();
-        EntitySpecifics specifics = EntitySpecifics.newBuilder().setDeviceInfo(deviceInfo).build();
-        // TODO(crbug.com/1219434): Don't duplicate DeviceInfo's SpecificsToTag() logic for the
-        // clientTag value, instead expose the function to Java and call it here.
-        mSyncTestRule.getFakeServerHelper().injectUniqueClientEntity(
-                "nonUniqueName", /*clientTag=*/"DeviceInfo_CacheGuid", specifics);
     }
 
     private void buildAndShowCoordinator() {

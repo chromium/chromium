@@ -172,6 +172,31 @@ public class FakeServerHelper {
     }
 
     /**
+     * Injects a device info entity into the fake Sync server.
+     *
+     * @param cacheGuid The cache GUID of the entry to inject.
+     * @param clientName The client name of the entry to inject.
+     * @param creationTimestamp The timestamp when the entry was created.
+     * @param lastUpdatedTimestamp The timestamp when the entry was last updated.
+     */
+    public void injectDeviceInfoEntity(
+            String cacheGuid,
+            String clientName,
+            long creationTimestamp,
+            long lastUpdatedTimestamp) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FakeServerHelperJni.get()
+                            .injectDeviceInfoEntity(
+                                    mNativeFakeServer,
+                                    cacheGuid,
+                                    clientName,
+                                    creationTimestamp,
+                                    lastUpdatedTimestamp);
+                });
+    }
+
+    /**
      * Injects a bookmark into the fake Sync server.
      *
      * @param title the title of the bookmark to inject
@@ -298,6 +323,12 @@ public class FakeServerHelper {
                 byte[] serializedEntitySpecifics);
         void setWalletData(long fakeServer, byte[] serializedEntity);
         void modifyEntitySpecifics(long fakeServer, String id, byte[] serializedEntitySpecifics);
+        void injectDeviceInfoEntity(
+                long fakeServer,
+                String cacheGuid,
+                String clientName,
+                long creationTimestamp,
+                long lastUpdatedTimestamp);
         void injectBookmarkEntity(
                 long fakeServer, String title, GURL url, String parentId, String parentGuid);
         void injectBookmarkFolderEntity(
