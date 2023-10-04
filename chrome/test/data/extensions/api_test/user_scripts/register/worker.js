@@ -245,6 +245,74 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  // Tests that a registered user script is injected only when the URL:
+  //   - matches any "matches" pattern or matches any "includeGlobs" pattern, if
+  //   present
+  //   - and does not match "excludeMatches", if present
+  //   - and does not match "excludeGlobs" patterns, if present.
+  async function registerFile_URLPatterns() {
+    await chrome.userScripts.unregister();
+
+    const scripts = [{
+      id: 'hostPerms',
+      matches: ['*://*.requested.com/*'],
+      excludeMatches: ['*://*.excluded.com/*'],
+      includeGlobs: ['*include_glob*'],
+      excludeGlobs: ['*exclude_glob*'],
+      js: [{file: 'script.js'}],
+      runAt: 'document_end'
+    }];
+
+    await chrome.userScripts.register(scripts);
+    const config = await chrome.test.getConfig();
+
+    // Script is NOT injected when URL matches any "excludeGlobs" pattern,
+    // regardless if URL also matches any "matches" pattern.
+    let url = `http://exclude_glob.requested.com:${
+        config.testServer.port}/simple.html`;
+    let tab = await openTab(url);
+    chrome.test.assertEq('OK', tab.title);
+
+    // Script is NOT injected when URL matches any "excludeMatches" pattern,
+    // regardless if URL also matches any "includeGlobs" pattern.
+    url = `http://include_glob.excluded.com:${
+        config.testServer.port}/simple.html`;
+    tab = await openTab(url);
+    chrome.test.assertEq('OK', tab.title);
+
+    // Script is NOT injected when URL is not in the extension manifest host
+    // permissions, regardless URL matches "includeGlobs" and neither
+    // "excludeMatches" or "excludeGLobs".
+    url = `http://include_glob.non-requested.com:${
+        config.testServer.port}/simple.html`;
+    tab = await openTab(url);
+    chrome.test.assertEq('OK', tab.title);
+
+    // Script is injected when URL matches any "matches" pattern and doesn't
+    // match "excludeMatches" or "excludeGlobs" patterns.
+    url = `http://requested.com:${config.testServer.port}/simple.html`;
+    tab = await openTab(url);
+    chrome.test.assertEq('NEW TITLE', tab.title);
+
+    // Script is injected when URL matches any "includeGlobs" and doesn't match
+    // "excludeMatches" or "excludeGlobs" patterns. Note that extension
+    // requested host permissions for'requested-2.com' but is not on the script
+    // "matches".
+    url = `http://include_glob.requested-2.com:${
+        config.testServer.port}/simple.html`;
+    tab = await openTab(url);
+    chrome.test.assertEq('NEW TITLE', tab.title);
+
+    // Script is injected when URL matches a URL "matches" and "includeGlobs"
+    // pattern, and doesn't match "excludeMatches" or "excludeGlobs" patterns.
+    url = `http://include_glob.requested.com:${
+        config.testServer.port}/simple.html`;
+    tab = await openTab(url);
+    chrome.test.assertEq('NEW TITLE', tab.title);
+
+    chrome.test.succeed();
+  },
+
   // Tests that a file can be used both as a user script and content script.
   async function fileUsedAsContentScript() {
     await chrome.userScripts.unregister();

@@ -73,6 +73,12 @@ bool ParseFileSources(const Extension* extension,
                       UserScript* result,
                       std::u16string* error);
 
+// Parses `include_globs` and `exclude_globs` and updates these fields for
+// `result`. Done for Greasemonkey compatibility.
+void ParseGlobs(const std::vector<std::string>* include_globs,
+                const std::vector<std::string>* exclude_globs,
+                UserScript* result);
+
 // Validates that the claimed file sources in `scripts` actually exist and are
 // UTF-8 encoded. This function must be called on a sequence which allows file
 // I/O.

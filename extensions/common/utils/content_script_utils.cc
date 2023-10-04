@@ -329,6 +329,22 @@ bool ParseFileSources(const Extension* extension,
   return true;
 }
 
+void ParseGlobs(const std::vector<std::string>* include_globs,
+                const std::vector<std::string>* exclude_globs,
+                UserScript* result) {
+  if (include_globs) {
+    for (const std::string& glob : *include_globs) {
+      result->add_glob(glob);
+    }
+  }
+
+  if (exclude_globs) {
+    for (const std::string& glob : *exclude_globs) {
+      result->add_exclude_glob(glob);
+    }
+  }
+}
+
 bool ValidateFileSources(const UserScriptList& scripts,
                          ExtensionResource::SymlinkPolicy symlink_policy,
                          std::string* error,

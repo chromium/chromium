@@ -8,20 +8,13 @@
 
 #include <memory>
 
-#include "base/files/file_util.h"
 #include "base/lazy_instance.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
-#include "base/values.h"
-#include "content/public/common/url_constants.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/api/extension_types.h"
-#include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/extension_resource.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/mojom/host_id.mojom.h"
@@ -32,8 +25,6 @@
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/common/utils/extension_types_utils.h"
-#include "extensions/strings/grit/extensions_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -43,20 +34,6 @@ namespace content_scripts_api = api::content_scripts;
 using ContentScriptsKeys = content_scripts_api::ManifestKeys;
 
 namespace {
-
-void ParseGlobs(const std::vector<std::string>* include_globs,
-                const std::vector<std::string>* exclude_globs,
-                UserScript* result) {
-  // include/exclude globs (mostly for Greasemonkey compatibility).
-  if (include_globs) {
-    for (const std::string& glob : *include_globs)
-      result->add_glob(glob);
-  }
-  if (exclude_globs) {
-    for (const std::string& glob : *exclude_globs)
-      result->add_exclude_glob(glob);
-  }
-}
 
 // Helper method that converts a parsed ContentScript object into a UserScript
 // object.
@@ -130,8 +107,9 @@ std::unique_ptr<UserScript> CreateUserScript(
   if (wants_file_access)
     extension->set_wants_file_access(true);
 
-  ParseGlobs(base::OptionalToPtr(content_script.include_globs),
-             base::OptionalToPtr(content_script.exclude_globs), result.get());
+  script_parsing::ParseGlobs(base::OptionalToPtr(content_script.include_globs),
+                             base::OptionalToPtr(content_script.exclude_globs),
+                             result.get());
 
   // Parse execution world. This should only be possible for MV3.
   if (content_script.world != api::extension_types::ExecutionWorld::kNone) {

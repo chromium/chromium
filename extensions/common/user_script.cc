@@ -220,15 +220,7 @@ UserScript::Source UserScript::GetSource() const {
 }
 
 bool UserScript::MatchesURL(const GURL& url) const {
-  if (!url_set_.is_empty() && !url_set_.MatchesURL(url)) {
-    return false;
-  }
-
   if (!exclude_url_set_.is_empty() && exclude_url_set_.MatchesURL(url)) {
-    return false;
-  }
-
-  if (!globs_.empty() && !UrlMatchesGlobs(&globs_, url)) {
     return false;
   }
 
@@ -236,7 +228,14 @@ bool UserScript::MatchesURL(const GURL& url) const {
     return false;
   }
 
-  return true;
+  // User scripts need to match url patterns OR include globs, if present.
+  if (GetSource() == UserScript::Source::kDynamicUserScript) {
+    return (url_set_.MatchesURL(url) || UrlMatchesGlobs(&globs_, url));
+  }
+
+  // Other scripts need to match url patterns AND include globs, if present.
+  return (url_set_.is_empty() || url_set_.MatchesURL(url)) &&
+         (globs_.empty() || UrlMatchesGlobs(&globs_, url));
 }
 
 bool UserScript::MatchesDocument(const GURL& effective_document_url,

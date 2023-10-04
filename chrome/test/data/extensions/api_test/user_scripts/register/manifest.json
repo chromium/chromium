@@ -13,6 +13,7 @@
     "tabs"
   ],
   "host_permissions": [
-    "*://requested.com/*"
+    "*://*.requested.com/*",
+    "*://*.requested-2.com/*"
   ]
 }

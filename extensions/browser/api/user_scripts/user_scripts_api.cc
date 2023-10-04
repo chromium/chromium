@@ -69,6 +69,10 @@ std::unique_ptr<UserScript> ParseUserScript(
     return nullptr;
   }
 
+  script_parsing::ParseGlobs(base::OptionalToPtr(user_script.include_globs),
+                             base::OptionalToPtr(user_script.exclude_globs),
+                             result.get());
+
   if (user_script.js.empty()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         kEmptySourceError, UserScript::TrimPrefixFromScriptID(user_script.id));

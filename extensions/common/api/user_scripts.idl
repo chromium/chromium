@@ -17,7 +17,9 @@ namespace userScripts {
   };
 
   // Describes a user script to be injected into a web page registered through
-  // this API.
+  // this API. The script is injected into a page if its URL matches any of
+  // "matches" or "include_globs" patterns, and the URL doesn't match
+  // "exclude_matches" and "exclude_globs" patterns.
   dictionary RegisteredUserScript {
     // If true, it will inject into all frames, even if the frame is not the
     // top-most frame in the tab. Each frame is checked independently for URL
@@ -25,7 +27,7 @@ namespace userScripts {
     // requirements are not met. Defaults to false, meaning that only the top
     // frame is matched.
     boolean? allFrames;
-    // Excludes pages that this content script would otherwise be injected into.
+    // Excludes pages that this user script would otherwise be injected into.
     // See <a href="match_patterns">Match Patterns</a> for more details on the
     // syntax of these strings.
     DOMString[]? excludeMatches;
@@ -33,12 +35,19 @@ namespace userScripts {
     // not start with a '_' as it's reserved as a prefix for generated script
     // IDs.
     DOMString id;
+    // Specifies wildcard patterns for pages this user script will be injected
+    // into.
+    DOMString[]? includeGlobs;
+    // Specifies wildcard patterns for pages this user script will NOT be
+    // injected into.
+    DOMString[]? excludeGlobs;
     // The list of ScriptSource objects defining sources of scripts to be
     // injected into matching pages.
     ScriptSource[] js;
-    // Specifies which pages this content script will be injected into. See
+    // Specifies which pages this user script will be injected into. See
     // <a href="match_patterns">Match Patterns</a> for more details on the
-    // syntax of these strings.
+    // syntax of these strings. This property must be specified for
+    // ${ref:register}.
     DOMString[]? matches;
     // Specifies when JavaScript files are injected into the web page. The
     // preferred and default value is <code>document_idle</code>.
