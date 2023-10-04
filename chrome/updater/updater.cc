@@ -115,6 +115,20 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
 
+  InitializeThreadPool("updater");
+  const base::ScopedClosureRunner shutdown_thread_pool(base::BindOnce([] {
+    // For the updater, it is important to join all threads before `UpdaterMain`
+    // exits, otherwise the behavior of the program is undefined. The threads
+    // in the pool can still run after shutdown to handle CONTINUE_ON_SHUTDOWN
+    // tasks, for example. In Chrome, the thread pool is leaked for this reason
+    // and there is no way to join its threads in production code. The updater
+    // has no such requirements (crbug.com/1484776).
+    base::ThreadPoolInstance* thread_pool = base::ThreadPoolInstance::Get();
+    thread_pool->Shutdown();
+    thread_pool->JoinForTesting();  // IN-TEST
+    base::ThreadPoolInstance::Set(nullptr);
+  }));
+
 #if BUILDFLAG(IS_WIN)
   base::win::ScopedCOMInitializer com_initializer(
       base::win::ScopedCOMInitializer::kMTA);
@@ -129,20 +143,6 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   base::win::RegisterInvalidParamHandler();
   VLOG(1) << GetUACState();
 #endif
-
-  InitializeThreadPool("updater");
-  const base::ScopedClosureRunner shutdown_thread_pool(base::BindOnce([] {
-    // For the updater, it is important to join all threads before `UpdaterMain`
-    // exits, otherwise the behavior of the program is undefined. The threads
-    // in the pool can still run after shutdown to handle CONTINUE_ON_SHUTDOWN
-    // tasks, for example. In Chrome, the thread pool is leaked for this reason
-    // and there is no way to join its threads in production code. The updater
-    // has no such requirements (crbug.com/1484776).
-    base::ThreadPoolInstance* thread_pool = base::ThreadPoolInstance::Get();
-    thread_pool->Shutdown();
-    thread_pool->JoinForTesting();  // IN-TEST
-    base::ThreadPoolInstance::Set(nullptr);
-  }));
 
   // Records a backtrace in the log, crashes the program, saves a crash dump,
   // and reports the crash.
