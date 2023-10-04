@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
 import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
+import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js';
 
 (async function() {
   TestRunner.addResult(`Tests that paint profiler is properly update when an event is selected in Flame Chart\n`);
@@ -50,7 +51,7 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
     // event will not correspond to any captured picture, and we just ignore it
     // for the purpose of this test.
     if (event.name === TimelineModel.TimelineModel.RecordType.Paint &&
-        TimelineModel.TimelineData.forEvent(event).picture) {
+        TimelineModel.TimelineModel.EventOnTimelineData.forEvent(event).picture) {
       paintEvents.push(event);
     }
   }

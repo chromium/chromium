@@ -8,6 +8,7 @@ import {NetworkTestRunner} from 'network_test_runner';
 
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
 import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
+import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js';
 
 (async function() {
   TestRunner.addResult(`Test timeline aggregated details.\n`);

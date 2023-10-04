@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js';
+
 (async function() {
   TestRunner.addResult(`Tests V8 cache information of Service Worker Cache Storage in timeline\n`);
   await TestRunner.loadLegacyModule('console');

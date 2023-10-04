@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
+import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js';
+
 (async function() {
   TestRunner.addResult(`Checks the FunctionCall with no closing event processed properly.\n`);
   await TestRunner.showPanel('timeline');
