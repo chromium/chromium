@@ -1469,6 +1469,8 @@ ci.builder(
 # TODO(crbug.com/1459433): Enable the branch once the builder is ready.
 ci.builder(
     name = "android-oreo-x86-rel",
+    # TODO(crbug.com/1487812): Enable on branches after stable.
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

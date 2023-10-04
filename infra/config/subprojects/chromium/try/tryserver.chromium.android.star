@@ -641,6 +641,41 @@ try_.builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
+try_.orchestrator_builder(
+    name = "android-x86-rel",
+    # TODO(crbug.com/1487812): Enable on branches after stable.
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    mirrors = [
+        "ci/android-oreo-x86-rel",
+    ],
+    compilator = "android-x86-rel-compilator",
+    contact_team_email = "clank-engprod@google.com",
+    coverage_test_types = ["unit", "overall"],
+    experiments = {
+        "chromium.add_one_test_shard": 10,
+    },
+    main_list_view = "try",
+    # TODO(crbug.com/1487812): Enable CQ and remove experiment_percentage
+    # after cache is warmed up.
+    tryjob = try_.job(
+        experiment_percentage = 3,
+    ),
+    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
+    # are addressed
+    # use_orchestrator_pool = True,
+    use_java_coverage = True,
+)
+
+try_.compilator_builder(
+    name = "android-x86-rel-compilator",
+    # TODO(crbug.com/1487812): Enable on branches after stable.
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    cores = 64 if settings.is_main else 32,
+    contact_team_email = "clank-engprod@google.com",
+    main_list_view = "try",
+    siso_enabled = True,
+)
+
 try_.builder(
     name = "android_arm64_dbg_recipe",
     mirrors = [
