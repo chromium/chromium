@@ -954,7 +954,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
                     is_downscale_or_identity_in_both_dimensions,
                     scoped_write->surface());
 
-      bool should_submit = !end_semaphores.empty();
+      bool should_submit_gr_context = !end_semaphores.empty();
 
       if (!FlushSurface(scoped_write->surface(), end_semaphores,
                         scoped_write.get())) {
@@ -963,8 +963,13 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
         return;
       }
 
-      if (should_submit && !gr_context()->submit()) {
+      if (should_submit_gr_context && !gr_context()->submit()) {
         DLOG(ERROR) << "CopyOutputRGBA gr_context->submit() failed";
+        return;
+      }
+
+      if (graphite_context() && !graphite_context()->submit()) {
+        DLOG(ERROR) << "CopyOutputRGBA graphite_context->submit() failed";
         return;
       }
 
