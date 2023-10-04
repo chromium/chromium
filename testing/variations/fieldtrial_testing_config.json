@@ -4599,6 +4599,24 @@
             ]
         }
     ],
+    "CrOSLateBootSwapZramCompAlgorithm": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledZstd_20231003",
+                    "params": {
+                        "comp_algorithm": "zstd"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootSwapZramCompAlgorithm"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSMglruNoKVMOpt": [
         {
             "platforms": [
