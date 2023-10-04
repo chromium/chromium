@@ -1171,15 +1171,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "nougat_or_oreo_fleet",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_os": "N2G48C|OPR4.170623.020",
-        },
-    ),
-)
-
-targets.mixin(
     name = "oreo-x86-emulator",
     args = [
         "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",

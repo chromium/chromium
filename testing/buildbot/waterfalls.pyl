@@ -4210,7 +4210,7 @@
         'os_type': 'android',
         'skip_merge_script': True,
         'mixins': [
-          'nougat_or_oreo_fleet',
+          'oreo_fleet',
           'bullhead',
         ],
         'test_suites': {

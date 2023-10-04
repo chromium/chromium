@@ -926,13 +926,6 @@
       ],
     },
   },
-  'nougat_or_oreo_fleet': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'N2G48C|OPR4.170623.020',
-      },
-    },
-  },
   'oreo-x86-emulator': {
     'args': [
       '--avd-config=../../tools/android/avd/proto/generic_android26.textpb',
