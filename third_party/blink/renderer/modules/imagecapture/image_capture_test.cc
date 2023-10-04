@@ -44,7 +44,6 @@ using ExpectHasPanTiltZoom =
 using PopulatePanTiltZoom =
     base::StrongAlias<class PopulatePanTiltZoomZoomTag, bool>;
 
-using media::VideoFrame;
 using testing::_;
 using testing::Invoke;
 using testing::NiceMock;
@@ -668,7 +667,7 @@ class ImageCaptureTest : public testing::Test {
                              MediaStreamVideoSink::IsSecure is_secure,
                              MediaStreamVideoSink::UsesAlpha uses_alpha) {
           platform_track_->AddSink(sink, callback, is_secure, uses_alpha);
-          callback.Run(VideoFrame::CreateBlackFrame(gfx::Size(1, 1)),
+          callback.Run(media::VideoFrame::CreateBlackFrame(gfx::Size(1, 1)),
                        /*scaled_video_frames=*/{},
                        /*estimated_capture_time=*/base::TimeTicks());
         }));
