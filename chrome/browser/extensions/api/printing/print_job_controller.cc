@@ -1,82 +1,162 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/printing/print_job_controller.h"
 
 #include <memory>
-#include <utility>
+#include <string>
 
-#include "base/check.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/printer_query.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/child_process_host.h"
 #include "content/public/browser/global_routing_id.h"
 #include "printing/metafile_skia.h"
 #include "printing/print_settings.h"
 #include "printing/printed_document.h"
 
-namespace extensions {
+namespace printing {
 
 namespace {
 
-void StartPrinting(scoped_refptr<printing::PrintJob> job,
-                   const std::string& extension_id,
-                   std::unique_ptr<printing::MetafileSkia> metafile,
-                   std::unique_ptr<printing::PrinterQuery> query) {
+void OnPrintSettingsApplied(scoped_refptr<PrintJob> print_job,
+                            std::unique_ptr<MetafileSkia> pdf,
+                            std::unique_ptr<PrinterQuery> query,
+                            PrintJob::Source source,
+                            const std::string& source_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Save in separate variable because |query| is moved.
   std::u16string title = query->settings().title();
-  job->Initialize(std::move(query), title, /*page_count=*/1);
-  job->SetSource(printing::PrintJob::Source::kExtension, extension_id);
-  job->document()->SetDocument(std::move(metafile));
-  job->StartPrinting();
+  print_job->Initialize(std::move(query), title, /*page_count=*/1);
+  print_job->SetSource(source, source_id);
+  print_job->document()->SetDocument(std::move(pdf));
+  print_job->StartPrinting();
 }
 
 }  // namespace
 
-// This class lives on UI thread.
-class PrintJobControllerImpl : public PrintJobController {
- public:
-  PrintJobControllerImpl() = default;
-  ~PrintJobControllerImpl() override = default;
+class PendingJob;
 
-  // PrintJobController:
-  scoped_refptr<printing::PrintJob> StartPrintJob(
-      const std::string& extension_id,
-      std::unique_ptr<printing::MetafileSkia> metafile,
-      std::unique_ptr<printing::PrintSettings> settings) override;
+// Keeps track of pending jobs and removes them from the storage once
+// processed.
+class PrintJobController::PendingJobStorage {
+ public:
+  PendingJobStorage() = default;
+  ~PendingJobStorage() = default;
+
+  PendingJobStorage(const PendingJobStorage&) = delete;
+  PendingJobStorage& operator=(const PendingJobStorage&) = delete;
+
+  void StartWatchingPrintJob(scoped_refptr<PrintJob> print_job,
+                             PrintJobCreatedCallback callback);
+
+  void DeletePendingJobPlease(PendingJob* pending_job);
+
+ private:
+  using PendingJobs =
+      base::flat_set<std::unique_ptr<PendingJob>, base::UniquePtrComparator>;
+
+  PendingJobs pending_jobs_;
 };
 
-scoped_refptr<printing::PrintJob> PrintJobControllerImpl::StartPrintJob(
-    const std::string& extension_id,
-    std::unique_ptr<printing::MetafileSkia> metafile,
-    std::unique_ptr<printing::PrintSettings> settings) {
+// Observes the given `print_job` and invokes `callback` once the job signals
+// OnDocDone() or OnFailed().
+class PendingJob : public PrintJob::Observer {
+ public:
+  PendingJob(PrintJobController::PendingJobStorage* storage,
+             scoped_refptr<PrintJob> print_job,
+             PrintJobController::PrintJobCreatedCallback callback);
+  ~PendingJob() override;
+
+  PendingJob(const PendingJob&) = delete;
+  PendingJob& operator=(const PendingJob&) = delete;
+
+  void OnDocDone(int job_id, PrintedDocument* document) override;
+  void OnFailed() override;
+
+ private:
+  // `storage_` owns `this`.
+  const raw_ref<PrintJobController::PendingJobStorage> storage_;
+
+  scoped_refptr<PrintJob> print_job_;
+  PrintJobController::PrintJobCreatedCallback callback_;
+};
+
+void PrintJobController::PendingJobStorage::StartWatchingPrintJob(
+    scoped_refptr<PrintJob> print_job,
+    PrintJobCreatedCallback callback) {
+  auto pending_job = std::make_unique<PendingJob>(this, std::move(print_job),
+                                                  std::move(callback));
+  pending_jobs_.insert(std::move(pending_job));
+}
+
+void PrintJobController::PendingJobStorage::DeletePendingJobPlease(
+    PendingJob* pending_job) {
+  pending_jobs_.erase(pending_job);
+}
+
+PrintJobController::PrintJobController()
+    : pending_job_storage_(std::make_unique<PendingJobStorage>()) {}
+
+PrintJobController::~PrintJobController() = default;
+
+void PrintJobController::StartWatchingPrintJob(
+    scoped_refptr<PrintJob> print_job,
+    PrintJobCreatedCallback callback) {
+  pending_job_storage_->StartWatchingPrintJob(std::move(print_job),
+                                              std::move(callback));
+}
+
+PendingJob::PendingJob(PrintJobController::PendingJobStorage* storage,
+                       scoped_refptr<PrintJob> print_job,
+                       PrintJobController::PrintJobCreatedCallback callback)
+    : storage_(*storage),
+      print_job_(std::move(print_job)),
+      callback_(std::move(callback)) {
+  print_job_->AddObserver(*this);
+}
+
+PendingJob::~PendingJob() {
+  print_job_->RemoveObserver(*this);
+}
+
+void PendingJob::OnDocDone(int job_id, PrintedDocument* document) {
+  auto document_ref = raw_ref<PrintedDocument>::from_ptr(document);
+  std::move(callback_).Run(PrintJobCreatedInfo{job_id, document_ref});
+
+  storage_->DeletePendingJobPlease(this);
+}
+
+void PendingJob::OnFailed() {
+  std::move(callback_).Run(absl::nullopt);
+
+  storage_->DeletePendingJobPlease(this);
+}
+
+void PrintJobController::CreatePrintJob(std::unique_ptr<MetafileSkia> pdf,
+                                        std::unique_ptr<PrintSettings> settings,
+                                        PrintJob::Source source,
+                                        const std::string& source_id,
+                                        PrintJobCreatedCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto job = base::MakeRefCounted<printing::PrintJob>(
-      g_browser_process->print_job_manager());
+  auto print_job =
+      base::MakeRefCounted<PrintJob>(g_browser_process->print_job_manager());
+  StartWatchingPrintJob(print_job, std::move(callback));
 
-  auto query =
-      printing::PrinterQuery::Create(content::GlobalRenderFrameHostId());
+  auto query = PrinterQuery::Create(content::GlobalRenderFrameHostId());
   auto* query_ptr = query.get();
+
   query_ptr->SetSettingsFromPOD(
       std::move(settings),
-      base::BindOnce(&StartPrinting, job, extension_id, std::move(metafile),
-                     std::move(query)));
-  return job;
+      base::BindOnce(&OnPrintSettingsApplied, print_job, std::move(pdf),
+                     std::move(query), source, source_id));
 }
 
-// static
-std::unique_ptr<PrintJobController> PrintJobController::Create() {
-  return std::make_unique<PrintJobControllerImpl>();
-}
-
-}  // namespace extensions
+}  // namespace printing

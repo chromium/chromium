@@ -66,24 +66,28 @@ void FakePrintJobControllerAsh::OnPrintJobCancelled(
   jobs_.erase(job->GetUniqueId());
 }
 
-scoped_refptr<printing::PrintJob> FakePrintJobControllerAsh::StartPrintJob(
-    const std::string& extension_id,
-    std::unique_ptr<printing::MetafileSkia> metafile,
-    std::unique_ptr<printing::PrintSettings> settings) {
+void FakePrintJobControllerAsh::CreatePrintJob(
+    std::unique_ptr<printing::MetafileSkia> pdf,
+    std::unique_ptr<printing::PrintSettings> settings,
+    crosapi::mojom::PrintJob::Source source,
+    const std::string& source_id,
+    PrintJobCreatedCallback callback) {
   auto job = base::MakeRefCounted<PrintJobForTesting>();
+  StartWatchingPrintJob(job, std::move(callback));
+
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&FakePrintJobControllerAsh::StartPrinting,
+      FROM_HERE, base::BindOnce(&FakePrintJobControllerAsh::CreatePrintJobImpl,
                                 weak_ptr_factory_.GetWeakPtr(), job,
-                                extension_id, std::move(settings)));
-  return job;
+                                std::move(settings), source, source_id));
 }
 
-void FakePrintJobControllerAsh::StartPrinting(
+void FakePrintJobControllerAsh::CreatePrintJobImpl(
     scoped_refptr<printing::PrintJob> job,
-    const std::string& extension_id,
-    std::unique_ptr<printing::PrintSettings> settings) {
+    std::unique_ptr<printing::PrintSettings> settings,
+    crosapi::mojom::PrintJob::Source source,
+    const std::string& source_id) {
   job_id_++;
-  job->SetSource(printing::PrintJob::Source::kExtension, extension_id);
+  job->SetSource(source, source_id);
 
   absl::optional<chromeos::Printer> printer =
       printers_manager_->GetPrinter(base::UTF16ToUTF8(settings->device_name()));
@@ -110,8 +114,8 @@ void FakePrintJobControllerAsh::StartPrinting(
   // Create a new CupsPrintJob.
   auto print_job = std::make_unique<ash::CupsPrintJob>(
       *printer, job_id_, base::UTF16ToUTF8(document->settings().title()),
-      /*total_page_number=*/1, printing::PrintJob::Source::kExtension,
-      extension_id, ash::PrintSettingsToProto(document->settings()));
+      /*total_page_number=*/1, source, source_id,
+      ash::PrintSettingsToProto(document->settings()));
   print_job_manager_->CreatePrintJob(print_job.get());
   print_job_manager_->StartPrintJob(print_job.get());
   std::string id = print_job->GetUniqueId();

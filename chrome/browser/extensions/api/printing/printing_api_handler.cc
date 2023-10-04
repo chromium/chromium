@@ -76,7 +76,7 @@ std::unique_ptr<PrintingAPIHandler> PrintingAPIHandler::CreateForTesting(
     content::BrowserContext* browser_context,
     EventRouter* event_router,
     ExtensionRegistry* extension_registry,
-    std::unique_ptr<PrintJobController> print_job_controller,
+    std::unique_ptr<printing::PrintJobController> print_job_controller,
     std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
     crosapi::mojom::LocalPrinter* local_printer) {
   return std::make_unique<PrintingAPIHandler>(
@@ -88,7 +88,7 @@ PrintingAPIHandler::PrintingAPIHandler(content::BrowserContext* browser_context)
     : PrintingAPIHandler(browser_context,
                          EventRouter::Get(browser_context),
                          ExtensionRegistry::Get(browser_context),
-                         PrintJobController::Create(),
+                         std::make_unique<printing::PrintJobController>(),
                          chromeos::CupsWrapper::Create(),
                          GetLocalPrinterInterface()) {
   CHECK(local_printer_);
@@ -101,7 +101,7 @@ PrintingAPIHandler::PrintingAPIHandler(
     content::BrowserContext* browser_context,
     EventRouter* event_router,
     ExtensionRegistry* extension_registry,
-    std::unique_ptr<PrintJobController> print_job_controller,
+    std::unique_ptr<printing::PrintJobController> print_job_controller,
     std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
     crosapi::mojom::LocalPrinter* local_printer)
     : browser_context_(browser_context),
@@ -329,7 +329,7 @@ void PrintingAPIHandler::OnPrinterStatusRetrieved(
 }
 
 void PrintingAPIHandler::SetPrintJobControllerForTesting(
-    std::unique_ptr<PrintJobController> print_job_controller) {
+    std::unique_ptr<printing::PrintJobController> print_job_controller) {
   print_job_controller_ = std::move(print_job_controller);
 }
 

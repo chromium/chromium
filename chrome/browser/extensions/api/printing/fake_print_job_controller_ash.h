@@ -24,7 +24,7 @@ namespace extensions {
 // Fake print job controller which doesn't send print jobs to actual printing
 // pipeline.
 // It's used in API integration tests.
-class FakePrintJobControllerAsh : public PrintJobController,
+class FakePrintJobControllerAsh : public printing::PrintJobController,
                                   ash::CupsPrintJobManager::Observer {
  public:
   FakePrintJobControllerAsh(ash::TestCupsPrintJobManager* print_job_manager,
@@ -37,15 +37,17 @@ class FakePrintJobControllerAsh : public PrintJobController,
   void OnPrintJobCancelled(base::WeakPtr<ash::CupsPrintJob> job) override;
 
   // PrintJobController:
-  scoped_refptr<printing::PrintJob> StartPrintJob(
-      const std::string& extension_id,
-      std::unique_ptr<printing::MetafileSkia> metafile,
-      std::unique_ptr<printing::PrintSettings> settings) override;
+  void CreatePrintJob(std::unique_ptr<printing::MetafileSkia> pdf,
+                      std::unique_ptr<printing::PrintSettings> settings,
+                      crosapi::mojom::PrintJob::Source source,
+                      const std::string& source_id,
+                      PrintJobCreatedCallback callback) override;
 
  private:
-  void StartPrinting(scoped_refptr<printing::PrintJob> job,
-                     const std::string& extension_id,
-                     std::unique_ptr<printing::PrintSettings> settings);
+  void CreatePrintJobImpl(scoped_refptr<printing::PrintJob> job,
+                          std::unique_ptr<printing::PrintSettings> settings,
+                          crosapi::mojom::PrintJob::Source source,
+                          const std::string& source_id);
 
   // Not owned by FakePrintJobControllerAsh.
   const raw_ptr<ash::TestCupsPrintJobManager> print_job_manager_;

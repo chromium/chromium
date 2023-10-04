@@ -74,7 +74,7 @@ bool IsUserConfirmationRequired(content::BrowserContext* browser_context,
 PrintJobSubmitter::PrintJobSubmitter(
     gfx::NativeWindow native_window,
     content::BrowserContext* browser_context,
-    PrintJobController* print_job_controller,
+    printing::PrintJobController* print_job_controller,
     printing::PdfBlobDataFlattener* pdf_blob_data_flattener,
     scoped_refptr<const extensions::Extension> extension,
     api::printing::SubmitJobRequest request,
@@ -93,11 +93,7 @@ PrintJobSubmitter::PrintJobSubmitter(
     native_window_tracker_ = views::NativeWindowTracker::Create(native_window);
 }
 
-PrintJobSubmitter::~PrintJobSubmitter() {
-  DCHECK(!callback_);
-  if (print_job_)
-    print_job_->RemoveObserver(*this);
-}
+PrintJobSubmitter::~PrintJobSubmitter() = default;
 
 // static
 void PrintJobSubmitter::Run(std::unique_ptr<PrintJobSubmitter> submitter) {
@@ -225,24 +221,23 @@ void PrintJobSubmitter::OnPrintJobConfirmationDialogClosed(bool accepted) {
 void PrintJobSubmitter::StartPrintJob() {
   CHECK(extension_);
   CHECK(settings_);
-  CHECK(!print_job_);
   CHECK(flattened_pdf_);
-  print_job_ = print_job_controller_->StartPrintJob(
-      extension_->id(), std::move(flattened_pdf_), std::move(settings_));
-  print_job_->AddObserver(*this);
+  print_job_controller_->CreatePrintJob(
+      std::move(flattened_pdf_), std::move(settings_),
+      crosapi::mojom::PrintJob::Source::kExtension, extension_->id(),
+      base::BindOnce(&PrintJobSubmitter::OnPrintJobCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PrintJobSubmitter::OnDocDone(int job_id,
-                                  printing::PrintedDocument* document) {
+void PrintJobSubmitter::OnPrintJobCreated(
+    absl::optional<printing::PrintJobCreatedInfo> info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!info) {
+    FireErrorCallback(kPrintingFailed);
+    return;
+  }
   DCHECK(callback_);
-
-  auto document_ref = raw_ref<printing::PrintedDocument>::from_ptr(document);
-  std::move(callback_).Run(printing::PrintJobCreatedInfo{job_id, document_ref});
-}
-
-void PrintJobSubmitter::OnFailed() {
-  FireErrorCallback(kPrintingFailed);
+  std::move(callback_).Run(std::move(*info));
 }
 
 void PrintJobSubmitter::FireErrorCallback(const std::string& error) {

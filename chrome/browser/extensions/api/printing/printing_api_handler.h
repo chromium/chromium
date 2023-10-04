@@ -39,6 +39,7 @@ class BrowserContext;
 
 namespace printing {
 class PdfBlobDataFlattener;
+class PrintJobController;
 struct PrinterStatus;
 struct PrintJobCreatedInfo;
 }  // namespace printing
@@ -46,7 +47,6 @@ struct PrintJobCreatedInfo;
 namespace extensions {
 
 class ExtensionRegistry;
-class PrintJobController;
 
 // Handles chrome.printing API functions calls, acts as a PrintJobObserver,
 // and generates OnJobStatusChanged() events of chrome.printing API.
@@ -70,17 +70,20 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
       content::BrowserContext* browser_context,
       EventRouter* event_router,
       ExtensionRegistry* extension_registry,
-      std::unique_ptr<PrintJobController> print_job_controller,
+      std::unique_ptr<printing::PrintJobController> print_job_controller,
       std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
       crosapi::mojom::LocalPrinter* local_printer);
 
   explicit PrintingAPIHandler(content::BrowserContext* browser_context);
-  PrintingAPIHandler(content::BrowserContext* browser_context,
-                     EventRouter* event_router,
-                     ExtensionRegistry* extension_registry,
-                     std::unique_ptr<PrintJobController> print_job_controller,
-                     std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
-                     crosapi::mojom::LocalPrinter* local_printer);
+
+  PrintingAPIHandler(
+      content::BrowserContext* browser_context,
+      EventRouter* event_router,
+      ExtensionRegistry* extension_registry,
+      std::unique_ptr<printing::PrintJobController> print_job_controller,
+      std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
+      crosapi::mojom::LocalPrinter* local_printer);
+
   PrintingAPIHandler(const PrintingAPIHandler&) = delete;
   PrintingAPIHandler& operator=(const PrintingAPIHandler&) = delete;
   ~PrintingAPIHandler() override;
@@ -122,7 +125,7 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
                       GetPrinterInfoCallback callback);
 
   void SetPrintJobControllerForTesting(
-      std::unique_ptr<PrintJobController> print_job_controller);
+      std::unique_ptr<printing::PrintJobController> print_job_controller);
 
  private:
   // Needed for BrowserContextKeyedAPI implementation.
@@ -161,7 +164,8 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   const raw_ptr<content::BrowserContext> browser_context_;
   const raw_ptr<EventRouter> event_router_;
   const raw_ptr<ExtensionRegistry> extension_registry_;
-  std::unique_ptr<PrintJobController> print_job_controller_;
+
+  std::unique_ptr<printing::PrintJobController> print_job_controller_;
   std::unique_ptr<chromeos::CupsWrapper> cups_wrapper_;
 
   const std::unique_ptr<printing::PdfBlobDataFlattener>

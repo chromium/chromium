@@ -8,10 +8,14 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
+
 class MetafileSkia;
 class PrintedDocument;
 class PrintJob;
@@ -22,31 +26,43 @@ struct PrintJobCreatedInfo {
   const raw_ref<PrintedDocument> document;
 };
 
-}  // namespace printing
-
-namespace extensions {
-
-// This class is responsible for sending print jobs in the printing pipeline.
-// It should be used by API handler as the entry point of actual printing
-// pipeline.
+// This class serves as an entry point to the printing pipeline. It sends print
+// jobs to the printing system and waits for them to be acknowledged.
 class PrintJobController {
  public:
-  static std::unique_ptr<PrintJobController> Create();
+  class PendingJobStorage;
 
-  PrintJobController() = default;
+  using PrintJobCreatedCallback =
+      base::OnceCallback<void(absl::optional<PrintJobCreatedInfo>)>;
+
+  PrintJobController();
   PrintJobController(const PrintJobController&) = delete;
   PrintJobController& operator=(const PrintJobController&) = delete;
-  virtual ~PrintJobController() = default;
+  virtual ~PrintJobController();
 
-  // Returns an uninitialized print job and starts printing.
-  // Do not call Initialize() on the returned print job. StartPrintJob() will
-  // initialize it internally.
-  virtual scoped_refptr<printing::PrintJob> StartPrintJob(
-      const std::string& extension_id,
-      std::unique_ptr<printing::MetafileSkia> metafile,
-      std::unique_ptr<printing::PrintSettings> settings) = 0;
+  // Creates a print job for the given `pdf` file with provided `settings`.
+  // Invokes `callback` with job info once the job is acknowledged by the
+  // printing system. If the job fails to start for some reason, invokes
+  // `callback` with absl::nullopt.
+  // `this` indirectly owns `callback`.
+  // Virtual for testing.
+  virtual void CreatePrintJob(std::unique_ptr<MetafileSkia> pdf,
+                              std::unique_ptr<PrintSettings> settings,
+                              crosapi::mojom::PrintJob::Source source,
+                              const std::string& source_id,
+                              PrintJobCreatedCallback callback);
+
+ protected:
+  // Starts watching the provided `print_job` and invokes `callback` with job
+  // info once the job is acknowledged by the printing system. If the job fails
+  // to start for some reason, invokes `callback` with absl::nullopt.
+  void StartWatchingPrintJob(scoped_refptr<PrintJob> print_job,
+                             PrintJobCreatedCallback callback);
+
+ private:
+  const std::unique_ptr<PendingJobStorage> pending_job_storage_;
 };
 
-}  // namespace extensions
+}  // namespace printing
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PRINTING_PRINT_JOB_CONTROLLER_H_
