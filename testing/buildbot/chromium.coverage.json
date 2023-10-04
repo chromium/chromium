@@ -8053,7 +8053,8 @@
     "gtest_tests": [
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8071,7 +8072,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8089,7 +8091,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8107,7 +8110,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8126,7 +8130,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8144,7 +8149,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8162,7 +8168,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8180,7 +8187,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8199,7 +8207,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8218,7 +8227,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8236,7 +8246,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8254,7 +8265,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8272,7 +8284,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8290,7 +8303,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8308,7 +8322,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8326,7 +8341,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8348,7 +8364,8 @@
           "--test-arg=--disable-gpu",
           "--test-arg=--headless",
           "--test-arg=--ozone-platform=headless",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8367,7 +8384,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8386,7 +8404,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8409,6 +8428,7 @@
           "--test-arg=--headless",
           "--test-arg=--ozone-platform=headless",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large",
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.coverage.content_browsertests.filter",
           "--test-launcher-jobs=1"
         ],
@@ -8429,7 +8449,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8448,7 +8469,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8466,7 +8488,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8484,7 +8507,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8502,7 +8526,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8520,7 +8545,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8539,7 +8565,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8557,7 +8584,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8575,7 +8603,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8594,7 +8623,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8612,7 +8642,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8630,7 +8661,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8649,7 +8681,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8667,7 +8700,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8686,7 +8720,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8704,7 +8739,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8722,7 +8758,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8740,7 +8777,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8759,7 +8797,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8777,7 +8816,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8795,7 +8835,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8814,7 +8855,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8833,7 +8875,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8853,7 +8896,8 @@
       {
         "args": [
           "--test-arg=--ozone-platform=headless",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8871,7 +8915,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8889,7 +8934,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8907,7 +8953,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8926,7 +8973,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8945,7 +8993,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8963,7 +9012,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8981,7 +9031,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8999,7 +9050,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9017,7 +9069,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9036,7 +9089,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9054,7 +9108,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9072,7 +9127,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9090,7 +9146,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9109,7 +9166,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9128,7 +9186,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9147,7 +9206,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9165,7 +9225,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9186,6 +9247,7 @@
         "args": [
           "--test-arg=--vmodule=test_navigation_listener=1",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large",
           "--test-launcher-jobs=1"
         ],
         "isolate_profile_data": true,
@@ -9205,7 +9267,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9223,7 +9286,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9241,7 +9305,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9259,7 +9324,8 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9281,6 +9347,7 @@
         "args": [
           "bin/run_angle_unittests",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=virtual_device_large",
           "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],
         "isolate_profile_data": true,

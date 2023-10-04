@@ -409,6 +409,11 @@
       '--code-coverage-dir=${ISOLATED_OUTDIR}',
     ],
   },
+  'fuchsia-large-device-spec': {
+    'args': [
+      '--device-spec=virtual_device_large',
+    ],
+  },
   'fuchsia-persistent-emulator': {
     'args': [
       '--everlasting',

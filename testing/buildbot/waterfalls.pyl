@@ -2344,6 +2344,7 @@
         },
         'mixins': [
           'fuchsia-code-coverage',
+          'fuchsia-large-device-spec',
           'isolate_profile_data',
           'linux-jammy',
         ],

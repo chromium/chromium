@@ -507,6 +507,16 @@ targets.mixin(
     ],
 )
 
+# TODO(b/300509814): Large device spec should be the default choice.
+# Choose virtual_device_large spec for more ram. This mixin works on emulators
+# only.
+targets.mixin(
+    name = "fuchsia-large-device-spec",
+    args = [
+        "--device-spec=virtual_device_large",
+    ],
+)
+
 targets.mixin(
     name = "fuchsia-persistent-emulator",
     args = [
