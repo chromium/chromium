@@ -334,9 +334,6 @@ extern const char kAutofillMoveLegalTermsAndIconForNewCardEnrollmentName[];
 extern const char
     kAutofillMoveLegalTermsAndIconForNewCardEnrollmentDescription[];
 
-extern const char kAutofillOfferToSaveCardWithSameLastFourName[];
-extern const char kAutofillOfferToSaveCardWithSameLastFourDescription[];
-
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 

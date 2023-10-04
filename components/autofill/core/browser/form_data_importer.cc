@@ -900,16 +900,11 @@ absl::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
       return *server_card;
     }
 
-    bool has_same_expiration_date =
-        server_card->HasSameExpirationDateAs(candidate);
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillOfferToSaveCardWithSameLastFour) ||
-        has_same_expiration_date) {
+    // Only return the masked server card if both the last four digits and
+    // expiration date match.
+    if (server_card->HasSameExpirationDateAs(candidate)) {
       AutofillMetrics::LogSubmittedServerCardExpirationStatusMetric(
-          has_same_expiration_date
-              ? AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_MATCHED
-              : AutofillMetrics::
-                    MASKED_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH);
+          AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_MATCHED);
 
       // Return that we found a masked server card with matching last four
       // digits.

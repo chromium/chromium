@@ -194,13 +194,6 @@ BASE_FEATURE(kAutofillMoveLegalTermsAndIconForNewCardEnrollment,
              "AutofillMoveLegalTermsAndIconForNewCardEnrollment",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, Autofill will offer saving a card to the users when the Chrome
-// detects a card number with the last 4 digits that matches an existing server
-// card but has a different expiration date.
-BASE_FEATURE(kAutofillOfferToSaveCardWithSameLastFour,
-             "AutofillOfferToSaveCardWithSameLastFour",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Autofill will attempt to find standalone CVC fields for VCN
 // card on file when parsing forms.
 BASE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields,

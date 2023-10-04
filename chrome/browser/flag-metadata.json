@@ -700,11 +700,6 @@
     "expiry_milestone": 123
   },
   {
-    "name": "autofill-offer-to-save-card-with-same-last-four",
-    "owners": [ "qihuizhao@google.com", "jsaul@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "autofill-parse-vcn-card-on-file-standalone-cvc-fields",
     "owners": [ "jsaul@google.com", "alexandertekle@google.com" ],
     "expiry_milestone": 120
