@@ -416,6 +416,8 @@ class AutofillClient : public RiskDataLoader {
   const PersonalDataManager* GetPersonalDataManager() const;
 
   // Gets the AutofillOptimizationGuide instance associated with the client.
+  // This function can return nullptr if we are on an unsupported platform, or
+  // if the AutofillOptimizationGuide's dependencies are not present.
   virtual AutofillOptimizationGuide* GetAutofillOptimizationGuide() const;
 
   // Gets the AutofillModelHandler instance for autofill machine learning
