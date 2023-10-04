@@ -3317,20 +3317,6 @@ bool LayoutBox::IsCustomItem() const {
   return parent_layout_box && parent_layout_box->IsLoaded();
 }
 
-void LayoutBox::AddVisualEffectOverflow() {
-  NOT_DESTROYED();
-  if (!StyleRef().HasVisualOverflowingEffect())
-    return;
-
-  // Add in the final overflow with shadows, outsets and outline combined.
-  PhysicalRect visual_effect_overflow = PhysicalBorderBoxRect();
-  NGPhysicalBoxStrut outsets = ComputeVisualEffectOverflowOutsets();
-  visual_effect_overflow.Expand(outsets);
-  AddSelfVisualOverflow(visual_effect_overflow);
-  if (VisualOverflowIsSet())
-    UpdateHasSubpixelVisualEffectOutsets(outsets);
-}
-
 NGPhysicalBoxStrut LayoutBox::ComputeVisualEffectOverflowOutsets() {
   NOT_DESTROYED();
   const ComputedStyle& style = StyleRef();
@@ -3352,24 +3338,6 @@ NGPhysicalBoxStrut LayoutBox::ComputeVisualEffectOverflowOutsets() {
   }
 
   return outsets;
-}
-
-void LayoutBox::AddVisualOverflowFromChild(const LayoutBox& child,
-                                           const PhysicalOffset& delta) {
-  NOT_DESTROYED();
-  // Never allow flow threads to propagate overflow up to a parent.
-  if (child.IsLayoutFlowThread())
-    return;
-
-  // Add in visual overflow from the child.  Even if the child clips its
-  // overflow, it may still have visual overflow of its own set from box shadows
-  // or reflections. It is unnecessary to propagate this overflow if we are
-  // clipping our own overflow.
-  if (child.HasSelfPaintingLayer())
-    return;
-  PhysicalRect child_visual_overflow_rect = child.VisualOverflowRect();
-  child_visual_overflow_rect.Move(delta);
-  AddContentsVisualOverflow(child_visual_overflow_rect);
 }
 
 bool LayoutBox::HasTopOverflow() const {
@@ -3613,7 +3581,9 @@ void LayoutBox::AddContentsVisualOverflow(const PhysicalRect& rect) {
 
 void LayoutBox::UpdateHasSubpixelVisualEffectOutsets(
     const NGPhysicalBoxStrut& outsets) {
-  DCHECK(VisualOverflowIsSet());
+  if (!VisualOverflowIsSet()) {
+    return;
+  }
   overflow_->visual_overflow->SetHasSubpixelVisualEffectOutsets(
       !IsIntegerValue(outsets.top) || !IsIntegerValue(outsets.right) ||
       !IsIntegerValue(outsets.bottom) || !IsIntegerValue(outsets.left));
@@ -3673,25 +3643,6 @@ bool LayoutBox::CanUseFragmentsForVisualOverflow() const {
   if (!fragment.CanUseFragmentsForInkOverflow())
     return false;
   return true;
-}
-
-void LayoutBox::RecalcFragmentsVisualOverflow() {
-  NOT_DESTROYED();
-  DCHECK(CanUseFragmentsForVisualOverflow());
-  DCHECK_GT(PhysicalFragmentCount(), 0u);
-  DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));
-  for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
-    DCHECK(fragment.CanUseFragmentsForInkOverflow());
-    fragment.GetMutableForPainting().RecalcInkOverflow();
-  }
-  // |NGPhysicalBoxFragment::RecalcInkOverflow| should have copied the computed
-  // values back to |this| and its descendant fragments.
-  //
-  // We can't check descendants of |this| here, because the descendant fragments
-  // may be different from descendant |LayoutObject|s, but the descendant
-  // fragments should match what |PrePaintTreeWalk| traverses. If there were
-  // mismatches, |PrePaintTreeWalk| should hit the DCHECKs.
-  CheckIsVisualOverflowComputed();
 }
 
 // Copy visual overflow from |PhysicalFragments()|.

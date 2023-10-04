@@ -471,21 +471,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void AddSelfVisualOverflow(const PhysicalRect& r);
   void AddContentsVisualOverflow(const PhysicalRect& r);
+  void UpdateHasSubpixelVisualEffectOutsets(const NGPhysicalBoxStrut&);
 
-  virtual void AddVisualEffectOverflow();
   NGPhysicalBoxStrut ComputeVisualEffectOverflowOutsets();
-  void AddVisualOverflowFromChild(const LayoutBox& child) {
-    NOT_DESTROYED();
-    AddVisualOverflowFromChild(child, PhysicalLocation());
-  }
-  void AddVisualOverflowFromChild(const LayoutBox& child,
-                                  const PhysicalOffset& delta);
 
   void ClearLayoutOverflow();
   void ClearVisualOverflow();
 
   bool CanUseFragmentsForVisualOverflow() const;
-  void RecalcFragmentsVisualOverflow();
   void CopyVisualOverflowFromFragments();
 
   virtual void UpdateAfterLayout();
@@ -1488,7 +1481,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // clipped to, including overflow-clip-margin.
   NGPhysicalBoxStrut BorderOutsetsForClipping() const;
 
-  void UpdateHasSubpixelVisualEffectOutsets(const NGPhysicalBoxStrut&);
   void SetVisualOverflow(const PhysicalRect& self,
                          const PhysicalRect& contents);
   void CopyVisualOverflowFromFragmentsWithoutInvalidations();

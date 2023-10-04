@@ -175,7 +175,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
  public:
   RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
 
-  void RecalcChildVisualOverflow();
   void RecalcVisualOverflow() override;
 
   // An example explaining layout tree structure about first-line style:
@@ -231,10 +230,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   bool RespectsCSSOverflow() const override;
 
  protected:
-  virtual void ComputeVisualOverflow();
-  void AddVisualOverflowFromChildren();
-  virtual void AddVisualOverflowFromBlockChildren();
-
   void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,

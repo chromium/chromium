@@ -43,7 +43,6 @@
 namespace blink {
 
 class LayoutMultiColumnFlowThread;
-class NGPhysicalFragment;
 
 struct NGInlineNodeData;
 
@@ -73,8 +72,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     NOT_DESTROYED();
     return true;
   }
-
-  void ComputeVisualOverflow() override;
 
   bool CanContainFirstFormattedLine() const;
 
@@ -112,8 +109,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   bool IsInitialLetterBox() const override;
 
-  void AddVisualOverflowFromInlineChildren();
-
   // Return true if this object is allowed to establish a multicol container.
   virtual bool AllowsColumns() const;
 
@@ -126,15 +121,9 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void SetShouldDoFullPaintInvalidationForFirstLine();
 
-  void RecalcInlineChildrenVisualOverflow();
-
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   bool ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom() const;
-
-  // These functions are only public so we can call it from NGBlockNode while
-  // we're still working on LayoutNG.
-  void AddVisualOverflowFromFloats(const NGPhysicalFragment& fragment);
 
   // Returns the associated `NGInlineNodeData`, or `nullptr` if `this` doesn't
   // have one (i.e., not an NG inline formatting context.)
@@ -190,9 +179,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   bool ShouldTruncateOverflowingText() const;
 
  private:
-  static void RecalcFloatingDescendantsVisualOverflow(
-      const NGPhysicalFragment& fragment);
-
   Member<LayoutMultiColumnFlowThread> multi_column_flow_thread_;
 
  protected:

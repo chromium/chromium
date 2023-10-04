@@ -317,49 +317,6 @@ void LayoutBlock::RemoveLeftoverAnonymousBlock(LayoutBlock* child) {
   child->Destroy();
 }
 
-void LayoutBlock::AddVisualOverflowFromChildren() {
-  NOT_DESTROYED();
-  // It is an error to call this function on a LayoutBlock that it itself inside
-  // a display-locked subtree.
-  DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));
-  if (ChildPrePaintBlockedByDisplayLock())
-    return;
-
-  DCHECK(!NeedsLayout());
-
-  if (ChildrenInline())
-    To<LayoutBlockFlow>(this)->AddVisualOverflowFromInlineChildren();
-  else
-    AddVisualOverflowFromBlockChildren();
-}
-
-void LayoutBlock::ComputeVisualOverflow() {
-  NOT_DESTROYED();
-  DCHECK(!SelfNeedsFullLayout());
-
-  PhysicalRect previous_visual_overflow_rect = VisualOverflowRect();
-  ClearVisualOverflow();
-  AddVisualOverflowFromChildren();
-  AddVisualEffectOverflow();
-
-  if (VisualOverflowRect() != previous_visual_overflow_rect) {
-    InvalidateIntersectionObserverCachedRects();
-    SetShouldCheckForPaintInvalidation();
-  }
-}
-
-void LayoutBlock::AddVisualOverflowFromBlockChildren() {
-  NOT_DESTROYED();
-  for (LayoutBox* child = FirstChildBox(); child;
-       child = child->NextSiblingBox()) {
-    if (child->IsOutOfFlowPositioned() || child->IsColumnSpanAll()) {
-      continue;
-    }
-
-    AddVisualOverflowFromChild(*child);
-  }
-}
-
 void LayoutBlock::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
 
@@ -855,35 +812,19 @@ RecalcLayoutOverflowResult LayoutBlock::RecalcLayoutOverflow() {
   return RecalcLayoutOverflowNG();
 }
 
-void LayoutBlock::RecalcChildVisualOverflow() {
-  NOT_DESTROYED();
-  DCHECK(!IsTable() || IsLayoutNGObject());
-  // It is an error to call this function on a LayoutBlock that it itself inside
-  // a display-locked subtree.
-  DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));
-  if (ChildPrePaintBlockedByDisplayLock())
-    return;
-
-  if (ChildrenInline()) {
-    SECURITY_DCHECK(IsLayoutBlockFlow());
-    To<LayoutBlockFlow>(this)->RecalcInlineChildrenVisualOverflow();
-  } else {
-    for (LayoutBox* box = FirstChildBox(); box; box = box->NextSiblingBox()) {
-      box->RecalcNormalFlowChildVisualOverflowIfNeeded();
-    }
-  }
-}
-
 void LayoutBlock::RecalcVisualOverflow() {
   NOT_DESTROYED();
-  if (CanUseFragmentsForVisualOverflow()) {
-    RecalcFragmentsVisualOverflow();
+  if (!PhysicalFragmentCount()) {
+    ClearVisualOverflow();
     return;
   }
-  DCHECK(!CanUseFragmentsForVisualOverflow());
-  DCHECK(!IsLayoutMultiColumnSet());
-  RecalcChildVisualOverflow();
-  ComputeVisualOverflow();
+
+  DCHECK(CanUseFragmentsForVisualOverflow());
+  DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));
+  for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
+    DCHECK(fragment.CanUseFragmentsForInkOverflow());
+    fragment.GetMutableForPainting().RecalcInkOverflow();
+  }
 }
 
 }  // namespace blink

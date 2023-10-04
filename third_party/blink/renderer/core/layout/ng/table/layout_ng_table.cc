@@ -383,15 +383,6 @@ PhysicalRect LayoutNGTable::OverflowClipRect(
   return clip_rect;
 }
 
-#if DCHECK_IS_ON()
-void LayoutNGTable::AddVisualEffectOverflow() {
-  NOT_DESTROYED();
-  // This is computed in |NGPhysicalBoxFragment::ComputeSelfInkOverflow| and
-  // that we should not reach here.
-  NOTREACHED();
-}
-#endif
-
 LayoutUnit LayoutNGTable::BorderLeft() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())

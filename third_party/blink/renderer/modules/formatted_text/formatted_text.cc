@@ -196,7 +196,7 @@ PaintRecord FormattedText::PaintFormattedText(Document& document,
   const NGLayoutResult* block_results = block_node.Layout(space, nullptr);
   const auto& fragment =
       To<NGPhysicalBoxFragment>(block_results->PhysicalFragment());
-  block_->RecalcFragmentsVisualOverflow();
+  block_->RecalcVisualOverflow();
   bounds = gfx::RectF{block_->VisualOverflowRect()};
   auto* paint_record_builder = MakeGarbageCollected<PaintRecordBuilder>();
   PaintInfo paint_info(paint_record_builder->Context(), CullRect::Infinite(),

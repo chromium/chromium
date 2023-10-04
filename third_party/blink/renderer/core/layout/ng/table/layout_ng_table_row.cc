@@ -158,15 +158,6 @@ LayoutBlock* LayoutNGTableRow::StickyContainer() const {
   return Table();
 }
 
-#if DCHECK_IS_ON()
-void LayoutNGTableRow::AddVisualOverflowFromBlockChildren() {
-  NOT_DESTROYED();
-  // This is computed in |NGPhysicalBoxFragment::ComputeSelfInkOverflow| and
-  // that we should not reach here.
-  NOTREACHED();
-}
-#endif
-
 PositionWithAffinity LayoutNGTableRow::PositionForPoint(
     const PhysicalOffset& offset) const {
   NOT_DESTROYED();
