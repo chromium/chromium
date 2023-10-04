@@ -330,6 +330,40 @@ void UserContext::SetPasswordKey(const Key& key) {
   password_key_ = key;
 }
 
+void UserContext::SetGaiaPassword(const GaiaPassword& password) {
+  gaia_password_.emplace(password);
+}
+
+void UserContext::SetSamlPassword(const SamlPassword& password) {
+  saml_password_.emplace(password);
+}
+
+void UserContext::SetLocalPasswordInput(const LocalPasswordInput& password) {
+  local_input_.emplace(password);
+}
+
+absl::optional<OnlinePassword> UserContext::GetOnlinePassword() const {
+  if (gaia_password_.has_value()) {
+    return OnlinePassword{gaia_password_->value()};
+  } else if (saml_password_.has_value()) {
+    return OnlinePassword{saml_password_->value()};
+  } else {
+    return absl::nullopt;
+  }
+}
+
+absl::optional<PasswordInput> UserContext::GetPassword() const {
+  if (local_input_.has_value()) {
+    return PasswordInput{local_input_->value()};
+  } else if (gaia_password_.has_value()) {
+    return PasswordInput{gaia_password_->value()};
+  } else if (saml_password_.has_value()) {
+    return PasswordInput{saml_password_->value()};
+  } else {
+    return absl::nullopt;
+  }
+}
+
 void UserContext::SetAuthCode(const std::string& auth_code) {
   auth_code_ = auth_code;
 }
@@ -489,6 +523,9 @@ void UserContext::ClearSecrets() {
   refresh_token_.clear();
   sync_trusted_vault_keys_.reset();
   cryptohome_.ClearSecrets();
+  gaia_password_.reset();
+  saml_password_.reset();
+  local_input_.reset();
 }
 
 }  // namespace ash

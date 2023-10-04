@@ -33,6 +33,7 @@ component("authpublic") {
     "auth_failure.h",
     "auth_session_intent.h",
     "auth_session_status.h",
+    "auth_types.h",
     "authentication_error.cc",
     "authentication_error.h",
     "cryptohome_key_constants.cc",

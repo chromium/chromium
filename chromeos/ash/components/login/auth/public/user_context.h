@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
+#include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
@@ -160,6 +161,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   bool CanLockManagedGuestSession() const;
   AuthSessionIntents GetAuthorizedIntents() const;
 
+  void SetGaiaPassword(const GaiaPassword& password);
+  void SetSamlPassword(const SamlPassword& password);
+  void SetLocalPasswordInput(const LocalPasswordInput& password);
+
+  absl::optional<OnlinePassword> GetOnlinePassword() const;
+  absl::optional<PasswordInput> GetPassword() const;
+
   bool HasCredentials() const;
   bool HasReplacementKey() const;
 
@@ -249,6 +257,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   AccountId account_id_;
   Key key_;
   Key password_key_;
+  absl::optional<GaiaPassword> gaia_password_;
+  absl::optional<SamlPassword> saml_password_;
+  absl::optional<LocalPasswordInput> local_input_;
   absl::optional<Key> replacement_key_ = absl::nullopt;
   std::vector<ChallengeResponseKey> challenge_response_keys_;
   std::string auth_code_;
