@@ -65,6 +65,21 @@
       });
     },
 
+    async function testShowPickerAPI() {
+      dp.Page.onceFileChooserOpened(event => {
+        testRunner.log('file chooser mode: ' + event.params.mode);
+        setInputFiles(event.params.backendNodeId, ['path1']);
+        return true;
+      });
+      await session.evaluateAsyncWithUserGesture(async () => {
+        const picker = document.createElement('input');
+        picker.type = 'file';
+        picker.showPicker();
+        await new Promise(x => picker.oninput = x);
+        LOG('selected files: ' + getSelectedFiles(picker));
+      });
+    },
+
     async function testOpenFilePickerAPI() {
       const [event] = await Promise.all([
         dp.Page.onceFileChooserOpened(),

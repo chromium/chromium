@@ -187,14 +187,6 @@ void FileInputType::HandleDOMActivateEvent(Event& event) {
     return;
   }
 
-  bool intercepted = false;
-  probe::FileChooserOpened(document.GetFrame(), &input, input.Multiple(),
-                           &intercepted);
-  if (intercepted) {
-    event.SetDefaultHandled();
-    return;
-  }
-
   OpenPopupView();
   event.SetDefaultHandled();
 }
@@ -202,6 +194,13 @@ void FileInputType::HandleDOMActivateEvent(Event& event) {
 void FileInputType::OpenPopupView() {
   HTMLInputElement& input = GetElement();
   Document& document = input.GetDocument();
+
+  bool intercepted = false;
+  probe::FileChooserOpened(document.GetFrame(), &input, input.Multiple(),
+                           &intercepted);
+  if (intercepted) {
+    return;
+  }
 
   if (ChromeClient* chrome_client = GetChromeClient()) {
     FileChooserParams params;
