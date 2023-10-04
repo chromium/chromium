@@ -32,7 +32,7 @@ class CORE_EXPORT ScopedPagePauser final {
   USING_FAST_MALLOC(ScopedPagePauser);
 
  public:
-  explicit ScopedPagePauser();
+  ScopedPagePauser();
   ScopedPagePauser(const ScopedPagePauser&) = delete;
   ScopedPagePauser& operator=(const ScopedPagePauser&) = delete;
   ~ScopedPagePauser();

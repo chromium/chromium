@@ -807,6 +807,11 @@ bool Frame::SwapImpl(
 
       // Set the provisioanl LocalFrame to become the new page's main frame.
       new_page->SetMainFrame(new_local_frame);
+      // We've done this in init() already, but any changes to the state have
+      // only been dispatched to the active frame tree and pending frames
+      // did not get them.
+      new_local_frame->OnPageLifecycleStateUpdated();
+
       // This trace event is needed to detect the main frame of the
       // renderer in telemetry metrics. See crbug.com/692112#c11.
       TRACE_EVENT_INSTANT1("loading", "markAsMainFrame",
