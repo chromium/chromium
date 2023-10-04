@@ -106,7 +106,7 @@ ExtensionAppShimManagerDelegate::~ExtensionAppShimManagerDelegate() = default;
 
 bool ExtensionAppShimManagerDelegate::ShowAppWindows(
     Profile* profile,
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   AppWindowList windows =
       AppWindowRegistry::Get(profile)->GetAppWindowsForApp(app_id);
   for (extensions::AppWindow* window : base::Reversed(windows)) {
@@ -118,7 +118,7 @@ bool ExtensionAppShimManagerDelegate::ShowAppWindows(
 
 void ExtensionAppShimManagerDelegate::CloseAppWindows(
     Profile* profile,
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   AppWindowList windows =
       AppWindowRegistry::Get(profile)->GetAppWindowsForApp(app_id);
   for (auto it = windows.begin(); it != windows.end(); ++it) {
@@ -129,14 +129,14 @@ void ExtensionAppShimManagerDelegate::CloseAppWindows(
 
 bool ExtensionAppShimManagerDelegate::AppIsInstalled(
     Profile* profile,
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   const Extension* extension = MaybeGetAppExtension(profile, app_id);
   return profile && extension;
 }
 
 bool ExtensionAppShimManagerDelegate::AppCanCreateHost(
     Profile* profile,
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   const Extension* extension = MaybeGetAppExtension(profile, app_id);
   if (!profile || !extension)
     return false;
@@ -152,13 +152,13 @@ bool ExtensionAppShimManagerDelegate::AppCanCreateHost(
 
 bool ExtensionAppShimManagerDelegate::AppIsMultiProfile(
     Profile* profile,
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   return false;
 }
 
 bool ExtensionAppShimManagerDelegate::AppUsesRemoteCocoa(
     Profile* profile,
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   const Extension* extension = MaybeGetAppExtension(profile, app_id);
   if (!profile || !extension)
     return false;
@@ -173,7 +173,7 @@ bool ExtensionAppShimManagerDelegate::AppUsesRemoteCocoa(
 
 void ExtensionAppShimManagerDelegate::EnableExtension(
     Profile* profile,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     base::OnceCallback<void()> callback) {
   const Extension* extension = MaybeGetAppExtension(profile, app_id);
   if (extension)
@@ -184,7 +184,7 @@ void ExtensionAppShimManagerDelegate::EnableExtension(
 
 void ExtensionAppShimManagerDelegate::LaunchApp(
     Profile* profile,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     const std::vector<base::FilePath>& files,
     const std::vector<GURL>& urls,
     const GURL& override_url,
@@ -223,7 +223,7 @@ void ExtensionAppShimManagerDelegate::LaunchApp(
 
 void ExtensionAppShimManagerDelegate::LaunchShim(
     Profile* profile,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     web_app::LaunchShimUpdateBehavior update_behavior,
     web_app::ShimLaunchMode launch_mode,
     apps::ShimLaunchedCallback launched_callback,
@@ -257,7 +257,7 @@ bool ExtensionAppShimManagerDelegate::HasNonBookmarkAppWindowsOpen() {
 std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
 ExtensionAppShimManagerDelegate::GetAppShortcutsMenuItemInfos(
     Profile* profile,
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   return std::vector<chrome::mojom::ApplicationDockMenuItemPtr>();
 }
 

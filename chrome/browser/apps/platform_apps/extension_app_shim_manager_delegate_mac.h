@@ -14,28 +14,28 @@ class ExtensionAppShimManagerDelegate : public AppShimManager::Delegate {
   // AppShimManager::Delegate:
   ExtensionAppShimManagerDelegate();
   ~ExtensionAppShimManagerDelegate() override;
-  bool ShowAppWindows(Profile* profile, const web_app::AppId& app_id) override;
-  void CloseAppWindows(Profile* profile, const web_app::AppId& app_id) override;
-  bool AppIsInstalled(Profile* profile, const web_app::AppId& app_id) override;
+  bool ShowAppWindows(Profile* profile, const webapps::AppId& app_id) override;
+  void CloseAppWindows(Profile* profile, const webapps::AppId& app_id) override;
+  bool AppIsInstalled(Profile* profile, const webapps::AppId& app_id) override;
   bool AppCanCreateHost(Profile* profile,
-                        const web_app::AppId& app_id) override;
+                        const webapps::AppId& app_id) override;
   bool AppUsesRemoteCocoa(Profile* profile,
-                          const web_app::AppId& app_id) override;
+                          const webapps::AppId& app_id) override;
   bool AppIsMultiProfile(Profile* profile,
-                         const web_app::AppId& app_id) override;
+                         const webapps::AppId& app_id) override;
   void EnableExtension(Profile* profile,
                        const std::string& extension_id,
                        base::OnceCallback<void()> callback) override;
   void LaunchApp(
       Profile* profile,
-      const web_app::AppId& app_id,
+      const webapps::AppId& app_id,
       const std::vector<base::FilePath>& files,
       const std::vector<GURL>& urls,
       const GURL& override_url,
       chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
       base::OnceClosure launch_finished_callback) override;
   void LaunchShim(Profile* profile,
-                  const web_app::AppId& app_id,
+                  const webapps::AppId& app_id,
                   web_app::LaunchShimUpdateBehavior update_behavior,
                   web_app::ShimLaunchMode launch_mode,
                   ShimLaunchedCallback launched_callback,
@@ -43,7 +43,7 @@ class ExtensionAppShimManagerDelegate : public AppShimManager::Delegate {
   bool HasNonBookmarkAppWindowsOpen() override;
   std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
   GetAppShortcutsMenuItemInfos(Profile* profile,
-                               const web_app::AppId& app_id) override;
+                               const webapps::AppId& app_id) override;
 };
 
 }  // namespace apps
