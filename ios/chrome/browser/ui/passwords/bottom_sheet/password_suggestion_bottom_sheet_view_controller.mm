@@ -10,7 +10,6 @@
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
-#import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_constants.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
@@ -272,7 +271,6 @@
   UITableView* tableView = [super createTableView];
 
   tableView.dataSource = self;
-  tableView.accessibilityIdentifier = kPasswordSuggestionBottomSheetTableViewId;
   [tableView registerClass:TableViewURLCell.class
       forCellReuseIdentifier:@"cell"];
 
