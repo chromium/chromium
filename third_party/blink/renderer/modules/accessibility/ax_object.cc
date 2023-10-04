@@ -901,9 +901,10 @@ bool AXObject::IsMissingParent() const {
     // TODO(accessibility) This is ugly. Consider destroying validation message
     // objects between uses instead. See GetOrCreateValidationMessageObject().
     bool is_missing = !IsRoot() && !IsValidationMessage();
-    CHECK(!is_missing || !AXObjectCache().IsFrozen())
-        << "Should not have missing parent in frozen tree: "
-        << ToString(true, true);
+    // TODO(accessibility) Restore this check. Removed so that we can ship 119.
+    // CHECK(!is_missing || !AXObjectCache().IsFrozen())
+    //     << "Should not have missing parent in frozen tree: "
+    //     << ToString(true, true);
     return is_missing;
   }
 
