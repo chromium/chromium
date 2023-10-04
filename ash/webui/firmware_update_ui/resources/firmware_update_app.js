@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './firmware_shared_css.js';
-import './firmware_shared_fonts.js';
+import './firmware_shared.css.js';
+import './firmware_shared_fonts.css.js';
 import './firmware_confirmation_dialog.js';
 import './firmware_update_dialog.js';
 import './peripheral_updates_list.js';

@@ -6,8 +6,8 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import './firmware_shared_css.js';
-import './firmware_shared_fonts.js';
+import './firmware_shared.css.js';
+import './firmware_shared_fonts.css.js';
 import './firmware_update.mojom-webui.js';
 import './strings.m.js';
 

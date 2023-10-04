@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
@@ -14,10 +15,18 @@ assert(is_chromeos_ash)
 preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
-polymer_element_files = [
+css_files = [
+  "firmware_shared.css",
+  "firmware_shared_fonts.css",
+]
+css_wrapper_files = []
+foreach(f, css_files) {
+  file_name = f + ".js"
+  css_wrapper_files += [ file_name ]
+}
+
+web_component_files = [
   "firmware_confirmation_dialog.js",
-  "firmware_shared_css.js",
-  "firmware_shared_fonts.js",
   "firmware_update_app.js",
   "firmware_update_dialog.js",
   "peripheral_updates_list.js",
@@ -36,11 +45,13 @@ generate_grd("build_grd") {
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [
+    ":preprocess",
     ":preprocess_generated",
     ":preprocess_mojom",
     "//mojo/public/mojom/base:base_js__generator",
   ]
   manifest_files = [
+    "$target_gen_dir/manifest_preprocess.json",
     "$target_gen_dir/manifest_preprocess_mojo.json",
     "$target_gen_dir/$preprocessed_gen_manifest",
   ]
@@ -160,12 +171,20 @@ js_library("update_card") {
   ]
 }
 
-preprocess_if_expr("preprocess_generated") {
+preprocess_if_expr("preprocess") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_manifest = "$target_gen_dir/manifest_preprocess.json"
+  in_files = web_component_files
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":css_wrapper_files" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocessed_dir"
   out_manifest = "$target_gen_dir/$preprocessed_gen_manifest"
-  in_files = polymer_element_files
+  in_files = css_wrapper_files
 }
 
 preprocess_if_expr("preprocess_mojom") {
@@ -177,5 +196,10 @@ preprocess_if_expr("preprocess_mojom") {
 }
 
 html_to_js("web_components") {
-  js_files = polymer_element_files
+  js_files = web_component_files
+}
+
+css_to_wrapper("css_wrapper_files") {
+  use_js = true
+  in_files = css_files
 }
