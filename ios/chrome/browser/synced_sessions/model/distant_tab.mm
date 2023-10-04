@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/synced_sessions/distant_tab.h"
+#import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
 
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 

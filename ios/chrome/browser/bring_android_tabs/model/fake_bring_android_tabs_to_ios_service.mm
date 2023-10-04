@@ -8,8 +8,8 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/synced_sessions/distant_tab.h"
-#import "ios/chrome/browser/synced_sessions/synced_sessions.h"
+#import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
+#import "ios/chrome/browser/synced_sessions/model/synced_sessions.h"
 
 FakeBringAndroidTabsToIOSService::FakeBringAndroidTabsToIOSService(
     std::vector<std::unique_ptr<synced_sessions::DistantTab>> tabs,

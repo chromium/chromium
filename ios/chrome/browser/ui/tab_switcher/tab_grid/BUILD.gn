@@ -53,7 +53,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/synced_sessions",
+    "//ios/chrome/browser/synced_sessions/model",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/ui/authentication/history_sync",

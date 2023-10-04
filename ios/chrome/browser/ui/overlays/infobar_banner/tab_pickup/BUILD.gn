@@ -39,7 +39,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/synced_sessions",
+    "//ios/chrome/browser/synced_sessions/model",
     "//ios/chrome/browser/tabs/tab_pickup:features",
     "//ios/chrome/browser/tabs/tab_pickup:infobar_delegate",
     "//ios/chrome/browser/ui/infobars/banners:public",

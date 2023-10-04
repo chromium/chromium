@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SYNCED_SESSIONS_SYNCED_SESSIONS_UTIL_H_
-#define IOS_CHROME_BROWSER_SYNCED_SESSIONS_SYNCED_SESSIONS_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_SYNCED_SESSIONS_MODEL_SYNCED_SESSIONS_UTIL_H_
+#define IOS_CHROME_BROWSER_SYNCED_SESSIONS_MODEL_SYNCED_SESSIONS_UTIL_H_
 
 class UrlLoadingBrowserAgent;
 enum class UrlLoadStrategy;
@@ -35,4 +35,4 @@ void OpenDistantSessionInBackground(
     UrlLoadingBrowserAgent* url_loader,
     UrlLoadStrategy first_tab_load_strategy);
 
-#endif  // IOS_CHROME_BROWSER_SYNCED_SESSIONS_SYNCED_SESSIONS_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_SYNCED_SESSIONS_MODEL_SYNCED_SESSIONS_UTIL_H_

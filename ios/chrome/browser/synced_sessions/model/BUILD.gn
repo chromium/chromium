@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("synced_sessions") {
+source_set("model") {
   sources = [
     "distant_session.h",
     "distant_session.mm",
@@ -34,7 +34,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "synced_sessions_util_unittest.mm" ]
   deps = [
-    ":synced_sessions",
+    ":model",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

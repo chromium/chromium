@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/synced_sessions/synced_sessions.h"
+#import "ios/chrome/browser/synced_sessions/model/synced_sessions.h"
 
 #import <functional>
 #import <memory>
@@ -12,7 +12,7 @@
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service.h"
-#import "ios/chrome/browser/synced_sessions/distant_session.h"
+#import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 
 namespace {
 

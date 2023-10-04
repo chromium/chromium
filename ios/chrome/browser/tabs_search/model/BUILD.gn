@@ -17,7 +17,7 @@ source_set("model") {
     "//ios/chrome/browser/history:history_utils",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/synced_sessions",
+    "//ios/chrome/browser/synced_sessions/model",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/history:history_driver",
   ]

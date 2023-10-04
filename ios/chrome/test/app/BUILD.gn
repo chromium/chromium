@@ -82,7 +82,7 @@ source_set("test_support") {
     "//ios/chrome/browser/signin:fake_system_identity_manager",
     "//ios/chrome/browser/signin:system_identity_manager",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/synced_sessions",
+    "//ios/chrome/browser/synced_sessions/model",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/cells",

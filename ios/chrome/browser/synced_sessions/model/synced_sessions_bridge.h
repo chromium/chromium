@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SYNCED_SESSIONS_SYNCED_SESSIONS_BRIDGE_H_
-#define IOS_CHROME_BROWSER_SYNCED_SESSIONS_SYNCED_SESSIONS_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_SYNCED_SESSIONS_MODEL_SYNCED_SESSIONS_BRIDGE_H_
+#define IOS_CHROME_BROWSER_SYNCED_SESSIONS_MODEL_SYNCED_SESSIONS_BRIDGE_H_
 
 #import <Foundation/Foundation.h>
 
@@ -42,4 +42,4 @@ class SyncedSessionsObserverBridge {
 
 }  // namespace synced_sessions
 
-#endif  // IOS_CHROME_BROWSER_SYNCED_SESSIONS_SYNCED_SESSIONS_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_SYNCED_SESSIONS_MODEL_SYNCED_SESSIONS_BRIDGE_H_

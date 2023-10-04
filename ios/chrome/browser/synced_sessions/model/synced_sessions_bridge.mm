@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/synced_sessions/synced_sessions_bridge.h"
+#import "ios/chrome/browser/synced_sessions/model/synced_sessions_bridge.h"
 
 #import "base/functional/bind.h"
 #import "components/sync_sessions/session_sync_service.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SYNCED_SESSIONS_DISTANT_TAB_H_
-#define IOS_CHROME_BROWSER_SYNCED_SESSIONS_DISTANT_TAB_H_
+#ifndef IOS_CHROME_BROWSER_SYNCED_SESSIONS_MODEL_DISTANT_TAB_H_
+#define IOS_CHROME_BROWSER_SYNCED_SESSIONS_MODEL_DISTANT_TAB_H_
 
 #import <string>
 #import <vector>
@@ -53,4 +53,4 @@ struct DistantTabsSet {
 
 }  // namespace synced_sessions
 
-#endif  // IOS_CHROME_BROWSER_SYNCED_SESSIONS_DISTANT_TAB_H_
+#endif  // IOS_CHROME_BROWSER_SYNCED_SESSIONS_MODEL_DISTANT_TAB_H_
