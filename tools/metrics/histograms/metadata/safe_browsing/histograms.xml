@@ -2488,17 +2488,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.TailoredSecurityUnconsentedMessageDismissReason"
-    enum="MessageDismissReason" expires_after="2023-11-11">
-  <owner>jacastro@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the specific reason a message was dismissed when a signed-in,
-    non-syncing user changes their account tailored security setting and
-    dismisses the corresponding message.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.TailoredSecurityUnconsentedModalOutcome"
     enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2024-02-04">
   <owner>jacastro@chromium.org</owner>
