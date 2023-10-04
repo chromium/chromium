@@ -8,7 +8,7 @@
 <translation id="1022628058306505708">Fluxo da Terra</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novas funcións dispoñibles. Utilizar frecha arriba para obter máis información.</translation>
-<translation id="1059913517121127803">Non se puido iniciar o escaneo</translation>
+<translation id="1059913517121127803">Non se puido iniciar o escaneamento</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Detectouse un firewall</translation>
@@ -48,7 +48,7 @@
 <translation id="1327977588028644528">Pasarela</translation>
 <translation id="1328223165223065150">Cor do fondo de pantalla</translation>
 <translation id="1330426557709298164">JPG</translation>
-<translation id="1337912285145772892">Axustar á zona de escaneo</translation>
+<translation id="1337912285145772892">Axustar á zona de escaneamento</translation>
 <translation id="1367951781824006909">Selecciona un ficheiro</translation>
 <translation id="1387854245479784695">Esta é a suma de todos os núcleos</translation>
 <translation id="1394661041439318933">Nivel de batería do estoxo do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -117,7 +117,7 @@
 <translation id="1768959921651994223">Tipo de autenticación</translation>
 <translation id="1776228893584526149">Ton do fondo de pantalla</translation>
 <translation id="1782199038061388045">tradución</translation>
-<translation id="1792647875738159689">Cancelando escaneo</translation>
+<translation id="1792647875738159689">Cancelando escaneamento</translation>
 <translation id="1801418420130173017">Desactivar tema escuro</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1827738518074806965">Galería de arte</translation>
@@ -461,7 +461,7 @@
 <translation id="4593212453765072419">Requírese autenticación proxy</translation>
 <translation id="4609350030397390689">Reducir brillo do teclado</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Para cancelar o traballo de impresión, preme Intro.</translation>
-<translation id="463791356324567266">Cancelando escaneo…</translation>
+<translation id="463791356324567266">Cancelando escaneamento…</translation>
 <translation id="4646949265910132906">Conexión wifi segura</translation>
 <translation id="4650608062294027130">Maiúsculas (dereita)</translation>
 <translation id="4654549501020883054">Cambiar todos os días</translation>
@@ -655,7 +655,7 @@
 <translation id="6073292342939316679">reducir o brillo do teclado</translation>
 <translation id="6075872808778243331">(Android) latencia de HTTP</translation>
 <translation id="6078323886959318429">Engadir atallo</translation>
-<translation id="6104112872696127344">Cancelouse o escaneo</translation>
+<translation id="6104112872696127344">Cancelouse o escaneamento</translation>
 <translation id="6106186594183574873">Para finalizar, introduce o teu antigo contrasinal</translation>
 <translation id="6108689792487843350">Non se puido acceder á pasarela</translation>
 <translation id="6112878310391905610">Os teus administradores xestionan esta opción de configuración</translation>
@@ -726,7 +726,7 @@
 <translation id="65587193855025101">Superficie plana</translation>
 <translation id="6560196641871357166">Intenso</translation>
 <translation id="6564646048574748301">Produciuse un erro: non se puido acceder á impresora</translation>
-<translation id="6566314079205407217">Escaneo de varias páxinas</translation>
+<translation id="6566314079205407217">Escaneamento de varias páxinas</translation>
 <translation id="6574762126505704998">Completar</translation>
 <translation id="6575134580692778371">Non configurado</translation>
 <translation id="6576005492601044801">esquerda</translation>
@@ -750,7 +750,7 @@
 <translation id="6747215703636344499">Detívose (a saída está chea)</translation>
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6753452347192452143">O dispositivo é un ordenador.</translation>
-<translation id="6756731097889387912">Non se puido cancelar o escaneo</translation>
+<translation id="6756731097889387912">Non se puido cancelar o escaneamento</translation>
 <translation id="6760706756348334449">Baixa o volume</translation>
 <translation id="6766275201586212568">Produciuse un erro coas resolucións de DNS</translation>
 <translation id="6768237774506518020">Hai un alto índice de erros relacionados coas resolucións de DNS</translation>

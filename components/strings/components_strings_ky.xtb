@@ -485,7 +485,7 @@
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1956486093533522234">Түзмөгүңүздү таап, коопсуздандырып же тазалаңыз</translation>
 <translation id="1958218078413065209">Эң көп алган упайыңыз: <ph name="SCORE" />.</translation>
-<translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Баш баккан айрым сайттарыңыздын URL'дерин, тутум тууралуу чектелген маалыматты жана барактагы айрым мазмунду<ph name="END_WHITEPAPER_LINK" /> Google'га жөнөтүү менен Интернеттеги коопсуздукту баары үчүн күчөтүүгө жардам бериңиз. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Купуялык саясаты<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Баш баккан айрым сайттарыңыздын URL'дерин, тутум тууралуу чектелген маалыматты жана барактагы айрым мазмунду<ph name="END_WHITEPAPER_LINK" /> Google'га жөнөтүү менен Интернеттеги коопсуздукту баары үчүн күчөтүүгө жардам бериңиз. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Купуялык эрежелери<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Кыстармалар</translation>
 <translation id="196752089528718902">Адатта сайттарга коопсуз туташасыз, бирок Chrome бул жолу коопсуз туташууну колдоно алган жок. Чабуулчу тармак туташууңузга көз салып же өзгөртүүгө аракет кылышы мүмкүн. <ph name="BEGIN_LEARN_MORE_LINK" />Кеңири маалымат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Сериялоо катасы</translation>
@@ -2435,7 +2435,7 @@
 <translation id="6051898664905071243">Барактардын саны:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053584886670442526">Сакталган даректериңизди Google кызматтарында колдоно аласыз. Бул дарек <ph name="ACCOUNT" /> Google аккаунтуңузга сакталды.</translation>
-<translation id="6053735090575989697">Google маалыматыңызды кандай коргой турганын билгиңиз келсе, Купуялык саясатыбызга өтүңүз.</translation>
+<translation id="6053735090575989697">Google маалыматыңызды кандай коргой турганын билгиңиз келсе, Купуялык эрежелерибизге өтүңүз.</translation>
 <translation id="6055888660316801977">Коопсуз төлөө үчүн дал келбеген эсептик дайындар барагы</translation>
 <translation id="6055982527635883756">Конверт (архив)</translation>
 <translation id="6058977677006700226">Карталарыңыз бардык түзмөктөрүңүздө колдонулсунбу?</translation>

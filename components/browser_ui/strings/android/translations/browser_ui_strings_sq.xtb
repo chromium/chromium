@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
-<translation id="1006017844123154345">Hap versionin në linjë</translation>
+<translation id="1006017844123154345">Hap versionin online</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1044891598689252897">Sajtet do të punojnë normalisht</translation>
 <translation id="1073417869336441572">Na ndihmo të përmirësojmë Chrome duke na treguar se pse ke lejuar kukit e palëve të treta. <ph name="BEGIN_LINK" />Dërgo komente<ph name="END_LINK" /></translation>
@@ -423,7 +423,7 @@
 <translation id="8444433999583714703">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te vendndodhja jote, aktivizo gjithashtu vendndodhjen në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoko lejen e pajisjes</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 kuki në përdorim}other{# kuki në përdorim}}</translation>
-<translation id="8487700953926739672">Mundësohet jashtë linje</translation>
+<translation id="8487700953926739672">Mundësohet offline</translation>
 <translation id="848952951823693243">Kërko gjithmonë sajtin për celular</translation>
 <translation id="8499083585497694743">Aktivizo mikrofonin</translation>
 <translation id="8514955299594277296">Mos lejo që sajtet të ruajnë të dhëna në pajisjen tënde (nuk rekomandohet)</translation>
@@ -470,7 +470,7 @@
 <translation id="913657688200966289">Aktivizo lejet për <ph name="APP_NAME" /> në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Zmadhimi aktual është në <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">Kjo faqe është e rrezikshme</translation>
-<translation id="9201023452444595544">Çdo e dhënë jashtë linje do të fshihet</translation>
+<translation id="9201023452444595544">Çdo e dhënë offline do të fshihet</translation>
 <translation id="930525582205581608">Të harrohet ky sajt?</translation>
 <translation id="947156494302904893">Sajtet që ti viziton mund të verifikojnë që je një person real dhe jo një robot</translation>
 <translation id="967624055006145463">Të dhënat e ruajtura</translation>

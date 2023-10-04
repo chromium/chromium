@@ -1813,7 +1813,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2412015533711271895">Deine Eltern oder Erziehungsberechtigten müssen sagen, dass du diese Erweiterung verwenden darfst</translation>
 <translation id="2412593942846481727">Update verfügbar</translation>
 <translation id="2412753904894530585">Kerberos</translation>
-<translation id="2414159296888870200">Suche nach „<ph name="MODULE_TITLE" />“ fortsetzen</translation>
+<translation id="2414159296888870200">Suche nach <ph name="MODULE_TITLE" /> fortsetzen</translation>
 <translation id="2414886740292270097">Dunkel</translation>
 <translation id="2416435988630956212">Funktionstasten der Tastatur</translation>
 <translation id="2418307627282545839">Hell und freundlich</translation>
@@ -7196,7 +7196,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6828182567531805778">Gib die Passphrase ein, um deine Daten zu synchronisieren</translation>
 <translation id="682871081149631693">QuickFix-Build</translation>
 <translation id="6828860976882136098">Automatische Updates für alle Nutzer konnten nicht eingerichtet werden (Preflight-Ausführungsfehler: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="682971198310367122">Google-Datenschutzerklärung</translation>
+<translation id="682971198310367122">Datenschutzerklärung von Google</translation>
 <translation id="6830200424658853449">Im Offline-Editor öffnen</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6832218595502288407">Linksbündig</translation>

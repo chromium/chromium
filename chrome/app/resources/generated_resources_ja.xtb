@@ -540,7 +540,7 @@
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1431188203598586230">最後のソフトウェア アップデート</translation>
 <translation id="1432581352905426595">検索エンジンを管理</translation>
-<translation id="1433478348197382180">読み上げモード</translation>
+<translation id="1433478348197382180">リーディング モード</translation>
 <translation id="1434696352799406980">起動ページ、新しいタブページ、検索エンジン、固定タブをリセットします。また、すべての拡張機能を無効にし、Cookie などの一時データを削除します。ただし、ブックマーク、履歴、保存したパスワードはそのまま残ります。</translation>
 <translation id="1434886155212424586">ホームページは新しいタブのページです</translation>
 <translation id="1435940442311036198">別のデバイスのパスキーを使用する</translation>
@@ -588,7 +588,7 @@
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{タブを新しいグループに追加}other{タブを新しいグループに追加}}</translation>
 <translation id="1470350905258700113">このデバイスを使用する</translation>
 <translation id="1470946456740188591">カーソル ブラウジングをオンまたはオフにするには、Ctrl+検索+7 ショートカット キーを使用します</translation>
-<translation id="1471034383866732283">読み上げモードで、このページのメイン コンテンツを検出できません</translation>
+<translation id="1471034383866732283">リーディング モードで、このページのメイン コンテンツを検出できません</translation>
 <translation id="1472675084647422956">表示項目を増やす</translation>
 <translation id="1473223074251193484">テザリング設定を行う</translation>
 <translation id="1474785664565228650">マイクの設定を変更するには、Parallels Desktop を再起動する必要があります。続行するには、Parallels Desktop を再起動してください。</translation>
@@ -1764,7 +1764,7 @@
 <translation id="2364498172489649528">成功</translation>
 <translation id="2365507699358342471">このサイトでは、クリップボードにコピーされているテキストや画像へのアクセスが許可されています。</translation>
 <translation id="2367972762794486313">アプリを表示</translation>
-<translation id="2369058545741334020">読み上げモードで開く</translation>
+<translation id="2369058545741334020">リーディング モードで開く</translation>
 <translation id="236939127352773362">コンテンツの送信を希望しているデバイスが近くにある場合に通知します</translation>
 <translation id="2371076942591664043">ダウンロードしたら開く(&amp;D)</translation>
 <translation id="237336063998926520">IP アドレスを使って現在地を特定します</translation>
@@ -2986,7 +2986,7 @@
 <translation id="3371351218553893534">行が長すぎます: <ph name="ERROR_LINE" /></translation>
 <translation id="3372602033006349389">その他のデバイス</translation>
 <translation id="337286756654493126">アプリケーションで開いたフォルダに書き込む</translation>
-<translation id="3373059063088819384">読み上げモードで開く</translation>
+<translation id="3373059063088819384">リーディング モードで開く</translation>
 <translation id="3373196968211632036">Steam for Chromebook（ベータ版）は、お子様の Google アカウントではご利用いただけません</translation>
 <translation id="3373701465337594448">この設定が有効な場合、閲覧履歴に基づいたウェブサイトのリストがここに表示されます。</translation>
 <translation id="3374294321938930390">「<ph name="BOOKMARK_TITLE" />」を「<ph name="NEW_FOLDER_TITLE" />」に移動しました。</translation>
@@ -3963,7 +3963,7 @@
 <translation id="4135746311382563554">Google Chrome および Chrome OS 追加利用規約</translation>
 <translation id="4136203100490971508">夜間モードは日の出時刻に自動的にオフになります</translation>
 <translation id="41365691917097717">続行すると、ADB デバッグによる Android アプリの作成とテストが可能になります。この操作を行うと、Google が確認していない Android アプリのインストールが許可されます。無効にする場合は、出荷時の設定へのリセットが必要になります。</translation>
-<translation id="4137923333452716643">読み上げモードで表示するテキストを選択</translation>
+<translation id="4137923333452716643">リーディング モードで表示するテキストを選択</translation>
 <translation id="4138267921960073861">ログイン ページにユーザー名と写真を表示する</translation>
 <translation id="4138598238327913711">現在、文法チェックは英語にのみ対応しています</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID デバイスに接続中</translation>
@@ -6471,7 +6471,7 @@
 <translation id="6235208551686043831">デバイスのカメラはオンです。eSIM の QR コードをカメラの前にかざしてください。</translation>
 <translation id="6237297174664969437">同期するブラウザのデータは、Chrome の設定でいつでも選択できます。<ph name="LINK_BEGIN" />デバイスの設定<ph name="LINK_END" />で、Chrome ブラウザからインストールしたウェブアプリの同期を管理できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="6237474966939441970">タッチペンのメモアプリ</translation>
-<translation id="623755660902014047">読み上げモード</translation>
+<translation id="623755660902014047">リーディング モード</translation>
 <translation id="6237985190818217347">このファイルはマルウェアが潜んでいる可能性があります</translation>
 <translation id="6238767809035845642">他のデバイスから共有されたテキスト</translation>
 <translation id="6238923052227198598">ロック画面に最新のメモを表示する</translation>
@@ -6638,7 +6638,7 @@
 <translation id="6377268785556383139">「<ph name="SEARCH_TEXT" />」に対する 1 件の検索結果</translation>
 <translation id="6378392501584240055">Wi-Fi ネットワークを開く</translation>
 <translation id="6380143666419481200">同意して続行</translation>
-<translation id="6383382161803538830">このページでは読み上げモードを利用できません</translation>
+<translation id="6383382161803538830">このページではリーディング モードを利用できません</translation>
 <translation id="638418309848716977">対応リンク</translation>
 <translation id="6384275966486438344">検索設定を次に変更します: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{名前のないグループ - 1 個のタブ}other{名前のないグループ - # 個のタブ}}</translation>
@@ -8232,7 +8232,7 @@
 <translation id="7684212569183643648">管理者によりインストールされています</translation>
 <translation id="7684559058815332124">キャプティブ ポータルのログインページにアクセス</translation>
 <translation id="7684718995427157417">アプリを作成してテストするには、Android Debug Bridge（ADB）を有効にします。この操作を行うと、Google が確認していない Android アプリのインストールが許可されます。無効にする場合は、出荷時の設定へのリセットが必要になります。</translation>
-<translation id="7684913007876670600">このページの簡易版を表示するには、サイドパネルを開いて [読み上げモード] を選択します</translation>
+<translation id="7684913007876670600">このページの簡易版を表示するには、サイドパネルを開いて [リーディング モード] を選択します</translation>
 <translation id="7685049629764448582">JavaScript メモリ</translation>
 <translation id="7685087414635069102">PIN が必要です</translation>
 <translation id="7686086654630106285">ウェブサイトによる広告提案の詳細</translation>
@@ -10140,7 +10140,7 @@
 <translation id="9214695392875603905">カップケーキ</translation>
 <translation id="9215293857209265904">「<ph name="EXTENSION_NAME" />」が追加されました</translation>
 <translation id="9215742531438648683">Google Play ストアのアンインストール</translation>
-<translation id="9218430445555521422">デフォルトとして設定</translation>
+<translation id="9218430445555521422">デフォルトに設定</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" />（サポートされていないアプリ）</translation>
 <translation id="9219582468404818260">ウェブの改善にご協力ください</translation>
 <translation id="9219741625496141320">閲覧データが自動的に削除されました</translation>

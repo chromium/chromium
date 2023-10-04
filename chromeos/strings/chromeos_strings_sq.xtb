@@ -205,7 +205,7 @@
 <translation id="2421798028054665193">Imazhi <ph name="CURRENT_PAGE" /> nga <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Saktësia e pikës pluskuese</translation>
 <translation id="2448312741937722512">Shkruaj</translation>
-<translation id="248546197012830854">Pajisja është jashtë linje. Lidhu me rrjetin Wi-Fi për të parë përmbajtjen ndihmëse.</translation>
+<translation id="248546197012830854">Pajisja është offline. Lidhu me rrjetin Wi-Fi për të parë përmbajtjen ndihmëse.</translation>
 <translation id="2491955442992294626">Çelësat nuk testohen kur ti je duke përdorur një dritare tjetër</translation>
 <translation id="2493126929778606526">Fotografitë e tua më të mira, të zgjedhura automatikisht</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,7 +661,7 @@
 <translation id="6112878310391905610">Ky cilësim menaxhohet nga administratorët e tu</translation>
 <translation id="6113701710518389813">Shigjeta lart</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> dhe <ph name="NUMBER" /> albume të tjera</translation>
-<translation id="6122191549521593678">Në linjë</translation>
+<translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Shërbimi i mënyrës së hyrjes së ChromeOS</translation>
 <translation id="6136285399872347291">hapësirë prapa</translation>
 <translation id="6137767437444130246">Certifikata e përdoruesit</translation>
@@ -722,7 +722,7 @@
 <translation id="6517239166834772319">Eksploro</translation>
 <translation id="6526200165918397681">Përputh me imazhin e sfondit</translation>
 <translation id="6527081081771465939">Protokoll i panjohur sigurie i Wi-Fi</translation>
-<translation id="6535178685492749208">Je jashtë linje. Komentet do të dërgohen më vonë.</translation>
+<translation id="6535178685492749208">Je offline. Komentet do të dërgohen më vonë.</translation>
 <translation id="65587193855025101">Shtrat i sheshtë</translation>
 <translation id="6560196641871357166">Me gjallëri</translation>
 <translation id="6564646048574748301">Dështoi - Printeri është i paarritshëm</translation>
@@ -772,7 +772,7 @@
 <translation id="6965978654500191972">Pajisja</translation>
 <translation id="6977381486153291903">Rishikimi i firmuerit</translation>
 <translation id="6981982820502123353">Qasja</translation>
-<translation id="7005833343836210400">Pajisja është jashtë linje</translation>
+<translation id="7005833343836210400">Pajisja është offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> menaxhon këtë pajisje dhe ka qasje te i gjithë aktiviteti i përdoruesit, duke përfshirë faqet e uebit të vizituara, fjalëkalimet dhe email-i.</translation>
 <translation id="7040230719604914234">Operatori</translation>
 <translation id="7041549558901442110">Pajisja nuk është lidhur.</translation>

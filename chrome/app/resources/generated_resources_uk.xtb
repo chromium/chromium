@@ -7473,7 +7473,7 @@
 <translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Новий спосіб навігації жестами</translation>
 <translation id="7025190659207909717">Керування службою пересилання мобільних даних</translation>
-<translation id="7025895441903756761">Безпека й&amp;nbsp;конфіденційність</translation>
+<translation id="7025895441903756761">Безпека й\u00A0конфіденційність</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Відкрити всі у &amp;вікні в режимі анонімного перегляду}=1{Відкрити у &amp;вікні в режимі анонімного перегляду}one{Відкрити всі ({COUNT}) у &amp;вікні в режимі анонімного перегляду}few{Відкрити всі ({COUNT}) у &amp;вікні в режимі анонімного перегляду}many{Відкрити всі ({COUNT}) у &amp;вікні в режимі анонімного перегляду}other{Відкрити всі ({COUNT}) у &amp;вікні в режимі анонімного перегляду}}</translation>
 <translation id="7029307918966275733">Crostini не встановлено. Установіть це рішення, щоб переглянути дані про розробників.</translation>
 <translation id="7029809446516969842">Паролі</translation>
@@ -10178,7 +10178,7 @@
 <translation id="9214695392875603905">Кекс</translation>
 <translation id="9215293857209265904">Додано розширення "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="9215742531438648683">Видалити Play Маркет</translation>
-<translation id="9218430445555521422">Установити за умовчанням</translation>
+<translation id="9218430445555521422">Використовувати за умовчанням</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (додаток не підтримується)</translation>
 <translation id="9219582468404818260">Допоможіть нам створити кращий веб-переглядач</translation>
 <translation id="9219741625496141320">Дані веб-перегляду видалено автоматично</translation>

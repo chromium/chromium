@@ -370,6 +370,7 @@
 <translation id="1711528724596764268">机器学习与人工智能</translation>
 <translation id="1712552549805331520"><ph name="URL" /> 想在您的本地计算机上永久存储数据</translation>
 <translation id="1713628304598226412">纸匣 2</translation>
+<translation id="1714807406136741351">浏览模式，您可以切换到表单模式，以便使用向左/向右键在图表中查看价格变动</translation>
 <translation id="1717218214683051432">移动传感器</translation>
 <translation id="1717494416764505390">信箱 3</translation>
 <translation id="1717688554309417925">借记卡和支票服务</translation>
@@ -3152,7 +3153,7 @@
 <translation id="7535087603100972091">值</translation>
 <translation id="7537536606612762813">强制</translation>
 <translation id="7542995811387359312">由于该表单不使用安全连接，因此自动填写信用卡信息的功能已停用。</translation>
-<translation id="7543525346216957623">请先征得您父亲/母亲的许可</translation>
+<translation id="7543525346216957623">需要家长同意</translation>
 <translation id="7546409722674205727">正在启动<ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">修正网络连接错误</translation>
 <translation id="7549584377607005141">此网页需要使用您之前输入的数据才能正常显示。您可以重新发送这些数据，不过，这么做会重复执行此网页之前执行过的所有操作。</translation>
@@ -3275,7 +3276,7 @@
 <translation id="7751971323486164747">自定义 Chrome 中的字号和字型</translation>
 <translation id="7752995774971033316">非托管</translation>
 <translation id="7754587126786572336">开始更新时，您的 Chrome 标签页和应用会关闭</translation>
-<translation id="7755287808199759310">您的父亲/母亲可为您取消屏蔽此网站</translation>
+<translation id="7755287808199759310">你的家长可为你取消屏蔽此网站</translation>
 <translation id="7755624218968747854">主卷</translation>
 <translation id="7758069387465995638">防火墙或防病毒软件可能已阻止您连接到网络。</translation>
 <translation id="7759809451544302770">可选</translation>

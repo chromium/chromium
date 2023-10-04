@@ -45,7 +45,7 @@
 <translation id="1713301662689114961">{0,plural, =1{Chrome 将在 1 小时后重新启动}other{Chrome 将在 # 小时后重新启动}}</translation>
 <translation id="1734234790201236882">Chrome 会将此密码保存在您的 Google 账号中，因此您不必记住它。</translation>
 <translation id="1786003790898721085">请确保您已在“<ph name="TARGET_DEVICE_NAME" />”上登录 Chrome，然后再次尝试发送。</translation>
-<translation id="1812689907177901597">关闭此功能后，您无需登录 Chrome 即可登录 Gmail 等 Google 网站</translation>
+<translation id="1812689907177901597">关闭此设置后，您无需登录 Chrome 即可登录 Gmail 等 Google 网站</translation>
 <translation id="1860536484129686729">Chrome 需要获得相应权限，才能允许此网站使用您的摄像头</translation>
 <translation id="1873233029667955273">Google Chrome 不是您的默认浏览器</translation>
 <translation id="1874309113135274312">Google Chrome 测试版 (mDNS-In)</translation>
@@ -285,7 +285,7 @@
 <translation id="6247557882553405851">Google 密码管理工具</translation>
 <translation id="6251759518630934363">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
 <translation id="6273793429163604305">即将就绪…</translation>
-<translation id="6277547788421725101">您的家长已为 Chrome 停用“网站、应用和扩展程序的权限”</translation>
+<translation id="6277547788421725101">你的家长已为 Chrome 停用“网站、应用和扩展程序的权限”</translation>
 <translation id="6291089322031436445">Chrome 开发者版应用</translation>
 <translation id="6291549208091401781">已为您计算机上的所有用户安装 Google Chrome。</translation>
 <translation id="6326175484149238433">从Chrome中移除</translation>
