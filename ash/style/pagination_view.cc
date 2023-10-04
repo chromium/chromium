@@ -510,7 +510,8 @@ void PaginationView::UpdateSelectorDot() {
 }
 
 void PaginationView::SetUpSelectorDotDeformation() {
-  DCHECK(!selector_dot_->DeformingInProgress());
+  CHECK(selector_dot_);
+  CHECK(!selector_dot_->DeformingInProgress());
 
   const int current_page = model_->selected_page();
   const int target_page = model_->transition().target_page;
@@ -628,6 +629,10 @@ void PaginationView::TotalPagesChanged(int previous_page_count,
 }
 
 void PaginationView::TransitionChanged() {
+  if (!selector_dot_) {
+    return;
+  }
+
   // If there is no transition, reset and cancel current selector dot
   // deformation and indicator container scrolling.
   if (!model_->has_transition()) {
