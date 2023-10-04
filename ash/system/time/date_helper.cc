@@ -325,6 +325,7 @@ void DateHelper::TimezoneChanged(const icu::TimeZone& timezone) {
 }
 
 void DateHelper::OnLocaleChanged() {
+  ResetFormatters();
   CalculateLocalWeekTitles();
 }
 
