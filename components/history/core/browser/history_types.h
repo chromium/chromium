@@ -459,7 +459,6 @@ struct MostVisitedURL {
   int visit_count{0};          // The page visit count.
   base::Time last_visit_time;  // The time of the last visit to the page.
   double score{0.0};           // The frecency score of the page.
-  bool is_srp{};               // Whether the URL points to the DSE SRP.
 };
 
 // FilteredURL -----------------------------------------------------------------
