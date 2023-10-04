@@ -21,7 +21,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
@@ -30,6 +29,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +47,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> GetTestWebAppInstallInfo() {
   return web_app_info;
 }
 
-web_app::AppId GetTestWebAppId() {
+webapps::AppId GetTestWebAppId() {
   return web_app::GenerateAppIdFromManifestId(GURL(kTestWebUIManifestId));
 }
 
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
   EXPECT_EQ(new_browser->tab_strip_model()->GetActiveWebContents(),
             new_web_contents);
 
-  absl::optional<web_app::AppId> app_id =
+  absl::optional<webapps::AppId> app_id =
       web_app::FindInstalledAppWithUrlInScope(second_profile,
                                               GURL(kTestWebUIAppURL));
   ASSERT_TRUE(app_id);

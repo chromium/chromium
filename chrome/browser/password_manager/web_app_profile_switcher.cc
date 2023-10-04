@@ -45,7 +45,7 @@ web_app::WebAppInstallInfo MakeInstallInfoFromApp(
 
 }  // namespace
 
-WebAppProfileSwitcher::WebAppProfileSwitcher(const web_app::AppId& app_id,
+WebAppProfileSwitcher::WebAppProfileSwitcher(const webapps::AppId& app_id,
                                              Profile& active_profile,
                                              base::OnceClosure on_completion)
     : app_id_(app_id),
@@ -156,7 +156,7 @@ void WebAppProfileSwitcher::InstallAndLaunchWebApp(
 }
 
 void WebAppProfileSwitcher::LaunchAppWithId(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode install_result) {
   // TODO(crbug/1414331): Record metrics for installation failures.
   if (!IsSuccess(install_result)) {

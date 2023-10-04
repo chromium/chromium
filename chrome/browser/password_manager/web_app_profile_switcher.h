@@ -8,7 +8,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 
 namespace webapps {
@@ -24,7 +24,7 @@ struct IconBitmaps;
 // already installed for |active_profile|, for other profiles.
 class WebAppProfileSwitcher : public ProfileObserver {
  public:
-  WebAppProfileSwitcher(const web_app::AppId& app_id,
+  WebAppProfileSwitcher(const webapps::AppId& app_id,
                         Profile& active_profile,
                         base::OnceClosure on_completion);
   ~WebAppProfileSwitcher() override;
@@ -51,14 +51,14 @@ class WebAppProfileSwitcher : public ProfileObserver {
   void InstallAndLaunchWebApp(web_app::IconBitmaps icon_bitmaps);
 
   // Launches web app defined by |app_id| for a |new_profile|.
-  void LaunchAppWithId(const web_app::AppId& app_id,
+  void LaunchAppWithId(const webapps::AppId& app_id,
                        webapps::InstallResultCode install_result);
 
   // Must be called when the the switcher is no longer needed.
   void RunCompletionCallback();
 
   // The id of an app to install.
-  web_app::AppId app_id_;
+  webapps::AppId app_id_;
 
   // The profile for which the app is already open.
   raw_ref<Profile> active_profile_;
