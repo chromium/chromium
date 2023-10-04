@@ -18,6 +18,7 @@ import android.graphics.Color;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.H
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -54,6 +56,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * View tests for the Account Selection component ensure that model changes are reflected in the
@@ -61,6 +64,10 @@ import java.util.Collections;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AccountSelectionViewTest {
+    // Note that these are not actual ETLD+1 values, but this is irrelevant for the purposes of this
+    // test.
+    private static final String TEST_IDP_ETLD_PLUS_ONE = JUnitTestGURLs.EXAMPLE_URL.getSpec();
+    private static final String TEST_RP_ETLD_PLUS_ONE = JUnitTestGURLs.URL_1.getSpec();
     private static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.EXAMPLE_URL;
     private static final GURL TEST_CONFIG_URL = JUnitTestGURLs.URL_1;
 
@@ -69,6 +76,9 @@ public class AccountSelectionViewTest {
     private static final Account NO_ONE =
             new Account("", "", "No Subject", "", TEST_PROFILE_PIC, true);
     private static final Account BOB = new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, true);
+
+    private static final GURL TEST_ERROR_URL = JUnitTestGURLs.URL_1;
+    private static final GURL TEST_EMPTY_ERROR_URL = new GURL("");
 
     private class RpContext {
         public String mValue;
@@ -83,6 +93,68 @@ public class AccountSelectionViewTest {
             new RpContext("signup", R.string.account_selection_sheet_title_explicit_signup),
             new RpContext("use", R.string.account_selection_sheet_title_explicit_use),
             new RpContext("continue", R.string.account_selection_sheet_title_explicit_continue)};
+
+    private class TokenError {
+        public String mCode;
+        public GURL mUrl;
+        public String mExpectedSummary;
+        public String mExpectedDescription;
+
+        TokenError(String code, GURL url) {
+            mCode = code;
+            mUrl = url;
+            mExpectedSummary = mCodeToSummary.get(code);
+            mExpectedDescription = AccountSelectionViewBinder.GENERIC.equals(code)
+                            || AccountSelectionViewBinder.SERVER_ERROR.equals(code)
+                    ? mCodeToDescription.get(code)
+                    : appendExtraDescription(url, mCodeToDescription.get(code));
+        }
+
+        private final Map<String, String> mCodeToSummary = Map.of(
+                AccountSelectionViewBinder.GENERIC,
+                mResources.getString(
+                        R.string.signin_generic_error_dialog_summary, TEST_IDP_ETLD_PLUS_ONE),
+                AccountSelectionViewBinder.INVALID_REQUEST,
+                mResources.getString(R.string.signin_invalid_request_error_dialog_summary,
+                        TEST_RP_ETLD_PLUS_ONE, TEST_IDP_ETLD_PLUS_ONE),
+                AccountSelectionViewBinder.UNAUTHORIZED_CLIENT,
+                mResources.getString(R.string.signin_unauthorized_client_error_dialog_summary,
+                        TEST_RP_ETLD_PLUS_ONE, TEST_IDP_ETLD_PLUS_ONE),
+                AccountSelectionViewBinder.ACCESS_DENIED,
+                mResources.getString(R.string.signin_access_denied_error_dialog_summary),
+                AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE,
+                mResources.getString(R.string.signin_temporarily_unavailable_error_dialog_summary),
+                AccountSelectionViewBinder.SERVER_ERROR,
+                mResources.getString(R.string.signin_server_error_dialog_summary));
+
+        private final Map<String, String> mCodeToDescription = Map.of(
+                AccountSelectionViewBinder.GENERIC,
+                mResources.getString(R.string.signin_generic_error_dialog_description),
+                AccountSelectionViewBinder.INVALID_REQUEST,
+                mResources.getString(R.string.signin_invalid_request_error_dialog_description),
+                AccountSelectionViewBinder.UNAUTHORIZED_CLIENT,
+                mResources.getString(R.string.signin_unauthorized_client_error_dialog_description),
+                AccountSelectionViewBinder.ACCESS_DENIED,
+                mResources.getString(R.string.signin_access_denied_error_dialog_description),
+                AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE,
+                mResources.getString(
+                        R.string.signin_temporarily_unavailable_error_dialog_description,
+                        TEST_IDP_ETLD_PLUS_ONE),
+                AccountSelectionViewBinder.SERVER_ERROR,
+                mResources.getString(
+                        R.string.signin_server_error_dialog_description, TEST_RP_ETLD_PLUS_ONE));
+
+        private final String appendExtraDescription(GURL url, String initialDescription) {
+            if (TEST_EMPTY_ERROR_URL.equals(url)) {
+                return initialDescription + " "
+                        + mResources.getString(R.string.signin_error_dialog_try_other_ways_prompt,
+                                TEST_RP_ETLD_PLUS_ONE);
+            }
+            return initialDescription + " "
+                    + mResources.getString(R.string.signin_error_dialog_more_details_prompt,
+                            TEST_IDP_ETLD_PLUS_ONE);
+        }
+    }
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -359,28 +431,45 @@ public class AccountSelectionViewTest {
 
     @Test
     public void testErrorDisplayed() {
-        final String idpEtldPlusOne = "idp.org";
-        mModel.set(ItemProperties.ERROR_SUMMARY, buildErrorItem(idpEtldPlusOne));
-        mModel.set(ItemProperties.ERROR_DESCRIPTION, buildErrorItem(idpEtldPlusOne));
-        assertEquals(View.VISIBLE, mContentView.getVisibility());
+        final TokenError[] mErrors = new TokenError[] {
+                new TokenError(AccountSelectionViewBinder.GENERIC, TEST_EMPTY_ERROR_URL),
+                new TokenError(AccountSelectionViewBinder.GENERIC, TEST_ERROR_URL),
+                new TokenError(AccountSelectionViewBinder.INVALID_REQUEST, TEST_EMPTY_ERROR_URL),
+                new TokenError(AccountSelectionViewBinder.INVALID_REQUEST, TEST_ERROR_URL),
+                new TokenError(
+                        AccountSelectionViewBinder.UNAUTHORIZED_CLIENT, TEST_EMPTY_ERROR_URL),
+                new TokenError(AccountSelectionViewBinder.UNAUTHORIZED_CLIENT, TEST_ERROR_URL),
+                new TokenError(AccountSelectionViewBinder.ACCESS_DENIED, TEST_EMPTY_ERROR_URL),
+                new TokenError(AccountSelectionViewBinder.ACCESS_DENIED, TEST_ERROR_URL),
+                new TokenError(
+                        AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE, TEST_EMPTY_ERROR_URL),
+                new TokenError(AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE, TEST_ERROR_URL),
+                new TokenError(AccountSelectionViewBinder.SERVER_ERROR, TEST_EMPTY_ERROR_URL),
+                new TokenError(AccountSelectionViewBinder.SERVER_ERROR, TEST_ERROR_URL)};
 
-        TextView errorSummary = mContentView.findViewById(R.id.error_summary);
-        assertTrue(errorSummary.isShown());
-        String expectedErrorSummaryText =
-                mResources.getString(R.string.signin_generic_error_dialog_summary, idpEtldPlusOne);
-        // We use toString() here because otherwise getText() returns a
-        // Spanned, which is not equal to the string we get from the resources.
-        assertEquals("Incorrect error summary text", expectedErrorSummaryText,
-                errorSummary.getText().toString());
+        for (TokenError error : mErrors) {
+            mModel.set(ItemProperties.ERROR_TEXT,
+                    buildErrorItem(TEST_IDP_ETLD_PLUS_ONE, TEST_RP_ETLD_PLUS_ONE,
+                            new IdentityCredentialTokenError(error.mCode, error.mUrl)));
+            assertEquals(View.VISIBLE, mContentView.getVisibility());
 
-        TextView errorDescription = mContentView.findViewById(R.id.error_description);
-        assertTrue(errorDescription.isShown());
-        String expectedErrorDescriptionText =
-                mResources.getString(R.string.signin_generic_error_dialog_description);
-        // We use toString() here because otherwise getText() returns a
-        // Spanned, which is not equal to the string we get from the resources.
-        assertEquals("Incorrect error description text", expectedErrorDescriptionText,
-                errorDescription.getText().toString());
+            LinearLayout errorText = mContentView.findViewById(R.id.error_text);
+            assertTrue(errorText.isShown());
+
+            TextView errorSummary = mContentView.findViewById(R.id.error_summary);
+            assertTrue(errorSummary.isShown());
+            // We use toString() here because otherwise getText() returns a
+            // Spanned, which is not equal to the string we get from the resources.
+            assertEquals("Incorrect error summary text", error.mExpectedSummary,
+                    errorSummary.getText().toString());
+
+            TextView errorDescription = mContentView.findViewById(R.id.error_description);
+            assertTrue(errorDescription.isShown());
+            // We use toString() here because otherwise getText() returns a
+            // Spanned, which is not equal to the string we get from the resources.
+            assertEquals("Incorrect error description text", error.mExpectedDescription,
+                    errorDescription.getText().toString());
+        }
     }
 
     private RecyclerView getAccounts() {
@@ -439,9 +528,15 @@ public class AccountSelectionViewTest {
                 .build();
     }
 
-    private PropertyModel buildErrorItem(String idpEtldPlusOne) {
+    private PropertyModel buildErrorItem(
+            String idpEtldPlusOne, String topFrameEtldPlusOne, IdentityCredentialTokenError error) {
+        ErrorProperties.Properties properties = new ErrorProperties.Properties();
+        properties.mIdpForDisplay = idpEtldPlusOne;
+        properties.mTopFrameForDisplay = topFrameEtldPlusOne;
+        properties.mError = error;
+
         return new PropertyModel.Builder(ErrorProperties.ALL_KEYS)
-                .with(ErrorProperties.IDP_FOR_DISPLAY, idpEtldPlusOne)
+                .with(ErrorProperties.PROPERTIES, properties)
                 .build();
     }
 }

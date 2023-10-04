@@ -61,6 +61,14 @@ import java.util.List;
 class AccountSelectionViewBinder {
     private static final String TAG = "AccountSelectionView";
 
+    // Error codes used to show more specific error UI to the user.
+    static final String GENERIC = "";
+    static final String INVALID_REQUEST = "invalid_request";
+    static final String UNAUTHORIZED_CLIENT = "unauthorized_client";
+    static final String ACCESS_DENIED = "access_denied";
+    static final String TEMPORARILY_UNAVAILABLE = "temporarily_unavailable";
+    static final String SERVER_ERROR = "server_error";
+
     /**
      * Returns bitmap with the maskable bitmap's safe zone as defined in
      * https://www.w3.org/TR/appmanifest/ cropped in a circle.
@@ -225,41 +233,104 @@ class AccountSelectionViewBinder {
         textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    /**
-     * Called whenever error summary is bound to this view.
-     * @param model The model containing the data for the view.
-     * @param view The view to be bound.
-     * @param key The key of the property to be bound.
-     */
-    static void bindErrorSummaryView(PropertyModel model, View view, PropertyKey key) {
-        if (key != ErrorProperties.IDP_FOR_DISPLAY) {
-            assert false : "Unhandled update to property: " + key;
-            return;
+    private static class ErrorText {
+        final String mSummary;
+        final String mDescription;
+
+        ErrorText(String summary, String description) {
+            mSummary = summary;
+            mDescription = description;
         }
-        String idpForDisplay = model.get(ErrorProperties.IDP_FOR_DISPLAY);
-        Context context = view.getContext();
-        TextView textView = view.findViewById(R.id.error_summary);
-        textView.setText(String.format(
-                context.getString(R.string.signin_generic_error_dialog_summary, idpForDisplay)));
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /**
-     * Called whenever error description is bound to this view.
+     * Returns text to be displayed on the error dialog.
+     * @param view The view to be bound.
+     * @param properties The properties which determine what error text to display.
+     * @return The ErrorText containing the summary and description to display.
+     */
+    private static ErrorText getErrorText(View view, ErrorProperties.Properties properties) {
+        String code = properties.mError.getCode();
+        GURL url = properties.mError.getUrl();
+        String idpForDisplay = properties.mIdpForDisplay;
+        String topFrameForDisplay = properties.mTopFrameForDisplay;
+        Context context = view.getContext();
+
+        String summary;
+        String description;
+
+        if (SERVER_ERROR.equals(code)) {
+            summary = String.format(context.getString(R.string.signin_server_error_dialog_summary));
+            description = String.format(context.getString(
+                    R.string.signin_server_error_dialog_description, topFrameForDisplay));
+            // Server errors do not need extra description to be displayed.
+            return new ErrorText(summary, description);
+        } else if (INVALID_REQUEST.equals(code)) {
+            summary = String.format(
+                    context.getString(R.string.signin_invalid_request_error_dialog_summary,
+                            topFrameForDisplay, idpForDisplay));
+            description = String.format(
+                    context.getString(R.string.signin_invalid_request_error_dialog_description));
+        } else if (UNAUTHORIZED_CLIENT.equals(code)) {
+            summary = String.format(
+                    context.getString(R.string.signin_unauthorized_client_error_dialog_summary,
+                            topFrameForDisplay, idpForDisplay));
+            description = String.format(context.getString(
+                    R.string.signin_unauthorized_client_error_dialog_description));
+        } else if (ACCESS_DENIED.equals(code)) {
+            summary = String.format(
+                    context.getString(R.string.signin_access_denied_error_dialog_summary));
+            description = String.format(
+                    context.getString(R.string.signin_access_denied_error_dialog_description));
+        } else if (TEMPORARILY_UNAVAILABLE.equals(code)) {
+            summary = String.format(context.getString(
+                    R.string.signin_temporarily_unavailable_error_dialog_summary));
+            description = String.format(context.getString(
+                    R.string.signin_temporarily_unavailable_error_dialog_description,
+                    idpForDisplay));
+        } else {
+            summary = String.format(
+                    context.getString(R.string.signin_generic_error_dialog_summary, idpForDisplay));
+            description = String.format(
+                    context.getString(R.string.signin_generic_error_dialog_description));
+            // Generic errors do not need extra description to be displayed.
+            return new ErrorText(summary, description);
+        }
+
+        if (url.isEmpty()) {
+            description += " "
+                    + String.format(
+                            context.getString(R.string.signin_error_dialog_try_other_ways_prompt,
+                                    topFrameForDisplay));
+            return new ErrorText(summary, description);
+        }
+
+        description += " "
+                + String.format(context.getString(
+                        R.string.signin_error_dialog_more_details_prompt, idpForDisplay));
+        return new ErrorText(summary, description);
+    }
+
+    /**
+     * Called whenever error text is bound to this view.
      * @param model The model containing the data for the view.
      * @param view The view to be bound.
      * @param key The key of the property to be bound.
      */
-    static void bindErrorDescriptionView(PropertyModel model, View view, PropertyKey key) {
-        if (key != ErrorProperties.IDP_FOR_DISPLAY) {
-            assert false : "Unhandled update to property: " + key;
-            return;
+    static void bindErrorTextView(PropertyModel model, View view, PropertyKey key) {
+        if (key == ErrorProperties.PROPERTIES) {
+            ErrorText errorText = getErrorText(view, model.get(ErrorProperties.PROPERTIES));
+
+            TextView summaryTextView = view.findViewById(R.id.error_summary);
+            summaryTextView.setText(errorText.mSummary);
+            summaryTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+            TextView descriptionTextView = view.findViewById(R.id.error_description);
+            descriptionTextView.setText(errorText.mDescription);
+            descriptionTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        } else {
+            assert false : "Unhandled update to property:" + key;
         }
-        Context context = view.getContext();
-        TextView textView = view.findViewById(R.id.error_description);
-        textView.setText(
-                String.format(context.getString(R.string.signin_generic_error_dialog_description)));
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /**
@@ -399,12 +470,9 @@ class AccountSelectionViewBinder {
         } else if (key == ItemProperties.IDP_SIGNIN) {
             itemView = view.findViewById(R.id.idp_signin);
             itemBinder = AccountSelectionViewBinder::bindIdpSignInView;
-        } else if (key == ItemProperties.ERROR_SUMMARY) {
-            itemView = view.findViewById(R.id.error_summary);
-            itemBinder = AccountSelectionViewBinder::bindErrorSummaryView;
-        } else if (key == ItemProperties.ERROR_DESCRIPTION) {
-            itemView = view.findViewById(R.id.error_description);
-            itemBinder = AccountSelectionViewBinder::bindErrorDescriptionView;
+        } else if (key == ItemProperties.ERROR_TEXT) {
+            itemView = view.findViewById(R.id.error_text);
+            itemBinder = AccountSelectionViewBinder::bindErrorTextView;
         } else if (key == ItemProperties.GOT_IT_BUTTON) {
             itemView = view.findViewById(R.id.got_it_btn);
             itemBinder = AccountSelectionViewBinder::bindGotItButtonView;

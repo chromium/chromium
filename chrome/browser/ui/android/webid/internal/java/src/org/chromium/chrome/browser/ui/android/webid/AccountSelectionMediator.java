@@ -488,12 +488,10 @@ class AccountSelectionMediator {
                 mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC
                         ? createIdpSignInItem(mIdpForDisplay)
                         : null);
-        mModel.set(ItemProperties.ERROR_SUMMARY,
-                mHeaderType == HeaderType.SIGN_IN_ERROR ? createErrorTextItem(mIdpForDisplay)
-                                                        : null);
-        mModel.set(ItemProperties.ERROR_DESCRIPTION,
-                mHeaderType == HeaderType.SIGN_IN_ERROR ? createErrorTextItem(mIdpForDisplay)
-                                                        : null);
+        mModel.set(ItemProperties.ERROR_TEXT,
+                mHeaderType == HeaderType.SIGN_IN_ERROR
+                        ? createErrorTextItem(mIdpForDisplay, mTopFrameForDisplay, mError)
+                        : null);
 
         mBottomSheetContent.computeAndUpdateAccountListHeight();
         showContent();
@@ -679,9 +677,14 @@ class AccountSelectionMediator {
                 .build();
     }
 
-    private PropertyModel createErrorTextItem(String idpForDisplay) {
+    private PropertyModel createErrorTextItem(
+            String idpForDisplay, String topFrameForDisplay, IdentityCredentialTokenError error) {
+        ErrorProperties.Properties properties = new ErrorProperties.Properties();
+        properties.mIdpForDisplay = idpForDisplay;
+        properties.mTopFrameForDisplay = topFrameForDisplay;
+        properties.mError = error;
         return new PropertyModel.Builder(ErrorProperties.ALL_KEYS)
-                .with(ErrorProperties.IDP_FOR_DISPLAY, idpForDisplay)
+                .with(ErrorProperties.PROPERTIES, properties)
                 .build();
     }
 

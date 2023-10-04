@@ -552,20 +552,17 @@ public class AccountSelectionControllerTest {
             assertEquals(0, mSheetAccountItems.size());
             assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
 
-            // For error dialog without an error URL, we expect header + error summary + error
-            // description + got it button
-            assertEquals(4, countAllItems());
-            assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_SUMMARY));
-            assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_DESCRIPTION));
+            // For error dialog without an error URL, we expect header + error text + got it button
+            assertEquals(3, countAllItems());
+            assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_TEXT));
 
-            String errorSummaryIdpEtldPlusOne =
-                    mModel.get(ItemProperties.ERROR_SUMMARY).get(ErrorProperties.IDP_FOR_DISPLAY);
-            assertEquals(
-                    "Incorrect provider ETLD+1", TEST_ETLD_PLUS_ONE_2, errorSummaryIdpEtldPlusOne);
-            String errorDescriptionIdpEtldPlusOne = mModel.get(ItemProperties.ERROR_DESCRIPTION)
-                                                            .get(ErrorProperties.IDP_FOR_DISPLAY);
+            ErrorProperties.Properties errorProperties =
+                    mModel.get(ItemProperties.ERROR_TEXT).get(ErrorProperties.PROPERTIES);
             assertEquals("Incorrect provider ETLD+1", TEST_ETLD_PLUS_ONE_2,
-                    errorDescriptionIdpEtldPlusOne);
+                    errorProperties.mIdpForDisplay);
+            assertEquals("Incorrect top frame ETLD+1", TEST_ETLD_PLUS_ONE,
+                    errorProperties.mTopFrameForDisplay);
+            assertEquals("Incorrect token error", TOKEN_ERROR_EMPTY_URL, errorProperties.mError);
 
             assertNotNull(mModel.get(ItemProperties.GOT_IT_BUTTON)
                                   .get(ErrorButtonProperties.ON_CLICK_LISTENER));
@@ -593,20 +590,18 @@ public class AccountSelectionControllerTest {
             assertEquals(0, mSheetAccountItems.size());
             assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
 
-            // For error dialog with an error URL, we expect header + error summary + error
-            // description + got it button + more details button
-            assertEquals(5, countAllItems());
-            assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_SUMMARY));
-            assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_DESCRIPTION));
+            // For error dialog with an error URL, we expect header + error text + got it button +
+            // more details button
+            assertEquals(4, countAllItems());
+            assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_TEXT));
 
-            String errorSummaryIdpEtldPlusOne =
-                    mModel.get(ItemProperties.ERROR_SUMMARY).get(ErrorProperties.IDP_FOR_DISPLAY);
-            assertEquals(
-                    "Incorrect provider ETLD+1", TEST_ETLD_PLUS_ONE_2, errorSummaryIdpEtldPlusOne);
-            String errorDescriptionIdpEtldPlusOne = mModel.get(ItemProperties.ERROR_DESCRIPTION)
-                                                            .get(ErrorProperties.IDP_FOR_DISPLAY);
+            ErrorProperties.Properties errorProperties =
+                    mModel.get(ItemProperties.ERROR_TEXT).get(ErrorProperties.PROPERTIES);
             assertEquals("Incorrect provider ETLD+1", TEST_ETLD_PLUS_ONE_2,
-                    errorDescriptionIdpEtldPlusOne);
+                    errorProperties.mIdpForDisplay);
+            assertEquals("Incorrect top frame ETLD+1", TEST_ETLD_PLUS_ONE,
+                    errorProperties.mTopFrameForDisplay);
+            assertEquals("Incorrect token error", TOKEN_ERROR, errorProperties.mError);
 
             assertNotNull(mModel.get(ItemProperties.GOT_IT_BUTTON)
                                   .get(ErrorButtonProperties.ON_CLICK_LISTENER));

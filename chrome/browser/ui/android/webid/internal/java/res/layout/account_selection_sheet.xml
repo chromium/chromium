@@ -32,15 +32,21 @@ found in the LICENSE file.
     <include layout="@layout/idp_signin_text_item"
         android:id="@+id/idp_signin"
         android:visibility="gone"/>
-    <include layout="@layout/error_summary_text_item"
-        android:id="@+id/error_summary"
-        android:visibility="gone"/>
-    <include layout="@layout/error_description_text_item"
-        android:id="@+id/error_description"
-        android:visibility="gone"/>
     <include layout="@layout/account_selection_continue_button"
         android:id="@+id/account_selection_continue_btn"
         android:visibility="gone"/>
+    <LinearLayout
+        android:id="@+id/error_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/account_selection_sheet_horizontal_margin"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <include layout="@layout/error_summary_text_item"
+            android:id="@+id/error_summary"/>
+        <include layout="@layout/error_description_text_item"
+            android:id="@+id/error_description"/>
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
