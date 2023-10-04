@@ -10,6 +10,7 @@
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -17,13 +18,13 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/ash/os_feedback_dialog.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
-
 namespace {
 
 GURL GetFeedbackURL() {
@@ -35,6 +36,7 @@ bool HasInstanceOfOsFeedbackDialog() {
 }
 
 void TestOpenOsFeedbackDialog() {
+  base::HistogramTester histogram_tester;
   Profile* const profile = ash::ProfileHelper::GetSigninProfile();
   auto login_feedback = std::make_unique<ash::LoginFeedback>(profile);
   // There should be none instance.
@@ -47,6 +49,9 @@ void TestOpenOsFeedbackDialog() {
 
   // Verify an instance exists now.
   EXPECT_TRUE(HasInstanceOfOsFeedbackDialog());
+  histogram_tester.ExpectBucketCount("Feedback.RequestSource",
+                                     chrome::kFeedbackSourceLogin, 1);
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
 class LoginFeedbackTest : public LoginManagerTest {
@@ -139,8 +144,8 @@ IN_PROC_BROWSER_TEST_F(OobeBaseTest, FeedbackBasic) {
   TestFeedback();
 }
 
-// Test feedback UI shows up and is active on the Login Screen when the feature
-// flag OsFeedbackDialog is enabled.
+// Test feedback UI shows up and is active on the Login Screen when the
+// feature flag OsFeedbackDialog is enabled.
 IN_PROC_BROWSER_TEST_F(LoginOsFeedbackDialogTest, Basic) {
   TestOpenOsFeedbackDialog();
 }

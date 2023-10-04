@@ -10,9 +10,12 @@
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "extensions/browser/api/feedback_private/feedback_private_api.h"
 
 namespace {
 
@@ -43,6 +46,13 @@ void OsFeedbackDialog::ShowDialogAsync(
       std::move(callback).Run();
     }
     return;
+  }
+  // Metric should has been recorded for other request sources before
+  // ShowDialogAsync is being called.
+  if (info.flow == extensions::api::feedback_private::FeedbackFlow::kLogin) {
+    UMA_HISTOGRAM_ENUMERATION("Feedback.RequestSource",
+                              chrome::kFeedbackSourceLogin,
+                              chrome::kFeedbackSourceCount);
   }
 
   // Take a screenshot and open the app afterward, regardless of screenshot

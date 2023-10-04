@@ -124,6 +124,7 @@ enum FeedbackSource {
   kFeedbackSourcePriceInsights,
   kFeedbackSourceCookieControls,
   kFeedbackSourceGameDashboard,
+  kFeedbackSourceLogin,
 
   // Must be last.
   kFeedbackSourceCount,
