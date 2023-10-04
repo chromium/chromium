@@ -162,7 +162,7 @@ export class TabSwiper {
       return;
     }
 
-    const pixelsSwiped = this.animation_.currentTime!;
+    const pixelsSwiped: number = Number(this.animation_.currentTime!);
     const swipedEnoughToClose = pixelsSwiped > SWIPE_START_THRESHOLD_PX;
     const wasHighVelocity = pixelsSwiped /
             (event.timeStamp - this.currentPointerDownEvent_!.timeStamp) >

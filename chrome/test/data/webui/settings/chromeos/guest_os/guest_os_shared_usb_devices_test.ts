@@ -299,9 +299,9 @@ suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
     // Simulate a change in the underlying model.
     const updatedDevices =
         structuredClone(guestOsBrowserProxy.sharedUsbDevices);
-    updatedDevices[0].guestId.vm_name = 'termina';
-    updatedDevices[0].guestId.container_name = 'penguin';
-    updatedDevices[0].promptBeforeSharing = true;
+    updatedDevices[0]!.guestId!.vm_name = 'termina';
+    updatedDevices[0]!.guestId!.container_name = 'penguin';
+    updatedDevices[0]!.promptBeforeSharing = true;
     webUIListenerCallback(
         'guest-os-shared-usb-devices-changed', updatedDevices);
     flush();
@@ -373,8 +373,8 @@ suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
     // Simulate a change in the underlying model.
     const updatedDevices =
         structuredClone(guestOsBrowserProxy.sharedUsbDevices);
-    updatedDevices[1].guestId.vm_name = 'not-termina';
-    updatedDevices[1].guestId.container_name = 'not-penguin';
+    updatedDevices[1]!.guestId!.vm_name = 'not-termina';
+    updatedDevices[1]!.guestId!.container_name = 'not-penguin';
     webUIListenerCallback(
         'guest-os-shared-usb-devices-changed', updatedDevices);
     flush();

@@ -71,8 +71,6 @@ build_webui("build") {
     "//ash/webui/scanning/mojom:mojom_ts__generator",
   ]
 
-  ts_tsconfig_base = "tsconfig.json"
-
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 
   ts_deps = [

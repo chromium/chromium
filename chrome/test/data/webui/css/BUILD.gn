@@ -16,5 +16,4 @@ build_webui_tests("build") {
   }
 
   ts_deps = [ "//ui/webui/resources/js:build_ts" ]
-  ts_tsconfig_base = "tsconfig_base.json"
 }

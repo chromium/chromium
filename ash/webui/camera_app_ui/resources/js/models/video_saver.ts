@@ -505,7 +505,8 @@ export class TimeLapseSaver {
       Promise<TimeLapseSaver> {
     const encoderSupport =
         await VideoEncoder.isConfigSupported(encoderArgs.encoderConfig);
-    if (!encoderSupport.supported) {
+    if (encoderSupport.supported === null ||
+        encoderSupport.supported === undefined || !encoderSupport.supported) {
       throw new Error('Video encoder is not supported.');
     }
 

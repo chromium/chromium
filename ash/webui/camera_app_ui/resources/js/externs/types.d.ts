@@ -12,8 +12,6 @@
 // still in working draft stage.
 // https://wicg.github.io/file-system-access/
 
-type FileSystemWriteChunkType = Blob|BufferSource|string;
-
 interface FileSystemWritableFileStream extends WritableStream {
   seek(position: number): Promise<void>;
   truncate(size: number): Promise<void>;
