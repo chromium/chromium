@@ -204,7 +204,8 @@ TEST_F(AXViewTransitionTest, TransitionPseudoNotRelevant) {
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback, exception_state);
 
-  ScriptPromiseTester finish_tester(script_state, transition->finished());
+  ScriptPromiseTester finish_tester(script_state,
+                                    transition->finished(script_state));
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(GetState(transition), State::kCapturing);

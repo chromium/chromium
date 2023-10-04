@@ -8,5 +8,5 @@
   Exposed=Window,
   RuntimeEnabled=PageRevealEvent
 ] interface PageRevealEvent : Event {
-  // TODO(crbug.com/1466250): Expose viewTransition property.
+  [RuntimeEnabled=ViewTransitionOnNavigation] readonly attribute ViewTransition? viewTransition;
 };

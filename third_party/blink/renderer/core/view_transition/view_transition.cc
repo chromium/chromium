@@ -110,16 +110,15 @@ const char* ViewTransition::StateToString(State state) {
 // static
 ViewTransition* ViewTransition::CreateFromScript(
     Document* document,
-    ScriptState* script_state,
     V8ViewTransitionCallback* callback,
     Delegate* delegate) {
   CHECK(document->GetExecutionContext());
-  return MakeGarbageCollected<ViewTransition>(document, script_state, callback,
+  return MakeGarbageCollected<ViewTransition>(PassKey(), document, callback,
                                               delegate);
 }
 
-ViewTransition::ViewTransition(Document* document,
-                               ScriptState* script_state,
+ViewTransition::ViewTransition(PassKey,
+                               Document* document,
                                V8ViewTransitionCallback* update_dom_callback,
                                Delegate* delegate)
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
@@ -132,7 +131,6 @@ ViewTransition::ViewTransition(Document* document,
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
           *document->GetExecutionContext(),
           *this,
-          *script_state,
           update_dom_callback)) {
   ProcessCurrentState();
 }
@@ -142,11 +140,12 @@ ViewTransition* ViewTransition::CreateForSnapshotForNavigation(
     Document* document,
     ViewTransitionStateCallback callback,
     Delegate* delegate) {
-  return MakeGarbageCollected<ViewTransition>(document, std::move(callback),
-                                              delegate);
+  return MakeGarbageCollected<ViewTransition>(PassKey(), document,
+                                              std::move(callback), delegate);
 }
 
-ViewTransition::ViewTransition(Document* document,
+ViewTransition::ViewTransition(PassKey,
+                               Document* document,
                                ViewTransitionStateCallback callback,
                                Delegate* delegate)
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
@@ -169,10 +168,11 @@ ViewTransition* ViewTransition::CreateFromSnapshotForNavigation(
     ViewTransitionState transition_state,
     Delegate* delegate) {
   return MakeGarbageCollected<ViewTransition>(
-      document, std::move(transition_state), delegate);
+      PassKey(), document, std::move(transition_state), delegate);
 }
 
-ViewTransition::ViewTransition(Document* document,
+ViewTransition::ViewTransition(PassKey,
+                               Document* document,
                                ViewTransitionState transition_state,
                                Delegate* delegate)
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
@@ -183,7 +183,10 @@ ViewTransition::ViewTransition(Document* document,
       document_tag_(NextDocumentTag()),
       style_tracker_(MakeGarbageCollected<ViewTransitionStyleTracker>(
           *document_,
-          std::move(transition_state))) {
+          std::move(transition_state))),
+      script_delegate_(MakeGarbageCollected<DOMViewTransition>(
+          *document_->GetExecutionContext(),
+          *this)) {
   TRACE_EVENT0("blink",
                "ViewTransition::ViewTransition - CreatingFromSnapshot");
   bool process_next_state = AdvanceTo(State::kWaitForRenderBlock);
@@ -200,10 +203,8 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   // script API. script_delegate_ is cleared when the Document is being torn
   // down and script specific callbacks don't need to be dispatched in that
   // case.
-  if (script_delegate_ && creation_type_ == CreationType::kScript) {
-    // TODO(bokan): This should be called for navigation created VT as
-    // well.
-    DCHECK(script_delegate_);
+  if (script_delegate_) {
+    CHECK_NE(creation_type_, CreationType::kForSnapshot);
     script_delegate_->DidSkipTransition(response);
   }
 
@@ -218,7 +219,7 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   // We always need to call the transition state callback (mojo seems to require
   // this contract), so do so if we have one and we haven't called it yet.
   if (transition_state_callback_) {
-    DCHECK_EQ(creation_type_, CreationType::kForSnapshot);
+    CHECK_EQ(creation_type_, CreationType::kForSnapshot);
     ViewTransitionState view_transition_state;
     view_transition_state.navigation_id = navigation_id_;
     std::move(transition_state_callback_).Run(std::move(view_transition_state));
@@ -513,12 +514,9 @@ void ViewTransition::ProcessCurrentState() {
         DCHECK(!process_next_state);
 
         DCHECK(!in_main_lifecycle_update_);
-        if (creation_type_ == CreationType::kScript) {
-          // TODO(bokan): This should be called for navigation created VT as
-          // well.
-          CHECK(script_delegate_);
-          script_delegate_->DidStartAnimating();
-        }
+        CHECK_NE(creation_type_, CreationType::kForSnapshot);
+        CHECK(script_delegate_);
+        script_delegate_->DidStartAnimating();
         break;
 
       case State::kAnimating: {
@@ -536,12 +534,9 @@ void ViewTransition::ProcessCurrentState() {
 
         style_tracker_->StartFinished();
 
-        if (creation_type_ == CreationType::kScript) {
-          // TODO(bokan): This should be called for navigation created VT as
-          // well.
-          CHECK(script_delegate_);
-          script_delegate_->DidFinishAnimating();
-        }
+        CHECK_NE(creation_type_, CreationType::kForSnapshot);
+        CHECK(script_delegate_);
+        script_delegate_->DidFinishAnimating();
 
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
             document_tag_, navigation_id_));

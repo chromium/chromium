@@ -6,8 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_PAGE_REVEAL_EVENT_H_
 
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
+
+class DOMViewTransition;
 
 // Implementation for the pagereveal event. Fired before the first
 // rendering update after a Document is activated (loaded, restored from
@@ -18,12 +21,17 @@ class PageRevealEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  PageRevealEvent();
+  explicit PageRevealEvent(DOMViewTransition*);
   ~PageRevealEvent() override;
 
   const AtomicString& InterfaceName() const override;
 
   void Trace(Visitor*) const override;
+
+  DOMViewTransition* viewTransition() const;
+
+ private:
+  Member<DOMViewTransition> dom_view_transition_;
 };
 
 }  // namespace blink

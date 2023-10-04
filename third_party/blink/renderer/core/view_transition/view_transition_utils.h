@@ -14,6 +14,7 @@
 
 namespace blink {
 
+class DOMViewTransition;
 class ViewTransition;
 
 class CORE_EXPORT ViewTransitionUtils {
@@ -159,8 +160,15 @@ class CORE_EXPORT ViewTransitionUtils {
     }
   }
 
-  // Returns the active transition from the document, if any.
+  // Returns the view transition in-progress in the given document, if one
+  // exists.
   static ViewTransition* GetTransition(const Document& document);
+
+  // If the given document has an in-progress view transition, this will return
+  // the script delegate associated with that view transition (which may be
+  // null).
+  static DOMViewTransition* GetTransitionScriptDelegate(
+      const Document& document);
 
   // Returns the ::view-transition pseudo element that is the root of the
   // view-transition DOM hierarchy.

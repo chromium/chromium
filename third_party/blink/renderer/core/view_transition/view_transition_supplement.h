@@ -79,8 +79,7 @@ class CORE_EXPORT ViewTransitionSupplement
   void WillInsertBody();
 
  private:
-  DOMViewTransition* StartTransition(ScriptState* script_state,
-                                     Document& document,
+  DOMViewTransition* StartTransition(Document& document,
                                      V8ViewTransitionCallback* callback,
                                      ExceptionState& exception_state);
   void StartTransition(Document& document,

@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -44,6 +45,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
                                    public ExecutionContextLifecycleObserver,
                                    public ChromeClient::CommitObserver {
  public:
+  using PassKey = base::PassKey<ViewTransition>;
   class Delegate {
    public:
     virtual ~Delegate() = default;
@@ -55,7 +57,6 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // Creates and starts a same-document ViewTransition initiated using the
   // script API.
   static ViewTransition* CreateFromScript(Document*,
-                                          ScriptState*,
                                           V8ViewTransitionCallback*,
                                           Delegate*);
 
@@ -76,9 +77,12 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
                                                          ViewTransitionState,
                                                          Delegate*);
 
-  ViewTransition(Document*, ScriptState*, V8ViewTransitionCallback*, Delegate*);
-  ViewTransition(Document*, ViewTransitionStateCallback, Delegate*);
-  ViewTransition(Document*, ViewTransitionState, Delegate*);
+  // Script-based constructor.
+  ViewTransition(PassKey, Document*, V8ViewTransitionCallback*, Delegate*);
+  // Navigation-initiated for-snapshot constructor.
+  ViewTransition(PassKey, Document*, ViewTransitionStateCallback, Delegate*);
+  // Navigation-initiated from-snapshot constructor.
+  ViewTransition(PassKey, Document*, ViewTransitionState, Delegate*);
 
   DOMViewTransition* GetScriptDelegate() { return script_delegate_; }
 
@@ -339,8 +343,9 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   ViewTransitionStateCallback transition_state_callback_;
 
   // This is the object that implements the IDL interface exposed to script. It
-  // is non-null only when ViewTransition is created from the
-  // `startViewTransition` script API.
+  // is cleared if the document is torn down. It can also be null when
+  // ViewTransition is created on the outgoing page of a cross-document
+  // navigation (via CreateForSnapshotNavigation).
   Member<DOMViewTransition> script_delegate_;
 
   bool in_main_lifecycle_update_ = false;

@@ -40,7 +40,7 @@ if (!is_prerender_step) {
   startPrerendering(prerendering_url);
 
   ready_to_activate.then(() => {
-    location.href = prerendering_url;
+    location.replace(prerendering_url);
   });
 } else {
   assert(document.prerendering, 'prerendering step must be initially prerendered');

@@ -18,11 +18,23 @@ ViewTransition* ViewTransitionUtils::GetTransition(const Document& document) {
   if (!supplement) {
     return nullptr;
   }
-  auto* transition = supplement->GetTransition();
+  ViewTransition* transition = supplement->GetTransition();
   if (!transition || transition->IsDone()) {
     return nullptr;
   }
   return transition;
+}
+
+// static
+DOMViewTransition* ViewTransitionUtils::GetTransitionScriptDelegate(
+    const Document& document) {
+  ViewTransition* view_transition =
+      ViewTransitionUtils::GetTransition(document);
+  if (!view_transition) {
+    return nullptr;
+  }
+
+  return view_transition->GetScriptDelegate();
 }
 
 // static
