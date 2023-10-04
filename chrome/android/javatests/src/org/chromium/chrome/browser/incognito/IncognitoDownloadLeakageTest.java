@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -64,7 +63,6 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures(ChromeFeatureList.CCT_INCOGNITO)
 // TODO(crbug.com/1360906) remove INCOGNITO_DOWNLOADS_WARNING from the disabled features and fix
 // the test accordingly
 @DisableFeatures(ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING)
@@ -142,9 +140,8 @@ public class IncognitoDownloadLeakageTest {
                 ApplicationProvider.getApplicationContext());
         mDownloadTestPage = mTestServer.getURL(DOWNLOAD_TEST_PAGE_PATH);
 
-        // Ensuring native is initialized before we access the CCT_INCOGNITO feature flag.
+        // Ensuring native is initialized, as code below requires it.
         IncognitoDataTestUtils.fireAndWaitForCctWarmup();
-        assertTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_INCOGNITO));
 
         // Download related setUp steps.
         TestThreadUtils.runOnUiThreadBlocking(() -> {

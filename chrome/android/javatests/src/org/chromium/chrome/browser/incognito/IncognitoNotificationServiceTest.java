@@ -32,7 +32,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -42,7 +41,6 @@ import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -216,7 +214,6 @@ public class IncognitoNotificationServiceTest {
     @Test
     @MediumTest
     @Feature("Incognito")
-    @EnableFeatures(ChromeFeatureList.CCT_INCOGNITO)
     public void testCloseAllIncognitoNotificationForIncognitoCCT_DoesNotCloseCCT()
             throws PendingIntent.CanceledException {
         launchIncognitoTabAndEnsureNotificationDisplayed();

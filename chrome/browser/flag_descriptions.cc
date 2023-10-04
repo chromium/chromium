@@ -3848,10 +3848,6 @@ const char kCCTBrandTransparencyDescription[] =
     "When enabled, CCT will show more Chrome branding information when start, "
     "giving user more transparency that the web page is running in Chrome.";
 
-const char kCCTIncognitoName[] = "Chrome Custom Tabs Incognito mode";
-const char kCCTIncognitoDescription[] =
-    "Enables incognito mode for Chrome Custom Tabs, on Android.";
-
 const char kCCTIncognitoAvailableToThirdPartyName[] =
     "Allow third party to open Custom Tabs Incognito mode";
 const char kCCTIncognitoAvailableToThirdPartyDescription[] =

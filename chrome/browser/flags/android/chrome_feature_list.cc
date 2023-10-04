@@ -192,14 +192,12 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCloseTabSaveTabList,
     &kCriticalPersistedTabData,
     &kCreateNewTabInitializeRenderer,
-    &kCCTBackgroundTab,
     &kCCTBottomBarSwipeUpGesture,
     &kCCTBrandTransparency,
     &kCCTBrandTransparencyMemoryImprovement,
     &kCCTClientDataHeader,
     &kCCTDeprecatedAPIs,
     &kCCTFeatureUsage,
-    &kCCTIncognito,
     &kCCTIncognitoAvailableToThirdParty,
     &kCCTIntentFeatureOverrides,
     &kCCTMinimized,
@@ -552,10 +550,6 @@ BASE_FEATURE(kCCTBottomBarSwipeUpGesture,
              "CCTBottomBarSwipeUpGesture",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCCTBackgroundTab,
-             "CCTBackgroundTab",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCCTBrandTransparency,
              "CCTBrandTransparency",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -579,8 +573,6 @@ BASE_FEATURE(kCCTNewDownloadTab,
 BASE_FEATURE(kCCTFeatureUsage,
              "CCTFeatureUsage",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTIncognito, "CCTIncognito", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTIncognitoAvailableToThirdParty,
              "CCTIncognitoAvailableToThirdParty",

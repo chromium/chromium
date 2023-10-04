@@ -113,8 +113,7 @@ public class CustomTabBrandingTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO,
-            ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY})
+    @EnableFeatures(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY)
     // clang-format off
     public void doesntStoreBrandingInfoForIncognito() {
         // clang-format on

@@ -11,7 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertTrue;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
@@ -35,7 +34,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.TestParams;
@@ -44,7 +42,6 @@ import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -65,7 +62,6 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures(ChromeFeatureList.CCT_INCOGNITO)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoPermissionLeakageTest {
     private static final String PERMISSION_HTML_PATH =
@@ -92,9 +88,6 @@ public class IncognitoPermissionLeakageTest {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
 
-        // Ensuring native is initialized before we access the CCT_INCOGNITO feature flag.
-        IncognitoDataTestUtils.fireAndWaitForCctWarmup();
-        assertTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_INCOGNITO));
         ModalDialogTestUtils.overrideEnableButtonTapProtection(false);
     }
 

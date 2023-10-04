@@ -7434,12 +7434,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"cct-incognito", flag_descriptions::kCCTIncognitoName,
-     flag_descriptions::kCCTIncognitoDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTIncognito)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"cct-incognito-available-to-third-party",
      flag_descriptions::kCCTIncognitoAvailableToThirdPartyName,
      flag_descriptions::kCCTIncognitoAvailableToThirdPartyDescription,

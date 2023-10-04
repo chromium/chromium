@@ -56,7 +56,6 @@ public class CustomTabActivityIncognitoMetricTest {
     @Before
     public void setUp() throws TimeoutException {
         mTestPage = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
-        // Ensuring native is initialized before we access the CCT_INCOGNITO feature flag.
         IncognitoDataTestUtils.fireAndWaitForCctWarmup();
     }
 
@@ -67,7 +66,6 @@ public class CustomTabActivityIncognitoMetricTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void recordsHistogram_1P() {
         assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting(UMA_KEY));
         Intent intent = createMinimalIncognitoCustomTabIntent();
@@ -81,7 +79,6 @@ public class CustomTabActivityIncognitoMetricTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void recordsHistogram_ReaderMode_WithExtra() {
         assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting(UMA_KEY));
         Intent intent = createMinimalIncognitoCustomTabIntent();
@@ -98,10 +95,8 @@ public class CustomTabActivityIncognitoMetricTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO,
-            ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY})
-    public void
-    recordsHistogram_Other() {
+    @EnableFeatures(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY)
+    public void recordsHistogram_Other() {
         assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting(UMA_KEY));
         Intent intent = createMinimalIncognitoCustomTabIntent();
         // Remove the first party override to emulate third party
@@ -116,10 +111,8 @@ public class CustomTabActivityIncognitoMetricTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO,
-            ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY})
-    public void
-    doesNotRecordThirdPartySpecificHistogram() {
+    @EnableFeatures(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY)
+    public void doesNotRecordThirdPartySpecificHistogram() {
         assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting(FIRST_PARTY_UMA_KEY));
         Intent intent = createMinimalIncognitoCustomTabIntent();
 

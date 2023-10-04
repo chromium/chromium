@@ -29,7 +29,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.history.HistoryItem;
@@ -40,7 +39,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -56,7 +54,6 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures(ChromeFeatureList.CCT_INCOGNITO)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoHistoryLeakageTest {
     private static final String TEST_PAGE_1 = "/chrome/test/data/android/google.html";
@@ -80,10 +77,6 @@ public class IncognitoHistoryLeakageTest {
                 ApplicationProvider.getApplicationContext());
         mTestPage1 = mTestServer.getURL(TEST_PAGE_1);
         mTestPage2 = mTestServer.getURL(TEST_PAGE_2);
-
-        // Ensuring native is initialized before we access the CCT_INCOGNITO feature flag.
-        IncognitoDataTestUtils.fireAndWaitForCctWarmup();
-        assertTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_INCOGNITO));
     }
 
     @After

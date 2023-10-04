@@ -210,8 +210,7 @@ public class IncognitoDataTestUtils {
         activity.getTabModelSelector().getModel(true).closeAllTabs();
     }
 
-    // Warming up CCT so that the native is initialized before we access the CCT_INCOGNITO
-    // feature flag.
+    // Warming up CCT so that the native is initialized before we access feature flags.
     public static void fireAndWaitForCctWarmup() throws TimeoutException {
         CallbackHelper startUpCallback = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {

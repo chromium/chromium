@@ -9,7 +9,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -80,7 +79,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -131,7 +129,6 @@ public class CustomTabActivityIncognitoTest {
 
         FirstRunStatus.setFirstRunFlowComplete(true);
         mTestPage = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
-        // Ensuring native is initialized before we access the CCT_INCOGNITO feature flag.
         IncognitoDataTestUtils.fireAndWaitForCctWarmup();
     }
 
@@ -220,7 +217,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void launchesIncognitoWhenEnabled() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
@@ -230,16 +226,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.CCT_INCOGNITO})
-    public void doesntLaunchIncognitoWhenDisabled() throws Exception {
-        Intent intent = createMinimalIncognitoCustomTabIntent();
-        CustomTabActivity activity = launchIncognitoCustomTab(intent);
-        assertFalse(activity.getActivityTab().isIncognito());
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void toolbarHasIncognitoThemeColor() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
@@ -248,7 +234,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void toolbarHasIncognitoLogo() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         launchIncognitoCustomTab(intent);
@@ -257,16 +242,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.CCT_INCOGNITO})
-    public void toolbarDoesNotHaveIncognitoLogo() throws Exception {
-        Intent intent = createMinimalIncognitoCustomTabIntent();
-        launchIncognitoCustomTab(intent);
-        onView(withId(R.id.incognito_cct_logo_image_view)).check(matches(not(isDisplayed())));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void toolbarHasNonPrimaryIncognitoProfile_ForIncognitoCCT() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         launchIncognitoCustomTab(intent);
@@ -296,7 +271,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void ignoresCustomizedToolbarColor() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         intent.putExtra(CustomTabsIntent.EXTRA_TOOLBAR_COLOR, Color.RED);
@@ -306,7 +280,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void closeAllIncognitoNotificationIsNotDisplayed() throws Exception {
         // It may happen that some previous incognito notification from tabbed activity may be
         // already be lying around. So, we test the delta instead to be 0.
@@ -325,14 +298,12 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void openInBrowserMenuItemIsNotVisible() throws Exception {
         launchAndTestMenuItemIsNotVisible(R.id.open_in_browser_id, "Open in Browser not visible");
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void doesNotHaveAddToHomeScreenMenuItem() throws Exception {
         launchAndTestMenuItemIsNotVisible(
                 R.id.add_to_homescreen_id, "Add to home screen not visible");
@@ -340,21 +311,18 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void bookmarkTopIconIsVisible() throws Exception {
         launchAndTestMenuItemIsVisible(R.id.bookmark_this_page_id, "Bookmark icon is visible");
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void downloadTopIconIsNotVisible() throws Exception {
         launchAndTestMenuItemIsNotVisible(R.id.offline_page_id, "Download icon not visible");
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void shareMenuItemByDefaultIsNotVisibile() throws Exception {
         launchAndTestMenuItemIsNotVisible(
                 R.id.share_row_menu_id, "Share menu item not visible by default");
@@ -362,7 +330,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void shareMenuItemViaIntentExtraIsVisibile() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         intent.putExtra(CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, true);
@@ -375,7 +342,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void ensureOnlyFourTopIconsAreVisible() throws Exception {
         launchMenuItem();
         testTopActionIconsIsVisible();
@@ -383,7 +349,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void ensureAddCustomMenuItemHasNoEffect() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         CustomTabsIntentTestUtils.addMenuEntriesToIntent(intent, 3, TEST_MENU_TITLE);
@@ -408,7 +373,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void ensureAddCustomMenuItemIsEnabledForReaderMode() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         CustomTabIntentDataProvider.addReaderModeUIExtras(intent);
@@ -435,7 +399,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void ensureAddCustomTopMenuItemHasNoEffect() throws Exception {
         Bitmap expectedIcon = createVectorDrawableBitmap(R.drawable.ic_credit_card_black, 77, 48);
         Intent intent = createMinimalIncognitoCustomTabIntent();
@@ -459,7 +422,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void ensureAddRemoteViewsHasNoEffect() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         Bitmap expectedIcon = createVectorDrawableBitmap(R.drawable.ic_credit_card_black, 77, 48);
@@ -490,7 +452,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void ensureMayLaunchUrlIsBlockedForIncognitoWithExtraInConnection() throws Exception {
         // mayLaunchUrl should be blocked for incognito mode since it runs with always regular
         // profile. Need to update the test if the mayLaunchUrl is ever
@@ -513,7 +474,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void ensureHiddenTabIsBlockedForIncognitoWithoutExtraInConnection() throws Exception {
         // Creation of hidden tab should be blocked for incognito mode for the same setup as regular
         // mode above. Currently hidden tabs are created always with regular profile, so we
@@ -542,10 +502,8 @@ public class CustomTabActivityIncognitoTest {
      */
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID,
-            ChromeFeatureList.CCT_INCOGNITO})
-    public void
-    testIncognitoReauthControllerCreated_WhenReauthFeatureIsEnabled()
+    @EnableFeatures(ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID)
+    public void testIncognitoReauthControllerCreated_WhenReauthFeatureIsEnabled()
             throws InterruptedException, TimeoutException {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         Intent intent = createMinimalIncognitoCustomTabIntent();
@@ -568,10 +526,8 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID,
-            ChromeFeatureList.CCT_INCOGNITO})
-    public void
-    testIncognitoReauthPageShowingForIncognitoCCT() throws Exception {
+    @EnableFeatures(ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID)
+    public void testIncognitoReauthPageShowingForIncognitoCCT() throws Exception {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(true);
 

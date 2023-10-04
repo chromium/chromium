@@ -667,8 +667,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         // Add the parent ID as an intent extra for back button functionality.
         customTabsIntent.intent.putExtra(EXTRA_READER_MODE_PARENT, mTab.getId());
 
-        // Use Incognito CCT if the source page is in Incognito mode. This is gated by
-        // flag ChromeFeatureList.CCT_INCOGNITO.
+        // Use Incognito CCT if the source page is in Incognito mode.
         if (mTab.isIncognito()) {
             IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
                     customTabsIntent.intent, IntentHandler.IncognitoCCTCallerId.READER_MODE);

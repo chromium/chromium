@@ -228,9 +228,8 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     // TODO(https://crbug.com/1023759): Remove this function and enable
     // incognito CCT request for all apps.
     public static boolean isValidIncognitoIntent(Intent intent) {
-        if (!isIncognitoRequested(intent)) return false;
-        if (!isTrustedIntent(intent)) return false;
-        return ChromeFeatureList.sCctIncognito.isEnabled();
+        if (!isIncognitoRequested(intent) || !isTrustedIntent(intent)) return false;
+        return true;
     }
 
     private String resolveUrlToLoad(Intent intent) {

@@ -177,7 +177,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_CLIENT_DATA_HEADER = "CCTClientDataHeader";
     public static final String CCT_DEPRECATED_APIs = "CCTDeprecatedAPIs";
     public static final String CCT_FEATURE_USAGE = "CCTFeatureUsage";
-    public static final String CCT_INCOGNITO = "CCTIncognito";
     public static final String CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY =
             "CCTIncognitoAvailableToThirdParty";
     public static final String CCT_MINIMIZED = "CCTMinimized";
@@ -515,7 +514,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctBrandTransparencyMemoryImprovement =
             new CachedFlag(CCT_BRAND_TRANSPARENCY_MEMORY_IMPROVEMENT, true);
     public static final CachedFlag sCctFeatureUsage = new CachedFlag(CCT_FEATURE_USAGE, false);
-    public static final CachedFlag sCctIncognito = new CachedFlag(CCT_INCOGNITO, true);
     public static final CachedFlag sCctIncognitoAvailableToThirdParty =
             new CachedFlag(CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY, false);
     public static final CachedFlag sCctIntentFeatureOverrides =
@@ -649,7 +647,6 @@ public abstract class ChromeFeatureList {
         sCctBottomBarSwipeUpGesture,
         sCctBrandTransparencyMemoryImprovement,
         sCctFeatureUsage,
-        sCctIncognito,
         sCctIncognitoAvailableToThirdParty,
         sCctIntentFeatureOverrides,
         sCctMinimized,

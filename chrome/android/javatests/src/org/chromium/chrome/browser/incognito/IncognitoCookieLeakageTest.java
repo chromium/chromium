@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.incognito;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
@@ -26,14 +25,12 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.TestParams;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -49,7 +46,6 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures(ChromeFeatureList.CCT_INCOGNITO)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoCookieLeakageTest {
     private static final String COOKIES_SETTING_PATH = "/chrome/test/data/android/cookie.html";
@@ -69,10 +65,6 @@ public class IncognitoCookieLeakageTest {
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());
         mCookiesTestPage = mTestServer.getURL(COOKIES_SETTING_PATH);
-
-        // Ensuring native is initialized before we access the CCT_INCOGNITO feature flag.
-        IncognitoDataTestUtils.fireAndWaitForCctWarmup();
-        assertTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_INCOGNITO));
     }
 
     @After
