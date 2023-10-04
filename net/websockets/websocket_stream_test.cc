@@ -524,7 +524,9 @@ class WebSocketStreamCreateBasicAuthTest : public WebSocketStreamCreateTest {
   }
 
   static std::string RequestExpectation(base::StringPiece base64_user_pass) {
-    static const char request2format[] =
+    // Copy base64_user_pass to a std::string in case it is not nul-terminated.
+    std::string base64_user_pass_string(base64_user_pass);
+    return base::StringPrintf(
         "GET / HTTP/1.1\r\n"
         "Host: www.example.org\r\n"
         "Connection: Upgrade\r\n"
@@ -540,8 +542,8 @@ class WebSocketStreamCreateBasicAuthTest : public WebSocketStreamCreateTest {
         "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n"
         "Sec-WebSocket-Extensions: permessage-deflate; "
         "client_max_window_bits\r\n"
-        "\r\n";
-    return base::StringPrintf(request2format, base64_user_pass.data());
+        "\r\n",
+        base64_user_pass_string.c_str());
   }
 
   static const char kUnauthorizedResponse[];

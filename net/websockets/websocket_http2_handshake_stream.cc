@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
@@ -324,7 +325,7 @@ void WebSocketHttp2HandshakeStream::OnClose(int status) {
   if (!response_headers_complete_)
     result_ = HandshakeResult::HTTP2_FAILED;
 
-  OnFailure(std::string("Stream closed with error: ") + ErrorToString(status),
+  OnFailure(base::StrCat({"Stream closed with error: ", ErrorToString(status)}),
             status, absl::nullopt);
 
   if (callback_)

@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/auth.h"
@@ -233,8 +234,8 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
       // in HttpResponseInfo when a ERR_TUNNEL_CONNECTION_FAILED error happens.
       return "Establishing a tunnel via proxy server failed.";
     } else {
-      return std::string("Error in connection establishment: ") +
-             ErrorToString(net_error);
+      return base::StrCat(
+          {"Error in connection establishment: ", ErrorToString(net_error)});
     }
   }
 

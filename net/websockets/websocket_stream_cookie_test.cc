@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -195,13 +196,12 @@ TEST_P(WebSocketStreamServerSetCookieTest, ServerSetCookie) {
   for (const auto& [key, value] : GetParam().cookie_header)
     headers.SetHeader(key, value);
   std::string cookie_header(headers.ToString());
-  const std::string response = base::StringPrintf(
-      "HTTP/1.1 101 Switching Protocols\r\n"
-      "Upgrade: websocket\r\n"
-      "Connection: Upgrade\r\n"
-      "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n"
-      "%s",
-      cookie_header.c_str());
+  const std::string response =
+      base::StrCat({"HTTP/1.1 101 Switching Protocols\r\n"
+                    "Upgrade: websocket\r\n"
+                    "Connection: Upgrade\r\n"
+                    "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n",
+                    cookie_header});
   CookieStore* store =
       url_request_context_host_.GetURLRequestContext()->cookie_store();
 

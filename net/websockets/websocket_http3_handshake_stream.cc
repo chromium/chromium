@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
@@ -321,7 +322,7 @@ void WebSocketHttp3HandshakeStream::OnClose(int status) {
     result_ = HandshakeResult::HTTP3_FAILED;
   }
 
-  OnFailure(std::string("Stream closed with error: ") + ErrorToString(status),
+  OnFailure(base::StrCat({"Stream closed with error: ", ErrorToString(status)}),
             status, absl::nullopt);
 
   if (callback_) {

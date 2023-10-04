@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -72,7 +73,7 @@ enum GetHeaderResult {
 };
 
 std::string MissingHeaderMessage(const std::string& header_name) {
-  return std::string("'") + header_name + "' header is missing";
+  return base::StrCat({"'", header_name, "' header is missing"});
 }
 
 std::string GenerateHandshakeChallenge() {
@@ -509,7 +510,7 @@ int WebSocketBasicHandshakeStream::ValidateResponse(int rv) {
       return rv;
     }
     OnFailure(
-        std::string("Error during WebSocket handshake: ") + ErrorToString(rv),
+        base::StrCat({"Error during WebSocket handshake: ", ErrorToString(rv)}),
         rv, absl::nullopt);
     // Some error codes (for example ERR_CONNECTION_CLOSED) get changed to OK at
     // higher levels. To prevent an unvalidated connection getting erroneously

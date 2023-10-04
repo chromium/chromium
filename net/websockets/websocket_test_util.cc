@@ -121,13 +121,12 @@ std::string WebSocketStandardRequestWithCookies(
 }
 
 std::string WebSocketStandardResponse(const std::string& extra_headers) {
-  return base::StringPrintf(
-      "HTTP/1.1 101 Switching Protocols\r\n"
-      "Upgrade: websocket\r\n"
-      "Connection: Upgrade\r\n"
-      "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n"
-      "%s\r\n",
-      extra_headers.c_str());
+  return base::StrCat(
+      {"HTTP/1.1 101 Switching Protocols\r\n"
+       "Upgrade: websocket\r\n"
+       "Connection: Upgrade\r\n"
+       "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n",
+       extra_headers, "\r\n"});
 }
 
 HttpRequestHeaders WebSocketCommonTestHeaders() {
