@@ -805,9 +805,10 @@ suite('PreloadingSubpageMovedToPerformanceSettings', function() {
   });
 });
 
-suite('Settings3pcdOptions', function() {
+suite('TrackingProtectionSettings', function() {
   let page: SettingsCookiesPageElement;
   let settingsPrefs: SettingsPrefsElement;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: true});
@@ -816,6 +817,8 @@ suite('Settings3pcdOptions', function() {
   });
 
   setup(function() {
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
@@ -827,7 +830,7 @@ suite('Settings3pcdOptions', function() {
     // Page description
     assertTrue(isChildVisible(page, '#explanationText'));
 
-    // Advance toggles
+    // Advanced toggles
     assertTrue(isChildVisible(page, '#blockThirdPartyToggle'));
     assertTrue(isChildVisible(page, '#doNotTrack'));
 
@@ -837,14 +840,22 @@ suite('Settings3pcdOptions', function() {
     assertTrue(isChildVisible(page, '#exceptionHeader3pcd'));
   });
 
-  test('Toggle3PCDPref', function() {
+  test('BlockAll3pcToggle', async function() {
     page.set(
         'prefs.tracking_protection.block_all_3pc_toggle_enabled.value', false);
     const blockThirdPartyCookiesToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#blockThirdPartyToggle')!;
     assertTrue(!!blockThirdPartyCookiesToggle);
+
     blockThirdPartyCookiesToggle.click();
+    const result =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(
+        PrivacyElementInteractions.BLOCK_ALL_THIRD_PARTY_COOKIES, result);
+    assertEquals(
+        'Settings.PrivacySandbox.Block3PCookies',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
     assertEquals(
         page.getPref('tracking_protection.block_all_3pc_toggle_enabled.value'),
         true);

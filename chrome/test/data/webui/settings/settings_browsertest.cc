@@ -581,9 +581,9 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
           "runMochaSuite('PreloadingSubpageMovedToPerformanceSettings')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, Settings3pcdOptions) {
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, TrackingProtectionSettings) {
   RunTest("settings/cookies_page_test.js",
-          "runMochaSuite('Settings3pcdOptions')");
+          "runMochaSuite('TrackingProtectionSettings')");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

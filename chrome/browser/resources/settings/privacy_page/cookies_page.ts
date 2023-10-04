@@ -21,6 +21,7 @@ import './do_not_track_toggle.js';
 import '/shared/settings/controls/settings_radio_group.js';
 
 import {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
+import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -268,6 +269,16 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
           controlledBy: sessionOnlyPref.controlledBy,
           controlledByName: sessionOnlyPref.controlledByName,
         }));
+  }
+
+  private onBlockAll3pcToggleChanged_(event: Event) {
+    this.metricsBrowserProxy_.recordSettingsPageHistogram(
+        PrivacyElementInteractions.BLOCK_ALL_THIRD_PARTY_COOKIES);
+    const target = event.target as SettingsToggleButtonElement;
+    if (target.checked) {
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.PrivacySandbox.Block3PCookies');
+    }
   }
 
   private onCookieControlsModeChanged_() {
