@@ -413,10 +413,16 @@ struct AttributionDataHostManagerImpl::RegistrarAndHeader {
     }
 
     if (has_web) {
+      // Max header size is 256 KB, use 1M count to encapsulate.
+      base::UmaHistogramCounts1M("Conversions.HeadersSize.RegisterSource",
+                                 web_source.size());
       return RegistrarAndHeader{.registrar = Registrar::kWeb,
                                 .header = std::move(web_source)};
     }
     if (has_os) {
+      // Max header size is 256 KB, use 1M count to encapsulate.
+      base::UmaHistogramCounts1M("Conversions.HeadersSize.RegisterOsSource",
+                                 os_source.size());
       return RegistrarAndHeader{.registrar = Registrar::kOs,
                                 .header = std::move(os_source)};
     }

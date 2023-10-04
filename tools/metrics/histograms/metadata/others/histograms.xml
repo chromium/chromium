@@ -3919,6 +3919,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.HeadersSize.Register{Type}" units="bytes"
+    expires_after="M121">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the size of attribution response headers for registering sources or
+    triggers in bytes. Recorded when Attribution Response Headers are received
+    and handled.
+  </summary>
+  <token key="Type">
+    <variant name="OsSource"/>
+    <variant name="OsTrigger"/>
+    <variant name="Source"/>
+    <variant name="Trigger"/>
+  </token>
+</histogram>
+
 <histogram name="Conversions.HttpResponseOrNetErrorCodeAggregatable"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-03-10">
   <owner>anthonygarant@chromium.org</owner>

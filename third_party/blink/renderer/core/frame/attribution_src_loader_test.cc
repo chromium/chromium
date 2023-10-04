@@ -597,6 +597,39 @@ TEST_F(AttributionSrcLoaderTest, WebDisabled_TriggerNotRegistered) {
   }
 }
 
+TEST_F(AttributionSrcLoaderTest, HeadersSize_RecordsMetrics) {
+  base::HistogramTester histograms;
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+  AtomicString register_trigger_json(
+      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+  AtomicString register_source_json(
+      R"({"source_event_id":"5","destination":"https://destination.example"})");
+
+  ResourceRequest request(test_url);
+  request.SetAttributionReportingEligibility(
+      AttributionReportingEligibility::kTrigger);
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(http_names::kAttributionReportingRegisterTrigger,
+                              register_trigger_json);
+
+  attribution_src_loader_->MaybeRegisterAttributionHeaders(request, response,
+                                                           resource);
+  histograms.ExpectUniqueSample("Conversions.HeadersSize.RegisterTrigger",
+                                register_trigger_json.length(), 1);
+
+  request.SetAttributionReportingEligibility(
+      AttributionReportingEligibility::kEventSource);
+  response.SetHttpHeaderField(http_names::kAttributionReportingRegisterSource,
+                              register_source_json);
+
+  attribution_src_loader_->MaybeRegisterAttributionHeaders(request, response,
+                                                           resource);
+  histograms.ExpectUniqueSample("Conversions.HeadersSize.RegisterSource",
+                                register_source_json.length(), 1);
+}
+
 class AttributionSrcLoaderCrossAppWebRuntimeDisabledTest
     : public AttributionSrcLoaderTest {
  public:
@@ -709,6 +742,40 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
               ::testing::ElementsAre(::testing::ElementsAre(
                   attribution_reporting::OsRegistrationItem{
                       .url = GURL("https://r.test/x")})));
+}
+
+TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
+       HeadersSize_OsMetricsRecorded) {
+  base::HistogramTester histograms;
+  platform_->attribution_support =
+      network::mojom::AttributionSupport::kWebAndOs;
+
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+  AtomicString os_registration(R"("https://r.test/x")");
+
+  ResourceRequest request(test_url);
+  request.SetAttributionReportingEligibility(
+      AttributionReportingEligibility::kTrigger);
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(
+      http_names::kAttributionReportingRegisterOSTrigger, os_registration);
+
+  EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+      request, response, resource));
+  histograms.ExpectUniqueSample("Conversions.HeadersSize.RegisterOsTrigger",
+                                os_registration.length(), 1);
+
+  request.SetAttributionReportingEligibility(
+      AttributionReportingEligibility::kEventSource);
+  response.SetHttpHeaderField(http_names::kAttributionReportingRegisterOSSource,
+                              os_registration);
+
+  EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+      request, response, resource));
+  histograms.ExpectUniqueSample("Conversions.HeadersSize.RegisterOsSource",
+                                os_registration.length(), 1);
 }
 
 }  // namespace

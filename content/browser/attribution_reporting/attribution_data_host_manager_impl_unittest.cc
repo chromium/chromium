@@ -2498,5 +2498,55 @@ TEST_F(AttributionDataHostManagerImplTest, WebDisabled_SourceNotRegistered) {
   }
 }
 
+TEST_F(AttributionDataHostManagerImplTest, HeadersSize_MetricsRecorded) {
+  base::HistogramTester histograms;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kAttributionReportingCrossAppWeb);
+
+  auto reporting_url = GURL("https://report.test");
+  auto source_origin = *SuitableOrigin::Deserialize("https://source.test");
+  base::StringPiece os_registration(R"("https://r.test/x")");
+
+  data_host_manager_.NotifyFencedFrameReportingBeaconStarted(
+      kBeaconId, kNavigationId, source_origin,
+      /*is_within_fenced_frame=*/false, AttributionInputEvent(), kFrameId,
+      kDevtoolsRequestId);
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                     kRegisterSourceJson);
+
+  data_host_manager_.NotifyFencedFrameReportingBeaconData(
+      kBeaconId, network::AttributionReportingRuntimeFeatures(), reporting_url,
+      headers.get(),
+      /*is_final_response=*/true);
+  histograms.ExpectUniqueSample("Conversions.HeadersSize.RegisterSource",
+                                strlen(kRegisterSourceJson), 1);
+
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  // OS registration
+  headers->RemoveHeader(kAttributionReportingRegisterSourceHeader);
+  headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
+                     os_registration);
+
+  data_host_manager_.NotifyFencedFrameReportingBeaconStarted(
+      kBeaconId, /*navigation_id=*/absl::nullopt, source_origin,
+      /*is_within_fenced_frame=*/false, AttributionInputEvent(), kFrameId,
+      kDevtoolsRequestId);
+
+  data_host_manager_.NotifyFencedFrameReportingBeaconData(
+      kBeaconId, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
+      reporting_url, headers.get(),
+      /*is_final_response=*/true);
+  histograms.ExpectUniqueSample("Conversions.HeadersSize.RegisterOsSource",
+                                os_registration.length(), 1);
+
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
 }  // namespace
 }  // namespace content
