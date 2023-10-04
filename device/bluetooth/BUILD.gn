@@ -587,7 +587,7 @@ component("bluetooth") {
         }
       }
       if (use_dbus) {
-        deps += [ "//dbus" ]
+        public_deps += [ "//dbus" ]
       }
     } else {  # !use_bluez
       defines += [ "LINUX_WITHOUT_DBUS" ]

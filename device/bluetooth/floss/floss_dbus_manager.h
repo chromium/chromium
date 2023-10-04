@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "dbus/object_manager.h"
 #include "device/bluetooth/bluetooth_export.h"
 
 namespace base {
@@ -52,7 +53,8 @@ class FlossAdminClient;
 // While similar to the BluezDBusManager, it requires totally different client
 // implementations since the Floss dbus apis are drastically different. Thus, it
 // doesn't make sense to share a common implementation between the two.
-class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
+class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
+    : public dbus::ObjectManager::Interface {
  public:
   class ClientInitializer {
    public:
@@ -102,6 +104,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
       }
     }
 
+    bool Finished() { return on_ready_.is_null(); }
+
    private:
     void ScheduleTimeout(base::TimeDelta timeout) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -146,6 +150,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   // Adapters are indexed from 0-N (corresponding to hci0..hciN). Use negative
   // value to represent invalid adapter.
   static const int kInvalidAdapter;
+
+  // Timeout to wait for clients to become ready.
+  static const int kClientReadyTimeoutMs;
 
   FlossDBusManager(const FlossDBusManager&) = delete;
   FlossDBusManager& operator=(const FlossDBusManager&) = delete;
@@ -194,6 +201,23 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   FlossAdminClient* GetAdminClient();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+ protected:
+  friend class FlossDBusManagerTest;
+  // dbus::ObjectManager::Interface overrides
+  dbus::PropertySet* CreateProperties(
+      dbus::ObjectProxy* object_proxy,
+      const dbus::ObjectPath& object_path,
+      const std::string& interface_name) override;
+
+  void ObjectAdded(const dbus::ObjectPath& object_path,
+                   const std::string& interface_name) override;
+  void ObjectRemoved(const dbus::ObjectPath& object_path,
+                     const std::string& interface_name) override;
+
+  // Keep track of the object manager so we can keep track of when the manager
+  // disappears. Managed by the bus object (do not delete).
+  raw_ptr<dbus::ObjectManager> object_manager_ = nullptr;
+
  private:
   friend class FlossDBusManagerSetter;
 
@@ -202,7 +226,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   static void CreateGlobalInstance(dbus::Bus* bus, bool use_stubs);
 
   FlossDBusManager(dbus::Bus* bus, bool use_stubs);
-  ~FlossDBusManager();
+  ~FlossDBusManager() override;
 
   void OnObjectManagerSupported(dbus::Response* response);
   void OnObjectManagerNotSupported(dbus::ErrorResponse* response);
@@ -214,6 +238,18 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   // performs additional setup for a specific adapter. Once all clients are
   // ready, calls the |on_ready| callback.
   void InitializeAdapterClients(int adapter, base::OnceClosure on_ready);
+
+  void InitAdapterClientsIfReady();
+  void InitAdapterLoggingClientsIfReady();
+#if BUILDFLAG(IS_CHROMEOS)
+  void InitAdminClientsIfReady();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  void InitBatteryClientsIfReady();
+  void InitTelephonyClientsIfReady();
+  void InitGattClientsIfReady();
+  void InitSocketManagerClientsIfReady();
+
+  void SetAllClientsPresentForTesting();
 
   // System bus instance (owned by FlossDBusThreadManager).
   raw_ptr<dbus::Bus> bus_;
@@ -229,6 +265,16 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   base::OnceClosure object_manager_support_known_callback_;
   bool object_manager_support_known_ = false;
   bool object_manager_supported_ = false;
+
+  bool adapter_interface_present_ = false;
+  bool adapter_logging_interface_present_ = false;
+#if BUILDFLAG(IS_CHROMEOS)
+  bool admin_interface_present_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  bool battery_interface_present_ = false;
+  bool telephony_interface_present_ = false;
+  bool gatt_interface_present_ = false;
+  bool socket_manager_interface_present_ = false;
 
   // Currently active Bluetooth adapter
   int active_adapter_ = kInvalidAdapter;
