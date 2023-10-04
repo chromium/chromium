@@ -87,6 +87,8 @@ component("shell_dialogs") {
 
   if (is_win) {
     sources += [
+      "auto_close_dialog_event_handler_win.cc",
+      "auto_close_dialog_event_handler_win.h",
       "base_shell_dialog_win.cc",
       "base_shell_dialog_win.h",
       "execute_select_file_win.cc",

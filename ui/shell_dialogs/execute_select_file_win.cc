@@ -7,6 +7,10 @@
 #include <shlobj.h>
 #include <wrl/client.h>
 
+#include <memory>
+
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -17,6 +21,7 @@
 #include "base/win/scoped_co_mem.h"
 #include "base/win/shortcut.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/auto_close_dialog_event_handler_win.h"
 #include "ui/shell_dialogs/base_shell_dialog_win.h"
 #include "ui/shell_dialogs/select_file_utils_win.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -24,6 +29,46 @@
 namespace ui {
 
 namespace {
+
+// Stop switch for the AutoCloseDialogEventHandler.
+BASE_FEATURE(kAutoCloseFileDialogs,
+             "AutoCloseFileDialogs",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// RAII wrapper around AutoCloseDialogEventHandler.
+class ScopedAutoCloseDialogEventHandler {
+ public:
+  ScopedAutoCloseDialogEventHandler(HWND owner_window, IFileDialog* file_dialog)
+      : file_dialog_(file_dialog) {
+    CHECK(file_dialog_);
+
+    if (!owner_window) {
+      return;
+    }
+
+    if (!base::FeatureList::IsEnabled(kAutoCloseFileDialogs)) {
+      return;
+    }
+
+    Microsoft::WRL::ComPtr<IFileDialogEvents> dialog_event_handler =
+        Microsoft::WRL::Make<AutoCloseDialogEventHandler>(owner_window);
+    if (!dialog_event_handler) {
+      return;
+    }
+
+    file_dialog_->Advise(dialog_event_handler.Get(), &cookie_);
+  }
+
+  ~ScopedAutoCloseDialogEventHandler() {
+    if (cookie_) {
+      file_dialog_->Unadvise(cookie_);
+    }
+  }
+
+ private:
+  Microsoft::WRL::ComPtr<IFileDialog> file_dialog_;
+  DWORD cookie_ = 0;
+};
 
 // Distinguish directories from regular files.
 bool IsDirectory(const base::FilePath& path) {
@@ -153,6 +198,11 @@ bool RunSaveFileDialog(HWND owner,
 
   file_save_dialog->SetDefaultExtension(def_ext.c_str());
 
+  // This handler auto-closes the file dialog if its owner window is closed.
+  auto auto_close_dialog_event_handler =
+      std::make_unique<ScopedAutoCloseDialogEventHandler>(
+          owner, file_save_dialog.Get());
+
   // Never consider the current scope as hung. The hang watching deadline (if
   // any) is not valid since the user can take unbounded time to choose the
   // file.
@@ -160,6 +210,10 @@ bool RunSaveFileDialog(HWND owner,
 
   HRESULT hr = file_save_dialog->Show(owner);
   BaseShellDialogImpl::DisableOwner(owner);
+
+  // Remove the event handler regardless of the return value of Show().
+  auto_close_dialog_event_handler = nullptr;
+
   if (FAILED(hr))
     return false;
 
@@ -211,6 +265,11 @@ bool RunOpenFileDialog(HWND owner,
     return false;
   }
 
+  // This handler auto-closes the file dialog if its owner window is closed.
+  auto auto_close_dialog_event_handler =
+      std::make_unique<ScopedAutoCloseDialogEventHandler>(
+          owner, file_open_dialog.Get());
+
   // Never consider the current scope as hung. The hang watching deadline (if
   // any) is not valid since the user can take unbounded time to choose the
   // file.
@@ -218,6 +277,10 @@ bool RunOpenFileDialog(HWND owner,
 
   HRESULT hr = file_open_dialog->Show(owner);
   BaseShellDialogImpl::DisableOwner(owner);
+
+  // Remove the event handler regardless of the return value of Show().
+  auto_close_dialog_event_handler = nullptr;
+
   if (FAILED(hr))
     return false;
 
