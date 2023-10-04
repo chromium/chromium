@@ -13,16 +13,16 @@ desc: |-
   may be used.
 
   This policy is planned to be removed in
-  <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 120,
-  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
-  for <ph name="LINUX_OS_NAME">Linux</ph> version 120, and
   <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> for
   <ph name="ANDROID_NAME">Android</ph> version 121,
   when support for using the platform supplied roots is planned to be removed.
 
   This policy was removed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
   for <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> and <ph name="MAC_OS_NAME">macOS</ph> version 113,
-  when support for using the platform supplied certificate verifier and roots was removed.
+  <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 120,
+  and <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> for
+  <ph name="LINUX_OS_NAME">Linux</ph> version 120 when support for using the
+  platform supplied certificate verifier and roots was removed.
 example_value: false
 features:
   dynamic_refresh: true
@@ -43,7 +43,7 @@ supported_on:
 - chrome.win:105-112
 - chrome.mac:105-112
 - android:114-
-- chrome.linux:114-
-- chrome_os:114-
+- chrome.linux:114-119
+- chrome_os:114-119
 tags: []
 type: main
