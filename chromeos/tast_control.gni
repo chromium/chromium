@@ -175,6 +175,9 @@ tast_disabled_tests_from_chrome_all = [
   # b/302415044: Until LKGM 15631 onward lands
   "crostini.BackupRestore.bullseye_stable",
 
+  # b/303353334: Until LKGM 15630 onward lands
+  "tast.platform.MLServiceBootstrap",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
