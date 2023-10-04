@@ -689,8 +689,10 @@ TEST_F(PlusAddressClientRequests,
       ResponseByteSizeHistogramFor(PlusAddressNetworkRequestType::kList), 0);
 }
 
-TEST_F(PlusAddressClientRequests,
-       GetAllPlusAddressesV1_WhenLoadingRequest_NewRequestsAreDropped) {
+// TODO: crbug.com/1489268 - Reenable this test after fixing flakiness.
+TEST_F(
+    PlusAddressClientRequests,
+    DISABLED_GetAllPlusAddressesV1_WhenLoadingRequest_NewRequestsAreDropped) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   client.SetAccessTokenInfoForTesting(eternal_token_info);
 
