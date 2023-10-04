@@ -9,7 +9,7 @@ namespace password_manager::features {
 // required to view saved credentials in the Password Manager Main Page.
 BASE_FEATURE(kIOSPasswordAuthOnEntry,
              "IOSPasswordAuthOnEntry",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAuthOnEntryEnabled() {
   return base::FeatureList::IsEnabled(kIOSPasswordAuthOnEntry);

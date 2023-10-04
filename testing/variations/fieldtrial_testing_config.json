@@ -12109,21 +12109,6 @@
             ]
         }
     ],
-    "PasswordManagerAuthOnEntryIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSPasswordAuthOnEntry"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordSuggestionBottomSheetV2": [
         {
             "platforms": [
