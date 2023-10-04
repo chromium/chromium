@@ -99,6 +99,7 @@ AbortSignal::AbortSignal(ScriptState* script_state,
   // If any of the signals are aborted, skip the linking and just abort this
   // signal.
   for (auto& source : source_signals) {
+    CHECK(source.Get());
     if (source->aborted()) {
       abort_reason_ = source->reason(script_state);
       source_signals.clear();
@@ -264,6 +265,8 @@ void AbortSignal::SignalAbort(ScriptState* script_state,
   }
 
   for (AbortSignal::AlgorithmHandle* handle : abort_algorithms_) {
+    CHECK(handle);
+    CHECK(handle->GetAlgorithm());
     handle->GetAlgorithm()->Run();
   }
 
@@ -283,6 +286,7 @@ void AbortSignal::SignalAbort(ScriptState* script_state,
       // This is safe against reentrancy because new dependents are not added to
       // already aborted signals.
       for (auto& signal : source_signal_manager->GetDependentSignals()) {
+        CHECK(signal.Get());
         signal->SignalAbort(script_state, abort_reason_, SignalAbortPassKey());
       }
     }
@@ -425,7 +429,10 @@ bool AbortSignal::IsSettledFor(
 
 AbortSignal::AlgorithmHandle::AlgorithmHandle(AbortSignal::Algorithm* algorithm,
                                               AbortSignal* signal)
-    : algorithm_(algorithm), signal_(signal) {}
+    : algorithm_(algorithm), signal_(signal) {
+  CHECK(algorithm_);
+  CHECK(signal_);
+}
 
 AbortSignal::AlgorithmHandle::~AlgorithmHandle() = default;
 
