@@ -46,16 +46,10 @@ class SessionSyncServiceImpl : public SessionSyncService {
   // GetOpenTabsUIDelegate() returns null or not.
   void ProxyTabsStateChanged(syncer::DataTypeController::State state) override;
 
-  // Returns OpenTabsUIDelegate regardless of sync being enabled or disabled,
-  // useful for tests.
-  OpenTabsUIDelegate* GetUnderlyingOpenTabsUIDelegateForTest();
-
  private:
   void NotifyForeignSessionUpdated();
 
   std::unique_ptr<SyncSessionsClient> sessions_client_;
-
-  bool proxy_tabs_running_ = false;
 
   std::unique_ptr<SessionSyncBridge> bridge_;
 

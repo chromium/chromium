@@ -141,21 +141,17 @@ class RecentTabsSubMenuModelTest : public BrowserWithTestWindowTest {
     ASSERT_NE(nullptr, activation_response->type_processor);
     sync_processor_ = std::move(activation_response->type_processor);
 
+    EnableSync();
+  }
+
+  void EnableSync() {
     // ClientTagBasedModelTypeProcessor requires connecting before
     // other interactions with the worker happen.
     sync_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
   }
 
-  void EnableSync() {
-    session_sync_service_->ProxyTabsStateChanged(
-        syncer::DataTypeController::RUNNING);
-  }
-
-  void DisableSync() {
-    session_sync_service_->ProxyTabsStateChanged(
-        syncer::DataTypeController::NOT_RUNNING);
-  }
+  void DisableSync() { sync_processor_->DisconnectSync(); }
 
   static std::unique_ptr<KeyedService> GetTabRestoreService(
       content::BrowserContext* browser_context) {
@@ -167,9 +163,7 @@ class RecentTabsSubMenuModelTest : public BrowserWithTestWindowTest {
 
   void RegisterRecentTabs(RecentTabsBuilderTestHelper* helper) {
     helper->ExportToSessionSync(sync_processor_.get());
-    helper->VerifyExport(static_cast<sync_sessions::SessionSyncServiceImpl*>(
-                             session_sync_service_)
-                             ->GetUnderlyingOpenTabsUIDelegateForTest());
+    helper->VerifyExport(session_sync_service_->GetOpenTabsUIDelegate());
   }
 
  private:
@@ -485,33 +479,19 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevices) {
 }
 
 TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
-  DisableSync();
+  EnableSync();
 
   // Before creating menu fill foreign sessions.
   base::Time update_timestamp = base::Time::Now() - base::Minutes(10);
 
+  // Create one foreign session with one window and one tab.
   RecentTabsBuilderTestHelper recent_tabs_builder;
-
-  // Create one session with one window and one tab.
   recent_tabs_builder.AddSession();
   recent_tabs_builder.AddWindow(0);
   recent_tabs_builder.AddTabWithInfo(0, 0, update_timestamp, std::u16string());
-
   RegisterRecentTabs(&recent_tabs_builder);
 
   RecentTabsSubMenuModel model(nullptr, browser());
-
-  // Expected menu items with sync disabled:
-  constexpr ModelData kDataSyncDisabled[] = {
-      {ui::MenuModel::TYPE_COMMAND, true},    // History
-      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-      {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
-      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-      {ui::MenuModel::TYPE_COMMAND, false},   // No tabs from other devices
-  };
-  VerifyModel(model, kDataSyncDisabled);
-
-  EnableSync();
 
   // Expected menu items with sync enabled:
   constexpr ModelData kDataSyncEnabled[] = {
