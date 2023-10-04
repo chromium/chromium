@@ -15,10 +15,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/vector_icons.h"
@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceContextMenuBrowserTest,
   Profile* profile = browser()->profile();
   auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_install_info->start_url = GURL("https://example.org");
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
   AppListClientImpl* client = AppListClientImpl::GetInstance();
