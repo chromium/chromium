@@ -36,14 +36,17 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/metrics_util.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/utility/haptics_util.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
@@ -54,6 +57,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event.h"
@@ -118,6 +122,7 @@ constexpr base::TimeDelta kFadeOutAnimationDuration = base::Milliseconds(100);
 //
 // The duration of the folder item view fade out animation.
 constexpr base::TimeDelta kFolderItemFadeOutDuration = base::Milliseconds(100);
+constexpr base::TimeDelta kSwapPromiseIconDuration = base::Milliseconds(1000);
 
 // The duraction of the folder item view fade in animation.
 constexpr base::TimeDelta kFolderItemFadeInDuration = base::Milliseconds(300);
@@ -2945,6 +2950,46 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
 
   items_container_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
                                              /*send_native_event=*/true);
+
+  // Attempt to animate the transition from a promise app into an actual app
+  const std::string package_name =
+      view->item()->GetMetadata()->promise_package_id;
+  PendingAppsLayersMap::iterator found =
+      pending_promise_apps_removals_.find(package_name);
+
+  if (item->GetMetadata()->app_status == AppStatus::kReady &&
+      found != pending_promise_apps_removals_.end()) {
+    AnimateTransitionForPromiseApps(
+        view, found->second->root(),
+        base::BindOnce(&AppsGridView::FinishAnimationForPromiseApps,
+                       weak_factory_.GetWeakPtr(), package_name));
+  }
+}
+
+void AppsGridView::AnimateTransitionForPromiseApps(AppListItemView* view,
+                                                   ui::Layer* promise_app_layer,
+                                                   base::OnceClosure callback) {
+  view->EnsureLayer();
+  view->layer()->SetOpacity(0.0f);
+
+  views::AnimationBuilder animation;
+  animation.OnEnded(std::move(callback));
+  animation.Once()
+      .SetDuration(kSwapPromiseIconDuration)
+      .SetOpacity(view->layer(), 1.0f, gfx::Tween::FAST_OUT_LINEAR_IN)
+      .SetOpacity(promise_app_layer, 0.0f, gfx::Tween::FAST_OUT_LINEAR_IN);
+}
+
+void AppsGridView::FinishAnimationForPromiseApps(
+    const std::string& pending_app_id) {
+  PendingAppsLayersMap::iterator pending_app_found =
+      pending_promise_apps_removals_.find(pending_app_id);
+
+  // Discard the pending promise app layer.
+  if (pending_app_found != pending_promise_apps_removals_.end()) {
+    auto pending_app_scope(std::move(pending_app_found->second));
+    pending_promise_apps_removals_.erase(pending_app_found);
+  }
 }
 
 void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
@@ -2953,6 +2998,8 @@ void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
   if (!updating_model_) {
     EndDrag(true);
   }
+
+  MaybeDuplicatePromiseAppForRemoval(GetItemViewAt(index));
 
   // Abort reorder animation before a view is deleted from `view_model_`.
   MaybeAbortWholeGridAnimation();
@@ -2972,6 +3019,46 @@ void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
 
   items_container_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
                                              /*send_native_event=*/true);
+}
+
+void AppsGridView::MaybeDuplicatePromiseAppForRemoval(
+    AppListItemView* promise_app_view) {
+  if (!ash::features::ArePromiseIconsEnabled()) {
+    return;
+  }
+
+  if (!promise_app_view || !promise_app_view->is_promise_app()) {
+    return;
+  }
+
+  AppListItem* item = promise_app_view->item();
+
+  if (item->app_status() != AppStatus::kInstallSuccess ||
+      !promise_app_view->IsDrawn()) {
+    return;
+  }
+
+  bool existing_app_in_grid = false;
+  // Search along the `view_model_` for an existing app with the same
+  // package id as the promise app to be removed.
+  for (const auto& entry : view_model_.entries()) {
+    AppListItemView* view = views::AsViewClass<AppListItemView>(entry.view);
+    if (view == promise_app_view) {
+      continue;
+    }
+
+    if (view->item()->GetMetadata()->promise_package_id == item->id()) {
+      existing_app_in_grid = true;
+      break;
+    }
+  }
+
+  // PromiseApps don't get animation for removal if an app lready existst in the
+  // grid.
+  if (!existing_app_in_grid) {
+    AddPendingLayerOwnerForPromiseApp(
+        item->id(), promise_app_view->RequestDuplicateLayer());
+  }
 }
 
 void AppsGridView::OnListItemMoved(size_t from_index,
@@ -3011,6 +3098,25 @@ void AppsGridView::OnListItemMoved(size_t from_index,
   } else {
     Layout();
   }
+}
+
+ui::LayerTreeOwner* AppsGridView::AddPendingLayerOwnerForPromiseApp(
+    const std::string& id,
+    std::unique_ptr<ui::LayerTreeOwner> layer_owner) {
+  if (!layer_owner) {
+    return nullptr;
+  }
+
+  PendingAppsLayersMap::iterator found =
+      pending_promise_apps_removals_.find(id);
+  if (found != pending_promise_apps_removals_.end()) {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  pending_promise_apps_removals_[id] = std::move(layer_owner);
+
+  return pending_promise_apps_removals_[id].get();
 }
 
 void AppsGridView::OnAppListModelStatusChanged() {

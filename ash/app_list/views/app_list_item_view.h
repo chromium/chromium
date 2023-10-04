@@ -18,6 +18,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
@@ -246,6 +247,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // Ensures this item view has its own layer.
   void EnsureLayer();
+
+  // Generates a copy of the current layer for the item and transfers ownership
+  // of it to the caller.
+  std::unique_ptr<ui::LayerTreeOwner> RequestDuplicateLayer();
 
   bool HasNotificationBadge();
 

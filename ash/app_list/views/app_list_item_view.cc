@@ -35,6 +35,7 @@
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/user_education_controller.h"
+#include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -1806,6 +1807,11 @@ void AppListItemView::ItemIsNewInstallChanged() {
     new_install_dot_->SetVisible(item_weak_->is_new_install());
     Layout();
   }
+}
+
+std::unique_ptr<ui::LayerTreeOwner> AppListItemView::RequestDuplicateLayer() {
+  CHECK(layer());
+  return ::wm::RecreateLayers(this);
 }
 
 void AppListItemView::ItemBeingDestroyed() {

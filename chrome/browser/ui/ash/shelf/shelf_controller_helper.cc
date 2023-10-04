@@ -9,6 +9,7 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -245,10 +246,9 @@ ash::AppStatus ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
     case apps::PromiseStatus::kInstalling:
       return ash::AppStatus::kInstalling;
     case apps::PromiseStatus::kSuccess:
+      return ash::AppStatus::kInstallSuccess;
     case apps::PromiseStatus::kCancelled:
-      // Set to kInstalling, as that would've been the last valid status before
-      // the promise app was removed.
-      return ash::AppStatus::kInstalling;
+      return ash::AppStatus::kInstallCancelled;
   }
 }
 

@@ -78,6 +78,7 @@
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
@@ -297,8 +298,9 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     if (is_rtl_)
       base::i18n::SetICUDefaultLocale("he");
 
-    scoped_feature_list_.InitWithFeatureState(
-        app_list_features::kDragAndDropRefactor, use_drag_drop_refactor_);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{app_list_features::kDragAndDropRefactor, use_drag_drop_refactor_},
+         {features::kPromiseIcons, true}});
     AshTestBase::SetUp();
 
     // Make the display big enough to hold the app list.
@@ -483,6 +485,18 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
 
     event_generator->MoveMouseTo(location);
     event_generator->ClickLeftButton();
+  }
+
+  ui::LayerTreeOwner* GetPendingPromiseLayerForId(
+      const std::string& promise_app_id) {
+    auto found =
+        apps_grid_view_->pending_promise_apps_removals_.find(promise_app_id);
+
+    if (found == apps_grid_view_->pending_promise_apps_removals_.end()) {
+      return nullptr;
+    }
+
+    return found->second.get();
   }
 
   // Simulates a long press on the point `location` if the test is in tablet
@@ -6309,6 +6323,59 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
     histogram_tester.ExpectTotalCount(
         kClamshellDragReorderAnimationSmoothnessHistogram, 1);
   }
+}
+
+TEST_F(AppsGridViewTest, PromiseIconLayers) {
+  AppListItem* item = GetTestModel()->CreateAndAddPromiseItem("PromiseApp");
+  const std::string promise_app_id = item->GetMetadata()->id;
+  UpdateLayout();
+
+  AppListItemView* promise_view = apps_grid_view_->GetItemViewAt(0);
+
+  // Promise apps are created with app_status kPending.
+  EXPECT_EQ(promise_view->item()->progress(), -1.0f);
+  EXPECT_TRUE(promise_view->layer());
+
+  // Change app status to installing and send a progress update.
+  item->UpdateAppStatusForTesting(AppStatus::kInstalling);
+  item->SetProgress(0.3f);
+  EXPECT_EQ(promise_view->item()->progress(), 0.3f);
+  EXPECT_TRUE(promise_view->layer());
+
+  // Set the last status update to kInstallSuccess as if the app had finished
+  // installing.
+  item->UpdateAppStatusForTesting(AppStatus::kInstallSuccess);
+  EXPECT_TRUE(promise_view->layer());
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Simulate pushing the installed app.
+  GetTestModel()->DeleteItem(item->id());
+
+  ui::LayerTreeOwner* promise_app_duplicate_layer =
+      GetPendingPromiseLayerForId(promise_app_id);
+  ASSERT_TRUE(promise_app_duplicate_layer);
+
+  auto* installed_item = GetTestModel()->CreateItem("installed_id");
+  auto installed_item_metadata = installed_item->CloneMetadata();
+  installed_item_metadata->promise_package_id = promise_app_id;
+  installed_item->SetMetadata(std::move(installed_item_metadata));
+  GetTestModel()->AddItem(std::move(installed_item));
+
+  AppListItemView* installed_view = apps_grid_view_->GetItemViewAt(0);
+  EXPECT_EQ(installed_view->item()->id(), "installed_id");
+  ASSERT_TRUE(installed_view->layer());
+  ASSERT_TRUE(GetPendingPromiseLayerForId(promise_app_id));
+
+  // Verify that the layer is still animating.
+  EXPECT_TRUE(installed_view->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(1.0f, installed_view->layer()->GetAnimator()->GetTargetOpacity());
+  EXPECT_TRUE(
+      promise_app_duplicate_layer->root()->GetAnimator()->is_animating());
+  EXPECT_EQ(
+      0.0f,
+      promise_app_duplicate_layer->root()->GetAnimator()->GetTargetOpacity());
 }
 
 }  // namespace test

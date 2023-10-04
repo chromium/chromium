@@ -499,9 +499,11 @@ TEST_P(AppListItemViewTest, AppStatusReflectsOnProgressIndicator) {
   EXPECT_EQ(view->item()->progress(), 0.8f);
   ProgressIndicatorWaiter().WaitForProgress(progress_indicator, absl::nullopt);
 
-  // Set the last status update to kReady as if the app had finished installing.
-  item->UpdateAppStatusForTesting(AppStatus::kReady);
-  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, absl::nullopt);
+  // Set the last status update to kInstallSuccess as if the app had finished
+  // installing.
+  item->UpdateAppStatusForTesting(AppStatus::kInstallSuccess);
+
+  // No crash.
 }
 
 TEST_P(AppListItemViewTest, UpdateProgressOnPromiseIcon) {

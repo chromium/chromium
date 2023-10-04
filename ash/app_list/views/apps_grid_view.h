@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <memory>
 #include <queue>
 #include <set>
@@ -22,6 +23,7 @@
 #include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/ash_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -85,6 +87,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   AppsGridView(const AppsGridView&) = delete;
   AppsGridView& operator=(const AppsGridView&) = delete;
   ~AppsGridView() override;
+
+  using PendingAppsLayersMap =
+      std::map<std::string, std::unique_ptr<ui::LayerTreeOwner>>;
 
   // Sets the `AppListConfig` that should be used to configure app list item
   // size within the grid. This will cause all items views to be updated to
@@ -957,6 +962,26 @@ class ASH_EXPORT AppsGridView : public views::View,
       ui::mojom::DragOperation& output_drag_op,
       std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
+  // Add a copy of a layer from an app that is pending for removal into
+  // `pending_promise_apps_removals_`.
+  ui::LayerTreeOwner* AddPendingLayerOwnerForPromiseApp(
+      const std::string& id,
+      std::unique_ptr<ui::LayerTreeOwner> layer_owner);
+
+  // Animate the transition of an incoming app if there was previously a promise
+  // app in place.
+  void AnimateTransitionForPromiseApps(AppListItemView* view,
+                                       ui::Layer* promise_app_layer,
+                                       base::OnceClosure callback);
+
+  // Called when the transition animation between apps is done.
+  void FinishAnimationForPromiseApps(const std::string& pending_app_id);
+
+  // Duplicates the layer for the `promise_app_view` and adds it to
+  // `pending_promise_apps_removals_` if an animation would be required for it
+  // on the future.
+  void MaybeDuplicatePromiseAppForRemoval(AppListItemView* promise_app_view);
+
   class ScopedModelUpdate;
 
   raw_ptr<AppListModel, ExperimentalAsh> model_ =
@@ -1161,6 +1186,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Whether an ideal bounds animation is being setup. Used to prevent item
   // layers from being deleted during setup.
   bool setting_up_ideal_bounds_animation_ = false;
+
+  // A list of pending promise app layers to be removed when the actual app is
+  // pushed into the apps grid.
+  PendingAppsLayersMap pending_promise_apps_removals_;
 
   base::WeakPtrFactory<AppsGridView> weak_factory_{this};
 };

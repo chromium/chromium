@@ -212,6 +212,11 @@ enum AppStatus {
   // (For promise apps only) The promise app is currently downloading/
   // installing.
   kInstalling,
+  // (For promise apps only) The promise app is finished downloading/
+  // installing.
+  kInstallSuccess,
+  // (For promise apps only) The promise app installing is cancelled.
+  kInstallCancelled,
 };
 
 // A unique shelf item id composed of an |app_id| and a |launch_id|.
