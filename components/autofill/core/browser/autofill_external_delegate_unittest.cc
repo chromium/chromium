@@ -1748,6 +1748,18 @@ TEST_F(AutofillExternalDelegateUnitTest, SelectVirtualCardOptionItem) {
       Suggestion(PopupItemId::kVirtualCreditCardEntry), kDefaultTriggerSource);
 }
 
+TEST_F(AutofillExternalDelegateUnitTest,
+       ShouldNotShowAutocompleteSuggestionAfterDialogIsClosed) {
+  IssueOnQuery();
+
+  EXPECT_CALL(autofill_client_, ShowAutofillPopup).Times(0);
+
+  external_delegate_->OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {Suggestion{PopupItemId::kAutocompleteEntry}},
+      AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed);
+}
+
 // Tests that the prompt to show account cards shows up when the corresponding
 // bit is set, including any suggestions that are passed along and the "Manage"
 // row in the footer.

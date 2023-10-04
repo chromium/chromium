@@ -58,20 +58,25 @@ bool IsAutofillWarningEntry(PopupItemId popup_item_id) {
          popup_item_id == PopupItemId::kMixedFormMessage;
 }
 
-// Returns true if any of the `suggestions` is an Autofill suggestion.
-bool HasAutofillSuggestions(const std::vector<Suggestion>& suggestions) {
-  // Virtual cards can appear on their own when filling the CVC for a card
-  // that a merchant has saved. This indicates there could be Autofill
-  // suggestions related to standalone CVC fields.
-  static constexpr auto kAutofillSuggestions =
-      base::MakeFixedFlatSet<PopupItemId>(
-          {PopupItemId::kCreditCardEntry, PopupItemId::kVirtualCreditCardEntry,
-           PopupItemId::kAddressEntry, PopupItemId::kFieldByFieldFilling,
-           PopupItemId::kFillFullAddress, PopupItemId::kFillFullPhoneNumber,
-           PopupItemId::kFillFullName});
-  return base::ranges::any_of(suggestions, [&](const Suggestion& suggestion) {
-    return kAutofillSuggestions.contains(suggestion.popup_item_id);
-  });
+// Returns true if `item_id` identifies a suggestion which can appear on the
+// first layer of the Autofill popup and can fill form fields.
+bool IsFirstLayerFormFillingSuggestionId(PopupItemId item_id) {
+  switch (item_id) {
+    case PopupItemId::kAddressEntry:
+    case PopupItemId::kFillFullAddress:
+    case PopupItemId::kFieldByFieldFilling:
+    case PopupItemId::kFillFullName:
+    case PopupItemId::kFillFullPhoneNumber:
+    case PopupItemId::kCreditCardEntry:
+      // Virtual cards can appear on their own when filling the CVC for a card
+      // that a merchant has saved. This indicates there could be Autofill
+      // suggestions related to standalone CVC fields.
+    case PopupItemId::kVirtualCreditCardEntry:
+      return true;
+    default:
+      return false;
+  }
+  NOTREACHED_NORETURN();
 }
 
 // The `AutofillTriggerSource` indicates what caused an Autofill fill or preview
@@ -147,8 +152,22 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     const std::vector<Suggestion>& input_suggestions,
     AutofillSuggestionTriggerSource trigger_source,
     bool is_all_server_suggestions) {
-  if (field_id != query_field_.global_id())
+  // Only include "Autofill Options" special menu item if we have Autofill
+  // suggestions.
+  has_autofill_suggestions_ = base::ranges::any_of(
+      input_suggestions, IsFirstLayerFormFillingSuggestionId,
+      &Suggestion::popup_item_id);
+
+  if (field_id != query_field_.global_id()) {
     return;
+  }
+  if (trigger_source ==
+          AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed &&
+      !has_autofill_suggestions_) {
+    // User changed or delete the only Autofill profile shown in the popup,
+    // avoid showing any other suggestions in this case.
+    return;
+  }
 #if BUILDFLAG(IS_IOS)
   if (!manager_->client().IsLastQueriedField(field_id)) {
     return;
@@ -167,10 +186,6 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     scan_credit_card.icon = "scanCreditCardIcon";
     suggestions.push_back(scan_credit_card);
   }
-
-  // Only include "Autofill Options" special menu item if we have Autofill
-  // suggestions.
-  has_autofill_suggestions_ = HasAutofillSuggestions(suggestions);
 
   if (should_show_cards_from_account_option_) {
     suggestions.emplace_back(
