@@ -5009,51 +5009,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "linux_lacros_chrome_interactive_ui_tests_version_skew_beta",
-    tests = {
-        "interactive_ui_tests": targets.legacy_test_config(
-            test = "interactive_ui_tests",
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
-            ],
-            swarming = targets.swarming(
-                shards = 3,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "linux_lacros_chrome_interactive_ui_tests_version_skew_dev",
-    tests = {
-        "interactive_ui_tests": targets.legacy_test_config(
-            test = "interactive_ui_tests",
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
-            ],
-            swarming = targets.swarming(
-                shards = 3,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "linux_lacros_chrome_interactive_ui_tests_version_skew_stable",
-    tests = {
-        "interactive_ui_tests": targets.legacy_test_config(
-            test = "interactive_ui_tests",
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
-            ],
-            swarming = targets.swarming(
-                shards = 3,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "linux_lacros_specific_gtests",
     tests = {
         "lacros_chrome_unittests": None,

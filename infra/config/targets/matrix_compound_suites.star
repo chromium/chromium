@@ -1153,20 +1153,8 @@ targets.legacy_matrix_compound_suite(
         "linux_lacros_chrome_interactive_ui_tests_version_skew": targets.legacy_matrix_config(
             variants = [
                 "LACROS_VERSION_SKEW_CANARY",
-            ],
-        ),
-        "linux_lacros_chrome_interactive_ui_tests_version_skew_beta": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_VERSION_SKEW_BETA",
-            ],
-        ),
-        "linux_lacros_chrome_interactive_ui_tests_version_skew_dev": targets.legacy_matrix_config(
-            variants = [
                 "LACROS_VERSION_SKEW_DEV",
-            ],
-        ),
-        "linux_lacros_chrome_interactive_ui_tests_version_skew_stable": targets.legacy_matrix_config(
-            variants = [
+                "LACROS_VERSION_SKEW_BETA",
                 "LACROS_VERSION_SKEW_STABLE",
             ],
         ),
