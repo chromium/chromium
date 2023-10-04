@@ -197,22 +197,21 @@ Polymer({
     this.automatic_ = ipConfigType !== 'Static';
 
     if (properties.ipConfigs || properties.staticIpConfig) {
-      if (this.automatic_ || !oldValue) {
-        // Update the 'ipConfig' property.
-        const ipv4 = this.getIPConfigUIProperties_(
-            OncMojo.getIPConfigForType(properties, IPConfigType.kIPv4));
-        let ipv6 = this.getIPConfigUIProperties_(
-            OncMojo.getIPConfigForType(properties, IPConfigType.kIPv6));
+      // Update the 'ipConfig' property.
+      const ipv4 = this.getIPConfigUIProperties_(
+          OncMojo.getIPConfigForType(properties, IPConfigType.kIPv4));
+      let ipv6 = this.getIPConfigUIProperties_(
+          OncMojo.getIPConfigForType(properties, IPConfigType.kIPv6));
 
-        // If connected and the IP address is automatic and set, show message if
-        // the ipv6 address is not set.
-        if (OncMojo.connectionStateIsConnected(properties.connectionState) &&
-            this.automatic_ && ipv4 && ipv4.ipAddress) {
-          ipv6 = ipv6 || {type: IPConfigType.kIPv6};
-          ipv6.ipAddress = ipv6.ipAddress || this.i18n('ipAddressNotAvailable');
-        }
-        this.ipConfig_ = {ipv4: ipv4, ipv6: ipv6};
+      // If connected and the IP address is automatic and set, show message if
+      // the ipv6 address is not set.
+      if (OncMojo.connectionStateIsConnected(properties.connectionState) &&
+          this.automatic_ && ipv4 && ipv4.ipAddress) {
+        ipv6 = ipv6 || {type: IPConfigType.kIPv6};
+        ipv6.ipAddress = ipv6.ipAddress || this.i18n('ipAddressNotAvailable');
       }
+
+      this.ipConfig_ = {ipv4: ipv4, ipv6: ipv6};
     } else {
       this.ipConfig_ = undefined;
     }
