@@ -10,6 +10,8 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
+#include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -203,10 +205,15 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
                                              bool should_document_pip) {
     auto* original_web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
+    auto* tab_helper =
+        AutoPictureInPictureTabHelper::FromWebContents(original_web_contents);
 
     // There should not currently be a picture-in-picture window.
     EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
     EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+    // The tab helper should not report that we are, or would be, in auto-pip.
+    EXPECT_FALSE(tab_helper->AreAutoPictureInPicturePreconditionsMet());
+    EXPECT_FALSE(tab_helper->IsInAutoPictureInPicture());
 
     // Open and switch to a new tab.
     content::MediaStartStopObserver enter_pip_observer(
@@ -221,6 +228,11 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
               original_web_contents->HasPictureInPictureVideo());
     EXPECT_EQ(should_document_pip,
               original_web_contents->HasPictureInPictureDocument());
+
+    // The tab helper should indicate that we're now in pip.
+    EXPECT_TRUE(tab_helper->IsInAutoPictureInPicture());
+    // Once we're in PiP, the preconditions should not be met anymore.
+    EXPECT_FALSE(tab_helper->AreAutoPictureInPicturePreconditionsMet());
 
     // Switch back to the original tab.
     content::MediaStartStopObserver exit_pip_observer(
@@ -346,6 +358,20 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                                         /*should_document_pip=*/true);
 }
 
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       OverlaySettingViewIsShownForDocumentPip) {
+  auto* window_manager = PictureInPictureWindowManager::GetInstance();
+
+  LoadCameraMicrophonePage(browser());
+  GetUserMediaAndAccept(browser()->tab_strip_model()->GetActiveWebContents());
+  OpenNewTab(browser());
+
+  // Use the setting helper as a proxy for "did return an overlay view", since
+  // the window manager won't keep it.
+  auto* setting_helper = window_manager->get_setting_helper_for_testing();
+  ASSERT_TRUE(setting_helper);
+}
+
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        DoesNotAutopipWithoutPlayback) {
   // Load a page that registers for autopip but doesn't start playback.
@@ -388,6 +414,21 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   // There should not be a picture-in-picture window.
   EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
   EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       OverlaySettingViewIsShownForVideoPip) {
+  auto* window_manager = PictureInPictureWindowManager::GetInstance();
+
+  LoadAutoVideoPipPage(browser());
+  PlayVideo(browser()->tab_strip_model()->GetActiveWebContents());
+  WaitForAudioFocusGained();
+  OpenNewTab(browser());
+
+  // Use the setting helper as a proxy for "did return an overlay view", since
+  // the window manager won't keep it.
+  auto* setting_helper = window_manager->get_setting_helper_for_testing();
+  ASSERT_TRUE(setting_helper);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,

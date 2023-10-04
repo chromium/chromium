@@ -74,7 +74,24 @@ class AutoPictureInPictureTabHelper
   void MediaSessionPositionChanged(
       const absl::optional<media_session::MediaPosition>& position) override {}
 
+  // Returns true if the tab is in PiP mode, and PiP was started by auto-pip.
   bool IsInAutoPictureInPicture() const;
+
+  // Returns true if a PiP window would be considered auto-pip if it opened.
+  // This is useful during PiP window startup, when we might not be technically
+  // in PiP yet.  `IsInAutoPictureInPicture()` requires that we're in PiP mode
+  // to return true.
+  //
+  // This differs from `IsEligibleForAutoPictureInPicture()` in that this
+  // measures if a pip window would qualify for pip, which requires that we've
+  // actually detected that the site `IsEligible`, the page has been obscured,
+  // and we've sent a pip media session action.  In contrast, `IsEligible` only
+  // makes sure that, if the tab were to be obscured, we would send the pip
+  // action at that point.
+  //
+  // Note that this will be false once auto-pip opens.  Opening the window
+  // clears the preconditions until the next time they're met.
+  bool AreAutoPictureInPicturePreconditionsMet() const;
 
  private:
   explicit AutoPictureInPictureTabHelper(content::WebContents* web_contents);
