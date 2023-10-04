@@ -738,13 +738,12 @@ void WebContentsViewAura::PrepareDropData(
   // Do not add FileContents if this is a tainted-cross-origin same-page image
   // (https://crbug.com/1264873).
   bool access_allowed =
-      // Drag started outside blink.
+      // Drag started outside of this top-level WebContents, including outside
+      // the browser.
       !drag_start_ ||
-      // Drag began in blink, but image access is allowed.
-      drag_start_->image_accessible_from_frame ||
-      // Drag began in blink, but in a different WebContents.
-      GetRenderViewHostID(web_contents_->GetRenderViewHost()) !=
-          drag_start_->view_id;
+      // Drag began in this top-level WebContents, and image access is allowed
+      // (not cross-origin).
+      drag_start_->image_accessible_from_frame;
   data.GetFilenames(&drop_data->filenames);
   if (access_allowed && drop_data->filenames.empty()) {
     base::FilePath filename;
@@ -869,6 +868,8 @@ bool WebContentsViewAura::IsValidDragTarget(
   // drags between cross-origin frames within the same page. Otherwise, a
   // malicious attacker could abuse drag interactions to leak information
   // across origins without explicit user intent.
+  // `drag_start_` is null when the drag started outside of the browser or from
+  // a different top-level WebContents.
   if (!drag_start_)
     return true;
 
@@ -876,35 +877,19 @@ bool WebContentsViewAura::IsValidDragTarget(
   // perform the check unless it already has access to the starting
   // document's origin. If the SiteInstanceGroups match, then the process
   // allocation policy decided that it is OK for the source and target
-  // frames to live in the same renderer process. Furthermore, it means that
-  // either the source and target frame are part of the same `blink::Page` or
-  // that there is an opener relationship and would cross tab boundaries. Allow
-  // this drag to the renderer. Blink will perform an additional check against
+  // frames to live in the same renderer process. Furthermore, having matching
+  // SiteInstanceGroups means that either (1) the source and target frame are
+  // part of the same blink::Page, or (2) that they are in the same Browsing
+  // Context Group and the drag would cross tab boundaries (the latter of which
+  // can't happen here since `drag_start_` is null). Allow this drag to the
+  // renderer. Blink will perform an additional check against
   // `blink::DragController::drag_initiator_` to decide whether or not to
   // allow the drag operation. This can be done in the renderer, as the
   // browser-side checks only have local tree fragment (potentially with
   // multiple origins) granularity at best, but a drag operation eventually
   // targets one single frame in that local tree fragment.
-  bool same_site_instance_group = target_rwh->GetSiteInstanceGroup()->GetId() ==
-                                  drag_start_->site_instance_group_id;
-  if (same_site_instance_group)
-    return true;
-
-  // Otherwise, if the SiteInstanceGroups do not match, enforce explicit
-  // user intent by ensuring this drag operation is crossing page boundaries.
-  // `drag_start_->view_id` is set to the main `RenderFrameHost`'s
-  // `RenderViewHost`'s ID when a drag starts, so if the two IDs match here,
-  // the drag is within the same page and disallowed.
-  //
-  // Drags between an embedder and an inner `WebContents` will disallowed by
-  // the above view ID check because `WebContentsViewAura` is always created
-  // for the outermost view. Inner `WebContents` will have a
-  // `WebContentsViewChildFrame` so when dragging between an inner
-  // `WebContents` and its embedder the view IDs will be the same.
-  bool cross_tab_drag =
-      GetRenderViewHostID(web_contents_->GetRenderViewHost()) !=
-      drag_start_->view_id;
-  return cross_tab_drag;
+  return target_rwh->GetSiteInstanceGroup()->GetId() ==
+         drag_start_->site_instance_group_id;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1182,7 +1167,6 @@ void WebContentsViewAura::StartDragging(
 
   drag_start_ =
       DragStart(source_rwh->GetSiteInstanceGroup()->GetId(),
-                GetRenderViewHostID(web_contents_->GetRenderViewHost()),
                 drop_data.file_contents_image_accessible);
 
   ui::TouchSelectionController* selection_controller = GetSelectionController();
