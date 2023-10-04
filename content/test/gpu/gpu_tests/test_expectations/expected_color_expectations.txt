@@ -107,7 +107,6 @@ crbug.com/1382332 [ angle-disabled chromeos chromeos-board-amd64-generic cros-ch
 crbug.com/1382332 [ angle-disabled chromeos chromeos-board-amd64-generic cros-chrome no-passthrough target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-clang-coverage no-passthrough renderer-skia-gl target-cpu-32 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ android-nexus-5x android angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
-crbug.com/1382332 [ android-pixel-4 android-r no-clang-coverage qualcomm renderer-skia-gl target-cpu-32 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ fuchsia ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 crbug.com/1302427 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
