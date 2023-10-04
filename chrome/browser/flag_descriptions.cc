@@ -3027,10 +3027,6 @@ const char kTestThirdPartyCookiePhaseoutDescription[] =
     "Enabling this flag also enables FedCM and third-party storage "
     "partitioning.";
 
-const char kPartitionedCookiesName[] = "Partitioned cookies";
-const char kPartitionedCookiesDescription[] =
-    "Controls if the Partitioned cookie attribute is enabled.";
-
 const char kThirdPartyStoragePartitioningName[] =
     "Experimental third-party storage partitioning.";
 const char kThirdPartyStoragePartitioningDescription[] =

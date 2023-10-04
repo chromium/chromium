@@ -1737,9 +1737,6 @@ extern const char kSafetyHubDescription[];
 extern const char kSameAppWindowCycleName[];
 extern const char kSameAppWindowCycleDescription[];
 
-extern const char kPartitionedCookiesName[];
-extern const char kPartitionedCookiesDescription[];
-
 extern const char kTestThirdPartyCookiePhaseoutName[];
 extern const char kTestThirdPartyCookiePhaseoutDescription[];
 

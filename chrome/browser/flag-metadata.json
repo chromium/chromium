@@ -6646,11 +6646,6 @@
     "expiry_milestone": 124
   },
   {
-    "name": "partitioned-cookies",
-    "owners": [ "dylancutler@google.com" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "passpoint-arc-support",
     "owners": [ "cros-networking@google.com" ],
     "expiry_milestone": 121

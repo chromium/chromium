@@ -9444,10 +9444,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kPhoneHubCallNotification)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"partitioned-cookies", flag_descriptions::kPartitionedCookiesName,
-     flag_descriptions::kPartitionedCookiesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kPartitionedCookies)},
-
     {"test-third-party-cookie-phaseout",
      flag_descriptions::kTestThirdPartyCookiePhaseoutName,
      flag_descriptions::kTestThirdPartyCookiePhaseoutDescription, kOsAll,
