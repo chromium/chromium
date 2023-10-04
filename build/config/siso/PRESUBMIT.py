@@ -17,8 +17,6 @@ def CheckTryjobFooters(input_api, output_api):
       "\nPlease add the following fields to run Siso tryjobs.\n\n"
       "Cq-Include-Trybots: luci.chromium.try:android-arm64-siso-rel\n"
       "Cq-Include-Trybots: luci.chromium.try:chromeos-amd64-generic-siso-rel\n"
-      "Cq-Include-Trybots: luci.chromium.try:linux-chromeos-siso-rel\n"
-      "Cq-Include-Trybots: luci.chromium.try:linux-lacros-siso-rel\n"
       "Cq-Include-Trybots: luci.chromium.try:linux-siso-rel\n"
       "Cq-Include-Trybots: luci.chromium.try:linux-wayland-siso-rel\n"
       "Cq-Include-Trybots: luci.chromium.try:linux_chromium_asan_siso_rel_ng\n"
