@@ -56,7 +56,7 @@ source_set("overflow_menu") {
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/reading_list/model",
-    "//ios/chrome/browser/settings/sync/utils:identity_error_util",
+    "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

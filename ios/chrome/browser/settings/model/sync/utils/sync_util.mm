@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/sync/utils/sync_util.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 
 #import "base/feature_list.h"
 #import "base/metrics/histogram_macros.h"
@@ -13,9 +13,9 @@
 #import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/settings/sync/utils/account_error_ui_info.h"
-#import "ios/chrome/browser/settings/sync/utils/identity_error_util.h"
-#import "ios/chrome/browser/settings/sync/utils/sync_error_infobar_delegate.h"
+#import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
+#import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_error_infobar_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"

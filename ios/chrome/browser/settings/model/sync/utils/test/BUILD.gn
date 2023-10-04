@@ -10,7 +10,7 @@ source_set("test") {
   ]
 
   deps = [
-    "//ios/chrome/browser/settings/sync/utils",
+    "//ios/chrome/browser/settings/model/sync/utils",
     "//testing/gmock",
     "//ui/base",
     "//ui/gfx",

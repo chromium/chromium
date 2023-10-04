@@ -6,8 +6,8 @@
 
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
-#import "ios/chrome/browser/settings/sync/utils/sync_presenter.h"
-#import "ios/chrome/browser/settings/sync/utils/test/mock_sync_error_infobar_delegate.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
+#import "ios/chrome/browser/settings/model/sync/utils/test/mock_sync_error_infobar_delegate.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"

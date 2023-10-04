@@ -17,7 +17,7 @@ include_rules = [
   "+ios/chrome/browser/consent_auditor/model",
   "+ios/chrome/browser/metrics",
   "+ios/chrome/browser/sessions",
-  "+ios/chrome/browser/settings/sync",
+  "+ios/chrome/browser/settings/model/sync",
   "+ios/chrome/browser/trusted_vault/model",
   "+ios/chrome/browser/dom_distiller",
   "+ios/chrome/browser/complex_tasks/model",

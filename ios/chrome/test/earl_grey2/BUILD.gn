@@ -172,7 +172,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
   deps = [
-    "//ios/chrome/browser/settings/sync/utils:eg2_tests",
+    "//ios/chrome/browser/settings/model/sync/utils:eg2_tests",
     "//ios/chrome/browser/ui/autofill/bottom_sheet:eg2_tests",
     "//ios/chrome/browser/ui/bring_android_tabs:eg2_tests",
     "//ios/chrome/browser/ui/browser_view:eg2_tests",
