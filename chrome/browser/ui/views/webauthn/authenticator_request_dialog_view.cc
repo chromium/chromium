@@ -111,7 +111,7 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_MANAGE_DEVICES)));
   } else {
-    SetExtraView<views::View>(nullptr);
+    SetExtraView(std::make_unique<views::View>());
   }
 
   DialogModelChanged();
