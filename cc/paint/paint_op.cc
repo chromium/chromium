@@ -140,8 +140,7 @@ void DrawImageRect(SkCanvas* canvas,
   M(SetNodeIdOp)      \
   M(TranslateOp)
 
-static constexpr size_t kNumOpTypes =
-    static_cast<size_t>(PaintOpType::kLastpaintoptype) + 1;
+static constexpr size_t kNumOpTypes = PaintOp::kNumOpTypes;
 
 // Verify that every op is in the TYPES macro.
 #define M(T) +1
@@ -228,11 +227,11 @@ using SerializeFunction = void (*)(const PaintOp& op,
                                    const SkM44& current_ctm,
                                    const SkM44& original_ctm);
 template <typename T>
-void Serialize(const PaintOp& op,
-               PaintOpWriter& writer,
-               const PaintFlags* flags_to_serialize,
-               const SkM44& current_ctm,
-               const SkM44& original_ctm) {
+ALWAYS_INLINE void Serialize(const PaintOp& op,
+                             PaintOpWriter& writer,
+                             const PaintFlags* flags_to_serialize,
+                             const SkM44& current_ctm,
+                             const SkM44& original_ctm) {
   if (T::kHasPaintFlags && !flags_to_serialize) {
     const auto& op_with_flags = static_cast<const PaintOpWithFlags&>(op);
     flags_to_serialize = &op_with_flags.flags;
@@ -289,14 +288,6 @@ using VoidFunction = void (*)(PaintOp* op);
 static const VoidFunction g_destructor_functions[kNumOpTypes] = {TYPES(M)};
 #undef M
 
-#define M(T) T::kIsDrawOp,
-static bool g_is_draw_op[kNumOpTypes] = {TYPES(M)};
-#undef M
-
-#define M(T) T::kHasPaintFlags,
-static bool g_has_paint_flags[kNumOpTypes] = {TYPES(M)};
-#undef M
-
 #define M(T)                                         \
   static_assert(sizeof(T) <= sizeof(LargestPaintOp), \
                 #T " must be no bigger than LargestPaintOp");
@@ -317,9 +308,17 @@ using AnalyzeOpFunc = void (*)(PaintOpBuffer*, const PaintOp*);
 static const AnalyzeOpFunc g_analyze_op_functions[kNumOpTypes] = {TYPES(M)};
 #undef M
 
-#undef TYPES
-
 }  // namespace
+
+#define M(T) T::kIsDrawOp,
+bool PaintOp::g_is_draw_op[kNumOpTypes] = {TYPES(M)};
+#undef M
+
+#define M(T) T::kHasPaintFlags,
+bool PaintOp::g_has_paint_flags[kNumOpTypes] = {TYPES(M)};
+#undef M
+
+#undef TYPES
 
 const SkRect PaintOp::kUnsetRect = {SK_ScalarInfinity, 0, 0, 0};
 
@@ -513,11 +512,7 @@ void DrawLineOp::Serialize(PaintOpWriter& writer,
                            const SkM44& current_ctm,
                            const SkM44& original_ctm) const {
   writer.Write(*flags_to_serialize, current_ctm);
-  writer.Write(x0);
-  writer.Write(y0);
-  writer.Write(x1);
-  writer.Write(y1);
-  writer.Write(draw_as_path);
+  writer.WriteSimpleMultiple(x0, y0, x1, y1, draw_as_path);
 }
 
 void DrawOvalOp::Serialize(PaintOpWriter& writer,
@@ -1650,14 +1645,6 @@ bool SetNodeIdOp::EqualsForTesting(const SetNodeIdOp& other) const {
 
 bool TranslateOp::EqualsForTesting(const TranslateOp& other) const {
   return dx == other.dx && dy == other.dy;
-}
-
-bool PaintOp::IsDrawOp() const {
-  return g_is_draw_op[type];
-}
-
-bool PaintOp::IsPaintOpWithFlags() const {
-  return g_has_paint_flags[type];
 }
 
 bool PaintOp::EqualsForTesting(const PaintOp& other) const {

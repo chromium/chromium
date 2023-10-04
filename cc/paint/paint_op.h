@@ -121,8 +121,8 @@ class CC_PAINT_EXPORT PaintOp {
   // static with a pointer to the base type so that we can use it as a function
   // pointer.
   void Raster(SkCanvas* canvas, const PlaybackParams& params) const;
-  bool IsDrawOp() const;
-  bool IsPaintOpWithFlags() const;
+  bool IsDrawOp() const { return g_is_draw_op[type]; }
+  bool IsPaintOpWithFlags() const { return g_has_paint_flags[type]; }
 
   bool EqualsForTesting(const PaintOp& other) const;
 
@@ -242,6 +242,11 @@ class CC_PAINT_EXPORT PaintOp {
   static bool IsValidOrUnsetRect(const SkRect& rect) {
     return IsUnsetRect(rect) || rect.isFinite();
   }
+
+  static constexpr size_t kNumOpTypes =
+      static_cast<size_t>(PaintOpType::kLastpaintoptype) + 1;
+  static bool g_is_draw_op[kNumOpTypes];
+  static bool g_has_paint_flags[kNumOpTypes];
 
   static constexpr bool kIsDrawOp = false;
   static constexpr bool kHasPaintFlags = false;

@@ -340,7 +340,18 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   BufferDataPtr ReallocIfNeededToFit();
 
   // Returns the allocated op.
-  void* AllocatePaintOp(uint16_t aligned_size);
+  void* AllocatePaintOp(uint16_t aligned_size) {
+    DCHECK(is_mutable());
+    if (used_ + aligned_size > reserved_) {
+      return AllocatePaintOpSlowPath(aligned_size);
+    } else {
+      void* op = data_.get() + used_;
+      used_ += aligned_size;
+      op_count_++;
+      return op;
+    }
+  }
+  void* AllocatePaintOpSlowPath(uint16_t aligned_size);
 
   void ResetRetainingBuffer();
 
