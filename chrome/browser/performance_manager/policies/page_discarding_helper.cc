@@ -144,7 +144,8 @@ void PageDiscardingHelper::DiscardMultiplePages(
     if (!discard_protected_tabs && is_protected) {
       continue;
     }
-    candidates.emplace_back(page_node, false, is_protected,
+    candidates.emplace_back(page_node, false, page_node->IsVisible(),
+                            is_protected,
                             page_node->GetTimeSinceLastVisibilityChange());
   }
   // Sorts with ascending importance.

@@ -49,27 +49,26 @@ class PageNodeSortProxy {
  public:
   PageNodeSortProxy(const PageNode* page_node,
                     bool is_marked,
+                    bool is_visible,
                     bool is_protected,
                     base::TimeDelta last_visible)
       : page_node_(page_node),
         is_marked_(is_marked),
+        is_visible_(is_visible),
         is_protected_(is_protected),
         last_visible_(last_visible) {}
   const PageNode* page_node() const { return page_node_; }
 
   // Returns true if the rhs is more important.
   bool operator<(const PageNodeSortProxy& rhs) const {
-    if (is_marked_ && !rhs.is_marked_) {
-      return false;
+    if (is_marked_ != rhs.is_marked_) {
+      return rhs.is_marked_;
     }
-    if (!is_marked_ && rhs.is_marked_) {
-      return true;
+    if (is_visible_ != rhs.is_visible_) {
+      return rhs.is_visible_;
     }
-    if (is_protected_ && !rhs.is_protected_) {
-      return false;
-    }
-    if (!is_protected_ && rhs.is_protected_) {
-      return true;
+    if (is_protected_ != rhs.is_protected_) {
+      return rhs.is_protected_;
     }
     return last_visible_ > rhs.last_visible_;
   }
@@ -77,6 +76,7 @@ class PageNodeSortProxy {
  private:
   raw_ptr<const PageNode> page_node_;
   bool is_marked_;
+  bool is_visible_;
   bool is_protected_;
   // Delta between current time and last visibility change time.
   base::TimeDelta last_visible_;

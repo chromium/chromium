@@ -4,6 +4,8 @@
 
 #include "chrome/browser/performance_manager/policies/oom_score_policy_chromeos.h"
 
+#include <algorithm>  // For count
+
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"  // For GraphTestHarnessWithMockDiscarder
 #include "components/performance_manager/test_support/mock_graphs.h"  // For TestProcessNodeImpl
 #include "content/public/common/content_constants.h"  // For kLowestRendererOomScore
@@ -14,14 +16,27 @@ namespace policies {
 
 class MockOomScorePolicyChromeOS : public OomScorePolicyChromeOS {
  public:
-  // Overrides OnPassedToGraph to avoid starting the timer.
-  void OnPassedToGraph(Graph* graph) override { graph_ = graph; }
-
-  void AssignOomScores() { OomScorePolicyChromeOS::AssignOomScores(); }
+  void HandlePageNodeEvents(bool oom_scores_assignment,
+                            bool background_pids_report) {
+    OomScorePolicyChromeOS::HandlePageNodeEvents(oom_scores_assignment,
+                                                 background_pids_report);
+  }
 
   int GetCachedOomScore(base::ProcessId pid) {
     return OomScorePolicyChromeOS::GetCachedOomScore(pid);
   }
+
+  std::vector<base::ProcessId> GetBackgroundProcesses() {
+    return background_pids_;
+  }
+
+ protected:
+  void ReportBackgroundProcesses(std::vector<base::ProcessId> pids) override {
+    background_pids_ = pids;
+  }
+
+ private:
+  std::vector<base::ProcessId> background_pids_;
 };
 
 class OomScorePolicyChromeOSTest
@@ -95,7 +110,7 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScores) {
   main_frame_node3->SetIsCurrent(false);
   AdvanceClock(base::Minutes(30));
 
-  policy()->AssignOomScores();
+  policy()->HandlePageNodeEvents(true, true);
 
   const int kMiddleRendererOomScore =
       (content::kHighestRendererOomScore + content::kLowestRendererOomScore) /
@@ -154,7 +169,7 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScoresWithPriority) {
   main_frame_node3->SetIsCurrent(false);
   AdvanceClock(base::Minutes(30));
 
-  policy()->AssignOomScores();
+  policy()->HandlePageNodeEvents(true, true);
 
   const int kMiddleRendererOomScore =
       (content::kHighestRendererOomScore + content::kLowestRendererOomScore) /
@@ -239,7 +254,7 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScoresSharedPid) {
   main_frame_node4->SetIsCurrent(false);
   AdvanceClock(base::Minutes(30));
 
-  policy()->AssignOomScores();
+  policy()->HandlePageNodeEvents(true, true);
 
   const int kMiddleRendererOomScore =
       (content::kHighestRendererOomScore + content::kLowestRendererOomScore) /
@@ -251,5 +266,79 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScoresSharedPid) {
   ASSERT_EQ(policy()->GetCachedOomScore(process_node2->process_id()),
             content::kLowestRendererOomScore);
 }
+
+TEST_F(OomScorePolicyChromeOSTest, ReportBackgroundProcesses) {
+  constexpr base::ProcessId kProcessId1 = 1;
+  constexpr base::ProcessId kProcessId2 = 2;
+  constexpr base::ProcessId kProcessId3 = 3;
+  constexpr base::ProcessId kProcessId4 = 4;
+
+  // Creates 4 pages.
+  auto process_node1 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node1->SetProcessWithPid(kProcessId1, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node1 =
+      CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
+  main_frame_node1->SetIsCurrent(true);
+  testing::MakePageNodeDiscardable(page_node1.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  main_frame_node1->SetIsCurrent(false);
+  AdvanceClock(base::Minutes(30));
+  // Set page node 1 audible to raise its priority.
+  page_node1->SetIsAudible(true);
+
+  auto process_node2 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node2->SetProcessWithPid(kProcessId2, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node2 =
+      CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
+  main_frame_node2->SetIsCurrent(true);
+  testing::MakePageNodeDiscardable(page_node2.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  main_frame_node2->SetIsCurrent(false);
+  AdvanceClock(base::Minutes(30));
+
+  auto process_node3 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node3->SetProcessWithPid(kProcessId3, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node3 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node3 =
+      CreateFrameNodeAutoId(process_node3.get(), page_node3.get());
+  main_frame_node3->SetIsCurrent(true);
+  testing::MakePageNodeDiscardable(page_node3.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  main_frame_node3->SetIsCurrent(false);
+  AdvanceClock(base::Minutes(30));
+
+  auto process_node4 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node4->SetProcessWithPid(kProcessId4, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node4 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node4 =
+      CreateFrameNodeAutoId(process_node4.get(), page_node4.get());
+  main_frame_node4->SetIsCurrent(true);
+  testing::MakePageNodeDiscardable(page_node4.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  main_frame_node4->SetIsCurrent(false);
+  AdvanceClock(base::Minutes(30));
+
+  policy()->HandlePageNodeEvents(true, true);
+
+  auto background_pids = policy()->GetBackgroundProcesses();
+  // Because page node 1 is audible, it's not in background.
+  ASSERT_EQ(background_pids.size(), 3u);
+  ASSERT_EQ(
+      std::count(background_pids.begin(), background_pids.end(), kProcessId2),
+      1);
+  ASSERT_EQ(
+      std::count(background_pids.begin(), background_pids.end(), kProcessId3),
+      1);
+  ASSERT_EQ(
+      std::count(background_pids.begin(), background_pids.end(), kProcessId4),
+      1);
+}
+
 }  // namespace policies
 }  // namespace performance_manager

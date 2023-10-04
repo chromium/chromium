@@ -10,6 +10,7 @@
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
 #include <cstdint>
+#include <vector>
 
 namespace dbus {
 class Bus;
@@ -127,6 +128,14 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
   virtual void SetMemoryMarginsBps(uint32_t critical_bps,
                                    uint32_t moderate_bps,
                                    SetMemoryMarginsBpsCallback callback) = 0;
+
+  enum class Component {
+    kAsh = 0,
+    kLacros = 1,
+  };
+
+  virtual void ReportBackgroundProcesses(Component component,
+                                         const std::vector<int32_t>& pids) = 0;
 
   // Adds an observer to the observer list to listen on memory pressure events.
   virtual void AddObserver(Observer* observer) = 0;

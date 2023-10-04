@@ -10,14 +10,49 @@
 #include "base/process/memory.h"  // For AdjustOOMScore
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "content/public/browser/browser_thread.h"  // For GetUIThreadTaskRunner
 #include "content/public/common/content_constants.h"  // For kLowestRendererOomScore
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/dbus/resourced/resourced_client.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace performance_manager {
 namespace policies {
 
 namespace {
 
-constexpr base::TimeDelta kOomScoreAssignmentInterval = base::Seconds(10);
+// TODO(crbug/1489325): oom_score_adj of some processes could be out-of-dated.
+// Override OnIsFocusedChanged to update the oom_score_adj of the focused tab
+// to make it harder to be killed by the Linux oom killer.
+constexpr base::TimeDelta kOomScoresAssignmentMinimalInterval =
+    base::Seconds(10);
+
+// The minimal interval of background pids report. The throttling is to reduce
+// the overhead of the pids reporting. When there is no memory pressure, the
+// reported pid list is not used. Under memory pressure, the background pids
+// are used to calculate the background Chrome memory usage. When the memory
+// pressure is higher, it requires larger amount of background memory usage to
+// change the low memory handling policy (whether to avoid killing perceptible
+// apps) [1]. So small deviation of the background memory usage caused by
+// out-of-dated pid list would only make the policy change a little bit earlier
+// or later.
+//
+// [1]:
+// https://chromium-review.googlesource.com/c/chromiumos/platform2/+/4889461/9/resourced/src/memory.rs#665
+constexpr base::TimeDelta kBackgroundPidsReportMinimalInterval =
+    base::Seconds(3);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ReportBackgroundProcessesOnUIThread(
+    const std::vector<base::ProcessId>& pids) {
+  ash::ResourcedClient* client = ash::ResourcedClient::Get();
+  if (client) {
+    client->ReportBackgroundProcesses(ash::ResourcedClient::Component::kAsh,
+                                      pids);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -27,24 +62,65 @@ OomScorePolicyChromeOS::~OomScorePolicyChromeOS() = default;
 void OomScorePolicyChromeOS::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph_ = graph;
-  timer_.Start(FROM_HERE, kOomScoreAssignmentInterval,
-               base::BindRepeating(&OomScorePolicyChromeOS::AssignOomScores,
-                                   weak_factory_.GetWeakPtr()));
+  graph->AddPageNodeObserver(this);
 }
 
 void OomScorePolicyChromeOS::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  graph->RemovePageNodeObserver(this);
   graph_ = nullptr;
-  timer_.Stop();
 }
 
-void OomScorePolicyChromeOS::AssignOomScores() {
+void OomScorePolicyChromeOS::OnPageNodeAdded(const PageNode* page_node) {
+  HandlePageNodeEventsThrottled();
+}
+
+void OomScorePolicyChromeOS::OnBeforePageNodeRemoved(
+    const PageNode* page_node) {
+  HandlePageNodeEventsThrottled();
+}
+
+void OomScorePolicyChromeOS::OnIsVisibleChanged(const PageNode* page_node) {
+  HandlePageNodeEventsThrottled();
+}
+
+void OomScorePolicyChromeOS::OnTypeChanged(const PageNode* page_node,
+                                           PageType previous_type) {
+  HandlePageNodeEventsThrottled();
+}
+
+void OomScorePolicyChromeOS::HandlePageNodeEventsThrottled() {
+  base::TimeTicks now = base::TimeTicks::Now();
+  bool oom_scores_assignment = false;
+  bool background_pids_report = false;
+
+  if (now - last_oom_scores_assignment_ > kOomScoresAssignmentMinimalInterval) {
+    last_oom_scores_assignment_ = now;
+    oom_scores_assignment = true;
+  }
+  if (now - last_background_pids_report_ >
+      kBackgroundPidsReportMinimalInterval) {
+    last_background_pids_report_ = now;
+    background_pids_report = true;
+  }
+
+  HandlePageNodeEvents(oom_scores_assignment, background_pids_report);
+}
+
+void OomScorePolicyChromeOS::HandlePageNodeEvents(bool oom_scores_assignment,
+                                                  bool background_pids_report) {
+  if (!oom_scores_assignment && !background_pids_report) {
+    return;
+  }
+
   PageDiscardingHelper* discarding_helper =
       PageDiscardingHelper::GetFromGraph(graph_);
 
   std::vector<const PageNode*> page_nodes = graph_->GetAllPageNodes();
 
   std::vector<PageNodeSortProxy> candidates;
+  std::vector<PageNodeSortProxy> background_candidates;
+
   for (const auto* page_node : page_nodes) {
     PageDiscardingHelper::CanDiscardResult can_discard_result =
         discarding_helper->CanDiscard(
@@ -53,16 +129,33 @@ void OomScorePolicyChromeOS::AssignOomScores() {
         (can_discard_result == PageDiscardingHelper::CanDiscardResult::kMarked);
     bool is_protected = (can_discard_result ==
                          PageDiscardingHelper::CanDiscardResult::kProtected);
-    candidates.emplace_back(page_node, is_marked, is_protected,
-                            page_node->GetTimeSinceLastVisibilityChange());
+    bool is_visible = page_node->IsVisible();
+    if (oom_scores_assignment) {
+      candidates.emplace_back(page_node, is_marked, is_visible, is_protected,
+                              page_node->GetTimeSinceLastVisibilityChange());
+    }
+    if (background_pids_report && !is_marked && !is_protected) {
+      background_candidates.emplace_back(
+          page_node, is_marked, is_visible, is_protected,
+          page_node->GetTimeSinceLastVisibilityChange());
+    }
   }
-  // Sorts with descending importance.
-  std::sort(candidates.begin(), candidates.end(),
-            [](const PageNodeSortProxy& lhs, const PageNodeSortProxy& rhs) {
-              return rhs < lhs;
-            });
 
-  oom_score_map_ = DistributeOomScore(candidates);
+  if (oom_scores_assignment) {
+    // Sorts with descending importance.
+    std::sort(candidates.begin(), candidates.end(),
+              [](const PageNodeSortProxy& lhs, const PageNodeSortProxy& rhs) {
+                return rhs < lhs;
+              });
+
+    oom_score_map_ = DistributeOomScore(candidates);
+  }
+
+  if (background_pids_report) {
+    std::vector<base::ProcessId> background_pids =
+        GetUniquePids(background_candidates);
+    ReportBackgroundProcesses(std::move(background_pids));
+  }
 }
 
 OomScorePolicyChromeOS::ProcessScoreMap
@@ -70,7 +163,7 @@ OomScorePolicyChromeOS::DistributeOomScore(
     const std::vector<PageNodeSortProxy>& candidates) {
   ProcessScoreMap score_map;
 
-  std::vector<base::ProcessId> pids = GetUniqueSortedPids(candidates);
+  std::vector<base::ProcessId> pids = GetUniquePids(candidates);
 
   const int pid_count = pids.size();
   if (pid_count == 0) {
@@ -106,7 +199,7 @@ OomScorePolicyChromeOS::DistributeOomScore(
   return score_map;
 }
 
-std::vector<base::ProcessId> OomScorePolicyChromeOS::GetUniqueSortedPids(
+std::vector<base::ProcessId> OomScorePolicyChromeOS::GetUniquePids(
     const std::vector<PageNodeSortProxy>& candidates) {
   std::vector<base::ProcessId> pids;
 
@@ -137,6 +230,16 @@ int OomScorePolicyChromeOS::GetCachedOomScore(base::ProcessHandle pid) {
     return -1;
   }
   return it->second;
+}
+
+void OomScorePolicyChromeOS::ReportBackgroundProcesses(
+    std::vector<base::ProcessId> pids) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ReportBackgroundProcessesOnUIThread, std::move(pids)));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(vovoy): report background processes in Lacros Chrome.
 }
 
 }  // namespace policies

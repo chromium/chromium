@@ -43,6 +43,18 @@ void FakeResourcedClient::SetMemoryMarginsBps(
       base::BindOnce(std::move(callback), true, critical_kb, moderate_kb));
 }
 
+void FakeResourcedClient::ReportBackgroundProcesses(
+    Component component,
+    const std::vector<int32_t>& pids) {
+  if (component == ResourcedClient::Component::kAsh) {
+    ash_background_pids_ = pids;
+  } else if (component == ResourcedClient::Component::kLacros) {
+    lacros_background_pids_ = pids;
+  } else {
+    NOTREACHED();
+  }
+}
+
 void FakeResourcedClient::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

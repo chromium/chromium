@@ -29,6 +29,9 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
                            uint32_t moderate,
                            SetMemoryMarginsBpsCallback callback) override;
 
+  void ReportBackgroundProcesses(Component component,
+                                 const std::vector<int32_t>& pids) override;
+
   void set_total_system_memory(uint64_t mem_kb) {
     total_system_memory_kb_ = mem_kb;
   }
@@ -48,6 +51,13 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
 
   uint32_t get_critical_margin_bps() const { return critical_margin_bps_; }
   uint32_t get_moderate_margin_bps() const { return moderate_margin_bps_; }
+
+  std::vector<int32_t> get_ash_background_pids() {
+    return ash_background_pids_;
+  }
+  std::vector<int32_t> get_lacros_background_pids() {
+    return lacros_background_pids_;
+  }
 
   void AddObserver(Observer* observer) override;
 
@@ -72,6 +82,9 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   uint64_t total_system_memory_kb_ = 1000 * 1000; /* 1 gb */
   uint32_t critical_margin_bps_ = 520;
   uint32_t moderate_margin_bps_ = 4000;
+
+  std::vector<int32_t> ash_background_pids_;
+  std::vector<int32_t> lacros_background_pids_;
 
   base::ObserverList<Observer> observers_;
   base::ObserverList<ArcVmObserver> arcvm_observers_;
