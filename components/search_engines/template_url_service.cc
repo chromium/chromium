@@ -594,6 +594,13 @@ TemplateURLService::TemplateURLVector TemplateURLService::GetTemplateURLs() {
 TemplateURLService::OwnedTemplateURLVector
 TemplateURLService::GetTemplateURLsForChoiceScreen() {
   OwnedTemplateURLVector result;
+
+  // We call `GetPrepopulatedEngines` instead of
+  // `GetSearchProvidersUsingLoadedEngines` because the latter will return the
+  // list of search engines that might have been modified by the user (by
+  // changing the engine's keyword in settings for example).
+  // Changing this will cause issues in the icon generation behavior that's
+  // handled by `generate_search_engine_icons.py`.
   std::vector<std::unique_ptr<TemplateURLData>> engines =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
           prefs_, /*default_search_provider_index=*/nullptr,

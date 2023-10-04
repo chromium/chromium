@@ -163,19 +163,9 @@ bool SearchEngineChoiceService::IsShowingDialog(Browser* browser) {
   return base::Contains(browsers_with_open_dialogs_, browser);
 }
 
-std::vector<std::unique_ptr<TemplateURLData>>
+std::vector<std::unique_ptr<TemplateURL>>
 SearchEngineChoiceService::GetSearchEngines() {
-  // We call `GetPrepopulatedEngines` instead of
-  // `GetSearchProvidersUsingLoadedEngines` because the latter will return the
-  // list of search engines that might have been modified by the user (by
-  // changing the engine's keyword in settings for example).
-  PrefService* pref_service = profile_->GetPrefs();
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(&profile_.get());
-  return TemplateURLPrepopulateData::GetPrepopulatedEngines(
-      pref_service,
-      /*default_search_provider_index=*/nullptr,
-      /*include_current_default=*/true, template_url_service);
+  return template_url_service_->GetTemplateURLsForChoiceScreen();
 }
 
 bool SearchEngineChoiceService::CanShowDialog(Browser& browser) {

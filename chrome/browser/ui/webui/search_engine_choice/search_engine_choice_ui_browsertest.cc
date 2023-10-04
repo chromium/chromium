@@ -51,7 +51,7 @@ class MockSearchEngineChoiceService : public SearchEngineChoiceService {
             *profile,
             *TemplateURLServiceFactory::GetForProfile(profile)) {
     ON_CALL(*this, GetSearchEngines).WillByDefault([]() {
-      std::vector<std::unique_ptr<TemplateURLData>> choices;
+      std::vector<std::unique_ptr<TemplateURL>> choices;
       auto choice = TemplateURLData();
 
       for (int i = 0; i < 12; i++) {
@@ -60,7 +60,7 @@ class MockSearchEngineChoiceService : public SearchEngineChoiceService {
         // engines.
         choice.prepopulate_id = i + 1;
         choice.SetShortName(kShortName);
-        choices.push_back(std::make_unique<TemplateURLData>(choice));
+        choices.push_back(std::make_unique<TemplateURL>(choice));
       }
       return choices;
     });
@@ -73,7 +73,7 @@ class MockSearchEngineChoiceService : public SearchEngineChoiceService {
         Profile::FromBrowserContext(context));
   }
 
-  MOCK_METHOD(std::vector<std::unique_ptr<TemplateURLData>>,
+  MOCK_METHOD(std::vector<std::unique_ptr<TemplateURL>>,
               GetSearchEngines,
               (),
               (override));

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 
 #include "base/check_deref.h"
-#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -21,7 +20,7 @@
 #include "chrome/grit/search_engine_choice_resources_map.h"
 #include "chrome/grit/signin_resources.h"
 #include "components/grit/components_scaled_resources.h"
-#include "components/search_engines/search_engine_utils.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -116,7 +115,7 @@ std::string GetChoiceListJSON(Profile& profile) {
   base::Value::List choice_value_list;
   SearchEngineChoiceService* search_engine_choice_service =
       SearchEngineChoiceServiceFactory::GetForProfile(&profile);
-  const std::vector<std::unique_ptr<TemplateURLData>> choices =
+  const std::vector<std::unique_ptr<TemplateURL>> choices =
       search_engine_choice_service->GetSearchEngines();
 
   for (const auto& choice : choices) {
@@ -128,7 +127,7 @@ std::string GetChoiceListJSON(Profile& profile) {
     std::replace(engine_keyword.begin(), engine_keyword.end(), '-', '_');
     const std::u16string icon_path = u"images/" + engine_keyword + u".png";
 
-    choice_value.Set("prepopulate_id", choice->prepopulate_id);
+    choice_value.Set("prepopulate_id", choice->prepopulate_id());
     choice_value.Set("name", choice->short_name());
     choice_value.Set("icon_path", icon_path);
     choice_value.Set("url", choice->url());
