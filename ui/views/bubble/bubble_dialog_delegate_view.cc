@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -882,12 +883,20 @@ void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
   if (!base::FeatureList::IsEnabled(::features::kBubbleMetricsApi)) {
     return;
   }
-  uma_func(base::StrCat({"Bubble.All.", histogram_name}), value);
-  if (GetBubbleName().has_value()) {
-    uma_func(
-        base::StrCat({"Bubble.", GetBubbleName().value(), ".", histogram_name}),
-        value);
+  absl::optional<std::string> bubble_name = GetBubbleName();
+  if (!bubble_name.has_value()) {
+    return;
   }
+  // We only log the a manually selected list of bubbles
+  const std::unordered_set<std::string> kValidClassName{
+      "ProfileMenuViewBase", "ExtensionsMenuView", "PageInfoBubbleViewBase",
+      "PermissionPromptBaseView", "DownloadBubbleContentsView"};
+  if (!base::Contains(kValidClassName, bubble_name.value())) {
+    return;
+  }
+  uma_func(base::StrCat({"Bubble.All.", histogram_name}), value);
+  uma_func(base::StrCat({"Bubble.", bubble_name.value(), ".", histogram_name}),
+           value);
 }
 
 gfx::Rect BubbleDialogDelegate::GetBubbleBounds() {
