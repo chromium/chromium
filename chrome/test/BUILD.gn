@@ -5291,8 +5291,7 @@ if (is_chromeos_lacros) {
     ]
 
     sources = [
-      "../browser/chromeos/reporting/network/network_bandwidth_sampler_lacros_browsertest.cc",
-      "../browser/chromeos/reporting/websites/website_events_observer_lacros_browsertest.cc",
+      # TODO(crbug/1489118): The test fails the flakiness test.
       "../browser/extensions/api/shared_storage/shared_storage_private_apitest.cc",
 
       # download_controller_client_lacros_browsertest.cc should become a unit
@@ -5323,12 +5322,10 @@ if (is_chromeos_lacros) {
       "//chrome/browser/chromeos:test_support",
       "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
       "//chromeos/crosapi/mojom",
-      "//chromeos/dbus/missive:test_support",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
       "//chromeos/startup",
       "//components/proxy_config:proxy_config",
-      "//components/reporting/proto:metric_data_proto",
       "//components/sync:test_support",
       "//components/user_manager",
       "//ui/ozone",
@@ -5369,6 +5366,8 @@ if (is_chromeos_lacros) {
       "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_apitest.cc",
       "../browser/chromeos/extensions/wallpaper_apitest.cc",
       "../browser/chromeos/extensions/wm/wm_desks_private_apitest_lacros.cc",
+      "../browser/chromeos/reporting/network/network_bandwidth_sampler_lacros_browsertest.cc",
+      "../browser/chromeos/reporting/websites/website_events_observer_lacros_browsertest.cc",
       "../browser/chromeos/tablet_mode/tablet_mode_page_behavior_browsertest.cc",
       "../browser/chromeos/video_conference/video_conference_manager_client_browsertest.cc",
       "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_lacros_apitest.cc",
@@ -5473,6 +5472,7 @@ if (is_chromeos_lacros) {
       "//chromeos/crosapi/cpp:cpp",
       "//chromeos/crosapi/cpp:test_support",
       "//chromeos/crosapi/mojom",
+      "//chromeos/dbus/missive:test_support",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
       "//chromeos/services/machine_learning/public/cpp",
@@ -5492,6 +5492,7 @@ if (is_chromeos_lacros) {
       "//components/metrics/structured",
       "//components/metrics/structured:structured_events",
       "//components/onc:onc",
+      "//components/reporting/proto:metric_data_proto",
       "//components/proxy_config:proxy_config",
       "//components/services/app_service",
       "//components/services/app_service/public/cpp:test_support",
