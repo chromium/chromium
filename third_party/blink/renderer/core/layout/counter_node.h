@@ -51,9 +51,7 @@ class CounterNode : public GarbageCollected<CounterNode> {
  public:
   enum Type { kIncrementType = 1 << 0, kResetType = 1 << 1, kSetType = 1 << 2 };
 
-  CounterNode(LayoutObject&, unsigned type_mask, int value);
-  CounterNode(LayoutObject&,
-              const AtomicString& identifier,
+  CounterNode(LayoutObject& object,
               unsigned type_mask,
               int value,
               bool is_reversed = false);
@@ -69,6 +67,7 @@ class CounterNode : public GarbageCollected<CounterNode> {
   int CountInParent() const { return count_in_parent_; }
   LayoutObject& Owner() const { return *owner_; }
   Element& OwnerElement() const;
+  Element& OwnerNonPseudoElement() const;
   void AddLayoutObject(LayoutCounter*);
   void RemoveLayoutObject(LayoutCounter*);
 

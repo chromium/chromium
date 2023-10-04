@@ -32,21 +32,7 @@
 
 namespace blink {
 
-CounterNode::CounterNode(LayoutObject& o, unsigned type_mask, int value)
-    : type_mask_(type_mask),
-      value_(value),
-      value_before_(0),
-      count_in_parent_(0),
-      owner_(&o),
-      root_layout_object_(nullptr),
-      parent_(nullptr),
-      previous_sibling_(nullptr),
-      next_sibling_(nullptr),
-      first_child_(nullptr),
-      last_child_(nullptr) {}
-
-CounterNode::CounterNode(LayoutObject& o,
-                         const AtomicString& identifier,
+CounterNode::CounterNode(LayoutObject& object,
                          unsigned type_mask,
                          int value,
                          bool is_reversed)
@@ -55,14 +41,13 @@ CounterNode::CounterNode(LayoutObject& o,
       value_before_(0),
       count_in_parent_(0),
       is_reversed_(is_reversed),
-      owner_(&o),
+      owner_(&object),
       root_layout_object_(nullptr),
       parent_(nullptr),
       previous_sibling_(nullptr),
       next_sibling_(nullptr),
       first_child_(nullptr),
-      last_child_(nullptr),
-      identifier_(identifier) {}
+      last_child_(nullptr) {}
 
 void CounterNode::Destroy() {
   // Ideally this would be an assert and this would never be reached. In reality
@@ -302,6 +287,14 @@ Element& CounterNode::OwnerElement() const {
   }
   CHECK(owner && IsA<Element>(owner->GetNode()));
   return *To<Element>(owner->GetNode());
+}
+
+Element& CounterNode::OwnerNonPseudoElement() const {
+  Element& element = OwnerElement();
+  if (element.IsPseudoElement()) {
+    return *element.ParentOrShadowHostElement();
+  }
+  return element;
 }
 
 void CounterNode::ResetThisAndDescendantsLayoutObjects() {

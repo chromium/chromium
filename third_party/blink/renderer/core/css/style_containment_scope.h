@@ -34,6 +34,8 @@ class StyleContainmentScope final
       const Element&,
       const AtomicString&) const;
   CORE_EXPORT void CreateCounterNodesForLayoutObject(LayoutObject&);
+  void CreateCounterNodeForLayoutObject(LayoutObject& object,
+                                        const AtomicString& identifier);
   CORE_EXPORT void CreateCounterNodeForLayoutCounter(LayoutCounter&);
   void CreateListItemCounterNodeForLayoutObject(LayoutObject&);
   void RemoveCounterNodeForLayoutCounter(LayoutCounter&);
