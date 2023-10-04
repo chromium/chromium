@@ -176,6 +176,27 @@ TEST_P(AshNotificationViewPixelTest, CollapsedNoMessage) {
       "collapsed_no_message", /*revision_number=*/1, notification_view));
 }
 
+// Tests that a progress notification does not have its title vertically
+// centered in the collapsed state.
+TEST_P(AshNotificationViewPixelTest, ProgressCollapsed) {
+  // Create a progress notification and open the notification center bubble to
+  // view it. Also add a second notification so that the progress notification
+  // is automatically in its collapsed state when the bubble is toggled.
+  const std::string id = test_api()->AddProgressNotification();
+  test_api()->AddNotification();
+  test_api()->ToggleBubble();
+
+  // Verify that the notification is collapsed.
+  auto* notification_view = static_cast<AshNotificationView*>(
+      test_api()->GetNotificationViewForId(id));
+  ASSERT_FALSE(notification_view->IsExpanded());
+
+  // Verify with a pixel test that the notification's title is not vertically
+  // centered.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "progress_collapsed", /*revision_number=*/0, notification_view));
+}
+
 class AshNotificationViewTitlePixelTest
     : public AshNotificationViewPixelTestBase,
       public testing::WithParamInterface<

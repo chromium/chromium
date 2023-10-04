@@ -102,6 +102,9 @@ class NotificationCenterTestApi {
   // `SystemNotificationWarningLevel::CRITICAL_WARNING` and returns its id.
   std::string AddCriticalWarningSystemNotification();
 
+  // Adds a progress notification and returns the associated id.
+  std::string AddProgressNotification();
+
   // Removes the notification associated with the provided id.
   void RemoveNotification(const std::string& id);
 

@@ -28,7 +28,6 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
-#include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -138,6 +137,21 @@ std::string NotificationCenterTestApi::AddCriticalWarningSystemNotification() {
                          message_center::RichNotificationData());
   notification->set_system_notification_warning_level(
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
+  return id;
+}
+
+std::string NotificationCenterTestApi::AddProgressNotification() {
+  const auto id = GenerateNotificationId();
+  message_center::RichNotificationData optional_fields;
+  optional_fields.progress = 50;
+  auto notification = std::make_unique<message_center::Notification>(
+      message_center::NOTIFICATION_TYPE_PROGRESS, id, u"test_title",
+      u"test_message", /*icon=*/ui::ImageModel(),
+      /*display_source=*/base::EmptyString16(), GURL(),
+      message_center::NotifierId(), optional_fields,
+      new message_center::NotificationDelegate());
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
   return id;

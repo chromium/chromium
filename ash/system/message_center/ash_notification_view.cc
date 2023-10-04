@@ -1150,11 +1150,14 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
     title_row_->title_view()->SetMaxLines(
         expanded ? kTitleLabelExpandedMaxLines : kTitleLabelCollapsedMaxLines);
     // Add extra padding to center the title in collapsed mode when there is no
-    // message.
-    title_row_->SetProperty(views::kMarginsKey,
-                            !message_label() && !use_expanded_padding
-                                ? kTitleRowNoMessageCollapsedPadding
-                                : gfx::Insets());
+    // message. The exception is when this is a progress notification, as
+    // progress notifications always show a progress bar and thus don't need the
+    // title vertically centered.
+    title_row_->SetProperty(
+        views::kMarginsKey,
+        !progress_bar_view() && !message_label() && !use_expanded_padding
+            ? kTitleRowNoMessageCollapsedPadding
+            : gfx::Insets());
   }
 
   if (message_label()) {
