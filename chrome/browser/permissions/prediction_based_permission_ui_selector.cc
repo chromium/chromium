@@ -341,12 +341,11 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
   const bool is_notification_cpss_enabled =
       profile_->GetPrefs()->GetBoolean(prefs::kEnableNotificationCPSS) &&
       (base::FeatureList::IsEnabled(features::kQuietNotificationPrompts) ||
-       base::FeatureList::IsEnabled(
-           permissions::features::kPermissionQuietChip));
+       permissions::PermissionUtil::DoesPlatformSupportChip());
 
   const bool is_geolocation_cpss_enabled =
       profile_->GetPrefs()->GetBoolean(prefs::kEnableGeolocationCPSS) &&
-      base::FeatureList::IsEnabled(permissions::features::kPermissionQuietChip);
+      permissions::PermissionUtil::DoesPlatformSupportChip();
 
   if (request_type == permissions::RequestType::kNotifications &&
       !is_notification_cpss_enabled) {

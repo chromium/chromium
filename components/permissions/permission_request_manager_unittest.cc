@@ -20,6 +20,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
@@ -36,9 +37,7 @@ namespace {
 using QuietUiReason = PermissionUiSelector::QuietUiReason;
 }
 
-class PermissionRequestManagerTest
-    : public content::RenderViewHostTestHarness,
-      public ::testing::WithParamInterface<bool> {
+class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
  public:
   PermissionRequestManagerTest()
       : RenderViewHostTestHarness(
@@ -58,27 +57,17 @@ class PermissionRequestManagerTest
         iframe_request_same_domain_(GURL("https://www.google.com/some/url"),
                                     RequestType::kMidiSysex),
         iframe_request_other_domain_(GURL("https://www.youtube.com"),
-                                     RequestType::kGeolocation),
+                                     RequestType::kClipboard),
         iframe_request_camera_other_domain_(GURL("https://www.youtube.com"),
                                             RequestType::kStorageAccess),
         iframe_request_mic_other_domain_(GURL("https://www.youtube.com"),
                                          RequestType::kMicStream) {
-
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          {permissions::features::kPermissionChip},
-          {permissions::features::kPermissionQuietChip});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {permissions::features::kPermissionChip,
-               permissions::features::kPermissionQuietChip});
-    }
   }
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     SetContents(CreateTestWebContents());
-    NavigateAndCommit(GURL(permissions::MockPermissionRequest::kDefaultOrigin));
+    NavigateAndCommit(GURL(MockPermissionRequest::kDefaultOrigin));
 
     PermissionRequestManager::CreateForWebContents(web_contents());
     manager_ = PermissionRequestManager::FromWebContents(web_contents());
@@ -195,12 +184,12 @@ class PermissionRequestManagerTest
 // General
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST_P(PermissionRequestManagerTest, NoRequests) {
+TEST_F(PermissionRequestManagerTest, NoRequests) {
   WaitForBubbleToBeShown();
   EXPECT_FALSE(prompt_factory_->is_visible());
 }
 
-TEST_P(PermissionRequestManagerTest, SingleRequest) {
+TEST_F(PermissionRequestManagerTest, SingleRequest) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
 
@@ -211,7 +200,7 @@ TEST_P(PermissionRequestManagerTest, SingleRequest) {
   EXPECT_TRUE(request1_.granted());
 }
 
-TEST_P(PermissionRequestManagerTest, SequentialRequests) {
+TEST_F(PermissionRequestManagerTest, SequentialRequests) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
   EXPECT_TRUE(prompt_factory_->is_visible());
@@ -228,7 +217,7 @@ TEST_P(PermissionRequestManagerTest, SequentialRequests) {
   EXPECT_TRUE(request2_.granted());
 }
 
-TEST_P(PermissionRequestManagerTest, ForgetRequestsOnPageNavigation) {
+TEST_F(PermissionRequestManagerTest, ForgetRequestsOnPageNavigation) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request2_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
@@ -247,7 +236,7 @@ TEST_P(PermissionRequestManagerTest, ForgetRequestsOnPageNavigation) {
   EXPECT_TRUE(iframe_request_other_domain_.finished());
 }
 
-TEST_P(PermissionRequestManagerTest, RequestsDontNeedUserGesture) {
+TEST_F(PermissionRequestManagerTest, RequestsDontNeedUserGesture) {
   WaitForFrameLoad();
   WaitForBubbleToBeShown();
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
@@ -259,7 +248,7 @@ TEST_P(PermissionRequestManagerTest, RequestsDontNeedUserGesture) {
   EXPECT_TRUE(prompt_factory_->is_visible());
 }
 
-TEST_P(PermissionRequestManagerTest, RequestsNotSupported) {
+TEST_F(PermissionRequestManagerTest, RequestsNotSupported) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
   Accept();
@@ -275,12 +264,11 @@ TEST_P(PermissionRequestManagerTest, RequestsNotSupported) {
 // Requests grouping
 ////////////////////////////////////////////////////////////////////////////////
 
+// Android is the only platform that does not support the permission chip.
+#if BUILDFLAG(IS_ANDROID)
 // Most requests should never be grouped.
-TEST_P(PermissionRequestManagerTest, TwoRequestsUngrouped) {
-  // Grouping for chip feature is tested in ThreeRequestsStackOrderChip.
-  if (GetParam())
-    return;
-
+// Grouping for chip feature is tested in ThreeRequestsStackOrderChip.
+TEST_F(PermissionRequestManagerTest, TwoRequestsUngrouped) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request2_);
 
@@ -299,10 +287,9 @@ TEST_P(PermissionRequestManagerTest, TwoRequestsUngrouped) {
   ASSERT_EQ(prompt_factory_->show_count(), 2);
 }
 
-TEST_P(PermissionRequestManagerTest, ThreeRequestsStackOrderChip) {
-  if (!GetParam())
-    return;
-
+// Tests for non-Android platforms which support the permission chip.
+#else   // BUILDFLAG(IS_ANDROID)
+TEST_F(PermissionRequestManagerTest, ThreeRequestsStackOrderChip) {
   // Test new permissions order, requests shouldn't be grouped.
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request2_);
@@ -331,10 +318,7 @@ TEST_P(PermissionRequestManagerTest, ThreeRequestsStackOrderChip) {
 }
 
 // Test new permissions order by adding requests one at a time.
-TEST_P(PermissionRequestManagerTest, ThreeRequestsOneByOneStackOrderChip) {
-  if (!GetParam())
-    return;
-
+TEST_F(PermissionRequestManagerTest, ThreeRequestsOneByOneStackOrderChip) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
 
@@ -364,9 +348,10 @@ TEST_P(PermissionRequestManagerTest, ThreeRequestsOneByOneStackOrderChip) {
   Accept();
   EXPECT_TRUE(request1_.granted());
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Only mic/camera requests from the same origin should be grouped.
-TEST_P(PermissionRequestManagerTest, MicCameraGrouped) {
+TEST_F(PermissionRequestManagerTest, MicCameraGrouped) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_mic_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_camera_);
   WaitForBubbleToBeShown();
@@ -381,7 +366,7 @@ TEST_P(PermissionRequestManagerTest, MicCameraGrouped) {
 
 // If mic/camera requests come from different origins, they should not be
 // grouped.
-TEST_P(PermissionRequestManagerTest, MicCameraDifferentOrigins) {
+TEST_F(PermissionRequestManagerTest, MicCameraDifferentOrigins) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
                        &iframe_request_mic_other_domain_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_camera_);
@@ -393,7 +378,7 @@ TEST_P(PermissionRequestManagerTest, MicCameraDifferentOrigins) {
 
 #if !BUILDFLAG(IS_ANDROID)
 // Only camera/ptz requests from the same origin should be grouped.
-TEST_P(PermissionRequestManagerTest, CameraPtzGrouped) {
+TEST_F(PermissionRequestManagerTest, CameraPtzGrouped) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_camera_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_ptz_);
   WaitForBubbleToBeShown();
@@ -406,7 +391,7 @@ TEST_P(PermissionRequestManagerTest, CameraPtzGrouped) {
   EXPECT_TRUE(request_ptz_.granted());
 }
 
-TEST_P(PermissionRequestManagerTest, CameraPtzDifferentOrigins) {
+TEST_F(PermissionRequestManagerTest, CameraPtzDifferentOrigins) {
   // If camera/ptz requests come from different origins, they should not be
   // grouped.
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
@@ -419,7 +404,7 @@ TEST_P(PermissionRequestManagerTest, CameraPtzDifferentOrigins) {
 }
 
 // Only mic/camera/ptz requests from the same origin should be grouped.
-TEST_P(PermissionRequestManagerTest, MicCameraPtzGrouped) {
+TEST_F(PermissionRequestManagerTest, MicCameraPtzGrouped) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_mic_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_camera_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_ptz_);
@@ -436,7 +421,7 @@ TEST_P(PermissionRequestManagerTest, MicCameraPtzGrouped) {
 
 // If mic/camera/ptz requests come from different origins, they should not be
 // grouped.
-TEST_P(PermissionRequestManagerTest, MicCameraPtzDifferentOrigins) {
+TEST_F(PermissionRequestManagerTest, MicCameraPtzDifferentOrigins) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
                        &iframe_request_mic_other_domain_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_camera_);
@@ -456,7 +441,7 @@ TEST_P(PermissionRequestManagerTest, MicCameraPtzDifferentOrigins) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests mix of grouped media requests and non-groupable request.
-TEST_P(PermissionRequestManagerTest, MixOfMediaAndNotMediaRequests) {
+TEST_F(PermissionRequestManagerTest, MixOfMediaAndNotMediaRequests) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_camera_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_mic_);
@@ -475,7 +460,7 @@ TEST_P(PermissionRequestManagerTest, MixOfMediaAndNotMediaRequests) {
   Accept();
 }
 
-TEST_P(PermissionRequestManagerTest, OpenHelpCenterLink) {
+TEST_F(PermissionRequestManagerTest, OpenHelpCenterLink) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
                        &iframe_request_camera_other_domain_);
   WaitForBubbleToBeShown();
@@ -485,7 +470,7 @@ TEST_P(PermissionRequestManagerTest, OpenHelpCenterLink) {
   SUCCEED();
 }
 
-TEST_P(PermissionRequestManagerTest, OpenHelpCenterLink_RequestNotSupported) {
+TEST_F(PermissionRequestManagerTest, OpenHelpCenterLink_RequestNotSupported) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
   EXPECT_TRUE(prompt_factory_->is_visible());
@@ -498,7 +483,7 @@ TEST_P(PermissionRequestManagerTest, OpenHelpCenterLink_RequestNotSupported) {
 ////////////////////////////////////////////////////////////////////////////////
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_P(PermissionRequestManagerTest, TwoRequestsTabSwitch) {
+TEST_F(PermissionRequestManagerTest, TwoRequestsTabSwitch) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_mic_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_camera_);
   WaitForBubbleToBeShown();
@@ -520,7 +505,7 @@ TEST_P(PermissionRequestManagerTest, TwoRequestsTabSwitch) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-TEST_P(PermissionRequestManagerTest, PermissionRequestWhileTabSwitchedAway) {
+TEST_F(PermissionRequestManagerTest, PermissionRequestWhileTabSwitchedAway) {
   MockTabSwitchAway();
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
@@ -535,7 +520,7 @@ TEST_P(PermissionRequestManagerTest, PermissionRequestWhileTabSwitchedAway) {
 // Duplicated requests
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST_P(PermissionRequestManagerTest, SameRequestRejected) {
+TEST_F(PermissionRequestManagerTest, SameRequestRejected) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   EXPECT_FALSE(request1_.finished());
@@ -549,7 +534,7 @@ TEST_P(PermissionRequestManagerTest, SameRequestRejected) {
   EXPECT_FALSE(prompt_factory_->is_visible());
 }
 
-TEST_P(PermissionRequestManagerTest, WeakDuplicateRequests) {
+TEST_F(PermissionRequestManagerTest, WeakDuplicateRequests) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
   auto dupe_request_1 = request1_.CreateDuplicateRequest();
@@ -604,7 +589,7 @@ class QuicklyDeletedRequest : public PermissionRequest {
   }
 };
 
-TEST_P(PermissionRequestManagerTest, WeakDuplicateRequestsAccept) {
+TEST_F(PermissionRequestManagerTest, WeakDuplicateRequestsAccept) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request2_);
@@ -633,7 +618,7 @@ TEST_P(PermissionRequestManagerTest, WeakDuplicateRequestsAccept) {
   EXPECT_EQ(0ul, manager_->duplicate_requests_.size());
 }
 
-TEST_P(PermissionRequestManagerTest, DuplicateRequest) {
+TEST_F(PermissionRequestManagerTest, DuplicateRequest) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request2_);
@@ -652,7 +637,7 @@ TEST_P(PermissionRequestManagerTest, DuplicateRequest) {
 
   WaitForBubbleToBeShown();
   Accept();
-  if (GetParam()) {
+  if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(dupe_request2->finished());
     EXPECT_TRUE(request2_.finished());
   } else {
@@ -662,7 +647,7 @@ TEST_P(PermissionRequestManagerTest, DuplicateRequest) {
 
   WaitForBubbleToBeShown();
   Accept();
-  if (GetParam()) {
+  if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(dupe_request->finished());
     EXPECT_TRUE(request1_.finished());
   } else {
@@ -675,7 +660,7 @@ TEST_P(PermissionRequestManagerTest, DuplicateRequest) {
 // Requests from iframes
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST_P(PermissionRequestManagerTest, MainFrameNoRequestIFrameRequest) {
+TEST_F(PermissionRequestManagerTest, MainFrameNoRequestIFrameRequest) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
                        &iframe_request_same_domain_);
   WaitForBubbleToBeShown();
@@ -686,7 +671,7 @@ TEST_P(PermissionRequestManagerTest, MainFrameNoRequestIFrameRequest) {
   EXPECT_TRUE(iframe_request_same_domain_.finished());
 }
 
-TEST_P(PermissionRequestManagerTest, MainFrameAndIFrameRequestSameDomain) {
+TEST_F(PermissionRequestManagerTest, MainFrameAndIFrameRequestSameDomain) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
                        &iframe_request_same_domain_);
@@ -696,7 +681,7 @@ TEST_P(PermissionRequestManagerTest, MainFrameAndIFrameRequestSameDomain) {
   EXPECT_TRUE(prompt_factory_->is_visible());
   ASSERT_EQ(1, prompt_factory_->request_count());
   Closing();
-  if (GetParam()) {
+  if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(iframe_request_same_domain_.finished());
     EXPECT_FALSE(request1_.finished());
   } else {
@@ -710,13 +695,14 @@ TEST_P(PermissionRequestManagerTest, MainFrameAndIFrameRequestSameDomain) {
 
   Closing();
   EXPECT_FALSE(prompt_factory_->is_visible());
-  if (GetParam())
+  if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(request1_.finished());
-  else
+  } else {
     EXPECT_TRUE(iframe_request_same_domain_.finished());
+  }
 }
 
-TEST_P(PermissionRequestManagerTest, MainFrameAndIFrameRequestOtherDomain) {
+TEST_F(PermissionRequestManagerTest, MainFrameAndIFrameRequestOtherDomain) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
                        &iframe_request_other_domain_);
@@ -725,7 +711,7 @@ TEST_P(PermissionRequestManagerTest, MainFrameAndIFrameRequestOtherDomain) {
 
   EXPECT_TRUE(prompt_factory_->is_visible());
   Closing();
-  if (GetParam()) {
+  if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(iframe_request_other_domain_.finished());
     EXPECT_FALSE(request1_.finished());
   } else {
@@ -736,13 +722,14 @@ TEST_P(PermissionRequestManagerTest, MainFrameAndIFrameRequestOtherDomain) {
   EXPECT_TRUE(prompt_factory_->is_visible());
   Closing();
   EXPECT_TRUE(iframe_request_other_domain_.finished());
-  if (GetParam())
+  if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(request1_.finished());
-  else
+  } else {
     EXPECT_TRUE(iframe_request_other_domain_.finished());
+  }
 }
 
-TEST_P(PermissionRequestManagerTest, IFrameRequestWhenMainRequestVisible) {
+TEST_F(PermissionRequestManagerTest, IFrameRequestWhenMainRequestVisible) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
   EXPECT_TRUE(prompt_factory_->is_visible());
@@ -752,7 +739,7 @@ TEST_P(PermissionRequestManagerTest, IFrameRequestWhenMainRequestVisible) {
   WaitForFrameLoad();
   ASSERT_EQ(prompt_factory_->request_count(), 1);
   Closing();
-  if (GetParam()) {
+  if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(iframe_request_same_domain_.finished());
     EXPECT_FALSE(request1_.finished());
   } else {
@@ -764,13 +751,14 @@ TEST_P(PermissionRequestManagerTest, IFrameRequestWhenMainRequestVisible) {
   ASSERT_EQ(prompt_factory_->request_count(), 1);
   Closing();
   EXPECT_TRUE(iframe_request_same_domain_.finished());
-  if (GetParam())
+  if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(request1_.finished());
-  else
+  } else {
     EXPECT_TRUE(iframe_request_same_domain_.finished());
+  }
 }
 
-TEST_P(PermissionRequestManagerTest,
+TEST_F(PermissionRequestManagerTest,
        IFrameRequestOtherDomainWhenMainRequestVisible) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
@@ -780,7 +768,7 @@ TEST_P(PermissionRequestManagerTest,
                        &iframe_request_other_domain_);
   WaitForFrameLoad();
   Closing();
-  if (GetParam()) {
+  if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(iframe_request_other_domain_.finished());
     EXPECT_FALSE(request1_.finished());
   } else {
@@ -790,10 +778,11 @@ TEST_P(PermissionRequestManagerTest,
 
   EXPECT_TRUE(prompt_factory_->is_visible());
   Closing();
-  if (GetParam())
+  if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(request1_.finished());
-  else
+  } else {
     EXPECT_TRUE(iframe_request_other_domain_.finished());
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -803,7 +792,7 @@ TEST_P(PermissionRequestManagerTest,
 // This code path (calling Accept on a non-merged bubble, with no accepted
 // permission) would never be used in actual Chrome, but its still tested for
 // completeness.
-TEST_P(PermissionRequestManagerTest, UMAForSimpleDeniedBubbleAlternatePath) {
+TEST_F(PermissionRequestManagerTest, UMAForSimpleDeniedBubbleAlternatePath) {
   base::HistogramTester histograms;
 
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
@@ -818,7 +807,7 @@ TEST_P(PermissionRequestManagerTest, UMAForSimpleDeniedBubbleAlternatePath) {
                                 1);
 }
 
-TEST_P(PermissionRequestManagerTest, UMAForTabSwitching) {
+TEST_F(PermissionRequestManagerTest, UMAForTabSwitching) {
   base::HistogramTester histograms;
 
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
@@ -927,7 +916,7 @@ class MockCameraStreamPermissionUiSelector
   }
 };
 
-TEST_P(PermissionRequestManagerTest,
+TEST_F(PermissionRequestManagerTest,
        UiSelectorNotUsedForPermissionsOtherThanNotification) {
   manager_->clear_permission_ui_selector_for_testing();
   MockNotificationPermissionUiSelector::CreateForManager(
@@ -945,7 +934,7 @@ TEST_P(PermissionRequestManagerTest,
   EXPECT_TRUE(request_camera_.granted());
 }
 
-TEST_P(PermissionRequestManagerTest, UiSelectorUsedForNotifications) {
+TEST_F(PermissionRequestManagerTest, UiSelectorUsedForNotifications) {
   const struct {
     absl::optional<PermissionUiSelector::QuietUiReason> quiet_ui_reason;
     absl::optional<base::TimeDelta> async_delay;
@@ -978,7 +967,7 @@ TEST_P(PermissionRequestManagerTest, UiSelectorUsedForNotifications) {
   }
 }
 
-TEST_P(PermissionRequestManagerTest,
+TEST_F(PermissionRequestManagerTest,
        UiSelectionHappensSeparatelyForEachRequest) {
   manager_->clear_permission_ui_selector_for_testing();
   MockNotificationPermissionUiSelector::CreateForManager(
@@ -1003,7 +992,7 @@ TEST_P(PermissionRequestManagerTest,
   Accept();
 }
 
-TEST_P(PermissionRequestManagerTest, SkipNextUiSelector) {
+TEST_F(PermissionRequestManagerTest, SkipNextUiSelector) {
   manager_->clear_permission_ui_selector_for_testing();
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_, QuietUiReason::kEnabledInPrefs,
@@ -1023,7 +1012,7 @@ TEST_P(PermissionRequestManagerTest, SkipNextUiSelector) {
   Accept();
 }
 
-TEST_P(PermissionRequestManagerTest, MultipleUiSelectors) {
+TEST_F(PermissionRequestManagerTest, MultipleUiSelectors) {
   const struct {
     std::vector<absl::optional<QuietUiReason>> quiet_ui_reasons;
     std::vector<bool> simulate_delayed_decision;
@@ -1118,7 +1107,7 @@ TEST_P(PermissionRequestManagerTest, MultipleUiSelectors) {
   }
 }
 
-TEST_P(PermissionRequestManagerTest, SelectorsPredictionLikelihood) {
+TEST_F(PermissionRequestManagerTest, SelectorsPredictionLikelihood) {
   using PredictionLikelihood = PermissionUmaUtil::PredictionGrantLikelihood;
   const auto VeryLikely = PredictionLikelihood::
       PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_LIKELY;
@@ -1172,7 +1161,7 @@ TEST_P(PermissionRequestManagerTest, SelectorsPredictionLikelihood) {
   }
 }
 
-TEST_P(PermissionRequestManagerTest, SelectorRequestTypes) {
+TEST_F(PermissionRequestManagerTest, SelectorRequestTypes) {
   const struct {
     RequestType request_type;
     bool should_request_use_quiet_ui;
@@ -1211,7 +1200,7 @@ TEST_P(PermissionRequestManagerTest, SelectorRequestTypes) {
 // Quiet UI chip. Low priority for Notifications & Geolocation.
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST_P(PermissionRequestManagerTest, NotificationsSingleBubbleAndChipRequest) {
+TEST_F(PermissionRequestManagerTest, NotificationsSingleBubbleAndChipRequest) {
   MockPermissionRequest request(RequestType::kNotifications,
                                 PermissionRequestGestureType::GESTURE);
 
@@ -1226,6 +1215,8 @@ TEST_P(PermissionRequestManagerTest, NotificationsSingleBubbleAndChipRequest) {
   EXPECT_EQ(prompt_factory_->show_count(), 1);
 }
 
+// Android is the only platform that does not support the permission chip.
+#if BUILDFLAG(IS_ANDROID)
 // Quiet UI feature is disabled. Chip is disabled. No low priority requests, the
 // first request is always shown.
 //
@@ -1238,13 +1229,8 @@ TEST_P(PermissionRequestManagerTest, NotificationsSingleBubbleAndChipRequest) {
 // 1. Notification request shown
 // 2. Geolocation request shown
 // 3. Camera request shown
-TEST_P(PermissionRequestManagerTest,
+TEST_F(PermissionRequestManagerTest,
        NotificationsGeolocationCameraBubbleRequest) {
-  // permissions::features::kPermissionChip is enabled based on `GetParam()`.
-  // That test is only for the default bubble.
-  if (GetParam())
-    return;
-
   std::unique_ptr<MockPermissionRequest> request_notifications =
       CreateAndAddRequest(RequestType::kNotifications, /*should_be_seen=*/true,
                           1);
@@ -1262,76 +1248,33 @@ TEST_P(PermissionRequestManagerTest,
   EXPECT_EQ(prompt_factory_->show_count(), 3);
 }
 
-// Quiet UI feature is disabled, no low priority requests, the last request is
-// always shown.
-//
-// Permissions requested in order:
-// 1. Notification (non abusive)
-// 2. Geolocation
-// 3. Camera
-//
-// Prompt display order:
-// 1. Notifications request shown but is preempted
-// 2. Geolocation request shown but is preempted
-// 3. Camera request shown
-// 4. Geolocation request shown again
-// 5. Notifications request shown again
-TEST_P(PermissionRequestManagerTest,
-       NotificationsGeolocationCameraChipRequest) {
-  // permissions::features::kPermissionChip is enabled based on `GetParam()`.
-  // That test is only for the chip UI.
-  if (!GetParam())
-    return;
-
-  std::unique_ptr<MockPermissionRequest> request_notifications =
-      CreateAndAddRequest(RequestType::kNotifications, /*should_be_seen=*/true,
-                          1);
-  std::unique_ptr<MockPermissionRequest> request_geolocation =
-      CreateAndAddRequest(RequestType::kGeolocation, /*should_be_seen=*/true,
-                          2);
-  std::unique_ptr<MockPermissionRequest> request_camera = CreateAndAddRequest(
-      RequestType::kCameraStream, /*should_be_seen=*/true, 3);
-
-  for (auto* kRequest : {request_camera.get(), request_geolocation.get(),
-                         request_notifications.get()}) {
-    WaitAndAcceptPromptForRequest(kRequest);
-  }
-
-  EXPECT_EQ(prompt_factory_->show_count(), 5);
-}
-
+// Tests for non-Android platforms which support the permission chip.
+#else  // BUILDFLAG(IS_ANDROID)
 // Quiet UI feature is disabled, no low priority requests, the last request is
 // always shown.
 //
 // Permissions requested in order:
 // 1. Camera
-// 2. Notification (non abusive)
-// 3. Geolocation
+// 2. Clipboard
+// 3. MIDI
 //
 // Prompt display order:
 // 1. Camera request shown but is preempted
-// 2. Notifications request shown but is preempted
-// 3. Geolocation request shown
-// 4. Notifications request shown again
+// 2. Clipboard request shown but is preempted
+// 3. MIDI request shown
+// 4. Clipboard request shown again
 // 5. Camera request shown again
-TEST_P(PermissionRequestManagerTest,
+TEST_F(PermissionRequestManagerTest,
        CameraNotificationsGeolocationChipRequest) {
-  // permissions::features::kPermissionChip is enabled based on `GetParam()`.
-  // That test is only for the chip.
-  if (!GetParam())
-    return;
-
   std::unique_ptr<MockPermissionRequest> request_camera = CreateAndAddRequest(
       RequestType::kCameraStream, /*should_be_seen=*/true, 1);
-  std::unique_ptr<MockPermissionRequest> request_notifications =
-      CreateAndAddRequest(RequestType::kNotifications, /*should_be_seen=*/true,
-                          2);
-  std::unique_ptr<MockPermissionRequest> request_geolocation =
-      CreateAndAddRequest(RequestType::kGeolocation, /*should_be_seen=*/true,
-                          3);
+  std::unique_ptr<MockPermissionRequest> request_clipboard =
+      CreateAndAddRequest(RequestType::kClipboard, /*should_be_seen=*/true, 2);
+  std::unique_ptr<MockPermissionRequest> request_midi =
+      CreateAndAddRequest(RequestType::kMidi, /*should_be_seen=*/true, 3);
 
-  for (auto* kRequest : {request_geolocation.get(), request_notifications.get(),
-                         request_camera.get()}) {
+  for (auto* kRequest :
+       {request_midi.get(), request_clipboard.get(), request_camera.get()}) {
     WaitAndAcceptPromptForRequest(kRequest);
   }
 
@@ -1348,12 +1291,9 @@ TEST_P(PermissionRequestManagerTest,
 //
 // Prompt display order:
 // 1. Mic
-// 2. Notification
+// 2. Clipboard
 // 3. Geolocation
-TEST_P(PermissionRequestManagerTest, NewHighPriorityRequestDuringUIDecision) {
-  if (!GetParam())
-    return;
-
+TEST_F(PermissionRequestManagerTest, NewHighPriorityRequestDuringUIDecision) {
   manager_->clear_permission_ui_selector_for_testing();
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_, QuietUiReason::kTriggeredDueToAbusiveRequests,
@@ -1362,7 +1302,7 @@ TEST_P(PermissionRequestManagerTest, NewHighPriorityRequestDuringUIDecision) {
 
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  MockPermissionRequest request(RequestType::kNotifications,
+  MockPermissionRequest request(RequestType::kClipboard,
                                 PermissionRequestGestureType::GESTURE);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_mic_);
@@ -1390,18 +1330,6 @@ TEST_P(PermissionRequestManagerTest, NewHighPriorityRequestDuringUIDecision) {
   EXPECT_TRUE(request1_.granted());
 }
 
-class PermissionRequestManagerTestQuietChip
-    : public PermissionRequestManagerTest {
- public:
-  PermissionRequestManagerTestQuietChip() {
-    feature_list_.InitWithFeatureState(
-        permissions::features::kPermissionQuietChip, true);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Verifies that the quiet UI chip is not ignored if another request came in
 // less than 8.5 seconds after.
 // Permissions requested in order:
@@ -1412,7 +1340,7 @@ class PermissionRequestManagerTestQuietChip
 // 1. Notifications request shown but is preempted because of quiet UI.
 // 2. Geolocation request shown
 // 3. Notifications request shown again
-TEST_P(PermissionRequestManagerTestQuietChip,
+TEST_F(PermissionRequestManagerTest,
        AbusiveNotificationsGeolocationQuietUIChipRequest) {
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_,
@@ -1447,8 +1375,7 @@ TEST_P(PermissionRequestManagerTestQuietChip,
 // Prompt display order:
 // 1. Notifications request shown but is preempted because of quiet UI.
 // 2. Geolocation request shown
-TEST_P(PermissionRequestManagerTestQuietChip,
-       AbusiveNotificationsShownLongEnough) {
+TEST_F(PermissionRequestManagerTest, AbusiveNotificationsShownLongEnough) {
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_,
       PermissionUiSelector::QuietUiReason::kTriggeredDueToAbusiveRequests,
@@ -1491,7 +1418,7 @@ TEST_P(PermissionRequestManagerTestQuietChip,
 // 3. Camera request shown
 // 4. Geolocation request shown again
 // 5. Notifications quiet UI request shown again
-TEST_P(PermissionRequestManagerTestQuietChip,
+TEST_F(PermissionRequestManagerTest,
        AbusiveNotificationsShownLongEnoughCamera) {
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_,
@@ -1537,8 +1464,7 @@ TEST_P(PermissionRequestManagerTestQuietChip,
 // 1. Camera request shown
 // 2. Geolocation request shown
 // 3. Camera request shown
-TEST_P(PermissionRequestManagerTestQuietChip,
-       CameraAbusiveNotificationsGeolocation) {
+TEST_F(PermissionRequestManagerTest, CameraAbusiveNotificationsGeolocation) {
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_,
       PermissionUiSelector::QuietUiReason::kTriggeredDueToAbusiveRequests,
@@ -1587,12 +1513,12 @@ TEST_P(PermissionRequestManagerTestQuietChip,
 // Prompt display order:
 // 1. Camera request shown
 // 2. MIDI request shown (or MIDI and then Camera, the order depends on
-// `GetParam()`)
+// `PermissionUtil::DoesPlatformSupportChip()`)
 // 3. Geolocation request shown
 // 4. Notifications request shown
 // If Chip is enabled MIDI will replace Camera, hence 5 prompts will be
 // shown. Otherwise 4.
-TEST_P(PermissionRequestManagerTestQuietChip,
+TEST_F(PermissionRequestManagerTest,
        CameraAbusiveNotificationsGeolocationMIDI) {
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_,
@@ -1617,15 +1543,9 @@ TEST_P(PermissionRequestManagerTestQuietChip,
 
   std::unique_ptr<MockPermissionRequest> request_midi;
 
-  // If Chip is enabled, MIDI should be shown, otherwise MIDI should not be
-  // shown.
-  if (GetParam()) {
-    request_midi = CreateAndAddRequest(RequestType::kMidiSysex,
-                                       /*should_be_seen=*/true, 2);
-  } else {
-    request_midi = CreateAndAddRequest(RequestType::kMidiSysex,
-                                       /*should_be_seen=*/false, 1);
-  }
+  // Since the chip is enabled, MIDI should be shown.
+  request_midi = CreateAndAddRequest(RequestType::kMidiSysex,
+                                     /*should_be_seen=*/true, 2);
 
   // The second permission after quiet UI was requested in 8.5 second window,
   // the quiet UI Notifiations request for an abusive origin is not
@@ -1633,14 +1553,12 @@ TEST_P(PermissionRequestManagerTestQuietChip,
   EXPECT_FALSE(request_notifications->granted());
   EXPECT_FALSE(request_notifications->finished());
 
-  WaitAndAcceptPromptForRequest(GetParam() ? request_midi.get()
-                                           : request_camera.get());
-  WaitAndAcceptPromptForRequest(GetParam() ? request_camera.get()
-                                           : request_midi.get());
+  WaitAndAcceptPromptForRequest(request_midi.get());
+  WaitAndAcceptPromptForRequest(request_camera.get());
   WaitAndAcceptPromptForRequest(request_geolocation.get());
   WaitAndAcceptPromptForRequest(request_notifications.get());
 
-  EXPECT_EQ(prompt_factory_->show_count(), GetParam() ? 5 : 4);
+  EXPECT_EQ(prompt_factory_->show_count(), 5);
 }
 
 // Verifies that non abusive chip behaves similar to others when Quiet UI Chip
@@ -1655,12 +1573,12 @@ TEST_P(PermissionRequestManagerTestQuietChip,
 // Prompt display order:
 // 1. Camera request shown
 // 2. MIDI request shown (or MIDI and then Camera, the order depends on
-// `GetParam()`)
+// `PermissionUtil::DoesPlatformSupportChip()`)
 // 3. Geolocation request shown
 // 4. Notifications request shown
 // If Chip is enabled MIDI will replace Camera, hence 5 prompts will be
 // shown. Otherwise 4.
-TEST_P(PermissionRequestManagerTestQuietChip,
+TEST_F(PermissionRequestManagerTest,
        CameraNonAbusiveNotificationsGeolocationMIDI) {
   std::unique_ptr<MockPermissionRequest> request_camera = CreateAndAddRequest(
       RequestType::kCameraStream, /*should_be_seen=*/true, 1);
@@ -1682,13 +1600,8 @@ TEST_P(PermissionRequestManagerTestQuietChip,
 
   // If Chip is enabled, MIDI should be shown, otherwise MIDI should not be
   // shown.
-  if (GetParam()) {
     request_midi = CreateAndAddRequest(RequestType::kMidiSysex,
                                        /*should_be_seen=*/true, 2);
-  } else {
-    request_midi = CreateAndAddRequest(RequestType::kMidiSysex,
-                                       /*should_be_seen=*/false, 1);
-  }
 
   // The second permission after quiet UI was requested in 8.5 second window,
   // the quiet UI Notifiations request for an abusive origin is not
@@ -1696,22 +1609,13 @@ TEST_P(PermissionRequestManagerTestQuietChip,
   EXPECT_FALSE(request_notifications->granted());
   EXPECT_FALSE(request_notifications->finished());
 
-  WaitAndAcceptPromptForRequest(GetParam() ? request_midi.get()
-                                           : request_camera.get());
-  WaitAndAcceptPromptForRequest(GetParam() ? request_camera.get()
-                                           : request_midi.get());
+  WaitAndAcceptPromptForRequest(request_midi.get());
+  WaitAndAcceptPromptForRequest(request_camera.get());
   WaitAndAcceptPromptForRequest(request_geolocation.get());
   WaitAndAcceptPromptForRequest(request_notifications.get());
 
-  EXPECT_EQ(prompt_factory_->show_count(), GetParam() ? 5 : 4);
+  EXPECT_EQ(prompt_factory_->show_count(), 5);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PermissionRequestManagerTest,
-                         ::testing::Values(false, true));
-INSTANTIATE_TEST_SUITE_P(All,
-                         PermissionRequestManagerTestQuietChip,
-                         ::testing::Values(false, true));
 
 // Verifies order of requests with mixed low-high priority requests input, with
 // both chip and quiet chip enabled. New permissions are added and accepted one
@@ -1726,10 +1630,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // 1. Mic
 // 2. Multiple Download
 // 3. Geolocation
-TEST_P(PermissionRequestManagerTestQuietChip, Mixed1Low2HighPriorityRequests) {
-  if (!GetParam())
-    return;
-
+TEST_F(PermissionRequestManagerTest, Mixed1Low2HighPriorityRequests) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request2_);
   WaitForBubbleToBeShown();
 
@@ -1773,10 +1674,7 @@ TEST_P(PermissionRequestManagerTestQuietChip, Mixed1Low2HighPriorityRequests) {
 // 1. Mic
 // 2. Notification
 // 3. Geolocation
-TEST_P(PermissionRequestManagerTestQuietChip, Mixed2Low1HighRequests) {
-  if (!GetParam())
-    return;
-
+TEST_F(PermissionRequestManagerTest, Mixed2Low1HighRequests) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
 
@@ -1821,11 +1719,7 @@ TEST_P(PermissionRequestManagerTestQuietChip, Mixed2Low1HighRequests) {
 // 1. Mic
 // 2. Notification
 // 3. Geolocation
-TEST_P(PermissionRequestManagerTestQuietChip,
-       MultipleSimultaneous2Low1HighRequests) {
-  if (!GetParam())
-    return;
-
+TEST_F(PermissionRequestManagerTest, MultipleSimultaneous2Low1HighRequests) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_mic_);
   MockPermissionRequest request(RequestType::kNotifications,
@@ -1870,10 +1764,7 @@ TEST_P(PermissionRequestManagerTestQuietChip,
 // 3. Midi
 // 4. Notification
 // 5. Geolocation
-TEST_P(PermissionRequestManagerTestQuietChip,
-       MultipleSimultaneous2Low3HighRequests) {
-  if (!GetParam())
-    return;
+TEST_F(PermissionRequestManagerTest, MultipleSimultaneous2Low3HighRequests) {
   MockPermissionRequest request_midi(RequestType::kMidiSysex,
                                      PermissionRequestGestureType::GESTURE);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_midi);
@@ -1937,11 +1828,7 @@ TEST_P(PermissionRequestManagerTestQuietChip,
 // 2. Mic
 // 3. Notification
 // 4. Geolocation
-TEST_P(PermissionRequestManagerTestQuietChip,
-       MultipleSimultaneous2Low2HighRequests) {
-  if (!GetParam())
-    return;
-
+TEST_F(PermissionRequestManagerTest, MultipleSimultaneous2Low2HighRequests) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   MockPermissionRequest request(RequestType::kNotifications,
                                 PermissionRequestGestureType::GESTURE);
@@ -1982,57 +1869,6 @@ TEST_P(PermissionRequestManagerTestQuietChip,
   EXPECT_TRUE(request1_.granted());
 }
 
-// Verifies order of requests with mixed low-high priority requests input, with
-// both chip and quiet chip enabled. Simultaneous new requests are coming while
-// we are waiting for UI selector decisions.
-//
-// Permissions requested in order:
-// 1. Geolocation (low), UI selector takes 2 seconds to decide.
-// 2. Notification(low) then mic (high)
-//
-// Prompt display order:
-// 1. Mic
-// 2. Geolocation will get delayed 2 seconds, then preempted to front of queue
-// 3. Notification
-TEST_P(PermissionRequestManagerTestQuietChip,
-       NewHighPriorityRequestDuringUIDecision) {
-  if (!GetParam())
-    return;
-
-  manager_->clear_permission_ui_selector_for_testing();
-  MockNotificationPermissionUiSelector::CreateForManager(
-      manager_, QuietUiReason::kTriggeredDueToAbusiveRequests,
-      absl::make_optional<base::TimeDelta>(base::Seconds(2)));
-  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
-
-  task_environment()->FastForwardBy(base::Seconds(1));
-
-  MockPermissionRequest request(RequestType::kNotifications,
-                                PermissionRequestGestureType::GESTURE);
-  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request);
-  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_mic_);
-  WaitForBubbleToBeShown();
-  manager_->clear_permission_ui_selector_for_testing();
-
-  EXPECT_TRUE(prompt_factory_->is_visible());
-  EXPECT_EQ(prompt_factory_->request_count(), 1);
-  Accept();
-  EXPECT_TRUE(request_mic_.granted());
-  EXPECT_FALSE(request.granted());
-  EXPECT_FALSE(request1_.granted());
-  WaitForBubbleToBeShown();
-
-  EXPECT_TRUE(prompt_factory_->is_visible());
-  EXPECT_EQ(prompt_factory_->request_count(), 1);
-  Accept();
-  EXPECT_TRUE(request1_.granted());
-  EXPECT_FALSE(request.granted());
-  WaitForBubbleToBeShown();
-
-  EXPECT_TRUE(prompt_factory_->is_visible());
-  EXPECT_EQ(prompt_factory_->request_count(), 1);
-  Accept();
-  EXPECT_TRUE(request.granted());
-}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace permissions

@@ -59,8 +59,7 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
          {permissions::features::kPermissionPredictionsV2,
           {{permissions::feature_params::kPermissionPredictionsV2HoldbackChance
                 .name,
-            holdback_chance_string}}},
-         {permissions::features::kPermissionQuietChip, {}}},
+            holdback_chance_string}}}},
         {} /* disabled_features */);
   }
 
@@ -171,9 +170,15 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
                 kServicePredictedVeryUnlikelyGrant,
             notification_decision.quiet_ui_reason);
 
-  EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                kServicePredictedVeryUnlikelyGrant,
-            geolocation_decision.quiet_ui_reason);
+  // Geolocation requests are only supported on platforms that support the
+  // permission chip.
+  if (permissions::PermissionUtil::DoesPlatformSupportChip()) {
+    EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
+                  kServicePredictedVeryUnlikelyGrant,
+              geolocation_decision.quiet_ui_reason);
+  } else {
+    EXPECT_EQ(Decision::UseNormalUi(), geolocation_decision.quiet_ui_reason);
+  }
 }
 
 TEST_F(PredictionBasedPermissionUiSelectorTest,
@@ -240,10 +245,19 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
 
   geolocation_decision = SelectUiToUseAndGetDecision(
       &prediction_selector, permissions::RequestType::kGeolocation);
-  EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                kServicePredictedVeryUnlikelyGrant,
-            geolocation_decision.quiet_ui_reason);
+
+  // Geolocation requests are only supported on platforms that support the
+  // permission chip.
+  if (permissions::PermissionUtil::DoesPlatformSupportChip()) {
+    EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
+                  kServicePredictedVeryUnlikelyGrant,
+              geolocation_decision.quiet_ui_reason);
+  } else {
+    EXPECT_EQ(Decision::UseNormalUi(), geolocation_decision.quiet_ui_reason);
+  }
 }
+
+#if BUILDFLAG(IS_ANDROID)
 
 TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
   PredictionBasedPermissionUiSelector prediction_selector(profile());
@@ -259,7 +273,6 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
       },
       {
           features::kQuietNotificationPrompts,
-          permissions::features::kPermissionQuietChip,
       });
   EXPECT_EQ(PredictionSource::USE_NONE,
             prediction_selector.GetPredictionTypeToUse(
@@ -278,7 +291,6 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
           features::kQuietNotificationPrompts,
       },
       {
-          permissions::features::kPermissionQuietChip,
       });
   EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
             prediction_selector.GetPredictionTypeToUse(
@@ -286,6 +298,11 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
   EXPECT_EQ(PredictionSource::USE_NONE,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kGeolocation));
+}
+
+#else   // BUILDFLAG(IS_ANDROID)
+TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
+  PredictionBasedPermissionUiSelector prediction_selector(profile());
 
   // All CPSS related flags enabled.
   feature_list_->Reset();
@@ -295,7 +312,6 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
           permissions::features::kPermissionOnDeviceNotificationPredictions,
           permissions::features::kPermissionOnDeviceGeolocationPredictions,
           features::kQuietNotificationPrompts,
-          permissions::features::kPermissionQuietChip,
       },
       {});
   EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
@@ -312,7 +328,6 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
           permissions::features::kPermissionOnDeviceNotificationPredictions,
           permissions::features::kPermissionOnDeviceGeolocationPredictions,
           features::kQuietNotificationPrompts,
-          permissions::features::kPermissionQuietChip,
       },
       {
           permissions::features::kPermissionPredictionsV2,
@@ -330,7 +345,6 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
       {
           permissions::features::kPermissionPredictionsV2,
           features::kQuietNotificationPrompts,
-          permissions::features::kPermissionQuietChip,
           permissions::features::kPermissionOnDeviceNotificationPredictions,
           permissions::features::kPermissionOnDeviceGeolocationPredictions,
       },
@@ -348,7 +362,6 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
       {
           permissions::features::kPermissionPredictionsV2,
           features::kQuietNotificationPrompts,
-          permissions::features::kPermissionQuietChip,
       },
       {
           permissions::features::kPermissionOnDeviceNotificationPredictions,
@@ -364,6 +377,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kGeolocation));
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(PredictionBasedPermissionUiSelectorTest, HoldbackHistogramTest) {
   PredictionBasedPermissionUiSelector prediction_selector(profile());

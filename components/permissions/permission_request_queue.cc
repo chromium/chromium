@@ -27,12 +27,7 @@ size_t PermissionRequestQueue::Count(PermissionRequest* request) const {
 }
 
 void PermissionRequestQueue::PushInternal(PermissionRequest* request) {
-  if (base::FeatureList::IsEnabled(features::kPermissionQuietChip) &&
-      !base::FeatureList::IsEnabled(features::kPermissionChip)) {
-    queued_requests_.push_front(request);
-  } else {
-    queued_requests_.push_back(request);
-  }
+  queued_requests_.push_back(request);
 }
 
 void PermissionRequestQueue::Push(PermissionRequest* request,
@@ -42,14 +37,13 @@ void PermissionRequestQueue::Push(PermissionRequest* request,
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kPermissionQuietChip) ||
-      !base::FeatureList::IsEnabled(features::kPermissionChip)) {
+  if (!PermissionUtil::DoesPlatformSupportChip()) {
     PushInternal(request);
     return;
   }
 
   // There're situations we need to take the priority into consideration (eg:
-  // kPermissionChip and kPermissionQuietChip both are enabled). In such cases,
+  // when the permission chip is enabled). In such cases,
   // push the new request to front of queue if it has high priority. Otherwise,
   // insert the request after the first low priority request.
   // Note that, the queue processing order is FIFO, but we have to iterate the
@@ -72,17 +66,17 @@ void PermissionRequestQueue::Push(PermissionRequest* request,
 
 PermissionRequest* PermissionRequestQueue::Pop() {
   PermissionRequest* next = Peek();
-  if (base::FeatureList::IsEnabled(features::kPermissionChip))
+  if (PermissionUtil::DoesPlatformSupportChip()) {
     queued_requests_.pop_back();
-  else
+  } else {
     queued_requests_.pop_front();
+  }
   return next;
 }
 
 PermissionRequest* PermissionRequestQueue::Peek() const {
-  return base::FeatureList::IsEnabled(features::kPermissionChip)
-             ? queued_requests_.back()
-             : queued_requests_.front();
+  return PermissionUtil::DoesPlatformSupportChip() ? queued_requests_.back()
+                                                   : queued_requests_.front();
 }
 
 PermissionRequest* PermissionRequestQueue::FindDuplicate(

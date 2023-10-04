@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/render_frame_host.h"
@@ -26,11 +24,7 @@ constexpr char kRequestNotifications[] = R"(
 
 class PermissionPromptMetricsTest : public InProcessBrowserTest {
  public:
-  PermissionPromptMetricsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        permissions::features::kPermissionChip);
-  }
-
+  PermissionPromptMetricsTest() = default;
   PermissionPromptMetricsTest(const PermissionPromptMetricsTest&) = delete;
   PermissionPromptMetricsTest& operator=(const PermissionPromptMetricsTest&) =
       delete;
@@ -49,7 +43,6 @@ class PermissionPromptMetricsTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PermissionPromptMetricsTest,

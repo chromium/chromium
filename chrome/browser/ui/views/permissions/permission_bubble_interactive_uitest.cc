@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
@@ -37,8 +36,6 @@ enum ChipFeatureConfig {
 class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
  public:
   PermissionBubbleInteractiveUITest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        permissions::features::kPermissionChip);
   }
 
   PermissionBubbleInteractiveUITest(const PermissionBubbleInteractiveUITest&) =
@@ -151,9 +148,6 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -236,46 +230,4 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest, MAYBE_SwitchTabs) {
 #if BUILDFLAG(IS_MAC)
   TestSwitchingTabsWithCurlyBraces();
 #endif
-}
-
-class PermissionPromptBubbleViewConfirmationTest
-    : public PermissionBubbleInteractiveUITest {
- public:
-  PermissionPromptBubbleViewConfirmationTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kConfirmationChip},
-        {permissions::features::kPermissionChip});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleViewConfirmationTest,
-                       VerifyConfirmationChipShown) {
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  LocationBarView* location_bar_view =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
-  EXPECT_NE(location_bar_view->chip_controller(), nullptr);
-  EXPECT_TRUE(location_bar_view->chip_controller()->chip()->GetVisible());
-  EXPECT_EQ(location_bar_view->chip_controller()->chip()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
-}
-
-IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleViewConfirmationTest,
-                       VerifyFullScreenHandledCorrectly) {
-  FullscreenNotificationObserver fullscreen_observer(browser());
-  chrome::ToggleFullscreenMode(browser());
-  fullscreen_observer.Wait();
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  LocationBarView* location_bar_view =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
-  EXPECT_NE(location_bar_view->chip_controller(), nullptr);
-  EXPECT_FALSE(location_bar_view->chip_controller()->chip()->GetVisible());
 }

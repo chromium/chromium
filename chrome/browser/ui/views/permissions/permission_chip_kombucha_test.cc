@@ -13,7 +13,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
-#include "components/permissions/features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -52,8 +51,6 @@ class TestQuietNotificationPermissionUiSelector
 class PermissionChipKombuchaTest : public InteractiveBrowserTest {
  public:
   PermissionChipKombuchaTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kPermissionChip}, {});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
@@ -109,7 +106,6 @@ class PermissionChipKombuchaTest : public InteractiveBrowserTest {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };
 

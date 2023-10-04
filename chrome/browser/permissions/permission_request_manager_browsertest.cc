@@ -895,7 +895,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   GetPermissionRequestManager()->Dismiss();
   base::RunLoop().RunUntilIdle();
 
-  if (base::FeatureList::IsEnabled(permissions::features::kPermissionChip)) {
+  if (permissions::PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_FALSE(request1.finished());
     EXPECT_TRUE(request2.finished());
   } else {

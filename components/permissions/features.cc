@@ -60,30 +60,6 @@ BASE_FEATURE(kOneTimePermission,
              "OneTimePermission",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// Not supported on Android.
-BASE_FEATURE(kPermissionChip,
-             "PermissionChip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPermissionQuietChip,
-             "PermissionQuietChip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-
-// Enables an experimental permission prompt that uses a chip in the location
-// bar.
-BASE_FEATURE(kPermissionChip,
-             "PermissionChip",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables a less prominent permission prompt that uses a chip in the location
-// bar. Requires chrome://flags/#quiet-notification-prompts to be enabled.
-BASE_FEATURE(kPermissionQuietChip,
-             "PermissionQuietChip",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Enables a faster permission request finalization if it is displayed as a
 // quiet chip.
 BASE_FEATURE(kFailFastQuietChip,

@@ -55,14 +55,6 @@ LocationBarView* GetLocationBarView(Browser* browser) {
 
 class PermissionRequestChipGestureSensitiveBrowserTest
     : public InProcessBrowserTest {
- public:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(permissions::features::kPermissionChip);
-    InProcessBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
@@ -308,15 +300,6 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
 
 class PermissionRequestChipGestureInsensitiveBrowserTest
     : public InProcessBrowserTest {
- public:
-  void SetUp() override {
-    feature_list_.InitWithFeatures({permissions::features::kPermissionChip},
-                                   {});
-    InProcessBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureInsensitiveBrowserTest,
@@ -355,10 +338,6 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureInsensitiveBrowserTest,
 
 class PermissionRequestChipBrowserUiTest : public UiBrowserTest {
  public:
-  PermissionRequestChipBrowserUiTest() {
-    feature_list_.InitAndEnableFeature(permissions::features::kPermissionChip);
-  }
-
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {
     RequestPermission(browser());
@@ -383,8 +362,6 @@ class PermissionRequestChipBrowserUiTest : public UiBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-
   // Disable the permission chip animation. This happens automatically in pixel
   // test mode, but without doing this explicitly, the test will fail when run
   // interactively.

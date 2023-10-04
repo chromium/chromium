@@ -157,6 +157,9 @@ class PermissionUtil {
   static bool CanPermissionRequestIgnoreStatus(
       const PermissionRequestData& request,
       content::PermissionStatusSource source);
+
+  // Returns `true` if the current platform support permission chips.
+  static bool DoesPlatformSupportChip();
 };
 
 }  // namespace permissions

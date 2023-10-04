@@ -92,20 +92,11 @@ class TestQuietNotificationPermissionUiSelector
 };
 }  // namespace
 
-class PermissionPromptBubbleBaseViewBrowserTest
-    : public DialogBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
  public:
   PermissionPromptBubbleBaseViewBrowserTest() {
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          {permissions::features::kPermissionChip},
-          {permissions::features::kPermissionStorageAccessAPI});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {permissions::features::kPermissionChip,
-               permissions::features::kPermissionStorageAccessAPI});
-    }
+    feature_list_.InitWithFeatures(
+        {}, {permissions::features::kPermissionStorageAccessAPI});
   }
 
   // DialogBrowserTest:
@@ -120,6 +111,17 @@ class PermissionPromptBubbleBaseViewBrowserTest
   }
 
  protected:
+  using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
+  using WarningReason = permissions::PermissionUiSelector::WarningReason;
+
+  void SetCannedUiDecision(absl::optional<QuietUiReason> quiet_ui_reason,
+                           absl::optional<WarningReason> warning_reason) {
+    GetTestApi().manager()->set_permission_ui_selector_for_testing(
+        std::make_unique<TestQuietNotificationPermissionUiSelector>(
+            permissions::PermissionUiSelector::Decision(quiet_ui_reason,
+                                                        warning_reason)));
+  }
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     const std::string& actual_name = name.substr(0, name.find("/"));
@@ -253,7 +255,7 @@ class PermissionPromptBubbleBaseViewBrowserTest
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };
 
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
@@ -272,7 +274,7 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
 
 // Test switching between PermissionChip and PermissionPromptBubbleBaseView and
 // make sure no crashes.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        SwitchBetweenChipAndBubble) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   browser_view->GetLocationBarView()->SetVisible(false);
@@ -297,7 +299,7 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
   ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest
 #endif
 // Regression test for https://crbug.com/933321.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     PermissionPromptBubbleBaseViewBrowserTest,
     MAYBE_ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest) {
   ShowUi("geolocation");
@@ -334,55 +336,55 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Host wants to know your location.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        InvokeUi_geolocation) {
   ShowAndVerifyUi();
 }
 
 // Host wants to show notifications.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        InvokeUi_notifications) {
   ShowAndVerifyUi();
 }
 
 // Host wants to use your microphone.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        InvokeUi_mic) {
   ShowAndVerifyUi();
 }
 
 // Host wants to use your camera.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        InvokeUi_camera) {
   ShowAndVerifyUi();
 }
 
 // Host wants to open email links.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        InvokeUi_protocol_handlers) {
   ShowAndVerifyUi();
 }
 
 // Host wants to use your MIDI devices.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        InvokeUi_midi) {
   ShowAndVerifyUi();
 }
 
 // Host wants to access storage from the site in which it's embedded.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        InvokeUi_storage_access) {
   ShowAndVerifyUi();
 }
 
 // Host wants to trigger multiple downloads.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        InvokeUi_downloads) {
   ShowAndVerifyUi();
 }
 
 // Shows a permissions bubble with multiple requests.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        InvokeUi_multiple) {
   ShowAndVerifyUi();
 }
@@ -399,29 +401,21 @@ class StorageAccessEnabledPermissionPromptBubbleViewBrowserTest
     : public PermissionPromptBubbleBaseViewBrowserTest {
  public:
   StorageAccessEnabledPermissionPromptBubbleViewBrowserTest() {
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          {permissions::features::kPermissionStorageAccessAPI,
-           permissions::features::kPermissionChip},
-          {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {permissions::features::kPermissionStorageAccessAPI},
-          {permissions::features::kPermissionChip});
-    }
+    feature_list_.InitWithFeatures(
+        {permissions::features::kPermissionStorageAccessAPI}, {});
   }
   base::test::ScopedFeatureList feature_list_;
 };
 
 // Host wants to access storage from the site in which it's embedded. Prompt
 // with new Google UI.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     StorageAccessEnabledPermissionPromptBubbleViewBrowserTest,
     InvokeUi_storage_access) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     StorageAccessEnabledPermissionPromptBubbleViewBrowserTest,
     OpenHelpCenterLinkInNewTab) {
   ShowUi("storage_access");
@@ -442,121 +436,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(new_tab_observer.GetWebContents()->GetVisibleURL(), url);
 }
 
-class QuietUIPromoBrowserTest
-    : public PermissionPromptBubbleBaseViewBrowserTest {
- public:
-  QuietUIPromoBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kQuietNotificationPrompts,
-          {{QuietNotificationPermissionUiConfig::kEnableAdaptiveActivation,
-            "true"}}}},
-        {{permissions::features::kPermissionQuietChip}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(QuietUIPromoBrowserTest, InvokeUi_QuietUIPromo) {
-  auto* profile = browser()->profile();
-  // Promo is not enabled by default.
-  EXPECT_FALSE(QuietNotificationPermissionUiState::ShouldShowPromo(profile));
-
-  for (const char* origin_spec :
-       {"https://a.com", "https://b.com", "https://c.com"}) {
-    GURL requesting_origin(origin_spec);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), requesting_origin));
-    permissions::MockPermissionRequest notification_request(
-        requesting_origin, permissions::RequestType::kNotifications);
-    GetTestApi().manager()->AddRequest(GetActiveMainFrame(),
-                                       &notification_request);
-    base::RunLoop().RunUntilIdle();
-    EXPECT_FALSE(GetTestApi().manager()->ShouldCurrentRequestUseQuietUI());
-    EXPECT_FALSE(QuietNotificationPermissionUiState::ShouldShowPromo(profile));
-    GetTestApi().manager()->Deny();
-    base::RunLoop().RunUntilIdle();
-  }
-
-  ContentSettingImageView& quiet_ui_icon = GetContentSettingImageView(
-      ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
-
-  EXPECT_FALSE(quiet_ui_icon.GetVisible());
-  // `ContentSettingImageView::AnimationEnded()` was not triggered and IPH is
-  // not shown.
-  EXPECT_FALSE(quiet_ui_icon.critical_promo_bubble_for_testing());
-
-  GURL notification("http://www.notification1.com/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), notification));
-  permissions::MockPermissionRequest notification_request(
-      notification, permissions::RequestType::kNotifications);
-  GetTestApi().manager()->AddRequest(GetActiveMainFrame(),
-                                     &notification_request);
-  base::RunLoop().RunUntilIdle();
-
-  // After 3 denied Notifications requests, Adaptive activation enabled quiet
-  // permission prompt.
-  EXPECT_TRUE(GetTestApi().manager()->ShouldCurrentRequestUseQuietUI());
-  // At the first quiet permission prompt we show IPH.
-  ASSERT_TRUE(QuietNotificationPermissionUiState::ShouldShowPromo(profile));
-
-  EXPECT_TRUE(quiet_ui_icon.GetVisible());
-  EXPECT_TRUE(quiet_ui_icon.is_animating_label());
-  // Animation is reset to trigger `ContentSettingImageView::AnimationEnded()`.
-  // `AnimationEnded` contains logic for displaying IPH and marking it as shown.
-  quiet_ui_icon.reset_animation_for_testing();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(quiet_ui_icon.is_animating_label());
-
-  // The IPH is showing.
-  auto* help_bubble = quiet_ui_icon.critical_promo_bubble_for_testing();
-  ASSERT_TRUE(help_bubble && help_bubble->is_open());
-  auto* const iph_controller = BrowserView::GetBrowserViewForBrowser(browser())
-                                   ->GetFeaturePromoController();
-  // The critical promo that is currently showing is the one created by a quiet
-  // permission prompt.
-  EXPECT_EQ(help_bubble, iph_controller->critical_promo_bubble_for_testing());
-
-  help_bubble->Close();
-
-  GetTestApi().manager()->Deny();
-  base::RunLoop().RunUntilIdle();
-
-  // After quiet permission prompt was resolved, the critical promo is reset.
-  EXPECT_FALSE(quiet_ui_icon.critical_promo_bubble_for_testing());
-
-  EXPECT_FALSE(quiet_ui_icon.GetVisible());
-
-  // The second Notifications permission request to verify that the IPH is not
-  // shown.
-  GURL notification2("http://www.notification2.com/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), notification2));
-  permissions::MockPermissionRequest notification_request2(
-      notification2, permissions::RequestType::kNotifications);
-  GetTestApi().manager()->AddRequest(GetActiveMainFrame(),
-                                     &notification_request2);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(GetTestApi().manager()->ShouldCurrentRequestUseQuietUI());
-  // At the second quiet permission prompt the IPH should be disabled.
-  EXPECT_FALSE(QuietNotificationPermissionUiState::ShouldShowPromo(profile));
-
-  EXPECT_TRUE(quiet_ui_icon.GetVisible());
-  EXPECT_TRUE(quiet_ui_icon.is_animating_label());
-  quiet_ui_icon.reset_animation_for_testing();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(quiet_ui_icon.is_animating_label());
-
-  // The critical promo is not shown.
-  EXPECT_FALSE(quiet_ui_icon.critical_promo_bubble_for_testing());
-  EXPECT_FALSE(iph_controller->critical_promo_bubble_for_testing());
-
-  GetTestApi().manager()->Deny();
-  base::RunLoop().RunUntilIdle();
-}
-
 // ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER is ChromeOS only.
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        InvokeUi_protected_media) {
   ShowAndVerifyUi();
 }
@@ -565,7 +447,7 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
 // Test that the quiet prompt disposition returns the same value when permission
 // is not considered abusive (currently only applicable for Notifications) vs.
 // when permission is not considered abusive.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        DispositionNoAbusiveTest) {
   base::HistogramTester histograms;
 
@@ -573,9 +455,8 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
 
   EXPECT_EQ(
       GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      GetParam() ? permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-                 : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
   base::TimeDelta duration = base::Milliseconds(42);
   GetTestApi().manager()->set_time_to_decision_for_test(duration);
@@ -583,7 +464,6 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
   GetTestApi().manager()->Accept();
   base::RunLoop().RunUntilIdle();
 
-  if (GetParam()) {
     histograms.ExpectBucketCount(
         "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Action",
         static_cast<int>(permissions::PermissionAction::GRANTED), 1);
@@ -591,23 +471,13 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
         "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Accepted."
         "TimeToAction",
         duration, 1);
-  } else {
-    histograms.ExpectBucketCount(
-        "Permissions.Prompt.Geolocation.AnchoredBubble.Action",
-        static_cast<int>(permissions::PermissionAction::GRANTED), 1);
-    histograms.ExpectTimeBucketCount(
-        "Permissions.Prompt.Geolocation.AnchoredBubble.Accepted."
-        "TimeToAction",
-        duration, 1);
-  }
 
   ShowUi("notifications");
 
   EXPECT_EQ(
       GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      GetParam() ? permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-                 : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
   duration = base::Milliseconds(42);
   GetTestApi().manager()->set_time_to_decision_for_test(duration);
@@ -615,7 +485,6 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
   GetTestApi().manager()->Accept();
   base::RunLoop().RunUntilIdle();
 
-  if (GetParam()) {
     histograms.ExpectBucketCount(
         "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble.Action",
         static_cast<int>(permissions::PermissionAction::GRANTED), 1);
@@ -624,18 +493,9 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
         "Accepted."
         "TimeToAction",
         duration, 1);
-  } else {
-    histograms.ExpectBucketCount(
-        "Permissions.Prompt.Notifications.AnchoredBubble.Action",
-        static_cast<int>(permissions::PermissionAction::GRANTED), 1);
-    histograms.ExpectTimeBucketCount(
-        "Permissions.Prompt.Notifications.AnchoredBubble.Accepted."
-        "TimeToAction",
-        duration, 1);
-  }
 }
 
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        AcceptedOnceDispositionNoAbusiveTest) {
   base::HistogramTester histograms;
 
@@ -643,9 +503,8 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
 
   EXPECT_EQ(
       GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      GetParam() ? permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-                 : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
   base::TimeDelta duration = base::Milliseconds(42);
   GetTestApi().manager()->set_time_to_decision_for_test(duration);
@@ -653,7 +512,6 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
   GetTestApi().manager()->AcceptThisTime();
   base::RunLoop().RunUntilIdle();
 
-  if (GetParam()) {
     histograms.ExpectBucketCount(
         "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Action",
         static_cast<int>(permissions::PermissionAction::GRANTED_ONCE), 1);
@@ -662,23 +520,13 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
         "AcceptedOnce."
         "TimeToAction",
         duration, 1);
-  } else {
-    histograms.ExpectBucketCount(
-        "Permissions.Prompt.Geolocation.AnchoredBubble.Action",
-        static_cast<int>(permissions::PermissionAction::GRANTED_ONCE), 1);
-    histograms.ExpectTimeBucketCount(
-        "Permissions.Prompt.Geolocation.AnchoredBubble.AcceptedOnce."
-        "TimeToAction",
-        duration, 1);
-  }
 
   ShowUi("notifications");
 
   EXPECT_EQ(
       GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      GetParam() ? permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-                 : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
   duration = base::Milliseconds(42);
   GetTestApi().manager()->set_time_to_decision_for_test(duration);
@@ -686,7 +534,6 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
   GetTestApi().manager()->AcceptThisTime();
   base::RunLoop().RunUntilIdle();
 
-  if (GetParam()) {
     histograms.ExpectBucketCount(
         "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble.Action",
         static_cast<int>(permissions::PermissionAction::GRANTED_ONCE), 1);
@@ -695,18 +542,9 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
         "AcceptedOnce."
         "TimeToAction",
         duration, 1);
-  } else {
-    histograms.ExpectBucketCount(
-        "Permissions.Prompt.Notifications.AnchoredBubble.Action",
-        static_cast<int>(permissions::PermissionAction::GRANTED_ONCE), 1);
-    histograms.ExpectTimeBucketCount(
-        "Permissions.Prompt.Notifications.AnchoredBubble.AcceptedOnce."
-        "TimeToAction",
-        duration, 1);
-  }
 }
 
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        PermissionPromptBubbleDisallowsCustomCursors) {
   ui::Cursor custom_cursor(ui::mojom::CursorType::kCustom);
 
@@ -726,9 +564,8 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
   ShowUi("geolocation");
   EXPECT_EQ(
       GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      GetParam() ? permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-                 : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
   widget_host->SetCursor(custom_cursor);
   EXPECT_EQ(content::CursorUtils::GetLastCursorForWebContents(
@@ -745,199 +582,7 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
             ui::mojom::CursorType::kCustom);
 }
 
-class PermissionPromptBubbleBaseViewQuietUiBrowserTest
-    : public PermissionPromptBubbleBaseViewBrowserTest {
- public:
-  PermissionPromptBubbleBaseViewQuietUiBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kQuietNotificationPrompts},
-        {permissions::features::kPermissionQuietChip});
-  }
-
- protected:
-  using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
-  using WarningReason = permissions::PermissionUiSelector::WarningReason;
-
-  void SetCannedUiDecision(absl::optional<QuietUiReason> quiet_ui_reason,
-                           absl::optional<WarningReason> warning_reason) {
-    GetTestApi().manager()->set_permission_ui_selector_for_testing(
-        std::make_unique<TestQuietNotificationPermissionUiSelector>(
-            permissions::PermissionUiSelector::Decision(quiet_ui_reason,
-                                                        warning_reason)));
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Test that the quiet prompt disposition differs when permission is considered
-// abusive (currently only applicable for Notifications) vs. when permission is
-// not considered abusive. For `QuietUiReason::kTriggeredDueToAbusiveContent`
-// reputation we show a static UI icon.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewQuietUiBrowserTest,
-                       DispositionAbusiveContentTest) {
-  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
-                      WarningReason::kAbusiveContent);
-
-  base::HistogramTester histograms;
-
-  ShowUi("geolocation");
-
-  EXPECT_EQ(
-      GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      GetParam() ? permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-                 : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
-
-  GetTestApi().manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  histograms.ExpectBucketCount(
-      GetParam() ? "Permissions.Prompt.Geolocation."
-                   "LocationBarLeftChipAutoBubble.Action"
-                 : "Permissions.Prompt.Geolocation.AnchoredBubble.Action",
-      static_cast<int>(permissions::PermissionAction::GRANTED), 1);
-
-  ShowUi("notifications");
-
-  EXPECT_EQ(
-      GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON);
-
-  GetTestApi().manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  histograms.ExpectBucketCount(
-      "Permissions.Prompt.Notifications.LocationBarRightStaticIcon.Action",
-      static_cast<int>(permissions::PermissionAction::GRANTED), 1);
-}
-
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewQuietUiBrowserTest,
-                       DispositionCrowdDenyTest) {
-  SetCannedUiDecision(QuietUiReason::kTriggeredByCrowdDeny, absl::nullopt);
-
-  ShowUi("geolocation");
-
-  EXPECT_EQ(
-      GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      GetParam() ? permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-                 : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
-
-  GetTestApi().manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  ShowUi("notifications");
-
-  EXPECT_EQ(
-      GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON);
-}
-
-// For `QuietUiReason::kEnabledInPrefs` reputation we show an animated quiet UI
-// icon.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewQuietUiBrowserTest,
-                       DispositionEnabledInPrefsTest) {
-  SetCannedUiDecision(QuietUiReason::kEnabledInPrefs, absl::nullopt);
-
-  base::HistogramTester histograms;
-
-  ShowUi("geolocation");
-
-  EXPECT_EQ(
-      GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      GetParam() ? permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-                 : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
-
-  GetTestApi().manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  histograms.ExpectBucketCount(
-      GetParam() ? "Permissions.Prompt.Geolocation."
-                   "LocationBarLeftChipAutoBubble.Action"
-                 : "Permissions.Prompt.Geolocation.AnchoredBubble.Action",
-      static_cast<int>(permissions::PermissionAction::GRANTED), 1);
-
-  ShowUi("notifications");
-
-  EXPECT_EQ(
-      GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::
-          LOCATION_BAR_RIGHT_ANIMATED_ICON);
-
-  GetTestApi().manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  histograms.ExpectBucketCount(
-      "Permissions.Prompt.Notifications.LocationBarRightAnimatedIcon.Action",
-      static_cast<int>(permissions::PermissionAction::GRANTED), 1);
-}
-
-// For `QuietUiReason::kServicePredictedVeryUnlikelyGrant` reputation we show an
-// animated quiet UI icon.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewQuietUiBrowserTest,
-                       DispositionPredictedVeryUnlikelyGrantTest) {
-  SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
-                      absl::nullopt);
-
-  ShowUi("geolocation");
-
-  EXPECT_EQ(
-      GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      GetParam() ? permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-                 : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
-
-  GetTestApi().manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  ShowUi("notifications");
-
-  EXPECT_EQ(
-      GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::
-          LOCATION_BAR_RIGHT_ANIMATED_ICON);
-}
-
-// For `QuietUiReason::kTriggeredDueToAbusiveRequests` reputation we show a
-// static quiet UI icon.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewQuietUiBrowserTest,
-                       DispositionAbusiveRequestsTest) {
-  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveRequests,
-                      WarningReason::kAbusiveRequests);
-
-  ShowUi("geolocation");
-
-  EXPECT_EQ(
-      GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      GetParam() ? permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-                 : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
-
-  GetTestApi().manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  ShowUi("notifications");
-
-  EXPECT_EQ(
-      GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON);
-}
-
-class QuietChipPermissionPromptBubbleBaseViewBrowserTest
-    : public PermissionPromptBubbleBaseViewQuietUiBrowserTest {
- public:
-  QuietChipPermissionPromptBubbleBaseViewBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        permissions::features::kPermissionQuietChip);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(QuietChipPermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        LoudChipOrAnchoredBubbleIsShownForNonAbusiveRequests) {
   SetCannedUiDecision(absl::nullopt, absl::nullopt);
 
@@ -945,9 +590,8 @@ IN_PROC_BROWSER_TEST_P(QuietChipPermissionPromptBubbleBaseViewBrowserTest,
 
   EXPECT_EQ(
       GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      GetParam() ? permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-                 : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
   GetTestApi().manager()->Accept();
   base::RunLoop().RunUntilIdle();
@@ -956,12 +600,11 @@ IN_PROC_BROWSER_TEST_P(QuietChipPermissionPromptBubbleBaseViewBrowserTest,
 
   EXPECT_EQ(
       GetTestApi().manager()->current_request_prompt_disposition_for_testing(),
-      GetParam() ? permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-                 : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 }
 
-IN_PROC_BROWSER_TEST_P(QuietChipPermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        QuietChipIsShownForAbusiveRequests) {
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
@@ -973,10 +616,8 @@ IN_PROC_BROWSER_TEST_P(QuietChipPermissionPromptBubbleBaseViewBrowserTest,
     EXPECT_EQ(GetTestApi()
                   .manager()
                   ->current_request_prompt_disposition_for_testing(),
-              GetParam()
-                  ? permissions::PermissionPromptDisposition::
-                        LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-                  : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+              permissions::PermissionPromptDisposition::
+                  LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
     GetTestApi().manager()->Accept();
     base::RunLoop().RunUntilIdle();
@@ -999,34 +640,14 @@ class OneTimePermissionPromptBubbleBaseViewBrowserTest
   OneTimePermissionPromptBubbleBaseViewBrowserTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         permissions::features::kOneTimePermission,
-        {{"OkButtonBehavesAsAllowAlways", GetParam() ? "true" : "false"}});
+        {{"OkButtonBehavesAsAllowAlways", "true"}});
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(OneTimePermissionPromptBubbleBaseViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(OneTimePermissionPromptBubbleBaseViewBrowserTest,
                        InvokeUi_geolocation) {
   ShowAndVerifyUi();
 }
-
-// False / True values determine if the PermissionChip feature is
-// disabled/enabled.
-INSTANTIATE_TEST_SUITE_P(All,
-                         PermissionPromptBubbleBaseViewBrowserTest,
-                         ::testing::Values(false, true));
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    StorageAccessEnabledPermissionPromptBubbleViewBrowserTest,
-    ::testing::Values(false, true));
-INSTANTIATE_TEST_SUITE_P(All,
-                         PermissionPromptBubbleBaseViewQuietUiBrowserTest,
-                         ::testing::Values(false, true));
-INSTANTIATE_TEST_SUITE_P(All,
-                         QuietChipPermissionPromptBubbleBaseViewBrowserTest,
-                         ::testing::Values(false, true));
-INSTANTIATE_TEST_SUITE_P(All,
-                         OneTimePermissionPromptBubbleBaseViewBrowserTest,
-                         ::testing::Values(false, true));
-INSTANTIATE_TEST_SUITE_P(All, QuietUIPromoBrowserTest, ::testing::Values(true));

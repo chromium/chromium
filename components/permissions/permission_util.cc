@@ -449,4 +449,13 @@ bool PermissionUtil::CanPermissionRequestIgnoreStatus(
   NOTREACHED();
 }
 
+// static
+bool PermissionUtil::DoesPlatformSupportChip() {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return true;
+#endif
+}
+
 }  // namespace permissions

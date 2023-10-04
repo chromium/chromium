@@ -133,11 +133,7 @@ class ChipExpansionObserver : OmniboxChipButton::Observer {
 
 class PermissionChipInteractiveTest : public InProcessBrowserTest {
  public:
-  PermissionChipInteractiveTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kPermissionChip}, {});
-  }
-
+  PermissionChipInteractiveTest() = default;
   PermissionChipInteractiveTest(const PermissionChipInteractiveTest&) = delete;
   PermissionChipInteractiveTest& operator=(
       const PermissionChipInteractiveTest&) = delete;
@@ -299,25 +295,19 @@ class LocationBarIconOverrideTest
 
     switch (GetParam()) {
       case REQUEST_CHIP:
-        scoped_feature_list_.InitWithFeatures(
-            {permissions::features::kPermissionChip}, disabled_features);
         break;
       case REQUEST_CHIP_LOCATION_BAR_ICON_OVERRIDE:
         scoped_feature_list_.InitWithFeatures(
-            {permissions::features::kPermissionChip,
-             permissions::features::kChipLocationBarIconOverride},
+            {permissions::features::kChipLocationBarIconOverride},
             disabled_features);
         break;
       case REQUEST_AND_CONFIRMATION_CHIP:
         scoped_feature_list_.InitWithFeatures(
-            {permissions::features::kPermissionChip,
-             permissions::features::kConfirmationChip},
-            disabled_features);
+            {permissions::features::kConfirmationChip}, disabled_features);
         break;
       case REQUEST_AND_CONFIRMATION_CHIP_LOCATION_BAR_ICON_OVERRIDE:
         scoped_feature_list_.InitWithFeatures(
-            {permissions::features::kPermissionChip,
-             permissions::features::kConfirmationChip,
+            {permissions::features::kConfirmationChip,
              permissions::features::kChipLocationBarIconOverride},
             disabled_features);
         break;
@@ -426,14 +416,11 @@ class ConfirmationChipEnabledInteractiveTest
     switch (GetParam()) {
       case REQUEST_AND_CONFIRMATION_CHIP:
         scoped_feature_list_.InitWithFeatures(
-            {permissions::features::kPermissionChip,
-             permissions::features::kConfirmationChip},
-            disabled_features);
+            {permissions::features::kConfirmationChip}, disabled_features);
         break;
       case REQUEST_AND_CONFIRMATION_CHIP_LOCATION_BAR_ICON_OVERRIDE:
         scoped_feature_list_.InitWithFeatures(
-            {permissions::features::kPermissionChip,
-             permissions::features::kConfirmationChip,
+            {permissions::features::kConfirmationChip,
              permissions::features::kChipLocationBarIconOverride},
             disabled_features);
         break;
@@ -845,62 +832,12 @@ IN_PROC_BROWSER_TEST_F(ChipGestureSensitiveEnabledInteractiveTest,
           LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 }
 
-class ChipRequestTypeSensitiveEnabledInteractiveTest
-    : public PermissionChipInteractiveTest {
- public:
-  ChipRequestTypeSensitiveEnabledInteractiveTest() {}
-};
-
-class ChipDisabledInteractiveTest : public PermissionChipInteractiveTest {
- public:
-  ChipDisabledInteractiveTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {permissions::features::kPermissionChip});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ChipDisabledInteractiveTest,
-                       ChipAutoPopupBubbleEnabled) {
-  ASSERT_FALSE(
-      base::FeatureList::IsEnabled(permissions::features::kPermissionChip));
-
-  RequestPermission(permissions::RequestType::kGeolocation);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  RequestPermission(permissions::RequestType::kNotifications);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  RequestPermission(permissions::RequestType::kMidiSysex);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
-}
-
 class QuietChipAutoPopupBubbleInteractiveTest
     : public PermissionChipInteractiveTest {
  public:
   QuietChipAutoPopupBubbleInteractiveTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kPermissionChip,
-         features::kQuietNotificationPrompts,
-         permissions::features::kPermissionQuietChip},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kQuietNotificationPrompts},
+                                          {});
   }
 
  protected:
@@ -1275,11 +1212,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
 IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
                        QuietChipAutoPopupBubbleEnabled) {
   ASSERT_TRUE(
-      base::FeatureList::IsEnabled(permissions::features::kPermissionChip));
-  ASSERT_TRUE(
       base::FeatureList::IsEnabled(features::kQuietNotificationPrompts));
-  ASSERT_TRUE(base::FeatureList::IsEnabled(
-      permissions::features::kPermissionQuietChip));
 
   SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
                       absl::nullopt);
@@ -1312,402 +1245,11 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
           LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 }
 
-class QuietUIPromoInteractiveTest : public PermissionChipInteractiveTest {
- public:
-  QuietUIPromoInteractiveTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kQuietNotificationPrompts,
-          {{QuietNotificationPermissionUiConfig::kEnableAdaptiveActivation,
-            "true"}}}},
-        {{permissions::features::kPermissionQuietChip}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(QuietUIPromoInteractiveTest, QuietUIPromo) {
-  auto* profile = browser()->profile();
-  // Promo is not enabled by default.
-  EXPECT_FALSE(QuietNotificationPermissionUiState::ShouldShowPromo(profile));
-
-  for (const char* origin_spec :
-       {"https://a.com", "https://b.com", "https://c.com"}) {
-    GURL requesting_origin(origin_spec);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), requesting_origin));
-    permissions::MockPermissionRequest notification_request(
-        requesting_origin, permissions::RequestType::kNotifications);
-    test_api_->manager()->AddRequest(GetActiveMainFrame(),
-                                     &notification_request);
-    base::RunLoop().RunUntilIdle();
-    EXPECT_FALSE(test_api_->manager()->ShouldCurrentRequestUseQuietUI());
-    EXPECT_FALSE(QuietNotificationPermissionUiState::ShouldShowPromo(profile));
-    test_api_->manager()->Deny();
-    base::RunLoop().RunUntilIdle();
-  }
-
-  ContentSettingImageView& quiet_ui_icon = GetContentSettingImageView(
-      ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
-
-  EXPECT_FALSE(quiet_ui_icon.GetVisible());
-  // `ContentSettingImageView::AnimationEnded()` was not triggered and IPH is
-  // not shown.
-  EXPECT_FALSE(quiet_ui_icon.critical_promo_bubble_for_testing());
-
-  GURL notification("http://www.notification1.com/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), notification));
-  permissions::MockPermissionRequest notification_request(
-      notification, permissions::RequestType::kNotifications);
-  test_api_->manager()->AddRequest(GetActiveMainFrame(), &notification_request);
-  base::RunLoop().RunUntilIdle();
-
-  // After 3 denied Notifications requests, Adaptive activation enabled quiet
-  // permission prompt.
-  EXPECT_TRUE(test_api_->manager()->ShouldCurrentRequestUseQuietUI());
-  // At the first quiet permission prompt we show IPH.
-  ASSERT_TRUE(QuietNotificationPermissionUiState::ShouldShowPromo(profile));
-
-  EXPECT_TRUE(quiet_ui_icon.GetVisible());
-  EXPECT_TRUE(quiet_ui_icon.is_animating_label());
-  // Animation is reset to trigger `ContentSettingImageView::AnimationEnded()`.
-  // `AnimationEnded` contains logic for displaying IPH and marking it as shown.
-  quiet_ui_icon.reset_animation_for_testing();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(quiet_ui_icon.is_animating_label());
-
-  // The IPH is showing.
-  ASSERT_TRUE(quiet_ui_icon.critical_promo_bubble_for_testing());
-
-  // The critical promo that is currently showing is the one created by a quiet
-  // permission prompt.
-  EXPECT_TRUE(quiet_ui_icon.critical_promo_bubble_for_testing()->is_open());
-  quiet_ui_icon.critical_promo_bubble_for_testing()->Close();
-
-  test_api_->manager()->Deny();
-  base::RunLoop().RunUntilIdle();
-
-  // After quiet permission prompt was resolved, the critical promo is reset.
-  EXPECT_FALSE(quiet_ui_icon.critical_promo_bubble_for_testing());
-
-  EXPECT_FALSE(quiet_ui_icon.GetVisible());
-
-  // The second Notifications permission request to verify that the IPH is not
-  // shown.
-  GURL notification2("http://www.notification2.com/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), notification2));
-  permissions::MockPermissionRequest notification_request2(
-      notification2, permissions::RequestType::kNotifications);
-  test_api_->manager()->AddRequest(GetActiveMainFrame(),
-                                   &notification_request2);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(test_api_->manager()->ShouldCurrentRequestUseQuietUI());
-  // At the second quiet permission prompt the IPH should be disabled.
-  EXPECT_FALSE(QuietNotificationPermissionUiState::ShouldShowPromo(profile));
-
-  EXPECT_TRUE(quiet_ui_icon.GetVisible());
-  EXPECT_TRUE(quiet_ui_icon.is_animating_label());
-  quiet_ui_icon.reset_animation_for_testing();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(quiet_ui_icon.is_animating_label());
-
-  // The IPH did not show when `ContentSettingImageView::AnimationEnded()`
-  // was triggered.
-  EXPECT_FALSE(quiet_ui_icon.critical_promo_bubble_for_testing());
-
-  test_api_->manager()->Deny();
-  base::RunLoop().RunUntilIdle();
-}
-
-class QuietChipPermissionPromptBubbleViewInteractiveTest
-    : public PermissionChipInteractiveTest {
- public:
-  QuietChipPermissionPromptBubbleViewInteractiveTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kQuietNotificationPrompts,
-         permissions::features::kPermissionQuietChip},
-        {permissions::features::kConfirmationChip});
-  }
-
- protected:
-  using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
-  using WarningReason = permissions::PermissionUiSelector::WarningReason;
-
-  void SetCannedUiDecision(absl::optional<QuietUiReason> quiet_ui_reason,
-                           absl::optional<WarningReason> warning_reason) {
-    test_api_->manager()->set_permission_ui_selector_for_testing(
-        std::make_unique<TestQuietNotificationPermissionUiSelector>(
-            permissions::PermissionUiSelector::Decision(quiet_ui_reason,
-                                                        warning_reason)));
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
-                       LoudChipIsShownForNonAbusiveRequests) {
-  SetCannedUiDecision(absl::nullopt, absl::nullopt);
-
-  RequestPermission(permissions::RequestType::kGeolocation);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::
-          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  RequestPermission(permissions::RequestType::kNotifications);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::
-          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
-}
-
-IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
-                       QuietChipIsShownForAbusiveRequests) {
-  for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
-                               QuietUiReason::kTriggeredDueToAbusiveRequests,
-                               QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, absl::nullopt);
-
-    RequestPermission(permissions::RequestType::kGeolocation);
-
-    EXPECT_EQ(
-        test_api_->manager()->current_request_prompt_disposition_for_testing(),
-        permissions::PermissionPromptDisposition::
-            LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
-
-    test_api_->manager()->Accept();
-    base::RunLoop().RunUntilIdle();
-
-    RequestPermission(permissions::RequestType::kNotifications);
-
-    // Quiet Chip is enabled, that means a quiet chip will be shown even if the
-    // Chip experiment is disabled.
-    EXPECT_EQ(
-        test_api_->manager()->current_request_prompt_disposition_for_testing(),
-        permissions::PermissionPromptDisposition::
-            LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
-  }
-}
-
-// The quiet UI icon is verified to make sure that the quiet chip is not shown
-// when the quiet icon is shown.
-IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
-                       QuietChipIsNotShownForNonAbusiveRequests) {
-  SetCannedUiDecision(absl::nullopt, absl::nullopt);
-
-  ContentSettingImageView& quiet_ui_icon = GetContentSettingImageView(
-      ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
-  EXPECT_FALSE(quiet_ui_icon.GetVisible());
-  EXPECT_FALSE(GetChip()->GetVisible() &&
-               GetChipController()->IsPermissionPromptChipVisible());
-
-  RequestPermission(permissions::RequestType::kGeolocation);
-
-  EXPECT_FALSE(quiet_ui_icon.GetVisible());
-  ExpectNormalChip();
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  RequestPermission(permissions::RequestType::kNotifications);
-
-  EXPECT_FALSE(quiet_ui_icon.GetVisible());
-  ExpectNormalChip();
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-}
-
-IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
-                       NotAnimatedQuietChipIsShownForAbusiveRequests) {
-  for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
-                               QuietUiReason::kTriggeredDueToAbusiveRequests,
-                               QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, absl::nullopt);
-
-    ContentSettingImageView& quiet_ui_icon = GetContentSettingImageView(
-        ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
-
-    EXPECT_FALSE(quiet_ui_icon.GetVisible());
-    EXPECT_FALSE(GetChip()->GetVisible() &&
-                 GetChipController()->IsPermissionPromptChipVisible());
-
-    RequestPermission(permissions::RequestType::kGeolocation);
-
-    EXPECT_FALSE(quiet_ui_icon.GetVisible());
-    ExpectNormalChip();
-
-    test_api_->manager()->Accept();
-    base::RunLoop().RunUntilIdle();
-
-    RequestPermission(permissions::RequestType::kNotifications);
-
-    EXPECT_FALSE(quiet_ui_icon.GetVisible());
-    ExpectQuietAbusiveChip();
-
-    test_api_->manager()->Accept();
-    base::RunLoop().RunUntilIdle();
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
-                       AnimatedQuietChipIsShownForNonAbusiveRequests) {
-  for (QuietUiReason reason :
-       {QuietUiReason::kEnabledInPrefs,
-        QuietUiReason::kServicePredictedVeryUnlikelyGrant}) {
-    SetCannedUiDecision(reason, absl::nullopt);
-
-    ContentSettingImageView& quiet_ui_icon = GetContentSettingImageView(
-        ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
-    EXPECT_FALSE(quiet_ui_icon.GetVisible());
-    EXPECT_FALSE(GetChip()->GetVisible() &&
-                 GetChipController()->IsPermissionPromptChipVisible());
-
-    RequestPermission(permissions::RequestType::kGeolocation);
-
-    EXPECT_FALSE(quiet_ui_icon.GetVisible());
-    ExpectNormalChip();
-
-    test_api_->manager()->Accept();
-    base::RunLoop().RunUntilIdle();
-
-    RequestPermission(permissions::RequestType::kNotifications);
-
-    EXPECT_FALSE(quiet_ui_icon.GetVisible());
-    ExpectQuietChip();
-
-    test_api_->manager()->Accept();
-    base::RunLoop().RunUntilIdle();
-  }
-}
-
-// Test that the quiet prompt disposition differs when permission is considered
-// abusive (currently only applicable for Notifications) vs. when permission is
-// not considered abusive.
-IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
-                       DispositionAbusiveContentTest) {
-  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
-                      WarningReason::kAbusiveContent);
-
-  RequestPermission(permissions::RequestType::kGeolocation);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::
-          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  RequestPermission(permissions::RequestType::kNotifications);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::
-          LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
-}
-
-IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
-                       DispositionCrowdDenyTest) {
-  SetCannedUiDecision(QuietUiReason::kTriggeredByCrowdDeny, absl::nullopt);
-
-  RequestPermission(permissions::RequestType::kGeolocation);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::
-          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  RequestPermission(permissions::RequestType::kNotifications);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::
-          LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
-}
-
-IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
-                       DispositionEnabledInPrefsTest) {
-  SetCannedUiDecision(QuietUiReason::kEnabledInPrefs, absl::nullopt);
-
-  RequestPermission(permissions::RequestType::kGeolocation);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::
-          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  RequestPermission(permissions::RequestType::kNotifications);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP);
-}
-
-IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
-                       DispositionPredictedVeryUnlikelyGrantTest) {
-  SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
-                      absl::nullopt);
-
-  RequestPermission(permissions::RequestType::kGeolocation);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::
-          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  RequestPermission(permissions::RequestType::kNotifications);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP);
-}
-
-IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
-                       DispositionAbusiveRequestsTest) {
-  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveRequests,
-                      WarningReason::kAbusiveRequests);
-
-  RequestPermission(permissions::RequestType::kGeolocation);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::
-          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  RequestPermission(permissions::RequestType::kNotifications);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::
-          LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
-}
-
 class QuietChipFailFastInteractiveTest : public PermissionChipInteractiveTest {
  public:
   QuietChipFailFastInteractiveTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kQuietNotificationPrompts,
-         permissions::features::kPermissionQuietChip,
-         permissions::features::kPermissionChip,
          permissions::features::kFailFastQuietChip},
         {});
   }

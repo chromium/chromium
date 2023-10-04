@@ -13,6 +13,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_queue.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
@@ -20,40 +21,13 @@
 
 namespace permissions {
 
-enum UiFeatureConfig { NoChip, QuietChipOnly, ChipOnly, QuietChipAndChip };
-
-class PermissionRequestQueueTest
-    : public ::testing::Test,
-      public ::testing::WithParamInterface<UiFeatureConfig> {
+class PermissionRequestQueueTest : public ::testing::Test {
  public:
   PermissionRequestQueueTest()
       : request1_(RequestType::kGeolocation,
                   PermissionRequestGestureType::GESTURE),
         request2_(RequestType::kMultipleDownloads,
                   PermissionRequestGestureType::NO_GESTURE) {
-    switch (GetParam()) {
-      case NoChip:
-        feature_list_.InitWithFeatures(
-            {}, {permissions::features::kPermissionChip,
-                 permissions::features::kPermissionQuietChip});
-        break;
-      case QuietChipOnly:
-        feature_list_.InitWithFeatures(
-            {permissions::features::kPermissionQuietChip},
-            {permissions::features::kPermissionChip});
-        break;
-      case ChipOnly:
-        feature_list_.InitWithFeatures(
-            {permissions::features::kPermissionChip},
-            {permissions::features::kPermissionQuietChip});
-        break;
-      case QuietChipAndChip:
-        feature_list_.InitWithFeatures(
-            {permissions::features::kPermissionChip,
-             permissions::features::kPermissionQuietChip},
-            {});
-        break;
-    }
   }
 
  protected:
@@ -63,7 +37,7 @@ class PermissionRequestQueueTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(PermissionRequestQueueTest, CountNumberOfRequestsInQueue) {
+TEST_F(PermissionRequestQueueTest, CountNumberOfRequestsInQueue) {
   EXPECT_EQ(0ul, permission_request_queue_.Count());
 
   permission_request_queue_.Push(&request1_);
@@ -74,7 +48,7 @@ TEST_P(PermissionRequestQueueTest, CountNumberOfRequestsInQueue) {
   EXPECT_EQ(1ul, permission_request_queue_.Count());
 }
 
-TEST_P(PermissionRequestQueueTest, CountDuplicateRequests) {
+TEST_F(PermissionRequestQueueTest, CountDuplicateRequests) {
   EXPECT_EQ(0ul, permission_request_queue_.Count());
 
   permission_request_queue_.Push(&request1_);
@@ -82,7 +56,7 @@ TEST_P(PermissionRequestQueueTest, CountDuplicateRequests) {
   EXPECT_EQ(2ul, permission_request_queue_.Count());
 }
 
-TEST_P(PermissionRequestQueueTest, CountNumberOfRequestOccurencesInQueue) {
+TEST_F(PermissionRequestQueueTest, CountNumberOfRequestOccurencesInQueue) {
   EXPECT_EQ(0ul, permission_request_queue_.Count(&request1_));
 
   permission_request_queue_.Push(&request1_);
@@ -92,7 +66,7 @@ TEST_P(PermissionRequestQueueTest, CountNumberOfRequestOccurencesInQueue) {
   EXPECT_EQ(2ul, permission_request_queue_.Count(&request1_));
 }
 
-TEST_P(PermissionRequestQueueTest, OnlyEmptyWithoutRequests) {
+TEST_F(PermissionRequestQueueTest, OnlyEmptyWithoutRequests) {
   EXPECT_TRUE(permission_request_queue_.IsEmpty());
 
   permission_request_queue_.Push(&request1_);
@@ -102,20 +76,20 @@ TEST_P(PermissionRequestQueueTest, OnlyEmptyWithoutRequests) {
   EXPECT_TRUE(permission_request_queue_.IsEmpty());
 }
 
-TEST_P(PermissionRequestQueueTest, ShouldFindDuplicateRequest) {
+TEST_F(PermissionRequestQueueTest, ShouldFindDuplicateRequest) {
   permission_request_queue_.Push(&request1_);
   permission_request_queue_.Push(&request2_);
 
   EXPECT_EQ(&request2_, permission_request_queue_.FindDuplicate(&request2_));
 }
 
-TEST_P(PermissionRequestQueueTest, ShouldNotFindDuplicateIfNotPresent) {
+TEST_F(PermissionRequestQueueTest, ShouldNotFindDuplicateIfNotPresent) {
   permission_request_queue_.Push(&request1_);
 
   EXPECT_EQ(nullptr, permission_request_queue_.FindDuplicate(&request2_));
 }
 
-TEST_P(PermissionRequestQueueTest, PeekedElementIsNextPoppedElement) {
+TEST_F(PermissionRequestQueueTest, PeekedElementIsNextPoppedElement) {
   permission_request_queue_.Push(&request1_);
   permission_request_queue_.Push(&request2_);
   PermissionRequest* peekedElement = permission_request_queue_.Peek();
@@ -123,24 +97,20 @@ TEST_P(PermissionRequestQueueTest, PeekedElementIsNextPoppedElement) {
   EXPECT_EQ(peekedElement, permission_request_queue_.Pop());
 }
 
-TEST_P(PermissionRequestQueueTest, VerifyPushOrder) {
+TEST_F(PermissionRequestQueueTest, VerifyPushOrder) {
   permission_request_queue_.Push(&request1_);
   permission_request_queue_.Push(&request2_);
   permission_request_queue_.Push(&request2_);
 
-  if (GetParam() == NoChip) {
+  if (!PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_EQ(permission_request_queue_.Pop(), &request1_);
     EXPECT_EQ(permission_request_queue_.Pop(), &request2_);
     EXPECT_EQ(permission_request_queue_.Pop(), &request2_);
-  } else {  // QuietChipOnly, ChipOnly, QuietChipAndChip
+  } else {
     EXPECT_EQ(permission_request_queue_.Pop(), &request2_);
     EXPECT_EQ(permission_request_queue_.Pop(), &request2_);
     EXPECT_EQ(permission_request_queue_.Pop(), &request1_);
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PermissionRequestQueueTest,
-    ::testing::Values(NoChip, QuietChipOnly, ChipOnly, QuietChipAndChip));
 }  // namespace permissions

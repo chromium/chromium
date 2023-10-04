@@ -115,7 +115,7 @@ class ContentSettingBubbleDialogTest
     scoped_feature_list_.InitWithFeatures(
         {features::kQuietNotificationPrompts,
          permissions::features::kPermissionStorageAccessAPI},
-        {permissions::features::kPermissionQuietChip});
+        {});
   }
 
   ContentSettingBubbleDialogTest(const ContentSettingBubbleDialogTest&) =
@@ -409,31 +409,6 @@ IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest, InvokeUi_midi_sysex) {
 }
 
 IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest, InvokeUi_ads) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
-                       InvokeUi_notifications_quiet) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
-                       InvokeUi_notifications_quiet_crowd_deny) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
-                       InvokeUi_notifications_quiet_abusive) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
-                       InvokeUi_notifications_quiet_abusive_content) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
-                       InvokeUi_notifications_quiet_predicted_very_unlikely) {
   ShowAndVerifyUi();
 }
 
