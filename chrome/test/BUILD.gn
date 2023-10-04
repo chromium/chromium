@@ -1126,6 +1126,7 @@ if (is_android) {
       "//components/ukm/content",
       "//components/unified_consent",
       "//components/variations/service",
+      "//components/webapk:proto",
       "//components/webapps/browser",
 
       # TODO(crbug.com/961849): This is needed for ShellManager which is what
@@ -1151,6 +1152,7 @@ if (is_android) {
       "../browser/android/persisted_tab_data/test/foo_persisted_tab_data.cc",
       "../browser/android/persisted_tab_data/test/foo_persisted_tab_data.h",
       "../browser/android/webapk/webapk_icon_hasher_browsertest.cc",
+      "../browser/android/webapk/webapk_installer_browsertest.cc",
       "../browser/banners/android/ambient_badge_manager_browsertest.cc",
       "../browser/browsing_data/access_context_audit_browsertest.cc",
       "../browser/browsing_data/browsing_data_remover_browsertest_base.cc",
@@ -7168,7 +7170,6 @@ test("unit_tests") {
       "../browser/android/usage_stats/usage_stats_database_unittest.cc",
       "../browser/android/webapk/webapk_database_unittest.cc",
       "../browser/android/webapk/webapk_helpers_unittest.cc",
-      "../browser/android/webapk/webapk_installer_unittest.cc",
       "../browser/android/webapk/webapk_sync_bridge_unittest.cc",
       "../browser/autofill/address_accessory_controller_impl_unittest.cc",
       "../browser/autofill/android/save_update_address_profile_message_controller_unittest.cc",

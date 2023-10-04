@@ -7,37 +7,30 @@
 #include <memory>
 #include <utility>
 
-#include "base/android/scoped_java_ref.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/android/android_browser_test.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/webapk/webapk.pb.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapk/webapk_proto_builder.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_web_contents_factory.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
-
-// Keep tests that verify the result of building the WebAPK-proto in sync with
-// weblayer/browser/webapps/webapk_install_scheduler_browsertest.cc.
 
 namespace {
 
@@ -50,12 +43,9 @@ const char* kServerUrl = "/webapkserver/";
 // Start URL for the WebAPK
 const char* kStartUrl = "/index.html";
 
-// The URLs of best icons from Web Manifest. We use a random file in the test
-// data directory. Since WebApkInstaller does not try to decode the file as an
-// image it is OK that the file is not an image.
-const char* kBestPrimaryIconUrl = "/simple.html";
-const char* kBestSplashIconUrl = "/nostore.html";
-const char* kBestShortcutIconUrl = "/title1.html";
+const char* kBestPrimaryIconUrl = "/banners/128x128-green.png";
+const char* kBestSplashIconUrl = "/banners/128x128-red.png";
+const char* kBestShortcutIconUrl = "/banners/96x96-red.png";
 
 // Icon which has Cross-Origin-Resource-Policy: same-origin set.
 const char* kBestPrimaryIconCorpUrl = "/banners/image-512px-corp.png";
@@ -242,52 +232,53 @@ class ScopedTempFile {
 
 }  // anonymous namespace
 
-class WebApkInstallerTest : public ::testing::Test {
+class WebApkInstallerBrowserTest : public AndroidBrowserTest {
  public:
   typedef base::RepeatingCallback<
       std::unique_ptr<net::test_server::HttpResponse>(void)>
       WebApkResponseBuilder;
 
-  WebApkInstallerTest()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+  WebApkInstallerBrowserTest() {}
 
-  WebApkInstallerTest(const WebApkInstallerTest&) = delete;
-  WebApkInstallerTest& operator=(const WebApkInstallerTest&) = delete;
+  WebApkInstallerBrowserTest(const WebApkInstallerBrowserTest&) = delete;
+  WebApkInstallerBrowserTest& operator=(const WebApkInstallerBrowserTest&) =
+      delete;
 
-  ~WebApkInstallerTest() override {}
+  ~WebApkInstallerBrowserTest() override = default;
 
-  void SetUp() override {
-    test_server_.AddDefaultHandlers(base::FilePath(kTestDataDir));
-    test_server_.RegisterRequestHandler(base::BindRepeating(
-        &WebApkInstallerTest::HandleWebApkRequest, base::Unretained(this)));
-    ASSERT_TRUE(test_server_.Start());
-
-    web_contents_ = web_contents_factory_.CreateWebContents(&profile_);
+  void SetUpOnMainThread() override {
+    embedded_test_server()->AddDefaultHandlers(base::FilePath(kTestDataDir));
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&WebApkInstallerBrowserTest::HandleWebApkRequest,
+                            base::Unretained(this)));
+    ASSERT_TRUE(embedded_test_server()->Start());
 
     SetDefaults();
+    AndroidBrowserTest::SetUpOnMainThread();
   }
-
-  void TearDown() override { base::RunLoop().RunUntilIdle(); }
 
   std::unique_ptr<WebApkInstaller> CreateDefaultWebApkInstaller() {
     auto installer = std::unique_ptr<WebApkInstaller>(
-        new TestWebApkInstaller(&profile_, SpaceStatus::ENOUGH_SPACE));
+        new TestWebApkInstaller(profile(), SpaceStatus::ENOUGH_SPACE));
     installer->SetTimeoutMs(kWebApkServerRequestTimeoutMs);
     return installer;
   }
 
   webapps::ShortcutInfo DefaultShortcutInfo() {
-    webapps::ShortcutInfo info(test_server_.GetURL(kStartUrl));
-    info.best_primary_icon_url = test_server_.GetURL(kBestPrimaryIconUrl);
-    info.splash_image_url = test_server_.GetURL(kBestSplashIconUrl);
+    webapps::ShortcutInfo info(embedded_test_server()->GetURL(kStartUrl));
+    info.best_primary_icon_url =
+        embedded_test_server()->GetURL(kBestPrimaryIconUrl);
+    info.splash_image_url = embedded_test_server()->GetURL(kBestSplashIconUrl);
     info.best_shortcut_icon_urls.push_back(
-        test_server_.GetURL(kBestShortcutIconUrl));
+        embedded_test_server()->GetURL(kBestShortcutIconUrl));
     return info;
   }
 
   std::unique_ptr<std::string> DefaultSerializedWebApk() {
-    std::string icon_url_1 = test_server()->GetURL("/icon1.png").spec();
-    std::string icon_url_2 = test_server()->GetURL("/icon2.png").spec();
+    std::string icon_url_1 =
+        embedded_test_server()->GetURL("/icon1.png").spec();
+    std::string icon_url_2 =
+        embedded_test_server()->GetURL("/icon2.png").spec();
     std::map<std::string, webapps::WebApkIconHasher::Icon>
         icon_url_to_murmur2_hash;
     icon_url_to_murmur2_hash[icon_url_1] = {"data1", "1"};
@@ -319,14 +310,19 @@ class WebApkInstallerTest : public ::testing::Test {
     webapk_response_builder_ = builder;
   }
 
-  Profile* profile() { return &profile_; }
-  content::WebContents* web_contents() { return web_contents_; }
-  net::test_server::EmbeddedTestServer* test_server() { return &test_server_; }
+ protected:
+  content::WebContents* web_contents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  Profile* profile() {
+    return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  }
 
  private:
   // Sets default configuration for running WebApkInstaller.
   void SetDefaults() {
-    SetWebApkServerUrl(test_server_.GetURL(kServerUrl));
+    SetWebApkServerUrl(embedded_test_server()->GetURL(kServerUrl));
     SetWebApkResponseBuilder(
         base::BindRepeating(&BuildValidWebApkResponse, kToken));
   }
@@ -338,19 +334,12 @@ class WebApkInstallerTest : public ::testing::Test {
                : std::unique_ptr<net::test_server::HttpResponse>();
   }
 
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
-  net::EmbeddedTestServer test_server_;
-  content::TestWebContentsFactory web_contents_factory_;
-  raw_ptr<content::WebContents>
-      web_contents_;  // Owned by `web_contents_factory_`.
-
   // Builds response to the WebAPK creation request.
   WebApkResponseBuilder webapk_response_builder_;
 };
 
 // Test installation succeeding.
-TEST_F(WebApkInstallerTest, Success) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest, Success) {
   WebApkInstallerRunner runner;
   runner.RunInstallWebApk(CreateDefaultWebApkInstaller(), web_contents(),
                           DefaultShortcutInfo());
@@ -358,7 +347,7 @@ TEST_F(WebApkInstallerTest, Success) {
 }
 
 // Test that installation fails if there is not enough space on device.
-TEST_F(WebApkInstallerTest, FailOnLowSpace) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest, FailOnLowSpace) {
   std::unique_ptr<WebApkInstaller> installer(
       new TestWebApkInstaller(profile(), SpaceStatus::NOT_ENOUGH_SPACE));
   installer->SetTimeoutMs(kWebApkServerRequestTimeoutMs);
@@ -371,10 +360,11 @@ TEST_F(WebApkInstallerTest, FailOnLowSpace) {
 // Test that installation succeeds when the primary icon is guarded by
 // a Cross-Origin-Resource-Policy: same-origin header and the icon is
 // same-origin with the start URL.
-TEST_F(WebApkInstallerTest, CrossOriginResourcePolicySameOriginIconSuccess) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       CrossOriginResourcePolicySameOriginIconSuccess) {
   webapps::ShortcutInfo shortcut_info = DefaultShortcutInfo();
   shortcut_info.best_primary_icon_url =
-      test_server()->GetURL(kBestPrimaryIconCorpUrl);
+      embedded_test_server()->GetURL(kBestPrimaryIconCorpUrl);
 
   WebApkInstallerRunner runner;
   runner.RunInstallWebApk(CreateDefaultWebApkInstaller(), web_contents(),
@@ -385,9 +375,11 @@ TEST_F(WebApkInstallerTest, CrossOriginResourcePolicySameOriginIconSuccess) {
 // Test that installation fails if fetching the bitmap at the best primary icon
 // URL returns no content. In a perfect world the fetch would always succeed
 // because the fetch for the same icon succeeded recently.
-TEST_F(WebApkInstallerTest, BestPrimaryIconUrlDownloadTimesOut) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       BestPrimaryIconUrlDownloadTimesOut) {
   webapps::ShortcutInfo shortcut_info = DefaultShortcutInfo();
-  shortcut_info.best_primary_icon_url = test_server()->GetURL("/nocontent");
+  shortcut_info.best_primary_icon_url =
+      embedded_test_server()->GetURL("/nocontent");
 
   WebApkInstallerRunner runner;
   runner.RunInstallWebApk(CreateDefaultWebApkInstaller(), web_contents(),
@@ -398,9 +390,10 @@ TEST_F(WebApkInstallerTest, BestPrimaryIconUrlDownloadTimesOut) {
 // Test that installation fails if fetching the bitmap at the best splash icon
 // URL returns no content. In a perfect world the fetch would always succeed
 // because the fetch for the same icon succeeded recently.
-TEST_F(WebApkInstallerTest, BestSplashIconUrlDownloadTimesOut) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       BestSplashIconUrlDownloadTimesOut) {
   webapps::ShortcutInfo shortcut_info = DefaultShortcutInfo();
-  shortcut_info.splash_image_url = test_server()->GetURL("/nocontent");
+  shortcut_info.splash_image_url = embedded_test_server()->GetURL("/nocontent");
 
   WebApkInstallerRunner runner;
   runner.RunInstallWebApk(CreateDefaultWebApkInstaller(), web_contents(),
@@ -409,7 +402,8 @@ TEST_F(WebApkInstallerTest, BestSplashIconUrlDownloadTimesOut) {
 }
 
 // Test that installation fails if the WebAPK server url is invalid.
-TEST_F(WebApkInstallerTest, CreateWebApkInvalidServerUrl) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       CreateWebApkInvalidServerUrl) {
   SetWebApkServerUrl(GURL());
   std::unique_ptr<WebApkInstaller> installer(
       new TestWebApkInstaller(profile(), SpaceStatus::ENOUGH_SPACE));
@@ -421,8 +415,9 @@ TEST_F(WebApkInstallerTest, CreateWebApkInvalidServerUrl) {
 }
 
 // Test that installation fails if the WebAPK creation request times out.
-TEST_F(WebApkInstallerTest, CreateWebApkRequestTimesOut) {
-  SetWebApkServerUrl(test_server()->GetURL("/slow?1000"));
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       CreateWebApkRequestTimesOut) {
+  SetWebApkServerUrl(embedded_test_server()->GetURL("/slow?1000"));
   std::unique_ptr<WebApkInstaller> installer(
       new TestWebApkInstaller(profile(), SpaceStatus::ENOUGH_SPACE));
   installer->SetTimeoutMs(100);
@@ -436,7 +431,7 @@ TEST_F(WebApkInstallerTest, CreateWebApkRequestTimesOut) {
 // InstallForService tests
 
 // Test installation for service succeeding
-TEST_F(WebApkInstallerTest, ServiceSuccess) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest, ServiceSuccess) {
   std::unique_ptr<WebApkInstaller> installer(
       new TestWebApkInstaller(profile(), SpaceStatus::ENOUGH_SPACE));
 
@@ -451,7 +446,7 @@ TEST_F(WebApkInstallerTest, ServiceSuccess) {
 }
 
 // Test installation for service failing if not enough space
-TEST_F(WebApkInstallerTest, ServiceFailOnLowSpace) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest, ServiceFailOnLowSpace) {
   std::unique_ptr<WebApkInstaller> installer(
       new TestWebApkInstaller(profile(), SpaceStatus::NOT_ENOUGH_SPACE));
 
@@ -466,7 +461,8 @@ TEST_F(WebApkInstallerTest, ServiceFailOnLowSpace) {
 }
 
 // Test installation for service failing if serialized apk invalid.
-TEST_F(WebApkInstallerTest, ServiceFailOnInvalidSerializedWebApk) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       ServiceFailOnInvalidSerializedWebApk) {
   std::unique_ptr<WebApkInstaller> installer(
       new TestWebApkInstaller(profile(), SpaceStatus::ENOUGH_SPACE));
 
@@ -498,7 +494,8 @@ BuildUnparsableWebApkResponse() {
 
 // Test that an HTTP response which cannot be parsed as a webapk::WebApkResponse
 // is handled properly.
-TEST_F(WebApkInstallerTest, UnparsableCreateWebApkResponse) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       UnparsableCreateWebApkResponse) {
   SetWebApkResponseBuilder(base::BindRepeating(&BuildUnparsableWebApkResponse));
 
   WebApkInstallerRunner runner;
@@ -508,7 +505,8 @@ TEST_F(WebApkInstallerTest, UnparsableCreateWebApkResponse) {
 }
 
 // Test update succeeding.
-TEST_F(WebApkInstallerTest, UpdateSuccess) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest, UpdateSuccess) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   ScopedTempFile scoped_file;
   base::FilePath update_request_path = scoped_file.GetFilePath();
   UpdateRequestStorer().StoreSync(update_request_path);
@@ -526,9 +524,11 @@ TEST_F(WebApkInstallerTest, UpdateSuccess) {
 // AND
 // - The most up to date version of the WebAPK on the server is identical to the
 //   one installed on the client.
-TEST_F(WebApkInstallerTest, UpdateSuccessWithEmptyTokenInResponse) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       UpdateSuccessWithEmptyTokenInResponse) {
   SetWebApkResponseBuilder(base::BindRepeating(&BuildValidWebApkResponse, ""));
 
+  base::ScopedAllowBlockingForTesting allow_blocking;
   ScopedTempFile scoped_file;
   base::FilePath update_request_path = scoped_file.GetFilePath();
   UpdateRequestStorer().StoreSync(update_request_path);
@@ -540,7 +540,9 @@ TEST_F(WebApkInstallerTest, UpdateSuccessWithEmptyTokenInResponse) {
 
 // Test that an update fails if the "update request path" points to an update
 // file with the incorrect format.
-TEST_F(WebApkInstallerTest, UpdateFailsUpdateRequestWrongFormat) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       UpdateFailsUpdateRequestWrongFormat) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   ScopedTempFile scoped_file;
   base::FilePath update_request_path = scoped_file.GetFilePath();
   base::WriteFile(update_request_path, "😀");
@@ -552,7 +554,9 @@ TEST_F(WebApkInstallerTest, UpdateFailsUpdateRequestWrongFormat) {
 
 // Test that an update fails if the "update request path" points to a
 // non-existing file.
-TEST_F(WebApkInstallerTest, UpdateFailsUpdateRequestFileDoesNotExist) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       UpdateFailsUpdateRequestFileDoesNotExist) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath update_request_path;
   {
     ScopedTempFile scoped_file;
@@ -567,7 +571,9 @@ TEST_F(WebApkInstallerTest, UpdateFailsUpdateRequestFileDoesNotExist) {
 
 // Test that StoreUpdateRequestToFile() creates directories if needed when
 // writing to the passed in |update_file_path|.
-TEST_F(WebApkInstallerTest, StoreUpdateRequestToFileCreatesDirectories) {
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       StoreUpdateRequestToFileCreatesDirectories) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath outer_file_path;
   ASSERT_TRUE(CreateNewTempDirectory("", &outer_file_path));
   base::FilePath update_request_path =

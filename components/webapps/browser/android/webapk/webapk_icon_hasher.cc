@@ -168,42 +168,43 @@ void WebApkIconHasher::OnSimpleLoaderComplete(
     return;
   }
 
-  // If it's an SVG or WEBP file, decode the image using Blink's image decoder.
+  // If the image is png/jpg/jpeg, send the raw data to server to decode,
+  // otherwise decode the image using Blink's image decoder.
   auto simple_url_loader = std::move(simple_url_loader_);
   if (simple_url_loader->ResponseInfo() &&
-      (simple_url_loader->ResponseInfo()->mime_type == "image/svg+xml" ||
-       simple_url_loader->ResponseInfo()->mime_type == "image/webp")) {
-    if (!web_contents) {
-      RunCallback({});
-      return;
-    }
-
-    download_timeout_timer_.Start(
-        FROM_HERE, base::Milliseconds(timeout_ms),
-        base::BindOnce(&WebApkIconHasher::OnDownloadTimedOut,
-                       base::Unretained(this)));
-
-    const gfx::Size preferred_size(ideal_icon_size, ideal_icon_size);
-    web_contents->DownloadImage(
-        simple_url_loader->GetFinalURL(),
-        false,  // is_favicon
-        preferred_size,
-        std::numeric_limits<int>::max(),  // max size
-        false,                            // normal cache policy
-        base::BindOnce(&WebApkIconHasher::OnImageDownloaded,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(response_body)));
+      (simple_url_loader->ResponseInfo()->mime_type == "image/png" ||
+       simple_url_loader->ResponseInfo()->mime_type == "image/jpg" ||
+       simple_url_loader->ResponseInfo()->mime_type == "image/jpeg")) {
+    // WARNING: We are running in the browser process. |*response_body| is the
+    // image's raw, unsanitized bytes from the web. |*response_body| may contain
+    // malicious data. Decoding unsanitized bitmap data to an SkBitmap in the
+    // browser process is a security bug.
+    Icon icon;
+    icon.unsafe_data = std::move(*response_body);
+    icon.hash = ComputeMurmur2Hash(icon.unsafe_data);
+    RunCallback(std::move(icon));
     return;
   }
 
-  // WARNING: We are running in the browser process. |*response_body| is the
-  // image's raw, unsanitized bytes from the web. |*response_body| may contain
-  // malicious data. Decoding unsanitized bitmap data to an SkBitmap in the
-  // browser process is a security bug.
-  Icon icon;
-  icon.unsafe_data = std::move(*response_body);
-  icon.hash = ComputeMurmur2Hash(icon.unsafe_data);
-  RunCallback(std::move(icon));
+  if (!web_contents) {
+    RunCallback({});
+    return;
+  }
+
+  download_timeout_timer_.Start(
+      FROM_HERE, base::Milliseconds(timeout_ms),
+      base::BindOnce(&WebApkIconHasher::OnDownloadTimedOut,
+                     base::Unretained(this)));
+
+  const gfx::Size preferred_size(ideal_icon_size, ideal_icon_size);
+  web_contents->DownloadImage(
+      simple_url_loader->GetFinalURL(),
+      false,  // is_favicon
+      preferred_size,
+      std::numeric_limits<int>::max(),  // max size
+      false,                            // normal cache policy
+      base::BindOnce(&WebApkIconHasher::OnImageDownloaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(response_body)));
 }
 
 void WebApkIconHasher::OnImageDownloaded(
