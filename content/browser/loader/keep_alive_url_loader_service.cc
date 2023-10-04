@@ -4,6 +4,8 @@
 
 #include "content/browser/loader/keep_alive_url_loader_service.h"
 
+#include <map>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -16,6 +18,7 @@
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -61,116 +64,82 @@ struct FactoryContext {
 
 }  // namespace
 
-// A mojom::URLLoaderFactory to handle fetch keepalive requests.
+// KeepAliveURLLoaderFactoriesBase is an abstract base class for creating and
+// managing all the KeepAliveURLLoader instances created by multiple factories
+// of the same `Interface`.
 //
-// This factory can handle requests from multiple remotes of URLLoaderFactory
-// from different renderers.
-// Users should call `BindFactory()` first to register a pending receiver with
-// this factory.
+// The receivers of those factories should be managed in subclass, which
+// implements `Interface` to bind factories from different RFHs.
 //
-// On requested by a remote, i.e. calling
-// `network::mojom::URLLoaderFactory::CreateLoaderAndStart()`, this factory will
-// create a `KeepAliveURLLoader` to load a keepalive request. The loader will be
-// held by the `KeepAliveURLLoaderService` owning this factory until it either
-// completes or fails to load the request. Note that a loader may outlive
-// the FactoryContext that has created itself.
+// `Interface` supports mojo interfaces other than URLLoaderFactory as long as
+// the provided arguments to a call to Interface::CreateLoader() able to satisfy
+// KeepAliveURLLoader ctor's requirement.
 //
-// This factory must be run in the browser process.
-//
-// See the "Implementation Details" section of the design doc
-// https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
-class KeepAliveURLLoaderService::KeepAliveURLLoaderFactory final
-    : public network::mojom::URLLoaderFactory {
+// The lifetime of an instance of a subclass must be the same as the owning
+// KeepAliveURLLoaderService.
+template <typename Interface,
+          template <typename>
+          class PendingReceiverType,
+          template <typename, typename>
+          class ReceiverSetType>
+class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
  public:
-  explicit KeepAliveURLLoaderFactory(KeepAliveURLLoaderService* service)
+  explicit KeepAliveURLLoaderFactoriesBase(KeepAliveURLLoaderService* service)
       : service_(service) {
-    CHECK(service_);
+    // `Unretained(this)` is safe because `this` owns `loader_receivers_`.
+    loader_receivers_.set_disconnect_handler(base::BindRepeating(
+        &KeepAliveURLLoaderFactoriesBase::OnLoaderDisconnected,
+        base::Unretained(this)));
   }
-  ~KeepAliveURLLoaderFactory() override = default;
-
   // Not copyable.
-  KeepAliveURLLoaderFactory(const KeepAliveURLLoaderFactory&) = delete;
-  KeepAliveURLLoaderFactory& operator=(const KeepAliveURLLoaderFactory&) =
+  KeepAliveURLLoaderFactoriesBase(const KeepAliveURLLoaderFactoriesBase&) =
       delete;
+  KeepAliveURLLoaderFactoriesBase& operator=(
+      const KeepAliveURLLoaderFactoriesBase&) = delete;
 
-  // Returns the pointer to the context for this factory.
-  const std::unique_ptr<FactoryContext>& current_context() const {
-    return loader_factory_receivers_.current_context();
+  // For testing only:
+  size_t NumLoadersForTesting() const {
+    return loader_receivers_.size() + disconnected_loaders_.size();
+  }
+  size_t NumDisconnectedLoadersForTesting() const {
+    return disconnected_loaders_.size();
   }
 
-  // Creates a `FactoryContext` to hold a refptr to
-  // `network::SharedURLLoaderFactory`, which is constructed with
-  // `subresource_proxying_factory_bundle`, and then bound with `receiver`.
-  // `policy_container_host` must not be null.
-  void BindFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      scoped_refptr<network::SharedURLLoaderFactory>
-          subresource_proxying_factory_bundle,
-      scoped_refptr<PolicyContainerHost> policy_container_host) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    CHECK(policy_container_host);
-    TRACE_EVENT("loading", "KeepAliveURLLoaderFactory::BindFactory");
-
-    // Adds a new factory receiver to the set, binding the pending `receiver`
-    // from to `this` with a new context that has frame-specific data and keeps
-    // reference to `subresource_proxying_factory_bundle`.
-    auto context = std::make_unique<FactoryContext>(
-        subresource_proxying_factory_bundle, std::move(policy_container_host));
-    loader_factory_receivers_.Add(this, std::move(receiver),
-                                  std::move(context));
-  }
-
-  // `network::mojom::URLLoaderFactory` overrides:
-  void CreateLoaderAndStart(
-      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+ protected:
+  // Creates a new KeepAliveURLLoader from the factory of the `context` to load
+  // `resource_request`. It returns a raw pointer to the loader already stored
+  // in `service()`. Note that the caller must manually start the returned
+  // loader.
+  //
+  // On calling, the initiator renderer that triggers this factory method
+  // may have already be gone, e.g. a keepalive request initiated from an
+  // unload handler. But as long as `context` exists, the necessary data for a
+  // loader is ensured to exist.
+  raw_ptr<KeepAliveURLLoader> CreateKeepAliveURLLoader(
+      PendingReceiverType<Interface> receiver,
+      const std::unique_ptr<FactoryContext>& context,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& resource_request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
-      override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    TRACE_EVENT("loading", "KeepAliveURLLoaderFactory::CreateLoaderAndStart",
-                "request_id", request_id);
-    if (!blink::features::IsKeepAliveURLLoaderServiceEnabled()) {
-      loader_factory_receivers_.ReportBadMessage(
-          "Unexpected call to "
-          "KeepAliveURLLoaderService::CreateLoaderAndStart()");
-      return;
-    }
-
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+    CHECK(context);
     if (!resource_request.keepalive) {
-      loader_factory_receivers_.ReportBadMessage(
+      mojo::ReportBadMessage(
           "Unexpected `resource_request` in "
-          "KeepAliveURLLoaderService::CreateLoaderAndStart(): "
+          "KeepAliveURLLoaderFactoriesBase::CreateLoaderAndStart(): "
           "resource_request.keepalive must be true");
-      return;
+      return nullptr;
     }
     if (resource_request.trusted_params) {
       // Must use untrusted URLLoaderFactory. If not, the requesting renderer
       // should be aborted.
-      loader_factory_receivers_.ReportBadMessage(
+      mojo::ReportBadMessage(
           "Unexpected `resource_request` in "
-          "KeepAliveURLLoaderService::CreateLoaderAndStart(): "
+          "KeepAliveURLLoaderFactoriesBase::CreateLoaderAndStart(): "
           "resource_request.trusted_params must not be set");
-      return;
+      return nullptr;
     }
-    if (!base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI) &&
-        resource_request.is_fetch_later_api) {
-      loader_factory_receivers_.ReportBadMessage(
-          "Unexpected `resource_request.is_fetch_later_api` in "
-          "KeepAliveURLLoaderService::CreateLoaderAndStart(): must not be set");
-      return;
-    }
-
-    // Creates a new KeepAliveURLLoader from the factory of the current context
-    // to load `resource_request`.
-    //
-    // At this point, the initiator renderer that triggers this factory method
-    // may have already be gone, e.g. a keepalive request initiated from an
-    // unload handler. But as long as `context` exists, the necessary data for a
-    // loader is ensured to exist.
-    const std::unique_ptr<FactoryContext>& context = current_context();
 
     // Passes in the pending remote of `client` from a renderer so that `loader`
     // can forward response back to the renderer.
@@ -184,36 +153,22 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactory final
         context->policy_container_host, service_->browser_context_,
         CreateThrottles(resource_request),
         base::PassKey<KeepAliveURLLoaderService>());
-    // Adds a new loader receiver to the set, binding the pending `receiver`
-    // from a renderer to `raw_loader` with `loader` as its context. The set
-    // will keep `loader` alive.
+    // Adds a new loader receiver to the set held by `this`, binding the pending
+    // `receiver` from a renderer to `raw_loader` with `loader` as its context.
+    // The set will keep `loader` alive.
     auto* raw_loader = loader.get();
-    auto receiver_id = service_->loader_receivers_.Add(
-        raw_loader, std::move(receiver), std::move(loader));
+    auto receiver_id = loader_receivers_.Add(raw_loader, std::move(receiver),
+                                             std::move(loader));
     raw_loader->set_on_delete_callback(
-        base::BindOnce(&KeepAliveURLLoaderService::RemoveLoader,
-                       base::Unretained(service_), receiver_id));
+        base::BindOnce(&KeepAliveURLLoaderFactoriesBase::RemoveLoader,
+                       base::Unretained(this), receiver_id));
 
     if (service_->loader_test_observer_) {
       raw_loader->SetObserverForTesting(     // IN-TEST
           service_->loader_test_observer_);  // IN-TEST
     }
 
-    // `loader` must only be started after the above setup.
-    // For non-FetchLater requests, they should be started immediately.
-    if (!resource_request.is_fetch_later_api) {
-      raw_loader->Start();
-    }
-    // For FetchLater requests, see
-    // `KeepAliveURLLoaderService::OnLoaderDisconnected()`.
-  }
-  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
-      override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-    loader_factory_receivers_.Add(
-        this, std::move(receiver),
-        std::make_unique<FactoryContext>(current_context()));
+    return raw_loader;
   }
 
  private:
@@ -240,6 +195,156 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactory final
         FrameTreeNode::kFrameTreeNodeInvalidId);
   }
 
+  void OnLoaderDisconnected() {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    auto disconnected_loader_receiver_id = loader_receivers_.current_receiver();
+
+    // The context of `disconnected_loader_receiver_id`, an KeepAliveURLLoader
+    // object, has been removed from `loader_receivers_`, but it has to stay
+    // alive to handle subsequent updates from network service.
+
+    // Let the KeepAliveURLLoader object itself aware of being disconnected.
+    loader_receivers_.current_context()->OnURLLoaderDisconnected();
+
+    // Move all KeepAliveURLLoader objects into a different loader set to keep
+    // them alive until finish or being dropped.
+    disconnected_loaders_.emplace(
+        disconnected_loader_receiver_id,
+        std::move(loader_receivers_.current_context()));
+  }
+
+  void RemoveLoader(mojo::ReceiverId loader_receiver_id) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    TRACE_EVENT("loading", "KeepAliveURLLoaderFactoriesBase::RemoveLoader",
+                "loader_id", loader_receiver_id);
+
+    loader_receivers_.Remove(loader_receiver_id);
+    disconnected_loaders_.erase(loader_receiver_id);
+  }
+
+  // Guaranteed to exist, as `service_` owns this.
+  raw_ptr<KeepAliveURLLoaderService> service_;
+
+  // Holds all the KeepAliveURLLoader connected with remotes in renderers.
+  // Each of them corresponds to the handling of one pending keepalive request.
+  // Once a receiver is disconnected, its context should be moved to
+  // `disconnected_loaders_`.
+  ReceiverSetType<Interface, std::unique_ptr<KeepAliveURLLoader>>
+      loader_receivers_;
+
+  // Holds all the KeepAliveURLLoader that has been disconnected from renderers.
+  // They should be kept alive until the request completes or fails.
+  // The key is the mojo::ReceiverId assigned by `loader_receivers_`.
+  std::map<mojo::ReceiverId, std::unique_ptr<KeepAliveURLLoader>>
+      disconnected_loaders_;
+};
+
+// A mojom::URLLoaderFactory to handle fetch keepalive requests.
+//
+// This factory can handle requests from multiple remotes of URLLoaderFactory
+// from different renderers.
+//
+// Users should call `BindFactory()` first to register a pending receiver with
+// this factory. A receiver stays until it gets disconnected from its remote in
+// a renderer. Hence, its lifetime is roughly equal to the lifetime of its
+// initiating renderer.
+//
+// On requested by a remote, i.e. calling
+// `network::mojom::URLLoaderFactory::CreateLoaderAndStart()`, this factory will
+// create a `KeepAliveURLLoader` to load a keepalive request. The loader will be
+// held by the parent class until it either completes or fails to load the
+// request. Note that a loader may outlive the FactoryContext that has created
+// itself.
+//
+// See the "Implementation Details" section of the design doc
+// https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
+class KeepAliveURLLoaderService::KeepAliveURLLoaderFactories final
+    : public KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase<
+          network::mojom::URLLoader,
+          mojo::PendingReceiver,
+          mojo::ReceiverSet>,
+      public network::mojom::URLLoaderFactory {
+ public:
+  explicit KeepAliveURLLoaderFactories(KeepAliveURLLoaderService* service)
+      : KeepAliveURLLoaderFactoriesBase(service) {}
+
+  // Creates a `FactoryContext` to hold a refptr to
+  // `network::SharedURLLoaderFactory`, which is constructed with
+  // `subresource_proxying_factory_bundle`, and then bound with `receiver`.
+  // `policy_container_host` must not be null.
+  void BindFactory(
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
+      scoped_refptr<network::SharedURLLoaderFactory>
+          subresource_proxying_factory_bundle,
+      scoped_refptr<PolicyContainerHost> policy_container_host) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK(policy_container_host);
+    TRACE_EVENT("loading", "KeepAliveURLLoaderFactories::BindFactory");
+
+    // Adds a new factory receiver to the set, binding the pending `receiver`
+    // from to `this` with a new context that has frame-specific data and keeps
+    // reference to `subresource_proxying_factory_bundle`.
+    auto context = std::make_unique<FactoryContext>(
+        std::move(subresource_proxying_factory_bundle),
+        std::move(policy_container_host));
+    loader_factory_receivers_.Add(this, std::move(receiver),
+                                  std::move(context));
+  }
+
+  // `network::mojom::URLLoaderFactory` overrides:
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& resource_request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    TRACE_EVENT("loading", "KeepAliveURLLoaderFactories::CreateLoaderAndStart",
+                "request_id", request_id);
+    if (!blink::features::IsKeepAliveURLLoaderServiceEnabled()) {
+      mojo::ReportBadMessage(
+          "Unexpected call to "
+          "KeepAliveURLLoaderFactories::CreateLoaderAndStart()");
+      return;
+    }
+    if (!base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI) &&
+        resource_request.is_fetch_later_api) {
+      mojo::ReportBadMessage(
+          "Unexpected `resource_request.is_fetch_later_api` in "
+          "KeepAliveURLLoaderFactories::CreateLoaderAndStart(): "
+          "must not be set");
+      return;
+    }
+
+    auto raw_loader = this->CreateKeepAliveURLLoader(
+        std::move(receiver), loader_factory_receivers_.current_context(),
+        request_id, options, resource_request, std::move(client),
+        traffic_annotation);
+    if (!raw_loader) {
+      return;
+    }
+
+    // `raw_loader` must only be started after the above setup.
+    // For non-FetchLater requests, they should be started immediately.
+    // TODO(crbug.com/1465781): Move the check to FetchLater-specific factories.
+    if (!resource_request.is_fetch_later_api) {
+      raw_loader->Start();
+    }
+    // For FetchLater requests, see `OnLoaderDisconnected()`.
+  }
+  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
+      override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+    loader_factory_receivers_.Add(
+        this, std::move(receiver),
+        std::make_unique<FactoryContext>(
+            loader_factory_receivers_.current_context()));
+  }
+
+ private:
   // Guaranteed to exist, as `service_` owns this object.
   raw_ptr<KeepAliveURLLoaderService> service_;
 
@@ -258,13 +363,7 @@ KeepAliveURLLoaderService::KeepAliveURLLoaderService(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(browser_context_);
 
-  factory_ =
-      std::make_unique<KeepAliveURLLoaderService::KeepAliveURLLoaderFactory>(
-          this);
-  // `Unretained(this)` is safe because `this` owns `loader_receivers_`.
-  loader_receivers_.set_disconnect_handler(
-      base::BindRepeating(&KeepAliveURLLoaderService::OnLoaderDisconnected,
-                          base::Unretained(this)));
+  url_loader_factories_ = std::make_unique<KeepAliveURLLoaderFactories>(this);
 }
 
 KeepAliveURLLoaderService::~KeepAliveURLLoaderService() = default;
@@ -275,48 +374,20 @@ void KeepAliveURLLoaderService::BindFactory(
         subresource_proxying_factory_bundle,
     scoped_refptr<PolicyContainerHost> policy_container_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(subresource_proxying_factory_bundle);
   CHECK(policy_container_host);
 
-  factory_->BindFactory(std::move(receiver),
-                        subresource_proxying_factory_bundle,
-                        std::move(policy_container_host));
-}
-
-void KeepAliveURLLoaderService::OnLoaderDisconnected() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto disconnected_loader_receiver_id = loader_receivers_.current_receiver();
-  TRACE_EVENT("loading", "KeepAliveURLLoaderService::OnLoaderDisconnected",
-              "loader_id", disconnected_loader_receiver_id);
-
-  // The context of `disconnected_loader_receiver_id`, an KeepAliveURLLoader
-  // object, has been removed from `loader_receivers_`, but it has to stay alive
-  // to handle subsequent updates from network service.
-
-  // Let the KeepAliveURLLoader object itself aware of being disconnected.
-  loader_receivers_.current_context()->OnURLLoaderDisconnected();
-
-  // Move all KeepAliveURLLoader objects into a different loader set to keep
-  // them alive until finish or being dropped.
-  disconnected_loaders_.emplace(disconnected_loader_receiver_id,
-                                std::move(loader_receivers_.current_context()));
-}
-
-void KeepAliveURLLoaderService::RemoveLoader(
-    mojo::ReceiverId loader_receiver_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT("loading", "KeepAliveURLLoaderService::RemoveLoader", "loader_id",
-              loader_receiver_id);
-
-  loader_receivers_.Remove(loader_receiver_id);
-  disconnected_loaders_.erase(loader_receiver_id);
+  url_loader_factories_->BindFactory(std::move(receiver),
+                                     subresource_proxying_factory_bundle,
+                                     std::move(policy_container_host));
 }
 
 size_t KeepAliveURLLoaderService::NumLoadersForTesting() const {
-  return loader_receivers_.size() + disconnected_loaders_.size();
+  return url_loader_factories_->NumLoadersForTesting();  // IN-TEST
 }
 
 size_t KeepAliveURLLoaderService::NumDisconnectedLoadersForTesting() const {
-  return disconnected_loaders_.size();
+  return url_loader_factories_->NumDisconnectedLoadersForTesting();  // IN-TEST
 }
 
 void KeepAliveURLLoaderService::SetLoaderObserverForTesting(

@@ -202,6 +202,67 @@ MATCHER_P2(ResponseHasHeader,
   return arg->headers->HasHeaderValue(name, value);
 }
 
+network::ResourceRequest CreateFetchLaterResourceRequest(const GURL& url) {
+  network::ResourceRequest request;
+  request.url = url;
+  request.keepalive = true;
+  request.is_fetch_later_api = true;
+  return request;
+}
+
+network::ResourceRequest CreateResourceRequest(
+    const GURL& url,
+    bool keepalive = true,
+    bool is_trusted = false,
+    absl::optional<network::mojom::RedirectMode> redirect_mode =
+        absl::nullopt) {
+  network::ResourceRequest request;
+  request.url = url;
+  request.keepalive = keepalive;
+  if (is_trusted) {
+    request.trusted_params = network::ResourceRequest::TrustedParams();
+  }
+  if (redirect_mode) {
+    request.redirect_mode = *redirect_mode;
+  }
+  return request;
+}
+
+network::mojom::URLResponseHeadPtr CreateResponseHead(
+    const std::vector<std::pair<std::string, std::string>>& extra_headers =
+        {}) {
+  auto response = network::mojom::URLResponseHead::New();
+  net::HttpResponseHeaders::Builder builder({1, 1}, "200 OK");
+  for (const auto& [name, value] : extra_headers) {
+    builder.AddHeader(name, value);
+  }
+  response->headers = builder.Build();
+  return response;
+}
+
+net::RedirectInfo CreateRedirectInfo(const GURL& new_url) {
+  net::RedirectInfo redirect_info;
+  redirect_info.new_method = "GET";
+  redirect_info.new_url = new_url;
+  redirect_info.status_code = 301;
+  return redirect_info;
+}
+
+network::mojom::EarlyHintsPtr CreateEarlyHints(
+    const GURL& url,
+    const std::vector<std::pair<std::string, std::string>>& extra_headers =
+        {}) {
+  auto response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  for (const auto& header : extra_headers) {
+    response_headers->SetHeader(header.first, header.second);
+  }
+  return network::mojom::EarlyHints::New(
+      network::PopulateParsedHeaders(response_headers.get(), url),
+      network::mojom::ReferrerPolicy::kDefault,
+      network::mojom::IPAddressSpace::kPublic);
+}
+
 }  // namespace
 
 class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
@@ -243,20 +304,15 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
   // More than one factory can be bound to the same service.
   void BindKeepAliveURLLoaderFactory(
       FakeRemoteURLLoaderFactory& remote_url_loader_factory) {
-    if (!loader_service_) {
-      loader_service_ = std::make_unique<KeepAliveURLLoaderService>(
-          main_rfh()->GetBrowserContext());
-    }
-
     mojo::Remote<network::mojom::URLLoaderFactory> factory;
-    network_url_loader_factory_->Clone(factory.BindNewPipeAndPassReceiver());
+    network_url_loader_factory().Clone(factory.BindNewPipeAndPassReceiver());
     auto pending_factory =
         std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
             factory.Unbind());
 
     // Remote: `remote_url_loader_factory`
     // Receiver: Held in `loader_service_`.
-    loader_service_->BindFactory(
+    loader_service().BindFactory(
         remote_url_loader_factory.BindNewPipeAndPassReceiver(),
         network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
         static_cast<RenderFrameHostImpl*>(main_rfh())
@@ -264,58 +320,6 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
             ->Clone());
   }
 
-  network::ResourceRequest CreateResourceRequest(
-      const GURL& url,
-      bool keepalive = true,
-      bool is_trusted = false,
-      absl::optional<network::mojom::RedirectMode> redirect_mode =
-          absl::nullopt) {
-    network::ResourceRequest request;
-    request.url = url;
-    request.keepalive = keepalive;
-    if (is_trusted) {
-      request.trusted_params = network::ResourceRequest::TrustedParams();
-    }
-    if (redirect_mode) {
-      request.redirect_mode = *redirect_mode;
-    }
-    return request;
-  }
-
-  network::mojom::URLResponseHeadPtr CreateResponseHead(
-      const std::vector<std::pair<std::string, std::string>>& extra_headers =
-          {}) {
-    auto response = network::mojom::URLResponseHead::New();
-    response->headers =
-        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
-    for (const auto& header : extra_headers) {
-      response->headers->SetHeader(header.first, header.second);
-    }
-    return response;
-  }
-
-  net::RedirectInfo CreateRedirectInfo(const GURL& new_url) {
-    net::RedirectInfo redirect_info;
-    redirect_info.new_method = "GET";
-    redirect_info.new_url = new_url;
-    redirect_info.status_code = 301;
-    return redirect_info;
-  }
-
-  network::mojom::EarlyHintsPtr CreateEarlyHints(
-      const GURL& url,
-      const std::vector<std::pair<std::string, std::string>>& extra_headers =
-          {}) {
-    auto response_headers =
-        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
-    for (const auto& header : extra_headers) {
-      response_headers->SetHeader(header.first, header.second);
-    }
-    return network::mojom::EarlyHints::New(
-        network::PopulateParsedHeaders(response_headers.get(), url),
-        network::mojom::ReferrerPolicy::kDefault,
-        network::mojom::IPAddressSpace::kPublic);
-  }
 
   network::TestURLLoaderFactory::PendingRequest* GetLastPendingRequest() {
     return &network_url_loader_factory_->pending_requests()->back();
@@ -334,7 +338,13 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
   network::TestURLLoaderFactory& network_url_loader_factory() {
     return *network_url_loader_factory_;
   }
-  KeepAliveURLLoaderService& loader_service() { return *loader_service_; }
+  KeepAliveURLLoaderService& loader_service() {
+    if (!loader_service_) {
+      loader_service_ = std::make_unique<KeepAliveURLLoaderService>(
+          main_rfh()->GetBrowserContext());
+    }
+    return *loader_service_;
+  }
   base::test::ScopedFeatureList& feature_list() { return scoped_feature_list_; }
 
  private:
@@ -367,14 +377,35 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   feature_list().Reset();
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
-      renderer_loader_client.BindNewPipeAndPassRemote());
+      renderer_loader_client.BindNewPipeAndPassRemote(),
+      /*expect_success=*/false);
 
   EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
   EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
   EXPECT_FALSE(renderer_loader_factory.is_remote_url_loader_connected());
   ExpectMojoBadMessage(
       "Unexpected call to "
-      "KeepAliveURLLoaderService::CreateLoaderAndStart()");
+      "KeepAliveURLLoaderFactories::CreateLoaderAndStart()");
+}
+
+TEST_F(KeepAliveURLLoaderServiceTest, LoadFetchLaterRequestAndTerminate) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  // Loads FetchLater request (which is also keepalive request), but is not
+  // allowed with URLLoaderFactory.
+  renderer_loader_factory.CreateLoaderAndStart(
+      CreateFetchLaterResourceRequest(GURL(kTestRequestUrl)),
+      renderer_loader_client.BindNewPipeAndPassRemote(),
+      /*expect_success=*/false);
+
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
+  EXPECT_FALSE(renderer_loader_factory.is_remote_url_loader_connected());
+  ExpectMojoBadMessage(
+      "Unexpected `resource_request.is_fetch_later_api` in "
+      "KeepAliveURLLoaderFactories::CreateLoaderAndStart(): must not be set");
 }
 
 TEST_F(KeepAliveURLLoaderServiceTest, LoadNonKeepaliveRequestAndTerminate) {
@@ -385,14 +416,15 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadNonKeepaliveRequestAndTerminate) {
   // Loads non-keepalive request:
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl), /*keepalive=*/false),
-      renderer_loader_client.BindNewPipeAndPassRemote());
+      renderer_loader_client.BindNewPipeAndPassRemote(),
+      /*expect_success=*/false);
 
   EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
   EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
   EXPECT_FALSE(renderer_loader_factory.is_remote_url_loader_connected());
   ExpectMojoBadMessage(
       "Unexpected `resource_request` in "
-      "KeepAliveURLLoaderService::CreateLoaderAndStart(): "
+      "KeepAliveURLLoaderFactoriesBase::CreateLoaderAndStart(): "
       "resource_request.keepalive must be true");
 }
 
@@ -405,14 +437,15 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadTrustedRequestAndTerminate) {
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl), /*keepalive=*/true,
                             /*is_trusted=*/true),
-      renderer_loader_client.BindNewPipeAndPassRemote());
+      renderer_loader_client.BindNewPipeAndPassRemote(),
+      /*expect_success=*/false);
 
   EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
   EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
   EXPECT_FALSE(renderer_loader_factory.is_remote_url_loader_connected());
   ExpectMojoBadMessage(
       "Unexpected `resource_request` in "
-      "KeepAliveURLLoaderService::CreateLoaderAndStart(): "
+      "KeepAliveURLLoaderFactoriesBase::CreateLoaderAndStart(): "
       "resource_request.trusted_params must not be set");
 }
 
@@ -1025,14 +1058,6 @@ class FetchLaterKeepAliveURLLoaderServiceTest
     feature_list().InitAndEnableFeature(blink::features::kFetchLaterAPI);
     KeepAliveURLLoaderServiceTestBase::SetUp();
   }
-
-  network::ResourceRequest CreateFetchLaterResourceRequest(const GURL& url) {
-    network::ResourceRequest request;
-    request.url = url;
-    request.keepalive = true;
-    request.is_fetch_later_api = true;
-    return request;
-  }
 };
 
 TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
@@ -1048,14 +1073,15 @@ TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
       blink::features::kKeepAliveInBrowserMigration);
   renderer_loader_factory.CreateLoaderAndStart(
       CreateFetchLaterResourceRequest(GURL(kTestRequestUrl)),
-      renderer_loader_client.BindNewPipeAndPassRemote());
+      renderer_loader_client.BindNewPipeAndPassRemote(),
+      /*expect_success=*/false);
 
   EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
   EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
   EXPECT_FALSE(renderer_loader_factory.is_remote_url_loader_connected());
   ExpectMojoBadMessage(
       "Unexpected `resource_request.is_fetch_later_api` in "
-      "KeepAliveURLLoaderService::CreateLoaderAndStart(): must not be set");
+      "KeepAliveURLLoaderFactories::CreateLoaderAndStart(): must not be set");
 }
 
 TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
