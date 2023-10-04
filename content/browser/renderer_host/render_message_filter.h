@@ -78,16 +78,8 @@ class RenderMessageFilter
   void GenerateRoutingID(GenerateRoutingIDCallback routing_id) override;
   void GenerateFrameRoutingID(GenerateFrameRoutingIDCallback callback) override;
   void HasGpuProcess(HasGpuProcessCallback callback) override;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  void SetThreadType(int32_t ns_tid, base::ThreadType thread_type) override;
-#endif
 
   void OnResolveProxy(const GURL& url, IPC::Message* reply_msg);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  void SetThreadTypeOnLauncherThread(base::PlatformThreadId ns_tid,
-                                     base::ThreadType thread_type);
-#endif
 
   void OnMediaLogRecords(const std::vector<media::MediaLogRecord>&);
 

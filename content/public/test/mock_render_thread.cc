@@ -63,11 +63,6 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
   void HasGpuProcess(HasGpuProcessCallback callback) override {
     std::move(callback).Run(false);
   }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  void SetThreadType(int32_t platform_thread_id,
-                     base::ThreadType thread_type) override {}
-#endif
 };
 
 }  // namespace

@@ -2434,6 +2434,8 @@ source_set("browser") {
   if (is_linux || is_chromeos) {
     sources += [
       "child_process_launcher_helper_linux.cc",
+      "child_thread_type_switcher_linux.cc",
+      "child_thread_type_switcher_linux.h",
       "font_access/font_enumeration_data_source_linux.cc",
       "font_access/font_enumeration_data_source_linux.h",
       "font_service.cc",

@@ -131,44 +131,6 @@ void RenderMessageFilter::GenerateFrameRoutingID(
                           document_token);
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-void RenderMessageFilter::SetThreadTypeOnLauncherThread(
-    base::PlatformThreadId ns_tid,
-    base::ThreadType thread_type) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-
-  bool ns_pid_supported = false;
-  pid_t peer_tid = base::FindThreadID(peer_pid(), ns_tid, &ns_pid_supported);
-  if (peer_tid == -1) {
-    if (ns_pid_supported)
-      DLOG(WARNING) << "Could not find tid";
-    return;
-  }
-
-  if (peer_tid == peer_pid() && thread_type != base::ThreadType::kCompositing) {
-    DLOG(WARNING) << "Changing main thread type to another value than "
-                  << "kCompositing isn't allowed";
-    return;
-  }
-
-  base::PlatformThread::SetThreadType(peer_pid(), peer_tid, thread_type, base::IsViaIPC(true));
-}
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-void RenderMessageFilter::SetThreadType(int32_t ns_tid,
-                                        base::ThreadType thread_type) {
-  // Post this task to process launcher task runner. All thread type changes
-  // (nice value, c-group setting) of renderer process would be performed on the
-  // same sequence as renderer process priority changes, to guarantee that
-  // there's no race of c-group manipulations.
-  GetProcessLauncherTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RenderMessageFilter::SetThreadTypeOnLauncherThread, this,
-                     static_cast<base::PlatformThreadId>(ns_tid), thread_type));
-}
-#endif
-
 void RenderMessageFilter::OnMediaLogRecords(
     const std::vector<media::MediaLogRecord>& events) {
   // OnMediaLogRecords() is always dispatched to the UI thread for handling.

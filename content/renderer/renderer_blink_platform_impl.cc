@@ -115,6 +115,7 @@
 #include "content/child/child_process_sandbox_support_impl_mac.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/child/child_process_sandbox_support_impl_linux.h"
+#include "content/child/sandboxed_process_thread_type_handler.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX)
@@ -246,9 +247,12 @@ std::string RendererBlinkPlatformImpl::GetNameForHistogram(const char* name) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void RendererBlinkPlatformImpl::SetThreadType(base::PlatformThreadId thread_id,
                                               base::ThreadType thread_type) {
-  if (RenderThreadImpl* render_thread = RenderThreadImpl::current()) {
-    render_thread->render_message_filter()->SetThreadType(thread_id,
-                                                          thread_type);
+  // TODO: both of the usages of this method could just be switched to use
+  // base::PlatformThread::SetCurrentThreadType().
+  if (SandboxedProcessThreadTypeHandler* sandboxed_process_thread_type_handler =
+          SandboxedProcessThreadTypeHandler::Get()) {
+    sandboxed_process_thread_type_handler->HandleThreadTypeChange(thread_id,
+                                                                  thread_type);
   }
 }
 #endif

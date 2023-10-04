@@ -227,7 +227,9 @@
 #include "content/browser/font_service.h"  // nogncheck
 #include "third_party/blink/public/mojom/memory_usage_monitor_linux.mojom.h"  // nogncheck
 
+#include "content/browser/child_thread_type_switcher_linux.h"
 #include "content/browser/media/video_encode_accelerator_provider_launcher.h"
+#include "content/common/thread_type_switcher.mojom.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #endif
 
@@ -1082,6 +1084,12 @@ class RenderProcessHostImpl::IOThreadHostImpl : public mojom::ChildProcessHost {
   IOThreadHostImpl(const IOThreadHostImpl& other) = delete;
   IOThreadHostImpl& operator=(const IOThreadHostImpl& other) = delete;
 
+  void SetPid(base::ProcessId child_pid) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    child_thread_type_switcher_.SetPid(child_pid);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  }
+
  private:
   // mojom::ChildProcessHost implementation:
   void Ping(PingCallback callback) override { std::move(callback).Run(); }
@@ -1117,6 +1125,11 @@ class RenderProcessHostImpl::IOThreadHostImpl : public mojom::ChildProcessHost {
             ->CreateVideoEncodeAcceleratorProvider(std::move(r));
         return;
       }
+    }
+
+    if (auto r = receiver.As<mojom::ThreadTypeSwitcher>()) {
+      child_thread_type_switcher_.Bind(std::move(r));
+      return;
     }
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 
@@ -1186,6 +1199,7 @@ class RenderProcessHostImpl::IOThreadHostImpl : public mojom::ChildProcessHost {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   mojo::Remote<media::mojom::VideoEncodeAcceleratorProviderFactory>
       video_encode_accelerator_factory_remote_;
+  ChildThreadTypeSwitcher child_thread_type_switcher_;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 };
 
@@ -5161,9 +5175,12 @@ void RenderProcessHostImpl::OnProcessLaunched() {
     if (coordinator_connector_receiver_.is_bound())
       coordinator_connector_receiver_.Resume();
 
-      // Not all platforms launch processes in the same backgrounded state. Make
-      // sure |priority_.visible| reflects this platform's initial process
-      // state.
+    io_thread_host_impl_->AsyncCall(&IOThreadHostImpl::SetPid)
+        .WithArgs(GetProcess().Pid());
+
+    // Not all platforms launch processes in the same backgrounded state. Make
+    // sure |priority_.visible| reflects this platform's initial process
+    // state.
 #if BUILDFLAG(IS_APPLE)
     priority_.visible = child_process_launcher_->GetProcess().GetPriority(
                             ChildProcessTaskPortProvider::GetInstance()) ==

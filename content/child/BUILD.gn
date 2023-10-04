@@ -118,6 +118,8 @@ target(link_target_type, "child") {
     sources += [
       "child_process_sandbox_support_impl_linux.cc",
       "child_process_sandbox_support_impl_linux.h",
+      "sandboxed_process_thread_type_handler.cc",
+      "sandboxed_process_thread_type_handler.h",
     ]
     deps += [
       "//components/services/font/public/cpp",

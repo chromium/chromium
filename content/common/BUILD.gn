@@ -479,12 +479,13 @@ mojom("mojo_bindings") {
     "web_ui.mojom",
   ]
 
+  if (is_linux || is_chromeos) {
+    sources += [ "thread_type_switcher.mojom" ]
+  }
+
   enabled_features = []
   if (enable_ipc_logging) {
     enabled_features += [ "ipc_logging" ]
-  }
-  if (is_linux || is_chromeos) {
-    enabled_features += [ "supports_thread_types" ]
   }
   if (use_clang_profiling_inside_sandbox) {
     enabled_features += [ "clang_profiling_inside_sandbox" ]

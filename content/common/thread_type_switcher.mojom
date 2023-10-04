@@ -1,0 +1,15 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "mojo/public/mojom/base/thread_type.mojom";
+
+// Implemented in the browser to handle thread type changes that cannot
+// occur in a child process due to its sandbox, e.g. on Linux and ChromeOS.
+interface ThreadTypeSwitcher {
+  // Asks the browser to change the type of thread.
+  SetThreadType(int32 platform_thread_id,
+                mojo_base.mojom.ThreadType thread_type);
+};

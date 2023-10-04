@@ -191,7 +191,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "content/renderer/renderer_thread_type_handler.h"
+#include "content/child/sandboxed_process_thread_type_handler.h"
 #endif
 
 #ifdef ENABLE_VTUNE_JIT_INTERFACE
@@ -603,7 +603,7 @@ void RenderThreadImpl::Init() {
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  RendererThreadTypeHandler::NotifyRenderThreadCreated();
+  SandboxedProcessThreadTypeHandler::NotifyMainChildThreadCreated();
 #endif
 
   cc::SetClientNameForMetrics("Renderer");
@@ -650,8 +650,14 @@ void RenderThreadImpl::Init() {
       discardable_memory_allocator_.get());
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  render_message_filter()->SetThreadType(
-      ChildProcess::current()->io_thread_id(), base::ThreadType::kCompositing);
+  // The SandboxedProcessThreadTypeHandler isn't created in
+  // render_thread_impl_browsertest.cc, nor in --single-process mode.
+  if (SandboxedProcessThreadTypeHandler* sandboxed_process_thread_type_handler =
+          SandboxedProcessThreadTypeHandler::Get()) {
+    sandboxed_process_thread_type_handler->HandleThreadTypeChange(
+        ChildProcess::current()->io_thread_id(),
+        base::ThreadType::kCompositing);
+  }
 #endif
 
   process_foregrounded_count_ = 0;
