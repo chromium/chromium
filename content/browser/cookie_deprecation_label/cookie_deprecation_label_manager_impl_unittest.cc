@@ -19,12 +19,11 @@ namespace {
 
 class CookieDeprecationLabelManagerImplTest : public testing::Test {
  public:
-  explicit CookieDeprecationLabelManagerImplTest(bool skip_label = false)
+  explicit CookieDeprecationLabelManagerImplTest()
       : label_manager_(&browser_context_) {
-    std::string skip_label_str = skip_label ? "true" : "false";
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kCookieDeprecationFacilitatedTesting,
-        {{"label", "label_test"}, {"skip_label", skip_label_str}});
+        {{"label", "label_test"}});
   }
 
  protected:
@@ -82,24 +81,6 @@ TEST_F(CookieDeprecationLabelManagerImplTest, AllowedForContext_LabelReturned) {
           /*top_frame_origin=*/url::Origin::Create(GURL("https://a.test")),
           /*context_origin=*/url::Origin::Create(GURL("https://b.test"))),
       "label_test");
-}
-
-class CookieDeprecationLabelManagerImplSkipLabelFlagTest
-    : public CookieDeprecationLabelManagerImplTest {
- public:
-  CookieDeprecationLabelManagerImplSkipLabelFlagTest()
-      : CookieDeprecationLabelManagerImplTest(/*skip_label=*/true) {}
-};
-
-TEST_F(CookieDeprecationLabelManagerImplSkipLabelFlagTest,
-       SkipLabelFlagOn_NoLabelReturned) {
-  MockCookieDeprecationLabelContentBrowserClientBase<TestContentBrowserClient>
-      browser_client;
-  EXPECT_CALL(browser_client, IsCookieDeprecationLabelAllowed)
-      .WillOnce(testing::Return(true));
-  ScopedContentBrowserClientSetting setting(&browser_client);
-
-  EXPECT_FALSE(label_manager_.GetValue().has_value());
 }
 
 }  // namespace
