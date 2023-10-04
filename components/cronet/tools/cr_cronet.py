@@ -13,6 +13,7 @@ import re
 import shlex
 import subprocess
 import sys
+from datetime import datetime
 
 
 def quoted_args(args):
@@ -56,8 +57,15 @@ def install(out_dir):
 
 
 def test(out_dir, extra_options):
-  return run([out_dir + '/bin/run_cronet_test_instrumentation_apk'] +
-             extra_options)
+  # Ideally we would fetch this path from somewhere. Though, that's not trivial
+  # and very unlikely to change. This being "best effort test code", it should
+  # be fine just to hardcode it.
+  remote_netlog_dir = '/data/data/org.chromium.net.tests/app_cronet_test/NetLog'
+  run(['adb', 'shell', 'rm', '-rf', remote_netlog_dir])
+  run([out_dir + '/bin/run_cronet_test_instrumentation_apk'] + extra_options)
+  local_netlog_dir = 'netlogs_for-' + datetime.now().strftime(
+      "%y_%m_%d-%H_%M_%S")
+  return run(['adb', 'pull', remote_netlog_dir, local_netlog_dir])
 
 
 def unittest(out_dir, extra_options):
