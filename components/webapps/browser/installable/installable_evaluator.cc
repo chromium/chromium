@@ -143,32 +143,59 @@ bool HasValidIcon(content::WebContents* web_contents,
           HasNonDefaultFavicon(web_contents));
 }
 
-bool ShouldRejectDisplayMode(blink::mojom::DisplayMode display_mode,
-                             InstallableCriteria criteria) {
-  if (criteria == InstallableCriteria::kImplicitManifestFieldsHTML) {
-    return display_mode == blink::mojom::DisplayMode::kBrowser;
+bool IsInstallableDisplayMode(blink::mojom::DisplayMode display_mode) {
+  return display_mode == blink::mojom::DisplayMode::kStandalone ||
+         display_mode == blink::mojom::DisplayMode::kFullscreen ||
+         display_mode == blink::mojom::DisplayMode::kMinimalUi ||
+         display_mode == blink::mojom::DisplayMode::kWindowControlsOverlay ||
+         (display_mode == blink::mojom::DisplayMode::kBorderless &&
+          base::FeatureList::IsEnabled(blink::features::kWebAppBorderless)) ||
+         (display_mode == blink::mojom::DisplayMode::kTabbed &&
+          base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip));
+}
+
+InstallableStatusCode GetDisplayError(const blink::mojom::Manifest& manifest,
+                                      InstallableCriteria criteria) {
+  blink::mojom::DisplayMode display_mode_to_evaluate = manifest.display;
+  InstallableStatusCode error_type_if_invalid = MANIFEST_DISPLAY_NOT_SUPPORTED;
+
+  // Unsupported values are ignored when we parse the manifest, and
+  // consequently aren't in the manifest.display_override array.
+  // If this array is not empty, the first value will "win", so validate
+  // this value is installable.
+  if (!manifest.display_override.empty()) {
+    display_mode_to_evaluate = manifest.display_override[0];
+    error_type_if_invalid = MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED;
   }
-  return !(
-      display_mode == blink::mojom::DisplayMode::kStandalone ||
-      display_mode == blink::mojom::DisplayMode::kFullscreen ||
-      display_mode == blink::mojom::DisplayMode::kMinimalUi ||
-      display_mode == blink::mojom::DisplayMode::kWindowControlsOverlay ||
-      (display_mode == blink::mojom::DisplayMode::kBorderless &&
-       base::FeatureList::IsEnabled(blink::features::kWebAppBorderless)) ||
-      (display_mode == blink::mojom::DisplayMode::kTabbed &&
-       base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip)));
+
+  switch (criteria) {
+    case InstallableCriteria::kValidManifestWithIcons:
+      if (!IsInstallableDisplayMode(display_mode_to_evaluate)) {
+        return error_type_if_invalid;
+      }
+      break;
+    case InstallableCriteria::kImplicitManifestFieldsHTML:
+      if (display_mode_to_evaluate == blink::mojom::DisplayMode::kBrowser) {
+        return error_type_if_invalid;
+      }
+      break;
+    case InstallableCriteria::kValidManifestIgnoreDisplay:
+      break;
+    case InstallableCriteria::kDoNotCheck:
+      NOTREACHED();
+      break;
+  }
+  return NO_ERROR_DETECTED;
 }
 
 }  // namespace
 
 InstallableEvaluator::InstallableEvaluator(content::WebContents* web_contents,
                                            const InstallablePageData& data,
-                                           InstallableCriteria criteria,
-                                           bool check_display)
+                                           InstallableCriteria criteria)
     : web_contents_(web_contents->GetWeakPtr()),
       page_data_(data),
-      criteria_(criteria),
-      check_display_(check_display) {}
+      criteria_(criteria) {}
 
 InstallableEvaluator::~InstallableEvaluator() = default;
 
@@ -199,23 +226,10 @@ InstallableEvaluator::CheckInstallability() const {
     errors.push_back(MANIFEST_MISSING_NAME_OR_SHORT_NAME);
   }
 
-  if (check_display_) {
-    blink::mojom::DisplayMode display_mode_to_evaluate =
-        page_data_->GetManifest().display;
-    InstallableStatusCode manifest_error = MANIFEST_DISPLAY_NOT_SUPPORTED;
-
-    // Unsupported values are ignored when we parse the manifest, and
-    // consequently aren't in the manifest.display_override array.
-    // If this array is not empty, the first value will "win", so validate
-    // this value is installable.
-    if (!page_data_->GetManifest().display_override.empty()) {
-      display_mode_to_evaluate = page_data_->GetManifest().display_override[0];
-      manifest_error = MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED;
-    }
-
-    if (ShouldRejectDisplayMode(display_mode_to_evaluate, criteria_)) {
-      errors.push_back(manifest_error);
-    }
+  InstallableStatusCode display_error =
+      GetDisplayError(page_data_->GetManifest(), criteria_);
+  if (display_error != NO_ERROR_DETECTED) {
+    errors.push_back(display_error);
   }
 
   if (!HasValidIcon(web_contents_.get(), page_data_->GetManifest(),

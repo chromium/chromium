@@ -13,6 +13,8 @@ enum class InstallableCriteria {
   // The page is installable if it has a valid manifest that contains valid
   // icons.
   kValidManifestWithIcons,
+  // Check the manifest valid ignoring the display setting.
+  kValidManifestIgnoreDisplay,
   // The page can be installable if required info (name, icon, display mode...)
   // is provided implicitly with meta tags, favicon, etc.
   kImplicitManifestFieldsHTML
@@ -49,10 +51,6 @@ struct InstallableParams {
   // Whether to fetch favicon for the primary icon if no manifest icon is
   // available.
   bool fetch_favicon = false;
-
-  // If the manifest is being checked, check the display setting in the manifest
-  // is a valid webapp display setting.
-  bool check_webapp_manifest_display = true;
 
   // Check whether the site manifest and web page metadata provided sufficient
   // info for installing the web app.

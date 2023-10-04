@@ -21,8 +21,7 @@ class InstallableEvaluator {
  public:
   InstallableEvaluator(content::WebContents* web_contents,
                        const InstallablePageData& data,
-                       InstallableCriteria criteria,
-                       bool check_display);
+                       InstallableCriteria criteria);
   ~InstallableEvaluator();
 
   // Maximum dimension size in pixels for icons.
@@ -60,8 +59,6 @@ class InstallableEvaluator {
   base::WeakPtr<content::WebContents> web_contents_;
   const raw_ref<const InstallablePageData> page_data_;
   InstallableCriteria criteria_;
-  // TODO(eirage): merge check_display_ with the InstallableCriteria enum.
-  bool check_display_;
 };
 
 }  // namespace webapps

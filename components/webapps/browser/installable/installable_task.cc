@@ -25,8 +25,7 @@ InstallableTask::InstallableTask(
   fetcher_ = std::make_unique<InstallableDataFetcher>(
       web_contents, service_worker_context, page_data);
   evaluator_ = std::make_unique<InstallableEvaluator>(
-      web_contents, page_data, params_.installable_criteria,
-      params_.check_webapp_manifest_display);
+      web_contents, page_data, params_.installable_criteria);
 }
 
 InstallableTask::InstallableTask(const InstallableParams params,

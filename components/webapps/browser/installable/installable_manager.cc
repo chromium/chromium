@@ -102,7 +102,6 @@ void InstallableManager::GetAllErrors(
   InstallableParams params;
   params.check_eligibility = true;
   params.installable_criteria = InstallableCriteria::kValidManifestWithIcons;
-  params.check_webapp_manifest_display = true;
   params.fetch_screenshots = true;
   params.valid_primary_icon = true;
   params.is_debug_mode = true;
