@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_GO_TO_OS_SETTINGS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_USER_UNDERSTANDS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.PREEXISTING_DEVICE_LOCK;
+import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.UI_ENABLED;
 import static org.chromium.components.browser_ui.device_lock.DeviceLockBridge.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED;
 
 import android.accounts.Account;
@@ -74,6 +75,7 @@ public class DeviceLockMediator {
                          .with(DEVICE_SUPPORTS_PIN_CREATION_INTENT,
                                  DeviceLockUtils.isDeviceLockCreationIntentSupported(mActivity))
                          .with(IN_SIGN_IN_FLOW, account != null)
+                         .with(UI_ENABLED, true)
                          .with(ON_CREATE_DEVICE_LOCK_CLICKED, v -> onCreateDeviceLockClicked())
                          .with(ON_GO_TO_OS_SETTINGS_CLICKED, v -> onGoToOSSettingsClicked())
                          .with(ON_USER_UNDERSTANDS_CLICKED, v -> onUserUnderstandsClicked())
@@ -96,16 +98,19 @@ public class DeviceLockMediator {
     }
 
     private void onCreateDeviceLockClicked() {
+        mModel.set(UI_ENABLED, false);
         navigateToDeviceLockCreation(DeviceLockUtils.createDeviceLockDirectlyIntent(),
                 () -> maybeTriggerAccountReauthenticationChallenge(this::setDeviceLockReady));
     }
 
     private void onGoToOSSettingsClicked() {
+        mModel.set(UI_ENABLED, false);
         navigateToDeviceLockCreation(DeviceLockUtils.createDeviceLockThroughOSSettingsIntent(),
                 () -> maybeTriggerAccountReauthenticationChallenge(this::setDeviceLockReady));
     }
 
     private void onUserUnderstandsClicked() {
+        mModel.set(UI_ENABLED, false);
         triggerDeviceLockChallenge(
                 () -> maybeTriggerAccountReauthenticationChallenge(this::setDeviceLockReady));
     }

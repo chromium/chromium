@@ -23,6 +23,7 @@ import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_GO_TO_OS_SETTINGS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_USER_UNDERSTANDS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.PREEXISTING_DEVICE_LOCK;
+import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.UI_ENABLED;
 import static org.chromium.components.browser_ui.device_lock.DeviceLockBridge.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED;
 
 import android.accounts.Account;
@@ -426,6 +427,13 @@ public class DeviceLockMediatorUnitTest {
                             + "device lock is not ready.",
                     ContextUtils.getAppSharedPreferences().getBoolean(
                             DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false));
+        }
+        if (onClick.equals(ON_DISMISS_CLICKED)) {
+            assertTrue("The UI should still be in an enabled state.",
+                    deviceLockMediator.getModel().get(UI_ENABLED));
+        } else {
+            assertFalse("The UI should have been set to a disabled state.",
+                    deviceLockMediator.getModel().get(UI_ENABLED));
         }
     }
 

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.device_lock;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ALL_KEYS;
@@ -15,6 +16,7 @@ import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_GO_TO_OS_SETTINGS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_USER_UNDERSTANDS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.PREEXISTING_DEVICE_LOCK;
+import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.UI_ENABLED;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,6 +69,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
                                  .with(PREEXISTING_DEVICE_LOCK, false)
                                  .with(DEVICE_SUPPORTS_PIN_CREATION_INTENT, true)
                                  .with(IN_SIGN_IN_FLOW, false)
+                                 .with(UI_ENABLED, true)
                                  .with(ON_CREATE_DEVICE_LOCK_CLICKED,
                                          v -> mCreateDeviceLockButtonClicked.set(true))
                                  .with(ON_GO_TO_OS_SETTINGS_CLICKED,
@@ -137,6 +140,31 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
                 mView.getContinueButton().getVisibility());
         assertEquals("The dismiss button should always be visible", View.VISIBLE,
                 mView.getDismissButton().getVisibility());
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testDeviceLockView_uiEnabled_showsEnabledUI() {
+        mViewModel.set(UI_ENABLED, true);
+
+        assertEquals("The progress bar should not be visible.", View.GONE,
+                mView.getProgressBar().getVisibility());
+        assertTrue("The continue button should be enabled.", mView.getContinueButton().isEnabled());
+        assertTrue("The dismiss button should be enabled.", mView.getDismissButton().isEnabled());
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testDeviceLockView_uiDisabled_showsDisabledUI() {
+        mViewModel.set(UI_ENABLED, false);
+
+        assertEquals("The progress bar should be visible.", View.VISIBLE,
+                mView.getProgressBar().getVisibility());
+        assertFalse(
+                "The continue button should be disabled.", mView.getContinueButton().isEnabled());
+        assertFalse("The dismiss button should be disabled.", mView.getDismissButton().isEnabled());
     }
 
     @Test

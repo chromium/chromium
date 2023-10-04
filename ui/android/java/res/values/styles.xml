@@ -150,7 +150,15 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
     </style>
 
+    <style name="TextAppearance.Headline.Disabled.Baseline.Light" parent="TextAppearance.Headline"
+        tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_light</item>
+    </style>
     <style name="TextAppearance.TextLarge.Disabled.Baseline.Light" parent="TextAppearance.TextLarge"
+        tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_light</item>
+    </style>
+    <style name="TextAppearance.TextMedium.Disabled.Baseline.Light" parent="TextAppearance.TextMedium"
         tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_disabled_light</item>
     </style>
@@ -200,6 +208,10 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_secondary_dark</item>
     </style>
 
+    <style name="TextAppearance.Headline.Disabled.Baseline.Dark" parent="TextAppearance.Headline"
+        tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_dark</item>
+    </style>
     <style name="TextAppearance.TextLarge.Disabled.Baseline.Dark" parent="TextAppearance.TextLarge"
         tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_disabled_dark</item>
@@ -316,6 +328,10 @@ found in the LICENSE file.
     <style name="TextAppearance.ErrorCaption" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_error</item>
         <item name="android:textSize">@dimen/text_size_small</item>
+    </style>
+    <style name="TextAppearance.TextMedium.Error">
+        <item name="android:textColor">@color/default_text_color_error</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
 
     <!-- Toast UI -->

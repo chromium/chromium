@@ -39,9 +39,16 @@ found in the LICENSE file.
                 app:srcCompat="@drawable/device_lock_alert_illustration"
                 tools:ignore="ContentDescription"/>
 
+            <!-- Linear progress indicator -->
+            <org.chromium.components.browser_ui.widget.MaterialProgressBar
+                android:id="@+id/device_lock_linear_progress_indicator"
+                android:layout_below="@id/device_lock_illustration"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"/>
+
             <TextView
                 android:id="@+id/device_lock_title"
-                android:layout_below="@id/device_lock_illustration"
+                android:layout_below="@id/device_lock_linear_progress_indicator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"

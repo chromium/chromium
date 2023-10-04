@@ -16,6 +16,7 @@ public class DeviceLockProperties {
     static final WritableBooleanPropertyKey DEVICE_SUPPORTS_PIN_CREATION_INTENT =
             new WritableBooleanPropertyKey();
     static final WritableBooleanPropertyKey IN_SIGN_IN_FLOW = new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey UI_ENABLED = new WritableBooleanPropertyKey();
     static final ReadableObjectPropertyKey<OnClickListener> ON_CREATE_DEVICE_LOCK_CLICKED =
             new ReadableObjectPropertyKey<>();
     static final ReadableObjectPropertyKey<OnClickListener> ON_GO_TO_OS_SETTINGS_CLICKED =
@@ -29,6 +30,7 @@ public class DeviceLockProperties {
             PREEXISTING_DEVICE_LOCK,
             DEVICE_SUPPORTS_PIN_CREATION_INTENT,
             IN_SIGN_IN_FLOW,
+            UI_ENABLED,
             ON_CREATE_DEVICE_LOCK_CLICKED,
             ON_GO_TO_OS_SETTINGS_CLICKED,
             ON_USER_UNDERSTANDS_CLICKED,

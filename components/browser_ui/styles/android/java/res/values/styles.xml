@@ -232,6 +232,10 @@ found in the LICENSE file.
     </style>
 
     <!-- Disabled text styles -->
+    <style name="TextAppearance.Headline.Disabled" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_list</item>
+    </style>
+
     <style name="TextAppearance.TextLarge.Disabled" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_disabled_list</item>
     </style>
