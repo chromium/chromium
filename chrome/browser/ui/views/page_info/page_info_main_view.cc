@@ -158,16 +158,21 @@ void PageInfoMainView::EnsureCookieInfo() {
   if (cookie_button_ != nullptr) {
     return;
   }
-  bool is_3pcd_enabled = ui_delegate_->IsTrackingProtection3pcdEnabled();
+  bool is_3pcd_enabled = presenter_->IsTrackingProtection3pcdEnabled();
 
   // Get the icon.
   PageInfo::PermissionInfo info;
   info.type = ContentSettingsType::COOKIES;
   info.setting = CONTENT_SETTING_ALLOW;
-  const ui::ImageModel icon = PageInfoViewFactory::GetPermissionIcon(info);
+  const ui::ImageModel icon =
+      is_3pcd_enabled ? PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon()
+                      : PageInfoViewFactory::GetPermissionIcon(info);
 
   const std::u16string& tooltip =
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
+      is_3pcd_enabled
+          ? l10n_util::GetStringUTF16(
+                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_TOOLTIP)
+          : l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
 
   // Create a cookie button that opens a cookies subpage.
   cookie_button_ =

@@ -274,6 +274,9 @@
       <message name="IDS_PAGE_INFO_COOKIES_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Cookies and site data' button. Options on the next screen include: Block third-party cookies, Manage cookies and site data, and See related sites.">
         Options for cookies and site data
       </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Tracking Protection' button. Options on the next screen include: Block third-party cookies, and Manage on-device site data.">
+        Options for tracking protections and on-device site data
+      </message>
     </if>
 
     <!-- Permission values -->
