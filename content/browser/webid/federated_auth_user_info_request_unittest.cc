@@ -133,10 +133,12 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                       FetchWellKnownCallback callback) override {
     has_fetched_well_known_ = true;
     FetchStatus fetch_status = {ParseStatus::kSuccess, net::HTTP_OK};
+    IdpNetworkRequestManager::WellKnown well_known;
     std::set<GURL> well_known_urls = {GURL(kProviderUrl)};
+    well_known.provider_urls = std::move(well_known_urls);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), fetch_status, well_known_urls));
+        base::BindOnce(std::move(callback), fetch_status, well_known));
   }
 
   void FetchConfig(const GURL& provider,

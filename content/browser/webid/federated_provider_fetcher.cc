@@ -4,6 +4,7 @@
 
 #include "content/browser/webid/federated_provider_fetcher.h"
 
+#include "base/check.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
 
@@ -14,6 +15,14 @@ namespace {
 // Maximum number of provider URLs in the well-known file.
 // TODO(cbiesinger): Determine what the right number is.
 static constexpr size_t kMaxProvidersInWellKnownFile = 1ul;
+
+void SetError(FederatedProviderFetcher::FetchResult& fetch_result,
+              blink::mojom::FederatedAuthRequestResult result,
+              content::FedCmRequestIdTokenStatus token_status,
+              absl::optional<std::string> additional_console_error_message) {
+  fetch_result.error = FederatedProviderFetcher::FetchError(
+      result, token_status, additional_console_error_message);
+}
 
 }  // namespace
 
@@ -81,7 +90,7 @@ void FederatedProviderFetcher::Start(
 void FederatedProviderFetcher::OnWellKnownFetched(
     FetchResult& fetch_result,
     IdpNetworkRequestManager::FetchStatus status,
-    const std::set<GURL>& urls) {
+    const IdpNetworkRequestManager::WellKnown& well_known) {
   pending_well_known_fetches_.erase(fetch_result.identity_provider_config_url);
 
   constexpr char kWellKnownFileStr[] = "well-known file";
@@ -135,38 +144,7 @@ void FederatedProviderFetcher::OnWellKnownFetched(
     }
   }
 
-  if (urls.size() > kMaxProvidersInWellKnownFile) {
-    OnError(fetch_result, FederatedAuthRequestResult::kErrorWellKnownTooBig,
-            TokenStatus::kWellKnownTooBig,
-            /*additional_console_error_message=*/absl::nullopt);
-    return;
-  }
-
-  // The provider url from the API call:
-  // navigator.credentials.get({
-  //   federated: {
-  //     providers: [{
-  //       configURL: "https://foo.idp.example/fedcm.json",
-  //       clientId: "1234"
-  //     }],
-  //   }
-  // });
-  // must match the one in the well-known file:
-  // {
-  //   "provider_urls": [
-  //     "https://foo.idp.example/fedcm.json"
-  //   ]
-  // }
-  bool provider_url_is_valid =
-      (urls.count(fetch_result.identity_provider_config_url) != 0);
-
-  if (!provider_url_is_valid && !IsFedCmWithoutWellKnownEnforcementEnabled()) {
-    OnError(fetch_result,
-            FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
-            TokenStatus::kConfigNotInWellKnown,
-            /*additional_console_error_message=*/absl::nullopt);
-    return;
-  }
+  fetch_result.wellknown = std::move(well_known);
 
   RunCallbackIfDone();
 }
@@ -226,22 +204,54 @@ void FederatedProviderFetcher::OnConfigFetched(
   }
 
   fetch_result.endpoints = endpoints;
-
   fetch_result.metadata = idp_metadata;
 
+  RunCallbackIfDone();
+}
+
+void FederatedProviderFetcher::OnError(
+    FetchResult& fetch_result,
+    blink::mojom::FederatedAuthRequestResult result,
+    content::FedCmRequestIdTokenStatus token_status,
+    absl::optional<std::string> additional_console_error_message) {
+  SetError(fetch_result, result, token_status,
+           additional_console_error_message);
+  RunCallbackIfDone();
+}
+
+void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
+  // This function validates fetch results, by analyzing the config file and
+  // the well-known file.
+  // If the validation fails, this function sets the "error" property in the
+  // result.
+
+  if (result.error) {
+    // A fetch error was already recorded earlier (e.g. a network error).
+    return;
+  }
+
+  // Validates the config file. A valid config file must have:
+  //
+  // (a) a token endpoint same-origin url
+  // (b) an accounts endpoint same-origin url
+  // (c) optionally, a login_url same-origin url
+  //
+  // If one of these conditions are not met (e.g. one of the urls are not
+  // valid), we consider the config file invalid.
+
   bool is_token_valid = webid::IsEndpointSameOrigin(
-      fetch_result.identity_provider_config_url, fetch_result.endpoints.token);
-  bool is_accounts_valid =
-      webid::IsEndpointSameOrigin(fetch_result.identity_provider_config_url,
-                                  fetch_result.endpoints.accounts);
+      result.identity_provider_config_url, result.endpoints.token);
+  bool is_accounts_valid = webid::IsEndpointSameOrigin(
+      result.identity_provider_config_url, result.endpoints.accounts);
   url::Origin idp_origin =
-      url::Origin::Create(fetch_result.identity_provider_config_url);
-  // We only need a login URL if the IDP signin status API is enabled.
+      url::Origin::Create(result.identity_provider_config_url);
+
   bool is_login_url_valid =
       webid::GetIdpSigninStatusMode(render_frame_host_.get(), idp_origin) !=
           FedCmIdpSigninStatusMode::ENABLED ||
-      webid::IsEndpointSameOrigin(fetch_result.identity_provider_config_url,
-                                  idp_metadata.idp_login_url);
+      webid::IsEndpointSameOrigin(result.identity_provider_config_url,
+                                  result.metadata->idp_login_url);
+
   if (!is_token_valid || !is_accounts_valid || !is_login_url_valid) {
     std::string console_message =
         "Config file is missing or has an invalid URL for the following:\n";
@@ -255,29 +265,97 @@ void FederatedProviderFetcher::OnConfigFetched(
       console_message += "\"login_url\"\n";
     }
 
-    OnError(fetch_result,
-            FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
-            TokenStatus::kConfigInvalidResponse, console_message);
+    SetError(result,
+             FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
+             TokenStatus::kConfigInvalidResponse, console_message);
     return;
   }
 
-  RunCallbackIfDone();
-}
+  // Validates the well-known file.
 
-void FederatedProviderFetcher::OnError(
-    FetchResult& fetch_result,
-    blink::mojom::FederatedAuthRequestResult result,
-    content::FedCmRequestIdTokenStatus token_status,
-    absl::optional<std::string> additional_console_error_message) {
-  fetch_result.error =
-      FetchError(result, token_status, additional_console_error_message);
-  RunCallbackIfDone();
+  // A well-known is valid if:
+  //
+  // (a) a chrome://flag has been set to bypass the check or
+  // (b) the well-known has an accounts_endpoint/login_url attribute that
+  //     match the one in the config file or
+  // (c) the well-known file has a providers_url list of size 1 and that
+  //     contains the config url passed in the JS call
+
+  // (a)
+  if (IsFedCmWithoutWellKnownEnforcementEnabled()) {
+    return;
+  }
+
+  // (b)
+  if (IsFedCmAuthzEnabled() && result.wellknown.accounts.is_valid() &&
+      result.wellknown.login_url.is_valid() && result.metadata &&
+      result.metadata->idp_login_url.is_valid()) {
+    // Behind the AuthZ flag, it is valid for IdPs to have valid configURLs
+    // by announcing their accounts_endpoint and their login_urls in the
+    // .well-known file. When that happens, and both of these urls match the
+    // contents of their configURLs, the browser knows that they don't
+    // contain any extra data embedded in them, so they can used as a valid
+    // configURL without checking for its presence in the provider_urls array.
+    if (result.endpoints.accounts != result.wellknown.accounts ||
+        result.metadata->idp_login_url != result.wellknown.login_url) {
+      SetError(result,
+               FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
+               TokenStatus::kConfigInvalidResponse,
+               "The well-known file contains an accounts endpoint or login_url "
+               "that doesn't match the one in the configURL");
+    }
+    return;
+  }
+
+  // (c)
+  //
+  // The config url from the API call:
+  // navigator.credentials.get({
+  //   federated: {
+  //     providers: [{
+  //       configURL: "https://foo.idp.example/fedcm.json",
+  //       clientId: "1234"
+  //     }],
+  //   }
+  // });
+  //
+  // must match the one in the well-known file:
+  //
+  // {
+  //   "provider_urls": [
+  //     "https://foo.idp.example/fedcm.json"
+  //   ]
+  // }
+
+  if (result.wellknown.provider_urls.size() > kMaxProvidersInWellKnownFile) {
+    SetError(result, FederatedAuthRequestResult::kErrorWellKnownTooBig,
+             TokenStatus::kWellKnownTooBig,
+             /*additional_console_error_message=*/absl::nullopt);
+    return;
+  }
+
+  bool provider_url_is_valid = (result.wellknown.provider_urls.count(
+                                    result.identity_provider_config_url) != 0);
+
+  if (!provider_url_is_valid) {
+    SetError(result, FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
+             TokenStatus::kConfigNotInWellKnown,
+             /*additional_console_error_message=*/absl::nullopt);
+    return;
+  }
 }
 
 void FederatedProviderFetcher::RunCallbackIfDone() {
-  if (pending_config_fetches_.empty() && pending_well_known_fetches_.empty()) {
-    std::move(callback_).Run(std::move(fetch_results_));
+  if (!pending_config_fetches_.empty() ||
+      !pending_well_known_fetches_.empty()) {
+    return;
   }
+
+  for (auto& result : fetch_results_) {
+    ValidateAndMaybeSetError(result);
+  }
+
+  std::move(callback_).Run(std::move(fetch_results_));
 }
 
 }  // namespace content

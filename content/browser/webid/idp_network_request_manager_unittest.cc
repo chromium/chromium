@@ -141,9 +141,10 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     FetchStatus parsed_fetch_status;
     std::set<GURL> parsed_urls;
     auto callback = base::BindLambdaForTesting(
-        [&](FetchStatus fetch_status, const std::set<GURL>& urls) {
+        [&](FetchStatus fetch_status,
+            const IdpNetworkRequestManager::WellKnown& well_known) {
           parsed_fetch_status = fetch_status;
-          parsed_urls = urls;
+          parsed_urls = well_known.provider_urls;
           run_loop.Quit();
         });
 
@@ -573,7 +574,8 @@ TEST_F(IdpNetworkRequestManagerTest, FetchWellKnownIllegalDomainFails) {
 
   base::RunLoop run_loop;
   auto callback = base::BindLambdaForTesting(
-      [&](FetchStatus fetch_status, const std::set<GURL>& urls) {
+      [&](FetchStatus fetch_status,
+          const IdpNetworkRequestManager::WellKnown& well_known) {
         EXPECT_EQ(ParseStatus::kHttpNotFoundError, fetch_status.parse_status);
         // We receive OK here because
         // IdpNetworkRequestManager::ComputeWellKnownUrl() fails.

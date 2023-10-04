@@ -62,10 +62,12 @@ constexpr char kProviderUrlListKey[] = "provider_urls";
 
 // fedcm.json configuration keys.
 constexpr char kIdAssertionEndpoint[] = "id_assertion_endpoint";
-constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
 constexpr char kMetricsEndpoint[] = "metrics_endpoint";
 constexpr char kLoginUrlKeyDeprecated[] = "signin_url";
+
+// Shared between the well-known files and config files
+constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
 constexpr char kLoginUrlKey[] = "login_url";
 
 // Keys in fedcm.json 'branding' dictionary.
@@ -407,6 +409,16 @@ void OnDownloadedJson(
                      response_code));
 }
 
+GURL ExtractEndpoint(const GURL& provider,
+                     const base::Value::Dict& response,
+                     const char* key) {
+  const std::string* endpoint = response.FindString(key);
+  if (!endpoint) {
+    return GURL();
+  }
+  return ResolveConfigUrl(provider, *endpoint);
+}
+
 void OnWellKnownParsed(
     IdpNetworkRequestManager::FetchWellKnownCallback callback,
     const GURL& well_known_url,
@@ -415,30 +427,38 @@ void OnWellKnownParsed(
   if (callback.IsCancelled())
     return;
 
+  IdpNetworkRequestManager::WellKnown well_known;
   std::set<GURL> urls;
 
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
-    std::move(callback).Run(fetch_status, urls);
+    std::move(callback).Run(fetch_status, std::move(well_known));
     return;
   }
 
   const base::Value::Dict* dict = result->GetIfDict();
   if (!dict) {
     std::move(callback).Run(
-        {ParseStatus::kInvalidResponseError, fetch_status.response_code}, urls);
+        {ParseStatus::kInvalidResponseError, fetch_status.response_code},
+        std::move(well_known));
     return;
   }
+
+  well_known.accounts =
+      ExtractEndpoint(well_known_url, *dict, kAccountsEndpointKey);
+  well_known.login_url = ExtractEndpoint(well_known_url, *dict, kLoginUrlKey);
 
   const base::Value::List* list = dict->FindList(kProviderUrlListKey);
   if (!list) {
     std::move(callback).Run(
-        {ParseStatus::kInvalidResponseError, fetch_status.response_code}, urls);
+        {ParseStatus::kInvalidResponseError, fetch_status.response_code},
+        std::move(well_known));
     return;
   }
 
   if (list->empty()) {
     std::move(callback).Run(
-        {ParseStatus::kEmptyListError, fetch_status.response_code}, urls);
+        {ParseStatus::kEmptyListError, fetch_status.response_code},
+        std::move(well_known));
     return;
   }
 
@@ -447,7 +467,7 @@ void OnWellKnownParsed(
     if (!url_str) {
       std::move(callback).Run(
           {ParseStatus::kInvalidResponseError, fetch_status.response_code},
-          std::set<GURL>());
+          std::move(well_known));
       return;
     }
     GURL url(*url_str);
@@ -457,8 +477,10 @@ void OnWellKnownParsed(
     urls.insert(url);
   }
 
+  well_known.provider_urls = std::move(urls);
+
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
-                          urls);
+                          std::move(well_known));
 }
 
 void OnConfigParsed(const GURL& provider,
@@ -474,19 +496,14 @@ void OnConfigParsed(const GURL& provider,
   }
 
   const base::Value::Dict& response = result->GetDict();
-  auto ExtractEndpoint = [&](const char* key) {
-    const std::string* endpoint = response.FindString(key);
-    if (!endpoint) {
-      return GURL();
-    }
-    return ResolveConfigUrl(provider, *endpoint);
-  };
 
   Endpoints endpoints;
-  endpoints.token = ExtractEndpoint(kIdAssertionEndpoint);
-  endpoints.accounts = ExtractEndpoint(kAccountsEndpointKey);
-  endpoints.client_metadata = ExtractEndpoint(kClientMetadataEndpointKey);
-  endpoints.metrics = ExtractEndpoint(kMetricsEndpoint);
+  endpoints.token = ExtractEndpoint(provider, response, kIdAssertionEndpoint);
+  endpoints.accounts =
+      ExtractEndpoint(provider, response, kAccountsEndpointKey);
+  endpoints.client_metadata =
+      ExtractEndpoint(provider, response, kClientMetadataEndpointKey);
+  endpoints.metrics = ExtractEndpoint(provider, response, kMetricsEndpoint);
 
   const base::Value::Dict* idp_metadata_value =
       response.FindDict(kIdpBrandingKey);
@@ -497,10 +514,12 @@ void OnConfigParsed(const GURL& provider,
                                   idp_brand_icon_ideal_size,
                                   idp_brand_icon_minimum_size, idp_metadata);
   }
-  idp_metadata.idp_login_url = ExtractEndpoint(kLoginUrlKey);
+  idp_metadata.idp_login_url =
+      ExtractEndpoint(provider, response, kLoginUrlKey);
   // TODO(cbiesinger): remove this fallback before 120
   if (idp_metadata.idp_login_url.is_empty()) {
-    idp_metadata.idp_login_url = ExtractEndpoint(kLoginUrlKeyDeprecated);
+    idp_metadata.idp_login_url =
+        ExtractEndpoint(provider, response, kLoginUrlKeyDeprecated);
   }
 
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
@@ -643,6 +662,11 @@ void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
 IdpNetworkRequestManager::Endpoints::Endpoints() = default;
 IdpNetworkRequestManager::Endpoints::~Endpoints() = default;
 IdpNetworkRequestManager::Endpoints::Endpoints(const Endpoints& other) =
+    default;
+
+IdpNetworkRequestManager::WellKnown::WellKnown() = default;
+IdpNetworkRequestManager::WellKnown::~WellKnown() = default;
+IdpNetworkRequestManager::WellKnown::WellKnown(const WellKnown& other) =
     default;
 
 IdpNetworkRequestManager::TokenResult::TokenResult() = default;
