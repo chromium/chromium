@@ -753,10 +753,6 @@ void SearchBoxView::OpenAssistantPage() {
   delegate_->AssistantButtonPressed();
 }
 
-void SearchBoxView::OpenSearchBoxIphUrl() {
-  view_delegate_->OpenSearchBoxIphUrl();
-}
-
 void SearchBoxView::ShowFilterMenu() {
   ui::SimpleMenuModel* model = BuildFilterMenuModel();
   filter_menu_adapter_ = std::make_unique<FilterMenuAdapter>(

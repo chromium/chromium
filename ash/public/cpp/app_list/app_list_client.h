@@ -130,9 +130,6 @@ class ASH_PUBLIC_EXPORT AppListClient {
   virtual std::unique_ptr<ScopedIphSession>
   CreateLauncherSearchIphSession() = 0;
 
-  // Opens the url in a browser for the search box IPH.
-  virtual void OpenSearchBoxIphUrl() = 0;
-
   // Invoked to load an icon of the app identified by `app_id`.
   virtual void LoadIcon(int profile_id, const std::string& app_id) = 0;
 

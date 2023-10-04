@@ -61,7 +61,6 @@ class TestAppListClient : public AppListClient {
   AppListNotifier* GetNotifier() override;
   void RecalculateWouldTriggerLauncherSearchIph() override;
   std::unique_ptr<ScopedIphSession> CreateLauncherSearchIphSession() override;
-  void OpenSearchBoxIphUrl() override;
   void LoadIcon(int profile_id, const std::string& app_id) override;
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
 

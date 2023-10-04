@@ -355,13 +355,6 @@ AppListControllerImpl::CreateLauncherSearchIphSession() {
   return client_->CreateLauncherSearchIphSession();
 }
 
-void AppListControllerImpl::OpenSearchBoxIphUrl() {
-  if (!client_) {
-    return;
-  }
-  client_->OpenSearchBoxIphUrl();
-}
-
 void AppListControllerImpl::SetActiveModel(
     int profile_id,
     AppListModel* model,

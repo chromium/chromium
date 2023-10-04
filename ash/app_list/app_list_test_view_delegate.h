@@ -107,7 +107,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   bool IsInTabletMode() override;
   AppListNotifier* GetNotifier() override;
   std::unique_ptr<ScopedIphSession> CreateLauncherSearchIphSession() override;
-  void OpenSearchBoxIphUrl() override;
   void LoadIcon(const std::string& app_id) override {}
   bool HasValidProfile() const override;
   bool ShouldHideContinueSection() const override;

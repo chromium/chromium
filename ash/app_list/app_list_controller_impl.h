@@ -152,7 +152,6 @@ class ASH_EXPORT AppListControllerImpl
   AppListNotifier* GetNotifier() override;
   std::unique_ptr<ash::ScopedIphSession> CreateLauncherSearchIphSession()
       override;
-  void OpenSearchBoxIphUrl() override;
   void StartAssistant() override;
   std::vector<AppListSearchControlCategory> GetToggleableCategories()
       const override;

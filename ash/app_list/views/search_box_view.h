@@ -110,7 +110,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // LauncherSearchIphView::Delegate:
   void RunLauncherSearchQuery(const std::u16string& query) override;
   void OpenAssistantPage() override;
-  void OpenSearchBoxIphUrl() override;
 
   // Shows the category filter menu that allows users to enable/disable specific
   // search categories.

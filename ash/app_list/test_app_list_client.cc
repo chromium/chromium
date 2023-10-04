@@ -104,8 +104,6 @@ TestAppListClient::CreateLauncherSearchIphSession() {
   return std::make_unique<FakeScopedIphSession>();
 }
 
-void TestAppListClient::OpenSearchBoxIphUrl() {}
-
 void TestAppListClient::LoadIcon(int profile_id, const std::string& app_id) {
   loaded_icon_app_ids_.push_back(app_id);
 }

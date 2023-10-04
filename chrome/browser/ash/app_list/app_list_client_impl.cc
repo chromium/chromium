@@ -72,8 +72,6 @@ constexpr base::TimeDelta kTimeMetricsMin = base::Seconds(1);
 constexpr base::TimeDelta kTimeMetricsMax = base::Days(7);
 constexpr int kTimeMetricsBucketCount = 100;
 
-constexpr char kSearchBoxIphUrlPlaceholder[] = "https://www.google.com/";
-
 bool IsTabletMode() {
   return ash::TabletMode::IsInTabletMode();
 }
@@ -732,12 +730,6 @@ AppListClientImpl::CreateLauncherSearchIphSession() {
   // return `ScopedIphSessionImpl`.
   return std::make_unique<ScopedIphSessionImpl>(
       tracker, feature_engagement::kIPHLauncherSearchHelpUiFeature);
-}
-
-void AppListClientImpl::OpenSearchBoxIphUrl() {
-  OpenURL(profile_, GURL(kSearchBoxIphUrlPlaceholder),
-          ui::PageTransition::PAGE_TRANSITION_LINK,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
 void AppListClientImpl::LoadIcon(int profile_id, const std::string& app_id) {

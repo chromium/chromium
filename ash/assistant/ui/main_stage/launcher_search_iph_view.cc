@@ -26,8 +26,6 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/link.h"
-#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
@@ -41,7 +39,6 @@ constexpr int kActionContainerBetweenChildSpacing = 8;
 
 constexpr char16_t kTitleTextPlaceholder[] = u"Title text";
 constexpr char16_t kDescriptionTextPlaceholder[] = u"Description text";
-constexpr char16_t kLinkTextPlaceholder[] = u"Link text";
 
 constexpr char16_t kChipOneQueryPlaceholder[] = u"Weather";
 constexpr char16_t kChipTwoQueryPlaceholder[] = u"1+1";
@@ -106,24 +103,9 @@ LauncherSearchIphView::LauncherSearchIphView(
   title_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   title_label->SetEnabledColorId(kColorAshTextColorPrimary);
 
-  // Add a description text and a link into another container to have a
-  // different between-child-spacing.
-  views::BoxLayoutView* description_container =
-      text_container->AddChildView(std::make_unique<views::BoxLayoutView>());
-  description_container->SetOrientation(
-      views::BoxLayout::Orientation::kVertical);
-  description_container->SetCrossAxisAlignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
-
-  views::Label* description_label = description_container->AddChildView(
+  views::Label* description_label = text_container->AddChildView(
       std::make_unique<views::Label>(kDescriptionTextPlaceholder));
   description_label->SetEnabledColorId(kColorAshTextColorPrimary);
-
-  link_label_ = description_container->AddChildView(
-      std::make_unique<views::Link>(kLinkTextPlaceholder));
-  link_label_->SetID(ViewId::kDescriptionLinkLabel);
-  link_label_->SetCallback(base::BindRepeating(
-      &LauncherSearchIphView::OnLinkClicked, weak_ptr_factory_.GetWeakPtr()));
 
   const TypographyProvider* typography_provider = TypographyProvider::Get();
   DCHECK(typography_provider) << "TypographyProvider must not be null";
@@ -131,7 +113,6 @@ LauncherSearchIphView::LauncherSearchIphView(
     typography_provider->StyleLabel(TypographyToken::kCrosTitle1, *title_label);
     typography_provider->StyleLabel(TypographyToken::kCrosBody2,
                                     *description_label);
-    typography_provider->StyleLabel(TypographyToken::kCrosBody2, *link_label_);
   }
 
   views::BoxLayoutView* actions_container =
@@ -181,26 +162,10 @@ LauncherSearchIphView::LauncherSearchIphView(
 
 LauncherSearchIphView::~LauncherSearchIphView() = default;
 
-void LauncherSearchIphView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  ui::ColorProvider* color_provider = link_label_->GetColorProvider();
-  DCHECK(color_provider) << "ColorProvider must not be null";
-  if (color_provider) {
-    // TODO(b/277380563): `views::Link::SetEnabledColorId` does not work.
-    link_label_->SetEnabledColor(
-        color_provider->GetColor(ui::ColorIds::kColorLabelForeground));
-  }
-}
-
 void LauncherSearchIphView::RunLauncherSearchQuery(
     const std::u16string& query) {
   scoped_iph_session_->NotifyEvent(kIphEventNameChipClick);
   delegate_->RunLauncherSearchQuery(query);
-}
-
-void LauncherSearchIphView::OnLinkClicked(const ui::Event& event) {
-  delegate_->OpenSearchBoxIphUrl();
 }
 
 void LauncherSearchIphView::OpenAssistantPage() {

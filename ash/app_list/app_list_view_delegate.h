@@ -49,9 +49,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   virtual std::unique_ptr<ScopedIphSession>
   CreateLauncherSearchIphSession() = 0;
 
-  // Opens the url in a browser for the search box IPH.
-  virtual void OpenSearchBoxIphUrl() = 0;
-
   // Invoked to start a new Google Assistant session.
   virtual void StartAssistant() = 0;
 
