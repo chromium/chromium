@@ -33,7 +33,7 @@ suite('PriceTrackingSectionTest', () => {
   };
 
   const priceInsights: PriceInsightsInfo = {
-    clusterId: BigInt(123),
+    clusterId: BigInt(12345),
     typicalLowPrice: '$100',
     typicalHighPrice: '$200',
     catalogAttributes: 'Unlocked, 4GB',
@@ -244,5 +244,33 @@ suite('PriceTrackingSectionTest', () => {
         loadTimeData.getString('trackPriceError') + '.');
     assertEquals(
         priceTrackingSection.$.toggle!.getAttribute('aria-pressed'), 'true');
+  });
+
+  test(`Observe product bookmark move event`, async () => {
+    shoppingListApi.setResultFor(
+        'getPriceTrackingStatusForCurrentUrl',
+        Promise.resolve({tracked: true}));
+
+    document.body.appendChild(priceTrackingSection);
+    await shoppingListApi.whenCalled('getPriceTrackingStatusForCurrentUrl');
+    await flushTasks();
+    checkPriceTrackingSectionRendering(true);
+    let expectedAnnotation =
+        loadTimeData.getStringF('trackPriceDone', 'Parent folder') + '.';
+    assertEquals(
+        priceTrackingSection.$.toggleAnnotation!.textContent,
+        expectedAnnotation);
+
+    shoppingListApi.setResultFor(
+        'getParentBookmarkFolderNameForCurrentUrl',
+        Promise.resolve({name: stringToMojoString16('New folder')}));
+    callbackRouterRemote.onProductBookmarkMoved(bookmarkProductInfo);
+    await flushTasks();
+
+    expectedAnnotation =
+        loadTimeData.getStringF('trackPriceDone', 'New folder') + '.';
+    assertEquals(
+        priceTrackingSection.$.toggleAnnotation!.textContent,
+        expectedAnnotation);
   });
 });

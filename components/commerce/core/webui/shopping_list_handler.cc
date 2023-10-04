@@ -216,7 +216,8 @@ ShoppingListHandler::ShoppingListHandler(
       tracker_(tracker),
       locale_(locale),
       delegate_(std::move(delegate)) {
-  scoped_observation_.Observe(shopping_service_);
+  scoped_subscriptions_observation_.Observe(shopping_service_);
+  scoped_bookmark_model_observation_.Observe(bookmark_model_);
   // It is safe to schedule updates and observe bookmarks. If the feature is
   // disabled, no new information will be fetched or provided to the frontend.
   shopping_service_->ScheduleSavedProductUpdate();
@@ -313,6 +314,28 @@ void ShoppingListHandler::OnUnsubscribe(
   if (succeeded) {
     HandleSubscriptionChange(subscription, false);
   }
+}
+
+void ShoppingListHandler::BookmarkModelChanged() {}
+
+void ShoppingListHandler::BookmarkNodeMoved(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* old_parent,
+    size_t old_index,
+    const bookmarks::BookmarkNode* new_parent,
+    size_t new_index) {
+  const bookmarks::BookmarkNode* node = new_parent->children()[new_index].get();
+  if (!node) {
+    return;
+  }
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+      power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_, node);
+  if (!meta || !meta->has_shopping_specifics() ||
+      !meta->shopping_specifics().has_product_cluster_id()) {
+    return;
+  }
+  remote_page_->OnProductBookmarkMoved(
+      BookmarkNodeToMojoProduct(*bookmark_model_, node, locale_));
 }
 
 void ShoppingListHandler::HandleSubscriptionChange(
