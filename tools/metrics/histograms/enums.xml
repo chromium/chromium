@@ -49527,6 +49527,24 @@ Called by update_permissions_policy_enum.py.-->
   <int value="32770" label="PDF"/>
 </enum>
 
+<enum name="GeneratedIconFixResult">
+  <int value="0" label="kAppUninstalled"/>
+  <int value="1" label="kShutdown"/>
+  <int value="2" label="kDownloadFailure"/>
+  <int value="3" label="kStillGenerated"/>
+  <int value="4" label="kWriteFailure"/>
+  <int value="5" label="kSuccess"/>
+</enum>
+
+<enum name="GeneratedIconFixScheduleDecision">
+  <int value="0" label="kNotSynced"/>
+  <int value="1" label="kTimeWindowExpired"/>
+  <int value="2" label="kNotRequired"/>
+  <int value="3" label="kAttemptLimitReached"/>
+  <int value="4" label="kAlreadyScheduled"/>
+  <int value="5" label="kSchedule"/>
+</enum>
+
 <enum name="GeneratedPasswordAlteredLengthIncreased">
   <int value="0" label="Length decreased"/>
   <int value="1" label="Length increased"/>

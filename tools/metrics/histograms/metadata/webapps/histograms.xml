@@ -491,6 +491,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.GeneratedIconFix.AttemptCount" units="attempts"
+    expires_after="2024-06-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the number of generated icon fixes already attempted for each web
+    app that had an icon fix scheduled at start up. Recorded at start up.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.GeneratedIconFix.Result" enum="GeneratedIconFixResult"
+    expires_after="2024-06-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of attempting to fix a web app's generated icon. Recorded
+    during start up and for all follow up daily retry events.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.GeneratedIconFix.ScheduleDecision"
+    enum="GeneratedIconFixScheduleDecision" expires_after="2024-06-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the decision made for whether to fix a web app's generated icon.
+    Recorded during start up and for all follow up daily retry events.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.GeneratedIconFix.StartUpAttemptCount"
+    units="start up attempts" expires_after="2024-06-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the number of background generated icon fix attempts initiated
+    during start up. Recorded at start up.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Icon.AppsWithEmptyDownloadedIconSizes" units="web apps"
     expires_after="2024-02-04">
   <owner>alancutter@chromium.org</owner>

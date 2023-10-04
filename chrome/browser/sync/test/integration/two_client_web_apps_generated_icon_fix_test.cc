@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 #include "chrome/browser/web_applications/generated_icon_fix_manager.h"
@@ -67,7 +68,11 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
     return generated_icon_fix;
   }
 
-  TwoClientGeneratedIconFixSyncTest() : WebAppsSyncTestBase(TWO_CLIENT) {}
+  TwoClientGeneratedIconFixSyncTest() : WebAppsSyncTestBase(TWO_CLIENT) {
+    // Because the retry happens asynchronously it causes flakiness in the
+    // metric expectations.
+    GeneratedIconFixManager::DisableAutoRetryForTesting();
+  }
   ~TwoClientGeneratedIconFixSyncTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -174,6 +179,7 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
 
 IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Fix) {
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
+  base::HistogramTester histogram_tester;
 
   base::Time first_now = base::Time::Now();
   generated_icon_fix_util::SetNowForTesting(first_now);
@@ -212,9 +218,20 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Fix) {
                            /*window_start_time=*/first_now,
                            /*last_attempt_time=*/second_now,
                            /*attempt_count=*/1));
+
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.GeneratedIconFix.ScheduleDecision",
+      GeneratedIconFixScheduleDecision::kSchedule, 1);
+  histogram_tester.ExpectUniqueSample("WebApp.GeneratedIconFix.Result",
+                                      GeneratedIconFixResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.GeneratedIconFix.StartUpAttemptCount", 1, 1);
+  histogram_tester.ExpectUniqueSample("WebApp.GeneratedIconFix.AttemptCount", 0,
+                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, TimeWindowExpired) {
+  base::HistogramTester histogram_tester;
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
 
   base::Time first_now = base::Time::Now();
@@ -258,9 +275,18 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, TimeWindowExpired) {
                            /*window_start_time=*/first_now,
                            /*last_attempt_time=*/absl::nullopt,
                            /*attempt_count=*/0));
+
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.GeneratedIconFix.ScheduleDecision",
+      GeneratedIconFixScheduleDecision::kTimeWindowExpired, 1);
+  histogram_tester.ExpectTotalCount("WebApp.GeneratedIconFix.Result", 0);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.GeneratedIconFix.StartUpAttemptCount", 0, 1);
+  histogram_tester.ExpectTotalCount("WebApp.GeneratedIconFix.AttemptCount", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, NotRequired) {
+  base::HistogramTester histogram_tester;
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
 
   base::Time first_now = base::Time::Now();
@@ -296,9 +322,18 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, NotRequired) {
                            /*window_start_time=*/first_now,
                            /*last_attempt_time=*/absl::nullopt,
                            /*attempt_count=*/0));
+
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.GeneratedIconFix.ScheduleDecision",
+      GeneratedIconFixScheduleDecision::kNotRequired, 1);
+  histogram_tester.ExpectTotalCount("WebApp.GeneratedIconFix.Result", 0);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.GeneratedIconFix.StartUpAttemptCount", 0, 1);
+  histogram_tester.ExpectTotalCount("WebApp.GeneratedIconFix.AttemptCount", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AppUninstalled) {
+  base::HistogramTester histogram_tester;
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
 
   base::Time first_now = base::Time::Now();
@@ -331,10 +366,22 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AppUninstalled) {
   EXPECT_EQ(futures.fix.Get<webapps::AppId>(), app_id);
   EXPECT_EQ(futures.fix.Get<GeneratedIconFixResult>(),
             GeneratedIconFixResult::kAppUninstalled);
+
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.GeneratedIconFix.ScheduleDecision",
+      GeneratedIconFixScheduleDecision::kSchedule, 1);
+  histogram_tester.ExpectUniqueSample("WebApp.GeneratedIconFix.Result",
+                                      GeneratedIconFixResult::kAppUninstalled,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.GeneratedIconFix.StartUpAttemptCount", 1, 1);
+  histogram_tester.ExpectUniqueSample("WebApp.GeneratedIconFix.AttemptCount", 0,
+                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest,
                        RetroactiveTimeWindow) {
+  base::HistogramTester histogram_tester;
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
 
   base::Time first_now = base::Time::Now();
@@ -404,9 +451,26 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest,
                            /*window_start_time=*/second_now,
                            /*last_attempt_time=*/second_now,
                            /*attempt_count=*/1));
+
+  histogram_tester.ExpectBucketCount(
+      "WebApp.GeneratedIconFix.ScheduleDecision",
+      GeneratedIconFixScheduleDecision::kSchedule, 1);
+  histogram_tester.ExpectBucketCount(
+      "WebApp.GeneratedIconFix.ScheduleDecision",
+      GeneratedIconFixScheduleDecision::kTimeWindowExpired, 1);
+  histogram_tester.ExpectUniqueSample("WebApp.GeneratedIconFix.Result",
+                                      GeneratedIconFixResult::kStillGenerated,
+                                      1);
+  histogram_tester.ExpectBucketCount(
+      "WebApp.GeneratedIconFix.StartUpAttemptCount", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "WebApp.GeneratedIconFix.StartUpAttemptCount", 1, 1);
+  histogram_tester.ExpectBucketCount("WebApp.GeneratedIconFix.AttemptCount", 0,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Throttling) {
+  base::HistogramTester histogram_tester;
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
 
   // Proto time conversion loses precision which must be accounted for when
@@ -476,6 +540,19 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Throttling) {
   EXPECT_EQ(generated_icon_fix_util::GetThrottleDuration(app),
             base::TimeDelta());
 
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.GeneratedIconFix.ScheduleDecision",
+      GeneratedIconFixScheduleDecision::kSchedule, 2);
+  histogram_tester.ExpectUniqueSample("WebApp.GeneratedIconFix.Result",
+                                      GeneratedIconFixResult::kStillGenerated,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.GeneratedIconFix.StartUpAttemptCount", 1, 2);
+  histogram_tester.ExpectBucketCount("WebApp.GeneratedIconFix.AttemptCount", 0,
+                                     1);
+  histogram_tester.ExpectBucketCount("WebApp.GeneratedIconFix.AttemptCount", 1,
+                                     1);
+
   // Note that this test doesn't use
   // TaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME) to
   // properly test the PostDelayedTask() behaviour due to the incompatibility it
@@ -484,6 +561,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Throttling) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AttemptLimit) {
+  base::HistogramTester histogram_tester;
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
 
   base::Time first_now = base::Time::Now();
@@ -551,6 +629,22 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AttemptLimit) {
     EXPECT_EQ(futures.schedule.Get<GeneratedIconFixScheduleDecision>(),
               GeneratedIconFixScheduleDecision::kAttemptLimitReached);
   }
+
+  histogram_tester.ExpectBucketCount(
+      "WebApp.GeneratedIconFix.ScheduleDecision",
+      GeneratedIconFixScheduleDecision::kSchedule, 1);
+  histogram_tester.ExpectBucketCount(
+      "WebApp.GeneratedIconFix.ScheduleDecision",
+      GeneratedIconFixScheduleDecision::kAttemptLimitReached, 1);
+  histogram_tester.ExpectUniqueSample("WebApp.GeneratedIconFix.Result",
+                                      GeneratedIconFixResult::kStillGenerated,
+                                      1);
+  histogram_tester.ExpectBucketCount(
+      "WebApp.GeneratedIconFix.StartUpAttemptCount", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "WebApp.GeneratedIconFix.StartUpAttemptCount", 0, 1);
+  histogram_tester.ExpectBucketCount("WebApp.GeneratedIconFix.AttemptCount", 6,
+                                     1);
 }
 
 }  // namespace web_app

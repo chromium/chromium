@@ -22,17 +22,22 @@ namespace web_app {
 class WebAppProvider;
 class WebApp;
 
+// Used by metrics.
 enum class GeneratedIconFixScheduleDecision {
-  kNoApp,
-  kTimeWindowExpired,
-  kNotRequired,
-  kAttemptLimitReached,
-  kAlreadyScheduled,
-  kSchedule,
+  kNotSynced = 0,
+  kTimeWindowExpired = 1,
+  kNotRequired = 2,
+  kAttemptLimitReached = 3,
+  kAlreadyScheduled = 4,
+  kSchedule = 5,
+
+  kMaxValue = kSchedule,
 };
 
 class GeneratedIconFixManager {
  public:
+  static void DisableAutoRetryForTesting();
+
   GeneratedIconFixManager();
   ~GeneratedIconFixManager();
 
@@ -60,9 +65,9 @@ class GeneratedIconFixManager {
   }
 
  private:
-  GeneratedIconFixScheduleDecision MaybeScheduleFix(
-      WithAppResources& resources,
-      const webapps::AppId& app_id);
+  // Returns whether a fix was newly scheduled for `app_id`.
+  bool MaybeScheduleFix(WithAppResources& resources,
+                        const webapps::AppId& app_id);
   GeneratedIconFixScheduleDecision MakeScheduleDecision(const WebApp* app);
   void StartFix(const webapps::AppId& app_id);
   void FixCompleted(const webapps::AppId& app_id,
