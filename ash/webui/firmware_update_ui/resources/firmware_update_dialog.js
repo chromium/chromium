@@ -14,9 +14,10 @@ import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FirmwareUpdate, InstallationProgress, InstallControllerRemote, UpdateProgressObserverInterface, UpdateProgressObserverReceiver, UpdateProviderInterface, UpdateState} from './firmware_update.mojom-webui.js';
+import {getTemplate} from './firmware_update_dialog.html.js';
 import {DialogContent} from './firmware_update_types.js';
 import {getUpdateProvider} from './mojo_interface_provider.js';
 
@@ -51,7 +52,7 @@ export class FirmwareUpdateDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

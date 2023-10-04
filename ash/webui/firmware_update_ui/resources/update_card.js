@@ -16,6 +16,7 @@ import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FirmwareUpdate, UpdatePriority} from './firmware_update.mojom-webui.js';
+import {getTemplate} from './update_card.html.js';
 
 /**
  * @fileoverview
@@ -36,7 +37,7 @@ export class UpdateCardElement extends UpdateCardElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
