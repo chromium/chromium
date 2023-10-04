@@ -11,10 +11,12 @@
 // Struct intended to be used with designated initializers and passed
 // to the `CountersMatch()` matcher.
 //
-// `CountingImplType` isn't used directly; it tells the `CountersMatch`
-// matcher which impl's static members should be checked.
-template <typename CountingImplType>
-struct CountingRawPtrExpectations {
+// TODO(tsepez): Although we only want one kind of these, the class is still
+// a template to circumvent the chromium-style out-of-line constructor rule.
+// Adding such a constructor would make this no longer be an aggregate and
+// that would prohibit designated initiaizers.
+template <int IGNORE>
+struct CountingRawPtrExpectationTemplate {
   absl::optional<int> wrap_raw_ptr_cnt;
   absl::optional<int> release_wrapped_ptr_cnt;
   absl::optional<int> get_for_dereference_cnt;
@@ -26,41 +28,43 @@ struct CountingRawPtrExpectations {
   absl::optional<int> wrap_raw_ptr_for_dup_cnt;
   absl::optional<int> get_for_duplication_cnt;
 };
+using CountingRawPtrExpectations = CountingRawPtrExpectationTemplate<0>;
 
-#define REPORT_UNEQUAL_RAW_PTR_COUNTER(member_name, CounterClassImpl) \
-  {                                                                   \
-    if (arg.member_name.has_value() &&                                \
-        arg.member_name.value() != CounterClassImpl::member_name) {   \
-      *result_listener << "Expected `" #member_name "` to be "        \
-                       << arg.member_name.value() << " but got "      \
-                       << CounterClassImpl::member_name << "; ";      \
-      result = false;                                                 \
-    }                                                                 \
+#define REPORT_UNEQUAL_RAW_PTR_COUNTER(member_name)                          \
+  {                                                                          \
+    if (arg.member_name.has_value() &&                                       \
+        arg.member_name.value() !=                                           \
+            base::test::RawPtrCountingImplForTest::member_name) {            \
+      *result_listener << "Expected `" #member_name "` to be "               \
+                       << arg.member_name.value() << " but got "             \
+                       << base::test::RawPtrCountingImplForTest::member_name \
+                       << "; ";                                              \
+      result = false;                                                        \
+    }                                                                        \
   }
-#define REPORT_UNEQUAL_RAW_PTR_COUNTERS(result, CounterClassImpl)              \
-  {                                                                            \
-    result = true;                                                             \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrap_raw_ptr_cnt, CounterClassImpl)         \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(release_wrapped_ptr_cnt, CounterClassImpl)  \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_dereference_cnt, CounterClassImpl)  \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_extraction_cnt, CounterClassImpl)   \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_comparison_cnt, CounterClassImpl)   \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrapped_ptr_swap_cnt, CounterClassImpl)     \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrapped_ptr_less_cnt, CounterClassImpl)     \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(pointer_to_member_operator_cnt,             \
-                                   CounterClassImpl)                           \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrap_raw_ptr_for_dup_cnt, CounterClassImpl) \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_duplication_cnt, CounterClassImpl)  \
+
+#define REPORT_UNEQUAL_RAW_PTR_COUNTERS(result)                    \
+  {                                                                \
+    result = true;                                                 \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrap_raw_ptr_cnt)               \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(release_wrapped_ptr_cnt)        \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_dereference_cnt)        \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_extraction_cnt)         \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_comparison_cnt)         \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrapped_ptr_swap_cnt)           \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrapped_ptr_less_cnt)           \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(pointer_to_member_operator_cnt) \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrap_raw_ptr_for_dup_cnt)       \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_duplication_cnt)        \
   }
 
 // Matcher used with `CountingRawPtr`. Provides slightly shorter
 // boilerplate for verifying counts. This inner function is detached
-// from the `MATCHER` to isolate the templating.
-template <typename CountingImplType>
-bool CountersMatchImpl(const CountingRawPtrExpectations<CountingImplType>& arg,
-                       testing::MatchResultListener* result_listener) {
+// from the `MATCHER`.
+inline bool CountersMatchImpl(const CountingRawPtrExpectations& arg,
+                              testing::MatchResultListener* result_listener) {
   bool result = true;
-  REPORT_UNEQUAL_RAW_PTR_COUNTERS(result, CountingImplType);
+  REPORT_UNEQUAL_RAW_PTR_COUNTERS(result);
   return result;
 }
 

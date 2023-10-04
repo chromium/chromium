@@ -650,6 +650,7 @@ source_set("raw_ptr") {
     "pointers/raw_ptr.h",
     "pointers/raw_ptr_cast.h",
     "pointers/raw_ptr_exclusion.h",
+    "pointers/raw_ptr_noop_impl.h",
     "pointers/raw_ref.h",
   ]
   sources = []

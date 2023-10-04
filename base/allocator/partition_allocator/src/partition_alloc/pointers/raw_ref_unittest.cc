@@ -9,7 +9,7 @@
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_counting_impl_wrapper_for_test.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_counting_impl_for_test.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_test_support.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
@@ -798,30 +798,24 @@ TEST(RawRefPtr, CTADWithConst) {
   EXPECT_EQ(&*s2.r, &str);
 }
 
-// `kDisableHooks` matches what `CountingRawRef` does internally.
-// `kUseCountingWrapperForTest` is removed, and `DisableHooks` is added.
-using RawPtrCountingImpl = base::test::RawPtrCountingImplWrapperForTest<
-    base::RawPtrTraits::kDisableHooks>;
-
-// `kDisableHooks | kMayDangle` matches what `CountingRawRefMayDangle` does
-// internally. `kUseCountingWrapperForTest` is removed, `kDisableHooks` is
-// added, and `kMayDangle` is kept.
-using RawPtrCountingMayDangleImpl =
-    base::test::RawPtrCountingImplWrapperForTest<
-        base::RawPtrTraits::kMayDangle | base::RawPtrTraits::kDisableHooks>;
+// Shorter name for expected test impl.
+using RawPtrCountingImpl = base::test::RawPtrCountingImplForTest;
 
 template <typename T>
-using CountingRawRef =
-    raw_ref<T, base::RawPtrTraits::kUseCountingWrapperForTest>;
+using CountingRawRef = raw_ref<T, base::RawPtrTraits::kUseCountingImplForTest>;
+
+// Ensure that the `kUseCountingImplForTest` flag selects the test impl.
 static_assert(std::is_same_v<CountingRawRef<int>::Impl, RawPtrCountingImpl>);
 
 template <typename T>
 using CountingRawRefMayDangle =
     raw_ref<T,
             base::RawPtrTraits::kMayDangle |
-                base::RawPtrTraits::kUseCountingWrapperForTest>;
-static_assert(std::is_same_v<CountingRawRefMayDangle<int>::Impl,
-                             RawPtrCountingMayDangleImpl>);
+                base::RawPtrTraits::kUseCountingImplForTest>;
+
+// Ensure that the `kUseCountingImplForTest` flag selects the test impl.
+static_assert(
+    std::is_same_v<CountingRawRefMayDangle<int>::Impl, RawPtrCountingImpl>);
 
 TEST(RawRef, StdLess) {
   int i[] = {1, 1};
@@ -883,32 +877,21 @@ TEST(RawRef, OperatorsUseGetForComparison) {
   CountingRawRefMayDangle<int> ref2(x);
 
   RawPtrCountingImpl::ClearCounters();
-  RawPtrCountingMayDangleImpl::ClearCounters();
 
   EXPECT_TRUE(ref1 == ref2);
   EXPECT_FALSE(ref1 != ref2);
   // The use of `PA_RAW_PTR_CHECK()`s to catch dangling references means
   // that we can't actually readily specify whether there are 0
   // extractions (`CHECK()`s compiled out) or 2 extractions.
-  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
-                  .get_for_comparison_cnt = 2,
-              }),
-              CountersMatch());
-  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
-                  .get_for_comparison_cnt = 2,
-              }),
+  EXPECT_THAT((CountingRawPtrExpectations{.get_for_comparison_cnt = 4}),
               CountersMatch());
 
   EXPECT_FALSE(ref1 < ref2);
   EXPECT_FALSE(ref1 > ref2);
   EXPECT_TRUE(ref1 <= ref2);
   EXPECT_TRUE(ref1 >= ref2);
-  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
-                  .get_for_comparison_cnt = 6,
-              }),
-              CountersMatch());
-  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
-                  .get_for_comparison_cnt = 6,
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .get_for_comparison_cnt = 12,
               }),
               CountersMatch());
 }
@@ -918,18 +901,15 @@ TEST(RawRef, CrossKindConversion) {
   CountingRawRef<int> ref1(x);
 
   RawPtrCountingImpl::ClearCounters();
-  RawPtrCountingMayDangleImpl::ClearCounters();
 
   CountingRawRefMayDangle<int> ref2(ref1);
   CountingRawRefMayDangle<int> ref3(std::move(ref1));  // Falls back to copy.
 
-  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
-                  .get_for_dereference_cnt = 0,
-                  .get_for_extraction_cnt = 0,
-                  .get_for_duplication_cnt = 2}),
-              CountersMatch());
-  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
-                  .wrap_raw_ptr_cnt = 0, .wrap_raw_ptr_for_dup_cnt = 2}),
+  EXPECT_THAT((CountingRawPtrExpectations{.wrap_raw_ptr_cnt = 0,
+                                          .get_for_dereference_cnt = 0,
+                                          .get_for_extraction_cnt = 0,
+                                          .wrap_raw_ptr_for_dup_cnt = 2,
+                                          .get_for_duplication_cnt = 2}),
               CountersMatch());
 }
 
@@ -941,17 +921,14 @@ TEST(RawRef, CrossKindAssignment) {
   CountingRawRefMayDangle<int> ref3(x);
 
   RawPtrCountingImpl::ClearCounters();
-  RawPtrCountingMayDangleImpl::ClearCounters();
   ref2 = ref1;
   ref3 = std::move(ref1);  // Falls back to copy.
 
-  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
-                  .get_for_dereference_cnt = 0,
-                  .get_for_extraction_cnt = 0,
-                  .get_for_duplication_cnt = 2}),
-              CountersMatch());
-  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
-                  .wrap_raw_ptr_cnt = 0, .wrap_raw_ptr_for_dup_cnt = 2}),
+  EXPECT_THAT((CountingRawPtrExpectations{.wrap_raw_ptr_cnt = 0,
+                                          .get_for_dereference_cnt = 0,
+                                          .get_for_extraction_cnt = 0,
+                                          .wrap_raw_ptr_for_dup_cnt = 2,
+                                          .get_for_duplication_cnt = 2}),
               CountersMatch());
 }
 

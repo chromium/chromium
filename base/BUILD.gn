@@ -5039,7 +5039,7 @@ source_set("partition_alloc_test_support") {
     "allocator/partition_allocator/src/partition_alloc/extended_api.h",
     "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h",
     "allocator/partition_allocator/src/partition_alloc/partition_alloc_for_testing.h",
-    "allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_counting_impl_wrapper_for_test.h",
+    "allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_counting_impl_for_test.h",
   ]
   if (is_posix) {
     sources += [ "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_posix_for_testing.cc" ]

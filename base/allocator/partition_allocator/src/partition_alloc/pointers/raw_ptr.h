@@ -110,13 +110,13 @@ enum class RawPtrTraits : unsigned {
 
   // *** ForTest traits below ***
 
-  // Adds accounting, on top of the chosen implementation, for test purposes.
+  // Adds accounting, on top of the NoOp implementation, for test purposes.
   // raw_ptr/raw_ref with this trait perform extra bookkeeping, e.g. to track
   // the number of times the raw_ptr is wrapped, unwrapped, etc.
   //
-  // Test only. Include raw_ptr_counting_wrapper_impl_for_test.h in your test
+  // Test only. Include raw_ptr_counting_impl_for_test.h in your test
   // files when using this trait.
-  kUseCountingWrapperForTest = (1 << 10),
+  kUseCountingImplForTest = (1 << 10),
 
   // Helper trait that can be used to test raw_ptr's behaviour or conversions.
   //
@@ -124,7 +124,7 @@ enum class RawPtrTraits : unsigned {
   kDummyForTest = (1 << 11),
 
   kAllMask = kMayDangle | kDisableHooks | kAllowPtrArithmetic |
-             kExperimentalAsh | kUseCountingWrapperForTest | kDummyForTest,
+             kExperimentalAsh | kUseCountingImplForTest | kDummyForTest,
 };
 // Template specialization to use |PA_DEFINE_OPERATORS_FOR_FLAGS| without
 // |kMaxValue| declaration.
@@ -246,8 +246,7 @@ constexpr bool IsPtrArithmeticAllowed(RawPtrTraits Traits) {
 
 namespace test {
 
-template <RawPtrTraits Traits>
-struct RawPtrCountingImplWrapperForTest;
+struct RawPtrCountingImplForTest;
 
 }  // namespace test
 
@@ -255,14 +254,14 @@ namespace raw_ptr_traits {
 
 // ImplForTraits is the struct that implements raw_ptr functions. Think of
 // raw_ptr as a thin wrapper, that directs calls to ImplForTraits. ImplForTraits
-// may be different from UnderlyingImplForTraits, because it may include a
-// wrapper.
+// may be different from UnderlyingImplForTraits, because it may select a
+// test impl instead.
 template <RawPtrTraits Traits>
-using ImplForTraits = std::conditional_t<
-    ContainsFlags(Traits, RawPtrTraits::kUseCountingWrapperForTest),
-    test::RawPtrCountingImplWrapperForTest<
-        RemoveFlags(Traits, RawPtrTraits::kUseCountingWrapperForTest)>,
-    UnderlyingImplForTraits<Traits>>;
+using ImplForTraits =
+    std::conditional_t<ContainsFlags(Traits,
+                                     RawPtrTraits::kUseCountingImplForTest),
+                       test::RawPtrCountingImplForTest,
+                       UnderlyingImplForTraits<Traits>>;
 
 }  // namespace raw_ptr_traits
 
