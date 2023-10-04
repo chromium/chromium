@@ -19,6 +19,10 @@ specific_include_rules = {
   'fast_pair_.*': [
     "+ash/quick_pair",
   ],
+  'power_section\.(cc|h)' : [
+    '+ash/shell.h',
+    '+ash/system/power',
+  ],
   'select_to_speak_handler\.cc': [
     '+content/public/browser/tts_controller.h',
   ],

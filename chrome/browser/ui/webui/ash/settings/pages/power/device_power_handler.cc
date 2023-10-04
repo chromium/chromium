@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/device_power_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/power/device_power_handler.h"
 
 #include <memory>
 #include <utility>
@@ -422,12 +422,14 @@ void PowerHandler::SendPowerManagementSettings(bool force) {
 
   base::Value::Dict dict;
   base::Value::List* list = dict.EnsureList(kPossibleAcIdleBehaviorsKey);
-  for (auto idle_behavior : ac_idle_info.possible_behaviors)
+  for (auto idle_behavior : ac_idle_info.possible_behaviors) {
     list->Append(static_cast<int>(idle_behavior));
+  }
 
   list = dict.EnsureList(kPossibleBatteryIdleBehaviorsKey);
-  for (auto idle_behavior : battery_idle_info.possible_behaviors)
+  for (auto idle_behavior : battery_idle_info.possible_behaviors) {
     list->Append(static_cast<int>(idle_behavior));
+  }
   dict.Set(kCurrentAcIdleBehaviorKey,
            static_cast<int>(ac_idle_info.current_behavior));
   dict.Set(kCurrentBatteryIdleBehaviorKey,
@@ -454,8 +456,9 @@ void PowerHandler::SendPowerManagementSettings(bool force) {
 
 void PowerHandler::OnGotSwitchStates(
     absl::optional<PowerManagerClient::SwitchStates> result) {
-  if (!result.has_value())
+  if (!result.has_value()) {
     return;
+  }
   lid_state_ = result->lid_state;
   SendPowerManagementSettings(false /* force */);
 }
@@ -537,10 +540,11 @@ PowerHandler::IdleBehaviorInfo PowerHandler::GetAllowedIdleBehaviors(
         static_cast<PowerPolicyController::Action>(
             prefs_->GetInteger(idle_pref));
 
-    if (idle_action == PowerPolicyController::ACTION_SUSPEND)
+    if (idle_action == PowerPolicyController::ACTION_SUSPEND) {
       current_idle_behavior = IdleBehavior::DISPLAY_OFF_SLEEP;
-    else
+    } else {
       current_idle_behavior = IdleBehavior::DISPLAY_OFF;
+    }
     return IdleBehaviorInfo(possible_behaviors, current_idle_behavior,
                             IsIdleManaged(power_source));
   }

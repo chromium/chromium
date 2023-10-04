@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_POWER_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_POWER_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_POWER_DEVICE_POWER_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_POWER_DEVICE_POWER_HANDLER_H_
 
 #include <memory>
 #include <set>
@@ -194,4 +194,4 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
 
 }  // namespace ash::settings
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_POWER_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_POWER_DEVICE_POWER_HANDLER_H_

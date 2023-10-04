@@ -14,7 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/settings/ash/device_power_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/power/device_power_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -148,12 +148,14 @@ class PowerHandlerTest : public InProcessBrowserTest {
     base::Value::Dict dict;
     base::Value::List* list =
         dict.EnsureList(PowerHandler::kPossibleAcIdleBehaviorsKey);
-    for (auto idle_behavior : settings.possible_ac_behaviors)
+    for (auto idle_behavior : settings.possible_ac_behaviors) {
       list->Append(static_cast<int>(idle_behavior));
+    }
 
     list = dict.EnsureList(PowerHandler::kPossibleBatteryIdleBehaviorsKey);
-    for (auto idle_behavior : settings.possible_battery_behaviors)
+    for (auto idle_behavior : settings.possible_battery_behaviors) {
       list->Append(static_cast<int>(idle_behavior));
+    }
 
     dict.Set(PowerHandler::kCurrentAcIdleBehaviorKey,
              static_cast<int>(settings.current_ac_behavior));
@@ -179,8 +181,9 @@ class PowerHandlerTest : public InProcessBrowserTest {
   // Returns the user-set value of the integer pref identified by |name| or -1
   // if the pref is unset.
   int GetIntPref(const std::string& name) {
-    if (!GetPrefs()->HasPrefPath(name))
+    if (!GetPrefs()->HasPrefPath(name)) {
       return -1;
+    }
     return GetPrefs()->GetInteger(name);
   }
 
