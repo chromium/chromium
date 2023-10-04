@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
+#import <string>
 
 #import "base/json/json_string_value_serializer.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
+#import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -38,6 +41,31 @@ NSString* SerializeDictValueToNSString(const base::Value::Dict& value) {
   JSONStringValueSerializer serializer(&output);
   EXPECT_TRUE(serializer.Serialize(value));
   return base::SysUTF8ToNSString(output);
+}
+
+base::Value::Dict ParsedField(std::string renderer_id,
+                              std::string control_type,
+                              std::string identifier,
+                              std::string value,
+                              std::string label,
+                              std::string name) {
+  base::Value::Dict field = base::Value::Dict()
+                                .Set("identifier", identifier)
+                                .Set("name", name)
+                                .Set("name_attribute", name)
+                                .Set("id_attribute", "")
+                                .Set("unique_renderer_id", renderer_id)
+                                .Set("form_control_type", control_type)
+                                .Set("aria_label", "")
+                                .Set("aria_description", "")
+                                .Set("should_autocomplete", true)
+                                .Set("is_focusable", true)
+                                .Set("max_length", 524288)
+                                .Set("is_checkable", false)
+                                .Set("value", value)
+                                .Set("label", label)
+                                .Set("placeholder_attribute", "");
+  return field;
 }
 
 // Text fixture to test password controller.
@@ -353,12 +381,11 @@ TEST_F(
 }
 
 // Check that one password form is identified and serialized correctly.
-TEST_F(PasswordControllerJsTest,
-       FindAndPreparePasswordFormsSingleFrameSingleForm) {
+TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndSingleForm) {
   web::test::LoadHtml(
       @"<html><body>"
        "<form action='/generic_submit' method='post' name='login_form'>"
-       "  Name: <input type='text' name='name'>"
+       "  Name: <input type='text' name='username'>"
        "  Password: <input type='password' name='password'>"
        "  <input type='submit' value='Submit'>"
        "</form>"
@@ -366,47 +393,48 @@ TEST_F(PasswordControllerJsTest,
       web_state());
   ASSERT_TRUE(SetUpUniqueIDs());
 
-  const std::string base_url = BaseUrl();
+  auto expected_form =
+      base::Value::Dict()
+          .Set("name", "login_form")
+          .Set("origin", BaseUrl())
+          .Set("action", base::StrCat({BaseUrl(), "generic_submit"}))
+          .Set("name_attribute", "login_form")
+          .Set("id_attribute", "")
+          .Set("unique_renderer_id", "1")
+          .Set("frame_id", GetMainWebFrame()->GetFrameId());
+  base::Value::Dict expected_username_field =
+      ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
+                  /*identifier=*/"username", /*value=*/"",
+                  /*label=*/"Name:", /*name=*/"username");
+  base::Value::Dict expected_password_field = ParsedField(
+      /*renderer_id=*/"3", /*contole_type=*/"password",
+      /*identifier=*/"password", /*value=*/"",
+      /*label=*/"Password:", /*name=*/"password");
+  auto expected_fields = base::Value::List()
+                             .Append(std::move(expected_username_field))
+                             .Append(std::move(expected_password_field));
+  expected_form.Set("fields", std::move(expected_fields));
+  base::Value::List expected_results =
+      base::Value::List().Append(std::move(expected_form));
 
-  std::string mainFrameID = GetMainWebFrame()->GetFrameId();
-  NSString* result = [NSString
-      stringWithFormat:
-          @"[{\"name\":\"login_form\",\"origin\":\"%s\",\"action\":\"https://"
-          @"chromium.test/generic_submit\",\"name_attribute\":\"login_form\","
-          @"\"id_attribute\":\"\",\"unique_renderer_id\":\"1\","
-          @"\"frame_id\":\"%s\","
-          @"\"fields\":[{"
-          @"\"identifier\":\"name\","
-          @"\"name\":\"name\",\"name_attribute\":\"name\",\"id_attribute\":"
-          @"\"\",\"unique_renderer_id\":\"2\",\"form_control_type\":\"text\","
-          @"\"placeholder_attribute\":\"\","
-          @"\"aria_label\":\"\","
-          @"\"aria_description\":\"\",\"should_autocomplete\":true,"
-          @"\"is_focusable\":true,\"max_length\":524288,\"is_checkable\":false,"
-          @"\"value\":\"\",\"label\":\"Name:\"},{\"identifier\":"
-          @"\"password\",\"name\":\"password\",\"name_attribute\":\"password\","
-          @"\"id_attribute\":\"\",\"unique_renderer_id\":\"3\","
-          @"\"form_control_type\":\"password\","
-          @"\"placeholder_attribute\":\"\","
-          @"\"aria_label\":\"\",\"aria_description\":\"\","
-          @"\"should_autocomplete\":true,\"is_focusable\":true,"
-          @"\"max_length\":524288,\"is_checkable\":false,\"value\":\"\","
-          @"\"label\":\"Password:\"}]}]",
-          base_url.c_str(), mainFrameID.c_str()];
-  EXPECT_NSEQ(result, FindPasswordForms());
+  std::unique_ptr<base::Value> results =
+      autofill::ParseJson(FindPasswordForms());
+  ASSERT_TRUE(results);
+
+  EXPECT_EQ(expected_results, *results);
 }
 
-// Check that multiple password forms are identified and serialized correctly.
-TEST_F(PasswordControllerJsTest,
-       FindAndPreparePasswordFormsSingleFrameMultipleForms) {
+// Check that multiple password forms are identified and parsed & serialized
+// correctly.
+TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndMultipleForms) {
   web::test::LoadHtml(@"<html><body>"
-                       "<form action='/generic_submit' id='login_form1'>"
-                       "  Name: <input type='text' name='name'>"
+                       "<form action='/generic_submit1' name='login_form1'>"
+                       "  Name: <input type='text' name='username'>"
                        "  Password: <input type='password' name='password'>"
                        "  <input type='submit' value='Submit'>"
                        "</form>"
-                       "<form action='/generic_s2' name='login_form2'>"
-                       "  Name: <input type='text' name='name2'>"
+                       "<form action='/generic_submit2' name='login_form2'>"
+                       "  Name: <input type='text' name='username2'>"
                        "  Password: <input type='password' name='password2'>"
                        "  <input type='submit' value='Submit'>"
                        "</form>"
@@ -414,64 +442,74 @@ TEST_F(PasswordControllerJsTest,
                       web_state());
   ASSERT_TRUE(SetUpUniqueIDs());
 
-  const std::string base_url = BaseUrl();
-  std::string mainFrameID = GetMainWebFrame()->GetFrameId();
-  NSString* result = [NSString
-      stringWithFormat:
-          @"[{\"name\":\"login_form1\",\"origin\":\"%s\",\"action\":\"%s"
-          @"generic_submit\",\"name_attribute\":\"\",\"id_attribute\":"
-          @"\"login_form1\",\"unique_renderer_id\":\"1\","
-          @"\"frame_id\":\"%s\","
-          @"\"fields\":[{"
-          @"\"identifier\":\"name\","
-          @"\"name\":\"name\",\"name_attribute\":\"name\",\"id_attribute\":"
-          @"\"\",\"unique_renderer_id\":\"2\",\"form_control_type\":\"text\","
-          @"\"placeholder_attribute\":\"\","
-          @"\"aria_label\":\"\","
-          @"\"aria_description\":\"\",\"should_autocomplete\":"
-          @"true,\"is_focusable\":true,\"max_length\":524288,\"is_checkable\":"
-          @"false,\"value\":\"\",\"label\":\"Name:\"},{\"identifier\":"
-          @"\"password\",\"name\":\"password\",\"name_attribute\":\"password\","
-          @"\"id_attribute\":\"\",\"unique_renderer_id\":\"3\","
-          @"\"form_control_type\":\"password\","
-          @"\"placeholder_attribute\":\"\","
-          @"\"aria_label\":\"\",\"aria_description\":\"\","
-          @"\"should_autocomplete\":true,\"is_focusable\":true,"
-          @"\"max_length\":524288,\"is_checkable\":false,\"value\":\"\","
-          @"\"label\":\"Password:\"}]},{\"name\":\"login_form2\",\"origin\":"
-          @"\"https://chromium.test/\",\"action\":\"https://chromium.test/"
-          @"generic_s2\",\"name_attribute\":\"login_form2\","
-          @"\"id_attribute\":\"\",\"unique_renderer_id\":\"4\","
-          @"\"frame_id\":\"%s\","
-          @"\"fields\":[{"
-          @"\"identifier\":\"name2\","
-          @"\"name\":\"name2\",\"name_attribute\":\"name2\",\"id_attribute\":"
-          @"\"\",\"unique_renderer_id\":\"5\",\"form_control_type\":\"text\","
-          @"\"placeholder_attribute\":\"\","
-          @"\"aria_label\":\"\","
-          @"\"aria_description\":\"\",\"should_autocomplete\":"
-          @"true,\"is_focusable\":true,\"max_length\":524288,\"is_checkable\":"
-          @"false,\"value\":\"\",\"label\":\"Name:\"},{\"identifier\":"
-          @"\"password2\",\"name\":\"password2\",\"name_attribute\":"
-          @"\"password2\",\"id_attribute\":\"\",\"unique_renderer_id\":\"6\","
-          @"\"form_control_type\":"
-          @"\"password\",\"placeholder_attribute\":\"\","
-          @"\"aria_label\":\"\",\"aria_description\":\"\","
-          @"\"should_autocomplete\":true,\"is_focusable\":true,"
-          @"\"max_length\":524288,\"is_checkable\":false,"
-          @"\"value\":\"\","
-          @"\"label\":\"Password:\"}]}]",
-          base_url.c_str(), base_url.c_str(), mainFrameID.c_str(),
-          mainFrameID.c_str()];
+  // Build expected parsed forms results.
+  base::Value::List expected_results = base::Value::List();
+  // Set expected form 1.
+  {
+    auto expected_form =
+        base::Value::Dict()
+            .Set("name", "login_form1")
+            .Set("origin", BaseUrl())
+            .Set("action", base::StrCat({BaseUrl(), "generic_submit1"}))
+            .Set("name_attribute", "login_form1")
+            .Set("id_attribute", "")
+            .Set("unique_renderer_id", "1")
+            .Set("frame_id", GetMainWebFrame()->GetFrameId());
 
-  EXPECT_NSEQ(result, FindPasswordForms());
+    base::Value::Dict expected_username_field =
+        ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
+                    /*identifier=*/"username", /*value=*/"",
+                    /*label=*/"Name:", /*name=*/"username");
+    base::Value::Dict expected_password_field = ParsedField(
+        /*renderer_id=*/"3", /*contole_type=*/"password",
+        /*identifier=*/"password", /*value=*/"",
+        /*label=*/"Password:", /*name=*/"password");
+    auto expected_fields = base::Value::List()
+                               .Append(std::move(expected_username_field))
+                               .Append(std::move(expected_password_field));
+    expected_form.Set("fields", std::move(expected_fields));
+
+    expected_results.Append(std::move(expected_form));
+  }
+  // Set expected form 2.
+  {
+    auto expected_form =
+        base::Value::Dict()
+            .Set("name", "login_form2")
+            .Set("origin", BaseUrl())
+            .Set("action", base::StrCat({BaseUrl(), "generic_submit2"}))
+            .Set("name_attribute", "login_form2")
+            .Set("id_attribute", "")
+            .Set("unique_renderer_id", "4")
+            .Set("frame_id", GetMainWebFrame()->GetFrameId());
+    base::Value::Dict expected_username_field =
+        ParsedField(/*renderer_id=*/"5", /*contole_type=*/"text",
+                    /*identifier=*/"username2", /*value=*/"",
+                    /*label=*/"Name:", /*name=*/"username2");
+    base::Value::Dict expected_password_field = ParsedField(
+        /*renderer_id=*/"6", /*contole_type=*/"password",
+        /*identifier=*/"password2", /*value=*/"",
+        /*label=*/"Password:", /*name=*/"password2");
+    auto expected_fields = base::Value::List()
+                               .Append(std::move(expected_username_field))
+                               .Append(std::move(expected_password_field));
+    expected_form.Set("fields", std::move(expected_fields));
+
+    expected_results.Append(std::move(expected_form));
+  }
+
+  std::unique_ptr<base::Value> results =
+      autofill::ParseJson(FindPasswordForms());
+  ASSERT_TRUE(results);
+
+  EXPECT_EQ(expected_results, *results);
 }
 
-// Test serializing of password forms.
-TEST_F(PasswordControllerJsTest, GetPasswordFormData) {
+// Test serializing of password forms by directly calling the javascript code.
+TEST_F(PasswordControllerJsTest, GetPasswordForms_DirectJsCall) {
   web::test::LoadHtml(@"<html><body>"
-                       "<form name='np' id='np1' action='/generic_submit'>"
-                       "  Name: <input type='text' name='name'>"
+                       "<form name='login_form' action='/generic_submit'>"
+                       "  Name: <input type='text' name='username'>"
                        "  Password: <input type='password' name='password'>"
                        "  <input type='submit' value='Submit'>"
                        "</form>"
@@ -479,47 +517,47 @@ TEST_F(PasswordControllerJsTest, GetPasswordFormData) {
                       web_state());
   ASSERT_TRUE(SetUpUniqueIDs());
 
-  const std::string base_url = BaseUrl();
+  auto expected_form =
+      base::Value::Dict()
+          .Set("name", "login_form")
+          .Set("origin", BaseUrl())
+          .Set("action", base::StrCat({BaseUrl(), "generic_submit"}))
+          .Set("name_attribute", "login_form")
+          .Set("id_attribute", "")
+          .Set("unique_renderer_id", "1")
+          .Set("frame_id", GetMainWebFrame()->GetFrameId())
+          .Set("fields", base::Value::List());
+
+  base::Value::Dict expected_username_field =
+      ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
+                  /*identifier=*/"username", /*value=*/"",
+                  /*label=*/"Name:", /*name=*/"username");
+  base::Value::Dict expected_password_field = ParsedField(
+      /*renderer_id=*/"3", /*contole_type=*/"password",
+      /*identifier=*/"password", /*value=*/"",
+      /*label=*/"Password:", /*name=*/"password");
+  auto expected_fields = base::Value::List()
+                             .Append(std::move(expected_username_field))
+                             .Append(std::move(expected_password_field));
+  expected_form.Set("fields", std::move(expected_fields));
+
   NSString* parameter = @"window.document.getElementsByTagName('form')[0]";
 
-  std::string mainFrameID = GetMainWebFrame()->GetFrameId();
-  NSString* result = [NSString
-      stringWithFormat:
-          @"{\"name\":\"np\",\"origin\":\"%s\",\"action\":\"%sgeneric_submit\","
-          @"\"name_attribute\":\"np\",\"id_attribute\":\"np1\",\"unique_"
-          @"renderer_id\":\"1\","
-          @"\"frame_id\":\"%s\","
-          @"\"fields\":[{\"identifier\":\"name\",\"name\":\"name\","
-          @"\"name_attribute\":\"name\",\"id_attribute\":\"\",\"unique_"
-          @"renderer_id\":\"2\",\"form_control_type\":\"text\","
-          @"\"placeholder_attribute\":\"\","
-          @"\"aria_label\":\"\","
-          @"\"aria_description\":\"\",\"should_autocomplete\":true,\"is_"
-          @"focusable\":true,\"max_length\":524288,\"is_checkable\":false,"
-          @"\"value\":\"\",\"label\":\"Name:\"},{\"identifier\":\"password\","
-          @"\"name\":\"password\",\"name_attribute\":\"password\","
-          @"\"id_attribute\":\"\",\"unique_renderer_id\":\"3\","
-          @"\"form_control_type\":\"password\","
-          @"\"placeholder_attribute\":\"\","
-          @"\"aria_label\":\"\",\"aria_description\":\"\","
-          @"\"should_autocomplete\":true,\"is_focusable\":true,"
-          @"\"max_length\":524288,"
-          @"\"is_checkable\":false,\"value\":\"\",\"label\":\"Password:\"}]}",
-          base_url.c_str(), base_url.c_str(), mainFrameID.c_str()];
+  std::unique_ptr<base::Value> results = autofill::ParseJson(ExecuteJavaScript(
+      [NSString stringWithFormat:@"__gCrWeb.stringify(__gCrWeb.passwords."
+                                 @"getPasswordFormData(%@, window))",
+                                 parameter]));
+  ASSERT_TRUE(results);
 
-  EXPECT_NSEQ(result,
-              ExecuteJavaScript([NSString
-                  stringWithFormat:@"__gCrWeb.stringify(__gCrWeb.passwords."
-                                   @"getPasswordFormData(%@, window))",
-                                   parameter]));
+  EXPECT_EQ(expected_form, *results);
 }
 
 // Check that if a form action is not set then the action is parsed to the
 // current url.
-TEST_F(PasswordControllerJsTest, FormActionIsNotSet) {
+TEST_F(PasswordControllerJsTest, GetPasswordForms_FormActionIsNotSet) {
   web::test::LoadHtml(@"<html><body>"
                        "<form name='login_form'>"
-                       "  Name: <input type='text' name='name'>"
+                       "  Name: <input type='text' name='username'>"
                        "  Password: <input type='password' name='password'>"
                        "  <input type='submit' value='Submit'>"
                        "</form>"
@@ -527,32 +565,144 @@ TEST_F(PasswordControllerJsTest, FormActionIsNotSet) {
                       web_state());
   ASSERT_TRUE(SetUpUniqueIDs());
 
-  const std::string base_url = BaseUrl();
+  auto expected_form = base::Value::Dict()
+                           .Set("name", "login_form")
+                           .Set("origin", BaseUrl())
+                           .Set("action", BaseUrl())
+                           .Set("name_attribute", "login_form")
+                           .Set("id_attribute", "")
+                           .Set("unique_renderer_id", "1")
+                           .Set("frame_id", GetMainWebFrame()->GetFrameId());
+  base::Value::Dict expected_username_field =
+      ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
+                  /*identifier=*/"username", /*value=*/"",
+                  /*label=*/"Name:", /*name=*/"username");
+  base::Value::Dict expected_password_field = ParsedField(
+      /*renderer_id=*/"3", /*contole_type=*/"password",
+      /*identifier=*/"password", /*value=*/"",
+      /*label=*/"Password:", /*name=*/"password");
+  auto expected_fields = base::Value::List()
+                             .Append(std::move(expected_username_field))
+                             .Append(std::move(expected_password_field));
+  expected_form.Set("fields", std::move(expected_fields));
+  base::Value::List expected_results =
+      base::Value::List().Append(std::move(expected_form));
+
+  std::unique_ptr<base::Value> results =
+      autofill::ParseJson(FindPasswordForms());
+  ASSERT_TRUE(results);
+
+  EXPECT_EQ(expected_results, *results);
+}
+
+// Check that a single username form can be extracted when its input has a
+// "username" autocomplete value.
+TEST_F(PasswordControllerJsTest,
+       GetPasswordForms_UsernameField_WithUsernameAutocompleteAttribute) {
+  web::test::LoadHtml(@"<html><body>"
+                       "<form name='login_form' action='/generic_submit'>"
+                       "  Name: <input type='text' name='username' "
+                       "autocomplete='username'>"
+                       "</form>"
+                       "</body></html>",
+                      web_state());
+  ASSERT_TRUE(SetUpUniqueIDs());
+
+  auto expected_form =
+      base::Value::Dict()
+          .Set("name", "login_form")
+          .Set("origin", BaseUrl())
+          .Set("action", base::StrCat({BaseUrl(), "generic_submit"}))
+          .Set("name_attribute", "login_form")
+          .Set("id_attribute", "")
+          .Set("unique_renderer_id", "1")
+          .Set("frame_id", GetMainWebFrame()->GetFrameId());
+  base::Value::Dict expected_username_field =
+      ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
+                  /*identifier=*/"username", /*value=*/"",
+                  /*label=*/"Name:", /*name=*/"username");
+  // Set the autocomplete_attribute key here which is only set if there is an
+  // autocomplete attribute in the input field.
+  expected_username_field.Set("autocomplete_attribute", "username");
+  auto expected_fields =
+      base::Value::List().Append(std::move(expected_username_field));
+  expected_form.Set("fields", std::move(expected_fields));
+  base::Value::List expected_results =
+      base::Value::List().Append(std::move(expected_form));
+
+  std::unique_ptr<base::Value> results =
+      autofill::ParseJson(FindPasswordForms());
+  ASSERT_TRUE(results);
+
+  EXPECT_EQ(expected_results, *results);
+}
+
+// Check that the form can be extracted when one of its input has a "webauthn"
+// autocomplete value.
+TEST_F(PasswordControllerJsTest,
+       GetPasswordForms_UsernameField_WithWebauthnAutocompleteAttribute) {
+  web::test::LoadHtml(@"<html><body>"
+                       "<form name='login_form' action='/generic_submit'>"
+                       "  Name: <input type='text' name='username' "
+                       "autocomplete='webauthn'>"
+                       "</form>"
+                       "</body></html>",
+                      web_state());
+  ASSERT_TRUE(SetUpUniqueIDs());
+
+  auto expected_form =
+      base::Value::Dict()
+          .Set("name", "login_form")
+          .Set("origin", BaseUrl())
+          .Set("action", base::StrCat({BaseUrl(), "generic_submit"}))
+          .Set("name_attribute", "login_form")
+          .Set("id_attribute", "")
+          .Set("unique_renderer_id", "1")
+          .Set("frame_id", GetMainWebFrame()->GetFrameId());
+  base::Value::Dict expected_username_field =
+      ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
+                  /*identifier=*/"username", /*value=*/"",
+                  /*label=*/"Name:", /*name=*/"username");
+  // Set the autocomplete_attribute field here which is only set if there is
+  // an autocomplete attribute in the field.
+  expected_username_field.Set("autocomplete_attribute", "webauthn");
+  auto expected_fields =
+      base::Value::List().Append(std::move(expected_username_field));
+  expected_form.Set("fields", std::move(expected_fields));
+  base::Value::List expected_results =
+      base::Value::List().Append(std::move(expected_form));
+
+  std::unique_ptr<base::Value> results =
+      autofill::ParseJson(FindPasswordForms());
+  ASSERT_TRUE(results);
+
+  EXPECT_EQ(expected_results, *results);
+}
+
+// Check that a form that isn't identified as a password form is rejected.
+TEST_F(PasswordControllerJsTest,
+       GetPasswordForms_UsernameField_NonPwdFormRejected) {
+  web::test::LoadHtml(@"<html><body>"
+                       "<form name='np' id='np1' action='/generic_submit'>"
+                       "  Name: <input type='text' name='name' "
+                       "autocomplete='address'>"
+                       "</form>"
+                       "</body></html>",
+                      web_state());
+  ASSERT_TRUE(SetUpUniqueIDs());
+
   std::string mainFrameID = GetMainWebFrame()->GetFrameId();
-  NSString* result = [NSString
-      stringWithFormat:
-          @"[{\"name\":\"login_form\",\"origin\":\"%s\",\"action\":\"%s\","
-          @"\"name_attribute\":\"login_form\",\"id_attribute\":\"\",\"unique_"
-          @"renderer_id\":\"1\","
-          @"\"frame_id\":\"%s\","
-          @"\"fields\":[{\"identifier\":\"name\",\"name\":\"name\","
-          @"\"name_attribute\":\"name\",\"id_attribute\":\"\",\"unique_"
-          @"renderer_id\":\"2\",\"form_control_type\":\"text\","
-          @"\"placeholder_attribute\":\"\","
-          @"\"aria_label\":\"\","
-          @"\"aria_description\":\"\",\"should_autocomplete\":true,\"is_"
-          @"focusable\":true,\"max_length\":524288,\"is_checkable\":false,"
-          @"\"value\":\"\",\"label\":\"Name:\"},{\"identifier\":\"password\","
-          @"\"name\":\"password\",\"name_attribute\":\"password\","
-          @"\"id_attribute\":\"\",\"unique_renderer_id\":\"3\","
-          @"\"form_control_type\":\"password\","
-          @"\"placeholder_attribute\":\"\","
-          @"\"aria_label\":\"\",\"aria_description\":\"\","
-          @"\"should_autocomplete\":true,\"is_focusable\":true,"
-          @"\"max_length\":524288,"
-          @"\"is_checkable\":false,\"value\":\"\",\"label\":\"Password:\"}]}]",
-          base_url.c_str(), base_url.c_str(), mainFrameID.c_str()];
-  EXPECT_NSEQ(result, FindPasswordForms());
+  NSString* expected_result = [NSString stringWithFormat:@"[]"];
+
+  std::unique_ptr<base::Value> expected_result_json =
+      autofill::ParseJson(expected_result);
+  ASSERT_TRUE(expected_result);
+
+  std::unique_ptr<base::Value> result_json =
+      autofill::ParseJson(FindPasswordForms());
+  ASSERT_TRUE(result_json);
+
+  EXPECT_EQ(*expected_result_json, *result_json);
 }
 
 // Checks that a touchend event from a button which contains in a password form
@@ -595,37 +745,33 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
   // Check that there was only 1 call for sendWebKitMessage.
   EXPECT_NSEQ(@1, ExecuteJavaScript(@"submittedFormMessageCalls"));
 
-  std::string mainFrameID = GetMainWebFrame()->GetFrameId();
-  NSString* expected_command = [NSString
-      stringWithFormat:
-          @"{\"name\":\"login_form\",\"origin\":\"https://chromium.test/"
-          @"\",\"action\":\"%s\",\"name_attribute\":\"login_form\","
-          @"\"id_attribute\":\"login_form\",\"unique_renderer_id\":\"1\","
-          @"\"frame_id\":\"%s\","
-          @"\"fields\":"
-          @"[{\"identifier\":\"username\","
-          @"\"name\":\"username\",\"name_attribute\":\"username\","
-          @"\"id_attribute\":\"\",\"unique_renderer_id\":\"2\","
-          @"\"form_control_type\":\"text\","
-          @"\"placeholder_attribute\":\"\","
-          @"\"aria_label\":\"\",\"aria_description\":\"\","
-          @"\"should_autocomplete\":true,\"is_focusable\":true,"
-          @"\"max_length\":524288,"
-          @"\"is_checkable\":false,\"value\":\"user1\",\"label\":\"Name:\"},{"
-          @"\"identifier\":\"password\",\"name\":\"password\","
-          @"\"name_attribute\":\"password\",\"id_attribute\":\"\",\"unique_"
-          @"renderer_id\":\"3\","
-          @"\"form_control_type\":\"password\","
-          @"\"placeholder_attribute\":\"\","
-          @"\"aria_label\":\"\",\"aria_description\":\"\","
-          @"\"should_autocomplete\":true,"
-          @"\"is_focusable\":true,\"max_length\":524288,\"is_checkable\":false,"
-          @"\"value\":\"password1\",\"label\":\"Password:\"}]}",
-          BaseUrl().c_str(), mainFrameID.c_str()];
+  auto expected_form = base::Value::Dict()
+                           .Set("name", "login_form")
+                           .Set("origin", BaseUrl())
+                           .Set("action", BaseUrl())
+                           .Set("name_attribute", "login_form")
+                           .Set("id_attribute", "login_form")
+                           .Set("unique_renderer_id", "1")
+                           .Set("frame_id", GetMainWebFrame()->GetFrameId());
+  base::Value::Dict expected_username_field = ParsedField(
+      /*renderer_id=*/"2", /*contole_type=*/"text",
+      /*identifier=*/"username", /*value=*/"user1",
+      /*label=*/"Name:", /*name=*/"username");
+  base::Value::Dict expected_password_field = ParsedField(
+      /*renderer_id=*/"3", /*contole_type=*/"password",
+      /*identifier=*/"password", /*value=*/"password1",
+      /*label=*/"Password:", /*name=*/"password");
+  auto expected_fields = base::Value::List()
+                             .Append(std::move(expected_username_field))
+                             .Append(std::move(expected_password_field));
+  expected_form.Set("fields", std::move(expected_fields));
+
+  std::unique_ptr<base::Value> results = autofill::ParseJson(
+      ExecuteJavaScript(@"__gCrWeb.stringify(submittedFormData)"));
+  ASSERT_TRUE(results);
 
   // Check that sendWebKitMessage was called with the correct argument.
-  EXPECT_NSEQ(expected_command,
-              ExecuteJavaScript(@"__gCrWeb.stringify(submittedFormData)"));
+  EXPECT_EQ(expected_form, *results);
 }
 
 // Check that a form is filled if url of a page and url in form fill data are
@@ -1173,39 +1319,36 @@ TEST_F(PasswordControllerJsTest, FillUsernameAndPassword_MissingUsernameInput) {
 // Check that password form outside the <form> tag is extracted correctly.
 TEST_F(PasswordControllerJsTest, ExtractFormOutsideTheFormTag) {
   web::test::LoadHtml(@"<html><body>"
-                       "  Name: <input type='text' name='name'>"
+                       "  Name: <input type='text' name='username'>"
                        "  Password: <input type='password' name='password'>"
                        "  <input type='submit' value='Submit'>"
                        "</body></html>",
                       web_state());
   ASSERT_TRUE(SetUpUniqueIDs());
 
-  const std::string base_url = BaseUrl();
-  NSString* result = [NSString
-      stringWithFormat:
-          @"{\"name\":\"\",\"origin\":\"%s\",\"action\":\"\","
-          @"\"is_form_tag\":false,\"fields\":[{"
-          @"\"identifier\":\"gChrome~field~~INPUT~0\","
-          @"\"name\":\"name\",\"name_attribute\":\"name\",\"id_attribute\":"
-          @"\"\",\"unique_renderer_id\":\"1\",\"form_control_type\":\"text\","
-          @"\"placeholder_attribute\":\"\","
-          @"\"aria_label\":\"\","
-          @"\"aria_description\":\"\",\"should_autocomplete\":true,"
-          @"\"is_focusable\":true,\"max_length\":524288,\"is_checkable\":false,"
-          @"\"value\":\"\",\"label\":\"Name:\"},{\"identifier\":"
-          @"\"gChrome~field~~INPUT~1\",\"name\":\"password\",\"name_"
-          @"attribute\":\"password\","
-          @"\"id_attribute\":\"\",\"unique_renderer_id\":\"2\","
-          @"\"form_control_type\":\"password\","
-          @"\"placeholder_attribute\":\"\","
-          @"\"aria_label\":\"\",\"aria_description\":\"\","
-          @"\"should_autocomplete\":true,\"is_focusable\":true,"
-          @"\"max_length\":524288,\"is_checkable\":false,\"value\":\"\","
-          @"\"label\":\"Password:\"}]}",
-          base_url.c_str()];
-  EXPECT_NSEQ(
-      result,
+  auto expected_form = base::Value::Dict()
+                           .Set("name", "")
+                           .Set("origin", BaseUrl())
+                           .Set("action", "")
+                           .Set("is_form_tag", false);
+  base::Value::Dict expected_username_field =
+      ParsedField(/*renderer_id=*/"1", /*contole_type=*/"text",
+                  /*identifier=*/"gChrome~field~~INPUT~0", /*value=*/"",
+                  /*label=*/"Name:", /*name=*/"username");
+  base::Value::Dict expected_password_field = ParsedField(
+      /*renderer_id=*/"2", /*contole_type=*/"password",
+      /*identifier=*/"gChrome~field~~INPUT~1", /*value=*/"",
+      /*label=*/"Password:", /*name=*/"password");
+  auto expected_fields = base::Value::List()
+                             .Append(std::move(expected_username_field))
+                             .Append(std::move(expected_password_field));
+  expected_form.Set("fields", std::move(expected_fields));
+
+  std::unique_ptr<base::Value> results = autofill::ParseJson(
       ExecuteJavaScript(@"__gCrWeb.passwords.getPasswordFormDataAsString(0)"));
+  ASSERT_TRUE(results);
+
+  EXPECT_EQ(expected_form, *results);
 }
 
 }  // namespace

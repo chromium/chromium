@@ -22,30 +22,13 @@ __gCrWeb['passwords'] = __gCrWeb.passwords;
 
 /**
  * Finds all password forms in the frame and returns form data as a JSON
- * string.
+ * string. Include the single username forms to support UFF.
  * @return {string} Form data as a JSON string.
  */
 __gCrWeb.passwords['findPasswordForms'] = function() {
   const formDataList = [];
-  if (hasPasswordField()) {
-    getPasswordFormDataList(formDataList);
-  }
+  getPasswordFormDataList(formDataList);
   return __gCrWeb.stringify(formDataList);
-};
-
-/**
- * Returns true if the current window contains an input field of type
- * 'password'.
- * @private
- * @return {boolean}
- */
-const hasPasswordField = function() {
-  // We may will not be allowed to read the 'document' property from a frame
-  // that is in a different domain.
-  if (!document) {
-    return false;
-  }
-  return document.querySelector('input[type=password]');
 };
 
 /**
@@ -339,6 +322,20 @@ function fillUsernameAndPassword_(inputs, formData, username, password) {
 }
 
 /**
+ * Returns true if the form is a recognized credential form. JS equivalent of
+ * IsRendererRecognizedCredentialForm() for other platforms
+ * (components/password_manager/core/common/password_manager_util.h).
+ * @param {FormData} form Object with the parsed form data.
+ */
+function isRecognizedCredentialForm(form) {
+  return form['fields'].some(
+      field => field['autocomplete_attribute']?.includes('username') ||
+          field['autocomplete_attribute']?.includes('webauthn') ||
+          field['form_control_type'] === 'password');
+}
+
+
+/**
  * Finds all forms with passwords in the current window or frame and appends
  * JS objects containing the form data to |formDataList|.
  * @param {!Array<Object>} formDataList A list that this function populates
@@ -348,14 +345,14 @@ const getPasswordFormDataList = function(formDataList) {
   const forms = document.forms;
   for (let i = 0; i < forms.length; i++) {
     const formData = __gCrWeb.passwords.getPasswordFormData(forms[i]);
-    if (formData) {
+    if (formData && isRecognizedCredentialForm(formData)) {
       formDataList.push(formData);
       addSubmitButtonTouchEndHandler(forms[i]);
     }
   }
   const unownedFormData =
       __gCrWeb.passwords.getPasswordFormDataFromUnownedElements();
-  if (unownedFormData) {
+  if (unownedFormData && isRecognizedCredentialForm(unownedFormData)) {
     formDataList.push(unownedFormData);
   }
 };
