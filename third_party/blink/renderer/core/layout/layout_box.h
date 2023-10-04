@@ -324,16 +324,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // coordinate space, it can be treated as in either physical coordinates
   // or "physical coordinates in flipped block-flow direction", and
   // FlipForWritingMode() will do nothing on it.
-  LayoutRect BorderBoxRect() const {
-    NOT_DESTROYED();
-    return LayoutRect(LayoutPoint(), Size().ToLayoutSize());
-  }
   PhysicalRect PhysicalBorderBoxRect() const {
     NOT_DESTROYED();
-    // This doesn't need flipping because the result would be the same.
-    DCHECK_EQ(PhysicalRect(BorderBoxRect()),
-              FlipForWritingMode(BorderBoxRect()));
-    return PhysicalRect(BorderBoxRect());
+    return PhysicalRect(PhysicalOffset(), Size());
   }
 
   // Client rect and padding box rect are the same concept.

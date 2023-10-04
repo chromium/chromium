@@ -54,7 +54,7 @@ static String CommonStyle() {
 static void CheckFlexBoxPhysicalGeometries(const LayoutBox* flex_box) {
   // 540 = border_left + padding_left + width + padding_right + border_right
   // 400 = border_top + padding_top + height + padding_bottom + border_bottom
-  EXPECT_EQ(LayoutRect(0, 0, 540, 400), flex_box->BorderBoxRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 540, 400), flex_box->PhysicalBorderBoxRect());
   if (!flex_box->ShouldPlaceVerticalScrollbarOnLeft()) {
     // This excludes borders and scrollbars from BorderBoxRect.
     EXPECT_EQ(PhysicalRect(50, 20, 445, 324),

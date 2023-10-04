@@ -424,8 +424,9 @@ bool BoxPaintInvalidator::NeedsToSavePreviousOverflowData() {
   // (see: ComputeViewBackgroundInvalidation).
   if ((BackgroundGeometryDependsOnLayoutOverflowRect() ||
        BackgroundPaintsInContentsSpace() || box_.IsDocumentElement()) &&
-      box_.LayoutOverflowRect() != box_.BorderBoxRect())
+      box_.PhysicalLayoutOverflowRect() != box_.PhysicalBorderBoxRect()) {
     return true;
+  }
 
   return false;
 }
