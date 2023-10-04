@@ -2307,9 +2307,7 @@ void PdfViewWebPlugin::PreviewDocumentLoadComplete() {
   preview_document_load_state_ = DocumentLoadState::kComplete;
 
   int dest_page_index = preview_pages_info_.front().dest_page_index;
-  DCHECK_GT(dest_page_index, 0);
   preview_pages_info_.pop();
-  DCHECK(preview_engine_);
   engine_->AppendPage(preview_engine_.get(), dest_page_index);
 
   ++print_preview_loaded_page_count_;

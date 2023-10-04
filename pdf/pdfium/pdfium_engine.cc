@@ -759,6 +759,9 @@ std::unique_ptr<URLLoaderWrapper> PDFiumEngine::CreateURLLoader() {
 }
 
 void PDFiumEngine::AppendPage(PDFEngine* engine, int index) {
+  CHECK(engine);
+  CHECK(PageIndexInBounds(index));
+
   // Unload and delete the blank page before appending.
   pages_[index]->Unload();
   pages_[index]->set_calculated_links(false);
