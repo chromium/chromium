@@ -289,7 +289,7 @@ public class NetworkChangesTest {
 
         // Without this synchronization it seems that the default network change can happen before
         // the underlying QUIC session is created (read: the test would be flaky).
-        waitForStatus(request, UrlRequest.Status.IDLE);
+        waitForStatus(request, UrlRequest.Status.WAITING_FOR_RESPONSE);
         networks.swapDefaultNetwork();
 
         // Similarly to tests below, 15s should be enough for the NCN notification to propagate.
@@ -332,7 +332,7 @@ public class NetworkChangesTest {
 
         // Without this synchronization it seems that the default network change can happen before
         // the underlying QUIC session is created (read: the test would be flaky).
-        waitForStatus(request, UrlRequest.Status.IDLE);
+        waitForStatus(request, UrlRequest.Status.WAITING_FOR_RESPONSE);
         networks.swapDefaultNetwork();
 
         callback.blockForDone();
@@ -369,7 +369,7 @@ public class NetworkChangesTest {
 
         // Without this synchronization it seems that the default network change can happen before
         // the underlying QUIC session is created (read: the test would be flaky).
-        waitForStatus(request, UrlRequest.Status.IDLE);
+        waitForStatus(request, UrlRequest.Status.WAITING_FOR_RESPONSE);
         networks.swapDefaultNetwork();
 
         callback.blockForDone();
@@ -406,7 +406,7 @@ public class NetworkChangesTest {
 
         // Without this synchronization it seems that the default network change can happen before
         // the underlying QUIC session is created (read: the test would be flaky).
-        waitForStatus(request, UrlRequest.Status.IDLE);
+        waitForStatus(request, UrlRequest.Status.WAITING_FOR_RESPONSE);
         networks.swapDefaultNetwork();
         // Back to previous default network.
         networks.swapDefaultNetwork();
@@ -446,7 +446,7 @@ public class NetworkChangesTest {
 
         // Without this synchronization it seems that the default network change can happen before
         // the underlying QUIC session is created (read: the test would be flaky).
-        waitForStatus(request, UrlRequest.Status.IDLE);
+        waitForStatus(request, UrlRequest.Status.WAITING_FOR_RESPONSE);
         networks.swapDefaultNetwork();
         networks.disconnectNonDefaultNetwork();
 
@@ -489,7 +489,7 @@ public class NetworkChangesTest {
 
         // Without this synchronization it seems that the default network change can happen before
         // the underlying QUIC session is created (read: the test would be flaky).
-        waitForStatus(request, UrlRequest.Status.IDLE);
+        waitForStatus(request, UrlRequest.Status.WAITING_FOR_RESPONSE);
         networks.swapDefaultNetwork();
         networks.disconnectNonDefaultNetwork();
 
@@ -529,7 +529,7 @@ public class NetworkChangesTest {
 
         // Without this synchronization it seems that the default network change can happen before
         // the underlying QUIC session is created (read: the test would be flaky).
-        waitForStatus(request, UrlRequest.Status.IDLE);
+        waitForStatus(request, UrlRequest.Status.WAITING_FOR_RESPONSE);
         networks.disconnectDefaultNetwork();
         networks.connectDefaultNetwork();
 
@@ -731,14 +731,33 @@ public class NetworkChangesTest {
 
     private static void waitForStatus(UrlRequest request, int targetStatus) {
         final ConditionVariable cv = new ConditionVariable(/*open=*/false);
-        request.getStatus(new UrlRequest.StatusListener() {
+        UrlRequest.StatusListener listener = new UrlRequest.StatusListener() {
             @Override
             public void onStatus(int status) {
-                if (status == targetStatus) {
+                // We are not guaranteed to receive every single state update: we might register
+                // the listener too late, missing what we're looking for.
+                // Hence, we should unblock also if we see a status that can only happen after the
+                // one we're waiting for (this works under the assumption that "value ordering" of
+                // states represent the "happens-after ordering" of states, which is true at the
+                // moment).
+                if (status >= targetStatus) {
                     cv.open();
+                } else {
+                    // Very confusingly, UrlRequest.StatusListener#onStatus gets called once.
+                    // We want to keep getting called until we reach the target status, so
+                    // re-register the listener. This effectively means that we're busy-polling the
+                    // state, but this is test code, so it's not too bad. Sleep a bit to avoid
+                    // potential locks contention.
+                    try {
+                        Thread.sleep(/*millis=*/100);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    request.getStatus(this);
                 }
             }
-        });
+        };
+        request.getStatus(listener);
         cv.block();
     }
 
