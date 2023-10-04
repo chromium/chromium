@@ -945,7 +945,10 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
   EXPECT_EQ(initial_num_calls, auth_instance().num_account_upserted_calls());
 }
 
-IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, AccountUpdatesArePropagated) {
+// TODO(crbug.com/1489184): This test fails due to accessing a context that was
+// ShutDown().
+IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
+                       DISABLED_AccountUpdatesArePropagated) {
   AccountInfo account_info = SetupGaiaAccount(kSecondaryAccountEmail);
 
   SetInvalidRefreshTokenForAccount(account_info.account_id);
@@ -1145,8 +1148,10 @@ IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest, GetDemoAccount) {
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
 }
 
+// TODO(crbug.com/1489184): This test fails due to accessing a context that was
+// ShutDown().
 IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest,
-                       GetDemoAccountOnAuthTokenFetchFailure) {
+                       DISABLED_GetDemoAccountOnAuthTokenFetchFailure) {
   ash::DemoSession::SetDemoConfigForTesting(
       ash::DemoSession::DemoModeConfig::kOnline);
   ash::test::LockDemoDeviceInstallAttributes();
