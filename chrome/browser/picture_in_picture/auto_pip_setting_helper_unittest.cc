@@ -11,11 +11,36 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
+
+using testing::_;
+using testing::AtLeast;
+using testing::Return;
+
+class MockAutoBlocker : public permissions::PermissionDecisionAutoBlockerBase {
+ public:
+  MOCK_METHOD(bool,
+              IsEmbargoed,
+              (const GURL& request_origin, ContentSettingsType permission),
+              (override));
+  MOCK_METHOD(bool,
+              RecordDismissAndEmbargo,
+              (const GURL& url,
+               ContentSettingsType permission,
+               bool dismissed_prompt_was_quiet),
+              (override));
+  MOCK_METHOD(bool,
+              RecordIgnoreAndEmbargo,
+              (const GURL& url,
+               ContentSettingsType permission,
+               bool ignored_prompt_was_quiet),
+              (override));
+};
 
 class AutoPipSettingHelperTest : public views::ViewsTestBase {
  public:
@@ -40,7 +65,7 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
         false /* restore_session */, true /* should_record_metrics */);
 
     setting_helper_ = std::make_unique<AutoPipSettingHelper>(
-        origin_, settings_map_.get(), close_cb_.Get());
+        origin_, settings_map_.get(), &auto_blocker(), close_cb_.Get());
   }
 
   void TearDown() override {
@@ -57,6 +82,8 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
   const AutoPipSettingOverlayView* setting_overlay() const {
     return setting_overlay_;
   }
+
+  void clear_setting_helper() { setting_helper_.reset(); }
 
   base::MockOnceCallback<void()>& close_cb() { return close_cb_; }
 
@@ -82,6 +109,29 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
         origin_, GURL(), ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
   }
 
+  MockAutoBlocker& auto_blocker() { return auto_blocker_; }
+
+  // Set up expectations that there will be no interaction with the permissions
+  // auto blocker.
+  void ExpectEmbargoWillNotBeChecked() {
+    EXPECT_CALL(auto_blocker(), IsEmbargoed(_, _)).Times(0);
+  }
+
+  // Expect that there will be an embargo check, and that there isn't currently
+  // an embargo.
+  void SetupNoEmbargo() {
+    // Expect `auto_blocker()` will be called at least once for the correct
+    // origin and content setting, but never for anything else.
+    EXPECT_CALL(auto_blocker(), IsEmbargoed(_, _)).Times(0);
+    EXPECT_CALL(
+        auto_blocker(),
+        IsEmbargoed(origin_, ContentSettingsType::AUTO_PICTURE_IN_PICTURE))
+        .Times(AtLeast(1))
+        .WillRepeatedly(Return(false));
+  }
+
+  const GURL& origin() const { return origin_; }
+
  private:
   base::MockOnceCallback<void()> close_cb_;
 
@@ -97,12 +147,14 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
 
   // Used by the AutoPipSettingHelper instance.
   scoped_refptr<HostContentSettingsMap> settings_map_;
+  MockAutoBlocker auto_blocker_;
 
   std::unique_ptr<AutoPipSettingHelper> setting_helper_;
 };
 
 TEST_F(AutoPipSettingHelperTest, NoUiIfContentSettingIsAllow) {
   set_content_setting(CONTENT_SETTING_ALLOW);
+  ExpectEmbargoWillNotBeChecked();
 
   EXPECT_CALL(close_cb(), Run()).Times(0);
   AttachOverlayView();
@@ -112,6 +164,7 @@ TEST_F(AutoPipSettingHelperTest, NoUiIfContentSettingIsAllow) {
 
 TEST_F(AutoPipSettingHelperTest, UiShownIfContentSettingIsAsk) {
   set_content_setting(CONTENT_SETTING_ASK);
+  SetupNoEmbargo();
 
   EXPECT_CALL(close_cb(), Run()).Times(0);
   AttachOverlayView();
@@ -122,6 +175,7 @@ TEST_F(AutoPipSettingHelperTest, UiShownIfContentSettingIsAsk) {
 TEST_F(AutoPipSettingHelperTest,
        NoUiButCallbackIsCalledIfContentSettingIsBlock) {
   set_content_setting(CONTENT_SETTING_BLOCK);
+  ExpectEmbargoWillNotBeChecked();
 
   EXPECT_CALL(close_cb(), Run()).Times(1);
   AttachOverlayView();
@@ -131,6 +185,8 @@ TEST_F(AutoPipSettingHelperTest,
 
 TEST_F(AutoPipSettingHelperTest, AllowOnceDoesNotCallCloseCb) {
   set_content_setting(CONTENT_SETTING_DEFAULT);
+  // Do not set any embargo expectations, because we aren't asking for the UI,
+  // and are instead just short-circuiting the callback for simplicity.
 
   // Run result callback with "allow once" UiResult.  Nothing should happen.
   EXPECT_CALL(close_cb(), Run()).Times(0);
@@ -141,6 +197,8 @@ TEST_F(AutoPipSettingHelperTest, AllowOnceDoesNotCallCloseCb) {
 
 TEST_F(AutoPipSettingHelperTest, AllowOnEveryVisitDoesNotCallCloseCb) {
   set_content_setting(CONTENT_SETTING_DEFAULT);
+  // Do not set any embargo expectations, because we aren't asking for the UI,
+  // and are instead just short-circuiting the callback for simplicity.
 
   // Run result callback with "allow on every visit" UiResult.  Nothing should
   // happen.
@@ -152,10 +210,88 @@ TEST_F(AutoPipSettingHelperTest, AllowOnEveryVisitDoesNotCallCloseCb) {
 
 TEST_F(AutoPipSettingHelperTest, BlockDoesCallCloseCb) {
   set_content_setting(CONTENT_SETTING_DEFAULT);
+  // Do not set any embargo expectations, because we aren't asking for the UI,
+  // and are instead just short-circuiting the callback for simplicity.
 
   // Run result callback with "block" UiResult.  The close cb should be called.
   EXPECT_CALL(close_cb(), Run()).Times(1);
   std::move(setting_helper()->take_result_cb_for_testing())
       .Run(AutoPipSettingView::UiResult::kBlock);
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_BLOCK);
+}
+
+TEST_F(AutoPipSettingHelperTest,
+       DestructionDoesNotNotifyEmbargoEvenIfUiIsCreated) {
+  // If the UI is created and not used, and the window is destroyed without
+  // notifying the helper that the user explicitly closed it, then the embargo
+  // should not be updated.  For example, switching back to the opener tab or
+  // the site closing the pip window should not count against the embargo.
+  set_content_setting(CONTENT_SETTING_DEFAULT);
+  SetupNoEmbargo();
+  EXPECT_CALL(auto_blocker(), RecordDismissAndEmbargo(_, _, _)).Times(0);
+
+  // The close cb shouldn't be called because the setting helper shouldn't want
+  // to close the window.
+  EXPECT_CALL(close_cb(), Run()).Times(0);
+  AttachOverlayView();
+  EXPECT_TRUE(setting_overlay());
+  // Destroy the setting helper without calling `OnUserClosedWindow()`.
+  clear_setting_helper();
+  EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ASK);
+}
+
+TEST_F(AutoPipSettingHelperTest, DismissNotifiesEmbargoIfUiIsCreated) {
+  set_content_setting(CONTENT_SETTING_DEFAULT);
+  SetupNoEmbargo();
+  EXPECT_CALL(
+      auto_blocker(),
+      RecordDismissAndEmbargo(
+          origin(), ContentSettingsType::AUTO_PICTURE_IN_PICTURE, false))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  // Notify the setting helper that the user closed the window manually.  The
+  // close cb should not be called, because the user closed it already.
+  EXPECT_CALL(close_cb(), Run()).Times(0);
+  AttachOverlayView();
+  EXPECT_TRUE(setting_overlay());
+  setting_helper()->OnUserClosedWindow();
+  EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ASK);
+}
+
+TEST_F(AutoPipSettingHelperTest,
+       DismissDoesNotNotifyEmbargoIfUiIsNotRequested) {
+  set_content_setting(CONTENT_SETTING_DEFAULT);
+  ExpectEmbargoWillNotBeChecked();
+  // We don't ask for the UI, so there should not be an embargo check.  There
+  // should also not be an embargo update.  That's the point of this test --
+  // creating the setting helper but not using it should not cause any update to
+  // the embargo.
+  EXPECT_CALL(auto_blocker(), RecordDismissAndEmbargo(_, _, _)).Times(0);
+
+  EXPECT_CALL(close_cb(), Run()).Times(0);
+  // Do not attach the overlay view, which should prevent a callback since the
+  // user wasn't presented with any UI.
+  setting_helper()->OnUserClosedWindow();
+  EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ASK);
+}
+
+TEST_F(AutoPipSettingHelperTest,
+       UiIsNotShownIfContentSettingIsAskButUnderEmbargo) {
+  set_content_setting(CONTENT_SETTING_ASK);
+  EXPECT_CALL(
+      auto_blocker(),
+      IsEmbargoed(origin(), ContentSettingsType::AUTO_PICTURE_IN_PICTURE))
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  // Since there's no UI shown, there also should not be an embargo update.
+  EXPECT_CALL(auto_blocker(), RecordDismissAndEmbargo(_, _, _)).Times(0);
+
+  // Since there's an embargo, we expect that there should not be an overlay
+  // view shown.  However, the close cb should be called.
+  EXPECT_CALL(close_cb(), Run()).Times(1);
+  AttachOverlayView();
+  EXPECT_FALSE(setting_overlay());
+  // Should not change the content setting as a result of the embargo.
+  EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ASK);
 }

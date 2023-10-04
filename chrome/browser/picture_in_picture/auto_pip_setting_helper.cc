@@ -5,8 +5,11 @@
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "content/public/browser/web_contents.h"
 
 // static
@@ -15,27 +18,46 @@ AutoPipSettingHelper::CreateForWebContents(content::WebContents* web_contents,
                                            base::OnceClosure close_pip_cb) {
   auto* settings_map = HostContentSettingsMapFactory::GetForProfile(
       web_contents->GetBrowserContext());
+  auto* auto_blocker = PermissionDecisionAutoBlockerFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   return std::make_unique<AutoPipSettingHelper>(
-      web_contents->GetLastCommittedURL(), settings_map,
+      web_contents->GetLastCommittedURL(), settings_map, auto_blocker,
       std::move(close_pip_cb));
 }
 
-AutoPipSettingHelper::AutoPipSettingHelper(const GURL& origin,
-                                           HostContentSettingsMap* settings_map,
-                                           base::OnceClosure close_pip_cb)
+AutoPipSettingHelper::AutoPipSettingHelper(
+    const GURL& origin,
+    HostContentSettingsMap* settings_map,
+    permissions::PermissionDecisionAutoBlockerBase* auto_blocker,
+    base::OnceClosure close_pip_cb)
     : origin_(origin),
       settings_map_(settings_map),
-      close_pip_cb_(std::move(close_pip_cb)) {
-  result_cb_ = base::BindOnce(&AutoPipSettingHelper::OnUiResult,
-                              weak_factory_.GetWeakPtr());
-}
+      close_pip_cb_(std::move(close_pip_cb)),
+      auto_blocker_(auto_blocker) {}
 
 AutoPipSettingHelper::~AutoPipSettingHelper() = default;
 
+void AutoPipSettingHelper::OnUserClosedWindow() {
+  if (auto_blocker_ && ui_was_shown_but_not_acknowledged_) {
+    auto_blocker_->RecordDismissAndEmbargo(
+        origin_, ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+        /*dismissed_prompt_was_quiet=*/false);
+  }
+}
+
 ContentSetting AutoPipSettingHelper::GetEffectiveContentSetting() {
-  return settings_map_->GetContentSetting(
+  auto setting = settings_map_->GetContentSetting(
       origin_, /*secondary_url=*/GURL(),
       ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
+
+  if (setting == CONTENT_SETTING_ASK && auto_blocker_) {
+    if (auto_blocker_->IsEmbargoed(
+            origin_, ContentSettingsType::AUTO_PICTURE_IN_PICTURE)) {
+      return CONTENT_SETTING_BLOCK;
+    }
+  }
+
+  return setting;
 }
 
 void AutoPipSettingHelper::UpdateContentSetting(ContentSetting new_setting) {
@@ -47,6 +69,12 @@ void AutoPipSettingHelper::UpdateContentSetting(ContentSetting new_setting) {
       ContentSettingsType::AUTO_PICTURE_IN_PICTURE, new_setting, constraints);
 }
 
+AutoPipSettingHelper::ResultCb AutoPipSettingHelper::CreateResultCb() {
+  weak_factory_.InvalidateWeakPtrs();
+  return base::BindOnce(&AutoPipSettingHelper::OnUiResult,
+                        weak_factory_.GetWeakPtr());
+}
+
 std::unique_ptr<AutoPipSettingOverlayView>
 AutoPipSettingHelper::CreateOverlayViewIfNeeded(
     const gfx::Rect& browser_view_overridden_bounds,
@@ -55,8 +83,9 @@ AutoPipSettingHelper::CreateOverlayViewIfNeeded(
   switch (GetEffectiveContentSetting()) {
     case CONTENT_SETTING_ASK:
       // Create and return the UI to ask the user.
+      ui_was_shown_but_not_acknowledged_ = true;
       return std::make_unique<AutoPipSettingOverlayView>(
-          std::move(result_cb_), origin_, browser_view_overridden_bounds,
+          CreateResultCb(), origin_, browser_view_overridden_bounds,
           anchor_view, arrow);
     case CONTENT_SETTING_ALLOW:
       // Nothing to do -- allow the auto pip to proceed.
@@ -73,6 +102,9 @@ AutoPipSettingHelper::CreateOverlayViewIfNeeded(
 }
 
 void AutoPipSettingHelper::OnUiResult(AutoPipSettingView::UiResult result) {
+  // The UI was both shown and acknoweledged, so we don't have to worry about it
+  // being dismissed without being acted on for the permission embargo.
+  ui_was_shown_but_not_acknowledged_ = false;
   switch (result) {
     case AutoPipSettingView::UiResult::kBlock:
       UpdateContentSetting(CONTENT_SETTING_BLOCK);
@@ -82,9 +114,9 @@ void AutoPipSettingHelper::OnUiResult(AutoPipSettingView::UiResult result) {
     case AutoPipSettingView::UiResult::kAllowOnEveryVisit:
       UpdateContentSetting(CONTENT_SETTING_ALLOW);
       break;
-    case AutoPipSettingView::UiResult::kDismissed:
     case AutoPipSettingView::UiResult::kAllowOnce:
-      // Leave at 'ASK'.
+      // Leave at 'ASK'.  Do not update the embargo, since the user allowed the
+      // feature to continue.  If anything, this should vote for 'anti-embargo'.
       break;
   }
 }
