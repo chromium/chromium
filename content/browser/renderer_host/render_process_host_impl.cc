@@ -3124,6 +3124,10 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
       process_lock.GetWebExposedIsolationLevel() >=
       WebExposedIsolationLevel::kMaybeIsolated);
 
+  GetRendererInterface()->SetIsWebSecurityDisabled(
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableWebSecurity));
+
   bool is_isolated_context_allowed_by_embedder =
       GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
           GetBrowserContext(), process_lock.lock_url());

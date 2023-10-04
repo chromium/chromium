@@ -447,6 +447,7 @@ class CONTENT_EXPORT RenderThreadImpl
       WriteClangProfilingProfileCallback callback) override;
 #endif
   void SetIsCrossOriginIsolated(bool value) override;
+  void SetIsWebSecurityDisabled(bool value) override;
   void SetIsIsolatedContext(bool value) override;
   void SetAttributionReportingSupport(
       network::mojom::AttributionSupport) override;

@@ -187,6 +187,11 @@ void SetIsCrossOriginIsolated(bool value) {
 }
 
 // Function defined in third_party/blink/public/web/blink.h.
+void SetIsWebSecurityDisabled(bool value) {
+  Agent::SetIsWebSecurityDisabled(value);
+}
+
+// Function defined in third_party/blink/public/web/blink.h.
 void SetIsIsolatedContext(bool value) {
   Agent::SetIsIsolatedContext(value);
 }

@@ -127,6 +127,10 @@ BLINK_EXPORT void ForceNextDrawingBufferCreationToFailForTest();
 // This is called at most once. This is called earlier than any frame commit.
 BLINK_EXPORT void SetIsCrossOriginIsolated(bool value);
 
+// Allows disabling web security. One example of this is that it enables APIs
+// that would otherwise require cross-origin-isolated contexts.
+BLINK_EXPORT void SetIsWebSecurityDisabled(bool value);
+
 // Set whether this renderer process is allowed to use Isolated Context APIs.
 // Similarly to the `SetIsCrossOriginIsolated()` method above, this flag is
 // process global, and called at most once, prior to committing a frame.

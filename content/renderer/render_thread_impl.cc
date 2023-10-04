@@ -1403,6 +1403,10 @@ void RenderThreadImpl::SetIsCrossOriginIsolated(bool value) {
   blink::SetIsCrossOriginIsolated(value);
 }
 
+void RenderThreadImpl::SetIsWebSecurityDisabled(bool value) {
+  blink::SetIsWebSecurityDisabled(value);
+}
+
 void RenderThreadImpl::SetIsIsolatedContext(bool value) {
   blink::SetIsIsolatedContext(value);
 }

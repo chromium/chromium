@@ -705,4 +705,9 @@ void ExecutionContext::WriteIntoTrace(
   proto->set_world_type(GetWorldType(*this));
 }
 
+bool ExecutionContext::CrossOriginIsolatedCapabilityOrDisabledWebSecurity()
+    const {
+  return Agent::IsWebSecurityDisabled() || CrossOriginIsolatedCapability();
+}
+
 }  // namespace blink

@@ -4189,7 +4189,8 @@ def bind_installer_local_vars(code_node, cg_context):
     local_vars.extend([
         S("is_cross_origin_isolated",
           ("const bool ${is_cross_origin_isolated} = "
-           "${execution_context}->CrossOriginIsolatedCapability();")),
+           "${execution_context}"
+           "->CrossOriginIsolatedCapabilityOrDisabledWebSecurity();")),
         S("is_in_isolated_context",
           ("const bool ${is_in_isolated_context} = "
            "${execution_context}->IsIsolatedContext();")),

@@ -66,6 +66,9 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
   // Only called from blink::SetIsCrossOriginIsolated.
   static void SetIsCrossOriginIsolated(bool value);
 
+  static bool IsWebSecurityDisabled();
+  static void SetIsWebSecurityDisabled(bool value);
+
   // Represents adherence to an additional set of restrictions above and beyond
   // "cross-origin isolated".
   //

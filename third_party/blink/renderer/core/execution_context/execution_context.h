@@ -394,6 +394,10 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // https://html.spec.whatwg.org/C/webappapis.html#concept-settings-object-cross-origin-isolated-capability
   virtual bool CrossOriginIsolatedCapability() const = 0;
 
+  // Allows --disable-web-security (via `Agent::IsWebSecurityDisabled()`) to
+  // override `CrossOriginIsolatedCapability()` .
+  bool CrossOriginIsolatedCapabilityOrDisabledWebSecurity() const;
+
   // Returns true if scripts within this ExecutionContext are allowed to use
   // Trusted Context APIs (i.e. annotated with [IsolatedContext] IDL attribute).
   //

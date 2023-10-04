@@ -157,6 +157,11 @@ interface Renderer {
   // This is called at most once, prior to committing a navigation.
   SetIsCrossOriginIsolated(bool value);
 
+  // Sets whether `--disable-web-security` has been set.
+  //
+  // This is called at most once on process startup.
+  SetIsWebSecurityDisabled(bool value);
+
   // Set whether this renderer process is allowed to use Isolated Context APIs.
   // Similarly to the `SetIsCrossOriginIsolated()` method above, this flag is
   // process global, and called at most once, prior to committing a navigation.

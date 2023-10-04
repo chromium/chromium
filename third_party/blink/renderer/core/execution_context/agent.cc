@@ -14,10 +14,12 @@ namespace blink {
 namespace {
 bool is_cross_origin_isolated = false;
 bool is_isolated_context = false;
+bool is_web_security_disabled = false;
 
 #if DCHECK_IS_ON()
 bool is_cross_origin_isolated_set = false;
 bool is_isolated_context_set = false;
+bool is_web_security_disabled_set = false;
 #endif
 }  // namespace
 
@@ -68,6 +70,22 @@ void Agent::SetIsCrossOriginIsolated(bool value) {
   is_cross_origin_isolated_set = true;
 #endif
   is_cross_origin_isolated = value;
+}
+
+// static
+bool Agent::IsWebSecurityDisabled() {
+  return is_web_security_disabled;
+}
+
+// static
+void Agent::SetIsWebSecurityDisabled(bool value) {
+#if DCHECK_IS_ON()
+  if (is_web_security_disabled_set) {
+    DCHECK_EQ(is_web_security_disabled, value);
+  }
+  is_web_security_disabled_set = true;
+#endif
+  is_web_security_disabled = value;
 }
 
 // static
