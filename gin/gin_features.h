@@ -69,6 +69,7 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptIteratorHelpers);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptPromiseWithResolvers);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTailCall);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyInlining);
+GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyGenericWrapper);
 
 }  // namespace features
 

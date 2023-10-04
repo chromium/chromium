@@ -256,4 +256,8 @@ BASE_FEATURE(kWebAssemblyInlining,
              "WebAssemblyInlining",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable the generic wasm-to-js wrapper.
+BASE_FEATURE(kWebAssemblyGenericWrapper,
+             "WebAssemblyGenericWrapper",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
