@@ -61,12 +61,12 @@
   {
     "name": "adaptive-charging",
     "owners": [ "thanhdng", "alanlxl" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "adaptive-charging-for-testing",
     "owners": [ "thanhdng", "alanlxl" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "add-identity-in-can-make-payment",
