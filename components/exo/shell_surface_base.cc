@@ -403,7 +403,6 @@ ShellSurfaceBase::ShellSurfaceBase(Surface* surface,
 }
 
 ShellSurfaceBase::~ShellSurfaceBase() {
-  LOG(ERROR) << "~ShellSurfaceBase";
   // If the surface was TrustedPinned, we have to unpin first as this might have
   // locked down some system functions.
   if (current_pinned_state_ == chromeos::WindowPinType::kTrustedPinned) {
