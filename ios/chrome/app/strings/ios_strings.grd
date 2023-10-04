@@ -4958,7 +4958,7 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_OVERFLOW_MENU_HIDDEN_READING_LIST_SUBTITLE" desc="The subtitle of the Add to Reading List action alerting users that the Reading List destination is hidden." meaning="[In Title case] [iOS only]">
         Reading List is hidden
       </message>
-      <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ITEM_ACCESSIBILITY_HINT" desc="Accessibility hint telling users what will happen if they take action on an item." meaning="[In Title case] [iOS only]">
+      <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ITEM_ACCESSIBILITY_HINT" desc="Accessibility hint telling users what will happen if they take action on a shown item." meaning="[In Title case] [iOS only]">
         Hides this item
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_SHARE_CHROME" desc="The iOS menu item for opening a share sheet with the URL to the Chrome app in the iOS app store" meaning="[In Title case] [iOS only] [Length: Unlimited]">
@@ -4969,6 +4969,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_SHARE_CHROME_DESC" desc="The description displayed along with the app store link to Chrome, when sharing the chrome app" meaning="[In Title case] [iOS only] [Length: Unlimited]">
         Download Chrome here.
+      </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_SHOW_ITEM_ACCESSIBILITY_HINT" desc="Accessibility hint telling users what will happen if they take action on a hidden item." meaning="[In Title case] [iOS only]">
+        Shows this item
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS" desc="The iOS menu item for starting the process to edit actions on the overflow menu." meaning="[In Title case] [iOS only] [Length: Unlimited]">
         Customize Menu
