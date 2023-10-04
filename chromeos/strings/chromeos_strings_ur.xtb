@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">وال پیپر کی تصویر کو روزانہ تبدیل کریں</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
 <translation id="1651925268237749928">آپ نے ایک اشتراک کردہ البم منتخب کیا ہے۔ دوسرے لوگ تصاویر شامل یا تبدیل کر سکتے ہیں۔ آپ کا وال پیپر ایسی تصاویر استعمال کر سکتا ہے جو فی الحال اس البم میں موجود نہیں ہیں۔</translation>
+<translation id="1661865805917886535">‏اکاؤنٹ اور سسٹم کی کچھ معلومات Google کو بھیجی جا سکتی ہے۔ ہم اس معلومات کو تکنیکی مسائل کو حل کرنے اور اپنی سروسز کو بہتر بنانے کے لیے استعمال کرتے ہیں، جو ہماری رازداری کی پالیسی (<ph name="PRIVACYPOLICYURL" />) اور سروس کی شرائط (<ph name="TERMSOFSERVICEURL" />) کے ساتھ مشروط ہے۔ مواد کی تبدیلیوں کی درخواست دینے کی خاطر قانونی امداد (<ph name="LEGALHELPPAGEURL" />) پر جائیں۔</translation>
 <translation id="1662989795263954667">رک گیا - سیاہی ختم ہو گئی</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> کا پیش منظر دیکھیں</translation>
 <translation id="1668469839109562275">‏پہلے سے موجود VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">آلہ منسلک ہے۔</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{صفحہ ہٹائیں؟}=1{{PAGE_NUMBER} صفحہ ہٹائیں؟}other{{PAGE_NUMBER} صفحہ ہٹائیں؟}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> کیلئے مخصوص</translation>
 <translation id="315116470104423982">موبائل ڈیٹا</translation>
 <translation id="3156846309055100599">صفحہ <ph name="PAGE_NUMBER" /> کو اسکین کیا جا رہا ہے...</translation>
 <translation id="315738237743207937">کیپٹو پورٹل کا پتا چلا</translation>

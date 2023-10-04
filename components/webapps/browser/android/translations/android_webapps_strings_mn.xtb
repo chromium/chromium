@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
+<translation id="1213425325105380833">Энэ бүртгэлтэй холбогдсон төхөөрөмжүүдэд саяхан ашигласан веб аппуудыг сэргээнэ үү</translation>
+<translation id="2065911435109240297">Веб аппуудаа сэргээх</translation>
+<translation id="2111649875343992405">Аль веб аппуудыг сэргээхийг шалгана уу</translation>
 <translation id="2139186145475833000">Нүүр хуудсын дэлгэц рүү нэмэх</translation>
+<translation id="2172982519592313442">Веб аппуудыг шалгах</translation>
 <translation id="2478076885740497414">Програм суулгах</translation>
 <translation id="3789841737615482174">Суулгах</translation>
 <translation id="3910402514791813257">Суулгаж чадсангүй</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Дэлгэцийн агшин. Хаахын тулд товшино уу.</translation>
 <translation id="6990079615885386641">Google Play Store-с апп авах: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Өмнөх сайтыг нэмж байна</translation>
+<translation id="7672888405515738928">Энэ төхөөрөмжид сэргээх веб аппуудыг сонгоно уу. Энд харуулсан аппуудыг таны Chrome-н түүхэд тулгуурласан.</translation>
+<translation id="8163051092261298861">Веб аппуудыг сэргээх</translation>
 <translation id="962979164594783469">Энэ аппыг суулгах</translation>
 </translationbundle>

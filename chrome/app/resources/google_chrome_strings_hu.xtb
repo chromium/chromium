@@ -120,6 +120,7 @@
 <translation id="2928420929544864228">A telepítés befejeződött.</translation>
 <translation id="2929907241665500097">Ismeretlen hiba történt, ezért a Chrome nem frissült. <ph name="BEGIN_LINK" />A Chrome frissítési problémáinak megoldása.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Hálózati bejelentkezés – Chrome</translation>
+<translation id="3018957014024118866">Az adatok a Chrome-ból is legyenek törölve (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">A ChromeOS Flex újraindítása és frissítése</translation>
 <translation id="303514781271618814">A Chrome olyan funkciók fejlesztésén dolgozik, amelyek ugyanazt a böngészési élményt nyújtják kevesebb adatfelhasználás mellett</translation>
 <translation id="3037838751736561277">A Google Chrome háttérmódban van.</translation>
@@ -209,6 +210,7 @@
 <translation id="4571503333518166079">A Chrome értesítési beállításainak megnyitása</translation>
 <translation id="459622048091363950">Miután hozzáférést biztosított a Chrome-nak, a webhelyek is hozzáférést kérhetnek.</translation>
 <translation id="4600710005438004015">Nem sikerült a Chrome frissítése a legújabb verzióra, így Ön lemarad az új funkciókról és biztonsági javításokról.</translation>
+<translation id="4624065194742029982">Chrome inkognitó mód</translation>
 <translation id="4627412468266359539">Nem kötelező: Segítheti a ChromeOS Flex funkcióinak és teljesítményének javítását azzal, hogy automatikusan elküldi a diagnosztikai és használati adatokat a Google-nak.</translation>
 <translation id="4633000520311261472">A Chrome biztonságosabbá tétele érdekében kikapcsoltunk néhány bővítményt, amelyek nem a(z) <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> szolgáltatásból származnak, és előfordulhat, hogy az Ön tudta nélkül lettek telepítve.</translation>
 <translation id="4680828127924988555">Telepítés megszakítása</translation>
@@ -218,6 +220,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Ez a fájl veszélyes lehet, ezért a Chrome letiltotta.</translation>
 <translation id="479167709087336770">A szolgáltatás ugyanazt a helyesírás-ellenőrzést használja, mint a Google Kereső. A begépelt szöveget a böngésző elküldi a Google-nak. A beállítások között ezt bármikor módosíthatja.</translation>
+<translation id="4793679854893018356">További információ arról, hogy miként gondoskodik a Chrome az Ön biztonságáról</translation>
 <translation id="4828579605166583682">A Google Chrome lecserélni próbálja a meglévő jelszavakat. Az engedélyezéshez adja meg Windows-jelszavát.</translation>
 <translation id="4842397268809523050">A ChromeOS Flex nem tudta szinkronizálni az adatait, mert a szinkronizálás nem áll rendelkezésre a domainjénél.</translation>
 <translation id="4873783916118289636">A legfontosabb adatvédelmi és biztonsági beállítások áttekintése a Chrome-ban</translation>
@@ -264,6 +267,7 @@
 <translation id="5756509061973259733">Már létezik Chrome-profil ezzel a fiókkal ezen az eszközön.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Nem sikerült a Chrome elindítása. Próbálkozzon újra.</translation>
+<translation id="586971344380992563"><ph name="BEGIN_LINK" />A Chrome figyelmezteti<ph name="END_LINK" /> a nem biztonságos webhelyekre és letöltésekre</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Hálózati bejelentkezés</translation>
 <translation id="5924017743176219022">Kapcsolódás az internethez…</translation>
@@ -273,6 +277,7 @@
 <translation id="5941830788786076944">A Google Chrome beállítása alapértelmezett böngészőként</translation>
 <translation id="6003112304606738118">Letöltés… <ph name="HOURS" /> óra van hátra</translation>
 <translation id="6010556343189461180">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a macOS 10.15-ös vagy újabb verziójára lesz szüksége. Ezen a számítógépen a macOS 10.14 fut.</translation>
+<translation id="6014316319780893079">A <ph name="BEGIN_LINK" />Chrome eszközeivel<ph name="END_LINK" /> biztonságosan böngészhet, és kézben tarthatja az irányítást</translation>
 <translation id="6022659036123304283">Tegye személyessé a Chrome-ot</translation>
 <translation id="6025087594896450715">A Google Chrome újraindul <ph name="REMAINING_TIME" /> múlva</translation>
 <translation id="6040143037577758943">Bezárás</translation>
@@ -362,6 +367,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="7651907282515937834">Chrome Enterprise-embléma</translation>
 <translation id="76531479118467370">A Chrome letiltotta ezt a letöltést, mert Ön kikapcsolta a Biztonságos Böngészést, és a fájl nem ellenőrizhető</translation>
 <translation id="7655455401911432608">Böngészési előzményei és az Ön által az ezen az eszközön használt Chrome-ban felkeresett webhelyek jegyzéke.</translation>
+<translation id="769538538642757151">A Chrome értesíti Önt, ha bármit érdemes áttekintenie</translation>
 <translation id="7747138024166251722">A telepítőnek nem sikerült létrehoznia az ideiglenes könyvtárat. Kérjük ellenőrizze, hogy van-e elegendő hely a lemezen, és rendelkezik-e engedéllyel a szoftvertelepítésre.</translation>
 <translation id="7761834446675418963">Kattintson a nevére a Chrome megnyitásához és a böngészés megkezdéséhez.</translation>
 <translation id="7777080907402804672">Ha valamelyik kép nem rendelkezik hasznos leírással, akkor a Chrome igyekszik leírást adni róla. A Google automatikusan megkapja a leírások létrehozásához szükséges képeket. A funkciót a beállítások között bármikor kikapcsolhatja.</translation>
@@ -390,6 +396,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8129812357326543296">A &amp;Google Chrome névjegye</translation>
 <translation id="813913629614996137">Indítás…</translation>
 <translation id="8255190535488645436">A Google Chrome használja a kamerát és a mikrofont.</translation>
+<translation id="8267953129876836456">A Chrome talált néhány áttekintésre érdemes biztonsági javaslatot</translation>
 <translation id="8270775718612349140">A Chrome által kezelt tanúsítványok</translation>
 <translation id="8286862437124483331">A Google Chrome megkísérli megjeleníteni a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="8290100596633877290">Hmm. A Google Chrome összeomlott. Újraindítja most?</translation>
@@ -404,6 +411,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8403038600646341038">A Chrome logója egy számítógép képernyőjén.</translation>
 <translation id="8416347857511542594">További információ a hirdetések személyre szabásáról a Chrome-ban</translation>
 <translation id="8418845734693287262">A ChromeOS nem tudta szinkronizálni az adatokat, mert a fiók bejelentkezési adatai elavultak.</translation>
+<translation id="842386925677997438">A Chrome biztonsági eszközei</translation>
 <translation id="8433638294851456451">Ha innen szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chrome-ba mindkét eszközén.</translation>
 <translation id="8451192282033883849">Az Ön fiókkezelője: <ph name="MANAGER_NAME" />. Rendszergazdája láthatja és szerkesztheti ezt a Chrome-böngészőprofilt és az adatait (például a könyvjelzőket, az előzményeket és a jelszavakat).</translation>
 <translation id="8496177819998570653">Google J&amp;elszókezelő</translation>
@@ -444,6 +452,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9195993889682885387">A Chrome meg tudja becsülni az Ön érdeklődési köreit a legutóbbi pár hétben végzett böngészési tevékenységei alapján. Ezek az információk nem hagyják el az eszközt.</translation>
 <translation id="919706545465235479">Frissítse a Chrome-ot a szinkronizálás megkezdéséhez</translation>
 <translation id="922152298093051471">A Chrome személyre szabása</translation>
+<translation id="92460355979482493">Ha be van kapcsolva ez a beállítás, a Chome előre betölti az oldalakat, ami felgyorsítja a böngészést és a keresést.</translation>
 <translation id="93760716455950538">A ChromeOS Flex újraindítása</translation>
 <translation id="940313311831216333">Ha szeretne minden eszközén hozzáférni Chrome-anyagához, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>
 <translation id="943390475793766444">A Chrome a fájl ellenőrzését javasolja, mert veszélyes lehet.</translation>

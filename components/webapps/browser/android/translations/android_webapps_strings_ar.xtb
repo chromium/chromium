@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1213425325105380833">يمكنك استعادة تطبيقات الويب التي استخدمتها مؤخرًا على الأجهزة المرتبطة بهذا الحساب.</translation>
+<translation id="2065911435109240297">استعادة تطبيقات الويب</translation>
+<translation id="2111649875343992405">الاطّلاع على تطبيقات الويب المطلوب استعادتها</translation>
 <translation id="2139186145475833000">الإضافة إلى الشاشة الرئيسية</translation>
+<translation id="2172982519592313442">مراجعة تطبيقات الويب</translation>
 <translation id="2478076885740497414">تثبيت التطبيق</translation>
 <translation id="3789841737615482174">تثبيت</translation>
 <translation id="3910402514791813257">تعذَّر التثبيت.</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">انقر لإغلاق لقطة الشاشة.</translation>
 <translation id="6990079615885386641">‏الحصول على التطبيق من متجر Google Play: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">لا تزال عملية إضافة الموقع الإلكتروني السابق جارية</translation>
+<translation id="7672888405515738928">‏اختَر تطبيقات الويب التي تريد استعادتها على هذا الجهاز. وتستند التطبيقات المعروضة هنا إلى سجلّ Chrome.</translation>
+<translation id="8163051092261298861">استعادة تطبيقات الويب</translation>
 <translation id="962979164594783469">تثبيت هذا التطبيق</translation>
 </translationbundle>

@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Il dispositivo è collegato.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Rimuovere la pagina?}=1{Rimuovere pagina {PAGE_NUMBER}?}other{Rimuovere pagina {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">In esclusiva per <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dati mobili</translation>
 <translation id="3156846309055100599">Scansione pagina <ph name="PAGE_NUMBER" /> in corso…</translation>
 <translation id="315738237743207937">Captive portal rilevato</translation>

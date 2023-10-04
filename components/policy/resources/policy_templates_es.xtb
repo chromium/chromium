@@ -7319,15 +7319,6 @@ Si se inhabilita esta política o no se define, se inhabilitará la configuraci�
       Si no se asigna ningún valor a esta política, la opción predeterminada no estará disponible para los usuarios gestionados por empresas, aunque sí lo estará para aquellos no gestionados por empresas.</translation>
 <translation id="7295019613773647480">Habilitar usuarios supervisados</translation>
 <translation id="7297476773981993405">Permite que se ejecute el algoritmo User-Agent GREASE actualizado.</translation>
-<translation id="7297765841046240459">Si se habilita esta política, <ph name="PRODUCT_NAME" /> verificará los certificados de los servidores mediante el verificador de certificados integrado usando Chrome Root Store como fuente de confianza pública.
-
-Si se inhabilita esta política, <ph name="PRODUCT_NAME" /> usará el verificador de certificados del sistema y los certificados raíz del sistema.
-
-Si no se define esta política, se podrá usar Chrome Root Store o las raíces proporcionadas por el sistema.
-
-Se prevé que esta política se elimine en la versión 120 de <ph name="PRODUCT_OS_NAME" />, en la versión 120 de <ph name="PRODUCT_NAME" /> para <ph name="LINUX_OS_NAME" /> y en la versión 121 de <ph name="PRODUCT_NAME" /> para <ph name="ANDROID_NAME" />, en la que el uso de raíces proporcionadas por la plataforma dejará de ser compatible.
-
-Esta política se eliminó en la versión 113 de <ph name="PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />, en la que el uso del verificador de certificados y las raíces proporcionados por la plataforma dejó de ser compatible.</translation>
 <translation id="7298197471363105063">Anular Conjuntos propios.</translation>
 <translation id="7302043767260300182">Retraso de bloqueo de pantalla cuando el dispositivo está conectado a la red</translation>
 <translation id="7303902834678570827">Los usuarios de sesiones de invitado gestionadas pueden almacenar ajustes de pantalla que se apliquen a todo el dispositivo</translation>

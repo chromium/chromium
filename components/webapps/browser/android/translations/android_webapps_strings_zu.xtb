@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
+<translation id="1213425325105380833">Buyisela ama-app ewebhu owasebenzise muva nje kumadivayisi axhunywe kule akhawunti</translation>
+<translation id="2065911435109240297">Buyisela ama-app akho ewebhu</translation>
+<translation id="2111649875343992405">Buyekeza ukuthi yimaphi ama-app azobuyiselwa</translation>
 <translation id="2139186145475833000">Engeza kusikrini sasekhaya</translation>
+<translation id="2172982519592313442">Buyekeza ama-app ewebhu</translation>
 <translation id="2478076885740497414">Faka uhlelo lokusebenza</translation>
 <translation id="3789841737615482174">Faka</translation>
 <translation id="3910402514791813257">Yehlulekile ukufaka</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Isithombe-skrini. Thepha ukuze uvale.</translation>
 <translation id="6990079615885386641">Thola uhlelo lokusebenza kusukela ku-Google Play Isitolo: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Isangeza isayithi langaphambilini</translation>
+<translation id="7672888405515738928">Khetha ama-app ewebhu ofuna ukuwabuyisela kule divayisi. Ama-app aboniswe lapha asekelwe emlandweni wakho we-Chrome.</translation>
+<translation id="8163051092261298861">Buyisa ama-app ewebhu</translation>
 <translation id="962979164594783469">Faka lolu hlelo lokusebenza</translation>
 </translationbundle>

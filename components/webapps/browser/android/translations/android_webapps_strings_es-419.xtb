@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1213425325105380833">Restablece las apps web que hayas usado recientemente en los dispositivos conectados a esta cuenta</translation>
+<translation id="2065911435109240297">Restablece tus apps web</translation>
+<translation id="2111649875343992405">Revisa qué apps web se deben restablecer</translation>
 <translation id="2139186145475833000">Agregar a la pantalla principal</translation>
+<translation id="2172982519592313442">Revisar las apps web</translation>
 <translation id="2478076885740497414">Instalar aplicación</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3910402514791813257">No se pudo instalar</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Captura de pantalla. Presionar para cerrar.</translation>
 <translation id="6990079615885386641">Descargar la aplicación desde Google Play Store: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Aún se está agregando el sitio anterior</translation>
+<translation id="7672888405515738928">Elige las apps web que quieras restablecer en este dispositivo. Las apps que se muestran aquí se basan en tu historial de Chrome.</translation>
+<translation id="8163051092261298861">Restablecer apps web</translation>
 <translation id="962979164594783469">Instalar esta app</translation>
 </translationbundle>

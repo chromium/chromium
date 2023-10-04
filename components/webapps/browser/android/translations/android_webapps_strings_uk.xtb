@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="1213425325105380833">Відновити веб-додатки, якими ви нещодавно користувалися на пристроях, зв’язаних із цим обліковим записом</translation>
+<translation id="2065911435109240297">Відновити веб-додатки</translation>
+<translation id="2111649875343992405">Перегляньте, які веб-додатки потрібно відновити</translation>
 <translation id="2139186145475833000">Додати на головний екран</translation>
+<translation id="2172982519592313442">Переглянути веб-додатки</translation>
 <translation id="2478076885740497414">Установити додаток</translation>
 <translation id="3789841737615482174">Установити</translation>
 <translation id="3910402514791813257">Не вдалося встановити додаток</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Знімок екрана. Торкніться, щоб закрити.</translation>
 <translation id="6990079615885386641">Завантажити додаток із магазину Google Play: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Попередній сайт ще додається</translation>
+<translation id="7672888405515738928">Виберіть веб-додатки, які потрібно відновити на цьому пристрої. Тут показуються додатки, підібрані на основі вашої історії Chrome.</translation>
+<translation id="8163051092261298861">Відновити веб-додатки</translation>
 <translation id="962979164594783469">Установити цей додаток</translation>
 </translationbundle>

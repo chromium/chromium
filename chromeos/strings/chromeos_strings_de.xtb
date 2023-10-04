@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Das Gerät ist verbunden.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Seite entfernen?}=1{Seite {PAGE_NUMBER} entfernen?}other{Seite {PAGE_NUMBER} entfernen?}}</translation>
+<translation id="3146655726035122603">Exklusiv für <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobile Daten</translation>
 <translation id="3156846309055100599">Seite <ph name="PAGE_NUMBER" /> wird gescannt…</translation>
 <translation id="315738237743207937">Captive Portal erkannt</translation>
@@ -920,6 +921,7 @@
 <translation id="8138405288920084977">LTE-Advanced</translation>
 <translation id="8143951647992294073">"<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />" auswählen</translation>
 <translation id="8151185429379586178">Entwicklertools</translation>
+<translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8183974620058026102">Anhängen</translation>
 <translation id="8206859287963243715">Mobil</translation>

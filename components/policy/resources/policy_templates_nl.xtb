@@ -7252,15 +7252,6 @@ Als je dit beleid niet toepast of niet instelt, staan de instellingen voor Kerbe
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="7295019613773647480">Gebruikers met beperkte rechten aanzetten</translation>
 <translation id="7297476773981993405">Toestaan dat het geüpdatete User-Agent GREASE-algoritme wordt uitgevoerd.</translation>
-<translation id="7297765841046240459">Als je dit beleid toepast, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie in de Chrome Root Store als bron van openbaar vertrouwen.
-
-Als je dit beleid niet toepast, gebruikt <ph name="PRODUCT_NAME" /> de systeemcertificaatverificatie en de rootcertificaten van het systeem.
-
-Als je dit beleid niet instelt, kunnen de Chrome Root Store of de door het systeem geleverde rootcertificaten worden gebruikt.
-
-Dit beleid wordt verwijderd in <ph name="PRODUCT_OS_NAME" /> versie 120, <ph name="PRODUCT_NAME" /> voor <ph name="LINUX_OS_NAME" /> versie 120 en <ph name="PRODUCT_NAME" /> voor <ph name="ANDROID_NAME" /> versie 121 wanneer het gebruik van de door het platform geleverde rootcertificaten niet meer wordt ondersteund.
-
-Dit beleid is verwijderd in <ph name="PRODUCT_NAME" /> voor <ph name="MS_WIN_NAME" /> en <ph name="MAC_OS_NAME" /> versie 113 wanneer de ondersteuning voor het gebruik van de door het platform geleverde certificaatverificatie en rootcertificaten werd verwijderd.</translation>
 <translation id="7298197471363105063">First-Party Sets overschrijven.</translation>
 <translation id="7302043767260300182">Vertraging van schermvergrendeling wanneer op netstroom wordt gewerkt</translation>
 <translation id="7303902834678570827">Gebruikers van beheerde gastsessies kunnen geen weergave-eigenschappen voor het hele apparaat opslaan</translation>

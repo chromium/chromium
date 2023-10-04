@@ -117,6 +117,7 @@ Megjegyzések:
 <translation id="5389212809648216794">A Google Chrome nem tudja használni a kamerát, mivel egy másik alkalmazás használja</translation>
 <translation id="5395376160638294582">Biztosítsa, hogy mindig használhassa a Google-fiókjában lévő Chrome-adatokat</translation>
 <translation id="5439191312780166229">Figyelmezteti Önt a veszélyes webhelyekre (még azokra is, amelyekről a Google korábban nem tudott), azáltal hogy több, webhelyekről származó adatot elemez, mint a normál védelem. Beállíthatja a Chrome figyelmeztetéseinek kihagyását.</translation>
+<translation id="5442013002200339429">Ha elrejti a(z) „<ph name="MODULE_NAME" />” modult, a Chrome a továbbiakban nem követi automatikusan a jövőbeli csomagjait, és törli az Ön összes korábbi csomagkövetési adatát.</translation>
 <translation id="5460571915754665838">4. Válassza ki a Chrome böngészőt.</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{A Chrome segít a csomag nyomon követésében az Új lap oldalon.}other{A Chrome segít a csomagok nyomon követésében az Új lap oldalon.}}</translation>
 <translation id="5492504007368565877">A Google Jelszókezelő nem tudja ellenőrizni az Ön jelszavait.</translation>
@@ -153,6 +154,7 @@ Megjegyzések:
 
 Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">A Chrome nem tudta ellenőrizni az összes jelszót. Próbálja újra később.</translation>
+<translation id="6851982868877411675">Nyissa meg a Chrome beállításait iOS rendszeren, majd koppintson az „Alapértelmezett böngészőalkalmazás” elemre, és válassza ki a Chrome-ot.</translation>
 <translation id="6916015246697034114">Hangalapú keresés a Chrome-ban</translation>
 <translation id="6964931465519938134">Mostantól bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>
 <translation id="6975725306479268850">A Chrome kiválasztása az automatikus kitöltéshez</translation>
@@ -187,6 +189,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="7933491483529363150">A legutóbbi lap megnyitása a Chrome-ban.</translation>
 <translation id="8022947259858476807">A Chrome-ot alapértelmezett böngészőként használva linkek nyithatók meg, modulokban lehet keresni, és jelszavak tölthetők be automatikusan az egyéb alkalmazásokban</translation>
 <translation id="804638182476029347">Annak engedélyezése a Chrome-értesítések számára, hogy értesítést küldjenek az árcsökkenésekről</translation>
+<translation id="8069507567842347179">Ezt a csomagot már nyomon követi a Chrome.</translation>
 <translation id="81358522153858150">A Chrome mostantól támogatja a felhasználói házirendeket az Ön felügyelt fiókjánál</translation>
 <translation id="8160472928944011082">Nem lehet frissíteni a Chrome-ot</translation>
 <translation id="8174679664544842874">Új lapot nyit a Chrome-ban.</translation>

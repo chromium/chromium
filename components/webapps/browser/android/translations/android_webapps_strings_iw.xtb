@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
+<translation id="1213425325105380833">שחזור של אפליקציות אינטרנט שהשתמשת בהן לאחרונה במכשירים שמקושרים לחשבון הזה</translation>
+<translation id="2065911435109240297">שחזור של אפליקציות האינטרנט</translation>
+<translation id="2111649875343992405">בדיקה של אפליקציות האינטרנט שצריך לשחזר</translation>
 <translation id="2139186145475833000">הוספה לדף הבית</translation>
+<translation id="2172982519592313442">בדיקה של אפליקציות האינטרנט</translation>
 <translation id="2478076885740497414">התקנת האפליקציה</translation>
 <translation id="3789841737615482174">התקנה</translation>
 <translation id="3910402514791813257">ההתקנה נכשלה</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">צילום מסך. אפשר להקיש כדי לסגור.</translation>
 <translation id="6990079615885386641">‏התקנת האפליקציה מחנות Google Play‏: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">עדיין מוסיף את האתר הקודם</translation>
+<translation id="7672888405515738928">‏בחירת אפליקציות אינטרנט לשחזור במכשיר הזה. מוצגות כאן אפליקציות על סמך ההיסטוריה ב-Chrome.</translation>
+<translation id="8163051092261298861">שחזור אפליקציות אינטרנט</translation>
 <translation id="962979164594783469">התקנת האפליקציה</translation>
 </translationbundle>

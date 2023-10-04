@@ -6,6 +6,7 @@
 <translation id="1016495303386450659">书签已更新</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{将密码保存到账号}other{将密码保存到账号}}</translation>
 <translation id="1035980983510608210">关闭所有标签页也会关闭固定标签页。</translation>
+<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
 <translation id="1049743911850919806">无痕</translation>
@@ -89,6 +90,7 @@
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="1408847409015257906">点按“隐私与安全”。</translation>
 <translation id="1430915738399379752">打印</translation>
+<translation id="143681031165817424">地址仅保存在此设备上</translation>
 <translation id="1443958768615272145">继续浏览</translation>
 <translation id="1449835205994625556">隐藏密码</translation>
 <translation id="1450170672351507823">已开启标准保护。若要进一步提升安全性，请使用增强型保护。</translation>
@@ -152,6 +154,8 @@
 <translation id="1813414402673211292">清除浏览数据</translation>
 <translation id="1815941218935345331">密码</translation>
 <translation id="1820259098641718022">已添加到阅读清单</translation>
+<translation id="1822994441903263130">FEDEX</translation>
+<translation id="1827529786398596735">轻触并按住主屏幕</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{已泄露的密码}=1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>
 <translation id="1830634592642484976">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 (<ph name="USER_EMAIL" />) 中。</translation>
 <translation id="1832848789136765277">若要确保您能随时访问自己的同步数据，请验证是您本人在操作</translation>
@@ -173,6 +177,7 @@
 <translation id="1943478190258551035">菜单 → 设置</translation>
 <translation id="194449685234099560">您可在此处找到您打开的所有标签页。</translation>
 <translation id="1952172573699511566">网站将尽可能以您的首选语言显示文字。</translation>
+<translation id="1956138802718275401">从主屏幕获取密码</translation>
 <translation id="1959441496380398824">轻触并按住某个日期。</translation>
 <translation id="1959679933317802873">正在等待内容</translation>
 <translation id="1965935827552890526">请完成您先前在另一已打开的 Chrome 窗口中正在执行的操作。</translation>
@@ -234,6 +239,7 @@
 <translation id="2297822946037605517">分享此页</translation>
 <translation id="2297989278479054870">当您退出 Google 账号后，该账号中的书签、密码等信息都将从此设备中移除。</translation>
 <translation id="2299218006564889602">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理器中。</translation>
+<translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">在网站上更改密码</translation>
 <translation id="2316709634732130529">使用建议的密码</translation>
 <translation id="2320166752086256636">隐藏键盘</translation>
@@ -242,12 +248,15 @@
 <translation id="2359043044084662842">翻译</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2360196772093551345">请求切换到移动版网站</translation>
+<translation id="2361721159900796207">隐藏此内容</translation>
 <translation id="2362083820973145409">您已使用<ph name="USER_NAME" />的身份登录。<ph name="USER_EMAIL" />。打开设置。</translation>
 <translation id="236977714248711277">网站无法使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
 
 网站也无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2386793615875593361">已选择 1 张</translation>
+<translation id="2390457533592708044">隐藏“<ph name="MODULE_NAME" />”</translation>
+<translation id="2403129868389095715">您的包裹无法送达</translation>
 <translation id="2411749908844615428">{count,plural, =1{键盘上方显示了 {count} 个已保存的地址。}other{键盘上方显示了 {count} 个已保存的地址。}}</translation>
 <translation id="2421004566762153674">阻止第三方 Cookie</translation>
 <translation id="2421044535038393232">继续修改</translation>
@@ -281,6 +290,7 @@
 <translation id="2587010742985678408">{count,plural, =0{没有任何已泄露的密码}=1{有 {count} 个已泄露的密码}other{有 {count} 个已泄露的密码}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{如果打开的标签页未使用的时间达到或超过 1 天，则会移至“闲置标签页”部分，以便您能轻松地专注于最常使用的标签页。您随时可以在“设置”中更改此设置。}other{如果打开的标签页未使用的时间达到或超过 {COUNT} 天，则会移至“闲置标签页”部分，以便您能轻松地专注于最常使用的标签页。您随时可以在“设置”中更改此设置。}}</translation>
 <translation id="2600682495497606169">清除网站 Cookie</translation>
+<translation id="260378315836159338">点按屏幕顶部的 +</translation>
 <translation id="2604176749896001318">更新浏览器</translation>
 <translation id="2609008503159898744">关闭所有标签页？</translation>
 <translation id="2617210333344098964">将地址迁移到账号</translation>
@@ -345,6 +355,7 @@
 <translation id="288113003463357084">将地址栏移到底部</translation>
 <translation id="2883151425485251736">查看和修改您已在账号中设为隐藏的主题</translation>
 <translation id="288655811176831528">关闭标签页</translation>
+<translation id="288902476966286676">退回给发件人</translation>
 <translation id="2890171748217283516">您关注的网站会保存在您的 Google 账号中。您可在“探索”设置中管理它们。</translation>
 <translation id="2898963176829412617">新建文件夹…</translation>
 <translation id="2902684821701498619">添加到阅读清单</translation>
@@ -361,7 +372,6 @@
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2952581218264071393">1. 打开 Chrome 设置</translation>
 <translation id="2956733177489514605">登录您的 Google 账号即可同步您的密码等信息。</translation>
-<translation id="2958271635022991876">您可在此处打开新标签页。</translation>
 <translation id="2958718410589002129">密码</translation>
 <translation id="2961210776189273067">称谓</translation>
 <translation id="2964349545761222050">阻止第三方 Cookie</translation>
@@ -374,6 +384,7 @@
 只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="2989805286512600854">在新标签页中打开</translation>
 <translation id="3010025794097054078">保护您免受数据泄露、不安全网站等问题的影响。</translation>
+<translation id="3010171936431626919">操作步骤</translation>
 <translation id="3020183492814296499">快捷方式</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
 <translation id="3039722182465315531">不登录</translation>
@@ -432,6 +443,7 @@
 <translation id="3328801116991980348">网站信息</translation>
 <translation id="3340938510625667914">Chrome 操作</translation>
 <translation id="3344485292736684439">{count,plural, =1{已将书签保存到账号 {email} 中的“{title}”}other{已将书签保存到账号 {email} 中的“{title}”}}</translation>
+<translation id="3348387552617855658">此卡片可协助您跟踪包裹，并为您提供重要的递送动态。</translation>
 <translation id="3349676726073650389">您关注的网站和搜索内容会保存在您的 Google 账号中。您可随时在设置中管理您关注的内容。</translation>
 <translation id="3365529507898144230">保存在 Google 相册中</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
@@ -533,6 +545,7 @@
 <translation id="3909222758573607742">将密码和其他内容保存到账号</translation>
 <translation id="3913386780052199712">已登录 Chrome</translation>
 <translation id="3915450441834151894">网站信息</translation>
+<translation id="3918585468378680136">正在获取包裹状态</translation>
 <translation id="3922310737605261887">搜索复制的文字</translation>
 <translation id="3928666092801078803">合并我的数据</translation>
 <translation id="3929457972718048006">地址</translation>
@@ -568,6 +581,7 @@
 <translation id="4152011295694446843">您的书签会显示在此处</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />，后四位数字为 <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4172051516777682613">一律显示</translation>
+<translation id="417442848889487144">已创建标签。日期待定</translation>
 <translation id="418156467088430727">在新标签页中查看离线版本</translation>
 <translation id="4181841719683918333">语言</translation>
 <translation id="4187450337729239226">粘贴并搜索</translation>
@@ -677,6 +691,7 @@
 <translation id="4803185665210547709">由贵单位管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">卡号无效</translation>
+<translation id="4808646838864186379">您的递送已取消</translation>
 <translation id="4808744395915275922">更新</translation>
 <translation id="4818522717893377262">添加语言…</translation>
 <translation id="481968316161811770">Cookie 和网站数据</translation>
@@ -705,6 +720,7 @@
 <translation id="4901778704868714008">保存…</translation>
 <translation id="4904877109095351937">标记为已读</translation>
 <translation id="4908869848243824489">Google 探索</translation>
+<translation id="4913626501929406101">您可以安全地与家人群组成员分享您的密码副本。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4916679969857390442">镜头</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4922154083994158612">想提升安全性？</translation>
@@ -776,6 +792,7 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318298563956633672">您已在跟踪此产品。</translation>
 <translation id="5339316356165661760">开启同步功能</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{要跟踪此包裹吗？}other{要跟踪这 {COUNT} 个包裹吗？}}</translation>
 <translation id="536067926684072644">显示书签</translation>
 <translation id="5360976571138293719">如需了解更多与隐私、安全和数据收集相关的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />部分。</translation>
 <translation id="5386314158584363703">您已关注的网站都会显示在此处</translation>
@@ -791,9 +808,11 @@
 <translation id="5443952882982198570">信用卡</translation>
 <translation id="5444892875087332195">书签</translation>
 <translation id="5457226814769348910">打开离线版</translation>
+<translation id="5475069061743940393">包裹跟踪</translation>
 <translation id="5478327362747197944">点击网页上的日期即可直接创建日历活动。</translation>
 <translation id="5489208564673669003">若要管理所有网站的 Cookie，请查看 <ph name="BEGIN_LINK" />Cookie 设置<ph name="END_LINK" />。</translation>
 <translation id="5490005495580364134">阻止所有 Cookie（不建议）</translation>
+<translation id="5497202150450073388">递送尝试失败。将重试</translation>
 <translation id="5511959326926949696">可选的浏览器极端保护措施。除非您认为自己可能会受到高度复杂的网络攻击，否则不应使用此选项。</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小时前</translation>
 <translation id="5520466080178053306">点按“密码管理工具”，然后点按“添加”</translation>
@@ -839,6 +858,7 @@
 <translation id="5738887413654608789">这样可让您找到与目前周遭环境相关的网页。</translation>
 <translation id="5745916533876677730">转到上一个标签页</translation>
 <translation id="574762237186762643">活动</translation>
+<translation id="5748177854685749242">将于<ph name="DATE" />送达</translation>
 <translation id="5755162682436943950">已退出。打开对话框即可登录并开启同步功能。</translation>
 <translation id="5758631781033351321">您的阅读清单会显示在此处</translation>
 <translation id="5765456154762864099">菜单 → 设置 → 默认浏览器</translation>
@@ -893,6 +913,8 @@
 <translation id="6021332621416007159">打开方式...</translation>
 <translation id="6027619584715411062">登录后即可将您的书签、密码等信息同步到您的所有设备上。</translation>
 <translation id="6027945736510816438">您是想访问 <ph name="WEBSITE" /> 吧？</translation>
+<translation id="6032845897905314562">新功能</translation>
+<translation id="6033598293589037429">可随时取货</translation>
 <translation id="6036215966221662377">清除浏览数据</translation>
 <translation id="6036514205982097558">一站式管理所有标签页</translation>
 <translation id="6039429417015973673">标题：<ph name="TITLE" />；发布者：<ph name="PUBLISHER_INFORMATION" />；发布日期：<ph name="PUBLICATION_DATE" /></translation>
@@ -940,6 +962,7 @@
 <translation id="6254066287920239840">在应用（而非浏览器）中打开链接。</translation>
 <translation id="625491139841322297">{count,plural, =1{查看标签页}other{查看所有标签页}}</translation>
 <translation id="6255097610484507482">修改信用卡</translation>
+<translation id="6266039999629596120">需要注意</translation>
 <translation id="6277426346321820595">无保护</translation>
 <translation id="6284652193729350524">主动询问是否翻译<ph name="LANGUAGE" />内容</translation>
 <translation id="6289501276895392862">已取消关注“<ph name="CHANNEL_NAME" />”</translation>
@@ -1053,6 +1076,7 @@
 <translation id="672735642903863329">获取您在所有设备上保存的书签、密码等信息。</translation>
 <translation id="6730682669179532099">无法导出密码</translation>
 <translation id="6732087373923685049">摄像头</translation>
+<translation id="6738233953537186295">分享您密码的副本</translation>
 <translation id="6746338529702829275">检查您的账号数据</translation>
 <translation id="6748108480210050150">发件人</translation>
 <translation id="6753469262000681876">“锁定”模式</translation>
@@ -1112,6 +1136,7 @@
 <translation id="7062545763355031412">接受并切换账号</translation>
 <translation id="7063811929043357292">您的账号由您的家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="7064619810277839954">根据您使用自己的 Google 账号在其他设备上进行的浏览活动，向您提供标签页建议。您的设备必须使用同一 Google 账号登录并开启同步功能。</translation>
 <translation id="7069695992271320873">从此设备中移除</translation>
 <translation id="7080806333218412752">会将网址发送给“安全浏览”功能进行检查。还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁。而且，会在您登录后暂时将这些数据关联到您的 Google 账号，以便在各个 Google 应用中为您提供保护。</translation>
 <translation id="7082853213442715471">开启锁定模式后，系统会屏蔽某些网络技术，这可能会导致部分网站的加载速度变慢或无法正常运行。</translation>
@@ -1140,6 +1165,7 @@
 <translation id="723787869754590019">使用 Chrome 自动填充</translation>
 <translation id="7265758999917665941">一律不保存此网站的密码</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{已跟踪新包裹}other{已跟踪新包裹}}</translation>
 <translation id="7291368939935408496">正在准备密码…</translation>
 <translation id="7302503784943202842">在您的所有设备上使用密码</translation>
 <translation id="730958329302570991">随时都可轻松将登录网站时所用的密码添加到 Google 密码管理工具中。</translation>
@@ -1152,6 +1178,7 @@
 <translation id="7351537303876921605">点按上下文菜单中的“创建链接”</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353432112255316844">请验证是您本人在操作</translation>
+<translation id="7367530036083223701">使用“密码管理工具”小组件从主屏幕安全地获取您的密码。</translation>
 <translation id="7380220816562673297">目前，您只能向家庭成员分享密码。不妨<ph name="BEGIN_LINK" />创建一个家人群组<ph name="END_LINK" />并添加最多 6 名成员，与他们一起充分利用 Google 产品和订阅。</translation>
 <translation id="7383797227493018512">阅读清单</translation>
 <translation id="7398893703713203428">创建链接</translation>
@@ -1167,11 +1194,14 @@
 <translation id="7454057999980797137">省/区/县</translation>
 <translation id="745899714366929493">全天</translation>
 <translation id="7459628154744868585">已开启增强型保护</translation>
+<translation id="7466693328838535498">在“搜索小组件”框中，输入“Chrome”</translation>
 <translation id="746684838091935575">3. 选择“Chrome”</translation>
 <translation id="7472734401283673885">公司名称</translation>
 <translation id="7473891865547856676">不，谢谢</translation>
+<translation id="7488874549363591659">已送达</translation>
 <translation id="7491131399623468277">前往“设置”…</translation>
 <translation id="7492574581995589075">贵组织已关闭在您的 Google 账号中保存 Chrome 数据并使用这些数据的功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
+<translation id="750149195207506638">已隐藏书签</translation>
 <translation id="750228856503700085">无法获取更新</translation>
 <translation id="750493650310597496">未选中任何项</translation>
 <translation id="7508728395076009983">如需锁定您的无痕式标签页，请设置触控 ID、面容 ID 或密码。</translation>
@@ -1239,11 +1269,13 @@
 <translation id="7856733331829174190">无法下载</translation>
 <translation id="785938070103630874">打开“密码”“付款方式”或“地址”等</translation>
 <translation id="7859704718976024901">浏览记录</translation>
+<translation id="7866501058614003444">已成功取消跟踪此包裹。</translation>
 <translation id="7870750252270996949">使用智能镜头搜索所复制的图片</translation>
 <translation id="7879275349003161544">显示下载内容</translation>
 <translation id="7883882164760409935">您有重复使用的密码。</translation>
 <translation id="7884694604461143138">在历史记录中搜索（找到了 <ph name="COUNT" /> 项结果）</translation>
 <translation id="7887198238286927132">为保护您的隐私，Chrome 不会自动填充此字段。</translation>
+<translation id="7889910613639381518">使用“Google 密码管理工具”小组件轻松安全地进行访问。</translation>
 <translation id="7911190106180361398">贵组织不允许您同步所有内容。</translation>
 <translation id="7920949005883349320">隐私与安全</translation>
 <translation id="792357691529995513">未发现任何问题</translation>
@@ -1308,6 +1340,7 @@
 <translation id="8206354486702514201">此设置是由您的管理员执行的。</translation>
 <translation id="8214293972734702249">已固定 <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">缓存的图片和文件</translation>
+<translation id="823133356836493038">已隐藏阅读清单</translation>
 <translation id="8237382152611443140">打开用于自动填充密码的设置</translation>
 <translation id="8248969482078657578">“闲置标签页”功能可帮助您保持专注</translation>
 <translation id="8261506727792406068">删除</translation>
@@ -1350,6 +1383,7 @@
 <translation id="8459333855531264009">不安全</translation>
 <translation id="8487667956631253959">已开启</translation>
 <translation id="8487700953926739672">可离线使用</translation>
+<translation id="8487894141648868716">USPS</translation>
 <translation id="8488923644885757471">打开新窗口</translation>
 <translation id="8490978609246021741">保存更改</translation>
 <translation id="8491300088149538575">目前登录的账号是 <ph name="EMAIL" />。您的数据已于 <ph name="TIME" />使用您的口令加密。请输入该口令，以便将 Chrome 数据保存在您的 Google 账号中并使用这些数据。</translation>
@@ -1433,6 +1467,7 @@
 <translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>
 <translation id="890565330728586731">返回</translation>
 <translation id="8909135823018751308">分享…</translation>
+<translation id="8909459547399237818">选择“密码管理工具”，然后点按“添加小组件”</translation>
 <translation id="8911759861431145525">点按“添加”，然后输入您的信息</translation>
 <translation id="891282356902782456">这个密码仅会保存到此设备上。如果想在您的其他设备上使用它，请将它保存到您的 Google 账号 <ph name="EMAIL" /> 中。</translation>
 <translation id="891658175948553296">在网站上突出显示文字</translation>
@@ -1483,6 +1518,7 @@
 <translation id="9148126808321036104">重新登录</translation>
 <translation id="9157836665414082580">禁止显示对话框</translation>
 <translation id="9162432979321511934">开启“自动填充密码”</translation>
+<translation id="9162941801309769488">已取消跟踪包裹</translation>
 <translation id="9165320910061267720">若要接收降价提醒通知，您需在 iOS 设置中开启通知功能。</translation>
 <translation id="9165886811579296457">安全检查并未发现任何需要解决的安全问题。</translation>
 <translation id="9172603439892261948">同步您的书签、历史记录等信息。</translation>

@@ -22,6 +22,7 @@
 <translation id="1478370723027452770">查看 Chrome for Testing 相關說明</translation>
 <translation id="1524282610922162960">分享 Chromium 分頁</translation>
 <translation id="1553461853655228091">Chromium 需要取得攝影機權限，才能根據你的周遭環境建立 3D 地圖</translation>
+<translation id="1574377791422810894">Chromium 安全工具</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{系統管理員要求你重新啟動 Chromium，以套用更新}=1{系統管理員要求你重新啟動 Chromium，以套用更新。你的無痕式視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chromium，以套用更新。你的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="1625909126243026060">查看 Chromium 中最重要的隱私權和安全性控制項</translation>
 <translation id="1632539827495546968">如果你只想使用這個帳戶一次，可以在 Chromium 瀏覽器中使用<ph name="GUEST_LINK_BEGIN" />訪客模式<ph name="GUEST_LINK_END" />。如要添加他人的帳戶，請<ph name="LINK_BEGIN" />將使用者新增<ph name="LINK_END" />至你的 <ph name="DEVICE_TYPE" />。
@@ -59,6 +60,7 @@
 <translation id="2185166961232948079">Chromium - 網路登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">如果你與親朋好友共用電腦，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium。</translation>
 <translation id="2313870531055795960">可使用儲存在 Chromium 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chromium 可能也會將網址 (包括部分網頁內容) 傳送給安全瀏覽功能。</translation>
+<translation id="2329088755516916767">開啟後，Chromium 會預先載入網頁，加快瀏覽與搜尋速度。</translation>
 <translation id="2343156876103232566">如要將號碼從這裡傳送到 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
 <translation id="2347108572062610441">這個擴充功能已變更 Chromium 啟動時所顯示的網頁。</translation>
 <translation id="2359808026110333948">繼續</translation>
@@ -66,6 +68,7 @@
 <translation id="2396765026452590966">擴充功能「<ph name="EXTENSION_NAME" />」已變更 Chromium 啟動時所顯示的網頁。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{至少有 1 個 Chromium 擴充功能當時正在存取 1 部 HID 裝置}=1{至少有 1 個 Chromium 擴充功能正在存取 1 部 HID 裝置}other{至少有 1 個 Chromium 擴充功能正在存取 # 部 HID 裝置}}</translation>
 <translation id="2401032172288869980">Chromium 需要相機權限和麥克風權限，才能執行這個網站要求的功能</translation>
+<translation id="2440750600860946460">有了 <ph name="BEGIN_LINK" />Chromium 的工具<ph name="END_LINK" />，你可以放心瀏覽網路、掌控全局</translation>
 <translation id="2451727308784734061">使用捷徑快速前往密碼管理工具。你可以將捷徑移至電腦的主畫面或應用程式啟動器。</translation>
 <translation id="2478295928299953161">Chromium 即將關閉</translation>
 <translation id="2483889755041906834">在 Chromium 中</translation>
@@ -133,6 +136,7 @@
 <translation id="3713809861844741608">在新的 Chromium 分頁中開啟連結(&amp;T)</translation>
 <translation id="378917192836375108">透過 Chromium，你只要按一下網路上的電話號碼，即可用 Skype 打電話！</translation>
 <translation id="3790262771324122253">瞭解 Chromium 封鎖某些下載內容的原因</translation>
+<translation id="379589255253486813">如有任何需要檢查的事項，Chromium 會通知你</translation>
 <translation id="3802055581630249637">Chromium 會預先載入你可能會造訪的網頁，以便在你造訪時更快載入</translation>
 <translation id="3830894615770080216">Chromium OS 系統</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
@@ -146,6 +150,7 @@
 <translation id="391789666908693569">你的帳戶是由 <ph name="MANAGER_NAME" /> 管理。系統管理員可查看及編輯這個 Chromium 瀏覽器設定檔及其中的資料，例如書籤、歷史記錄和密碼。</translation>
 <translation id="3945058413678539331">Chromium 正在嘗試複製密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
 <translation id="3962623956404948996">這個檔案可能含有危險內容，因此 Chromium 建議掃描檔案</translation>
+<translation id="3962647064319009959">瞭解 Chromium 如何保護資料安全</translation>
 <translation id="3975724895399328945">關於 Google Chrome for Testing(&amp;G)</translation>
 <translation id="3997429360543082038">關於 Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
@@ -153,6 +158,7 @@
 <translation id="4050175100176540509">最新版本包含重要的安全性改善與新功能。</translation>
 <translation id="4055805654398742145">密碼管理工具(&amp;A)</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{根據貴機構規定，Chromium 閒置 1 分鐘就會自動關閉。屆時系統將刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。}other{根據貴機構規定，Chromium 閒置 # 分鐘就會自動關閉。屆時系統將刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。}}</translation>
+<translation id="4118474109249235144">Chromium 無痕模式</translation>
 <translation id="4148957013307229264">安裝中...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 網路登入 - Chromium</translation>
 <translation id="421369550622382712">探索 Chromium 專用的優質應用程式、遊戲、擴充功能和主題。</translation>
@@ -200,6 +206,7 @@
 <translation id="5252179775517634216"><ph name="EXISTING_USER" />已登入這個 Chromium 設定檔。這項操作會為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chromium 設定檔</translation>
 <translation id="5277894862589591112">如要套用變更，請重新啟動 Chromium</translation>
 <translation id="5296845517486664001">在試用期間，如果 Chromium 隨機讓你加入試用行列，你的瀏覽記錄會影響你所看到的廣告，以及系統推測的下列興趣喜好。為保護個人隱私，Chromium 每個月都會刪除你的興趣喜好。</translation>
+<translation id="5352264705793813212">Chromium 發現一些安全性建議需要你檢查</translation>
 <translation id="5358375970380395591">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chromium 設定檔。你的 Chromium 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。<ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">正在更新 Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">允許登入 Chromium</translation>
@@ -369,6 +376,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8213374284266571500">這個類型的檔案有安全疑慮，因此 Chromium 已封鎖這個檔案</translation>
 <translation id="8248265253516264921">如果圖片缺少有用的說明，Chromium 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。你隨時可以在設定中關閉這項功能。</translation>
 <translation id="8266560134891435528">你尚未登入帳戶，因此 Chromium 無法檢查你的密碼</translation>
+<translation id="8286943863733751221">偵測到不安全的網站和下載內容時，<ph name="BEGIN_LINK" />Chromium 會顯示警告<ph name="END_LINK" /></translation>
 <translation id="8290862415967981663">這個檔案可能不安全，因此遭到 Chromium 封鎖。</translation>
 <translation id="8318772038038596122">由於 Chromium 閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其關閉。</translation>
 <translation id="8325404639443959713">Chromium 讓你事半功倍</translation>
@@ -383,6 +391,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8458614432758743027">Chromium 僅支援 Windows 10 以上版本的作業系統。</translation>
 <translation id="8463672209299734063">選用：自動將診斷資訊和使用資料傳送給 Google，協助改善 Chromium OS 的功能與效能。</translation>
 <translation id="8493179195440786826">Chromium 版本過舊</translation>
+<translation id="8522801943730206384">Chromium 可以檢查你儲存的密碼</translation>
 <translation id="8550334526674375523">這個工作資料夾與個人資料夾各自獨立。</translation>
 <translation id="8568283329061645092">如果你使用 Google 帳戶登入，Chromium 可以檢查你的密碼</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>

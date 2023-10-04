@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">อุปกรณ์เชื่อมต่ออยู่</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{นำหน้าออกไหม}=1{นำหน้าที่ {PAGE_NUMBER} ออกไหม}other{นำหน้าที่ {PAGE_NUMBER} ออกไหม}}</translation>
+<translation id="3146655726035122603">พิเศษสำหรับ <ph name="PRODUCT_NAME" /> โดยเฉพาะ</translation>
 <translation id="315116470104423982">เน็ตมือถือ</translation>
 <translation id="3156846309055100599">กำลังสแกนหน้า <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">ตรวจพบแคพทีฟพอร์ทัล</translation>

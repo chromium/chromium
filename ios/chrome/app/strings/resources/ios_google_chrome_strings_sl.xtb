@@ -117,6 +117,7 @@ Kaj je treba upoštevati:
 <translation id="5389212809648216794">Google Chrome ne more uporabljati fotoaparata, ker ga uporablja druga aplikacija</translation>
 <translation id="5395376160638294582">Poskrbite, da boste v računu Google vedno lahko uporabljali podatke v Chromu</translation>
 <translation id="5439191312780166229">Opozori vas o nevarnih spletnih mestih, celo tistih, za katere Google prej ni vedel, in sicer tako, da analizira več podatkov s spletnih mest kot standardna zaščita. Izberete lahko, da preskočite opozorila za Chrome.</translation>
+<translation id="5442013002200339429">Če skrijete »<ph name="MODULE_NAME" />«, Chrome ne bo več samodejno sledil prihodnjim paketom in bo izbrisal vse pretekle podatke o sledenju paketu.</translation>
 <translation id="5460571915754665838">4. Izberite Chrome.</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome bo pomagal slediti temu paketu na novem zavihku s povezavami.}one{Chrome bo pomagal slediti tem paketom na novem zavihku s povezavami.}two{Chrome bo pomagal slediti tem paketom na novem zavihku s povezavami.}few{Chrome bo pomagal slediti tem paketom na novem zavihku s povezavami.}other{Chrome bo pomagal slediti tem paketom na novem zavihku s povezavami.}}</translation>
 <translation id="5492504007368565877">Googlov upravitelj gesel ne more preveriti vaših gesel.</translation>
@@ -153,6 +154,7 @@ Kaj je treba upoštevati:
 
 Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chromu ni uspelo preveriti vseh gesel. Poskusite znova pozneje.</translation>
+<translation id="6851982868877411675">V sistemu iOS odprite nastavitve za Chrome, nato se dotaknite »Default Browser App« (Privzeti brskalnik) in izberite Chrome.</translation>
 <translation id="6916015246697034114">Iskanje z govorom v Chromu</translation>
 <translation id="6964931465519938134">Zdaj lahko uporabljate Chrome, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="6975725306479268850">Izbira Chroma za samodejno izpolnjevanje</translation>
@@ -187,6 +189,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7933491483529363150">Odpiranje zadnjega zavihka v Chromu.</translation>
 <translation id="8022947259858476807">Uporabljajte Chrome kot privzeto možnost odpiranja povezav, iskanja v pripomočkih in samodejnega izpolnjevanja gesel v drugih aplikacijah.</translation>
 <translation id="804638182476029347">Dovolite obvestila za Chrome, če želite prejemati opozorila o znižanju cen</translation>
+<translation id="8069507567842347179">Temu paketu že sledite v Chromu.</translation>
 <translation id="81358522153858150">Chrome zdaj podpira uporabniške pravilnike za vaš upravljani račun</translation>
 <translation id="8160472928944011082">Chroma ni mogoče posodobiti</translation>
 <translation id="8174679664544842874">Odpiranje novega zavihka v Chromu.</translation>

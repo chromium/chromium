@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1213425325105380833">Restaura as aplicacións web que usases recentemente nos dispositivos conectados a esta conta</translation>
+<translation id="2065911435109240297">Restaurar as túas aplicacións web</translation>
+<translation id="2111649875343992405">Revisar que aplicacións web queres restaurar</translation>
 <translation id="2139186145475833000">Engadir á pantalla inicio</translation>
+<translation id="2172982519592313442">Revisar aplicacións web</translation>
 <translation id="2478076885740497414">Instalar aplicación</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3910402514791813257">Produciuse un erro ao levar a cabo a instalación</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Captura de pantalla. Toca para pechala.</translation>
 <translation id="6990079615885386641">Descarga a aplicación en Google Play Store: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Aínda se está engadindo o sitio anterior</translation>
+<translation id="7672888405515738928">Selecciona as aplicacións web que queres restaurar neste dispositivo. As que se mostran aquí baséanse no teu historial de Chrome.</translation>
+<translation id="8163051092261298861">Restaurar aplicacións web</translation>
 <translation id="962979164594783469">Instalar esta aplicación</translation>
 </translationbundle>

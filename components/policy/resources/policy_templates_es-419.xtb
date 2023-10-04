@@ -395,6 +395,9 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
 <translation id="1372618949173323717">Inhabilitar JavaScript</translation>
 <translation id="1376119291123231789">Habilitar el modo avanzado de carga de la batería</translation>
 <translation id="1376765488559847650">CloudUpload</translation>
+<translation id="1379689277107868399">Cuando estableces la política como DoNotPrompt o no la estableces, <ph name="PRODUCT_NAME" /> no le solicita automáticamente al usuario que vuelva a realizar la autenticación en el navegador.
+
+Cuando la estableces como PromptInTab, cuando vence la autenticación del usuario, se abre inmediatamente una pestaña nueva con la página de acceso de Google. Esto solo sucede si se usa <ph name="CHROME_SYNC_NAME" />.</translation>
 <translation id="1384459581748403878">Referencia: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Esta política hace que el navegador no descarte nunca las URLs que coincidan con uno o más de los patrones que especifican (con el formato de filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />).
       Esto se aplica al descarte de la presión de memoria y del modo de alta eficiencia.
@@ -3565,6 +3568,7 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
 <translation id="3977304360459208438">Usar la configuración predeterminada para los conjuntos de algoritmos de cifrado 3DES en TLS</translation>
 <translation id="3979738908158213640">URL a las que se les concede acceso para realizar la certificación de los dispositivos durante la autenticación de SAML</translation>
 <translation id="3982322576186033243">No permitir los hashes no seguros en los protocolos de enlace TLS</translation>
+<translation id="3982465141749620677">Solicitar una nueva autenticación en una pestaña</translation>
 <translation id="3983162212222338509">Ejecutar la resolución de DNS del sistema dentro o fuera del proceso de red, o bien parcialmente dentro y parcialmente fuera, según la configuración del sistema y las marcas de función</translation>
 <translation id="3986700049001404598">Permitir que los usuarios finalicen los procesos con el Administrador de tareas de Chrome</translation>
 <translation id="398884292557092447">Si estableces la política como verdadera o no la estableces, los usuarios podrán controlar las sugerencias de Autocompletar para las tarjetas de crédito en la IU.
@@ -6591,6 +6595,7 @@ Si no estableces la política, se aplicará la tasa predeterminada de 15 minutos
       Si no estableces la política, los usuarios podrán elegir la configuración de proxy.
 
       Nota: Para obtener ejemplos detallados, visita The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
+<translation id="6559643481486165125">No solicitar una nueva autenticación</translation>
 <translation id="656130159911161669">Ignorar las actualizaciones de ChromeOS con la versión definida en el manifiesto de la app de kiosco</translation>
 <translation id="6561396069801924653">Mostrar opciones de accesibilidad en el menú de la bandeja del sistema</translation>
 <translation id="6562889469672829421">El período sin intervención del usuario después del cual se atenúa la pantalla (en milisegundos).</translation>
@@ -7512,26 +7517,6 @@ Si inhabilitas esta política o no la estableces, no se permitirá la configurac
       Si no se configura esta política, la acción predeterminada no se permite para los usuarios administrados por empresas y sí se permite para los usuarios no administrados.</translation>
 <translation id="7295019613773647480">Habilitar usuarios supervisados</translation>
 <translation id="7297476773981993405">Permitir la ejecución del algoritmo GREASE de usuario-agente actualizado</translation>
-<translation id="7297765841046240459">Si habilitas esta política, <ph name="PRODUCT_NAME" />
-verificará los certificados del servidor con el verificador de certificados integrado con Chrome Root Store como fuente de confianza pública.
-
-Si la inhabilitas, <ph name="PRODUCT_NAME" />
-usará el verificador de certificados del sistema y los certificados raíz del sistema.
-
-Si no la estableces, se podrán usar
-las raíces provistas por el sistema o Chrome Root Store.
-
-Se planea quitar esta política en
-la versión 120 de <ph name="PRODUCT_OS_NAME" />,
-en la versión 120 de <ph name="PRODUCT_NAME" />
-para <ph name="LINUX_OS_NAME" /> y en
-la versión 121 de <ph name="PRODUCT_NAME" /> para
-<ph name="ANDROID_NAME" />,
-cuando se quite la compatibilidad para usar las raíces provistas por la plataforma.
-
-Se quitó esta política en la versión 113 de <ph name="PRODUCT_NAME" />
-para <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />,
-cuando se quitó la compatibilidad para usar las raíces y el verificador de certificados proporcionados por la plataforma.</translation>
 <translation id="7298197471363105063">Anular los conjuntos propios</translation>
 <translation id="7302043767260300182">Demora de bloqueo de pantalla con alimentación de CA</translation>
 <translation id="7303902834678570827">Los usuarios de la sesión de invitado administrada no pueden almacenar la configuración de la pantalla de todo el dispositivo</translation>
@@ -9214,6 +9199,7 @@ el esquema https.</translation>
 <translation id="8744844164152340112">Controla el tema que se usa para renderizar la IU durante la OOBE y en la sesión (oscuro, claro o automático).
       El modo automático alterna entre temas oscuros y claros de forma automática al amanecer y al atardecer.
       Se debe recomendar esta política, lo que les da a los usuarios la posibilidad de cambiar el tema en la configuración del sistema.</translation>
+<translation id="8744997936011793680">Solicitar a los usuarios que vuelvan a realizar la autenticación en el perfil</translation>
 <translation id="8749536858950505376">Si estableces el valor "True" para la política, el cursor quedará activado. Si estableces el valor "False", el cursor quedará desactivado.
 
       Si configuras la política, los usuarios no podrán cambiar la función. Si no la configuras, el cursor grande estará desactivado al principio, pero los usuarios podrán activarlo en cualquier momento.</translation>

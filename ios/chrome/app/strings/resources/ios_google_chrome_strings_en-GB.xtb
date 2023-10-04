@@ -153,6 +153,7 @@ Things to consider:
 
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome couldn't check all passwords. Try again later.</translation>
+<translation id="6851982868877411675">Open Chrome Settings in iOS, then tap on 'Default Browser App' and select Chrome.</translation>
 <translation id="6916015246697034114">Search with Voice in Chrome</translation>
 <translation id="6964931465519938134">You can now use Chrome whenever you tap on links in messages, documents and other apps.</translation>
 <translation id="6975725306479268850">Choose Chrome for auto-fill</translation>

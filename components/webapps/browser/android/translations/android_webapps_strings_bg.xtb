@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1213425325105380833">Възстановете уеб приложенията, които наскоро сте използвали на устройствата, свързани с този профил</translation>
+<translation id="2065911435109240297">Възстановяване на уеб приложенията ви</translation>
+<translation id="2111649875343992405">Прегледайте кои уеб приложения да бъдат възстановени</translation>
 <translation id="2139186145475833000">Добавяне към началния екран</translation>
+<translation id="2172982519592313442">Преглед на уеб приложенията</translation>
 <translation id="2478076885740497414">Инсталиране на приложението</translation>
 <translation id="3789841737615482174">Инсталиране</translation>
 <translation id="3910402514791813257">Инсталирането не бе успешно</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Екранна снимка. Докоснете за затваряне.</translation>
 <translation id="6990079615885386641">Изтегляне на приложението от Google Play Магазин: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Още се добавя предишният сайт</translation>
+<translation id="7672888405515738928">Изберете уеб приложенията, които да бъдат възстановени на това устройство. Показаните тук са въз основа на историята ви в Chrome.</translation>
+<translation id="8163051092261298861">Възстановяване на уеб приложенията</translation>
 <translation id="962979164594783469">Инсталиране на това приложение</translation>
 </translationbundle>

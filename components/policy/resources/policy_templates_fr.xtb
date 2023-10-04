@@ -389,6 +389,9 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de re
 <translation id="1372618949173323717">Désactiver JavaScript</translation>
 <translation id="1376119291123231789">Activer le mode avancé de recharge de la batterie</translation>
 <translation id="1376765488559847650">Importation cloud</translation>
+<translation id="1379689277107868399">Si la règle est définie sur "DoNotPrompt" ou n'est pas configurée, <ph name="PRODUCT_NAME" /> n'invite pas automatiquement l'utilisateur à s'authentifier de nouveau auprès du navigateur.
+
+Si elle est définie sur "PromptInTab", lorsque l'authentification de l'utilisateur expire, un nouvel onglet avec la page de connexion Google s'ouvre immédiatement. Cela ne se produit que si la <ph name="CHROME_SYNC_NAME" /> est utilisée.</translation>
 <translation id="1384459581748403878">Référence : <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Cette règle détermine que toute URL correspondant à un ou plusieurs des formats qu'elle spécifie (avec le format de filtre <ph name="URL_BLOCKLIST_POLICY_NAME" />) ne sera jamais supprimée par le navigateur.
       Cela s'applique à la suppression de la pression sur la mémoire et du mode Haute efficacité.
@@ -3477,6 +3480,7 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
 <translation id="3977304360459208438">Utiliser le paramètre par défaut pour les suites de chiffrement 3DES dans TLS</translation>
 <translation id="3979738908158213640">URL autorisées à procéder à l'attestation de l'identité de l'appareil lors de l'authentification SAML</translation>
 <translation id="3982322576186033243">Ne pas autoriser les hachages non sécurisés lors de handshakes TLS</translation>
+<translation id="3982465141749620677">Inviter à s'authentifier de nouveau dans un onglet</translation>
 <translation id="3983162212222338509">La résolution DNS du système peut être exécutée dans le processus réseau, en dehors de celui-ci, ou partiellement à l'intérieur et à l'extérieur du processus réseau, en fonction de la configuration du système et des flags de fonctionnalité.</translation>
 <translation id="3986700049001404598">Autoriser les utilisateurs à mettre fin aux processus dans le gestionnaire de tâches Chrome</translation>
 <translation id="398884292557092447">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs peuvent contrôler les suggestions de saisie automatique pour les cartes de crédit dans l'interface utilisateur.
@@ -6384,6 +6388,7 @@ Si vous sélectionnez les options suivantes :
       Si cette règle n'est pas configurée, les utilisateurs peuvent sélectionner les paramètres de proxy.
 
       Remarque : Pour consulter des exemples détaillés, accédez au site The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
+<translation id="6559643481486165125">Ne pas inviter à s'authentifier de nouveau</translation>
 <translation id="656130159911161669">Les mises à jour de ChromeOS ignorent la version définie dans le fichier manifeste de l'appli kiosque</translation>
 <translation id="6561396069801924653">Afficher les options d'accessibilité dans le menu de la barre système</translation>
 <translation id="6562889469672829421">Délai d'inactivité de l'utilisateur, en millisecondes, au terme duquel l'écran s'assombrit.</translation>
@@ -7280,21 +7285,6 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de co
       Si cette règle n'est pas définie, par défaut, ce mode de partage ne sera pas autorisé pour les utilisateurs gérés par une entreprise et sera autorisé pour les utilisateurs non gérés.</translation>
 <translation id="7295019613773647480">Activer les utilisateurs supervisés</translation>
 <translation id="7297476773981993405">Autorisez l'exécution de l'algorithme GREASE user-agent mis à jour.</translation>
-<translation id="7297765841046240459">Si cette règle est activée, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré et utilise le Chrome Root Store comme source de confiance publique.
-
-Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> utilise l'outil de vérification des certificats du système et les certificats racines du système.
-
-Si cette règle n'est pas configurée, le Chrome Root Store ou les certificats racines du système peuvent être utilisés indifféremment.
-
-Cette règle sera supprimée dans
-la version 120 de <ph name="PRODUCT_OS_NAME" />,
-la version 120 de <ph name="PRODUCT_NAME" />
-pour <ph name="LINUX_OS_NAME" /> et
-la version 121 de <ph name="PRODUCT_NAME" />
-pour <ph name="ANDROID_NAME" />,
-quand l'utilisation des racines fournies par la plate-forme ne sera plus prise en charge.
-
-Cette règle a été supprimée dans la version 113 de <ph name="PRODUCT_NAME" /> pour <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />, quand la prise en charge de l'outil de vérification des certificats et des racines fournis par la plate-forme a cessé.</translation>
 <translation id="7298197471363105063">Ignorer les ensembles propriétaires.</translation>
 <translation id="7302043767260300182">Délai de verrouillage de l'écran (secteur)</translation>
 <translation id="7303902834678570827">Les utilisateurs d'une session Invité gérée ne peuvent pas stocker les paramètres d'affichage au niveau de l'appareil</translation>
@@ -8927,6 +8917,7 @@ Si cette règle n'est pas configurée, aucun mot de passe enregistré n'est impo
 <translation id="8744844164152340112">Contrôle le thème utilisé pour afficher l'UI pendant la configuration initiale et en cours de session (sombre/clair/auto).
       Le mode Auto alterne automatiquement entre le thème sombre et le thème clair au lever et au coucher du soleil.
       Cette règle devrait être recommandée, car elle permet aux utilisateurs de modifier le thème dans les paramètres système.</translation>
+<translation id="8744997936011793680">Inviter les utilisateurs à s'authentifier de nouveau auprès du profil</translation>
 <translation id="8749536858950505376">Définissez cette règle sur "True" pour maintenir le grand curseur activé. Définissez cette règle sur "False" pour le maintenir désactivé.
 
       Si vous définissez cette règle, les utilisateurs ne peuvent pas la modifier. Si elle n'est pas définie, le grand curseur est désactivé par défaut, mais les utilisateurs peuvent l'activer à tout moment.</translation>

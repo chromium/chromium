@@ -14,6 +14,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1149651794389918149">Hasi saioa Chrome-n. Saioa behin bakarrik hasi nahi baduzu, <ph name="GUEST_LINK_BEGIN" />erabili gailua gonbidatu gisa<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Chrome OS-ri buruz</translation>
 <translation id="1154147086299354128">&amp;Ireki Chrome-n</translation>
+<translation id="1194807384646768652">Chrome-k deskarga hau blokeatu du, fitxategi mota normalean deskargatzen ez delako eta agian arriskutsua delako</translation>
 <translation id="1203500561924088507">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, arakatzailea berrabiarazi behar duzu.</translation>
 <translation id="1278833599417554002">Abiaraz ezazu berriro &amp;Chrome eguneratzeko</translation>
 <translation id="1302523850133262269">Itxaron Chrome-k sistemaren azken eguneratzeak instalatu arte.</translation>
@@ -132,10 +133,12 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3080151273017101988">Mantendu atzeko planoko aplikazioak abian Google Chrome ixten denean</translation>
 <translation id="3089968997497233615">Google Chrome-ren bertsio berriagoa eta seguruagoa erabilgarri dago.</translation>
 <translation id="3100998948628680988">Eman izen bat Chrome-ko profilari</translation>
+<translation id="3112458742631356345">Chrome-k deskarga hau blokeatu du, fitxategia normalean deskargatzen ez delako eta agian arriskutsua delako</translation>
 <translation id="3114643501466072395">Gainerako pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazoen aurka babestuta dauden egiaztatzeko, <ph name="BEGIN_LINK" />hasi saioa Chrome-n<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Aldaketek Google Chrome abiarazten duzun hurrengo aldian izango dute eragina.</translation>
 <translation id="3149510190863420837">Chrome-ren aplikazioak</translation>
 <translation id="3169523567916669830">Probak abian diren bitartean, webguneek iragarkiak erakusteko erabili dituzten gai interesgarriak ikusi eta ken ditzakezu. Azkenaldiko arakatze-historian oinarrituta estimatzen ditu Chrome-k zure interesak.</translation>
+<translation id="3196187562065225381">Chrome-k deskarga hau blokeatu du, fitxategia arriskutsua delako</translation>
 <translation id="3226612997184048185">Era berean, laster-markak Google-ko kontuan gordetzen badituzu, Chrome-n produktuen prezioen jarraipena egin ahal izango duzu, eta prezioak jaisten direnean jakinarazpenak jaso</translation>
 <translation id="3245429137663807393">Chrome-ren erabilera-txostenak ere partekatzen badituzu, bisitatzen dituzun URLak agertuko dira txosten horietan</translation>
 <translation id="3282568296779691940">Hasi saioa Chrome-n</translation>
@@ -157,6 +160,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3582972582564653026">Sinkronizatu eta pertsonalizatu Chrome gailu guztietan</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Chrome berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko}=1{Chrome berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chrome berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
 <translation id="3622797965165704966">Errazagoa da Chrome erabiltzea Google-ko kontuarekin eta partekatutako ordenagailuetan.</translation>
+<translation id="3635073343384702370">Gordetzen dituzun pasahitzak egiaztatzeko gai da Chrome</translation>
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />" elementuak malwarea duela hauteman du Chrome-k</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible Chrome OS; adibidez, <ph name="BEGIN_LINK_LINUX_OSS" />Linux-eko garapen-ingurunea<ph name="END_LINK_LINUX_OSS" /> erabiltzen da.</translation>
 <translation id="3716540481907974026">ChromeOS Flex-en bertsioa</translation>
@@ -182,6 +186,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4148957013307229264">Instalatzen…</translation>
 <translation id="4149882025268051530">Instalatzaileak ezin izan du artxiboa deskonprimitu. Deskargatu berriro Google Chrome.</translation>
 <translation id="4153934450158521343">Chrome-k arakatze-datuak ezabatuko ditu eta itxi egingo da laster</translation>
+<translation id="4175922240926474352">Chrome-k deskarga hau blokeatu du, webgunearen konexioa segurua ez delako eta agian fitxategia manipulatu delako</translation>
 <translation id="4191857738314598978">{0,plural, =1{Berrabiarazi Chrome egun bateko epean}other{Berrabiarazi Chrome # eguneko epean}}</translation>
 <translation id="4205939740494406371">Chrome-k ezin ditu egiaztatu pasahitzak. Saiatu berriro 24 ordu barru edo <ph name="BEGIN_LINK" />egiaztatu pasahitzak Google-ko kontuan<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Bertan behera uzten…</translation>
@@ -207,6 +212,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4571503333518166079">Joan Chrome-ren jakinarazpen-ezarpenetara</translation>
 <translation id="459622048091363950">Chrome-k sarbidea duenean, webguneek sarbidea eskatuko dizute.</translation>
 <translation id="4600710005438004015">Ezin izan da eguneratu Chrome azken bertsiora; beraz, ez dituzu erabilgarri eginbide berriak eta segurtasun-konponketak.</translation>
+<translation id="4624065194742029982">Chrome-ren ezkutuko modua</translation>
 <translation id="4627412468266359539">Aukerakoa: lagundu ChromeOS Flex-en eginbideak eta errendimendua hobetzen Google-ri diagnostiko- eta erabilera-datuak automatikoki bidalita.</translation>
 <translation id="4633000520311261472">Chrome seguruagoa izan dadin, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dendan ez dauden luzapen batzuk desgaitu ditugu; horiek agian zuk jakin gabe zeuden gehituta.</translation>
 <translation id="4680828127924988555">Utzi instalazioa bertan behera</translation>
@@ -216,6 +222,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Baliteke fitxategia arriskutsua izatea; horregatik, blokeatu egin du Chrome-k.</translation>
 <translation id="479167709087336770">Google Bilaketa zerbitzuan erabiltzen den ortografia-zuzentzaile bera erabiltzen da. Arakatzailean idazten duzun testua Google-ri bidaltzen zaio. Aukera horiek aldatzeko, joan ezarpenetara.</translation>
+<translation id="4793679854893018356">Lortu Chrome-k zu babesteko duen moduari buruzko informazio gehiago</translation>
 <translation id="4828579605166583682">Lehendik dauden pasahitzak ordezten saiatzen ari da Google Chrome. Horretarako baimena emateko, idatzi Windows-eko pasahitza.</translation>
 <translation id="4842397268809523050">ChromeOS Flex-ek ezin izan ditu sinkronizatu zure datuak, sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
 <translation id="4873783916118289636">Berrikusi pribatutasuna eta segurtasuna kontrolatzeko aukera garrantzitsuenak Chrome-n</translation>
@@ -265,7 +272,8 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5736850870166430177">Webguneren bat pasahitza lapurtzen saiatzen bada edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chrome-k URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
 <translation id="5756509061973259733">Badago kontu honen Chrome-ko profil bat gailu honetan</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
-<translation id="5804318322022881572">Ezin izan da abiarazi Chrome. Saiatu berriro.</translation>
+<translation id="5804318322022881572">Ezin izan da exekutatu Chrome. Saiatu berriro.</translation>
+<translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome-k abisatu egiten dizu<ph name="END_LINK" /> webgune edo deskarga bat segurua ez bada</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Hasi saioa sarean</translation>
 <translation id="5924017743176219022">Internetera konektatzen…</translation>
@@ -275,6 +283,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5941830788786076944">Ezarri Google Chrome arakatzaile lehenetsi gisa</translation>
 <translation id="6003112304606738118">Deskargatzen… <ph name="HOURS" /> ordu geratzen dira.</translation>
 <translation id="6010556343189461180">Etorkizunean Google Chrome-ren eguneratzeak eskuratzeko, macOS 10.15 edo berriago bat beharko duzu. Ordenagailu hau macOS 10.14 erabiltzen ari da.</translation>
+<translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-ren tresnekin<ph name="END_LINK" />, segurtasunez araka dezakezu, eta dena kontrolpean eduki</translation>
 <translation id="6022659036123304283">Zeureganatu Chrome</translation>
 <translation id="6025087594896450715"><ph name="REMAINING_TIME" /> barru berrabiaraziko da Google Chrome</translation>
 <translation id="6040143037577758943">Itxi</translation>
@@ -362,7 +371,9 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="7641148173327520642">Sistemaren administratzailearen konfigurazioaren arabera, Google Chrome-k <ph name="ALTERNATIVE_BROWSER_NAME" /> arakatzailea ireki behar du <ph name="TARGET_URL_HOSTNAME" /> helbidera joateko.</translation>
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7651907282515937834">Chrome Enterprise logotipoa</translation>
+<translation id="76531479118467370">Chrome-k deskarga hau blokeatu du, Arakatze segurua desaktibatu duzulako eta fitxategia egiaztatu ezin delako</translation>
 <translation id="7655455401911432608">Zure arakatze-historia eta gailu hau erabili bitartean Chrome-ren bidez bisitatutako webguneen erregistro bat.</translation>
+<translation id="769538538642757151">Chrome-k jakinaraziko dizu ezerk zure berrikuspena behar badu</translation>
 <translation id="7747138024166251722">Instalatzaileak ezin izan du sortu behin behineko direktoriorik. Softwarea instalatzeko, egiaztatu diskoan duzun espazio librea eta baimena.</translation>
 <translation id="7761834446675418963">Sakatu zure izena Chrome irekitzeko eta arakatzen hasteko.</translation>
 <translation id="7777080907402804672">Irudiren batek ez badu azalpen lagungarririk, halako bat lortzen ahaleginduko da Chrome. Azalpen horiek sortzeko, irudiak Google-ri bidaltzen zaizkio. Aukera hori desaktibatu nahi baduzu, joan ezarpenetara.</translation>
@@ -378,6 +389,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="7890208801193284374">Ordenagailua partekatzen baduzu, lagunek eta familiako kideek euren kontuak erabilita ibil daitezke Interneten, nahi duten moduan.</translation>
 <translation id="7896673875602241923">Norbaitek <ph name="ACCOUNT_EMAIL_LAST" /> gisa hasi du saioa Chrome-n ordenagailu hau erabilita. Zure informazioa bereizita izateko, sortu beste Chrome erabiltzaile bat.</translation>
 <translation id="7917876797003313048">Saioa hasita daukaten Google-ko kontuak kudea ditzakezu. Google-ko kontuak Chrome arakatzaile, Play Store, Gmail eta abarrerako erabiltzen dira. Kontu bat beste norbaitentzat gehitu nahi baduzu (adibidez, familiako kide batentzat), gehitu beste pertsona bat <ph name="DEVICE_TYPE" /> gailuan. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="7936702483636872823">Chrome-k deskarga hau blokeatu du, fitxategia engainagarria delako eta agian espero ez dituzun aldaketak egingo dituelako gailuan</translation>
 <translation id="7951272445806340501">Eguneratzea aplikatzeko, berrabiarazi egin behar da ChromeOS Flex.</translation>
 <translation id="7962368738413920945">Webguneek espero duzun bezala funtzionatuko dute segur aski, baina ez zaituzte gogoratuko Chrome-ko leiho guztiak itxi ondoren</translation>
 <translation id="7962410387636238736">Ordenagailuak ez du jasoko Google Chrome-ren beste eguneratzerik, jada ez baita bateragarria Windows XP eta Windows Vista-rekin</translation>
@@ -390,6 +402,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8129812357326543296">&amp;Google Chrome arakatzaileari buruz</translation>
 <translation id="813913629614996137">Hasieratzen…</translation>
 <translation id="8255190535488645436">Google Chrome zure mikrofonoa eta kamera erabiltzen ari da.</translation>
+<translation id="8267953129876836456">Chrome-k segurtasun-gomendio batzuk aurkitu ditu berrikus ditzazun</translation>
 <translation id="8270775718612349140">Chrome-k kudeatutako ziurtagiriak</translation>
 <translation id="8286862437124483331">Google Chrome pasahitzak erakusten saiatzen ari da. Hori baimentzeko, idatzi Windows pasahitza.</translation>
 <translation id="8290100596633877290">Google Chrome-k huts egin du. Berriro abiarazi nahi duzu?</translation>
@@ -404,6 +417,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8403038600646341038">Chrome-ren logotipoa ordenagailu baten pantailan.</translation>
 <translation id="8416347857511542594">Lortu Chrome-ko iragarkiak pertsonalizatzeari buruzko informazio gehiago</translation>
 <translation id="8418845734693287262">Chrome OS-k ezin izan ditu sinkronizatu zure datuak, kontuan saioa hasteko xehetasunak zaharkituta daudelako.</translation>
+<translation id="842386925677997438">Chrome-ren segurtasun-tresnak</translation>
 <translation id="8433638294851456451">Zenbaki bat hemendik Android-eko telefonora bidaltzeko, hasi Chrome-ko saioa bi gailuetan.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> administratzaileak kudeatzen du kontua. Chrome arakatzaileko profil hau eta profil honetako datuak (esaterako, laster-markak, historia eta pasahitzak) ikusi eta edita ditzake administratzaileak.</translation>
 <translation id="8496177819998570653">Google-ren Pasahitz-kudeatzailea</translation>
@@ -444,6 +458,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="9195993889682885387">Azken asteetako arakatze-historian oinarrituta estima ditzake gutxi gorabehera zure interesak Chrome-k. Informazio hori gailuan gelditzen da.</translation>
 <translation id="919706545465235479">Eguneratu Chrome sinkronizatzen hasteko</translation>
 <translation id="922152298093051471">Pertsonalizatu Chrome</translation>
+<translation id="92460355979482493">Piztuta dagoenenean, Chrome-k orriak aurrez kargatzen ditu, azkarrago arakatu eta bila dezazun.</translation>
 <translation id="93760716455950538">Berrabiarazi ChromeOS Flex</translation>
 <translation id="940313311831216333">Chrome-ko gauzak gailu guztietan atzitze aldera, hasi saioa eta aktibatu sinkronizazioa.</translation>
 <translation id="943390475793766444">Chrome-k fitxategia aztertzea gomendatzen du, agian arriskutsua delako.</translation>

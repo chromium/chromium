@@ -161,6 +161,7 @@
 <translation id="3582972582564653026">모든 기기에서 Chrome을 동기화하고 맞춤설정하세요.</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="3622797965165704966">이제 Google 계정으로 공유 컴퓨터에서 Chrome을 손쉽게 사용할 수 있습니다.</translation>
+<translation id="3635073343384702370">비밀번호를 저장하면 Chrome에서 확인할 수 있습니다</translation>
 <translation id="3673813398384385993">Chrome에서 "<ph name="EXTENSION_NAME" />"에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromeOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="3716540481907974026">ChromeOS Flex 버전</translation>
@@ -212,6 +213,7 @@
 <translation id="4571503333518166079">Chrome 알림 설정으로 이동</translation>
 <translation id="459622048091363950">Chrome에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.</translation>
 <translation id="4600710005438004015">Chrome을 최신 버전으로 업데이트하지 못했기 때문에 새로운 기능과 보안 수정 사항이 적용되지 않았습니다.</translation>
+<translation id="4624065194742029982">Chrome 시크릿 모드</translation>
 <translation id="4627412468266359539">선택사항: 진단 및 사용 데이터를 Google에 자동으로 전송하여 ChromeOS Flex의 기능과 성능을 개선할 수 있도록 도와주세요.</translation>
 <translation id="4633000520311261472">Google에서는 Chrome의 보안을 강화하기 위해 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않고 사용자 모르게 추가되었을 수 있는 일부 확장 프로그램의 사용을 중지했습니다.</translation>
 <translation id="4680828127924988555">설치 취소</translation>
@@ -221,6 +223,7 @@
 <translation id="4754614261631455953">Chrome Canary(mDNS-In)</translation>
 <translation id="4771048833395599659">이 파일은 위험할 수있으므로 Chrome에서 차단했습니다.</translation>
 <translation id="479167709087336770">Google 검색과 동일한 맞춤법 검사기가 사용됩니다. 브라우저에 입력되는 텍스트는 Google로 전송됩니다. 설정에서 언제든지 이 동작을 변경할 수 있습니다.</translation>
+<translation id="4793679854893018356">Chrome이 사용자를 안전하게 보호하는 방법 알아보기</translation>
 <translation id="4828579605166583682">Chrome에서 기존 비밀번호를 교체하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="4842397268809523050">도메인에 대한 동기화가 허용되지 않아 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="4873783916118289636">Chrome의 주요 개인 정보 보호 및 보안 제어 기능을 검토합니다.</translation>
@@ -271,6 +274,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5756509061973259733">이 계정을 사용하는 Chrome 프로필이 기기에 이미 존재합니다.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome을 실행할 수 없습니다. 다시 시도해 보세요.</translation>
+<translation id="586971344380992563">안전하지 않은 사이트 및 다운로드에 대해 <ph name="BEGIN_LINK" />Chrome에서 경고<ph name="END_LINK" /></translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 네트워크 로그인</translation>
 <translation id="5924017743176219022">인터넷에 연결 중...</translation>
@@ -280,6 +284,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5941830788786076944">Chrome을 기본 브라우저로</translation>
 <translation id="6003112304606738118">다운로드 중... <ph name="HOURS" />시간 남음</translation>
 <translation id="6010556343189461180">향후 Chrome 업데이트를 받으려면 macOS 10.15 이상이 필요합니다. 이 컴퓨터에서는 macOS 10.14를 사용 중입니다.</translation>
+<translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome의 도구<ph name="END_LINK" />로 안전하게 탐색하고 관리할 수 있습니다.</translation>
 <translation id="6022659036123304283">나만의 Chrome 만들기</translation>
 <translation id="6025087594896450715"><ph name="REMAINING_TIME" /> 후 Chrome 다시 시작</translation>
 <translation id="6040143037577758943">닫기</translation>
@@ -296,7 +301,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6251759518630934363">표준 보호 모드보다 더 많은 사이트에서 데이터를 분석하여 위험한 사이트에 관해 경고합니다. Google이 이전에 몰랐던 사이트도 여기에 포함됩니다. Chrome 경고를 건너뛸 수 있습니다.</translation>
 <translation id="6273793429163604305">준비하세요...</translation>
-<translation id="6277547788421725101">부모님이 Chrome의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지했습니다</translation>
+<translation id="6277547788421725101">부모님이 Chrome의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지했습니다.</translation>
 <translation id="6291089322031436445">Chrome 개발자 앱</translation>
 <translation id="6291549208091401781">컴퓨터에 Chrome이 이미 설치되어 있으며 모든 사용자가 사용할 수 있습니다.</translation>
 <translation id="6326175484149238433">Chrome에서 삭제</translation>
@@ -369,6 +374,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7651907282515937834">Chrome Enterprise 로고</translation>
 <translation id="76531479118467370">사용자가 세이프 브라우징을 사용 중지했으며 파일을 확인할 수 없기 때문에 Chrome에서 이 다운로드를 차단했습니다.</translation>
 <translation id="7655455401911432608">이 기기에서 Chrome을 사용해 방문한 사이트의 기록인 방문 기록이 사용됩니다.</translation>
+<translation id="769538538642757151">검토가 필요한 사항이 있으면 Chrome에서 알려 드립니다.</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
 <translation id="7761834446675418963">Chrome을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
 <translation id="7777080907402804672">이미지에 유용한 설명이 없으면 Chrome에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다. 이 기능은 언제든지 설정에서 사용 중지할 수 있습니다.</translation>
@@ -397,6 +403,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8129812357326543296">Chrome 정보(&amp;G)</translation>
 <translation id="813913629614996137">초기화 중...</translation>
 <translation id="8255190535488645436">Chrome에서 카메라와 마이크를 사용 중입니다.</translation>
+<translation id="8267953129876836456">Chrome에서 발견한 보안 권장사항을 검토해 주세요</translation>
 <translation id="8270775718612349140">Chrome이 관리하는 인증서</translation>
 <translation id="8286862437124483331">Chrome에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="8290100596633877290">Chrome이 다운되었습니다. 다시 시작하시겠습니까?</translation>
@@ -411,6 +418,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8403038600646341038">컴퓨터 화면에 표시된 Chrome 로고입니다.</translation>
 <translation id="8416347857511542594">Chrome의 광고 개인 최적화에 관해 자세히 알아보기</translation>
 <translation id="8418845734693287262">계정의 로그인 세부정보가 오래되어 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
+<translation id="842386925677997438">Chrome의 안전 도구</translation>
 <translation id="8433638294851456451">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="8451192282033883849">내 계정은 <ph name="MANAGER_NAME" />에서 관리합니다. 관리자가 이 Chrome 브라우저 프로필과 북마크, 방문 기록, 비밀번호 등의 데이터를 보고 수정할 수 있습니다.</translation>
 <translation id="8496177819998570653">Google 비밀번호 관리자(&amp;A)</translation>
@@ -451,6 +459,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="9195993889682885387">Chrome은 지난 몇 주간의 방문 기록을 토대로 관심분야를 예측할 수 있습니다. 예측 정보는 기기 외부로 전송되지 않습니다.</translation>
 <translation id="919706545465235479">동기화를 시작하려면 Chrome을 업데이트하세요.</translation>
 <translation id="922152298093051471">Chrome 맞춤설정</translation>
+<translation id="92460355979482493">사용 설정하면 Chrome에서 페이지를 미리 로드하여 더 빠르게 탐색하고 검색할 수 있습니다.</translation>
 <translation id="93760716455950538">ChromeOS Flex 다시 시작</translation>
 <translation id="940313311831216333">모든 기기에서 Chrome 콘텐츠에 액세스하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
 <translation id="943390475793766444">위험할 수 있는 파일이므로 검사하는 것이 좋습니다.</translation>

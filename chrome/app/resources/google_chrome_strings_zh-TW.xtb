@@ -157,6 +157,7 @@
 <translation id="3582972582564653026">進行同步處理即可在你的所有裝置上享有個人化的 Chrome 體驗</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{系統管理員要求你重新啟動 Chrome，以套用更新}=1{系統管理員要求你重新啟動 Chrome，以套用更新。你的無痕式視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用更新。你的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="3622797965165704966">無論是登入 Google 帳戶使用 Chrome，還是以 Google 帳戶使用共用電腦，現在都變得更容易了。</translation>
+<translation id="3635073343384702370">Chrome 可以檢查你儲存的密碼</translation>
 <translation id="3673813398384385993">Chrome 偵測到「<ph name="EXTENSION_NAME" />」含有惡意軟體</translation>
 <translation id="3703994572283698466">Chrome OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="3716540481907974026">ChromeOS Flex 版本</translation>
@@ -208,6 +209,7 @@
 <translation id="4571503333518166079">前往 Chrome 通知設定</translation>
 <translation id="459622048091363950">Chrome 取得存取權後，網站將可要求你授予存取權。</translation>
 <translation id="4600710005438004015">Chrome 無法更新至最新版本，因此你並未取得最新功能和安全性問題修正。</translation>
+<translation id="4624065194742029982">Chrome 無痕模式</translation>
 <translation id="4627412468266359539">選用：自動將診斷與使用資料傳送給 Google，協助改善 ChromeOS Flex 的功能與效能。</translation>
 <translation id="4633000520311261472">為了讓 Chrome 的安全性更有保障，我們已將部分未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，它們可能在你不知情的情況下加入瀏覽器。</translation>
 <translation id="4680828127924988555">取消安裝</translation>
@@ -217,6 +219,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">這個檔案可能不安全，因此遭到 Chrome 封鎖。</translation>
 <translation id="479167709087336770">這會使用與 Google 搜尋相同的拼字檢查工具。系統會將你在瀏覽器中輸入的文字傳送給 Google。你隨時可以在設定中變更這項行為。</translation>
+<translation id="4793679854893018356">瞭解 Chrome 如何保護資料安全</translation>
 <translation id="4828579605166583682">Google Chrome 正嘗試更換現有密碼。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="4842397268809523050">你的網域無法使用同步功能，因此 ChromeOS Flex 無法同步處理你的資料。</translation>
 <translation id="4873783916118289636">查看 Chrome 中最重要的隱私權和安全性控制項</translation>
@@ -265,6 +268,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5756509061973259733">這部裝置已有與此帳戶相關聯的 Chrome 設定檔</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary 版</translation>
 <translation id="5804318322022881572">無法啟動 Chrome，請再試一次。</translation>
+<translation id="586971344380992563">偵測到不安全的網站和下載內容時，<ph name="BEGIN_LINK" />Chrome 會顯示警告<ph name="END_LINK" /></translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 網路登入</translation>
 <translation id="5924017743176219022">正在連線至網際網路...</translation>
@@ -274,6 +278,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5941830788786076944">使用 Google Chrome 做為我的預設瀏覽器</translation>
 <translation id="6003112304606738118">下載中… 還剩 <ph name="HOURS" /> 小時</translation>
 <translation id="6010556343189461180">如果之後要更新 Google Chrome，必須使用 macOS 10.15 以上版本。這部電腦目前的版本為 macOS 10.14。</translation>
+<translation id="6014316319780893079">有了 <ph name="BEGIN_LINK" />Chrome 的工具<ph name="END_LINK" />，你可以放心瀏覽網路、掌控全局</translation>
 <translation id="6022659036123304283">打造專屬的 Chrome</translation>
 <translation id="6025087594896450715">Google Chrome 將於 <ph name="REMAINING_TIME" /> 後重新啟動</translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -363,6 +368,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7651907282515937834">Chrome Enterprise 標誌</translation>
 <translation id="76531479118467370">安全瀏覽功能已關閉，系統無法驗證這個檔案，因此 Chrome 已禁止下載</translation>
 <translation id="7655455401911432608">你的瀏覽記錄，以及在這部裝置上透過 Chrome 造訪的網站記錄。</translation>
+<translation id="769538538642757151">如有任何需要檢查的事項，Chrome 會通知你</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟體。</translation>
 <translation id="7761834446675418963">按一下你的名稱即可開啟 Chrome 並開始瀏覽。</translation>
 <translation id="7777080907402804672">如果圖片缺少有用的說明，Chrome 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。你隨時可以在設定中關閉這項功能。</translation>
@@ -391,6 +397,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8129812357326543296">關於 Google Chrome(&amp;G)</translation>
 <translation id="813913629614996137">正在初始化...</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用你的攝影機和麥克風。</translation>
+<translation id="8267953129876836456">Chrome 發現一些安全性建議需要你檢查</translation>
 <translation id="8270775718612349140">由 Chrome 管理的憑證</translation>
 <translation id="8286862437124483331">Google Chrome 現在會嘗試顯示密碼。如果你同意的話，請輸入你的 Windows 密碼。</translation>
 <translation id="8290100596633877290">真糟糕！Google Chrome 當掉了，要立即重新啟動嗎？</translation>
@@ -405,6 +412,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8403038600646341038">電腦螢幕畫面中的 Chrome 標誌。</translation>
 <translation id="8416347857511542594">前往 Chrome 進一步瞭解廣告個人化</translation>
 <translation id="8418845734693287262">你的帳戶登入詳細資料尚未更新，因此 Chrome OS 無法同步處理你的資料。</translation>
+<translation id="842386925677997438">Chrome 安全工具</translation>
 <translation id="8433638294851456451">如要將號碼從這裡傳送到 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8451192282033883849">你的帳戶是由 <ph name="MANAGER_NAME" /> 管理。系統管理員可查看及編輯這個 Chrome 瀏覽器設定檔及其中的資料，例如書籤、歷史記錄和密碼。</translation>
 <translation id="8496177819998570653">Google 密碼管理工具(&amp;A)</translation>
@@ -445,6 +453,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="9195993889682885387">Chrome 可以根據過去幾週的瀏覽記錄，推測你的興趣喜好。這項資訊會儲存在你的裝置上。</translation>
 <translation id="919706545465235479">如要開始同步處理，請更新 Chrome</translation>
 <translation id="922152298093051471">自訂 Chrome</translation>
+<translation id="92460355979482493">開啟後，Chrome 會預先載入網頁，加快瀏覽與搜尋速度。</translation>
 <translation id="93760716455950538">重新啟動 ChromeOS Flex</translation>
 <translation id="940313311831216333">如要透過所有裝置存取你的 Chrome 資料，請登入並開啟同步處理功能。</translation>
 <translation id="943390475793766444">這個檔案可能有危險內容，因此 Chrome 建議掃描檔案。</translation>

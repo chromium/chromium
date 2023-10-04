@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Thiết bị đã được kết nối.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Xóa trang?}=1{Xóa trang {PAGE_NUMBER}?}other{Xóa trang {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Dành riêng cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dữ liệu di động</translation>
 <translation id="3156846309055100599">Đang quét trang <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Đã phát hiện thấy trang xác thực</translation>

@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">Працэсар</translation>
 <translation id="3124039320086536031">Прылада падключана.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Выдаліць старонку?}=1{Выдаліць старонку {PAGE_NUMBER}?}one{Выдаліць старонку {PAGE_NUMBER}?}few{Выдаліць старонку {PAGE_NUMBER}?}many{Выдаліць старонку {PAGE_NUMBER}?}other{Выдаліць старонку {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Эксклюзіўна для <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мабільная перадача даных</translation>
 <translation id="3156846309055100599">Сканіруецца старонка <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Выяўлены партал узаемадзеяння</translation>

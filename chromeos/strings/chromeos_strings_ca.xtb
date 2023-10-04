@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">El dispositiu està connectat.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vols suprimir la pàgina?}=1{Vols suprimir la pàgina {PAGE_NUMBER}?}other{Vols suprimir les pàgines {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Exclusiu de <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dades mòbils</translation>
 <translation id="3156846309055100599">S'està escanejant la pàgina <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">S'ha detectat un portal captiu</translation>

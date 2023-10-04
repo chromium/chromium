@@ -156,6 +156,7 @@
 <translation id="3582972582564653026">ซิงค์และปรับเปลี่ยน Chrome ในอุปกรณ์ต่างๆ</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{ผู้ดูแลระบบต้องการให้คุณเปิด Chrome ขึ้นมาใหม่เพื่อใช้การอัปเดต}=1{ผู้ดูแลระบบต้องการให้คุณเปิด Chrome ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างที่ไม่ระบุตัวตนจะไม่เปิดให้อีก}other{ผู้ดูแลระบบต้องการให้คุณเปิด Chrome ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างที่ไม่ระบุตัวตนจำนวน # หน้าต่างจะไม่เปิดให้อีก}}</translation>
 <translation id="3622797965165704966">ตอนนี้การใช้ Chrome กับบัญชี Google ของคุณและบนคอมพิวเตอร์ที่ใช้ร่วมกันทำได้ง่ายกว่าเดิม</translation>
+<translation id="3635073343384702370">Chrome จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกรหัสผ่านไว้</translation>
 <translation id="3673813398384385993">Chrome พบว่า "<ph name="EXTENSION_NAME" />" มีมัลแวร์</translation>
 <translation id="3703994572283698466">Chrome OS เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />อื่นเพิ่มเติม ตลอดจน<ph name="BEGIN_LINK_LINUX_OSS" />สภาพแวดล้อมในการพัฒนาซอฟต์แวร์ Linux<ph name="END_LINK_LINUX_OSS" /></translation>
 <translation id="3716540481907974026">เวอร์ชัน Chrome OS Flex</translation>
@@ -207,6 +208,7 @@
 <translation id="4571503333518166079">ไปที่การตั้งค่าการแจ้งเตือน Chrome</translation>
 <translation id="459622048091363950">เมื่อ Chrome มีสิทธิ์การเข้าถึงแล้ว เว็บไซต์จะขอสิทธิ์การเข้าถึงจากคุณได้</translation>
 <translation id="4600710005438004015">Chrome อัปเดตเป็นเวอร์ชันล่าสุดไม่ได้ คุณจึงไม่ได้รับฟีเจอร์ใหม่และการแก้ไขด้านความปลอดภัย</translation>
+<translation id="4624065194742029982">โหมดไม่ระบุตัวตนของ Chrome</translation>
 <translation id="4627412468266359539">ไม่บังคับ: ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chrome OS Flex ด้วยการส่งข้อมูลการวินิจฉัยและการใช้งานให้ Google โดยอัตโนมัติ</translation>
 <translation id="4633000520311261472">เพื่อให้ Chrome ปลอดภัยขึ้น เราปิดส่วนขยายบางรายการที่ไม่ได้ระบุไว้ใน <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> และอาจถูกเพิ่มเข้ามาโดยที่คุณไม่รู้ตัว</translation>
 <translation id="4680828127924988555">ยกเลิกการติดตั้ง</translation>
@@ -216,6 +218,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">ไฟล์นี้อาจเป็นอันตราย Chrome จึงบล็อกไว้</translation>
 <translation id="479167709087336770">การดำเนินการนี้จะใช้โปรแกรมตรวจตัวสะกดแบบเดียวกับใน Google Search ข้อความที่คุณพิมพ์ในเบราว์เซอร์จะส่งไปยัง Google คุณปรับเปลี่ยนลักษณะการทำงานนี้ได้ทุกเมื่อในการตั้งค่า</translation>
+<translation id="4793679854893018356">ดูวิธีที่ Chrome ช่วยให้คุณปลอดภัย</translation>
 <translation id="4828579605166583682">Google Chrome กำลังพยายามแทนที่รหัสผ่านที่มีอยู่ โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="4842397268809523050">Chrome OS Flex ซิงค์ข้อมูลไม่ได้เนื่องจากการซิงค์ใช้ไม่ได้กับโดเมนของคุณ</translation>
 <translation id="4873783916118289636">ตรวจสอบการควบคุมที่สำคัญด้านความเป็นส่วนตัวและความปลอดภัยใน Chrome</translation>
@@ -262,6 +265,7 @@
 <translation id="5756509061973259733">มีโปรไฟล์ Chrome ที่ใช้บัญชีนี้ในอุปกรณ์นี้อยู่แล้ว</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">เปิด Chrome ไม่ได้ โปรดลองอีกครั้ง</translation>
+<translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome จะเตือนคุณ<ph name="END_LINK" />เกี่ยวกับเว็บไซต์และการดาวน์โหลดที่ไม่ปลอดภัย</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - หน้าลงชื่อเข้าใช้ของเครือข่าย</translation>
 <translation id="5924017743176219022">กำลังเชื่อมต่ออินเทอร์เน็ต...</translation>
@@ -271,6 +275,7 @@
 <translation id="5941830788786076944">ทำให้ Google Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="6003112304606738118">กำลังดาวน์โหลด... เหลืออีก <ph name="HOURS" /> ชั่วโมง</translation>
 <translation id="6010556343189461180">คุณจะต้องใช้ macOS 10.15 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ macOS 10.14</translation>
+<translation id="6014316319780893079"><ph name="BEGIN_LINK" />เครื่องมือจาก Chrome<ph name="END_LINK" /> ช่วยให้คุณท่องเว็บได้อย่างปลอดภัยและควบคุมได้ตามความต้องการ</translation>
 <translation id="6022659036123304283">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
 <translation id="6025087594896450715">Google Chrome จะรีสตาร์ทใน <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">ปิด</translation>
@@ -360,6 +365,7 @@
 <translation id="7651907282515937834">โลโก้ Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากคุณปิด Google Safe Browsing จึงยืนยันไฟล์ไม่ได้</translation>
 <translation id="7655455401911432608">ประวัติการท่องเว็บ ซึ่งเป็นบันทึกรายการเว็บไซต์ที่คุณเข้าชมโดยใช้ Chrome ในอุปกรณ์นี้</translation>
+<translation id="769538538642757151">Chrome จะแจ้งให้คุณทราบหากมีสิ่งใดที่คุณต้องตรวจสอบ</translation>
 <translation id="7747138024166251722">โปรแกรมติดตั้งสร้างไดเรกทอรีชั่วคราวไม่ได้ โปรดตรวจสอบพื้นที่ดิสก์ว่างและการอนุญาตให้ติดตั้งซอฟต์แวร์</translation>
 <translation id="7761834446675418963">คลิกชื่อของคุณเพื่อเปิด Chrome และเริ่มท่องเว็บ</translation>
 <translation id="7777080907402804672">หากรูปภาพไม่มีคำอธิบายที่เป็นประโยชน์ Chrome จะพยายามใส่คำอธิบายให้คุณ รูปภาพจะส่งมายัง Google เพื่อสร้างคำอธิบาย คุณปิดการดำเนินการนี้ได้ทุกเมื่อในการตั้งค่า</translation>
@@ -388,6 +394,7 @@
 <translation id="8129812357326543296">เกี่ยวกับ &amp;Google Chrome</translation>
 <translation id="813913629614996137">กำลังเริ่มดำเนินการ...</translation>
 <translation id="8255190535488645436">Google Chrome ใช้กล้องและไมโครโฟนของคุณอยู่</translation>
+<translation id="8267953129876836456">Chrome พบคำแนะนำด้านความปลอดภัยบางอย่างที่คุณควรตรวจสอบ</translation>
 <translation id="8270775718612349140">ใบรับรองที่จัดการโดย Chrome</translation>
 <translation id="8286862437124483331">Google Chrome กำลังพยายามแสดงรหัสผ่าน พิมพ์รหัสผ่าน Windows ของคุณเพื่อแสดงรหัสผ่าน</translation>
 <translation id="8290100596633877290">อ๊ะ! Google Chrome ขัดข้อง เปิดใหม่ตอนนี้หรือไม่</translation>
@@ -402,6 +409,7 @@
 <translation id="8403038600646341038">โลโก้ Chrome ในหน้าจอคอมพิวเตอร์</translation>
 <translation id="8416347857511542594">ดูข้อมูลเพิ่มเติมเกี่ยวกับการปรับโฆษณาตามโปรไฟล์ของผู้ใช้ใน Chrome</translation>
 <translation id="8418845734693287262">Chrome OS ซิงค์ข้อมูลไม่ได้เนื่องจากรายละเอียดการลงชื่อเข้าใช้บัญชีของคุณไม่ใช่ข้อมูลปัจจุบัน</translation>
+<translation id="842386925677997438">เครื่องมือด้านความปลอดภัยของ Chrome</translation>
 <translation id="8433638294851456451">หากต้องการส่งหมายเลขจากที่นี่ไปยังโทรศัพท์ Android ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์ทั้งสองเครื่อง</translation>
 <translation id="8451192282033883849">บัญชีของคุณจัดการโดย <ph name="MANAGER_NAME" /> ผู้ดูแลระบบสามารถดูและแก้ไขโปรไฟล์เบราว์เซอร์ Chrome นี้ รวมถึงข้อมูลในโปรไฟล์อย่างเช่นบุ๊กมาร์ก ประวัติการเข้าชม และรหัสผ่านได้</translation>
 <translation id="8496177819998570653">เครื่องมือจัดการรหัสผ่านบน Google</translation>
@@ -442,6 +450,7 @@
 <translation id="9195993889682885387">Chrome สามารถคาดคะเนความสนใจโดยพิจารณาจากประวัติการท่องเว็บเมื่อ 2-3 สัปดาห์ที่ผ่านมา ข้อมูลนี้อยู่ในอุปกรณ์ของคุณ</translation>
 <translation id="919706545465235479">อัปเดต Chrome เพื่อเริ่มการซิงค์</translation>
 <translation id="922152298093051471">ปรับแต่ง Chrome</translation>
+<translation id="92460355979482493">เมื่อเปิดอยู่ Chrome จะโหลดหน้าเว็บล่วงหน้าซึ่งทำให้ท่องเว็บและค้นหาได้เร็วขึ้น</translation>
 <translation id="93760716455950538">รีสตาร์ท Chrome OS Flex</translation>
 <translation id="940313311831216333">หากต้องการเข้าถึงข้อมูล Chrome ในอุปกรณ์ทั้งหมด ให้ลงชื่อเข้าใช้แล้วเปิดการซิงค์</translation>
 <translation id="943390475793766444">Chrome แนะนำให้สแกนไฟล์นี้เนื่องจากอาจเป็นอันตราย</translation>

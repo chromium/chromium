@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1213425325105380833">Gendan webapps, du for nylig har brugt på enheder, der er knyttet til denne konto</translation>
+<translation id="2065911435109240297">Gendan dine webapps</translation>
+<translation id="2111649875343992405">Gennemgå, hvilke webapps der skal gendannes</translation>
 <translation id="2139186145475833000">Føj til startskærm</translation>
+<translation id="2172982519592313442">Gennemgå webapps</translation>
 <translation id="2478076885740497414">Installer app</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3910402514791813257">Installationen blev ikke gennemført</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Screenshot. Tryk for at lukke.</translation>
 <translation id="6990079615885386641">Hent appen i Google Play Butik: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Det forrige website er stadig ved at blive tilføjet</translation>
+<translation id="7672888405515738928">Vælg, hvilke webapps der skal gendannes på denne enhed. De apps, der vises her, er baseret på din Chrome-historik.</translation>
+<translation id="8163051092261298861">Gendan webapps</translation>
 <translation id="962979164594783469">Installer denne app</translation>
 </translationbundle>

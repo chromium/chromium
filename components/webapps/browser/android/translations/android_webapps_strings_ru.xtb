@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1213425325105380833">Восстановите веб-приложения, которые недавно использовались на устройствах, связанных с этим аккаунтом.</translation>
+<translation id="2065911435109240297">Восстановление веб-приложений</translation>
+<translation id="2111649875343992405">Проверьте список веб-приложений для восстановления</translation>
 <translation id="2139186145475833000">Добавить на гл. экран</translation>
+<translation id="2172982519592313442">Проверить веб-приложения</translation>
 <translation id="2478076885740497414">Установить приложение</translation>
 <translation id="3789841737615482174">Установить</translation>
 <translation id="3910402514791813257">Сбой установки</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Скриншот. Нажмите, чтобы закрыть.</translation>
 <translation id="6990079615885386641">Приложение в Google Play Маркете: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Предыдущий сайт ещё не добавлен</translation>
+<translation id="7672888405515738928">Выберите, какие веб-приложения следует восстановить на этом устройстве. Здесь показаны приложения на основе истории Chrome.</translation>
+<translation id="8163051092261298861">Восстановить веб-приложения</translation>
 <translation id="962979164594783469">Установить приложение</translation>
 </translationbundle>

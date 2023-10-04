@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">Процесор</translation>
 <translation id="3124039320086536031">Устройството е свързано.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Да се премахне ли страницата?}=1{Да се премахне ли страница {PAGE_NUMBER}?}other{Да се премахне ли страница {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Само за <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мобилни данни</translation>
 <translation id="3156846309055100599">Страница <ph name="PAGE_NUMBER" /> се сканира...</translation>
 <translation id="315738237743207937">Открит е портал за удостоверяване</translation>

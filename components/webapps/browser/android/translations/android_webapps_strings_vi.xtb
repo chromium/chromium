@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1213425325105380833">Khôi phục các ứng dụng web mà bạn đã sử dụng gần đây trên những thiết bị kết nối với tài khoản này</translation>
+<translation id="2065911435109240297">Khôi phục các ứng dụng web</translation>
+<translation id="2111649875343992405">Kiểm tra lại xem bạn cần khôi phục ứng dụng web nào</translation>
 <translation id="2139186145475833000">Thêm vào Màn hình chính</translation>
+<translation id="2172982519592313442">Kiểm tra lại các ứng dụng web</translation>
 <translation id="2478076885740497414">Cài đặt ứng dụng</translation>
 <translation id="3789841737615482174">Cài đặt</translation>
 <translation id="3910402514791813257">Không cài đặt được</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Ảnh chụp màn hình. Nhấn để đóng.</translation>
 <translation id="6990079615885386641">Tải ứng dụng từ Cửa hàng Google Play: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Vẫn đang thêm trang web trước</translation>
+<translation id="7672888405515738928">Chọn các ứng dụng web cần khôi phục trên thiết bị này. Các ứng dụng xuất hiện ở đây dựa trên nhật ký duyệt web của bạn trên Chrome.</translation>
+<translation id="8163051092261298861">Khôi phục các ứng dụng web</translation>
 <translation id="962979164594783469">Cài đặt ứng dụng này</translation>
 </translationbundle>

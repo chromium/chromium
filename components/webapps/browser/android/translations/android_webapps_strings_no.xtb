@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1213425325105380833">Gjenopprett nettapper du nylig har brukt på enheter som er koblet til denne kontoen</translation>
+<translation id="2065911435109240297">Gjenopprett nettappene dine</translation>
+<translation id="2111649875343992405">Gjennomgå hvilke nettapper som skal gjenopprettes</translation>
 <translation id="2139186145475833000">Legg til på startsiden</translation>
+<translation id="2172982519592313442">Gjennomgå nettapper</translation>
 <translation id="2478076885740497414">Installér appen</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3910402514791813257">Installasjonen mislyktes</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Skjermdump. Trykk for å lukke.</translation>
 <translation id="6990079615885386641">Last ned appen fra Google Play Butikk: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Holder fortsatt på å legge til det forrige nettstedet</translation>
+<translation id="7672888405515738928">Velg nettappene du vil gjenopprette på denne enheten. Appene som vises her, er basert på Chrome-loggen din.</translation>
+<translation id="8163051092261298861">Gjenopprett nettapper</translation>
 <translation id="962979164594783469">Installer denne appen</translation>
 </translationbundle>

@@ -747,6 +747,7 @@ Se esta política não for definida, o usuário poderá adicionar exceções par
 <translation id="165769015320654523">Conceder automaticamente permissão a esses sites para se conectarem a dispositivos HID com determinados IDs de fornecedores e de produtos.</translation>
 <translation id="1659406551862245683">O comportamento padrão de redimensionamento do teclado virtual é modificado para redimensionar a janela de visualização de layout</translation>
 <translation id="166427968280387991">Servidor proxy</translation>
+<translation id="1670638264428789878">Ativar conjuntos de sites relacionados</translation>
 <translation id="1673097259557436886">Sempre informar os sites de que não existem formas de pagamento salvas</translation>
 <translation id="1674287836076801014">SAML</translation>
 <translation id="1675002386741412210">Com suporte em:</translation>
@@ -1851,6 +1852,13 @@ Observação: a omissão de um campo significa que todos os valores correspondem
 
       Os usuários não podem mudar as pastas em que os favoritos estão, embora seja possível ocultá-las da barra de favoritos. O nome padrão da pasta de favoritos gerenciados é "Favoritos gerenciados", mas ele pode ser modificado ao adicionar um novo subdicionário à política com uma única chave chamada "<ph name="TOPLEVEL_NAME" />" usando o nome da pasta desejada como valor. Os favoritos gerenciados não são sincronizados com a conta do usuário, e as extensões não podem modificá-los.</translation>
 <translation id="2552966063069741410">Fuso horário</translation>
+<translation id="2554010621206996293">Esta política permite controlar a ativação do recurso de conjuntos de sites relacionados.
+
+Esta política substitui a <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
+
+Quando a política for deixada sem definição ou for definida como verdadeira, o recurso de conjuntos de sites relacionados será ativado.
+
+Quando ela for definida como falsa, o recurso de conjuntos de sites relacionados será desativado.</translation>
 <translation id="2555244983262829274">Ocultar o botão "Página inicial" na barra de ferramentas</translation>
 <translation id="2562213287271514629">Permitir que o <ph name="FLASH_PLUGIN_NAME" /> desatualizado seja usado como o <ph name="FLASH_PLUGIN_NAME" /> normal</translation>
 <translation id="2562339630163277285">Especifica o URL do mecanismo de pesquisa usado para fornecer resultados instantâneos. O URL deve conter a string <ph name="SEARCH_TERM_MARKER" />, que será substituída no instante da consulta pelo texto que o usuário digitou até o momento.
@@ -1868,6 +1876,7 @@ Observação: a omissão de um campo significa que todos os valores correspondem
 <translation id="2576324725151524912">Permitir o modo de desenvolvedor para apps isolados.</translation>
 <translation id="257717978573041245">Ativar a aceleração de hardware</translation>
 <translation id="257788512393330403">A senha precisa ser digitada a cada seis horas</translation>
+<translation id="2580606791930800692">Define uma lista de regras de controles de dados.</translation>
 <translation id="2580757713966614760">A definição da política designa qual política de acesso se aplica à configuração em massa de impressoras, controlando quais impressoras da <ph name="DEVICE_PRINTERS_POLICY_NAME" /> estão disponíveis para os usuários.
 
       * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_BLOCKLISTRESTRICTIONS" /> (valor 0), <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> pode restringir o acesso às impressoras especificadas.
@@ -3754,6 +3763,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="4157594634940419685">Permitir acesso a impressoras CUPS nativas</translation>
 <translation id="4158531549614162499">Ativar a sincronização do Google Drive em conexões celulares</translation>
 <translation id="4160962198980004898">Fonte de endereço MAC do dispositivo quando encaixado na base</translation>
+<translation id="4161019158509414446">Controla as políticas do recurso de conjuntos de sites relacionados.</translation>
 <translation id="4164511138197196839">Se a política for ativada, as extensões não publicadas na Chrome Web
 Store serão desativadas no <ph name="PRODUCT_NAME" />.
 Esta política se aplica apenas às extensões instaladas e atualizadas pela
@@ -6297,6 +6307,7 @@ resolução de localização baseada no <ph name="IP" />.</translation>
       Se ela for definida como falsa, conteúdos Signed HTTP Exchanges não serão carregados.</translation>
 <translation id="6368011194414932347">Configurar o URL da página inicial</translation>
 <translation id="6368403635025849609">Permitir o JavaScript nestes sites</translation>
+<translation id="6371005337713685988">Configurações dos conjuntos de sites relacionados</translation>
 <translation id="6371561334154580937">Mostrar a caixa de diálogo para saída na última janela fechada.</translation>
 <translation id="6372105930898423193">Permite que o recurso AppCache seja reativado mesmo se estiver desativado por padrão.</translation>
 <translation id="6373299801585455337">Ativar relatórios de informações da CPU do dispositivo</translation>
@@ -7504,27 +7515,6 @@ Se esta política for desativada ou não for definida, as configurações de con
       Se esta política for deixada sem definição, o comportamento padrão será não permitir para usuários gerenciados por empresas e permitir para usuários não gerenciados.</translation>
 <translation id="7295019613773647480">Ativar usuários supervisionados</translation>
 <translation id="7297476773981993405">Permitir que o algoritmo User-Agent GREASE atualizado seja executado.</translation>
-<translation id="7297765841046240459">Quando a política é ativada, o <ph name="PRODUCT_NAME" />
-verifica os certificados do servidor usando o verificador de certificados integrado,
-com a Chrome Root Store como fonte de confiança pública.
-
-Se a política for desativada, o <ph name="PRODUCT_NAME" />
-vai usar o verificador de certificados e os certificados raiz do sistema.
-
-Quando ela não for definida, a Chrome Root Store ou as raízes fornecidas pelo sistema
-poderão ser usadas.
-
-Esta política será removida na
-versão 120 do <ph name="PRODUCT_OS_NAME" />,
-<ph name="PRODUCT_NAME" />
-da versão 120 do <ph name="LINUX_OS_NAME" /> e
-<ph name="PRODUCT_NAME" /> do
-<ph name="ANDROID_NAME" /> versão 121,
-quando o suporte para o uso das raízes fornecidas pela plataforma será removido.
-
-Esta política foi removida no <ph name="PRODUCT_NAME" />
-para <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" /> versão 113
-após a remoção do suporte para uso das raízes e do verificador de certificados fornecidos pela plataforma.</translation>
 <translation id="7298197471363105063">Substituir o First-Party Sets.</translation>
 <translation id="7302043767260300182">Intervalo de bloqueio da tela no funcionamento com alimentação CA</translation>
 <translation id="7303902834678570827">Usuários de Sessões de visitante gerenciadas não podem armazenar configurações de tela para o dispositivo</translation>
@@ -8029,6 +8019,7 @@ Quando ela for deixada sem definição, o renderizador de PDF será escolhido pe
 <translation id="7758378441185523981">Ativar a autenticação pelo SO para tipos de perfil.</translation>
 <translation id="776110834126722255">Obsoleta</translation>
 <translation id="7763614521440615342">Mostrar sugestões de conteúdo na página "Nova guia"</translation>
+<translation id="776465643636059256">Desativar conjuntos de sites relacionados</translation>
 <translation id="7765879851993224640">Permitir que o login do Smart Lock seja usado.</translation>
 <translation id="7767066506143083523">Se a política for definida, será possível configurar uma lista de padrões de URL que podem usar a captura de guia.
 

@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Háttérkép módosítása naponta</translation>
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="1651925268237749928">Egy megosztott albumot választott ki. Mások is módosíthatják a benne lévő fotókat, illetve hozzáadhatnak újakat. Háttérképként olyan fotók is megjelenhetnek, amelyek jelenleg nem találhatók meg ebben az albumban.</translation>
+<translation id="1661865805917886535">A Google megkaphat bizonyos adatokat a fiókról és a rendszerről. Ezeket az adatokat a technikai problémák kezelésére és szolgáltatásaink fejlesztésére használjuk az adatvédelmi irányelveinknek (<ph name="PRIVACYPOLICYURL" />) és az Általános Szerződési Feltételeknek (<ph name="TERMSOFSERVICEURL" />) megfelelően. Tartalommódosítás kéréséhez lépjen a Jogi súgóba (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Leállt – Kifogyott a tinta</translation>
 <translation id="1664796644829245314">Előnézet: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Beépített VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Az eszköz csatlakoztatva van.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Eltávolítja az oldalt?}=1{Eltávolítja a(z) {PAGE_NUMBER}. oldalt?}other{Eltávolítja a(z) {PAGE_NUMBER}. oldalt?}}</translation>
+<translation id="3146655726035122603">Kizárólag a következőnél: <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobiladatok</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. oldal beolvasása…</translation>
 <translation id="315738237743207937">Hitelesítési portál észlelve</translation>

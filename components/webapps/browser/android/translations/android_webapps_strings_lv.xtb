@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1213425325105380833">Atjaunojiet tīmekļa lietotnes, ko nesen esat izmantojis ar šo kontu saistītajās ierīcēs.</translation>
+<translation id="2065911435109240297">Atjaunojiet tīmekļa lietotnes</translation>
+<translation id="2111649875343992405">Pārskatiet, kuras tīmekļa lietotnes atjaunot</translation>
 <translation id="2139186145475833000">Pievienot sākuma ekrānam</translation>
+<translation id="2172982519592313442">Pārskatīt tīmekļa lietotnes</translation>
 <translation id="2478076885740497414">Instalēt lietotni</translation>
 <translation id="3789841737615482174">Instalēt</translation>
 <translation id="3910402514791813257">Neizdevās instalēt</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Ekrānuzņēmums. Pieskarieties, lai to aizvērtu.</translation>
 <translation id="6990079615885386641">Iegūstiet lietotni Google Play veikalā: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Joprojām notiek iepriekšējās vietnes pievienošana</translation>
+<translation id="7672888405515738928">Izvēlieties, kuras tīmekļa lietotnes atjaunot šajā ierīcē. Šeit parādīto lietotņu pamatā ir jūsu Chrome vēsture.</translation>
+<translation id="8163051092261298861">Atjaunot tīmekļa lietotnes</translation>
 <translation id="962979164594783469">Instalēt šo lietotni</translation>
 </translationbundle>

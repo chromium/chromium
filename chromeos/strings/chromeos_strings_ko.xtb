@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">기기가 연결되어 있습니다.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{페이지를 삭제하시겠습니까?}=1{{PAGE_NUMBER}페이지를 삭제하시겠습니까?}other{{PAGE_NUMBER}페이지를 삭제하시겠습니까?}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 전용</translation>
 <translation id="315116470104423982">모바일 데이터</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />페이지 스캔 중…</translation>
 <translation id="315738237743207937">종속 포털 감지됨</translation>

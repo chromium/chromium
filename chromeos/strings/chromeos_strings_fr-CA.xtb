@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">Processeur</translation>
 <translation id="3124039320086536031">L'appareil est connecté.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Retirer la page?}=1{Retirer la page {PAGE_NUMBER}?}one{Retirer la page {PAGE_NUMBER}?}other{Retirer la page {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Exclusif à <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Données mobiles</translation>
 <translation id="3156846309055100599">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="315738237743207937">Un portail captif a été détecté</translation>

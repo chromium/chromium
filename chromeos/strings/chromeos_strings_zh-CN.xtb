@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">设备已连接。</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{移除页面？}=1{移除第 {PAGE_NUMBER} 页？}other{移除第 {PAGE_NUMBER} 页？}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 专有</translation>
 <translation id="315116470104423982">移动数据</translation>
 <translation id="3156846309055100599">正在扫描第 <ph name="PAGE_NUMBER" /> 页…</translation>
 <translation id="315738237743207937">检测到强制门户</translation>

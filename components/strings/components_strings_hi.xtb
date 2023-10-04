@@ -189,6 +189,7 @@
 <translation id="1346748346194534595">दाएं</translation>
 <translation id="1348198688976932919">आगे आने वाली साइट में खतरनाक ऐप्लिकेशन हैं</translation>
 <translation id="1348779747280417563">नाम की पुष्टि करें</translation>
+<translation id="1352798470428594123">Chrome, ज़्यादातर साइटों को तीसरे पक्ष की कुकी का इस्तेमाल करने से रोकता है. ऐसा इसलिए किया जाता है, ताकि ब्राउज़ करते समय वे साइटें आपको ट्रैक न कर सकें. <ph name="LINK" /> के लिए सेटिंग पर जाएं.</translation>
 <translation id="1354976809542763843">घर खरीदने के लिए लोन देने वाली सेवाएं</translation>
 <translation id="1355158069018170842">कीमत में कमी से जुड़ी सूचनाओं को टैब पर दिखाएं</translation>
 <translation id="1355301061807280185">नौकरियां</translation>
@@ -328,6 +329,7 @@
 <translation id="1618571384971354160">टोइंग और बीच सफ़र में वाहन खराब होने पर मरम्मत के लिए मिलने वाली सेवाएं</translation>
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="1622571349153632031">शाकाहारी पकवान</translation>
+<translation id="162285686621567578">यह वेबसाइट आपके माता-पिता ने ब्लॉक की है.</translation>
 <translation id="1622966923835127638">कारोबारी फ़ाइनेंस</translation>
 <translation id="1623104350909869708">इस पेज को अतिरिक्त डॉयलॉग बनाने से रोकें</translation>
 <translation id="1633137413609266904">{0,plural, =1{एडमिन नीति के तहत, इस फ़ाइल को खोलने की अनुमति नहीं है}one{एडमिन नीति के तहत, # फ़ाइल को खोलने की अनुमति नहीं है}other{एडमिन नीति के तहत, # फ़ाइलों को खोलने की अनुमति नहीं है}}</translation>
@@ -373,6 +375,7 @@
 <translation id="1711528724596764268">मशीन लर्निंग और आर्टिफ़िशियल इंटेलिजेंस</translation>
 <translation id="1712552549805331520"><ph name="URL" /> आपके स्थानीय कंप्यूटर पर हमेशा के लिए डेटा संग्रहित करना चाहता है</translation>
 <translation id="1713628304598226412">ट्रे 2</translation>
+<translation id="1714807406136741351">ब्राउज़ मोड, ग्राफ़ पर कीमत में हुए बदलावों की समीक्षा करने के लिए, लेफ़्ट/राइट ऐरो का इस्तेमाल किया जा सकता है. ऐसा करने के लिए फ़ॉर्म मोड का इस्तेमाल करें</translation>
 <translation id="1717218214683051432">मोशन सेंसर</translation>
 <translation id="1717494416764505390">मेलबॉक्स 3</translation>
 <translation id="1717688554309417925">डेबिट और जांच सेवाएं</translation>
@@ -1331,6 +1334,7 @@
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides में जल्दी से Google प्रज़ेंटेशन बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="3733139489341305600">ऑटोनोमस वाहन</translation>
 <translation id="3736520371357197498">अगर आप अपनी सुरक्षा संबंधी जोखिमों को समझते हैं तो, खतरनाक प्रोग्राम हटाए जाने से पहले आप <ph name="BEGIN_LINK" />इस असुरक्षित साइट पर विज़िट<ph name="END_LINK" /> कर सकते हैं.</translation>
+<translation id="3736739313435669994">आपने साइटों को तीसरे पक्ष की कुकी का इस्तेमाल करने से रोका है, ताकि ब्राउज़ करते समय आपको ट्रैक न किया जा सके. <ph name="LINK" /> के लिए सेटिंग पर जाएं.</translation>
 <translation id="3738166223076830879">आपका एडमिन आपके ब्राउज़र को मैनेज करता है.</translation>
 <translation id="3740319564441798148">लंबी दूरी के लिए परिवहन सेवाएं</translation>
 <translation id="3740447166056383374">कॉपी करने से पहले, समीक्षा करना ज़रूरी है</translation>
@@ -1398,7 +1402,7 @@
 <translation id="3872834068356954457">विज्ञान</translation>
 <translation id="3875783148670536197">मुझे इसका तरीका दिखाएं</translation>
 <translation id="3881478300875776315">कम लाइनें दिखाएं</translation>
-<translation id="3883500545751229739">तंग करने वाले विज्ञापन</translation>
+<translation id="3883500545751229739">परेशान करने वाले विज्ञापन</translation>
 <translation id="3884278016824448484">विरोधाभासी डिवाइस पहचानकर्ता</translation>
 <translation id="388632593194507180">यह पता चला है कि नज़र रखी जा रही है</translation>
 <translation id="3886948180919384617">स्टैकर 3</translation>
@@ -1522,6 +1526,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{पेज 1}one{पेज {COUNT}}other{पेज {COUNT}}}</translation>
 <translation id="4154277373259957087">पेमेंट के तरीके भरने से पहले, Chrome आपकी पहचान की पुष्टि करेगा. <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> में जाकर, इसे कभी भी अपडेट किया जा सकता है.</translation>
 <translation id="4159149286839604525">इसका मतलब है कि साइट की ज़्यादातर सुविधाएं काम करेंगी, लेकिन आपकी सुरक्षा का स्तर कम हो जाएगा</translation>
+<translation id="4159575773617358878">अगली बार तेज़ी से पेमेंट करने के लिए, अपने कार्ड की जानकारी, सुरक्षा कोड, और बिलिंग पते को अपने Google खाते में सेव करें</translation>
 <translation id="4159784952369912983">बैंगनी</translation>
 <translation id="4165986682804962316">साइट सेटिंग</translation>
 <translation id="4169535189173047238">अनुमति न दें</translation>
@@ -2270,6 +2275,7 @@
 <translation id="5666606186680807225">बीच और टापू</translation>
 <translation id="5667827081946850877">ऑडियो बुक</translation>
 <translation id="5675650730144413517">यह पेज काम नहीं कर रहा है</translation>
+<translation id="5677928146339483299">ब्लॉक किया गया है</translation>
 <translation id="5678007133659493065">फ़ॉयल</translation>
 <translation id="568292603005599551">इमेज X की स्थिति</translation>
 <translation id="5684277895745049190">सूची</translation>
@@ -2435,7 +2441,7 @@
 <translation id="6034514109191629503">एकार्डियन फ़ोल्ड</translation>
 <translation id="6039846035001940113">अगर समस्या बनी रहती है, तो साइट के मालिक से संपर्क करें.</translation>
 <translation id="6040143037577758943">बंद करें</translation>
-<translation id="604124094241169006">स्वचालित</translation>
+<translation id="604124094241169006">ऑटोमेटिक</translation>
 <translation id="6041777658117377052">चेंबर का तापमान</translation>
 <translation id="6042308850641462728">और ज़्यादा</translation>
 <translation id="6044573915096792553">आकार 12</translation>
@@ -2577,6 +2583,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> की वैल्यू गलत है और इसका इस्तेमाल नहीं किया जाएगा.</translation>
 <translation id="6340739886198108203">जब गोपनीय कॉन्टेंट दिख रहा हो, तो एडमिन नीति स्क्रीनशॉट लेने या रिकॉर्डिंग करने का सुझाव नहीं देती है:</translation>
 <translation id="6341434961864773665">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर अपलोड करने का सुझाव नहीं देती}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर अपलोड करने का सुझाव नहीं देती}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> पर अपलोड करने का सुझाव नहीं देती}}</translation>
+<translation id="6344622098450209924">ट्रैकिंग सुरक्षा</translation>
 <translation id="634500758737709758">निर्देश</translation>
 <translation id="6348220984832452017">इस्तेमाल किए जा सकने वाले वर्शन</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करें</translation>
@@ -3233,6 +3240,7 @@
 <translation id="762844065391966283">एक बार में एक</translation>
 <translation id="763042426047865637">आग और सुरक्षा से जुड़ी सेवाएं</translation>
 <translation id="7630470133768862132">सहमति से जुड़ी नीति की स्थिति:</translation>
+<translation id="7631072086707140121">यूआरएल, एचटीटीपीएस में होना चाहिए.</translation>
 <translation id="7631444403134069754">ट्रैक एंड फ़ील्ड</translation>
 <translation id="7631527008834753063">टीवी गेम शो</translation>
 <translation id="7633909222644580952">परफ़ॉर्मेंस डेटा और क्रैश रिपोर्ट</translation>
@@ -3256,6 +3264,7 @@
 <translation id="7667346355482952095">वापस लौटा हुआ नीति टोकन खाली है या उसका मिलान वर्तमान टोकन से नहीं होता</translation>
 <translation id="7668654391829183341">अज्ञात डिवाइस</translation>
 <translation id="7669271284792375604">इस साइट पर मौजूद हमलावर धोखे से आपसे ऐसे प्रोग्राम इंस्टॉल करवाने की कोशिश कर सकते हैं, जिनसे आपके ब्राउज़िंग अनुभव को नुकसान पहुंच सकता है (उदाहरण के लिए, आपका होमपेज बदलकर या आप जिन साइटों पर जाते हैं उन पर ज़्यादा विज्ञापन दिखाकर).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" /> में से <ph name="ITEM_POSITION" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{गोपनीय के तौर पर फ़्लैग किए गए डेटा पर कार्रवाई की गई (लॉगिन के बाद 1 कार्रवाई की गई). <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" />}one{गोपनीय के तौर पर फ़्लैग किए गए डेटा पर कार्रवाई की गई (लॉगिन के बाद # कार्रवाई की गई). <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" />}other{गोपनीय के तौर पर फ़्लैग किए गए डेटा पर कार्रवाइयां की गईं (लॉगिन के बाद # कार्रवाइयां रिपोर्ट की गईं). <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">मेलबॉक्स 6</translation>
 <translation id="7675325315208090829">पैसे चुकाने के तरीके मैनेज करें...</translation>
@@ -3654,6 +3663,7 @@
 <translation id="8473863474539038330">पते वगैरह</translation>
 <translation id="8474910779563686872">डेवलपर की जानकारी दिखाएं</translation>
 <translation id="8479754468255770962">नीचे बाईं ओर स्टेपल</translation>
+<translation id="8479926481822108747">ट्रैकिंग सुरक्षा की सुविधा को मैनेज करें</translation>
 <translation id="8483229036294884935">आपके Google खाते, <ph name="ACCOUNT" /> से यह पता मिटा दिया जाएगा</translation>
 <translation id="8488350697529856933">इस पर लागू होती है</translation>
 <translation id="8490137692873530638">स्टैकर 10</translation>
@@ -3848,7 +3858,7 @@
 <translation id="8891727572606052622">अमान्य प्रॉक्सी मोड.</translation>
 <translation id="8894794286471754040">लॉन्ग एज फ़र्स्ट</translation>
 <translation id="8897428486789851669">तैराकी</translation>
-<translation id="8899807382908246773">तंग करने वाले विज्ञापन</translation>
+<translation id="8899807382908246773">परेशान करने वाले विज्ञापन</translation>
 <translation id="8903921497873541725">ज़ूम इन करें</translation>
 <translation id="890493561996401738">सुझाव बटन हटाएं, हटाने के लिए Enter दबाएं, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 इंच</translation>

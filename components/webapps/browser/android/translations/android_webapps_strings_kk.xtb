@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
+<translation id="1213425325105380833">Осы аккаунтпен байланысты құрылғыларда жақында қолданылған веб-қолданбаларды қалпына келтіру</translation>
+<translation id="2065911435109240297">Веб-қолданбаларды қалпына келтіру</translation>
+<translation id="2111649875343992405">Қандай веб-қолданбаларды қалпына келтіру қажеттігін тексеру</translation>
 <translation id="2139186145475833000">Негізгі экранға қосу</translation>
+<translation id="2172982519592313442">Веб-қолданбаларды тексеру</translation>
 <translation id="2478076885740497414">Қолданбаны орнату</translation>
 <translation id="3789841737615482174">Орнату</translation>
 <translation id="3910402514791813257">Орнатылмады</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Скриншот. Жабу үшін түртіңіз.</translation>
 <translation id="6990079615885386641">Google Play дүкенінен қолданба алу: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Алдыңғы сайт әлі енгізілуде</translation>
+<translation id="7672888405515738928">Осы құрылғыда қалпына келтіру қажет веб-қолданбаларды таңдаңыз. Бұл жерде көрсетілетін қолданбалар Chrome тарихыңызға негізделеді.</translation>
+<translation id="8163051092261298861">Веб-қолданбаларды қалпына келтіру</translation>
 <translation id="962979164594783469">Осы қолданбаны орнату</translation>
 </translationbundle>

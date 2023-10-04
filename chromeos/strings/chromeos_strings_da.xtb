@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Enheden har forbindelse.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vil du fjerne siden?}=1{Vil du fjerne side {PAGE_NUMBER}?}one{Remove page {PAGE_NUMBER}?}other{Vil du fjerne side {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Kun tilgængelig på <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3156846309055100599">Scanner side <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Der blev registreret en loginportal</translation>

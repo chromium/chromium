@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1213425325105380833">Վերականգնեք վեբ հավելվածները, որոնք վերջերս օգտագործել եք այս հաշվի հետ կապված սարքերում</translation>
+<translation id="2065911435109240297">Վերականգնեք ձեր վեբ հավելվածները</translation>
+<translation id="2111649875343992405">Դիտեք, թե որ վեբ հավելվածներն եք ուզում վերականգնել</translation>
 <translation id="2139186145475833000">Ավելացնել գլխավոր էկրանին</translation>
+<translation id="2172982519592313442">Դիտել վեբ հավելվածները</translation>
 <translation id="2478076885740497414">Տեղադրել հավելվածը</translation>
 <translation id="3789841737615482174">Տեղադրել</translation>
 <translation id="3910402514791813257">Չհաջողվեց տեղադրել</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Սքրինշոթ։ Հպեք՝ փակելու համար։</translation>
 <translation id="6990079615885386641">Ձեռք բերեք հավելվածը Google Play Խանութից՝ <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Դեռ նախորդ կայքն է ավելացվում</translation>
+<translation id="7672888405515738928">Ընտրեք վեբ հավելվածները՝ այս սարքում վերականգնելու համար։ Այստեղ ցուցադրվում են հավելվածներ՝ հիմնված Chrome-ի ձեր պատմության վրա։</translation>
+<translation id="8163051092261298861">Վերականգնել վեբ հավելվածները</translation>
 <translation id="962979164594783469">Տեղադրել հավելվածը</translation>
 </translationbundle>

@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Verander muurpapierprent daagliks</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
 <translation id="1651925268237749928">Jy het ’n gedeelde album gekies. Ander mense kan foto’s byvoeg of verander. Jou muurpapier kan foto’s gebruik wat nie tans in hierdie album is nie.</translation>
+<translation id="1661865805917886535">Sekere rekening- en stelselinligting sal dalk na Google gestuur word. Ons gebruik hierdie inligting om tegniese kwessies te help hanteer en om ons dienste te verbeter, onderworpe aan ons Privaatheidsbeleid (<ph name="PRIVACYPOLICYURL" />) en Diensbepalings (<ph name="TERMSOFSERVICEURL" />). Gaan na Regshulp (<ph name="LEGALHELPPAGEURL" />) om inhoudveranderinge aan te vra.</translation>
 <translation id="1662989795263954667">Gestop – ink is op</translation>
 <translation id="1664796644829245314">Voorbeskou <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Ingeboude VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Toestel is gekoppel.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Verwyder bladsy?}=1{Verwyder bladsy {PAGE_NUMBER}?}other{Verwyder bladsy {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Eksklusief aan <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobiele data</translation>
 <translation id="3156846309055100599">Skandeer tans bladsy <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Kontroleringsportaal is bespeur</translation>

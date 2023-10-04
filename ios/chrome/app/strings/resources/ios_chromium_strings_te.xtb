@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Chromiumలో Voiceతో సెర్చ్ చేయండి.</translation>
 <translation id="1047130070405668746">Chromiumను ఎంచుకోండి</translation>
 <translation id="1091252999271033193">అంటే Chromium ప్రతిసారీ మొబైల్ సైట్‌ను రిక్వెస్ట్ చేస్తుందని అర్థం.</translation>
+<translation id="1171824629317156389">iOSలో Chromium సెట్టింగ్‌లను తెరిచి, ఆపై "ఆటోమేటిక్ బ్రౌజర్ యాప్"పై ట్యాప్ చేసి, Chromiumను ఎంచుకోండి.</translation>
 <translation id="1185134272377778587">Chromium గురించి</translation>
 <translation id="1257458525759135959">ఇమేజ్‌లను సేవ్ చేయడానికి, మీ ఫోటోలకు యాడ్ చేయడం కోసం Chromiumను అనుమతించడానికి సెట్టింగ్‌లపై ట్యాప్ చేయండి</translation>
 <translation id="1289216811211435351">Chromiumకు మారండి</translation>
@@ -16,6 +17,7 @@
 <translation id="1591119736686995611">Chromium ట్యాబ్ గ్రిడ్‌ను తెరుస్తుంది.</translation>
 <translation id="1617663976202781617">Chromium సింక్ నుండి పొందే డేటా</translation>
 <translation id="1647558790457890304">Chromium సెట్టింగ్‌లు</translation>
+<translation id="164952285225495380">Chromiumలో ఈ ప్యాకేజీ ఇప్పటికే ట్రాక్ చేయబడింది.</translation>
 <translation id="1722370509450468186">మీ పాస్‌వర్డ్ మీ ఖాతా (<ph name="EMAIL" />)లో సేవ్ చేయబడుతుంది.</translation>
 <translation id="1736662517232558588">Chromium డేటా తీసేసింది</translation>
 <translation id="1791845338122684020">మీ Chromium హిస్టరీ పేజీని తెరవండి.</translation>
@@ -139,6 +141,7 @@
 1. సెట్టింగ్‌లను తెరవండి
 2. ఆటోమేటిక్ బ్రౌజర్ యాప్‌ను ట్యాప్ చేయండి
 3. Chromiumను ఎంచుకోండి.</translation>
+<translation id="6197255575340902638">మీరు "<ph name="MODULE_NAME" />"‌ను దాచినట్లయితే, Chromium ఇకపై మీ భవిష్యత్తు ప్యాకేజీలను ఆటోమేటిక్‌గా ట్రాక్ చేయదు, గతంలోని మీ ప్యాకేజీ ట్రాకింగ్ డేటా మొత్తాన్నీ తొలగిస్తుంది.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6268381023930128611">Chromium నుండి సైన్ అవుట్ చేయాలా?</translation>
 <translation id="6324041800010509197">Chromiumలో ట్యాబ్ గ్రిడ్‌ను చూడండి</translation>

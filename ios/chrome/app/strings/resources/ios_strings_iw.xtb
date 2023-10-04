@@ -6,6 +6,7 @@
 <translation id="1016495303386450659">הפריט עודכן</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{שמירת הסיסמה בחשבון}one{שמירת הסיסמאות בחשבון}two{שמירת הסיסמאות בחשבון}other{שמירת הסיסמאות בחשבון}}</translation>
 <translation id="1035980983510608210">אם סוגרים את כל הכרטיסיות, גם הכרטיסיות המוצמדות נסגרות.</translation>
+<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">כיבוי</translation>
 <translation id="1044891598689252897">אתרים יפעלו כרגיל</translation>
 <translation id="1049743911850919806">גלישה פרטית</translation>
@@ -154,6 +155,8 @@
 <translation id="1813414402673211292">ניקוי נתוני גלישה</translation>
 <translation id="1815941218935345331">קוד גישה</translation>
 <translation id="1820259098641718022">נוסף לרשימת הקריאה</translation>
+<translation id="1822994441903263130">FedEx</translation>
+<translation id="1827529786398596735">לוחצים לחיצה ארוכה על מסך הבית</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{סיסמאות שנחשפו}=1{סיסמה אחת ({COUNT}) שנחשפה}one{{COUNT} סיסמאות שנחשפו}two{{COUNT} סיסמאות שנחשפו}other{{COUNT} סיסמאות שנחשפו}}</translation>
 <translation id="1830634592642484976">‏הכתובת הזו שמורה ב-Chrome. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">כדי לוודא שתמיד תהיה לך גישה לנתונים המסונכרנים שלך, עליך לאמת את זהותך</translation>
@@ -175,6 +178,7 @@
 <translation id="1943478190258551035">תפריט ← הגדרות</translation>
 <translation id="194449685234099560">כאן אפשר למצוא את כל הכרטיסיות הפתוחות.</translation>
 <translation id="1952172573699511566">אתרים יציגו טקסט בשפה המועדפת שלך, כשזה אפשרי.</translation>
+<translation id="1956138802718275401">גישה לסיסמאות במסך הבית</translation>
 <translation id="1959441496380398824">לוחצים לחיצה ארוכה על תאריך.</translation>
 <translation id="1959679933317802873">בהמתנה לתוכן</translation>
 <translation id="1965935827552890526">‏יש לסיים את הפעילות בחלון Chrome הפתוח הנוסף.</translation>
@@ -236,6 +240,7 @@
 <translation id="2297822946037605517">שתף דף זה</translation>
 <translation id="2297989278479054870">‏אחרי היציאה מהחשבון, הסימניות, הסיסמאות ופרטים נוספים בחשבון Google שלך יוסרו מהמכשיר הזה.</translation>
 <translation id="2299218006564889602">‏הסיסמאות שלך מוצפנות במכשיר לפני שהן נשמרות במנהל הסיסמאות של Google.</translation>
+<translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">שינוי הסיסמה באתר</translation>
 <translation id="2316709634732130529">שימוש בסיסמה המוצעת</translation>
 <translation id="2320166752086256636">הסתרת מקלדת</translation>
@@ -251,6 +256,8 @@
 אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך. המידע הזה דרוש להם לצרכים שונים, למשל לצורך הצגה של מודעות בהתאמה אישית.</translation>
 <translation id="2381405137052800939">הגדרות בסיסיות</translation>
 <translation id="2386793615875593361">נבחרה תמונה אחת</translation>
+<translation id="2390457533592708044">הסתרה של '<ph name="MODULE_NAME" />'</translation>
+<translation id="2403129868389095715">אי אפשר למסור את החבילה</translation>
 <translation id="2411749908844615428">{count,plural, =1{כתובת שמורה אחת ({count}) זמינה מעל המקלדת.}one{{count} כתובות שמורות זמינות מעל המקלדת.}two{{count} כתובות שמורות זמינות מעל המקלדת.}other{{count} כתובות שמורות זמינות מעל המקלדת.}}</translation>
 <translation id="2421004566762153674">‏חסימת קובצי Cookie של צד שלישי</translation>
 <translation id="2421044535038393232">המשך העריכה</translation>
@@ -284,6 +291,7 @@
 <translation id="2587010742985678408">{count,plural, =0{אין סיסמאות שנחשפו}=1{יש סיסמה אחת ({count}) שנחשפה}one{יש {count} סיסמאות שנחשפו}two{יש {count} סיסמאות שנחשפו}other{יש {count} סיסמאות שנחשפו}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{כרטיסיות פתוחות שלא נעשה בהן שימוש במשך יום אחד או יותר עוברות לקטע 'כרטיסיות לא פעילות', כך שתהיה לך אפשרות להתמקד בקלות בכרטיסיות שנעשה בהן שימוש בתדירות הגבוהה ביותר. תמיד אפשר לשנות זאת בהגדרות.}one{כרטיסיות פתוחות שלא נעשה בהן שימוש במשך {COUNT} ימים או יותר עוברות לקטע 'כרטיסיות לא פעילות', כך שתהיה לך אפשרות להתמקד בקלות בכרטיסיות שנעשה בהן שימוש בתדירות הגבוהה ביותר. תמיד אפשר לשנות זאת בהגדרות.}two{כרטיסיות פתוחות שלא נעשה בהן שימוש במשך יומיים ({COUNT}) או יותר עוברות לקטע 'כרטיסיות לא פעילות', כך שתהיה לך אפשרות להתמקד בקלות בכרטיסיות שנעשה בהן שימוש בתדירות הגבוהה ביותר. תמיד אפשר לשנות זאת בהגדרות.}other{כרטיסיות פתוחות שלא נעשה בהן שימוש במשך {COUNT} ימים או יותר עוברות לקטע 'כרטיסיות לא פעילות', כך שתהיה לך אפשרות להתמקד בקלות בכרטיסיות שנעשה בהן שימוש בתדירות הגבוהה ביותר. תמיד אפשר לשנות זאת בהגדרות.}}</translation>
 <translation id="2600682495497606169">‏ניקוי קובצי ה-cookie של אתרים</translation>
+<translation id="260378315836159338">בחלק העליון של המסך, מקישים על +</translation>
 <translation id="2604176749896001318">עדכון הדפדפן</translation>
 <translation id="2609008503159898744">לסגור את כל הכרטיסיות?</translation>
 <translation id="2617210333344098964">העברת הכתובת לחשבון</translation>
@@ -348,6 +356,7 @@
 <translation id="288113003463357084">העברת סרגל הכתובות לתחתית</translation>
 <translation id="2883151425485251736">הצגה ועריכה של נושאים שבחרת להסתיר מהחשבון</translation>
 <translation id="288655811176831528">סגירת הכרטיסייה</translation>
+<translation id="288902476966286676">הוחזרה לשולח</translation>
 <translation id="2890171748217283516">‏אתרים שנמצאים במעקב נשמרים בחשבון Google שלך. ניתן לנהל אותם בהגדרות של Discover.</translation>
 <translation id="2898963176829412617">תיקייה חדשה…</translation>
 <translation id="2902684821701498619">הוספה לרשימת הקריאה</translation>
@@ -364,7 +373,6 @@
 <translation id="2952278131021475699">‏חיפוש באמצעות המצלמה ב-Lens</translation>
 <translation id="2952581218264071393">‏1. פותחים את ההגדרות של Chrome</translation>
 <translation id="2956733177489514605">‏כניסה באמצעות חשבון Google כדי לסנכרן את הסיסמאות שלך ועוד.</translation>
-<translation id="2958271635022991876">כאן אפשר לפתוח כרטיסייה חדשה.</translation>
 <translation id="2958718410589002129">סיסמאות</translation>
 <translation id="2961210776189273067">תואר</translation>
 <translation id="2964349545761222050">‏חסימה של קובצי cookie מצדדים שלישיים</translation>
@@ -377,6 +385,7 @@
 רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google ולא מאוחסן ב-Google. אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך לנקות את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">פתיחה בכרטיסייה חדשה</translation>
 <translation id="3010025794097054078">הגנה מפני פרצות באבטחת המידע, אתרים לא בטוחים ועוד.</translation>
+<translation id="3010171936431626919">איך עושים את זה?</translation>
 <translation id="3020183492814296499">קיצורים</translation>
 <translation id="3037605927509011580">אוי, לא!</translation>
 <translation id="3039722182465315531">אני לא רוצה להיכנס</translation>
@@ -435,6 +444,7 @@
 <translation id="3328801116991980348">פרטי אתר</translation>
 <translation id="3340938510625667914">‏פעולות ב-Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘ בחשבון שלך, {email}}one{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}two{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}other{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}}</translation>
+<translation id="3348387552617855658">בכרטיס הזה אפשר לעקוב אחר חבילות ולקבל עדכונים חשובים על משלוחים.</translation>
 <translation id="3349676726073650389">‏האתרים והחיפושים שבמעקב נשמרים בחשבון Google שלך. בכל שלב אפשר לנהל את הפריטים שבמעקב בהגדרות.</translation>
 <translation id="3365529507898144230">‏שמירה ב-Photos</translation>
 <translation id="3371831930909698441">‏Translate זמין. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
@@ -536,6 +546,7 @@
 <translation id="3909222758573607742">שמירת סיסמאות ופריטים אחרים בחשבון</translation>
 <translation id="3913386780052199712">‏נכנסת ל-Chrome</translation>
 <translation id="3915450441834151894">פרטי אתר</translation>
+<translation id="3918585468378680136">סטטוס החבילה עוד לא התקבל</translation>
 <translation id="3922310737605261887">חיפוש טקסט שהועתק</translation>
 <translation id="3928666092801078803">שילוב הנתונים שלי</translation>
 <translation id="3929457972718048006">כתובות</translation>
@@ -571,6 +582,7 @@
 <translation id="4152011295694446843">הסימניות זמינות כאן</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> המסתיים בספרות <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4172051516777682613">להציג תמיד</translation>
+<translation id="417442848889487144">התווית נוצרה. התאריך בהמתנה</translation>
 <translation id="418156467088430727">הצגת גרסה אופליין בכרטיסייה חדשה</translation>
 <translation id="4181841719683918333">שפות</translation>
 <translation id="4187450337729239226">הדבקה וחיפוש</translation>
@@ -680,6 +692,7 @@
 <translation id="4803185665210547709">מנוהל על-ידי הארגון שלך.
 <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">מספר כרטיס לא חוקי</translation>
+<translation id="4808646838864186379">המסירה בוטלה</translation>
 <translation id="4808744395915275922">עדכונים</translation>
 <translation id="4818522717893377262">הוספת שפה…</translation>
 <translation id="481968316161811770">‏קובצי cookie, נתונים מאתרים</translation>
@@ -795,9 +808,11 @@
 <translation id="5443952882982198570">כרטיסי אשראי</translation>
 <translation id="5444892875087332195">סימניות</translation>
 <translation id="5457226814769348910">פתיחה של גרסת אופליין</translation>
+<translation id="5475069061743940393">מעקב אחר חבילה</translation>
 <translation id="5478327362747197944">ניתן ליצור אירועים ישירות ביומן בלחיצה על תאריך בדף אינטרנט.</translation>
 <translation id="5489208564673669003">‏הסבר על ניהול קובצי ה-cookie עבור כל האתרים זמין במאמר <ph name="BEGIN_LINK" />הגדרות קובצי cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
+<translation id="5497202150450073388">בוצע ניסיון מסירה. יתבצע ניסיון נוסף</translation>
 <translation id="5511959326926949696">יש אפשרות להפעיל הגנה מתקדמת מאוד בדפדפן. חשוב להשתמש באפשרות הזו רק אם לדעתך סומנת כיעד למתקפת סייבר מתוחכמת במיוחד.</translation>
 <translation id="5513681519188741830">לפני <ph name="TIME" /> שעות</translation>
 <translation id="5520466080178053306">מקישים על 'מנהל הסיסמאות' ואז על 'הוספה'</translation>
@@ -843,6 +858,7 @@
 <translation id="5738887413654608789">‏תקשורת Bluetooth מאפשרת לך למצוא אתרי אינטרנט רלוונטיים לפי המיקום שלך.</translation>
 <translation id="5745916533876677730">מעבר לכרטיסייה הקודמת</translation>
 <translation id="574762237186762643">אירועים</translation>
+<translation id="5748177854685749242">תאריך המסירה: <ph name="DATE" /></translation>
 <translation id="5755162682436943950">החשבון לא מחובר. תיפתח תיבת דו-שיח לכניסה לחשבון ולהפעלת הסנכרון.</translation>
 <translation id="5758631781033351321">רשימת הקריאה זמינה כאן</translation>
 <translation id="5765456154762864099">תפריט ← הגדרות ← דפדפן ברירת המחדל</translation>
@@ -897,6 +913,8 @@
 <translation id="6021332621416007159">פתיחה ב...</translation>
 <translation id="6027619584715411062">כדאי להיכנס לחשבון כדי שהסימניות, הסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך.</translation>
 <translation id="6027945736510816438">האם התכוונת לאתר <ph name="WEBSITE" />?</translation>
+<translation id="6032845897905314562">תכונה חדשה</translation>
+<translation id="6033598293589037429">החבילה מוכנה לאיסוף</translation>
 <translation id="6036215966221662377">מחיקת נתוני הגלישה</translation>
 <translation id="6036514205982097558">כל הכרטיסיות שלך בדפדפן אחד</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -944,6 +962,7 @@
 <translation id="6254066287920239840">פתיחת קישורים באפליקציה ולא בדפדפן.</translation>
 <translation id="625491139841322297">{count,plural, =1{בדיקת הכרטיסייה}one{בדיקת כל הכרטיסיות}two{בדיקת כל הכרטיסיות}other{בדיקת כל הכרטיסיות}}</translation>
 <translation id="6255097610484507482">עריכת כרטיס אשראי</translation>
+<translation id="6266039999629596120">נדרש טיפול</translation>
 <translation id="6277426346321820595">ללא הגנה</translation>
 <translation id="6284652193729350524">הצגת הצעה לתרגום <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">בוטל המעקב אחר <ph name="CHANNEL_NAME" /></translation>
@@ -1159,6 +1178,7 @@
 <translation id="7351537303876921605">מקישים על 'יצירת קישור' בתפריט ההקשר</translation>
 <translation id="7352651011704765696">משהו השתבש</translation>
 <translation id="7353432112255316844">אימות הזהות שלך</translation>
+<translation id="7367530036083223701">הווידג'ט של מנהל הסיסמאות מאפשר לגשת לסיסמאות באופן מאובטח במסך הבית.</translation>
 <translation id="7380220816562673297">‏בשלב הזה אפשר לשתף סיסמאות רק עם חברים בקבוצה המשפחתית. ניתן <ph name="BEGIN_LINK" />ליצור קבוצה משפחתית<ph name="END_LINK" /> של עד 6 אנשים ולהפיק יותר ממוצרי Google ומהמינויים לשירותי Google.</translation>
 <translation id="7383797227493018512">רשימת קריאה</translation>
 <translation id="7398893703713203428">יצירת קישור</translation>
@@ -1174,9 +1194,11 @@
 <translation id="7454057999980797137">מדינה / ארץ</translation>
 <translation id="745899714366929493">כל היום</translation>
 <translation id="7459628154744868585">ההגנה המשופרת פועלת</translation>
+<translation id="7466693328838535498">‏בתיבה לחיפוש ווידג'טים, מזינים 'Chrome'</translation>
 <translation id="746684838091935575">‏3. בוחרים באפשרות Chrome.</translation>
 <translation id="7472734401283673885">שם החברה</translation>
 <translation id="7473891865547856676">לא, תודה</translation>
+<translation id="7488874549363591659">החבילה נמסרה</translation>
 <translation id="7491131399623468277">להגדרות…</translation>
 <translation id="7492574581995589075">‏הארגון שלך השבית את האפשרות להשתמש בנתוני Chrome ולשמור אותם בחשבון Google. סימניות, סיסמאות ונתונים נוספים חדשים יישמרו רק במכשיר הזה.</translation>
 <translation id="750149195207506638">הסימניות מוסתרות</translation>
@@ -1253,6 +1275,7 @@
 <translation id="7883882164760409935">יש לך סיסמאות בשימוש חוזר.</translation>
 <translation id="7884694604461143138">חיפוש בהיסטוריה (התקבלו <ph name="COUNT" /> תוצאות)</translation>
 <translation id="7887198238286927132">‏כדי לשמור על הפרטיות שלך, מערכת Chrome לא ממלאת את השדה הזה באופן אוטומטי.</translation>
+<translation id="7889910613639381518">‏גישה פשוטה ומאובטחת דרך הווידג'ט של מנהל הסיסמאות של Google.</translation>
 <translation id="7911190106180361398">בהתאם למדיניות הארגון שלך, אין לך אפשרות לסנכרן הכול.</translation>
 <translation id="7920949005883349320">פרטיות ואבטחה</translation>
 <translation id="792357691529995513">לא נמצאו בעיות</translation>
@@ -1360,6 +1383,7 @@
 <translation id="8459333855531264009">לא מאובטח</translation>
 <translation id="8487667956631253959">מופעל</translation>
 <translation id="8487700953926739672">זמין אופליין</translation>
+<translation id="8487894141648868716">USPS</translation>
 <translation id="8488923644885757471">חלון חדש</translation>
 <translation id="8490978609246021741">שמירת השינויים</translation>
 <translation id="8491300088149538575">‏נכנסת לחשבון בתור <ph name="EMAIL" />.
@@ -1445,6 +1469,7 @@
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
 <translation id="890565330728586731">אחורה</translation>
 <translation id="8909135823018751308">שיתוף…</translation>
+<translation id="8909459547399237818">בוחרים במנהל הסיסמאות ומקישים על 'הוספת ווידג'ט'</translation>
 <translation id="8911759861431145525">מקישים על 'הוספה' ומזינים את הפרטים האישיים</translation>
 <translation id="891282356902782456">‏הסיסמה הזו שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, עליך לשמור אותה בחשבון Google שלך, <ph name="EMAIL" />.</translation>
 <translation id="891658175948553296">מדגישים טקסט באתר</translation>

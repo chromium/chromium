@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Svakodnevno mijenjanje slike pozadine</translation>
 <translation id="1644574205037202324">Povijest</translation>
 <translation id="1651925268237749928">Odabrali ste dijeljeni album. Druge osobe mogu dodavati ili mijenjati fotografije. Za pozadinu se mogu upotrebljavati fotografije koje trenutačno nisu u ovom albumu.</translation>
+<translation id="1661865805917886535">Neki podaci o računu i sustavu možda će se poslati Googleu. Te podatke upotrebljavamo za rješavanje tehničkih problema i poboljšavanje svojih usluga, u skladu s našim pravilima o privatnosti (<ph name="PRIVACYPOLICYURL" />) i uvjetima pružanja usluge (<ph name="TERMSOFSERVICEURL" />). Da biste zatražili izmjene sadržaja, posjetite pravnu pomoć (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Zaustavljeno – nema tinte</translation>
 <translation id="1664796644829245314">Pregled: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">Procesor (CPU)</translation>
 <translation id="3124039320086536031">Uređaj je povezan.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Želite li ukloniti stranicu?}=1{Želite li ukloniti stranicu {PAGE_NUMBER}?}one{Želite li ukloniti stranicu {PAGE_NUMBER}?}few{Želite li ukloniti stranicu {PAGE_NUMBER}?}other{Želite li ukloniti stranicu {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Ekskluzivno za <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilni podaci</translation>
 <translation id="3156846309055100599">Skeniranje stranice <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Otkriven je zaštitni portal</translation>

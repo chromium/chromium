@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Zmieniaj obraz tapety codziennie</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1651925268237749928">Wybrałeś(-aś) album udostępniony. Inne osoby mogą dodawać i zmieniać zdjęcia. Tapeta może pokazywać zdjęcia spoza tego albumu.</translation>
+<translation id="1661865805917886535">Niektóre informacje o koncie i systemie mogą zostać przesłane do Google. Zgodnie z naszą polityką prywatności (<ph name="PRIVACYPOLICYURL" />) i Warunkami korzystania z usługi (<ph name="TERMSOFSERVICEURL" />) używamy tych informacji do rozwiązywania problemów technicznych i ulepszania oferowanych usług. Aby poprosić o zmianę treści, wejdź na stronę pomocy prawnej (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Zatrzymano – brak tuszu</translation>
 <translation id="1664796644829245314">Wyświetl podgląd: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Wbudowana sieć VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">Procesor</translation>
 <translation id="3124039320086536031">Urządzenie jest połączone.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Usunąć stronę?}=1{Usunąć stronę {PAGE_NUMBER}?}few{Usunąć stronę {PAGE_NUMBER}?}many{Usunąć stronę {PAGE_NUMBER}?}other{Usunąć stronę {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Tylko na urządzeniu <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilna transmisja danych</translation>
 <translation id="3156846309055100599">Skanuję stronę <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Wykryto portal przechwytujący</translation>

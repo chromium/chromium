@@ -117,6 +117,7 @@ Aspetos a considerar:
 <translation id="5389212809648216794">O Google Chrome não pode utilizar a câmara porque está a ser utilizada por outra aplicação</translation>
 <translation id="5395376160638294582">Certifique-se de que pode sempre usar os dados do Chrome na sua Conta Google</translation>
 <translation id="5439191312780166229">Envia-lhe avisos sobre sites perigosos, mesmo aqueles que a Google desconhecia, ao analisar mais dados de sites do que a Proteção padrão. Pode optar por ignorar os avisos do Chrome.</translation>
+<translation id="5442013002200339429">Se ocultar "<ph name="MODULE_NAME" />", o Chrome vai deixar de acompanhar automaticamente embalagens futuras e elimina todos os dados de acompanhamento de embalagens anteriores.</translation>
 <translation id="5460571915754665838">4. Selecione o Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{O Chrome vai ajudar a acompanhar esta embalagem na página Novo separador.}other{O Chrome vai ajudar a acompanhar estas embalagens na página Novo separador.}}</translation>
 <translation id="5492504007368565877">O Gestor de Palavras-passe da Google não consegue verificar as suas palavras-passe.</translation>
@@ -153,6 +154,7 @@ Aspetos a considerar:
 
 Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">O Chrome não conseguiu verificar todas as palavras-passe. Tente mais tarde.</translation>
+<translation id="6851982868877411675">Abra as Definições do Chrome no iOS, toque em "App de navegador predefinida" e selecione o Chrome.</translation>
 <translation id="6916015246697034114">Pesquise com a voz no Chrome</translation>
 <translation id="6964931465519938134">Agora, pode utilizar o Chrome sempre que tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="6975725306479268850">Escolha o Chrome para o preenchimento automático</translation>
@@ -187,6 +189,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="7933491483529363150">Abra o separador mais recente no Chrome.</translation>
 <translation id="8022947259858476807">Utilize o Chrome por predefinição para abrir links, pesquisar a partir de widgets e preencher automaticamente palavras-passe noutras apps</translation>
 <translation id="804638182476029347">Permita que as notificações do Chrome recebam alertas de descida do preço</translation>
+<translation id="8069507567842347179">Esta embalagem já foi acompanhada no Chrome.</translation>
 <translation id="81358522153858150">O Chrome suporta agora Políticas do Utilizador para a sua conta gerida</translation>
 <translation id="8160472928944011082">Não é possível atualizar o Chrome.</translation>
 <translation id="8174679664544842874">Abre um novo separador no Chrome.</translation>

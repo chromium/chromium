@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Αναζήτηση με φωνή στο Chromium.</translation>
 <translation id="1047130070405668746">Επιλέξτε το Chromium</translation>
 <translation id="1091252999271033193">Αυτό σημαίνει ότι το Chromium θα ζητάει κάθε φορά τον ιστότοπο για κινητά.</translation>
+<translation id="1171824629317156389">Ανοίξτε τις ρυθμίσεις του Chromium σε iOS, πατήστε Προεπιλεγμένη εφαρμογή προγράμματος περιήγησης και επιλέξτε το Chromium.</translation>
 <translation id="1185134272377778587">Σχετικά με το Chromium</translation>
 <translation id="1257458525759135959">Για αποθήκευση εικόνων, πατήστε Ρυθμίσεις για να επιτρέψετε στο Chromium να προσθέτει φωτογραφίες.</translation>
 <translation id="1289216811211435351">Εναλλαγή σε Chromium</translation>
@@ -16,6 +17,7 @@
 <translation id="1591119736686995611">Ανοίγει το Πλέγμα καρτελών του Chromium.</translation>
 <translation id="1617663976202781617">Δεδομένα από τον συγχρονισμό του Chromium</translation>
 <translation id="1647558790457890304">Ρυθμίσεις Chromium</translation>
+<translation id="164952285225495380">Η παρακολούθηση αυτού του πακέτου έχει ήδη πραγματοποιηθεί στο Chromium.</translation>
 <translation id="1722370509450468186">Ο κωδικός πρόσβασής σας θα αποθηκευτεί στον Λογαριασμό σας (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Διαγρ. δεδ. Chromium</translation>
 <translation id="1791845338122684020">Ανοίγει τη σελίδα ιστορικού Chromium.</translation>
@@ -139,6 +141,7 @@
 1. Ανοίξτε τις Ρυθμίσεις.
 2. Πατήστε Προεπιλεγμένη εφαρμογή προγράμματος περιήγησης.
 3. Επιλέξτε το Chromium.</translation>
+<translation id="6197255575340902638">Εάν αποκρύψετε το στοιχείο "<ph name="MODULE_NAME" />", το Chromium δεν θα παρακολουθεί πλέον αυτόματα τα μελλοντικά σας πακέτα και θα διαγράψει όλα τα προηγούμενα δεδομένα παρακολούθησης πακέτων.</translation>
 <translation id="6247557882553405851">Διαχειριστής κωδικών πρόσβασης Google</translation>
 <translation id="6268381023930128611">Θέλετε να αποσυνδεθείτε από το Chromium;</translation>
 <translation id="6324041800010509197">Μετάβαση στο Πλέγμα καρτελών του Chromium</translation>

@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Byt bakgrundsbild varje dag</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1651925268237749928">Du har valt ett delat album. Andra personer kan lägga till eller ändra foton. Foton som för närvarande inte finns i det här albumet kan användas för bakgrunden.</translation>
+<translation id="1661865805917886535">Vissa konto- och systemuppgifter kan skickas till Google. Med dessa uppgifter kan vi åtgärda tekniska problem och förbättra våra tjänster i enlighet med vår integritetspolicy (<ph name="PRIVACYPOLICYURL" />) och våra användarvillkor (<ph name="TERMSOFSERVICEURL" />). Om du vill begära innehållsändringar besöker du den juridiska hjälpen (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Har stoppats – slut på bläck</translation>
 <translation id="1664796644829245314">Förhandsgranska <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Inbyggt VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Enheten är ansluten.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vill du ta bort sidan?}=1{Vill du ta bort sidan {PAGE_NUMBER}?}other{Vill du ta bort sidan {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Exklusivt för <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3156846309055100599">Skannar sidan <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Infångstportal har upptäckts</translation>

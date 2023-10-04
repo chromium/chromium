@@ -65,6 +65,7 @@
 <translation id="1225748608451425081">Ձեր Chromebook-ը կողպվել է խնդրի պատճառով։ Դուք կկարողանաք մուտք գործել <ph name="TIME_LEFT" />ից։</translation>
 <translation id="1226877728704622336">ոչ ակտիվ աշխատասեղան</translation>
 <translation id="1229194443904279055">Դադարեցնել տեքստի ընտրությունը</translation>
+<translation id="1233979878541157665">Ֆայլի անվան փոխարեն փորձեք որոնել «արևածագ» կամ «ծառ»։ Դուք կարող եք որոնման գոտում անջատել պատկերի միջոցով որոնումը։</translation>
 <translation id="1235458158152011030">Պահված ցանցեր</translation>
 <translation id="1239161794459865856">«<ph name="FEATURE_NAME" />» գործառույթը միացված է։</translation>
 <translation id="1240638468526743569">Հավելված</translation>
@@ -206,6 +207,7 @@
 <translation id="1775598828170459419">Ցուցադրված է <ph name="NUM_SHOWN_ITEMS" /> տարր՝ <ph name="NUM_TOTAL_ITEMS" />-ից</translation>
 <translation id="178347895271755507">Կարգավորել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի և ծանուցումների դիտումը</translation>
 <translation id="1787955149152357925">Անջատված է</translation>
+<translation id="1796561540704213354">Վեբ կայքերը՝ ներառյալ էջերը, որոնք այցելել եք, և բացված էջերը</translation>
 <translation id="1797271123677381264">Մոռացել եմ գաղտնաբառը</translation>
 <translation id="181103072419391116">Ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="1815245884418711390">Միացնել/անջատել թեժ կետը։ Թեժ կետն անջատված է։</translation>
@@ -225,6 +227,7 @@
 <translation id="1831565490995294689">Սեղմեք՝ <ph name="APP_TO_OPEN" /> հավելվածը բացելու համար։</translation>
 <translation id="1838895407229022812">Գիշերային ռեժիմն անջատված է</translation>
 <translation id="1854180393107901205">Դադարեցնել հեռարձակումը</translation>
+<translation id="1862077610023398675">Թաքցնել կառավարման տարրերը</translation>
 <translation id="1862380676329487333">Թարմացնել և դուրս գալ</translation>
 <translation id="1864454756846565995">USB-C սարք (հետևի միացք)</translation>
 <translation id="1869497990620230175">Ֆայլերի արագ մուտք</translation>
@@ -248,6 +251,7 @@
 <translation id="1962969542251276847">Կողպել էկրանը</translation>
 <translation id="1967970931040389207">Միացնել թեժ կետը</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
+<translation id="1971815855639997522">Աշխատասեղանն ու պատուհանները հեռացվել են։ Սեղմեք Control+Z ստեղները՝ գործողությունը հետարկելու համար։</translation>
 <translation id="1972950159383891558">Ողջույն, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Տեքսի մուտքագրում</translation>
 <translation id="1980808257969311265">Միանալ «<ph name="EVENT_SUMMARY" />» միջոցառմանը</translation>
@@ -304,6 +308,7 @@
 <translation id="2268130516524549846">Bluetooth-ն անջատված է</translation>
 <translation id="2268813581635650749">Դուրս գալ բոլորից</translation>
 <translation id="2269016722240250274">Ինչ-որ հավելված օգտագործում է ձեր խոսափողը</translation>
+<translation id="2276987123919776440">15 րոպե</translation>
 <translation id="2277103315734023688">Առաջ գնալ</translation>
 <translation id="2282073721614284166">Բացել հղումը ներդիրում</translation>
 <translation id="2284237890386182187">Միացված է, որևէ սարք միացած չէ</translation>
@@ -513,6 +518,7 @@
 <translation id="3153444934357957346">Դուք կարող եք առավելագույնը <ph name="MULTI_PROFILE_USER_LIMIT" /> հաշիվ ունենալ:</translation>
 <translation id="3154351730702813399">Այս սարքի ադմինիստրատորը կարող է տեսնել ձեր այցելությունների պատմությունը:</translation>
 <translation id="316086887565479535">Ձևանմուշում առկա են չաջակցվող հավելվածներ</translation>
+<translation id="3160929076476941240">2 ժ</translation>
 <translation id="3161500364292033097">Փակել աշխատասեղանն ու պատուհանները</translation>
 <translation id="316356270129335934">Համաձայն կառավարչի (<ph name="MANAGER" />) պահանջի՝ ձեր <ph name="DEVICE_TYPE" /> սարքում վերականգնվում է օպերացիոն համակարգի նախորդ տարբերակը։ Սարքը կվերակայվի, և բոլոր տվյալները կջնջվեն։</translation>
 <translation id="3171170659304083361">Ներածման մեթոդների կարգավորումներ</translation>
@@ -581,6 +587,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Փոփոխել հիշեցումը</translation>
 <translation id="3435967511775410570">Մատնահետքը ճանաչվեց</translation>
+<translation id="3437677362970530951">Խաղեր Play Խանութում կամ այլ խաղային հարթակներում</translation>
 <translation id="3439896670700055005">Վերաբեռնել ընթացիկ էջը՝ առանց հիշապահեստի բովանդակությունն օգտագործելու</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> րոպե</translation>
@@ -785,6 +792,7 @@
 <translation id="4215497585250573029">VPN կարգավորումներ</translation>
 <translation id="4217571870635786043">Ձայնային ներածում</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, տեղադրված հավելված, դադարեցված է</translation>
+<translation id="4228078597006700451">Կառավարման տարրերը կարգավորված չեն</translation>
 <translation id="4231053948789591973">Հեռարձակումն այս պահին դադարեցված է։ Ցանկացած պահի կարող եք վերսկսել կամ ավարտել էկրանի հեռարձակումը։</translation>
 <translation id="423685346499232137">Այս պահին հնարավոր չէ բովանդակություն պատճենել կամ տեղադրել</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -819,6 +827,7 @@
 <translation id="4333628967105022692">Lacros-ը չի աջակցվում, երբ մեկից ավելի օգտատերեր են մուտք գործում</translation>
 <translation id="4338109981321384717">Խոշորացույց</translation>
 <translation id="4356872429719185452">Ցույց տալ թեժ կետի մանրամասները։ Թեժ կետը միանում է։</translation>
+<translation id="4364101114148522660"><ph name="DURATION" />  Տեսագրում</translation>
 <translation id="4371348193907997655">Հեռարձակման կարգավորումներ</translation>
 <translation id="4375482231364171368">Որոնել հասցեագոտում</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /> տոկոս</translation>
@@ -928,6 +937,7 @@
 <translation id="4814539958450445987">Մուտքի էկրան</translation>
 <translation id="481455355267255546">Հաջորդիվ</translation>
 <translation id="4826588772550366629">տեսախցիկն ու խոսափողը</translation>
+<translation id="482908187605862807">Play Խանութում հասանելի հավելվածներ</translation>
 <translation id="4831034276697007977">Իսկապե՞ս ուզում եք անջատել ավտոմատ սեղմումները:</translation>
 <translation id="4849058404725798627">Ընդգծել ստեղնաշարի միջոցով ընտրված օբյեկտները</translation>
 <translation id="485592688953820832">Ոչ մի գործողություն (դադար)</translation>
@@ -979,6 +989,7 @@
 <translation id="5004607513195820459">Ցանցը կառավարվում է ադմինիստրատորի կողմից</translation>
 <translation id="5009463889040999939">Պրոֆիլը վերանվանվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="5016558321564993266">Միացնել/անջատել նշիչը։ <ph name="STATE_TEXT" /></translation>
+<translation id="5020360656995955353">Որոնեք ըստ կատեգորիաների</translation>
 <translation id="5029356738310729434">Սարքի տեսախցիկի օգտագործման թույլտվությունը միացված է</translation>
 <translation id="5030659775136592441">Ցուցադրել էջանիշների կառավարիչը</translation>
 <translation id="5030687792513154421">Ժամանակը սպառվեց</translation>
@@ -1033,6 +1044,7 @@
 <translation id="5234764350956374838">Փակել</translation>
 <translation id="523505283826916779">Հատուկ գործառույթների կարգավորումներ</translation>
 <translation id="5238719049014159442">Բացել/փակել գործարկիչը</translation>
+<translation id="5240725217819182328">Որոշակի էջերի կամ գործողությունների արագ հասանելիություն տեղադրված հավելվածներում</translation>
 <translation id="5245201184978705914">Չհաջողվեց ստեղծել տեքստային տարբերակը</translation>
 <translation id="5253783950165989294">Կապ է հաստատվել «<ph name="DEVICE_NAME" />» սարքի հետ, մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Պահված աշխատասեղաններ չկան</translation>
@@ -1251,6 +1263,7 @@
 <translation id="6095008505822982596">Խոսքի արագությունը</translation>
 <translation id="6095425951508823973">Ավելացնել միացում <ph name="PROVIDER" />-ի օգնությամբ</translation>
 <translation id="6099678161144790572">Անցած ամիս փոփոխել եք</translation>
+<translation id="6099793635444444289">Հնարավոր չէ սկսել թելադրումը, քանի որ խոսափողի ձայնն անջատված է</translation>
 <translation id="6103838137565245112">համակարգ</translation>
 <translation id="6114505516289286752">Այս լեզվով (<ph name="LANGUAGE" />) խոսքի ճանաչման ֆայլերը ներբեռնվեցին</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />։ <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1268,6 +1281,7 @@
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6166852626429024716">Որոնեք սարքում, հավելվածներում, կարգավորումներում, համացանցում…</translation>
 <translation id="6168318496333165060">Բացել «Դիագնոստիկա» հավելվածը</translation>
+<translation id="6168622430237609329">Ձեր տեղադրած հավելվածները</translation>
 <translation id="6173151025443907148">Մի քանի հաշիվների մուտքը չի աջակցվում, երբ Lacros դիտարկիչն աշխատում է։ Օգտագործեք դիտարկիչի երկրորդ պրոֆիլ Lacros-ում կամ փակեք Lacros-ը և նորից փորձեք։</translation>
 <translation id="6179832488876878285">Դուք կարող եք այստեղ ամրացնել ձեր կարևոր ֆայլերը։ Սկսելու համար բացեք «Ֆայլեր» հավելվածը։</translation>
 <translation id="6182592640011875895">Բացել աշխատասեղանը</translation>
@@ -1321,6 +1335,7 @@
 <translation id="6442259747294754014">Սարքի տեսախցիկի օգտագործման թույլտվությունն անջատված է</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> ներդիրը հեռարձակվում է «<ph name="RECEIVER_NAME" />» սարքին</translation>
 <translation id="6445915701151710649">պրոցեսոր</translation>
+<translation id="6446225358675593408">Փնտրեք ձեր պատկերները ըստ բովանդակության</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> միջոցառում</translation>
 <translation id="6449483711453944360">Լինուքսի հավելվածներն ու ինկոգնիտո պատուհանները ներկայումս չեն աջակցվում</translation>
 <translation id="6450245544201845082">«Սեղմել մկնիկի աջ կոճակը» գործողության դյուրանցումը ներկայումս անջատված է</translation>
@@ -1350,6 +1365,7 @@
 <translation id="6537924328260219877">Ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Ներբեռնումը դադարեցված է, <ph name="FILENAME" /> ֆայլը ստուգվում է</translation>
 <translation id="6542521951477560771">Հեռարձակում «<ph name="RECEIVER_NAME" />» սարքին</translation>
+<translation id="6546062506073634094">Պատկերների որոնում ըստ բովանդակության և պատկերի նախադիտման</translation>
 <translation id="6555373427270923730">Հասցեագոտում մուտքագրեք վեբ հասցեն, ապա սեղմեք <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Նոր տեղադրում</translation>
@@ -1403,6 +1419,7 @@
 <translation id="6752912906630585008">Աշխատասեղան <ph name="REMOVED_DESK" />-ը հեռացվել է և միացվել է աշխատասեղան <ph name="RECEIVE_DESK" />-ի հետ</translation>
 <translation id="6753390234084146956">ներդիրներ</translation>
 <translation id="6757237461819837179">Մեդիա բովանդակություն չի նվագարկվում</translation>
+<translation id="6760438044935091345">Խաղային վահանակ</translation>
 <translation id="6768043681523654438">տարածք</translation>
 <translation id="6777216307882431711">Լիցքավորում է միացված USB-C սարքերը</translation>
 <translation id="6781002679438061620">Աշխատասեղան 9</translation>
@@ -1416,6 +1433,7 @@
 <translation id="6802196538183166658">Բացել Արագ կարգավորումները ժամանակ ընտրելիս</translation>
 <translation id="6802687695197837794">Սա օգտագործման թույլտվություն է տրամադրում <ph name="APP1_NAME" /> և <ph name="APP2_NAME" /> հավելվածներին, ինչպես նաև բոլոր այն հավելվածներին ու կայքերին, որոնք ունեն խոսափողի և տեսախցիկի օգտագործման թույլտվություն</translation>
 <translation id="6803622936009808957">Չհաջողվեց հայելապատճենել մոնիտորները, քանի որ աջակցվող լուծաչափեր չգտնվեցին: Փոխարենը միացվել է ընդարձակված աշխատասեղանը:</translation>
+<translation id="6809556495807506746">Կառավարման տարրերը հասանելի չեն</translation>
 <translation id="6812232930908427253">Չհաջողվեց պահել աշխատասեղանը։ Չափազանց շատ պատուհաններ կամ ներդիրներ կան։</translation>
 <translation id="6818242057446442178">Մեկ բառով հետ</translation>
 <translation id="6819327813400217281">Տեսախցիկի պատկերն ամրացված է ներքևի ձախ անկյունում</translation>
@@ -1425,12 +1443,14 @@
 <translation id="6836499262298959512">Վտանգավոր ֆայլ</translation>
 <translation id="6852052252232534364">Ակտիվացնել</translation>
 <translation id="6855029042976311970">Քիչ առաջ փոփոխել եք</translation>
+<translation id="6856708615407876657">Միացնել/անջատել որոնման արդյունքների կատեգորիաները</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> վ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Մնաց 1 թվանշան}one{Մնաց # թվանշան}other{Մնաց # թվանշան}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> ֆայլի ներբեռնումը դադարեցված է</translation>
 <translation id="6874854809828346832">Ցույց տալ թեժ կետի մանրամասները։ Թեժ կետը միացված է։</translation>
 <translation id="6878400149835617132">Դյուրանցումն անջատված է</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 հավելված}one{# հավելված}other{# հավելված}}</translation>
+<translation id="6883768636838842873">Ստեղների դյուրանցումներ, սարքի օգտագործման հետ կապված խորհուրդներ և այլն</translation>
 <translation id="6884665277231944629">Վերադառնալ այսօրվա ամսաթվին</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> սարքի արդյունավետությունը կարող է նվազել։ Օգտագործեք հավաստագրված <ph name="PREFERRED_MINIMUM_POWER" />Վ կամ ավելի բարձր USB-C սնուցման ադապտեր։</translation>
 <translation id="688631446150864480">Մյուս պատուհան անցնելու համար սեղմեք վար սլաքը</translation>
@@ -1440,6 +1460,7 @@
 <translation id="6919251195245069855">Չհաջողվեց ճանաչել ձեր խելացի քարտը: Նորից փորձեք։</translation>
 <translation id="6920245099716267363">Միացնել/անջատել թեժ կետը։ Թեժ կետը միացված է, և 1 սարք միացած է դրան։</translation>
 <translation id="692135145298539227">ջնջել</translation>
+<translation id="6929081673585394903">Ցույց տալ կառավարման տարրերը</translation>
 <translation id="6931576957638141829">Պահել…</translation>
 <translation id="6942518653766415536">Տեսագրման ձևաչափի ընտրացանկ</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
@@ -1516,6 +1537,7 @@
 <translation id="7312210124139670355">Ադմինիստրատորը վերակայում է ձեր eSIM-ը։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="7313193732017069507">Ծավալել տեսախցիկը</translation>
 <translation id="7316261577130609484">Ավելացնել նոր առաջադրանք</translation>
+<translation id="7321889295239318128">Ավելին իմանալու համար սեղմեք Shift + Tab</translation>
 <translation id="7330397557116570022">Թելադրումն օգտագործելու համար անցեք տեքստային դաշտ</translation>
 <translation id="7331646370422660166">alt + ներքև սլաք</translation>
 <translation id="7340731148882810149">Ավտոմատ սեղմումների ընտրացանկ</translation>
@@ -1635,6 +1657,7 @@
 <translation id="7773536009433685931">Միացնել Wi-Fi-ը</translation>
 <translation id="7780094051999721182">դյուրանցումներ</translation>
 <translation id="7780159184141939021">Էկրանի պտտում</translation>
+<translation id="7792590255364786396">Տեսանելի է</translation>
 <translation id="7796735576426975947">Նոր ծանուցումները թաքցված են</translation>
 <translation id="7798302898096527229">Չեղարկելու համար սեղմեք Search կամ Shift:</translation>
 <translation id="780301667611848630">Ոչ</translation>
@@ -1828,6 +1851,7 @@
 <translation id="8619138598101195078">Իջեցնել ձայնը</translation>
 <translation id="8627191004499078455">Միացված է <ph name="DEVICE_NAME" /> սարքին</translation>
 <translation id="8631727435199967028">Հատուկ գործառույթների կարգավորումներ</translation>
+<translation id="8634326941504371857">Այս սարքի և ձեր Google Drive-ի ֆայլերը</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="8638637208069328956">Միացնել/անջատել խոսափողը</translation>
 <translation id="8639760480004882931">Մնացել է <ph name="PERCENTAGE" /></translation>
@@ -1903,6 +1927,7 @@
 <translation id="8940956008527784070">Մարտկոցի լիցքն սպառվում է (<ph name="PERCENTAGE" />%)</translation>
 <translation id="8949925099261528566">Միացած է, սակայն ինտերնետ կապ չկա</translation>
 <translation id="8951539504029375108">Միայն հաստատված Thunderbolt սարքերն են համատեղելի ձեր Chromebook-ի հետ</translation>
+<translation id="8964525410783593407">1 ժ</translation>
 <translation id="8973885907461690937">Անցնել ընտրացանկի պատկերակին</translation>
 <translation id="8980862970816311842">Հավելվածի պատկերակը տեղափոխել պանակ կամ պանակից դուրս՝ հավելվածների ցանցում</translation>
 <translation id="8982906748181120328">Մոտակա սարքերի հասանելիություն</translation>
@@ -1974,6 +1999,7 @@
 <translation id="951991426597076286">Մերժել</translation>
 <translation id="953431725143473984">Անջատե՞լ սարքը</translation>
 <translation id="954052413789300507">Բավարար տարածք չկա <ph name="FILENAME" /> ֆայլը ներբեռնելու համար։ Ազատեք տարածք։</translation>
+<translation id="954520015070501466">30 րոպե</translation>
 <translation id="974545358917229949">Ցուցադրվում է «<ph name="QUERY" />»-ի որոնման <ph name="RESULT_COUNT" /> արդյունք</translation>
 <translation id="981011780479609956">Առանց վերջնաժամկետի</translation>
 <translation id="98120814841227350">Անցնել փաստաթղթի վերջ</translation>

@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ເຊື່ອມຕໍ່ອຸປະກອນແລ້ວ.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ລຶບໜ້າອອກບໍ?}=1{ລຶບໜ້າ {PAGE_NUMBER} ອອກບໍ?}other{ລຶບໜ້າ {PAGE_NUMBER} ອອກບໍ?}}</translation>
+<translation id="3146655726035122603">ພິເສດສຳລັບ <ph name="PRODUCT_NAME" /> ໂດຍສະເພາະ</translation>
 <translation id="315116470104423982">ຂໍ້​ມູນ​ມື​ຖື</translation>
 <translation id="3156846309055100599">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">ກວດພົບຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>

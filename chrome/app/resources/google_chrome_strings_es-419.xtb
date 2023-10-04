@@ -157,6 +157,7 @@
 <translation id="3582972582564653026">Sincroniza y personaliza Chrome en todos tus dispositivos</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{El administrador necesita que reinicies Chrome para aplicar una actualización}=1{El administrador necesita que reinicies Chrome para aplicar una actualización. No se volverá a abrir la ventana de incógnito.}other{El administrador necesita que reinicies Chrome para aplicar una actualización. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="3622797965165704966">Ahora es más sencillo utilizar Chrome con la cuenta de Google y en computadoras compartidas.</translation>
+<translation id="3635073343384702370">Chrome puede revisar las contraseñas cuando las guardas</translation>
 <translation id="3673813398384385993">Chrome detectó que "<ph name="EXTENSION_NAME" />" contiene software malicioso.</translation>
 <translation id="3703994572283698466">ChromeOS funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional, como <ph name="BEGIN_LINK_LINUX_OSS" />el entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versión de ChromeOS Flex</translation>
@@ -208,6 +209,7 @@
 <translation id="4571503333518166079">Ir a la configuración de notificaciones de Chrome</translation>
 <translation id="459622048091363950">Una vez que Chrome tenga acceso, los sitios web podrán solicitarte acceso.</translation>
 <translation id="4600710005438004015">Chrome no se pudo actualizar a la última versión, por lo que te estás perdiendo las nuevas funciones y correcciones de seguridad.</translation>
+<translation id="4624065194742029982">Incógnito de Chrome</translation>
 <translation id="4627412468266359539">Opcional: Para ayudar a mejorar las funciones y el rendimiento de ChromeOS Flex, envía automáticamente datos de uso y de diagnóstico a Google.</translation>
 <translation id="4633000520311261472">Para que Chrome sea más seguro, inhabilitamos algunas extensiones que no figuran en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> y que posiblemente se hayan agregado sin tu conocimiento.</translation>
 <translation id="4680828127924988555">Cancelar la instalación</translation>
@@ -217,6 +219,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (tráfico mDNS entrante)</translation>
 <translation id="4771048833395599659">Chrome bloqueó este archivo porque podría ser peligroso.</translation>
 <translation id="479167709087336770">Se usará el mismo corrector ortográfico que se emplea en la Búsqueda de Google. El texto que escribes en el navegador se envía a Google. Puedes modificar este comportamiento en la configuración en cualquier momento.</translation>
+<translation id="4793679854893018356">Obtén información acerca de cómo Chrome te protege</translation>
 <translation id="4828579605166583682">Google Chrome está intentando reemplazar las contraseñas existentes. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="4842397268809523050">ChromeOS Flex no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
 <translation id="4873783916118289636">Revisa los controles de seguridad y privacidad más importantes en Chrome</translation>
@@ -263,6 +266,7 @@
 <translation id="5756509061973259733">Ya existe un perfil de Chrome con esta cuenta en este dispositivo.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" />: Google Chrome Canary</translation>
 <translation id="5804318322022881572">No se pudo iniciar Chrome. Vuelve a intentarlo.</translation>
+<translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome te advierte<ph name="END_LINK" /> sobre descargas y sitios no seguros</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" />: Acceso a la red</translation>
 <translation id="5924017743176219022">Conectando a Internet...</translation>
@@ -272,6 +276,7 @@
 <translation id="5941830788786076944">Haga de Google Chrome su navegador predeterminado</translation>
 <translation id="6003112304606738118">Descargando… Horas restantes: <ph name="HOURS" /></translation>
 <translation id="6010556343189461180">Para recibir las próximas actualizaciones de Google Chrome, necesitarás macOS 10.15 o versiones posteriores. Esta computadora usa macOS 10.14.</translation>
+<translation id="6014316319780893079">Con las <ph name="BEGIN_LINK" />herramientas de Chrome<ph name="END_LINK" />, puedes navegar de forma segura y mantener el control</translation>
 <translation id="6022659036123304283">Personaliza Chrome a tu medida</translation>
 <translation id="6025087594896450715">Google Chrome se reiniciará en <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Cerrar</translation>
@@ -361,6 +366,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7651907282515937834">Logotipo de Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome bloqueó esta descarga porque desactivaste la Navegación segura y no se puede verificar el archivo</translation>
 <translation id="7655455401911432608">Tu historial de navegación, un registro de los sitios que visitaste con Chrome en este dispositivo.</translation>
+<translation id="769538538642757151">Chrome te avisará si hay algo que debas revisar</translation>
 <translation id="7747138024166251722">El instalador no pudo crear un directorio temporal. Verifique si hay espacio disponible en el disco y cuenta con permiso para instalar software.</translation>
 <translation id="7761834446675418963">Haz clic en tu nombre para abrir Chrome y empezar a navegar.</translation>
 <translation id="7777080907402804672">Si una imagen no tiene una descripción útil, Chrome intentará proporcionarte una. Para crear descripciones, se envían las imágenes a Google. Puedes desactivar esta opción en la configuración en cualquier momento.</translation>
@@ -389,6 +395,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8255190535488645436">Google Chrome está usando tu cámara y tu micrófono.</translation>
+<translation id="8267953129876836456">Chrome encontró algunas recomendaciones de seguridad para que revises</translation>
 <translation id="8270775718612349140">Certificados administrados por Chrome</translation>
 <translation id="8286862437124483331">Google Chrome está intentando mostrar contraseñas. Para permitirlo, ingresa tu contraseña de Windows.</translation>
 <translation id="8290100596633877290">¡Vaya! Se ha producido un bloqueo en Google Chrome. ¿Quieres reiniciar el navegador ahora?</translation>
@@ -403,6 +410,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8403038600646341038">Logotipo de Chrome en la pantalla de una computadora.</translation>
 <translation id="8416347857511542594">Más información sobre la personalización de anuncios en Chrome</translation>
 <translation id="8418845734693287262">ChromeOS no pudo sincronizar los datos porque la información de acceso de la cuenta está desactualizada.</translation>
+<translation id="842386925677997438">Herramientas de seguridad de Chrome</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí a tu teléfono Android, accede a Chrome en ambos dispositivos.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> administra tu cuenta. El administrador puede ver y editar este perfil del navegador de Chrome y sus datos, como los favoritos, el historial y las contraseñas.</translation>
 <translation id="8496177819998570653">Administrador de contraseñas de Google</translation>
@@ -443,6 +451,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9195993889682885387">Chrome puede estimar tus intereses en función de tu historial de navegación de las últimas semanas. Esta información permanece en tu dispositivo.</translation>
 <translation id="919706545465235479">Actualiza Chrome para iniciar la sincronización</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
+<translation id="92460355979482493">Cuando está activado, Chrome precarga páginas, lo que agiliza la navegación y las búsquedas.</translation>
 <translation id="93760716455950538">Reiniciar ChromeOS Flex</translation>
 <translation id="940313311831216333">A fin de ver tu contenido de Chrome en todos tus dispositivos, accede a tu cuenta y activa la sincronización.</translation>
 <translation id="943390475793766444">Chrome recomienda analizar el archivo porque puede ser peligroso.</translation>

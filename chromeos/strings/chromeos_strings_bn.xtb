@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">ওয়ালপেপারের ছবি প্রতিদিন পরিবর্তন করুন</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1651925268237749928">আপনি শেয়ার করা অ্যালবাম বেছে নিয়েছেন। অন্য ব্যক্তি ফটো যোগ বা পরিবর্তন করতে পারবেন। আপনার ওয়ালপেপারে এমন ফটো ব্যবহার করা হতে পারে যা বর্তমানে এই অ্যালবামে নেই।</translation>
+<translation id="1661865805917886535">অ্যাকাউন্ট ও সিস্টেমের কিছু তথ্য Google-এর কাছে পাঠানো হতে পারে। আমরা প্রযুক্তিগত সমস্যা সমাধান করতে ও আমাদের পরিষেবা উন্নত করতে এই তথ্য আমাদের গোপনীয়তা নীতি (<ph name="PRIVACYPOLICYURL" />) এবং পরিষেবার শর্তাবলী (<ph name="TERMSOFSERVICEURL" />) অনুযায়ী ব্যবহার করি। কন্টেন্ট পরিবর্তনের অনুরোধ করতে, আইনি সহায়তা (<ph name="LEGALHELPPAGEURL" />)-এ যান।</translation>
 <translation id="1662989795263954667">বন্ধ হয়ে গেছে - প্রিন্টারে কালি ফুরিয়ে গেছে</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />-এর প্রিভিউ দেখুন</translation>
 <translation id="1668469839109562275">বিল্ট-ইন ভিপিএন</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">সিপিইউ</translation>
 <translation id="3124039320086536031">ডিভাইস কানেক্ট করা আছে।</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{পৃষ্ঠাটি সরাতে চান?}=1{{PAGE_NUMBER} নম্বর পৃষ্ঠাটি সরাতে চান?}one{{PAGE_NUMBER} নম্বর পৃষ্ঠাটি সরাতে চান?}other{{PAGE_NUMBER} নম্বর পৃষ্ঠাটি সরাতে চান?}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" />-এর জন্য এক্সক্লুসিভ</translation>
 <translation id="315116470104423982">মোবাইল ডেটা</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> নম্বর পৃষ্ঠা স্ক্যান করা হচ্ছে...</translation>
 <translation id="315738237743207937">অন্তরীণ পোর্টাল শনাক্ত করা হয়েছে</translation>

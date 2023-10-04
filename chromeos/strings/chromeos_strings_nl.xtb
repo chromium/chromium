@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Achtergrondafbeelding dagelijks wijzigen</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1651925268237749928">Je hebt een gedeeld album geselecteerd. Andere mensen kunnen foto's toevoegen of wijzigen. Je achtergrond kan foto's gebruiken die momenteel niet in dit album staan.</translation>
+<translation id="1661865805917886535">Bepaalde account- en systeemgegevens worden misschien naar Google gestuurd. We gebruiken deze gegevens om technische problemen op te lossen en onze services te verbeteren, in overeenstemming met het Privacybeleid (<ph name="PRIVACYPOLICYURL" />) en de Servicevoorwaarden (<ph name="TERMSOFSERVICEURL" />). Als je contentwijzigingen wilt aanvragen, ga je naar de juridische Help-pagina (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Gestopt: geen inkt meer</translation>
 <translation id="1664796644829245314">Voorbeeld van <ph name="PREVIEW_OBJECT" /> laten zien</translation>
 <translation id="1668469839109562275">Ingebouwde VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Apparaat is verbonden.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pagina verwijderen?}=1{Pagina {PAGE_NUMBER} verwijderen?}other{Pagina {PAGE_NUMBER} verwijderen?}}</translation>
+<translation id="3146655726035122603">Exclusief voor <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobiele data</translation>
 <translation id="3156846309055100599">Pagina <ph name="PAGE_NUMBER" /> scannen…</translation>
 <translation id="315738237743207937">Captive portal waargenomen</translation>

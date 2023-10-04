@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
+<translation id="1046370274005147998">Effectuer une recherche vocale dans Chromium.</translation>
 <translation id="1047130070405668746">Sélectionnez Chromium</translation>
 <translation id="1091252999271033193">Cela signifie que Chromium demandera toujours la version mobile du site.</translation>
+<translation id="1171824629317156389">Ouvrez les paramètres Chromium dans iOS, puis touchez « Navigateur par défaut » et sélectionnez Chromium.</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1257458525759135959">Pour enregistrer des images, touchez Paramètres et autorisez Chromium à les ajouter à vos photos</translation>
 <translation id="1289216811211435351">Passer à Chromium</translation>
@@ -42,6 +44,7 @@
 <translation id="2574528844022712255">Voir les favoris Chromium</translation>
 <translation id="2590893390871230428">Synchroniser vos données Chromium</translation>
 <translation id="2618596336309823556">Dans les paramètres de l'appareil, ouvrir « <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> » et sélectionner « Chromium »</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium vous aidera à suivre ce colis sur la page Nouvel onglet.}one{Chromium vous aidera à suivre ce colis sur la page Nouvel onglet.}other{Chromium vous aidera à suivre ces colis sur la page Nouvel onglet.}}</translation>
 <translation id="2650312721222849884">Pour voir vos onglets partout où vous utilisez Chromium, activez la synchronisation</translation>
 <translation id="2684230048001240293">Définissez Chromium comme navigateur par défaut pour synchroniser vos onglets, vos mots de passe et vos renseignements de paiement sur tous vos appareils</translation>
 <translation id="2730884209570016437">Chromium ne peut pas utiliser votre appareil photo, car il est utilisé par une autre application</translation>
@@ -51,6 +54,7 @@
 <translation id="2918709798697875261">Votre organisation vous demande de rester déconnecté de Chromium.</translation>
 <translation id="2942241131342758843">Utilisez Chromium par défaut pour ouvrir des liens, faire des recherches dans des widgets et entrer automatiquement des mots de passe dans d'autres applications</translation>
 <translation id="2977470724722393594">Chromium est à jour</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium peut vous aider à suivre ce colis sur la page Nouvel onglet.}one{Chromium peut vous aider à suivre ce colis sur la page Nouvel onglet.}other{Chromium peut vous aider à suivre ces colis sur la page Nouvel onglet.}}</translation>
 <translation id="3102849287235003384">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Effectuer une recherche vocale dans Chromium</translation>
 <translation id="3228349498066165585">Certaines de vos données Chromium n'ont pas encore été enregistrées dans votre compte Google.
@@ -111,6 +115,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 <translation id="5521125884468363740">Pour voir vos onglets partout où vous utilisez Chromium, connectez-vous et activez la synchronisation</translation>
 <translation id="5522297504975449419">Certaines fonctionnalités de Chromium ne seront plus offertes.</translation>
 <translation id="5571094606370987472">Ouvre les onglets récents de Chromium.</translation>
+<translation id="5623083843656850677">Verrouillez vos onglets de Navigation privée lorsque vous quittez Chromium ou passez à une autre application.</translation>
 <translation id="5688047395118852662">Cette carte vous montre des suggestions sur la façon de tirer le meilleur parti de Chromium.</translation>
 <translation id="5700709190537129682">Chromium ne peut pas vérifier vos mots de passe</translation>
 <translation id="5777187867430702742">Page Chromium</translation>

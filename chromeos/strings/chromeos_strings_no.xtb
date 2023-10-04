@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Endre bakgrunnsbilde daglig</translation>
 <translation id="1644574205037202324">Logg</translation>
 <translation id="1651925268237749928">Du har valgt et delt album. Andre kan legge til eller endre bilder. Bakgrunnen din kan bruke bilder som ikke er i dette albumet nå.</translation>
+<translation id="1661865805917886535">Noe konto- og systeminformasjon kan bli sendt til Google. Vi bruker denne informasjonen til å løse tekniske problemer og forbedre tjenestene våre, i henhold til personvernreglene (<ph name="PRIVACYPOLICYURL" />) og vilkårene for bruk (<ph name="TERMSOFSERVICEURL" />). For å be om innholdsendringer, gå til juridisk hjelp (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Stoppet – tom for blekk</translation>
 <translation id="1664796644829245314">Forhåndsvis <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Innebygd VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">Prosessor</translation>
 <translation id="3124039320086536031">Enheten er tilkoblet.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vil du fjerne siden?}=1{Vil du fjerne side {PAGE_NUMBER}?}other{Vil du fjerne side {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Kun på <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3156846309055100599">Skanner side <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Oppdaget en obligatorisk side</translation>

@@ -22,6 +22,7 @@
 <translation id="1478370723027452770">Få hjelp med Chrome for testing</translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
 <translation id="1553461853655228091">Chromium trenger tilgang til kameraet for å lage et 3D-kart av omgivelsene</translation>
+<translation id="1574377791422810894">Sikkerhetsverktøyene i Chromium</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering}=1{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="1625909126243026060">Gjennomgå viktige personvern- og sikkerhetskontroller i Chromium</translation>
 <translation id="1632539827495546968">Hvis du vil bruke denne kontoen kun én gang, kan du bruke <ph name="GUEST_LINK_BEGIN" />gjestemodus<ph name="GUEST_LINK_END" /> i Chromium-nettleseren. Hvis du vil legge til en konto for noen andre, kan du <ph name="LINK_BEGIN" />legge til en ny person<ph name="LINK_END" /> på <ph name="DEVICE_TYPE" />.
@@ -59,6 +60,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2185166961232948079">Chromium – nettverkspålogging – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Hvis du deler en datamaskin med andre, kan venner og familie surfe hver for seg og konfigurere Chromium akkurat slik de vil.</translation>
 <translation id="2313870531055795960">Kontrollerer nettadresser opp mot en liste i Chromium over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chromium også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
+<translation id="2329088755516916767">Når dette er på, forhåndslaster Chromium sider, slik at det går raskere å surfe og søke.</translation>
 <translation id="2343156876103232566">For å sende numre herfra til Android-telefonen din, logg på Chromium på begge enhetene.</translation>
 <translation id="2347108572062610441">Denne utvidelsen har endret hvilken side som vises når du starter Chromium.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
@@ -66,6 +68,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2396765026452590966">Utvidelsen «<ph name="EXTENSION_NAME" />» har endret hvilken side som vises når du starter Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID-enhet ble brukt av en eller flere Chromium-utvidelser}=1{1 HID-enhet brukes av en eller flere Chromium-utvidelser}other{# HID-enheter brukes av en eller flere Chromium-utvidelser}}</translation>
 <translation id="2401032172288869980">Chromium trenger kamera- og mikrofontillatelse for dette nettstedet</translation>
+<translation id="2440750600860946460">Med <ph name="BEGIN_LINK" />verktøy fra Chromium<ph name="END_LINK" /> kan du surfe trygt og ha kontroll</translation>
 <translation id="2451727308784734061">Bruk snarveien for å åpne Passordlagring raskt. Du kan flytte snarveien til startskjermen eller appoversikten på datamaskinen.</translation>
 <translation id="2478295928299953161">Chromium lukkes snart</translation>
 <translation id="2483889755041906834">I Chromium</translation>
@@ -133,6 +136,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="3713809861844741608">Åpne linken i en ny fane i Chromium</translation>
 <translation id="378917192836375108">Med Chromium kan du klikke på et telefonnummer på nettet og ringe til det med Skype.</translation>
 <translation id="3790262771324122253">Finn ut hvorfor Chromium blokkerer enkelte nedlastinger</translation>
+<translation id="379589255253486813">Chromium gir deg beskjed hvis noe må gjennomgås</translation>
 <translation id="3802055581630249637">Chromium forhåndslaster sider du sannsynligvis kommer til å besøke, slik at de lastes inn raskere når du faktisk besøker dem</translation>
 <translation id="3830894615770080216">ChromiumOS-systemet</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
@@ -146,6 +150,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="391789666908693569">Kontoen din administreres av <ph name="MANAGER_NAME" />. Administratoren kan se og redigere denne Chromium-nettleserprofilen og tilhørende data, som bokmerker, logg og passord.</translation>
 <translation id="3945058413678539331">Chromium prøver å kopiere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="3962623956404948996">Chromium anbefaler å skanne denne filen ettersom den kan være farlig</translation>
+<translation id="3962647064319009959">Finn ut hvordan Chromium holder deg trygg</translation>
 <translation id="3975724895399328945">Om &amp;Google Chrome for testing</translation>
 <translation id="3997429360543082038">Om ChromiumOS</translation>
 <translation id="4019629340646866719">ChromiumOS er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />, i likhet med <ph name="BEGIN_LINK_LINUX_OSS" />Linux-utviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -153,6 +158,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="4050175100176540509">Viktige sikkerhetsforbedringer og nye funksjoner er tilgjengelige i den nyeste versjonen.</translation>
 <translation id="4055805654398742145">P&amp;assordlagring</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Organisasjonen din lukker Chromium-nettleseren automatisk når den ikke har vært i bruk på ett minutt. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}other{Organisasjonen din lukker Chromium-nettleseren automatisk når den ikke har vært i bruk på # minutter. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}}</translation>
+<translation id="4118474109249235144">Chromium Inkognito</translation>
 <translation id="4148957013307229264">Installerer …</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – nettverkspålogging – Chromium</translation>
 <translation id="421369550622382712">Oppdag flotte apper, spill, utvidelser og temaer for Chromium.</translation>
@@ -200,6 +206,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> er allerede logget på denne Chromium-profilen. Dette medfører at det blir opprettet en ny Chromium-profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">For å bruke endringene dine må du starte Chromium på nytt</translation>
 <translation id="5296845517486664001">Når prøveprosjekter er påslått, og hvis Chromium har plassert deg tilfeldig i et aktivt prøveprosjekt, påvirker nettleserloggen din annonsene du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chromium interessene dine på rullerende basis hver måned.</translation>
+<translation id="5352264705793813212">Chromium har noen sikkerhetsanbefalinger til deg</translation>
 <translation id="5358375970380395591">Du logger deg på med en administrert konto og gir tilhørende administratorer kontroll over Chromium-profilen din. Chromium-dataene dine, slik som apper, bokmerker, loggen, passord og andre innstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse dataene via oversikten for Google-kontoer, men du kan ikke knytte disse dataene til en annen konto. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Oppdaterer Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Tillat Chromium-pålogging</translation>
@@ -368,6 +375,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8213374284266571500">Chromium har blokkert denne filen fordi denne filtypen er farlig</translation>
 <translation id="8248265253516264921">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chromium å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google. Du kan slå av dette i innstillingene når som helst.</translation>
 <translation id="8266560134891435528">Chromium kan ikke sjekke passordene dine, siden du ikke er logget på</translation>
+<translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium advarer deg<ph name="END_LINK" /> om utrygge nettsteder og nedlastinger</translation>
 <translation id="8290862415967981663">Denne filen kan være farlig, så Chromium har blokkert den.</translation>
 <translation id="8318772038038596122">Organisasjonen din lukker Chromium når den ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8325404639443959713">Gjør mer med Chromium</translation>
@@ -382,6 +390,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8458614432758743027">Chromium krever Windows 10 eller nyere.</translation>
 <translation id="8463672209299734063">Valgfritt: Bidra til å gjøre funksjonene og ytelsen til ChromiumOS bedre ved å sende diagnostikk og bruksdata automatisk til Google.</translation>
 <translation id="8493179195440786826">Chromium er utdatert</translation>
+<translation id="8522801943730206384">Chromium kan sjekke passordene dine når du lagrer dem</translation>
 <translation id="8550334526674375523">Denne jobbprofilen er helt separat fra den personlige profilen din.</translation>
 <translation id="8568283329061645092">Chromium kan sjekke passordene dine når du logger på med Google-kontoen din</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>

@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
+<translation id="1213425325105380833">აღადგინეთ ვებ-აპები, რომლებიც ახლახან გამოიყენეთ ამ ანგარიშთან დაკავშირებულ მოწყობილობებზე.</translation>
+<translation id="2065911435109240297">აღადგინეთ თქვენი ვებ-აპები</translation>
+<translation id="2111649875343992405">შეამოწმეთ აღსადგენი ვებ-აპები</translation>
 <translation id="2139186145475833000">მთავარ ეკრანზე დამატება</translation>
+<translation id="2172982519592313442">ვებ-აპების შემოწმება</translation>
 <translation id="2478076885740497414">დააინსტალირეთ პროგრამა</translation>
 <translation id="3789841737615482174">ინსტალაცია</translation>
 <translation id="3910402514791813257">ინსტალაცია ვერ მოხერხდა</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">ეკრანის ანაბეჭდი. შეეხეთ დასახურად.</translation>
 <translation id="6990079615885386641">აპის Google Play Store-იდან მიღება: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">ჯერ კიდევ მიმდინარეობს წინა საიტის დამატება</translation>
+<translation id="7672888405515738928">აირჩიეთ, რომელი ვებ-აპების აღდგენა გსურთ ამ მოწყობილობაზე. აპები აქ ნაჩვენებია Chrome-ში თქვენი ისტორიის საფუძველზე.</translation>
+<translation id="8163051092261298861">ვებ-აპების აღდგენა</translation>
 <translation id="962979164594783469">ამ აპის ინსტალაცია</translation>
 </translationbundle>

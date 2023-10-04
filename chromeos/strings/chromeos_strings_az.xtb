@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Hər gün divar kağızı şəklini dəyişdirin</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="1651925268237749928">Paylaşılan albom seçmisiniz. Digər şəxslər foto əlavə edə və ya dəyişə bilər. Divar kağızında bu albomda olmayan fotolardan istifadə edilmiş ola bilər.</translation>
+<translation id="1661865805917886535">Bəzi hesab və sistem məlumatları Google-a göndərilə bilər. Texniki problemləri həll etmək və xidmətləri təkmilləşdirmək üçün bu məlumatı Məxfilik Siyasətimizə (<ph name="PRIVACYPOLICYURL" />) və Xidmət Şərtlərinə (<ph name="TERMSOFSERVICEURL" />) əsasən istifadə edirik. Kontent dəyişikliyi sorğusu göndərmək üçün Hüquqi Kömək (<ph name="LEGALHELPPAGEURL" />) bölməsinə keçin.</translation>
 <translation id="1662989795263954667">Dayanıb - Mürəkkəb yoxdur</translation>
 <translation id="1664796644829245314">Önizləyin: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Daxili VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Cihaz qoşulub.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Səhifə silinsin?}=1{{PAGE_NUMBER} saylı səhifə silinsin?}other{{PAGE_NUMBER} saylı səhifə silinsin?}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> üçün eksklüziv</translation>
 <translation id="315116470104423982">Mobil data</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> saylı səhifə skanlanır...</translation>
 <translation id="315738237743207937">Avtorizasiya portalı aşkarlanıb</translation>

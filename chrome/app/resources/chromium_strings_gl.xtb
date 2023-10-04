@@ -24,6 +24,7 @@
 <translation id="1478370723027452770">Recibir axuda con Chrome for Testing</translation>
 <translation id="1524282610922162960">Compartir unha pestana de Chromium</translation>
 <translation id="1553461853655228091">Chromium necesita permiso para acceder á cámara co fin de crear un mapa 3D do que te rodea</translation>
+<translation id="1574377791422810894">Ferramentas de seguranza de Chromium</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{O teu administrador require que reinicies Chromium para aplicar unha actualización}=1{O teu administrador require que reinicies Chromium para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}other{O teu administrador require que reinicies Chromium para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="1625909126243026060">Revisa os controis clave de privacidade e seguranza en Chromium</translation>
 <translation id="1632539827495546968">Se queres usar esta conta unha soa vez, podes utilizar o <ph name="GUEST_LINK_BEGIN" />modo de convidado<ph name="GUEST_LINK_END" /> no navegador Chromium. Se queres engadir unha conta para outra persoa, <ph name="LINK_BEGIN" />engade unha persoa nova<ph name="LINK_END" /> ao teu dispositivo (<ph name="DEVICE_TYPE" />).
@@ -61,6 +62,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="2185166961232948079">Chromium (inicio de sesión de rede, <ph name="PAGE_TITLE" />)</translation>
 <translation id="2241627712206172106">Se compartes un ordenador, os teus amigos e familiares poderán navegar por separado e configurar Chromium como prefiran.</translation>
 <translation id="2313870531055795960">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chromium. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chromium tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
+<translation id="2329088755516916767">Cando está activada a opción, Chromium precarga as páxinas para que navegar e facer buscas sexa máis rápido.</translation>
 <translation id="2343156876103232566">Para enviar un número desde aquí ao teu teléfono Android, inicia sesión en Chromium nos dous dispositivos.</translation>
 <translation id="2347108572062610441">Esta extensión cambiou a páxina que se mostra ao iniciar Chromium.</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -68,6 +70,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="2396765026452590966">A extensión "<ph name="EXTENSION_NAME" />" cambiou a páxina que se mostra ao iniciar Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo de interface humana}=1{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo de interface humana}other{Unha ou varias extensións de Chromium estaban accedendo a # dispositivos de interface humana}}</translation>
 <translation id="2401032172288869980">Chromium necesita permiso de acceso á cámara e ao micrófono para este sitio</translation>
+<translation id="2440750600860946460">Coas <ph name="BEGIN_LINK" />ferramentas de Chromium<ph name="END_LINK" />, podes navegar de maneira segura e manter o control</translation>
 <translation id="2451727308784734061">Usa o atallo para acceder rapidamente ao xestor de contrasinais. Podes mover o atallo ao Menú de aplicacións ou á pantalla de inicio do ordenador.</translation>
 <translation id="2478295928299953161">Chromium pecharase en breve</translation>
 <translation id="2483889755041906834">En Chromium</translation>
@@ -135,6 +138,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="3713809861844741608">Abrir ligazón nunha nova &amp;pestana de Chromium</translation>
 <translation id="378917192836375108">Chromium permíteche facer clic nun número de teléfono da web e chamar mediante Skype.</translation>
 <translation id="3790262771324122253">Descubre por que Chromium bloquea algunhas descargas</translation>
+<translation id="379589255253486813">Chromium informarate se atopa algo que necesites revisar</translation>
 <translation id="3802055581630249637">Chromium precargará as páxinas que é probable que visites para que carguen máis rapidamente cando accedas a elas</translation>
 <translation id="3830894615770080216">Sistema Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" />: Chromium</translation>
@@ -148,6 +152,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="391789666908693569"><ph name="MANAGER_NAME" /> xestiona a túa conta. O teu administrador pode consultar e editar este perfil do navegador Chromium e os seus datos (por exemplo, os marcadores, o historial ou os contrasinais).</translation>
 <translation id="3945058413678539331">Chromium está tentando copiar os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="3962623956404948996">Chromium recomenda analizar este ficheiro porque pode ser perigoso</translation>
+<translation id="3962647064319009959">Descubre como te protexe Chromium</translation>
 <translation id="3975724895399328945">Sobre &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Acerca de Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -155,6 +160,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="4050175100176540509">A última versión conta con melloras de seguranza importantes e novas funcións.</translation>
 <translation id="4055805654398742145">X&amp;estor de contrasinais</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{A túa organización pechará Chromium automaticamente cando leve 1 minuto sen usarse. Os datos de navegación (entre os que se poderían incluír o historial, os datos da función de autocompletar e as descargas) eliminaranse.}other{A túa organización pechará Chromium automaticamente cando leve # minuto sen usarse. Os datos de navegación (entre os que se poderían incluír o historial, os datos da función de autocompletar e as descargas) eliminaranse.}}</translation>
+<translation id="4118474109249235144">Modo de incógnito de Chromium</translation>
 <translation id="4148957013307229264">Instalando...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> (Inicio de sesión, Chromium)</translation>
 <translation id="421369550622382712">Descubre aplicacións, xogos, extensións e temas fantásticos para Chromium.</translation>
@@ -202,6 +208,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> xa ten a sesión iniciada neste perfil de Chromium. Con esta acción crearase un novo perfil de Chromium para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Para aplicar os cambios, reinicia Chromium</translation>
 <translation id="5296845517486664001">Cando as probas están activas e Chromium te inclúe de forma aleatoria nunha delas, o teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chromium elimina os teus intereses cada mes.</translation>
+<translation id="5352264705793813212">Chromium atopou algunhas recomendacións de seguranza para que as revises</translation>
 <translation id="5358375970380395591">Estás iniciando sesión cunha conta xestionada e concedendo control ao seu administrador sobre o teu perfil de Chromium. Os teus datos de Chromium, como as túas aplicacións, marcadores, historial, contrasinais e outras configuracións ligaranse permanentemente a <ph name="USER_NAME" />. Poderás eliminar estes datos a través do Panel de control das contas de Google, pero non poderás asociar estes datos a outra conta. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Actualizando Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Permitir inicio de sesión en Chromium</translation>
@@ -370,6 +377,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8213374284266571500">Chromium bloqueou este ficheiro porque os elementos deste tipo son perigosos</translation>
 <translation id="8248265253516264921">Se unha imaxe non ten unha descrición útil, Chromium tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google. Podes desactivar esta función na configuración cando queiras.</translation>
 <translation id="8266560134891435528">Chromium non puido comprobar os teus contrasinais porque non iniciaches sesión</translation>
+<translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium avísate<ph name="END_LINK" /> sobre descargas e sitios pouco seguros</translation>
 <translation id="8290862415967981663">Este ficheiro pode ser perigoso, así que Chromium bloqueouno.</translation>
 <translation id="8318772038038596122">A túa organización pecha Chromium cando non se usa durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8325404639443959713">Tira máis proveito de Chromium</translation>
@@ -384,6 +392,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8458614432758743027">Para usar Chromium, precísase Windows 10 ou unha versión posterior.</translation>
 <translation id="8463672209299734063">Opcional: Axuda a mellorar as funcións e o rendemento de Chromium OS enviando automaticamente datos de uso e diagnóstico a Google.</translation>
 <translation id="8493179195440786826">Chromium está desactualizado</translation>
+<translation id="8522801943730206384">Chromium pode comprobar os teus contrasinais cando os gardes</translation>
 <translation id="8550334526674375523">Este perfil de traballo é totalmente independente do teu perfil persoal.</translation>
 <translation id="8568283329061645092">Chromium pode comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" />, os autores de Chromium. Reservados todos os dereitos.</translation>

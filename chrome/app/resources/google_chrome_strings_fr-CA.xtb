@@ -14,6 +14,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1149651794389918149">Connectez-vous à Chrome. Si vous ne souhaitez vous connecter qu'une seule fois à un compte, vous pouvez <ph name="GUEST_LINK_BEGIN" />utiliser l'appareil en tant qu'invité<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">À propos de Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Ouvrir dans Chrome</translation>
+<translation id="1194807384646768652">Chrome a bloqué ce téléchargement, car le type de fichier n'est pas souvent téléchargé et pourrait être dangereux</translation>
 <translation id="1203500561924088507">Merci pour l'installation. Vous devez redémarrer votre navigateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Relancer &amp;Chrome pour le mettre à jour</translation>
 <translation id="1302523850133262269">Veuillez patienter pendant que Chrome installe les dernières mises à jour système.</translation>
@@ -132,10 +133,12 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3080151273017101988">Continuer l'exécution des applications en arrière-plan après la fermeture de Google Chrome</translation>
 <translation id="3089968997497233615">Une nouvelle version de Google Chrome encore plus sûre est maintenant offerte.</translation>
 <translation id="3100998948628680988">Nommer votre profil Chrome</translation>
+<translation id="3112458742631356345">Chrome a bloqué ce téléchargement, car le fichier n'est pas souvent téléchargé et pourrait être dangereux</translation>
 <translation id="3114643501466072395">Pour vérifier si vos autres mots de passe sont en sécurité contre les violations de données et d'autres risques de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Vos modifications seront appliquées au prochain redémarrage de Google Chrome.</translation>
 <translation id="3149510190863420837">Applications Chrome</translation>
 <translation id="3169523567916669830">Pendant les essais, vous pouvez voir et retirer les sujets d'intérêt que les sites utilisent pour vous montrer des annonces. Chrome estime vos centres d'intérêt en fonction de votre historique de navigation récent.</translation>
+<translation id="3196187562065225381">Chrome a bloqué ce téléchargement, car le fichier est dangereux</translation>
 <translation id="3226612997184048185">Si vous enregistrez également vos favoris dans votre compte Google, vous pouvez suivre les prix des produits dans Chrome et être informé lors d'une baisse de prix</translation>
 <translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation de Chrome, ceux-ci incluent les URL que vous consultez</translation>
 <translation id="3282568296779691940">Connexion à Chrome</translation>
@@ -182,6 +185,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4148957013307229264">Installation...</translation>
 <translation id="4149882025268051530">Le programme d'installation n'a pas réussi à décompresser l'archive. Veuillez télécharger Google Chrome de nouveau.</translation>
 <translation id="4153934450158521343">Chrome va bientôt se fermer et supprimer des données</translation>
+<translation id="4175922240926474352">Chrome a bloqué ce téléchargement, car le site n'utilise pas de connexion sécurisée et le fichier a peut-être été altéré</translation>
 <translation id="4191857738314598978">{0,plural, =1{Redémarrer Chrome d'ici un jour}one{Redémarrer Chrome d'ici # jour}other{Redémarrer Chrome d'ici # jours}}</translation>
 <translation id="4205939740494406371">Chrome ne peut pas vérifier vos mots de passe. Réessayez après 24 heures ou <ph name="BEGIN_LINK" />effectuez une vérification des mots de passe dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Annulation en cours…</translation>
@@ -362,7 +366,9 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7641148173327520642">Votre administrateur système a configuré Google Chrome de manière à ouvrir <ph name="ALTERNATIVE_BROWSER_NAME" /> pour accéder à <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7651907282515937834">Logo de Chrome Enterprise</translation>
+<translation id="76531479118467370">Chrome a bloqué ce téléchargement, car vous avez désactivé la Navigation sécurisée et le fichier ne peut pas être vérifié</translation>
 <translation id="7655455401911432608">Votre historique de navigation, soit un enregistrement des sites que vous avez visités à l'aide de Chrome sur cet appareil.</translation>
+<translation id="769538538642757151">Chrome vous informera si vous devez examiner quelque chose</translation>
 <translation id="7747138024166251722">Le programme d'installation n'a pas pu créer de répertoire temporaire. Vérifiez que le disque a suffisamment d'espace libre et que vous disposez des autorisations nécessaires pour installer le logiciel.</translation>
 <translation id="7761834446675418963">Cliquez sur votre nom pour ouvrir Chrome et commencer à naviguer.</translation>
 <translation id="7777080907402804672">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour créer des descriptions, les images sont envoyées à Google. Vous pouvez désactiver cette option dans les paramètres à tout moment.</translation>
@@ -378,6 +384,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7890208801193284374">Si vous partagez un ordinateur avec vos proches, ceux-ci peuvent configurer Google Chrome comme bon leur semble et naviguer sur le Web à leur manière.</translation>
 <translation id="7896673875602241923">Un utilisateur s'est récemment connecté à Google Chrome sur cet ordinateur en tant que <ph name="ACCOUNT_EMAIL_LAST" />. Veuillez créer un autre utilisateur Google Chrome pour séparer vos données.</translation>
 <translation id="7917876797003313048">Vous pouvez gérer les comptes Google auxquels vous êtes connecté. Vos comptes Google sont utilisés par le navigateur Chrome, par Play Store, par Gmail et autres. Si vous voulez ajouter un compte pour quelqu'un d'autre, comme un membre de votre famille, ajoutez plutôt une nouvelle personne à votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="7936702483636872823">Chrome a bloqué ce téléchargement, car le fichier est trompeur et pourrait apporter des modifications inattendues à votre appareil</translation>
 <translation id="7951272445806340501">Chrome OS Flex doit être redémarré pour appliquer la mise à jour.</translation>
 <translation id="7962368738413920945">Il est probable que les sites fonctionneront comme prévu, mais vos données de navigation ne seront peut-être pas enregistrées lorsque vous fermerez toutes les fenêtres de Chromium</translation>
 <translation id="7962410387636238736">Cet ordinateur ne recevra plus de mises à jour de Google Chrome, car Windows XP et Windows Vista ne sont plus pris en charge</translation>
@@ -390,6 +397,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8129812357326543296">À propos de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialisation en cours...</translation>
 <translation id="8255190535488645436">Google Chrome utilise votre caméra et votre microphone.</translation>
+<translation id="8267953129876836456">Chrome a trouvé des recommandations de sécurité que vous pouvez examiner</translation>
 <translation id="8270775718612349140">Certificats gérés par Chrome</translation>
 <translation id="8286862437124483331">Google Chrome tente d'afficher les mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="8290100596633877290">Google Chrome a planté. Voulez-vous le relancer maintenant?</translation>
@@ -444,6 +452,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="9195993889682885387">Chrome peut estimer vos centres intérêt en fonction de votre historique de navigation au cours des dernières semaines. Ces renseignements restent sur votre appareil.</translation>
 <translation id="919706545465235479">Mettez Chrome à jour pour commencer la synchronisation</translation>
 <translation id="922152298093051471">Personnaliser Chrome</translation>
+<translation id="92460355979482493">Lorsqu'il est activé, Chrome précharge les pages, ce qui accélère la navigation et la recherche.</translation>
 <translation id="93760716455950538">Redémarrer Chrome OS Flex</translation>
 <translation id="940313311831216333">Pour accéder à vos données Chrome sur tous vos appareils, connectez-vous et activez la synchronisation.</translation>
 <translation id="943390475793766444">Chrome recommande de numériser ce fichier, car il pourrait être dangereux.</translation>

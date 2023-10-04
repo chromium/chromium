@@ -65,6 +65,7 @@
 <translation id="1225748608451425081">‏کسی معلوم مسئلے کی وجہ سے آپ کا Chromebook مقفل ہو گیا ہے۔ اس کے بعد آپ سائن ان کر پائیں گے: <ph name="TIME_LEFT" />۔</translation>
 <translation id="1226877728704622336">غیر فعال ڈیسک</translation>
 <translation id="1229194443904279055">منتخب کرنا روکیں</translation>
+<translation id="1233979878541157665">فائل کے نام کے بجائے "سَن سیٹ" یا "ٹِری" تلاش کرنے کی کوشش کریں۔ آپ تلاش بار میں 'تصاویر کا استعمال کر کے تلاش' کو آف کر سکتے ہیں۔</translation>
 <translation id="1235458158152011030">معلوم نیٹ ورکس</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> منسلک ہے۔</translation>
 <translation id="1240638468526743569">ایک ایپ</translation>
@@ -206,6 +207,7 @@
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> میں سے <ph name="NUM_SHOWN_ITEMS" /> دکھائے جا رہے ہیں</translation>
 <translation id="178347895271755507">اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھنے کو سیٹ اپ کریں</translation>
 <translation id="1787955149152357925">آف</translation>
+<translation id="1796561540704213354">ویب سائٹس بشمول وہ صفحات جن کا آپ نے ملاحظہ کیا ہے اور وہ صفحات جنہیں آپ نے کھولا ہے</translation>
 <translation id="1797271123677381264">پاس ورڈ بھول گئے</translation>
 <translation id="181103072419391116">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="1815245884418711390">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ آف ہے۔</translation>
@@ -249,6 +251,7 @@
 <translation id="1962969542251276847">مقفل اسکرین</translation>
 <translation id="1967970931040389207">ہاٹ سپاٹ آن کریں</translation>
 <translation id="1969011864782743497">‎<ph name="DEVICE_NAME" /> (USB)‎</translation>
+<translation id="1971815855639997522">‏ڈیسک اور ونڈوز ہٹا دی گئی ہیں۔ کارروائی کو کالعدم کرنے کے لیے Control + Z دبائیں۔</translation>
 <translation id="1972950159383891558">ہائے، <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">متن ان پٹ</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> میں شامل ہوں</translation>
@@ -584,6 +587,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">یاد دہانی میں ترمیم کریں</translation>
 <translation id="3435967511775410570">فنگر پرنٹ کی شناخت ہوگئی</translation>
+<translation id="3437677362970530951">‏Play اسٹور اور دیگر گیمنگ پلیٹ فارمز پر دستیاب گیمز</translation>
 <translation id="3439896670700055005">کیش کردہ مواد کا استعمال کیے بغیر اپنا موجودہ صفحہ دوبارہ لوڈ کریں</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> منٹ</translation>
@@ -934,6 +938,7 @@
 <translation id="4814539958450445987">لاگ ان اسکرین</translation>
 <translation id="481455355267255546">اس کے آگے</translation>
 <translation id="4826588772550366629">کیمرا اور مائیکروفون</translation>
+<translation id="482908187605862807">‏Play اسٹور سے دستیاب ایپس</translation>
 <translation id="4831034276697007977">کیا آپ واقعی خودکار کلکس کو آف کرنا چاہتے ہیں؟</translation>
 <translation id="4849058404725798627">کی بورڈ فوکس کی مدد سے آبجیکٹ کو نمایاں کریں</translation>
 <translation id="485592688953820832">کوئی کارروائی نہیں (موقوف کریں)</translation>
@@ -985,6 +990,7 @@
 <translation id="5004607513195820459">نیٹ ورک زیر انتظام ہے</translation>
 <translation id="5009463889040999939">پروفائل کا نام تبدیل ہو رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="5016558321564993266">مارکر ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
+<translation id="5020360656995955353">تلاش کے زمرے</translation>
 <translation id="5029356738310729434">آلے کے مائیکروفون تک رسائی آن ہے</translation>
 <translation id="5030659775136592441">بُک مارک مینیجر دکھائیں</translation>
 <translation id="5030687792513154421">وقت ختم ہو گیا</translation>
@@ -1039,6 +1045,7 @@
 <translation id="5234764350956374838">برخاست کریں</translation>
 <translation id="523505283826916779">ایکسیسبیلٹی کی ترتیبات</translation>
 <translation id="5238719049014159442">لانچر کھولیں/بند کریں</translation>
+<translation id="5240725217819182328">انسٹال کردہ ایپس کے اندر مخصوص صفحات یا کارروائیوں تک فوری رسائی</translation>
 <translation id="5245201184978705914">ٹرانسکرپٹ کو تیار نہیں کیا جا سکتا</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> نام والے آلے سے منسلک، <ph name="BATTERY_PERCENTAGE" /> فیصد بیٹری ہے</translation>
 <translation id="5258528442992323769">محفوظ کردہ کوئی ڈیسک نہیں ہے</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6095008505822982596">اسپیچ کی شرح</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> کے ساتھ کنکشن شامل کریں</translation>
 <translation id="6099678161144790572">گزشتہ مہینے میں ترمیم کی</translation>
+<translation id="6099793635444444289">ڈکٹیشن شروع نہیں کیا جا سکتا کیونکہ مائیکروفون خاموش ہے</translation>
 <translation id="6103838137565245112">سسٹم</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> کی اسپیچ فائلز ڈاؤن لوڈ ہو گئی</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />۔ <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1274,6 +1282,7 @@
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6166852626429024716">اپنا آلہ، ایپس، ترتیبات ویب تلاش کریں...</translation>
 <translation id="6168318496333165060">‏Diagnostics ایپ کھولیں</translation>
+<translation id="6168622430237609329">آپ کی انسٹال کردہ ایپس</translation>
 <translation id="6173151025443907148">‏اگر Lacros فعال ہے تو دوسرے صارف میں سائن ان کرنا تعاون یافتہ نہیں ہے۔ براہ کرم اس کی بجائے Lacros میں دوسری براؤزر پروفائل استعمال کریں یا Lacros کو غیر فعال کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6179832488876878285">آپ اپنی اہم فائلز کو یہاں پن کر سکتے ہیں۔ شروع کرنے کیلئے فائلز ایپ کھولیں۔</translation>
 <translation id="6182592640011875895">ڈیسک کھولیں</translation>
@@ -1327,6 +1336,7 @@
 <translation id="6442259747294754014">آلے کے مائیکروفون تک رسائی آف ہے</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
+<translation id="6446225358675593408">مواد کے لحاظ سے اپنی تصاویر تلاش کریں</translation>
 <translation id="6447111710783417522"><ph name="DATE" />، <ph name="NUMBER" /> ایونٹ</translation>
 <translation id="6449483711453944360">‏Linux ایپس اور پوشیدگی ونڈوز فی الحال تعاون یافتہ نہیں ہیں</translation>
 <translation id="6450245544201845082">دائیں کلک کا شارٹ کٹ فی الحال آف ہے</translation>
@@ -1356,6 +1366,7 @@
 <translation id="6537924328260219877">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، فون کی بیٹری <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">اسکین ہونے والی <ph name="FILENAME" /> کو ڈاؤن لوڈ کریں</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> پر کاسٹ کیا جا رہا ہے</translation>
+<translation id="6546062506073634094">مواد اور تصویر کے پیش منظر کے لحاظ سے 'تصاویر کا استعمال کر کے تلاش'</translation>
 <translation id="6555373427270923730">ایڈریس بار میں ایک ویب پتہ ٹائپ کریں، پھر <ph name="MODIFIER" /><ph name="KEY" /> دبائیں</translation>
 <translation id="655633303491376835">نئی انسٹال کردہ <ph name="APP_NAME" /></translation>
 <translation id="6559976592393364813">منتظم سے پوچھیں</translation>
@@ -1432,12 +1443,14 @@
 <translation id="6836499262298959512">خطرناک فائل</translation>
 <translation id="6852052252232534364">کلک برائے فعال</translation>
 <translation id="6855029042976311970">ابھی ابھی ترمیم کی گئی ہے</translation>
+<translation id="6856708615407876657">تلاش کے نتیجے کے زمرے کو ٹوگل کریں</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> سیکنڈ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ایک ہندسہ باقی ہے}other{# ہندسے باقی ہیں}}</translation>
 <translation id="6867938213751067702">ڈاؤن لوڈ موقوف ہو گیا <ph name="FILENAME" /></translation>
 <translation id="6874854809828346832">ہاٹ اسپاٹ کی تفصیلات دکھائیں۔ ہاٹ اسپاٹ آن ہے۔</translation>
 <translation id="6878400149835617132">شارٹ کٹ آف ہے</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ایپ}other{# ایپس}}</translation>
+<translation id="6883768636838842873">کی بورڈ شارٹ کٹس، آلے کا استعمال کرنے کے لیے تجاویز، اور مزید بہت کچھ</translation>
 <translation id="6884665277231944629">آج کی تاریخ پر واپس جائیں</translation>
 <translation id="6886172995547742638">‏آپ کے <ph name="DEVICE_TYPE" /> کی کارکردگی کم ہو سکتی ہے سندیافتہ <ph name="PREFERRED_MINIMUM_POWER" />W یا اعلی USB-C پاور ایڈاپٹر استعمال کریں۔</translation>
 <translation id="688631446150864480">ونڈوز کو سوئچ کرنے کیلئے نیچے تیر کے نشان والی کلید کو دبائیں</translation>
@@ -1525,6 +1538,7 @@
 <translation id="7312210124139670355">‏آپ کا منتظم آپ کی eSIM کو ری سیٹ کر رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="7313193732017069507">کیمرا پھیلائیں</translation>
 <translation id="7316261577130609484">نیا ٹاسک شامل کریں</translation>
+<translation id="7321889295239318128">‏مزید جاننے کیلئے، shift اور tab ایک ساتھ دبائیں</translation>
 <translation id="7330397557116570022">ڈکٹیشن استعمال کرنے کے لیے ٹیکسٹ فیلڈ میں جائیں</translation>
 <translation id="7331646370422660166">‏alt + نیچے تیر کا نشان</translation>
 <translation id="7340731148882810149">خودکار کلکس مینیو</translation>
@@ -1838,6 +1852,7 @@
 <translation id="8619138598101195078">والیوم کم کریں</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> سے منسلک ہے</translation>
 <translation id="8631727435199967028">ایکسیسبیلٹی کی ترتیبات</translation>
+<translation id="8634326941504371857">‏اس آلہ پر اور Google Drive پر موجود آپ کی فائلز</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="8638637208069328956">مائیکروفون آن/آف کریں</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> باقی</translation>

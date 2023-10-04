@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">המכשיר מחובר.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{להסיר את הדף?}=1{להסיר את דף {PAGE_NUMBER}?}one{להסיר את דף {PAGE_NUMBER}?}two{להסיר את דף {PAGE_NUMBER}?}other{להסיר את דף {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">רק ב-<ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">נתוני נייד</translation>
 <translation id="3156846309055100599">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">זוהה פורטל שבוי</translation>

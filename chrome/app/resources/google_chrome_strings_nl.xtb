@@ -160,6 +160,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3582972582564653026">Chrome op al je apparaten synchroniseren en personaliseren</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Je beheerder vereist dat je Chrome opnieuw start om een update uit te voeren.}=1{Je beheerder vereist dat je Chrome opnieuw start om een update uit te voeren. Je incognitovenster kan niet opnieuw worden geopend.}other{Je beheerder vereist dat je Chrome opnieuw start om een update uit te voeren. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
 <translation id="3622797965165704966">Het is nu gemakkelijker om Chrome met je Google-account en op gedeelde computers te gebruiken.</translation>
+<translation id="3635073343384702370">Chrome kan je wachtwoorden controleren als je deze hebt opgeslagen</translation>
 <translation id="3673813398384385993">Chrome heeft vastgesteld dat <ph name="EXTENSION_NAME" /> malware bevat</translation>
 <translation id="3703994572283698466">Chrome OS wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />, net als de <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelomgeving<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flex-versie</translation>
@@ -211,6 +212,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4571503333518166079">Ga naar instellingen voor Chrome-meldingen</translation>
 <translation id="459622048091363950">Zodra Chrome toegang heeft, kunnen websites je om toegang vragen.</translation>
 <translation id="4600710005438004015">Chrome kan niet worden geüpdatet naar de nieuwste versie, dus je loopt nieuwe functies en beveiligingsoplossingen mis.</translation>
+<translation id="4624065194742029982">Chrome-incognitomodus</translation>
 <translation id="4627412468266359539">Optioneel: Help de functies en prestaties van Chrome OS Flex te verbeteren door automatisch diagnostische en gebruiksgegevens naar Google te sturen.</translation>
 <translation id="4633000520311261472">Om Chrome veiliger te maken, hebben we een aantal extensies uitgezet die niet worden vermeld in de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> en mogelijk zonder je medeweten zijn geïnstalleerd.</translation>
 <translation id="4680828127924988555">Installatie annuleren</translation>
@@ -220,6 +222,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Dit bestand kan gevaarlijk zijn en is daarom door Chrome geblokkeerd.</translation>
 <translation id="479167709087336770">Hiervoor wordt dezelfde spellingcontrole gebruikt als voor Google Zoeken. Tekst die je in de browser typt, wordt naar Google gestuurd. Je kunt dit altijd wijzigen in de instellingen.</translation>
+<translation id="4793679854893018356">Meer informatie over hoe Chrome je beschermt</translation>
 <translation id="4828579605166583682">Google Chrome probeert bestaande wachtwoorden te vervangen. Typ je Windows-wachtwoord om dit toe te staan.</translation>
 <translation id="4842397268809523050">Chrome OS Flex kan je gegevens niet synchroniseren omdat synchronisatie niet beschikbaar is voor je domein.</translation>
 <translation id="4873783916118289636">Bekijk belangrijke privacy- en beveiligingsopties in Chrome</translation>
@@ -268,6 +271,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5756509061973259733">Er bestaat op dit apparaat al een Chrome-profiel met dit account</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Kan Chrome niet starten. Probeer het opnieuw.</translation>
+<translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome waarschuwt je<ph name="END_LINK" /> voor onveilige sites en downloads.</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Inloggen bij netwerk</translation>
 <translation id="5924017743176219022">Verbinding maken met internet...</translation>
@@ -277,6 +281,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5941830788786076944">Google Chrome instellen als mijn standaardbrowser</translation>
 <translation id="6003112304606738118">Downloaden... Nog <ph name="HOURS" /> uur</translation>
 <translation id="6010556343189461180">Als je toekomstige Google Chrome-updates wilt krijgen, heb je macOS 10.15 of hoger nodig. Deze computer gebruikt macOS 10.14.</translation>
+<translation id="6014316319780893079">Met <ph name="BEGIN_LINK" />tools van Chrome<ph name="END_LINK" /> kun je beveiligd browsen en de controle behouden</translation>
 <translation id="6022659036123304283">Personaliseer Chrome voor jou</translation>
 <translation id="6025087594896450715">Google Chrome wordt over <ph name="REMAINING_TIME" /> opnieuw opgestart</translation>
 <translation id="6040143037577758943">Sluiten</translation>
@@ -366,6 +371,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="7651907282515937834">Chrome Enterprise-logo</translation>
 <translation id="76531479118467370">Chrome heeft deze download geblokkeerd, omdat je Safe Browsing hebt uitgezet en het bestand niet kan worden geverifieerd</translation>
 <translation id="7655455401911432608">Je browsegeschiedenis, een lijst van de sites die je via Chrome op dit apparaat hebt bezocht.</translation>
+<translation id="769538538642757151">Chrome laat het je weten als je iets moet controleren</translation>
 <translation id="7747138024166251722">Het installatieprogramma kan geen tijdelijke directory maken. Controleer of je nog schijfruimte hebt en of je rechten hebt om software te installeren.</translation>
 <translation id="7761834446675418963">Klik op je naam om Chrome te openen en begin met surfen.</translation>
 <translation id="7777080907402804672">Als een afbeelding geen nuttige beschrijving bevat, probeert Chrome je er een te geven. Afbeeldingen worden naar Google gestuurd om beschrijvingen te maken. Je kunt dit op elk gewenst moment uitzetten in Instellingen.</translation>
@@ -394,6 +400,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8129812357326543296">Over &amp;Google Chrome</translation>
 <translation id="813913629614996137">Starten...</translation>
 <translation id="8255190535488645436">Google Chrome gebruikt je camera en microfoon.</translation>
+<translation id="8267953129876836456">Chrome heeft een aantal veiligheidsaanbevelingen gevonden die je moet controleren</translation>
 <translation id="8270775718612349140">Certificaten beheerd door Chrome</translation>
 <translation id="8286862437124483331">Google Chrome probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="8290100596633877290">Oeps! Google Chrome is vastgelopen. Nu opnieuw starten?</translation>
@@ -408,6 +415,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8403038600646341038">Chrome-logo in een computerscherm.</translation>
 <translation id="8416347857511542594">Meer informatie over advertentiepersonalisatie in Chrome</translation>
 <translation id="8418845734693287262">Chrome OS kan je gegevens niet synchroniseren, omdat de inloggegevens voor je account zijn verouderd.</translation>
+<translation id="842386925677997438">Veiligheidstools van Chrome</translation>
 <translation id="8433638294851456451">Als je een nummer hier vandaan naar je Android-telefoon wilt sturen, log je in bij Chrome op beide apparaten.</translation>
 <translation id="8451192282033883849">Je account wordt beheerd door <ph name="MANAGER_NAME" />. Je beheerder kan dit Chrome-browserprofiel en de bijbehorende gegevens (zoals bookmarks, geschiedenis en wachtwoorden) bekijken en bewerken.</translation>
 <translation id="8496177819998570653">Google W&amp;achtwoordmanager</translation>
@@ -448,6 +456,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="9195993889682885387">Chrome kan een schatting van je interesses maken op basis van je browsegeschiedenis van de afgelopen weken. Deze informatie blijft op je apparaat staan.</translation>
 <translation id="919706545465235479">Chrome updaten om de synchronisatie te starten</translation>
 <translation id="922152298093051471">Chrome aanpassen</translation>
+<translation id="92460355979482493">Als deze instelling aanstaat, worden pagina's vooraf geladen door Chrome, zodat je sneller kunt browsen en zoeken.</translation>
 <translation id="93760716455950538">Chrome OS Flex opnieuw opstarten</translation>
 <translation id="940313311831216333">Log in en zet synchronisatie aan voor toegang tot je Chromium-gegevens op al je apparaten.</translation>
 <translation id="943390475793766444">Chrome raadt aan dit bestand te scannen omdat het misschien gevaarlijk is.</translation>

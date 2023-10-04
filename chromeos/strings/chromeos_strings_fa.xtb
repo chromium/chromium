@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">تغییر روزانه کاغذدیواری</translation>
 <translation id="1644574205037202324">سابقه</translation>
 <translation id="1651925268237749928">آلبوم مشترکی را انتخاب کرده‌اید. دیگران می‌توانند عکس اضافه کنند یا عکس‌ها را تغییر دهند. کاغذدیواری‌تان ممکن است از عکس‌هایی استفاده کند که اکنون در این آلبوم نیست.</translation>
+<translation id="1661865805917886535">‏ممکن است برخی‌از اطلاعات سیستم و حساب به Google ارسال شود. از این اطلاعات برای رسیدگی به مشکلات فنی و بهبود سرویس‌هایمان مطابق با «خط‌مشی رازداری» (<ph name="PRIVACYPOLICYURL" />) و «شرایط خدمات» (<ph name="TERMSOFSERVICEURL" />) خود استفاده می‌کنیم. برای درخواست تغییر محتوا، به «راهنمای محلی» (<ph name="LEGALHELPPAGEURL" />) بروید.</translation>
 <translation id="1662989795263954667">متوقف شد - جوهر تمام شده است</translation>
 <translation id="1664796644829245314">پیش‌دید کردن <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">‏VPN داخلی</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">دستگاه متصل شده است.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{صفحه حذف شود؟}=1{{PAGE_NUMBER} صفحه حذف شود؟}one{{PAGE_NUMBER} صفحه حذف شود؟}other{{PAGE_NUMBER} صفحه حذف شود؟}}</translation>
+<translation id="3146655726035122603">اختصاصی برای <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">داده‌های تلفن همراه</translation>
 <translation id="3156846309055100599">درحال اسکن کردن صفحه <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">درگاه مهمان شناسایی شد</translation>

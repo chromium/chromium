@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ਡੀਵਾਈਸ ਕਨੈਕਟ ਹੈ।</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ਕੀ ਪੰਨਾ ਹਟਾਉਣਾ ਹੈ?}=1{ਕੀ ਪੰਨਾ {PAGE_NUMBER} ਹਟਾਉਣਾ ਹੈ?}other{ਕੀ ਪੰਨਾ {PAGE_NUMBER} ਹਟਾਉਣਾ ਹੈ?}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> ਲਈ ਵਿਸ਼ੇਸ਼</translation>
 <translation id="315116470104423982">ਮੋਬਾਈਲ ਡਾਟਾ</translation>
 <translation id="3156846309055100599">ਪੰਨਾ <ph name="PAGE_NUMBER" /> ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="315738237743207937">ਕੈਪਟਿਵ ਪੋਰਟਲ ਦਾ ਪਤਾ ਲੱਗਾ</translation>

@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">ವಾಲ್‌ಪೇಪರ್ ಚಿತ್ರವನ್ನು ಪ್ರತಿದಿನ ಬದಲಾಯಿಸಿ</translation>
 <translation id="1644574205037202324">ಇತಿಹಾಸ</translation>
 <translation id="1651925268237749928">ನೀವು ಹಂಚಿಕೊಂಡ ಆಲ್ಬಮ್ ಆಯ್ಕೆಮಾಡಿದ್ದೀರಿ. ಇತರ ಜನರು ಫೋಟೋಗಳನ್ನು ಸೇರಿಸಬಹುದು ಅಥವಾ ಬದಲಾಯಿಸಬಹುದು. ನಿಮ್ಮ ವಾಲ್‌ಪೇಪರ್ ಪ್ರಸ್ತುತ ಈ ಆಲ್ಬಮ್‌ನಲ್ಲಿ ಇಲ್ಲದಿರುವ ಫೋಟೋಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
+<translation id="1661865805917886535">ಕೆಲವು ಖಾತೆ ಮತ್ತು ಸಿಸ್ಟಂ ಮಾಹಿತಿಯನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ತಾಂತ್ರಿಕ ಸಮಸ್ಯೆಗಳನ್ನು ಪರಿಹರಿಸಲು ಮತ್ತು ನಮ್ಮ ಸೇವೆಗಳನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಲು ನಾವು ಈ ಮಾಹಿತಿಯನ್ನು ಬಳಸುತ್ತೇವೆ, ಇದು ನಮ್ಮ ಗೌಪ್ಯತೆ ನೀತಿ (<ph name="PRIVACYPOLICYURL" />) ಮತ್ತು ಸೇವಾ ನಿಯಮಗಳಿಗೆ (<ph name="TERMSOFSERVICEURL" />) ಒಳಪಟ್ಟಿರುತ್ತದೆ. ಕಂಟೆಂಟ್‌ ಬದಲಾವಣೆಗಳಿಗೆ ವಿನಂತಿಸುವುದಕ್ಕಾಗಿ, ಕಾನೂನುಬದ್ಧ ಸಹಾಯ ಪುಟಕ್ಕೆ (<ph name="LEGALHELPPAGEURL" />) ಹೋಗಿ.</translation>
 <translation id="1662989795263954667">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಇಂಕ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> ಅನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ</translation>
 <translation id="1668469839109562275">ಬಿಲ್ಟ್-ಇನ್ VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ಸಾಧನವು ಕನೆಕ್ಟ್ ಆಗಿದೆ.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}=1{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}one{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}other{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}}</translation>
+<translation id="3146655726035122603">ವಿಶೇಷವಾಗಿ <ph name="PRODUCT_NAME" /> ಗೆ ಆಗಿದೆ</translation>
 <translation id="315116470104423982">ಮೊಬೈಲ್ ಡೇಟಾ</translation>
 <translation id="3156846309055100599">ಪುಟ <ph name="PAGE_NUMBER" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="315738237743207937">ವೈ-ಫೈ ಪ್ರಾರಂಭ ಪೋರ್ಟಲ್ ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>

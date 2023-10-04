@@ -157,6 +157,7 @@
 <translation id="3582972582564653026">‏סינכרון והתאמה אישית של Chrome בכל המכשירים שלך</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל עדכון}=1{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל עדכון. החלון האנונימי לא ייפתח מחדש.}one{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}two{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
 <translation id="3622797965165704966">‏קל יותר כעת להשתמש ב-Chrome באמצעות חשבון Google שלך ובמחשבים משותפים.</translation>
+<translation id="3635073343384702370">‏ל-Chrome יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן</translation>
 <translation id="3673813398384385993">‏הפריט "<ph name="EXTENSION_NAME" />" שנמצא ב-Chrome מכיל תכונה זדונית</translation>
 <translation id="3703994572283698466">‏השימוש ב-ChromeOS מתאפשר בזכות <ph name="BEGIN_LINK_CROS_OSS" />תוכנות קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספות כמו <ph name="BEGIN_LINK_LINUX_OSS" />סביבת הפיתוח של Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">‏הגרסה של ChromeOS Flex</translation>
@@ -208,6 +209,7 @@
 <translation id="4571503333518166079">‏מעבר אל הגדרות של הודעות ב-Chrome</translation>
 <translation id="459622048091363950">‏אחרי מתן גישה ל-Chrome, אתרים יוכלו לבקש ממך גישה.</translation>
 <translation id="4600710005438004015">‏עדכון Chrome לגרסה האחרונה לא הצליח, ולכן אין לך גישה אל תכונות חדשות ותיקוני אבטחה.</translation>
+<translation id="4624065194742029982">‏מצב פרטי ב-Chrome</translation>
 <translation id="4627412468266359539">‏אופציונלי: שליחה אוטומטית של נתוני השימוש וניתוח הביצועים אל Google תעזור לשפר את התכונות ואת הביצועים של ChromeOS Flex.</translation>
 <translation id="4633000520311261472">‏כדי לשפר את האבטחה של Chrome, השבתנו חלק מהתוספים שלא רשומים ב<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> וייתכן שנוספו ללא ידיעתך.</translation>
 <translation id="4680828127924988555">ביטול ההתקנה</translation>
@@ -217,6 +219,7 @@
 <translation id="4754614261631455953">‏גרסה ניסיונית של Google Chrome‏ (mDNS-In)</translation>
 <translation id="4771048833395599659">‏Chrome‏ חסם את הקובץ הזה כי הוא עלול להיות מסוכן.</translation>
 <translation id="479167709087336770">‏נעשה כאן שימוש בבדיקת האיות של חיפוש Google. הטקסט המוקלד בדפדפן נשלח אל Google. אפשר לשנות את ההתנהגות הזו בכל שלב דרך ההגדרות.</translation>
+<translation id="4793679854893018356">‏איך מערכת Chromium שומרת על האבטחה שלך</translation>
 <translation id="4828579605166583682">‏Google Chrome מנסה להחליף סיסמאות קיימות. כדי לאפשר זאת, יש להזין את הסיסמה שלך ל-Windows.</translation>
 <translation id="4842397268809523050">‏לא ניתן היה לסנכרן את הנתונים שלך ב-ChromeOS Flex כי הסנכרון לא זמין בדומיין שלך.</translation>
 <translation id="4873783916118289636">‏בדיקה של אמצעי הבקרה החשובים ביותר על פרטיות ואבטחה ב-Chrome</translation>
@@ -263,6 +266,7 @@
 <translation id="5756509061973259733">‏כבר קיים במכשיר פרופיל Chrome עם החשבון הזה.</translation>
 <translation id="5795887333006832406">‏<ph name="PAGE_TITLE" /> - Google Chrome בגרסת Canary</translation>
 <translation id="5804318322022881572">‏לא ניתן היה להפעיל את Chrome. יש לנסות שוב.</translation>
+<translation id="586971344380992563">‏<ph name="BEGIN_LINK" />ב-Chrome מוצגות אזהרות<ph name="END_LINK" /> מפני הורדות ואתרים לא בטוחים</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – כניסה לרשת</translation>
 <translation id="5924017743176219022">מתבצעת התחברות לאינטרנט…</translation>
@@ -272,6 +276,7 @@
 <translation id="5941830788786076944">‏Google Chrome יהיה דפדפן ברירת המחדל</translation>
 <translation id="6003112304606738118">מתבצעת הורדה… יש עוד <ph name="HOURS" /> שע'</translation>
 <translation id="6010556343189461180">‏כדי לקבל עדכונים של Google Chrome בעתיד, צריך להשתמש ב-macOS מגרסה 10.15 ואילך. במחשב הזה מותקנת מערכת ההפעלה macOS 10.14.</translation>
+<translation id="6014316319780893079">‏בעזרת <ph name="BEGIN_LINK" />הכלים של Chrome<ph name="END_LINK" /> אפשר לגלוש בבטחה ובשליטה</translation>
 <translation id="6022659036123304283">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>
 <translation id="6025087594896450715">‏Google Chrome יופעל מחדש בעוד <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">סגירה</translation>
@@ -403,6 +408,7 @@
 <translation id="8403038600646341038">‏הלוגו של Chromium בתוך מסך מחשב.</translation>
 <translation id="8416347857511542594">‏מידע נוסף על ההתאמה האישית של המודעות ב-Chrome</translation>
 <translation id="8418845734693287262">‏לא בוצע סנכרון של הנתונים ב-ChromeOS כי פרטי הכניסה לחשבון לא מעודכנים.</translation>
+<translation id="842386925677997438">‏הכלים לבטיחות של Chrome</translation>
 <translation id="8433638294851456451">‏כדי לשלוח מספר מכאן לטלפון Android, יש להיכנס ל-Chrome בשני המכשירים.</translation>
 <translation id="8451192282033883849">‏החשבון שלך מנוהל על ידי <ph name="MANAGER_NAME" />. האדמין שלך יכול לראות ולערוך את הפרופיל הזה של דפדפן Chrome ואת הנתונים שלו, כמו סימניות, היסטוריה וסיסמאות.</translation>
 <translation id="8496177819998570653">‏מנהל &amp;הסיסמאות של Google</translation>

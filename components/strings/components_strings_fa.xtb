@@ -52,8 +52,10 @@
 <translation id="1080116354587839789">متناسب با پهنا</translation>
 <translation id="1081061862829655580">سینی ۱۹</translation>
 <translation id="1089439967362294234">تغییر گذرواژه</translation>
+<translation id="1090629319939036170">‏منو VR</translation>
 <translation id="1094777233105318927">اطلاعات مربوط به مرورگر، سیستم‌عامل، دستگاه، نرم‌افزار نصب‌شده، و فایل‌های شما</translation>
 <translation id="1096545575934602868">این فیلد نباید بیشتر از <ph name="MAX_ITEMS_LIMIT" /> ورودی داشته باشد. از همه ورودی‌های آینده صرف‌نظر می‌شود.</translation>
+<translation id="1099928364755383720">تصویر در تصویر خودکار</translation>
 <translation id="1100782917270858593">‏دکمه «ازسرگیری سفر جستجو»، برای ازسر گرفتن سفر جستجو و دیدن فعالیت‌های مرتبط در سابقه Chrome، کلید «ورود» را فشار دهید</translation>
 <translation id="1101672080107056897">اقدام خطا</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> همیشه ترجمه شود</translation>
@@ -187,6 +189,7 @@
 <translation id="1346748346194534595">راست</translation>
 <translation id="1348198688976932919">سایت پیش‌رو حاوی برنامه‌های خطرناک است</translation>
 <translation id="1348779747280417563">تأیید نام</translation>
+<translation id="1352798470428594123">‏‫Chrome استفاده از کوکی‌های شخص ثالث را برای اکثر سایت‌ها محدود می‌کند تا این سایت‌ها نتوانند هنگامی که مرور می‌کنید شما را ردیابی کنند. برای <ph name="LINK" /> به تنظیمات بروید.</translation>
 <translation id="1354976809542763843">تأمین هزینه خرید خانه</translation>
 <translation id="1355158069018170842">نمایش کاهش قیمت در برگه‌ها</translation>
 <translation id="1355301061807280185">مشاغل</translation>
@@ -478,6 +481,7 @@
 <translation id="192095259937375524">دکمه «هم‌رسانی این برگه»؛ برای هم‌رسانی این برگه ازطریق هم‌رسانی پیوند، ایجاد رمزینه پاسخ‌سریع، پخش محتوا، و موارد دیگر، آن را فعال کنید</translation>
 <translation id="1924727005275031552">جدید</translation>
 <translation id="1935995810530254458">درهرصورت کپی شود</translation>
+<translation id="1939059826036755332">تصویر در تصویر خودکار</translation>
 <translation id="1939175642807587452">می‌تواند برای ارسال اعلان درخواست دهد</translation>
 <translation id="1940441167050915935">حذف کدهای امنیتی ذخیره‌شده</translation>
 <translation id="1943994668912612445">طراحی</translation>
@@ -510,6 +514,7 @@
 <translation id="201174227998721785">‏مدیریت اجازه‌ها و داده‌های ذخیره‌شده در سایت‌ها در تنظیمات Chrome</translation>
 <translation id="2012276282211112603">درحال‌حاضر هیچ موضوعی برای نمایش وجود ندارد</translation>
 <translation id="2018769312928511665">پارچه (براق)</translation>
+<translation id="2020779321517562133">حذف رونوشت</translation>
 <translation id="2021333772895814435">این خط‌مشی همگام‌سازی را در همه دستگاه‌ها برای این موارد به‌طور خودکار غیرفعال می‌کند: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">۱۹ × ۱۲ اینچ</translation>
 <translation id="2022815493835288714">هشدار درباره تنظیم پرداخت جدید باز است</translation>
@@ -765,6 +770,7 @@
 <translation id="2551608178605132291">آدرس: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">کارت‌پستال</translation>
 <translation id="2552295903035773204">ازاین‌به‌بعد برای تأیید رساندن کارت‌ها از قفل صفحه استفاده کنید</translation>
+<translation id="2552532158894206888">کلید راست</translation>
 <translation id="2553853292994445426">‏تنظیمات DNS امن را بررسی کنید. ممکن است سرور DNS امنی را پیکربندی کرده باشید که اتصال به آن انجام نمی‌شود.</translation>
 <translation id="255497580849974774">لطفاً دستگاهتان را درطول به‌روزرسانی به شارژر متصل نگه دارید.</translation>
 <translation id="2556876185419854533">&amp;واگرد ویرایش</translation>
@@ -830,6 +836,7 @@
 <translation id="2688969097326701645">بله، ادامه می‌دهم</translation>
 <translation id="2691924980723297736">هشدار ایمنی</translation>
 <translation id="2692131511336778528">علمی تخیلی و فانتزی</translation>
+<translation id="2699273987028089219">منوِ فرعی دردسترس است، برای پیمایش به گزینه‌های دیگر از <ph name="SHORTCUT" /> استفاده کنید.</translation>
 <translation id="2701514975700770343">روبه‌پایین</translation>
 <translation id="2702592986366989640">گزینه ارزان‌قیمت</translation>
 <translation id="2702801445560668637">فهرست خواندن</translation>
@@ -974,6 +981,7 @@
 <translation id="3023165109041533893">آگهی‌های پیشنهادی سایت از سابقه مرور و هویت شما محافظت می‌کند و درعین‌حال به سایت‌ها امکان می‌دهد آگهی‌های مرتبط به شما نشان دهند. براساس فعالیتتان، سایتی که از آن بازدید کرده‌اید می‌تواند در ادامه مرورتان، آگهی‌های مرتبط پیشنهاد دهد. در تنظیمات می‌توانید فهرست این سایت‌ها را ببینید و آن‌هایی را که نمی‌خواهید مسدود کنید.</translation>
 <translation id="3024663005179499861">نوع خط‌مشی اشتباه است</translation>
 <translation id="3029752078111257850">اخبار جهان</translation>
+<translation id="3030331669969285614">این پرچم‌ها از تغییر ناگهانی جلوگیری می‌کنند یا آن را لغو می‌کنند و فقط برای مدت محدودی دردسترس خواهند بود.</translation>
 <translation id="3036894576201005614">لوازم تمیزکاری خانگی</translation>
 <translation id="3037177537145227281">درحال پیگیری قیمت</translation>
 <translation id="3037605927509011580">اوه، نه!</translation>
@@ -1254,6 +1262,7 @@
 <translation id="3603507503523709">سرپرست برنامه را مسدود کرده است</translation>
 <translation id="3605899229568538311">۵ × ۵ اینچ</translation>
 <translation id="3608932978122581043">جهت تغذیه کاغذ</translation>
+<translation id="3610142117915544498">‏برای اینکه دفعه بعد پرداخت سریع‌تری داشته باشید، اطلاعات کارت، نام، و نشانی صورت‌حسابتان را در «حساب Google» خود ذخیره کنید</translation>
 <translation id="3611317423880285981">ملزومات خانه</translation>
 <translation id="3614103345592970299">اندازه ۲</translation>
 <translation id="361438452008624280">ورودی فهرست «<ph name="LANGUAGE_ID" />»: زبان ناشناس یا پشتیبانی‌نشده.</translation>
@@ -1325,6 +1334,7 @@
 <translation id="3727101516080730231">‏<ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع ارائه جدید در «اسلایدنگار Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3733139489341305600">وسیله نقلیه خودران</translation>
 <translation id="3736520371357197498">اگر خطرات امنیتی که متوجه شما هستند را درک می‌کنید، می‌توانید قبل از حذف شدن برنامه‌های خطرناک از <ph name="BEGIN_LINK" />این سایت غیرایمن بازدید کنید<ph name="END_LINK" />.</translation>
+<translation id="3736739313435669994">استفاده از کوکی‌های شخص ثالث را برای سایت‌ها مسدود کردید تا سایت‌ها نتوانند هنگامی که مرور می‌کنید شما را ردیابی کنند. برای <ph name="LINK" /> به تنظیمات بروید.</translation>
 <translation id="3738166223076830879">سرپرست شما مرورگرتان را مدیریت می‌کند.</translation>
 <translation id="3740319564441798148">اتوبوس و قطار بین‌شهری</translation>
 <translation id="3740447166056383374">قبل‌از کپی کردن باید بررسی شود</translation>
@@ -1492,6 +1502,7 @@
 <translation id="4111546256784973544">پینت‌بال</translation>
 <translation id="4112140312785995938">رفتن به عقب</translation>
 <translation id="4113354056388982663">‏به‌روزرسانی ضروری عملکرد Android</translation>
+<translation id="4114007503059268298">‏می‌خواهید این کارت در «حساب Google» شما و این دستگاه ذخیره شود؟</translation>
 <translation id="4114146879518089587">رفتن به سایت</translation>
 <translation id="4116663294526079822">همیشه مجاز در این سایت</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1515,6 +1526,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{صفحه ۱}one{صفحه {COUNT}}other{صفحه {COUNT}}}</translation>
 <translation id="4154277373259957087">‏Chrome‌ اکنون پیش‌از پر کردن روش‌های پرداخت، هویت شما را به‌تأیید می‌رساند. هرزمان بخواهید می‌توانید این گزینه را در <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> به‌روز کنید.</translation>
 <translation id="4159149286839604525">این بدین معنی است که اکثر ویژگی‌های سایت باید کار کند، اما محافظت کمتری دارید</translation>
+<translation id="4159575773617358878">‏برای اینکه دفعه بعد پرداخت سریع‌تری داشته باشید، اطلاعات کارت، کد امنیتی، و نشانی صورت‌حسابتان را در «حساب Google» خود ذخیره کنید</translation>
 <translation id="4159784952369912983">بنفش</translation>
 <translation id="4165986682804962316">تنظیمات سایت</translation>
 <translation id="4169535189173047238">اجازه داده نشود</translation>
@@ -1713,13 +1725,16 @@
 <translation id="4526465106919207193">مردم و جامعه</translation>
 <translation id="4530347922939905757">پیام نوشتاری</translation>
 <translation id="4531477351494678589">شماره کارت مجازی:</translation>
+<translation id="4535523368173457420">این موتورهای جستجو در منطقه شما محبوب هستند و به‌ترتیب تصادفی نشان داده می‌شوند</translation>
 <translation id="4540780316273593836">مشکلی رخ داد</translation>
 <translation id="4541810033354695636">واقعیت افزوده</translation>
 <translation id="4542971377163063093">سینی ۶</translation>
+<translation id="4543072026714825470">‏برای اینکه دفعه بعد پرداخت سریع‌تری داشته باشید، اطلاعات کارت و نشانی صورت‌حسابتان را در «حساب Google» خود ذخیره کنید</translation>
 <translation id="4546730006268514143">مهلت زمانی انتقال تمام شد</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">از قفل صفحه برای تکمیل گذرواژه‌ها استفاده می‌کنید</translation>
 <translation id="4558551763791394412">افزونه‌ها را غیرفعال کنید.</translation>
+<translation id="456043042661026303">درحال بررسی ایمن جزئیات پرداخت شما</translation>
 <translation id="4566017918361049074">فعالیت‌های فضای باز</translation>
 <translation id="4567686777917670400">‏سرپرستتان می‌تواند تنظیمات مرورگرتان را ازراه‌دور تغییر دهد. ممکن است فعالیت‌های انجام‌شده در این دستگاه خارج از Chromium هم مدیریت شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">مرور فهرست کوکی‌ها و داده‌های سایت در پنجره‌ای جدید</translation>
@@ -2261,6 +2276,7 @@
 <translation id="5666606186680807225">ساحل و جزیره</translation>
 <translation id="5667827081946850877">کتاب صوتی</translation>
 <translation id="5675650730144413517">این صفحه کار نمی‌کند</translation>
+<translation id="5677928146339483299">مسدود است</translation>
 <translation id="5678007133659493065">فویل</translation>
 <translation id="568292603005599551">‏موقعیت X تصویر</translation>
 <translation id="5684277895745049190">فهرست</translation>
@@ -2473,6 +2489,7 @@
 <translation id="6126565365696310362">پاکت چینی شماره ۲</translation>
 <translation id="6127379762771434464">مورد برداشته شد</translation>
 <translation id="6132161237766805930">‏<ph name="BEGIN_LINK" />درباره «حالت ناشناس» در Chrome بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="6133320744616005677">دسترسی ادامه یابد</translation>
 <translation id="6133984428121856852">پسوند فایل خالی یا در قالب نادرست است.</translation>
 <translation id="6139975341602920272">۲۲ × ۱۷ اینچ</translation>
 <translation id="6146055958333702838">همه کابل‌ها را بررسی کنید و همه ره‌یاب‌ها، مودم‌ها، یا دیگر دستگاه‌های
@@ -2507,6 +2524,7 @@
 <translation id="6217950634729714357">آشپزخانه و مبلمان ناهارخوری</translation>
 <translation id="6218753634732582820">‏آدرس از Chromium پاک شود؟</translation>
 <translation id="622039917539443112">تاخوردگی موازی</translation>
+<translation id="6221311046884916259">‏می‌خواهید این کارت در «حساب Google» شما ذخیره شود؟</translation>
 <translation id="6221345481584921695">‏Google Safe Browsing به تازگی در <ph name="SITE" />، ‏<ph name="BEGIN_LINK" />بدافزار شناسایی کرده است<ph name="END_LINK" />. گاهی اوقات وب‌سایت‌هایی که معمولاً امن هستند، با بدافزار آلوده می‌شوند. منبع محتوای مخرب <ph name="SUBRESOURCE_HOST" /> است که یک توزیع‌کننده بدافزار شناخته شده، می‌باشد.</translation>
 <translation id="6221892641068781024">نمای ساده‌شده</translation>
 <translation id="6222527803348563979">نوشت‌افزار</translation>
@@ -2566,6 +2584,7 @@
 <translation id="633770708279464947">مقدار <ph name="SECURE_DNS_SALT" /> نامعتبر است و استفاده نخواهد شد.</translation>
 <translation id="6340739886198108203">خط‌مشی سرپرست توصیه می‌کند وقتی محتوای محرمانه قابل‌مشاهده است نماگرفت نگیرید یا ضبط نکنید:</translation>
 <translation id="6341434961864773665">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگذاری کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگذاری کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را در <ph name="DESTINATION_NAME" /> بارگذاری کنید}}</translation>
+<translation id="6344622098450209924">محافظت دربرابر ردیابی</translation>
 <translation id="634500758737709758">مسیرها</translation>
 <translation id="6348220984832452017">گونه‌های فعال</translation>
 <translation id="6349101878882523185">نصب <ph name="APP_NAME" /></translation>
@@ -2696,6 +2715,7 @@
 <translation id="6599642189720630047">محصولات پیگیری‌شده</translation>
 <translation id="6611723696964473273">اخبار اقتصادی</translation>
 <translation id="6612010098632894193">ویدیو  آنلاین</translation>
+<translation id="6613866251791999074">‏درباره موتور جستجویتان در Chrome بیشتر بدانید</translation>
 <translation id="6615297766614333076">پشته‌ساز ۲</translation>
 <translation id="6624427990725312378">اطلاعات تماس</translation>
 <translation id="6627727261837091711">نمایش جزئیات شخصی‌سازی آگهی</translation>
@@ -2811,6 +2831,7 @@
 <translation id="6852204201400771460">برنامه بار کردن مجدد شود؟</translation>
 <translation id="6857776781123259569">مدیریت گذرواژه‌ها…</translation>
 <translation id="6858034839887287663">A2x4</translation>
+<translation id="6860888819347870819">می‌تواند برای ورود به حالت تصویر در تصویر درخواست دهد</translation>
 <translation id="6864189428899665393">۳۸۹ × ۲۶۷ میلی‌متر</translation>
 <translation id="686485648936420384">منابع مصرف‌کننده</translation>
 <translation id="6865412394715372076">درحال‌حاضر نمی‌توان این کارت را به تأیید رساند</translation>
@@ -3220,6 +3241,7 @@
 <translation id="762844065391966283">حذف تک تک</translation>
 <translation id="763042426047865637">خدمات آتش‌نشانی و ایمنی</translation>
 <translation id="7630470133768862132">وضعیت رضایت:</translation>
+<translation id="7631072086707140121">‏نشانی وب باید https باشد.</translation>
 <translation id="7631444403134069754">دومیدانی</translation>
 <translation id="7631527008834753063">نمایش بازی‌های تلویزیونی</translation>
 <translation id="7633909222644580952">داده‌های عملکرد و گزارش‌های خرابی</translation>
@@ -3341,6 +3363,7 @@
 <translation id="7865448901209910068">بهترین سرعت</translation>
 <translation id="7870281855125116701">تخفیف پیدا شد</translation>
 <translation id="7871445724586827387">‏تغییر گذرواژه «حساب Google»</translation>
+<translation id="7876615279559620350">‏برای تصفیه‌حساب سریع‌تر، کد تأیید (CVC) این کارت را در «حساب Google» خود ذخیره کنید</translation>
 <translation id="7877007680666472091">شناسه‌های محتوای محافظت‌شده</translation>
 <translation id="7878562273885520351">ممکن است گذرواژه‌تان درمعرض خطر باشد</translation>
 <translation id="7880146494886811634">ذخیره نشانی</translation>
@@ -3399,6 +3422,7 @@
 <translation id="8003046808285812021">«<ph name="SEARCH_TERMS" />»</translation>
 <translation id="8004582292198964060">مرورگر</translation>
 <translation id="8009225694047762179">مدیریت گذرواژه</translation>
+<translation id="8009460986924589054"><ph name="BEGIN_LINK" />حذف کوکی‌ها را امتحان کنید<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">۱۱ × ۱۰ اینچ</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{این کارت و نشانی صورت‌حساب آن ذخیره می‌شود. وقتی به سیستم <ph name="USER_EMAIL" /> وارد شوید می‌توانید از آن استفاده کنید.}one{این کارت‌ها و نشانی صورت‌حساب آن‌ها ذخیره می‌شود. وقتی به سیستم <ph name="USER_EMAIL" /> وارد شوید می‌توانید از آن‌ها استفاده کنید.}other{این کارت‌ها و نشانی صورت‌حساب آن‌ها ذخیره می‌شود. وقتی به سیستم <ph name="USER_EMAIL" /> وارد شوید می‌توانید از آن‌ها استفاده کنید.}}</translation>
 <translation id="8012647001091218357">در حال حاضر نمی‌توانیم با والدینتان ارتباط برقرار کنیم. لطفاً دوباره امتحان کنید.</translation>
@@ -3468,6 +3492,7 @@
 <translation id="8127301229239896662">«<ph name="SOFTWARE_NAME" />» به‌درستی در رایانه یا شبکه‌تان پیکربندی نشد. از سرپرست فناوری اطلاعات خود بخواهید این مشکل را حل کند.</translation>
 <translation id="8131740175452115882">تأیید</translation>
 <translation id="8134058435519644366">استخدام و تأمین نیرو</translation>
+<translation id="8135546115396015134">کلید چپ</translation>
 <translation id="8144303576836498784">مشکلی پیش آمد. تغییر ذخیره نشد</translation>
 <translation id="8148608574971654810">‏نسخه PDF:</translation>
 <translation id="8149426793427495338">رایانه‌تان به خواب رفته است.</translation>
@@ -3640,6 +3665,7 @@
 <translation id="8473863474539038330">نشانی‌ها و سایر موارد</translation>
 <translation id="8474910779563686872">نمایش جزئیات برنامه‌نویس</translation>
 <translation id="8479754468255770962">منگنه در پایین سمت چپ</translation>
+<translation id="8479926481822108747">مدیریت محافظت دربرابر ردیابی</translation>
 <translation id="8483229036294884935">‏این نشانی از «حساب Google» شما (<ph name="ACCOUNT" />) حذف خواهد شد</translation>
 <translation id="8488350697529856933">اعمال برای</translation>
 <translation id="8490137692873530638">پشته‌ساز ۱۰</translation>
@@ -3692,9 +3718,11 @@
 <translation id="8576310925653847813">سیستم سینمای خانگی</translation>
 <translation id="8577192028579836704">همه گزینه‌ها در محدوده قیمت معمول <ph name="TYPICAL_PRICE" /> قرار دارند</translation>
 <translation id="8577348305244205642">کارت مجازی دردسترس نیست</translation>
+<translation id="8585615573162100611">دسترسی به <ph name="PERMISSION" /> متوقف شود</translation>
 <translation id="8586082901536468629">تجهیزات راکت‌بال و اسکواش</translation>
 <translation id="858637041960032120">افزودن شماره تلفن</translation>
 <translation id="8589998999637048520">بهترین کیفیت</translation>
+<translation id="8590264442799989746"><ph name="HOST_NAME" /> و موارد دیگر</translation>
 <translation id="8600271352425265729">فقط این بار</translation>
 <translation id="860043288473659153">نام صاحب کارت</translation>
 <translation id="8601027005147870853">‏<ph name="BEGIN_BOLD" />از چه داده‌هایی استفاده می‌شود:<ph name="END_BOLD" /> فعالیت شما در سایتی که بااستفاده از Chrome در این دستگاه بازدید می‌کنید.</translation>
@@ -3823,6 +3851,7 @@
 <translation id="8870494189203302833">ترتیب یکسان، روبه‌پایین</translation>
 <translation id="8870700989640064057">فایل محرمانه چاپ شود؟</translation>
 <translation id="8871553383647848643">سفارشی کردن ظاهر مرورگر</translation>
+<translation id="8874790741333031443">کوکی‌های شخص ثالث را به‌طور موقت مجاز کنید. این کار به‌معنی محافظت کمتر هنگام مرور است اما ویژگی‌های سایت به احتمال زیاد عملکرد موردنظر را خواهد داشت.</translation>
 <translation id="8874824191258364635">شماره کارت معتبری وارد کنید</translation>
 <translation id="8876033571432926051">بازی نامرتب</translation>
 <translation id="8877780815363510165">ماهی‌گیری</translation>
@@ -4016,6 +4045,7 @@
 <translation id="984275831282074731">روش‌های پرداخت</translation>
 <translation id="985199708454569384">‏&lt;p&gt;اگر تاریخ و زمان رایانه یا دستگاه همراهتان درست نباشد این خطا را می‌بینید.&lt;/p&gt;
     &lt;p&gt;برای برطرف کردن این خطا، ساعت دستگاه را باز کنید. مطمئن شوید تاریخ و زمان صحیح است.&lt;/p&gt;</translation>
+<translation id="986257639512122511">دسترسی به <ph name="PERMISSION" /> را در <ph name="ORIGIN" /> مجاز کرده‌اید</translation>
 <translation id="987264212798334818">موارد کلی</translation>
 <translation id="988159990683914416">ساخت برنامه‌نویس</translation>
 <translation id="989988560359834682">ویرایش آدرس</translation>

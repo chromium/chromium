@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">Maksa par daļas vienību</translation>
 <translation id="3124039320086536031">Ierīce ir pievienota.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vai noņemt lapu?}=1{Vai noņemt {PAGE_NUMBER}. lapu?}zero{Vai noņemt {PAGE_NUMBER}. lapu?}one{Vai noņemt {PAGE_NUMBER}. lapu?}other{Vai noņemt {PAGE_NUMBER}. lapu?}}</translation>
+<translation id="3146655726035122603">Tikai šeit: <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilie dati</translation>
 <translation id="3156846309055100599">Notiek <ph name="PAGE_NUMBER" />. lapas skenēšana…</translation>
 <translation id="315738237743207937">Konstatēta caurlaides lapa</translation>

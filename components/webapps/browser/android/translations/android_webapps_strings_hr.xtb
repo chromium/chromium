@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
+<translation id="1213425325105380833">Vraćanje web-aplikacija koje ste nedavno upotrebljavali na uređajima povezanim s ovim računom</translation>
+<translation id="2065911435109240297">Vratite web-aplikacije</translation>
+<translation id="2111649875343992405">Pregledajte koje web-aplikacije treba vratiti</translation>
 <translation id="2139186145475833000">Dodaj na početni zaslon</translation>
+<translation id="2172982519592313442">Pregledajte web-aplikacije</translation>
 <translation id="2478076885740497414">Instaliranje aplikacije</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="3910402514791813257">Instaliranje nije uspjelo</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Snimka zaslona. Dodirnite da biste zatvorili.</translation>
 <translation id="6990079615885386641">Preuzmite aplikaciju iz Trgovine Google Play: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">I dalje se dodaje prethodna web-lokacija</translation>
+<translation id="7672888405515738928">Odaberite web-aplikacije koje želite vratiti na ovom uređaju. Aplikacije koje se ovdje prikazuju temelje se na vašoj povijesti na Chromeu.</translation>
+<translation id="8163051092261298861">Vrati web-aplikacije</translation>
 <translation id="962979164594783469">Instalirajte ovu aplikaciju</translation>
 </translationbundle>

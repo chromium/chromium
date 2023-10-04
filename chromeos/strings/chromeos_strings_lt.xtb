@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Kasdien keisti ekrano fono vaizdą</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1651925268237749928">Pasirinkote bendrinamą albumą. Kiti žmonės gali pridėti ar keisti nuotraukas. Ekrano fonui gali būti naudojamos nuotraukos, kurių šiuo metu nėra šiame albume.</translation>
+<translation id="1661865805917886535">Dalis informacijos apie paskyrą ir sistemą gali būti išsiųsta „Google“. Šią informaciją naudojame spręsdami technines problemas ir tobulindami paslaugas, kurioms taikoma privatumo politika (<ph name="PRIVACYPOLICYURL" />) ir paslaugų teikimo sąlygos (<ph name="TERMSOFSERVICEURL" />). Jei norite pateikti turinio pakeitimų užklausą, eikite į puslapį „Teisinė pagalba“ (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Sustabdyta – baigėsi rašalas</translation>
 <translation id="1664796644829245314">Peržiūrėti kalendorių „<ph name="PREVIEW_OBJECT" />“</translation>
 <translation id="1668469839109562275">Įtaisytasis VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">Centrinis procesorius</translation>
 <translation id="3124039320086536031">Įrenginys prijungtas.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pašalinti puslapį?}=1{Pašalinti {PAGE_NUMBER} puslapį?}one{Pašalinti {PAGE_NUMBER} puslapį?}few{Pašalinti {PAGE_NUMBER} puslapį?}many{Pašalinti {PAGE_NUMBER} puslapį?}other{Pašalinti {PAGE_NUMBER} puslapį?}}</translation>
+<translation id="3146655726035122603">Taikoma tik „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="315116470104423982">Duomenys mobiliesiems</translation>
 <translation id="3156846309055100599">Nuskaitomas <ph name="PAGE_NUMBER" /> puslapis...</translation>
 <translation id="315738237743207937">Aptiktas fiksuotasis portalas</translation>

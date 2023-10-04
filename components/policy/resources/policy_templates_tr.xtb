@@ -390,6 +390,9 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa gi
 <translation id="1372618949173323717">JavaScript'i devre dışı bırak</translation>
 <translation id="1376119291123231789">Gelişmiş pil şarj modunu etkinleştir</translation>
 <translation id="1376765488559847650">Cloud Upload</translation>
+<translation id="1379689277107868399">DoNotPrompt değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, kullanıcıdan tarayıcıda yeniden kimlik doğrulaması yapmasını otomatik olarak istemez.
+
+PromptInTab olarak ayarlanırsa kullanıcının kimlik doğrulama süresi dolduğunda hemen yeni bir sekmede Google giriş sayfası açılır. Bu yalnızca <ph name="CHROME_SYNC_NAME" /> kullanıldığında geçerlidir.</translation>
 <translation id="1384459581748403878">Referans: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Bu politika, <ph name="URL_BLOCKLIST_POLICY_NAME" /> filtre biçimini kullanarak belirttiği kalıplardan en az bir tanesiyle eşleşen herhangi bir URL'nin, tarayıcı tarafından hiçbir zaman silinmemesini sağlar.
       Bu durum, bellek baskısı ve yüksek verimlilik modunun silinme işleminde de geçerlidir.
@@ -3530,6 +3533,7 @@ Bu politika geçici bir çözümdür ve birkaç kilometre taşından kaldırıla
 <translation id="3977304360459208438">TLS'de 3DES şifre paketleri için varsayılan ayarı kullan</translation>
 <translation id="3979738908158213640">SAML kimlik doğrulaması sırasında cihaz onayı gerçekleştirmek için erişim izni verilecek URL'ler</translation>
 <translation id="3982322576186033243">TLS El Sıkışmalarında Güvenli Olmayan Karmalara İzin Verme</translation>
+<translation id="3982465141749620677">Yeni sekmede yeniden kimlik doğrulama iste</translation>
 <translation id="3983162212222338509">Sistem DNS çözümlemesi, sistem yapılandırmasına ve özellik bayraklarına bağlı olarak ağ işleminin içinde veya dışında ya da kısmen içinde kısmen dışında çalıştırılabilir.</translation>
 <translation id="3986700049001404598">Kullanıcıların, Chrome görev yöneticisini kullanarak işlemleri sona erdirmesine izin ver</translation>
 <translation id="398884292557092447">Politika True (Doğru) değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar, kullanıcı arayüzünde kredi kartları için otomatik doldurma önerilerini kontrol edebilirler.
@@ -6459,6 +6463,7 @@ Ayarlanmazsa 15 dakikalık varsayılan süre geçerli olur.</translation>
       Politika ayarlanmazsa kullanıcılar proxy ayarlarını seçebilir.
 
       Not: Ayrıntılı örnekler için Chromium Projeleri'ni ziyaret edin ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
+<translation id="6559643481486165125">Yeniden kimlik doğrulama isteme</translation>
 <translation id="656130159911161669">ChromeOS güncellemeleri kiosk uygulamasının manifestinde belirtilen sürümü yoksayar</translation>
 <translation id="6561396069801924653">Erişilebilirlik seçeneklerini sistem tepsisi menüsünde göster</translation>
 <translation id="6562889469672829421">Ekran karartılmadan önce kullanıcı girişi olmadan geçecek süre (milisaniye olarak)</translation>
@@ -7363,15 +7368,6 @@ Bu politika devre dışı bırakılır veya ayarlanmazsa Kerberos Hesapları aya
       Bu politika ayarlanmadan bırakılırsa, varsayılan olarak kuruluş tarafından yönetilen kullanıcılara izin verilmezken, yönetilmeyen kullanıcılara izin verilir.</translation>
 <translation id="7295019613773647480">Denetlenen kullanıcıları etkinleştir</translation>
 <translation id="7297476773981993405">Güncellenen kullanıcı aracısı GREASE algoritmasını çalıştırmaya izin ver.</translation>
-<translation id="7297765841046240459">Bu politika, Etkin olarak ayarlanırsa <ph name="PRODUCT_NAME" />, sunucu sertifikalarının doğrulamasını, herkese açık güven kaynağı Chrome Root Store olacak şekilde yerleşik sertifika doğrulayıcıyı kullanarak gerçekleştirir.
-
-Bu politika, Devre Dışı olarak ayarlanırsa <ph name="PRODUCT_NAME" />, sistem sertifikası doğrulayıcıyı ve sistem kök sertifikalarını kullanır.
-
-Bu politika ayarlanmadan bırakılırsa Chrome Root Store veya sistem tarafından sağlanan kökler kullanılabilir.
-
-Platform tarafından sağlanan kökleri kullanma desteğinin kaldırılması planlandığından bu politikanın <ph name="PRODUCT_OS_NAME" /> sürüm 120'den, <ph name="LINUX_OS_NAME" /> sürüm 120 için <ph name="PRODUCT_NAME" /> ürününden ve <ph name="ANDROID_NAME" /> sürüm 121 için <ph name="PRODUCT_NAME" /> ürününden kaldırılması planlanmıştır.
-
-Bu politika, platform tarafından sağlanan sertifika doğrulayıcıyı ve kökleri kullanma desteği kaldırıldığında <ph name="MS_WIN_NAME" /> ve <ph name="MAC_OS_NAME" /> sürüm 113 için <ph name="PRODUCT_NAME" /> ürününden kaldırılmıştır.</translation>
 <translation id="7298197471363105063">First-Party Sets özelliğini geçersiz kıl.</translation>
 <translation id="7302043767260300182">AC güçle çalışırken ekran kilidi gecikmesi</translation>
 <translation id="7303902834678570827">Yönetilen Misafir Oturumu kullanıcıları, cihaz genelindeki görüntü ayarlarını saklayamazlar.</translation>
@@ -9026,6 +9022,7 @@ yükleyicide "daha fazla bilgi" URL'si görünmez. Görünüyorsa https şeması
 <translation id="8744844164152340112">OOBE ve oturum sırasında kullanıcı arayüzü oluşturmak için kullanılan temayı kontrol eder (koyu/açık/otomatik).
       Otomatik mod, gün doğumu ve gün batımında otomatik olarak koyu ve açık tema arasında geçiş yapar.
       Kullanıcıların sistem ayarlarında temayı değiştirmesine imkan veren bu politika önerilmelidir.</translation>
+<translation id="8744997936011793680">Kullanıcılardan profil için yeniden kimlik doğrulamalarını iste</translation>
 <translation id="8749536858950505376">Politikayı True (Doğru) değerine ayarlamak, büyük imleci açık tutar. Politikayı False (Yanlış) değerine ayarlamak, büyük imleci kapalı tutar.
 
       Bu politikayı ayarlarsanız kullanıcılar özelliği değiştiremez. Ayarlanmazsa büyük imleç ilk başta kapalıdır, ancak kullanıcılar istedikleri zaman açabilir.</translation>

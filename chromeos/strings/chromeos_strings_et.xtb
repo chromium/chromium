@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">Protsessor</translation>
 <translation id="3124039320086536031">Seade on ühendatud.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Kas eemaldada leht?}=1{Kas eemaldada {PAGE_NUMBER}. leht?}other{Kas eemaldada {PAGE_NUMBER}. leht?}}</translation>
+<translation id="3146655726035122603">Ainult teenuses <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobiilne andmeside</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. lehe skannimine …</translation>
 <translation id="315738237743207937">Tuvastati hõiveportaal</translation>

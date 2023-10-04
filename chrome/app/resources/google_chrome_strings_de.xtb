@@ -12,6 +12,7 @@
 <translation id="1149651794389918149">Melde dich in Chrome an. Wenn du dich nur einmal in einem Konto anmelden möchtest, kannst du <ph name="GUEST_LINK_BEGIN" />das Gerät als Gast verwenden<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Über ChromeOS</translation>
 <translation id="1154147086299354128">In Chr&amp;ome öffnen</translation>
+<translation id="1194807384646768652">Chrome hat diesen Download blockiert, weil der Dateityp normalerweise nicht heruntergeladen wird und gefährlich sein könnte</translation>
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
 <translation id="1278833599417554002">Neu starten, um &amp;Chrome zu aktualisieren</translation>
 <translation id="1302523850133262269">Bitte warte, bis die aktuellen Systemupdates von Chrome installiert wurden.</translation>
@@ -129,10 +130,12 @@
 <translation id="3080151273017101988">Apps im Hintergrund ausführen, wenn Google Chrome geschlossen ist</translation>
 <translation id="3089968997497233615">Es gibt eine neue, sicherere Version von Google Chrome.</translation>
 <translation id="3100998948628680988">Chrome-Profil benennen</translation>
+<translation id="3112458742631356345">Chrome hat diesen Download blockiert, weil die Datei normalerweise nicht heruntergeladen wird und gefährlich sein könnte</translation>
 <translation id="3114643501466072395">Wenn du prüfen möchtest, ob deine anderen Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melde dich in Chrome an<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Deine Änderungen werden beim nächsten Neustart von Google Chrome wirksam.</translation>
 <translation id="3149510190863420837">Chrome-Apps</translation>
 <translation id="3169523567916669830">Während die Tests laufen, kannst du Angaben zu Interessengebieten sehen und entfernen, die von Websites verwendet werden, um dir relevante Werbung anzuzeigen. Chromium nutzt zur Ermittlung deiner Interessengebiete deinen aktuellen Browserverlauf.</translation>
+<translation id="3196187562065225381">Chrome hat diesen Download blockiert, weil die Datei gefährlich ist</translation>
 <translation id="3226612997184048185">Wenn du auch deine Lesezeichen in deinem Google-Konto speicherst, kannst du Produktpreise in Chrome beobachten und dich benachrichtigen lassen, wenn der Preis sinkt</translation>
 <translation id="3245429137663807393">Wenn du Chrome-Nutzungsberichte teilst, enthalten diese Berichte die von dir aufgerufenen URLs</translation>
 <translation id="3282568296779691940">In Chrome anmelden</translation>
@@ -154,6 +157,7 @@
 <translation id="3582972582564653026">Chrome auf allen deinen Geräten synchronisieren und personalisieren</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen}=1{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="3622797965165704966">Du kannst Chrome jetzt noch einfacher mit deinem Google-Konto und auf gemeinsam genutzten Computern verwenden.</translation>
+<translation id="3635073343384702370">Chrome kann deine Passwörter prüfen, wenn du sie speicherst</translation>
 <translation id="3673813398384385993">Chrome hat festgestellt, dass „<ph name="EXTENSION_NAME" />“ Malware enthält</translation>
 <translation id="3703994572283698466">Chrome OS und die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-Entwicklungsumgebung<ph name="END_LINK_LINUX_OSS" /> werden durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="3716540481907974026">Chrome OS Flex-Version</translation>
@@ -179,6 +183,7 @@
 <translation id="4148957013307229264">Installation wird ausgeführt...</translation>
 <translation id="4149882025268051530">Das Installationsprogramm konnte das Archiv nicht dekomprimieren. Lade Google Chrome erneut herunter.</translation>
 <translation id="4153934450158521343">Browserdaten in Chrome werden bald gelöscht und der Browser geschlossen</translation>
+<translation id="4175922240926474352">Chrome hat diesen Download blockiert, weil die Website keine sichere Verbindung verwendet und die Datei möglicherweise manipuliert wurde</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome innerhalb eines Tages neu starten}other{Chrome innerhalb von # Tagen neu starten}}</translation>
 <translation id="4205939740494406371">Chrome kann deine Passwörter nicht prüfen. Versuche es in 24 Stunden noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Wird abgebrochen…</translation>
@@ -204,6 +209,7 @@
 <translation id="4571503333518166079">Chrome-Benachrichtigungseinstellungen aufrufen</translation>
 <translation id="459622048091363950">Sobald Chrome Zugriff hat, können Websites dich um Zugriff bitten.</translation>
 <translation id="4600710005438004015">Chrome konnte nicht auf die neueste Version aktualisiert werden. In deiner Version fehlen daher einige neue Funktionen und Sicherheitspatches.</translation>
+<translation id="4624065194742029982">Der Inkognitomodus von Chrome</translation>
 <translation id="4627412468266359539">Optional: Lasse Diagnose- und Nutzungsdaten automatisch an Google senden, um die Funktionen und die Leistung von Chrome OS Flex zu verbessern.</translation>
 <translation id="4633000520311261472">Um Chrome sicherer zu machen, haben wir einige Erweiterungen deaktiviert, die nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt sind und möglicherweise ohne dein Wissen hinzugefügt wurden.</translation>
 <translation id="4680828127924988555">Installation abbrechen</translation>
@@ -213,6 +219,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Diese Datei ist eventuell schädlich und wurde von Chrome blockiert.</translation>
 <translation id="479167709087336770">Es wird dieselbe Rechtschreibprüfung wie in der Google Suche verwendet. Der in den Browser eingegebene Text wird an Google gesendet. Du kannst dies jederzeit in den Einstellungen ändern.</translation>
+<translation id="4793679854893018356">So trägt Chrome zu deinem Schutz bei</translation>
 <translation id="4828579605166583682">Google Chrome versucht, vorhandene Passwörter zu ersetzen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="4842397268809523050">Chrome OS Flex konnte deine Daten nicht synchronisieren, da die Synchronisierung für deine Domain nicht zur Verfügung steht.</translation>
 <translation id="4873783916118289636">Hiermit kannst du dir die wichtigsten Datenschutz- und Sicherheitseinstellungen in Chrome ansehen</translation>
@@ -259,6 +266,7 @@
 <translation id="5756509061973259733">Ein Chrome-Profil mit diesem Konto ist auf diesem Gerät bereits vorhanden</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome konnte nicht gestartet werden. Versuche es noch einmal.</translation>
+<translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome warnt dich<ph name="END_LINK" /> vor unsicheren Websites und Downloads</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Netzwerkanmeldung</translation>
 <translation id="5924017743176219022">Internetverbindung wird hergestellt…</translation>
@@ -268,6 +276,7 @@
 <translation id="5941830788786076944">Google Chrome als Standardbrowser festlegen</translation>
 <translation id="6003112304606738118">Wird heruntergeladen… Noch <ph name="HOURS" /> Stunde(n)</translation>
 <translation id="6010556343189461180">Du benötigst macOS 10.15 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Auf diesem Computer wird macOS 10.14 ausgeführt.</translation>
+<translation id="6014316319780893079">Mit den <ph name="BEGIN_LINK" />Tools von Chrome<ph name="END_LINK" /> kannst du unbeschwert surfen und die Kontrolle behalten</translation>
 <translation id="6022659036123304283">Chrome personalisieren</translation>
 <translation id="6025087594896450715">Google Chrome wird in <ph name="REMAINING_TIME" /> neu gestartet</translation>
 <translation id="6040143037577758943">Schließen</translation>
@@ -284,7 +293,7 @@
 <translation id="6247557882553405851">Google Passwortmanager</translation>
 <translation id="6251759518630934363">Warnt dich vor schädlichen Websites, auch solchen, die Google vorher nicht bekannt waren, indem mehr Daten von Websites analysiert werden als beim Standardschutz. Du kannst festlegen, dass Warnungen von Chrome übersprungen werden.</translation>
 <translation id="6273793429163604305">Auf die Plätze…</translation>
-<translation id="6277547788421725101">Dein Elternteil hat „Berechtigungen für Websites, Apps und Erweiterungen“ für Chrome deaktiviert</translation>
+<translation id="6277547788421725101">Deine Eltern haben „Berechtigungen für Websites, Apps und Erweiterungen“ für Chrome deaktiviert</translation>
 <translation id="6291089322031436445">Chrome Dev-Apps</translation>
 <translation id="6291549208091401781">Google Chrome ist bereits für alle Nutzer auf deinem Computer installiert.</translation>
 <translation id="6326175484149238433">Aus Chrome entfernen</translation>
@@ -355,7 +364,9 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7641148173327520642">Dein Systemadministrator hat Google Chrome so konfiguriert, dass <ph name="ALTERNATIVE_BROWSER_NAME" /> für den Zugriff auf <ph name="TARGET_URL_HOSTNAME" /> geöffnet wird.</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7651907282515937834">Logo von Chrome Enterprise</translation>
+<translation id="76531479118467370">Chrome hat diesen Download blockiert, weil du Safe Browsing deaktiviert hast und die Datei nicht überprüft werden kann</translation>
 <translation id="7655455401911432608">Dein Browserverlauf, das heißt eine Liste der von dir auf diesem Gerät in Chrome besuchten Websites.</translation>
+<translation id="769538538642757151">Solltest du etwas überprüfen müssen, wirst du von Chrome informiert</translation>
 <translation id="7747138024166251722">Das Installationsprogramm konnte kein temporäres Verzeichnis erstellen. Überprüfe, ob freier Speicherplatz und die Rechte zum Installieren von Software vorhanden sind.</translation>
 <translation id="7761834446675418963">Klicke auf deinen Namen, um Chrome zu öffnen und im Web zu surfen.</translation>
 <translation id="7777080907402804672">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet. Du kannst dies jederzeit in den Einstellungen deaktivieren.</translation>
@@ -371,6 +382,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7890208801193284374">Bei gemeinsam genutzten Computern können die verschiedenen Personen separat surfen und Chrome jeweils nach ihren Wünschen einrichten.</translation>
 <translation id="7896673875602241923">Auf diesem Computer war zuvor ein Nutzer mit dem Konto <ph name="ACCOUNT_EMAIL_LAST" /> in Chrome angemeldet. Erstelle einen neuen Chrome-Nutzer, um deine Daten getrennt zu verwenden.</translation>
 <translation id="7917876797003313048">Du kannst deine angemeldeten Google-Konten verwalten. Deine Google-Konten werden für den Chrome-Browser, den Play Store, Gmail und mehr verwendet. Wenn du ein Konto für jemand anderen hinzufügen möchtest, z. B. ein Familienmitglied, ordne bitte stattdessen deinem Gerät (<ph name="DEVICE_TYPE" />) eine neue Person zu. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="7936702483636872823">Chrome hat diesen Download blockiert, weil dich die Datei täuschen soll und unerwartete Änderungen an deinem Gerät vornehmen könnte</translation>
 <translation id="7951272445806340501">Chrome OS Flex muss neu gestartet werden, um das Update zu übernehmen.</translation>
 <translation id="7962368738413920945">Websites funktionieren wahrscheinlich erwartungsgemäß, sie werden sich aber nach dem Schließen aller Chrome-Fenster nicht mehr an dich erinnern</translation>
 <translation id="7962410387636238736">Dieser Computer erhält keine Google Chrome-Updates mehr, da Windows XP und Windows Vista nicht mehr unterstützt werden</translation>
@@ -383,6 +395,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8129812357326543296">Über &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialisierung…</translation>
 <translation id="8255190535488645436">Google Chrome verwendet deine Kamera und dein Mikrofon.</translation>
+<translation id="8267953129876836456">Chrome hat einige Sicherheitsempfehlungen gefunden, die du überprüfen solltest</translation>
 <translation id="8270775718612349140">Von Chrome verwaltete Zertifikate</translation>
 <translation id="8286862437124483331">Google Chrome möchte Passwörter anzeigen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="8290100596633877290">Google Chrome ist abgestürzt. Jetzt neu starten?</translation>
@@ -397,6 +410,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8403038600646341038">Chrome-Logo auf einem Computerbildschirm.</translation>
 <translation id="8416347857511542594">Weitere Informationen zur Personalisierung von Werbung in Chrome</translation>
 <translation id="8418845734693287262">Chrome OS konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos veraltet sind.</translation>
+<translation id="842386925677997438">Sicherheitstools von Chrome</translation>
 <translation id="8433638294851456451">Wenn du eine Nummer von diesem Gerät an dein Android-Smartphone senden möchtest, musst du dich auf beiden Geräten in Chrome anmelden.</translation>
 <translation id="8451192282033883849">Dein Konto wird von <ph name="MANAGER_NAME" /> verwaltet. Dein Administrator kann das Profil dieses Chrome-Browsers und seine Daten wie Lesezeichen, den Verlauf und Passwörter ansehen und bearbeiten.</translation>
 <translation id="8496177819998570653">Google P&amp;asswortmanager</translation>
@@ -437,6 +451,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="9195993889682885387">Chrome kann auf Grundlage deines Browserverlaufs der letzten Wochen deine Interessen schätzen. Diese Daten bleiben auf deinem Gerät.</translation>
 <translation id="919706545465235479">Aktualisiere Chrome, um die Synchronisierung zu starten</translation>
 <translation id="922152298093051471">Chrome anpassen</translation>
+<translation id="92460355979482493">Wenn diese Option aktiviert ist, lädt Chrome Seiten vorab, um das Surfen und die Suche zu beschleunigen.</translation>
 <translation id="93760716455950538">Chrome OS Flex neu starten</translation>
 <translation id="940313311831216333">Wenn du auf allen deinen Geräten auf deine Chrome-Inhalte zugreifen möchtest, melde dich an und aktiviere die Synchronisierung.</translation>
 <translation id="943390475793766444">Chrome empfiehlt, diese Datei zu scannen, da sie gefährlich sein könnte.</translation>

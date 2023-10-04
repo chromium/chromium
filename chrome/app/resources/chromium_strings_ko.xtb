@@ -24,6 +24,7 @@
 <translation id="1478370723027452770">Chrome for Testing 관련 지원받기</translation>
 <translation id="1524282610922162960">Chromium 탭 공유</translation>
 <translation id="1553461853655228091">Chromium에서 주변 3D 지도를 만들려면 카메라 액세스 권한이 필요합니다.</translation>
+<translation id="1574377791422810894">Chromium의 안전 도구</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="1625909126243026060">Chromium의 주요 개인 정보 보호 및 보안 제어 기능을 검토합니다.</translation>
 <translation id="1632539827495546968">이 계정을 한 번만 사용하려면 Chromium 브라우저에서 <ph name="GUEST_LINK_BEGIN" />게스트 모드<ph name="GUEST_LINK_END" />를 사용하세요. 다른 사용자를 위해 계정을 추가하려면 <ph name="DEVICE_TYPE" />에 <ph name="LINK_BEGIN" />새 사용자를 추가<ph name="LINK_END" />하세요.
@@ -61,6 +62,7 @@
 <translation id="2185166961232948079">Chromium - 네트워크 로그인 - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">컴퓨터를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chromium을 설정할 수 있습니다.</translation>
 <translation id="2313870531055795960">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
+<translation id="2329088755516916767">사용 설정하면 Chromium에서 페이지를 미리 로드하여 더 빠르게 탐색하고 검색할 수 있습니다.</translation>
 <translation id="2343156876103232566">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chromium에 로그인하세요.</translation>
 <translation id="2347108572062610441">Chromium을 시작하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
 <translation id="2359808026110333948">계속</translation>
@@ -68,6 +70,7 @@
 <translation id="2396765026452590966">Chromium을 시작하면 표시되는 페이지가 '<ph name="EXTENSION_NAME" />' 확장 프로그램으로 인해 변경되었습니다.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{하나 이상의 Chromium 확장 프로그램에서 HID 기기 1대에 액세스함}=1{하나 이상의 Chromium 확장 프로그램에서 HID 기기 1대에 액세스 중}other{하나 이상의 Chromium 확장 프로그램에서 HID 기기 #대에 액세스 중}}</translation>
 <translation id="2401032172288869980">Chromium에서 사이트에 대한 카메라 및 마이크 권한이 필요합니다.</translation>
+<translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium의 도구<ph name="END_LINK" />로 안전하게 탐색하고 관리할 수 있습니다.</translation>
 <translation id="2451727308784734061">바로가기를 사용하여 비밀번호 관리자로 빠르게 이동하세요. 바로가기는 컴퓨터의 홈 화면이나 앱 런처로 이동할 수 있습니다.</translation>
 <translation id="2478295928299953161">Chromium이 곧 종료됩니다</translation>
 <translation id="2483889755041906834">Chromium에서</translation>
@@ -135,6 +138,7 @@
 <translation id="3713809861844741608">새 Chromium 탭에서 링크 열기(&amp;T)</translation>
 <translation id="378917192836375108">Chromium을 사용하면 웹에서 전화번호를 클릭하여 Skype로 통화할 수 있습니다.</translation>
 <translation id="3790262771324122253">Chromium에서 일부 다운로드를 차단하는 이유 알아보기</translation>
+<translation id="379589255253486813">검토가 필요한 경우 Chromium에서 알려드립니다</translation>
 <translation id="3802055581630249637">Chromium은 사용자가 방문할 가능성이 있는 페이지를 미리 로드하여 사용자가 방문할 때 페이지를 더 빠르게 로드합니다.</translation>
 <translation id="3830894615770080216">ChromiumOS 시스템</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
@@ -148,6 +152,7 @@
 <translation id="391789666908693569">내 계정은 <ph name="MANAGER_NAME" />에서 관리합니다. 관리자가 이 Chromium 브라우저 프로필과 북마크, 방문 기록, 비밀번호 등의 데이터를 보고 수정할 수 있습니다.</translation>
 <translation id="3945058413678539331">Chromium에서 비밀번호를 복사하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="3962623956404948996">위험할 수 있는 파일이므로 검사하는 것이 좋습니다.</translation>
+<translation id="3962647064319009959">Chromium이 사용자를 안전하게 보호하는 방법 알아보기</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing 정보</translation>
 <translation id="3997429360543082038">ChromiumOS 정보</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromiumOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
@@ -155,6 +160,7 @@
 <translation id="4050175100176540509">최신 버전에는 중요한 보안 개선사항 및 새로운 기능이 포함되어 있습니다.</translation>
 <translation id="4055805654398742145">비밀번호 관리자(&amp;A)</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}}</translation>
+<translation id="4118474109249235144">Chromium 시크릿 모드</translation>
 <translation id="4148957013307229264">설치 중...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 네트워크 로그인 - Chromium</translation>
 <translation id="421369550622382712">Chromium에 유용한 앱, 게임, 확장 프로그램, 테마를 찾아보세요.</translation>
@@ -202,6 +208,7 @@
 <translation id="5252179775517634216"><ph name="EXISTING_USER" />님이 이미 Chromium 프로필에 로그인되어 있습니다. <ph name="USER_EMAIL_ADDRESS" />님을 위한 새 Chromium 프로필이 생성됩니다.</translation>
 <translation id="5277894862589591112">변경사항을 적용하려면 Chromium을 다시 실행하세요.</translation>
 <translation id="5296845517486664001">무료 체험이 사용 설정되어 있는 경우와 Chromium에서 임의로 나에게 현재 진행 중인 무료 체험을 적용한 경우, 표시되는 광고 및 아래의 예측 관심분야에 방문 기록이 영향을 미칩니다. 개인 정보를 보호하기 위해 Chromium에서는 매월 최소 한 번씩 수시로 관심분야를 삭제합니다.</translation>
+<translation id="5352264705793813212">Chromium에서 발견한 보안 권장사항을 검토해 주세요</translation>
 <translation id="5358375970380395591">관리 계정으로 로그인하고 Chromium 프로필에 대한 관리자 제어권을 부여하려고 합니다. 앱, 북마크, 방문 기록, 비밀번호 및 기타 설정 등 Chromium 데이터가 <ph name="USER_NAME" /> 계정에 영구적으로 연결됩니다. 이후 이 데이터를 Google 계정 대시보드에서 삭제할 수는 있지만 다른 계정에 연결할 수는 없습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium 로그인 허용</translation>
@@ -371,6 +378,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8213374284266571500">위험한 유형의 파일이기 때문에 Chromium에서 파일을 차단했습니다.</translation>
 <translation id="8248265253516264921">이미지에 유용한 설명이 없으면 Chromium에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다. 이 기능은 언제든지 설정에서 사용 중지할 수 있습니다.</translation>
 <translation id="8266560134891435528">로그인되어 있지 않으므로 Chromium에서 비밀번호를 확인할 수 없습니다.</translation>
+<translation id="8286943863733751221">안전하지 않은 사이트 및 다운로드에 대해 <ph name="BEGIN_LINK" />Chromium에서 경고<ph name="END_LINK" /></translation>
 <translation id="8290862415967981663">이 파일은 위험할 수 있으므로 Chromium에서 차단했습니다.</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chromium을 종료합니다.</translation>
 <translation id="8325404639443959713">Chromium으로 더 많은 작업하기</translation>
@@ -385,6 +393,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8458614432758743027">Chromium은 Windows 10 이상 버전에서 사용할 수 있습니다.</translation>
 <translation id="8463672209299734063">선택사항: 진단 및 사용 데이터를 Google에 자동으로 전송하여 ChromiumOS의 기능 및 성능 개선에 참여합니다.</translation>
 <translation id="8493179195440786826">Chromium이 이전 버전임</translation>
+<translation id="8522801943730206384">비밀번호를 저장하면 Chromium에서 확인할 수 있습니다</translation>
 <translation id="8550334526674375523">이 직장 프로필은 개인 프로필과 완전히 분리됩니다.</translation>
 <translation id="8568283329061645092">Google 계정으로 로그인하면 Chromium에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
