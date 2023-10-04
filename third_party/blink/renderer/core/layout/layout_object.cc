@@ -4537,6 +4537,9 @@ void LayoutObject::SetShouldInvalidateSelection() {
   NOT_DESTROYED();
   bitfields_.SetShouldInvalidateSelection(true);
   SetShouldCheckForPaintInvalidation();
+  if (GetSelectionStyle()) {
+    InvalidateVisualOverflow();
+  }
 }
 
 void LayoutObject::SetShouldDoFullPaintInvalidation(

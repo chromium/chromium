@@ -2548,8 +2548,8 @@ bool LocalFrameView::RunCompositingInputsLifecyclePhase(
         }
       }
 
-      frame_view.GetLayoutView()->Layer()->UpdateDescendantDependentFlags();
       frame_view.GetLayoutView()->CommitPendingSelection();
+      frame_view.GetLayoutView()->Layer()->UpdateDescendantDependentFlags();
     });
 #if DCHECK_IS_ON()
     SetIsUpdatingDescendantDependentFlags(false);
