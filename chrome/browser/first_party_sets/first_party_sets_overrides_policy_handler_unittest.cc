@@ -38,6 +38,7 @@ class FirstPartySetsOverridesPolicyHandlerTest
   void SetUp() override {
     auto handler = std::make_unique<
         first_party_sets::FirstPartySetsOverridesPolicyHandler>(
+        policy::key::kFirstPartySetsOverrides,
         policy::Schema::Wrap(policy::GetChromeSchemaData()));
     handler_ = handler.get();
     handler_list_.AddHandler(std::move(handler));

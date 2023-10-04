@@ -60,10 +60,11 @@ std::string ParseWarningTypeToString(
 }  // namespace
 
 FirstPartySetsOverridesPolicyHandler::FirstPartySetsOverridesPolicyHandler(
+    const char* policy_name,
     const policy::Schema& schema)
     : policy::SchemaValidatingPolicyHandler(
-          policy::key::kFirstPartySetsOverrides,
-          schema.GetKnownProperty(policy::key::kFirstPartySetsOverrides),
+          policy_name,
+          schema.GetKnownProperty(policy_name),
           policy::SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN) {}
 
 FirstPartySetsOverridesPolicyHandler::~FirstPartySetsOverridesPolicyHandler() =

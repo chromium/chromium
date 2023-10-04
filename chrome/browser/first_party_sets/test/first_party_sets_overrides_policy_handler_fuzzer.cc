@@ -32,7 +32,8 @@ IcuEnvironment* test_case = new IcuEnvironment();
 DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   json_proto::JsonProtoConverter converter;
   std::string native_input = converter.Convert(json_value);
-  FirstPartySetsOverridesPolicyHandler handler(policy::GetChromeSchema());
+  FirstPartySetsOverridesPolicyHandler handler(
+      policy::key::kFirstPartySetsOverrides, policy::GetChromeSchema());
 
   if (getenv("LPM_DUMP_NATIVE_INPUT"))
     std::cout << native_input << std::endl;
