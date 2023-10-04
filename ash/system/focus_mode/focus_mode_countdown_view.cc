@@ -112,13 +112,14 @@ FocusModeCountdownView::FocusModeCountdownView() {
           IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON),
       PillButton::Type::kPrimaryWithoutIcon, /*icon=*/nullptr));
 
-  button_container->AddChildView(std::make_unique<PillButton>(
-      base::BindRepeating(&FocusModeController::ExtendActiveSessionDuration,
-                          base::Unretained(focus_mode_controller)),
-      l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_LABEL),
-      PillButton::Type::kSecondaryWithoutIcon,
-      /*icon=*/nullptr));
+  extend_session_duration_button_ =
+      button_container->AddChildView(std::make_unique<PillButton>(
+          base::BindRepeating(&FocusModeController::ExtendActiveSessionDuration,
+                              base::Unretained(focus_mode_controller)),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_LABEL),
+          PillButton::Type::kSecondaryWithoutIcon,
+          /*icon=*/nullptr));
 
   focus_mode_controller->AddObserver(this);
 
@@ -152,6 +153,9 @@ void FocusModeCountdownView::UpdateUI() {
       time_elapsed, focus_mode_util::TimeFormatType::kDigital));
 
   progress_bar_->SetValue(time_elapsed / session_duration);
+
+  extend_session_duration_button_->SetEnabled(
+      session_duration < focus_mode_util::kMaximumDuration);
 }
 
 }  // namespace ash

@@ -479,21 +479,23 @@ void FocusModeDetailedView::CreateTimerSettingView() {
       views::kMarginsKey,
       gfx::Insets::TLBR(0, -1 * kTimerSettingViewBetweenChildSpacing, 0, 0));
 
-  // TODO(b/302196478): Make increment and decrement buttons disabled
-  // when increment or decrement limit is reached.
-  timer_setting_view_->AddChildView(CreateTimerAdjustmentButton(
-      base::BindRepeating(&FocusModeDetailedView::AdjustInactiveSessionDuration,
-                          base::Unretained(this),
-                          /*decrement=*/true),
-      kChevronDownIcon, cros_tokens::kCrosSysBaseElevated,
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_DECREMENT_BUTTON));
+  timer_decrement_button_ =
+      timer_setting_view_->AddChildView(CreateTimerAdjustmentButton(
+          base::BindRepeating(
+              &FocusModeDetailedView::AdjustInactiveSessionDuration,
+              base::Unretained(this),
+              /*decrement=*/true),
+          kChevronDownIcon, cros_tokens::kCrosSysBaseElevated,
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_DECREMENT_BUTTON));
 
-  timer_setting_view_->AddChildView(CreateTimerAdjustmentButton(
-      base::BindRepeating(&FocusModeDetailedView::AdjustInactiveSessionDuration,
-                          base::Unretained(this),
-                          /*decrement=*/false),
-      kChevronUpIcon, cros_tokens::kCrosSysHighlightShape,
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_INCREMENT_BUTTON));
+  timer_increment_button_ =
+      timer_setting_view_->AddChildView(CreateTimerAdjustmentButton(
+          base::BindRepeating(
+              &FocusModeDetailedView::AdjustInactiveSessionDuration,
+              base::Unretained(this),
+              /*decrement=*/false),
+          kChevronUpIcon, cros_tokens::kCrosSysHighlightShape,
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_INCREMENT_BUTTON));
 }
 
 void FocusModeDetailedView::CreateDoNotDisturbContainer() {
@@ -583,11 +585,18 @@ void FocusModeDetailedView::OnInactiveSessionDurationChanged() {
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   CHECK(!focus_mode_controller->in_focus_session());
   toggle_view_->SetSubText(CreateTimeRemainingString());
-  std::u16string new_session_duration_string = base::NumberToString16(
-      focus_mode_controller->session_duration().InMinutes());
+  const base::TimeDelta session_duration =
+      focus_mode_controller->session_duration();
+  std::u16string new_session_duration_string =
+      base::NumberToString16(session_duration.InMinutes());
   timer_textfield_->SetText(new_session_duration_string);
   timer_textfield_controller_->RefreshTextfieldSize(
       new_session_duration_string);
+
+  timer_decrement_button_->SetEnabled(session_duration >
+                                      focus_mode_util::kMinimumDuration);
+  timer_increment_button_->SetEnabled(session_duration <
+                                      focus_mode_util::kMaximumDuration);
 }
 
 void FocusModeDetailedView::SetInactiveSessionDuration(

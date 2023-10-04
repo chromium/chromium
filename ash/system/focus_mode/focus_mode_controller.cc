@@ -128,7 +128,6 @@ void FocusModeController::OnActiveUserSessionChanged(
 
 void FocusModeController::ExtendActiveSessionDuration() {
   CHECK(in_focus_session_);
-  end_time_ += kExtendDuration;
   SetSessionDuration(session_duration_ + kExtendDuration);
 
   // Update all observers that may be using `end_time_` or `session_duration_`,
@@ -152,16 +151,22 @@ void FocusModeController::ExtendActiveSessionDuration() {
 
 void FocusModeController::SetSessionDuration(
     const base::TimeDelta& new_session_duration) {
-  if (session_duration_ == new_session_duration) {
+  const base::TimeDelta valid_new_session_duration =
+      std::clamp(new_session_duration, focus_mode_util::kMinimumDuration,
+                 focus_mode_util::kMaximumDuration);
+  if (session_duration_ == valid_new_session_duration) {
     return;
+  }
+
+  // Update `end_time_` only during an active focus session.
+  if (in_focus_session_) {
+    end_time_ += (valid_new_session_duration - session_duration_);
   }
 
   // We do not immediately commit the change directly to the user prefs because
   // the user has not yet indicated their preferred timer duration by starting
   // the timer.
-  session_duration_ =
-      std::clamp(new_session_duration, focus_mode_util::kMinimumDuration,
-                 focus_mode_util::kMaximumDuration);
+  session_duration_ = valid_new_session_duration;
 }
 
 void FocusModeController::OnTimerTick() {

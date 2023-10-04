@@ -19,6 +19,7 @@ class BoxLayoutView;
 namespace ash {
 
 class HoverHighlightView;
+class IconButton;
 class RoundedContainer;
 class Switch;
 class SystemTextfield;
@@ -100,6 +101,9 @@ class ASH_EXPORT FocusModeDetailedView
   raw_ptr<SystemTextfield> timer_textfield_ = nullptr;
   // Handles input validation and events for the `timer_textfield`.
   std::unique_ptr<TimerTextfieldController> timer_textfield_controller_;
+  // The decrement and increment buttons in the `timer_setting_view_`.
+  raw_ptr<IconButton> timer_decrement_button_ = nullptr;
+  raw_ptr<IconButton> timer_increment_button_ = nullptr;
   // This view contains controls for selecting the focus scene (background +
   // audio), as well as volume controls.
   raw_ptr<RoundedContainer> scene_view_ = nullptr;

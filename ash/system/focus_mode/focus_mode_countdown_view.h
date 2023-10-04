@@ -15,6 +15,8 @@ class ProgressBar;
 
 namespace ash {
 
+class PillButton;
+
 // The bubble associated with the `FocusModeTray`. Contains a timer with the
 // amount of time left in the focus session, buttons to end the focus session
 // and add 10 minutes to the focus session, and a progress bar showing the
@@ -33,6 +35,8 @@ class ASH_EXPORT FocusModeCountdownView : public views::FlexLayoutView,
   void OnTimerTick() override;
 
  private:
+  friend class FocusModeCountdownViewTest;
+
   void UpdateUI();
 
   // The main timer label, displays the amount of time left in the focus
@@ -48,6 +52,9 @@ class ASH_EXPORT FocusModeCountdownView : public views::FlexLayoutView,
 
   // The timer progress bar.
   raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
+
+  // The `+10 min` button.
+  raw_ptr<PillButton> extend_session_duration_button_ = nullptr;
 };
 
 }  // namespace ash

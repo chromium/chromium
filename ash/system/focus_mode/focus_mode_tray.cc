@@ -90,9 +90,9 @@ void FocusModeTray::ShowBubble() {
       std::make_unique<TrayBubbleView>(CreateInitParamsForTrayBubble(
           /*tray=*/this, /*anchor_to_shelf_corner=*/false));
 
-  auto* countdown_view =
+  countdown_view_ =
       bubble_view->AddChildView(std::make_unique<FocusModeCountdownView>());
-  countdown_view->SetBorder(
+  countdown_view_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets(kBubbleInset)));
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);

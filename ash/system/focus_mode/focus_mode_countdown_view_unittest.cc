@@ -5,11 +5,14 @@
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 
 namespace ash {
 
@@ -29,6 +32,16 @@ class FocusModeCountdownViewTest : public AshTestBase {
   void TearDown() override {
     focus_mode_tray_ = nullptr;
     AshTestBase::TearDown();
+  }
+
+  PillButton* GetExtendTimeButton() {
+    return focus_mode_tray_->countdown_view_for_testing()
+        ->extend_session_duration_button_;
+  }
+
+  views::Label* GetTimeRemainingLabel() {
+    return focus_mode_tray_->countdown_view_for_testing()
+        ->time_remaining_label_;
   }
 
  protected:
@@ -58,6 +71,33 @@ TEST_F(FocusModeCountdownViewTest, ToggleVisibility) {
   EXPECT_TRUE(focus_mode_tray_->tray_bubble_wrapper_for_testing());
   controller->ToggleFocusMode();
   EXPECT_FALSE(focus_mode_tray_->tray_bubble_wrapper_for_testing());
+}
+
+// Tests that in an active focus session, the user clicks the `+10 min` button
+// while the valid time to extend is less than 10 minutes. Check if the `+10
+// min` button is disabled and the text of the remaining time label in the
+// progress bar should be equal to the maximum session duration.
+TEST_F(FocusModeCountdownViewTest, ExtendSessionDurationUntilUpperBound) {
+  FocusModeController* controller = FocusModeController::Get();
+  controller->SetSessionDuration(focus_mode_util::kMaximumDuration -
+                                 base::Minutes(1));
+  controller->ToggleFocusMode();
+
+  LeftClickOn(focus_mode_tray_);
+  EXPECT_TRUE(focus_mode_tray_->tray_bubble_wrapper_for_testing());
+
+  auto* button = GetExtendTimeButton();
+  EXPECT_TRUE(button->GetEnabled());
+
+  auto* label = GetTimeRemainingLabel();
+  EXPECT_EQ(u"4 hr, 59 min, 0 sec", label->GetText());
+
+  // Extend the session duration.
+  LeftClickOn(button);
+
+  EXPECT_FALSE(button->GetEnabled());
+  EXPECT_EQ(u"5 hr, 0 min, 0 sec", label->GetText());
+  EXPECT_EQ(focus_mode_util::kMaximumDuration, controller->session_duration());
 }
 
 }  // namespace ash

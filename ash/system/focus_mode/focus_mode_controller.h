@@ -67,7 +67,8 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // `session_duration_`. This is only used during a focus session.
   void ExtendActiveSessionDuration();
 
-  // Sets a specific value for `session_duration_`.
+  // Sets a specific value for `session_duration_` and updates `end_time_` only
+  // during an active focus session.
   void SetSessionDuration(const base::TimeDelta& new_session_duration);
 
  private:
