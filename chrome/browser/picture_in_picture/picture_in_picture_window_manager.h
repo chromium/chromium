@@ -171,10 +171,6 @@ class PictureInPictureWindowManager {
       const gfx::Rect& browser_view_overridden_bounds,
       views::View* anchor_view,
       views::BubbleBorder::Arrow arrow);
-
-  AutoPipSettingHelper* get_setting_helper_for_testing() {
-    return auto_pip_setting_helper_.get();
-  }
 #endif
 
   // Get the origins for initiators of active Picture-in-Picture sessions.
