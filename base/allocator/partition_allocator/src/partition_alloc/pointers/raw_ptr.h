@@ -108,6 +108,11 @@ enum class RawPtrTraits : unsigned {
   // Don't use directly, use ExperimentalAsh instead.
   kExperimentalAsh = (1 << 4),
 
+  // Uninitialized pointers are discouraged and disabled by default.
+  //
+  // Don't use directly, use AllowUninitialized instead.
+  kAllowUninitialized = (1 << 5),
+
   // *** ForTest traits below ***
 
   // Adds accounting, on top of the NoOp implementation, for test purposes.
@@ -124,7 +129,8 @@ enum class RawPtrTraits : unsigned {
   kDummyForTest = (1 << 11),
 
   kAllMask = kMayDangle | kDisableHooks | kAllowPtrArithmetic |
-             kExperimentalAsh | kUseCountingImplForTest | kDummyForTest,
+             kExperimentalAsh | kAllowUninitialized | kUseCountingImplForTest |
+             kDummyForTest,
 };
 // Template specialization to use |PA_DEFINE_OPERATORS_FOR_FLAGS| without
 // |kMaxValue| declaration.
@@ -293,7 +299,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
                 "raw_ptr<T> doesn't work with this kind of pointee type T");
 
   static constexpr bool kZeroOnConstruct =
-      Impl::kMustZeroOnConstruct || BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT);
+      Impl::kMustZeroOnConstruct ||
+      (BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT) &&
+       !ContainsFlags(Traits, RawPtrTraits::kAllowUninitialized));
   static constexpr bool kZeroOnMove =
       Impl::kMustZeroOnMove || BUILDFLAG(RAW_PTR_ZERO_ON_MOVE);
   static constexpr bool kZeroOnDestruct =
@@ -421,7 +429,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
             typename Unused = std::enable_if_t<Traits != PassedTraits>>
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
       const raw_ptr<T, PassedTraits>& p) noexcept {
-    // Limit cross-kind assignments only to cases where kMayDangle gets added,
+    // Limit cross-kind assignments only to cases where `kMayDangle` gets added,
     // because that's needed for Unretained(Ref)Wrapper. Use a static_assert,
     // instead of disabling via SFINAE, so that the compiler catches other
     // conversions. Otherwise implicit raw_ptr<T> -> T* -> raw_ptr<> route will
@@ -991,6 +999,18 @@ constexpr auto AllowPtrArithmetic = base::RawPtrTraits::kAllowPtrArithmetic;
 //
 // This is not meant to be added manually. You can ignore this flag.
 constexpr auto ExperimentalAsh = base::RawPtrTraits::kExperimentalAsh;
+
+// The use of uninitialized pointers is strongly discouraged. raw_ptrs will
+// be initialized to nullptr by default in all cases when building against
+// Chromium. However, third-party projects built in a standalone manner may
+// wish to opt out where possible. One way to do this is via buildflags,
+// thus affecting all raw_ptrs, but a finer-grained mechanism is the use
+// of the kAllowUninitialized trait.
+//
+// Note that opting out may not always be effective, given that algorithms
+// like BackupRefPtr require nullptr initializaion for correctness and thus
+// silently enforce it.
+constexpr auto AllowUninitialized = base::RawPtrTraits::kAllowUninitialized;
 
 // This flag is used to tag a subset of dangling pointers. Similarly to
 // DanglingUntriaged, those pointers are known to be dangling. However, we also

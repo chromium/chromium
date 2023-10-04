@@ -196,6 +196,16 @@ using CountingRawPtrMayDangle =
 static_assert(
     std::is_same_v<CountingRawPtrMayDangle<int>::Impl, RawPtrCountingImpl>);
 
+template <typename T>
+using CountingRawPtrUninitialized =
+    raw_ptr<T,
+            base::RawPtrTraits::kUseCountingImplForTest |
+                base::RawPtrTraits::kAllowUninitialized>;
+
+// Ensure that the `kUseCountingImplForTest` flag selects the test impl.
+static_assert(
+    std::is_same_v<CountingRawPtrUninitialized<int>::Impl, RawPtrCountingImpl>);
+
 struct MyStruct {
   int x;
 };
@@ -1539,6 +1549,14 @@ TEST_F(RawPtrTest, EphemeralRawAddrPointerReference) {
   EXPECT_EQ(ptr.get(), &v2);
   InOutParamFuncWithReference(&v1, ptr.AsEphemeralRawAddr());
   EXPECT_EQ(ptr.get(), &v1);
+}
+
+TEST_F(RawPtrTest, AllowUninitialized) {
+  constexpr uintptr_t kPattern = 0x12345678;
+  uintptr_t storage = kPattern;
+  // Placement new over stored pattern must not change it.
+  new (&storage) CountingRawPtrUninitialized<int>;
+  EXPECT_EQ(storage, kPattern);
 }
 
 }  // namespace

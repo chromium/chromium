@@ -314,6 +314,13 @@ desirable have been tagged with the AllowPtrArithmetic trait. That all such
 pointer are tagged can be enforced by setting the GN build arg
 enable_pointer_arithmetic_trait_check=true.
 
+### The AllowUninitialized trait
+
+When building Chromium, raw_ptrs are always nullptr initialized, either as
+the result of specific implementation that requires it (e.g. BackupRefPtr),
+or as the result of build flags (to enforce consistency). However, we provide
+an opt-out to allow third-party code to skip this step (where possible). Use
+this trait sparingly.
 
 ## Recoverable compile-time problems {#Recoverable-compile-time-problems}
 
