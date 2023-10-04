@@ -198,6 +198,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 
     void SetPaused(bool paused);
     virtual bool CanEncodeAlphaChannel() const;
+    virtual base::WeakPtr<Encoder> GetWeakPtr() = 0;
     void ForceKeyFrameForNextFrameForTesting() {
       request_key_frame_for_testing_ = true;
     }

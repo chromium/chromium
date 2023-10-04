@@ -55,7 +55,9 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
       const media::BitstreamBufferMetadata& metadata) override;
   void NotifyErrorStatus(const media::EncoderStatus& status) override;
 
-  base::WeakPtr<Encoder> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
+  base::WeakPtr<Encoder> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
 
  private:
   struct VideoFrameAndMetadata {
