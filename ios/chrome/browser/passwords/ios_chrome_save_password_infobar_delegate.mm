@@ -97,13 +97,10 @@ void RecordDismissalMetrics(
 
   if (update_infobar) {
     password_manager::metrics_util::LogUpdateUIDismissalReason(
-        infobar_response,
-        form_to_save->GetPendingCredentials().submission_event);
+        infobar_response);
   } else {
     password_manager::metrics_util::LogSaveUIDismissalReason(
-        infobar_response,
-        form_to_save->GetPendingCredentials().submission_event,
-        account_storage_user_state);
+        infobar_response, account_storage_user_state);
   }
 }
 

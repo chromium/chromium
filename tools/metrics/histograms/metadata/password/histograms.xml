@@ -3177,17 +3177,6 @@ chromium-metrics-reviews@google.com.
   <token key="UserSyncingType" variants="UserSyncingType"/>
 </histogram>
 
-<histogram
-    name="PasswordManager.SaveUIOnClearedPasswordChangeFormDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="2023-10-22">
-  <owner>kazinova@google.com</owner>
-  <owner>khamutov@google.com</owner>
-  <summary>
-    Why was the save password UI closed on a cleared change password form?
-    Recorded when the save bubble/infobar is dismissed.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.SaveUpdateUIDismissalReasonAndroid{Dialog}"
     enum="SaveUpdatePasswordMessageDismissReason" expires_after="2023-07-15">
   <owner>atsvirchkova@google.com</owner>
@@ -3671,17 +3660,6 @@ chromium-metrics-reviews@google.com.
     enum="PasswordManagerUIDismissalReason" expires_after="2024-03-17">
   <owner>vasilii@chromium.org</owner>
   <summary>Why was the update password UI (bubble or infobar) closed?</summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.UpdateUIOnClearedPasswordChangeFormDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="2024-04-15">
-  <owner>kazinova@google.com</owner>
-  <owner>khamutov@google.com</owner>
-  <summary>
-    Why was the update password UI closed on a cleared change password form?
-    Recorded when the update bubble/infobar is dismissed.
-  </summary>
 </histogram>
 
 <histogram name="PasswordManager.UPMUnenrollmentReason"

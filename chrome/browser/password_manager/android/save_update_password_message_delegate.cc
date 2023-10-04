@@ -556,15 +556,12 @@ void SaveUpdatePasswordMessageDelegate::RecordMessageShownMetrics() {
 
 void SaveUpdatePasswordMessageDelegate::RecordDismissalReasonMetrics(
     password_manager::metrics_util::UIDismissalReason ui_dismissal_reason) {
-  auto submission_event =
-      passwords_state_.form_manager()->GetPendingCredentials().submission_event;
   if (update_password_) {
     password_manager::metrics_util::LogUpdateUIDismissalReason(
-        ui_dismissal_reason, submission_event);
+        ui_dismissal_reason);
   } else {
     password_manager::metrics_util::LogSaveUIDismissalReason(
-        ui_dismissal_reason, submission_event,
-        /*user_state=*/absl::nullopt);
+        ui_dismissal_reason, /*user_state=*/absl::nullopt);
   }
   if (auto* recorder = passwords_state_.form_manager()->GetMetricsRecorder()) {
     recorder->RecordUIDismissalReason(ui_dismissal_reason);
