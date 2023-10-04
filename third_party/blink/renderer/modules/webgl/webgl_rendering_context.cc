@@ -78,7 +78,6 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw_instanced_base_vertex_base_instance.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_polygon_mode.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_video_texture.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 
 namespace blink {
@@ -219,7 +218,6 @@ void WebGLRenderingContext::RegisterContextExtensions() {
   RegisterExtension(webgl_lose_context_, kApprovedExtension);
   RegisterExtension(webgl_multi_draw_);
   RegisterExtension(webgl_polygon_mode_, kDraftExtension);
-  RegisterExtension(webgl_video_texture_, kDraftExtension);
 }
 
 void WebGLRenderingContext::Trace(Visitor* visitor) const {
@@ -262,7 +260,6 @@ void WebGLRenderingContext::Trace(Visitor* visitor) const {
   visitor->Trace(webgl_lose_context_);
   visitor->Trace(webgl_multi_draw_);
   visitor->Trace(webgl_polygon_mode_);
-  visitor->Trace(webgl_video_texture_);
   WebGLRenderingContextBase::Trace(visitor);
 }
 

@@ -68,7 +68,6 @@ enum WebGLExtensionName {
   kWebGLRenderSharedExponentName,
   kWebGLShaderPixelLocalStorageName,
   kWebGLStencilTexturingName,
-  kWebGLVideoTextureName,
   kWebGLWebCodecsVideoFrameName,
   kWebGLExtensionNameCount,  // Must be the last entry
 };

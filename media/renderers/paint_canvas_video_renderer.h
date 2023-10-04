@@ -137,14 +137,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       bool flip_y,
       bool allow_shared_image_for_direct_upload);
 
-  // TODO(776222): Remove this function from PaintCanvasVideoRenderer.
-  static bool PrepareVideoFrameForWebGL(
-      viz::RasterContextProvider* raster_context_provider,
-      gpu::gles2::GLES2Interface* gl,
-      scoped_refptr<VideoFrame> video_frame,
-      unsigned int target,
-      unsigned int texture);
-
   // Copy the CPU-side YUV contents of |video_frame| to texture |texture| in
   // context |destination_gl|.
   // |level|, |internal_format|, |type| specify target texture |texture|.

@@ -46,7 +46,6 @@ class WebGLProvokingVertex;
 class WebGLRenderSharedExponent;
 class WebGLShaderPixelLocalStorage;
 class WebGLStencilTexturing;
-class WebGLVideoTexture;
 
 class WebGL2RenderingContext : public WebGL2RenderingContextBase {
   DEFINE_WRAPPERTYPEINFO();
@@ -130,7 +129,6 @@ class WebGL2RenderingContext : public WebGL2RenderingContextBase {
   Member<WebGLRenderSharedExponent> webgl_render_shared_exponent_;
   Member<WebGLShaderPixelLocalStorage> webgl_shader_pixel_local_storage_;
   Member<WebGLStencilTexturing> webgl_stencil_texturing_;
-  Member<WebGLVideoTexture> webgl_video_texture_;
 };
 
 }  // namespace blink

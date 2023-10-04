@@ -74,7 +74,6 @@ class WebGL2ConformanceIntegrationTest(
         'WEBGL_render_shared_exponent',
         'WEBGL_shader_pixel_local_storage',
         'WEBGL_stencil_texturing',
-        'WEBGL_video_texture',
     ]
 
   @classmethod

@@ -73,7 +73,6 @@ class WebGL1ConformanceIntegrationTest(
         'WEBGL_lose_context',
         'WEBGL_multi_draw',
         'WEBGL_polygon_mode',
-        'WEBGL_video_texture',
     ]
 
   @classmethod

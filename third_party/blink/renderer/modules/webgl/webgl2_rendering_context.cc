@@ -57,7 +57,6 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_render_shared_exponent.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_shader_pixel_local_storage.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_stencil_texturing.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_video_texture.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 
 namespace blink {
@@ -208,7 +207,6 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
   RegisterExtension(webgl_render_shared_exponent_, kDraftExtension);
   RegisterExtension(webgl_shader_pixel_local_storage_, kDraftExtension);
   RegisterExtension(webgl_stencil_texturing_, kDraftExtension);
-  RegisterExtension(webgl_video_texture_, kDraftExtension);
 }
 
 void WebGL2RenderingContext::Trace(Visitor* visitor) const {
@@ -252,7 +250,6 @@ void WebGL2RenderingContext::Trace(Visitor* visitor) const {
   visitor->Trace(webgl_render_shared_exponent_);
   visitor->Trace(webgl_shader_pixel_local_storage_);
   visitor->Trace(webgl_stencil_texturing_);
-  visitor->Trace(webgl_video_texture_);
   WebGL2RenderingContextBase::Trace(visitor);
 }
 
