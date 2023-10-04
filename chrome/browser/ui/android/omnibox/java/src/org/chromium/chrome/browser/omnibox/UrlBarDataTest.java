@@ -98,6 +98,86 @@ public class UrlBarDataTest {
         verifyOriginSpan("content://dev/blah", null, "content://dev/blah");
     }
 
+    // http://crbug/1485446
+    @Test
+    public void forUrlAndText_missingDisplayTextSchemeDoesNotConfuseHosts() {
+        var url = "https://www.a.com/https://bbb.com/i.htm";
+        var displayText = "a.com/https://bbb.com/i.htm";
+        UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
+        Assert.assertEquals(url, data.url);
+        Assert.assertEquals(displayText, data.displayText);
+        Assert.assertEquals(0, data.originStartIndex);
+        Assert.assertEquals("a.com".length(), data.originEndIndex);
+    }
+
+    // http://crbug/1485446
+    @Test
+    public void forUrlAndText_missingDisplayTextSchemeDoesNotConfusePaths() {
+        var url = "https://www.a.com/?k=v/bbb.com/i.htm";
+        var displayText = "a.com/?k=v/bbb.com/i.htm";
+        UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
+        Assert.assertEquals(url, data.url);
+        Assert.assertEquals(displayText, data.displayText);
+        Assert.assertEquals(0, data.originStartIndex);
+        Assert.assertEquals("a.com".length(), data.originEndIndex);
+    }
+
+    @Test
+    public void forUrlAndText_portNumberDoesNotConfuseHostForScheme() {
+        var url = "https://https:1234/abcd";
+        var displayText = "https:1234/abcd";
+        UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
+        Assert.assertEquals(url, data.url);
+        Assert.assertEquals(displayText, data.displayText);
+        Assert.assertEquals(0, data.originStartIndex);
+        Assert.assertEquals("https:1234".length(), data.originEndIndex);
+    }
+
+    @Test
+    public void forUrlAndText_doesNotExtractPathFromUnsupportedSchemes() {
+        var url = "data:google.com/test";
+        var displayText = "data:google.com/test";
+        UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
+        Assert.assertEquals(url, data.url);
+        Assert.assertEquals(displayText, data.displayText);
+        Assert.assertEquals(0, data.originStartIndex);
+        Assert.assertEquals(displayText.length(), data.originEndIndex);
+    }
+
+    @Test
+    public void forUrlAndText_lookupPathInEligibleBlobScheme() {
+        var url = "blob:https://www.a.com/1234-5678";
+        var displayText = "blob:https://www.a.com/1234-5678";
+        UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
+        Assert.assertEquals(url, data.url);
+        Assert.assertEquals(displayText, data.displayText);
+        Assert.assertEquals(0, data.originStartIndex);
+        Assert.assertEquals("blob:https://www.a.com".length(), data.originEndIndex);
+    }
+
+    @Test
+    public void forUrlAndText_skipPathInNonEligibleBlobScheme() {
+        var url = "blob:object://www.a.com/1234-5678";
+        var displayText = "blob:object://www.a.com/1234-5678";
+        UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
+        Assert.assertEquals(url, data.url);
+        Assert.assertEquals(displayText, data.displayText);
+        Assert.assertEquals(0, data.originStartIndex);
+        Assert.assertEquals("blob:object:".length(), data.originEndIndex);
+    }
+
+    @Test
+    public void forUrlAndText_misleadingBlobUrlHandledCorrectly() {
+        var url = "blob:https:///";
+        // Pick embedded scheme that is eligible for host/path split.
+        var displayText = "blob:https:///";
+        UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
+        Assert.assertEquals(url, data.url);
+        Assert.assertEquals(displayText, data.displayText);
+        Assert.assertEquals(0, data.originStartIndex);
+        Assert.assertEquals("blob:https:///".length(), data.originEndIndex);
+    }
+
     private void verifyOriginSpan(
             String expectedOrigin, @Nullable String expectedOriginSuffix, String url) {
         UrlBarData urlBarData = UrlBarData.forUrl(url);
