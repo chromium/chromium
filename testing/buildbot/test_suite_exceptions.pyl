@@ -5306,6 +5306,9 @@
           '--target',
           'Release_x64',
         ],
+        'swarming': {
+          'shards': 19,
+        },
       },
       'linux-wpt-content-shell-asan-fyi-rel': {
         'args': [
