@@ -4,12 +4,14 @@
 
 #include "base/containers/enum_set.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/pref_names.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -70,11 +72,20 @@ class GetUpdatesObserver : public FakeServer::Observer {
 
 class SingleClientCommonSyncTest : public SyncTest {
  public:
-  SingleClientCommonSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientCommonSyncTest() : SyncTest(SINGLE_CLIENT) {
+    override_features_.InitWithFeatures(
+        /*enabled_features=*/
+        {password_manager::features::kPasswordManagerEnableReceiverService,
+         password_manager::features::kPasswordManagerEnableSenderService},
+        /*disabled_features=*/{});
+  }
   ~SingleClientCommonSyncTest() override = default;
   SingleClientCommonSyncTest(const SingleClientCommonSyncTest&) = delete;
   SingleClientCommonSyncTest& operator=(const SingleClientCommonSyncTest&) =
       delete;
+
+ private:
+  base::test::ScopedFeatureList override_features_;
 };
 
 // Android doesn't currently support PRE_ tests, see crbug.com/1117345.

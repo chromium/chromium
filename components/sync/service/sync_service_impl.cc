@@ -812,21 +812,13 @@ SyncService::TransportState SyncServiceImpl::GetTransportState() const {
   // The DataTypeManager gets created once the engine is initialized.
   DCHECK(data_type_manager_);
 
-  // At this point we should usually be able to configure our data types (and
-  // once the data types can be configured, they must actually get configured).
-  // However, if the initial setup hasn't been completed, then we can't
-  // configure the data types. Also if a later (non-initial) setup happens to be
-  // in progress, we won't configure them right now.
+  // At this point we should usually be able to configure our data types (so the
+  // DataTypeManager should not be STOPPED anymore), unless setup is in
+  // progress. But it can also happen if this gets called from DataTypeManager
+  // itself.
   if (data_type_manager_->state() == DataTypeManager::STOPPED) {
-    DCHECK(!CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false));
     return TransportState::PENDING_DESIRED_CONFIGURATION;
   }
-
-  // Note that if a setup is started after the data types have been configured,
-  // then they'll stay configured even though CanConfigureDataTypes will be
-  // false.
-  DCHECK(CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false) ||
-         IsSetupInProgress());
 
   if (data_type_manager_->state() != DataTypeManager::CONFIGURED) {
     return TransportState::CONFIGURING;
