@@ -189,6 +189,7 @@ class InfoBarDelegate {
     LOCAL_TEST_POLICIES_APPLIED_INFOBAR = 115,
     BIDDING_AND_AUCTION_CONSENTED_DEBUGGING_DELEGATE = 116,
     PARCEL_TRACKING_INFOBAR_DELEGATE = 117,
+    TEST_THIRD_PARTY_COOKIE_PHASEOUT_DELEGATE = 118,
   };
 
   // Describes navigation events, used to decide whether infobars should be

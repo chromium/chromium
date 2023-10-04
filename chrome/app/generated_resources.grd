@@ -16004,6 +16004,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Protected Audiences Debugging is enabled.
     </message>
 
+    <!-- Infobar shown when test-third-party-cookies switch is enabled -->
+    <message name="IDS_TEST_THIRD_PARTY_COOKIE_BLOCKING_PHASEOUT_INFO" desc="Text of infobar that shows up when the user starts Chrome with the --test-third-party-cookie-phaseout command line flag">
+      You have enabled testing third-party cookie phaseout. This cannot be overridden by the settings page. If you want to re-enable third-party cookies, relaunch Chrome with this feature disabled.
+    </message>
+
     <!-- Experimental enterprise plus_addresses feature strings -->
     <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">
       Lorem Ipsum
