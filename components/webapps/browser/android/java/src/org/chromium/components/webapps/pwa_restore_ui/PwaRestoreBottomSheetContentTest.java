@@ -55,6 +55,8 @@ public final class PwaRestoreBottomSheetContentTest {
         Assert.assertEquals(BottomSheetContent.ContentPriority.HIGH,
                 pwaRestoreBottomSheetContent.getPriority());
 
+        Assert.assertEquals(BottomSheetContent.HeightMode.DISABLED,
+                pwaRestoreBottomSheetContent.getHalfHeightRatio(), 0.0001);
         Assert.assertEquals(1f, pwaRestoreBottomSheetContent.getFullHeightRatio(), 0.0001);
         Assert.assertEquals(0, pwaRestoreBottomSheetContent.getVerticalScrollOffset());
         Assert.assertFalse(pwaRestoreBottomSheetContent.swipeToDismissEnabled());

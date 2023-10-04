@@ -217,6 +217,9 @@
       <message name="IDS_PWA_RESTORE_TITLE_PEEKING" desc="The sheet title when the PWA Restore BottomSheet UI is in peeking state.">
          Restore your web apps
       </message>
+      <message name="IDS_PWA_RESTORE_BUTTON_DESELECT" desc="The label for the 'Deselect All' button.">
+         Deselect all
+      </message>
       <message name="IDS_PWA_RESTORE_BUTTON_EXPANDED" desc="The button label when the PWA Restore BottomSheet UI is in expanded state.">
          Restore web apps
       </message>

@@ -48,6 +48,8 @@ public class PwaRestoreProperties {
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> EXPANDED_TITLE =
             new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<String> DESELECT_BUTTON_LABEL =
+            new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> EXPANDED_BUTTON_LABEL =
             new WritableObjectPropertyKey<>();
 
@@ -55,6 +57,8 @@ public class PwaRestoreProperties {
     static final ReadableObjectPropertyKey<OnClickListener> BACK_BUTTON_ON_CLICK_CALLBACK =
             new ReadableObjectPropertyKey<>();
     static final ReadableObjectPropertyKey<OnClickListener> REVIEW_BUTTON_ON_CLICK_CALLBACK =
+            new ReadableObjectPropertyKey<>();
+    static final ReadableObjectPropertyKey<OnClickListener> DESELECT_BUTTON_ON_CLICK_CALLBACK =
             new ReadableObjectPropertyKey<>();
     static final ReadableObjectPropertyKey<OnClickListener> RESTORE_BUTTON_ON_CLICK_CALLBACK =
             new ReadableObjectPropertyKey<>();
@@ -66,17 +70,20 @@ public class PwaRestoreProperties {
             PEEK_BUTTON_LABEL,
             EXPANDED_DESCRIPTION,
             EXPANDED_TITLE,
+            DESELECT_BUTTON_LABEL,
             EXPANDED_BUTTON_LABEL,
             BACK_BUTTON_ON_CLICK_CALLBACK,
             REVIEW_BUTTON_ON_CLICK_CALLBACK,
+            DESELECT_BUTTON_ON_CLICK_CALLBACK,
             RESTORE_BUTTON_ON_CLICK_CALLBACK,
     };
 
-    static PropertyModel createModel(
-            Runnable onReviewClicked, Runnable onBackClicked, Runnable onRestoreClicked) {
+    static PropertyModel createModel(Runnable onReviewClicked, Runnable onBackClicked,
+            Runnable onDeselectClicked, Runnable onRestoreClicked) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(BACK_BUTTON_ON_CLICK_CALLBACK, v -> onBackClicked.run())
                 .with(REVIEW_BUTTON_ON_CLICK_CALLBACK, v -> onReviewClicked.run())
+                .with(DESELECT_BUTTON_ON_CLICK_CALLBACK, v -> onDeselectClicked.run())
                 .with(RESTORE_BUTTON_ON_CLICK_CALLBACK, v -> onRestoreClicked.run())
                 .build();
     }
