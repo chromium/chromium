@@ -52,7 +52,6 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -154,18 +153,27 @@ void SetWidgetBoundsAndMaybeAnimateTransform(
   window->SetTransform(gfx::Transform());
 }
 
+bool IsContinuousScrollInProgress() {
+  return features::IsContinuousOverviewScrollAnimationEnabled() &&
+         Shell::Get()
+             ->overview_controller()
+             ->is_continuous_scroll_in_progress();
+}
+
 }  // namespace
 
 OverviewItem::OverviewItem(aura::Window* window,
                            OverviewSession* overview_session,
                            OverviewGrid* overview_grid,
-                           WindowDestructionDelegate* delegate)
+                           WindowDestructionDelegate* delegate,
+                           bool eligible_for_shadow_config)
     : OverviewItemBase(overview_session,
                        overview_grid,
                        window->GetRootWindow()),
       root_window_(window->GetRootWindow()),
       transform_window_(this, window),
       window_destruction_delegate_(delegate),
+      eligible_for_shadow_config_(eligible_for_shadow_config),
       animation_disabler_(window) {
   CHECK(window_destruction_delegate_);
   CreateItemWidget();
@@ -181,6 +189,39 @@ OverviewItem::~OverviewItem() {
 
 void OverviewItem::UpdateItemContentViewForMinimizedWindow() {
   overview_item_view_->RefreshPreviewView();
+}
+
+void OverviewItem::UpdateRoundedCorners() {
+  // TODO(sammiequon): Clean up this function.
+
+  // Do not show the rounded corners and the shadow if overview is shutting
+  // down or we're currently in entering overview animation. Also don't update
+  // or animate the window's frame header clip under these conditions. If the
+  // feature ContinuousOverviewScrollAnimation is enabled, always show rounded
+  // corners for minimized windows, and show rounded corners for non-minimized
+  // windows after the continuous scroll has ended.
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  bool show_rounded_corners_for_start_animation = false;
+  if (features::IsContinuousOverviewScrollAnimationEnabled() &&
+      !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    show_rounded_corners_for_start_animation =
+        transform_window_.IsMinimizedOrTucked() ||
+        !IsContinuousScrollInProgress();
+  } else {
+    show_rounded_corners_for_start_animation =
+        !overview_controller->IsInStartAnimation();
+  }
+
+  const bool is_shutting_down =
+      !overview_controller || !overview_controller->InOverviewSession();
+  const bool should_show_rounded_corners =
+      !is_shutting_down && show_rounded_corners_for_start_animation;
+  if (should_show_rounded_corners) {
+    overview_item_view_->RefreshItemVisuals();
+    if (!transform_window_.IsMinimizedOrTucked()) {
+      transform_window_.UpdateRoundedCorners(should_show_rounded_corners);
+    }
+  }
 }
 
 OverviewAnimationType OverviewItem::GetExitOverviewAnimationType() const {
@@ -522,113 +563,35 @@ views::View* OverviewItem::GetBackDropView() const {
 }
 
 void OverviewItem::UpdateRoundedCornersAndShadow() {
-  // TODO(sammiequon): Clean up this function.
+  UpdateRoundedCorners();
 
-  // Do not show the rounded corners and the shadow if overview is shutting
-  // down or we're currently in entering overview animation. Also don't update
-  // or animate the window's frame header clip under these conditions. If the
-  // feature ContinuousOverviewScrollAnimation is enabled, always show rounded
-  // corners for minimized windows, and show rounded corners for non-minimized
-  // windows after the continuous scroll has ended.
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  const bool continuous_scroll_in_progress =
-      features::IsContinuousOverviewScrollAnimationEnabled() &&
-      Shell::Get()->overview_controller()->is_continuous_scroll_in_progress();
-  bool show_rounded_corners_for_start_animation = false;
-  if (features::IsContinuousOverviewScrollAnimationEnabled() &&
-      !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-    show_rounded_corners_for_start_animation =
-        transform_window_.IsMinimizedOrTucked() ||
-        !continuous_scroll_in_progress;
-  } else {
-    show_rounded_corners_for_start_animation =
-        !overview_controller->IsInStartAnimation();
-  }
-
-  const bool is_shutting_down =
-      !overview_controller || !overview_controller->InOverviewSession();
-  const bool should_show_rounded_corners =
-      !is_shutting_down && show_rounded_corners_for_start_animation;
-  if (should_show_rounded_corners) {
-    overview_item_view_->RefreshItemVisuals();
-    if (!transform_window_.IsMinimizedOrTucked()) {
-      transform_window_.UpdateRoundedCorners(should_show_rounded_corners);
-    }
-  }
-
-  // In addition, the shadow should be hidden if
-  // 1) this overview item is the drop target window or
-  // 2) this overview item is in animation.
-  // If a continuous scroll is in progress, minimized windows have rounded
-  // corners but no shadows.
-  bool should_show_shadow_for_rounded_corners = false;
-  if (features::IsContinuousOverviewScrollAnimationEnabled()) {
-    should_show_shadow_for_rounded_corners = !continuous_scroll_in_progress;
-  } else {
-    should_show_shadow_for_rounded_corners = should_show_rounded_corners;
-  }
-
-  const bool should_show_shadow = should_show_shadow_for_rounded_corners &&
-                                  !overview_grid_->IsDropTargetItem(this) &&
-                                  !transform_window_.GetOverviewWindow()
-                                       ->layer()
-                                       ->GetAnimator()
-                                       ->is_animating();
-
-  if (should_show_shadow) {
-    // The shadow should always match the size of the item minus the border
-    // instead of the transformed window or preview view, since for the window
-    // which has `kPillarBoxed` or `kLetterBoxed` dimension types, it doesn't
-    // occupy the whole remaining area of the overview item widget minus the
-    // header view in which case, the shadow looks weird if it matches the size
-    // of the transformed window or preview view.
-    gfx::RectF shadow_bounds;
-    if (chromeos::features::IsJellyrollEnabled()) {
-      shadow_bounds = target_bounds_;
-    } else {
-      shadow_bounds = GetWindowTargetBoundsWithInsets();
-    }
-    SetShadowBounds(absl::make_optional(shadow_bounds));
-  } else {
-    SetShadowBounds(absl::nullopt);
-  }
-}
-
-void OverviewItem::SetShadowBounds(
-    absl::optional<gfx::RectF> bounds_in_screen) {
-  // Shadow is normally turned off during animations and reapplied when they
-  // are finished. On destruction, `shadow_` is cleaned up before
-  // `transform_window_`, which may call this function, so early exit if
-  // `shadow_` is nullptr.
-  if (!shadow_) {
+  // The shadow should not be created if `this` is hosted by an
+  // `OverviewGroupItem` together with another `OverviewItem` (the group-level
+  // shadow will be installed instead).
+  if (!eligible_for_shadow_config_) {
     return;
   }
 
-  if (!bounds_in_screen) {
-    shadow_->GetLayer()->SetVisible(false);
-    return;
-  }
+  // The shadow should be hidden if
+  // 1) Rounded corners are available;
+  // 2) `this` is the drop target window;
+  // 3) `this` is being animated.
+  const bool is_animating = transform_window_.GetOverviewWindow()
+                                ->layer()
+                                ->GetAnimator()
+                                ->is_animating() ||
+                            IsContinuousScrollInProgress();
+  const bool shadow_visible = !GetRoundedCorners().IsEmpty() &&
+                              !overview_grid_->IsDropTargetItem(this) &&
+                              !is_animating;
 
-  shadow_->GetLayer()->SetVisible(true);
-  gfx::Rect bounds_in_item =
-      gfx::Rect(item_widget_->GetNativeWindow()->GetTargetBounds().size());
-
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-  const bool continuous_scroll =
-      features::IsContinuousOverviewScrollAnimationEnabled() &&
-      Shell::Get()->overview_controller()->is_continuous_scroll_in_progress();
-  if (!is_jellyroll_enabled || continuous_scroll) {
-    bounds_in_item.Inset(gfx::Insets::TLBR(kHeaderHeightDp, 0, 0, 0));
-  }
-
-  bounds_in_item.ClampToCenteredSize(
-      gfx::ToRoundedSize(bounds_in_screen->size()));
-  shadow_->SetContentBounds(bounds_in_item);
-  if (continuous_scroll) {
-    shadow_->SetRoundedCornerRadius(/*corner_radius=*/0.f);
-  } else if (is_jellyroll_enabled) {
-    shadow_->SetRoundedCornerRadius(kOverviewItemCornerRadius);
-  }
+  // The shadow should always match the size of the item minus the border
+  // instead of the transformed window or preview view, since for the window
+  // which has `kPillarBoxed` or `kLetterBoxed` dimension types, it doesn't
+  // occupy the whole remaining area of the overview item widget minus the
+  // header view in which case, the shadow will look weird if it matches the
+  // size of the transformed window or preview view.
+  RefreshShadowVisuals(shadow_visible);
 }
 
 void OverviewItem::SetOpacity(float opacity) {
@@ -656,9 +619,7 @@ void OverviewItem::OnStartingAnimationComplete() {
     // should already be shown.
     overview_item_view_->SetHeaderVisibility(
         OverviewItemView::HeaderVisibility::kVisible, /*animate=*/true);
-  } else if (!Shell::Get()
-                  ->overview_controller()
-                  ->is_continuous_scroll_in_progress() &&
+  } else if (!IsContinuousScrollInProgress() &&
              overview_session_->enter_exit_overview_type() ==
                  OverviewEnterExitType::
                      kContinuousAnimationEnterOnScrollUpdate) {
@@ -733,7 +694,7 @@ void OverviewItem::RevertHideForSavedDeskLibrary(bool animate) {
 }
 
 void OverviewItem::CloseWindows() {
-  SetShadowBounds(/*bounds_in_screen=*/absl::nullopt);
+  RefreshShadowVisuals(/*shadow_visible=*/false);
 
   gfx::RectF inset_bounds(target_bounds_);
   inset_bounds.Inset(gfx::InsetsF::VH(target_bounds_.height() * kPreCloseScale,
@@ -1204,7 +1165,9 @@ void OverviewItem::CreateItemWidget() {
   // Overview uses custom animations so remove the default ones.
   wm::SetWindowVisibilityAnimationTransition(widget_window, wm::ANIMATE_NONE);
 
-  ConfigureTheShadow();
+  if (eligible_for_shadow_config_) {
+    ConfigureTheShadow();
+  }
 
   overview_item_view_ =
       item_widget_->SetContentsView(std::make_unique<OverviewItemView>(
@@ -1236,9 +1199,9 @@ void OverviewItem::OnItemSpawnedAnimationCompleted() {
 void OverviewItem::OnItemBoundsAnimationStarted() {
   // Remove the shadow before animating because it may affect animation
   // performance. The shadow will be added back once the animation is completed.
-  // Note that we can't use UpdateRoundedCornersAndShadow() since we don't want
-  // to update the rounded corners.
-  SetShadowBounds(absl::nullopt);
+  // Note that we can't use `UpdateRoundedCornersAndShadow()` since we don't
+  // want to update the rounded corners.
+  RefreshShadowVisuals(/*shadow_visible=*/false);
 }
 
 void OverviewItem::OnItemBoundsAnimationEnded() {

@@ -56,7 +56,6 @@ class OverviewGroupItem : public OverviewItemBase,
   OverviewFocusableView* GetFocusableView() const override;
   views::View* GetBackDropView() const override;
   void UpdateRoundedCornersAndShadow() override;
-  void SetShadowBounds(absl::optional<gfx::RectF> bounds_in_screen) override;
   void SetOpacity(float opacity) override;
   float GetOpacity() const override;
   void PrepareForOverview() override;

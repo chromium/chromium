@@ -572,14 +572,15 @@ void OverviewController::OnStartingAnimationComplete(bool canceled) {
     overview_wallpaper_controller_->Blur(/*animate=*/true);
   }
 
-  for (auto& observer : observers_)
-    observer.OnOverviewModeStartingAnimationComplete(canceled);
-
   // Observers should not do anything which may cause overview to quit
   // explicitly (i.e. ToggleOverview()) or implicity (i.e. activation change).
   DCHECK(overview_session_);
   overview_session_->OnStartingAnimationComplete(canceled,
                                                  should_focus_overview_);
+  for (auto& observer : observers_) {
+    observer.OnOverviewModeStartingAnimationComplete(canceled);
+  }
+
   UnpauseOcclusionTracker(kOcclusionPauseDurationForStart);
   TRACE_EVENT_NESTABLE_ASYNC_END1("ui", "OverviewController::EnterOverview",
                                   this, "canceled", canceled);

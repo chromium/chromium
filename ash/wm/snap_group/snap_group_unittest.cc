@@ -50,6 +50,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
@@ -1240,6 +1241,39 @@ TEST_F(SnapGroupEntryPointArm1Test,
   for (const auto& overview_item : window_list) {
     EXPECT_EQ(overview_item->GetRoundedCorners(),
               gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
+  }
+}
+
+// Tests that the shadow for the group item in overview will be applied on the
+// group-level.
+TEST_F(SnapGroupEntryPointArm1Test, OverviewGroupItemShadow) {
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow(gfx::Rect(100, 100)));
+  SnapTwoTestWindowsInArm1(w0.get(), w1.get());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+  ASSERT_TRUE(overview_controller->overview_session());
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto& window_list = overview_grid->window_list();
+  ASSERT_EQ(window_list.size(), 2u);
+
+  // Wait until the post task to `UpdateRoundedCornersAndShadow()` triggered in
+  // `OverviewController::DelayedUpdateRoundedCornersAndShadow()` is finished.
+  ShellTestApi().WaitForOverviewAnimationState(
+      OverviewAnimationState::kEnterAnimationComplete);
+  base::RunLoop().RunUntilIdle();
+  for (const auto& overview_item : window_list) {
+    const auto shadow_content_bounds =
+        overview_item->get_shadow_content_bounds_for_testing();
+    ASSERT_TRUE(!shadow_content_bounds.IsEmpty());
+    const auto widget_bounds =
+        overview_item->item_widget()->GetNativeWindow()->GetBoundsInScreen();
+    EXPECT_EQ(shadow_content_bounds.size(), widget_bounds.size());
   }
 }
 

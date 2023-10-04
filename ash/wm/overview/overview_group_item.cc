@@ -42,10 +42,13 @@ OverviewGroupItem::OverviewGroupItem(const Windows& windows,
   for (auto* window : windows) {
     // Create the overview items hosted by `this`, which will be the delegate to
     // handle the window destroying if the overview representation for the
-    // window is hosted by `this`.
+    // window is hosted by `this`. We also need to explicitly disable the shadow
+    // to be installed on individual overview item hosted by `this` as the
+    // group-level shadow will be installed instead.
     std::unique_ptr<OverviewItem> overview_item =
         std::make_unique<OverviewItem>(window, overview_session_,
-                                       overview_grid_, /*delegate=*/this);
+                                       overview_grid_, /*delegate=*/this,
+                                       /*eligible_for_shadow_config=*/false);
 
     // Disallow events to be forwarded to the individual overview item(s) hosted
     // by `this` so that we can perform group-level operation on event received
@@ -139,11 +142,9 @@ gfx::RectF OverviewGroupItem::GetTargetBoundsInScreen() const {
 }
 
 gfx::RectF OverviewGroupItem::GetWindowTargetBoundsWithInsets() const {
-  // TODO(b/295067835): `target_bounds_` will be updated when we start working
-  // on the actual implementation of `SetBounds()`.
-  gfx::RectF item_target_bounds = target_bounds_;
-  item_target_bounds.Inset(gfx::InsetsF::TLBR(kHeaderHeightDp, 0, 0, 0));
-  return item_target_bounds;
+  gfx::RectF target_bounds_with_insets = target_bounds_;
+  target_bounds_with_insets.Inset(gfx::InsetsF::TLBR(kHeaderHeightDp, 0, 0, 0));
+  return target_bounds_with_insets;
 }
 
 gfx::RectF OverviewGroupItem::GetTransformedBounds() const {
@@ -177,12 +178,11 @@ views::View* OverviewGroupItem::GetBackDropView() const {
 
 void OverviewGroupItem::UpdateRoundedCornersAndShadow() {
   for (const auto& overview_item : overview_items_) {
-    overview_item->UpdateRoundedCornersAndShadow();
+    overview_item->UpdateRoundedCorners();
   }
-}
 
-void OverviewGroupItem::SetShadowBounds(
-    absl::optional<gfx::RectF> bounds_in_screen) {}
+  RefreshShadowVisuals(/*shadow_visible=*/true);
+}
 
 void OverviewGroupItem::SetOpacity(float opacity) {}
 

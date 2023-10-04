@@ -809,8 +809,9 @@ void OverviewSession::SetWindowListNotAnimatedWhenExiting(
 
 void OverviewSession::UpdateRoundedCornersAndShadow() {
   for (auto& grid : grid_list_)
-    for (auto& window : grid->window_list())
+    for (auto& window : grid->window_list()) {
       window->UpdateRoundedCornersAndShadow();
+    }
 }
 
 void OverviewSession::OnStartingAnimationComplete(bool canceled,

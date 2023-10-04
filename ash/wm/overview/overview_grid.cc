@@ -514,9 +514,9 @@ OverviewGrid::OverviewGrid(aura::Window* root_window,
     // windows before entering overview mode again in the
     // OnImplicitAnimationsCompleted() of the observer of the
     // available-workspace-covering window's animation.
-    auto* animator = window->layer()->GetAnimator();
-    if (animator->is_animating()) {
-      window->layer()->GetAnimator()->StopAnimating();
+    if (auto* animator = window->layer()->GetAnimator();
+        animator && animator->is_animating()) {
+      animator->StopAnimating();
     }
 
     std::unique_ptr<OverviewItemBase> overview_item_base =
