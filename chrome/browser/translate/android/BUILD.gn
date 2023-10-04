@@ -89,3 +89,27 @@ android_library("javatests") {
     "//ui/android:ui_java_test_support",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "auto_translate_snackbar_controller_unittest.cc" ]
+  deps = [
+    ":android",
+    "//base",
+    "//base/test:test_support",
+    "//components/language/core/browser",
+    "//components/language/core/browser:test_support",
+    "//components/language/core/common",
+    "//components/metrics",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/translate/core/browser",
+    "//components/translate/core/browser:test_support",
+    "//components/translate/core/common",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
