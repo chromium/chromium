@@ -107,6 +107,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 #include "chrome/browser/ash/tether/tether_service_factory.h"
+#include "chrome/browser/ash/trusted_vault/trusted_vault_backend_service_factory_ash.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory_impl.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
@@ -249,6 +250,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   SystemWebAppManagerFactory::GetInstance();
   tether::TetherServiceFactory::GetInstance();
   TokenHandleFetcher::EnsureFactoryBuilt();
+  TrustedVaultBackendServiceFactoryAsh::GetInstance();
   TtsEngineExtensionObserverChromeOS::EnsureFactoryBuilt();
 }
 
