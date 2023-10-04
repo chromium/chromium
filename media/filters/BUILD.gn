@@ -379,7 +379,7 @@ source_set("unit_tests") {
       ]
     }
 
-    if (enable_ffmpeg_video_decoders) {
+    if (enable_ffmpeg_video_decoders && proprietary_codecs) {
       sources += [ "ffmpeg_video_decoder_unittest.cc" ]
     }
   }
