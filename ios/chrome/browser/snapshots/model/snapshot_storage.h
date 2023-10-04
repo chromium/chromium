@@ -111,17 +111,4 @@ class Time;
 
 @end
 
-// Additionnal methods that should only be used for tests.
-@interface SnapshotStorage (TestingAdditions)
-// Requests the grey snapshot for `snapshotID`. If the image is already loaded
-// in memory, this will immediately call back with `callback`. Otherwise, only
-// uses `callback` for the most recent caller. The callback is not guaranteed to
-// be called.
-- (void)greyImageForSnapshotID:(SnapshotID)snapshotID
-                      callback:(void (^)(UIImage*))callback;
-- (BOOL)hasImageInMemory:(SnapshotID)snapshotID;
-- (BOOL)hasGreyImageInMemory:(SnapshotID)snapshotID;
-- (NSUInteger)lruCacheMaxSize;
-@end
-
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_STORAGE_H_
