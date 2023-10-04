@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ash/dbus/vm/vm_applications_service_provider.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_split.h"
@@ -42,10 +45,65 @@
 namespace ash {
 namespace {
 
+class DialogListener : public ui::SelectFileDialog::Listener {
+ public:
+  DialogListener()
+      : dialog_(SelectFileDialogExtension::Create(
+            this,
+            std::make_unique<ChromeSelectFilePolicy>(nullptr))) {
+    CHECK(dialog_);
+  }
+  DialogListener(const DialogListener&) = delete;
+  DialogListener& operator=(const DialogListener&) = delete;
+  ~DialogListener() override { dialog_->ListenerDestroyed(); }
+
+  scoped_refptr<SelectFileDialogExtension> dialog() { return dialog_; }
+
+  // ui::SelectFileDialog::Listener:
+  void FileSelected(const base::FilePath& path,
+                    int index,
+                    void* params) override {
+    MultiFilesSelected({path}, params);
+  }
+  void MultiFilesSelected(const std::vector<base::FilePath>& files,
+                          void* params) override;
+  void FileSelectionCanceled(void* params) override {
+    MultiFilesSelected({}, params);
+  }
+
+ private:
+  const scoped_refptr<SelectFileDialogExtension> dialog_;
+};
+
 struct SelectFileData {
-  scoped_refptr<SelectFileDialogExtension> dialog;
+  DialogListener dialog_listener;
   vm_tools::cicerone::FileSelectedSignal signal;
 };
+
+void DialogListener::MultiFilesSelected(
+    const std::vector<base::FilePath>& files,
+    void* params) {
+  // `params` is the SelectFileData created by
+  // VmApplicationsServiceProvider::SelectFile(). Take back ownership.
+  auto data = base::WrapUnique(static_cast<SelectFileData*>(params));
+
+  ui::EndpointType target = ui::EndpointType::kDefault;
+  if (data->signal.vm_name() == crostini::kCrostiniDefaultVmName) {
+    target = ui::EndpointType::kCrostini;
+  }
+
+  ShareWithVMAndTranslateToFileUrls(
+      target, files,
+      base::BindOnce(
+          [](std::unique_ptr<SelectFileData> data,
+             std::vector<std::string> file_urls) {
+            for (const auto& file_url : file_urls) {
+              data->signal.add_files(file_url);
+            }
+            CiceroneClient::Get()->FileSelected(data->signal);
+          },
+          std::move(data)));
+}
 
 }  // namespace
 
@@ -205,14 +263,6 @@ void VmApplicationsServiceProvider::SelectFile(
   }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 
-  // SelectFileDialog will take ownership of |data| when we call SelectFile(),
-  // and we will take back ownership in MultiFilesSelected().
-  auto data = std::make_unique<SelectFileData>();
-  data->signal.set_vm_name(request.vm_name());
-  data->signal.set_container_name(request.container_name());
-  data->signal.set_owner_id(request.owner_id());
-  data->signal.set_select_file_token(request.select_file_token());
-
   // Match strings used by FilesApp GetDialogTypeAsString().
   ui::SelectFileDialog::Type type = ui::SelectFileDialog::SELECT_OPEN_FILE;
   if (request.type() == "open-multi-file") {
@@ -252,20 +302,29 @@ void VmApplicationsServiceProvider::SelectFile(
   int file_type_index = 0;
   ParseSelectFileDialogFileTypes(request.allowed_extensions(), &file_types,
                                  &file_type_index);
-  data->dialog = SelectFileDialogExtension::Create(
-      this, std::make_unique<ChromeSelectFilePolicy>(nullptr));
-  // Release ownership of |data| and take back in MultiFilesSelected().
-  void* params = static_cast<void*>(data.get());
 
-  data.release()->dialog->SelectFileWithFileManagerParams(
-      type, title, default_path, &file_types, file_type_index, params, owner,
+  auto data = std::make_unique<SelectFileData>();
+  data->signal.set_vm_name(request.vm_name());
+  data->signal.set_container_name(request.container_name());
+  data->signal.set_owner_id(request.owner_id());
+  data->signal.set_select_file_token(request.select_file_token());
+
+  // Grab the dialog from `data` before releasing it.
+  scoped_refptr<SelectFileDialogExtension> dialog =
+      data->dialog_listener.dialog();
+  // Release ownership of `data` to `dialog` and take back in
+  // DialogListener::MultiFilesSelected().
+  dialog->SelectFileWithFileManagerParams(
+      type, title, default_path, &file_types, file_type_index, data.release(),
+      owner,
       /*search_query=*/"", /*show_android_picker_apps=*/false);
 }
 
+// static
 void VmApplicationsServiceProvider::ParseSelectFileDialogFileTypes(
     const std::string& allowed_extensions,
     ui::SelectFileDialog::FileTypeInfo* file_types,
-    int* file_type_index) const {
+    int* file_type_index) {
   file_types->extensions.clear();
   file_types->extension_description_overrides.clear();
   file_types->include_all_files = false;
@@ -302,40 +361,6 @@ void VmApplicationsServiceProvider::ParseSelectFileDialogFileTypes(
       ++i;
     }
   }
-}
-
-void VmApplicationsServiceProvider::FileSelected(const base::FilePath& path,
-                                                 int index,
-                                                 void* params) {
-  MultiFilesSelected({path}, params);
-}
-
-void VmApplicationsServiceProvider::MultiFilesSelected(
-    const std::vector<base::FilePath>& files,
-    void* params) {
-  auto data =
-      base::WrapUnique<SelectFileData>(static_cast<SelectFileData*>(params));
-
-  ui::EndpointType target = ui::EndpointType::kDefault;
-  if (data->signal.vm_name() == crostini::kCrostiniDefaultVmName) {
-    target = ui::EndpointType::kCrostini;
-  }
-
-  ShareWithVMAndTranslateToFileUrls(
-      target, files,
-      base::BindOnce(
-          [](std::unique_ptr<SelectFileData> data,
-             std::vector<std::string> file_urls) {
-            for (const auto& file_url : file_urls) {
-              data->signal.add_files(file_url);
-            }
-            CiceroneClient::Get()->FileSelected(data->signal);
-          },
-          std::move(data)));
-}
-
-void VmApplicationsServiceProvider::FileSelectionCanceled(void* params) {
-  MultiFilesSelected({}, params);
 }
 
 }  // namespace ash

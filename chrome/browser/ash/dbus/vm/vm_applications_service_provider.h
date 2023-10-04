@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_DBUS_VM_VM_APPLICATIONS_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_DBUS_VM_VM_APPLICATIONS_SERVICE_PROVIDER_H_
 
+#include <string>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
@@ -20,8 +22,7 @@ namespace ash {
 // This class exports D-Bus methods for functions that we want to be available
 // to the Crostini container.
 class VmApplicationsServiceProvider
-    : public CrosDBusService::ServiceProviderInterface,
-      public ui::SelectFileDialog::Listener {
+    : public CrosDBusService::ServiceProviderInterface {
  public:
   VmApplicationsServiceProvider();
 
@@ -55,18 +56,11 @@ class VmApplicationsServiceProvider
   void SelectFile(dbus::MethodCall* method_call,
                   dbus::ExportedObject::ResponseSender response_sender);
 
-  void ParseSelectFileDialogFileTypes(
+  // Exposed in the header so unit tests can call it.
+  static void ParseSelectFileDialogFileTypes(
       const std::string& allowed_extensions,
       ui::SelectFileDialog::FileTypeInfo* file_types,
-      int* file_type_index) const;
-
-  // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const base::FilePath& path,
-                    int index,
-                    void* params) override;
-  void MultiFilesSelected(const std::vector<base::FilePath>& files,
-                          void* params) override;
-  void FileSelectionCanceled(void* params) override;
+      int* file_type_index);
 
   base::WeakPtrFactory<VmApplicationsServiceProvider> weak_ptr_factory_{this};
 };
