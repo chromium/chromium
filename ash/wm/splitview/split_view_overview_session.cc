@@ -64,6 +64,18 @@ SplitViewOverviewSession::~SplitViewOverviewSession() {
   WindowState::Get(window_)->RemoveObserver(this);
 }
 
+void SplitViewOverviewSession::Init(
+    absl::optional<OverviewStartAction> action,
+    absl::optional<OverviewEnterExitType> type) {
+  if (!IsInOverviewSession()) {
+    // Overview may already be in session, if a window was dragged to split view
+    // from overview in clamshell mode.
+    Shell::Get()->overview_controller()->StartOverview(
+        action.value_or(OverviewStartAction::kSplitView),
+        type.value_or(OverviewEnterExitType::kNormal));
+  }
+}
+
 chromeos::WindowStateType SplitViewOverviewSession::GetWindowStateType() const {
   WindowState* window_state = WindowState::Get(window_);
   CHECK(window_state->IsSnapped());

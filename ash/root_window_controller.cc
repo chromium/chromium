@@ -980,9 +980,13 @@ RootWindowController::security_curtain_widget_controller() {
   return security_curtain_widget_controller_.get();
 }
 
-void RootWindowController::StartSplitViewOverviewSession(aura::Window* window) {
+void RootWindowController::StartSplitViewOverviewSession(
+    aura::Window* window,
+    absl::optional<OverviewStartAction> action,
+    absl::optional<OverviewEnterExitType> type) {
   split_view_overview_session_ =
       std::make_unique<SplitViewOverviewSession>(window);
+  split_view_overview_session_->Init(action, type);
 }
 
 void RootWindowController::EndSplitViewOverviewSession() {

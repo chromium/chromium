@@ -61,10 +61,8 @@ void SnapGroupController::OnWindowSnapped(aura::Window* window) {
 
   if (!IsInOverviewSession()) {
     RootWindowController::ForWindow(window)->StartSplitViewOverviewSession(
-        window);
-    // TODO(b/303146294): Move this to `StartSplitViewOverviewSession()`.
-    Shell::Get()->overview_controller()->StartOverview(
-        OverviewStartAction::kSplitView, OverviewEnterExitType::kNormal);
+        window, OverviewStartAction::kSplitView,
+        OverviewEnterExitType::kNormal);
     // If this is the second window, SplitViewController will add the snap
     // group and end overview.
     // TODO(b/286963080): Move snap group creation here.
