@@ -243,6 +243,9 @@ public final class ProductionSupportedFlagList {
                             + "accessory."),
             Flag.baseFeature(NetworkServiceFeatures.PRIVATE_STATE_TOKENS,
                     "Enables the prototype Private State Tokens API."),
+            Flag.baseFeature(NetworkServiceFeatures.COOKIE_ACCESS_DETAILS_NOTIFICATION_DE_DUPING,
+                    "Enables de-duplicating cookie access details that are sent to observers via"
+                            + " OnCookiesAccessed."),
             Flag.baseFeature(AwFeatures.WEBVIEW_EMPTY_COMPONENT_LOADER_POLICY,
                     "Enables loading a fake empty (no-op) component during WebView startup."),
             Flag.commandLine(AwSwitches.WEBVIEW_SELECTIVE_IMAGE_INVERSION_DARKENING,
