@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_COMMERCE_CORE_SUBSCRIPTIONS_COMMERCE_SUBSCRIPTION_H_
 #define COMPONENTS_COMMERCE_CORE_SUBSCRIPTIONS_COMMERCE_SUBSCRIPTION_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
