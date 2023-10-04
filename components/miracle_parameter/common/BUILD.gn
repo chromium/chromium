@@ -2,8 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("common") {
-  sources = [ "public/miracle_parameter.h" ]
+component("common") {
+  defines = [ "IS_MIRACLE_PARAMETER_IMPL" ]
+
+  sources = [
+    "public/miracle_parameter.cc",
+    "public/miracle_parameter.h",
+  ]
 
   deps = [ "//base" ]
 }

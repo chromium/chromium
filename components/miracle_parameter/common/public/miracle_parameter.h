@@ -5,72 +5,50 @@
 #ifndef COMPONENTS_MIRACLE_PARAMETER_COMMON_PUBLIC_MIRACLE_PARAMETER_H_
 #define COMPONENTS_MIRACLE_PARAMETER_COMMON_PUBLIC_MIRACLE_PARAMETER_H_
 
-#include <type_traits>
+#include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/strcat.h"
-#include "base/system/sys_info.h"
-#include "base/time/time.h"
-#include "base/types/always_false.h"
 
 namespace miracle_parameter {
 
-const int kMiracleParameterMemory512MB = 512;
-const int kMiracleParameterMemory1GB = 1024;
-const int kMiracleParameterMemory2GB = 2 * 1024;
-const int kMiracleParameterMemory4GB = 4 * 1024;
-const int kMiracleParameterMemory8GB = 8 * 1024;
-const int kMiracleParameterMemory16GB = 16 * 1024;
+namespace {
 
-// Base class for MiracleParameter.
-template <typename T>
-class MiracleParameterBase {
- public:
-  constexpr MiracleParameterBase(const base::Feature* feature,
-                                 const char* param_name,
-                                 T default_value)
-      : feature_(feature),
-        param_name_(param_name),
-        default_value_(default_value) {}
-
-  virtual T Get() const = 0;
-
- protected:
-  std::string GetNameWithSuffix() const {
-    int physical_memory_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
-
-    const char* suffix =
-        physical_memory_mb < kMiracleParameterMemory512MB  ? "ForLessThan512MB"
-        : physical_memory_mb < kMiracleParameterMemory1GB  ? "For512MBTo1GB"
-        : physical_memory_mb < kMiracleParameterMemory2GB  ? "For1GBTo2GB"
-        : physical_memory_mb < kMiracleParameterMemory4GB  ? "For2GBTo4GB"
-        : physical_memory_mb < kMiracleParameterMemory8GB  ? "For4GBTo8GB"
-        : physical_memory_mb < kMiracleParameterMemory16GB ? "For8GBTo16GB"
-                                                           : "For16GBAndAbove";
-
-    return base::StrCat({param_name_, suffix});
+template <typename Enum>
+Enum GetFieldTrialParamByFeatureAsEnum(
+    const base::Feature& feature,
+    const std::string& param_name,
+    const Enum default_value,
+    const base::span<const typename base::FeatureParam<Enum>::Option>&
+        options) {
+  std::string string_value =
+      base::GetFieldTrialParamValueByFeature(feature, param_name);
+  if (string_value.empty()) {
+    return default_value;
   }
 
-  // This field is not a raw_ptr<> because this class is used with constexpr.
-  RAW_PTR_EXCLUSION const base::Feature* const feature_;
-  const char* const param_name_;
-  const T default_value_;
-};
+  for (const auto& option : options) {
+    if (string_value == option.name) {
+      return option.value;
+    }
+  }
 
-// Shared declaration for various MiracleParameter<T> types.
-//
-// This template is defined for the following types T:
-//   bool
-//   int
-//   double
-//   std::string
-//   enum types
-//   TimeDelta
-//
-// Unlike FeatureParam, MiracleParameter determines the parameter value based on
-// the amount of physical memory when the following suffix is used as a
-// parameter name. If there are no parameter settings that have the following
-// suffixes, MiracleParameter behaves the same as the FeatureParam.
+  base::LogInvalidEnumValue(feature, param_name, string_value,
+                            static_cast<int>(default_value));
+  return default_value;
+}
+
+}  // namespace
+
+constexpr int kMiracleParameterMemory512MB = 512;
+constexpr int kMiracleParameterMemory1GB = 1024;
+constexpr int kMiracleParameterMemory2GB = 2 * 1024;
+constexpr int kMiracleParameterMemory4GB = 4 * 1024;
+constexpr int kMiracleParameterMemory8GB = 8 * 1024;
+constexpr int kMiracleParameterMemory16GB = 16 * 1024;
+
+// GetParamNameWithSuffix put a parameter name suffix based on
+// the amount of physical memory.
 //
 // - "ForLessThan512MB" for less than 512MB memory devices.
 // - "For512MBTo1GB" for 512MB to 1GB memory devices.
@@ -79,157 +57,109 @@ class MiracleParameterBase {
 // - "For4GBTo8GB" for 4GB to 8GB memory devices.
 // - "For8GBTo16GB" for 8GB to 16GB memory devices.
 // - "For16GBAndAbove" for 16GB memory and above devices.
-template <typename T, bool IsEnum = std::is_enum_v<T>>
-class MiracleParameter {
- public:
-  // Prevent use of MiracleParameter<> with unsupported types (e.g. void*). Uses
-  // T in its definition so that evaluation is deferred until the template is
-  // instantiated.
-  static_assert(base::AlwaysFalse<T>, "unsupported MiracleParameter<> type");
-};
+COMPONENT_EXPORT(MIRACLE_PARAMETER)
+std::string GetParamNameWithSuffix(const std::string& param_name);
 
-// Provides a similar feature with FeatureParam<std::string> except the return
+// Provides a similar behavior with FeatureParam<std::string> except the return
 // value is determined by the amount of physical memory.
-template <>
-class MiracleParameter<std::string> : public MiracleParameterBase<std::string> {
- public:
-  constexpr MiracleParameter(const base::Feature* feature,
-                             const char* param_name,
-                             std::string default_value)
-      : MiracleParameterBase(feature, param_name, std::move(default_value)) {}
+COMPONENT_EXPORT(MIRACLE_PARAMETER)
+std::string GetMiracleParameterAsString(const base::Feature& feature,
+                                        const std::string& param_name,
+                                        const std::string& default_value);
 
-  std::string Get() const override {
-    const std::string value =
-        base::GetFieldTrialParamValueByFeature(*feature_, GetNameWithSuffix());
-
-    if (!value.empty()) {
-      return value;
-    }
-
-    // If there are no memory dependent parameter settings, MiracleParameter
-    // behaves the same as the FeatureParam.
-    const std::string fallback_value =
-        base::GetFieldTrialParamValueByFeature(*feature_, param_name_);
-    return fallback_value.empty() ? default_value_ : fallback_value;
-  }
-};
-
-// Provides a similar feature with FeatureParam<double> except the return value
+// Provides a similar behavior with FeatureParam<double> except the return value
 // is determined by the amount of physical memory.
-template <>
-class MiracleParameter<double> : public MiracleParameterBase<double> {
- public:
-  constexpr MiracleParameter(const base::Feature* feature,
-                             const char* param_name,
-                             double default_value)
-      : MiracleParameterBase(feature, param_name, default_value) {}
+COMPONENT_EXPORT(MIRACLE_PARAMETER)
+double GetMiracleParameterAsDouble(const base::Feature& feature,
+                                   const std::string& param_name,
+                                   double default_value);
 
-  double Get() const override {
-    return base::GetFieldTrialParamByFeatureAsDouble(
-        *feature_, GetNameWithSuffix(),
-        base::GetFieldTrialParamByFeatureAsDouble(*feature_, param_name_,
-                                                  default_value_));
-  }
-};
-
-// Provides a similar feature with FeatureParam<int> except the return value is
+// Provides a similar behavior with FeatureParam<int> except the return value is
 // determined by the amount of physical memory.
-template <>
-class MiracleParameter<int> : public MiracleParameterBase<int> {
- public:
-  constexpr MiracleParameter(const base::Feature* feature,
-                             const char* param_name,
-                             int default_value)
-      : MiracleParameterBase(feature, param_name, default_value) {}
+COMPONENT_EXPORT(MIRACLE_PARAMETER)
+int GetMiracleParameterAsInt(const base::Feature& feature,
+                             const std::string& param_name,
+                             int default_value);
 
-  int Get() const override {
-    return base::GetFieldTrialParamByFeatureAsInt(
-        *feature_, GetNameWithSuffix(),
-        base::GetFieldTrialParamByFeatureAsInt(*feature_, param_name_,
-                                               default_value_));
-  }
-};
+// Provides a similar behavior with FeatureParam<bool> except the return value
+// is determined by the amount of physical memory.
+COMPONENT_EXPORT(MIRACLE_PARAMETER)
+bool GetMiracleParameterAsBool(const base::Feature& feature,
+                               const std::string& param_name,
+                               bool default_value);
 
-// Provides a similar feature with FeatureParam<bool> except the return value is
-// determined by the amount of physical memory.
-template <>
-class MiracleParameter<bool> : public MiracleParameterBase<bool> {
- public:
-  constexpr MiracleParameter(const base::Feature* feature,
-                             const char* param_name,
-                             bool default_value)
-      : MiracleParameterBase(feature, param_name, default_value) {}
+// Provides a similar behavior with FeatureParam<base::TimeDelta> except the
+// return value is determined by the amount of physical memory.
+COMPONENT_EXPORT(MIRACLE_PARAMETER)
+base::TimeDelta GetMiracleParameterAsTimeDelta(const base::Feature& feature,
+                                               const std::string& param_name,
+                                               base::TimeDelta default_value);
 
-  bool Get() const override {
-    return base::GetFieldTrialParamByFeatureAsBool(
-        *feature_, GetNameWithSuffix(),
-        base::GetFieldTrialParamByFeatureAsBool(*feature_, param_name_,
-                                                default_value_));
-  }
-};
-
-// Provides a similar feature with FeatureParam<TimeDelta> except the return
-// value is determined by the amount of physical memory.
-template <>
-class MiracleParameter<base::TimeDelta>
-    : public MiracleParameterBase<base::TimeDelta> {
- public:
-  constexpr MiracleParameter(const base::Feature* feature,
-                             const char* param_name,
-                             base::TimeDelta default_value)
-      : MiracleParameterBase(feature, param_name, std::move(default_value)) {}
-
-  base::TimeDelta Get() const override {
-    return base::GetFieldTrialParamByFeatureAsTimeDelta(
-        *feature_, GetNameWithSuffix(),
-        base::GetFieldTrialParamByFeatureAsTimeDelta(*feature_, param_name_,
-                                                     default_value_));
-  }
-};
-
-// Provides a similar feature with FeatureParam<Enum> except the return value is
-// determined by the amount of physical memory.
+// Provides a similar behavior with FeatureParam<Enum> except the return value
+// is determined by the amount of physical memory.
 template <typename Enum>
-class MiracleParameter<Enum, true> : public MiracleParameterBase<Enum> {
- public:
-  constexpr MiracleParameter(
-      const base::Feature* feature,
-      const char* param_name,
-      const Enum default_value,
-      const base::span<const typename base::FeatureParam<Enum>::Option> options)
-      : MiracleParameterBase<Enum>(feature, param_name, default_value),
-        options_(std::move(options)) {}
+Enum GetMiracleParameterAsEnum(
+    const base::Feature& feature,
+    const std::string& param_name,
+    const Enum default_value,
+    const base::span<const typename base::FeatureParam<Enum>::Option> options) {
+  return GetFieldTrialParamByFeatureAsEnum(
+      feature, GetParamNameWithSuffix(param_name),
+      GetFieldTrialParamByFeatureAsEnum(feature, param_name, default_value,
+                                        options),
+      options);
+}
 
-  Enum Get() const override {
-    return GetFieldTrialParamByFeatureAsEnum(
-        *this->feature_, this->GetNameWithSuffix(),
-        GetFieldTrialParamByFeatureAsEnum(*this->feature_, this->param_name_,
-                                          this->default_value_));
+#define MIRACLE_PARAMETER_FOR_STRING(function_name, feature, param_name,    \
+                                     default_value)                         \
+  std::string function_name() {                                             \
+    static const std::string value =                                        \
+        miracle_parameter::GetMiracleParameterAsString(feature, param_name, \
+                                                       default_value);      \
+    return value;                                                           \
   }
 
- private:
-  Enum GetFieldTrialParamByFeatureAsEnum(const base::Feature& feature,
-                                         const std::string& param_name,
-                                         const Enum default_value) const {
-    std::string string_value =
-        base::GetFieldTrialParamValueByFeature(feature, param_name);
-    if (string_value.empty()) {
-      return default_value;
-    }
-
-    for (const auto& option : options_) {
-      if (string_value == option.name) {
-        return option.value;
-      }
-    }
-
-    base::LogInvalidEnumValue(feature, param_name, string_value,
-                              static_cast<int>(default_value));
-    return default_value;
+#define MIRACLE_PARAMETER_FOR_DOUBLE(function_name, feature, param_name,    \
+                                     default_value)                         \
+  double function_name() {                                                  \
+    static const double value =                                             \
+        miracle_parameter::GetMiracleParameterAsDouble(feature, param_name, \
+                                                       default_value);      \
+    return value;                                                           \
   }
 
-  const base::span<const typename base::FeatureParam<Enum>::Option> options_;
-};
+#define MIRACLE_PARAMETER_FOR_INT(function_name, feature, param_name,     \
+                                  default_value)                          \
+  int function_name() {                                                   \
+    static const int value = miracle_parameter::GetMiracleParameterAsInt( \
+        feature, param_name, default_value);                              \
+    return value;                                                         \
+  }
+
+#define MIRACLE_PARAMETER_FOR_BOOL(function_name, feature, param_name,      \
+                                   default_value)                           \
+  bool function_name() {                                                    \
+    static const bool value = miracle_parameter::GetMiracleParameterAsBool( \
+        feature, param_name, default_value);                                \
+    return value;                                                           \
+  }
+
+#define MIRACLE_PARAMETER_FOR_TIME_DELTA(function_name, feature, param_name,   \
+                                         default_value)                        \
+  base::TimeDelta function_name() {                                            \
+    static const base::TimeDelta value =                                       \
+        miracle_parameter::GetMiracleParameterAsTimeDelta(feature, param_name, \
+                                                          default_value);      \
+    return value;                                                              \
+  }
+
+#define MIRACLE_PARAMETER_FOR_ENUM(function_name, feature, param_name,      \
+                                   default_value, type, options)            \
+  type function_name() {                                                    \
+    static const type value = miracle_parameter::GetMiracleParameterAsEnum( \
+        feature, param_name, default_value, base::make_span(options));      \
+    return value;                                                           \
+  }
 
 }  // namespace miracle_parameter
 
