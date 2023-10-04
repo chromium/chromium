@@ -80,14 +80,7 @@ class HibermanClientTest : public testing::Test {
                     dbus::ObjectProxy::ResponseCallback* callback) {
     std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
     dbus::MessageWriter writer(response.get());
-    if (method_call->GetMember() == ::hiberman::kResumeFromHibernateMethod) {
-      dbus::MessageReader reader(method_call);
-      std::string account_id;
-      // The Resume method should have an account_id string.
-      ASSERT_TRUE(reader.PopString(&account_id));
-      // There's no reply data for this method.
-    } else if (method_call->GetMember() ==
-               ::hiberman::kResumeFromHibernateASMethod) {
+    if (method_call->GetMember() == ::hiberman::kResumeFromHibernateASMethod) {
       dbus::MessageReader reader(method_call);
       const uint8_t* bytes = nullptr;
       size_t length = 0;
