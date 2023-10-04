@@ -344,7 +344,6 @@ class SoftwareVideoEncoderTest
 };
 
 class H264VideoEncoderTest : public SoftwareVideoEncoderTest {};
-class VpxVideoEncoderTest : public SoftwareVideoEncoderTest {};
 class SVCVideoEncoderTest : public SoftwareVideoEncoderTest {};
 
 TEST_P(SoftwareVideoEncoderTest, StopCallbackWrapping) {
@@ -753,7 +752,7 @@ TEST_P(SVCVideoEncoderTest, ChangeLayers) {
   EXPECT_EQ(chunks.size(), total_frames_count);
 }
 
-TEST_P(VpxVideoEncoderTest, ReconfigureWithResize) {
+TEST_P(SoftwareVideoEncoderTest, ReconfigureWithResizingNumberOfThreads) {
   int outputs_count = 0;
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(1024, 1024);
@@ -1155,11 +1154,6 @@ SwVideoTestParams kVpxParams[] = {
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_XRGB}};
 
-INSTANTIATE_TEST_SUITE_P(VpxSpecific,
-                         VpxVideoEncoderTest,
-                         ::testing::ValuesIn(kVpxParams),
-                         PrintTestParams);
-
 INSTANTIATE_TEST_SUITE_P(VpxGeneric,
                          SoftwareVideoEncoderTest,
                          ::testing::ValuesIn(kVpxParams),
@@ -1219,7 +1213,6 @@ INSTANTIATE_TEST_SUITE_P(Av1TemporalSvc,
 #endif  // ENABLE_LIBAOM
 
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(H264VideoEncoderTest);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(VpxVideoEncoderTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SVCVideoEncoderTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SoftwareVideoEncoderTest);
 
