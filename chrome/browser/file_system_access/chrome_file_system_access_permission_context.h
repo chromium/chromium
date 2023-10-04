@@ -314,8 +314,6 @@ class ChromeFileSystemAccessPermissionContext
       base::OnceCallback<void(SensitiveEntryResult)> callback,
       bool should_block);
 
-  void MaybeMigrateOriginToNewSchema(const url::Origin& origin);
-
   // An origin can only specify up to `max_ids_per_origin_` custom IDs per
   // origin (not including the default ID). If this limit is exceeded, evict
   // using LRU.
