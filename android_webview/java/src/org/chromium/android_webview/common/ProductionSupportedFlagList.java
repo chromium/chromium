@@ -409,9 +409,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(MetricsFeatures.MERGE_SUBPROCESS_METRICS_ON_BG_AND_FG,
                     "Controls whether child process histograms are merged on background "
                             + "and foreground."),
-            Flag.baseFeature(MetricsFeatures.RESTORE_UMA_CLIENT_ID_INDEPENDENT_LOGS,
-                    "Controls whether independent logs from PMA files will use the embedded "
-                            + "client uuid as the log's client ID."),
             Flag.baseFeature(MetricsFeatures.FLUSH_PERSISTENT_SYSTEM_PROFILE_ON_WRITE,
                     "Controls whether to schedule a flush of persistent histogram memory "
                             + "immediately after writing a system profile to it."),

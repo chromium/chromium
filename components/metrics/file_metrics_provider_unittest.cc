@@ -25,10 +25,8 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_system_profile.h"
@@ -1215,10 +1213,6 @@ TEST_P(FileMetricsProviderTest, IndependentLogContainsUmaHistograms) {
 // Verifies that if the embedded system profile in the file does not contain
 // a client UUID, the generated independent log's client ID is not overwritten.
 TEST_P(FileMetricsProviderTest, EmbeddedProfileWithoutClientUuid) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kRestoreUmaClientIdIndependentLogs);
-
   ASSERT_FALSE(PathExists(metrics_file()));
   CreateMetricsFileWithHistograms(
       metrics_file(), base::Time::Now(), 2,
@@ -1253,10 +1247,6 @@ TEST_P(FileMetricsProviderTest, EmbeddedProfileWithoutClientUuid) {
 // Verifies that if the embedded system profile in the file contains a client
 // UUID, it is used as the generated independent log's client ID.
 TEST_P(FileMetricsProviderTest, EmbeddedProfileWithClientUuid) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kRestoreUmaClientIdIndependentLogs);
-
   ASSERT_FALSE(PathExists(metrics_file()));
   static constexpr char kProfileClientUuid[] = "abc";
   CreateMetricsFileWithHistograms(

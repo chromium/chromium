@@ -709,21 +709,18 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
         snapshot_manager, source,
         /*required_flags=*/base::HistogramBase::kUmaTargetedHistogramFlag);
 
-    if (base::FeatureList::IsEnabled(
-            features::kRestoreUmaClientIdIndependentLogs)) {
-      // NOTE: If you are adding anything here, consider also changing
-      // MetricsStateManager::ProvidePreviousSessionData().
+    // NOTE: If you are adding anything here, consider also changing
+    // MetricsStateMetricsProvider::ProvidePreviousSessionData().
 
-      // Use the client UUID stored in the system profile (if there is one) as
-      // the independent log's client ID. Usually, this has no effect, but there
-      // are scenarios where the log may have come from a session that had a
-      // different client ID than the one currently in use (e.g., client ID was
-      // reset due to being detected as a cloned install), so make sure to
-      // associate it with the proper one.
-      const std::string& client_uuid = system_profile_proto->client_uuid();
-      if (!client_uuid.empty()) {
-        uma_proto->set_client_id(MetricsLog::Hash(client_uuid));
-      }
+    // Use the client UUID stored in the system profile (if there is one) as the
+    // independent log's client ID. Usually, this has no effect, but there are
+    // scenarios where the log may have come from a session that had a different
+    // client ID than the one currently in use (e.g., client ID was reset due to
+    // being detected as a cloned install), so make sure to associate it with
+    // the proper one.
+    const std::string& client_uuid = system_profile_proto->client_uuid();
+    if (!client_uuid.empty()) {
+      uma_proto->set_client_id(MetricsLog::Hash(client_uuid));
     }
 
     // If |kMetricsServiceAsyncIndependentLogs| is enabled, serialize the log
