@@ -64,7 +64,6 @@ class CreditCardRiskBasedAuthenticator {
   // called again until Requestor::OnRiskBasedAuthenticationComplete has been
   // triggered for this `requester`.
   void Authenticate(CreditCard card,
-                    int64_t billing_customer_id,
                     base::WeakPtr<Requester> requester);
 
   void OnUnmaskResponseReceivedForTesting(

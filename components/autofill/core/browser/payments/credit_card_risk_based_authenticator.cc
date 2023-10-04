@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 
 namespace autofill {
 
@@ -24,7 +25,6 @@ CreditCardRiskBasedAuthenticator::~CreditCardRiskBasedAuthenticator() = default;
 
 void CreditCardRiskBasedAuthenticator::Authenticate(
     CreditCard card,
-    int64_t billing_customer_id,
     base::WeakPtr<Requester> requester) {
   // Authenticate should not be called while there is an existing authentication
   // underway.
@@ -45,7 +45,9 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
     unmask_request_details_->client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowingCardArtImageAndCardProductName);
   }
-  unmask_request_details_->billing_customer_number = billing_customer_id;
+  unmask_request_details_->billing_customer_number =
+      payments::GetBillingCustomerId(
+          autofill_client_->GetPersonalDataManager());
 
   autofill_client_->GetPaymentsClient()->Prepare();
   autofill_client_->LoadRiskData(

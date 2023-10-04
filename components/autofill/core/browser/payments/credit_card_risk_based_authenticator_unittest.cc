@@ -16,7 +16,6 @@ namespace autofill {
 
 namespace {
 constexpr std::string_view kTestNumber = "4234567890123456";
-constexpr int64_t kTestBillingCustomerNumber = 123456;
 }  // namespace
 
 class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
@@ -62,8 +61,7 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
 // Ensure the UnmaskRequestDetails is populated with the correct contents when
 // we initiate a risk based authentication flow.
 TEST_F(CreditCardRiskBasedAuthenticatorTest, UnmaskRequestSetCorrectly) {
-  authenticator_->Authenticate(card_, kTestBillingCustomerNumber,
-                               requester_->GetWeakPtr());
+  authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
   EXPECT_TRUE(payments_client()->unmask_request()->context_token.empty());
   EXPECT_FALSE(payments_client()->unmask_request()->risk_data.empty());
@@ -71,8 +69,7 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, UnmaskRequestSetCorrectly) {
 
 // Test that risk-based authentication returns the full PAN upon success.
 TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardSuccess) {
-  authenticator_->Authenticate(card_, kTestBillingCustomerNumber,
-                               requester_->GetWeakPtr());
+  authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
   // Simulate server returns success with card returned and invoke the callback.
   OnUnmaskResponseReceived(AutofillClient::PaymentsRpcResult::kSuccess,
@@ -85,8 +82,7 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardSuccess) {
 // Test that risk-based authentication doesn't return the full PAN when the
 // server call fails.
 TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardFailure) {
-  authenticator_->Authenticate(card_, kTestBillingCustomerNumber,
-                               requester_->GetWeakPtr());
+  authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
   // Simulate server returns failure and invoke the callback.
   OnUnmaskResponseReceived(AutofillClient::PaymentsRpcResult::kPermanentFailure,
@@ -99,8 +95,7 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardFailure) {
 // Test that risk-based authentication doesn't return the full PAN when the user
 // cancels risk-based authentication.
 TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticationCancelled) {
-  authenticator_->Authenticate(card_, kTestBillingCustomerNumber,
-                               requester_->GetWeakPtr());
+  authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
   // Simulate user cancels the authentication.
   authenticator_->OnCardUnmaskCancelledForTesting();
