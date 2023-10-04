@@ -190,7 +190,7 @@
   </if>
   <if expr="is_win or is_linux">
     <message name="IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_SUBTITLE" desc="Subtitle for the overscroll history navigation setting, which allows you to navigate back and forward by swiping left or right with a touch device.">
-      Navigate back and forward with swipe gesture
+      Navigate back and forward with a swipe gesture
     </message>
   </if>
   <if expr="is_macosx">
