@@ -105,6 +105,7 @@ GPUAdapter::GPUAdapter(
   WGPUAdapterProperties properties = {};
   GetProcs().adapterGetProperties(handle_, &properties);
   is_fallback_adapter_ = properties.adapterType == WGPUAdapterType_CPU;
+  adapter_type_ = properties.adapterType;
   backend_type_ = properties.backendType;
   is_compatibility_mode_ = properties.compatibilityMode;
 
@@ -332,7 +333,7 @@ ScriptPromise GPUAdapter::requestAdapterInfo(
     // only available when the flag is enabled.
     adapter_info = MakeGarbageCollected<GPUAdapterInfo>(
         vendor_, architecture_, device_, description_, driver_,
-        FromDawnEnum(backend_type_));
+        FromDawnEnum(backend_type_), FromDawnEnum(adapter_type_));
   } else {
     // TODO(dawn:1427): If unmask_hints are given ask the user for consent to
     // expose more information and, if given, include device_ and description_

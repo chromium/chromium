@@ -71,6 +71,7 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
   Member<GPU> gpu_;
   bool is_fallback_adapter_;
   WGPUBackendType backend_type_;
+  WGPUAdapterType adapter_type_;
   bool is_consumed_ = false;
   bool is_compatibility_mode_;
   Member<GPUSupportedLimits> limits_;

@@ -959,4 +959,21 @@ const char* FromDawnEnum(WGPUBackendType dawn_enum) {
   return "";
 }
 
+const char* FromDawnEnum(WGPUAdapterType dawn_enum) {
+  switch (dawn_enum) {
+    case WGPUAdapterType_DiscreteGPU:
+      return "discrete GPU";
+    case WGPUAdapterType_IntegratedGPU:
+      return "integrated GPU";
+    case WGPUAdapterType_CPU:
+      return "CPU";
+    case WGPUAdapterType_Unknown:
+      return "unknown";
+    case WGPUAdapterType_Force32:
+    default:
+      NOTREACHED();
+  }
+  return "";
+}
+
 }  // namespace blink
