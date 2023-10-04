@@ -304,10 +304,13 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     ReadAnythingToolbar.maybeUpdateMoreOptions(toolbar);
   }
 
-  private setFontForFontOptions_() {
+  private restoreFontMenu_() {
+    const currentFontIndex =
+        this.fontOptions_.indexOf(chrome.readingMode.fontName);
     let fontOptions: Element[];
     if (this.isReadAloudEnabled_) {
       fontOptions = Array.from(this.$.fontMenu.children);
+      this.setCheckMarkForMenu_(this.$.fontMenu, currentFontIndex);
     } else {
       const shadowRoot = this.shadowRoot;
       assert(shadowRoot);
@@ -315,6 +318,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
           shadowRoot.getElementById('font-select') as HTMLSelectElement;
       assert(select);
       fontOptions = Array.from(select.options);
+      select.selectedIndex = currentFontIndex;
     }
 
     fontOptions.forEach(element => {
@@ -328,7 +332,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   }
 
   restoreSettingsFromPrefs(colorSuffix?: string) {
-    this.setFontForFontOptions_();
+    this.restoreFontMenu_();
 
     if (this.isReadAloudEnabled_) {
       const speechRate = parseFloat(chrome.readingMode.speechRate.toFixed(1));
@@ -340,9 +344,6 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
           chrome.readingMode.highlightGranularity ===
           chrome.readingMode.highlightOn);
     }
-    this.setCheckMarkForMenu_(
-        this.$.fontMenu,
-        this.fontOptions_.indexOf(chrome.readingMode.fontName));
     this.setCheckMarkForMenu_(
         this.$.colorMenu,
         this.getIndexOfSetting_(this.colorOptions_, colorSuffix));
