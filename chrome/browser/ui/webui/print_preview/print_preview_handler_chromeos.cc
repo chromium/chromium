@@ -23,6 +23,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/print_preview/local_printer_handler_chromeos.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
@@ -67,6 +68,15 @@ base::Value::Dict PrintServersConfigMojomToValue(
       config->fetching_mode ==
           ash::ServerPrintersFetchingMode::kSingleServerOnly);
   return ui_print_servers_config;
+}
+
+base::Value::List ConvertPrintersToValues(
+    const std::vector<crosapi::mojom::LocalDestinationInfoPtr>& printers) {
+  base::Value::List list;
+  for (const crosapi::mojom::LocalDestinationInfoPtr& p : printers) {
+    list.Append(LocalPrinterHandlerChromeos::PrinterToValue(*p));
+  }
+  return list;
 }
 
 }  // namespace
@@ -126,6 +136,11 @@ void PrintPreviewHandlerChromeOS::RegisterMessages() {
       "getShowManagePrinters",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleGetShowManagePrinters,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "observeLocalPrinters",
+      base::BindRepeating(
+          &PrintPreviewHandlerChromeOS::HandleObserveLocalPrinters,
           base::Unretained(this)));
 }
 
@@ -376,6 +391,36 @@ void PrintPreviewHandlerChromeOS::HandleGetShowManagePrinters(
   const bool domain_is_os_settings = initiator->GetLastCommittedURL().DomainIs(
       chrome::kChromeUIOSSettingsHost);
   ResolveJavascriptCallback(args[0], base::Value(!domain_is_os_settings));
+}
+
+void PrintPreviewHandlerChromeOS::HandleObserveLocalPrinters(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  CHECK(args[0].is_string());
+  const std::string& callback_id = args[0].GetString();
+
+  // Each instance of Print Preview only needs to subscribe once.
+  if (local_printers_receiver_.is_bound()) {
+    ResolveJavascriptCallback(callback_id, base::Value());
+    return;
+  }
+
+  local_printer_->AddLocalPrintersObserver(
+      local_printers_receiver_.BindNewPipeAndPassRemoteWithVersion(),
+      base::BindOnce(&PrintPreviewHandlerChromeOS::OnHandleObserveLocalPrinters,
+                     weak_factory_.GetWeakPtr(), callback_id));
+}
+
+void PrintPreviewHandlerChromeOS::OnHandleObserveLocalPrinters(
+    const std::string& callback_id,
+    std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers) {
+  ResolveJavascriptCallback(callback_id, ConvertPrintersToValues(printers));
+}
+
+void PrintPreviewHandlerChromeOS::OnLocalPrintersUpdated(
+    std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers) {
+  FireWebUIListener("local-printers-updated",
+                    ConvertPrintersToValues(printers));
 }
 
 void PrintPreviewHandlerChromeOS::SetInitiatorForTesting(

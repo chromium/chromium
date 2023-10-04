@@ -37,8 +37,10 @@ class PrinterHandler;
 class PrintPreviewHandler;
 
 // The handler for Javascript messages related to the print preview dialog.
-class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
-                                    public crosapi::mojom::PrintServerObserver {
+class PrintPreviewHandlerChromeOS
+    : public content::WebUIMessageHandler,
+      public crosapi::mojom::PrintServerObserver,
+      public crosapi::mojom::LocalPrintersObserver {
  public:
   PrintPreviewHandlerChromeOS();
   PrintPreviewHandlerChromeOS(const PrintPreviewHandlerChromeOS&) = delete;
@@ -120,9 +122,23 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
   // should be hidden if preview launched from the settings SWA.
   void HandleGetShowManagePrinters(const base::Value::List& args);
 
+  void HandleObserveLocalPrinters(const base::Value::List& args);
+
+  // Callback for `HandleGetShowManagePrinters()`.
+  void OnHandleObserveLocalPrinters(
+      const std::string& callback_id,
+      std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers);
+
+  // crosapi::mojom::LocalPrintersObserver Implementation:
+  void OnLocalPrintersUpdated(
+      std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers) override;
+
   void SetInitiatorForTesting(content::WebContents* test_initiator);
 
   mojo::Receiver<crosapi::mojom::PrintServerObserver> receiver_{this};
+
+  mojo::Receiver<crosapi::mojom::LocalPrintersObserver>
+      local_printers_receiver_{this};
 
   // Used for testing, when `GetInitiator` called and `test_initiator` is set
   // then it will be returned instead of calling `PrintPreviewDialogController`

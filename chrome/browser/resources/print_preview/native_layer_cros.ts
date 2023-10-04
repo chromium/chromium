@@ -5,7 +5,7 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 import {Cdd} from './data/cdd.js';
-import {ExtensionDestinationInfo} from './data/local_parsers.js';
+import {ExtensionDestinationInfo, LocalDestinationInfo} from './data/local_parsers.js';
 import {PrintAttemptOutcome, PrinterStatus} from './data/printer_status_cros.js';
 
 export interface PrinterSetupResponse {
@@ -83,6 +83,12 @@ export interface NativeLayerCros {
    * the given print preview initiator.
    */
   getShowManagePrinters(): Promise<boolean>;
+
+  /**
+   * Observes the LocalPrinterObserver then returns the current list of local
+   * printers.
+   */
+  observeLocalPrinters(): Promise<LocalDestinationInfo[]>;
 }
 
 export class NativeLayerCrosImpl implements NativeLayerCros {
@@ -123,6 +129,10 @@ export class NativeLayerCrosImpl implements NativeLayerCros {
 
   getShowManagePrinters() {
     return sendWithPromise('getShowManagePrinters');
+  }
+
+  observeLocalPrinters() {
+    return sendWithPromise('observeLocalPrinters');
   }
 
   static getInstance(): NativeLayerCros {
