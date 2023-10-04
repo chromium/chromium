@@ -410,6 +410,15 @@ void ReadAnythingAppController::AccessibilityEventReceived(
   }
 }
 
+void ReadAnythingAppController::ExecuteJavaScript(std::string script) {
+  if (!render_frame_) {
+    return;
+  }
+  // TODO(b/1266555): Use v8::Function rather than javascript. If possible,
+  // replace this function call with firing an event.
+  render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
+}
+
 void ReadAnythingAppController::OnActiveAXTreeIDChanged(
     const ui::AXTreeID& tree_id,
     ukm::SourceId ukm_source_id,
@@ -426,10 +435,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   model_.ClearPendingUpdates();
   model_.set_requires_distillation(false);
 
-  // TODO(b/1266555): Use v8::Function rather than javascript. If possible,
-  // replace this function call with firing an event.
-  std::string script = "chrome.readingMode.showLoading();";
-  render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
+  ExecuteJavaScript("chrome.readingMode.showLoading();");
 
   // When the UI first constructs, this function may be called before tree_id
   // has been added to the tree list in AccessibilityEventReceived. In that
@@ -508,10 +514,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   PostProcessSelection();
 
   if (model_.is_empty()) {
-    // TODO(b/1266555): Use v8::Function rather than javascript. If possible,
-    // replace this function call with firing an event.
-    std::string script = "chrome.readingMode.showEmpty();";
-    render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
+    ExecuteJavaScript("chrome.readingMode.showEmpty();");
     if (IsSelectable()) {
       base::UmaHistogramEnumeration(string_constants::kEmptyStateHistogramName,
                                     ReadAnythingEmptyState::kEmptyStateShown);
@@ -554,28 +557,18 @@ void ReadAnythingAppController::PostProcessSelection() {
 void ReadAnythingAppController::Draw() {
   // This call should check that the active tree isn't in an undistilled state
   // -- that is, it is awaiting distillation or never requested distillation.
-  // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
-  // replace this function call with firing an event.
-  std::string script = "chrome.readingMode.updateContent();";
-  render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
+  ExecuteJavaScript("chrome.readingMode.updateContent();");
 }
 
 void ReadAnythingAppController::DrawSelection() {
   // This call should check that the active tree isn't in an undistilled state
   // -- that is, it is awaiting distillation or never requested distillation.
-  // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
-  // replace this function call with firing an event.
-  std::string script = "chrome.readingMode.updateSelection();";
-  render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
+  ExecuteJavaScript("chrome.readingMode.updateSelection();");
 }
 
 void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
   model_.OnThemeChanged(std::move(new_theme));
-
-  // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
-  // replace this function call with firing an event.
-  std::string script = "chrome.readingMode.updateTheme();";
-  render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
+  ExecuteJavaScript("chrome.readingMode.updateTheme();");
 }
 
 void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
@@ -589,10 +582,7 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
   model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
                                      font_size, color, speech_rate,
                                      granularity);
-  // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
-  // replace this function call with firing an event.
-  std::string script = "chrome.readingMode.restoreSettingsFromPrefs();";
-  render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
+  ExecuteJavaScript("chrome.readingMode.restoreSettingsFromPrefs();");
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -947,6 +937,9 @@ void ReadAnythingAppController::OnConnected() {
   page_handler_factory_->CreateUntrustedPageHandler(
       receiver_.BindNewPipeAndPassRemote(),
       page_handler_.BindNewPipeAndPassReceiver());
+  if (!render_frame_) {
+    return;
+  }
   render_frame_->GetBrowserInterfaceBroker()->GetInterface(
       std::move(page_handler_factory_receiver));
 }
@@ -1198,13 +1191,15 @@ void ReadAnythingAppController::SetDefaultLanguageCode(
   model_.set_default_language_code(code);
 
   // Signal to the WebUI that the supported fonts may have changed.
-  std::string script = "chrome.readingMode.updateFonts();";
-  render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
+  ExecuteJavaScript("chrome.readingMode.updateFonts();");
 }
 
 void ReadAnythingAppController::SetContentForTesting(
     v8::Local<v8::Value> v8_snapshot_lite,
     std::vector<ui::AXNodeID> content_node_ids) {
+  if (!render_frame_) {
+    return;
+  }
   v8::Isolate* isolate =
       render_frame_->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   ui::AXTreeUpdate snapshot =
