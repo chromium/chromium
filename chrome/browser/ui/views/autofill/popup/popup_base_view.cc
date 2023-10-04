@@ -164,6 +164,7 @@ class PopupBaseView::Widget : public views::Widget {
     // transparent parts (e.g. shadow) overlap parent (assuming that
     // the contents are not x`overlapped).
     if (event->type() == ui::EventType::ET_MOUSE_MOVED &&
+        !GetContentsView()->IsMouseHovered() &&
         parent_content_view->IsMouseHovered()) {
       parent()->SynthesizeMouseMoveEvent();
       // Save the synthesized event position to use it for the exit event
