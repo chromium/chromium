@@ -108,7 +108,15 @@ module.exports = {
       }],
 
       // https://google.github.io/styleguide/tsguide.html#interfaces-vs-type-aliases
-      "@typescript-eslint/consistent-type-definitions": ['error', 'interface'],
+      '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
+
+      // https://google.github.io/styleguide/tsguide.html#visibility
+      '@typescript-eslint/explicit-member-accessibility': ['error', {
+        accessibility: 'no-public',
+        overrides: {
+          parameterProperties: 'off',
+        },
+      }],
 
       // https://google.github.io/styleguide/jsguide.html#naming
       '@typescript-eslint/naming-convention': [

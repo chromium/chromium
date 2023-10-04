@@ -50,7 +50,7 @@ class FlagSearch {
    * Initialises the in page search. Adds searchbox listeners and
    * collates the text elements used for string matching.
    */
-  public init() {
+  init() {
     if (this.initialized) {
       return;
     }
@@ -82,7 +82,7 @@ class FlagSearch {
   /**
    * Clears a search showing all experiments.
    */
-  public clearSearch() {
+  clearSearch() {
     this.searchBox.value = '';
     this.doSearch();
   }
@@ -193,7 +193,7 @@ export class FlagsAppElement extends CustomElement {
       this.getRequiredElement<HTMLButtonElement>('#experiment-restart-button');
   // </if>
 
-  public tabs: Tab[] = [
+  tabs: Tab[] = [
     {
       tabEl: this.getRequiredElement('#tab-available'),
       panelEl: this.getRequiredElement('#tab-content-available'),
@@ -228,7 +228,7 @@ export class FlagsAppElement extends CustomElement {
    * Cause a text string to be announced by screen readers
    * @param text The text that should be announced.
    */
-  public announceStatus(text: string) {
+  announceStatus(text: string) {
     this.getRequiredElement('#screen-reader-status-message').textContent = '';
     setTimeout(() => {
       this.getRequiredElement('#screen-reader-status-message').textContent =
