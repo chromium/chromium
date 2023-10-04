@@ -136,7 +136,7 @@ jobs:
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
         working-directory: wpt
       - name: Setup cache for browser binaries
-        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
         with:
           path: ~/.cache/chromium-bidi
           key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
