@@ -71,9 +71,10 @@ namespace content {
 
 namespace {
 
-struct AttributionReportJsonConverter {
+class AttributionReportJsonConverter {
+ public:
   explicit AttributionReportJsonConverter(base::Time time_origin)
-      : time_origin(time_origin) {}
+      : time_origin_(time_origin) {}
 
   base::Value::Dict ToJson(const AttributionReport& report,
                            bool is_debug_report) const {
@@ -87,26 +88,22 @@ struct AttributionReportJsonConverter {
               // and therefore are sources of nondeterminism in the output.
 
               // Output attribution_destination from the shared_info field.
-              absl::optional<base::Value> shared_info =
-                  report_body.Extract("shared_info");
-              DCHECK(shared_info);
-              std::string* shared_info_str = shared_info->GetIfString();
-              DCHECK(shared_info_str);
-
-              absl::optional<base::Value> shared_info_value =
-                  base::JSONReader::Read(*shared_info_str,
-                                         base::JSON_PARSE_RFC);
-              DCHECK(shared_info_value && shared_info_value->is_dict());
-
-              static constexpr char kKeyAttributionDestination[] =
-                  "attribution_destination";
-              std::string* attribution_destination =
-                  shared_info_value->GetDict().FindString(
-                      kKeyAttributionDestination);
-              DCHECK(attribution_destination);
-              DCHECK(!report_body.contains(kKeyAttributionDestination));
-              report_body.Set(kKeyAttributionDestination,
-                              std::move(*attribution_destination));
+              if (absl::optional<base::Value> shared_info =
+                      report_body.Extract("shared_info");
+                  shared_info.has_value() && shared_info->is_string()) {
+                if (absl::optional<base::Value> shared_info_value =
+                        base::JSONReader::Read(shared_info->GetString(),
+                                               base::JSON_PARSE_RFC)) {
+                  static constexpr char kKeyAttributionDestination[] =
+                      "attribution_destination";
+                  if (absl::optional<base::Value> attribution_destination =
+                          shared_info_value->GetDict().Extract(
+                              kKeyAttributionDestination)) {
+                    report_body.Set(kKeyAttributionDestination,
+                                    std::move(*attribution_destination));
+                  }
+                }
+              }
 
               report_body.Remove("aggregation_service_payloads");
 
@@ -115,23 +112,23 @@ struct AttributionReportJsonConverter {
 
               base::Value::List list;
               for (const auto& contribution : aggregatable_data.contributions) {
-                base::Value::Dict dict;
-                dict.Set("key", attribution_reporting::HexEncodeAggregationKey(
-                                    contribution.key()));
-                dict.Set("value",
-                         base::checked_cast<int>(contribution.value()));
-
-                list.Append(std::move(dict));
+                list.Append(
+                    base::Value::Dict()
+                        .Set("key",
+                             attribution_reporting::HexEncodeAggregationKey(
+                                 contribution.key()))
+                        .Set("value",
+                             base::checked_cast<int>(contribution.value())));
               }
               report_body.Set("histograms", std::move(list));
             },
             [&](const AttributionReport::EventLevelData&) {
-              // Report IDs are a source of nondeterminism, so remove them.
+              // Report IDs are a source of nondeterminism, so remove
+              // them.
               report_body.Remove("report_id");
 
-              bool ok = AdjustScheduledReportTime(report_body,
-                                                  report.initial_report_time());
-              DCHECK(ok);
+              AdjustScheduledReportTime(report_body,
+                                        report.initial_report_time());
             },
             [](const AttributionReport::NullAggregatableData&) {
               NOTREACHED_NORETURN();
@@ -139,62 +136,59 @@ struct AttributionReportJsonConverter {
         },
         report.data());
 
-    base::Value::Dict value;
-    value.Set("payload", std::move(report_body));
-    value.Set("report_url", report.ReportURL(is_debug_report).spec());
-
-    value.Set("report_time",
-              FormatTime(is_debug_report ? report.attribution_info().time
-                                         : report.report_time()));
-
-    return value;
+    return MakeReport(base::Value(std::move(report_body)),
+                      report.ReportURL(is_debug_report),
+                      is_debug_report ? report.attribution_info().time
+                                      : report.report_time());
   }
 
   base::Value::Dict ToJson(const AttributionDebugReport& report,
                            base::Time time) const {
     base::Value::List report_body = report.ReportBody().Clone();
     for (auto& value : report_body) {
-      base::Value::Dict* dict = value.GetIfDict();
-      DCHECK(dict);
+      if (base::Value::Dict* dict = value.GetIfDict()) {
+        if (base::Value::Dict* body = dict->FindDict("body")) {
+          // Report IDs are a source of nondeterminism, so remove them.
+          body->Remove("report_id");
 
-      base::Value::Dict* body = dict->FindDict("body");
-      DCHECK(body);
-
-      // Report IDs are a source of nondeterminism, so remove them.
-      body->Remove("report_id");
-
-      AdjustScheduledReportTime(*body,
-                                report.GetOriginalReportTimeForTesting());
+          AdjustScheduledReportTime(*body,
+                                    report.GetOriginalReportTimeForTesting());
+        }
+      }
     }
 
-    base::Value::Dict value;
-    value.Set("payload", std::move(report_body));
-    value.Set("report_url", report.ReportUrl().spec());
-    value.Set("report_time", FormatTime(time));
-    return value;
+    return MakeReport(base::Value(std::move(report_body)), report.ReportUrl(),
+                      time);
   }
 
   std::string FormatTime(base::Time time) const {
-    base::TimeDelta time_delta = time - time_origin;
+    base::TimeDelta time_delta = time - time_origin_;
     return base::NumberToString(time_delta.InMilliseconds());
   }
 
-  bool AdjustScheduledReportTime(base::Value::Dict& report_body,
+ private:
+  void AdjustScheduledReportTime(base::Value::Dict& report_body,
                                  base::Time original_report_time) const {
     // This field contains a string encoding seconds from the UNIX epoch. It
     // needs to be adjusted relative to the simulator's origin time in order
     // for test output to be consistent.
     std::string* str = report_body.FindString("scheduled_report_time");
-    if (!str) {
-      return false;
+    if (str) {
+      *str = base::NumberToString(
+          (original_report_time - time_origin_).InSeconds());
     }
-
-    *str =
-        base::NumberToString((original_report_time - time_origin).InSeconds());
-    return true;
   }
 
-  const base::Time time_origin;
+  base::Value::Dict MakeReport(base::Value payload,
+                               const GURL& report_url,
+                               base::Time report_time) const {
+    return base::Value::Dict()
+        .Set("payload", std::move(payload))
+        .Set("report_url", report_url.spec())
+        .Set("report_time", FormatTime(report_time));
+  }
+
+  const base::Time time_origin_;
 };
 
 class FakeReportSender : public AttributionReportSender {
