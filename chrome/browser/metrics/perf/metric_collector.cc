@@ -28,10 +28,8 @@ const char kCollectionOutcomeHistogramPrefix[] = "ChromeOS.CWP.Collect";
 const int kMinIntervalBetweenSessionRestoreCollectionsInSec = 30;
 
 // Returns a random TimeDelta uniformly selected between zero and |max|.
-base::TimeDelta RandomTimeDelta(base::TimeDelta max) {
-  if (max.is_zero())
-    return max;
-  return base::Microseconds(base::RandGenerator(max.InMicroseconds()));
+base::TimeDelta RandTimeDelta(base::TimeDelta max) {
+  return max.is_positive() ? base::RandTimeDeltaUpTo(max) : max;
 }
 
 // PerfDataProto is defined elsewhere with more fields than the definition in
@@ -131,7 +129,7 @@ void MetricCollector::ScheduleSuspendDoneCollection(
 
   // Randomly pick a delay before doing the collection.
   base::TimeDelta collection_delay =
-      RandomTimeDelta(resume_params.max_collection_delay);
+      RandTimeDelta(resume_params.max_collection_delay);
   timer_.Start(FROM_HERE, collection_delay,
                base::BindOnce(&MetricCollector::CollectPerfDataAfterResume,
                               GetWeakPtr(), sleep_duration, collection_delay));
@@ -176,7 +174,7 @@ void MetricCollector::ScheduleSessionRestoreCollection(int num_tabs_restored) {
 
   // Randomly pick a delay before doing the collection.
   base::TimeDelta collection_delay =
-      RandomTimeDelta(restore_params.max_collection_delay);
+      RandTimeDelta(restore_params.max_collection_delay);
   timer_.Start(
       FROM_HERE, collection_delay,
       base::BindOnce(&MetricCollector::CollectPerfDataAfterSessionRestore,
@@ -235,7 +233,7 @@ void MetricCollector::ScheduleIntervalCollection() {
   // Pick a random time in the current interval.
   base::TimeTicks scheduled_time =
       next_profiling_interval_start_ +
-      RandomTimeDelta(collection_params_.periodic_interval);
+      RandTimeDelta(collection_params_.periodic_interval);
   // If the scheduled time has already passed in the time it took to make the
   // above calculations, trigger the collection event immediately.
   if (scheduled_time < now)

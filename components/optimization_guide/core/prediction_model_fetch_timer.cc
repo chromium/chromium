@@ -14,11 +14,10 @@ namespace optimization_guide {
 
 namespace {
 
-// Provide a random time delta in seconds before fetching models.
+// Provide a random time delta before fetching models.
 base::TimeDelta RandomFetchDelay() {
-  return base::Seconds(
-      base::RandInt(features::PredictionModelFetchRandomMinDelaySecs(),
-                    features::PredictionModelFetchRandomMaxDelaySecs()));
+  return base::RandTimeDelta(features::PredictionModelFetchRandomMinDelay(),
+                             features::PredictionModelFetchRandomMaxDelay());
 }
 
 }  // namespace

@@ -52,6 +52,33 @@ TEST(RandUtilTest, RandFloat) {
   EXPECT_LE(0.f, number);
 }
 
+TEST(RandUtilTest, RandTimeDelta) {
+  {
+    const auto delta =
+        base::RandTimeDelta(-base::Seconds(2), -base::Seconds(1));
+    EXPECT_GE(delta, -base::Seconds(2));
+    EXPECT_LT(delta, -base::Seconds(1));
+  }
+
+  {
+    const auto delta = base::RandTimeDelta(-base::Seconds(2), base::Seconds(2));
+    EXPECT_GE(delta, -base::Seconds(2));
+    EXPECT_LT(delta, base::Seconds(2));
+  }
+
+  {
+    const auto delta = base::RandTimeDelta(base::Seconds(1), base::Seconds(2));
+    EXPECT_GE(delta, base::Seconds(1));
+    EXPECT_LT(delta, base::Seconds(2));
+  }
+}
+
+TEST(RandUtilTest, RandTimeDeltaUpTo) {
+  const auto delta = base::RandTimeDeltaUpTo(base::Seconds(2));
+  EXPECT_FALSE(delta.is_negative());
+  EXPECT_LT(delta, base::Seconds(2));
+}
+
 TEST(RandUtilTest, BitsToOpenEndedUnitInterval) {
   // Force 64-bit precision, making sure we're not in an 80-bit FPU register.
   volatile double all_zeros = BitsToOpenEndedUnitInterval(0x0);

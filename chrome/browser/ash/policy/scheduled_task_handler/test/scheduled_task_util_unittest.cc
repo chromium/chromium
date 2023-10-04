@@ -150,17 +150,6 @@ TEST(ScheduledTaskUtilTest,
   EXPECT_EQ(delay.value(), base::TimeDeltaFromString("671h19m"));  // 27d23h19m
 }
 
-TEST(ScheduledTaskUtilTest, GenerateRandomDelayInRange) {
-  base::TimeDelta min_delay = base::Milliseconds(0);
-  base::TimeDelta max_delay = base::Milliseconds(120 * 1000);
-
-  for (int i = 0; i < 50; i++) {
-    base::TimeDelta delay = scheduled_task_util::GenerateRandomDelay(120);
-    EXPECT_GE(delay, min_delay);
-    EXPECT_LT(delay, max_delay);
-  }
-}
-
 TEST(ScheduledTaskUtilTest, ParsesEmptyGracePeriodSwitch) {
   base::test::ScopedCommandLine command_line;
 

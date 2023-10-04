@@ -184,7 +184,8 @@ BASE_DECLARE_FEATURE(kDeviceActiveClientChurnObservationCheckMembership);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDeviceForceScheduledReboot);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<int> kDeviceForceScheduledRebootMaxDelay;
+extern const base::FeatureParam<base::TimeDelta>
+    kDeviceForceScheduledRebootMaxDelay;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kInputDeviceSettingsSplit);
 COMPONENT_EXPORT(ASH_CONSTANTS)

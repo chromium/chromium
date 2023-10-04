@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_util.h"
@@ -251,7 +252,7 @@ void DeviceScheduledRebootHandler::ResetState() {
 const base::TimeDelta DeviceScheduledRebootHandler::GetExternalDelay() const {
   return reboot_delay_for_testing_.has_value()
              ? reboot_delay_for_testing_.value()
-             : scheduled_task_util::GenerateRandomDelay(
+             : base::RandTimeDeltaUpTo(
                    ash::features::kDeviceForceScheduledRebootMaxDelay.Get());
 }
 

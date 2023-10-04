@@ -310,12 +310,11 @@ void CastMediaSinkServiceImpl::OpenChannelsWithRandomizedDelay(
   // Add a random backoff between 0s to 5s before opening channels to prevent
   // different browser instances connecting to the same receiver at the same
   // time.
-  base::TimeDelta delay = base::Milliseconds(base::RandInt(0, 50) * 100);
   task_runner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CastMediaSinkServiceImpl::OpenChannels, GetWeakPtr(),
                      cast_sinks, sink_source),
-      delay);
+      base::RandTimeDeltaUpTo(base::Seconds(5)));
 }
 
 void CastMediaSinkServiceImpl::OpenChannels(

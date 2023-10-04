@@ -104,8 +104,8 @@ const char kTxtversLine[] = "\x9txtvers=1";
 // shared resource record set, should be delayed uniformly and randomly in the
 // range of 20-120 ms. This delay is applied in addition to the scheduled delay
 // by rate limiting.
-const base::TimeDelta kMinRandDelayForSharedResult = base::Milliseconds(20);
-const base::TimeDelta kMaxRandDelayForSharedResult = base::Milliseconds(120);
+constexpr auto kMinRandDelayForSharedResult = base::Milliseconds(20);
+constexpr auto kMaxRandDelayForSharedResult = base::Milliseconds(120);
 
 class RandomUuidNameGenerator
     : public network::MdnsResponderManager::NameGenerator {
@@ -316,15 +316,6 @@ struct PendingPacket {
   scoped_refptr<MdnsResponseSendOption> option;
   base::TimeTicks send_ready_time;
 };
-
-// Returns a random TimeDelta between |min| and |max| following the uniform
-// distribution.
-base::TimeDelta GetRandTimeDelta(const base::TimeDelta& min,
-                                 const base::TimeDelta& max) {
-  DCHECK_LE(min, max);
-  return base::Microseconds(
-      base::RandInt(min.InMicroseconds(), max.InMicroseconds()));
-}
 
 }  // namespace
 
@@ -710,8 +701,8 @@ absl::optional<base::TimeDelta> MdnsResponderManager::SocketHandler::
         const MdnsResponseSendOption& option) {
   auto now = tick_clock_->NowTicks();
   const auto extra_delay_for_shared_result =
-      option.shared_result ? GetRandTimeDelta(kMinRandDelayForSharedResult,
-                                              kMaxRandDelayForSharedResult)
+      option.shared_result ? base::RandTimeDelta(kMinRandDelayForSharedResult,
+                                                 kMaxRandDelayForSharedResult)
                            : base::TimeDelta();
 
   // RFC 6762 requires the rate limiting applied on a per-record basis. When a

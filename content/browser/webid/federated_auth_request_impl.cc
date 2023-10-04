@@ -270,12 +270,6 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
   }
 }
 
-// TODO(crbug.com/1344150): Use normal distribution after sufficient data is
-// collected.
-base::TimeDelta GetRandomRejectionTime() {
-  return kMaxRejectionTime * base::RandDouble();
-}
-
 std::string FormatUrlWithDomain(const GURL& url, bool for_display) {
   // We do not use url_formatter::FormatUrlForSecurityDisplay() directly because
   // our UI intentionally shows only the eTLD+1, as it makes for a shorter text
@@ -2166,7 +2160,9 @@ void FederatedAuthRequestImpl::CompleteRequest(
         FROM_HERE,
         base::BindOnce(&FederatedAuthRequestImpl::OnRejectRequest,
                        weak_ptr_factory_.GetWeakPtr()),
-        GetRandomRejectionTime());
+        // TODO(crbug.com/1344150): Use normal distribution after sufficient
+        // data is collected.
+        base::RandTimeDeltaUpTo(kMaxRejectionTime));
   }
 }
 

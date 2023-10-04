@@ -205,24 +205,21 @@ void PasswordStatusCheckService::Shutdown() {
 
 void PasswordStatusCheckService::StartRepeatedUpdates() {
   if (ShouldFindNewCheckTime(profile_)) {
-    base::TimeDelta update_interval =
+    const base::TimeDelta update_interval =
         features::kBackgroundPasswordCheckInterval.Get();
-
-    base::TimeDelta random_delta = base::Microseconds(
-        base::RandGenerator(update_interval.InMicroseconds()));
-    base::Time scheduled_check_time = base::Time::Now() + random_delta;
-
-    SetPasswordCheckSchedulePrefsWithInterval(scheduled_check_time);
+    SetPasswordCheckSchedulePrefsWithInterval(
+        base::Time::Now() + base::RandTimeDeltaUpTo(update_interval));
   }
 
-  // If the scheduled time for the password check is in the future, it should
+  // If the scheduled time for the password check is not yet overdue, it should
   // run at that time. If password check is overdue, pick a random time in the
   // next hour.
   base::TimeDelta password_check_run_delta =
-      GetScheduledPasswordCheckTime() > base::Time::Now()
-          ? GetScheduledPasswordCheckTime() - base::Time::Now()
-          : base::Microseconds(base::RandGenerator(
-                safety_hub::kPasswordCheckOverdueTimeWindow.InMicroseconds()));
+      GetScheduledPasswordCheckTime() - base::Time::Now();
+  if (password_check_run_delta.is_negative()) {
+    password_check_run_delta =
+        base::RandTimeDeltaUpTo(safety_hub::kPasswordCheckOverdueTimeWindow);
+  }
 
   password_check_timer_.Start(
       FROM_HERE, password_check_run_delta,

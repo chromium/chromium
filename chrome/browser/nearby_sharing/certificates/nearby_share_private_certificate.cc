@@ -42,8 +42,8 @@ const char kConsumedSalts[] = "consumed_salts";
 // Generates a random validity bound offset in the interval
 // [0, kNearbyShareMaxPrivateCertificateValidityBoundOffset).
 base::TimeDelta GenerateRandomOffset() {
-  return base::Microseconds(base::RandGenerator(
-      kNearbyShareMaxPrivateCertificateValidityBoundOffset.InMicroseconds()));
+  return base::RandTimeDeltaUpTo(
+      kNearbyShareMaxPrivateCertificateValidityBoundOffset);
 }
 
 // Generates a certificate identifier by hashing the input secret |key|.

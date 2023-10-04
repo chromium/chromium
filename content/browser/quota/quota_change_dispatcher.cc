@@ -24,18 +24,12 @@ namespace {
 constexpr base::TimeDelta kDefaultQuotaChangeIntervalSeconds =
     base::Seconds(60);
 
-base::TimeDelta GetRandomDelay() {
-  int64_t delay_micros = static_cast<int64_t>(
-      base::RandInt(0, 2 * base::Time::kMicrosecondsPerSecond));
-  return base::Microseconds(delay_micros);
-}
-
 }  // namespace
 
 namespace content {
 
 QuotaChangeDispatcher::DelayedStorageKeyListener::DelayedStorageKeyListener()
-    : delay(GetRandomDelay()) {}
+    : delay(base::RandTimeDeltaUpTo(base::Seconds(2))) {}
 QuotaChangeDispatcher::DelayedStorageKeyListener::~DelayedStorageKeyListener() =
     default;
 

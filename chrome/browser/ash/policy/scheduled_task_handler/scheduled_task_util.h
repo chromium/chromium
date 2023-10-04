@@ -53,10 +53,6 @@ std::unique_ptr<icu::Calendar> CalculateNextScheduledTimeAfter(
     const ScheduledTaskExecutor::ScheduledTaskData& data,
     const icu::Calendar& time);
 
-// Calculates random small delay in milliseconds in range [0,
-// max_delay_in_seconds).
-base::TimeDelta GenerateRandomDelay(int max_delay_in_seconds);
-
 // Returns grace period from commandline if present and valid. Returns default
 // grace time otherwise.
 base::TimeDelta GetScheduledRebootGracePeriod();

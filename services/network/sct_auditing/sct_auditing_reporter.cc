@@ -293,8 +293,10 @@ void SCTAuditingReporter::OnCheckReportAllowedStatusComplete(bool allowed) {
 
   // Calculate an estimated minimum delay after which the log is expected to
   // have been ingested by the server.
-  base::TimeDelta random_delay = base::Seconds(base::RandInt(
-      0, configuration_->log_max_ingestion_random_delay.InSeconds()));
+  const auto max_delay = configuration_->log_max_ingestion_random_delay;
+  const base::TimeDelta random_delay = max_delay.is_positive()
+                                           ? base::RandTimeDeltaUpTo(max_delay)
+                                           : base::TimeDelta();
   base::TimeDelta delay = sct_hashdance_metadata_->issued +
                           sct_hashdance_metadata_->log_mmd +
                           configuration_->log_expected_ingestion_delay +

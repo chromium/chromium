@@ -106,11 +106,6 @@ base::Time ComputeRelaunchWindowStartForDay(
   return window_start;
 }
 
-// Returns random TimeDelta uniformly selected between zero and `max`.
-base::TimeDelta GenRandomTimeDelta(base::TimeDelta max) {
-  return base::Microseconds(base::RandGenerator(max.InMicroseconds()));
-}
-
 }  // namespace
 
 // static
@@ -264,7 +259,7 @@ base::Time UpgradeDetector::AdjustDeadline(base::Time deadline,
       next_window_start =
           ComputeRelaunchWindowStartForDay(window, deadline + base::Hours(23));
     }
-    return next_window_start + GenRandomTimeDelta(duration);
+    return next_window_start + base::RandTimeDeltaUpTo(duration);
   }
 
   // Is the deadline within this day's window?
@@ -289,7 +284,7 @@ base::Time UpgradeDetector::AdjustDeadline(base::Time deadline,
 
   // The deadline is after previous day's window. Push the deadline forward into
   // a random interval in the day's window.
-  return window_start + GenRandomTimeDelta(duration);
+  return window_start + base::RandTimeDeltaUpTo(duration);
 }
 
 // static

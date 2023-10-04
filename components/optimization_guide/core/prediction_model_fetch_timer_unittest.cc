@@ -93,9 +93,8 @@ TEST_F(PredictionModelFetchTimerTest, FirstModelFetchSuccess) {
   EXPECT_EQ(features::PredictionModelFetchInterval(),
             prediction_model_fetch_timer_->GetFetchTimerForTesting()
                 ->GetCurrentDelay());
-  MoveClockForwardBy(
-      features::PredictionModelFetchInterval() +
-      base::Seconds(features::PredictionModelFetchRandomMaxDelaySecs()));
+  MoveClockForwardBy(features::PredictionModelFetchInterval() +
+                     features::PredictionModelFetchRandomMaxDelay());
   EXPECT_TRUE(last_model_fetch_time_);
   EXPECT_EQ(PredictionModelFetchTimer::kPeriodicFetch,
             GetPredictionModelFetchTimerState());
@@ -104,9 +103,8 @@ TEST_F(PredictionModelFetchTimerTest, FirstModelFetchSuccess) {
 TEST_F(PredictionModelFetchTimerTest, FirstModelFetchFailure) {
   prediction_model_fetch_timer_->NotifyModelFetchAttempt();
   prediction_model_fetch_timer_->NotifyModelFetchSuccess();
-  MoveClockForwardBy(
-      features::PredictionModelFetchInterval() +
-      base::Seconds(features::PredictionModelFetchRandomMaxDelaySecs()));
+  MoveClockForwardBy(features::PredictionModelFetchInterval() +
+                     features::PredictionModelFetchRandomMaxDelay());
 
   prediction_model_fetch_timer_->MaybeScheduleFirstModelFetch();
   MoveClockTillFirstModelFetch();
@@ -119,12 +117,9 @@ TEST_F(PredictionModelFetchTimerTest, FirstModelFetchFailure) {
   prediction_model_fetch_timer_->SchedulePeriodicModelsFetch();
   auto delay = prediction_model_fetch_timer_->GetFetchTimerForTesting()
                    ->GetCurrentDelay();
-  EXPECT_LE(base::Seconds(features::PredictionModelFetchRandomMinDelaySecs()),
-            delay);
-  EXPECT_GE(base::Seconds(features::PredictionModelFetchRandomMaxDelaySecs()),
-            delay);
-  MoveClockForwardBy(
-      base::Seconds(features::PredictionModelFetchRandomMaxDelaySecs()));
+  EXPECT_LE(features::PredictionModelFetchRandomMinDelay(), delay);
+  EXPECT_GE(features::PredictionModelFetchRandomMaxDelay(), delay);
+  MoveClockForwardBy(features::PredictionModelFetchRandomMaxDelay());
   EXPECT_TRUE(last_model_fetch_time_);
 
   // Without updating the model fetch success attempt, it will retry.
@@ -134,9 +129,8 @@ TEST_F(PredictionModelFetchTimerTest, FirstModelFetchFailure) {
   EXPECT_EQ(features::PredictionModelFetchRetryDelay(),
             prediction_model_fetch_timer_->GetFetchTimerForTesting()
                 ->GetCurrentDelay());
-  MoveClockForwardBy(
-      features::PredictionModelFetchRetryDelay() +
-      base::Seconds(features::PredictionModelFetchRandomMaxDelaySecs()));
+  MoveClockForwardBy(features::PredictionModelFetchRetryDelay() +
+                     features::PredictionModelFetchRandomMaxDelay());
   EXPECT_TRUE(last_model_fetch_time_);
 
   // With model fetch attempt and success updated, it will be periodic fetch.
@@ -147,9 +141,8 @@ TEST_F(PredictionModelFetchTimerTest, FirstModelFetchFailure) {
   EXPECT_EQ(features::PredictionModelFetchInterval(),
             prediction_model_fetch_timer_->GetFetchTimerForTesting()
                 ->GetCurrentDelay());
-  MoveClockForwardBy(
-      features::PredictionModelFetchInterval() +
-      base::Seconds(features::PredictionModelFetchRandomMaxDelaySecs()));
+  MoveClockForwardBy(features::PredictionModelFetchInterval() +
+                     features::PredictionModelFetchRandomMaxDelay());
   EXPECT_TRUE(last_model_fetch_time_);
   EXPECT_EQ(PredictionModelFetchTimer::kPeriodicFetch,
             GetPredictionModelFetchTimerState());
@@ -185,17 +178,14 @@ TEST_F(PredictionModelFetchTimerTest, NewRegistrationFetchEnabled) {
             GetPredictionModelFetchTimerState());
   auto delay = prediction_model_fetch_timer_->GetFetchTimerForTesting()
                    ->GetCurrentDelay();
-  EXPECT_LE(
-      features::PredictionModelNewRegistrationFetchDelay() +
-          base::Seconds(features::PredictionModelFetchRandomMinDelaySecs()),
-      delay);
-  EXPECT_GE(
-      features::PredictionModelNewRegistrationFetchDelay() +
-          base::Seconds(features::PredictionModelFetchRandomMaxDelaySecs()),
-      delay);
-  MoveClockForwardBy(
-      features::PredictionModelNewRegistrationFetchDelay() +
-      base::Seconds(features::PredictionModelFetchRandomMaxDelaySecs()));
+  EXPECT_LE(features::PredictionModelNewRegistrationFetchDelay() +
+                features::PredictionModelFetchRandomMinDelay(),
+            delay);
+  EXPECT_GE(features::PredictionModelNewRegistrationFetchDelay() +
+                features::PredictionModelFetchRandomMaxDelay(),
+            delay);
+  MoveClockForwardBy(features::PredictionModelNewRegistrationFetchDelay() +
+                     features::PredictionModelFetchRandomMaxDelay());
   EXPECT_TRUE(last_model_fetch_time_);
   last_model_fetch_time_ = absl::nullopt;
 

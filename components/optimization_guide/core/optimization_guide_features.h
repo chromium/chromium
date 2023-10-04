@@ -153,18 +153,18 @@ size_t MaxConcurrentBatchUpdateFetches();
 // Service that should be allowed for navigations.
 size_t MaxConcurrentPageNavigationFetches();
 
-// Returns the minimum number of seconds to randomly delay before starting to
-// fetch for hints for active tabs.
-int ActiveTabsHintsFetchRandomMinDelaySecs();
+// Returns the minimum random delay before starting to fetch for hints for
+// active tabs.
+base::TimeDelta ActiveTabsHintsFetchRandomMinDelay();
 
-// Returns the maximum number of seconds to randomly delay before starting to
-// fetch for hints for active tabs.
-int ActiveTabsHintsFetchRandomMaxDelaySecs();
+// Returns the maximum random delay before starting to fetch for hints for
+// active tabs.
+base::TimeDelta ActiveTabsHintsFetchRandomMaxDelay();
 
 // Returns whether fetching hints for active tabs should happen on deferred
 // startup. Otherwise active tabs hints will be fetched after a random interval
-// between ActiveTabsHintsFetchRandomMinDelaySecs() and
-// ActiveTabsHintsFetchRandomMaxDelaySecs().
+// between ActiveTabsHintsFetchRandomMinDelay() and
+// ActiveTabsHintsFetchRandomMaxDelay().
 bool ShouldDeferStartupActiveTabsHintsFetch();
 
 // The amount of time host model features will be considered fresh enough
@@ -216,13 +216,13 @@ bool ShouldEnablePersonalizedMetadata(proto::RequestContext request_context);
 // Returns the OAuth scopes to use for personalized metadata.
 std::set<std::string> GetOAuthScopesForPersonalizedMetadata();
 
-// Returns the minimum number of seconds to randomly delay before starting to
-// fetch for prediction models and host model features.
-int PredictionModelFetchRandomMinDelaySecs();
+// Returns the minimum random delay before starting to fetch for prediction
+// models and host model features.
+base::TimeDelta PredictionModelFetchRandomMinDelay();
 
-// Returns the maximum number of seconds to randomly delay before starting to
-// fetch for prediction models and host model features.
-int PredictionModelFetchRandomMaxDelaySecs();
+// Returns the maximum random delay before starting to fetch for prediction
+// models and host model features.
+base::TimeDelta PredictionModelFetchRandomMaxDelay();
 
 // Returns the time to wait before retrying a failed fetch for prediction
 // models.

@@ -65,12 +65,9 @@ namespace {
 // startup will have a newer version than it.
 constexpr char kManualConfigComponentVersion[] = "0.0.0";
 
-// Provides a random time delta in seconds between |kFetchRandomMinDelay| and
-// |kFetchRandomMaxDelay|.
 base::TimeDelta RandomFetchDelay() {
-  return base::Seconds(
-      base::RandInt(features::ActiveTabsHintsFetchRandomMinDelaySecs(),
-                    features::ActiveTabsHintsFetchRandomMaxDelaySecs()));
+  return base::RandTimeDelta(features::ActiveTabsHintsFetchRandomMinDelay(),
+                             features::ActiveTabsHintsFetchRandomMaxDelay());
 }
 
 void MaybeRunUpdateClosure(base::OnceClosure update_closure) {

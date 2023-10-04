@@ -399,10 +399,12 @@ class Requester : public DiscreteTimeSimulation::Actor {
   }
 
   void PerformAction() override {
-    const base::TimeDelta current_jitter = request_jitter_ * base::RandDouble();
+    const auto current_jitter =
+        request_jitter_.is_zero()
+            ? base::TimeDelta()
+            : base::RandTimeDelta(-request_jitter_, request_jitter_);
     const base::TimeDelta effective_delay =
-        time_between_requests_ +
-        (base::RandInt(0, 1) ? -current_jitter : current_jitter);
+        time_between_requests_ + current_jitter;
 
     if (throttler_entry_->ImplGetTimeNow() - time_of_last_attempt_ >
         effective_delay) {
@@ -439,9 +441,8 @@ class Requester : public DiscreteTimeSimulation::Actor {
   // Adds a delay until the first request, equal to a uniformly distributed
   // value between now and now + max_delay.
   void SetStartupJitter(const base::TimeDelta& max_delay) {
-    int delay_ms = base::RandInt(0, max_delay.InMilliseconds());
-    time_of_last_attempt_ =
-        TimeTicks() + base::Milliseconds(delay_ms) - time_between_requests_;
+    time_of_last_attempt_ = TimeTicks() + base::RandTimeDeltaUpTo(max_delay) -
+                            time_between_requests_;
   }
 
   void SetRequestJitter(const base::TimeDelta& request_jitter) {

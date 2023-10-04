@@ -2893,8 +2893,8 @@ BASE_FEATURE(kDeviceForceScheduledReboot,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Maximum delay added to reboot time when DeviceScheduledReboot policy is set.
-const base::FeatureParam<int> kDeviceForceScheduledRebootMaxDelay{
-    &kDeviceForceScheduledReboot, "max-delay-in-seconds", 120};
+const base::FeatureParam<base::TimeDelta> kDeviceForceScheduledRebootMaxDelay{
+    &kDeviceForceScheduledReboot, "MaxDelay", base::Minutes(2)};
 
 // Enables settings to be split per device.
 BASE_FEATURE(kInputDeviceSettingsSplit,

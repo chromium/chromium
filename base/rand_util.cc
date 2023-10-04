@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 
 namespace base {
 
@@ -47,6 +48,23 @@ double RandDouble() {
 
 float RandFloat() {
   return BitsToOpenEndedUnitIntervalF(base::RandUint64());
+}
+
+TimeDelta RandTimeDelta(TimeDelta start, TimeDelta limit) {
+  // We must have a finite, non-empty, non-reversed interval.
+  CHECK_LT(start, limit);
+  CHECK(!start.is_min());
+  CHECK(!limit.is_max());
+
+  const int64_t range = (limit - start).InMicroseconds();
+  // Because of the `CHECK_LT()` above, range > 0, so this cast is safe.
+  const uint64_t delta_us = base::RandGenerator(static_cast<uint64_t>(range));
+  // ...and because `range` fit in an `int64_t`, so will `delta_us`.
+  return start + Microseconds(static_cast<int64_t>(delta_us));
+}
+
+TimeDelta RandTimeDeltaUpTo(TimeDelta limit) {
+  return RandTimeDelta(TimeDelta(), limit);
 }
 
 double BitsToOpenEndedUnitInterval(uint64_t bits) {
