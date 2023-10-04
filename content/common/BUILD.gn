@@ -309,10 +309,7 @@ source_set("common") {
     ]
 
     if (use_seccomp_bpf) {
-      sources += [
-        "//sandbox/policy/linux/bpf_base_policy_linux.cc",
-        "//sandbox/policy/linux/bpf_base_policy_linux.h",
-      ]
+      deps += [ "//sandbox/policy" ]
     }
   }
 

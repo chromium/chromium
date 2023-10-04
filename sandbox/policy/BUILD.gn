@@ -35,6 +35,19 @@ component("policy") {
     "//sandbox/policy/mojom",
   ]
   public_deps = [ "//sandbox:common" ]
+  if (is_android) {
+    sources += [
+      "linux/bpf_base_policy_linux.cc",
+      "linux/bpf_base_policy_linux.h",
+      "linux/bpf_renderer_policy_linux.cc",
+      "linux/bpf_renderer_policy_linux.h",
+    ]
+    deps += [
+      "//sandbox:sandbox_buildflags",
+      "//sandbox/linux:sandbox_services",
+      "//sandbox/linux:seccomp_bpf",
+    ]
+  }
   if (is_linux || is_chromeos) {
     sources += [
       "linux/bpf_audio_policy_linux.cc",

@@ -9,6 +9,7 @@ import("//build/config/ui.gni")
 import("//content/common/features.gni")
 import("//media/media_options.gni")
 import("//ppapi/buildflags/buildflags.gni")
+import("//sandbox/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/webrtc/webrtc.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
@@ -338,6 +339,10 @@ target(link_target_type, "renderer") {
       "//third_party/cpu_features:ndk_compat",
       "//third_party/libphonenumber",
     ]
+
+    if (use_seccomp_bpf) {
+      deps += [ "//sandbox/policy" ]
+    }
   }
 
   if (is_linux || is_chromeos) {
