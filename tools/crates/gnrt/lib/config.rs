@@ -60,10 +60,12 @@ pub struct CrateConfig {
     /// other generated targets.
     pub exclude_deps_in_gn: Vec<String>,
     /// Include rs and input files under these relative paths as part of the
-    /// crate.
+    /// crate. The roots may each be a single file or a directory.
     #[serde(default)]
     pub extra_src_roots: Vec<std::path::PathBuf>,
     /// Include input files under these relative paths as part of the crate.
+    ///
+    /// The roots may each be a single file or a directory.
     #[serde(default)]
     pub extra_input_roots: Vec<std::path::PathBuf>,
     #[serde(default)]

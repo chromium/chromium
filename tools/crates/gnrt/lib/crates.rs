@@ -525,27 +525,27 @@ enum CollectCrateFiles {
 
 // Adds a `filepath` to `CrateFiles` depending on the type of file and the
 // `mode` of collection.
-fn collect_crate_file(files: &mut CrateFiles, mode: CollectCrateFiles, filepath: PathBuf) {
+fn collect_crate_file(files: &mut CrateFiles, mode: CollectCrateFiles, filepath: &Path) {
     match filepath.extension().map(std::ffi::OsStr::to_str).flatten() {
         Some("rs") => match mode {
-            CollectCrateFiles::Internal => files.sources.push(filepath),
-            CollectCrateFiles::ExternalSourcesAndInputs => files.inputs.push(filepath),
+            CollectCrateFiles::Internal => files.sources.push(filepath.to_owned()),
+            CollectCrateFiles::ExternalSourcesAndInputs => files.inputs.push(filepath.to_owned()),
             CollectCrateFiles::ExternalInputsOnly => (),
         },
         // md: Markdown files are commonly include!()'d into source code as docs.
         // h: cxxbridge_cmd include!()'s its .h file into it.
-        Some("md") | Some("h") => files.inputs.push(filepath),
+        Some("md") | Some("h") => files.inputs.push(filepath.to_owned()),
         _ => (),
     };
 }
 
-// Recursively visits all files under `dir` and calls `f` on each one.
-fn recurse_crate_files(dir: &Path, f: &mut dyn FnMut(PathBuf)) -> io::Result<()> {
-    fn recurse(dir: &Path, root: &Path, f: &mut dyn FnMut(PathBuf)) -> io::Result<()> {
-        'each_dir_entry: for r in std::fs::read_dir(dir)? {
-            let entry = r?;
-            let path = entry.path();
-            let is_dir = entry.metadata()?.is_dir();
+// Recursively visits all files under `path` and calls `f` on each one.
+//
+// The `path` may be a single file or a directory.
+fn recurse_crate_files(path: &Path, f: &mut dyn FnMut(&Path)) -> io::Result<()> {
+    fn recurse(path: &Path, root: &Path, f: &mut dyn FnMut(&Path)) -> io::Result<()> {
+        let meta = std::fs::metadata(path)?;
+        if !meta.is_dir() {
             // Working locally can produce files in tree that should not be considered, and
             // which are not part of the git repository.
             //
@@ -559,14 +559,20 @@ fn recurse_crate_files(dir: &Path, f: &mut dyn FnMut(PathBuf)) -> io::Result<()>
             const SKIP_PREFIXES: [&str; 3] = [".devcontainer", ".vscode", "target"];
             for skip in SKIP_PREFIXES {
                 if path.starts_with(root.join(Path::new(skip))) {
-                    continue 'each_dir_entry;
+                    return Ok(());
                 }
             }
-            if is_dir { recurse(&path, root, f)? } else { f(path) }
+            f(path)
+        } else {
+            for r in std::fs::read_dir(path)? {
+                let entry = r?;
+                let path = entry.path();
+                recurse(&path, root, f)?;
+            }
         }
         Ok(())
     }
-    recurse(dir, dir, f)
+    recurse(path, path, f)
 }
 
 /// Get a crate's ID and parsed manifest from its path. Returns `Ok(None)` if
