@@ -47,6 +47,11 @@ BASE_FEATURE(kCrosComponents,
              "CrosComponents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the more detailed, OS-level dialog for web app installs.
+BASE_FEATURE(kCrosWebAppInstallDialog,
+             "CrosWebAppInstallDialog",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Disable idle sockets closing on memory pressure for NetworkContexts that
 // belong to Profiles. It only applies to Profiles because the goal is to
 // improve perceived performance of web browsing within the ChromeOS user
