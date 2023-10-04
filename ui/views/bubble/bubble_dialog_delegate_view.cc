@@ -883,18 +883,19 @@ void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
   if (!base::FeatureList::IsEnabled(::features::kBubbleMetricsApi)) {
     return;
   }
+  // Record histogram for all BDDV subclasses under a generic name
+  uma_func(base::StrCat({"Bubble.All.", histogram_name}), value);
+  // Record histograms for specific BDDV subclasses
   absl::optional<std::string> bubble_name = GetBubbleName();
   if (!bubble_name.has_value()) {
     return;
   }
-  // We only log the a manually selected list of bubbles
   const std::unordered_set<std::string> kValidClassName{
       "ProfileMenuViewBase", "ExtensionsMenuView", "PageInfoBubbleViewBase",
       "PermissionPromptBaseView", "DownloadBubbleContentsView"};
   if (!base::Contains(kValidClassName, bubble_name.value())) {
     return;
   }
-  uma_func(base::StrCat({"Bubble.All.", histogram_name}), value);
   uma_func(base::StrCat({"Bubble.", bubble_name.value(), ".", histogram_name}),
            value);
 }
