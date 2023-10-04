@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -732,7 +733,13 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupSize) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupResize) {
+// TODO(crbug.com/1489123): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PopupResize DISABLED_PopupResize
+#else
+#define MAYBE_PopupResize PopupResize
+#endif
+IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, MAYBE_PopupResize) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
   GrantWindowManagementPermission();
   ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
