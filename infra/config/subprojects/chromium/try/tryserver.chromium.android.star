@@ -119,6 +119,7 @@ try_.builder(
 
 try_.builder(
     name = "android-arm-compile-dbg",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = ["ci/Android arm Builder (dbg)"],
 )
 
@@ -278,6 +279,7 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-mainline-clang-x86-dbg",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = ["ci/android-cronet-mainline-clang-x86-dbg"],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
@@ -296,6 +298,7 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-x64-dbg",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = ["ci/android-cronet-x64-dbg"],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
@@ -610,6 +613,7 @@ try_.builder(
 
 try_.builder(
     name = "android-webview-nougat-arm64-dbg",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/Android arm64 Builder (dbg)",
         "ci/Android WebView N (dbg)",
@@ -619,6 +623,7 @@ try_.builder(
 
 try_.builder(
     name = "android-webview-oreo-arm64-dbg",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/Android arm64 Builder (dbg)",
         "ci/Android WebView O (dbg)",
@@ -628,6 +633,7 @@ try_.builder(
 
 try_.builder(
     name = "android-webview-pie-arm64-dbg",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/Android arm64 Builder (dbg)",
         "ci/Android WebView P (dbg)",

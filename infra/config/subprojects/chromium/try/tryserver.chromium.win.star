@@ -168,6 +168,7 @@ try_.builder(
 
 try_.builder(
     name = "win_chromium_compile_rel_ng",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     mirrors = [
         "ci/Win Builder",
     ],

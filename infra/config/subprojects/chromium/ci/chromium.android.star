@@ -309,27 +309,11 @@ ci.builder(
 
 # This builder should be used for trybot mirroring when no need to compile all.
 # See the builder "Android x64 Builder All Targets (dbg)" for more details.
+# Don't enable this for branches unless the triggered testers are enabled for
+# branches, "Android x64 Builder All Targets (dbg)" is already building all.
 ci.builder(
     name = "Android x64 Builder (dbg)",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android",
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "x64_builder_mb",
-        ),
-        build_gs_bucket = "chromium-android-archive",
-    ),
+    builder_spec = builder_config.copy_from("ci/Android x64 Builder All Targets (dbg)"),
     builderless = False,
     cores = None,
     console_view_entry = consoles.console_view_entry(
@@ -349,7 +333,24 @@ ci.builder(
 ci.builder(
     name = "Android x64 Builder All Targets (dbg)",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    builder_spec = builder_config.copy_from("ci/Android x64 Builder (dbg)"),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "x64_builder_mb",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "builder|x86",

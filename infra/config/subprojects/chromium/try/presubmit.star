@@ -66,9 +66,11 @@ def branch_configs():
     return [{
         "name": "standard branch",
         "platforms": [p for p in PLATFORMS if p != platform.CROS_LTS],
+        "sheriff_rotation": "chrome_browser_release",
     }, {
         "name": "desktop extended stable branch",
         "platforms": [platform.MAC, platform.WINDOWS],
+        "sheriff_rotation": "chrome_browser_release",
     }] + [{
         "name": p,
         "platforms": [p],

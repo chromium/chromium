@@ -205,6 +205,7 @@ try_.builder(
 
 try_.builder(
     name = "mac11-arm64-rel",
+    branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/mac-arm64-rel",
         "ci/mac11-arm64-rel-tests",
@@ -228,6 +229,7 @@ try_.builder(
 
 try_.builder(
     name = "mac12-arm64-rel",
+    branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/mac-arm64-rel",
         "ci/mac12-arm64-rel-tests",
@@ -238,6 +240,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "mac13-arm64-rel",
+    branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/mac-arm64-rel",
         "ci/mac13-arm64-rel-tests",
@@ -251,6 +254,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "mac13-arm64-rel-compilator",
+    branch_selector = branches.selector.MAC_BRANCHES,
     os = os.MAC_DEFAULT,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
@@ -290,6 +294,7 @@ try_.builder(
 # The 10.xx version translates to which bots will run isolated tests.
 try_.builder(
     name = "mac_chromium_10.15_rel_ng",
+    branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/Mac Builder",
         "ci/Mac10.15 Tests",
@@ -299,6 +304,7 @@ try_.builder(
 
 try_.builder(
     name = "mac_chromium_11.0_rel_ng",
+    branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/Mac Builder",
         "ci/Mac11 Tests",
@@ -308,6 +314,7 @@ try_.builder(
 
 try_.builder(
     name = "mac12-tests",
+    branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/Mac Builder",
         "ci/Mac12 Tests",
