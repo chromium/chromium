@@ -129,6 +129,9 @@ void ImageInputType::AltAttributeChanged() {
 }
 
 void ImageInputType::SrcAttributeChanged() {
+  if (!GetElement().GetExecutionContext()) {
+    return;
+  }
   if (!GetElement().GetLayoutObject() &&
       !RuntimeEnabledFeatures::LoadInputImageWithoutObjectEnabled()) {
     return;
