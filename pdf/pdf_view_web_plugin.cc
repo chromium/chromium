@@ -1883,12 +1883,6 @@ void PdfViewWebPlugin::ClearDeferredInvalidates() {
 }
 
 void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
-  snapshot_ =
-      cc::PaintImageBuilder::WithDefault()
-          .set_image(std::move(snapshot), cc::PaintImage::GetNextContentId())
-          .set_id(cc::PaintImage::GetNextId())
-          .TakePaintImage();
-
   // Every time something changes (e.g. scale or scroll position),
   // `UpdateSnapshot()` is called, so the snapshot is effectively used only
   // once. Make it "no-cache" so that the old snapshots are not cached
@@ -1899,7 +1893,12 @@ void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
   // service transfer cache. The size of the service transfer cache is bounded,
   // so on desktop this "only" causes a 256MiB memory spike, but it's completely
   // wasted memory nonetheless.
-  snapshot_.set_no_cache(true);
+  snapshot_ =
+      cc::PaintImageBuilder::WithDefault()
+          .set_image(std::move(snapshot), cc::PaintImage::GetNextContentId())
+          .set_id(cc::PaintImage::GetNextId())
+          .set_no_cache(true)
+          .TakePaintImage();
 
   if (!plugin_rect_.IsEmpty())
     InvalidatePluginContainer();

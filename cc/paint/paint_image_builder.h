@@ -101,6 +101,10 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     paint_image_.may_be_lcp_candidate_ = may_be_lcp_candidate;
     return std::move(*this);
   }
+  PaintImageBuilder&& set_no_cache(bool no_cache) {
+    paint_image_.no_cache_ = no_cache;
+    return std::move(*this);
+  }
   PaintImageBuilder&& set_repetition_count(int count) {
     paint_image_.repetition_count_ = count;
     return std::move(*this);

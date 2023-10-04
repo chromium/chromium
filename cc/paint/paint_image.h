@@ -280,7 +280,6 @@ class CC_PAINT_EXPORT PaintImage {
   bool is_high_bit_depth() const { return is_high_bit_depth_; }
   bool may_be_lcp_candidate() const { return may_be_lcp_candidate_; }
   bool no_cache() const { return no_cache_; }
-  void set_no_cache(bool no_cache) { no_cache_ = no_cache; }
   int repetition_count() const { return repetition_count_; }
   bool ShouldAnimate() const;
   AnimationSequenceId reset_animation_sequence_id() const {

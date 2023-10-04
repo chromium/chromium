@@ -24,6 +24,7 @@
 #include "cc/paint/color_filter.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_transfer_cache_entry.h"
+#include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/test/fake_paint_image_generator.h"
@@ -4882,9 +4883,12 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, NoDeadlock) {
 
 TEST_P(GpuImageDecodeCachePurgeOnTimerTest, NoCache) {
   const uint32_t client_id = cache_->GenerateClientId();
-  PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  image.set_no_cache(true);
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  PaintImage image_no_cache =
+      PaintImageBuilder::WithCopy(
+          CreatePaintImageInternal(GetNormalImageSize()))
+          .set_no_cache(true)
+          .TakePaintImage();
+  DrawImage draw_image = CreateDrawImageInternal(image_no_cache);
 
   ImageDecodeCache::TaskResult result = cache_->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
