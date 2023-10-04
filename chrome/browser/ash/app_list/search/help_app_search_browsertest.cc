@@ -194,9 +194,10 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
 // Test that the number of times the suggestion chip should show decreases when
 // the chip is shown in tablet mode.
+// https://crbug.com/1489431: test is flaky on bots.
 IN_PROC_BROWSER_TEST_F(
     HelpAppSearchBrowserTest,
-    ReleaseNotesDecreasesTimesShownOnAppListOpenInTabletMode) {
+    DISABLED_ReleaseNotesDecreasesTimesShownOnAppListOpenInTabletMode) {
   ash::SystemWebAppManager::GetForTest(GetProfile())
       ->InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
