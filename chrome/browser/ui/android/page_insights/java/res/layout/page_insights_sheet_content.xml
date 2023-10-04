@@ -8,9 +8,58 @@ found in the LICENSE file.
 <!-- A content layout designed for page insight bottom-sheet -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
+
+  <!-- Privacy Notice for Page Insights Hub. -->
+  <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+      android:id="@+id/page_insights_privacy_notice"
+      android:layout_height="wrap_content"
+      android:layout_width="380dp"
+      android:layout_gravity="center"
+      android:backgroundTint="@color/default_bg_color_baseline"
+      android:layout_marginVertical="75dp"
+      style="@style/MaterialCardStyle"
+      android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal">
+      <ImageView
+          android:layout_height="34dp"
+          android:layout_width="34dp"
+          android:layout_marginStart="16dp"
+          android:src="@drawable/my_activity_icon"
+          android:layout_gravity="center_vertical"
+          android:contentDescription="@string/page_insights_hub_my_activity_logo"/>
+
+      <TextView
+          android:layout_marginStart="16dp"
+          android:id="@+id/page_insights_privacy_notice_message"
+          android:layout_width="260dp"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_marginBottom="24dp"
+          android:layout_marginTop="24dp"
+          android:textAlignment="center"
+          android:textAppearance="@style/TextAppearance.TextSmall.Primary.Baseline"/>
+
+      <ImageButton
+          android:layout_marginStart="15dp"
+          android:id="@+id/page_insights_privacy_notice_close_button"
+          android:layout_height="24dp"
+          android:layout_width="24dp"
+          android:src="@drawable/btn_close"
+          android:background="@android:color/transparent"
+          app:tint="@color/default_icon_color_baseline"
+          android:layout_gravity="center_vertical"
+          android:contentDescription="@string/page_insights_hub_privacy_notice_close"/>
+    </LinearLayout>
+  </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
 
   <!-- xUIKit container for main page (Feed Page). -->
   <FrameLayout
@@ -41,6 +90,5 @@ found in the LICENSE file.
       android:contentDescription="@string/page_insights_loading_indicator_description"
       android:visibility="visible">
   </ProgressBar>
-
 
 </LinearLayout>

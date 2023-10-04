@@ -600,6 +600,13 @@ public final class ChromePreferenceKeys {
             "Chrome.OfflineIndicatorV2.HasPersistentOfflineContent";
 
     /**
+     * Indicates whether Page Insights Hub's Privacy Notice has been closed by user; used to ensure
+     * user does not see it again.
+     */
+    public static final String PIH_PRIVACY_NOTICE_CLOSED =
+            "Chrome.PageInsightsHub.PrivacyNoticeClosedByUser";
+
+    /**
      * Save the timestamp of the last time that we record metrics on whether user enables the price
      * tracking annotations.
      */
@@ -1064,6 +1071,7 @@ public final class ChromePreferenceKeys {
                 OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.pattern(),
                 PASSWORD_PROTECTION_ACCOUNTS,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
+                PIH_PRIVACY_NOTICE_CLOSED,
                 PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                 PRICE_TRACKING_CHROME_MANAGED_NOTIFICATIONS_TIMESTAMPS,
                 PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD,

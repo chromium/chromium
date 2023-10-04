@@ -175,6 +175,7 @@ public class PageInsightsMediatorTest {
                 PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END, String.valueOf(triggerDelayMs));
         FeatureList.setTestValues(testValues);
         Context context = ContextUtils.getApplicationContext();
+        context.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
         mMediator = new PageInsightsMediator(context, mMockTabProvider, mShareDelegateSupplier,
                 mBottomSheetController, mBottomUiController, mExpandedSheetHelper,
                 mControlsStateProvider, mBrowserControlsSizer, () -> true, firstLoadTimeMs);
