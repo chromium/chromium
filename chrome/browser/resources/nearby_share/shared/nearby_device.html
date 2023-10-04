@@ -21,6 +21,7 @@
     border-bottom-style: hidden;
     align-items: center;
     display: flex;
+    justify-content: space-between;
   }
 
   /* TODO(b/279623883): Remove once Jelly is launched. */
@@ -67,10 +68,12 @@
     display: none;
     flex-shrink: 0;
     height: 20px;
-    padding-left: 2px;
     padding-top: 2px;
     vertical-align: middle;
     width: 20px;
+    margin-left: auto;
+    padding-left: 8px;
+    padding-right: 8px;
   }
 
   :host-context(body.jelly-enabled) #checked {
@@ -115,10 +118,10 @@
 
   #name {
     flex-grow: 1;
-    margin-inline-start: 11px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    padding-left: 8px;
   }
 
   /* TODO(b/279623883): Remove once Jelly is launched. */
@@ -142,5 +145,5 @@
       auto-src="[[getTargetImageUrl_(shareTarget)]]">
   </img>
   <div id="name">[[shareTarget.name]]</div>
-  <iron-icon id="checked" icon="nearby-share:checked"></iron-icon>
 </div>
+<iron-icon id="checked" icon="nearby-share:checked"></iron-icon>
