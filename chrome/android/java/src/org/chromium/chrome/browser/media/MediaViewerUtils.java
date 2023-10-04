@@ -15,12 +15,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Browser;
 import android.text.TextUtils;
 
 import androidx.annotation.OptIn;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.core.os.BuildCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -293,7 +293,7 @@ public class MediaViewerUtils {
 
     @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     private static int getAllowUnsafeImplicitIntentFlag() {
-        if (BuildCompat.isAtLeastU()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             try {
                 return PendingIntent.class.getDeclaredField("FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT")
                         .getInt(null);
