@@ -567,13 +567,8 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
   num_pending_decodes_ = 0;
   ScheduleDequeueEvent();
 
-  // Fire the error callback if necessary. Per spec, this is a queued task.
   if (exception) {
-    main_thread_task_runner_->PostTask(
-        FROM_HERE,
-        WTF::BindOnce(&V8WebCodecsErrorCallback::InvokeAndReportException,
-                      WrapPersistent(error_cb), nullptr,
-                      WrapPersistent(exception)));
+    error_cb->InvokeAndReportException(nullptr, exception);
   }
 }
 
