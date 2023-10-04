@@ -40,6 +40,11 @@ namespace password_manager {
 
 extern const char kGetChangePasswordURLMetricName[];
 
+// Change password info request requires branding_info enabled.
+constexpr AffiliationFetcherInterface::RequestInfo
+    kChangePasswordUrlRequestInfo{.branding_info = true,
+                                  .change_password_info = true};
+
 // Used to record metrics for the usage and timing of the GetChangePasswordUrl
 // call. These values are persisted to logs. Entries should not be renumbered
 // and numeric values should never be reused.
