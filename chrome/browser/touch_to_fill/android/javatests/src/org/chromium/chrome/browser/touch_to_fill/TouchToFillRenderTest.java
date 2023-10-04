@@ -15,6 +15,8 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.He
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.SHOW_WEBAUTHN_SUBMIT_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_CREDENTIAL;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
 import static java.util.Arrays.asList;
@@ -50,6 +52,7 @@ import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Credentia
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -87,6 +90,13 @@ public class TouchToFillRenderTest {
             new Credential("Bob", "*****", "Bob", "", "example.com", GetLoginMatchType.EXACT, 0);
     private static final Credential MARIAM =
             new Credential("مريم", "***", "مريم", "", "example.com", GetLoginMatchType.EXACT, 0);
+    private static final byte[] RANDOM_ID = new byte[] {0};
+    private static final WebAuthnCredential BATMAN =
+            new WebAuthnCredential("example.com", RANDOM_ID, RANDOM_ID, "batman");
+    private static final WebAuthnCredential PETROL =
+            new WebAuthnCredential("example.com", RANDOM_ID, RANDOM_ID, "petrol");
+    private static final WebAuthnCredential SPOR =
+            new WebAuthnCredential("example.com", RANDOM_ID, RANDOM_ID, "spor");
 
     @Mock
     private Callback<Integer> mDismissHandler;
@@ -151,15 +161,17 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowsOneCredentialModern() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            addHeader(mActivityTestRule.getActivity().getString(
-                    org.chromium.chrome.browser.touch_to_fill.R.string
-                            .touch_to_fill_sheet_uniform_title));
-            mModel.get(SHEET_ITEMS).addAll(asList(buildCredentialItem(ARON)));
-            addButton(ARON);
-            addFooter();
-            mModel.set(VISIBLE, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    addHeader(
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getString(R.string.touch_to_fill_sheet_uniform_title));
+                    mModel.get(SHEET_ITEMS).addAll(asList(buildCredentialItem(ARON)));
+                    addButton(ARON);
+                    addFooter();
+                    mModel.set(VISIBLE, true);
+                });
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -171,15 +183,17 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowsOneCredentialModernHalfState() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            addHeader(mActivityTestRule.getActivity().getString(
-                    org.chromium.chrome.browser.touch_to_fill.R.string
-                            .touch_to_fill_sheet_uniform_title));
-            mModel.get(SHEET_ITEMS).addAll(asList(buildCredentialItem(ARON)));
-            addButton(ARON);
-            addFooter();
-            mModel.set(VISIBLE, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    addHeader(
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getString(R.string.touch_to_fill_sheet_uniform_title));
+                    mModel.get(SHEET_ITEMS).addAll(asList(buildCredentialItem(ARON)));
+                    addButton(ARON);
+                    addFooter();
+                    mModel.set(VISIBLE, true);
+                });
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -194,16 +208,18 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowsTwoCredentialsModern() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            addHeader(mActivityTestRule.getActivity().getString(
-                    org.chromium.chrome.browser.touch_to_fill.R.string
-                            .touch_to_fill_sheet_uniform_title));
-            mModel.get(SHEET_ITEMS);
-            mModel.get(SHEET_ITEMS)
-                    .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB)));
-            addFooter();
-            mModel.set(VISIBLE, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    addHeader(
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getString(R.string.touch_to_fill_sheet_uniform_title));
+                    mModel.get(SHEET_ITEMS);
+                    mModel.get(SHEET_ITEMS)
+                            .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB)));
+                    addFooter();
+                    mModel.set(VISIBLE, true);
+                });
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -215,16 +231,18 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowsTwoCredentialsModernHalfState() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            addHeader(mActivityTestRule.getActivity().getString(
-                    org.chromium.chrome.browser.touch_to_fill.R.string
-                            .touch_to_fill_sheet_uniform_title));
-            mModel.get(SHEET_ITEMS);
-            mModel.get(SHEET_ITEMS)
-                    .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB)));
-            addFooter();
-            mModel.set(VISIBLE, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    addHeader(
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getString(R.string.touch_to_fill_sheet_uniform_title));
+                    mModel.get(SHEET_ITEMS);
+                    mModel.get(SHEET_ITEMS)
+                            .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB)));
+                    addFooter();
+                    mModel.set(VISIBLE, true);
+                });
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -239,16 +257,21 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowsThreeCredentialsModern() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            addHeader(mActivityTestRule.getActivity().getString(
-                    org.chromium.chrome.browser.touch_to_fill.R.string
-                            .touch_to_fill_sheet_uniform_title));
-            mModel.get(SHEET_ITEMS)
-                    .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB),
-                            buildCredentialItem(MARIAM)));
-            addFooter();
-            mModel.set(VISIBLE, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    addHeader(
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getString(R.string.touch_to_fill_sheet_uniform_title));
+                    mModel.get(SHEET_ITEMS)
+                            .addAll(
+                                    asList(
+                                            buildCredentialItem(ARON),
+                                            buildCredentialItem(BOB),
+                                            buildCredentialItem(MARIAM)));
+                    addFooter();
+                    mModel.set(VISIBLE, true);
+                });
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -260,16 +283,21 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowsThreeCredentialsModernHalfState() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            addHeader(mActivityTestRule.getActivity().getString(
-                    org.chromium.chrome.browser.touch_to_fill.R.string
-                            .touch_to_fill_sheet_uniform_title));
-            mModel.get(SHEET_ITEMS)
-                    .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB),
-                            buildCredentialItem(MARIAM)));
-            addFooter();
-            mModel.set(VISIBLE, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    addHeader(
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getString(R.string.touch_to_fill_sheet_uniform_title));
+                    mModel.get(SHEET_ITEMS)
+                            .addAll(
+                                    asList(
+                                            buildCredentialItem(ARON),
+                                            buildCredentialItem(BOB),
+                                            buildCredentialItem(MARIAM)));
+                    addFooter();
+                    mModel.set(VISIBLE, true);
+                });
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -280,9 +308,51 @@ public class TouchToFillRenderTest {
                 bottomSheetParentView, "ttf_shows_three_credentials_modern_ui_half_state");
     }
 
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsThreeCredentialsWhenThereAreFiveModernHalfState() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    addHeader(
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getString(R.string.touch_to_fill_sheet_uniform_title));
+                    mModel.get(SHEET_ITEMS)
+                            .addAll(
+                                    asList(
+                                            buildWebAuthnCredentialItem(BATMAN),
+                                            buildWebAuthnCredentialItem(PETROL),
+                                            buildWebAuthnCredentialItem(SPOR),
+                                            buildCredentialItem(ARON),
+                                            buildCredentialItem(BOB)));
+                    addFooter();
+                    mModel.set(VISIBLE, true);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ViewGroup bottomSheetParentView =
+                (ViewGroup)
+                        mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet).getParent();
+        mRenderTestRule.render(
+                bottomSheetParentView,
+                "ttf_shows_three_credentials_when_there_are_five_modern_ui_half_state");
+    }
+
     private MVCListAdapter.ListItem buildCredentialItem(Credential credential) {
         return buildSheetItem(
                 TouchToFillProperties.ItemType.CREDENTIAL, credential, mCredentialCallback, false);
+    }
+
+    private MVCListAdapter.ListItem buildWebAuthnCredentialItem(WebAuthnCredential credential) {
+        return new MVCListAdapter.ListItem(
+                TouchToFillProperties.ItemType.WEBAUTHN_CREDENTIAL,
+                new PropertyModel.Builder(
+                                TouchToFillProperties.WebAuthnCredentialProperties.ALL_KEYS)
+                        .with(WEBAUTHN_CREDENTIAL, credential)
+                        .with(SHOW_WEBAUTHN_SUBMIT_BUTTON, false)
+                        .build());
     }
 
     private static MVCListAdapter.ListItem buildSheetItem(
@@ -321,12 +391,15 @@ public class TouchToFillRenderTest {
 
     private void addFooter() {
         mModel.get(SHEET_ITEMS)
-                .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.FOOTER,
-                        new PropertyModel.Builder(FooterProperties.ALL_KEYS)
-                                .with(MANAGE_BUTTON_TEXT,
-                                        mActivityTestRule.getActivity().getString(
-                                                org.chromium.chrome.browser.touch_to_fill.R.string
-                                                        .manage_passwords))
-                                .build()));
+                .add(
+                        new MVCListAdapter.ListItem(
+                                TouchToFillProperties.ItemType.FOOTER,
+                                new PropertyModel.Builder(FooterProperties.ALL_KEYS)
+                                        .with(
+                                                MANAGE_BUTTON_TEXT,
+                                                mActivityTestRule
+                                                        .getActivity()
+                                                        .getString(R.string.manage_passwords))
+                                        .build()));
     }
 }
