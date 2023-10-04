@@ -25,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.StrictModeContext;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.AdditionalSelectionMenuItemProvider;
 import org.chromium.content_public.browser.SelectionClient;
@@ -281,7 +282,10 @@ public class SelectActionMenuHelper {
             ResolveInfo resolveInfo = supportedActivities.get(i);
             if (resolveInfo.activityInfo == null || !resolveInfo.activityInfo.exported) continue;
             CharSequence title = resolveInfo.loadLabel(packageManager);
-            Drawable icon = resolveInfo.loadIcon(packageManager);
+            Drawable icon;
+            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+                icon = resolveInfo.loadIcon(packageManager);
+            }
             Intent intent = createProcessTextIntentForResolveInfo(resolveInfo, isSelectionReadOnly);
             View.OnClickListener listener = v -> intentHandler.handleIntent(intent);
             textProcessingItems.addItem(
