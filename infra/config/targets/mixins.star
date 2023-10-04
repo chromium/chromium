@@ -906,7 +906,7 @@ targets.mixin(
         dimensions = {
             "cpu": "arm64",
             "mac_model": "Macmini9,1",
-            "os": "Mac-13.4",
+            "os": "Mac-13.5.2",
             "pool": "chromium.tests",
             "display_attached": "1",
         },
