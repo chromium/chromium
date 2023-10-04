@@ -69,56 +69,66 @@ PdfNavigationThrottle::WillStartRequest() {
   params.is_renderer_initiated = false;
   params.is_pdf = true;
 
+  // The parent frame should always exist after main frame navigations are
+  // filtered out in `MaybeCreateThrottleFor()`, and it has the expected
+  // embedder URL based on the checks in
+  // `PdfStreamDelegate::MapToOriginalUrl()`. For the PDF viewer, the parent
+  // frame is the PDF extension frame. For Print Preview, the parent frame is
+  // the embedder frame.
+  content::RenderFrameHost* embedder_frame =
+      navigation_handle()->GetParentFrame();
+  CHECK(embedder_frame);
+
   // Reset the source SiteInstance.  This is a workaround for a lifetime bug:
   // leaving the source SiteInstance in OpenURLParams could inadvertently
   // prolong the SiteInstance's lifetime beyond the lifetime of the
   // BrowserContext it's associated with.  The BrowserContext could get
   // destroyed after the task below is scheduled but before it runs (see
-  // https://crbug.com/1382761), and even though the task uses a WebContents
-  // WeakPtr to return early in that case, the task's OpenURLParams would only
-  // get destroyed and decrement the source SiteInstance's refcount at the time
-  // of that early return, which is already after the BrowserContext is
-  // destroyed.  This can cause logic in the SiteInstance destructor to trip up
-  // if it tries to use the SiteInstance's BrowserContext.
+  // https://crbug.com/1382761), and even though the task checks if the frame is
+  // null to return early in that case, the task's OpenURLParams would only get
+  // destroyed and decrement the source SiteInstance's refcount at the time of
+  // that early return, which is already after the BrowserContext is destroyed.
+  // This can cause logic in the SiteInstance destructor to trip up if it tries
+  // to use the SiteInstance's BrowserContext.
   //
-  // Fortunately, the source SiteInstance of this navigation should always
-  // correspond to the PDF extension loaded in the primary main frame of
-  // `contents`. Hence, if the navigation task does run and does not get
-  // canceled due to WebContents becoming null, we can restore the source
-  // SiteInstance at that point.
+  // The source SiteInstance of this navigation should always be SiteInstance of
+  // the parent frame's, which is the embedder frame. Hence, if the navigation
+  // task does run and does not get canceled due to the embedder frame becoming
+  // null, we can restore the source SiteInstance at that point.
   //
   // TODO(crbug.com/1382761): This should be fixed in a more systematic way.
-  content::WebContents* contents = navigation_handle()->GetWebContents();
-  DCHECK_EQ(params.source_site_instance,
-            contents->GetPrimaryMainFrame()->GetSiteInstance());
+  DCHECK_EQ(params.source_site_instance, embedder_frame->GetSiteInstance());
   params.source_site_instance.reset();
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::WeakPtr<content::WebContents> web_contents,
+          [](content::GlobalRenderFrameHostId frame_id,
              const content::OpenURLParams& params) {
-            if (!web_contents)
+            auto* embedder_frame = content::RenderFrameHost::FromID(frame_id);
+            if (!embedder_frame) {
               return;
+            }
 
             // Restore the source SiteInstance that was cleared out of the
             // original OpenURLParams.
             content::OpenURLParams new_params = params;
-            new_params.source_site_instance =
-                web_contents->GetPrimaryMainFrame()->GetSiteInstance();
+            new_params.source_site_instance = embedder_frame->GetSiteInstance();
 
             // `MimeHandlerViewGuest` navigates its embedder for calls to
             // `WebContents::OpenURL()`, so use `LoadURLWithParams()` directly
             // instead.
-            web_contents->GetController().LoadURLWithParams(
-                content::NavigationController::LoadURLParams(new_params));
+            content::WebContents::FromRenderFrameHost(embedder_frame)
+                ->GetController()
+                .LoadURLWithParams(
+                    content::NavigationController::LoadURLParams(new_params));
 
             // Note that we don't need to register the stream's URL loader as a
             // subresource, as `MimeHandlerViewGuest::ReadyToCommitNavigation()`
             // will handle this as soon as we navigate to a
             // non-`kPdfExtensionId` URL.
           },
-          contents->GetWeakPtr(), std::move(params)));
+          embedder_frame->GetGlobalId(), std::move(params)));
   return CANCEL_AND_IGNORE;
 }
 
