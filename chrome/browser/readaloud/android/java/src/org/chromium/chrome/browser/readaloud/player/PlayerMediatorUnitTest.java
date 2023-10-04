@@ -171,6 +171,39 @@ public class PlayerMediatorUnitTest {
                 PlaybackListener.State.PLAYING, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
     }
 
+    @Test
+    public void testPlayClicked() {
+        mMediator.setPlayback(mPlayback);
+        mMediator.setPlaybackState(PlaybackListener.State.PAUSED);
+
+        mMediator.onPlayPauseClick();
+        verify(mPlayback).play();
+    }
+
+    @Test
+    public void testPlayClicked_fromStopped() {
+        mMediator.setPlayback(mPlayback);
+        mMediator.setPlaybackState(PlaybackListener.State.STOPPED);
+
+        mMediator.onPlayPauseClick();
+        verify(mPlayback).play();
+    }
+
+    @Test
+    public void testPauseClicked() {
+        mMediator.setPlayback(mPlayback);
+        mMediator.setPlaybackState(PlaybackListener.State.PLAYING);
+
+        mMediator.onPlayPauseClick();
+        verify(mPlayback).pause();
+    }
+
+    @Test
+    public void testCloseClicked() {
+        mMediator.onCloseClick();
+        verify(mPlayerCoordinator).closeClicked();
+    }
+
     private void resetPlayback() {
         reset(mPlayback);
         doReturn(mPlaybackMetadata).when(mPlayback).getMetadata();

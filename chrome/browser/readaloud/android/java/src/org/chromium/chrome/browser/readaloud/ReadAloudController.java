@@ -24,6 +24,7 @@ import org.chromium.chrome.modules.readaloud.ExpandedPlayer;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
+import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -35,10 +36,10 @@ import java.util.HashSet;
 import java.util.Map;
 
 /**
- * The main entrypoint component for Read Aloud feature. It's responsible for
- * checking its availability and triggering playback.
- **/
-public class ReadAloudController {
+ * The main entrypoint component for Read Aloud feature. It's responsible for checking its
+ * availability and triggering playback.
+ */
+public class ReadAloudController implements Player.Observer {
     private static final String TAG = "ReadAloudController";
 
     private final ObservableSupplier<Profile> mProfileSupplier;
@@ -100,6 +101,7 @@ public class ReadAloudController {
                     mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
                     mPlayback.play();
                 }
+
                 @Override
                 public void onFailure(Throwable t) {
                     Log.i(TAG, t.getMessage());
@@ -216,6 +218,7 @@ public class ReadAloudController {
 
             // Notify player UI that playback is happening soon.
             mPlayerCoordinator.playTabRequested();
+            mPlayerCoordinator.addObserver(this);
         }
     }
 
@@ -229,6 +232,25 @@ public class ReadAloudController {
             return timepointsSuported == null ? false : timepointsSuported;
         }
         return false;
+    }
+
+    /** Stops the playback, hides the UI and resets its state. */
+    public void stopPlayback() {
+        // Players should be dismissed before releasing playback so that the playback
+        // listener can be removed.
+        mPlayerCoordinator.removeObserver(this);
+        mPlayerCoordinator.dismissPlayers();
+
+        // TODO(b/303294007): Investigate exception sometimes thrown by release().
+        if (mPlayback != null) {
+            mPlayback.release();
+            mPlayback = null;
+        }
+        if (mCurrentlyPlayingTab != null) {
+            // TODO: clear highlights
+            // TODO: remove translation observer
+            mCurrentlyPlayingTab = null;
+        }
     }
 
     /** Cleanup: unregister listeners. */
@@ -247,6 +269,12 @@ public class ReadAloudController {
         if (mCurrentlyPlayingTab != null) {
             mCurrentlyPlayingTab = null;
         }
+    }
+
+    // Player.Observer
+    @Override
+    public void onRequestClosePlayers() {
+        stopPlayback();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

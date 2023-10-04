@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.readaloud;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -249,6 +251,7 @@ public class ReadAloudControllerUnitTest {
 
         mPlaybackCallbackCaptor.getValue().onSuccess(mPlayback);
         verify(mPlayerCoordinator, times(1)).playbackReady(eq(mPlayback), eq(PlaybackListener.State.PLAYING));
+        verify(mPlayerCoordinator).addObserver(mController);
 
         // test that previous playback is released when another playback is called
         MockTab newTab = mTabModelSelector.addMockTab();
@@ -268,5 +271,37 @@ public class ReadAloudControllerUnitTest {
 
         mPlaybackCallbackCaptor.getValue().onFailure(new Throwable());
         verify(mPlayerCoordinator, times(1)).playbackFailed();
+    }
+
+    @Test
+    public void testStopPlayback() {
+        // Play tab
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+
+        mPlaybackCallbackCaptor.getValue().onSuccess(mPlayback);
+        verify(mPlayerCoordinator, times(1))
+                .playbackReady(eq(mPlayback), eq(PlaybackListener.State.PLAYING));
+        verify(mPlayerCoordinator).addObserver(mController);
+
+        // Stop playback
+        mController.stopPlayback();
+        verify(mPlayerCoordinator).addObserver(eq(mController));
+        verify(mPlayback).release();
+
+        reset(mPlayerCoordinator);
+        reset(mPlayback);
+        reset(mPlaybackHooks);
+
+        // Subsequent playTab() should play without trying to release anything.
+        mController.playTab(mTab);
+        verify(mPlaybackHooks).createPlayback(any(), any());
+        verify(mPlayback, never()).release();
+        verify(mPlayerCoordinator).addObserver(eq(mController));
+        verify(mPlayerCoordinator, never()).removeObserver(eq(mController));
     }
 }

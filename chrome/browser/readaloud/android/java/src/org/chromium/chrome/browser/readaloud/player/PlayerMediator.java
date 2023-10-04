@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.readaloud.player;
 
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSED;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYING;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
+
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import androidx.annotation.Nullable;
@@ -59,7 +63,27 @@ class PlayerMediator implements InteractionHandler {
 
     // InteractionHandler implementation
     @Override
-    public void onPlayPauseClick() {}
+    public void onPlayPauseClick() {
+        assert mPlayback != null;
+
+        @PlaybackListener.State int state = mModel.get(PlayerProperties.PLAYBACK_STATE);
+
+        // Call playback control methods and rely on updates through mPlaybackListener
+        // to update UI with new playback state.
+        switch (state) {
+            case PLAYING:
+                mPlayback.pause();
+                return;
+
+            case PAUSED:
+            case STOPPED:
+                mPlayback.play();
+                return;
+
+            default:
+                return;
+        }
+    }
 
     @Override
     public void onCloseClick() {
