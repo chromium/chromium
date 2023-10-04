@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL WebSockets: close() in close event handler SCHEME_DOMAIN_PORT is not defined
-Harness: the test ran to completion.
-
