@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PRERENDER_FAKE_PRERENDER_SERVICE_H_
-#define IOS_CHROME_BROWSER_PRERENDER_FAKE_PRERENDER_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_PRERENDER_MODEL_FAKE_PRERENDER_SERVICE_H_
+#define IOS_CHROME_BROWSER_PRERENDER_MODEL_FAKE_PRERENDER_SERVICE_H_
 
-#import "ios/chrome/browser/prerender/prerender_service.h"
+#import "ios/chrome/browser/prerender/model/prerender_service.h"
 
 // Fake implementation of PrerenderService. Treats a prerender as in-progress
 // after a call to StartPrerender(), but MaybeLoadPrerenderedURL() always
@@ -43,4 +43,4 @@ class FakePrerenderService : public PrerenderService {
   GURL preload_url_;
 };
 
-#endif  // IOS_CHROME_BROWSER_PRERENDER_FAKE_PRERENDER_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_PRERENDER_MODEL_FAKE_PRERENDER_SERVICE_H_

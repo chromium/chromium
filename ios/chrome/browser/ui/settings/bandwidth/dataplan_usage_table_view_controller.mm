@@ -8,7 +8,7 @@
 #import "base/check.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/prerender/prerender_pref.h"
+#import "ios/chrome/browser/prerender/model/prerender_pref.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"

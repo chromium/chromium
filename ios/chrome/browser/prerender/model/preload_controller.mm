@@ -4,7 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/prerender/preload_controller.h"
+#import "ios/chrome/browser/prerender/model/preload_controller.h"
 
 #import "base/check_op.h"
 #import "base/ios/device_util.h"
@@ -22,8 +22,8 @@
 #import "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/history/history_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/itunes_urls_handler_tab_helper.h"
-#import "ios/chrome/browser/prerender/preload_controller_delegate.h"
-#import "ios/chrome/browser/prerender/prerender_pref.h"
+#import "ios/chrome/browser/prerender/model/preload_controller_delegate.h"
+#import "ios/chrome/browser/prerender/model/prerender_pref.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
@@ -220,11 +220,13 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   __block std::unique_ptr<web::WebState> block_web_state = std::move(web_state);
 
   auto reset_block = ^{
-    if (block_web_state)
+    if (block_web_state) {
       block_web_state.reset();
+    }
 
-    if (!reset_timer)
+    if (!reset_timer) {
       return;
+    }
 
     reset_timer->Stop();
     reset_timer.reset();
@@ -402,8 +404,9 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 }
 
 - (void)setLoadCompleted:(BOOL)loadCompleted {
-  if (_loadCompleted == loadCompleted)
+  if (_loadCompleted == loadCompleted) {
     return;
+  }
 
   _loadCompleted = loadCompleted;
 
@@ -428,8 +431,9 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
          immediately:(BOOL)immediately {
   // TODO(crbug.com/754050): If CanPrerenderURL() returns false, should we
   // cancel any scheduled prerender requests?
-  if (!self.enabled || !CanPrerenderURL(url))
+  if (!self.enabled || !CanPrerenderURL(url)) {
     return;
+  }
 
   // Ignore this request if there is already a scheduled request for the same
   // URL; or, if there is no scheduled request, but the currently prerendered
@@ -465,8 +469,9 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 
 - (std::unique_ptr<web::WebState>)releasePrerenderContents {
   if (!_webState ||
-      _webState->GetNavigationManager()->IsRestoreSessionInProgress())
+      _webState->GetNavigationManager()->IsRestoreSessionInProgress()) {
     return nullptr;
+  }
 
   self.successfulPrerendersPerSessionCount++;
   [self recordReleaseMetrics];
@@ -567,8 +572,9 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigation {
   DCHECK_EQ(webState, _webState.get());
-  if ([self shouldCancelPreloadForMimeType:webState->GetContentsMimeType()])
+  if ([self shouldCancelPreloadForMimeType:webState->GetContentsMimeType()]) {
     [self schedulePrerenderCancel];
+  }
 }
 
 - (void)webState:(web::WebState*)webState
@@ -738,8 +744,9 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 }
 
 - (void)destroyPreviewContentsForReason:(PrerenderFinalStatus)reason {
-  if (!_webState)
+  if (!_webState) {
     return;
+  }
 
   UMA_HISTOGRAM_ENUMERATION(kPrerenderFinalStatusHistogramName, reason,
                             PRERENDER_FINAL_STATUS_MAX);

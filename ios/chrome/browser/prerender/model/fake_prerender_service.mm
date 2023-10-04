@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/prerender/fake_prerender_service.h"
+#import "ios/chrome/browser/prerender/model/fake_prerender_service.h"
 
 FakePrerenderService::FakePrerenderService() = default;
 

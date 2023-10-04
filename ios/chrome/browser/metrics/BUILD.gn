@@ -208,7 +208,7 @@ source_set("metrics_browser_agent") {
     "//components/google/core/common",
     "//components/previous_session_info",
     "//components/ukm/ios:ukm_url_recorder",
-    "//ios/chrome/browser/prerender",
+    "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/sessions:restoration_observer",
     "//ios/chrome/browser/sessions:restoration_observer_helper",
     "//ios/chrome/browser/shared/model/browser",

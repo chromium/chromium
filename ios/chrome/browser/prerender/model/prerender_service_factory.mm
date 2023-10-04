@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "ios/chrome/browser/prerender/prerender_service_impl.h"
+#import "ios/chrome/browser/prerender/model/prerender_service_impl.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/web/public/browser_state.h"

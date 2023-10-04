@@ -32,7 +32,7 @@ source_set("url_loading") {
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/ntp:util",
     "//ios/chrome/browser/policy:policy_util",
-    "//ios/chrome/browser/prerender",
+    "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

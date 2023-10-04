@@ -159,7 +159,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/main",
-    "//ios/chrome/browser/prerender",
+    "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/promos_manager:test_support",

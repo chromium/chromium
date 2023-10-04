@@ -246,7 +246,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/permissions:unit_tests",
     "//ios/chrome/browser/photos:unit_tests",
     "//ios/chrome/browser/policy:unit_tests",
-    "//ios/chrome/browser/prerender:unit_tests",
+    "//ios/chrome/browser/prerender/model:unit_tests",
     "//ios/chrome/browser/promos_manager:unit_tests",
     "//ios/chrome/browser/push_notification:unit_tests",
     "//ios/chrome/browser/reading_list/model:unit_tests",

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PRERENDER_PRERENDER_SERVICE_IMPL_H_
-#define IOS_CHROME_BROWSER_PRERENDER_PRERENDER_SERVICE_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_PRERENDER_MODEL_PRERENDER_SERVICE_IMPL_H_
+#define IOS_CHROME_BROWSER_PRERENDER_MODEL_PRERENDER_SERVICE_IMPL_H_
 
-#import "ios/chrome/browser/prerender/prerender_service.h"
+#import "ios/chrome/browser/prerender/model/prerender_service.h"
 
 #import <Foundation/Foundation.h>
 
@@ -43,4 +43,4 @@ class PrerenderServiceImpl : public PrerenderService {
   bool loading_prerender_ = false;
 };
 
-#endif  // IOS_CHROME_BROWSER_PRERENDER_PRERENDER_SERVICE_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_PRERENDER_MODEL_PRERENDER_SERVICE_IMPL_H_

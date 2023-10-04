@@ -9,7 +9,7 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/safe_browsing/core/common/features.h"
-#import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/hash_realtime_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_client_impl.h"

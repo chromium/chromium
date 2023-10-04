@@ -138,7 +138,7 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/ntp",
-    "//ios/chrome/browser/prerender",
+    "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/search_engines:search_engines_util",
     "//ios/chrome/browser/sessions",

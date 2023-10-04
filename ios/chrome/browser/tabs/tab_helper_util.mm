@@ -67,7 +67,7 @@
 #import "ios/chrome/browser/passwords/well_known_change_password_tab_helper.h"
 #import "ios/chrome/browser/permissions/permissions_tab_helper.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_tab_helper.h"
-#import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/offline_page_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_web_state_observer.h"

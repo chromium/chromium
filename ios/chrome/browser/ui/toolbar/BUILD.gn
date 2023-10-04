@@ -45,7 +45,7 @@ source_set("toolbar") {
     "//ios/chrome/browser/ntp:util",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/policy:policy_util",
-    "//ios/chrome/browser/prerender",
+    "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/search_engines:search_engines_util",

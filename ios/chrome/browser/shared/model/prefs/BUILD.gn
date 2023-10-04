@@ -87,7 +87,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/ntp_tiles/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/parcel_tracking:prefs",
     "//ios/chrome/browser/policy:policy_util",
-    "//ios/chrome/browser/prerender:prerender_pref",
+    "//ios/chrome/browser/prerender/model:prerender_pref",
     "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/safety_check/model:constants",
     "//ios/chrome/browser/shared/model/browser_state",

@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/prerender",
+  "+ios/chrome/browser/prerender/model",
   "+ios/chrome/browser/overlays/public",
   "+ios/chrome/browser/optimization_guide",
 ]

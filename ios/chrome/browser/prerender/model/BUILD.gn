@@ -6,7 +6,7 @@ source_set("prerender_pref") {
   public = [ "prerender_pref.h" ]
 }
 
-source_set("prerender") {
+source_set("model") {
   public = [
     "preload_controller_delegate.h",
     "prerender_service.h",
@@ -62,7 +62,7 @@ source_set("test_support") {
     "fake_prerender_service.mm",
   ]
 
-  deps = [ ":prerender" ]
+  deps = [ ":model" ]
 }
 
 source_set("unit_tests") {
@@ -73,7 +73,7 @@ source_set("unit_tests") {
     "prerender_service_impl_unittest.mm",
   ]
   deps = [
-    ":prerender",
+    ":model",
     ":prerender_pref",
     "//base",
     "//components/prefs",

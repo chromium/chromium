@@ -10,7 +10,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_service_impl.h"
-#import "ios/chrome/browser/prerender/prerender_service.h"
+#import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/web/public/navigation/https_upgrade_type.h"

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/prerender/prerender_service_impl.h"
+#import "ios/chrome/browser/prerender/model/prerender_service_impl.h"
 
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
-#import "ios/chrome/browser/prerender/preload_controller.h"
+#import "ios/chrome/browser/prerender/model/preload_controller.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"

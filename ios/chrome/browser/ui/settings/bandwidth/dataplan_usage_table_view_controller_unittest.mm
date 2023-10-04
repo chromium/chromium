@@ -12,7 +12,7 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
-#import "ios/chrome/browser/prerender/prerender_pref.h"
+#import "ios/chrome/browser/prerender/model/prerender_pref.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/bandwidth/dataplan_usage_table_view_controller+private.h"

@@ -7,7 +7,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/test/bind.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
-#import "ios/chrome/browser/prerender/fake_prerender_service.h"
+#import "ios/chrome/browser/prerender/model/fake_prerender_service.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"

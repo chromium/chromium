@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
-#import "ios/chrome/browser/prerender/prerender_service.h"
+#import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_bottom_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
