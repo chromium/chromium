@@ -8,9 +8,10 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/i18n/case_conversion.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -122,13 +123,13 @@ bool SanitizedFieldIsEmpty(const std::u16string& value) {
   // Some sites enter values such as ____-____-____-____ or (___)-___-____ in
   // their fields. Check if the field value is empty after the removal of the
   // formatting characters.
-  static std::u16string formatting =
+  static const base::NoDestructor<std::u16string> formatting(
       base::StrCat({u"-_()/",
                     {&base::i18n::kRightToLeftMark, 1},
                     {&base::i18n::kLeftToRightMark, 1},
-                    base::kWhitespaceUTF16});
+                    base::kWhitespaceUTF16}));
 
-  return (value.find_first_not_of(formatting) == base::StringPiece::npos);
+  return base::ContainsOnlyChars(value, *formatting);
 }
 
 bool ShouldAutoselectFirstSuggestionOnArrowDown() {
