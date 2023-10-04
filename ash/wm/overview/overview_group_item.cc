@@ -24,9 +24,9 @@ namespace {
 // Insets values for the individual overview items hosted by the overview group
 // item.
 constexpr gfx::InsetsF kLeftItemBoundsInsets =
-    gfx::InsetsF::TLBR(/*top=*/0, /*left=*/0, /*bottom=*/0, /*right=*/1);
+    gfx::InsetsF::TLBR(/*top=*/2, /*left=*/2, /*bottom=*/2, /*right=*/1);
 constexpr gfx::InsetsF kRightItemBoundsInsets =
-    gfx::InsetsF::TLBR(/*top=*/0, /*left=*/1, /*bottom=*/0, /*right=*/0);
+    gfx::InsetsF::TLBR(/*top=*/2, /*left=*/1, /*bottom=*/2, /*right=*/2);
 
 }  // namespace
 

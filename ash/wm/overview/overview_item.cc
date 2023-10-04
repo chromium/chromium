@@ -381,7 +381,9 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
 
 gfx::Transform OverviewItem::ComputeTargetTransform(
     const gfx::RectF& target_bounds) {
-  CHECK(!overview_grid_->IsDropTargetItem(this));
+  aura::Window* window = GetWindow();
+
+  CHECK(!overview_grid_->IsDropTargetWindow(window));
 
   gfx::RectF screen_rect = gfx::RectF(GetTargetBoundsInScreen());
 
@@ -390,6 +392,7 @@ gfx::Transform OverviewItem::ComputeTargetTransform(
   screen_size.SetToMax(gfx::SizeF(1.f, 1.f));
   screen_rect.set_size(screen_size);
 
+  const int top_view_inset = transform_window_.GetTopInset();
   gfx::RectF transformed_bounds = target_bounds;
 
   // Update `transformed_bounds` to match the unclipped size of the window, so
@@ -398,7 +401,6 @@ gfx::Transform OverviewItem::ComputeTargetTransform(
     transformed_bounds.set_size(gfx::SizeF(*unclipped_size_));
   }
 
-  const int top_view_inset = transform_window_.GetTopInset();
   gfx::RectF overview_item_bounds =
       transform_window_.ShrinkRectToFitPreservingAspectRatio(
           screen_rect, transformed_bounds, top_view_inset, kHeaderHeightDp);
@@ -470,7 +472,7 @@ void OverviewItem::RestoreWindow(bool reset_transform, bool animate) {
 }
 
 gfx::RectF OverviewItem::GetTargetBoundsInScreen() const {
-  return ash::GetTargetBoundsInScreen(transform_window_.window());
+  return ::ash::GetTargetBoundsInScreen(transform_window_.window());
 }
 
 gfx::RectF OverviewItem::GetWindowTargetBoundsWithInsets() const {
@@ -568,12 +570,13 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
     should_show_shadow_for_rounded_corners = should_show_rounded_corners;
   }
 
-  const bool should_show_shadow = should_show_shadow_for_rounded_corners &&
-                                  !overview_grid_->IsDropTargetItem(this) &&
-                                  !transform_window_.GetOverviewWindow()
-                                       ->layer()
-                                       ->GetAnimator()
-                                       ->is_animating();
+  const bool should_show_shadow =
+      should_show_shadow_for_rounded_corners &&
+      !overview_grid_->IsDropTargetWindow(GetWindow()) &&
+      !transform_window_.GetOverviewWindow()
+           ->layer()
+           ->GetAnimator()
+           ->is_animating();
 
   if (should_show_shadow) {
     // The shadow should always match the size of the item minus the border
@@ -776,7 +779,7 @@ void OverviewItem::Restack() {
     // used to restack an item that comes after a drop target. In other words,
     // `overview_grid_` might have a drop target, but we will break out of the
     // for loop before reaching it.
-    CHECK(!overview_grid_->IsDropTargetItem(this));
+    DCHECK(!overview_grid_->IsDropTargetWindow(overview_item->GetWindow()));
     if (overview_item.get() == this) {
       break;
     }
@@ -893,7 +896,7 @@ void OverviewItem::UpdateCannotSnapWarningVisibility(bool animate) {
   if (SplitViewController::Get(root_window_)
           ->ComputeSnapRatio(GetWindow())
           .has_value() ||
-      overview_grid_->IsDropTargetItem(this)) {
+      overview_grid_->IsDropTargetWindow(GetWindow())) {
     visible = false;
   } else {
     const SplitViewController::State state =
@@ -1093,7 +1096,7 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
                                          const gfx::Rect& old_bounds,
                                          const gfx::Rect& new_bounds,
                                          ui::PropertyChangeReason reason) {
-  CHECK_EQ(GetWindow(), window);
+  DCHECK_EQ(GetWindow(), window);
 
   // During preparation, window bounds can change. Ignore bounds change
   // notifications in this case; we'll reposition soon.
@@ -1113,9 +1116,8 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
   // The drop target will get its bounds set as opposed to its transform
   // set in `SetItemBounds` so do not position windows again when that
   // particular window has its bounds changed.
-  if (overview_grid_->IsDropTargetItem(this)) {
+  if (overview_grid_->IsDropTargetWindow(window))
     return;
-  }
 
   if (reason == ui::PropertyChangeReason::NOT_FROM_ANIMATION)
     overview_item_view_->RefreshPreviewView();
@@ -1305,10 +1307,9 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
                                  OverviewAnimationType animation_type,
                                  bool is_first_update) {
   aura::Window* window = GetWindow();
-  CHECK_EQ(root_window_, window->GetRootWindow());
-
+  DCHECK(root_window_ == window->GetRootWindow());
   // Do not set transform for drop target, set bounds instead.
-  if (overview_grid_->IsDropTargetItem(this)) {
+  if (overview_grid_->IsDropTargetWindow(window)) {
     const gfx::Rect drop_target_bounds =
         ToStableSizeRoundedRect(chromeos::features::IsJellyrollEnabled()
                                     ? target_bounds_
