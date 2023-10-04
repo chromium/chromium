@@ -20,7 +20,6 @@ LacrosDataBackwardMigrationScreenHandler::
 
 void LacrosDataBackwardMigrationScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  // TODO(b/254435635): Update with backward migration specific strings.
   builder->Add("lacrosDataBackwardMigrationTitle",
                IDS_LACROS_DATA_MIGRATION_SCREEN_TITLE);
   builder->Add("lacrosDataBackwardMigrationSubtitle",
