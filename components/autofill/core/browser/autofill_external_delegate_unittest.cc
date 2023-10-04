@@ -356,6 +356,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ShowEditorForExistingProfile) {
 TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing) {
   IssueOnQuery();
 
+  base::HistogramTester histogram;
   const std::string guid = base::Uuid().AsLowercaseString();
   ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
       .WillByDefault(Return(&profile_));
@@ -381,12 +382,14 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing) {
   external_delegate_->DidAcceptSuggestion(
       suggestion, 0,
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  histogram.ExpectUniqueSample("Autofill.ExtendedMenu.EditAddress", 0, 1);
 }
 
 // Test that the editor changes are persisted if the user has canceled editing.
 TEST_F(AutofillExternalDelegateUnitTest, UserSavesEdits) {
   IssueOnQuery();
 
+  base::HistogramTester histogram;
   const std::string guid = base::Uuid().AsLowercaseString();
   ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
       .WillByDefault(Return(&profile_));
@@ -415,6 +418,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserSavesEdits) {
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
   external_delegate_->OnPersonalDataFinishedProfileTasks();
+  histogram.ExpectUniqueSample("Autofill.ExtendedMenu.EditAddress", 1, 1);
 }
 
 // Test the situation when database changes take long enough for the user to

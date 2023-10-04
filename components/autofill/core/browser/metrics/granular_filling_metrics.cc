@@ -8,6 +8,11 @@
 
 namespace autofill::autofill_metrics {
 
+void LogEditAddressProfileDialogClosed(bool user_saved_changes) {
+  base::UmaHistogramBoolean("Autofill.ExtendedMenu.EditAddress",
+                            user_saved_changes);
+}
+
 void LogDeleteAddressProfileDialogClosed(bool user_accepted_delete) {
   base::UmaHistogramBoolean("Autofill.ExtendedMenu.DeleteAddress",
                             user_accepted_delete);

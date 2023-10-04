@@ -590,6 +590,8 @@ void AutofillExternalDelegate::OnAddressEditorClosed(
     AutofillProfile profile) {
   if (decision ==
       AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted) {
+    autofill_metrics::LogEditAddressProfileDialogClosed(
+        /*user_saved_changes=*/true);
     PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
     if (!pdm_observation_.IsObserving()) {
       pdm_observation_.Observe(pdm);
@@ -597,6 +599,8 @@ void AutofillExternalDelegate::OnAddressEditorClosed(
     pdm->UpdateProfile(profile);
     return;
   }
+  autofill_metrics::LogEditAddressProfileDialogClosed(
+      /*user_saved_changes=*/false);
   manager_->driver().RendererShouldTriggerSuggestions(
       query_field_.global_id(),
       AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed);

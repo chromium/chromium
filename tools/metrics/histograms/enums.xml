@@ -12009,6 +12009,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Deleted"/>
 </enum>
 
+<enum name="BooleanAutofillExtendedMenuEditAddress">
+  <int value="0" label="Canceled"/>
+  <int value="1" label="Saved"/>
+</enum>
+
 <enum name="BooleanAutofillFillAfterInteraction">
   <int value="0" label="Not filled"/>
   <int value="1" label="Filled"/>
