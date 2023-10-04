@@ -21,7 +21,6 @@
 
 namespace content {
 
-using Lock = FileSystemAccessLockManager::Lock;
 using LockType = FileSystemAccessLockManager::LockType;
 using storage::FileSystemURL;
 

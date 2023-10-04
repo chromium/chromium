@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/browser/file_system_access/file_system_access_capacity_allocation_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_delegate_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -32,7 +33,7 @@ class FileSystemAccessAccessHandleHostImpl
   FileSystemAccessAccessHandleHostImpl(
       FileSystemAccessManagerImpl* manager,
       const storage::FileSystemURL& url,
-      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
       base::PassKey<FileSystemAccessManagerImpl> pass_key,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessAccessHandleHost>
           receiver,
@@ -110,7 +111,7 @@ class FileSystemAccessAccessHandleHostImpl
   // declared after `close_callback_` to ensure that the lock is released before
   // the FileSystemSyncAccessHandle.close() method returns. See
   // https://github.com/whatwg/fs/issues/83.
-  scoped_refptr<FileSystemAccessLockManager::Lock> lock_;
+  scoped_refptr<FileSystemAccessLockManager::LockHandle> lock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -188,9 +188,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
                         const storage::FileSystemURL& url,
                         const SharedHandleState& handle_state);
 
-  // Attempts to take a lock of `lock_type` on `url`. Returns the lock if
-  // successful. The lock is released when the returned object is destroyed.
-  scoped_refptr<FileSystemAccessLockManager::Lock> TakeLock(
+  // Attempts to take a lock of `lock_type` on `url`. Returns a handle to the
+  // lock if successful. The lock is released when there are no handles to it.
+  scoped_refptr<FileSystemAccessLockManager::LockHandle> TakeLock(
       const storage::FileSystemURL& url,
       FileSystemAccessLockManager::LockType lock_type);
 
@@ -221,21 +221,22 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // Creates a new FileSystemAccessFileWriterImpl for a given target and
   // swap file URLs. Assumes the passed in URLs are valid and represent files.
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>
-  CreateFileWriter(const BindingContext& binding_context,
-                   const storage::FileSystemURL& url,
-                   const storage::FileSystemURL& swap_url,
-                   scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-                   scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
-                   const SharedHandleState& handle_state,
-                   bool auto_close);
+  CreateFileWriter(
+      const BindingContext& binding_context,
+      const storage::FileSystemURL& url,
+      const storage::FileSystemURL& swap_url,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
+      const SharedHandleState& handle_state,
+      bool auto_close);
   // Returns a weak pointer to a newly created FileSystemAccessFileWriterImpl.
   // Useful for tests
   base::WeakPtr<FileSystemAccessFileWriterImpl> CreateFileWriter(
       const BindingContext& binding_context,
       const storage::FileSystemURL& url,
       const storage::FileSystemURL& swap_url,
-      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-      scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
       const SharedHandleState& handle_state,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
       bool has_transient_user_activation,
@@ -253,7 +254,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
           blink::mojom::FileSystemAccessCapacityAllocationHost>
           capacity_allocation_host_receiver,
       int64_t file_size,
-      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
       base::ScopedClosureRunner on_close_callback);
 
   // Create a transfer token for a specific file or directory.

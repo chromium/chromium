@@ -16,7 +16,7 @@ namespace content {
 FileSystemAccessAccessHandleHostImpl::FileSystemAccessAccessHandleHostImpl(
     FileSystemAccessManagerImpl* manager,
     const storage::FileSystemURL& url,
-    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
     base::PassKey<FileSystemAccessManagerImpl> /*pass_key*/,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessAccessHandleHost>
         receiver,

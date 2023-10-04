@@ -144,20 +144,20 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   void ConfirmMoveWillNotOverwriteDestination(
       const bool has_write_access,
       const storage::FileSystemURL& destination_url,
-      std::vector<scoped_refptr<FileSystemAccessLockManager::Lock>> locks,
+      std::vector<scoped_refptr<FileSystemAccessLockManager::LockHandle>> locks,
       bool has_transient_user_activation,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
       base::File::Error result);
   void DoPerformMoveOperation(
       const storage::FileSystemURL& destination_url,
-      std::vector<scoped_refptr<FileSystemAccessLockManager::Lock>> locks,
+      std::vector<scoped_refptr<FileSystemAccessLockManager::LockHandle>> locks,
       bool has_transient_user_activation,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
           callback);
 
   void DidMove(
       storage::FileSystemURL destination_url,
-      std::vector<scoped_refptr<FileSystemAccessLockManager::Lock>> locks,
+      std::vector<scoped_refptr<FileSystemAccessLockManager::LockHandle>> locks,
       std::unique_ptr<FileSystemAccessSafeMoveHelper> move_helper,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
       blink::mojom::FileSystemAccessErrorPtr result);

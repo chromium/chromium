@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -17,7 +16,6 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 class FileSystemURL;
@@ -26,6 +24,7 @@ class FileSystemURL;
 namespace content {
 
 class FileSystemAccessManagerImpl;
+class Lock;
 
 // This class is in charge of the creation of Locks. Locks restrict the access
 // to a specific file or directory, preventing unexpected concurrent access to
@@ -70,47 +69,31 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
   // from acquiring a lock.
   using LockType = base::IdType32<class LockTypeTag>;
 
-  // This class represents an active lock on an entry locator. The lock is
-  // released on destruction.
-  class CONTENT_EXPORT Lock : public base::RefCounted<Lock> {
+  // A handle to a `Lock` passed to the frame that holds the lock. The `Lock` is
+  // kept alive as long as `LockHandle` is kept alive.
+  class CONTENT_EXPORT LockHandle : public base::RefCounted<LockHandle> {
    public:
-    Lock(base::WeakPtr<FileSystemAccessLockManager> lock_manager,
-         const EntryLocator& entry_locator,
-         const LockType& type,
-         const scoped_refptr<Lock> parent_lock,
-         base::PassKey<FileSystemAccessLockManager> pass_key);
-
-    Lock(Lock const&) = delete;
-    Lock& operator=(Lock const&) = delete;
+    LockHandle(LockHandle const&) = delete;
+    LockHandle& operator=(LockHandle const&) = delete;
 
     const LockType& type() const { return type_; }
 
-    bool IsExclusive() const;
+    bool IsExclusive() const { return is_exclusive_; }
 
    private:
-    friend class base::RefCounted<Lock>;
-    // The lock is released on destruction.
-    ~Lock();
+    friend class Lock;
+    friend class base::RefCounted<LockHandle>;
+
+    explicit LockHandle(base::WeakPtr<Lock> lock);
+
+    // On destruction, lets its `lock_` know it is no longer held.
+    ~LockHandle();
 
     SEQUENCE_CHECKER(sequence_checker_);
 
-    // The FileSystemAccessLockManager that created this instance. Used on
-    // destruction to release the lock on the file.
-    base::WeakPtr<FileSystemAccessLockManager> lock_manager_
-        GUARDED_BY_CONTEXT(sequence_checker_);
-
-    // Locator of the file or directory associated with this lock. It is used to
-    // unlock the lock on closure/destruction.
-    const EntryLocator entry_locator_;
-
+    base::WeakPtr<Lock> lock_ GUARDED_BY_CONTEXT(sequence_checker_);
     const LockType type_;
-
-    // When a file or directory is locked, it acquires a shared lock on its
-    // parent directory, which acquires a shared lock on its parent, and so
-    // forth. When this instance goes away, the associated ancestor locks are
-    // automatically released. May be null if this instance represents the root
-    // of its file system.
-    const scoped_refptr<Lock> parent_lock_;
+    const bool is_exclusive_;
   };
 
   explicit FileSystemAccessLockManager(
@@ -121,10 +104,10 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
   FileSystemAccessLockManager& operator=(FileSystemAccessLockManager const&) =
       delete;
 
-  // Attempts to take a lock of `lock_type` on `url`. Returns the lock if
-  // successful. The lock is released when the returned object is destroyed.
-  scoped_refptr<Lock> TakeLock(const storage::FileSystemURL& url,
-                               LockType lock_type);
+  // Attempts to take a lock of `lock_type` on `url`. Returns a handle to the
+  // lock if successful. The lock is released when there are no handles to it.
+  scoped_refptr<LockHandle> TakeLock(const storage::FileSystemURL& url,
+                                     LockType lock_type);
 
   // Creates a new shared lock type.
   [[nodiscard]] LockType CreateSharedLockType();
@@ -136,15 +119,18 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
   [[nodiscard]] LockType GetAncestorLockTypeForTesting();
 
  private:
-  scoped_refptr<Lock> TakeLockImpl(const EntryLocator& entry_locator,
-                                   LockType lock_type);
+  friend Lock;
+
+  scoped_refptr<LockHandle> TakeLockImpl(const EntryLocator& entry_locator,
+                                         LockType lock_type);
 
   // Releases the lock on `entry_locator`. Called from the Lock destructor.
   void ReleaseLock(const EntryLocator& entry_locator);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::map<EntryLocator, Lock*> locks_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::map<EntryLocator, std::unique_ptr<Lock>> locks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   LockType::Generator lock_type_generator_;
 

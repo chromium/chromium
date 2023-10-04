@@ -4,7 +4,6 @@
 
 #include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "base/files/file_path.h"
-#include "base/memory/scoped_refptr.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -13,7 +12,94 @@
 namespace content {
 
 using EntryLocator = FileSystemAccessLockManager::EntryLocator;
-using Lock = FileSystemAccessLockManager::Lock;
+using LockHandle = FileSystemAccessLockManager::LockHandle;
+using LockType = FileSystemAccessLockManager::LockType;
+
+// This class represents an active lock on an entry locator. The lock is kept
+// alive when there is some `LockHandle` to it. The lock is released when all
+// its `LockHandle`s have been destroyed.
+class Lock {
+ public:
+  Lock(base::WeakPtr<FileSystemAccessLockManager> lock_manager,
+       const EntryLocator& entry_locator,
+       const LockType& type,
+       scoped_refptr<LockHandle> parent_lock)
+      : lock_manager_(lock_manager),
+        entry_locator_(entry_locator),
+        type_(type),
+        parent_lock_(std::move(parent_lock)) {}
+
+  ~Lock() = default;
+
+  Lock(Lock const&) = delete;
+  Lock& operator=(Lock const&) = delete;
+
+  const EntryLocator& locator() const { return entry_locator_; }
+
+  const LockType& type() const { return type_; }
+
+  bool IsExclusive() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return type_ == lock_manager_->exclusive_lock_type_;
+  }
+
+  // Returns whether this lock is contentious with `type`.
+  bool IsContentious(LockType type) { return type != type_ || IsExclusive(); }
+
+  scoped_refptr<LockHandle> CreateLockHandle() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (!lock_handle_) {
+      // The lock is owned by the caller or its child lock. A raw pointer is
+      // stored in `lock_handle_` to be able to increase the refcount when a new
+      // shared lock is requested for this `Lock`.
+      //
+      // It is safe to store raw pointers in `lock_handle_` because when a lock
+      // is destroyed, `this` is destroyed. This means that it will be a valid
+      // object for the lifetime of `Lock`, and is therefore safe to
+      // dereference.
+      lock_handle_ = new LockHandle(weak_factory_.GetWeakPtr());
+    }
+
+    return base::WrapRefCounted<LockHandle>(lock_handle_);
+  }
+
+ private:
+  friend class FileSystemAccessLockManager::LockHandle;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Called by a `LockHandle` when its destroyed.
+  void LockHandleDestroyed() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // ReleaseLock will destroy `this`.
+    lock_manager_->ReleaseLock(entry_locator_);
+  }
+
+  // The FileSystemAccessLockManager that created this instance. Used on
+  // destruction to release the lock on the file.
+  base::WeakPtr<FileSystemAccessLockManager> lock_manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The handle that holds this lock.
+  raw_ptr<LockHandle> lock_handle_ = nullptr;
+
+  // Locator of the file or directory associated with this lock. It is used to
+  // unlock the lock on release.
+  const EntryLocator entry_locator_;
+
+  const LockType type_;
+
+  // When a file or directory is locked, it acquires a shared lock on its
+  // parent directory, which acquires a shared lock on its parent, and so
+  // forth. When this instance goes away, the associated ancestor locks are
+  // automatically released. May be null if this instance represents the root
+  // of its file system.
+  const scoped_refptr<LockHandle> parent_lock_;
+
+  base::WeakPtrFactory<Lock> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
+};
 
 // static
 EntryLocator EntryLocator::FromFileSystemURL(
@@ -61,26 +147,14 @@ bool EntryLocator::operator<(const EntryLocator& other) const {
          std::tie(other.type, other.path, other.bucket_locator);
 }
 
-Lock::Lock(base::WeakPtr<FileSystemAccessLockManager> lock_manager,
-           const EntryLocator& entry_locator,
-           const LockType& type,
-           const scoped_refptr<Lock> parent_lock,
-           base::PassKey<FileSystemAccessLockManager> pass_key)
-    : lock_manager_(lock_manager),
-      entry_locator_(entry_locator),
-      type_(type),
-      parent_lock_(std::move(parent_lock)) {}
+LockHandle::LockHandle(base::WeakPtr<Lock> lock)
+    : lock_(lock), type_(lock->type()), is_exclusive_(lock->IsExclusive()) {}
 
-Lock::~Lock() {
+LockHandle::~LockHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (lock_manager_) {
-    lock_manager_->ReleaseLock(entry_locator_);
+  if (lock_) {
+    lock_->LockHandleDestroyed();
   }
-}
-
-bool Lock::IsExclusive() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return type_ == lock_manager_->exclusive_lock_type_;
 }
 
 FileSystemAccessLockManager::FileSystemAccessLockManager(
@@ -88,7 +162,7 @@ FileSystemAccessLockManager::FileSystemAccessLockManager(
 
 FileSystemAccessLockManager::~FileSystemAccessLockManager() = default;
 
-scoped_refptr<Lock> FileSystemAccessLockManager::TakeLock(
+scoped_refptr<LockHandle> FileSystemAccessLockManager::TakeLock(
     const storage::FileSystemURL& url,
     LockType lock_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -97,18 +171,19 @@ scoped_refptr<Lock> FileSystemAccessLockManager::TakeLock(
   return TakeLockImpl(entry_locator, lock_type);
 }
 
-scoped_refptr<Lock> FileSystemAccessLockManager::TakeLockImpl(
+scoped_refptr<LockHandle> FileSystemAccessLockManager::TakeLockImpl(
     const EntryLocator& entry_locator,
     LockType lock_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto lock_it = locks_.find(entry_locator);
-  Lock* existing_lock = lock_it != locks_.end() ? lock_it->second : nullptr;
+  Lock* existing_lock =
+      lock_it != locks_.end() ? lock_it->second.get() : nullptr;
 
   if (!existing_lock) {
     // Recursively try to acquire shared locks on all parent directories. If any
     // parent directories are locked, lock acquisition should fail.
-    scoped_refptr<Lock> parent_lock;
+    scoped_refptr<LockHandle> parent_lock;
     auto parent_path = entry_locator.path.DirName();
     if (parent_path != entry_locator.path) {
       EntryLocator parent_entry_locator{entry_locator.type, parent_path,
@@ -120,19 +195,18 @@ scoped_refptr<Lock> FileSystemAccessLockManager::TakeLockImpl(
     }
 
     // There are no locks on the file, we can take any type of lock.
-    Lock* new_lock = new Lock(weak_factory_.GetWeakPtr(), entry_locator,
-                              lock_type, std::move(parent_lock), PassKey());
-    // The lock is owned by the caller or its child lock. A raw pointer is
-    // stored `locks_` to be able to increase the refcount when a new shared
-    // lock is requested on a URL that has an existing one.
-    //
-    // It is safe to store raw pointers in `locks_` because when a lock is
-    // destroyed, it's entry in the map is erased. This means that any raw
-    // pointer in the map points to a valid object, and is therefore safe to
-    // dereference.
-    locks_.emplace(std::move(entry_locator), new_lock);
+    std::unique_ptr<Lock> new_lock =
+        std::make_unique<Lock>(weak_factory_.GetWeakPtr(), entry_locator,
+                               lock_type, std::move(parent_lock));
 
-    return base::WrapRefCounted<Lock>(new_lock);
+    // The lock handle is owned by the caller or its child lock.
+    scoped_refptr<LockHandle> lock_handle = new_lock->CreateLockHandle();
+
+    // The lock is stored in `locks_` for future calls of `TakeLockImpl` to get
+    // the existing lock.
+    locks_.emplace(std::move(entry_locator), std::move(new_lock));
+
+    return lock_handle;
   }
 
   if (lock_type != existing_lock->type() || lock_type == exclusive_lock_type_) {
@@ -142,10 +216,9 @@ scoped_refptr<Lock> FileSystemAccessLockManager::TakeLockImpl(
     return nullptr;
   }
 
-  // There is an existing shared lock, and the requested lock is also shared.
-  // We increase the refcount of the existing lock by taking and returning a
-  // scoped_refptr to it.
-  return base::WrapRefCounted<Lock>(existing_lock);
+  // The existing lock is not in contention with the requested lock, so return a
+  // handle to it.
+  return existing_lock->CreateLockHandle();
 }
 
 void FileSystemAccessLockManager::ReleaseLock(

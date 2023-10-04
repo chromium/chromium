@@ -32,7 +32,7 @@
 
 namespace content {
 
-using Lock = FileSystemAccessLockManager::Lock;
+using LockHandle = FileSystemAccessLockManager::LockHandle;
 
 namespace {
 std::string GetURLDisplayName(const storage::FileSystemURL& url) {
@@ -392,7 +392,7 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
 
   // The file can only be moved if we can acquire exclusive locks to both the
   // source and destination URLs.
-  std::vector<scoped_refptr<Lock>> locks;
+  std::vector<scoped_refptr<LockHandle>> locks;
   auto source_lock =
       manager()->TakeLock(url(), manager()->GetExclusiveLockType());
   if (!source_lock) {
@@ -443,7 +443,7 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
 void FileSystemAccessHandleBase::ConfirmMoveWillNotOverwriteDestination(
     const bool has_write_access,
     const storage::FileSystemURL& destination_url,
-    std::vector<scoped_refptr<Lock>> locks,
+    std::vector<scoped_refptr<LockHandle>> locks,
     bool has_transient_user_activation,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
     base::File::Error result) {
@@ -467,7 +467,7 @@ void FileSystemAccessHandleBase::ConfirmMoveWillNotOverwriteDestination(
 
 void FileSystemAccessHandleBase::DoPerformMoveOperation(
     const storage::FileSystemURL& destination_url,
-    std::vector<scoped_refptr<Lock>> locks,
+    std::vector<scoped_refptr<LockHandle>> locks,
     bool has_transient_user_activation,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -490,7 +490,7 @@ void FileSystemAccessHandleBase::DoPerformMoveOperation(
 
 void FileSystemAccessHandleBase::DidMove(
     storage::FileSystemURL destination_url,
-    std::vector<scoped_refptr<Lock>> locks,
+    std::vector<scoped_refptr<LockHandle>> locks,
     std::unique_ptr<FileSystemAccessSafeMoveHelper> /*move_helper*/,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
     blink::mojom::FileSystemAccessErrorPtr result) {
@@ -545,7 +545,7 @@ void FileSystemAccessHandleBase::DoRemove(
   // Bind the `lock` to the Remove callback to guarantee the lock is held until
   // the operation completes.
   auto wrapped_callback = base::BindOnce(
-      [](scoped_refptr<Lock> lock,
+      [](scoped_refptr<LockHandle> lock,
          base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
              callback,
          base::File::Error result) {

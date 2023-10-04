@@ -296,7 +296,7 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
 }
 
 void FileSystemAccessFileHandleImpl::DoOpenIncognitoFile(
-    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
     OpenAccessHandleCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(GetWritePermissionStatus(),
@@ -318,7 +318,7 @@ void FileSystemAccessFileHandleImpl::DoOpenIncognitoFile(
 }
 
 void FileSystemAccessFileHandleImpl::DoOpenFile(
-    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
     OpenAccessHandleCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(GetWritePermissionStatus(),
@@ -335,7 +335,7 @@ void FileSystemAccessFileHandleImpl::DoOpenFile(
 
 void FileSystemAccessFileHandleImpl::DoGetLengthAfterOpenFile(
     OpenAccessHandleCallback callback,
-    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
     base::File file,
     base::ScopedClosureRunner on_close_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -371,7 +371,7 @@ void FileSystemAccessFileHandleImpl::DoGetLengthAfterOpenFile(
 
 void FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength(
     OpenAccessHandleCallback callback,
-    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
     base::ScopedClosureRunner on_close_callback,
     std::pair<base::File, base::FileErrorOr<int64_t>> file_and_length) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -559,7 +559,7 @@ void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
     int count,
     bool keep_existing_data,
     bool auto_close,
-    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(count >= 0);
@@ -641,8 +641,8 @@ void FileSystemAccessFileHandleImpl::DidCheckSwapFileExists(
     int count,
     const storage::FileSystemURL& swap_url,
     bool auto_close,
-    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-    scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
     CreateFileWriterCallback callback,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -674,8 +674,8 @@ void FileSystemAccessFileHandleImpl::CreateSwapFileFromCopy(
     int count,
     const storage::FileSystemURL& swap_url,
     bool auto_close,
-    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-    scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(count >= 0);
@@ -700,8 +700,8 @@ void FileSystemAccessFileHandleImpl::CreateClonedSwapFile(
     int count,
     const storage::FileSystemURL& swap_url,
     bool auto_close,
-    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-    scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(count >= 0);
@@ -728,8 +728,8 @@ void FileSystemAccessFileHandleImpl::DidCloneSwapFile(
     int count,
     const storage::FileSystemURL& swap_url,
     bool auto_close,
-    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-    scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
     CreateFileWriterCallback callback,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -771,8 +771,8 @@ void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
     const storage::FileSystemURL& swap_url,
     bool keep_existing_data,
     bool auto_close,
-    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-    scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
     CreateFileWriterCallback callback,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
