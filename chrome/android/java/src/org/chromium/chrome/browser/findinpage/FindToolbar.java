@@ -33,12 +33,10 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityEventCompat;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -114,38 +112,15 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
 
     /** Subclasses EditText in order to intercept BACK key presses. */
     @SuppressLint("Instantiatable")
-    static class FindQuery extends VerticallyFixedEditText implements OnKeyListener {
+    static class FindQuery extends VerticallyFixedEditText {
         private FindToolbar mFindToolbar;
 
         public FindQuery(Context context, AttributeSet attrs) {
             super(context, attrs);
-            if (!BackPressManager.isEnabled() && !BuildInfo.isAtLeastT()) {
-                setOnKeyListener(this);
-            }
         }
 
         void setFindToolbar(FindToolbar findToolbar) {
             mFindToolbar = findToolbar;
-        }
-
-        @Override
-        @SuppressLint("GestureBackNavigation")
-        public boolean onKey(View v, int keyCode, KeyEvent event) {
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
-                    // Tell the framework to start tracking this event.
-                    getKeyDispatcherState().startTracking(event, this);
-                    return true;
-                } else if (event.getAction() == KeyEvent.ACTION_UP) {
-                    getKeyDispatcherState().handleUpEvent(event);
-                    if (event.isTracking() && !event.isCanceled()) {
-                        BackPressManager.record(Type.FIND_TOOLBAR);
-                        mFindToolbar.deactivate();
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
 
         @Override
