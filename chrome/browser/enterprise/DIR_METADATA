@@ -1,3 +1,1 @@
-monorail: {
-  component: "Enterprise"
-}
+mixins: "//components/enterprise/browser/COMMON_METADATA"

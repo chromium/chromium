@@ -1,5 +1,4 @@
 monorail {
-  component: "Enterprise>BrowserSwitcher"
+  component: "Enterprise>TrafficAnnotations"
 }
-
 team_email: "chromium-enterprise@chromium.org"

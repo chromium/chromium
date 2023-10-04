@@ -1,0 +1,19 @@
+monorail {
+  component: "Services>Safebrowsing"
+}
+
+overrides [
+  {
+    file_patterns: ["deep_scan*.*"]
+    metadata {
+        # TODO: b/293930398 - change to mixin (http://shortn/_gOsS9Ts5Oq)
+        monorail {
+            component: "Enterprise>Connectors"
+          }
+        buganizer {
+            component_id: 1208119
+        }
+        team_email: "dpr-eng@google.com"
+    }
+  }
+]

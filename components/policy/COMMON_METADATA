@@ -1,5 +1,9 @@
+# For CrOS issues, file under buganizer component.
+
 monorail {
   component: "Enterprise"
 }
-
+buganizer {
+    component_id: 1227364
+}
 team_email: "chromium-enterprise@chromium.org"
