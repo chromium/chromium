@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/policy_url_blocking",
+  "+ios/chrome/browser/policy_url_blocking/model",
   "+ios/chrome/browser/signin",
 ]
 

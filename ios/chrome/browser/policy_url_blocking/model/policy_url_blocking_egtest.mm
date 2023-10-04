@@ -32,7 +32,7 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
                  @"Waiting for policy url blocklist to update.");
 }
 
-}
+}  // namespace
 
 // Tests the URLBlocklist and URLAllowlist enterprise policies.
 @interface PolicyURLBlockingTestCase : ChromeTestCase

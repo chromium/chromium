@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_POLICY_URL_BLOCKING_POLICY_URL_BLOCKING_SERVICE_H_
-#define IOS_CHROME_BROWSER_POLICY_URL_BLOCKING_POLICY_URL_BLOCKING_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_POLICY_URL_BLOCKING_MODEL_POLICY_URL_BLOCKING_SERVICE_H_
+#define IOS_CHROME_BROWSER_POLICY_URL_BLOCKING_MODEL_POLICY_URL_BLOCKING_SERVICE_H_
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -57,4 +57,4 @@ class PolicyBlocklistServiceFactory : public BrowserStateKeyedServiceFactory {
       const PolicyBlocklistServiceFactory&) = delete;
 };
 
-#endif  // IOS_CHROME_BROWSER_POLICY_URL_BLOCKING_POLICY_URL_BLOCKING_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_POLICY_URL_BLOCKING_MODEL_POLICY_URL_BLOCKING_SERVICE_H_

@@ -50,7 +50,7 @@
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/photos/photos_service_factory.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
-#import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
+#import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_event_exporter_factory.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/push_notification/push_notification_browser_state_service_factory.h"
