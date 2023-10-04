@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -207,8 +206,6 @@ base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
         return SourceRegistrationError::kFilterDataValueWrongType;
       case FilterValuesError::kValueTooLong:
         return SourceRegistrationError::kFilterDataValueTooLong;
-      default:
-        NOTREACHED_NORETURN();
     }
   };
   ASSIGN_OR_RETURN(auto filter_values,
