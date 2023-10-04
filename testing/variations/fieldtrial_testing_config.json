@@ -6254,6 +6254,24 @@
             ]
         }
     ],
+    "EnableOneTapForMaps": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "OneTapForMapsConsentModeParam": "iph"
+                    },
+                    "enable_features": [
+                        "EnableOneTapForMaps"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableOverwritingPlaceholderUsernames": [
         {
             "platforms": [
