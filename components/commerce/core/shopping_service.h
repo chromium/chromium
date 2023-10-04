@@ -418,8 +418,15 @@ class ShoppingService : public KeyedService,
   void GetAllParcelStatuses(GetParcelStatusCallback callback);
 
   // Called to stop tracking a given parcel.
+  // DEPRECATED: use StopTrackingParcels() below()
   void StopTrackingParcel(const std::string& tracking_id,
                           base::OnceCallback<void(bool)> callback);
+
+  // Called to stop tracking multiple parcels.
+  void StopTrackingParcels(
+      const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
+          parcel_identifiers,
+      base::OnceCallback<void(bool)> callback);
 
   // Called to stop tracking all parcels.
   void StopTrackingAllParcels(base::OnceCallback<void(bool)> callback);

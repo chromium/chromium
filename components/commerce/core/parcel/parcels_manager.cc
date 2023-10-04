@@ -164,6 +164,16 @@ void ParcelsManager::StopTrackingParcel(const std::string& tracking_id,
   ProcessPendingOperations();
 }
 
+void ParcelsManager::StopTrackingParcels(
+    const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
+        parcel_identifiers,
+    StopParcelTrackingCallback callback) {
+  pending_operations_.push(base::BindOnce(
+      &ParcelsManager::StopTrackingParcelsInternal,
+      weak_ptr_factory_.GetWeakPtr(), parcel_identifiers, std::move(callback)));
+  ProcessPendingOperations();
+}
+
 void ParcelsManager::StopTrackingAllParcels(
     StopParcelTrackingCallback callback) {
   pending_operations_.push(
@@ -259,6 +269,18 @@ void ParcelsManager::StopTrackingParcelInternal(
                                   std::move(callback)));
 }
 
+void ParcelsManager::StopTrackingParcelsInternal(
+    const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
+        parcel_identifiers,
+    StopParcelTrackingCallback callback) {
+  std::vector<ParcelIdentifier> identifiers =
+      ConvertParcelIdentifier(parcel_identifiers);
+  parcels_server_proxy_->StopTrackingParcels(
+      identifiers, base::BindOnce(&ParcelsManager::OnStopTrackingParcelsDone,
+                                  weak_ptr_factory_.GetWeakPtr(), identifiers,
+                                  std::move(callback)));
+}
+
 void ParcelsManager::StopTrackingAllParcelsInternal(
     StopParcelTrackingCallback callback) {
   parcels_server_proxy_->StopTrackingAllParcels(
@@ -300,6 +322,21 @@ void ParcelsManager::OnStopTrackingParcelDone(
   if (success) {
     parcels_storage_->DeleteParcelStatus(tracking_id,
                                          base::DoNothingAs<void(bool)>());
+  }
+
+  std::move(callback).Run(success);
+  OnCurrentOperationFinished();
+}
+
+void ParcelsManager::OnStopTrackingParcelsDone(
+    const std::vector<ParcelIdentifier>& parcel_identifiers,
+    StopParcelTrackingCallback callback,
+    bool success) {
+  DCHECK(is_processing_pending_operations_);
+  // Update the database if network request succeeds.
+  if (success) {
+    parcels_storage_->DeleteParcelsStatus(parcel_identifiers,
+                                          base::DoNothingAs<void(bool)>());
   }
 
   std::move(callback).Run(success);

@@ -334,6 +334,26 @@ void ParcelsServerProxy::StopTrackingParcel(
       kStopTrackingParcelTrafficAnnotation, std::move(callback));
 }
 
+void ParcelsServerProxy::StopTrackingParcels(
+    const std::vector<ParcelIdentifier>& parcel_identifiers,
+    StopParcelTrackingCallback callback) {
+  CHECK_GT(parcel_identifiers.size(), 0u);
+  base::Value::List parcel_list = Serialize(parcel_identifiers);
+  if (parcel_list.empty()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+  base::Value::Dict request_json;
+  request_json.Set(kParcelIdsKey, std::move(parcel_list));
+
+  SendJsonRequestToServer(
+      std::move(request_json), GURL(kServiceBaseUrl.Get()),
+      kStopTrackingParcelTrafficAnnotation,
+      base::BindOnce(&ParcelsServerProxy::OnStopTrackingResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void ParcelsServerProxy::StopTrackingAllParcels(
     StopParcelTrackingCallback callback) {
   SendStopTrackingRequestToServer(GURL(kServiceBaseUrl.Get()),
@@ -354,6 +374,7 @@ std::unique_ptr<EndpointFetcher> ParcelsServerProxy::CreateEndpointFetcher(
 
 void ParcelsServerProxy::ProcessGetParcelStatusResponse(
     GetParcelStatusCallback callback,
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> response) {
   if (response->http_status_code != net::HTTP_OK || response->error_type) {
     std::move(callback).Run(false,
@@ -397,17 +418,17 @@ void ParcelsServerProxy::OnStopTrackingResponse(
 }
 
 void ParcelsServerProxy::OnServerResponse(
-    EndpointFetcherCallback callback,
+    EndpointCallback callback,
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> response) {
-  std::move(callback).Run(std::move(response));
+  std::move(callback).Run(std::move(endpoint_fetcher), std::move(response));
 }
 
 void ParcelsServerProxy::SendJsonRequestToServer(
     base::Value::Dict request_json,
     const GURL& server_url,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-    EndpointFetcherCallback callback) {
+    EndpointCallback callback) {
   std::string post_data;
   base::JSONWriter::Write(request_json, &post_data);
   auto fetcher = CreateEndpointFetcher(GURL(server_url), kPostHttpMethod,
