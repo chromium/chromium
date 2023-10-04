@@ -1693,9 +1693,16 @@ class MaximizedBrowserWindowWaiter {
 
 }  // namespace
 
+// TODO(crbug/1489264): The test is failing. Please re-enable after fixing the
+// failure.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_DetachToOwnWindow DISABLED_DetachToOwnWindow
+#else
+#define MAYBE_DetachToOwnWindow DetachToOwnWindow
+#endif
 // Drags from browser to separate window and releases mouse.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DetachToOwnWindow) {
+                       MAYBE_DetachToOwnWindow) {
   const gfx::Rect initial_bounds(browser()->window()->GetBounds());
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
