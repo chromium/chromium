@@ -665,6 +665,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     // Reset webview to prevent calls from authenticator.
     this.authenticator_.resetWebview();
     this.authenticator_.resetStates();
+    this.navigationButtonsHidden_ = true;
     // Explicitly disable video here to let `onVideoEnabledChange_()` handle
     // timer start next time when `videoEnabled_` will be set to true on SAML
     // page.
@@ -872,6 +873,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     this.loadingFrameContents_ = true;
     this.startLoadingTimer_();
     this.authCompleted_ = false;
+    this.navigationButtonsHidden_ = false;
   }
 
   /**

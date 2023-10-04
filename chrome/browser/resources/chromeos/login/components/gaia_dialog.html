@@ -128,8 +128,8 @@ found in the LICENSE file.
   <div slot="back-navigation" hidden$="[[navigationHidden]]">
     <oobe-back-button id="signin-back-button"
         disabled="[[!navigationEnabled]]"
-        hidden="[[isBackButtonHidden(hideBackButtonIfCantGoBack,
-                                      canGoBack)]]"
+        hidden="[[isBackButtonHidden(navigationHidden,
+                                     hideBackButtonIfCantGoBack, canGoBack)]]"
         on-click="onBackButtonClicked_">
     </oobe-back-button>
   </div>

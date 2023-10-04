@@ -33,6 +33,10 @@ constexpr test::UIPath kEnterpriseEnrollmentButton = {"gaia-signin",
                                                       "enterpriseEnrollment"};
 
 constexpr char kSigninWebview[] = "$('gaia-signin').getSigninFrame_()";
+
+constexpr test::UIPath kSigninBackButton = {
+    "gaia-signin", "signin-frame-dialog", "signin-back-button"};
+
 constexpr test::UIPath kSigninNextButton = {
     "gaia-signin", "signin-frame-dialog", "primary-action-button"};
 
@@ -78,6 +82,18 @@ class EnrollmentNudgeTest : public OobeBaseTest {
         {kSigninWebview, ".src.indexOf('#challengepassword') != -1"}));
   }
 
+  void ExpectNavigationButtonsHidden() {
+    test::OobeJS().ExpectHiddenPath(kSigninBackButton);
+    // TODO(b/302676357): we check if the button is disabled because the
+    // "hidden" attribute for this button is not always set as expected
+    test::OobeJS().ExpectDisabledPath(kSigninNextButton);
+  }
+
+  void ExpectNavigationButtonsVisible() {
+    test::OobeJS().ExpectVisiblePath(kSigninBackButton);
+    test::OobeJS().ExpectVisiblePath(kSigninNextButton);
+  }
+
   void CheckUserActionHistogram(const UserAction& expected_user_action) {
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Enterprise.EnrollmentNudge.UserAction"),
@@ -98,6 +114,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, SwitchToEnrollment) {
   // Proceed to Gaia sign in page during OOBE.
   WaitForGaiaPageLoadAndPropertyUpdate();
   ExpectGaiaIdentifierPage();
+  ExpectNavigationButtonsVisible();
 
   // Enter the `FakeGaiaMixin::kEnterpriseUser1` email. It should trigger
   // enrollment nudge pop-up.
@@ -105,6 +122,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, SwitchToEnrollment) {
                                FakeGaiaMixin::kEmailPath);
   test::OobeJS().ClickOnPath(kSigninNextButton);
   WaitForEnrollmentNudgeDialogToOpen();
+  test::OobeJS().CreateVisibilityWaiter(false, kSigninBackButton)->Wait();
+  ExpectNavigationButtonsHidden();
 
   // Clicking on `kEnterpriseEnrollmentButton` should lead to enrollment screen.
   test::OobeJS().ClickOnPath(kEnterpriseEnrollmentButton);
@@ -121,6 +140,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, UseAnotherAccountButton) {
   // Proceed to Gaia sign in page during OOBE.
   WaitForGaiaPageLoadAndPropertyUpdate();
   ExpectGaiaIdentifierPage();
+  ExpectNavigationButtonsVisible();
 
   // Enter the `FakeGaiaMixin::kEnterpriseUser1` email. It should trigger
   // enrollment nudge pop-up.
@@ -128,11 +148,14 @@ IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, UseAnotherAccountButton) {
                                FakeGaiaMixin::kEmailPath);
   test::OobeJS().ClickOnPath(kSigninNextButton);
   WaitForEnrollmentNudgeDialogToOpen();
+  test::OobeJS().CreateVisibilityWaiter(false, kSigninBackButton)->Wait();
+  ExpectNavigationButtonsHidden();
 
   // Clicking on `kUseAnotherAccountButton` should result in Gaia page being
   // reload.
   test::OobeJS().ClickOnPath(kUseAnotherAccountButton);
   WaitForGaiaPageReload();
+  ExpectNavigationButtonsVisible();
   CheckUserActionHistogram(UserAction::kUseAnotherAccountButtonClicked);
 }
 
@@ -140,6 +163,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, NoNudgeForKnownConsumerDomain) {
   // Proceed to Gaia sign in page during OOBE.
   WaitForGaiaPageLoadAndPropertyUpdate();
   ExpectGaiaIdentifierPage();
+  ExpectNavigationButtonsVisible();
 
   // Make sure that `FakeGaiaMixin::kFakeUserEmail` belongs to a known consumer
   // domain.
@@ -154,6 +178,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, NoNudgeForKnownConsumerDomain) {
   test::OobeJS().ClickOnPath(kSigninNextButton);
   WaitForGaiaPageBackButtonUpdate();
   ExpectGaiaPasswordPage();
+  ExpectNavigationButtonsVisible();
   EXPECT_TRUE(
       histogram_tester.GetAllSamples("Enterprise.EnrollmentNudge.UserAction")
           .empty());
