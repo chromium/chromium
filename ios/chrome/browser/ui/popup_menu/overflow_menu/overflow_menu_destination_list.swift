@@ -197,10 +197,7 @@ struct OverflowMenuDestinationList: View {
                   id: MenuCustomizationAnimationID.from(destination), in: namespace
                 )
                 .accessibilityElement(children: .combine)
-                .accessibilityHint(
-                  editMode?.wrappedValue.isEditing == true && destination.canBeHidden
-                    ? L10nUtils.stringWithFixup(
-                      messageId: IDS_IOS_OVERFLOW_MENU_HIDE_ITEM_ACCESSIBILITY_HINT) : "")
+                .accessibilityHint(editButtonAccessibilityHint(for: destination))
             }
           }
           .alignmentGuide(.top) { $0[.top] - (Constants.defaultTopMargin + extraTopMargin) }
@@ -228,6 +225,16 @@ struct OverflowMenuDestinationList: View {
         uiConfiguration.destinationListScreenFrame = geometry.frame(in: .global)
       }
     }
+  }
+
+  private func editButtonAccessibilityHint(for destination: OverflowMenuDestination) -> String {
+    guard editMode?.wrappedValue.isEditing == true && destination.canBeHidden else {
+      return ""
+    }
+    return destination.shown
+      ? L10nUtils.stringWithFixup(
+        messageId: IDS_IOS_OVERFLOW_MENU_HIDE_ITEM_ACCESSIBILITY_HINT)
+      : ""
   }
 
   /// Finds the lower and upper breakpoint above and below `width`.
