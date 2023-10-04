@@ -6,26 +6,36 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_test_util.h"
-#include "chrome/browser/apps/app_service/app_icon/web_app_icon_unittest.h"
+#include "chrome/browser/apps/app_service/app_icon/web_app_icon_test_helper.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/shortcut_publisher.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
+#include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
+
+using IconPurpose = web_app::IconPurpose;
+
 class FakeShortcutPublisherForIconTest : public apps::ShortcutPublisher {
  public:
   FakeShortcutPublisherForIconTest(apps::AppServiceProxy* proxy,
@@ -60,12 +70,16 @@ class FakeShortcutPublisherForIconTest : public apps::ShortcutPublisher {
   int num_get_icon_call_ = 0;
 };
 
-class BrowserShortcutIconTest : public WebAppIconFactoryTest {
+class BrowserShortcutIconTest : public testing::Test {
  public:
   void SetUp() override {
+    testing::Test::SetUp();
     scoped_feature_list_.InitAndEnableFeature(
         features::kCrosWebAppShortcutUiUpdate);
-    WebAppIconFactoryTest::SetUp();
+    TestingProfile::Builder builder;
+    profile_ = builder.Build();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+
     proxy_ = AppServiceProxyFactory::GetForProfile(profile());
     fake_shortcut_publisher_ =
         std::make_unique<apps::FakeShortcutPublisherForIconTest>(
@@ -87,7 +101,7 @@ class BrowserShortcutIconTest : public WebAppIconFactoryTest {
     ShortcutPtr shortcut = std::make_unique<Shortcut>(
         app_constants::kChromeAppId, web_app->app_id());
     shortcut->icon_key = IconKey(0, 0, 0);
-    WebAppIconFactoryTest ::RegisterApp(std::move(web_app));
+    test_helper().RegisterApp(std::move(web_app));
     apps::ShortcutId shortcut_id = shortcut->shortcut_id;
     app_service_proxy()->PublishShortcut(std::move(shortcut));
     return shortcut_id;
@@ -105,8 +119,18 @@ class BrowserShortcutIconTest : public WebAppIconFactoryTest {
   FakeShortcutPublisherForIconTest* fake_shortcut_publisher() {
     return fake_shortcut_publisher_.get();
   }
+  web_app::WebAppIconManager& icon_manager() {
+    return web_app::WebAppProvider::GetForWebApps(profile())->icon_manager();
+  }
+
+  Profile* profile() { return profile_.get(); }
+
+  WebAppIconTestHelper test_helper() { return WebAppIconTestHelper(profile()); }
 
  private:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<web_app::WebAppIconManager> icon_manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<AppServiceProxy> proxy_;
@@ -124,20 +148,19 @@ TEST_F(BrowserShortcutIconTest, GetCompressedIconData) {
   const int kIconSize2 = kSizeInDip * scale2;
   const std::vector<int> sizes_px{kIconSize1, kIconSize2};
   const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
-  WriteIcons(web_app_id, {web_app::IconPurpose::ANY}, sizes_px, colors);
+  test_helper().WriteIcons(web_app_id, {IconPurpose::ANY}, sizes_px, colors);
 
-  web_app->SetDownloadedIconSizes(web_app::IconPurpose::ANY, sizes_px);
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
 
   apps::ShortcutId shortcut_id = RegisterShortcut(std::move(web_app));
 
-  ASSERT_TRUE(
-      icon_manager().HasIcons(web_app_id, web_app::IconPurpose::ANY, sizes_px));
+  ASSERT_TRUE(icon_manager().HasIcons(web_app_id, IconPurpose::ANY, sizes_px));
 
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
 
-  std::vector<uint8_t> src_data = GenerateWebAppCompressedIcon(
-      web_app_id, web_app::IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+  std::vector<uint8_t> src_data = test_helper().GenerateWebAppCompressedIcon(
+      web_app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
       scale_to_size_in_px, scale1);
   EXPECT_EQ(0, fake_shortcut_publisher()->num_get_icon_call());
   // Verify the icon reading and writing function in AppService for the
@@ -164,19 +187,18 @@ TEST_F(BrowserShortcutIconTest, GetStandardIconData) {
   const int kIconSize2 = kSizeInDip * scale2;
   const std::vector<int> sizes_px{kIconSize1, kIconSize2};
   const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
-  WriteIcons(web_app_id, {web_app::IconPurpose::ANY}, sizes_px, colors);
+  test_helper().WriteIcons(web_app_id, {IconPurpose::ANY}, sizes_px, colors);
 
-  web_app->SetDownloadedIconSizes(web_app::IconPurpose::ANY, sizes_px);
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
   apps::ShortcutId shortcut_id = RegisterShortcut(std::move(web_app));
 
-  ASSERT_TRUE(
-      icon_manager().HasIcons(web_app_id, web_app::IconPurpose::ANY, sizes_px));
+  ASSERT_TRUE(icon_manager().HasIcons(web_app_id, IconPurpose::ANY, sizes_px));
 
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  gfx::ImageSkia src_image_skia =
-      GenerateWebAppIcon(web_app_id, web_app::IconPurpose::ANY, sizes_px,
-                         scale_to_size_in_px, /*skip_icon_effects=*/true);
+  gfx::ImageSkia src_image_skia = test_helper().GenerateWebAppIcon(
+      web_app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
+      /*skip_icon_effects=*/true);
 
   EXPECT_EQ(0, fake_shortcut_publisher()->num_get_icon_call());
   // Verify the icon reading and writing function in AppService for the
@@ -203,13 +225,12 @@ TEST_F(BrowserShortcutIconTest, GetIconDataWithDifferentSizeIcon) {
   const int kIconSize2 = 256;
   const std::vector<int> sizes_px{kIconSize1, kIconSize2};
   const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
-  WriteIcons(web_app_id, {web_app::IconPurpose::ANY}, sizes_px, colors);
+  test_helper().WriteIcons(web_app_id, {IconPurpose::ANY}, sizes_px, colors);
 
-  web_app->SetDownloadedIconSizes(web_app::IconPurpose::ANY, sizes_px);
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
   apps::ShortcutId shortcut_id = RegisterShortcut(std::move(web_app));
 
-  ASSERT_TRUE(
-      icon_manager().HasIcons(web_app_id, web_app::IconPurpose::ANY, sizes_px));
+  ASSERT_TRUE(icon_manager().HasIcons(web_app_id, IconPurpose::ANY, sizes_px));
 
   // Create the web app compressed icon data for the size in dip 64.
   // 1. The icon file of size 96px will be resized to 64 to generated the
@@ -221,8 +242,8 @@ TEST_F(BrowserShortcutIconTest, GetIconDataWithDifferentSizeIcon) {
   // data `src_data`.
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  std::vector<uint8_t> src_data = GenerateWebAppCompressedIcon(
-      web_app_id, web_app::IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+  std::vector<uint8_t> src_data = test_helper().GenerateWebAppCompressedIcon(
+      web_app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
       scale_to_size_in_px, scale);
 
   EXPECT_EQ(0, fake_shortcut_publisher()->num_get_icon_call());
@@ -235,8 +256,8 @@ TEST_F(BrowserShortcutIconTest, GetIconDataWithDifferentSizeIcon) {
                        *LoadShortcutIcon(shortcut_id, IconType::kCompressed));
 
   EXPECT_EQ(2, fake_shortcut_publisher()->num_get_icon_call());
-  gfx::ImageSkia src_image_skia = GenerateWebAppIcon(
-      web_app_id, web_app::IconPurpose::ANY, sizes_px, scale_to_size_in_px,
+  gfx::ImageSkia src_image_skia = test_helper().GenerateWebAppIcon(
+      web_app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
       /*skip_icon_effects=*/true);
 
   // Verify the icon reading and writing function in AppService for the
@@ -265,19 +286,18 @@ TEST_F(BrowserShortcutIconTest, IconUpdated) {
   const int kIconSize2 = kSizeInDip * scale2;
   const std::vector<int> sizes_px{kIconSize1, kIconSize2};
   const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
-  WriteIcons(web_app_id, {web_app::IconPurpose::ANY}, sizes_px, colors);
+  test_helper().WriteIcons(web_app_id, {IconPurpose::ANY}, sizes_px, colors);
 
-  web_app->SetDownloadedIconSizes(web_app::IconPurpose::ANY, sizes_px);
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
   apps::ShortcutId shortcut_id = RegisterShortcut(std::move(web_app));
 
-  ASSERT_TRUE(
-      icon_manager().HasIcons(web_app_id, web_app::IconPurpose::ANY, sizes_px));
+  ASSERT_TRUE(icon_manager().HasIcons(web_app_id, IconPurpose::ANY, sizes_px));
 
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  gfx::ImageSkia src_image_skia =
-      GenerateWebAppIcon(web_app_id, web_app::IconPurpose::ANY, sizes_px,
-                         scale_to_size_in_px, /*skip_icon_effects=*/true);
+  gfx::ImageSkia src_image_skia = test_helper().GenerateWebAppIcon(
+      web_app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
+      /*skip_icon_effects=*/true);
 
   EXPECT_EQ(0, fake_shortcut_publisher()->num_get_icon_call());
   // Verify the icon reading and writing function in AppService for the
@@ -289,10 +309,10 @@ TEST_F(BrowserShortcutIconTest, IconUpdated) {
 
   // Update the icon
   const std::vector<SkColor> colors2{SK_ColorRED, SK_ColorBLUE};
-  WriteIcons(web_app_id, {web_app::IconPurpose::ANY}, sizes_px, colors2);
-  gfx::ImageSkia src_image_skia2 =
-      GenerateWebAppIcon(web_app_id, web_app::IconPurpose::ANY, sizes_px,
-                         scale_to_size_in_px, /*skip_icon_effects=*/true);
+  test_helper().WriteIcons(web_app_id, {IconPurpose::ANY}, sizes_px, colors2);
+  gfx::ImageSkia src_image_skia2 = test_helper().GenerateWebAppIcon(
+      web_app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
+      /*skip_icon_effects=*/true);
 
   auto delta =
       std::make_unique<Shortcut>(app_constants::kChromeAppId, web_app_id);
@@ -318,19 +338,18 @@ TEST_F(BrowserShortcutIconTest, ShortcutRemovedAndCreatedAgain) {
   const int kIconSize2 = kSizeInDip * scale2;
   const std::vector<int> sizes_px{kIconSize1, kIconSize2};
   const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
-  WriteIcons(web_app_id, {web_app::IconPurpose::ANY}, sizes_px, colors);
+  test_helper().WriteIcons(web_app_id, {IconPurpose::ANY}, sizes_px, colors);
 
-  web_app->SetDownloadedIconSizes(web_app::IconPurpose::ANY, sizes_px);
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
   apps::ShortcutId shortcut_id = RegisterShortcut(std::move(web_app));
 
-  ASSERT_TRUE(
-      icon_manager().HasIcons(web_app_id, web_app::IconPurpose::ANY, sizes_px));
+  ASSERT_TRUE(icon_manager().HasIcons(web_app_id, IconPurpose::ANY, sizes_px));
 
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  gfx::ImageSkia src_image_skia =
-      GenerateWebAppIcon(web_app_id, web_app::IconPurpose::ANY, sizes_px,
-                         scale_to_size_in_px, /*skip_icon_effects=*/true);
+  gfx::ImageSkia src_image_skia = test_helper().GenerateWebAppIcon(
+      web_app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
+      /*skip_icon_effects=*/true);
 
   EXPECT_EQ(0, fake_shortcut_publisher()->num_get_icon_call());
   // Verify the icon reading and writing function in AppService for the
