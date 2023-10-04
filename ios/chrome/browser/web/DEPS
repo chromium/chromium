@@ -28,7 +28,7 @@ include_rules = [
   "+ios/chrome/browser/promos_manager",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/rlz",
-  "+ios/chrome/browser/safe_browsing",
+  "+ios/chrome/browser/safe_browsing/model",
   "+ios/chrome/browser/search_engines",
   "+ios/chrome/browser/sessions",
   "+ios/chrome/browser/signin",

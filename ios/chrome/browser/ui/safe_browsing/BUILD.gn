@@ -9,7 +9,7 @@ source_set("safe_browsing") {
   ]
   deps = [
     "//components/safe_browsing/core/common",
-    "//ios/chrome/browser/safe_browsing:safe_browsing",
+    "//ios/chrome/browser/safe_browsing/model:model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",

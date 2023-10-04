@@ -110,7 +110,7 @@ source_set("model") {
     "//ios/chrome/browser/promos_manager:factory",
     "//ios/chrome/browser/push_notification:push_notification_browser_state_service_factory",
     "//ios/chrome/browser/reading_list/model",
-    "//ios/chrome/browser/safe_browsing",
+    "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/safety_check/model:factory",
     "//ios/chrome/browser/screen_time/model:buildflags",
     "//ios/chrome/browser/search_engines",

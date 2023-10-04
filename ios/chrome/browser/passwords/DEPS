@@ -2,7 +2,7 @@ include_rules = [
   "+ios/chrome/browser/signin",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/infobars",
-  "+ios/chrome/browser/safe_browsing",
+  "+ios/chrome/browser/safe_browsing/model",
   "+ios/chrome/browser/autofill",
   "+ios/chrome/browser/credential_provider_promo/model/features.h",
   "+ios/chrome/browser/translate/model",

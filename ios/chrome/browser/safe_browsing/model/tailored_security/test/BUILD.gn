@@ -1,0 +1,18 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test") {
+  testonly = true
+
+  sources = [
+    "mock_tailored_security_service_infobar_delegate.h",
+    "mock_tailored_security_service_infobar_delegate.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/infobars/core",
+    "//ios/chrome/browser/safe_browsing/model/tailored_security:infobar_delegates",
+    "//testing/gmock",
+  ]
+}

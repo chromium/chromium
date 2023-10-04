@@ -26,7 +26,7 @@ source_set("ssl") {
     "//components/security_state/ios",
     "//components/strings",
     "//components/url_formatter",
-    "//ios/chrome/browser/safe_browsing",
+    "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/ui/util",

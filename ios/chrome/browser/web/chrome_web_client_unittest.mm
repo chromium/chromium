@@ -22,7 +22,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
-#import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
+#import "ios/chrome/browser/safe_browsing/model/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"

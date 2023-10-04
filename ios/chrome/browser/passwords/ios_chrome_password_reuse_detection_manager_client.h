@@ -14,8 +14,8 @@
 #include "components/password_manager/ios/password_reuse_detection_manager_client_bridge.h"
 #include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager.h"
 #include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_client.h"
-#import "ios/chrome/browser/safe_browsing/input_event_observer.h"
-#import "ios/chrome/browser/safe_browsing/password_protection_java_script_feature.h"
+#import "ios/chrome/browser/safe_browsing/model/input_event_observer.h"
+#import "ios/chrome/browser/safe_browsing/model/password_protection_java_script_feature.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 
