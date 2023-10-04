@@ -456,8 +456,21 @@ base::File::Error ObfuscatedFileUtil::CreateDirectory(
     if (error != base::File::FILE_OK)
       return error;
     UpdateUsage(context, url, growth);
+
+    // Appropriately report changes when recursively creating a directory by
+    // constructing the FileSystemURL of created intermediate directories.
+    base::FilePath changed_path = url.virtual_path();
+    for (size_t i = components.size() - 1; i > index; --i) {
+      changed_path = VirtualPath::DirName(changed_path);
+    }
+    auto created_directory_url =
+        context->file_system_context()->CreateCrackedFileSystemURL(
+            url.storage_key(), url.mount_type(), changed_path);
+    if (url.bucket().has_value()) {
+      created_directory_url.SetBucket(url.bucket().value());
+    }
     context->change_observers()->Notify(&FileChangeObserver::OnCreateDirectory,
-                                        url);
+                                        created_directory_url);
     if (first) {
       first = false;
       TouchDirectory(db, file_info.parent_id);

@@ -56,6 +56,7 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/database/database_identifier.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -1014,12 +1015,18 @@ TEST_P(ObfuscatedFileUtilTest, TestCreateAndDeleteFile) {
   context = NewContext(nullptr);
   bool exclusive = true;
   bool recursive = true;
-  FileSystemURL directory_url = CreateURLFromUTF8("series/of/directories");
+  FileSystemURL root_url = CreateURLFromUTF8("series");
+  FileSystemURL intermediate_url = FileSystemURLAppendUTF8(root_url, "of");
+  FileSystemURL directory_url =
+      FileSystemURLAppendUTF8(intermediate_url, "directories");
   url = FileSystemURLAppendUTF8(directory_url, "file name");
   EXPECT_EQ(base::File::FILE_OK,
             ofu()->CreateDirectory(context.get(), directory_url, exclusive,
                                    recursive));
-  // The oepration created 3 directories recursively.
+  // The operation created 3 directories recursively.
+  EXPECT_THAT(
+      change_observer()->get_changed_urls(),
+      testing::UnorderedElementsAre(root_url, intermediate_url, directory_url));
   EXPECT_EQ(3, change_observer()->get_and_reset_create_directory_count());
 
   context = NewContext(nullptr);

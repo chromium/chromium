@@ -27,27 +27,34 @@ ChangeObserverList MockFileChangeObserver::CreateList(
 
 void MockFileChangeObserver::OnCreateFile(const FileSystemURL& url) {
   create_file_count_++;
+  changed_urls_.insert(url);
 }
 
 void MockFileChangeObserver::OnCreateFileFrom(const FileSystemURL& url,
                                               const FileSystemURL& src) {
   create_file_from_count_++;
+  changed_urls_.insert(url);
+  changed_urls_.insert(src);
 }
 
 void MockFileChangeObserver::OnRemoveFile(const FileSystemURL& url) {
   remove_file_count_++;
+  changed_urls_.insert(url);
 }
 
 void MockFileChangeObserver::OnModifyFile(const FileSystemURL& url) {
   modify_file_count_++;
+  changed_urls_.insert(url);
 }
 
 void MockFileChangeObserver::OnCreateDirectory(const FileSystemURL& url) {
   create_directory_count_++;
+  changed_urls_.insert(url);
 }
 
 void MockFileChangeObserver::OnRemoveDirectory(const FileSystemURL& url) {
   remove_directory_count_++;
+  changed_urls_.insert(url);
 }
 
 }  // namespace storage
