@@ -21,14 +21,63 @@
 
 namespace content {
 
-// static
-bool StoredSource::IsExpiryOrReportWindowTimeValid(
-    base::Time expiry_or_report_window_time,
-    base::Time source_time) {
+namespace {
+
+bool IsExpiryOrReportWindowTimeValid(base::Time expiry_or_report_window_time,
+                                     base::Time source_time) {
   // The source must expire strictly after it occurred.
   return expiry_or_report_window_time > source_time &&
          expiry_or_report_window_time - source_time <=
              attribution_reporting::kMaxSourceExpiry;
+}
+
+bool AreFieldsValid(int64_t aggregatable_budget_consumed,
+                    int max_event_level_reports,
+                    double randomized_response_rate,
+                    base::Time source_time,
+                    base::Time expiry_time,
+                    base::Time aggregatable_report_window_time) {
+  return aggregatable_budget_consumed >= 0 && max_event_level_reports >= 0 &&
+         randomized_response_rate >= 0 && randomized_response_rate <= 1 &&
+         IsExpiryOrReportWindowTimeValid(expiry_time, source_time) &&
+         IsExpiryOrReportWindowTimeValid(aggregatable_report_window_time,
+                                         source_time);
+}
+
+}  // namespace
+
+// static
+absl::optional<StoredSource> StoredSource::Create(
+    CommonSourceInfo common_info,
+    uint64_t source_event_id,
+    attribution_reporting::DestinationSet destination_sites,
+    base::Time source_time,
+    base::Time expiry_time,
+    attribution_reporting::EventReportWindows event_report_windows,
+    base::Time aggregatable_report_window_time,
+    int max_event_level_reports,
+    int64_t priority,
+    attribution_reporting::FilterData filter_data,
+    absl::optional<uint64_t> debug_key,
+    attribution_reporting::AggregationKeys aggregation_keys,
+    AttributionLogic attribution_logic,
+    ActiveState active_state,
+    Id source_id,
+    int64_t aggregatable_budget_consumed,
+    double randomized_response_rate) {
+  if (!AreFieldsValid(aggregatable_budget_consumed, max_event_level_reports,
+                      randomized_response_rate, source_time, expiry_time,
+                      aggregatable_report_window_time)) {
+    return absl::nullopt;
+  }
+
+  return StoredSource(
+      std::move(common_info), source_event_id, std::move(destination_sites),
+      source_time, expiry_time, std::move(event_report_windows),
+      aggregatable_report_window_time, max_event_level_reports, priority,
+      std::move(filter_data), debug_key, std::move(aggregation_keys),
+      attribution_logic, active_state, source_id, aggregatable_budget_consumed,
+      randomized_response_rate);
 }
 
 StoredSource::StoredSource(
@@ -66,15 +115,9 @@ StoredSource::StoredSource(
       source_id_(source_id),
       aggregatable_budget_consumed_(aggregatable_budget_consumed),
       randomized_response_rate_(randomized_response_rate) {
-  DCHECK_GE(aggregatable_budget_consumed_, 0);
-  DCHECK_GE(max_event_level_reports_, 0);
-
-  DCHECK_GE(randomized_response_rate_, 0);
-  DCHECK_LE(randomized_response_rate_, 1);
-
-  DCHECK(IsExpiryOrReportWindowTimeValid(expiry_time_, source_time_));
-  DCHECK(IsExpiryOrReportWindowTimeValid(aggregatable_report_window_time_,
-                                         source_time_));
+  DCHECK(AreFieldsValid(aggregatable_budget_consumed_, max_event_level_reports_,
+                        randomized_response_rate_, source_time_, expiry_time_,
+                        aggregatable_report_window_time_));
 }
 
 StoredSource::~StoredSource() = default;

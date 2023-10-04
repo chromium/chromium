@@ -43,28 +43,24 @@ class CONTENT_EXPORT StoredSource {
     kReachedEventLevelAttributionLimit = 2,
     kMaxValue = kReachedEventLevelAttributionLimit,
   };
-
-  static bool IsExpiryOrReportWindowTimeValid(
-      base::Time expiry_or_report_window_time,
-      base::Time source_time);
-
-  StoredSource(CommonSourceInfo common_info,
-               uint64_t source_event_id,
-               attribution_reporting::DestinationSet,
-               base::Time source_time,
-               base::Time expiry_time,
-               attribution_reporting::EventReportWindows,
-               base::Time aggregatable_report_window_time,
-               int max_event_level_reports,
-               int64_t priority,
-               attribution_reporting::FilterData,
-               absl::optional<uint64_t> debug_key,
-               attribution_reporting::AggregationKeys,
-               AttributionLogic,
-               ActiveState,
-               Id source_id,
-               int64_t aggregatable_budget_consumed,
-               double randomized_response_rate);
+  static absl::optional<StoredSource> Create(
+      CommonSourceInfo common_info,
+      uint64_t source_event_id,
+      attribution_reporting::DestinationSet,
+      base::Time source_time,
+      base::Time expiry_time,
+      attribution_reporting::EventReportWindows,
+      base::Time aggregatable_report_window_time,
+      int max_event_level_reports,
+      int64_t priority,
+      attribution_reporting::FilterData,
+      absl::optional<uint64_t> debug_key,
+      attribution_reporting::AggregationKeys,
+      AttributionLogic,
+      ActiveState,
+      Id source_id,
+      int64_t aggregatable_budget_consumed,
+      double randomized_response_rate);
 
   ~StoredSource();
 
@@ -136,6 +132,24 @@ class CONTENT_EXPORT StoredSource {
   }
 
  private:
+  StoredSource(CommonSourceInfo common_info,
+               uint64_t source_event_id,
+               attribution_reporting::DestinationSet,
+               base::Time source_time,
+               base::Time expiry_time,
+               attribution_reporting::EventReportWindows,
+               base::Time aggregatable_report_window_time,
+               int max_event_level_reports,
+               int64_t priority,
+               attribution_reporting::FilterData,
+               absl::optional<uint64_t> debug_key,
+               attribution_reporting::AggregationKeys,
+               AttributionLogic,
+               ActiveState,
+               Id source_id,
+               int64_t aggregatable_budget_consumed,
+               double randomized_response_rate);
+
   CommonSourceInfo common_info_;
 
   uint64_t source_event_id_;

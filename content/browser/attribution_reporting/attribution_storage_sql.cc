@@ -545,12 +545,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
 
   if (!source_origin || !reporting_origin || !source_type.has_value() ||
       !attribution_logic.has_value() || num_conversions < 0 ||
-      aggregatable_budget_consumed < 0 || num_aggregatable_reports < 0 ||
-      !aggregation_keys.has_value() ||
-      !StoredSource::IsExpiryOrReportWindowTimeValid(expiry_time,
-                                                     source_time) ||
-      !StoredSource::IsExpiryOrReportWindowTimeValid(
-          aggregatable_report_window_time, source_time)) {
+      num_aggregatable_reports < 0 || !aggregation_keys.has_value()) {
     return absl::nullopt;
   }
 
@@ -577,9 +572,6 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
 
   int max_event_level_reports =
       read_only_source_data_msg->max_event_level_reports();
-  if (max_event_level_reports < 0) {
-    return absl::nullopt;
-  }
 
   std::vector<base::TimeDelta> end_times;
   for (int64_t time :
@@ -601,9 +593,6 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
           ? read_only_source_data_msg->randomized_response_rate()
           : delegate_->GetRandomizedResponseRate(
                 *source_type, *event_report_windows, max_event_level_reports);
-  if (randomized_response_rate < 0 || randomized_response_rate > 1) {
-    return absl::nullopt;
-  }
 
   static constexpr char kDestinationSitesSql[] =
       "SELECT destination_site "
@@ -629,18 +618,21 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
     return absl::nullopt;
   }
 
-  return StoredSourceData{
-      .source = StoredSource(
-          CommonSourceInfo(std::move(*source_origin),
-                           std::move(*reporting_origin), *source_type),
-          source_event_id, std::move(*destination_set), source_time,
-          expiry_time, std::move(*event_report_windows),
-          aggregatable_report_window_time, max_event_level_reports, priority,
-          std::move(*filter_data), debug_key, std::move(*aggregation_keys),
-          *attribution_logic, *active_state, source_id,
-          aggregatable_budget_consumed, randomized_response_rate),
-      .num_conversions = num_conversions,
-      .num_aggregatable_reports = num_aggregatable_reports};
+  absl::optional<StoredSource> stored_source = StoredSource::Create(
+      CommonSourceInfo(std::move(*source_origin), std::move(*reporting_origin),
+                       *source_type),
+      source_event_id, std::move(*destination_set), source_time, expiry_time,
+      std::move(*event_report_windows), aggregatable_report_window_time,
+      max_event_level_reports, priority, std::move(*filter_data), debug_key,
+      std::move(*aggregation_keys), *attribution_logic, *active_state,
+      source_id, aggregatable_budget_consumed, randomized_response_rate);
+  if (!stored_source.has_value()) {
+    return absl::nullopt;
+  }
+
+  return StoredSourceData{.source = std::move(*stored_source),
+                          .num_conversions = num_conversions,
+                          .num_aggregatable_reports = num_aggregatable_reports};
 }
 
 absl::optional<AttributionStorageSql::StoredSourceData>
@@ -939,7 +931,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     }
   }
 
-  const StoredSource stored_source(
+  absl::optional<StoredSource> stored_source = StoredSource::Create(
       source.common_info(), reg.source_event_id, reg.destination_set,
       source_time, expiry_time, std::move(event_report_windows),
       aggregatable_report_window_time, reg.max_event_level_reports,
@@ -947,7 +939,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       attribution_logic, *active_state, source_id,
       /*aggregatable_budget_consumed=*/0, randomized_response_data.rate());
 
-  if (!rate_limit_table_.AddRateLimitForSource(&db_, stored_source)) {
+  if (!stored_source.has_value() ||
+      !rate_limit_table_.AddRateLimitForSource(&db_, *stored_source)) {
     return StoreSourceResult(StorableSource::Result::kInternalError);
   }
 
@@ -974,7 +967,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
           /*initial_report_time=*/fake_report.report_time,
           delegate_->NewReportID(), /*failed_send_attempts=*/0,
           AttributionReport::EventLevelData(fake_report.trigger_data,
-                                            /*priority=*/0, stored_source));
+                                            /*priority=*/0, *stored_source));
       if (!StoreAttributionReport(fake_attribution_report)) {
         return StoreSourceResult(StorableSource::Result::kInternalError);
       }
@@ -992,7 +985,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
             AttributionInfo(/*time=*/source_time,
                             /*debug_key=*/absl::nullopt,
                             /*context_origin=*/common_info.source_origin()),
-            stored_source)) {
+            *stored_source)) {
       return StoreSourceResult(StorableSource::Result::kInternalError);
     }
   }

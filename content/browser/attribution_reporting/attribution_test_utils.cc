@@ -35,6 +35,7 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
@@ -235,7 +236,7 @@ StorableSource SourceBuilder::Build() const {
 
 StoredSource SourceBuilder::BuildStored() const {
   base::Time expiry_time = source_time_ + registration_.expiry;
-  StoredSource source(
+  StoredSource source = *StoredSource::Create(
       BuildCommonInfo(), registration_.source_event_id,
       registration_.destination_set, source_time_, expiry_time,
       registration_.event_report_windows.value_or(
