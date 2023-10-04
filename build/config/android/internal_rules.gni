@@ -4132,18 +4132,13 @@ if (enable_java_templates) {
         }
         deps = [ ":$_build_config_target_name" ]
         if (_is_robolectric) {
-          # For robolectric tests, we add the sdk stub jars so that classes
-          # that reference Android types can be loaded without throwing
-          # NoClassDefFoundErrors. The Robolectric sandbox makes these types
-          # available in non-stub form, but not until test classes are loaded
-          # into it. Before being loaded into the sandbox, they must be loaded
-          # outside of it in order to read their annotations (which configure
-          # the sandbox), and to enumerate test methods.
-          extra_classpath_jars = [
-            android_sdk_jar,
-            "$android_sdk/optional/android.test.base.jar",
-            "$android_sdk/optional/android.test.runner.jar",
-          ]
+          # For robolectric tests, we also add the normal sdk jar to the
+          # classpath since whenever we start using a new Android SDK,
+          # robolectric doesn't support it, and they often take a few months to
+          # support it. This causes issues when mocking classes that reference
+          # new SDK classes, so providing our normal SDK will allow these
+          # classes to resolve. For an example, see crbug.com/1350963.
+          extra_classpath_jars = [ android_sdk_jar ]
         }
       }
     }
