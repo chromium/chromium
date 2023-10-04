@@ -135,15 +135,13 @@ absl::optional<autofill::ServerFieldType> StringToFieldType(
     const std::string& str) {
   static auto map = []() {
     std::map<std::string, autofill::ServerFieldType> map;
-    for (size_t i = autofill::NO_SERVER_DATA;
-         i < autofill::MAX_VALID_FIELD_TYPE; ++i) {
-      auto field_type = static_cast<autofill::ServerFieldType>(i);
+    for (autofill::ServerFieldType field_type :
+         autofill::kAllServerFieldTypes) {
       map[autofill::AutofillType(field_type).ToString()] = field_type;
     }
-    for (size_t i = static_cast<size_t>(autofill::HtmlFieldType::kUnspecified);
-         i <= static_cast<size_t>(autofill::HtmlFieldType::kMaxValue); ++i) {
-      autofill::AutofillType field_type(
-          static_cast<autofill::HtmlFieldType>(i));
+    for (autofill::HtmlFieldType html_field_type :
+         autofill::kAllHtmlFieldTypes) {
+      autofill::AutofillType field_type(html_field_type);
       map[field_type.ToString()] = field_type.GetStorableType();
     }
     return map;
@@ -807,20 +805,6 @@ ProfileDataController::ProfileDataController()
       card_(autofill::CreditCard(
           base::Uuid::GenerateRandomV4().AsLowercaseString(),
           "http://www.example.com")) {
-  for (size_t i = autofill::NO_SERVER_DATA; i < autofill::MAX_VALID_FIELD_TYPE;
-       ++i) {
-    autofill::ServerFieldType field_type =
-        static_cast<autofill::ServerFieldType>(i);
-    string_to_field_type_map_[autofill::AutofillType(field_type).ToString()] =
-        field_type;
-  }
-
-  for (size_t i = static_cast<size_t>(autofill::HtmlFieldType::kUnspecified);
-       i <= static_cast<size_t>(autofill::HtmlFieldType::kMaxValue); ++i) {
-    autofill::AutofillType field_type(static_cast<autofill::HtmlFieldType>(i));
-    string_to_field_type_map_[field_type.ToString()] =
-        field_type.GetStorableType();
-  }
 
   // Initialize the credit card with default values, in case the test recipe
   // file does not contain pre-saved credit card info.

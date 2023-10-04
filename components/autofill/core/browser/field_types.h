@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "base/strings/string_piece_forward.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/html_field_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -444,6 +445,8 @@ struct DenseSetTraits<ServerFieldType> {
 
 using ServerFieldTypeSet = DenseSet<ServerFieldType>;
 
+using HtmlFieldTypeSet = DenseSet<HtmlFieldType>;
+
 std::ostream& operator<<(std::ostream& o, ServerFieldTypeSet field_type_set);
 
 // Returns whether the field can be filled with data.
@@ -527,6 +530,20 @@ constexpr ServerFieldTypeSet kAllServerFieldTypes = [] {
        ++i) {
     if (ServerFieldType field_type = ToSafeServerFieldType(i, NO_SERVER_DATA);
         field_type != NO_SERVER_DATA) {
+      fields.insert(field_type);
+    }
+  }
+  return fields;
+}();
+
+constexpr HtmlFieldTypeSet kAllHtmlFieldTypes = [] {
+  HtmlFieldTypeSet fields;
+  using underlying_type_t = std::underlying_type_t<HtmlFieldType>;
+  for (underlying_type_t i = base::to_underlying(HtmlFieldType::kMinValue);
+       i < base::to_underlying(HtmlFieldType::kMaxValue); ++i) {
+    if (HtmlFieldType field_type =
+            ToSafeHtmlFieldType(i, HtmlFieldType::kUnrecognized);
+        field_type != HtmlFieldType::kUnrecognized) {
       fields.insert(field_type);
     }
   }
