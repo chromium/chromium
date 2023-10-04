@@ -5288,13 +5288,9 @@ if (is_chromeos_lacros) {
     ]
 
     sources = [
-      # dlp_content_manager_lacros_browsertest.cc should become a unit test.
-      "../browser/chromeos/policy/dlp/dlp_content_manager_lacros_browsertest.cc",
       "../browser/chromeos/reporting/network/network_bandwidth_sampler_lacros_browsertest.cc",
       "../browser/chromeos/reporting/websites/website_events_observer_lacros_browsertest.cc",
       "../browser/extensions/api/shared_storage/shared_storage_private_apitest.cc",
-      "../browser/lacros/desk_template_client_lacros_browsertest.cc",
-      "../browser/lacros/device_attributes_lacros_browsertest.cc",
 
       # download_controller_client_lacros_browsertest.cc should become a unit
       # test.
@@ -5388,6 +5384,8 @@ if (is_chromeos_lacros) {
       "../browser/lacros/clipboard_lacros_browsertest.cc",
       "../browser/lacros/component_policy_lacros_browsertest.cc",
       "../browser/lacros/crosapi_pref_observer_lacros_browsertest.cc",
+      "../browser/lacros/desk_template_client_lacros_browsertest.cc",
+      "../browser/lacros/device_attributes_lacros_browsertest.cc",
       "../browser/lacros/download_status_updater_lacros_browsertest.cc",
       "../browser/lacros/embedded_a11y_manager_lacros_browsertest.cc",
       "../browser/lacros/geolocation/system_geolocation_source_lacros_browsertest.cc",
@@ -5441,6 +5439,9 @@ if (is_chromeos_lacros) {
       "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc",
       "../browser/web_applications/app_service/lacros_web_apps_controller_lacros_browsertest.cc",
       "../browser/web_applications/externally_managed_app_manager_browsertest.cc",
+
+      # dlp_content_manager_lacros_browsertest.cc should become a unit test.
+      "../browser/chromeos/policy/dlp/dlp_content_manager_lacros_browsertest.cc",
     ]
 
     deps = [
