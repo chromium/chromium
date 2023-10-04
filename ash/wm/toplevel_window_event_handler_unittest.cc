@@ -1242,14 +1242,28 @@ class ToplevelWindowEventHandlerDragTest : public AshTestBase {
   }
 
  protected:
-  // Send gesture event with |type| to the toplevel window event handler.
+  // Send gesture event with `type` to the toplevel window event handler.
+  // This is for gestures that require the `delta` arguments for
+  // `GestureEventDetails` construction.
   void SendGestureEvent(const gfx::Point& position,
                         int scroll_x,
                         int scroll_y,
                         ui::EventType type) {
-    ui::GestureEvent event = ui::GestureEvent(
-        position.x(), position.y(), ui::EF_NONE, base::TimeTicks::Now(),
-        ui::GestureEventDetails(type, scroll_x, scroll_y));
+    SendGestureEventImpl(position,
+                         ui::GestureEventDetails(type, scroll_x, scroll_y));
+  }
+
+  // Send gesture event with `type` to the toplevel window event handler.
+  // This is for gestures that do not require the `delta` arguments for
+  // `GestureEventDetails` construction.
+  void SendGestureEvent(const gfx::Point& position, ui::EventType type) {
+    SendGestureEventImpl(position, ui::GestureEventDetails(type));
+  }
+
+  void SendGestureEventImpl(const gfx::Point& position,
+                            ui::GestureEventDetails gesture_details) {
+    ui::GestureEvent event(position.x(), position.y(), ui::EF_NONE,
+                           base::TimeTicks::Now(), gesture_details);
     ui::Event::DispatcherApi(&event).set_target(dragged_window_.get());
     ui::Event::DispatcherApi(&event).set_phase(ui::EP_PRETARGET);
     Shell::Get()->toplevel_window_event_handler()->OnGestureEvent(&event);
@@ -1291,6 +1305,20 @@ TEST_F(ToplevelWindowEventHandlerDragTest, WindowDestroyedDuringDragging) {
 
   dragged_window_.reset();
   EXPECT_FALSE(event_handler->is_drag_in_progress());
+}
+
+// Test that `gesture_target_` is set immediately with
+// `ET_GESTURE_BEGIN`. The client may call `AttemptToStartDrag()` after
+// `ET_GESTURE_BEGIN` but before `ET_GESTURE_SCROLL_BEGIN` or
+// `ET_GESTURE_PINCH_BEGIN`.
+TEST_F(ToplevelWindowEventHandlerDragTest,
+       GestureTargetIsSetAsSoonAsGestureStarts) {
+  SendGestureEvent(gfx::Point(0, 0), ui::ET_GESTURE_BEGIN);
+  ToplevelWindowEventHandler* event_handler =
+      Shell::Get()->toplevel_window_event_handler();
+
+  EXPECT_TRUE(event_handler->gesture_target());
+  dragged_window_.reset();
 }
 
 class ToplevelWindowEventHandlerPipPinchToResizeTest : public AshTestBase {
