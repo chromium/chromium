@@ -1,9 +1,8 @@
-<style include="cr-hidden-style">
-  :host-context([chrome-refresh-2023]) #container,
-  :host-context([chrome-refresh-2023]) #conainer-parent,
-  :host-context([chrome-refresh-2023]) #container-border,
+<style include="cr-hidden-style sp-shared-style">
   :host-context([chrome-refresh-2023]) #empty-state-container {
-    border-radius: 16px;
+    border-radius: 12px;
+  }
+  .sp-scroller {
     display: block;
   }
   :host-context([chrome-refresh-2023]) #empty-state-container {
@@ -22,20 +21,16 @@
     flex-direction: column;
   }
 
-  #container-border{
-    overflow: hidden;
-    height: 100%;
-    width: 100%;
-    flex-grow: 1;
-  }
-
   #container-parent {
     background: var(--background-color);
-    height:100%;
-    overflow: auto;
-    overflow-wrap: break-word;
-    overflow-x: hidden;
+    height: 100%;
   }
+
+  :host-context([chrome-refresh-2023]) .sp-scroller::-webkit-scrollbar-track {
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+
   #container {
     background: var(--background-color);
     color: var(--foreground-color);
@@ -84,10 +79,9 @@
   <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
     <read-anything-toolbar id="toolbar"></read-anything-toolbar>
   </div>
-  <div id="container-border" hidden="[[!hasContent_]]">
-    <div id="container-parent">
-      <div id="container"></div>
-    </div>
+  <div id="container-parent" class="sp-card sp-scroller"
+       hidden="[[!hasContent_]]">
+    <div id="container"></div>
   </div>
   <div id="empty-state-container" hidden="[[hasContent_]]">
     <sp-empty-state

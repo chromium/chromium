@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // out/Debug/browser_tests \
-//    --gtest_filter=ReadAnythingAppToolbarTest.ReadAnythingToolbar_Visible
+//    --gtest_filter=ReadAnythingAppToolbarTest.ReadAloud_Hidden
 
 // Do not call the real `onConnected()`. As defined in
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
@@ -20,8 +20,8 @@
   //  for other UI elements.
   const read_aloud_container = toolbar.getElementById('read-aloud-container');
 
-  const expected = true;
-  const actual = read_aloud_container.hidden;
+  const expected = false;
+  const actual = read_aloud_container.if;
   const isEqual = actual === expected;
   if (!isEqual) {
     console.error(

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // out/Debug/browser_tests \
-//    --gtest_filter=ReadAnythingAppToolbarTest.PlayPauseCallback_PlaysAndPausesSpeech
+//    --gtest_filter=ReadAnythingAppReadAloudTest.PlayPauseCallback_PlaysAndPausesSpeech
 
 // Do not call the real `onConnected()`. As defined in
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the

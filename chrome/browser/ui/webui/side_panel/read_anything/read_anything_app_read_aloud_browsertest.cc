@@ -99,6 +99,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
+                       PlayPauseCallback_PlaysAndPausesSpeech) {
+  ASSERT_TRUE(RunTest("play_pause_callback_play_pause_speech.js"));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
                        ReadAloud_GranularityChangesUpdatesHighlight) {
   ASSERT_TRUE(RunTest("read_aloud_highlight_with_granularity_changes.js"));
 }

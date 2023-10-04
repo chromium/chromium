@@ -1,26 +1,24 @@
 <style include="cr-icons md-select">
   iron-icon {
-    --icon-size: 16px;
+    --icon-size: 20px;
     height: var(--icon-size);
     width: var(--icon-size);
+    margin: 0px 8px;
   }
   cr-icon-button {
     --cr-icon-button-icon-size: 16px;
     --cr-icon-button-size: 24px;
-    margin: 10px 4px;
+    margin: 0 4px;
+    color: var(--color-sys-on-surface-subtle);
   }
-  :host-context([chrome-refresh-2023]) #play-pause {
+  /* TODO(b/1465029): Investigate why chrome refresh colors don't always
+     work on first launch. */
+  #play-pause {
     --cr-icon-button-icon-size: 20px;
     --cr-icon-button-size: 28px;
     color: var(--color-side-panel-entry-icon);
   }
-  :host-context([chrome-refresh-2023]) cr-icon-button {
-    color: var(--color-sys-on-surface-subtle);
-  }
-  :host-context([chrome-refresh-2023]) .dropdown-item:focus {
-    background-color: var(--cr-hover-background-color);
-  }
-  :host-context([chrome-refresh-2023]) #audio-controls {
+  #audio-controls {
     background: var(--audio-controls-background);
     border-radius: 18px;
     padding: 8px 0px;
@@ -28,6 +26,8 @@
   }
   .dropdown-item {
     display: block;
+    min-width: 180px;
+    font-size: 13px;
   }
   .dropdown-voice-selection {
     display: flex;
@@ -41,14 +41,6 @@
   .dropdown-voice-selection p {
     margin: 8px 0;
     display: inline;
-  }
-  /* TODO(b/1465029): Investigate why chrome refresh colors don't always
-     work on first launch. */
-  :host-context([chrome-refresh-2023]) cr-action-menu {
-    --cr-menu-border-radius: 4px;
-  }
-  .back, .section {
-    font-weight: bold;
   }
   .item-invisible-true {
     visibility: hidden;
@@ -67,8 +59,10 @@
   }
   .check-mark {
     visibility: hidden;
+    margin-left: 0;
   }
   #toolbar-container {
+    margin: 10px 0px;
     overflow: visible;
     white-space: nowrap;
     max-height: 60px;
@@ -82,10 +76,14 @@
     height: 0px;
     transform: rotate(-90deg);
     margin: 10px 4px;
+    background: var(--color-sys-divider);
+  }
+  :host-context([chrome-refresh-2023]) .separator {
+    background: var(--color-side-panel-divider);
   }
   .md-select {
     --md-select-width: fit-content;
-    margin: 10px 8px;
+    margin: 0px 8px;
   }
   :host-context([chrome-refresh-2023]) .md-select {
     --md-select-text-color: var(--cr-primary-text-color);
@@ -93,9 +91,12 @@
   :host-context([chrome-refresh-2023]) .md-select option {
     --md-select-option-bg-color: var(--color-sys-base-container-elevated);
   }
+  .more-options-icon {
+    margin: 12px 4px;
+  }
 </style>
 <div id="toolbar-container" class="toolbar-container">
-  <span id="read-aloud-container" hidden="[[!isReadAloudEnabled_]]">
+  <template id="read-aloud-container" is="dom-if" if="[[isReadAloudEnabled_]]">
     <span id="audio-controls">
       <cr-icon-button
         class="toolbar-button"
@@ -133,7 +134,7 @@
       title="$i18n{turnHighlightOff}"
       on-click="onHighlightClick_">
     </cr-icon-button>
-  </span>
+  </template>
 
   <template is="dom-if" if="[[!isReadAloudEnabled_]]">
     <select id="font-select" class="md-select"
@@ -177,6 +178,7 @@
     <template is="dom-repeat" items="[[textStyleOptions_]]">
       <cr-icon-button
         id="[[item.id]]"
+        class="more-options-icon"
         iron-icon="[[item.icon]]"
         on-click="onTextStyleMenuButtonClick_">
       </cr-icon-button>
@@ -186,7 +188,7 @@
     <template is="dom-repeat" items="[[rateOptions_]]">
       <button class="dropdown-item" on-click="onRateClick_">
         <iron-icon class="button-image check-mark"
-            icon="read-anything:check-mark"></iron-icon>
+            icon="read-anything-20:check-mark"></iron-icon>
         [[item]]x
       </button>
     </template>
@@ -200,7 +202,7 @@
         <span>
           <iron-icon
           class$="button-image item-invisible-[[!item.data.selected]]"
-            icon="read-anything:check-mark"></iron-icon>
+            icon="read-anything-20:check-mark"></iron-icon>
           <p>[[item.title]]</p>
         </span>
         <cr-icon-button on-click="onVoicePreviewClick_"
@@ -238,7 +240,7 @@
     <template is="dom-repeat" items="[[colorOptions_]]">
       <button class="dropdown-item" on-click="onColorClick_">
         <iron-icon class="button-image check-mark"
-            icon="read-anything:check-mark"></iron-icon>
+            icon="read-anything-20:check-mark"></iron-icon>
         <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
         [[item.title]]
       </button>
@@ -248,7 +250,7 @@
     <template is="dom-repeat" items="[[lineSpacingOptions_]]">
       <button class="dropdown-item" on-click="onLineSpacingClick_">
         <iron-icon class="button-image check-mark"
-            icon="read-anything:check-mark"></iron-icon>
+            icon="read-anything-20:check-mark"></iron-icon>
         <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
         [[item.title]]
       </button>
@@ -258,7 +260,7 @@
     <template is="dom-repeat" items="[[letterSpacingOptions_]]">
       <button class="dropdown-item" on-click="onLetterSpacingClick_">
         <iron-icon class="button-image check-mark"
-            icon="read-anything:check-mark"></iron-icon>
+            icon="read-anything-20:check-mark"></iron-icon>
         <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
         [[item.title]]
       </button>
@@ -268,7 +270,7 @@
   <template id="fontTemplate" is="dom-repeat" items="[[fontOptions_]]">
     <button class="dropdown-item" on-click="onFontClick_">
       <iron-icon class="button-image check-mark"
-          icon="read-anything:check-mark"></iron-icon>
+          icon="read-anything-20:check-mark"></iron-icon>
       [[item]]
     </button>
   </template>
