@@ -1,15 +1,10 @@
-<style include="cr-shared-style settings-shared two-column-description">
+<style include="cr-shared-style settings-shared settings-columned-section">
   .settings-section-bottom-padding {
     padding-block-end: var(--cr-section-vertical-padding);
   }
 
   settings-collapse-radio-button[hidden] + settings-collapse-radio-button {
     --settings-collapse-separator-line: 0;
-  }
-
-  .bullet-line {
-    margin: 12px 0;
-    padding-inline-end: 12px;
   }
 
   settings-collapse-radio-button:not(:first-of-type) {
@@ -38,32 +33,32 @@
           label="$i18n{preloadingPageExtendedPreloadingTitle}"
           sub-label="$i18n{preloadingPageExtendedPreloadingSummary}"
           no-automatic-collapse>
-        <div slot="collapse" class="description-wrapper two-column">
-          <div class="description-column description-column-first">
+        <div slot="collapse" class="settings-columned-section">
+          <div class="column">
             <div class="description-header">
               $i18n{privacyGuideFeatureDescriptionHeader}
             </div>
-            <div role="list">
-              <div class="bullet-line secondary" role="listitem">
+            <ul>
+              <li class="secondary">
                 $i18n{preloadingPageExtendedPreloadingWhenOnBulletOne}
-              </div>
-              <div class="bullet-line secondary" role="listitem">
+              </li>
+              <li class="secondary">
                 $i18n{preloadingPageExtendedPreloadingWhenOnBulletTwo}
-              </div>
-            </div>
+              </li>
+            </ul>
           </div>
-          <div class="description-column">
+          <div class="column">
             <div class="description-header">
               $i18n{privacyGuideThingsToConsider}
             </div>
-            <div role="list">
-              <div class="bullet-line secondary" role="listitem">
+            <ul>
+              <li class="secondary">
                 $i18n{preloadingPageThingsToConsiderBulletOne}
-              </div>
-              <div class="bullet-line secondary" role="listitem">
+              </li>
+              <li class="secondary">
                 $i18n{preloadingPageExtendedPreloadingThingsToConsiderBulletTwo}
-              </div>
-            </div>
+              </li>
+            </ul>
           </div>
         </div>
       </settings-collapse-radio-button>
@@ -74,29 +69,29 @@
           sub-label="$i18n{preloadingPageStandardPreloadingSummary}"
           info-opened="{{infoOpened_}}"
           no-automatic-collapse>
-        <div slot="collapse" class="description-wrapper two-column">
-          <div class="description-column description-column-first">
+        <div slot="collapse" class="settings-columned-section">
+          <div class="column">
             <div class="description-header">
               $i18n{privacyGuideFeatureDescriptionHeader}
             </div>
-            <div role="list">
-              <div class="bullet-line secondary" role="listitem">
+            <ul>
+              <li class="secondary">
                 $i18n{preloadingPageStandardPreloadingWhenOnBulletOne}
-              </div>
-              <div class="bullet-line secondary" role="listitem">
+              </li>
+              <li class="secondary">
                 $i18n{preloadingPageStandardPreloadingWhenOnBulletTwo}
-              </div>
-            </div>
+              </li>
+            </ul>
           </div>
-          <div class="description-column">
+          <div class="column">
             <div class="description-header">
               $i18n{privacyGuideThingsToConsider}
             </div>
-            <div role="list">
-              <div class="bullet-line secondary" role="listitem">
+            <ul>
+              <li class="secondary">
                 $i18n{preloadingPageThingsToConsiderBulletOne}
-              </div>
-            </div>
+              </li>
+            </ul>
           </div>
         </div>
       </settings-collapse-radio-button>

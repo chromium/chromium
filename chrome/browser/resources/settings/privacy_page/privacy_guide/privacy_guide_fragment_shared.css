@@ -7,8 +7,8 @@
  * #import=chrome://resources/cr_elements/cr_shared_style.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=../../settings_shared.css.js
- * #import=../../two_column_description.css.js
- * #include=cr-shared-style settings-shared two-column-description
+ * #import=../../settings_columned_section.css.js
+ * #include=cr-shared-style settings-shared settings-columned-section
  * #css_wrapper_metadata_end */
 
 :host {

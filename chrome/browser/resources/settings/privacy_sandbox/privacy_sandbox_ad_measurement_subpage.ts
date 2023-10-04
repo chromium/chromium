@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '/shared/settings/controls/settings_toggle_button.js';
+import '../settings_columned_section.css.js';
 import '../settings_shared.css.js';
 
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';

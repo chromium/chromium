@@ -25,8 +25,8 @@
         <!-- TODO(http://crbug.com/1470385): Remove the template element below when friendlier
         settings is fully rolled out. -->
         <template is="dom-if" if="[[!enableFriendlierSafeBrowsingSettings_]]">
-          <div slot="collapse" class="description-wrapper-radio two-column">
-            <div class="description-column description-column-first">
+          <div slot="collapse" class="settings-columned-section">
+            <div class="column">
               <div class="description-header">
                 $i18n{privacyGuideFeatureDescriptionHeader}
               </div>
@@ -53,7 +53,7 @@
                 </privacy-guide-description-item>
               </div>
             </div>
-            <div class="description-column">
+            <div class="column">
               <div class="description-header">
                 $i18n{privacyGuideThingsToConsider}
               </div>
@@ -78,8 +78,8 @@
           </div>
         </template>
         <template is="dom-if" if="[[enableFriendlierSafeBrowsingSettings_]]">
-          <div slot="collapse" class="description-wrapper-radio two-column">
-            <div class="description-column description-column-first">
+          <div slot="collapse" class="settings-columned-section">
+            <div class="column">
               <div class="description-header">
                 $i18n{privacyGuideFeatureDescriptionHeader}
               </div>
@@ -111,7 +111,7 @@
                 </privacy-guide-description-item>
               </div>
             </div>
-            <div class="description-column">
+            <div class="column">
               <div class="description-header">
                 $i18n{privacyGuideThingsToConsider}
               </div>
@@ -147,9 +147,9 @@
         expand-aria-label="$i18n{safeBrowsingStandardExpandA11yLabel}"
         on-click="onSafeBrowsingStandardClick_">
         <template is="dom-if" if="[[!enableFriendlierSafeBrowsingSettings_]]">
-          <div slot="collapse" class="description-wrapper-radio two-column"
+          <div slot="collapse" class="settings-columned-section"
             id="whenOnThingsToConsiderStandardProtection">
-            <div class="description-column description-column-first">
+            <div class="column">
               <div class="description-header">
                 $i18n{privacyGuideFeatureDescriptionHeader}
               </div>
@@ -168,7 +168,7 @@
                 </privacy-guide-description-item>
               </div>
             </div>
-            <div class="description-column">
+            <div class="column">
               <div class="description-header">
                 $i18n{privacyGuideThingsToConsider}
               </div>

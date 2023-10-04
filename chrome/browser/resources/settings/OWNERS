@@ -5,3 +5,6 @@ per-file hats_browser_proxy.ts=sauski@google.com
 
 # Metrics browser proxy
 per-file metrics_browser_proxy.ts=sauski@google.com,rainhard@chromium.org,msramek@chromium.org
+
+# Two-column description style
+per-file settings_columned_section.css=rainhard@chromium.org
