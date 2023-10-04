@@ -240,16 +240,16 @@ two separate test functions, passed serially in the array to
 ```js
 chrome.test.runTests([
   function createTab() {
-    chrome.tabs.create({url: 'http://example.com'}, callbackPass(() => {
+    chrome.tabs.create({url: 'http://example.com'}, () => {
       <verify state>
       chrome.test.succeed();
-    }));
+    });
   },
   function initializeStorage() {
-    chrome.storage.local.set({foo: 'bar'}, callbackPass(() => {
+    chrome.storage.local.set({foo: 'bar'}, () => {
       <verify state>
       chrome.test.succeed();
-    }));
+    });
   },
   function nextStep() {
     ...
