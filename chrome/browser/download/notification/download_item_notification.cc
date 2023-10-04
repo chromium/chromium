@@ -783,8 +783,14 @@ DownloadItemNotification::GetExtraActions() const {
       break;
     case download::DownloadItem::COMPLETE:
       actions->push_back(DownloadCommands::SHOW_IN_FOLDER);
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+      // We disable this functionality for now as the usage is very low, the
+      // feature gets re-written at this time and there is currently no secure
+      // way to determine the caller on the Ash side as the dialog is still
+      // active when |seat::SetSelection| is reached.
       if (!notification_->image().IsEmpty())
         actions->push_back(DownloadCommands::COPY_TO_CLIPBOARD);
+#endif
       if (IsGalleryAppPdfEditNotificationEligible())
         actions->push_back(DownloadCommands::PLATFORM_OPEN);
       break;
