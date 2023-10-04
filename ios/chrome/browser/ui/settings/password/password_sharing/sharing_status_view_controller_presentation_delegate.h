@@ -1,0 +1,19 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_
+#define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_
+
+@class SharingStatusViewController;
+
+// Delegate for SharingStatusViewController.
+@protocol SharingStatusViewControllerPresentationDelegate <NSObject>
+
+// Called when the user clicks done button.
+// TODO(crbug.com/1463882): Handle dismissing by swiping.
+- (void)sharingStatusWasDismissed:(SharingStatusViewController*)controller;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_

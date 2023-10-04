@@ -30,6 +30,7 @@ source_set("password_sharing") {
     "password_sharing_mediator_delegate.h",
     "sharing_status_coordinator.h",
     "sharing_status_coordinator.mm",
+    "sharing_status_coordinator_delegate.h",
   ]
   deps = [
     ":password_sharing_constants",
@@ -86,6 +87,7 @@ source_set("password_sharing_ui") {
     "recipient_info.mm",
     "sharing_status_view_controller.h",
     "sharing_status_view_controller.mm",
+    "sharing_status_view_controller_presentation_delegate.h",
   ]
   deps = [
     ":password_sharing_constants",

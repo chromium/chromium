@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
+@protocol SharingStatusViewControllerPresentationDelegate;
+
 // Presents the following animation:
 // * Recipient and sender images appear on the middle.
 // * Both images slide out (sender to the left, recipient to the right).
@@ -17,6 +19,11 @@
 // cancelled status is presented. Otherwise, success status is displayed when
 // the animation finishes.
 @interface SharingStatusViewController : ChromeTableViewController
+
+// Delegate for handling dismissal of the view.
+@property(nonatomic, weak) id<SharingStatusViewControllerPresentationDelegate>
+    delegate;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_VIEW_CONTROLLER_H_

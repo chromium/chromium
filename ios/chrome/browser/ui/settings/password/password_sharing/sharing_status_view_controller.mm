@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_view_controller_presentation_delegate.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
@@ -509,7 +510,7 @@ const CGFloat kImagesSlidingInDistance = 51;
 
 // Handles done buttons clicks by dismissing the view.
 - (void)doneButtonTapped {
-  // TODO(crbug.com/1463882): Implement.
+  [self.delegate sharingStatusWasDismissed:self];
 }
 
 @end

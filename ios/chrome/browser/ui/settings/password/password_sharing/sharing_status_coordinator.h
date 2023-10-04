@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol SharingStatusCoordinatorDelegate;
+
 // This coordinator presents a view with a sharing status animation. Main part
 // of the animation is a progress bar loading between images of the sender and
 // the recipients. The progress does not reflect actual sharing going on under
@@ -18,6 +20,9 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
     NS_DESIGNATED_INITIALIZER;
+
+// Delegate handling coordinator dismissal.
+@property(nonatomic, weak) id<SharingStatusCoordinatorDelegate> delegate;
 
 @end
 
