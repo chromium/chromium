@@ -107,11 +107,6 @@ class FormCache {
  private:
   friend class FormCacheTestApi;
 
-  // Iterates through |control_elements| and returns whether there is an
-  // autofillable form control.
-  bool HasAutofillableFormControl(
-      const std::vector<blink::WebFormControlElement>& control_elements);
-
   // Saves initial state of checkbox and select elements.
   void SaveInitialValues(
       const std::vector<blink::WebFormControlElement>& control_elements);

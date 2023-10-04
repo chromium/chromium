@@ -422,8 +422,6 @@ blink::WebFormElement FindFormByUniqueRendererId(
     const blink::WebDocument& doc,
     FormRendererId form_renderer_id);
 
-std::string GetAutocompleteAttribute(const blink::WebElement& element);
-
 // Returns the form control element by unique renderer id.
 // |form_to_be_searched| could be used as an optimization to only search for
 // elements in it, but doesn't guarantee that the returned element will belong
@@ -459,6 +457,8 @@ FindFormControlElementsByUniqueRendererId(
     const blink::WebDocument& doc,
     FormRendererId form_renderer_id,
     const std::vector<FieldRendererId>& queried_form_controls);
+
+std::string GetAutocompleteAttribute(const blink::WebElement& element);
 
 // Returns the ARIA label text of the elements denoted by the aria-labelledby
 // attribute of |element| or the value of the aria-label attribute of
