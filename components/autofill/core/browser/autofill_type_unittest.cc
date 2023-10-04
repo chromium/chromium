@@ -127,11 +127,6 @@ TEST_P(AutofillTypeTestForHtmlFieldTypes, GroupsOfHtmlFieldTypes) {
       UNKNOWN_TYPE) {
     return;
   }
-  // TODO(crbug.com/1476882): AutofillType(HtmlFieldType::kOneTimeCode).group()
-  // is kNoGroup, but AutofillType(ONE_TIME_CODE).group() is kUnfillable.
-  if (html_field_type() == HtmlFieldType::kOneTimeCode) {
-    return;
-  }
   AutofillType t(html_field_type());
   SCOPED_TRACE(testing::Message()
                << "html_field_type="
