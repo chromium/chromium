@@ -136,12 +136,7 @@ bool PrintJobSubmitter::CheckPrintTicket() {
 }
 
 void PrintJobSubmitter::CheckPrinter() {
-  if (!local_printer_) {
-    LOG(ERROR)
-        << "Local printer not available (PrintJobSubmitter::CheckPrinter()";
-    CheckCapabilitiesCompatibility(nullptr);
-    return;
-  }
+  CHECK(local_printer_);
   local_printer_->GetCapability(
       request_.job.printer_id,
       base::BindOnce(&PrintJobSubmitter::CheckCapabilitiesCompatibility,

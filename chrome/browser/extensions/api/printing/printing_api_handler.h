@@ -80,7 +80,7 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
                      ExtensionRegistry* extension_registry,
                      std::unique_ptr<PrintJobController> print_job_controller,
                      std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
-                     crosapi::mojom::LocalPrinter* local_printer = nullptr);
+                     crosapi::mojom::LocalPrinter* local_printer);
   PrintingAPIHandler(const PrintingAPIHandler&) = delete;
   PrintingAPIHandler& operator=(const PrintingAPIHandler&) = delete;
   ~PrintingAPIHandler() override;
@@ -172,9 +172,6 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   base::flat_map<std::string, PrintJobInfo> print_jobs_;
 
   raw_ptr<crosapi::mojom::LocalPrinter> local_printer_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  int local_printer_version_ = 0;
-#endif
 
   mojo::Receiver<crosapi::mojom::PrintJobObserver> receiver_{this};
 
