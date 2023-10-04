@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
-#import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
-#import "ios/chrome/browser/upgrade/upgrade_utils.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_utils.h"
 #import "ios/chrome/common/channel_info.h"
 
 IOSChromeSafetyCheckManager::IOSChromeSafetyCheckManager(

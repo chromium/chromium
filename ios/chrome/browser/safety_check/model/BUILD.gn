@@ -25,8 +25,8 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
-    "//ios/chrome/browser/upgrade",
-    "//ios/chrome/browser/upgrade:public",
+    "//ios/chrome/browser/upgrade/model",
+    "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/common",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -99,7 +99,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
-    "//ios/chrome/browser/upgrade",
+    "//ios/chrome/browser/upgrade/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

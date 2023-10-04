@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/upgrade/upgrade_center.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_center.h"
 
-#import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -24,7 +24,7 @@ class UpgradeCenterTest : public PlatformTest {
 
 }  // namespace
 
-@interface FakeUpgradeCenterClient : NSObject<UpgradeCenterClient>
+@interface FakeUpgradeCenterClient : NSObject <UpgradeCenterClient>
 - (instancetype)initWithTest:(UpgradeCenterTest*)test;
 @end
 

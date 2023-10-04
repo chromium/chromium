@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 
 @interface SafetyCheckMediator ()
 

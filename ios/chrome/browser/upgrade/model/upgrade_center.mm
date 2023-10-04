@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/upgrade/upgrade_center.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_center.h"
 
 #import <memory>
 #import <set>
@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/upgrade/upgrade_constants.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/url_scheme_util.h"
@@ -75,8 +75,9 @@ class UpgradeInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   void RemoveSelf() {
     infobars::InfoBar* infobar = this->infobar();
-    if (infobar)
+    if (infobar) {
       infobar->RemoveSelf();
+    }
   }
 
  private:
@@ -278,21 +279,24 @@ class UpgradeInfoBarDismissObserver
 }
 
 - (void)applicationWillEnterForeground:(NSNotification*)note {
-  if (_upgradeInfoBarIsVisible)
+  if (_upgradeInfoBarIsVisible) {
     return;
+  }
 
   // When returning to active if the upgrade notification has been dismissed,
   // bring it back.
-  if ([self shouldShowInfoBar])
+  if ([self shouldShowInfoBar]) {
     [self showUpgradeInfoBars];
+  }
 }
 
 - (void)registerClient:(id<UpgradeCenterClient>)client
            withHandler:(id<ApplicationCommands>)handler {
   [_clients addObject:client];
   self.handler = handler;
-  if (_upgradeInfoBarIsVisible)
+  if (_upgradeInfoBarIsVisible) {
     [client showUpgrade:self];
+  }
 }
 
 - (void)unregisterClient:(id<UpgradeCenterClient>)client {
@@ -308,12 +312,14 @@ class UpgradeInfoBarDismissObserver
   DCHECK(infoBarManager);
 
   // Nothing to do if the infobar are not visible at this point in time.
-  if (!_upgradeInfoBarIsVisible)
+  if (!_upgradeInfoBarIsVisible) {
     return;
+  }
 
   // Nothing to do if the infobar is already there.
-  if ([_upgradeInfoBarDelegates objectForKey:tabId])
+  if ([_upgradeInfoBarDelegates objectForKey:tabId]) {
     return;
+  }
 
   auto infobarDelegate = std::make_unique<UpgradeInfoBarDelegate>();
   DelegateHolder* delegateHolder =
@@ -337,8 +343,9 @@ class UpgradeInfoBarDismissObserver
   // infobar.
   DelegateHolder* delegateHolder =
       [_upgradeInfoBarDelegates objectForKey:tabId];
-  if (!delegateHolder)
+  if (!delegateHolder) {
     return;
+  }
 
   // Forget about this dismissed infobar.
   [_upgradeInfoBarDelegates removeObjectForKey:tabId];
@@ -349,12 +356,14 @@ class UpgradeInfoBarDismissObserver
   if (shouldUpgrade) {
     NSString* urlString = [[NSUserDefaults standardUserDefaults]
         valueForKey:kIOSChromeUpgradeURLKey];
-    if (!urlString)
+    if (!urlString) {
       return;  // Missing URL, no upgrade possible.
+    }
 
     GURL URL = GURL(base::SysNSStringToUTF8(urlString));
-    if (!URL.is_valid())
+    if (!URL.is_valid()) {
       return;
+    }
 
     if (web::UrlHasWebScheme(URL)) {
       // This URL can be opened in the application, just open in a new tab.
@@ -379,8 +388,9 @@ class UpgradeInfoBarDismissObserver
   _inCallback = YES;
 #endif
   _upgradeInfoBarIsVisible = YES;
-  for (id<UpgradeCenterClient> upgradeClient in _clients)
+  for (id<UpgradeCenterClient> upgradeClient in _clients) {
     [upgradeClient showUpgrade:self];
+  }
 #if DCHECK_IS_ON()
   _inCallback = NO;
 #endif
@@ -441,8 +451,9 @@ class UpgradeInfoBarDismissObserver
               forKey:kIOSChromeUpgradeURLKey];
   [defaults setValue:newVersionString forKey:kIOSChromeNextVersionKey];
 
-  if ([self shouldShowInfoBar])
+  if ([self shouldShowInfoBar]) {
     [self showUpgradeInfoBars];
+  }
 }
 
 - (void)resetForTests {

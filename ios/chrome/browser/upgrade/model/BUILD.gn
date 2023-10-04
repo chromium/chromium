@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("upgrade") {
+source_set("model") {
   sources = [
     "upgrade_center.h",
     "upgrade_center.mm",
@@ -49,12 +49,12 @@ source_set("unit_tests") {
     "upgrade_center_unittest.mm",
   ]
   deps = [
-    ":upgrade",
+    ":model",
     "//base",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
-    "//ios/chrome/browser/upgrade/test",
+    "//ios/chrome/browser/upgrade/model/test",
     "//ios/web/public/test:test",
     "//ios/web/public/test/fakes:fakes",
     "//testing/gtest",

@@ -1,4 +1,4 @@
 include_rules = [
   "+ios/chrome/browser/browser_state_metrics/model/browser_state_metrics.h",
-  "+ios/chrome/browser/upgrade",
+  "+ios/chrome/browser/upgrade/model",
 ]

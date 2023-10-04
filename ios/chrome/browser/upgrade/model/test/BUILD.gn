@@ -11,7 +11,7 @@ source_set("test") {
 
   deps = [
     "//base",
-    "//ios/chrome/browser/upgrade",
+    "//ios/chrome/browser/upgrade/model",
     "//testing/gtest",
   ]
 }

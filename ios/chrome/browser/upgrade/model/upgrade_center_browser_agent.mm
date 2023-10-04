@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/upgrade/upgrade_center_browser_agent.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_center_browser_agent.h"
 
 #import "base/check.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/upgrade/upgrade_center.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_center.h"
 
 BROWSER_USER_DATA_KEY_IMPL(UpgradeCenterBrowserAgent)
 

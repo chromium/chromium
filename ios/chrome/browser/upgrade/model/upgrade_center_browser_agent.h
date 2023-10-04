@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UPGRADE_UPGRADE_CENTER_BROWSER_AGENT_H_
-#define IOS_CHROME_BROWSER_UPGRADE_UPGRADE_CENTER_BROWSER_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_UPGRADE_MODEL_UPGRADE_CENTER_BROWSER_AGENT_H_
+#define IOS_CHROME_BROWSER_UPGRADE_MODEL_UPGRADE_CENTER_BROWSER_AGENT_H_
 
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
@@ -63,4 +63,4 @@ class UpgradeCenterBrowserAgent
       web_state_observations_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_UPGRADE_UPGRADE_CENTER_BROWSER_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_UPGRADE_MODEL_UPGRADE_CENTER_BROWSER_AGENT_H_

@@ -14,8 +14,8 @@ source_set("upgrade") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/upgrade",
-    "//ios/chrome/browser/upgrade/utils:features",
+    "//ios/chrome/browser/upgrade/model",
+    "//ios/chrome/browser/upgrade/model/utils:features",
     "//ios/chrome/browser/web_state_list",
     "//ui/base",
   ]

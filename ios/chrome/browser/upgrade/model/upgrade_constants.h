@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UPGRADE_UPGRADE_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_UPGRADE_UPGRADE_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_UPGRADE_MODEL_UPGRADE_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_UPGRADE_MODEL_UPGRADE_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -16,4 +16,4 @@ extern NSString* const kIOSChromeUpToDateKey;
 // The user defaults key for the last time the update infobar was shown.
 extern NSString* const kLastInfobarDisplayTimeKey;
 
-#endif  // IOS_CHROME_BROWSER_UPGRADE_UPGRADE_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_UPGRADE_MODEL_UPGRADE_CONSTANTS_H_

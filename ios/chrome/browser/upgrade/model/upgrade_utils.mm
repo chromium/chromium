@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/upgrade/upgrade_utils.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_utils.h"
 
 #import <Foundation/Foundation.h>
-#import "ios/chrome/browser/upgrade/upgrade_constants.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 
 bool IsAppUpToDate() {
   return

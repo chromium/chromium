@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UPGRADE_UPGRADE_CENTER_H_
-#define IOS_CHROME_BROWSER_UPGRADE_UPGRADE_CENTER_H_
+#ifndef IOS_CHROME_BROWSER_UPGRADE_MODEL_UPGRADE_CENTER_H_
+#define IOS_CHROME_BROWSER_UPGRADE_MODEL_UPGRADE_CENTER_H_
 
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
+#include "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 
 @protocol ApplicationCommands;
 @class UpgradeCenter;
@@ -62,4 +62,4 @@ class InfoBarManager;
 - (void)setLastDisplayToPast;
 @end
 
-#endif  // IOS_CHROME_BROWSER_UPGRADE_UPGRADE_CENTER_H_
+#endif  // IOS_CHROME_BROWSER_UPGRADE_MODEL_UPGRADE_CENTER_H_

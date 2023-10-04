@@ -129,7 +129,7 @@
 #import "ios/chrome/browser/ui/settings/table_cell_catalog_view_controller.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/voice_search_table_view_controller.h"
-#import "ios/chrome/browser/upgrade/upgrade_utils.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_utils.h"
 #import "ios/chrome/browser/voice/speech_input_locale_config.h"
 #import "ios/chrome/browser/voice/voice_search_prefs.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

@@ -6,7 +6,7 @@
 
 #import "base/time/time.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
-#import "ios/chrome/browser/upgrade/upgrade_utils.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_utils.h"
 
 bool PreviousSafetyCheckIssueFound() {
   // Verify if the last safety check found issues.
