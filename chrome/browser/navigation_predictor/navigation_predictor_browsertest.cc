@@ -604,8 +604,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 }
 
 // Same as NavigationScoreSingleObserver test but with more than one observer.
-// TODO(crbug.com/1416900): Flaky on Linux and Chrome OS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1416900): Flaky on Linux, Chrome OS and win-asan.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_TwoObservers DISABLED_TwoObservers
 #else
 #define MAYBE_TwoObservers TwoObservers
