@@ -2575,6 +2575,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.PortalDetector.AggregateResult.{Technology}"
+    enum="PortalDetectorAggregateResult" expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Result of ChromeOS network validation aggregated over multiple attempts
+    until Internet connectivity has been validated or until disconnection.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
 <histogram name="Network.Shill.PortalDetector.AttemptsToDisconnect.Cellular"
     units="attempts" expires_after="2024-03-10">
   <owner>stevenjb@chromium.org</owner>
@@ -2757,6 +2768,25 @@ chromium-metrics-reviews@google.com.
   <token key="ProbeType">
     <variant name="HTTPProbe"/>
     <variant name="HTTPSProbe"/>
+  </token>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.{Transition}.{Technology}"
+    units="ms" expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Total time it takes for ChromeOS network validation to find a captive portal
+    redirection or to validate Internet access starting from the initial network
+    connection (&quot;TimeToRedirect, &quot;TimeToInternet&quot;) or starting
+    from the first discovery of a captive portal redirection
+    (&quot;TimeToInternetAfterRedirect&quot;).
+  </summary>
+  <token key="Transition">
+    <variant name="TimeToInternet"/>
+    <variant name="TimeToInternetAfterRedirect"/>
+    <variant name="TimeToRedirect"/>
   </token>
   <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>

@@ -86776,6 +86776,16 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="6" label="HTTPS traffic not blocked, HTTP 204 received"/>
 </enum>
 
+<enum name="PortalDetectorAggregateResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No Connectivity"/>
+  <int value="2" label="Partial Connectivity"/>
+  <int value="3" label="Redirect"/>
+  <int value="4" label="Internet After Partial Connectivity"/>
+  <int value="5" label="Internet After Redirect"/>
+  <int value="6" label="Internet"/>
+</enum>
+
 <enum name="PortalDetectorResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="Connection Failure"/>
