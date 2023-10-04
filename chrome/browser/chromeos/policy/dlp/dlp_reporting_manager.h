@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/util/status.h"
 
