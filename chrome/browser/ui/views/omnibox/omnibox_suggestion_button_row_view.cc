@@ -68,6 +68,11 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
         icon_(&icon),
         popup_view_(popup_view),
         selection_(selection) {
+    SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kPreferred));
+
     SetTriggerableEventFlags(GetTriggerableEventFlags() |
                              ui::EF_MIDDLE_MOUSE_BUTTON);
     views::InstallPillHighlightPathGenerator(this);
