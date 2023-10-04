@@ -1,0 +1,24 @@
+# Copyright 2015 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "speech_input_locale_config.h",
+    "voice_search_navigations_tab_helper.h",
+  ]
+
+  public_deps = [ "//ios/chrome/browser/voice" ]
+}
+
+source_set("prefs") {
+  sources = [ "voice_search_prefs.h" ]
+
+  public_deps = [ "//ios/chrome/browser/voice:prefs" ]
+}
+
+source_set("tts") {
+  sources = [ "text_to_speech_listener.h" ]
+
+  public_deps = [ "//ios/chrome/browser/voice:tts" ]
+}
