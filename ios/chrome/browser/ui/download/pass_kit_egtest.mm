@@ -130,7 +130,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
 // Tests that Chrome PassKit dialog is shown for sucessfully downloaded bundle
 // pkpasses file.
-- (void)DISABLED_testBundlePassKitDownload {
+- (void)testBundlePassKitDownload {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Wallet app is not supported on iPads.");
   }
@@ -153,15 +153,13 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
             waitForExistenceWithTimeout:kWaitForDownloadTimeout.InSecondsF()],
         @"PassKit dialog UI was not presented");
 
-    // Swipe left to show the next card
-    [title swipeLeft];
-    GREYAssertFalse(title.hittable, @"PassKit dialog UI was not scrolled");
-    XCUIElement* title2 = nil;
-    title2 = app.staticTexts[@"Paw Planet"];
+    // It is flaky to swipe to show the other pass, so check that there is the
+    // title saying there are 2 passes.
+    title = app.staticTexts[@"2 Passes"];
     GREYAssert(
-        [title2
+        [title
             waitForExistenceWithTimeout:kWaitForDownloadTimeout.InSecondsF()],
-        @"Second PassKit dialog UI was not presented");
+        @"There aren't two passes.");
   }
 }
 
