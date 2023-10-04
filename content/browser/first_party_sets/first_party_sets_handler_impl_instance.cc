@@ -59,7 +59,8 @@ base::TaskPriority GetTaskPriority() {
 }
 
 void RecordSitesToClearCount(int count) {
-  base::UmaHistogramCounts1000("FirstPartySets.SitesToClear.Count", count);
+  base::UmaHistogramCounts1000(
+      "FirstPartySets.Initialization.SitesToClear.Count", count);
 }
 
 }  // namespace
