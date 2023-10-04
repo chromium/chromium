@@ -130,7 +130,7 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToUnobserve(
     return;
   }
 
-  // TODO(https://crbug.com/1019297): Better handle overlapping observations.
+  // TODO(https://crbug.com/1489057): Better handle overlapping observations.
   base::EraseIf(observations_, [&](const auto& observation) {
     return observation->handle_url() == resolved_token->url();
   });

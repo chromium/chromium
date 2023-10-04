@@ -96,7 +96,7 @@ class FileSystemAccessObserverHost
   // Connection owned by a FileSystemObserver object. When the
   // FileSystemObserver is destroyed, this instance will remove itself from the
   // manager.
-  // TODO(https://crbug.com/1019297): Make the lifetime not depend on GC.
+  // TODO(https://crbug.com/1488875): Make the lifetime not depend on GC.
   mojo::Receiver<blink::mojom::FileSystemAccessObserverHost> host_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

@@ -463,7 +463,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ObserveBucketFS) {
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, UnsupportedScope) {
-  // TODO(https://crbug.com/1019297): External backends are not yet supported.
+  // TODO(https://crbug.com/1489061): External backends are not yet supported.
   base::FilePath test_external_path =
       base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("foo");
   auto external_url = manager_->CreateFileSystemURLFromPath(
@@ -480,7 +480,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, UnsupportedScope) {
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
 }
 
-// TODO(https://crbug.com/1019297): Add tests covering more edge cases regarding
+// TODO(https://crbug.com/1489057): Add tests covering more edge cases regarding
 // overlapping scopes.
 TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
@@ -519,7 +519,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
   source_for_dir.Signal(/*relative_path=*/file_path.BaseName(),
                         /*error=*/false);
 
-  // TODO(https://crbug.com/1019297): It would be nice if the watcher manager
+  // TODO(https://crbug.com/1447240): It would be nice if the watcher manager
   // could consolidate these changes....
 
   std::list<Change> expected_changes = {{file_url, /*error=*/false},

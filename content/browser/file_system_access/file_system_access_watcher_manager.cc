@@ -200,7 +200,7 @@ void FileSystemAccessWatcherManager::EnsureSourceIsInitializedForScope(
         on_source_initialized) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(https://crbug.com/1019297): Handle overlapping scopes and initializing
+  // TODO(https://crbug.com/1489057): Handle overlapping scopes and initializing
   // sources.
 
   FileSystemAccessChangeSource* raw_change_source = nullptr;
@@ -294,7 +294,7 @@ FileSystemAccessWatcherManager::CreateOwnedSourceForScope(
     CHECK(scope.root_url().type() !=
           storage::FileSystemType::kFileSystemTypeTemporary);
 
-    // TODO(https://crbug.com/1019297): Support non-local file systems.
+    // TODO(https://crbug.com/1489061): Support non-local file systems.
     return nullptr;
   }
 

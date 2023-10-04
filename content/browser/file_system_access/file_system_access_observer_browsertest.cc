@@ -105,8 +105,11 @@ enum class TestFileSystemType {
 //   - change types
 //   - observing a handle without permission should fail
 //   - changes should not be reported to swap files
+//     (see https://crbug.com/1488874)
 //   - changes should not be reported if permission to the handle is lost
+//     (see https://crbug.com/1489035)
 //   - changes should not be reported if the page is not fully-active
+//     (see https://crbug.com/1488875)
 //   - moving an observed handle
 
 class FileSystemAccessObserverBrowserTestBase : public ContentBrowserTest {
@@ -478,7 +481,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_THAT(records.GetList(), testing::IsEmpty());
 }
 
-// TODO(https://crbug.com/1019297): Add a ReObserveAfterUnobserve test once the
+// TODO(https://crbug.com/1489029): Add a ReObserveAfterUnobserve test once the
 // unobserve() method is no longer racy. See https://crrev.com/c/4814709.
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ReObserveAfterDisconnect) {

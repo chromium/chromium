@@ -78,7 +78,7 @@ ScriptPromise FileSystemObserver::observe(
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(https://crbug.com/1019297): Add AllowStorageAccess checks.
+  // TODO(https://crbug.com/1489033): Add AllowStorageAccess checks.
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
@@ -116,8 +116,9 @@ void FileSystemObserver::unobserve(FileSystemHandle* handle) {
     return;
   }
 
-  // TODO(https://crbug.com/1019297): Unqueue and pause records for this
-  // observation.
+  // TODO(https://crbug.com/1489029): Unqueue and pause records for this
+  // observation, or consider making observe() return a token which can be
+  // passed to this method.
 
   // Disconnects the receiver of an observer corresponding to `handle`, if such
   // an observer exists. This will remove it from our `observer_receivers_` set.

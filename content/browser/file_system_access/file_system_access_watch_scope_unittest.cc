@@ -101,7 +101,7 @@ TEST_F(FileSystemAccessWatchScopeTest, FileScope) {
   EXPECT_FALSE(scope.Contains(child_scope));
   EXPECT_FALSE(child_scope.Contains(scope));
 
-  // TODO(https://crbug.com/1019297): Test that URLs from different file systems
+  // TODO(https://crbug.com/1489061): Test that URLs from different file systems
   // return are out of scope.
 }
 
@@ -134,7 +134,7 @@ TEST_F(FileSystemAccessWatchScopeTest, DirectoryScope) {
       FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
           parent_url, /*is_recursive=*/false);
   EXPECT_FALSE(scope.Contains(parent_non_recursive_scope));
-  // TODO(https://crbug.com/1019297): This is unfortunate. See what can be done
+  // TODO(https://crbug.com/1489057): This is unfortunate. See what can be done
   // here.
   EXPECT_FALSE(parent_non_recursive_scope.Contains(scope));
 
@@ -164,7 +164,7 @@ TEST_F(FileSystemAccessWatchScopeTest, DirectoryScope) {
   EXPECT_FALSE(scope.Contains(grandchild_scope));
   EXPECT_FALSE(grandchild_scope.Contains(scope));
 
-  // TODO(https://crbug.com/1019297): Test that URLs from different file systems
+  // TODO(https://crbug.com/1489061): Test that URLs from different file systems
   // return are out of scope.
 }
 
@@ -225,7 +225,7 @@ TEST_F(FileSystemAccessWatchScopeTest, RecursiveDirectoryScope) {
   EXPECT_TRUE(scope.Contains(grandchild_scope));
   EXPECT_FALSE(grandchild_scope.Contains(scope));
 
-  // TODO(https://crbug.com/1019297): Test that URLs from different file systems
+  // TODO(https://crbug.com/1489061): Test that URLs from different file systems
   // return are out of scope.
 }
 
