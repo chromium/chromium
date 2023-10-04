@@ -220,6 +220,13 @@ class ProcessNodeImpl
   friend class ProcessMetricsDecoratorAccess;
   friend class ProcessPriorityAggregatorAccess;
 
+  using AnyChildProcessHostProxy =
+      absl::variant<RenderProcessHostProxy, BrowserChildProcessHostProxy>;
+
+  // Shared constructor for all process types.
+  ProcessNodeImpl(content::ProcessType process_type,
+                  AnyChildProcessHostProxy proxy);
+
   // ProcessNode implementation. These are private so that users of the impl use
   // the private getters rather than the public interface.
   content::ProcessType GetProcessType() const override;
@@ -246,6 +253,7 @@ class ProcessNodeImpl
   void OnAllFramesInProcessFrozen();
 
   // NodeBase:
+  void OnJoiningGraph() override;
   void OnBeforeLeavingGraph() override;
   void RemoveNodeAttachedData() override;
 
@@ -277,8 +285,7 @@ class ProcessNodeImpl
   // The proxy that allows access to either the RenderProcessHost or the
   // BrowserChildProcessHost associated with this process, if `this` is a
   // process node for a child process (process_type() != PROCESS_TYPE_BROWSER).
-  const absl::variant<RenderProcessHostProxy, BrowserChildProcessHostProxy>
-      child_process_host_proxy_;
+  const AnyChildProcessHostProxy child_process_host_proxy_;
 
   ObservedProperty::NotifiesOnlyOnChanges<
       bool,

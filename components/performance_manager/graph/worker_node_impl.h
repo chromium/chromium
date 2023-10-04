@@ -76,10 +76,8 @@ class WorkerNodeImpl
   uint64_t resident_set_kb_estimate() const;
   uint64_t private_footprint_kb_estimate() const;
 
-  base::WeakPtr<WorkerNodeImpl> GetWeakPtr() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return weak_factory_.GetWeakPtr();
-  }
+  base::WeakPtr<WorkerNodeImpl> GetWeakPtrOnUIThread();
+  base::WeakPtr<WorkerNodeImpl> GetWeakPtr();
 
   // Implementation details below this point.
 
@@ -171,6 +169,7 @@ class WorkerNodeImpl
   std::unique_ptr<NodeAttachedData> execution_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  base::WeakPtr<WorkerNodeImpl> weak_this_;
   base::WeakPtrFactory<WorkerNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };

@@ -161,15 +161,8 @@ class PageNodeImpl
     SetHadUserEdits(had_user_edits);
   }
 
-  base::WeakPtr<PageNodeImpl> GetWeakPtrOnUIThread() {
-    // TODO(siggi): Validate thread context.
-    return weak_this_;
-  }
-
-  base::WeakPtr<PageNodeImpl> GetWeakPtr() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return weak_factory_.GetWeakPtr();
-  }
+  base::WeakPtr<PageNodeImpl> GetWeakPtrOnUIThread();
+  base::WeakPtr<PageNodeImpl> GetWeakPtr();
 
   // Accessors to some of the NodeAttachedData:
   std::unique_ptr<NodeAttachedData>& GetSiteData(

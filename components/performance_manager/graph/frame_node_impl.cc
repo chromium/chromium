@@ -16,6 +16,7 @@
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace performance_manager {
 
@@ -44,11 +45,15 @@ FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
               .render_process_host_id()
               .value(),
           render_frame_id)) {
+  // Nodes are created on the UI thread, then accessed on the PM sequence.
+  // `weak_this_` can be returned from GetWeakPtrOnUIThread() and dereferenced
+  // on the PM sequence.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
   weak_this_ = weak_factory_.GetWeakPtr();
 
   DCHECK(process_node);
   DCHECK(page_node);
-  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 FrameNodeImpl::~FrameNodeImpl() {
@@ -402,7 +407,7 @@ void FrameNodeImpl::SetPriorityAndReason(
 }
 
 base::WeakPtr<FrameNodeImpl> FrameNodeImpl::GetWeakPtrOnUIThread() {
-  // TODO(siggi): Validate the thread context here.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return weak_this_;
 }
 
@@ -670,6 +675,18 @@ void FrameNodeImpl::RemoveChildFrame(FrameNodeImpl* child_frame_node) {
 
 void FrameNodeImpl::OnJoiningGraph() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Make sure all weak pointers, even `weak_this_` that was created on the UI
+  // thread in the constructor, can only be dereferenced on the graph sequence.
+  //
+  // If this is the first pointer dereferenced, it will bind all pointers from
+  // `weak_factory_` to the current sequence. If not, get() will DCHECK.
+  // DCHECK'ing the return value of get() prevents the compiler from optimizing
+  // it away.
+  //
+  // TODO(crbug.com/1134162): Use WeakPtrFactory::BindToCurrentSequence for this
+  // (it's clearer but currently not exposed publicly).
+  DCHECK(GetWeakPtr().get());
 
   // Enable querying this node using process and frame routing ids.
   graph()->RegisterFrameNodeForId(process_node_->GetRenderProcessId(),
