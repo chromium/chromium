@@ -36,6 +36,7 @@ class ResultRefreshManager {
   ResultRefreshManager(ResultRefreshManager&) = delete;
   ResultRefreshManager& operator=(ResultRefreshManager&) = delete;
 
+  // TODO(ritikagup) : Pass ExecutionService as a argument here.
   // This method initialises the class with result providers.
   void Initialize(std::map<std::string, std::unique_ptr<SegmentResultProvider>>
                       result_providers);

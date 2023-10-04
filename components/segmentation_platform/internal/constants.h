@@ -20,7 +20,14 @@ extern const char kSegmentationUkmMostRecentAllowedTimeKey[];
 // Last metrics collection time for the segmentation platform.
 extern const char kSegmentationLastCollectionTimePref[];
 
+// The segmentation platform will ignore all the valid results from previous
+// model executions, and re-run all the models and recompute segment selections.
+// Used for automated testing as well testing the model execution locally.
 extern const char kSegmentationPlatformRefreshResultsSwitch[];
+
+// All the model executed at startup would run without any delay.
+// Used for automated testing as well testing the model execution locally.
+extern const char kSegmentationPlatformDisableModelExecutionDelaySwitch[];
 
 // The timestamp before which all samples were compacted and future compactions
 // need to only check for days after it.
