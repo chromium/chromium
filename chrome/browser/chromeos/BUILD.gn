@@ -216,7 +216,6 @@ source_set("chromeos") {
     "//chrome/browser/apps/app_service",
   ]
   public_deps = [
-    ":dlp_policy_event_proto",
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser/extensions",
@@ -230,6 +229,7 @@ source_set("chromeos") {
     "//chromeos/dbus/power",
     "//components/account_id",
     "//components/arc/common",
+    "//components/enterprise/data_controls:dlp_policy_event_proto",
     "//components/file_access",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
@@ -470,7 +470,7 @@ static_library("test_support") {
   }
 
   deps = [
-    ":dlp_policy_event_proto",
+    "//components/enterprise/data_controls:dlp_policy_event_proto",
     "//components/reporting/client:test_support",
   ]
 
@@ -524,7 +524,6 @@ source_set("unit_tests") {
   ]
   deps = [
     ":chromeos",
-    ":dlp_policy_event_proto",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -554,6 +553,7 @@ source_set("unit_tests") {
     "//components/arc/common:arc_intent_helper_constants",
     "//components/arc/common:arc_test_support",
     "//components/enterprise/data_controls",
+    "//components/enterprise/data_controls:dlp_policy_event_proto",
     "//components/file_access",
     "//components/keyed_service/core",
     "//components/policy/core/common:common_constants",
@@ -664,8 +664,4 @@ source_set("unit_tests") {
       "//components/reporting/util:rate_limiter_interface",
     ]
   }
-}
-
-proto_library("dlp_policy_event_proto") {
-  sources = [ "policy/dlp/dlp_policy_event.proto" ]
 }

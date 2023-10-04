@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(enterprise_data_controls)
 
@@ -56,4 +57,8 @@ source_set("unit_tests") {
     "//base",
     "//testing/gtest",
   ]
+}
+
+proto_library("dlp_policy_event_proto") {
+  sources = [ "dlp_policy_event.proto" ]
 }
