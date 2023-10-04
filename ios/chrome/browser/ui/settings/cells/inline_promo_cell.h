@@ -8,17 +8,22 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 
 // TableViewCell with:
-//   - an image overlaid by a new feature badge at the top
-//   - a descriptive label in the middle
-//   - a button to get more info at the bottom
+//   - an image overlaid by a new feature badge
+//   - a descriptive label
+//   - a button to get more info
 //   - a close button at the top right
+// Narrow layout: the image, the label and the more info button are displayed in
+// a single centered column.
+// Wide layout: the layout has two left aligned columns. One for the image and
+// another one for the label and the more info button.
+//
 // Used to display a promo within a table view.
 @interface InlinePromoCell : TableViewCell
 
 // Button to dismiss the promo.
 @property(nonatomic, readonly) UIButton* closeButton;
 
-// Image view at the top of the cell.
+// Image view of the cell.
 @property(nonatomic, readonly) UIImageView* promoImageView;
 
 // Label containing the description of the promo.
@@ -31,6 +36,9 @@
 // the text is dimmed and colors, as well as the image, are greyed out. `YES` by
 // default.
 @property(nonatomic, assign, getter=isEnabled) BOOL enabled;
+
+// Whether or not the cell should be configured with its wide layout.
+@property(nonatomic, assign) BOOL shouldHaveWideLayout;
 
 @end
 

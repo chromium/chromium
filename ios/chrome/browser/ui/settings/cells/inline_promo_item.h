@@ -12,7 +12,7 @@
 // InlinePromoItem is a model class that uses InlinePromoCell.
 @interface InlinePromoItem : TableViewItem
 
-// Image displayed at the top of the cell.
+// Image displayed with a new feature badge.
 @property(nonatomic, strong) UIImage* promoImage;
 
 // Descriptive text of the promo.
@@ -26,6 +26,9 @@
 
 // Whether or not the cell should be enabled. `YES` by default.
 @property(nonatomic, assign, getter=isEnabled) BOOL enabled;
+
+// Whether or not the cell should be configured with its wide layout.
+@property(nonatomic, assign) BOOL shouldHaveWideLayout;
 
 @end
 
