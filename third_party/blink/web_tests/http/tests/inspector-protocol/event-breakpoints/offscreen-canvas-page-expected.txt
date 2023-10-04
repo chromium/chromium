@@ -1,0 +1,8 @@
+Test that CanvasCreated breakpoing is hit when offscreen context is created in the page
+{
+    data : {
+        eventName : instrumentation:canvasContextCreated
+    }
+    reason : EventListener
+}
+

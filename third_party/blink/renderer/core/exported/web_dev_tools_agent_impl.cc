@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_snapshot_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_emulation_agent.h"
+#include "third_party/blink/renderer/core/inspector/inspector_event_breakpoints_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_io_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_layer_tree_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_log_agent.h"
@@ -316,6 +317,9 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
   InspectorDOMDebuggerAgent* dom_debugger_agent =
       session->CreateAndAppend<InspectorDOMDebuggerAgent>(isolate, dom_agent,
                                                           session->V8Session());
+
+  session->CreateAndAppend<InspectorEventBreakpointsAgent>(
+      session->V8Session());
 
   session->CreateAndAppend<InspectorPerformanceAgent>(inspected_frames);
 

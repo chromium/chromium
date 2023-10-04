@@ -52,6 +52,8 @@ inspector_protocol_generate("protocol_sources") {
     "inspector/protocol/dom_snapshot.h",
     "inspector/protocol/dom_storage.cc",
     "inspector/protocol/dom_storage.h",
+    "inspector/protocol/event_breakpoints.cc",
+    "inspector/protocol/event_breakpoints.h",
     "inspector/protocol/emulation.cc",
     "inspector/protocol/emulation.h",
     "inspector/protocol/forward.h",

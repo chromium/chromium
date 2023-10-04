@@ -105,26 +105,32 @@
     },
     InspectorDOMDebuggerAgent: {
       probes: [
-        "BreakableLocation",
         "CharacterDataModified",
+        "DidInsertDOMNode",
+        "DidInvalidateStyleAttr",
+        "UserCallback",
+        "WillInsertDOMNode",
+        "WillModifyDOMAttr",
+        "WillSendXMLHttpOrFetchNetworkRequest",
+        "OnContentSecurityPolicyViolation",
+      ]
+    },
+    InspectorEventBreakpointsAgent: {
+      probes: [
+        "BreakableLocation",
+        "DidCreateOffscreenCanvasContext",
         "DidCreateCanvasContext",
         "DidCreateOffscreenCanvasContext",
         "DidFireWebGLError",
         "DidFireWebGLErrorOrWarning",
         "DidFireWebGLWarning",
-        "DidInsertDOMNode",
-        "DidInvalidateStyleAttr",
-        "ExecuteScript",
-        "ScriptExecutionBlockedByCSP",
-        "UserCallback",
-        "WillInsertDOMNode",
-        "WillModifyDOMAttr",
-        "WillSendXMLHttpOrFetchNetworkRequest",
         "DidCreateAudioContext",
         "DidCloseAudioContext",
         "DidResumeAudioContext",
         "DidSuspendAudioContext",
-        "OnContentSecurityPolicyViolation",
+        "ExecuteScript",
+        "ScriptExecutionBlockedByCSP",
+        "UserCallback",
       ]
     },
     InspectorDOMSnapshotAgent: {

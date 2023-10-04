@@ -45,6 +45,8 @@ blink_core_sources_inspector = [
   "inspector_dom_debugger_agent.h",
   "inspector_dom_snapshot_agent.cc",
   "inspector_dom_snapshot_agent.h",
+  "inspector_event_breakpoints_agent.cc",
+  "inspector_event_breakpoints_agent.h",
   "inspector_diff.cc",
   "inspector_diff.h",
   "inspector_emulation_agent.cc",
