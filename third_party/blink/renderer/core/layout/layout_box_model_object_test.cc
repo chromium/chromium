@@ -28,6 +28,73 @@ class LayoutBoxModelObjectTest : public RenderingTest,
 
 INSTANTIATE_PAINT_TEST_SUITE_P(LayoutBoxModelObjectTest);
 
+// This test doesn't need to be a parameterized test.
+TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+      font: 10px Ahem;
+    }
+    .target {
+      padding: 1px 3px 5px 7px;
+      block-size: 40px;
+      inline-size: 33px;
+    }
+    #target-rl {
+      writing-mode: vertical-rl;
+    }
+    #target-lr {
+      writing-mode: vertical-lr;
+    }
+    </style>
+    <div id='target-rl' class="target"></div>
+    <div id='target-lr' class="target"></div>
+
+    <div style="writing-mode:vertical-rl;">
+    <br>
+    <span id="target-inline-rl" class="target"></span>
+    </div>
+
+    <div style="writing-mode:vertical-lr;">
+    <br>
+    <span id="target-inline-lr" class="target"></span>
+    </div>
+  })HTML");
+
+  constexpr LayoutUnit kPaddingTop = LayoutUnit(1);
+  constexpr LayoutUnit kPaddingRight = LayoutUnit(3);
+  constexpr LayoutUnit kPaddingLeft = LayoutUnit(7);
+  constexpr LayoutUnit kFontHeight = LayoutUnit(10);
+  constexpr LayoutUnit kCaretWidth = LayoutUnit(1);
+
+  {
+    auto* rl = GetLayoutBoxByElementId("target-rl");
+    EXPECT_EQ(LayoutRect(rl->Size().width - kPaddingRight - kFontHeight,
+                         kPaddingTop, kFontHeight, kCaretWidth),
+              rl->LocalCaretRect(0));
+  }
+  {
+    auto* lr = GetLayoutBoxByElementId("target-lr");
+    EXPECT_EQ(LayoutRect(kPaddingLeft, kPaddingTop, kFontHeight, kCaretWidth),
+              lr->LocalCaretRect(0));
+  }
+  {
+    auto* inline_rl =
+        To<LayoutInline>(GetLayoutObjectByElementId("target-inline-rl"));
+    EXPECT_EQ(LayoutRect(LayoutUnit(), kPaddingTop - kCaretWidth, kFontHeight,
+                         kCaretWidth),
+              inline_rl->LocalCaretRect(0, nullptr));
+  }
+  {
+    auto* inline_lr =
+        To<LayoutInline>(GetLayoutObjectByElementId("target-inline-lr"));
+    EXPECT_EQ(LayoutRect(kFontHeight, kPaddingTop - kCaretWidth, kFontHeight,
+                         kCaretWidth),
+              inline_lr->LocalCaretRect(0, nullptr));
+  }
+}
+
 // Verifies that the sticky constraints are correctly computed.
 TEST_P(LayoutBoxModelObjectTest, StickyPositionConstraints) {
   SetBodyInnerHTML(R"HTML(

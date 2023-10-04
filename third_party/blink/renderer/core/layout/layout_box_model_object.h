@@ -416,6 +416,8 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   PhysicalOffset AdjustedPositionRelativeTo(const PhysicalOffset&,
                                             const Element*) const;
 
+  // This returns a logical rectangle.
+  // TODO(crbug.com/1229581): Change it to LogicalRect.
   LayoutRect LocalCaretRectForEmptyElement(LayoutUnit width,
                                            LayoutUnit text_indent_offset) const;
 

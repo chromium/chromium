@@ -269,13 +269,23 @@ LayoutRect LayoutInline::LocalCaretRect(
   if (extra_width_to_end_of_line)
     *extra_width_to_end_of_line = LayoutUnit();
 
+  LayoutUnit inline_size = RuntimeEnabledFeatures::EmptyCaretInVerticalEnabled()
+                               ? BorderAndPaddingLogicalWidth()
+                               : BorderAndPaddingWidth();
   LayoutRect caret_rect =
-      LocalCaretRectForEmptyElement(BorderAndPaddingWidth(), LayoutUnit());
+      LocalCaretRectForEmptyElement(inline_size, LayoutUnit());
 
   if (IsInLayoutNGInlineFormattingContext()) {
     NGInlineCursor cursor;
     cursor.MoveTo(*this);
     if (cursor) {
+      if (RuntimeEnabledFeatures::EmptyCaretInVerticalEnabled()) {
+        caret_rect = WritingModeConverter(
+                         {StyleRef().GetWritingMode(), TextDirection::kLtr},
+                         cursor.CurrentItem()->Size())
+                         .ToPhysical(LogicalRect(caret_rect))
+                         .ToLayoutRect();
+      }
       caret_rect.MoveBy(
           cursor.Current().OffsetInContainerFragment().ToLayoutPoint());
     }

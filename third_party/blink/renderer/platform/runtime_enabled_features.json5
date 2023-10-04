@@ -1523,6 +1523,10 @@
       name: "ElementCapture",
     },
     {
+      name: "EmptyCaretInVertical",
+      status: "stable",
+    },
+    {
       name: "EnforceAnonymityExposure",
       status: "stable",
     },

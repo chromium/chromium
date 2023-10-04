@@ -795,6 +795,14 @@ LayoutRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
 
   LayoutUnit x = BorderLeft() + PaddingLeft();
   LayoutUnit max_x = width - BorderRight() - PaddingRight();
+  NGBoxStrut border_padding;
+  if (RuntimeEnabledFeatures::EmptyCaretInVerticalEnabled()) {
+    border_padding = (BorderOutsets() + PaddingOutsets())
+                         .ConvertToLogical({current_style.GetWritingMode(),
+                                            TextDirection::kLtr});
+    x = border_padding.inline_start;
+    max_x = width - border_padding.inline_end;
+  }
   LayoutUnit caret_width = GetFrameView()->CaretWidth();
 
   switch (alignment) {
@@ -825,6 +833,11 @@ LayoutRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
   if (font_data)
     height = LayoutUnit(font_data->GetFontMetrics().Height());
   LayoutUnit vertical_space = FirstLineHeight() - height;
+  if (RuntimeEnabledFeatures::EmptyCaretInVerticalEnabled()) {
+    LayoutUnit block_start = border_padding.block_start + (vertical_space / 2);
+    // Returns a logical box.
+    return LayoutRect(x, block_start, caret_width, height);
+  }
   LayoutUnit y = PaddingTop() + BorderTop() + (vertical_space / 2);
   return current_style.IsHorizontalWritingMode()
              ? LayoutRect(x, y, caret_width, height)
