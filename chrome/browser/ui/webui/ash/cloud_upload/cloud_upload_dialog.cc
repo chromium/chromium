@@ -432,22 +432,27 @@ bool CloudOpenTask::Execute(
     Profile* profile,
     const std::vector<storage::FileSystemURL>& file_urls,
     const CloudProvider cloud_provider,
-    gfx::NativeWindow modal_parent) {
+    gfx::NativeWindow modal_parent,
+    std::unique_ptr<CloudOpenMetrics> cloud_open_metrics) {
   scoped_refptr<CloudOpenTask> upload_task = WrapRefCounted(
-      new CloudOpenTask(profile, file_urls, cloud_provider, modal_parent));
+      new CloudOpenTask(profile, file_urls, cloud_provider, modal_parent,
+                        std::move(cloud_open_metrics)));
   // Keep `upload_task` alive until `TaskFinished` executes.
   bool status = upload_task->ExecuteInternal();
   return status;
 }
 
-CloudOpenTask::CloudOpenTask(Profile* profile,
-                             std::vector<storage::FileSystemURL> file_urls,
-                             const CloudProvider cloud_provider,
-                             gfx::NativeWindow modal_parent)
+CloudOpenTask::CloudOpenTask(
+    Profile* profile,
+    std::vector<storage::FileSystemURL> file_urls,
+    const CloudProvider cloud_provider,
+    gfx::NativeWindow modal_parent,
+    std::unique_ptr<CloudOpenMetrics> cloud_open_metrics)
     : profile_(profile),
       file_urls_(file_urls),
       cloud_provider_(cloud_provider),
-      modal_parent_(modal_parent) {}
+      modal_parent_(modal_parent),
+      cloud_open_metrics_(std::move(cloud_open_metrics)) {}
 
 CloudOpenTask::~CloudOpenTask() = default;
 
@@ -799,19 +804,26 @@ void CloudOpenTask::StartUpload() {
   DCHECK_EQ(pending_uploads_, 0UL);
   pending_uploads_ = file_urls_.size();
   upload_timer_ = base::ElapsedTimer();
+  // CloudOpenTask is the only owner of the `CloudOpenMetrics` object and will
+  // still be alive after the upload handler completes. Thus, pass a `SafeRef`
+  // of `CloudOpenMetrics` to the upload handler.
+  base::SafeRef<CloudOpenMetrics> cloud_open_metrics_safe_ref =
+      cloud_open_metrics_->GetSafeRef();
 
   if (cloud_provider_ == CloudProvider::kGoogleDrive) {
     for (const auto& file_url : file_urls_) {
       DriveUploadHandler::Upload(
           profile_, file_url,
-          base::BindOnce(&CloudOpenTask::FinishedDriveUpload, this));
+          base::BindOnce(&CloudOpenTask::FinishedDriveUpload, this),
+          cloud_open_metrics_safe_ref);
     }
   } else if (cloud_provider_ == CloudProvider::kOneDrive) {
     for (const auto& file_url : file_urls_) {
       OneDriveUploadHandler::Upload(
           profile_, file_url,
           base::BindOnce(&CloudOpenTask::FinishedOneDriveUpload, this,
-                         profile_->GetWeakPtr()));
+                         profile_->GetWeakPtr()),
+          cloud_open_metrics_safe_ref);
     }
   }
 }

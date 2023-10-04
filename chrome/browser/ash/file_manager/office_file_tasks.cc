@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
@@ -146,7 +147,8 @@ bool ExecuteWebDriveOfficeTask(
     Profile* profile,
     const TaskDescriptor& task,
     const std::vector<storage::FileSystemURL>& file_urls,
-    gfx::NativeWindow modal_parent) {
+    gfx::NativeWindow modal_parent,
+    std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics) {
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   const bool offline = drive::util::GetDriveConnectionStatus(profile) !=
@@ -155,33 +157,35 @@ bool ExecuteWebDriveOfficeTask(
       !integration_service->GetDriveFsInterface()) {
     return GetUserFallbackChoice(
         profile, task, file_urls, modal_parent,
-        ash::office_fallback::FallbackReason::kDriveUnavailable);
+        ash::office_fallback::FallbackReason::kDriveUnavailable,
+        std::move(cloud_open_metrics));
   } else if (offline) {
     // TODO(petermarshall): Quick Office vs. other default handler.
-    return GetUserFallbackChoice(
-        profile, task, file_urls, modal_parent,
-        ash::office_fallback::FallbackReason::kOffline);
+    return GetUserFallbackChoice(profile, task, file_urls, modal_parent,
+                                 ash::office_fallback::FallbackReason::kOffline,
+                                 std::move(cloud_open_metrics));
   }
 
   return ash::cloud_upload::CloudOpenTask::Execute(
       profile, file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive,
-      modal_parent);
+      modal_parent, std::move(cloud_open_metrics));
 }
 
 bool ExecuteOpenInOfficeTask(
     Profile* profile,
     const TaskDescriptor& task,
     const std::vector<storage::FileSystemURL>& file_urls,
-    gfx::NativeWindow modal_parent) {
+    gfx::NativeWindow modal_parent,
+    std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics) {
   if (content::GetNetworkConnectionTracker()->IsOffline()) {
-    return GetUserFallbackChoice(
-        profile, task, file_urls, modal_parent,
-        ash::office_fallback::FallbackReason::kOffline);
+    return GetUserFallbackChoice(profile, task, file_urls, modal_parent,
+                                 ash::office_fallback::FallbackReason::kOffline,
+                                 std::move(cloud_open_metrics));
   }
 
   return ash::cloud_upload::CloudOpenTask::Execute(
       profile, file_urls, ash::cloud_upload::CloudProvider::kOneDrive,
-      modal_parent);
+      modal_parent, std::move(cloud_open_metrics));
 }
 
 void LaunchQuickOffice(Profile* profile,
@@ -210,6 +214,7 @@ void OnDialogChoiceReceived(
     const TaskDescriptor& task,
     const std::vector<storage::FileSystemURL>& file_urls,
     gfx::NativeWindow modal_parent,
+    std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics,
     const std::string& choice,
     ash::office_fallback::FallbackReason fallback_reason) {
   if (choice == ash::office_fallback::kDialogChoiceQuickOffice) {
@@ -229,9 +234,11 @@ void OnDialogChoiceReceived(
     // Only the last open result is recorded: when the user either selects
     // QO or cancels.
     if (IsWebDriveOfficeTask(task)) {
-      ExecuteWebDriveOfficeTask(profile, task, file_urls, modal_parent);
+      ExecuteWebDriveOfficeTask(profile, task, file_urls, modal_parent,
+                                std::move(cloud_open_metrics));
     } else if (IsOpenInOfficeTask(task)) {
-      ExecuteOpenInOfficeTask(profile, task, file_urls, modal_parent);
+      ExecuteOpenInOfficeTask(profile, task, file_urls, modal_parent,
+                              std::move(cloud_open_metrics));
     }
   } else if (choice == ash::office_fallback::kDialogChoiceCancel) {
     if (IsWebDriveOfficeTask(task)) {
@@ -251,7 +258,8 @@ bool GetUserFallbackChoice(
     const TaskDescriptor& task,
     const std::vector<storage::FileSystemURL>& file_urls,
     gfx::NativeWindow modal_parent,
-    ash::office_fallback::FallbackReason fallback_reason) {
+    ash::office_fallback::FallbackReason fallback_reason,
+    std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics) {
   // If QuickOffice is not installed, don't launch dialog.
   if (!IsQuickOfficeInstalled(profile)) {
     LOG(ERROR) << "Cannot fallback to QuickOffice when it is not installed";
@@ -262,8 +270,9 @@ bool GetUserFallbackChoice(
   // `OnDialogChoiceReceived()` can open multiple files.
   std::vector<storage::FileSystemURL> first_url{file_urls.front()};
 
-  ash::office_fallback::DialogChoiceCallback callback = base::BindOnce(
-      &OnDialogChoiceReceived, profile, task, first_url, modal_parent);
+  ash::office_fallback::DialogChoiceCallback callback =
+      base::BindOnce(&OnDialogChoiceReceived, profile, task, first_url,
+                     modal_parent, std::move(cloud_open_metrics));
 
   const std::string parsed_action_id = ParseFilesAppActionId(task.action_id);
 

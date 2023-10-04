@@ -40,7 +40,8 @@ class OneDriveUploadHandler
   // Starts the upload workflow for the file specified at construct time.
   static void Upload(Profile* profile,
                      const storage::FileSystemURL& source_url,
-                     UploadCallback callback);
+                     UploadCallback callback,
+                     base::SafeRef<CloudOpenMetrics> cloud_open_metrics);
 
   OneDriveUploadHandler(const OneDriveUploadHandler&) = delete;
   OneDriveUploadHandler& operator=(const OneDriveUploadHandler&) = delete;
@@ -48,7 +49,8 @@ class OneDriveUploadHandler
  private:
   friend base::RefCounted<OneDriveUploadHandler>;
   OneDriveUploadHandler(Profile* profile,
-                        const storage::FileSystemURL source_url);
+                        const storage::FileSystemURL source_url,
+                        base::SafeRef<CloudOpenMetrics> cloud_open_metrics);
   ~OneDriveUploadHandler() override;
 
   // Starts the upload workflow. Initiated by the `UploadToCloud` static method.
@@ -97,6 +99,7 @@ class OneDriveUploadHandler
   UploadCallback callback_;
   // Total size (in bytes) required to upload.
   int64_t upload_size_ = 0;
+  base::SafeRef<CloudOpenMetrics> cloud_open_metrics_;
   base::WeakPtrFactory<OneDriveUploadHandler> weak_ptr_factory_{this};
 };
 

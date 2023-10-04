@@ -63,10 +63,10 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_dialog.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -800,12 +800,17 @@ bool ExecuteFileTask(Profile* profile,
 
   const std::string parsed_action_id(ParseFilesAppActionId(task.action_id));
 
+  // Object to track cloud upload/open flow metrics. It only has one owner at a
+  // given time.
+  std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics =
+      std::make_unique<ash::cloud_upload::CloudOpenMetrics>();
+
   if (IsWebDriveOfficeTask(task)) {
     for (const FileSystemURL& file_url : file_urls) {
       RecordOfficeOpenExtensionDriveMetric(file_url);
     }
-    const bool started =
-        ExecuteWebDriveOfficeTask(profile, task, file_urls, modal_parent);
+    const bool started = ExecuteWebDriveOfficeTask(
+        profile, task, file_urls, modal_parent, std::move(cloud_open_metrics));
     if (done) {
       if (started) {
         std::move(done).Run(
@@ -821,8 +826,8 @@ bool ExecuteFileTask(Profile* profile,
     for (const FileSystemURL& file_url : file_urls) {
       RecordOfficeOpenExtensionOneDriveMetric(file_url);
     }
-    const bool started =
-        ExecuteOpenInOfficeTask(profile, task, file_urls, modal_parent);
+    const bool started = ExecuteOpenInOfficeTask(
+        profile, task, file_urls, modal_parent, std::move(cloud_open_metrics));
     if (done) {
       if (started) {
         std::move(done).Run(

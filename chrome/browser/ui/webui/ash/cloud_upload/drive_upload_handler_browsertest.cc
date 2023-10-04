@@ -292,6 +292,11 @@ class DriveUploadHandlerTest
   // Overrides `fail_sync_`
   base::RepeatingClosure on_transfer_complete_callback_;
 
+  std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics_ =
+      std::make_unique<ash::cloud_upload::CloudOpenMetrics>();
+  base::SafeRef<CloudOpenMetrics> cloud_open_metrics_ref_ =
+      cloud_open_metrics_->GetSafeRef();
+
  private:
   // IOTaskController::Observer:
   void OnIOTaskStatus(
@@ -399,7 +404,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFiles) {
   DriveUploadHandler::Upload(
       profile(), source_file_url,
       base::BindOnce(&DriveUploadHandlerTest::OnUploadDone,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      cloud_open_metrics_ref_);
   Wait();
 
   // Check that the source file has been moved to Drive.
@@ -425,7 +431,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromReadOnlyFileSystem) {
   DriveUploadHandler::Upload(
       profile(), source_file_url,
       base::BindOnce(&DriveUploadHandlerTest::OnUploadDone,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      cloud_open_metrics_ref_);
   Wait();
 
   // Check that the source file has been copied to Drive.
@@ -453,7 +460,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFails) {
   DriveUploadHandler::Upload(
       profile(), source_file_url,
       base::BindOnce(&DriveUploadHandlerTest::OnUploadDone,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      cloud_open_metrics_ref_);
   Wait();
 
   // Check that the source file has not been moved to Drive.
@@ -481,7 +489,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFilesNoConnection) {
   base::MockCallback<DriveUploadHandler::UploadCallback> upload_callback;
   EXPECT_CALL(upload_callback, Run(absl::optional<GURL>(absl::nullopt), _))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
-  DriveUploadHandler::Upload(profile(), source_file_url, upload_callback.Get());
+  DriveUploadHandler::Upload(profile(), source_file_url, upload_callback.Get(),
+                             cloud_open_metrics_ref_);
   run_loop.Run();
 
   // Check that the source file has not been moved to Drive.
@@ -512,7 +521,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
   base::MockCallback<DriveUploadHandler::UploadCallback> upload_callback;
   EXPECT_CALL(upload_callback, Run(absl::optional<GURL>(absl::nullopt), _))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
-  DriveUploadHandler::Upload(profile(), source_file_url, upload_callback.Get());
+  DriveUploadHandler::Upload(profile(), source_file_url, upload_callback.Get(),
+                             cloud_open_metrics_ref_);
   run_loop.Run();
 }
 

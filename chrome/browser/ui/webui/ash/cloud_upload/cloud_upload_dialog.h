@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
@@ -106,7 +107,8 @@ class CloudOpenTask : public BrowserListObserver,
   static bool Execute(Profile* profile,
                       const std::vector<storage::FileSystemURL>& file_urls,
                       const CloudProvider cloud_provider,
-                      gfx::NativeWindow modal_parent);
+                      gfx::NativeWindow modal_parent,
+                      std::unique_ptr<CloudOpenMetrics> cloud_open_metrics);
 
   // Set the local tasks that are passed to the File Handler dialog. Normally
   // tasks are calculated internally by this class before displaying this
@@ -157,7 +159,8 @@ class CloudOpenTask : public BrowserListObserver,
   CloudOpenTask(Profile* profile,
                 std::vector<storage::FileSystemURL> file_urls,
                 const CloudProvider cloud_provider,
-                gfx::NativeWindow modal_parent);
+                gfx::NativeWindow modal_parent,
+                std::unique_ptr<CloudOpenMetrics> cloud_open_metrics);
 
   ~CloudOpenTask() override;
 
@@ -220,6 +223,7 @@ class CloudOpenTask : public BrowserListObserver,
   std::vector<storage::FileSystemURL> file_urls_;
   CloudProvider cloud_provider_;
   gfx::NativeWindow modal_parent_;
+  std::unique_ptr<CloudOpenMetrics> cloud_open_metrics_;
   std::vector<::file_manager::file_tasks::TaskDescriptor> local_tasks_;
   size_t pending_uploads_ = 0;
   raw_ptr<CloudUploadDialog, ExperimentalAsh> pending_dialog_ = nullptr;

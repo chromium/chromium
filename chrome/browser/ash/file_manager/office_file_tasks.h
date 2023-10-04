@@ -16,6 +16,10 @@
 
 class Profile;
 
+namespace ash::cloud_upload {
+class CloudOpenMetrics;
+}
+
 namespace storage {
 class FileSystemURL;
 }
@@ -125,14 +129,16 @@ bool ExecuteWebDriveOfficeTask(
     Profile* profile,
     const TaskDescriptor& task,
     const std::vector<storage::FileSystemURL>& file_urls,
-    gfx::NativeWindow modal_parent);
+    gfx::NativeWindow modal_parent,
+    std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics);
 
 // Open files with Office365.
 bool ExecuteOpenInOfficeTask(
     Profile* profile,
     const TaskDescriptor& task,
     const std::vector<storage::FileSystemURL>& file_urls,
-    gfx::NativeWindow modal_parent);
+    gfx::NativeWindow modal_parent,
+    std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics);
 
 // Executes QuickOffice file handler for each element of |file_urls|.
 void LaunchQuickOffice(Profile* profile,
@@ -147,16 +153,19 @@ void OnDialogChoiceReceived(
     const TaskDescriptor& task,
     const std::vector<storage::FileSystemURL>& file_urls,
     gfx::NativeWindow modal_parent,
+    std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics,
     const std::string& choice,
     ash::office_fallback::FallbackReason fallback_reason);
 
 // Shows a new dialog for users to choose what to do next. Returns True
 // if a new dialog has been effectively created.
-bool GetUserFallbackChoice(Profile* profile,
-                           const TaskDescriptor& task,
-                           const std::vector<storage::FileSystemURL>& file_urls,
-                           gfx::NativeWindow modal_parent,
-                           ash::office_fallback::FallbackReason failure_reason);
+bool GetUserFallbackChoice(
+    Profile* profile,
+    const TaskDescriptor& task,
+    const std::vector<storage::FileSystemURL>& file_urls,
+    gfx::NativeWindow modal_parent,
+    ash::office_fallback::FallbackReason failure_reason,
+    std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics);
 
 bool IsWebDriveOfficeTask(const TaskDescriptor& task);
 

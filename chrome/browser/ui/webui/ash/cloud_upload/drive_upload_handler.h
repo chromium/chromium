@@ -48,14 +48,17 @@ class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
   // Starts the upload workflow for the file specified at construct time.
   static void Upload(Profile* profile,
                      const storage::FileSystemURL& source_url,
-                     UploadCallback callback);
+                     UploadCallback callback,
+                     base::SafeRef<CloudOpenMetrics> cloud_open_metrics);
 
   DriveUploadHandler(const DriveUploadHandler&) = delete;
   DriveUploadHandler& operator=(const DriveUploadHandler&) = delete;
 
  private:
   friend base::RefCounted<DriveUploadHandler>;
-  DriveUploadHandler(Profile* profile, const storage::FileSystemURL source_url);
+  DriveUploadHandler(Profile* profile,
+                     const storage::FileSystemURL source_url,
+                     base::SafeRef<CloudOpenMetrics> cloud_open_metrics);
   ~DriveUploadHandler() override;
 
   // Starts the upload workflow:
@@ -152,6 +155,7 @@ class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
       drive_observer1_{this};
   base::ScopedObservation<drivefs::DriveFsHost, drivefs::DriveFsHost::Observer>
       drive_observer2_{this};
+  base::SafeRef<CloudOpenMetrics> cloud_open_metrics_;
   base::WeakPtrFactory<DriveUploadHandler> weak_ptr_factory_{this};
 };
 

@@ -68,18 +68,22 @@ std::string GetTargetAppName(base::FilePath file_path) {
 }  // namespace
 
 // static.
-void DriveUploadHandler::Upload(Profile* profile,
-                                const FileSystemURL& source_url,
-                                UploadCallback callback) {
+void DriveUploadHandler::Upload(
+    Profile* profile,
+    const FileSystemURL& source_url,
+    UploadCallback callback,
+    base::SafeRef<CloudOpenMetrics> cloud_open_metrics) {
   scoped_refptr<DriveUploadHandler> drive_upload_handler =
-      new DriveUploadHandler(profile, source_url);
+      new DriveUploadHandler(profile, source_url, cloud_open_metrics);
   // Keep `drive_upload_handler` alive until `UploadDone` executes.
   drive_upload_handler->Run(
       base::BindOnce(&OnUploadDone, drive_upload_handler, std::move(callback)));
 }
 
-DriveUploadHandler::DriveUploadHandler(Profile* profile,
-                                       const FileSystemURL source_url)
+DriveUploadHandler::DriveUploadHandler(
+    Profile* profile,
+    const FileSystemURL source_url,
+    base::SafeRef<CloudOpenMetrics> cloud_open_metrics)
     : profile_(profile),
       file_system_context_(
           file_manager::util::GetFileManagerFileSystemContext(profile)),
@@ -95,7 +99,8 @@ DriveUploadHandler::DriveUploadHandler(Profile* profile,
               // TODO(b/242685536) Update when support for multi-files is added.
               /*num_files=*/1,
               upload_type_)),
-      source_url_(source_url) {
+      source_url_(source_url),
+      cloud_open_metrics_(cloud_open_metrics) {
   observed_copy_task_id_ = -1;
   observed_delete_task_id_ = -1;
 }
