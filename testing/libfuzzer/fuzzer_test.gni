@@ -19,7 +19,12 @@ import("//testing/test.gni")
 # - dict - a dictionary file for the fuzzer.
 # - environment_variables - certain whitelisted environment variables for the
 # fuzzer (AFL_DRIVER_DONT_DEFER is the only one allowed currently).
-# - libfuzzer_options - options for the fuzzer (e.g. -close_fd_mask=N).
+# - libfuzzer_options - options for the fuzzer (e.g. close_fd_mask=N).
+#   These are mostly applied only when the fuzzer is being run using the
+#   libfuzzer fuzzing engine, but a few of these may be interpreted by
+#   other fuzzing engines too
+# - centipede_options - options for the fuzzer (e.g. shmem_size_mb=N)
+#   when running using the centipede fuzzing engine.
 # - asan_options - AddressSanitizer options (e.g. allow_user_segv_handler=1).
 # - msan_options - MemorySanitizer options.
 # - ubsan_options - UndefinedBehaviorSanitizer options.
@@ -101,8 +106,8 @@ template("fuzzer_test") {
     }
 
     if (defined(invoker.dict) || defined(invoker.libfuzzer_options) ||
-        defined(invoker.asan_options) || defined(invoker.msan_options) ||
-        defined(invoker.ubsan_options) ||
+        defined(invoker.centipede_options) || defined(invoker.asan_options) ||
+        defined(invoker.msan_options) || defined(invoker.ubsan_options) ||
         defined(invoker.environment_variables) ||
         defined(invoker.grammar_options)) {
       if (defined(invoker.dict)) {
@@ -134,6 +139,11 @@ template("fuzzer_test") {
         if (defined(invoker.libfuzzer_options)) {
           args += [ "--libfuzzer_options" ]
           args += invoker.libfuzzer_options
+        }
+
+        if (defined(invoker.centipede_options)) {
+          args += [ "--centipede_options" ]
+          args += invoker.centipede_options
         }
 
         if (defined(invoker.asan_options)) {
