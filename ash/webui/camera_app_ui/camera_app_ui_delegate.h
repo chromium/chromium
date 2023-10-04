@@ -67,8 +67,7 @@ class CameraAppUIDelegate {
   // Takes a WebUIDataSource, and adds load time data into it.
   virtual void PopulateLoadTimeData(content::WebUIDataSource* source) = 0;
 
-  // TODO(crbug.com/1113567): Remove this method once we migrate to use UMA to
-  // collect metrics. Checks if the logging consent option is enabled.
+  // Checks if the logging consent option is enabled.
   virtual bool IsMetricsAndCrashReportingEnabled() = 0;
 
   // Opens the file in Downloads folder by its |name| in gallery.
