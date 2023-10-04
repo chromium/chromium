@@ -812,8 +812,8 @@ bool XkbKeyboardLayoutEngine::Lookup(DomCode dom_code,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Classify the keysym and convert to DOM and VKEY representations.
-  if (xkb_keysym != XKB_KEY_at || (flags & EF_CONTROL_DOWN) == 0) {
-    // Non-character key. (We only support NUL as ^@.)
+  if (dom_code != DomCode::DIGIT2 || (flags & EF_CONTROL_DOWN) == 0) {
+    // Non-character key. (We only support NUL as ^@ and ^2.)
     *dom_key = NonPrintableXKeySymToDomKey(xkb_keysym);
     if (*dom_key != DomKey::NONE) {
       *key_code = NonPrintableDomKeyToKeyboardCode(*dom_key);
