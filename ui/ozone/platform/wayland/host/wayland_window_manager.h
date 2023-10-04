@@ -117,6 +117,8 @@ class WaylandWindowManager {
 
   void DumpState(std::ostream& out) const;
 
+  bool HasObserverForTesting(const WaylandWindowObserver& observer) const;
+
  private:
   raw_ptr<WaylandWindow> pointer_focused_window_ = nullptr;
   raw_ptr<WaylandWindow> keyboard_focused_window_ = nullptr;
