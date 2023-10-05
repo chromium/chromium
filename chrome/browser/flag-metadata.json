@@ -4709,7 +4709,7 @@
   {
     "name": "fullscreen-popup-windows",
     "owners": [ "btriebw", "msw" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "fullscreen-promo-on-omnibox-copy-paste",
