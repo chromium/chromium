@@ -1271,8 +1271,9 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
 
   histogram_.ExpectUniqueSample(ash::cloud_upload::kDriveOpenSourceVolumeMetric,
                                 VolumeType::VOLUME_TYPE_GOOGLE_DRIVE, 1);
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kDriveTransferRequiredMetric,
-                                OfficeFilesTransferRequired::kNotRequired, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveTransferRequiredMetric,
+      ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kGoogleDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kOpened, 1);
@@ -1308,8 +1309,9 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OpenFileInDrive) {
 
   histogram_.ExpectUniqueSample(ash::cloud_upload::kDriveOpenSourceVolumeMetric,
                                 VolumeType::VOLUME_TYPE_GOOGLE_DRIVE, 1);
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kDriveTransferRequiredMetric,
-                                OfficeFilesTransferRequired::kNotRequired, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveTransferRequiredMetric,
+      ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kGoogleDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kOpened, 1);
@@ -1643,7 +1645,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
       1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
-      OfficeFilesTransferRequired::kNotRequired, 1);
+      ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kOpened, 1);
@@ -1735,7 +1737,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromODFS) {
       1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
-      OfficeFilesTransferRequired::kNotRequired, 1);
+      ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kOpened, 1);
@@ -1774,7 +1776,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileNotFromODFS) {
       VolumeType::VOLUME_TYPE_DOWNLOADS_DIRECTORY, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
-      OfficeFilesTransferRequired::kMove, 1);
+      ash::cloud_upload::OfficeFilesTransferRequired::kMove, 1);
 }
 
 // Test that when opening a file from ODFS fails due reauthentication to
@@ -1812,7 +1814,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
       1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
-      OfficeFilesTransferRequired::kNotRequired, 1);
+      ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kFailedToOpen, 1);
@@ -1860,7 +1862,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
       1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
-      OfficeFilesTransferRequired::kNotRequired, 1);
+      ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kFailedToOpen, 1);
@@ -1915,7 +1917,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromAndroidOneDriveViaODFS) {
       0);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
-      OfficeFilesTransferRequired::kNotRequired, 1);
+      ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kOpened, 1);
@@ -1960,7 +1962,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
 
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
-      OfficeFilesTransferRequired::kNotRequired, 1);
+      ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kFailedToOpen, 1);
@@ -2003,7 +2005,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
 
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
-      OfficeFilesTransferRequired::kNotRequired, 1);
+      ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kFailedToOpen, 1);
@@ -2051,7 +2053,7 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
-      OfficeFilesTransferRequired::kNotRequired, 1);
+      ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kFailedToOpen, 1);

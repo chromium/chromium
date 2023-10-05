@@ -56,37 +56,20 @@ enum class UploadType {
   kMaxValue = kMove,
 };
 
-constexpr char kGoogleDriveTaskResultMetricName[] =
-    "FileBrowser.OfficeFiles.TaskResult.Drive";
-constexpr char kOneDriveTaskResultMetricName[] =
-    "FileBrowser.OfficeFiles.TaskResult.OneDrive";
-constexpr char kGoogleDriveUploadResultMetricName[] =
-    "FileBrowser.OfficeFiles.Open.UploadResult.GoogleDrive";
-constexpr char kOneDriveUploadResultMetricName[] =
-    "FileBrowser.OfficeFiles.Open.UploadResult.OneDrive";
+// Either OneDrive for the Office PWA or Drive for Drive Web editing.
+enum class CloudProvider {
+  kGoogleDrive,
+  kOneDrive,
+};
 
-constexpr char kGoogleDriveMoveErrorMetricName[] =
-    "FileBrowser.OfficeFiles.Open.IOTaskError.GoogleDrive.Move";
-constexpr char kGoogleDriveCopyErrorMetricName[] =
-    "FileBrowser.OfficeFiles.Open.IOTaskError.GoogleDrive.Copy";
-constexpr char kOneDriveMoveErrorMetricName[] =
-    "FileBrowser.OfficeFiles.Open.IOTaskError.OneDrive.Move";
-constexpr char kOneDriveCopyErrorMetricName[] =
-    "FileBrowser.OfficeFiles.Open.IOTaskError.OneDrive.Copy";
-
-constexpr char kDriveOpenSourceVolumeMetric[] =
-    "FileBrowser.OfficeFiles.Open.SourceVolume.GoogleDrive";
-constexpr char kOneDriveOpenSourceVolumeMetric[] =
-    "FileBrowser.OfficeFiles.Open.SourceVolume.MicrosoftOneDrive";
-
-constexpr char kDriveTransferRequiredMetric[] =
-    "FileBrowser.OfficeFiles.Open.TransferRequired.GoogleDrive";
-constexpr char kOneDriveTransferRequiredMetric[] =
-    "FileBrowser.OfficeFiles.Open.TransferRequired.OneDrive";
-
-constexpr char kDriveErrorMetricName[] = "FileBrowser.OfficeFiles.Errors.Drive";
-constexpr char kOneDriveErrorMetricName[] =
-    "FileBrowser.OfficeFiles.Errors.OneDrive";
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OfficeFilesTransferRequired {
+  kNotRequired = 0,
+  kMove = 1,
+  kCopy = 2,
+  kMaxValue = kCopy,
+};
 
 // List of UMA enum values for Office File Handler task results for Drive. The
 // enum values must be kept in sync with OfficeDriveOpenErrors in
@@ -178,6 +161,38 @@ enum class OfficeFilesUploadResult {
   kCloudReauthRequired = 17,
   kMaxValue = kCloudReauthRequired,
 };
+
+constexpr char kGoogleDriveTaskResultMetricName[] =
+    "FileBrowser.OfficeFiles.TaskResult.Drive";
+constexpr char kOneDriveTaskResultMetricName[] =
+    "FileBrowser.OfficeFiles.TaskResult.OneDrive";
+constexpr char kGoogleDriveUploadResultMetricName[] =
+    "FileBrowser.OfficeFiles.Open.UploadResult.GoogleDrive";
+constexpr char kOneDriveUploadResultMetricName[] =
+    "FileBrowser.OfficeFiles.Open.UploadResult.OneDrive";
+
+constexpr char kGoogleDriveMoveErrorMetricName[] =
+    "FileBrowser.OfficeFiles.Open.IOTaskError.GoogleDrive.Move";
+constexpr char kGoogleDriveCopyErrorMetricName[] =
+    "FileBrowser.OfficeFiles.Open.IOTaskError.GoogleDrive.Copy";
+constexpr char kOneDriveMoveErrorMetricName[] =
+    "FileBrowser.OfficeFiles.Open.IOTaskError.OneDrive.Move";
+constexpr char kOneDriveCopyErrorMetricName[] =
+    "FileBrowser.OfficeFiles.Open.IOTaskError.OneDrive.Copy";
+
+constexpr char kDriveOpenSourceVolumeMetric[] =
+    "FileBrowser.OfficeFiles.Open.SourceVolume.GoogleDrive";
+constexpr char kOneDriveOpenSourceVolumeMetric[] =
+    "FileBrowser.OfficeFiles.Open.SourceVolume.MicrosoftOneDrive";
+
+constexpr char kDriveTransferRequiredMetric[] =
+    "FileBrowser.OfficeFiles.Open.TransferRequired.GoogleDrive";
+constexpr char kOneDriveTransferRequiredMetric[] =
+    "FileBrowser.OfficeFiles.Open.TransferRequired.OneDrive";
+
+constexpr char kDriveErrorMetricName[] = "FileBrowser.OfficeFiles.Errors.Drive";
+constexpr char kOneDriveErrorMetricName[] =
+    "FileBrowser.OfficeFiles.Errors.OneDrive";
 
 // Query actions for this path to get ODFS Metadata.
 const char kODFSMetadataQueryPath[] = "/";

@@ -47,17 +47,6 @@ FORWARD_DECLARE_TEST(
     FailToOpenFileFromAndroidOneDriveDirectoryNotAccessibleToODFS);
 }  // namespace file_manager::file_tasks
 
-namespace {
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OfficeFilesTransferRequired {
-  kNotRequired = 0,
-  kMove = 1,
-  kCopy = 2,
-  kMaxValue = kCopy,
-};
-}  // namespace
-
 namespace ash::cloud_upload {
 
 struct ODFSFileSystemAndPath {
@@ -79,12 +68,6 @@ constexpr char kUserActionConfirmOrUploadToGoogleDrive[] =
     "confirm-or-upload-google-drive";
 constexpr char kUserActionConfirmOrUploadToOneDrive[] =
     "confirm-or-upload-onedrive";
-
-// Either OneDrive for the Office PWA or Drive for Drive Web editing.
-enum class CloudProvider {
-  kGoogleDrive,
-  kOneDrive,
-};
 
 class CloudUploadDialog;
 
