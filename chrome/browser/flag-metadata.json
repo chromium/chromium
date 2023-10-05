@@ -2243,7 +2243,7 @@
   {
     "name": "enable-button-configuration-usage",
     "owners": [ "joemerramos", "ajuma", "bling-flags@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "enable-cardboard",
@@ -2881,11 +2881,6 @@
   {
     "name": "enable-friendlier-safe-browsing-settings-standard-protection",
     "owners": [ "awado", "jacastro", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "enable-fullscreen-api",
-    "owners": [ "ajuma", "joemerramos" ],
     "expiry_milestone": 120
   },
   {
