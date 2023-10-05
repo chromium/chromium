@@ -100,25 +100,6 @@ Local Modifications:
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
-Name: Type Definition for CSS Typed OM Level 1
-Short Name: @types/w3c-css-typed-object-model-level-1
-URL: https://www.npmjs.com/package/@types/w3c-css-typed-object-model-level-1
-Version: 20180410.0.4
-License: MIT
-Security Critical: no
-Shipped: no
-
-Description:
-This package contains type definitions for css-typed-object-model-level-1
-(https://www.w3.org/TR/css-typed-om-1/).
-
-The types are only used when type checking in Chrome OS.
-
-Local Modifications:
-(none)
-
--------------------- DEPENDENCY DIVIDER --------------------
-
 Name: Type Definition for W3C Image Capture
 Short Name: @types/w3c-image-capture
 URL: https://www.npmjs.com/package/@types/w3c-image-capture

@@ -11,8 +11,7 @@
     "types": [
       "trusted-types",
       "filesystem",
-      "filewriter",
-      "w3c-css-typed-object-model-level-1"
+      "filewriter"
     ],
     "experimentalDecorators": true,
     "noEmitHelpers": true,
