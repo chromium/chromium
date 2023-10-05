@@ -4013,6 +4013,7 @@ enum WebFeature {
   kTextWrapBalance = 4673,
   kTextWrapPretty = 4674,
   kV8PointerEvent_DeviceId_AttributeGetter = 4675,
+  kSourceMappingUrlMagicCommentAtSign = 4676,
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in
