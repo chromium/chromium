@@ -140,9 +140,7 @@ try_.builder(
     mirrors = [
         "ci/lacros-amd64-generic-rel",
     ],
-    builderless = not settings.is_main,
     main_list_view = "try",
-    tryjob = try_.job(),
 )
 
 try_.builder(
