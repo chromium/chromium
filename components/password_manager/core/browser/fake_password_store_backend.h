@@ -62,6 +62,8 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
   void GetAllLoginsAsync(LoginsOrErrorReply callback) override;
+  void GetAllLoginsWithAffiliationAndBrandingAsync(
+      LoginsOrErrorReply callback) override;
   void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) override;
   void GetAllLoginsForAccountAsync(absl::optional<std::string> account,
                                    LoginsOrErrorReply callback) override;

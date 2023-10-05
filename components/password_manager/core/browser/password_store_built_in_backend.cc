@@ -109,6 +109,16 @@ void PasswordStoreBuiltInBackend::GetAllLoginsAsync(
           .Then(std::move(callback)));
 }
 
+void PasswordStoreBuiltInBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
+    LoginsOrErrorReply callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(helper_);
+  auto affiliation_injection = base::BindOnce(
+      &PasswordStoreBuiltInBackend::InjectAffiliationAndBrandingInformation,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  GetAllLoginsAsync(std::move(affiliation_injection));
+}
+
 void PasswordStoreBuiltInBackend::GetAutofillableLoginsAsync(
     LoginsOrErrorReply callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -324,6 +334,19 @@ void PasswordStoreBuiltInBackend::RemoveStatisticsByOriginAndTime(
                      base::Unretained(helper_.get()), origin_filter,
                      delete_begin, delete_end),
       std::move(completion));
+}
+
+void PasswordStoreBuiltInBackend::InjectAffiliationAndBrandingInformation(
+    LoginsOrErrorReply callback,
+    LoginsResultOrError forms_or_error) {
+  if (!affiliated_match_helper_ ||
+      absl::holds_alternative<PasswordStoreBackendError>(forms_or_error) ||
+      absl::get<LoginsResult>(forms_or_error).empty()) {
+    std::move(callback).Run(std::move(forms_or_error));
+    return;
+  }
+  affiliated_match_helper_->InjectAffiliationAndBrandingInformation(
+      std::move(absl::get<LoginsResult>(forms_or_error)), std::move(callback));
 }
 
 }  // namespace password_manager

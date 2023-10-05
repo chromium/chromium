@@ -66,6 +66,12 @@ class PasswordStoreBackend
   // status). Callback is called on the main sequence.
   virtual void GetAllLoginsAsync(LoginsOrErrorReply callback) = 0;
 
+  // Returns the complete list of PasswordForms and fills in affiliation and
+  // branding information for Android credentials. Callback is called on the
+  // main sequence.
+  virtual void GetAllLoginsWithAffiliationAndBrandingAsync(
+      LoginsOrErrorReply callback) = 0;
+
   // Returns the complete list of non-blocklist PasswordForms. Callback is
   // called on the main sequence.
   virtual void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) = 0;

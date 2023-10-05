@@ -184,15 +184,6 @@ class PasswordStore : public PasswordStoreInterface {
   void UnblocklistInternal(base::OnceClosure completion,
                            std::vector<std::unique_ptr<PasswordForm>> forms);
 
-  // If |forms_or_error| contains forms, it retrieves and fills in affiliation
-  // and branding information for Android credentials in the forms and invokes
-  // |callback| with the result. If an error was received instead, it directly
-  // invokes |callback| with it, as no forms could be fetched. Called on
-  // the main sequence.
-  void InjectAffiliationAndBrandingInformation(
-      LoginsOrErrorReply callback,
-      LoginsResultOrError forms_or_error);
-
   // This member is called to perform the actual interaction with the storage.
   // The backend is injected via the public constructor, this member owns the
   // instance and deletes it by calling PasswordStoreBackend::Shutdown on it.

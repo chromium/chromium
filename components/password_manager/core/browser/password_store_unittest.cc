@@ -1464,14 +1464,8 @@ TEST_F(PasswordStoreTest, GetAllLogins) {
 }
 
 TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
-  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
-  // Invoke the store initialization callback to initialize
-  // AffiliatedMatchHelper.
-  EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(WithArg<3>(
-          testing::Invoke([](base::OnceCallback<void(bool)> reply) -> void {
-            std::move(reply).Run(true);
-          })));
+  auto store = base::MakeRefCounted<PasswordStore>(
+      std::make_unique<FakePasswordStoreBackend>());
 
   FakeAffiliationService fake_affiliation_service;
   auto mock_match_helper =
@@ -1482,10 +1476,10 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
   static constexpr PasswordFormData kTestCredentials[] = {
       {PasswordForm::Scheme::kHtml, kTestAndroidRealm1, "", "", u"", u"", u"",
        u"username_value_1", u"", kTestLastUsageTime, 1},
-      {PasswordForm::Scheme::kHtml, kTestAndroidRealm2, "", "", u"", u"", u"",
-       u"username_value_2", u"", kTestLastUsageTime, 1},
       {PasswordForm::Scheme::kHtml, kTestAndroidRealm3, "", "", u"", u"", u"",
        u"username_value_3", u"", kTestLastUsageTime, 1},
+      {PasswordForm::Scheme::kHtml, kTestAndroidRealm2, "", "", u"", u"", u"",
+       u"username_value_2", u"", kTestLastUsageTime, 1},
       {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "", u"",
        u"", u"", u"username_value_4", u"", kTestLastUsageTime, 1},
       // A PasswordFormData with nullptr as the username_value will be converted
@@ -1498,7 +1492,9 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& test_credential : kTestCredentials) {
     all_credentials.push_back(FillPasswordFormWithData(test_credential));
+    store->AddLogin(*all_credentials.back());
   }
+  WaitForPasswordStore();
 
   MockPasswordStoreConsumer mock_consumer;
   std::vector<std::unique_ptr<PasswordForm>> expected_results;
@@ -1508,8 +1504,8 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
   std::vector<MockAffiliatedMatchHelper::AffiliationAndBrandingInformation>
       affiliation_info_for_results = {
           {kTestWebRealm1, kTestAndroidName1, GURL(kTestAndroidIconURL1)},
-          {kTestWebRealm2, kTestAndroidName2, GURL(kTestAndroidIconURL2)},
           {/* Pretend affiliation or branding info is unavailable. */},
+          {kTestWebRealm2, kTestAndroidName2, GURL(kTestAndroidIconURL2)},
           {/* Pretend affiliation or branding info is unavailable. */},
           {/* Pretend affiliation or branding info is unavailable. */},
           {/* Pretend affiliation or branding info is unavailable. */}};
@@ -1529,10 +1525,6 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsOrErrorFrom(
                   store.get(), LoginsResultsOrErrorAre(&expected_results)));
-  EXPECT_CALL(*mock_backend, GetAllLoginsAsync)
-      .WillOnce([&all_credentials](LoginsOrErrorReply callback) {
-        std::move(callback).Run(std::move(all_credentials));
-      });
   store->GetAllLoginsWithAffiliationAndBrandingInformation(
       mock_consumer.GetWeakPtr());
 

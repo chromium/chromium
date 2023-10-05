@@ -21,6 +21,24 @@
 
 namespace password_manager {
 
+namespace {
+
+void InjectAffiliationAndBrandingInformation(
+    AffiliatedMatchHelper* match_helper,
+    LoginsOrErrorReply callback,
+    LoginsResultOrError forms_or_error) {
+  if (!match_helper ||
+      absl::holds_alternative<PasswordStoreBackendError>(forms_or_error) ||
+      absl::get<LoginsResult>(forms_or_error).empty()) {
+    std::move(callback).Run(std::move(forms_or_error));
+    return;
+  }
+  match_helper->InjectAffiliationAndBrandingInformation(
+      std::move(absl::get<LoginsResult>(forms_or_error)), std::move(callback));
+}
+
+}  // namespace
+
 FakePasswordStoreBackend::FakePasswordStoreBackend() = default;
 
 FakePasswordStoreBackend::FakePasswordStoreBackend(
@@ -73,6 +91,13 @@ void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
       base::BindOnce(&FakePasswordStoreBackend::GetAllLoginsInternal,
                      base::Unretained(this)),
       std::move(callback));
+}
+
+void FakePasswordStoreBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
+    LoginsOrErrorReply callback) {
+  auto injection = base::BindOnce(&InjectAffiliationAndBrandingInformation,
+                                  match_helper_, std::move(callback));
+  GetAllLoginsAsync(std::move(injection));
 }
 
 void FakePasswordStoreBackend::GetAutofillableLoginsAsync(

@@ -207,6 +207,12 @@ void PasswordStoreBackendMigrationDecorator::GetAllLoginsAsync(
   active_backend_->GetAllLoginsAsync(std::move(callback));
 }
 
+void PasswordStoreBackendMigrationDecorator::
+    GetAllLoginsWithAffiliationAndBrandingAsync(LoginsOrErrorReply callback) {
+  active_backend_->GetAllLoginsWithAffiliationAndBrandingAsync(
+      std::move(callback));
+}
+
 void PasswordStoreBackendMigrationDecorator::GetAutofillableLoginsAsync(
     LoginsOrErrorReply callback) {
   active_backend_->GetAutofillableLoginsAsync(std::move(callback));

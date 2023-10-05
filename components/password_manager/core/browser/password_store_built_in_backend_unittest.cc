@@ -72,6 +72,10 @@ constexpr PasswordFormData kTestCredentials[] = {
 constexpr auto kLatencyDelta = base::Milliseconds(123u);
 constexpr auto kStart = base::Time::FromTimeT(1000);
 constexpr auto kEnd = base::Time::FromTimeT(2000);
+constexpr const char kTestAndroidName1[] = "Example Android App 1";
+constexpr const char kTestAndroidIconURL1[] = "https://example.com/icon_1.png";
+constexpr const char kTestAndroidName2[] = "Example Android App 2";
+constexpr const char kTestAndroidIconURL2[] = "https://example.com/icon_2.png";
 
 class MockPasswordStoreBackendTester {
  public:
@@ -793,6 +797,55 @@ TEST_F(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
   EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_results)));
 
   backend->GetGroupedMatchingLoginsAsync(observed_form, mock_reply.Get());
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreBuiltInBackendTest,
+       GetAllLoginsWithAffiliationAndBrandingInformation) {
+  FakeAffiliationService fake_affiliation_service;
+  MockAffiliatedMatchHelper mock_affiliated_match_helper(
+      &fake_affiliation_service);
+  PasswordStoreBackend* backend =
+      Initialize(nullptr, &mock_affiliated_match_helper);
+
+  std::vector<std::unique_ptr<PasswordForm>> all_credentials;
+  for (const auto& test_credential : kTestCredentials) {
+    all_credentials.push_back(FillPasswordFormWithData(test_credential));
+    backend->AddLoginAsync(*all_credentials.back(), base::DoNothing());
+    RunUntilIdle();
+  }
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_results;
+  for (const auto& credential : all_credentials) {
+    expected_results.push_back(std::make_unique<PasswordForm>(*credential));
+  }
+
+  std::vector<MockAffiliatedMatchHelper::AffiliationAndBrandingInformation>
+      affiliation_info_for_results = {
+          {kTestWebRealm1, kTestAndroidName1, GURL(kTestAndroidIconURL1)},
+          {/* Pretend affiliation or branding info is unavailable. */},
+          {kTestWebRealm2, kTestAndroidName2, GURL(kTestAndroidIconURL2)},
+          {/* Pretend affiliation or branding info is unavailable. */},
+          {/* Pretend affiliation or branding info is unavailable. */},
+          {/* Pretend affiliation or branding info is unavailable. */}};
+
+  mock_affiliated_match_helper
+      .ExpectCallToInjectAffiliationAndBrandingInformation(
+          affiliation_info_for_results);
+
+  for (size_t i = 0; i < expected_results.size(); ++i) {
+    expected_results[i]->affiliated_web_realm =
+        affiliation_info_for_results[i].affiliated_web_realm;
+    expected_results[i]->app_display_name =
+        affiliation_info_for_results[i].app_display_name;
+    expected_results[i]->app_icon_url =
+        affiliation_info_for_results[i].app_icon_url;
+  }
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_results)));
+
+  backend->GetAllLoginsWithAffiliationAndBrandingAsync(mock_reply.Get());
   RunUntilIdle();
 }
 

@@ -165,6 +165,8 @@ class PasswordStoreAndroidBackend
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
   void GetAllLoginsAsync(LoginsOrErrorReply callback) override;
+  void GetAllLoginsWithAffiliationAndBrandingAsync(
+      LoginsOrErrorReply callback) override;
   void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) override;
   void GetAllLoginsForAccountAsync(absl::optional<std::string> account,
                                    LoginsOrErrorReply callback) override;
@@ -325,6 +327,15 @@ class PasswordStoreAndroidBackend
   // Clears |sync_service_| when syncer::SyncServiceObserver::OnSyncShutdown is
   // called.
   void SyncShutdown();
+
+  // If |forms_or_error| contains forms, it retrieves and fills in affiliation
+  // and branding information for Android credentials in the forms and invokes
+  // |callback| with the result. If an error was received instead, it directly
+  // invokes |callback| with it, as no forms could be fetched. Called on
+  // the main sequence.
+  void InjectAffiliationAndBrandingInformation(
+      LoginsOrErrorReply callback,
+      LoginsResultOrError forms_or_error);
 
   // Observer to propagate potential password changes to.
   RemoteChangesReceived stored_passwords_changed_;

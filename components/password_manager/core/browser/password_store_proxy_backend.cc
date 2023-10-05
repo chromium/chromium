@@ -134,6 +134,12 @@ void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
   main_backend()->GetAllLoginsAsync(std::move(callback));
 }
 
+void PasswordStoreProxyBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
+    LoginsOrErrorReply callback) {
+  main_backend()->GetAllLoginsWithAffiliationAndBrandingAsync(
+      std::move(callback));
+}
+
 void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
     LoginsOrErrorReply callback) {
   main_backend()->GetAutofillableLoginsAsync(std::move(callback));

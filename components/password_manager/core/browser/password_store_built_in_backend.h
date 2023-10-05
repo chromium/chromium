@@ -52,6 +52,8 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
   void GetAllLoginsAsync(LoginsOrErrorReply callback) override;
+  void GetAllLoginsWithAffiliationAndBrandingAsync(
+      LoginsOrErrorReply callback) override;
   void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) override;
   void GetAllLoginsForAccountAsync(absl::optional<std::string> account,
                                    LoginsOrErrorReply callback) override;
@@ -96,6 +98,15 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       base::Time delete_end,
       base::OnceClosure completion) override;
 
+  // If |forms_or_error| contains forms, it retrieves and fills in affiliation
+  // and branding information for Android credentials in the forms and invokes
+  // |callback| with the result. If an error was received instead, it directly
+  // invokes |callback| with it, as no forms could be fetched. Called on
+  // the main sequence.
+  void InjectAffiliationAndBrandingInformation(
+      LoginsOrErrorReply callback,
+      LoginsResultOrError forms_or_error);
+
   // Ensures that all methods are called on the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -111,6 +122,8 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   // TaskRunner for all the background operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<PasswordStoreBuiltInBackend> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

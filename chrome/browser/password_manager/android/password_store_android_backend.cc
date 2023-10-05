@@ -31,6 +31,7 @@
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -608,6 +609,16 @@ void PasswordStoreAndroidBackend::GetAllLoginsAsync(
                                  std::move(callback),
                                  PasswordStoreOperation::kGetAllLoginsAsync,
                                  /*delay=*/base::Seconds(0));
+}
+
+void PasswordStoreAndroidBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
+    LoginsOrErrorReply callback) {
+  // TODO(crbug.com/1480412): Invoke new API to get all passwords with branding
+  // info instead of calling affiliation service.
+  auto affiliation_injection = base::BindOnce(
+      &PasswordStoreAndroidBackend::InjectAffiliationAndBrandingInformation,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  GetAllLoginsAsync(std::move(affiliation_injection));
 }
 
 void PasswordStoreAndroidBackend::GetAutofillableLoginsAsync(
@@ -1200,6 +1211,19 @@ void PasswordStoreAndroidBackend::ClearZombieTasks() {
 
 void PasswordStoreAndroidBackend::SyncShutdown() {
   sync_service_ = nullptr;
+}
+
+void PasswordStoreAndroidBackend::InjectAffiliationAndBrandingInformation(
+    LoginsOrErrorReply callback,
+    LoginsResultOrError forms_or_error) {
+  if (!affiliated_match_helper_ ||
+      absl::holds_alternative<PasswordStoreBackendError>(forms_or_error) ||
+      absl::get<LoginsResult>(forms_or_error).empty()) {
+    std::move(callback).Run(std::move(forms_or_error));
+    return;
+  }
+  affiliated_match_helper_->InjectAffiliationAndBrandingInformation(
+      std::move(absl::get<LoginsResult>(forms_or_error)), std::move(callback));
 }
 
 }  // namespace password_manager
