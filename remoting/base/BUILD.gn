@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/util/process_version.gni")
+import("//remoting/build/config/remoting_build.gni")
 import("//remoting/build/config/remoting_logging.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -16,6 +18,11 @@ process_version("remoting_base_version") {
   sources = [ "//chrome/VERSION" ]
   template_file = "//remoting/base/version.h.in"
   output = "$target_gen_dir/version.h"
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "REMOTING_INTERNAL=$remoting_internal" ]
 }
 
 source_set("base") {
@@ -100,6 +107,7 @@ source_set("base") {
   ]
   deps = [
     ":authorization",
+    ":buildflags",
     ":protobuf_http_client_messages_proto",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
@@ -113,6 +121,10 @@ source_set("base") {
     "//third_party/webrtc_overrides:webrtc_component",
     "//url",
   ]
+
+  if (remoting_internal) {
+    deps += [ "//remoting/internal/base:internal_base" ]
+  }
 
   if (is_win) {
     sources += [ "scoped_sc_handle_win.h" ]

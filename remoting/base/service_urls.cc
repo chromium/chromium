@@ -7,6 +7,11 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "remoting/base/buildflags.h"
+
+#if BUILDFLAG(REMOTING_INTERNAL)
+#include "remoting/internal/base/service_urls.h"
+#endif
 
 // Configurable service data.
 // Debug builds should default to the autopush environment (can be configured
@@ -32,6 +37,10 @@ namespace remoting {
 ServiceUrls::ServiceUrls()
     : ftl_server_endpoint_(kFtlServerEndpoint),
       remoting_server_endpoint_(kRemotingServerEndpoint) {
+#if BUILDFLAG(REMOTING_INTERNAL)
+  remoting_corp_endpoint_ = internal::GetRemotingCorpApiUrl();
+#endif
+
 #if !defined(NDEBUG)
   // The command line may not be initialized when running as a PNaCl plugin.
   if (base::CommandLine::InitializedForCurrentProcess()) {
@@ -50,6 +59,16 @@ ServiceUrls::ServiceUrls()
     } else {
       LOG(WARNING) << "CRD: Using autopush (non prod) remoting server";
     }
+
+#if BUILDFLAG(REMOTING_INTERNAL)
+    const char kRemotingCorpEndpointSwitch[] = "remoting-corp-endpoint";
+    if (command_line->HasSwitch(kRemotingCorpEndpointSwitch)) {
+      remoting_corp_endpoint_ =
+          command_line->GetSwitchValueASCII(kRemotingCorpEndpointSwitch);
+    } else {
+      LOG(WARNING) << "CRD: Using autopush (non prod) remotedesktop Corp API";
+    }
+#endif  // BUILDFLAG(REMOTING_INTERNAL)
   }
 #endif  // !defined(NDEBUG)
 }
