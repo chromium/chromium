@@ -61,7 +61,6 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
                 mHandleStrategyFactory.create(getStrategyType(), mActivity, this::isFullHeight,
                         () -> 0, null, this::handleCloseAnimation);
         toolbar.setHandleStrategy(handleStrategy);
-        toolbar.setMinimizeButtonEnabled(true);
         updateDragBarVisibility(/*dragHandlebarVisibility*/ View.GONE);
     }
 

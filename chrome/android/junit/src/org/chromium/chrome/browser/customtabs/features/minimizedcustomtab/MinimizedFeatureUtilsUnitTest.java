@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -63,7 +64,8 @@ public class MinimizedFeatureUtilsUnitTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Context mContext;
+    @Mock
+    private Activity mActivity;
     @Mock
     private PackageManager mPackageManager;
     @Mock
@@ -75,15 +77,15 @@ public class MinimizedFeatureUtilsUnitTest {
     public void setUp() {
         ShadowSysUtils.sIsLowEndDevice = false;
         mApplicationInfo.uid = UID;
-        when(mContext.getApplicationInfo()).thenReturn(mApplicationInfo);
-        when(mContext.getPackageName()).thenReturn(NAME);
+        when(mActivity.getApplicationInfo()).thenReturn(mApplicationInfo);
+        when(mActivity.getPackageName()).thenReturn(NAME);
         when(mPackageManager.hasSystemFeature(eq(PackageManager.FEATURE_PICTURE_IN_PICTURE)))
                 .thenReturn(true);
-        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mActivity.getPackageManager()).thenReturn(mPackageManager);
         when(mAppOpsManager.checkOpNoThrow(
                      eq(AppOpsManager.OPSTR_PICTURE_IN_PICTURE), eq(UID), eq(NAME)))
                 .thenReturn(AppOpsManager.MODE_ALLOWED);
-        when(mContext.getSystemService(eq(Context.APP_OPS_SERVICE))).thenReturn(mAppOpsManager);
+        when(mActivity.getSystemService(eq(Context.APP_OPS_SERVICE))).thenReturn(mAppOpsManager);
     }
 
     @After
@@ -96,7 +98,7 @@ public class MinimizedFeatureUtilsUnitTest {
     public void testSdkLevel_preO() {
         try (var ignored = HistogramWatcher.newSingleRecordWatcher(
                      HISTOGRAM, MinimizedFeatureAvailability.UNAVAILABLE_API_LEVEL)) {
-            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
+            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mActivity));
         }
     }
 
@@ -104,7 +106,7 @@ public class MinimizedFeatureUtilsUnitTest {
     public void testSdkLevel_OAndAbove() {
         try (var ignored = HistogramWatcher.newSingleRecordWatcher(
                      HISTOGRAM, MinimizedFeatureAvailability.AVAILABLE)) {
-            assertTrue(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
+            assertTrue(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mActivity));
         }
     }
 
@@ -113,7 +115,7 @@ public class MinimizedFeatureUtilsUnitTest {
         ShadowSysUtils.sIsLowEndDevice = true;
         try (var ignored = HistogramWatcher.newSingleRecordWatcher(
                      HISTOGRAM, MinimizedFeatureAvailability.UNAVAILABLE_LOW_END_DEVICE)) {
-            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
+            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mActivity));
         }
     }
 
@@ -123,7 +125,7 @@ public class MinimizedFeatureUtilsUnitTest {
                 .thenReturn(false);
         try (var ignored = HistogramWatcher.newSingleRecordWatcher(
                      HISTOGRAM, MinimizedFeatureAvailability.UNAVAILABLE_SYSTEM_FEATURE)) {
-            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
+            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mActivity));
         }
     }
 
@@ -134,7 +136,7 @@ public class MinimizedFeatureUtilsUnitTest {
                 .thenReturn(AppOpsManager.MODE_IGNORED);
         try (var ignored = HistogramWatcher.newSingleRecordWatcher(
                      HISTOGRAM, MinimizedFeatureAvailability.UNAVAILABLE_PIP_PERMISSION)) {
-            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
+            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mActivity));
         }
     }
 }
