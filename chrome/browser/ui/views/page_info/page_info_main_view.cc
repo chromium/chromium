@@ -157,10 +157,7 @@ PageInfoMainView::PageInfoMainView(
 
 PageInfoMainView::~PageInfoMainView() = default;
 
-void PageInfoMainView::EnsureCookieInfo() {
-  if (cookie_button_ != nullptr) {
-    return;
-  }
+void PageInfoMainView::SetCookieInfo(const CookiesNewInfo& cookie_info) {
   bool is_3pcd_enabled = presenter_->IsTrackingProtection3pcdEnabled();
 
   // Get the icon.
@@ -177,6 +174,20 @@ void PageInfoMainView::EnsureCookieInfo() {
                 IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_TOOLTIP)
           : l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
 
+  std::u16string cookie_button_label = std::u16string();
+
+  if (is_3pcd_enabled) {
+    if (cookie_info.status == CookieControlsStatus::kDisabledForSite) {
+      cookie_button_label = l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_ALLOWED);
+    } else {
+      cookie_button_label = l10n_util::GetStringUTF16(
+          presenter_->AreAllThirdPartyCookiesBlocked()
+              ? IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_BLOCKED
+              : IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_LIMITED);
+    }
+  }
+
   // Create a cookie button that opens a cookies subpage.
   cookie_button_ =
       site_settings_view_->AddChildView(std::make_unique<RichHoverButton>(
@@ -187,15 +198,13 @@ void PageInfoMainView::EnsureCookieInfo() {
               ? l10n_util::GetStringUTF16(
                     IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME)
               : l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
-          std::u16string(), tooltip, std::u16string(),
+          std::u16string(), tooltip, cookie_button_label,
           PageInfoViewFactory::GetOpenSubpageIcon()));
   cookie_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
 
   cookie_button_->SetProperty(views::kElementIdentifierKey,
                               kCookieButtonElementId);
-  ads_personalization_section_ =
-      site_settings_view_->AddChildView(CreateContainerView());
 }
 
 void PageInfoMainView::SetPermissionInfo(
@@ -460,9 +469,8 @@ void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
 
 void PageInfoMainView::SetAdPersonalizationInfo(
     const AdPersonalizationInfo& info) {
-  EnsureCookieInfo();
-  if (!ads_personalization_section_)
-    return;
+  ads_personalization_section_ =
+      site_settings_view_->AddChildView(CreateContainerView());
 
   ads_personalization_section_->RemoveAllChildViews();
 

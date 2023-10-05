@@ -71,6 +71,7 @@ class PageInfoMainView : public views::View,
   void SetIdentityInfo(const IdentityInfo& identity_info) override;
   void SetPageFeatureInfo(const PageFeatureInfo& info) override;
   void SetAdPersonalizationInfo(const AdPersonalizationInfo& info) override;
+  void SetCookieInfo(const CookiesNewInfo& cookie_info) override;
 
   gfx::Size CalculatePreferredSize() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
@@ -93,10 +94,6 @@ class PageInfoMainView : public views::View,
  private:
   friend class PageInfoBubbleViewDialogBrowserTest;
   friend class test::PageInfoBubbleViewTestApi;
-
-  // Ensures the cookie information UI is present, with placeholder information
-  // if necessary.
-  void EnsureCookieInfo();
 
   // Creates a view with vertical box layout that will used a container for
   // other views.
