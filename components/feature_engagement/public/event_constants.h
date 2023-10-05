@@ -78,9 +78,6 @@ extern const char kBatterySaverDialogShown[];
 // The user has opened the high efficiency page action chip
 extern const char kHighEfficiencyDialogShown[];
 
-// The user clicked on the performance menu item
-extern const char kPerformanceMenuItemActivated[];
-
 // Extensions menu is opened when any extension has access to the current site.
 extern const char kExtensionsMenuOpenedWhileExtensionHasAccess[];
 

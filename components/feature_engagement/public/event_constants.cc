@@ -49,8 +49,6 @@ const char kBatterySaverDialogShown[] = "battery_saver_info_shown";
 
 const char kHighEfficiencyDialogShown[] = "high_efficiency_info_shown";
 
-const char kPerformanceMenuItemActivated[] = "performance_activated";
-
 const char kExtensionsMenuOpenedWhileExtensionHasAccess[] =
     "extensions_menu_opened_while_extension_has_access";
 

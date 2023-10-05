@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -42,7 +41,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -51,7 +49,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
 #include "components/zoom/zoom_event_manager.h"
@@ -956,8 +953,6 @@ AppMenu::AppMenu(Browser* browser, ui::MenuModel* model, int run_types)
     : browser_(browser), model_(model), run_types_(run_types) {
   global_error_observation_.Observe(
       GlobalErrorServiceFactory::GetForProfile(browser->profile()));
-  new_badge_tracker_ =
-      std::make_unique<ScopedNewBadgeTracker>(browser_->profile());
 
   DCHECK(!root_);
   root_ = new MenuItemView(this);
@@ -1216,25 +1211,6 @@ void AppMenu::WillShowMenu(MenuItemView* menu) {
     CreateBookmarkMenu();
   else if (bookmark_menu_delegate_)
     bookmark_menu_delegate_->WillShowMenu(menu);
-
-  if (menu->GetCommand() == IDC_MORE_TOOLS_MENU) {
-    std::vector<MenuItemView*> more_tools_items =
-        menu->GetSubmenu()->GetMenuItems();
-
-    auto performanceItem =
-        base::ranges::find_if(more_tools_items, [](MenuItemView* item) -> bool {
-          return item->GetCommand() == IDC_PERFORMANCE;
-        });
-
-    if (performanceItem != more_tools_items.end()) {
-      bool show_new_badge =
-          browser_->window()->IsFeaturePromoActive(
-              feature_engagement::kIPHHighEfficiencyModeFeature) ||
-          new_badge_tracker_->TryShowNewBadge(
-              feature_engagement::kIPHPerformanceNewBadgeFeature);
-      (*performanceItem)->set_is_new(show_new_badge);
-    }
-  }
 }
 
 void AppMenu::WillHideMenu(MenuItemView* menu) {

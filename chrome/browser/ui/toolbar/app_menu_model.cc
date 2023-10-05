@@ -79,7 +79,6 @@
 #include "components/dom_distiller/content/browser/uma_helper.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
-#include "components/feature_engagement/public/event_constants.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -823,11 +822,6 @@ void AppMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (error) {
     error->ExecuteMenuItem(browser_);
     return;
-  }
-
-  if (command_id == IDC_PERFORMANCE) {
-    browser()->window()->NotifyFeatureEngagementEvent(
-        feature_engagement::events::kPerformanceMenuItemActivated);
   }
 
   if (command_id == IDC_VIEW_PASSWORDS) {
