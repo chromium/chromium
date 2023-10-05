@@ -29,11 +29,21 @@ namespace {
 constexpr CGFloat kContentMargin = 16.;
 // Space between elements in `self.contentView`.
 constexpr CGFloat kContentSpacing = 16.;
-// Extra top padding between the navigation bar of the scroll view and the
-// top edge of the scroll view.
-constexpr CGFloat kExtraNavBarTopPadding = 3.;
 // Vertical insets of primary button.
 constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
+
+// Returns font to use for the navigation bar title.
+UIFont* GetNavigationBarTitleFont() {
+  UITraitCollection* large_trait_collection =
+      [UITraitCollection traitCollectionWithPreferredContentSizeCategory:
+                             UIContentSizeCategoryLarge];
+  UIFontDescriptor* font_descriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleBody
+             compatibleWithTraitCollection:large_trait_collection];
+  UIFont* font = [UIFont systemFontOfSize:font_descriptor.pointSize
+                                   weight:UIFontWeightBold];
+  return [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
+}
 
 }  // namespace
 
@@ -104,58 +114,32 @@ constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
   // Set the navigation title in the left bar button item to have left
   // alignment.
   UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.font = GetNavigationBarTitleFont();
   titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE);
   titleLabel.textAlignment = NSTextAlignmentLeft;
   titleLabel.adjustsFontSizeToFitWidth = YES;
   titleLabel.minimumScaleFactor = 0.1;
-
-  CHECK(self.skipButtonText);
-  UIButton* skipButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [skipButton setTitle:self.skipButtonText forState:UIControlStateNormal];
-  skipButton.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  [skipButton addTarget:self
-                 action:@selector(skipButtonAction:)
-       forControlEvents:UIControlEventTouchUpInside];
-  skipButton.accessibilityIdentifier =
-      kWebSigninSkipButtonAccessibilityIdentifier;
-  // Put titleLabel and skipButton each in a wrapper UIView so we can adjust
-  // their top padding.
-  UIView* titleLabelWrapper = [[UIView alloc] init];
-  UIView* skipButtonWrapper = [[UIView alloc] init];
-  [titleLabelWrapper addSubview:titleLabel];
-  [skipButtonWrapper addSubview:skipButton];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  skipButton.translatesAutoresizingMaskIntoConstraints = NO;
 
-  // Fix the positions of titleLabel and skipButton relative to their wrappers.
-  [NSLayoutConstraint activateConstraints:@[
-    [titleLabel.topAnchor constraintEqualToAnchor:titleLabelWrapper.topAnchor
-                                         constant:kExtraNavBarTopPadding],
-    [titleLabel.bottomAnchor
-        constraintEqualToAnchor:titleLabelWrapper.bottomAnchor],
-    [titleLabel.leadingAnchor
-        constraintEqualToAnchor:titleLabelWrapper.leadingAnchor],
-    [titleLabel.trailingAnchor
-        constraintEqualToAnchor:titleLabelWrapper.trailingAnchor],
-    [skipButton.topAnchor constraintEqualToAnchor:skipButtonWrapper.topAnchor
-                                         constant:kExtraNavBarTopPadding],
-    [skipButton.bottomAnchor
-        constraintEqualToAnchor:skipButtonWrapper.bottomAnchor],
-    [skipButton.leadingAnchor
-        constraintEqualToAnchor:skipButtonWrapper.leadingAnchor],
-    [skipButton.trailingAnchor
-        constraintEqualToAnchor:skipButtonWrapper.trailingAnchor]
-  ]];
-
-  // Add the wrappers to the navigation bar.
+  // Add the title label to the navigation bar.
   UIBarButtonItem* leftItem =
-      [[UIBarButtonItem alloc] initWithCustomView:titleLabelWrapper];
-  UIBarButtonItem* rightItem =
-      [[UIBarButtonItem alloc] initWithCustomView:skipButtonWrapper];
+      [[UIBarButtonItem alloc] initWithCustomView:titleLabel];
   self.navigationItem.leftBarButtonItem = leftItem;
+  self.navigationController.navigationBar.minimumContentSizeCategory =
+      UIContentSizeCategoryLarge;
+  self.navigationController.navigationBar.maximumContentSizeCategory =
+      UIContentSizeCategoryExtraExtraLarge;
+  // Create the skip button.
+  CHECK(self.skipButtonText);
+  UIBarButtonItem* rightItem =
+      [[UIBarButtonItem alloc] initWithTitle:self.skipButtonText
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(skipButtonAction:)];
+  rightItem.accessibilityIdentifier =
+      kWebSigninSkipButtonAccessibilityIdentifier;
   self.navigationItem.rightBarButtonItem = rightItem;
 
   // Replace the controller view by the scroll view.
@@ -199,6 +183,7 @@ constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
   // Add the label.
   if (self.labelText) {
     UILabel* label = [[UILabel alloc] init];
+    label.adjustsFontForContentSizeCategory = YES;
     label.text = self.labelText;
     label.textColor = [UIColor colorNamed:kGrey700Color];
     label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
