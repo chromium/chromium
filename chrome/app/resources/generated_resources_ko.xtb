@@ -936,6 +936,7 @@
 <translation id="1723824996674794290">새 창(&amp;N)</translation>
 <translation id="1724801751621173132">입력 모드</translation>
 <translation id="1725562816265788801">탭 스크롤</translation>
+<translation id="1726294682426724172">새로운 기능에는 방해 요소를 없애 주는 Google 포토의 매직 지우개, 개선된 영상 통화 도구 등이 포함됩니다.</translation>
 <translation id="1726503915437308071">기울임꼴</translation>
 <translation id="1729533290416704613">또한 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="1730666151302379551">이전 비밀번호 지우기</translation>
@@ -2174,6 +2175,7 @@
 <translation id="2671451824761031126">북마크와 설정을 가져왔습니다.</translation>
 <translation id="2672142220933875349">잘못된 crx 파일입니다. 압축을 해제하지 못했습니다.</translation>
 <translation id="2673135533890720193">인터넷 사용 기록 확인</translation>
+<translation id="2673848446870717676">블루투스 기기를 페어링 모드로 설정하고 가까이 두세요. 신뢰하는 기기만 페어링하세요. 페어링된 기기는 이 Chromebook의 모든 계정에 표시됩니다.</translation>
 <translation id="2673873887296220733">파일 1개를 <ph name="CLOUD_PROVIDER" />에 복사하여 여시겠습니까?</translation>
 <translation id="2674764818721168631">사용 안함</translation>
 <translation id="2676084251379299915">이 확장 프로그램은 Chrome 웹 스토어에서 더 이상 제공되지 않으므로 기업 정책에 의해 사용 중지되었습니다.</translation>
@@ -3529,7 +3531,6 @@
 <translation id="3771851622616482156">열려 있는 탭을 포함하여 이 사이트에서 로그아웃됩니다.</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />을 읽었으며 이에 동의합니다.</translation>
 <translation id="3774166835015494435">최근 사진 및 알림</translation>
-<translation id="3774546890772201673"><ph name="NAME" />을 업데이트합니다.</translation>
 <translation id="3775432569830822555">SSL 서버 인증서</translation>
 <translation id="3775705724665058594">기기로 전송</translation>
 <translation id="3776508619697147021">사이트에서 여러 파일의 자동 다운로드를 요청할 수 있음</translation>
@@ -3851,6 +3852,7 @@
 <translation id="4010917659463429001">휴대기기에서 내 북마크를 사용하려면 <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">'<ph name="EXTENSION_NAME" />'을(를) 복구하시겠습니까?</translation>
 <translation id="4015163439792426608">확장 프로그램이 있나요? 한곳에서 편리하게 <ph name="BEGIN_LINK" />확장 프로그램을 관리<ph name="END_LINK" />하세요.</translation>
+<translation id="4016762287427926315"><ph name="APP_NAME" />에 허용한 권한이 이 앱에도 허용됩니다. <ph name="BEGIN_LINK" />관리하기<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">이 링크의 QR 코드 생성</translation>
 <translation id="4019983356493507433">북마크 목록 수정</translation>
 <translation id="4020327272915390518">옵션 메뉴</translation>
@@ -3969,6 +3971,7 @@
 <translation id="4110485659976215879">경고 다시 열기</translation>
 <translation id="4110490973560452005">다운로드 완료: <ph name="FILE_NAME" />. 다운로드바 영역으로 이동하려면 Shift+F6를 누르세요.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />(오프라인)</translation>
+<translation id="411318099524508025"><ph name="NAME" /> 버전으로 업그레이드됨</translation>
 <translation id="4113743276555482284">파일 비밀번호</translation>
 <translation id="4114524937989710624">Google Drive에서 최근 활동으로 쉽게 돌아갈 수 있도록 표시된 추천 파일입니다.
         <ph name="BREAK" />
@@ -6424,6 +6427,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6156863943908443225">스크립트 캐시</translation>
 <translation id="6156944117133588106">태블릿 모드에서 탐색 버튼 표시</translation>
 <translation id="615930144153753547">사이트에서 이미지를 표시할 수 있음</translation>
+<translation id="6160290816917599257">잘못된 코드입니다. 입력되는 내용은 <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ 주소<ph name="LPA_2" />$<ph name="LPA_3" />일치 ID(선택사항)<ph name="LPA_4" /> 형식이어야 합니다.</translation>
 <translation id="6160625263637492097">인증에 사용할 인증서 제공</translation>
 <translation id="6163363155248589649">보통(&amp;N)</translation>
 <translation id="6163376401832887457">Kerberos 설정</translation>
@@ -8455,6 +8459,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" />님이 다른 기기에서 이미 Google 어시스턴트를 설정한 것 같습니다. <ph name="SUPERVISED_USER_NAME" />님은 이 기기에서 화면 컨텍스트를 사용 설정하여 어시스턴트를 더 유용하게 활용할 수 있습니다.</translation>
 <translation id="7807711621188256451"><ph name="HOST" />에서 카메라에 액세스하도록 항상 허용</translation>
 <translation id="7810202088502699111">이 페이지에서 팝업이 차단되었습니다.</translation>
+<translation id="7810367892333449285">입력되는 내용은 <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ 주소<ph name="LPA_2" />$<ph name="LPA_3" />일치 ID(선택사항)<ph name="LPA_4" /> 형식이어야 합니다.</translation>
 <translation id="7814458197256864873">복사(&amp;C)</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" />의 <ph name="SHORTCUT" /> 단축키 수정</translation>
@@ -8797,7 +8802,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8077120325605624147">어떤 사이트에서나 광고를 게재할 수 있습니다.</translation>
 <translation id="8077579734294125741">기타 Chrome 프로필</translation>
 <translation id="80798452873915119">사이트에서 모든 디스플레이의 창 관리 허용 여부를 확인할 수 있음</translation>
-<translation id="807990231167557618">Chromebook이 업데이트되었습니다.</translation>
 <translation id="8080028325999236607">탭 모두 닫기</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" />에서 세션을 관리합니다. 관리자가 내 프로필을 삭제하고 네트워크 트래픽을 모니터링할 수도 있습니다.</translation>
@@ -9435,6 +9439,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8605428685123651449">SQLite 메모리</translation>
 <translation id="8607171490667464784">비활성 상태이며 배터리를 사용하는 동안</translation>
 <translation id="8607326572516521315">스팸 및 사기 감소 기능은 비공개 상태 토큰을 사용해 사이트에서 사기에 대응하고 사람과 봇을 구별하도록 돕습니다.</translation>
+<translation id="8607828412110648570">블루투스 기기를 페어링 모드로 설정하고 가까이 두세요. 신뢰하는 기기만 페어링하세요. 페어링된 기기는 이 Chromebook의 모든 계정에 표시됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos 티켓 추가</translation>
 <translation id="8609465669617005112">위로 이동</translation>
 <translation id="8610103157987623234">잘못된 형식입니다. 다시 시도하세요.</translation>

@@ -799,6 +799,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5360976571138293719">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" /> ‑kohdasta.</translation>
 <translation id="5386314158584363703">Näet seuraamasi sivustot täällä</translation>
 <translation id="5388358297987318779">Avaa kuva</translation>
+<translation id="5396950905475481456">Perheenjäsenten kutsuminen</translation>
 <translation id="5407969256130905701">Hylkää muutokset</translation>
 <translation id="5414763847370083940">Saat ilmoituksen, jos hinta laskee jollakin sivustolla.</translation>
 <translation id="5416022985862681400">Viimeiset 7 päivää</translation>
@@ -1550,4 +1551,5 @@ Datasi salataan tunnuslauseella <ph name="TIME" />. Lisää se, niin voit käytt
 <translation id="988141524645182168">Muut laitteet</translation>
 <translation id="989988560359834682">Osoitteen muokkaus</translation>
 <translation id="994757059139821576">Ehdotetut artikkelit</translation>
+<translation id="999768147936949692">Tällä hetkellä voit jakaa salasanoja vain perheenjäsenillesi. <ph name="BEGIN_LINK" />Kutsu perheenjäseniä<ph name="END_LINK" /> ryhmään, niin saat enemmän irti Googlen tuotteista ja tilauksista.</translation>
 </translationbundle>

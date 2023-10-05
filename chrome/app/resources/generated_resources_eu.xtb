@@ -925,6 +925,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1723824996674794290">&amp;Leiho berria</translation>
 <translation id="1724801751621173132">Idazketa-metodoa</translation>
 <translation id="1725562816265788801">Fitxen zintan eskuinera/ezkerrera egitea</translation>
+<translation id="1726294682426724172">Eginbide berrien artean, Google Argazkiak zerbitzuko Ezabagoma magikoa (distrakzioak kentzeko) eta bideodeiak egiteko tresna hobetuak daude</translation>
 <translation id="1726503915437308071">Letra etzana</translation>
 <translation id="1729533290416704613">Omnibox-etik bilaketak egin dituzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="1730666151302379551">Aurreko pasahitza ahaztu zaizu?</translation>
@@ -2157,6 +2158,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2671451824761031126">Prest dituzu laster-markak eta ezarpenak</translation>
 <translation id="2672142220933875349">crx fitxategiak ez du balio. Ezin izan da deskonprimatu.</translation>
 <translation id="2673135533890720193">Irakurri arakatze-historia</translation>
+<translation id="2673848446870717676">Ziurtatu Bluetooth bidezko gailua gertu eta parekatzeko moduan dagoela. Parekatu gailu fidagarriekin soilik. Chromebook honetako kontu guztiek ikus ditzakete gailu parekatuak.</translation>
 <translation id="2673873887296220733">1 fitxategi <ph name="CLOUD_PROVIDER" />-ra kopiatu nahi duzu ireki ahal izateko?</translation>
 <translation id="2674764818721168631">Desaktibatuta</translation>
 <translation id="2676084251379299915">Enpresaren gidalerroak direla eta, luzapena desgaitu egin da, jadanik ez dagoelako Chrome Web Store-n.</translation>
@@ -3512,7 +3514,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3771851622616482156">Webguneko saioa amaituko da, baita irekita dauden fitxetakoa ere.</translation>
 <translation id="3772046291955677288">Irakurri ditut eta onartzen ditut <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Chrome-ren eta ChromeOS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Azken argazkiak eta jakinarazpenak</translation>
-<translation id="3774546890772201673">Eguneratu <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">SSL zerbitzariaren ziurtagiria</translation>
 <translation id="3775705724665058594">Bidali zure gailuetara</translation>
 <translation id="3776508619697147021">Webguneek fitxategi bat baino gehiago automatikoki deskargatzea eska dezakete</translation>
@@ -3834,6 +3835,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4010917659463429001">Laster-markak gailu mugikorrean izateko, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" konpondu nahi duzu?</translation>
 <translation id="4015163439792426608">Luzapenak dituzu? <ph name="BEGIN_LINK" />Kudeatu luzapen guztiak<ph name="END_LINK" /> toki berean.</translation>
+<translation id="4016762287427926315"><ph name="APP_NAME" /> aplikazioari ematen dizkiozun baimenak aplikazio honi ere emango zaizkio. <ph name="BEGIN_LINK" />Kudeatu<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Sortu esteka honen QR kodea</translation>
 <translation id="4019983356493507433">Editatu laster-marken zerrenda</translation>
 <translation id="4020327272915390518">Aukeren menua</translation>
@@ -3954,6 +3956,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4110485659976215879">Leheneratu abisua</translation>
 <translation id="4110490973560452005">Deskargatu da: <ph name="FILE_NAME" />. Sakatu Maius + F6 deskargen barraren eremura iritsi arte.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (deskonektatuta)</translation>
+<translation id="411318099524508025">Mailaz igo zara, eta orain <ph name="NAME" /> daukazu.</translation>
 <translation id="4113743276555482284">Fitxategiaren pasahitza</translation>
 <translation id="4114524937989710624">Google Drive-n egindako azkenaldiko jardueretara erraz itzul zaitezen ari zara ikusten iradokitako fitxategiak.
         <ph name="BREAK" />
@@ -6405,6 +6408,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6156863943908443225">Scripten cachea</translation>
 <translation id="6156944117133588106">Erakutsi nabigazio-botoiak tableta moduan</translation>
 <translation id="615930144153753547">Webguneek irudiak erakuts ditzakete</translation>
+<translation id="6160290816917599257">Kodeak ez du balio. Kodeak formatu hau eduki behar du: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ helbidea<ph name="LPA_2" />$<ph name="LPA_3" />bat datorren aukerako identifikatzaile bat<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Eman autentifikatzeko ziurtagiriak</translation>
 <translation id="6163363155248589649">&amp;Normala</translation>
 <translation id="6163376401832887457">Kerberos-en ezarpenak</translation>
@@ -8435,6 +8439,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> erabiltzaileak beste gailu batean konfiguratu du Google-ren Laguntzailea. <ph name="SUPERVISED_USER_NAME" /> erabiltzaileak etekin handiagoa atera diezaioke Laguntzailea zerbitzuari gailu honetan Pantailaren testuingurua aktibatuta.</translation>
 <translation id="7807711621188256451">Eman beti zure kamera erabiltzeko baimena <ph name="HOST" /> ostalariari</translation>
 <translation id="7810202088502699111">Orri honetako popup-mezuak blokeatu dira.</translation>
+<translation id="7810367892333449285">Kodeak formatu hau eduki behar du: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ helbidea<ph name="LPA_2" />$<ph name="LPA_3" />bat datorren aukerako identifikatzaile bat<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Kopiatu</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editatu <ph name="EXTENSION_NAME" /> luzapenaren <ph name="SHORTCUT" /> lasterbidea</translation>
@@ -8775,7 +8780,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8077120325605624147">Bisitatzen dituzun webgune guztiek edozein iragarki erakusteko aukera dute</translation>
 <translation id="8077579734294125741">Chrome-ko beste profilak</translation>
 <translation id="80798452873915119">Webguneek leihoak pantaila guztietan kudeatzea eska dezakete</translation>
-<translation id="807990231167557618">Chromebook-a eguneratuta dago.</translation>
 <translation id="8080028325999236607">Itxi fitxa guztiak</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> bidez kudeatzen da saioa. Administratzaileek zure profila ezaba dezakete, eta sareko trafikoa gainbegiratu.</translation>
@@ -9413,6 +9417,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8605428685123651449">SQLite memoria</translation>
 <translation id="8607171490667464784">Inaktibo dagoen eta bateria erabiltzen ari den bitartean</translation>
 <translation id="8607326572516521315">Spamaren eta iruzurren murrizketak egoeraren token pribatuak erabiltzen ditu webguneei iruzurrak hautematen eta robotak pertsonengandik desberdintzen laguntzeko.</translation>
+<translation id="8607828412110648570">Ziurtatu Bluetooth bidezko gailua gertu eta parekatzeko moduan dagoela. Parekatu gailu fidagarriekin soilik. Chromebook honetako kontu guztiek ikus ditzakete gailu parekatuak. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Gehitu Kerberos-eko txartel bat</translation>
 <translation id="8609465669617005112">Eraman gora</translation>
 <translation id="8610103157987623234">Formatua okerra da. Saiatu berriro.</translation>

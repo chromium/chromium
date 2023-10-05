@@ -593,7 +593,7 @@ Privatni tokeni stanja poboljšavaju zaštitu privatnosti na webu i ne mogu se k
 <translation id="4116038641877404294">Preuzmite stranice da ih koristite van mreže.</translation>
 <translation id="4121654769234887259">Nećete morati zapamtiti ovu lozinku. Sačuvat će se u Google upravitelju lozinki za račun <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Tok odobrenja za obavještenja je otvoren u punoj visini</translation>
-<translation id="4126285640274188657">Uvidi na stranici</translation>
+<translation id="4126285640274188657">Uvidi u stranice</translation>
 <translation id="4135200667068010335">Spisak uređaja s kojim će se dijeliti kartica je zatvoren.</translation>
 <translation id="4137746084635924146">Trenutni jezik uređaja</translation>
 <translation id="4139654229316918773">Chrome Canary</translation>
@@ -1245,7 +1245,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7376560087009844242">Ako obuhvatite više teksta stranice, možda ćete dobiti bolje rezultate prilikom korištenja Pretraživanja dodirom. Uvijek možete posjetiti <ph name="BEGIN_LINK" />postavke<ph name="END_LINK" /> da to promijenite.</translation>
 <translation id="7379900596734708416">Dostupna je tamna tema za web lokacije</translation>
 <translation id="7388615499319468910">Web lokacije i oglašivači mogu razumjeti performanse oglasa. Postavka je isključena.</translation>
-<translation id="7397416715506917976">Prikaži uvide na stranici</translation>
+<translation id="7397416715506917976">Prikaži uvide u stranice</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Iskustvo prvog pokretanja Chromea</translation>
 <translation id="7411224099004328643">Korisnik Google računa</translation>

@@ -937,6 +937,7 @@
 <translation id="1723824996674794290">&amp;Нов прозорец</translation>
 <translation id="1724801751621173132">Режим за внесување</translation>
 <translation id="1725562816265788801">Лизгање на лентата за картички</translation>
+<translation id="1726294682426724172">Новите функции опфаќаат „Волшебно бришење“ на „Фотографии на Google“ за отстранување работи што го одвлекуваат вниманието, подобрени алатки за видеоповици и друго</translation>
 <translation id="1726503915437308071">Закосен фонт</translation>
 <translation id="1729533290416704613">Исто така, контролира која страница е прикажана кога пребарувате од Omnibox.</translation>
 <translation id="1730666151302379551">Ја заборавив старата лозинка</translation>
@@ -2173,6 +2174,7 @@
 <translation id="2671451824761031126">Обележувачите и поставките се подготвени</translation>
 <translation id="2672142220933875349">Лоша crx датотека, отпакувањето не успеа.</translation>
 <translation id="2673135533890720193">Прочитајте ја историјата на прелистувачот</translation>
+<translation id="2673848446870717676">Проверете дали уредот со Bluetooth е во режим на спарување и во близина. Спарувајте само доверливи уреди. Спарените уреди се видливи за сите сметки на овој Chromebook.</translation>
 <translation id="2673873887296220733">Да се копира 1 датотека во <ph name="CLOUD_PROVIDER" /> за да се отвори?</translation>
 <translation id="2674764818721168631">Исклучено</translation>
 <translation id="2676084251379299915">Екстензијава е оневозможена со правилата на претпријатието затоа што веќе не е достапна во „Веб-продавницата на Chrome“.</translation>
@@ -3528,7 +3530,6 @@
 <translation id="3771851622616482156">Ќе ве одјавиме од сајтов, вклучително и од отворените картички</translation>
 <translation id="3772046291955677288">Ги прочитав и се согласувам со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Chrome и ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Неодамнешни фотографии и известувања</translation>
-<translation id="3774546890772201673">Ажурирање на <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Сертификат на SSL-сервер</translation>
 <translation id="3775705724665058594">Испратете до вашите уреди</translation>
 <translation id="3776508619697147021">Сајтовите може да прашуваат дали автоматски да преземаат повеќе датотеки</translation>
@@ -3850,6 +3851,7 @@
 <translation id="4010917659463429001">За да ги добиете обележувачите на мобилниот уред, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Поправи „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4015163439792426608">Имате ли екстензии? <ph name="BEGIN_LINK" />Управувајте со екстензиите<ph name="END_LINK" /> на едно место.</translation>
+<translation id="4016762287427926315">Дозволите за <ph name="APP_NAME" /> ќе важат и за оваа апликација. <ph name="BEGIN_LINK" />Управувајте<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Создајте QR-код за линков</translation>
 <translation id="4019983356493507433">Изменете го списокот со обележувачи</translation>
 <translation id="4020327272915390518">Мени со опции</translation>
@@ -3970,6 +3972,7 @@
 <translation id="4110485659976215879">Врати ја опомената</translation>
 <translation id="4110490973560452005">Преземањето е завршено: <ph name="FILE_NAME" />. Притиснете Shift+F6 за да одите до областа на лентата за преземања.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлајн)</translation>
+<translation id="411318099524508025">Добивте надградба на <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Лозинка на датотеката</translation>
 <translation id="4114524937989710624">Прикажани се предложени датотеки што ќе ви помогнат полесно да се вратите на последната активност во Google Drive.
         <ph name="BREAK" />
@@ -6425,6 +6428,7 @@
 <translation id="6156863943908443225">Кеш на скрипта</translation>
 <translation id="6156944117133588106">Прикажување на копчињата за навигација во режимот на таблет</translation>
 <translation id="615930144153753547">Сајтовите може да прикажуваат слики</translation>
+<translation id="6160290816917599257">Неважечки код. Вашиот код треба да биде во следниов формат: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Обезбеди сертификат за автентикација</translation>
 <translation id="6163363155248589649">&amp;Нормален</translation>
 <translation id="6163376401832887457">Поставки за Kerberos</translation>
@@ -8458,6 +8462,7 @@
 <translation id="7807117920154132308">Се чини дека <ph name="SUPERVISED_USER_NAME" /> веќе има поставено „Помошник на Google“ на друг уред. <ph name="SUPERVISED_USER_NAME" /> може да извлече максимум од „Помошникот“ ако вклучи „Контекст на екранот“ на овој уред.</translation>
 <translation id="7807711621188256451">Секогаш дозволувај <ph name="HOST" /> да пристапи до камерата</translation>
 <translation id="7810202088502699111">На оваа страница се блокирани појавни прозорци.</translation>
+<translation id="7810367892333449285">Вашиот код треба да биде во следниов формат: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Копирај</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Изменете ја кратенката <ph name="SHORTCUT" /> за <ph name="EXTENSION_NAME" /></translation>
@@ -8798,7 +8803,6 @@
 <translation id="8077120325605624147">Секој сајт што го посетувате може да ви прикаже која било реклама</translation>
 <translation id="8077579734294125741">Други профили на Chrome</translation>
 <translation id="80798452873915119">Сајтовите може да бараат да управуваат со прозорците на сите екрани</translation>
-<translation id="807990231167557618">Вашиот Chromebook е ажуриран.</translation>
 <translation id="8080028325999236607">Затвори ги сите картички</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Со вашата сесија управува <ph name="MANAGER_NAME" />. Администраторите може да го избришат вашиот профил и да го надгледуваат мрежниот сообраќај.</translation>
@@ -9439,6 +9443,7 @@
 <translation id="8605428685123651449">Меморија на SQLite</translation>
 <translation id="8607171490667464784">Додека е неактивен и работи на батерија</translation>
 <translation id="8607326572516521315">Намалувањето на спамот и измамите се потпира на токени за автентичност за да им помогне на сајтовите да се борат против измамите и да ги разликуваат ботовите од луѓето.</translation>
+<translation id="8607828412110648570">Проверете дали уредот со Bluetooth е во режим на спарување и во близина. Спарувајте само доверливи уреди. Спарените уреди се видливи за сите сметки на овој Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Додајте билет на Kerberos</translation>
 <translation id="8609465669617005112">Премести нагоре</translation>
 <translation id="8610103157987623234">Погрешен формат. Обидете се повторно</translation>

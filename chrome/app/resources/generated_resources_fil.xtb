@@ -937,6 +937,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1723824996674794290">&amp;Bagong window</translation>
 <translation id="1724801751621173132">Pamamaraan ng pag-input</translation>
 <translation id="1725562816265788801">Pag-scroll ng Tab</translation>
+<translation id="1726294682426724172">Kasama sa mga bagong feature ang Magic Eraser sa Google Photos para alisin ang mga abala, pahusayin ang mga tool para sa video call, at higit pa</translation>
 <translation id="1726503915437308071">Italic na font</translation>
 <translation id="1729533290416704613">Kinokontrol din nito kung anong pahina ang ipinapakita kapag naghanap ka mula sa Omnibox.</translation>
 <translation id="1730666151302379551">Nakalimutan ang lumang password</translation>
@@ -2173,6 +2174,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2671451824761031126">Handa na ang iyong mga bookmark at setting</translation>
 <translation id="2672142220933875349">Sirang crx file, hindi na-unpack.</translation>
 <translation id="2673135533890720193">Basahin ang iyong history ng pag-browse</translation>
+<translation id="2673848446870717676">Tiyaking nasa pairing mode at nasa malapit ang iyong Bluetooth device. Makipagpares lang sa mga device na pinagkakatiwalaan mo. Makikita ng lahat ng account sa Chromebook na ito ang mga nakapares na device.</translation>
 <translation id="2673873887296220733">Kopyahin ang 1 file sa <ph name="CLOUD_PROVIDER" /> para buksan?</translation>
 <translation id="2674764818721168631">Naka-off</translation>
 <translation id="2676084251379299915">Na-disable ng patakaran sa enterprise ang extension na ito dahil hindi na ito available sa Chrome Web Store.</translation>
@@ -3528,7 +3530,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3771851622616482156">Masa-sign out ka sa site na ito, pati na rin sa mga nakabukas na tab</translation>
 <translation id="3772046291955677288">Nabasa at sinasang-ayunan ko ang <ph name="BEGIN_LINK1" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />Mga Karagdagang Tuntunin ng Serbisyo ng Chrome at ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Mga kamakailang larawan at notification</translation>
-<translation id="3774546890772201673">I-update ang <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">SSL Server Certificate</translation>
 <translation id="3775705724665058594">Ipadala sa iyong mga device</translation>
 <translation id="3776508619697147021">Puwedeng hilingin ng mga site na awtomatikong mag-download ng maraming file</translation>
@@ -3850,6 +3851,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4010917659463429001">Upang makuha ang iyong mga bookmark sa mobile device mo, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Ayusin ang "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">May mga extension? <ph name="BEGIN_LINK" />Pamahalaan ang iyong mga extension<ph name="END_LINK" /> sa isang madaling puntahang lugar.</translation>
+<translation id="4016762287427926315">Ang mga pahintulot na papayagan mo para sa <ph name="APP_NAME" /> ay papayagan din para sa app na ito. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Gumawa ng QR Code para sa link na ito</translation>
 <translation id="4019983356493507433">I-edit ang Listahan ng Bookmark</translation>
 <translation id="4020327272915390518">Menu ng mga opsyon</translation>
@@ -3970,6 +3972,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4110485659976215879">I-restore ang babala</translation>
 <translation id="4110490973560452005">Na-download na: <ph name="FILE_NAME" />. Pindutin ang Shift+F6 para mag-cycle sa lugar ng bar ng mga download.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="411318099524508025">Na-upgrade ka na sa <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Password ng file</translation>
 <translation id="4114524937989710624">Nakikita mo ang mga iminumungkahing file na makakatulong para madali mong mabalikan ang iyong pinakakamakailang aktibidad sa Google Drive.
         <ph name="BREAK" />
@@ -6425,6 +6428,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="6156863943908443225">Script cache</translation>
 <translation id="6156944117133588106">Ipakita ang mga button ng navigation sa tablet mode</translation>
 <translation id="615930144153753547">Puwedeng magpakita ng mga larawan ang mga site</translation>
+<translation id="6160290816917599257">Invalid ang code. Ang format ng iyong entry ay dapat <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />opsyonal na katugmang id<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Magbigay ng mga certificate para sa pagpapatotoo</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Mga setting ng Kerberos</translation>
@@ -8459,6 +8463,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7807117920154132308">Mukhang na-set up na ni <ph name="SUPERVISED_USER_NAME" /> ang Google Assistant sa ibang device. Mas masusulit ni <ph name="SUPERVISED_USER_NAME" /> ang Assistant sa pamamagitan ng pag-on sa Konteksto ng screen sa device na ito.</translation>
 <translation id="7807711621188256451">Palaging pahintulutan ang <ph name="HOST" /> na i-access ang iyong camera</translation>
 <translation id="7810202088502699111">Hinarangan ang mga pop-up sa pahinang ito.</translation>
+<translation id="7810367892333449285">Ang format ng iyong entry ay dapat <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />opsyonal na katugmang id<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Kopyahin</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">I-edit ang shortcut na <ph name="SHORTCUT" /> para sa <ph name="EXTENSION_NAME" /></translation>
@@ -8800,7 +8805,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8077120325605624147">Puwedeng magpakita ng anumang ad sa iyo ang anumang site na bibisitahin mo</translation>
 <translation id="8077579734294125741">Iba pang Profile sa Chrome</translation>
 <translation id="80798452873915119">Puwedeng magtanong ang mga site na pamahalaan ang mga window sa lahat ng iyong display</translation>
-<translation id="807990231167557618">In-update ang iyong Chromebook.</translation>
 <translation id="8080028325999236607">Isara ang Lahat ng Tab</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Pinapamahalaan ng <ph name="MANAGER_NAME" /> ang iyong session. Magagawa ng mga administrator na i-delete ang iyong profile at subaybayan ang trapiko sa network mo.</translation>
@@ -9439,6 +9443,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8605428685123651449">Memory ng SQLite</translation>
 <translation id="8607171490667464784">Kapag hindi aktibo at ginagamit ang baterya</translation>
 <translation id="8607326572516521315">Umaasa ang pagbawas ng spam at panloloko sa mga private state token para matulungan ang mga site na labanan ang panloloko at matukoy ang mga bot kumpara sa mga tao.</translation>
+<translation id="8607828412110648570">Tiyaking nasa pairing mode at nasa malapit ang iyong Bluetooth device. Makipagpares lang sa mga device na pinagkakatiwalaan mo. Makikita ng lahat ng account sa Chromebook na ito ang mga nakapares na device. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Magdagdag ng ticket ng Kerberos</translation>
 <translation id="8609465669617005112">Ilipat sa itaas</translation>
 <translation id="8610103157987623234">Hindi wastong format, pakisubukang muli</translation>

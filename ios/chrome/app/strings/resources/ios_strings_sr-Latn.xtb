@@ -799,6 +799,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="5360976571138293719">Više podešavanja u vezi sa privatnošću, bezbednošću i prikupljanjem podataka potražite u odeljku <ph name="BEGIN_LINK" />Google usluge<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Ovde ćete pronaći sajtove koje pratite</translation>
 <translation id="5388358297987318779">Otvori sliku</translation>
+<translation id="5396950905475481456">Pozovite članove porodice.</translation>
 <translation id="5407969256130905701">Odbaci promene</translation>
 <translation id="5414763847370083940">Dobićete obaveštenje ako se cena snizi na bilo kom sajtu.</translation>
 <translation id="5416022985862681400">Poslednjih 7 dana</translation>
@@ -1550,4 +1551,5 @@ Podaci su šifrovani pomoću pristupne fraze <ph name="TIME" />. Unesite je da 
 <translation id="988141524645182168">Drugi uređaji</translation>
 <translation id="989988560359834682">Izmena adrese</translation>
 <translation id="994757059139821576">Predlozi članaka</translation>
+<translation id="999768147936949692">Za sada lozinke možete da delite samo sa članovima porodice. <ph name="BEGIN_LINK" />Pozovite članove porodice<ph name="END_LINK" /> da se pridruže grupi i koristite proizvode i pretplate širom Google-a na bolji način.</translation>
 </translationbundle>

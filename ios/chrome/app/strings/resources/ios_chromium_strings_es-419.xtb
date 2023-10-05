@@ -95,6 +95,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> administra tu cuenta, por lo que se borrarán los datos de Chromium almacenados en este dispositivo.</translation>
 <translation id="4790638144988730920">Sigue usando los datos de Chromium en tu Cuenta de Google.</translation>
 <translation id="4828317641996116749">Chromium no pudo verificar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
+<translation id="4935539884203837577">Chromium puede detectar los números de seguimiento que ingresas y hacer un seguimiento de tus paquetes en la página Nueva pestaña, al mismo tiempo que te ayuda con otras experiencias de compras de Chromium.</translation>
 <translation id="4985291216379576555">Sin conexión, Chromium no puede buscar actualizaciones.</translation>
 <translation id="4996471330284142407">Realiza más tareas con una versión de Chromium más simple, segura y rápida que nunca.</translation>
 <translation id="4999538639245140991">Como estás saliendo de una cuenta que administra <ph name="SIGNOUT_MANAGED_DOMAIN" />, tus datos de Chromium se borrarán de este dispositivo, pero permanecerán en tu Cuenta de Google.</translation>

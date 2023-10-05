@@ -931,6 +931,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1723824996674794290">&amp;Nytt vindu</translation>
 <translation id="1724801751621173132">Inndatamodus</translation>
 <translation id="1725562816265788801">Fanerulling</translation>
+<translation id="1726294682426724172">Oppgraderingen inneholder nye funksjoner, som Magisk viskelær i Google Foto for å fjerne forstyrrelser, bedre videosamtaleverktøy med mer</translation>
 <translation id="1726503915437308071">Kursiv skrifttype</translation>
 <translation id="1729533290416704613">Den styrer også hvilken side som vises når du søker fra multifunksjonsfeltet.</translation>
 <translation id="1730666151302379551">Glemt gammelt passord</translation>
@@ -3523,7 +3524,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3771851622616482156">Du blir logget av dette nettstedet, også på faner som er åpne</translation>
 <translation id="3772046291955677288">Jeg har lest og samtykker i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Nylige bilder og varsler</translation>
-<translation id="3774546890772201673">Oppdater <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">SSL-tjenersertifikat</translation>
 <translation id="3775705724665058594">Send til enhetene dine</translation>
 <translation id="3776508619697147021">Nettsteder kan be om å få laste ned flere filer automatisk</translation>
@@ -3964,6 +3964,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4110485659976215879">Gjenopprett varsel</translation>
 <translation id="4110490973560452005">Nedlastingen er fullført: <ph name="FILE_NAME" />. Trykk på Shift+F6 for å gå til nedlastingsraden.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (uten nett)</translation>
+<translation id="411318099524508025">Nettleseren din er oppgradert til <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Filpassord</translation>
 <translation id="4114524937989710624">Du ser forslag til filer, slik at du enkelt kan komme tilbake til den nyligste aktiviteten din i Google Disk.
         <ph name="BREAK" />
@@ -8792,7 +8793,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8077120325605624147">Alle nettsteder du besøker, kan vise deg alle slags annonser</translation>
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>
 <translation id="80798452873915119">Nettsteder kan be om å få administrere vinduer på alle skjermene dine</translation>
-<translation id="807990231167557618">Chromebooken er oppdatert.</translation>
 <translation id="8080028325999236607">Lukk alle faner</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Økten din administreres av <ph name="MANAGER_NAME" />. Administratorer kan slette profilen din og dessuten overvåke nettverkstrafikken din.</translation>

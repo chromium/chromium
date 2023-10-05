@@ -927,6 +927,7 @@
 <translation id="1723824996674794290">&amp;Նոր պատուհան</translation>
 <translation id="1724801751621173132">Ներածման ռեժիմ</translation>
 <translation id="1725562816265788801">Ներդիրների ոլորում</translation>
+<translation id="1726294682426724172">Այժմ կարող եք օգտվել այնպիսի նոր գործառույթներից, ինչպիսիք են կախարդական ջնջոցը Google Լուսանկարներում (խանգարող օբյեկտները հեռացնելու համար), տեսազանգի բարելավված գործիքները և այլն</translation>
 <translation id="1726503915437308071">Շեղ տառատեսակ</translation>
 <translation id="1729533290416704613">Այն նաև վերահսկում է ցուցադրվող էջերը, երբ դուք որոնում եք կատարում Omnibox-ից:</translation>
 <translation id="1730666151302379551">Մոռացել եմ հին գաղտնաբառը</translation>
@@ -2157,6 +2158,7 @@
 <translation id="2671451824761031126">Ձեր էջանիշներն ու կարգավորումները պատրաստ են</translation>
 <translation id="2672142220933875349">Սխալ CRX ֆայլ: Ապափաթեթավորումը ձախողվեց:</translation>
 <translation id="2673135533890720193">Կարդալ ձեր զննարկման պատմությունը</translation>
+<translation id="2673848446870717676">Համոզվեք, որ ձեր Bluetooth սարքը մոտակայքում է և զուգակցման ռեժիմում։ Զուգակցեք միայն այն սարքերի հետ, որոնց վստահում եք։ Միացված սարքերը տեսանելի են այս Chromebook-ի բոլոր հաշիվների համար։</translation>
 <translation id="2673873887296220733">Պատճենե՞լ 1 ֆայլ <ph name="CLOUD_PROVIDER" />-ում՝ բացելու համար</translation>
 <translation id="2674764818721168631">Անջատված է</translation>
 <translation id="2676084251379299915">Այս ընդլայնումն անջատվել է կազմակերպության կանոններով, քանի որ այն այլևս հասանելի չէ Chrome Web Store-ում։</translation>
@@ -3512,7 +3514,6 @@
 <translation id="3771851622616482156">Դուք դուրս կգրվեք հաշվից այս կայքում և բաց ներդիրներում</translation>
 <translation id="3772046291955677288">Ես կարդացել և ընդունում եմ <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։</translation>
 <translation id="3774166835015494435">Վերջին լուսանկարներ և ծանուցումներ</translation>
-<translation id="3774546890772201673">Թարմացրեք <ph name="NAME" />-ը։</translation>
 <translation id="3775432569830822555">SSL սերվերի վկայագիր</translation>
 <translation id="3775705724665058594">Ուղարկել սարքերին</translation>
 <translation id="3776508619697147021">Կայքերը կարող են ավտոմատ մի քանի ֆայլ ներբեռնելու թույլտվություն հայցել</translation>
@@ -3834,6 +3835,7 @@
 <translation id="4010917659463429001">Ձեր էջանիշները ձեր շարժական սարքում օգտագործելու համար <ph name="GET_IOS_APP_LINK" />:</translation>
 <translation id="4014432863917027322">Վերանորոգե՞լ «<ph name="EXTENSION_NAME" />»-ը:</translation>
 <translation id="4015163439792426608">Օգտվո՞ւմ եք ընդլայնումներից: <ph name="BEGIN_LINK" />Կառավարեք ձեր ընդլայնումները<ph name="END_LINK" /> մեկ վայրում:</translation>
+<translation id="4016762287427926315">Թույլտվությունները, որոնք տրամադրում եք «<ph name="APP_NAME" />» հավելվածին, նաև կգործեն այս հավելվածի համար։ <ph name="BEGIN_LINK" />Կարգավորումներ<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Ստեղծել QR կոդ այս հղման համար</translation>
 <translation id="4019983356493507433">Փոփոխել էջանիշների ցանկը</translation>
 <translation id="4020327272915390518">Ընտրանքների ցանկ</translation>
@@ -3954,6 +3956,7 @@
 <translation id="4110485659976215879">Վերականգնել նախազգուշացումը</translation>
 <translation id="4110490973560452005">Ներբեռնումն ավարտվեց. <ph name="FILE_NAME" />: Սեղմեք Shift+F6՝ ներբեռնումների գոտու տարածք անցնելու համար:</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (անցանց)</translation>
+<translation id="411318099524508025">Դուք անցում եք կատարել <ph name="NAME" />-ին։</translation>
 <translation id="4113743276555482284">Ֆայլի գաղտնաբառ</translation>
 <translation id="4114524937989710624">Այս առաջարկվող ֆայլերը կօգնեն ձեզ արագ անցնել վերջին գործողություններին Google-ում։
         <ph name="BREAK" />
@@ -6408,6 +6411,7 @@
 <translation id="6156863943908443225">Սկրիպտների քեշ</translation>
 <translation id="6156944117133588106">Ցույց տալ նավիգացիայի կոճակները պլանշետի ռեժիմում</translation>
 <translation id="615930144153753547">Կայքերը կարող են պատկերներ ցուցադրել</translation>
+<translation id="6160290816917599257">Կոդն անվավեր է։ Մուտքագրումը պետք է լինի <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /> ձևաչափով</translation>
 <translation id="6160625263637492097">Տրամադրել վկայագրեր իսկորոշման համար</translation>
 <translation id="6163363155248589649">&amp;Սովորական</translation>
 <translation id="6163376401832887457">Kerberos-ի կարգավորումներ</translation>
@@ -8440,6 +8444,7 @@
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" />-ն արդեն կարգավորել է Google Օգնականը մեկ այլ սարքում։ «Էկրանի համատեքստ» գործառույթն այս սարքում միացնելու դեպքում <ph name="SUPERVISED_USER_NAME" />-ին հասանելի կլինեն Օգնականի ավելի շատ հնարավորություններ։</translation>
 <translation id="7807711621188256451">Միշտ թույլ տալ <ph name="HOST" />-ին օգտագործել տեսախցիկը</translation>
 <translation id="7810202088502699111">Ելնող պատուհաններն արգելափակված են այս էջում:</translation>
+<translation id="7810367892333449285">Մուտքագրումը պետք է լինի <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /> ձևաչափով</translation>
 <translation id="7814458197256864873">&amp;Պատճենել</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Փոփոխել <ph name="EXTENSION_NAME" /> ընդլայնման <ph name="SHORTCUT" /> դյուրացումը</translation>
@@ -8780,7 +8785,6 @@
 <translation id="8077120325605624147">Ցանկացած կայք, որն այցելում եք, կարող է գովազդ ցուցադրել ձեզ</translation>
 <translation id="8077579734294125741">Այլ Chrome պրոֆիլներ</translation>
 <translation id="80798452873915119">Կայքերը կարող են հայցել պատուհանները բոլոր էկրաններին կառավարելու թույլտվություն</translation>
-<translation id="807990231167557618">Ձեր Chromebook-ը թարմացված է։</translation>
 <translation id="8080028325999236607">Փակել բոլոր ներդիրները</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Ձեր աշխատաշրջանը կառավարվում է <ph name="MANAGER_NAME" />-ի կողմից։ Ադմինիստրատորները կարող են ջնջել ձեր պրոֆիլը, ինչպես նաև վերահսկել ձեր ցանցի թրաֆիկը։</translation>
@@ -9418,6 +9422,7 @@
 <translation id="8605428685123651449">SQLite հիշողություն</translation>
 <translation id="8607171490667464784">Անգործուն և մարտկոցից սնուցվելու ժամանակ</translation>
 <translation id="8607326572516521315">Սպամի և խարդախության դեմ պայքարի համար օգտագործվում են վիճակի անձնական թոքեններ, որոնք օգնում են կայքերին կանխել խարդախության փորձերը և տարբերել բոտերին մարդկանցից։</translation>
+<translation id="8607828412110648570">Համոզվեք, որ ձեր Bluetooth սարքը մոտակայքում է և զուգակցման ռեժիմում։ Զուգակցեք միայն այն սարքերի հետ, որոնց վստահում եք։ Միացված սարքերը տեսանելի են այս Chromebook-ի բոլոր հաշիվների համար։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Ավելացնել Kerberos տոմս</translation>
 <translation id="8609465669617005112">Տեղափոխել վեր</translation>
 <translation id="8610103157987623234">Ձևաչափը սխալ է։ Նորից փորձեք։</translation>

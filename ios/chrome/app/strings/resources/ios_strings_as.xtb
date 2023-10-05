@@ -58,6 +58,7 @@
 <translation id="1264156759663453185">বাছনি কৰা পাঠটো আংশিক অনুবাদৰ বাবে বেছি ডাঙৰ।</translation>
 <translation id="1265739287306757398">কেনেকৈ কৰিব জানক</translation>
 <translation id="1272079795634619415">বন্ধ কৰক</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} টা পাছৱৰ্ড}one{{count} টা পাছৱৰ্ড}other{{count} টা পাছৱৰ্ড}}</translation>
 <translation id="1275718070701477396">বাছনি কৰা আছে</translation>
 <translation id="1279024913354609713">অনুমতি নিদিব</translation>
 <translation id="1281818060020671000">ডেটা পৰিচালনা কৰক</translation>
@@ -191,6 +192,7 @@
 <translation id="1987779152850321833">Chromeৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ তলত পৰামৰ্শ দিয়া কাৰ্যসমূহ সম্পূৰ্ণ কৰক।</translation>
 <translation id="1989112275319619282">ব্ৰাউজ কৰক</translation>
 <translation id="1990820278544963435">বিচাৰক</translation>
+<translation id="1991153180045413119">পাছৱৰ্ড শ্বেয়াৰ কৰা হ’ল</translation>
 <translation id="1992055602764528852">অন্য ডিভাইচৰ পৰা আপোনাৰ টেবসমূহ চাবলৈ ছাইন ইন কৰক।</translation>
 <translation id="199425419756152024">পাছৱৰ্ড চাওক</translation>
 <translation id="2008357574463816229">আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰে অথবা এই ছেটিংটো সলাব বিচাৰে, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromeৰ ডেটা মচক<ph name="END_LINK" />।</translation>
@@ -234,6 +236,7 @@
 <translation id="2268044343513325586">পৰিষ্কৰণ</translation>
 <translation id="2269277877025820298">অধিক চাওক</translation>
 <translation id="2273327106802955778">অধিক বিকল্পৰ মেনু</translation>
+<translation id="2274800392139890332">এই পেকেজটো ট্ৰেক কৰা বন্ধ কৰক</translation>
 <translation id="2275480389219976105">ঠিকনা বিচাৰি পোৱা গৈছে</translation>
 <translation id="2286505070150039482">হাইলাইট কৰা পাঠ</translation>
 <translation id="2287614783861766820">{count,plural, =1{এই ঠিকনাটো এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব।}one{এই ঠিকনাসমূহ এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব।}other{এই ঠিকনাসমূহ এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব।}}</translation>
@@ -242,6 +245,7 @@
 <translation id="2299218006564889602">Google পাছৱৰ্ড পৰিচালকত ছেভ কৰাৰ পূৰ্বে আপোনাৰ ডিভাইচত আপোনাৰ পাছৱৰ্ড এনক্ৰিপ্ট কৰা হয়।</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">ৱেবছাইটত পাছৱৰ্ড সলনি কৰক</translation>
+<translation id="2310154074101836012">কেৰ’ছেল সম্পাদনা কৰক</translation>
 <translation id="2316709634732130529">চুপাৰিছ কৰা পাছৱৰ্ড ব্যৱহাৰ কৰক</translation>
 <translation id="2320166752086256636">কীব'ৰ্ড লুকুৱাওক</translation>
 <translation id="2351097562818989364">আপোনাৰ অনুবাদ ছেটিংসমূহ ৰিছেট কৰা হৈছে।</translation>
@@ -526,6 +530,7 @@
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803696231112616155">এই ছাইটটো অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
+<translation id="3818045793209708987">এই পেকেজটো ট্ৰেক কৰাটো বন্ধ কৰা হৈছে</translation>
 <translation id="3818293389945649617">পৰৱৰ্তী ষ্ট্ৰিং বিচাৰক</translation>
 <translation id="3819183753496523827">আপুনি অফলাইন হৈ আছে। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3832419617903252251">পাছৱৰ্ড কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে</translation>
@@ -564,6 +569,7 @@
 <translation id="4018310736049373830">কার্যকলাপ পৰিচালনা কৰক</translation>
 <translation id="4038354071007134711">এই ডিভাইচটোত থকা কোনো এপ্লিকেশ্বনে ফাইলটো খুলিব নোৱাৰে।</translation>
 <translation id="4042870976416480368">পৃষ্ঠাত বিচাৰক</translation>
+<translation id="4043294777772912240"><ph name="USERNAME" />এ <ph name="WEBSITE" />ত ছাইন ইন কৰিবলৈ Google Password Manager ব্যৱহাৰ কৰাৰ সময়ত তেওঁ আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড এতিয়া ব্যৱহাৰ কৰিব পাৰিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">এটা পোনপটীয়া লিংক সৃষ্টি কৰক আৰু আপুনি হাইলাইট কৰা পৃষ্ঠা এখনৰ অংশলৈ সেইটো শ্বেয়াৰ কৰক।</translation>
 <translation id="4045648459118332842">এবাৰ টিপিয়েই যিকোনো এপত আপোনাৰ ছেভ কৰা পাছৱৰ্ডসমূহ লাভ কৰক</translation>
 <translation id="4049507953662678203">আপোনাৰ নেটৱৰ্ক সংযোগ থকাটো নিশ্চিত কৰি আকৌ চেষ্টা কৰক।</translation>
@@ -607,6 +613,7 @@
 <translation id="4286718549648564014">আপোনাৰ একাউণ্ট <ph name="USER_EMAIL" />লৈ ঠিকনা স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="4293080268407233932">সন্ধান কৰক</translation>
 <translation id="4302248187517737842">কোনো ব্যৱহাৰকাৰীৰ নাম নাই ••••••••</translation>
+<translation id="4302415908542657649">পাছৱৰ্ড শ্বেয়াৰ কৰি থকা হৈছে</translation>
 <translation id="4304713468139749426">পাছৱৰ্ড পৰিচালক</translation>
 <translation id="430793432425771671">সকলো ছিংক কৰক</translation>
 <translation id="4309403553630140242">অধিক তথ্যৰ বাবে দুবাৰ টিপক</translation>
@@ -642,6 +649,7 @@
 <translation id="4508750114462689118">ছাইন প্ৰ’ম’ বন্ধ কৰক</translation>
 <translation id="4514889972748124117">বিশ্বস্ত পাছৱৰ্ডৰ পৰামৰ্শ দিয়ক...</translation>
 <translation id="4520798012560649652">ইনক’গনিট’ ম’ডৰ বিষয়ে অধিক জানক</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} টা বুকমাৰ্ক}one{{count} টা বুকমাৰ্ক}other{{count} টা বুকমাৰ্ক}}</translation>
 <translation id="452750746583162491">আপোনাৰ ছিংক কৰা ডেটা পর্যালোচনা কৰক</translation>
 <translation id="4527660062930312477">আপোনাৰ একাউণ্টটো পৰিচালনা কৰা হয়</translation>
 <translation id="4536418791685807335">পুনৰ ছাইন ইন কৰি চাওক।</translation>
@@ -661,6 +669,7 @@
 <translation id="4619615317237390068">অন্য ডিভাইচৰ টেব</translation>
 <translation id="4620246317052452550">আপুনি পঢ়া পৃষ্ঠা</translation>
 <translation id="4620888520263267479">লিংকৰ পূৰ্বদৰ্শন দেখুৱাওক</translation>
+<translation id="4622477750832577849">ট্ৰেকিং সক্ষম কৰক</translation>
 <translation id="4630540211544979320">পৃষ্ঠাবোৰ অনুবাদ কৰক</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> টা পুনৰ্ব্যৱহৃত পাছৱৰ্ড</translation>
 <translation id="4634124774493850572">পাছৱৰ্ড দিয়ক</translation>
@@ -810,6 +819,7 @@
 <translation id="54401264925851789">পৃষ্ঠাৰ সুৰক্ষাৰ তথ্য</translation>
 <translation id="5443952882982198570">ক্ৰেডিট কাৰ্ড</translation>
 <translation id="5444892875087332195">বুকমার্ক</translation>
+<translation id="5454211924362324495">অন্য লোকে আপোনাৰ পাছৱৰ্ড ব্যৱহাৰ কৰাটো বন্ধ কৰিবলৈ, <ph name="BEGIN_LINK" /><ph name="WEBSITE" />ত সেইটো সলনি কৰক<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">অফলাইন সংস্কৰণটো খোলক</translation>
 <translation id="5475069061743940393">পেকেজ ট্ৰেকিং</translation>
 <translation id="5478327362747197944">এখন ৱেব পৃষ্ঠাত পোনপটীয়াকৈ এটা তাৰিখত ক্লিক কৰি কেলেণ্ডাৰ অনুষ্ঠান সৃষ্টি কৰক।</translation>
@@ -1156,6 +1166,7 @@
 <translation id="7154343200458623869">আপোনাৰ কাৰ্য সম্পূৰ্ণ কৰক।</translation>
 <translation id="7161230316646448869">আটাইবোৰ ডিভাইচত আপোনাৰ বুকমাৰ্ক, ইতিহাস আৰু অধিক ছিংক কৰক</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" />ৰ জৰিয়তে ইনক’গনিট’ টেব আনলক কৰক</translation>
+<translation id="7168959436351276050">এই কাৰ্ডখন লুকুওৱাটোৱে আপোনাৰ আটাইবোৰ পেকেজ ট্ৰেকিঙৰ ডেটা আঁতৰাব</translation>
 <translation id="7172852049901402487">আপোনাৰ পাছৱর্ডসমূহক সুৰক্ষা সম্পর্কীয় সমস্যাসমূহৰ পৰা নিৰাপদে ৰাখক</translation>
 <translation id="7173114856073700355">ছেটিংসমূহ খোলক</translation>
 <translation id="7189598951263744875">শ্বেয়াৰ কৰক...</translation>

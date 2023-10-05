@@ -799,6 +799,7 @@
 <translation id="5360976571138293719">Више подешавања у вези са приватношћу, безбедношћу и прикупљањем података потражите у одељку <ph name="BEGIN_LINK" />Google услуге<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Овде ћете пронаћи сајтове које пратите</translation>
 <translation id="5388358297987318779">Отвори слику</translation>
+<translation id="5396950905475481456">Позовите чланове породице.</translation>
 <translation id="5407969256130905701">Одбаци промене</translation>
 <translation id="5414763847370083940">Добићете обавештење ако се цена снизи на било ком сајту.</translation>
 <translation id="5416022985862681400">Последњих 7 дана</translation>
@@ -1550,4 +1551,5 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="988141524645182168">Други уређаји</translation>
 <translation id="989988560359834682">Измена адресе</translation>
 <translation id="994757059139821576">Предлози чланака</translation>
+<translation id="999768147936949692">За сада лозинке можете да делите само са члановима породице. <ph name="BEGIN_LINK" />Позовите чланове породице<ph name="END_LINK" /> да се придруже групи и користите производе и претплате широм Google-а на бољи начин.</translation>
 </translationbundle>

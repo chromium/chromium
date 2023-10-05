@@ -924,6 +924,7 @@
 <translation id="1723824996674794290">新しいウィンドウ(&amp;N)</translation>
 <translation id="1724801751621173132">ローマ字入力・かな入力</translation>
 <translation id="1725562816265788801">タブスクロール</translation>
+<translation id="1726294682426724172">不要な部分を消せる　Google フォトの消しゴムマジックや便利になったビデオ通話ツールなどの新機能をご利用いただけます</translation>
 <translation id="1726503915437308071">斜体フォント</translation>
 <translation id="1729533290416704613">この拡張機能では、アドレスバーからの検索時に表示されるページも制御されます。</translation>
 <translation id="1730666151302379551">以前のパスワードを忘れた場合</translation>
@@ -2151,6 +2152,7 @@
 <translation id="2671451824761031126">ブックマークと設定をインポートしました</translation>
 <translation id="2672142220933875349">不正な crx ファイルです。解凍できませんでした。</translation>
 <translation id="2673135533890720193">閲覧履歴の読み取り</translation>
+<translation id="2673848446870717676">Bluetooth デバイスがペア設定モードになっていて、近くにあることを確認してください。ペア設定は信頼しているデバイスとのみ行ってください。ペア設定したデバイスは、この Chromebook のすべてのアカウントに表示されます。</translation>
 <translation id="2673873887296220733">1 個のファイルを <ph name="CLOUD_PROVIDER" /> にコピーして開きますか？</translation>
 <translation id="2674764818721168631">オフ</translation>
 <translation id="2676084251379299915">この拡張機能は Chrome ウェブストアで利用できなくなったため、エンタープライズ ポリシーにより無効になっています。</translation>
@@ -3505,7 +3507,6 @@
 <translation id="3771851622616482156">タブで表示中のものも含め、このサイトからログアウトします</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />を確認し、内容に同意します。</translation>
 <translation id="3774166835015494435">最近の写真と通知</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> を更新します。</translation>
 <translation id="3775432569830822555">SSL サーバー証明書</translation>
 <translation id="3775705724665058594">お使いのデバイスに送信</translation>
 <translation id="3776508619697147021">サイトが複数のファイルの自動ダウンロードを要求できるようにする</translation>
@@ -3827,6 +3828,7 @@
 <translation id="4010917659463429001">ブックマークをモバイル デバイスで使用できるようにするには、<ph name="GET_IOS_APP_LINK" />してください。</translation>
 <translation id="4014432863917027322">「<ph name="EXTENSION_NAME" />」を修復しますか？</translation>
 <translation id="4015163439792426608">拡張機能はご利用ですか？<ph name="BEGIN_LINK" />拡張機能の管理<ph name="END_LINK" />は 1 か所で簡単に行うことができます。</translation>
+<translation id="4016762287427926315"><ph name="APP_NAME" /> に許可した権限は、このアプリにも適用されます。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">このリンクの QR コードを作成</translation>
 <translation id="4019983356493507433">ブックマーク リストを編集</translation>
 <translation id="4020327272915390518">オプション メニュー</translation>
@@ -3947,6 +3949,7 @@
 <translation id="4110485659976215879">警告を復元</translation>
 <translation id="4110490973560452005">ダウンロードが完了しました（<ph name="FILE_NAME" />）。ダウンロード バーの領域に切り替えるには Shift+F6 キーを押してください。</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（オフライン）</translation>
+<translation id="411318099524508025"><ph name="NAME" /> にアップグレードしました。</translation>
 <translation id="4113743276555482284">ファイルのパスワード</translation>
 <translation id="4114524937989710624">Google ドライブで最近使用したファイルに簡単にアクセスできるよう、ファイルの候補が表示されています。
         <ph name="BREAK" />
@@ -6398,6 +6401,7 @@
 <translation id="6156863943908443225">スクリプト キャッシュ</translation>
 <translation id="6156944117133588106">タブレット モードでナビゲーション ボタンを表示する</translation>
 <translation id="615930144153753547">サイトが画像を表示できるようにする</translation>
+<translation id="6160290816917599257">コードが無効です。エントリは「<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" />」という形式にする必要があります</translation>
 <translation id="6160625263637492097">認証用の証明書の提供</translation>
 <translation id="6163363155248589649">標準(&amp;N)</translation>
 <translation id="6163376401832887457">Kerberos 設定</translation>
@@ -8426,6 +8430,7 @@
 <translation id="7807117920154132308">Google アシスタントは、<ph name="SUPERVISED_USER_NAME" /> さんがすでに別のデバイスで設定済みのようです。このデバイスで [画面のコンテキスト] をオンにすれば、<ph name="SUPERVISED_USER_NAME" /> さんにアシスタントをもっと活用していただけるようになります。</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> によるカメラへのアクセスを常に許可する</translation>
 <translation id="7810202088502699111">このページのポップアップはブロックされました。</translation>
+<translation id="7810367892333449285">エントリは「<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" />」という形式にする必要があります</translation>
 <translation id="7814458197256864873">コピー(&amp;C)</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> のショートカット <ph name="SHORTCUT" /> を編集</translation>
@@ -8767,7 +8772,6 @@
 <translation id="8077120325605624147">アクセスしたすべてのサイトであらゆる広告の表示が許可されます</translation>
 <translation id="8077579734294125741">その他の Chrome プロフィール</translation>
 <translation id="80798452873915119">全ディスプレイのウィンドウ管理をリクエストすることをサイトに許可する</translation>
-<translation id="807990231167557618">Chromebook が更新されています。</translation>
 <translation id="8080028325999236607">すべてのタブを閉じる</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">セッションは <ph name="MANAGER_NAME" /> によって管理されています。管理者はあなたのプロフィールを削除することや、ネットワークトラフィックを監視することができます。</translation>
@@ -9405,6 +9409,7 @@
 <translation id="8605428685123651449">SQLite メモリ</translation>
 <translation id="8607171490667464784">非アクティブでバッテリー駆動時</translation>
 <translation id="8607326572516521315">スパムと不正行為の削減はプライベート ステート トークンに依拠して行われ、サイトが不正行為に対処し、bot と人間を区別できるようにします。</translation>
+<translation id="8607828412110648570">Bluetooth デバイスがペア設定モードになっていて、近くにあることを確認してください。ペア設定は信頼しているデバイスとのみ行ってください。ペア設定したデバイスは、この Chromebook のすべてのアカウントに表示されます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos チケットの追加</translation>
 <translation id="8609465669617005112">上に移動</translation>
 <translation id="8610103157987623234">無効な形式です。もう一度お試しください</translation>

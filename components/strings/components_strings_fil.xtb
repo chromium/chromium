@@ -1734,6 +1734,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Ginagamit mo ang iyong lock ng screen para sa paglalagay ng mga password</translation>
 <translation id="4558551763791394412">Subukang i-disable ang iyong mga extension.</translation>
+<translation id="456043042661026303">Secure na sinusuri ang iyong mga detalye ng pagbabayad</translation>
 <translation id="4566017918361049074">Sa labas</translation>
 <translation id="4567686777917670400">Puwedeng baguhin ng iyong administrator ang setup ng browser mo sa remote na paraan. Puwede ring pamahalaan sa labas ng Chromium ang aktibidad sa device na ito. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Sumuri ng listahan ng cookies at data ng site sa bagong window</translation>
@@ -3361,6 +3362,7 @@ Mga karagdagang detalye:
 <translation id="7865448901209910068">Pinakamabilis</translation>
 <translation id="7870281855125116701">May Nakitang Diskwento</translation>
 <translation id="7871445724586827387">Palitan ang password ng iyong Google Account</translation>
+<translation id="7876615279559620350">Para sa mas mabilis na pag-checkout, i-save ang CVC para sa card na ito sa iyong Google Account</translation>
 <translation id="7877007680666472091">mga pinoprotektahang content ID</translation>
 <translation id="7878562273885520351">Maaaring makompromismo ang iyong password</translation>
 <translation id="7880146494886811634">I-save ang Address</translation>
@@ -3848,6 +3850,7 @@ Mga karagdagang detalye:
 <translation id="8870494189203302833">Parehong pagkakasunod-sunod nang nakataob</translation>
 <translation id="8870700989640064057">Mag-print ng kumpidensyal na file?</translation>
 <translation id="8871553383647848643">I-customize ang hitsura ng iyong browser</translation>
+<translation id="8874790741333031443">Subukang payagan nang pansamantala ang third-party na cookies, na nangangahulugang mas mahina ang proteksyon sa pag-browse pero mas malamang na gumana ang mga feature ng site gaya ng inaasahan.</translation>
 <translation id="8874824191258364635">Maglagay ng wastong numero ng card</translation>
 <translation id="8876033571432926051">Mga casual na laro</translation>
 <translation id="8877780815363510165">Pangingisda</translation>

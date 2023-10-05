@@ -925,6 +925,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1723824996674794290">&amp;Nuova finestra</translation>
 <translation id="1724801751621173132">Modalità di immissione</translation>
 <translation id="1725562816265788801">Scorrimento delle schede</translation>
+<translation id="1726294682426724172">Le nuove funzionalità includono Gomma Magica su Google Foto per rimuovere le distrazioni, strumenti per videochiamate migliorati e altro ancora</translation>
 <translation id="1726503915437308071">Carattere corsivo</translation>
 <translation id="1729533290416704613">Controlla anche la pagina visualizzata quando esegui ricerche dalla Omnibox.</translation>
 <translation id="1730666151302379551">Ho dimenticato la password precedente</translation>
@@ -2157,6 +2158,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2671451824761031126">Preferiti e impostazioni sono pronti</translation>
 <translation id="2672142220933875349">File crx non valido, decompressione non riuscita.</translation>
 <translation id="2673135533890720193">Leggere la cronologia di navigazione</translation>
+<translation id="2673848446870717676">Assicurati che il dispositivo Bluetooth sia in modalità di accoppiamento e nelle vicinanze. Esegui l'accoppiamento solo con i dispositivi che ritieni attendibili. I dispositivi accoppiati sono visibili a tutti gli account su questo Chromebook.</translation>
 <translation id="2673873887296220733">Vuoi copiare 1 file in <ph name="CLOUD_PROVIDER" /> per aprirlo?</translation>
 <translation id="2674764818721168631">Off</translation>
 <translation id="2676084251379299915">Questa estensione è stata disattivata dai criteri aziendali perché non è più disponibile nel Chrome Web Store.</translation>
@@ -3512,7 +3514,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3771851622616482156">Uscirai da questo sito, schede aperte incluse</translation>
 <translation id="3772046291955677288">Ho letto e accetto i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Chrome e ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Foto e notifiche recenti</translation>
-<translation id="3774546890772201673">Aggiorna <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Certificato server SSL</translation>
 <translation id="3775705724665058594">Invia ai tuoi dispositivi</translation>
 <translation id="3776508619697147021">I siti possono chiedere di scaricare automaticamente più file</translation>
@@ -3834,6 +3835,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4010917659463429001">Per trovare i tuoi preferiti sul tuo dispositivo mobile, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Riparare "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Usi delle estensioni? <ph name="BEGIN_LINK" />Gestiscile<ph name="END_LINK" /> da un unico punto di facile accesso.</translation>
+<translation id="4016762287427926315">Le autorizzazioni consentite per <ph name="APP_NAME" /> saranno consentite anche per questa app. <ph name="BEGIN_LINK" />Gestisci<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crea codice QR per questo link</translation>
 <translation id="4019983356493507433">Modifica elenco di preferiti</translation>
 <translation id="4020327272915390518">Menu Opzioni</translation>
@@ -3954,6 +3956,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4110485659976215879">Ripristina avviso</translation>
 <translation id="4110490973560452005">Download completato: <ph name="FILE_NAME" />. Premi MAIUSC+F6 per passare alla parte con la barra dei download.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="411318099524508025">È stato eseguito l'upgrade a <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Password del file</translation>
 <translation id="4114524937989710624">Visualizzi i file suggeriti per aiutarti a tornare facilmente alle tue attività più recenti in Google Drive.
         <ph name="BREAK" />
@@ -6405,6 +6408,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6156863943908443225">Cache script</translation>
 <translation id="6156944117133588106">Mostra i pulsanti di navigazione in modalità tablet</translation>
 <translation id="615930144153753547">I siti possono mostrare immagini</translation>
+<translation id="6160290816917599257">Codice non valido. Il formato dell'elemento dovrebbe essere <ph name="LPA_0" />$<ph name="LPA_1" />indirizzo SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID corrispondenza facoltativo<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Fornisci certificati per l'autenticazione</translation>
 <translation id="6163363155248589649">&amp;Normale</translation>
 <translation id="6163376401832887457">Impostazioni Kerberos</translation>
@@ -8437,6 +8441,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7807117920154132308">Sembra che <ph name="SUPERVISED_USER_NAME" /> abbia già impostato l'Assistente Google su un altro dispositivo. <ph name="SUPERVISED_USER_NAME" /> può ottenere ancora di più dall'assistente attivando Contesto dello schermo su questo dispositivo.</translation>
 <translation id="7807711621188256451">Consenti sempre a <ph name="HOST" /> di accedere alla webcam</translation>
 <translation id="7810202088502699111">I popup sono stati bloccati in questa pagina.</translation>
+<translation id="7810367892333449285">Il formato dell'elemento dovrebbe essere <ph name="LPA_0" />$<ph name="LPA_1" />indirizzo SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID corrispondenza facoltativo<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Copia</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Modifica la scorciatoia <ph name="SHORTCUT" /> per <ph name="EXTENSION_NAME" /></translation>
@@ -8485,7 +8490,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: anche qualcuno con una voce simile alla tua o in possesso di una registrazione della tua voce potrebbe essere in grado di accedere ai tuoi risultati personali o all'assistente. Per consumare meno batteria, puoi configurare le impostazioni dell'assistente in modo che "Hey Google" sia attivo solo quando il dispositivo è connesso a una fonte di alimentazione.</translation>
 <translation id="7851457902707056880">L'accesso è consentito soltanto all'account del proprietario. Riavvia ed esegui l'accesso con l'account del proprietario. Il computer si riavvierà automaticamente tra 30 secondi.</translation>
 <translation id="7851716364080026749">Impedisci sempre l'accesso a webcam e microfono</translation>
-<translation id="7851720427268294554">Analizzatore sintattico IPP</translation>
+<translation id="7851720427268294554">Parser IPP</translation>
 <translation id="78526636422538552">L'aggiunta di altri Account Google è disattivata</translation>
 <translation id="7853747251428735">Altri strume&amp;nti</translation>
 <translation id="7853999103056713222">Usa una password più sicura</translation>
@@ -8778,7 +8783,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8077120325605624147">Qualsiasi sito visitato può mostrarti qualsiasi annuncio</translation>
 <translation id="8077579734294125741">Altri profili Chrome</translation>
 <translation id="80798452873915119">I siti possono chiedere di gestire le finestre su tutti i tuoi schermi</translation>
-<translation id="807990231167557618">Chromebook è aggiornato.</translation>
 <translation id="8080028325999236607">Chiudi tutte le schede</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">La sessione è gestita da <ph name="MANAGER_NAME" />. Gli amministratori possono eliminare il tuo profilo e monitorare il tuo traffico di rete.</translation>
@@ -9416,6 +9420,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8605428685123651449">Memoria SQLite</translation>
 <translation id="8607171490667464784">In stato di inattività e durante l'utilizzo della batteria</translation>
 <translation id="8607326572516521315">La riduzione di spam e attività fraudolente è basata su token di stato privati per aiutare i siti a contrastare le attività fraudolente e a distinguere i bot dalle persone.</translation>
+<translation id="8607828412110648570">Assicurati che il dispositivo Bluetooth sia in modalità di accoppiamento e nelle vicinanze. Esegui l'accoppiamento solo con i dispositivi che ritieni attendibili. I dispositivi accoppiati sono visibili a tutti gli account su questo Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Aggiungi una richiesta di Kerberos</translation>
 <translation id="8609465669617005112">Sposta su</translation>
 <translation id="8610103157987623234">Formato errato, riprova</translation>

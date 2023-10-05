@@ -1735,6 +1735,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Käytät näytön lukituksen avaustapaa salasanojen täyttämiseen</translation>
 <translation id="4558551763791394412">Poista laajennukset käytöstä.</translation>
+<translation id="456043042661026303">Maksutietoja tarkistetaan suojatusti</translation>
 <translation id="4566017918361049074">Ulkoilu</translation>
 <translation id="4567686777917670400">Järjestelmänvalvoja voi muuttaa selaimen määrityksiä etäyhteydellä. Toimintaa tällä laitteella saatetaan ylläpitää myös Chromiumin ulkopuolelta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Tarkista evästeet ja sivustodata uudessa ikkunassa</translation>
@@ -2115,7 +2116,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5323043727018853753">Upotettu sisältö sallittu</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Selainta ei ylläpidetä</translation>
-<translation id="5331585574693522196">Valitse oletukseksi</translation>
+<translation id="5331585574693522196">Aseta oletukseksi</translation>
 <translation id="5332219387342487447">Toimitustapa</translation>
 <translation id="5332769172018416402">Kysy viestillä</translation>
 <translation id="5334013548165032829">Yksityiskohtaiset järjestelmälokit</translation>
@@ -3362,6 +3363,7 @@ Lisätietoja:
 <translation id="7865448901209910068">Paras nopeus</translation>
 <translation id="7870281855125116701">Alennus löydetty</translation>
 <translation id="7871445724586827387">Vaihda Google-tilin salasana</translation>
+<translation id="7876615279559620350">Tallenna kortin CVC Google-tilille nopeampaa maksamista varten</translation>
 <translation id="7877007680666472091">suojatun sisällön tunnukset</translation>
 <translation id="7878562273885520351">Salasanasi on saattanut vaarantua.</translation>
 <translation id="7880146494886811634">Tallenna osoite</translation>
@@ -3850,6 +3852,7 @@ Lisätietoja:
 <translation id="8870494189203302833">Sama järjestys tulostuspuoli alaspäin</translation>
 <translation id="8870700989640064057">Tulostetaanko luottamuksellinen tiedosto?</translation>
 <translation id="8871553383647848643">Muokkaa selaimen ulkoasua</translation>
+<translation id="8874790741333031443">Kokeile sallia kolmannen osapuolen evästeet väliaikaisesti. Selauksen suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin oikein.</translation>
 <translation id="8874824191258364635">Anna kelvollinen kortin numero.</translation>
 <translation id="8876033571432926051">Helpot pelit</translation>
 <translation id="8877780815363510165">Kalastus</translation>

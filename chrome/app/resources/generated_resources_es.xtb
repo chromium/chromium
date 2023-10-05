@@ -925,6 +925,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1723824996674794290">&amp;Nueva ventana</translation>
 <translation id="1724801751621173132">Modo de introducción de texto</translation>
 <translation id="1725562816265788801">Desplazamiento por pestañas</translation>
+<translation id="1726294682426724172">Entre las nuevas funciones, se incluye el Borrador mágico de Google Fotos para eliminar elementos no deseados, herramientas de videollamada mejoradas y más.</translation>
 <translation id="1726503915437308071">Fuente cursiva</translation>
 <translation id="1729533290416704613">También controla qué página se muestra al hacer búsquedas desde el omnibox.</translation>
 <translation id="1730666151302379551">No recuerdo mi contraseña anterior</translation>
@@ -2158,6 +2159,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2671451824761031126">Tu configuración y tus marcadores están listos</translation>
 <translation id="2672142220933875349">El archivo crx no es válido y no se ha podido descomprimir.</translation>
 <translation id="2673135533890720193">Leer tu historial de navegación</translation>
+<translation id="2673848446870717676">Comprueba que tu dispositivo Bluetooth esté cerca y en modo Emparejamiento. Emparéjalo solo con dispositivos de confianza. Todas las cuentas de este Chromebook pueden ver los dispositivos emparejados.</translation>
 <translation id="2673873887296220733">¿Copiar 1 archivo a <ph name="CLOUD_PROVIDER" /> para abrirlo?</translation>
 <translation id="2674764818721168631">Desactivado</translation>
 <translation id="2676084251379299915">Una política de empresa ha inhabilitado esta extensión porque ya no está disponible en Chrome Web Store.</translation>
@@ -3513,7 +3515,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3771851622616482156">Se cerrará tu sesión en este sitio, incluso si está en pestañas abiertas</translation>
 <translation id="3772046291955677288">He leído y acepto los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Chrome y Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Fotos y notificaciones recientes</translation>
-<translation id="3774546890772201673">Actualiza <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Certificado de servidor SSL</translation>
 <translation id="3775705724665058594">Enviar a tus dispositivos</translation>
 <translation id="3776508619697147021">Los sitios pueden solicitar permiso para descargar varios archivos automáticamente</translation>
@@ -3834,6 +3835,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4010917659463429001">Para ver los marcadores en todos tus dispositivos, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">¿Reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">¿Tienes extensiones? <ph name="BEGIN_LINK" />Gestiona tus extensiones<ph name="END_LINK" /> en un solo sitio sin complicaciones.</translation>
+<translation id="4016762287427926315">Los permisos que concedas a <ph name="APP_NAME" /> también se concederán a esta aplicación. <ph name="BEGIN_LINK" />Gestionar<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crear código QR para este enlace</translation>
 <translation id="4019983356493507433">Editar lista de marcadores</translation>
 <translation id="4020327272915390518">Menú de opciones</translation>
@@ -3954,6 +3956,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4110485659976215879">Restaurar advertencia</translation>
 <translation id="4110490973560452005">Descarga completa: <ph name="FILE_NAME" />. Pulsa Mayús+F6 para desplazarte al área de la barra de descargas.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sin conexión)</translation>
+<translation id="411318099524508025">Se te ha actualizado a <ph name="NAME" /></translation>
 <translation id="4113743276555482284">Contraseña del archivo</translation>
 <translation id="4114524937989710624">Estás viendo sugerencias de archivos para ayudarte a retomar fácilmente tu actividad más reciente en Google Drive.
         <ph name="BREAK" />
@@ -6408,6 +6411,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6156863943908443225">Caché de secuencia de comandos</translation>
 <translation id="6156944117133588106">Mostrar botones de navegación en modo Tablet</translation>
 <translation id="615930144153753547">Los sitios pueden mostrar imágenes</translation>
+<translation id="6160290816917599257">Código no válido. El formato debe ser <ph name="LPA_0" />$<ph name="LPA_1" />dirección SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID de coincidencia opcional<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Proporcionar certificados para autenticación</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Ajustes de Kerberos</translation>
@@ -8440,6 +8444,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7807117920154132308">Parece que <ph name="SUPERVISED_USER_NAME" /> ya ha configurado el Asistente de Google en otro dispositivo. <ph name="SUPERVISED_USER_NAME" /> puede sacarle aún más partido al Asistente activando el contexto de la pantalla en este dispositivo.</translation>
 <translation id="7807711621188256451">Permitir siempre que <ph name="HOST" /> acceda a la cámara</translation>
 <translation id="7810202088502699111">Se han bloqueado los pop-ups en esta página.</translation>
+<translation id="7810367892333449285">El formato debe ser <ph name="LPA_0" />$<ph name="LPA_1" />dirección SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID de coincidencia opcional<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editar acceso directo <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
@@ -8781,7 +8786,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8077120325605624147">Cualquier sitio que visites puede mostrarte cualquier anuncio</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
 <translation id="80798452873915119">Los sitios pueden solicitar permiso para gestionar las ventanas en todas tus pantallas</translation>
-<translation id="807990231167557618">Tu Chromebook está actualizado.</translation>
 <translation id="8080028325999236607">Cerrar todas las pestañas</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> gestiona tu sesión. Los administradores pueden eliminar tu perfil y monitorizar tu tráfico de red.</translation>
@@ -9419,6 +9423,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8605428685123651449">Memoria SQLite</translation>
 <translation id="8607171490667464784">Mientras está inactivo y usando la batería</translation>
 <translation id="8607326572516521315">La reducción del spam y el fraude se basa en tokens de confianza que ayudan a los sitios a luchar contra el fraude y a distinguir a los bots de las personas.</translation>
+<translation id="8607828412110648570">Comprueba que tu dispositivo Bluetooth esté cerca y en modo Emparejamiento. Emparéjalo solo con dispositivos de confianza. Todas las cuentas de este Chromebook pueden ver los dispositivos emparejados. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Añadir un ticket de Kerberos</translation>
 <translation id="8609465669617005112">Subir</translation>
 <translation id="8610103157987623234">El formato no es correcto; inténtalo de nuevo</translation>

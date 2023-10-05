@@ -69,6 +69,7 @@ Things to consider:
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
 <translation id="3472587960215700950">Chrome uses Google Maps to give you directions and local info on detected addresses.</translation>
 <translation id="3503014945441706099">Get Enhanced Safe Browsing for this Chrome profile, too</translation>
+<translation id="3506309791702511623">Chrome can detect the tracking numbers you input and track your packages on the New Tab Page while helping other shopping experiences from Google.</translation>
 <translation id="3522659714780527202">To see your tabs from wherever you use Chrome, turn on sync</translation>
 <translation id="3533694711092285624">No saved passwords. Chrome can check your passwords when you save them.</translation>
 <translation id="3594076341410558780">Hide 'Get the most out of Chrome'</translation>
@@ -117,6 +118,7 @@ Things to consider:
 <translation id="5389212809648216794">Google Chrome can't use your camera because it's in use by another application</translation>
 <translation id="5395376160638294582">Make sure that you can always use the Chrome data in your Google Account</translation>
 <translation id="5439191312780166229">Warns you about dangerous sites, even ones that Google didn't know about before, by analysing more data from sites than standard protection. You can choose to skip Chrome warnings.</translation>
+<translation id="5442013002200339429">If you hide '<ph name="MODULE_NAME" />, Chrome will no longer auto-track your future packages and will delete all your past package tracking data.</translation>
 <translation id="5460571915754665838">4. Select Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome will help track this parcel on the New tab page.}other{Chrome will help track these parcels on the New tab page.}}</translation>
 <translation id="5492504007368565877">Google Password Manager can’t check your passwords.</translation>

@@ -937,6 +937,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1723824996674794290">&amp;Nýr gluggi</translation>
 <translation id="1724801751621173132">Innfærsluaðferð</translation>
 <translation id="1725562816265788801">Flipafletting</translation>
+<translation id="1726294682426724172">Nýir eiginleikar eru meðal annars töfrastrokleður í Google-myndum til að fjarlægja truflanir, endurbætt verkfæri fyrir myndsímtöl og fleira</translation>
 <translation id="1726503915437308071">Skáletur</translation>
 <translation id="1729533290416704613">Hún stýrir því einnig hvaða síða birtist þegar þú leitar með veffangastikunni.</translation>
 <translation id="1730666151302379551">Eldra lykilorð gleymt</translation>
@@ -2173,6 +2174,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2671451824761031126">Bókamerki og stillingar eru til reiðu</translation>
 <translation id="2672142220933875349">Skemmd crx-skrá. Mistókst að afpakka.</translation>
 <translation id="2673135533890720193">Lesa vafraferilinn þinn</translation>
+<translation id="2673848446870717676">Gakktu úr skugga um að Bluetooth-tækið þitt sé nálægt og í pörunarstillingu. Paraðu eingöngu við tæki sem þú treystir. Allir reikningar í þessu Chromebook-tæki geta séð pöruð tæki.</translation>
 <translation id="2673873887296220733">Afrita 1 skrá í <ph name="CLOUD_PROVIDER" /> til að opna?</translation>
 <translation id="2674764818721168631">Slökkt</translation>
 <translation id="2676084251379299915">Fyrirtækjaregla hefur slökkt á þessari viðbót vegna þess að hún er ekki lengur tiltæk í Vefverslun Chrome.</translation>
@@ -3528,7 +3530,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3771851622616482156">Þú verður skráð(ur) út af þessu vefsvæði, þar á meðal opnum flipum</translation>
 <translation id="3772046291955677288">Ég hef lesið og samþykki <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />viðbótarþjónustuskilmála Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Nýlegar myndir og tilkynningar</translation>
-<translation id="3774546890772201673">Uppfærðu <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">SSL-þjónsvottorð</translation>
 <translation id="3775705724665058594">Senda í tækin þín</translation>
 <translation id="3776508619697147021">Vefsvæði geta beðið um að fá að hlaða sjálfkrafa niður mörgum skrám</translation>
@@ -3850,6 +3851,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4010917659463429001">Til að sækja bókamerkin þín í fartækið þitt: <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Gera við „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4015163439792426608">Ertu með viðbætur? <ph name="BEGIN_LINK" />Stjórnaðu viðbótunum<ph name="END_LINK" /> á einum og sama staðnum.</translation>
+<translation id="4016762287427926315">Heimildir sem þú veitir <ph name="APP_NAME" /> verða einnig notaðar fyrir þetta forrit. <ph name="BEGIN_LINK" />Stjórna<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Búa til QR-kóða fyrir þennan tengil</translation>
 <translation id="4019983356493507433">Breyta bókamerkjalista</translation>
 <translation id="4020327272915390518">Valmynd</translation>
@@ -3970,6 +3972,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4110485659976215879">Endurheimta viðvörun</translation>
 <translation id="4110490973560452005">Niðurhali lokið: <ph name="FILE_NAME" />. Ýttu á Shift+F6 til að fara á niðurhalsstikuna.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ekki nettengt)</translation>
+<translation id="411318099524508025">Þú fékkst uppfærslu í <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Aðgangsorð skráar</translation>
 <translation id="4114524937989710624">Þú sérð skráatillögur sem auðvelda þér að halda áfram í nýjustu virkni þinni á Google Drive.
         <ph name="BREAK" />
@@ -6425,6 +6428,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6156863943908443225">Skyndiminni skriftu</translation>
 <translation id="6156944117133588106">Sýna flettihnappa í spjaldtölvustillingu</translation>
 <translation id="615930144153753547">Vefsvæði mega birta myndir</translation>
+<translation id="6160290816917599257">Ógildur kóði. Færslan ætti að vera á sniðinu<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ heimilisfang<ph name="LPA_2" />$<ph name="LPA_3" />valkvætt samsvarandi auðkenni<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Veita vottorð fyrir auðkenningu</translation>
 <translation id="6163363155248589649">Ve&amp;njulegt</translation>
 <translation id="6163376401832887457">Kerberos stillingar</translation>
@@ -8458,6 +8462,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> virðist þegar hafa sett upp Google hjálpara í öðru tæki. <ph name="SUPERVISED_USER_NAME" /> getur fengið enn meira út úr Hjálparanum með því að kveikja á skjáumhverfi í þessu tæki.</translation>
 <translation id="7807711621188256451">Veita <ph name="HOST" /> alltaf aðgang að myndavélinni</translation>
 <translation id="7810202088502699111">Sprettigluggar voru útilokaðir á þessari síðu.</translation>
+<translation id="7810367892333449285">Færslan ætti að vera á sniðinu<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ heimilisfang<ph name="LPA_2" />$<ph name="LPA_3" />valkvætt samsvarandi auðkenni<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">Afrita</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Breyta flýtileiðinni <ph name="SHORTCUT" /> fyrir <ph name="EXTENSION_NAME" /></translation>
@@ -8798,7 +8803,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8077120325605624147">Öll vefsvæði sem þú heimsækir mega birta þér hvaða auglýsingar sem er</translation>
 <translation id="8077579734294125741">Aðrir Chrome-prófílar</translation>
 <translation id="80798452873915119">Vefsvæði geta beðið um að stjórna gluggum á öllum skjáum</translation>
-<translation id="807990231167557618">Chromebook-tölvan þín er uppfærð.</translation>
 <translation id="8080028325999236607">Loka öllum flipum</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Lotunni er stjórnað af <ph name="MANAGER_NAME" />. Stjórnendur geta eytt prófílnum þínum og fylgst með netumferð þinni.</translation>
@@ -9436,6 +9440,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8605428685123651449">SQLite-minni</translation>
 <translation id="8607171490667464784">Á meðan tækið er ekki í notkun og gengur fyrir rafhlöðuorku</translation>
 <translation id="8607326572516521315">Traustslyklar eru notaðir til að draga úr ruslefni og svikum til að auðvelda vefsvæðum að berjast gegn svikum og greina á milli spjallara og fólks.</translation>
+<translation id="8607828412110648570">Gakktu úr skugga um að Bluetooth-tækið þitt sé nálægt og í pörunarstillingu. Paraðu eingöngu við tæki sem þú treystir. Allir reikningar í þessu Chromebook-tæki geta séð pöruð tæki. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Bæta við Kerberos-miða</translation>
 <translation id="8609465669617005112">Færa upp</translation>
 <translation id="8610103157987623234">Rangt snið. Reyndu aftur</translation>

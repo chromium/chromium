@@ -95,6 +95,7 @@
 <translation id="4736424910885271643">アカウントは <ph name="HOSTED_DOMAIN" /> で管理されているため、Chromium データはこのデバイスから削除されます</translation>
 <translation id="4790638144988730920">Google アカウントの Chromium データを引き続き使用してください。</translation>
 <translation id="4828317641996116749">Chromium ですべてのパスワードを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
+<translation id="4935539884203837577">Chromium では入力した荷物追跡番号が検出され、新しいタブページで荷物を追跡できます。Chromium からの他のショッピング エクスペリエンスも支援されます。</translation>
 <translation id="4985291216379576555">オフラインのため Chromium でアップデートを確認できません</translation>
 <translation id="4996471330284142407">シンプル、安全で、さらに高速になった Chromium をご活用ください。</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> で管理されているアカウントからログアウトするにあたり、Chromium データはこのデバイスから削除されます（ただし Google アカウントには残ります）。</translation>

@@ -943,6 +943,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1723824996674794290">&amp;Novo okno</translation>
 <translation id="1724801751621173132">Način vnosa</translation>
 <translation id="1725562816265788801">Drsenje z zavihki</translation>
+<translation id="1726294682426724172">Nove funkcije vključujejo magično radirko v Googlu Foto, s katero lahko odpravite motnje, izboljšana orodja za videoklice in drugo</translation>
 <translation id="1726503915437308071">Ležeča pisava</translation>
 <translation id="1729533290416704613">Določa tudi, katera stran je prikazana, ko iščete v naslovni vrstici.</translation>
 <translation id="1730666151302379551">Pozabi staro geslo</translation>
@@ -3537,7 +3538,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3771851622616482156">Odjavljeni boste s tega spletnega mesta, vključno s tistim na odprtih zavihkih.</translation>
 <translation id="3772046291955677288">Prebral(-a) sem <ph name="BEGIN_LINK1" />Googlove pogoje storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatne pogoje storitve za Chrome in Chrome OS<ph name="END_LINK2" /> ter se strinjam z njimi.</translation>
 <translation id="3774166835015494435">Nedavne fotografije in obvestila</translation>
-<translation id="3774546890772201673">Posodobite »<ph name="NAME" />«.</translation>
 <translation id="3775432569830822555">Strežniško potrdilo SSL</translation>
 <translation id="3775705724665058594">Pošiljanje v naprave</translation>
 <translation id="3776508619697147021">Spletna mesta lahko zahtevajo samodejno prenašanje več datotek.</translation>
@@ -3982,6 +3982,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4110485659976215879">Obnovi opozorilo</translation>
 <translation id="4110490973560452005">Prenos je končan: <ph name="FILE_NAME" />. Pritisnite Shift + F6, če želite krožiti do območja vrstice s prenosi.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (brez povezave)</translation>
+<translation id="411318099524508025">Nadgrajeni ste na <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Geslo za datoteko</translation>
 <translation id="4114524937989710624">Prikazane so predlagane datoteke, s katerimi se boste lažje vrnili k nedavni dejavnosti v Googlu Drive.
         <ph name="BREAK" />
@@ -8830,7 +8831,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8077120325605624147">Vsa spletna mesta, ki jih obiščete, vam lahko prikazujejo kateri koli oglas.</translation>
 <translation id="8077579734294125741">Drugi profili v Chromu</translation>
 <translation id="80798452873915119">Spletna mesta lahko zahtevajo upravljanje oken na vseh zaslonih.</translation>
-<translation id="807990231167557618">Chromebook je posodobljen.</translation>
 <translation id="8080028325999236607">Zapri vse zavihke</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Sejo upravlja <ph name="MANAGER_NAME" />. Skrbniki lahko izbrišejo profil in nadzirajo omrežni promet.</translation>

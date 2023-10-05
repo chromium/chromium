@@ -923,6 +923,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1723824996674794290">&amp;Yangi oyna</translation>
 <translation id="1724801751621173132">Matn kiritish rejimi</translation>
 <translation id="1725562816265788801">Varaqni aylantirish</translation>
+<translation id="1726294682426724172">Google Photos xizmatida ortiqcha elementlarni olib tashlovchi Magic Eraser, yaxshilangan video chaqiruvi vositalari va boshqa yangi funksyalar kiritildi.</translation>
 <translation id="1726503915437308071">Qiya shrift</translation>
 <translation id="1729533290416704613">Bundan tashqari kengaytma Omniboksda so‘rovlar kiritishda foydalaniladigan birlamchi qidiruv tizimini o‘zgartirib qo‘ydi.</translation>
 <translation id="1730666151302379551">Eski parolni unutdingizmi?</translation>
@@ -3514,7 +3515,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3771851622616482156">Bu saytdagi hisobingizdan avtomatik chiqarilasiz (shuningdek, ochiq varaqlardan ham)</translation>
 <translation id="3772046291955677288">Men <ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome va ChromeOS qoʻshimcha xizmat shartlari<ph name="END_LINK2" /> bilan tanishdim va ularga roziman.</translation>
 <translation id="3774166835015494435">Oxirgi rasmlar va bildirishnomalar</translation>
-<translation id="3774546890772201673"><ph name="NAME" />ni yangilang.</translation>
 <translation id="3775432569830822555">SSL server sertifikati</translation>
 <translation id="3775705724665058594">Qurilmalaringizga yuborish</translation>
 <translation id="3776508619697147021">Saytlar birdaniga bir nechta fayl yuklab olishga ruxsat soʻrashi mumkin</translation>
@@ -3956,6 +3956,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4110485659976215879">Ogohlantirishni tiklash</translation>
 <translation id="4110490973560452005">Yuklab olindi: <ph name="FILE_NAME" />. Yuklanmalar paneliga qaytish uchun Shift+F6 tugmalarini bosing.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflayn)</translation>
+<translation id="411318099524508025"><ph name="NAME" /> tizimi yangilandi.</translation>
 <translation id="4113743276555482284">Fayl paroli</translation>
 <translation id="4114524937989710624">Google Drive xizmatidagi oxirgi harakatlarga qaytishni osonlashtirish uchun tavsiya etilgan fayllar chiqyapti.
         <ph name="BREAK" />
@@ -8781,7 +8782,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8077120325605624147">Siz ochgan har qanday sayt istalgan reklamani koʻrsatishi mumkin</translation>
 <translation id="8077579734294125741">Boshqa Chrome profillari</translation>
 <translation id="80798452873915119">Saytlar barcha displeylaringizda oynalarni boshqarishni soʻrashi mumkin</translation>
-<translation id="807990231167557618">Chromebook yangilangan.</translation>
 <translation id="8080028325999236607">Barcha tablarni yopish</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Seansingiz <ph name="MANAGER_NAME" /> tomonidan boshqariladi. Administratorlar profilingizni oʻchirishi va tarmoq trafigini kuzatishi mumkin.</translation>

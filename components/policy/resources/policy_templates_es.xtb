@@ -738,6 +738,7 @@ Si no se establece esta política, los usuarios podrán añadir excepciones para
 <translation id="165769015320654523">Concede permiso automáticamente a estos sitios para que se conecten a dispositivos HID con los IDs de proveedor y producto facilitados.</translation>
 <translation id="1659406551862245683">El comportamiento predeterminado de cambio de tamaño del teclado virtual se modifica para cambiar el tamaño del viewport de diseño</translation>
 <translation id="166427968280387991">Servidor proxy</translation>
+<translation id="1670638264428789878">Habilitar Conjuntos de sitios web relacionados</translation>
 <translation id="1673097259557436886">Indicar siempre a los sitios web que no hay métodos de pago guardados</translation>
 <translation id="1674287836076801014">SAML</translation>
 <translation id="1675002386741412210">Compatible con:</translation>
@@ -1829,6 +1830,13 @@ Nota: Si se omite un campo, todos los valores coincidirán con ese campo concret
 
       Los usuarios no podrán cambiar las carpetas en las que están colocados los marcadores, pero podrán ocultarlas de la barra de marcadores. El nombre predeterminado de la carpeta de marcadores administrados es "Marcadores administrados", pero se puede cambiar si se añade un nuevo subdiccionario a la política con una única clave llamada "<ph name="TOPLEVEL_NAME" />" que tenga asignado como valor el nombre que se quiera asignar a la carpeta. Los marcadores administrados no se sincronizan con la cuenta de usuario y las extensiones no pueden modificarlos.</translation>
 <translation id="2552966063069741410">Zona horaria</translation>
+<translation id="2554010621206996293">Esta política permite controlar si se habilita la función Conjuntos de sitios web relacionados.
+
+Esta política anula la política <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
+
+Si no se define esta política o se le asigna el valor True, se habilitará la función Conjuntos de sitios web relacionados.
+
+Si se le asigna el valor False, se inhabilitará la función Conjuntos de sitios web relacionados.</translation>
 <translation id="2555244983262829274">Ocultar el botón de inicio de la barra de herramientas</translation>
 <translation id="2562213287271514629">Permitir que se utilice una versión obsoleta de <ph name="FLASH_PLUGIN_NAME" /> como si fuera una versión normal de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="2562339630163277285">Especifica la URL del motor de búsqueda utilizada para proporcionar resultados instantáneos. La URL debe contener la cadena <ph name="SEARCH_TERM_MARKER" />, que se sustituirá en el momento de la consulta por el texto que el usuario haya introducido hasta el momento.
@@ -1846,6 +1854,7 @@ Nota: Si se omite un campo, todos los valores coincidirán con ese campo concret
 <translation id="2576324725151524912">Permitir el modo desarrollador para aplicaciones aisladas.</translation>
 <translation id="257717978573041245">Habilitar la aceleración por hardware</translation>
 <translation id="257788512393330403">Es obligatorio introducir la contraseña cada seis horas</translation>
+<translation id="2580606791930800692">Define una lista de reglas de control de datos.</translation>
 <translation id="2580757713966614760">Si se establece esta política, se designará qué política de acceso se utiliza para configurar impresoras en bloque y controlará qué impresoras de la política <ph name="DEVICE_PRINTERS_POLICY_NAME" /> están disponibles para los usuarios.
 
       * Si se selecciona <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_BLOCKLISTRESTRICTIONS" /> (valor 0), <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> restringe el acceso a las impresoras especificadas
@@ -3690,6 +3699,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="4157594634940419685">Permitir el acceso a impresoras CUPS nativas</translation>
 <translation id="4158531549614162499">Habilitar la sincronización de Google Drive mediante conexiones de datos móviles</translation>
 <translation id="4160962198980004898">Fuente de la dirección MAC del dispositivo cuando esté conectado a una base</translation>
+<translation id="4161019158509414446">Controla las políticas de la función Conjuntos de sitios web relacionados.</translation>
 <translation id="4164511138197196839">Si se habilita esta política, las extensiones cuya publicación se haya anulado en Chrome Web Store se inhabilitarán en <ph name="PRODUCT_NAME" />.
 Esta política solo se aplica a las extensiones que se instalan y actualizan desde Chrome Web Store.
 
@@ -6175,6 +6185,7 @@ ADVERTENCIA: Ten cuidado al cambiar este ajuste, ya que podría interferir en ot
       Si se le asigna el valor "Inhabilitada", los Signed HTTP Exchanges no se podrán cargar.</translation>
 <translation id="6368011194414932347">Configurar la URL de la página principal</translation>
 <translation id="6368403635025849609">Permitir JavaScript en estos sitios</translation>
+<translation id="6371005337713685988">Configuración de Conjuntos de sitios web relacionados</translation>
 <translation id="6371561334154580937">Muestra el cuadro de diálogo de cierre de sesión cuando se cierra la última ventana.</translation>
 <translation id="6372105930898423193">Permite volver a habilitar la función AppCache aunque esté desactivada de forma predeterminada.</translation>
 <translation id="6373299801585455337">Habilitar los informes sobre la CPU del dispositivo</translation>
@@ -7900,6 +7911,7 @@ Si no se establece esta política, el navegador seleccionará el renderizador de
 <translation id="7758378441185523981">Habilita la autenticación pasiva para tipos de perfil.</translation>
 <translation id="776110834126722255">Obsoleta</translation>
 <translation id="7763614521440615342">Mostrar sugerencias de contenido en la página Nueva pestaña</translation>
+<translation id="776465643636059256">Inhabilitar Conjuntos de sitios web relacionados</translation>
 <translation id="7765879851993224640">Permitir que se use el inicio de sesión con Smart Lock</translation>
 <translation id="7767066506143083523">Si se establece la política, se podrá definir una lista de los patrones de URL que pueden usar la captura de pestañas.
 

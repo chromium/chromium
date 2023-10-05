@@ -929,6 +929,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1723824996674794290">&amp;Nova janela</translation>
 <translation id="1724801751621173132">Método de introdução</translation>
 <translation id="1725562816265788801">Deslocamento do separador</translation>
+<translation id="1726294682426724172">As novas funcionalidades incluem a Borracha mágica no Google Fotos para remover distrações, ferramentas de videochamadas melhoradas e muito mais</translation>
 <translation id="1726503915437308071">Tipo de letra itálico</translation>
 <translation id="1729533290416704613">Também controla a página apresentada quando pesquisa a partir da Caixa geral.</translation>
 <translation id="1730666151302379551">Esqueci-me da palavra-passe antiga</translation>
@@ -3520,7 +3521,6 @@ Quer pará-lo?</translation>
 <translation id="3771851622616482156">A sua sessão neste site será terminada, incluindo em separadores abertos</translation>
 <translation id="3772046291955677288">Li e aceito os <ph name="BEGIN_LINK1" />Termos de Utilização da Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Utilização Adicionais do Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Notificações e fotos recentes</translation>
-<translation id="3774546890772201673">Atualize o <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Certificado de servidor SSL</translation>
 <translation id="3775705724665058594">Envie para os seus dispositivos</translation>
 <translation id="3776508619697147021">Os sites podem solicitar a transferência automática de vários ficheiros</translation>
@@ -3965,6 +3965,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4110485659976215879">Restaurar aviso</translation>
 <translation id="4110490973560452005">Transferência concluída: <ph name="FILE_NAME" />. Prima Shift+F6 para aceder à área da barra de transferências.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="411318099524508025">A sua atualização para <ph name="NAME" /> foi realizada com êxito.</translation>
 <translation id="4113743276555482284">Palavra-passe do ficheiro</translation>
 <translation id="4114524937989710624">Está a ver ficheiros sugeridos que ajudam a voltar facilmente para a sua atividade mais recente no Google Drive.
         <ph name="BREAK" />
@@ -8805,7 +8806,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8077120325605624147">Qualquer site que visitar pode mostrar-lhe qualquer anúncio</translation>
 <translation id="8077579734294125741">Outros perfis do Chrome</translation>
 <translation id="80798452873915119">Os sites podem pedir para gerir janelas em todos os seus ecrãs</translation>
-<translation id="807990231167557618">O Chromebook está atualizado.</translation>
 <translation id="8080028325999236607">Fechar Todos os Separadores</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">A sua sessão é gerida por <ph name="MANAGER_NAME" />. Os administradores podem eliminar o seu perfil e monitorizar o tráfego de rede.</translation>

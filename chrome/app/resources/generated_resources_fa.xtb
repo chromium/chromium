@@ -934,6 +934,7 @@
 <translation id="1723824996674794290">پنجره &amp;جدید</translation>
 <translation id="1724801751621173132">حالت ورودی</translation>
 <translation id="1725562816265788801">پیمایش برگه</translation>
+<translation id="1726294682426724172">‏ویژگی‌های جدید شامل «پاک‌کن جادویی» در Google Photos برای حذف عناصر حواس‌پرتی، ابزارهای بهبودیافته تماس تصویری، و موارد دیگر می‌شود</translation>
 <translation id="1726503915437308071">قلم ایتالیک</translation>
 <translation id="1729533290416704613">‏این برنامه صفحه‌ای را که هنگام جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="1730666151302379551">فراموشی گذرواژه قدیمی</translation>
@@ -3525,7 +3526,6 @@
 <translation id="3771851622616482156">از سیستم این سایت (ازجمله در برگه‌های باز) خارج خواهید شد</translation>
 <translation id="3772046291955677288">‏<ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Chrome و ChromeOS<ph name="END_LINK2" /> را خوانده‌ام و با آن‌ها موافقت می‌کنم.</translation>
 <translation id="3774166835015494435">اعلان‌ها و عکس‌های جدید</translation>
-<translation id="3774546890772201673">به‌روزرسانی <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">‏گواهی سرور SSL</translation>
 <translation id="3775705724665058594">ارسال به دستگاه‌هایتان</translation>
 <translation id="3776508619697147021">سایت‌ها می‌توانند بارگیری خودکار چند فایل را درخواست کنند</translation>
@@ -3968,6 +3968,7 @@
 <translation id="4110485659976215879">بازیابی هشدار</translation>
 <translation id="4110490973560452005">‏بارگیری کامل شد: <ph name="FILE_NAME" />. برای چرخش در قسمت نوار بارگیری‌ها، Shift+F6 را فشار دهید.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (آفلاین)</translation>
+<translation id="411318099524508025">شما به <ph name="NAME" /> ارتقا یافته‌اید.</translation>
 <translation id="4113743276555482284">گذرواژه فایل</translation>
 <translation id="4114524937989710624">‏درحال دیدن فایل‌های پیشنهادی هستید تا به‌کمک آن‌ها بتوانید خیلی راحت به جدیدترین فعالیتتان در Google Drive برگردید.
         <ph name="BREAK" />
@@ -8799,7 +8800,6 @@
 <translation id="8077120325605624147">هر سایتی که بازدید کنید می‌تواند هر نوع آگهی را به شما نمایش دهد</translation>
 <translation id="8077579734294125741">‏دیگر نمایه‌های Chrome</translation>
 <translation id="80798452873915119">سایت‌ها می‌توانند درخواست کنند پنجره‌های همه نمایشگرهایتان را مدیریت کنند</translation>
-<translation id="807990231167557618">‏Chromebook به‌روز است.</translation>
 <translation id="8080028325999236607">بستن همه برگه‌ها</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> جلسه‌تان را مدیریت می‌کند. سرپرستان می‌توانند نمایه‌تان را حذف کنند و بر ترافیک شبکه‌تان نیز نظارت داشته باشند.</translation>

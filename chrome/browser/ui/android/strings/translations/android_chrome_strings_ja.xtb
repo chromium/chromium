@@ -594,6 +594,7 @@
 <translation id="4116038641877404294">ページをダウンロードするとオフラインで使用できるようになります</translation>
 <translation id="4121654769234887259">このパスワードを覚えておく必要はありません。パスワードは、<ph name="USERNAME" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="4124152339699379357">通知権限フローが画面全体に表示されています</translation>
+<translation id="4126285640274188657">ページの関連情報</translation>
 <translation id="4135200667068010335">タブを共有するデバイスのリストが閉じられました。</translation>
 <translation id="4137746084635924146">現在のデバイスの言語</translation>
 <translation id="4139654229316918773">Chrome Canary</translation>
@@ -1245,6 +1246,7 @@
 <translation id="7376560087009844242">検索に含めるページのテキストを増やすと、「タップして検索」使用時により正確な結果が得られる可能性があります。<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />からいつでも変更できます。</translation>
 <translation id="7379900596734708416">このサイトでダークモードを使用できます</translation>
 <translation id="7388615499319468910">ウェブサイトと広告主は表示された広告の効果を確認できます。この設定は無効になっています。</translation>
+<translation id="7397416715506917976">ページの関連情報を表示</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome 初回起動時の操作</translation>
 <translation id="7411224099004328643">Google アカウント ユーザー</translation>

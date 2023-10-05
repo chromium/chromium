@@ -750,6 +750,7 @@ Jika kebijakan ini tidak disetel, pengguna akan diizinkan untuk menambahkan peng
 <translation id="165769015320654523">Otomatis memberikan izin ke situs ini untuk terhubung ke perangkat HID dengan ID produk dan vendor tertentu.</translation>
 <translation id="1659406551862245683">Perilaku pengubahan ukuran keyboard virtual default diubah untuk mengubah ukuran area pandang tata letak</translation>
 <translation id="166427968280387991">Server proxy</translation>
+<translation id="1670638264428789878">Aktifkan Set Situs Terkait</translation>
 <translation id="1673097259557436886">Selalu beri tahu situs bahwa tidak ada metode pembayaran yang disimpan</translation>
 <translation id="1674287836076801014">SAML</translation>
 <translation id="1675002386741412210">Didukung di:</translation>
@@ -1856,6 +1857,13 @@ Catatan: Jika nilai suatu kolom tidak ditetapkan, semua nilai akan cocok untuk k
 
       Pengguna tidak dapat mengubah folder lokasi bookmark (meskipun pengguna dapat menyembunyikannya dari kolom bookmark). Nama folder default untuk bookmark terkelola adalah "Bookmark terkelola (Managed bookmarks)", tetapi dapat diubah dengan menambahkan sub-kamus baru ke kebijakan dengan kunci tunggal bernama "<ph name="TOPLEVEL_NAME" />" yang berisi nama folder yang diinginkan sebagai nilainya. Bookmark terkelola tidak disinkronkan ke akun pengguna dan ekstensi tidak dapat mengubahnya.</translation>
 <translation id="2552966063069741410">Zona Waktu</translation>
+<translation id="2554010621206996293">Kebijakan ini memungkinkan Anda mengontrol pengaktifan fitur Set Situs Terkait.
+
+Kebijakan ini menggantikan kebijakan <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
+
+Jika kebijakan ini tidak disetel atau disetel ke Benar (True), fitur Set Situs Terkait akan diaktifkan.
+
+Jika kebijakan ini disetel ke Salah (False), fitur Set Situs Terkait akan dinonaktifkan.</translation>
 <translation id="2555244983262829274">Sembunyikan tombol Layar Utama dari toolbar</translation>
 <translation id="2562213287271514629">Izinkan <ph name="FLASH_PLUGIN_NAME" /> yang sudah tidak berlaku untuk digunakan sebagai <ph name="FLASH_PLUGIN_NAME" /> normal</translation>
 <translation id="2562339630163277285">Menentukan URL mesin telusur yang digunakan untuk memberikan hasil instan. URL harus berisi string <ph name="SEARCH_TERM_MARKER" />, yang akan diganti pada waktu kueri dengan teks yang telah dimasukkan oleh pengguna sejauh ini.
@@ -1873,6 +1881,7 @@ Catatan: Jika nilai suatu kolom tidak ditetapkan, semua nilai akan cocok untuk k
 <translation id="2576324725151524912">Mengizinkan Mode Developer Aplikasi Terisolasi.</translation>
 <translation id="257717978573041245">Aktifkan akselerasi hardware</translation>
 <translation id="257788512393330403">Sandi harus dimasukkan setiap enam jam</translation>
+<translation id="2580606791930800692">Menetapkan daftar aturan Kontrol Data.</translation>
 <translation id="2580757713966614760">Menyetel kebijakan akan menentukan kebijakan akses yang berlaku untuk konfigurasi printer massal sehingga akan mengontrol printer mana dari <ph name="DEVICE_PRINTERS_POLICY_NAME" /> yang akan tersedia bagi pengguna.
 
       * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_BLOCKLISTRESTRICTIONS" /> (nilai 0), <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> dapat membatasi akses ke printer yang ditentukan
@@ -3782,6 +3791,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="4157594634940419685">Izinkan akses ke printer CUPS native</translation>
 <translation id="4158531549614162499">Aktifkan sinkronisasi Google Drive melalui koneksi seluler</translation>
 <translation id="4160962198980004898">Sumber alamat MAC perangkat saat dipasang di dok</translation>
+<translation id="4161019158509414446">Mengontrol kebijakan untuk fitur Set Situs Terkait.</translation>
 <translation id="4164511138197196839">Jika kebijakan ini disetel ke aktif, ekstensi yang tidak dipublikasikan di Chrome Web
 Store akan dinonaktifkan di <ph name="PRODUCT_NAME" />.
 Kebijakan ini hanya berlaku untuk ekstensi yang diinstal dan diupdate dari
@@ -6350,6 +6360,7 @@ di layar <ph name="LOG_IN" />.</translation>
       Jika kebijakan disetel ke Salah (False), Signed HTTP Exchange tidak akan dimuat.</translation>
 <translation id="6368011194414932347">Konfigurasikan URL halaman beranda</translation>
 <translation id="6368403635025849609">Izinkan JavaScript di situs ini</translation>
+<translation id="6371005337713685988">Setelan Set Situs Terkait</translation>
 <translation id="6371561334154580937">Tampilkan dialog logout saat jendela terakhir ditutup.</translation>
 <translation id="6372105930898423193">Mengizinkan fitur AppCache untuk diaktifkan ulang meskipun dinonaktifkan secara default</translation>
 <translation id="6373299801585455337">Aktifkan pelaporan info CPU perangkat</translation>
@@ -8118,6 +8129,7 @@ Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</trans
 <translation id="7758378441185523981">Mengaktifkan Autentikasi Pasif untuk jenis profil.</translation>
 <translation id="776110834126722255">Tidak digunakan lagi</translation>
 <translation id="7763614521440615342">Tampilkan saran konten di halaman Tab Baru</translation>
+<translation id="776465643636059256">Nonaktifkan Set Situs Terkait</translation>
 <translation id="7765879851993224640">Izinkan Smart Lock Signin digunakan.</translation>
 <translation id="7767066506143083523">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang dapat menggunakan Tangkapan Tab.
 

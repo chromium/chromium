@@ -799,6 +799,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5360976571138293719">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la page <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Vos sites suivis s'afficheront ici</translation>
 <translation id="5388358297987318779">Ouvrir l'image</translation>
+<translation id="5396950905475481456">Inviter des membres de la famille</translation>
 <translation id="5407969256130905701">Supprimer les modifications</translation>
 <translation id="5414763847370083940">Vous recevrez une alerte si le prix baisse sur un site.</translation>
 <translation id="5416022985862681400">Sept derniers jours</translation>
@@ -1551,4 +1552,5 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="988141524645182168">Autres appareils</translation>
 <translation id="989988560359834682">Modifier l'adresse</translation>
 <translation id="994757059139821576">Suggestions d'articles</translation>
+<translation id="999768147936949692">Pour le moment, vous ne pouvez partager des mots de passe qu'avec des membres de votre famille. <ph name="BEGIN_LINK" />Invitez des membres de votre famille<ph name="END_LINK" /> à rejoindre votre groupe, et profitez pleinement de vos produits et abonnements sur Google.</translation>
 </translationbundle>

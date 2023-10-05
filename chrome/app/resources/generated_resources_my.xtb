@@ -935,6 +935,7 @@
 <translation id="1723824996674794290">&amp;ဝင်ဒိုး အသစ်</translation>
 <translation id="1724801751621173132">လက်ကွက်ထည့်သွင်းနည်း</translation>
 <translation id="1725562816265788801">တဘ် လှိမ့်ခြင်း</translation>
+<translation id="1726294682426724172">အနှောင့်အယှက်များဖယ်ရှားရန် Google Photos ရှိ ‘မှော်ခဲဖျက်’၊ ပိုကောင်းအောင်လုပ်ထားသော ဗီဒီယိုခေါ်ဆိုမှုတူးလ်များ စသည်တို့ အင်္ဂါရပ်အသစ်များတွင် ပါဝင်သည်</translation>
 <translation id="1726503915437308071">စာလုံးစောင်းဖောင့်</translation>
 <translation id="1729533290416704613">၎င်းသည် သင်က Omnibox ဖြင့် ရှာဖွေရာတွင် ဘယ်စာမျက်နှာကို ပြကြောင်းကိုပါ ထိန်းချုပ်သည်။</translation>
 <translation id="1730666151302379551">စကားဝှက်ဟောင်း မေ့သွားသည်</translation>
@@ -2170,6 +2171,7 @@
 <translation id="2671451824761031126">သင်သိမ်းထားသော ဝဘ်လိပ်စာများနှင့် ဆက်တင်များ အဆင်သင့်ဖြစ်ပါပြီ</translation>
 <translation id="2672142220933875349">ဆိုးရွားသော crx ဖိုင်၊ ရှင်းလင်းခြင်း မအောင်မြင်ပါ။</translation>
 <translation id="2673135533890720193">သင်၏ ဘရောင်ဇာ မှတ်တမ်းကို ဖတ်ကြည့်ရန်</translation>
+<translation id="2673848446870717676">သင့်ဘလူးတုသ်သုံးစက်သည် တွဲချိတ်ခြင်းမုဒ်တွင် ရှိပြီး အနီးအနားတွင် ရှိနေကြောင်း သေချာပါစေ။ သင်ယုံကြည်ရသော စက်များနှင့်သာ တွဲချိတ်ပါ။ တွဲချိတ်ထားသောစက်များကို ဤ Chromebook ရှိ အကောင့်အားလုံးက မြင်နိုင်သည်။</translation>
 <translation id="2673873887296220733">ဖိုင် ၁ ဖိုင်ဖွင့်ရန် <ph name="CLOUD_PROVIDER" /> သို့ မိတ္တူကူးမလား။</translation>
 <translation id="2674764818721168631">ပိတ်ရန်</translation>
 <translation id="2676084251379299915">Chrome Web Store တွင် မရနိုင်တော့သောကြောင့် ဤနောက်ဆက်တွဲကို လုပ်ငန်းမူဝါဒက ပိတ်ထားသည်။</translation>
@@ -3525,7 +3527,6 @@
 <translation id="3771851622616482156">ဖွင့်ထားသော တဘ်များအပါအဝင် ဤဝဘ်ဆိုက်မှ သင်ထွက်သွားပါမည်</translation>
 <translation id="3772046291955677288">ကျွန်ုပ်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို ဖတ်ရှုပြီး သဘောတူပါသည်။</translation>
 <translation id="3774166835015494435">မကြာသေးမီက ဓာတ်ပုံများနှင့် အကြောင်းကြားချက်များ</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> အပ်ဒိတ်လုပ်ပါ။</translation>
 <translation id="3775432569830822555">SSL ဆာဗာ လက်မှတ်</translation>
 <translation id="3775705724665058594">သင့်ကိရိယာများသို့ ပို့ပါ</translation>
 <translation id="3776508619697147021">ဝဘ်ဆိုက်များက ဖိုင်အများအပြားကို အလိုအလျောက်ဒေါင်းလုဒ်လုပ်လိုပါက ခွင့်တောင်းနိုင်သည်</translation>
@@ -3846,6 +3847,7 @@
 <translation id="4010917659463429001">မှတ်ထားသောလိပ်စာများကို သင်၏စက်ပစ္စည်းတွင် ရရှိနိုင်ရန် <ph name="GET_IOS_APP_LINK" /> ကို ရယူပါ။</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" အား ပြင်မည်လား?</translation>
 <translation id="4015163439792426608">နောက်ဆက်တွဲများ ရှိသလား။ လွယ်ကူသော နေရာတစ်ခုတည်းတွင် <ph name="BEGIN_LINK" />သင်၏နောက်ဆက်တွဲများကို စီမံပါ<ph name="END_LINK" />။</translation>
+<translation id="4016762287427926315"><ph name="APP_NAME" /> အတွက် သင်၏ခွင့်ပြုချက်များကို ဤအက်ပ်အတွက်လည်း ခွင့်ပြုပါမည်။ <ph name="BEGIN_LINK" />စီမံရန်<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">ဤလင့်ခ်အတွက် QR ကုဒ် ပြုလုပ်ရန်</translation>
 <translation id="4019983356493507433">လိပ်စာစာရင်း တည်းဖြတ်ရန်</translation>
 <translation id="4020327272915390518">ရွေးချယ်စရာ မီနူး</translation>
@@ -3966,6 +3968,7 @@
 <translation id="4110485659976215879">သတိပေးချက် ပြန်ယူခြင်း</translation>
 <translation id="4110490973560452005">ဒေါင်းလုဒ်လုပ်ပြီးပါပြီ− <ph name="FILE_NAME" />။ ဒေါင်းလုဒ်များ ဘားဧရိယာသို့ သွားရန် Shift+F6 နှိပ်ပါ။</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (အော့ဖ်လိုင်း)</translation>
+<translation id="411318099524508025">သင့်ကို <ph name="NAME" /> သို့ အဆင့်မြှင့်လိုက်ပြီ။</translation>
 <translation id="4113743276555482284">ဖိုင်စကားဝှက်</translation>
 <translation id="4114524937989710624">Google Drive ရှိ လတ်တလောအဖြစ်ဆုံး လုပ်ဆောင်ချက်သို့ အလွယ်တကူပြန်သွားနိုင်ရန် အကြံပြုထားသောဖိုင်များကို မြင်နေရခြင်းဖြစ်သည်။
         <ph name="BREAK" />
@@ -6420,6 +6423,7 @@
 <translation id="6156863943908443225">Script ကက်ရှ်</translation>
 <translation id="6156944117133588106">တက်ဘလက်မုဒ်တွင် လမ်းညွှန်ခလုတ်များ ပြခြင်း</translation>
 <translation id="615930144153753547">ဝဘ်ဆိုက်များက ပုံများ ပြနိုင်သည်</translation>
+<translation id="6160290816917599257">ကုဒ် မမှန်ကန်ပါ။ သင့်ထည့်သွင်းမှုသည် ဤပုံစံဖြစ်ရမည်- <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">အထောက်အထားစိစစ်ရန် လက်မှတ်များကို စီစဉ်ပေးပါ</translation>
 <translation id="6163363155248589649">&amp;သာမန်</translation>
 <translation id="6163376401832887457">Kerberos ဆက်တင်များ</translation>
@@ -8450,6 +8454,7 @@
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> သည် စက်နောက်တစ်ခုတွင် Google Assistant ကို စနစ်ထည့်သွင်းပြီးပုံ ရပါသည်။ ဤစက်တွင် ‘ဖန်သားပြင်’ အကြောင်းအရာ ဖွင့်ခြင်းဖြင့် <ph name="SUPERVISED_USER_NAME" /> သည် Assistant ကို အကောင်းဆုံးအသုံးပြုနိုင်သည်။</translation>
 <translation id="7807711621188256451"><ph name="HOST" />အား သင့် ကင်မရာကို ရယူသုံးမှု အမြဲတမ်း ခွင့်ပြုရန်</translation>
 <translation id="7810202088502699111">ဤစာမျက်နှာတွင် ပေါ့ပ်အာ့ပ်များ ပိတ်ဆို့ထားသည်။</translation>
+<translation id="7810367892333449285">သင့်ထည့်သွင်းမှုသည် ဤပုံစံဖြစ်ရမည်- <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;ကူးယူ</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> အတွက် ဖြတ်လမ်းလင့်ခ် <ph name="SHORTCUT" /> ပြင်ဆင်ရန်</translation>
@@ -8790,7 +8795,6 @@
 <translation id="8077120325605624147">သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်တိုင်းက မည်သည့်ကြော်ငြာကိုမဆို ပြနိုင်သည်</translation>
 <translation id="8077579734294125741">အခြား Chrome ပရိုဖိုင်များ</translation>
 <translation id="80798452873915119">သင့်ဖန်သားပြင်အားလုံးတွင် ဝင်းဒိုးများစီမံရန်အတွက် ဝဘ်ဆိုက်များကို တောင်းဆိုခွင့်ပြုရန်</translation>
-<translation id="807990231167557618">သင့် Chromebook က အပ်ဒိတ်ဖြစ်နေသည်။</translation>
 <translation id="8080028325999236607">တဘ်အားလုံး ပိတ်မည်</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">သင့်စက်ရှင်ကို <ph name="MANAGER_NAME" /> က စီမံသည်။ စီမံခန့်ခွဲသူများက သင့်ပရိုဖိုင်ကို ဖျက်နိုင်သကဲ့သို့ သင့်ကွန်ရက်ဒေတာ စီးဆင်းမှုကိုလည်း စောင့်ကြည့်နိုင်သည်။</translation>
@@ -9428,6 +9432,7 @@
 <translation id="8605428685123651449">SQLite မှတ်ဉာဏ်</translation>
 <translation id="8607171490667464784">သုံးမနေဘဲ ဘက်ထရီဖြင့် ဖွင့်ထားစဉ်</translation>
 <translation id="8607326572516521315">စပမ်းနှင့် လိမ်လည်မှုလျှော့ချခြင်းသည် သီးသန့်အခြေအနေ တိုကင်များပေါ် အမှီပြုပြီး ဝဘ်ဆိုက်များ လိမ်လည်မှုတိုက်ဖျက်ရာတွင်၊ လူနှင့် ဘော့တ်များကို ခွဲခြားဖော်ထုတ်ရာတွင် ကူညီပေးသည်။</translation>
+<translation id="8607828412110648570">သင့်ဘလူးတုသ်သုံးစက်သည် တွဲချိတ်ခြင်းမုဒ်တွင် ရှိပြီး အနီးအနားတွင် ရှိနေကြောင်း သေချာပါစေ။ သင်ယုံကြည်ရသော စက်များနှင့်သာ တွဲချိတ်ပါ။ တွဲချိတ်ထားသောစက်များကို ဤ Chromebook ရှိ အကောင့်အားလုံးက မြင်နိုင်သည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos လက်မှတ်တစ်ခု ထည့်ခြင်း</translation>
 <translation id="8609465669617005112">အပေါ်ရွှေ့ပါ</translation>
 <translation id="8610103157987623234">ပုံစံ မမှန်ပါ၊ ထပ်စမ်းကြည့်ပါ</translation>

@@ -1734,6 +1734,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Vous utilisez le verrouillage de l'écran pour la saisie des mots de passe</translation>
 <translation id="4558551763791394412">Essayez de désactiver les extensions.</translation>
+<translation id="456043042661026303">Vérification sécurisée de vos détails de paiement…</translation>
 <translation id="4566017918361049074">Activités de plein air</translation>
 <translation id="4567686777917670400">Votre administrateur peut modifier à distance la configuration de votre navigateur. Il se peut que l'activité sur cet appareil soit gérée en dehors de Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Consulter une liste de cookies et de données de sites dans une nouvelle fenêtre</translation>
@@ -3362,6 +3363,7 @@ Informations supplémentaires :
 <translation id="7865448901209910068">Vitesse optimale</translation>
 <translation id="7870281855125116701">Remise trouvée</translation>
 <translation id="7871445724586827387">Changez le mot de passe de votre compte Google</translation>
+<translation id="7876615279559620350">Pour payer plus rapidement, enregistrez le code CVC de cette carte dans votre compte Google</translation>
 <translation id="7877007680666472091">ID de contenus protégés</translation>
 <translation id="7878562273885520351">Votre mot de passe a peut-être été piraté</translation>
 <translation id="7880146494886811634">Enregistrer l'adresse</translation>
@@ -3849,6 +3851,7 @@ Informations supplémentaires :
 <translation id="8870494189203302833">Même ordre, face vers le bas</translation>
 <translation id="8870700989640064057">Imprimer le fichier confidentiel ?</translation>
 <translation id="8871553383647848643">Personnalisez l'apparence de votre navigateur</translation>
+<translation id="8874790741333031443">Essayez d'autoriser temporairement les cookies tiers. Vous réduirez ainsi la protection de la navigation, mais les fonctionnalités du site auront plus de chances de fonctionner comme prévu.</translation>
 <translation id="8874824191258364635">Saisissez un numéro de carte valide</translation>
 <translation id="8876033571432926051">Jeux grand public</translation>
 <translation id="8877780815363510165">Pêche</translation>

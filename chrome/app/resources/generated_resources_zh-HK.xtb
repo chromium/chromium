@@ -935,6 +935,7 @@
 <translation id="1723824996674794290">新視窗(&amp;N)</translation>
 <translation id="1724801751621173132">輸入法</translation>
 <translation id="1725562816265788801">分頁捲動</translation>
+<translation id="1726294682426724172">現可使用多項新功能，包括「Google 相片」可消除干擾元素的「魔術橡皮擦」、功能更強大的視像通話工具等</translation>
 <translation id="1726503915437308071">斜體字型</translation>
 <translation id="1729533290416704613">這個擴充功能也會控管您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="1730666151302379551">忘記舊密碼</translation>
@@ -2172,6 +2173,7 @@
 <translation id="2671451824761031126">現在可以使用您的書籤和設定了</translation>
 <translation id="2672142220933875349">crx 檔案損毀，無法解除套件。</translation>
 <translation id="2673135533890720193">讀取您的瀏覽記錄</translation>
+<translation id="2673848446870717676">請確保藍牙裝置在附近，且已處於配對模式。請只與你信任的裝置配對。在此 Chromebook 上，所有帳戶都能看到已配對的裝置。</translation>
 <translation id="2673873887296220733">要將 1 個檔案複製到 <ph name="CLOUD_PROVIDER" /> 開啟嗎？</translation>
 <translation id="2674764818721168631">關閉</translation>
 <translation id="2676084251379299915">由於 Chrome 網上應用程式商店已無法取得此擴充程式，因此企業政策已將其停用。</translation>
@@ -3527,7 +3529,6 @@
 <translation id="3771851622616482156">您將會從此網站 (包括已開啟的分頁) 登出。</translation>
 <translation id="3772046291955677288">我已閱讀並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />Chrome 和 Chrome OS 附加服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="3774166835015494435">最近的相片和通知</translation>
-<translation id="3774546890772201673">更新 <ph name="NAME" />。</translation>
 <translation id="3775432569830822555">SSL 伺服器憑證</translation>
 <translation id="3775705724665058594">傳送至您的裝置</translation>
 <translation id="3776508619697147021">網站可要求自動下載多個檔案</translation>
@@ -3847,6 +3848,7 @@
 <translation id="4010917659463429001">如要在所有裝置上查看書籤，請<ph name="GET_IOS_APP_LINK" />。</translation>
 <translation id="4014432863917027322">修復「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="4015163439792426608">您有使用擴充程式嗎？集中<ph name="BEGIN_LINK" />管理擴充程式<ph name="END_LINK" />，輕鬆又方便。</translation>
+<translation id="4016762287427926315">如果你將權限授予「<ph name="APP_NAME" />」，這些應用程式亦會取得同樣的權限。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">為此連結建立 QR 碼</translation>
 <translation id="4019983356493507433">編輯書籤清單</translation>
 <translation id="4020327272915390518">選項選單</translation>
@@ -3965,6 +3967,7 @@
 <translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4110490973560452005">下載完成 ：<ph name="FILE_NAME" />。按住 Shift+F6 鍵即可切換至下載內容列的位置。</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
+<translation id="411318099524508025">你已升級到 <ph name="NAME" />。</translation>
 <translation id="4113743276555482284">檔案密碼</translation>
 <translation id="4114524937989710624">畫面會顯示建議的檔案，以便您繼續執行最近在「Google 雲端硬碟」中的活動。
         <ph name="BREAK" />
@@ -6418,6 +6421,7 @@
 <translation id="6156863943908443225">指令碼快取</translation>
 <translation id="6156944117133588106">在平板電腦模式中顯示導覽按鈕</translation>
 <translation id="615930144153753547">網站可顯示圖片</translation>
+<translation id="6160290816917599257">代碼無效。輸入的內容應採用以下格式：<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ 地址<ph name="LPA_2" />$<ph name="LPA_3" />選填的相符 ID<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">提供用於驗證的憑證</translation>
 <translation id="6163363155248589649">一般(&amp;N)</translation>
 <translation id="6163376401832887457">Kerberos 設定</translation>
@@ -8449,6 +8453,7 @@
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" />似乎已在其他裝置上設定「Google 助理」。只要開啟 [畫面內容] 設定，<ph name="SUPERVISED_USER_NAME" />就能運用「Google 助理」的更多功能。</translation>
 <translation id="7807711621188256451">永遠允許 <ph name="HOST" /> 存取您的相機</translation>
 <translation id="7810202088502699111">系統已封鎖此網頁的彈出式視窗。</translation>
+<translation id="7810367892333449285">輸入的內容應採用以下格式：<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ 地址<ph name="LPA_2" />$<ph name="LPA_3" />選填的相符 ID<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">複製(&amp;C)</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">編輯「<ph name="EXTENSION_NAME" />」的快速鍵 <ph name="SHORTCUT" /></translation>
@@ -8790,7 +8795,6 @@
 <translation id="8077120325605624147">您瀏覽的網站都可向您顯示所有廣告</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>
 <translation id="80798452873915119">網站可以要求在您所有的顯示屏上管理視窗</translation>
-<translation id="807990231167557618">Chromebook 已更新。</translation>
 <translation id="8080028325999236607">關閉所有分頁</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">工作階段由 <ph name="MANAGER_NAME" /> 管理。管理員可刪除設定檔並監察網絡流量。</translation>
@@ -9428,6 +9432,7 @@
 <translation id="8605428685123651449">SQLite 記憶體使用量</translation>
 <translation id="8607171490667464784">處於閒置狀態且使用電池時</translation>
 <translation id="8607326572516521315">為減少垃圾內容和欺詐行為，系統需依賴 Private State Token，以協助網站對抗欺詐行為，並分辨機器人和真人。</translation>
+<translation id="8607828412110648570">請確保藍牙裝置在附近，且已處於配對模式。請只與你信任的裝置配對。在此 Chromebook 上，所有帳戶都能看到已配對的裝置。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">新增 Kerberos 票證</translation>
 <translation id="8609465669617005112">向上移</translation>
 <translation id="8610103157987623234">格式不正確，請再試一次</translation>

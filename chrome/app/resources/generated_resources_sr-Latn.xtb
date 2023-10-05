@@ -924,6 +924,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1723824996674794290">&amp;Novi prozor</translation>
 <translation id="1724801751621173132">Režim unosa</translation>
 <translation id="1725562816265788801">Pomeranje kartica</translation>
+<translation id="1726294682426724172">U nove funkcije spadaju Magični brisač u Google slikama za uklanjanje ometanja, poboljšane alatke za video pozive i drugo</translation>
 <translation id="1726503915437308071">Font u kurzivu</translation>
 <translation id="1729533290416704613">Kontroliše i stranicu koja se prikazuje kada pretražujete iz omniboksa.</translation>
 <translation id="1730666151302379551">Zaboravljena stara lozinka</translation>
@@ -2155,6 +2156,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2671451824761031126">Obeleživači i podešavanja su spremni</translation>
 <translation id="2672142220933875349">crx datoteka je oštećena. Otpakivanje nije uspelo.</translation>
 <translation id="2673135533890720193">Čitanje vaše istorije pregledanja</translation>
+<translation id="2673848446870717676">Proverite da li je Bluetooth uređaj u režimu uparivanja i u blizini. Uparujte samo sa uređajima u koje imate poverenja. Upareni uređaji su vidljivi svim nalozima na ovom Chromebook-u.</translation>
 <translation id="2673873887296220733">Želite da kopirate 1 fajl u <ph name="CLOUD_PROVIDER" /> da biste ga otvorili?</translation>
 <translation id="2674764818721168631">Isključeno</translation>
 <translation id="2676084251379299915">Ovaj dodatak je onemogućen smernicama za preduzeća zato što više nije dostupan u Chrome veb-prodavnici.</translation>
@@ -3510,7 +3512,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3771851622616482156">Odjavićete se sa ovog sajta, uključujući i instance na otvorenim karticama</translation>
 <translation id="3772046291955677288">Pročitao/la sam i prihvatam <ph name="BEGIN_LINK1" />Google uslove korišćenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne uslove korišćenja usluge za Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Nedavne slike i obaveštenja</translation>
-<translation id="3774546890772201673">Ažurirajte <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Sertifikat SSL servera</translation>
 <translation id="3775705724665058594">Pošaljite na svoje uređaje</translation>
 <translation id="3776508619697147021">Sajtovi mogu da traže da automatski preuzimaju više fajlova</translation>
@@ -3832,6 +3833,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4010917659463429001">Da bi vam obeleživači bili dostupni na mobilnom uređaju, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Želite li da popravite „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4015163439792426608">Imate dodatke? <ph name="BEGIN_LINK" />Upravljajte dodacima<ph name="END_LINK" /> na jednom praktičnom mestu.</translation>
+<translation id="4016762287427926315">Dozvole koje pružite za aplikaciju <ph name="APP_NAME" /> će važiti i za ovu aplikaciju. <ph name="BEGIN_LINK" />Upravljajte<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Napravi QR kôd za ovaj link</translation>
 <translation id="4019983356493507433">Izmenite listu obeleživača</translation>
 <translation id="4020327272915390518">Meni sa opcijama</translation>
@@ -3952,6 +3954,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4110485659976215879">Vrati upozorenje</translation>
 <translation id="4110490973560452005">Preuzimanje je dovršeno: <ph name="FILE_NAME" />. Pritisnite Shift + F6 da biste prešli na oblast trake sa preuzimanjima.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflajn)</translation>
+<translation id="411318099524508025">Obavili ste nadogradnju na <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Lozinka za fajl</translation>
 <translation id="4114524937989710624">Predloženi fajlovi vam se prikazuju da biste lako mogli da se vratite najnovijim aktivnostima na Google disku.
         <ph name="BREAK" />
@@ -6406,6 +6409,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6156863943908443225">Keš skripte</translation>
 <translation id="6156944117133588106">Prikazujte dugmad za navigaciju u režimu tableta</translation>
 <translation id="615930144153753547">Sajtovi mogu da prikazuju slike</translation>
+<translation id="6160290816917599257">Kôd je nevažeći. Unos treba da bude u formatu <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ adresa<ph name="LPA_2" />$<ph name="LPA_3" />opcionalno podudaranje ID-a<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Dostavljaj sertifikate za potvrdu autentičnosti</translation>
 <translation id="6163363155248589649">&amp;Normalno</translation>
 <translation id="6163376401832887457">Podešavanja Kerberos-a</translation>
@@ -8442,6 +8446,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7807117920154132308">Izgleda da je <ph name="SUPERVISED_USER_NAME" /> već podesio/la Google pomoćnik na drugom uređaju. <ph name="SUPERVISED_USER_NAME" /> može još bolje da iskoristi Pomoćnik ako uključi kontekst sa ekrana na ovom uređaju.</translation>
 <translation id="7807711621188256451">Uvek dozvoli da <ph name="HOST" /> pristupa kameri</translation>
 <translation id="7810202088502699111">Iskačući prozori su blokirani na ovoj stranici.</translation>
+<translation id="7810367892333449285">Unos treba da bude u formatu <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ adresa<ph name="LPA_2" />$<ph name="LPA_3" />opcionalno podudaranje ID-a<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Kopiraj</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Izmenite prečicu <ph name="SHORTCUT" /> za: <ph name="EXTENSION_NAME" /></translation>
@@ -8783,7 +8788,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8077120325605624147">Svaki sajt koji posetite može da vam prikaže bilo koji oglas</translation>
 <translation id="8077579734294125741">Drugi Chrome profili</translation>
 <translation id="80798452873915119">Sajtovi mogu da zatraže da upravljaju prozorima na svim ekranima</translation>
-<translation id="807990231167557618">Chromebook je ažuriran.</translation>
 <translation id="8080028325999236607">Zatvori sve kartice</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Sesijom upravlja <ph name="MANAGER_NAME" />. Administratori mogu da izbrišu vaš profil i da nadgledaju vaš mrežni saobraćaj.</translation>
@@ -9421,6 +9425,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8605428685123651449">SQLite memorija</translation>
 <translation id="8607171490667464784">Dok je neaktivan i troši bateriju</translation>
 <translation id="8607326572516521315">Umanjenje nepoželjnog sadržaja i prevara oslanja se na privatne tokene za stanje da bi pomoglo sajtovima koji se bore protiv prevara, kao i u razlikovanju robota od ljudi.</translation>
+<translation id="8607828412110648570">Proverite da li je Bluetooth uređaj u režimu uparivanja i u blizini. Uparujte samo sa uređajima u koje imate poverenja. Upareni uređaji su vidljivi svim nalozima na ovom Chromebook-u. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Dodajte Kerberos tiket</translation>
 <translation id="8609465669617005112">Premesti nagore</translation>
 <translation id="8610103157987623234">Pogrešan format. Probajte ponovo</translation>

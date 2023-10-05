@@ -13,6 +13,7 @@
 <translation id="1024913885641459127">Product Reviews and Price Comparisons</translation>
 <translation id="1028781062521375153">See details</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wants to permanently store large data on your device</translation>
+<translation id="1030949145805074938">{COUNT,plural, =0{None}=1{From 1 site. Signs you out of most sites. }other{From # sites. Signs you out of most sites. }}</translation>
 <translation id="1033329911862281889">Incognito does not make you invisible online:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Sites and the services that they use can see visits<ph name="END_LIST_ITEM" />
@@ -484,6 +485,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1939059826036755332">Automatic picture-in-picture</translation>
 <translation id="1939175642807587452">Can ask to send notifications</translation>
 <translation id="1940441167050915935">Delete saved security codes</translation>
+<translation id="194174710521904357">You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected.</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">You could lose access to your organisation's account or experience identity theft. Chromium recommends changing your password now.</translation>
 <translation id="1946849748901605102">12 in x 15 in</translation>
@@ -661,6 +663,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2300306941146563769">Not uploaded</translation>
 <translation id="230286397113210245">Open Incognito window button, activate to open a new Incognito window to browse privately</translation>
 <translation id="2312234273148520048">Condiments and Dressings</translation>
+<translation id="2316087952091171402">Less than <ph name="UPPER_ESTIMATE" />. Some sites may load more slowly on your next visit.</translation>
 <translation id="2316159751672436664">Personalise your accessibility tools in Chrome OS settings</translation>
 <translation id="2316887270356262533">Frees up less than 1 MB. Some sites may load more slowly on your next visit.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requires a username and password.</translation>
@@ -1105,6 +1108,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3271648667212143903"><ph name="ORIGIN" /> wants to connect</translation>
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Enter <ph name="NUMBER_OF_DIGITS" />-digit verification code</translation>
+<translation id="3272643614306383237">Less than 1 MB. Some sites may load more slowly on your next visit.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administrator policy doesn’t recommend opening this file in <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend opening these files in <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Your organisation, <ph name="ENROLLMENT_DOMAIN" />, has sent some info to the following websites, like settings or policies.</translation>
 <translation id="3286372614333682499">portrait</translation>
@@ -2869,6 +2873,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Your default search engine lets you search the web and powers Chrome features<ph name="END_BOLD" /> like searching from the address bar and from images on web pages. A feature might not be available if your search engine doesn’t support it.</translation>
 <translation id="6934672428414710184">This name is from your Google Account</translation>
 <translation id="6935082727755903526">Accounting and Finance Jobs</translation>
+<translation id="6935179587384421592"><ph name="SIZE" />. Some sites may load more slowly on your next visit.</translation>
 <translation id="6936976777388162184">This is a bundled device and cannot be enrolled with Kiosk and signage upgrade.</translation>
 <translation id="6939469646605424232">TV dramas</translation>
 <translation id="6944692733090228304">You entered your password on a site that’s not managed by <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. To protect your account, don’t reuse your password on other apps and sites.</translation>
@@ -3134,6 +3139,7 @@ Additional details:
 <translation id="7441864845853794192">Gourmet and Speciality Foods</translation>
 <translation id="7442725080345379071">Light orange</translation>
 <translation id="7444046173054089907">This site is blocked</translation>
+<translation id="7444176988908839653">{COUNT,plural, =0{Cookies will be blocked again today}=1{Cookies will be blocked again tomorrow}other{# days until cookies are blocked again}}</translation>
 <translation id="7445762425076701745">The identity of the server to which you are connected cannot be fully validated. You are connected to a server using a name valid only within your network, and an external certificate authority has no way to validate ownership. As some certificate authorities will issue certificates for these names regardless, there is no way to ensure that you are connected to the intended website and not to an attacker.</translation>
 <translation id="7447234474237738389">Apparel Services</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
@@ -3500,6 +3506,7 @@ Additional details:
 <translation id="81563721597823545">Hockey Equipment</translation>
 <translation id="8161095570253161196">Resume browsing</translation>
 <translation id="8163866351304776260">Quad punch left</translation>
+<translation id="8164078261547504572">Want emails when prices drop?</translation>
 <translation id="8175796834047840627">Chrome is offering to save your cards in your Google Account because you are signed in. You can change this behaviour in settings.</translation>
 <translation id="8176440868214972690">The administrator of this device has sent some info to the following websites, like settings or policies.</translation>
 <translation id="817820454357658398">Feminine Hygiene Products</translation>
@@ -3940,6 +3947,7 @@ Additional details:
 <translation id="9078912659001679888">Blenders and Juicers</translation>
 <translation id="9078964945751709336">More information required</translation>
 <translation id="9080712759204168376">Order Summary</translation>
+<translation id="9084304544887760521">Get emails sent to <ph name="EMAIL" /> when the price of items you track drops on any site.</translation>
 <translation id="908796725011587895">University sports</translation>
 <translation id="9089260154716455634">Off-hours policy:</translation>
 <translation id="9090243919347147717">Attachments</translation>
@@ -4024,6 +4032,7 @@ Additional details:
 <translation id="944540589955480312">Use passwords and passkeys saved in your Google Account</translation>
 <translation id="945855313015696284">Check the info below and delete any invalid cards</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new site in Google Sites quickly</translation>
+<translation id="947974362755924771">{COUNT,plural, =0{Chrome will limit cookies again today}=1{Chrome will limit cookies again tomorrow}other{# days until Chrome limits cookies again}}</translation>
 <translation id="949314938206378263">You asked to visit this site. Your parent can reply in Family Link.</translation>
 <translation id="950736567201356821">Triple punch top</translation>
 <translation id="961663415146723894">Bind bottom</translation>

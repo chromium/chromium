@@ -95,6 +95,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your 
 <translation id="4736424910885271643">Your account is managed by <ph name="HOSTED_DOMAIN" />, so your Chromium data will be cleared from this device</translation>
 <translation id="4790638144988730920">Keep using the Chromium data in your Google Account.</translation>
 <translation id="4828317641996116749">Chromium couldn't check all passwords. Try again later.</translation>
+<translation id="4935539884203837577">Chromium can detect the tracking numbers you input and track your packages on the New Tab Page while helping other shopping experiences from Chromium.</translation>
 <translation id="4985291216379576555">Offline, Chromium can't check for updates</translation>
 <translation id="4996471330284142407">Get more done with a simple, secure and faster-than-ever Chromium.</translation>
 <translation id="4999538639245140991">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chromium data will be deleted from this device. Your data will remain in your Google Account.</translation>
@@ -140,6 +141,7 @@ Things to consider:
 1. Open settings
 2. Tap the default browser app
 3. Select Chromium.</translation>
+<translation id="6197255575340902638">If you hide '<ph name="MODULE_NAME" />', Chromium will no longer auto-track your future packages and will delete all your past package tracking data.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
 <translation id="6324041800010509197">Visit the Tab Grid in Chromium</translation>

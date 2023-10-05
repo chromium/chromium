@@ -345,6 +345,7 @@
 <translation id="2856503607207334158">ছাইন ইন কৰিব পৰা নগ’ল</translation>
 <translation id="2860954141821109167">নিশ্চিত হৈ লওক যে এই ডিভাইচটোত এটা ফ’ন এপ্‌ সক্ৰিয় কৰা আছে</translation>
 <translation id="2861923151411510142">Chromeৰ কিছুমান সুবিধা আৰু উপলব্ধ হৈ নাথাকিব</translation>
+<translation id="2869430948265924908">গাড়ীত আপোনাৰ সংবেদনশীল সমল সুৰক্ষিত কৰি ৰাখিবলৈ, আপুনি এটা গাড়ীৰ প্ৰ’ফাইল লক সৃষ্টি কৰিবই লাগিব।  আপুনি এইটো এটা পিন, ক’ড অথবা পাছৱৰ্ডৰ জৰিয়তে কৰিব পাৰে।</translation>
 <translation id="2870560284913253234">ছাইট</translation>
 <translation id="2871733351037274014">পৃষ্ঠা আগতীয়াকৈ ল’ড কৰক</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />এ আপুনি এই ৱেবছাইটটো অনুমোদন জনোৱাটো বিচাৰে:</translation>
@@ -466,6 +467,7 @@
 <translation id="3421726884497337397">কেতিয়া তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰিব লাগে সেয়া বাছনি কৰক</translation>
 <translation id="3428747202529429621">আপোনাক Chromeত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা সময়ত অন্য Google এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="3429160811076349561">ট্ৰায়েলৰ সুবিধা অফ আছে</translation>
+<translation id="3430670036890315772">আপোনাৰ প্ৰ’ফাইল লকটো অফ কৰাটোৱে আপোনাৰ ছেভ কৰি থোৱা তথ্যখিনি আঁতৰাব</translation>
 <translation id="3435465986463792564">বহুতো ৱিণ্ড’ পাইছেনে? আপুনি ইয়াৰ পৰা সেইবোৰ পৰিচালনা কৰিব পাৰে</translation>
 <translation id="3435738964857648380">সুৰক্ষা</translation>
 <translation id="3439276997620616816">ইয়াত আপুনি নিজৰ শেহতীয়া টেবসমূহ বিচাৰি পাব</translation>
@@ -645,6 +647,7 @@
 <translation id="4378154925671717803">ফ'ন</translation>
 <translation id="438319986296050901">কেৱল কাৰ্ড শ্বেয়াৰ কৰক</translation>
 <translation id="4384468725000734951">সন্ধান কৰিবলৈ Sogou ব্যৱহাৰ কৰি থকা হৈছে</translation>
+<translation id="4387647248986092471">গাড়ীৰ প্ৰ’ফাইল লক এটা সৃষ্টি কৰক</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ডাউনল’ড কৰি থকা হৈছে…</translation>
 <translation id="4404568932422911380">কোনো বুকমাৰ্ক নাই</translation>
 <translation id="4405224443901389797">ইয়ালৈ স্থানান্তৰ কৰক…</translation>
@@ -824,6 +827,7 @@
 <translation id="5210286577605176222">পূর্বৱর্তী টেবলৈ যাওক</translation>
 <translation id="5210365745912300556">টেব বন্ধ কৰক</translation>
 <translation id="5222676887888702881">ছাইন আউট কৰক</translation>
+<translation id="5226378907213531272">আপুনি প্ৰতিবাৰ গাড়ীখন ব্যৱহাৰ কৰোঁতে আপোনাৰ স্ক্ৰীনখন আনলক কৰিব</translation>
 <translation id="5227554086496586518">সন্ধানৰ ফলাফল চাবলৈ টিপক</translation>
 <translation id="5233638681132016545">নতুন টেব</translation>
 <translation id="5234971936051226002">“এই পৃষ্ঠাখন শুনক” প্লে’য়াৰ মিনিমাইজ কৰা হৈছে।</translation>
@@ -1318,6 +1322,7 @@
 <translation id="7691043218961417207">ফ’ল’ কৰিবলৈ সমল অন্বেষণ কৰক</translation>
 <translation id="7697383401610880082">টানি আনি এৰা হেণ্ডেল</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />ত ইমেইল সৃষ্টি কৰক</translation>
+<translation id="7702388902581909985">আপোনাৰ ব্ৰাউজিঙৰ ডেটা মচাটোৱে আপোনাক নিজৰ Google একাউণ্টৰ পৰা ছাইন আউট নকৰায়। এনে কৰিবলৈ, <ph name="BEGIN_LINK1" />Chromeৰ পৰা ছাইট আউট কৰক<ph name="END_LINK1" />।</translation>
 <translation id="7707922173985738739">ম’বাইল ডেটা ব্যৱহাৰ কৰক</translation>
 <translation id="7709094866268987903">আপুনি আঁতৰোৱা আগ্ৰহসমূহ ইয়াত প্ৰদৰ্শিত হ’ব</translation>
 <translation id="7709918231054955894">আপোনাৰ আটাইবোৰ টেব পাওক</translation>

@@ -250,6 +250,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1962969542251276847">Écran de verrouillage</translation>
 <translation id="1967970931040389207">Activer le point d'accès sans fil</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
+<translation id="1971815855639997522">Le bureau et les fenêtres ont été retirés. Appuyez sur Ctrl+Z pour annuler l'action</translation>
 <translation id="1972950159383891558">Bonjour, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Entrée de texte</translation>
 <translation id="1980808257969311265">Se joindre à <ph name="EVENT_SUMMARY" /></translation>
@@ -1261,6 +1262,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6095008505822982596">Vitesse de la voix</translation>
 <translation id="6095425951508823973">Ajouter une connexion avec <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Modifié au cours du dernier mois</translation>
+<translation id="6099793635444444289">Impossible de démarrer la dictée, car le microphone est désactivé</translation>
 <translation id="6103838137565245112">système</translation>
 <translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>

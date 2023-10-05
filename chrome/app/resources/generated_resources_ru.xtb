@@ -927,6 +927,7 @@
 <translation id="1723824996674794290">&amp;Новое окно</translation>
 <translation id="1724801751621173132">Режим ввода</translation>
 <translation id="1725562816265788801">Прокрутка вкладок</translation>
+<translation id="1726294682426724172">Вам доступны новые функции, например улучшенные инструменты для видеовызовов и волшебный ластик в Google Фото, чтобы удалять все лишнее с изображений.</translation>
 <translation id="1726503915437308071">Курсив</translation>
 <translation id="1729533290416704613">Кроме того, расширение изменило поисковую систему, используемую по умолчанию при вводе запроса в омнибокс.</translation>
 <translation id="1730666151302379551">Забыли старый пароль?</translation>
@@ -2159,6 +2160,7 @@
 <translation id="2671451824761031126">Импорт закладок и настроек завершен</translation>
 <translation id="2672142220933875349">Файл CRX поврежден, распаковать его не удалось.</translation>
 <translation id="2673135533890720193">Чтение истории просмотров</translation>
+<translation id="2673848446870717676">Устройство Bluetooth должно быть в режиме подключения и находиться рядом. Устанавливайте соединение только с надежными устройствами. Подключенные устройства видны во всех аккаунтах на этом Chromebook.</translation>
 <translation id="2673873887296220733">Скопировать 1 файл в сервис "<ph name="CLOUD_PROVIDER" />" перед открытием?</translation>
 <translation id="2674764818721168631">Отключено</translation>
 <translation id="2676084251379299915">Это расширение было отключено в соответствии с корпоративными правилами, так как оно больше не доступно в интернет-магазине Chrome.</translation>
@@ -3514,7 +3516,6 @@
 <translation id="3771851622616482156">Вы автоматически выйдете из аккаунта на этом сайте (в том числе на открытых вкладках).</translation>
 <translation id="3772046291955677288">Я принимаю <ph name="BEGIN_LINK1" />Условия использования<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" /></translation>
 <translation id="3774166835015494435">Недавние фотографии и уведомления</translation>
-<translation id="3774546890772201673">Обновите <ph name="NAME" /></translation>
 <translation id="3775432569830822555">Сертификат сервера SSL</translation>
 <translation id="3775705724665058594">Отправка на свои устройства</translation>
 <translation id="3776508619697147021">Разрешить сайтам отправлять запрос на автоматическое скачивание нескольких файлов</translation>
@@ -3836,6 +3837,7 @@
 <translation id="4010917659463429001">Чтобы получить доступ к закладкам на мобильном устройстве, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Восстановить "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Используете расширения? <ph name="BEGIN_LINK" />Управляйте ими<ph name="END_LINK" /> в специальном разделе.</translation>
+<translation id="4016762287427926315">Разрешения, предоставленные приложению "<ph name="APP_NAME" />", будут действовать и для этого приложения. Вы можете их <ph name="BEGIN_LINK" />изменить<ph name="END_LINK" />.</translation>
 <translation id="4017225831995090447">Создать QR-код для этой ссылки</translation>
 <translation id="4019983356493507433">Изменить список закладок</translation>
 <translation id="4020327272915390518">Действия</translation>
@@ -3956,6 +3958,7 @@
 <translation id="4110485659976215879">Восстановить предупреждение</translation>
 <translation id="4110490973560452005">Скачивание завершено: <ph name="FILE_NAME" />. Чтобы перейти к панели загрузок, нажмите Shift + F6.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="411318099524508025">Установлена новая версия <ph name="NAME" /></translation>
 <translation id="4113743276555482284">Пароль файла</translation>
 <translation id="4114524937989710624">Эти рекомендованные файлы помогут вам вернуться к действиям, которые вы недавно выполняли на Google Диске.
         <ph name="BREAK" />
@@ -6410,6 +6413,7 @@
 <translation id="6156863943908443225">Кеш скрипта</translation>
 <translation id="6156944117133588106">Показывать кнопки навигации в режиме планшета</translation>
 <translation id="615930144153753547">Разрешить сайтам показывать изображения</translation>
+<translation id="6160290816917599257">Недействительный код. Запись должна быть в формате <ph name="LPA_0" />$<ph name="LPA_1" />адрес SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />необязательный идентификатор для сопоставления<ph name="LPA_4" />.</translation>
 <translation id="6160625263637492097">Предоставление сертификатов для аутентификации</translation>
 <translation id="6163363155248589649">&amp;Стандартный</translation>
 <translation id="6163376401832887457">Настройки Kerberos</translation>
@@ -8447,6 +8451,7 @@
 <translation id="7807117920154132308">Пользователь <ph name="SUPERVISED_USER_NAME" /> уже настроил Google Ассистента на другом устройстве. Если разрешить доступ к содержимому экрана, <ph name="SUPERVISED_USER_NAME" /> сможет пользоваться дополнительными возможностями Ассистента на этом устройстве.</translation>
 <translation id="7807711621188256451">Всегда предоставлять <ph name="HOST" /> доступ к моей камере</translation>
 <translation id="7810202088502699111">Всплывающие окна были заблокированы. </translation>
+<translation id="7810367892333449285">Запись должна быть в формате <ph name="LPA_0" />$<ph name="LPA_1" />адрес SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />необязательный идентификатор для сопоставления<ph name="LPA_4" />.</translation>
 <translation id="7814458197256864873">&amp;Копировать</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Изменить сочетание клавиш <ph name="SHORTCUT" /> для расширения "<ph name="EXTENSION_NAME" />"</translation>
@@ -8788,7 +8793,6 @@
 <translation id="8077120325605624147">Реклама может показываться на любом посещаемом сайте</translation>
 <translation id="8077579734294125741">Другие профили Chrome</translation>
 <translation id="80798452873915119">Разрешить сайтам запрашивать управление окнами на всех ваших экранах</translation>
-<translation id="807990231167557618">Устройство Chromebook обновлено.</translation>
 <translation id="8080028325999236607">Закрыть все вкладки</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Сеансом управляет <ph name="MANAGER_NAME" />. Администраторы могут удалять профили и следить за сетевым трафиком.</translation>
@@ -9426,6 +9430,7 @@
 <translation id="8605428685123651449">Память SQLite</translation>
 <translation id="8607171490667464784">Когда устройство неактивно и работает от батареи</translation>
 <translation id="8607326572516521315">Противодействие спаму и мошенничеству осуществляется с использованием токенов доверия, помогающих сайтам бороться с мошенничеством и отличать ботов от людей.</translation>
+<translation id="8607828412110648570">Устройство Bluetooth должно быть в режиме подключения и находиться рядом. Устанавливайте соединение только с надежными устройствами. Подключенные устройства видны во всех аккаунтах на этом Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Добавить билет Kerberos</translation>
 <translation id="8609465669617005112">Переместить вверх</translation>
 <translation id="8610103157987623234">Неверный формат. Повторите попытку.</translation>

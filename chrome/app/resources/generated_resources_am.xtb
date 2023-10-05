@@ -933,6 +933,7 @@
 <translation id="1723824996674794290">&amp;አዲስ መስኮት</translation>
 <translation id="1724801751621173132">ግቤት ቅጥ</translation>
 <translation id="1725562816265788801">የትር ሽብለላ</translation>
+<translation id="1726294682426724172">አዳዲስ ባህሪያት በGoogle ፎቶዎች ላይ አዘናጊዎችን ለማስወገድ ምትሃታዊ ማጥፊያ፣ የተሻሻሉ የቪዲዮ ጥሪ መሣሪያዎች እና ሌሎችንም ያካትታሉ</translation>
 <translation id="1726503915437308071">ሰያፍ ቅርጸ-ቁምፊ</translation>
 <translation id="1729533290416704613">እንዲሁም ከኦምኒቦክሱ ሆነው ሲፈልጉ የሚታየውን ገፅ ይቆጣጠራል።</translation>
 <translation id="1730666151302379551">የቀድሞ የይለፍ ቃልን ዘንጋ</translation>
@@ -3521,7 +3522,6 @@
 <translation id="3771851622616482156">ክፍት ትሮችን ጨምሮ፣ ከዚህ ጣቢያ ዘግተው እንዲወጡ ይደረጋሉ</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />የGoogle አገልግሎት ውል<ph name="END_LINK1" />ን እና <ph name="BEGIN_LINK2" />የChrome እና ChromeOS ተጨማሪ አገልግሎት ውል<ph name="END_LINK2" />ን አንብቤ ተስማምቼባቸዋለሁ።</translation>
 <translation id="3774166835015494435">የቅርብ ጊዜ ፎቶዎች እና ማሳወቂያዎች</translation>
-<translation id="3774546890772201673"><ph name="NAME" />ን ያዘምኑ።</translation>
 <translation id="3775432569830822555">SSL አገልጋይ ሰርቲፊኬት</translation>
 <translation id="3775705724665058594">ወደ መሣሪያዎችዎ ይላኩ</translation>
 <translation id="3776508619697147021">ጣቢያዎች ብዙ ፋይሎችን በራስ-ሰር ለማውረድ መጠየቅ ይችላሉ</translation>
@@ -3961,6 +3961,7 @@
 <translation id="4110485659976215879">ማስጠንቀቂያን ወደነበረበት መልስ</translation>
 <translation id="4110490973560452005">ውርድ ተጠናቅቋል፦ <ph name="FILE_NAME" />። የውርዶች አሞሌ አካባቢውን ለመቀየር Shift+F6 ይጫኑ።</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ከመስመር ውጭ)</translation>
+<translation id="411318099524508025">ወደ <ph name="NAME" /> ልቀዋል።</translation>
 <translation id="4113743276555482284">የፋይል የይለፍ ቃል</translation>
 <translation id="4114524937989710624">በGoogle Drive ውስጥ ወደ በጣም የቅርብ ጊዜ እንቅስቃሴዎ በቀላሉ እንዲመለሱ የሚያግዙ የተጠቆሙ ፋይሎችን እየተመለከቱ ነው።
         <ph name="BREAK" />
@@ -8795,7 +8796,6 @@ nil</translation>
 <translation id="8077120325605624147">የሚጎበኙት ማንኛውም ጣቢያ ማንኛውንም ማስታወቂያ ሊያሳይዎ ይችላል</translation>
 <translation id="8077579734294125741">ሌሎች የChrome መገለጫዎች</translation>
 <translation id="80798452873915119">ጣቢያዎች በሁሉም የእርስዎ ማሳያዎች ላይ መስኮቶችን ለማስተዳደር መጠየቅ ይችላሉ</translation>
-<translation id="807990231167557618">የእርስዎ Chromebook ተዘምኗል።</translation>
 <translation id="8080028325999236607">ሁሉንም ትሮች ይዝጉ</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">ክፍለ ጊዜዎ በ<ph name="MANAGER_NAME" /> የሚተዳደር ነው። አስተዳዳሪዎች የእርስዎን መገለጫ መሰረዝ እና እንዲሁም የእርስዎን የአውታረ መረብ ትራፊክ መቆጣጠር ይችላሉ።</translation>

@@ -69,6 +69,7 @@
 <translation id="3345341804167540816">Naudokite „Chrome“ visur</translation>
 <translation id="3472587960215700950">„Chrome“ naudoja „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos apie aptiktus adresus.</translation>
 <translation id="3503014945441706099">Taip pat naudokite Sustiprintą saugų naršymą šiame „Chrome“ profilyje</translation>
+<translation id="3506309791702511623">„Chrome“ gali aptikti įvestus stebėjimo numerius ir stebėti jūsų paketus naujo skirtuko puslapyje, padėdama naudotis kitomis „Google“ apsipirkimo funkcijomis.</translation>
 <translation id="3522659714780527202">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chrome“, įjunkite sinchronizavimą</translation>
 <translation id="3533694711092285624">Nėra išsaugotų slaptažodžių. „Chrome“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote.</translation>
 <translation id="3594076341410558780">Slėpti parinktį „Išnaudokite visas „Chrome“ galimybes“</translation>
@@ -117,6 +118,7 @@
 <translation id="5389212809648216794">„Google Chrome“ negali naudoti fotoaparato, nes jį naudoja kita programa</translation>
 <translation id="5395376160638294582">Užtikrinkite, kad visada galėtumėte naudoti „Chrome“ duomenis „Google“ paskyroje</translation>
 <translation id="5439191312780166229">Įspėjama apie pavojingas svetaines, net ir apie tas, apie kurias anksčiau „Google“ nežinojo, analizuojant daugiau duomenų iš svetainių, nei taikant įprastą apsaugą. Galite pasirinkti praleisti „Chrome“ įspėjimus.</translation>
+<translation id="5442013002200339429">Jei paslėpsite „<ph name="MODULE_NAME" />“, „Chrome“ automatiškai nebestebės būsimų siuntinių ir ištrins visus ankstesnius siuntinių stebėjimo duomenis.</translation>
 <translation id="5460571915754665838">4. Pasirinkite „Chrome“</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{„Chrome“ padės stebėti šį paketą „Naujo skirtuko“ puslapyje.}one{„Chrome“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}few{„Chrome“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}many{„Chrome“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}other{„Chrome“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}}</translation>
 <translation id="5492504007368565877">„Google“ slaptažodžių tvarkyklė negali patikrinti jūsų slaptažodžių.</translation>

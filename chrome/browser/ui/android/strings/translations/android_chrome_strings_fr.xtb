@@ -593,6 +593,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="4116038641877404294">Téléchargez des pages pour y accéder hors connexion</translation>
 <translation id="4121654769234887259">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe de Google pour <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Flux d'autorisation de notification ouvert à pleine hauteur</translation>
+<translation id="4126285640274188657">Insights sur la page</translation>
 <translation id="4135200667068010335">La liste des appareils avec lesquels vous pouvez partager un onglet est fermée.</translation>
 <translation id="4137746084635924146">Langue actuelle de l'appareil</translation>
 <translation id="4139654229316918773">Chrome Canary</translation>
@@ -1244,6 +1245,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7376560087009844242">En incluant plus de texte d'une page, vous pourriez avoir de meilleurs résultats quand vous utilisez Appuyer pour rechercher. Vous pouvez toujours changer cela dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Le thème sombre pour les sites est disponible</translation>
 <translation id="7388615499319468910">Les sites et les annonceurs peuvent comprendre les performances des annonces. Ce paramètre est désactivé.</translation>
+<translation id="7397416715506917976">Voir insights sur la page</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Expérience de première utilisation de Chrome</translation>
 <translation id="7411224099004328643">Utilisateur du compte Google</translation>

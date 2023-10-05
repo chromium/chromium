@@ -1734,6 +1734,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Koristite zaključavanje ekrana za popunjavanje lozinki</translation>
 <translation id="4558551763791394412">Pokušajte da onemogućite dodatke.</translation>
+<translation id="456043042661026303">Bezbedno se proveravaju informacije o plaćanju</translation>
 <translation id="4566017918361049074">Rekreacija na otvorenom</translation>
 <translation id="4567686777917670400">Administrator može daljinski da promeni podešavanje pregledača. Aktivnostima na ovom uređaju može da se upravlja i van Chromium-a. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Pregledajte listu kolačića i podataka o sajtovima u novom prozoru</translation>
@@ -3360,6 +3361,7 @@ Dodatni detalji:
 <translation id="7865448901209910068">Najbolja brzina</translation>
 <translation id="7870281855125116701">Pronađen je popust</translation>
 <translation id="7871445724586827387">Promenite lozinku za Google nalog</translation>
+<translation id="7876615279559620350">Da biste brže plaćali, sačuvajte CVC za ovu karticu na Google nalogu</translation>
 <translation id="7877007680666472091">ID-ovi zaštićenog sadržaja</translation>
 <translation id="7878562273885520351">Lozinka je možda kompromitovana</translation>
 <translation id="7880146494886811634">Sačuvajte adresu</translation>
@@ -3848,6 +3850,7 @@ Dodatni detalji:
 <translation id="8870494189203302833">Istim redosledom sa odštampanom stranom nadole</translation>
 <translation id="8870700989640064057">Želite da štampate poverljivi fajl?</translation>
 <translation id="8871553383647848643">Prilagodite izgled pregledača</translation>
+<translation id="8874790741333031443">Probajte privremeno da dozvolite kolačiće treće strane, što znači slabiju zaštitu pregledanja, ali veću verovatnoću da će funkcije sajta raditi na očekivani način.</translation>
 <translation id="8874824191258364635">Unesite važeći broj kartice</translation>
 <translation id="8876033571432926051">Igre za opuštanje</translation>
 <translation id="8877780815363510165">Pecanje</translation>

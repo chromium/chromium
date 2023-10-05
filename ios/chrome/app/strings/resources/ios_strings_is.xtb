@@ -799,6 +799,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5360976571138293719">Fleiri stillingar sem tengjast persónuvernd, öryggi og gagnasöfnun má finna í: <ph name="BEGIN_LINK" />Google þjónustur<ph name="END_LINK" /></translation>
 <translation id="5386314158584363703">Þú finnur vefsvæði sem þú fylgir hér</translation>
 <translation id="5388358297987318779">Opna mynd</translation>
+<translation id="5396950905475481456">Bjóddu fjölskyldumeðlimum</translation>
 <translation id="5407969256130905701">Fleygja breytingum</translation>
 <translation id="5414763847370083940">Þú færð tilkynningu ef verð lækkar á einhverju vefsvæði.</translation>
 <translation id="5416022985862681400">Undanfarnir 7 dagar</translation>
@@ -1550,4 +1551,5 @@ Gögnin þín voru dulkóðuð með aðgangsorði <ph name="TIME" />. Sláðu þ
 <translation id="988141524645182168">Önnur tæki</translation>
 <translation id="989988560359834682">Breyta heimilisfangi</translation>
 <translation id="994757059139821576">Tillögur að greinum</translation>
+<translation id="999768147936949692">Sem stendur geturðu aðeins deilt aðgangsorðum með fjölskyldumeðlimum. <ph name="BEGIN_LINK" />Bjóddu fjölskyldumeðlimum<ph name="END_LINK" /> að slást í hópinn og fáðu meira út úr vörunum þínum og áskriftum á Google.</translation>
 </translationbundle>

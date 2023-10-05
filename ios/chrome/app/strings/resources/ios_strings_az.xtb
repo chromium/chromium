@@ -58,6 +58,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="1264156759663453185">Seçilmiş mətn qismən tərcümə üçün çox böyükdür.</translation>
 <translation id="1265739287306757398">Məlumat əldə edin</translation>
 <translation id="1272079795634619415">Dayandırın</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} parol}other{{count} parol}}</translation>
 <translation id="1275718070701477396">Seçilib</translation>
 <translation id="1279024913354609713">İcazə verməyin</translation>
 <translation id="1281818060020671000">Datanı idarə edin</translation>
@@ -191,6 +192,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="1987779152850321833">Chrome-dan maksimum yararlanmaq üçün aşağıda təklif edilənləri tamamlayın.</translation>
 <translation id="1989112275319619282">Baxın</translation>
 <translation id="1990820278544963435">Tapın</translation>
+<translation id="1991153180045413119">Parol paylaşıldı</translation>
 <translation id="1992055602764528852">Digər cihazlardakı tabları görmək üçün daxil olun.</translation>
 <translation id="199425419756152024">Parola Baxın</translation>
 <translation id="2008357574463816229">Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chrome datasını silin<ph name="END_LINK" />.</translation>
@@ -234,6 +236,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="2268044343513325586">Silin</translation>
 <translation id="2269277877025820298">Ardına baxın</translation>
 <translation id="2273327106802955778">Ətraflı menyu</translation>
+<translation id="2274800392139890332">Bu bağlamanı izləməyin</translation>
 <translation id="2275480389219976105">Ünvan tapıldı</translation>
 <translation id="2286505070150039482">Vurğulanmış Mətn</translation>
 <translation id="2287614783861766820">{count,plural, =1{Bu ünvan bu cihazdan silinəcək.}other{Bu ünvanlar bu cihazdan silinəcək.}}</translation>
@@ -242,6 +245,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="2299218006564889602">Parollarınız Google Parol Menecerində saxlanmazdan əvvəl cihazınızda şifrələnir.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Vebsaytda parolu dəyişin</translation>
+<translation id="2310154074101836012">Karuselə düzəliş edin</translation>
 <translation id="2316709634732130529">Təklif Edilmiş Paroldan İstifadə Edin</translation>
 <translation id="2320166752086256636">Klaviaturanı gizlədin.</translation>
 <translation id="2351097562818989364">Tərcümə ayarlarınız sıfırlanmışdır.</translation>
@@ -526,6 +530,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="380329542618494757">Ad</translation>
 <translation id="3803696231112616155">Bu saytı tərcümə etməyi təklif edin</translation>
 <translation id="3810973564298564668">İdarə edin</translation>
+<translation id="3818045793209708987">Bu bağlamanın izlənməsi dayandı</translation>
 <translation id="3818293389945649617">Növbətini Tapın</translation>
 <translation id="3819183753496523827">Oflaynsınız. İnternet bağlantınızı yoxlayın və yenidən cəhd edin.</translation>
 <translation id="3832419617903252251">Parol yalnız bu cihazda saxlanıldı</translation>
@@ -564,6 +569,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4018310736049373830">Fəaliyyəti idarə edin</translation>
 <translation id="4038354071007134711">Bu cihazdakı heç bir tətbiq faylı aça bilmir.</translation>
 <translation id="4042870976416480368">Səhifədə tapın</translation>
+<translation id="4043294777772912240"><ph name="USERNAME" /> Google Parol Meneceri ilə <ph name="WEBSITE" /> veb-saytına daxil olduqda istifadəçi adı və parolunuzdan istifadə edə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Birbaşa keçid yaradın və vurğuladığınız səhifənin bir hissəsində paylaşın.</translation>
 <translation id="4045648459118332842">Saxlanmış parollarınızı bir toxunuşla istənilən tətbiqdə əldə edin</translation>
 <translation id="4049507953662678203">Şəbəkə bağlantısının olmasına əmin olun və yenidən cəhd edin.</translation>
@@ -607,6 +613,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4286718549648564014">Ünvan <ph name="USER_EMAIL" /> hesabına köçürüldü</translation>
 <translation id="4293080268407233932">Axtarış</translation>
 <translation id="4302248187517737842">İstifadəçi adı yoxdur ••••••••</translation>
+<translation id="4302415908542657649">Parol paylaşılır</translation>
 <translation id="4304713468139749426">Parol Meneceri</translation>
 <translation id="430793432425771671">Hər şeyi Sinxronlaşdırın</translation>
 <translation id="4309403553630140242">Ətraflı məlumat üçün iki dəfə toxunun</translation>
@@ -642,6 +649,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4508750114462689118">Giriş reklamını bağlayın</translation>
 <translation id="4514889972748124117">Güclü Parol Təklif Edin...</translation>
 <translation id="4520798012560649652">Anonim rejimi haqqında ətraflı məlumat</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} əlfəcin}other{{count} əlfəcin}}</translation>
 <translation id="452750746583162491">Sinxronlaşdırılmış datanızı nəzərdən keçirin</translation>
 <translation id="4527660062930312477">Hesab idarə edilir</translation>
 <translation id="4536418791685807335">Yenidən daxil olmağa cəhd edin.</translation>
@@ -661,6 +669,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4619615317237390068">Digər cihazlardan tablar</translation>
 <translation id="4620246317052452550">Oxuduğunuz Səhifələr</translation>
 <translation id="4620888520263267479">Keçid Önizləmələrini göstərin</translation>
+<translation id="4622477750832577849">İzləməni aktivləşdirin</translation>
 <translation id="4630540211544979320">Səhifələri Tərcümə Edin</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> təkrar işlənən parol</translation>
 <translation id="4634124774493850572">Parol istifadə edin</translation>
@@ -810,6 +819,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="54401264925851789">Səhifə güvənliyi məlumatı</translation>
 <translation id="5443952882982198570">Kredit Kartları</translation>
 <translation id="5444892875087332195">Əlfəcinlər</translation>
+<translation id="5454211924362324495">Digərlərinin paroldan istifadə etməməsi üçün <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> veb-saytında onu dəyişin<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Oflayn versiyanı açın</translation>
 <translation id="5475069061743940393">Bağlamanın izlənilməsi</translation>
 <translation id="5478327362747197944">Veb-səhifədə tarixə klikləməklə Təqvim tədbiri yaradın.</translation>
@@ -1156,6 +1166,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7154343200458623869">Tapşırığı tamamlayın.</translation>
 <translation id="7161230316646448869">Əlfəcin, tarixçə və s. məlumatları bütün cihazlarda sinxronlaşdırın</translation>
 <translation id="7162168282402939716">Anonim tabları <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ilə kiliddən çıxarın</translation>
+<translation id="7168959436351276050">Bu Kartı gizlətdikdə bütün bağlama izləmə datası silinəcək</translation>
 <translation id="7172852049901402487">Güvənlik məsələlərinə qarşı parollarınızı qoruyun</translation>
 <translation id="7173114856073700355">Ayarları Açın</translation>
 <translation id="7189598951263744875">Paylaşın...</translation>

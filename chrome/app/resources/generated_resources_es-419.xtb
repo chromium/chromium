@@ -922,6 +922,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1723824996674794290">&amp;Nueva ventana</translation>
 <translation id="1724801751621173132">Modo de entrada de texto</translation>
 <translation id="1725562816265788801">Desplazamiento de pestañas</translation>
+<translation id="1726294682426724172">Las nuevas funciones incluyen el Borrador mágico de Google Fotos para quitar distracciones, mejores herramientas de videollamada y mucho más.</translation>
 <translation id="1726503915437308071">Fuente en cursiva</translation>
 <translation id="1729533290416704613">También controla qué página se muestra al realizar búsquedas desde el cuadro multifunción.</translation>
 <translation id="1730666151302379551">Olvidé mi contraseña anterior</translation>
@@ -3509,7 +3510,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3771851622616482156">Saldrás de este sitio, incluso si está en pestañas abiertas.</translation>
 <translation id="3772046291955677288">Leí y acepté las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Chrome y ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Notificaciones y fotos recientes</translation>
-<translation id="3774546890772201673">Actualiza tu <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Certificado del servidor SSL</translation>
 <translation id="3775705724665058594">Enviar a tus dispositivos</translation>
 <translation id="3776508619697147021">Permitir que los sitios soliciten permiso para descargar múltiples archivos de forma automática</translation>
@@ -3951,6 +3951,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4110485659976215879">Restablecer advertencia</translation>
 <translation id="4110490973560452005">Se completó la descarga: <ph name="FILE_NAME" />. Presiona mayúscula + F6 para ir al área de la barra de descargas.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sin conexión)</translation>
+<translation id="411318099524508025">El sistema se actualizó a <ph name="NAME" /></translation>
 <translation id="4113743276555482284">Contraseña del archivo</translation>
 <translation id="4114524937989710624">Estás viendo archivos sugeridos para que puedas regresar a la actividad más reciente en Google Drive.
         <ph name="BREAK" />
@@ -8778,7 +8779,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8077120325605624147">Cualquier sitio que visites puede mostrarte cualquier anuncio</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
 <translation id="80798452873915119">Los sitios pueden solicitar permiso para administrar las ventanas de todas tus pantallas</translation>
-<translation id="807990231167557618">Se actualizó la Chromebook.</translation>
 <translation id="8080028325999236607">Cerrar todas las pestañas</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> administra tu sesión. Los administradores pueden borrar tu perfil y supervisar el tráfico de red.</translation>

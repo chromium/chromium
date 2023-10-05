@@ -932,6 +932,7 @@
 <translation id="1723824996674794290">&amp;Шинэ цонх</translation>
 <translation id="1724801751621173132">Орох горим</translation>
 <translation id="1725562816265788801">Таб гүйлгэх</translation>
+<translation id="1726294682426724172">Шинэ онцлогуудад анхаарал сарниулах зүйлсийг хасах Google Зургийн Шидэт баллуур, сайжруулсан видео дуудлагын хэрэгсэл болон бусад зүйл багтана</translation>
 <translation id="1726503915437308071">Налуу фонт</translation>
 <translation id="1729533290416704613">Omnibox-оос хайлт хийхэд ямар хуудсуудыг харуулахыг мөн хянадаг.</translation>
 <translation id="1730666151302379551">Хуучин нууц үгийг мартсан</translation>
@@ -3523,7 +3524,6 @@
 <translation id="3771851622616482156">Таныг энэ сайтаас гаргах бөгөөд үүнд нээлттэй табын сайтууд мөн багтана</translation>
 <translation id="3772046291955677288">Би <ph name="BEGIN_LINK1" />Google-н үйлчилгээний нөхцөл<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome болон ChromeOS-н үйлчилгээний нэмэлт нөхцөлийг<ph name="END_LINK2" /> уншсан бөгөөд зөвшөөрч байна.</translation>
 <translation id="3774166835015494435">Саяхны зургууд болон мэдэгдлүүд</translation>
-<translation id="3774546890772201673"><ph name="NAME" />-г шинэчилнэ үү.</translation>
 <translation id="3775432569830822555">SSL серверийн сертификат</translation>
 <translation id="3775705724665058594">Төхөөрөмжүүддээ илгээх</translation>
 <translation id="3776508619697147021">Сайтууд олон файлыг автоматаар татахыг хүсэх боломжтой</translation>
@@ -3964,6 +3964,7 @@
 <translation id="4110485659976215879">Сануулгыг сэргээх</translation>
 <translation id="4110490973560452005">Татаж дууссан: <ph name="FILE_NAME" />. Татаж авсан файл хадгалах эсвэл нээх хэсэгт гүйлгэхийн тулд Shift+F6-г дарна уу.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="411318099524508025">Таныг <ph name="NAME" /> руу сайжруулсан.</translation>
 <translation id="4113743276555482284">Файлын нууц үг</translation>
 <translation id="4114524937989710624">Та Google Драйвт хамгийн саяхны үйл ажиллагаа руугаа хялбархан буцахад тань туслах санал болгосон файлуудыг харж байна.
         <ph name="BREAK" />
@@ -8788,7 +8789,6 @@
 <translation id="8077120325605624147">Таны зочилсон ямар ч сайт танд ямар ч зар харуулах боломжтой</translation>
 <translation id="8077579734294125741">Chrome-н бусад профайл</translation>
 <translation id="80798452873915119">Сайтууд таны бүх дэлгэц дээр цонх удирдахыг хүсэх боломжтой</translation>
-<translation id="807990231167557618">Таны Chromebook-г шинэчилсэн.</translation>
 <translation id="8080028325999236607">Бүх цонхнуудыг хаах</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Таны харилцан үйлдлийг <ph name="MANAGER_NAME" /> удирддаг. Администраторууд таны профайлыг устгаж, мөн сүлжээний ачааллыг тань хянах боломжтой.</translation>

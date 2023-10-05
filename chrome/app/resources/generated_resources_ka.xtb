@@ -925,6 +925,7 @@
 <translation id="1723824996674794290">&amp;ახალი ფანჯარა</translation>
 <translation id="1724801751621173132">შეყვანის რეჟიმი</translation>
 <translation id="1725562816265788801">ჩანართებში გადაადგილება</translation>
+<translation id="1726294682426724172">ახალ ფუნქციებს შორისაა ჯადოსნური საშლელი Google Photos-ში (ხელისშემშლელი ფაქტორების მოსაშორებლად), ვიდეოზარების გაუმჯობესებული ხელსაწყოები და სხვა</translation>
 <translation id="1726503915437308071">დახრილი შრიფტი</translation>
 <translation id="1729533290416704613">იგი ასევე აკონტროლებს, თუ რომელი გვერდი გამოჩნდება Omnibox-ში ძიების დროს.</translation>
 <translation id="1730666151302379551">ძველი პაროლი დამავიწყდა</translation>
@@ -2157,6 +2158,7 @@
 <translation id="2671451824761031126">თქვენი სანიშნეები და პარამეტრები მზად არის</translation>
 <translation id="2672142220933875349">crx ფაილი დაზიანებულია, ამოღება ვერ მოხერხდა.</translation>
 <translation id="2673135533890720193">დათვალიერების ისტორიის წაკითხვა</translation>
+<translation id="2673848446870717676">დარწმუნდით, რომ თქვენი Bluetooth-მოწყობილობა დაწყვილების რეჟიმშია და ახლოს მდებარეობს. დააწყვილეთ მხოლოდ ის მოწყობილობები, რომლებსაც ენდობით. დაწყვილებული მოწყობილობები ხილულია ამ Chromebook-ის ყველა მომხმარებლისთვის.</translation>
 <translation id="2673873887296220733">დაკოპირდეს 1 ფაილი <ph name="CLOUD_PROVIDER" />-ში გასახსნელად?</translation>
 <translation id="2674764818721168631">გამორთული</translation>
 <translation id="2676084251379299915">ეს გაფართოება გაითიშა კორპორაციული წესების მიხედვით, რადგან ის აღარ არის ხელმისაწვდომი Chrome Web Store-ში.</translation>
@@ -3512,7 +3514,6 @@
 <translation id="3771851622616482156">თქვენ გამოხვალთ ამ საიტიდან, მათ შორის, გახსნილ ჩანართებზე</translation>
 <translation id="3772046291955677288">წავიკითხე <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობები<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Chrome-ისა და ChromeOS-ის მომსახურების დამატებითი პირობები<ph name="END_LINK2" /> და ვეთანხმები მათ.</translation>
 <translation id="3774166835015494435">ბოლოდროინდელი ფოტოები და შეტყობინებები</translation>
-<translation id="3774546890772201673">განაახლეთ <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">SSL სერვერის სერტიფიკატი</translation>
 <translation id="3775705724665058594">გააგზავნეთ თქვენს მოწყობილობებზე</translation>
 <translation id="3776508619697147021">საიტებს შეუძლია რამდენიმე ფაილის ავტომატურად ჩამოტვირთვის თხოვნა</translation>
@@ -3834,6 +3835,7 @@
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> სანიშნეების ყველა თქვენს მობილურ მოწყობილობაზე მისაღებად.</translation>
 <translation id="4014432863917027322">აღვადგინოთ „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4015163439792426608">სარგებლობთ გაფართოებებით? მარტივად <ph name="BEGIN_LINK" />მართეთ ყველა გაფართოება<ph name="END_LINK" /> ერთი სივრციდან.</translation>
+<translation id="4016762287427926315">ნებართვები, რომლებსაც „<ph name="APP_NAME" />“-ისთვის დაუშვებთ, დაშვებული იქნება ამ აპისთვისაც. <ph name="BEGIN_LINK" />მართვა<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">ამ ბმულისთვის QR კოდის შექმნა</translation>
 <translation id="4019983356493507433">სანიშნეების სიის რედაქტირება</translation>
 <translation id="4020327272915390518">ვარიანტების მენიუ</translation>
@@ -3954,6 +3956,7 @@
 <translation id="4110485659976215879">გაფრთხილების აღდგენა</translation>
 <translation id="4110490973560452005">ჩამოტვირთვა დასრულდა: <ph name="FILE_NAME" />. ჩამოტვირთვების ზოლის არეზე გადასასვლელად დააჭირეთ კლავიშთა კომბინაციას: Shift+F6.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ხაზგარეშე)</translation>
+<translation id="411318099524508025">თქვენ გადახვედით <ph name="NAME" />-ზე.</translation>
 <translation id="4113743276555482284">ფაილის პაროლი</translation>
 <translation id="4114524937989710624">თქვენ ხედავთ შემოთავაზებულ ფაილებს, რომლებიც დაგეხმარებათ, მარტივად დაუბრუნდეთ თქვენს ყველაზე ბოლოდროინდელ აქტივობას Google Drive-ში.
         <ph name="BREAK" />
@@ -6408,6 +6411,7 @@
 <translation id="6156863943908443225">სკრიპტის ქეში</translation>
 <translation id="6156944117133588106">ნავიგაციის ღილაკების ჩვენება ტაბლეტის რეჟიმში</translation>
 <translation id="615930144153753547">საიტებს შეუძლია სურათების ჩვენება</translation>
+<translation id="6160290816917599257">კოდი არასწორია. თქვენი შენატანის ფორმატი უნდა იყოს <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ მისამართი<ph name="LPA_2" />$<ph name="LPA_3" />დამთხვევის არასავალდებულო იდენტიფიკატორი<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">ავტორიზაციისთვის სერტიფიკატების უზრუნველყოფა</translation>
 <translation id="6163363155248589649">&amp;ნორმალური</translation>
 <translation id="6163376401832887457">Kerberos-ის პარამეტრები</translation>
@@ -8438,6 +8442,7 @@
 <translation id="7807117920154132308">როგორც ჩანს, <ph name="SUPERVISED_USER_NAME" />-მა უკვე დააყენა Google ასისტენტი სხვა მოწყობილობაზე. ამ მოწყობილობაზე ეკრანის კონტექსტის ჩართვის შემთხვევაში <ph name="SUPERVISED_USER_NAME" /> ასისტენტის კიდევ უფრო მეტ შესაძლებლობას გამოიყენებს.</translation>
 <translation id="7807711621188256451">ყოველთვის მიეცით <ph name="HOST" />-ს თქვენს კამერაზე წვდომის ნება</translation>
 <translation id="7810202088502699111">კონტექსტური ფანჯრები დაბლოკილია ამ გვერდზე.</translation>
+<translation id="7810367892333449285">თქვენი შენატანის ფორმატი უნდა იყოს <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ მისამართი<ph name="LPA_2" />$<ph name="LPA_3" />დამთხვევის არასავალდებულო იდენტიფიკატორი<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;კოპირება</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">მალსახმობი <ph name="SHORTCUT" />-ის რედაქტირება გაფართოებისთვის <ph name="EXTENSION_NAME" /></translation>
@@ -8778,7 +8783,6 @@
 <translation id="8077120325605624147">თქვენთვის რეკლამის ჩვენება შეუძლია ნებისმიერ საიტს, რომელსაც სტუმრობთ</translation>
 <translation id="8077579734294125741">სხვა Chrome პროფილები</translation>
 <translation id="80798452873915119">საიტებს შეუძლია თქვენს ყველა ეკრანზე ფანჯრების მართვის მოთხოვნა</translation>
-<translation id="807990231167557618">თქვენი Chromebook განახლებულია.</translation>
 <translation id="8080028325999236607">ყველა ჩანართის დახურვა</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">თქვენს სესიას მართავს <ph name="MANAGER_NAME" />. ადმინისტრატორებს შეუძლიათ თქვენი პროფილის წაშლა და თქვენი ქსელის ტრაფიკზე დაკვირვება.</translation>
@@ -9416,6 +9420,7 @@
 <translation id="8605428685123651449">SQLite მეხსიერება</translation>
 <translation id="8607171490667464784">როცა უმოქმედოა და მუშაობს ბატარეაზე</translation>
 <translation id="8607326572516521315">სპამისა და თაღლითობისგან დაცვა ფუნქციონირებს პირადი მდგომარეობის ჟეტონების საფუძველზე და ეხმარება საიტებს თაღლითობასთან ბრძოლაში, ასევე, ბოტების ადამიანებისგან გარჩევაში.</translation>
+<translation id="8607828412110648570">დარწმუნდით, რომ თქვენი Bluetooth-მოწყობილობა დაწყვილების რეჟიმშია და ახლოს მდებარეობს. დააწყვილეთ მხოლოდ ის მოწყობილობები, რომლებსაც ენდობით. დაწყვილებული მოწყობილობები ხილულია ამ Chromebook-ის ყველა მომხმარებლისთვის. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos ბილეთის დამატება</translation>
 <translation id="8609465669617005112">გადაადგილება ზემოთ</translation>
 <translation id="8610103157987623234">ფორმატი არასწორია, ცადეთ ხელახლა</translation>

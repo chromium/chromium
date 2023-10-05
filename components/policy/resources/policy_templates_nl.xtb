@@ -737,6 +737,7 @@ Als je dit beleid niet instelt, krijgen gebruikers een waarschuwing (in plaats v
 <translation id="165769015320654523">Automatisch rechten aan deze sites geven om verbinding te maken met HID-apparaten met de opgegeven leveranciers- en product-ID's.</translation>
 <translation id="1659406551862245683">Het standaardgedrag voor formaataanpassing van het virtuele toetsenbord is gewijzigd om het formaat van het opmaakkijkvenster aan te passen</translation>
 <translation id="166427968280387991">Proxyserver</translation>
+<translation id="1670638264428789878">Gerelateerde websitesets aanzetten</translation>
 <translation id="1673097259557436886">Websites altijd laten weten dat er geen betaalmethoden zijn opgeslagen</translation>
 <translation id="1674287836076801014">SAML</translation>
 <translation id="1675002386741412210">Ondersteund op:</translation>
@@ -1824,6 +1825,13 @@ Opmerking: Als je een veld overslaat, betekent dit dat alle waarden overeenkomen
 
       Gebruikers kunnen de mappen waarin de bookmarks zijn geplaatst niet wijzigen (maar ze kunnen deze wel verbergen via de bookmarkbalk). De standaard mapnaam voor beheerde bookmarks is 'Beheerde bookmarks' maar je kunt deze naam wijzigen door een nieuw subwoordenboek aan het beleid toe te voegen met één sleutel met de naam '<ph name="TOPLEVEL_NAME" />' en met de gewenste map als waarde. Beheerde bookmarks worden niet gesynchroniseerd met het gebruikersaccount en kunnen niet worden gewijzigd via extensies.</translation>
 <translation id="2552966063069741410">Tijdzone</translation>
+<translation id="2554010621206996293">Met dit beleid kun je de functie Gerelateerde websitesets aanzetten.
+
+Dit beleid overschrijft het beleid <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
+
+Als je dit beleid niet instelt of instelt op True, staat de functie Gerelateerde websitesets aan.
+
+Als je dit beleid instelt op False, staat de functie Gerelateerde websitesets uit.</translation>
 <translation id="2555244983262829274">De startknop verbergen op de werkbalk</translation>
 <translation id="2562213287271514629">Toestaan dat verouderde <ph name="FLASH_PLUGIN_NAME" /> wordt gebruikt als normale <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="2562339630163277285">Hiermee kun je de URL opgeven van de zoekmachine die wordt gebruikt om instantresultaten te leveren. De URL moet de tekenreeks <ph name="SEARCH_TERM_MARKER" /> bevatten. Deze tekenreeks wordt op het moment van de zoekopdracht vervangen door de tekst die de gebruiker tot op dat moment heeft getypt.
@@ -1841,6 +1849,7 @@ Opmerking: Als je een veld overslaat, betekent dit dat alle waarden overeenkomen
 <translation id="2576324725151524912">Ontwikkelaarsmodus voor geïsoleerde apps toestaan.</translation>
 <translation id="257717978573041245">Hardwareversnelling aanzetten</translation>
 <translation id="257788512393330403">Het wachtwoord moet elke zes uur worden opgegeven</translation>
+<translation id="2580606791930800692">Hiermee stel je een lijst in voor regels voor gegevensbeheer.</translation>
 <translation id="2580757713966614760">Als je dit beleid instelt, kun je aangeven welk toegangsbeleid wordt toegepast op bulksgewijze printerconfiguratie en beheren welke printers van <ph name="DEVICE_PRINTERS_POLICY_NAME" /> beschikbaar zijn voor gebruikers.
 
       * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_BLOCKLISTRESTRICTIONS" /> (waarde 0), <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> kan de toegang tot de opgegeven printers beperken,
@@ -3673,6 +3682,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 <translation id="4157594634940419685">Toegang verlenen aan systeemeigen CUPS-printers</translation>
 <translation id="4158531549614162499">Google Drive-synchronisatie via mobiele verbindingen aanzetten</translation>
 <translation id="4160962198980004898">Bron van MAC-adres van apparaat wanneer het is gedockt</translation>
+<translation id="4161019158509414446">Beheert het beleid voor de functie Gerelateerde websitesets.</translation>
 <translation id="4164511138197196839">Als je dit beleid toepast, worden extensies waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store uitgezet in <ph name="PRODUCT_NAME" />.
 Dit beleid geldt alleen voor extensies die zijn geïnstalleerd en geüpdatet via de Chrome Web Store.
 
@@ -6114,6 +6124,7 @@ Als je dit beleid instelt op <ph name="DISALLOW" />, werken de opties <ph name="
       Als je het beleid instelt op False, worden Signed HTTP Exchanges niet geladen.</translation>
 <translation id="6368011194414932347">De homepage-URL configureren</translation>
 <translation id="6368403635025849609">JavaScript toestaan op deze sites</translation>
+<translation id="6371005337713685988">Instellingen voor Gerelateerde websitesets</translation>
 <translation id="6371561334154580937">Dialoogvenster voor uitloggen tonen als het laatste venster wordt gesloten.</translation>
 <translation id="6372105930898423193">Hiermee sta je toe dat de AppCache-functie opnieuw wordt aangezet, ook als deze standaard is uitgezet.</translation>
 <translation id="6373299801585455337">Rapportage van CPU-informatie van apparaat aanzetten</translation>
@@ -7827,6 +7838,7 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
 <translation id="7758378441185523981">Ambient-verificatie voor profieltypen aanzetten.</translation>
 <translation id="776110834126722255">Beëindigd</translation>
 <translation id="7763614521440615342">Contentsuggesties tonen op de nieuwe tabbladpagina</translation>
+<translation id="776465643636059256">Gerelateerde websitesets uitzetten</translation>
 <translation id="7765879851993224640">Toestaan dat Smart Lock Signin wordt gebruikt</translation>
 <translation id="7767066506143083523">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van de sites die tabbladopname mogen gebruiken.
 

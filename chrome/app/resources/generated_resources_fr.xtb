@@ -359,7 +359,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1275936815032730048">Lanceur d'applications+Flèche vers la droite</translation>
 <translation id="1276994519141842946">Impossible de désinstaller <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Créez un code différent de l'actuel</translation>
-<translation id="1277597051786235230">&amp;Rechercher "<ph name="SEARCH_TERMS" />" dans un nouvel onglet dans <ph name="SEARCH_ENGINE" /></translation>
+<translation id="1277597051786235230">&amp;Rechercher "<ph name="SEARCH_TERMS" />" dans un nouvel onglet <ph name="SEARCH_ENGINE" /></translation>
 <translation id="1278859221870828664">Examiner les applis et services Google Play</translation>
 <translation id="127946606521051357">Un appareil à proximité essaie de partager un contenu</translation>
 <translation id="1280965841156951489">Modifier les fichiers</translation>
@@ -926,6 +926,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1723824996674794290">&amp;Nouvelle fenêtre</translation>
 <translation id="1724801751621173132">Mode de saisie</translation>
 <translation id="1725562816265788801">Défilement des onglets</translation>
+<translation id="1726294682426724172">Les nouvelles fonctionnalités comprennent la Gomme magique de Google Photos pour effacer les éléments indésirables, les outils d'appel vidéo améliorés et bien plus encore</translation>
 <translation id="1726503915437308071">Police en italique</translation>
 <translation id="1729533290416704613">Elle contrôle également la page qui s'affiche lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="1730666151302379551">Ancien mot de passe oublié</translation>
@@ -2158,6 +2159,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2671451824761031126">Vos favoris et vos paramètres sont prêts</translation>
 <translation id="2672142220933875349">Fichier crx incorrect. Échec du déballage.</translation>
 <translation id="2673135533890720193">Consulter votre historique de navigation</translation>
+<translation id="2673848446870717676">Assurez-vous que votre appareil Bluetooth est en mode association et à proximité. Associez uniquement des appareils de confiance. Les appareils associés sont visibles dans tous les comptes sur ce Chromebook.</translation>
 <translation id="2673873887296220733">Copier 1 fichier dans <ph name="CLOUD_PROVIDER" /> et l'ouvrir ?</translation>
 <translation id="2674764818721168631">Désactivé</translation>
 <translation id="2676084251379299915">Cette extension a été désactivée par une règle d'entreprise, car elle n'est plus disponible sur le Chrome Web Store.</translation>
@@ -2823,7 +2825,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="32101887417650595">Connexion à l'imprimante impossible</translation>
 <translation id="3210736980143419785">Impossible de terminer le téléchargement</translation>
 <translation id="321084946921799184">Jaune et blanc</translation>
-<translation id="3211126692872351610">&amp;Rechercher "<ph name="SEARCH_TERMS" />" dans un nouvel onglet dans <ph name="SEARCH_ENGINE" /></translation>
+<translation id="3211126692872351610">&amp;Rechercher "<ph name="SEARCH_TERMS" />" dans un nouvel onglet <ph name="SEARCH_ENGINE" /></translation>
 <translation id="321356136776075234">UO de l'appareil (par exemple, OU=Chromebooks, DC=example, DC=com)</translation>
 <translation id="321367297115597343">Ajouter un favori à ce dossier</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Il se peut qu'une voix similaire ou un enregistrement puissent accéder aux résultats personnels de <ph name="SUPERVISED_USER_NAME" />.</translation>
@@ -3513,7 +3515,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3771851622616482156">Vous allez être déconnecté de ce site, y compris dans les onglets ouverts</translation>
 <translation id="3772046291955677288">J'ai lu et j'accepte les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" />, ainsi que les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Chrome et Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Photos et notifications récentes</translation>
-<translation id="3774546890772201673">Mettez à jour <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Certificat du serveur SSL</translation>
 <translation id="3775705724665058594">Envoyer à vos appareils</translation>
 <translation id="3776508619697147021">Les sites peuvent demander à télécharger automatiquement plusieurs fichiers</translation>
@@ -3835,6 +3836,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4010917659463429001">Pour synchroniser vos favoris avec votre appareil mobile, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Réparer "<ph name="EXTENSION_NAME" />" ?</translation>
 <translation id="4015163439792426608">Vous avez des extensions ? <ph name="BEGIN_LINK" />Gérez-les<ph name="END_LINK" /> facilement depuis une seule et même interface.</translation>
+<translation id="4016762287427926315">Les autorisations que vous accordez à <ph name="APP_NAME" /> le seront aussi pour cette appli. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Créer un code QR pour ce lien</translation>
 <translation id="4019983356493507433">Modifier la liste des favoris</translation>
 <translation id="4020327272915390518">Menu Options</translation>
@@ -3955,6 +3957,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4110485659976215879">Restaurer l'avertissement</translation>
 <translation id="4110490973560452005">Téléchargement terminé : <ph name="FILE_NAME" />. Appuyez sur Maj+F6 pour accéder à la zone de la barre de téléchargements.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (hors connexion)</translation>
+<translation id="411318099524508025">Vous êtes passé à <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Mot de passe du fichier</translation>
 <translation id="4114524937989710624">Des fichiers vous sont suggérés pour vous aider à retrouver facilement votre dernière activité dans Google Drive.
         <ph name="BREAK" />
@@ -6410,6 +6413,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6156863943908443225">Cache des scripts</translation>
 <translation id="6156944117133588106">Afficher les boutons de navigation en mode tablette</translation>
 <translation id="615930144153753547">Les sites peuvent afficher des images</translation>
+<translation id="6160290816917599257">Code non valide. Il devrait se présenter comme suit : <ph name="LPA_0" />$<ph name="LPA_1" />Adresse SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />identifiant de mise en correspondance facultatif<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Fournir des certificats pour l'authentification</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Paramètres Kerberos</translation>
@@ -8444,6 +8448,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7807117920154132308">Apparemment, <ph name="SUPERVISED_USER_NAME" /> a déjà configuré l'Assistant Google sur un autre appareil. <ph name="SUPERVISED_USER_NAME" /> peut profiter encore plus de l'Assistant en activant le contexte de l'écran sur cet appareil.</translation>
 <translation id="7807711621188256451">Toujours autoriser <ph name="HOST" /> à accéder à votre caméra</translation>
 <translation id="7810202088502699111">Des fenêtres pop-up ont été bloquées sur cette page.</translation>
+<translation id="7810367892333449285">Le code devrait se présenter comme suit : <ph name="LPA_0" />$<ph name="LPA_1" />Adresse SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />identifiant de mise en correspondance facultatif<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Copier</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Modifier le raccourci <ph name="SHORTCUT" /> pour <ph name="EXTENSION_NAME" /></translation>
@@ -8785,7 +8790,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8077120325605624147">Tous les sites que vous consultez peuvent vous montrer des annonces</translation>
 <translation id="8077579734294125741">Autres profils Chrome</translation>
 <translation id="80798452873915119">Les sites peuvent demander à gérer les fenêtres de tous vos écrans</translation>
-<translation id="807990231167557618">Votre Chromebook est à jour.</translation>
 <translation id="8080028325999236607">Fermer tous les onglets</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Votre session est gérée par <ph name="MANAGER_NAME" />. Les administrateurs peuvent supprimer votre profil et surveiller votre trafic réseau.</translation>
@@ -9423,6 +9427,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8605428685123651449">Mémoire SQLite</translation>
 <translation id="8607171490667464784">Lorsque l'appareil est inactif et sur batterie</translation>
 <translation id="8607326572516521315">La réduction du spam et de la fraude repose sur des jetons d'état privés pour aider les sites à lutter contre la fraude et à distinguer les robots des humains.</translation>
+<translation id="8607828412110648570">Assurez-vous que votre appareil Bluetooth est en mode association et à proximité. Associez uniquement des appareils de confiance. Les appareils associés sont visibles dans tous les comptes sur ce Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Ajouter un ticket Kerberos</translation>
 <translation id="8609465669617005112">Monter</translation>
 <translation id="8610103157987623234">Format incorrect, veuillez réessayer</translation>

@@ -799,6 +799,7 @@
 <translation id="5360976571138293719">如需更多與私隱權、安全性和資料收集相關的設定，請參閱 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="5386314158584363703">此處會顯示您已追蹤的網站</translation>
 <translation id="5388358297987318779">開啟圖片</translation>
+<translation id="5396950905475481456">邀請家庭成員</translation>
 <translation id="5407969256130905701">捨棄變更</translation>
 <translation id="5414763847370083940">如果產品在任何網站上降價，系統將通知您。</translation>
 <translation id="5416022985862681400">最近 7 天</translation>
@@ -1548,4 +1549,5 @@
 <translation id="988141524645182168">其他裝置</translation>
 <translation id="989988560359834682">編輯地址</translation>
 <translation id="994757059139821576">文章建議</translation>
+<translation id="999768147936949692">目前只能與家庭成員分享密碼。你可<ph name="BEGIN_LINK" />邀請家庭成員<ph name="END_LINK" />加入群組，充分發揮 Google 的產品和訂閱服務的功用。</translation>
 </translationbundle>

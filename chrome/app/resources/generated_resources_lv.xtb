@@ -927,6 +927,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1723824996674794290">Jauns logs</translation>
 <translation id="1724801751621173132">Ievades režīms</translation>
 <translation id="1725562816265788801">Ciļņu ritināšana</translation>
+<translation id="1726294682426724172">Pakalpojumā Google fotoattēli ir jaunas funkcijas, tostarp funkcija Brīnumainā dzēšgumija, kas ļauj novērst traucēkļus, kā arī uzlaboti videozvanu rīki u.c.</translation>
 <translation id="1726503915437308071">Fonts slīprakstā</translation>
 <translation id="1729533290416704613">Tas nosaka arī to, kāda lapa tiks rādīta, kad meklēsiet, izmantojot universālo lodziņu.</translation>
 <translation id="1730666151302379551">Aizmirsu iepriekšējo paroli</translation>
@@ -3514,7 +3515,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3771851622616482156">Jūs tiksiet izrakstīts no šīs vietnes, tostarp atvērtajās cilnēs</translation>
 <translation id="3772046291955677288">Es izlasīju <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumus<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumus<ph name="END_LINK2" /> un piekrītu tiem.</translation>
 <translation id="3774166835015494435">Jaunākie fotoattēli un paziņojumi</translation>
-<translation id="3774546890772201673">Atjauniniet <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">SSL servera sertifikāts</translation>
 <translation id="3775705724665058594">Sūtīšana uz jūsu ierīcēm</translation>
 <translation id="3776508619697147021">Atļaut vietnēm pieprasīt atļauju automātiski lejupielādēt vairākus failus</translation>
@@ -3956,6 +3956,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4110485659976215879">Atjaunot brīdinājumu</translation>
 <translation id="4110490973560452005">Lejupielāde ir pabeigta: <ph name="FILE_NAME" />. Nospiediet taustiņus Shift+F6, lai pārslēgtos uz lejupielāžu joslas zonu.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (bezsaistē)</translation>
+<translation id="411318099524508025">Jūs veicāt jaunināšanu uz <ph name="NAME" /></translation>
 <translation id="4113743276555482284">Faila parole</translation>
 <translation id="4114524937989710624">Jums tiek rādīti ieteiktie faili, lai palīdzētu ērti atgriezties pie pēdējām darbībām Google diskā.
         <ph name="BREAK" />
@@ -8783,7 +8784,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8077120325605624147">Jebkurā jūsu apmeklētā vietnē var tikt rādītas jebkādas reklāmas</translation>
 <translation id="8077579734294125741">Citi Chrome profili</translation>
 <translation id="80798452873915119">Vietnes var pieprasīt atļauju pārvaldīt logus visos jūsu displejos</translation>
-<translation id="807990231167557618">Chromebook dators ir atjaunināts.</translation>
 <translation id="8080028325999236607">Aizvērt visas cilnes</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Jūsu sesiju pārvalda <ph name="MANAGER_NAME" />. Administratori var dzēst jūsu profilu un pārraudzīt jūsu tīkla datplūsmu.</translation>

@@ -1733,6 +1733,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">您正在使用螢幕鎖定功能填入密碼</translation>
 <translation id="4558551763791394412">嘗試停用擴充程式。</translation>
+<translation id="456043042661026303">正在對付款資料進行安全檢查</translation>
 <translation id="4566017918361049074">戶外活動</translation>
 <translation id="4567686777917670400">您的管理員可遠端變更瀏覽器設定。此裝置上的活動也可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">在新視窗中審核 Cookie 和網站資料清單</translation>
@@ -3360,6 +3361,7 @@
 <translation id="7865448901209910068">最佳速度</translation>
 <translation id="7870281855125116701">已找到折扣</translation>
 <translation id="7871445724586827387">變更 Google 帳戶密碼</translation>
+<translation id="7876615279559620350">在 Google 帳戶中儲存此卡的 CVC 可加快結帳速度</translation>
 <translation id="7877007680666472091">受保護的內容 ID</translation>
 <translation id="7878562273885520351">您的密碼可能會被盜用</translation>
 <translation id="7880146494886811634">儲存地址</translation>
@@ -3847,6 +3849,7 @@
 <translation id="8870494189203302833">相同順序 (正面朝下)</translation>
 <translation id="8870700989640064057">要列印機密檔案嗎？</translation>
 <translation id="8871553383647848643">自訂瀏覽器外觀</translation>
+<translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie，這代表瀏覽保護程度較低，但網站功能較容易如期運作。</translation>
 <translation id="8874824191258364635">請輸入有效的信用卡號碼</translation>
 <translation id="8876033571432926051">休閒遊戲</translation>
 <translation id="8877780815363510165">釣魚</translation>

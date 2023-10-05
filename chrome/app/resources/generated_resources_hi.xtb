@@ -572,7 +572,7 @@
 <translation id="1455119378540982311">विंडो के प्रीसेट साइज़</translation>
 <translation id="1457907785077086338">ऐप्लिकेशन के बैज का रंग</translation>
 <translation id="146000042969587795">यह फ़्रेम ब्लॉक किया गया था क्योंकि इसमें कुछ असुरक्षित सामग्री मौजूद है.</translation>
-<translation id="1461041542809785877">प्रदर्शन</translation>
+<translation id="1461041542809785877">परफ़ॉर्मेंस</translation>
 <translation id="1461177659295855031">बुकमार्क बार वाले फ़ोल्डर में ले जाएं</translation>
 <translation id="1461288887896722288">आपने अभी-अभी मैनेज किए जा रहे खाते से साइन इन किया है. मैनेज की जा रही नई प्रोफ़ाइल बनाने पर, आपको उस खाते से जुड़े कुछ संसाधनों का ऐक्सेस मिल जाएगा.</translation>
 <translation id="146219525117638703">ONC स्‍थिति</translation>
@@ -937,6 +937,7 @@
 <translation id="1723824996674794290">&amp;नई विंडो</translation>
 <translation id="1724801751621173132">इनपुट मोड</translation>
 <translation id="1725562816265788801">टैब स्क्रोलिंग</translation>
+<translation id="1726294682426724172">नई सुविधाओं में, मैजिक इरेज़र, वीडियो कॉल के लिए बेहतर टूल वगैरह शामिल हैं. Google Photos के मैजिक इरेज़र की मदद से, फ़ोटो में मौजूद ध्यान भटकाने वाली चीज़ें हटाई जा सकती हैं</translation>
 <translation id="1726503915437308071">इटैलिक फ़ॉन्ट</translation>
 <translation id="1729533290416704613">इससे यह भी नियंत्रित होता है कि ऑम्निबॉक्‍स से खोजते समय आपको कौन सा पेज दिखाया जाए.</translation>
 <translation id="1730666151302379551">पुराना पासवर्ड याद नहीं है</translation>
@@ -2173,6 +2174,7 @@
 <translation id="2671451824761031126">आपके बुकमार्क और सेटिंग तैयार हैं</translation>
 <translation id="2672142220933875349">खराब crx फ़ाइल, अनपैक करना विफल.</translation>
 <translation id="2673135533890720193">अपना ब्राउज़िंग इतिहास पढ़ें</translation>
+<translation id="2673848446870717676">पक्का करें कि आपका ब्लूटूथ डिवाइस, दूसरे डिवाइस से जोड़ने वाले मोड में है और आस-पास है. सिर्फ़ भरोसेमंद डिवाइसों के साथ ही जोड़ें. जोड़े गए डिवाइस, इस Chromebook पर मौजूद सभी खातों पर दिखते हैं.</translation>
 <translation id="2673873887296220733">क्या एक फ़ाइल को खोलने के लिए, उसे <ph name="CLOUD_PROVIDER" /> पर कॉपी करना है?</translation>
 <translation id="2674764818721168631">बंद है</translation>
 <translation id="2676084251379299915">एंटरप्राइज़ नीति के तहत इस एक्सटेंशन को बंद कर दिया गया है, क्योंकि यह अब Chrome Web Store पर उपलब्ध नहीं है.</translation>
@@ -3528,7 +3530,6 @@
 <translation id="3771851622616482156">आपको इस साइट और खुले हुए टैब से साइन आउट कर दिया जाएगा</translation>
 <translation id="3772046291955677288">मैंने <ph name="BEGIN_LINK1" />Google की सेवा की शर्तें<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome और ChromeOS की सेवा की अन्य शर्तें<ph name="END_LINK2" /> पढ़ ली हैं और मैं उनसे सहमत हूं.</translation>
 <translation id="3774166835015494435">हाल ही की फ़ोटो और सूचनाएं</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> अपडेट करें.</translation>
 <translation id="3775432569830822555">SSL सर्वर प्रमाणपत्र</translation>
 <translation id="3775705724665058594">अपने डिवाइस पर भेजें</translation>
 <translation id="3776508619697147021">साइटें कई फ़ाइलों को अपने-आप डाउनलोड करने के लिए पूछ सकती हैं</translation>
@@ -3849,6 +3850,7 @@
 <translation id="4010917659463429001">अपने मोबाइल डिवाइस पर अपने बुकमार्क पाने के लिए, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" को ठीक करें?</translation>
 <translation id="4015163439792426608">एक्सटेंशन मिल गए? एक ही जगह पर आसानी से अपने <ph name="BEGIN_LINK" />एक्सटेंशन प्रबंधित करें<ph name="END_LINK" />.</translation>
+<translation id="4016762287427926315">आपने <ph name="APP_NAME" /> को जो अनुमतियां दी हैं वे इस ऐप्लिकेशन के लिए भी लागू होंगी. <ph name="BEGIN_LINK" />मैनेज करें<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">इस लिंक के लिए क्यूआर कोड बनाएं</translation>
 <translation id="4019983356493507433">बुकमार्क की सूची में बदलाव करें</translation>
 <translation id="4020327272915390518">विकल्प मेन्यू</translation>
@@ -3969,6 +3971,7 @@
 <translation id="4110485659976215879">चेतावनी दिखाना फिर से चालू करें</translation>
 <translation id="4110490973560452005">डाउनलोड पूरा हो गया: <ph name="FILE_NAME" />. डाउनलोड बार वाले हिस्से पर जाने के लिए Shift+F6 दबाएं.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफ़लाइन)</translation>
+<translation id="411318099524508025">आपके ब्राउज़र को <ph name="NAME" /> पर अपग्रेड कर दिया गया है.</translation>
 <translation id="4113743276555482284">फ़ाइल का पासवर्ड</translation>
 <translation id="4114524937989710624">आपको फ़ाइलों के सुझाव दिखाए जा रहे हैं, ताकि आप उन फ़ाइलों को आसानी से ढूंढ सकें जिन्हें आपने हाल ही में Google Drive पर इस्तेमाल किया था.
         <ph name="BREAK" />
@@ -6424,6 +6427,7 @@
 <translation id="6156863943908443225">स्क्रिप्ट कैश</translation>
 <translation id="6156944117133588106">टैबलेट मोड में नेविगेशन बटन दिखाएं</translation>
 <translation id="615930144153753547">साइटें इमेज दिखा सकती हैं</translation>
+<translation id="6160290816917599257">कोड अमान्य है. आपकी एंट्री <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ पता<ph name="LPA_2" />$<ph name="LPA_3" />मेल खाने वाला वैकल्पिक आईडी<ph name="LPA_4" /> के फ़ॉर्मैट में होनी चाहिए</translation>
 <translation id="6160625263637492097">प्रमाणीकरण के लिए प्रमाणपत्र दें</translation>
 <translation id="6163363155248589649">&amp;सामान्य</translation>
 <translation id="6163376401832887457">Kerberos खाते की सेटिंग</translation>
@@ -6559,7 +6563,7 @@
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> पर अपना प्रमाणन करने के लिए किसी प्रमाणपत्र को चुनें</translation>
 <translation id="6268252012308737255"><ph name="APP" /> में खोलें</translation>
 <translation id="6270309713620950855">सूचना म्यूट करें</translation>
-<translation id="6270391203985052864">साइटें आपको सूचनाएं भेजने के लिए पूछ सकती हैं</translation>
+<translation id="6270391203985052864">साइटें, सूचनाएं भेजने के लिए आपकी अनुमति मांग सकती हैं</translation>
 <translation id="6270486800167535228">एक्सटेंशन को पिन किया गया है. ज़्यादा विकल्प देखने के लिए चुनें</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />सिस्टम और ऐप्लिकेशन की जानकारी<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />मेट्रिक<ph name="END_LINK2" /> भेजें</translation>
 <translation id="6271348838875430303">शब्द में किए गए सुधार को पहले जैसा कर दिया गया है</translation>
@@ -8456,6 +8460,7 @@
 <translation id="7807117920154132308">ऐसा लगता है कि <ph name="SUPERVISED_USER_NAME" /> ने पहले से ही किसी दूसरे डिवाइस पर Google Assistant को सेट अप कर लिया है. इस डिवाइस पर 'स्क्रीन पर दिखने वाला कॉन्टेंट इस्तेमाल करें' चालू करके, <ph name="SUPERVISED_USER_NAME" /> Assistant से ज़्यादा फ़ायदे पा सकते हैं.</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> को हमेशा अपने कैमरे को एक्सेस करने की अनुमति दें</translation>
 <translation id="7810202088502699111">इस पेज पर पॉप-अप अवरोधित किए गए थे.</translation>
+<translation id="7810367892333449285">आपकी एंट्री <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ पता<ph name="LPA_2" />$<ph name="LPA_3" />मेल खाने वाला वैकल्पिक आईडी<ph name="LPA_4" /> के फ़ॉर्मैट में होनी चाहिए</translation>
 <translation id="7814458197256864873">&amp;प्रतिलिपि बनाएं</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> के लिए, <ph name="SHORTCUT" /> शॉर्टकट में बदलाव करें</translation>
@@ -8797,7 +8802,6 @@
 <translation id="8077120325605624147">किसी भी साइट को देखने पर, आपको कोई भी विज्ञापन दिख सकता है</translation>
 <translation id="8077579734294125741">Chrome की अन्य प्रोफ़ाइलें</translation>
 <translation id="80798452873915119">साइटें, आपके सभी डिसप्ले पर विंडो मैनेज करने की अनुमति मांग सकती हैं</translation>
-<translation id="807990231167557618">आपका Chromebook अपडेट हो गया है.</translation>
 <translation id="8080028325999236607">सभी टैब बंद करें</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">आपके सेशन को <ph name="MANAGER_NAME" /> मैनेज करता है. एडमिन आपकी प्रोफ़ाइल मिटा सकते हैं और आपके नेटवर्क ट्रैफ़िक की निगरानी भी कर सकते हैं.</translation>
@@ -9435,6 +9439,7 @@
 <translation id="8605428685123651449">SQLite मेमोरी</translation>
 <translation id="8607171490667464784">डिवाइस इनऐक्टिव है, लेकिन बैटरी का इस्तेमाल हो रहा है</translation>
 <translation id="8607326572516521315">स्पैम और धोखाधड़ी में कमी प्राइवेट स्टेट टोकन पर निर्भर करती है. इससे, लोगों और बॉट में अंतर करने के साथ-साथ, धोखाधड़ी से निपटने में साइटों को मदद मिलती है.</translation>
+<translation id="8607828412110648570">पक्का करें कि आपका ब्लूटूथ डिवाइस, दूसरे डिवाइस से जोड़ने वाले मोड में है और आस-पास है. सिर्फ़ भरोसेमंद डिवाइसों के साथ ही जोड़ें. जोड़े गए डिवाइस, इस Chromebook पर मौजूद सभी खातों पर दिखते हैं. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos टिकट जोड़ें</translation>
 <translation id="8609465669617005112">ऊपर जाएं</translation>
 <translation id="8610103157987623234">फ़ॉर्मैट गलत है, कृपया फिर से कोशिश करें</translation>

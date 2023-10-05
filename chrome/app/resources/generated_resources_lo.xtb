@@ -934,6 +934,7 @@
 <translation id="1723824996674794290">ໜ້າ​ຕ່າງ​ໃໝ່</translation>
 <translation id="1724801751621173132">ໂຫມດການປ້ອນຂໍ້ມູນ</translation>
 <translation id="1725562816265788801">ການເລື່ອນແຖບ</translation>
+<translation id="1726294682426724172">ຄຸນສົມບັດໃໝ່ໆຮວມມີຢາງລຶບວິເສດຢູ່ Google ຮູບພາບເພື່ອລຶບສິ່ງລົບກວນອອກ, ເຄື່ອງມືການໂທວິດີໂອທີ່ປັບປຸງໃໝ່ ແລະ ອື່ນໆ</translation>
 <translation id="1726503915437308071">ຟອນຕົວອຽງ</translation>
 <translation id="1729533290416704613">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານຄົ້ນຫາຈາກ Omnibox.</translation>
 <translation id="1730666151302379551">ລືມລະຫັດຜ່ານເກົ່າ</translation>
@@ -2171,6 +2172,7 @@
 <translation id="2671451824761031126">ບຸກມາກ ແລະ ການຕັ້ງຄ່າຂອງທ່ານພ້ອມແລ້ວ</translation>
 <translation id="2672142220933875349">ໄຟລ​໌ crx ບໍ່​ດີ​, ການແຍກອອກບໍ່ສໍາ​ເລັດ​.</translation>
 <translation id="2673135533890720193">ອ່ານປະຫວັດການທ່ອງເວັບຂອງທ່ານ</translation>
+<translation id="2673848446870717676">ກະລຸນາກວດສອບວ່າອຸປະກອນ Bluetooth ຂອງທ່ານຢູ່ໃນໂໝດຈັບຄູ່ ແລະ ຢູ່ໃກ້ຄຽງ. ທ່ານຄວນຈັບຄູ່ກັບອຸປະກອນທີ່ທ່ານເຊື່ອຖືເທົ່ານັ້ນ. ທຸກບັນຊີໃນ Chromebook ນີ້ຈະເຫັນອຸປະກອນທີ່ຈັບຄູ່ແລ້ວ.</translation>
 <translation id="2673873887296220733">ສຳເນົາ 1 ໄຟລ໌ໄປໃສ່ <ph name="CLOUD_PROVIDER" /> ເພື່ອເປີດບໍ?</translation>
 <translation id="2674764818721168631">ປິດ</translation>
 <translation id="2676084251379299915">ສ່ວນຂະຫຍາຍນີ້ຖືກປິດການນຳໃຊ້ໂດຍນະໂຍບາຍວິສາຫະກິດ ເພາະວ່າມັນບໍ່ມີໃຫ້ອີກຕໍ່ໄປຢູ່ Chrome Web Store.</translation>
@@ -3526,7 +3528,6 @@
 <translation id="3771851622616482156">ທ່ານຈະຖືກພາອອກຈາກລະບົບເວັບໄຊນີ້, ຮວມທັງໃນແຖບທີ່ເປີດຢູ່</translation>
 <translation id="3772046291955677288">ຂ້ອຍໄດ້ອ່ານ ແລະ ຍອມຮັບ <ph name="BEGIN_LINK1" />ຂໍ້ກຳນົດບໍລິການ Google<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ຂໍ້ກຳນົດບໍລິການເພີ່ມເຕີມ Chrome ແລະ ChromeOS<ph name="END_LINK2" /> ແລ້ວ.</translation>
 <translation id="3774166835015494435">ຮູບພາບ ແລະ ການແຈ້ງເຕືອນຫຼ້າສຸດ</translation>
-<translation id="3774546890772201673">ອັບເດດ <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">ໃບຢັ້ງຢືນເຊີບເວີ SSL</translation>
 <translation id="3775705724665058594">ສົ່ງຫາອຸປະກອນຂອງທ່ານ</translation>
 <translation id="3776508619697147021">ເວັບໄຊສາມາດຂໍດາວໂຫຼດຫຼາຍໄຟລ໌ໂດຍອັດຕະໂນມັດໄດ້</translation>
@@ -3848,6 +3849,7 @@
 <translation id="4010917659463429001">ເພື່ອເອົາບຸກມາກຂອງທ່ານຢູ່ໃນອຸປະກອນມືຖື, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">ສ້ອມແປງ "<ph name="EXTENSION_NAME" />" ບໍ?</translation>
 <translation id="4015163439792426608">ມີສ່ວນຂະຫຍາຍຫຼາຍລາຍການບໍ? <ph name="BEGIN_LINK" />ຈັດການສ່ວນຂະຫຍາຍຂອງທ່ານ<ph name="END_LINK" /> ໄດ້ງ່າຍໆຢູ່ບ່ອນດຽວ.</translation>
+<translation id="4016762287427926315">ສິດທິທີ່ທ່ານໄດ້ໃຫ້ກັບ <ph name="APP_NAME" /> ຈະອະນຸຍາດສຳລັບແອັບນີ້ນຳ. <ph name="BEGIN_LINK" />ຈັດການ<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">ສ້າງລະຫັດ QR ສຳລັບລິ້ງນີ້</translation>
 <translation id="4019983356493507433">ແກ້ໄຂລາຍຊື່ບຸກມາກ</translation>
 <translation id="4020327272915390518">ເມນູຕົວເລືອກ</translation>
@@ -3968,6 +3970,7 @@
 <translation id="4110485659976215879">ກູ້ຄຳເຕືອນຄືນ</translation>
 <translation id="4110490973560452005">ການດາວໂຫຼດສຳເລັດແລ້ວ: <ph name="FILE_NAME" />. ກົດ Shift+F6 ເພື່ອໝຸນວົນໄປຫາບໍລິເວນແຖບການດາວໂຫຼດ.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ອອບລາຍ)</translation>
+<translation id="411318099524508025">ທ່ານໄດ້ຮັບການອັບເກຣດເປັນ <ph name="NAME" /> ແລ້ວ.</translation>
 <translation id="4113743276555482284">ລະຫັດຜ່ານໄຟລ໌</translation>
 <translation id="4114524937989710624">ທ່ານກຳລັງເບິ່ງໄຟລ໌ທີ່ແນະນຳເພື່ອຊ່ວຍໃຫ້ທ່ານກັບໄປຫາການເຄື່ອນໄຫວຫຼ້າສຸດຂອງທ່ານໃນ Google Drive ໄດ້ຢ່າງງ່າຍດາຍ.
         <ph name="BREAK" />
@@ -6422,6 +6425,7 @@
 <translation id="6156863943908443225">ແຄຊ໌ຕົວໜັງສື</translation>
 <translation id="6156944117133588106">ສະແດງປຸ່ມການນໍາທາງໃນໂໝດແທັບເລັດ</translation>
 <translation id="615930144153753547">ເວັບໄຊສາມາດສະແດງຮູບໄດ້</translation>
+<translation id="6160290816917599257">ລະຫັດບໍ່ຖືກຕ້ອງ. ລະຫັດທີ່ທ່ານລະບຸຄວນຢູ່ໃນທີ່ຢູ່ <ph name="LPA_0" />$<ph name="LPA_1" />ທີ່ຢູ່ SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ລະຫັດທີ່ກົງກັນ (ບໍ່ບັງຄັບ)<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">ໃຫ້​ໃບ​ຢັ້ງ​ຢືນ​ສຳ​ລັບ​ການ​ຮັບ​ຮອງ</translation>
 <translation id="6163363155248589649">ປົກ​ກະ​ຕິ</translation>
 <translation id="6163376401832887457">ການຕັ້ງຄ່າ Kerberos</translation>
@@ -8451,6 +8455,7 @@
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> ໄດ້ຕັ້ງຄ່າຜູ້ຊ່ວຍ Google ຢູ່ອຸປະກອນອື່ນໄປກ່ອນແລ້ວ. <ph name="SUPERVISED_USER_NAME" /> ສາມາດໃຊ້ປະໂຫຍດຈາກຜູ້ຊ່ວຍໄດ້ຫຼາຍຍິ່ງຂຶ້ນໂດຍການເປີດໃຊ້ບໍລິບົດໜ້າຈໍຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="7807711621188256451">​ອະ​ນຸ​ຍາດ​ໃຫ້ <ph name="HOST" /> ເຂົ້າຫາກ້ອງ​ຖ່າຍ​ຮູບ​ຂອງ​ທ່ານທຸກຄັ້ງ</translation>
 <translation id="7810202088502699111">ປັອບອັບຖືກບລັອກຢູ່​ເທິງ​ຫນ້າ​ນີ້.</translation>
+<translation id="7810367892333449285">ລະຫັດທີ່ທ່ານລະບຸຄວນຢູ່ໃນທີ່ຢູ່ <ph name="LPA_0" />$<ph name="LPA_1" />ທີ່ຢູ່ SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ລະຫັດທີ່ກົງກັນ (ບໍ່ບັງຄັບ)<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">ກັອບປີ້</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">ແກ້ໄຂທາງລັດ <ph name="SHORTCUT" /> ສຳລັບ <ph name="EXTENSION_NAME" /></translation>
@@ -8791,7 +8796,6 @@
 <translation id="8077120325605624147">ເວັບໄຊໃດກໍ່ຕາມທີ່ທ່ານເຂົ້າເບິ່ງສາມາດສະແດງໂຄສະນາໃຫ້ທ່ານເຫັນໄດ້</translation>
 <translation id="8077579734294125741">ໂປຣໄຟລ໌ Chrome ອື່ນໆ</translation>
 <translation id="80798452873915119">ເວັບໄຊສາມາດຖາມເພື່ອຈັດການໜ້າຈໍຢູ່ການສະແດງຜົນທັງໝົດຂອງທ່ານ</translation>
-<translation id="807990231167557618">Chromebook ຂອງທ່ານໄດ້ຮັບການອັບເດດແລ້ວ.</translation>
 <translation id="8080028325999236607">ປິດ​ທຸກແຖບ</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">ເຊດຊັດຂອງທ່ານແມ່ນຈັດການໂດຍ <ph name="MANAGER_NAME" />. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດລຶບໂປຣໄຟລ໌ຂອງທ່ານອອກໄດ້ ແລະ ສາມາດຕິດຕາມການ​ຈາ​ລະ​ຈອນ​ເຄືອ​ຂ່າ​ຍຂອງທ່ານໄດ້ນຳ.</translation>
@@ -9429,6 +9433,7 @@
 <translation id="8605428685123651449">ຄວາມ​ຈໍາ SQLite</translation>
 <translation id="8607171490667464784">ໃນຂະນະທີ່ບໍ່ມີການນຳໃຊ້ ແລະ ໃຊ້ແບັດເຕີຣີຢູ່</translation>
 <translation id="8607326572516521315">ການຫຼຸດຈຳນວນສະແປມ ແລະ ການສໍ້ໂກງຈະໃຊ້ໂທເຄນສະຖານະສ່ວນຕົວເພື່ອຊ່ວຍເວັບໄຊປ້ອງກັນການສໍ້ໂກງ ແລະ ແຍກບັອດອອກຈາກຄົນ.</translation>
+<translation id="8607828412110648570">ກະລຸນາກວດສອບວ່າອຸປະກອນ Bluetooth ຂອງທ່ານຢູ່ໃນໂໝດຈັບຄູ່ ແລະ ຢູ່ໃກ້ຄຽງ. ທ່ານຄວນຈັບຄູ່ກັບອຸປະກອນທີ່ທ່ານເຊື່ອຖືເທົ່ານັ້ນ. ທຸກບັນຊີໃນ Chromebook ນີ້ຈະເຫັນອຸປະກອນທີ່ຈັບຄູ່ແລ້ວ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">ເພີ່ມປີ້ Kerberos</translation>
 <translation id="8609465669617005112">ຍ້າຍຂຶ້ນ</translation>
 <translation id="8610103157987623234">ຮູບແບບບໍ່ຖືກຕ້ອງ, ກະລຸນາລອງອີກຄັ້ງ</translation>

@@ -799,6 +799,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5360976571138293719">Pribatutasunarekin, segurtasunarekin eta datu-bilketarekin lotutako ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
 <translation id="5386314158584363703">Hemen aurkituko dituzu jarraitzaile zaituzten webguneak</translation>
 <translation id="5388358297987318779">Ireki irudia</translation>
+<translation id="5396950905475481456">Gonbidatu familiako kideak</translation>
 <translation id="5407969256130905701">Baztertu aldaketak</translation>
 <translation id="5414763847370083940">Webgune bateko produktu baten prezioa jaisten bada, alerta bat jasoko duzu.</translation>
 <translation id="5416022985862681400">Azken 7 egunetakoak</translation>
@@ -1550,4 +1551,5 @@ Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chrom
 <translation id="988141524645182168">Bestelakoak</translation>
 <translation id="989988560359834682">Editatu helbidea</translation>
 <translation id="994757059139821576">Artikulu-iradokizunak</translation>
+<translation id="999768147936949692">Oraingoz, familiako kideekin soilik parteka ditzakezu pasahitzak. <ph name="BEGIN_LINK" />Gonbidatu familiako kideak<ph name="END_LINK" /> taldera eta atera etekin handiagoa Google-ren produktu eta harpidetzei.</translation>
 </translationbundle>

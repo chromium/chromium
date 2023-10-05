@@ -926,6 +926,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1723824996674794290">&amp;Fereastră nouă</translation>
 <translation id="1724801751621173132">Mod de introducere</translation>
 <translation id="1725562816265788801">Derulare prin file</translation>
+<translation id="1726294682426724172">Printre funcțiile noi se numără radiera magică din Google Foto care elimină obiectele care distrag atenția, instrumente îmbunătățite pentru apeluri video și multe altele</translation>
 <translation id="1726503915437308071">Font cursiv</translation>
 <translation id="1729533290416704613">Stabilește și ce pagină se afișează când căutați din caseta polivalentă.</translation>
 <translation id="1730666151302379551">Am uitat parola veche</translation>
@@ -2158,6 +2159,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2671451824761031126">Marcajele și setările sunt gata</translation>
 <translation id="2672142220933875349">Fișier crx incorect. Despachetarea nu a reușit.</translation>
 <translation id="2673135533890720193">Citește istoricul de navigare</translation>
+<translation id="2673848446870717676">Verifică dacă dispozitivul Bluetooth este în modul de asociere și în apropiere. Asociază-l numai cu dispozitive în care ai încredere. Dispozitivele asociate sunt vizibile pentru toate conturile de pe acest Chromebook.</translation>
 <translation id="2673873887296220733">Copiezi un fișier în <ph name="CLOUD_PROVIDER" /> pentru a-l deschide?</translation>
 <translation id="2674764818721168631">Dezactivat</translation>
 <translation id="2676084251379299915">Extensia a fost dezactivată conform politicii companiei, deoarece nu mai este disponibilă în Magazinul web Chrome.</translation>
@@ -3513,7 +3515,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3771851622616482156">Te vei deconecta de la acest site, inclusiv din filele deschise</translation>
 <translation id="3772046291955677288">Am citit și sunt de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Chrome și sistemul de operare Chrome<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Fotografiile și notificările recente</translation>
-<translation id="3774546890772201673">Actualizează <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Certificat de server SSL</translation>
 <translation id="3775705724665058594">Trimite pe dispozitivele tale</translation>
 <translation id="3776508619697147021">Site-urile pot solicita permisiunea de a descărca automat mai multe fișiere</translation>
@@ -3835,6 +3836,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4010917659463429001">Pentru a accesa marcajele pe dispozitivul mobil, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Repari „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="4015163439792426608">Ai extensii? <ph name="BEGIN_LINK" />Gestionează extensiile<ph name="END_LINK" /> ușor, dintr-un singur loc.</translation>
+<translation id="4016762287427926315">Permisiunile pe care le acorzi pentru <ph name="APP_NAME" /> vor fi acordate și pentru această aplicație. <ph name="BEGIN_LINK" />Gestionează-le<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Creează un cod QR pentru acest link</translation>
 <translation id="4019983356493507433">Editează lista de marcaje</translation>
 <translation id="4020327272915390518">Meniul Opțiuni</translation>
@@ -3955,6 +3957,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4110485659976215879">Restabilește avertismentul</translation>
 <translation id="4110490973560452005">Descărcare finalizată: <ph name="FILE_NAME" />. Apasă Shift+F6 ca să revii la zona barei de descărcări.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="411318099524508025"><ph name="NAME" /> s-a actualizat.</translation>
 <translation id="4113743276555482284">Parola fișierului</translation>
 <translation id="4114524937989710624">Vezi fișierele sugerate ca să poți reveni ușor la cea mai recentă activitate din Google Drive.
         <ph name="BREAK" />
@@ -6409,6 +6412,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6156863943908443225">Memorie cache de scripturi</translation>
 <translation id="6156944117133588106">Afișează butoanele de navigare în modul tabletă</translation>
 <translation id="615930144153753547">Site-urile pot afișa imagini</translation>
+<translation id="6160290816917599257">Cod nevalid. Intrarea trebuie să aibă formatul <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+address<ph name="LPA_2" />$<ph name="LPA_3" />cod opțional corespunzător<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Oferă certificate pentru autentificare</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Setări pentru Kerberos</translation>
@@ -8443,6 +8447,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7807117920154132308">Se pare că <ph name="SUPERVISED_USER_NAME" /> a configurat deja Asistentul Google pe alt dispozitiv. <ph name="SUPERVISED_USER_NAME" /> poate profita la maximum de Asistent activând Contextul de pe ecran pe acest dispozitiv.</translation>
 <translation id="7807711621188256451">Permiteți întotdeauna accesul <ph name="HOST" /> la camera dvs.</translation>
 <translation id="7810202088502699111">Ferestrele pop-up au fost blocate pe această pagină.</translation>
+<translation id="7810367892333449285">Intrarea trebuie să aibă formatul <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+address<ph name="LPA_2" />$<ph name="LPA_3" />cod opțional corespunzător<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Copiază</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editează comanda rapidă <ph name="SHORTCUT" /> pentru <ph name="EXTENSION_NAME" /></translation>
@@ -8784,7 +8789,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8077120325605624147">Orice site pe care îl accesezi îți poate afișa orice anunț</translation>
 <translation id="8077579734294125741">Alte profiluri Chrome</translation>
 <translation id="80798452873915119">Site-urile pot solicita permisiunea de a gestiona ferestre pe toate ecranele</translation>
-<translation id="807990231167557618">Chromebookul este actualizat.</translation>
 <translation id="8080028325999236607">Închide filele</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Sesiunea este gestionată de <ph name="MANAGER_NAME" />. Administratorii pot să-ți șteargă profilul și să monitorizeze traficul de rețea.</translation>
@@ -9422,6 +9426,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8605428685123651449">Memorie SQLite</translation>
 <translation id="8607171490667464784">În timp ce dispozitivul este inactiv și pe baterie</translation>
 <translation id="8607326572516521315">Reducerea spamului și fraudei se bazează pe indicative private de stare pentru a ajuta site-urile să prevină frauda și să deosebească aplicațiile bot de persoane.</translation>
+<translation id="8607828412110648570">Verifică dacă dispozitivul Bluetooth este în modul de asociere și în apropiere. Asociază-l numai cu dispozitive în care ai încredere. Dispozitivele asociate sunt vizibile pentru toate conturile de pe acest Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Adaugă un tichet Kerberos</translation>
 <translation id="8609465669617005112">Mutați mai sus</translation>
 <translation id="8610103157987623234">Formatul este incorect, încearcă din nou</translation>

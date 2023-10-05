@@ -1734,6 +1734,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Kasutate oma ekraanilukku paroolide sisestamiseks</translation>
 <translation id="4558551763791394412">Keelake laiendused.</translation>
+<translation id="456043042661026303">Makseteabe turvaliselt kontrollimine</translation>
 <translation id="4566017918361049074">Vabaõhutegevused</translation>
 <translation id="4567686777917670400">Teie administraator saab brauseri seadistust kaugühenduse kaudu muuta. Selle seadme tegevusi võidakse hallata ka väljaspool Chromiumi. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Küpsisefailide ja saidi andmete valikute ülevaatamine uues aknas</translation>
@@ -3361,6 +3362,7 @@ Lisateave:
 <translation id="7865448901209910068">Suurim kiirus</translation>
 <translation id="7870281855125116701">Leiti allahindlus</translation>
 <translation id="7871445724586827387">Google'i konto parooli muutmine</translation>
+<translation id="7876615279559620350">Kiiremaks maksmiseks salvestage selle kaardi CVC oma Google'i kontol</translation>
 <translation id="7877007680666472091">kaitstud sisu ID-d</translation>
 <translation id="7878562273885520351">Teie parool võib olla ohus</translation>
 <translation id="7880146494886811634">Aadressi salvestamine</translation>
@@ -3848,6 +3850,7 @@ Lisateave:
 <translation id="8870494189203302833">Sama järjestus, esikülg allapoole</translation>
 <translation id="8870700989640064057">Kas printida konfidentsiaalne fail?</translation>
 <translation id="8871553383647848643">Kohandage oma brauseri ilmet</translation>
+<translation id="8874790741333031443">Proovige kolmanda osapoole küpsisefailid ajutiselt lubada. See vähendab sirvimiskaitset, kuid saidi funktsiooni töötavad suurema tõenäosusega oodatud moel.</translation>
 <translation id="8874824191258364635">Sisestaeg kehtiv kaardinumber</translation>
 <translation id="8876033571432926051">Lihtsad mängud</translation>
 <translation id="8877780815363510165">Kalapüük</translation>

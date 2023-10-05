@@ -936,6 +936,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1723824996674794290">&amp;Jendela baru</translation>
 <translation id="1724801751621173132">Mode input</translation>
 <translation id="1725562816265788801">Scrolling Tab</translation>
+<translation id="1726294682426724172">Fitur baru mencakup Penghapus Ajaib di Google Foto untuk menghilangkan gangguan, meningkatkan kualitas alat panggilan video, dan lainnya</translation>
 <translation id="1726503915437308071">Font miring</translation>
 <translation id="1729533290416704613">Juga mengontrol halaman apa yang ditampilkan saat Anda menelusuri dari Omnibox.</translation>
 <translation id="1730666151302379551">Lupa sandi lama</translation>
@@ -2172,6 +2173,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2671451824761031126">Bookmark dan setelan Anda sudah siap</translation>
 <translation id="2672142220933875349">File crx yang buruk. Gagal membuka kemasan.</translation>
 <translation id="2673135533890720193">Membaca histori penjelajahan Anda</translation>
+<translation id="2673848446870717676">Pastikan perangkat Bluetooth Anda dalam mode penyambungan dan berada di sekitar. Hanya sambungkan dengan perangkat yang Anda percayai. Perangkat yang disambungkan dapat dilihat oleh semua akun di Chromebook ini.</translation>
 <translation id="2673873887296220733">Salin 1 file ke <ph name="CLOUD_PROVIDER" /> untuk dibuka?</translation>
 <translation id="2674764818721168631">Nonaktif</translation>
 <translation id="2676084251379299915">Ekstensi ini telah dinonaktifkan oleh kebijakan perusahaan karena tidak lagi tersedia di Chrome Web Store.</translation>
@@ -3527,7 +3529,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3771851622616482156">Anda akan logout dari situs ini, termasuk di tab yang terbuka</translation>
 <translation id="3772046291955677288">Saya telah membaca dan menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Chrome and ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Foto terbaru dan notifikasi</translation>
-<translation id="3774546890772201673">Update <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Sertifikat Server SSL</translation>
 <translation id="3775705724665058594">Kirim ke perangkat Anda</translation>
 <translation id="3776508619697147021">Situs dapat meminta untuk otomatis mendownload beberapa file</translation>
@@ -3849,6 +3850,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4010917659463429001">Untuk mendapatkan bookmark di perangkat seluler, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Perbaiki "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Punya ekstensi? <ph name="BEGIN_LINK" />Kelola ekstensi Anda<ph name="END_LINK" /> dalam satu tempat praktis.</translation>
+<translation id="4016762287427926315">Izin yang Anda berikan untuk <ph name="APP_NAME" /> juga akan diberikan untuk aplikasi ini. <ph name="BEGIN_LINK" />Kelola<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Buat Kode QR untuk link ini</translation>
 <translation id="4019983356493507433">Edit Daftar Bookmark</translation>
 <translation id="4020327272915390518">Menu opsi</translation>
@@ -3969,6 +3971,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4110485659976215879">Pulihkan peringatan</translation>
 <translation id="4110490973560452005">Download selesai: <ph name="FILE_NAME" />. Tekan Shift+F6 untuk masuk ke area kotak download</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="411318099524508025">Anda telah diupgrade ke <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Sandi file</translation>
 <translation id="4114524937989710624">Anda melihat saran file untuk membantu Anda kembali ke aktivitas terbaru Anda di Google Drive dengan mudah.
         <ph name="BREAK" />
@@ -6424,6 +6427,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6156863943908443225">Cache skrip</translation>
 <translation id="6156944117133588106">Tampilkan tombol navigasi dalam mode tablet</translation>
 <translation id="615930144153753547">Situs dapat menampilkan gambar</translation>
+<translation id="6160290816917599257">Kode tidak valid. Entri Anda harus memiliki format <ph name="LPA_0" />$<ph name="LPA_1" />alamat SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID kecocokan opsional<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Berikan sertifikat untuk autentikasi</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Setelan Kerberos</translation>
@@ -8455,6 +8459,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7807117920154132308">Sepertinya <ph name="SUPERVISED_USER_NAME" /> sudah menyiapkan Asisten Google di perangkat lain. <ph name="SUPERVISED_USER_NAME" /> dapat mengoptimalkan penggunaan Asisten dengan mengaktifkan Konteks layar di perangkat ini.</translation>
 <translation id="7807711621188256451">Selalu izinkan <ph name="HOST" /> mengakses kamera Anda</translation>
 <translation id="7810202088502699111">Pop-up diblokir di halaman ini.</translation>
+<translation id="7810367892333449285">Entri Anda harus memiliki format <ph name="LPA_0" />$<ph name="LPA_1" />alamat SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID kecocokan opsional<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Salin</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Edit pintasan <ph name="SHORTCUT" /> untuk <ph name="EXTENSION_NAME" /></translation>
@@ -8796,7 +8801,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8077120325605624147">Setiap situs yang Anda buka dapat menampilkan iklan apa pun kepada Anda</translation>
 <translation id="8077579734294125741">Profil Chrome lainnya</translation>
 <translation id="80798452873915119">Situs dapat meminta untuk mengelola jendela di semua layar</translation>
-<translation id="807990231167557618">Chromebook Anda sudah diupdate.</translation>
 <translation id="8080028325999236607">Tutup Semua Tab</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Sesi Anda dikelola oleh <ph name="MANAGER_NAME" />. Administrator dapat menghapus profil serta memantau traffic jaringan Anda.</translation>
@@ -9434,6 +9438,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8605428685123651449">Memori SQLite</translation>
 <translation id="8607171490667464784">Saat tidak aktif dan menggunakan baterai</translation>
 <translation id="8607326572516521315">Pengurangan spam &amp; penipuan mengandalkan private state token untuk membantu situs melawan penipuan dan membedakan bot dari manusia.</translation>
+<translation id="8607828412110648570">Pastikan perangkat Bluetooth Anda dalam mode penyambungan dan berada di sekitar. Hanya sambungkan dengan perangkat yang Anda percayai. Perangkat yang disambungkan dapat dilihat oleh semua akun di Chromebook ini. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Tambahkan tiket Kerberos</translation>
 <translation id="8609465669617005112">Berpindah ke atas</translation>
 <translation id="8610103157987623234">Format salah, harap coba lagi</translation>

@@ -922,6 +922,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1723824996674794290">Neues &amp;Fenster</translation>
 <translation id="1724801751621173132">Eingabemodus</translation>
 <translation id="1725562816265788801">Tab-Scrollen</translation>
+<translation id="1726294682426724172">Zu den neuen Funktionen gehören der Magische Radierer in Google Fotos, um störende Elemente zu entfernen, verbesserte Tools für Videoanrufe und vieles mehr</translation>
 <translation id="1726503915437308071">Kursiv</translation>
 <translation id="1729533290416704613">Die Erweiterung legt auch fest, welche Seite bei der Suche über die Omnibox angezeigt wird.</translation>
 <translation id="1730666151302379551">Ich habe mein altes Passwort vergessen</translation>
@@ -3509,7 +3510,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3771851622616482156">Du wirst von dieser Website abgemeldet, auch in offenen Tabs</translation>
 <translation id="3772046291955677288">Ich habe die <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />die zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> gelesen und stimme ihnen zu.</translation>
 <translation id="3774166835015494435">Letzte Fotos und Benachrichtigungen</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> aktualisieren.</translation>
 <translation id="3775432569830822555">SSL-Serverzertifikat</translation>
 <translation id="3775705724665058594">An meine Geräte senden</translation>
 <translation id="3776508619697147021">Websites dürfen nachfragen, ob sie automatisch mehrere Dateien herunterladen dürfen</translation>
@@ -3951,6 +3951,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4110485659976215879">Warnung wiederherstellen</translation>
 <translation id="4110490973560452005">Download abgeschlossen: <ph name="FILE_NAME" />. Drücke Umschalttaste + F6, um zum Bereich mit der Downloadleiste zu wechseln.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="411318099524508025">Das Upgrade auf <ph name="NAME" /> ist abgeschlossen.</translation>
 <translation id="4113743276555482284">Dateipasswort</translation>
 <translation id="4114524937989710624">Dir werden Dateivorschläge angezeigt, damit du bei Google Drive einfacher dort weitermachen kannst, wo du zuletzt aufgehört hast.
         <ph name="BREAK" />
@@ -8775,7 +8776,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8077120325605624147">Jede Website, die du besuchst, kann dir beliebige Werbung präsentieren</translation>
 <translation id="8077579734294125741">Andere Chrome-Profile</translation>
 <translation id="80798452873915119">Zulassen, dass Websites Fenster auf allen deinen Bildschirmen verwalten</translation>
-<translation id="807990231167557618">Chromebook wurde aktualisiert.</translation>
 <translation id="8080028325999236607">Alle Tabs schließen</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Deine Sitzung wird von <ph name="MANAGER_NAME" /> verwaltet. Administratoren können dein Profil löschen und auch deinen Netzwerkverkehr ansehen.</translation>
