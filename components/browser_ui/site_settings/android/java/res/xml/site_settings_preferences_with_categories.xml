@@ -42,6 +42,10 @@ Also add new settings to site_settings_preferences.xml!
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="notifications" />
+    <!-- StorageAccess -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="storage_access" />
     <!-- NFC -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"

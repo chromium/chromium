@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
@@ -126,6 +127,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.nfc.NfcSystemLevelSetting;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
@@ -294,6 +296,17 @@ public class SiteSettingsTest {
                     ContentSettingsType.COOKIES, "*", "secondary.com", ContentSettingValues.ALLOW);
             WebsitePreferenceBridge.setContentSettingCustomScope(getBrowserContextHandle(),
                     ContentSettingsType.COOKIES, "primary.com", "*", ContentSettingValues.ALLOW);
+        });
+    }
+
+    private void createStorageAccessExceptions() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            WebsitePreferenceBridge.setContentSettingCustomScope(getBrowserContextHandle(),
+                    ContentSettingsType.STORAGE_ACCESS, "primary.com", "secondary.com",
+                    ContentSettingValues.ALLOW);
+            WebsitePreferenceBridge.setContentSettingCustomScope(getBrowserContextHandle(),
+                    ContentSettingsType.STORAGE_ACCESS, "primary2.com", "secondary2.com",
+                    ContentSettingValues.ALLOW);
         });
     }
 
@@ -1166,7 +1179,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(30, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(31, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -1324,6 +1337,39 @@ public class SiteSettingsTest {
 
         onView(withText("primary.com")).check(doesNotExist());
         onView(withText("secondary.com")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
+    public void testOnlyExpectedPreferencesStorageAccess() {
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.STORAGE_ACCESS, BINARY_TOGGLE, BINARY_TOGGLE);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
+    public void testExpectedExceptionsStorageAccess() {
+        createStorageAccessExceptions();
+        SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.STORAGE_ACCESS);
+
+        onView(withText("primary.com")).check(matches(isDisplayed()));
+        onView(withText("Embedded on secondary.com")).check(matches(isDisplayed()));
+        onView(withText("primary2.com")).check(matches(isDisplayed()));
+        onView(withText("Embedded on secondary2.com")).check(matches(isDisplayed()));
+
+        onView(withText("primary.com")).perform(click());
+        onView(withText("Block")).perform(click());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertEquals( ContentSettingValues.BLOCK, WebsitePreferenceBridge.getContentSetting(getBrowserContextHandle(),
+                ContentSettingsType.STORAGE_ACCESS, new GURL("https://primary.com"), new GURL("https://secondary.com")));
+            assertEquals( ContentSettingValues.ALLOW, WebsitePreferenceBridge.getContentSetting(getBrowserContextHandle(),
+                ContentSettingsType.STORAGE_ACCESS, new GURL("https://primary2.com"), new GURL("https://secondary2.com")));
+        });
     }
 
     @Test

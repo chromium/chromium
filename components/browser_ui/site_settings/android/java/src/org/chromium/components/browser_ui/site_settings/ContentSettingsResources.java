@@ -153,7 +153,6 @@ public class ContentSettingsResources {
 
             case ContentSettingsType.BLUETOOTH_SCANNING:
                 return new ResourceItem(R.drawable.gm_filled_bluetooth_searching_24,
-
                         R.string.website_settings_bluetooth_scanning, ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK,
                         R.string.website_settings_category_bluetooth_scanning_ask, 0);

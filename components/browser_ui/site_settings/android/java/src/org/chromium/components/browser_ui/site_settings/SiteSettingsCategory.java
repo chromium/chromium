@@ -82,10 +82,11 @@ public class SiteSettingsCategory {
         int SITE_DATA = 27;
         int ANTI_ABUSE = 28;
         int ZOOM = 29;
+        int STORAGE_ACCESS = 30;
         /**
          * Number of handled categories used for calculating array sizes.
          */
-        int NUM_ENTRIES = 30;
+        int NUM_ENTRIES = 31;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -208,6 +209,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER;
             case Type.SENSORS:
                 return ContentSettingsType.SENSORS;
+            case Type.STORAGE_ACCESS:
+                return ContentSettingsType.STORAGE_ACCESS;
             case Type.SOUND:
                 return ContentSettingsType.SOUND;
             case Type.USB:
@@ -290,6 +293,8 @@ public class SiteSettingsCategory {
                 return "protected_content";
             case Type.SENSORS:
                 return "sensors";
+            case Type.STORAGE_ACCESS:
+                return "storage_access";
             case Type.SOUND:
                 return "sound";
             case Type.USB:

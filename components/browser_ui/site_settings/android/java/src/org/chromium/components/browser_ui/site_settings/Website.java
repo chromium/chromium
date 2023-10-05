@@ -72,6 +72,12 @@ public final class Website implements WebsiteEntry {
         return UrlFormatter.formatUrlForDisplayOmitScheme(url);
     }
 
+    // Returns whether exceptions for this type are retrieved through
+    // getEmbeddedPermissions().
+    public static boolean isEmbeddedPermission(@ContentSettingsType int type) {
+        return type == ContentSettingsType.STORAGE_ACCESS;
+    }
+
     public Website(WebsiteAddress origin, WebsiteAddress embedder) {
         mOrigin = origin;
         mEmbedder = embedder;
@@ -202,7 +208,14 @@ public final class Website implements WebsiteEntry {
      */
     public @ContentSettingValues @Nullable Integer getContentSetting(
             BrowserContextHandle browserContextHandle, @ContentSettingsType int type) {
-        if (getPermissionInfo(type) != null) {
+        if (isEmbeddedPermission(type)) {
+            var exceptions = getEmbeddedPermissions().get(type);
+            if (exceptions == null) return null;
+            // This function may not be used when multiple embedded permissions have been merged
+            // into one website like for SingleWebsiteSettings.
+            assert exceptions.size() == 1;
+            return exceptions.get(0).getContentSetting();
+        } else if (getPermissionInfo(type) != null) {
             return getPermissionInfo(type).getContentSetting(browserContextHandle);
         } else if (getContentSettingException(type) != null) {
             return getContentSettingException(type).getContentSetting();
@@ -261,6 +274,12 @@ public final class Website implements WebsiteEntry {
                 RecordUserAction.record("SoundContentSetting.MuteBy.SiteSettings");
             } else {
                 RecordUserAction.record("SoundContentSetting.UnmuteBy.SiteSettings");
+            }
+        } else if (isEmbeddedPermission(type)) {
+            var exceptions = getEmbeddedPermissions().get(type);
+            if (exceptions != null) {
+                assert exceptions.size() == 1;
+                exception = exceptions.get(0);
             }
         }
         // We want to call setContentSetting even after explicitly setting

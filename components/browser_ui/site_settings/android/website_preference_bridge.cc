@@ -873,6 +873,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
       case ContentSettingsType::MEDIASTREAM_MIC:
       case ContentSettingsType::NFC:
       case ContentSettingsType::NOTIFICATIONS:
+      case ContentSettingsType::STORAGE_ACCESS:
       case ContentSettingsType::USB_GUARD:
       case ContentSettingsType::VR:
         value = CONTENT_SETTING_ASK;
