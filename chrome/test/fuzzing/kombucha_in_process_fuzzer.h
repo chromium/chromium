@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/test/fuzzing/in_process_fuzzer.h"
+#include "chrome/test/fuzzing/in_process_proto_fuzzer.h"
 #include "chrome/test/fuzzing/kombucha_in_process_fuzzer.pb.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"

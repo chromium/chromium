@@ -31,6 +31,12 @@ if (fuzzing_engine_supports_custom_main) {
     header = "in_process_fuzzer_buildflags.h"
     flags = [ "AVOID_SINGLE_PROCESS_MODE=$use_libfuzzer" ]
   }
+
+  source_set("in_process_proto_fuzzer_runner") {
+    testonly = true
+    sources = [ "in_process_proto_fuzzer.h" ]
+    public_deps = [ ":in_process_fuzzer_runner" ]
+  }
 }
 
 if (!is_android) {

@@ -34,18 +34,6 @@
 #include "ui/platform_window/common/platform_window_defaults.h"
 #endif  // defined(USE_AURA) && BUILDFLAG(IS_OZONE)
 
-#define DEFINE_BINARY_PROTO_IN_PROCESS_FUZZER(arg) \
-  DEFINE_PROTO_FUZZER_IN_PROCESS_IMPL(true, arg)
-
-#define DEFINE_PROTO_FUZZER_IN_PROCESS_IMPL(use_binary, arg)      \
-  static void TestOneProtoInput(arg);                             \
-  using FuzzerProtoType =                                         \
-      protobuf_mutator::libfuzzer::macro_internal::GetFirstParam< \
-          decltype(&TestOneProtoInput)>::type;                    \
-  DEFINE_CUSTOM_PROTO_MUTATOR_IMPL(use_binary, FuzzerProtoType)   \
-  DEFINE_CUSTOM_PROTO_CROSSOVER_IMPL(use_binary, FuzzerProtoType) \
-  DEFINE_POST_PROCESS_PROTO_MUTATION_IMPL(FuzzerProtoType)
-
 namespace {
 ui::ElementTracker::ElementList GetTargetableEvents() {
   // Only views can be targeted by clicks or mouse drag.
@@ -318,6 +306,4 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
   return 0;
 }
 
-REGISTER_IN_PROCESS_FUZZER(KombuchaInProcessFuzzer)
-DEFINE_BINARY_PROTO_IN_PROCESS_FUZZER(
-    KombuchaInProcessFuzzer::FuzzCase testcase)
+REGISTER_BINARY_PROTO_IN_PROCESS_FUZZER(KombuchaInProcessFuzzer)

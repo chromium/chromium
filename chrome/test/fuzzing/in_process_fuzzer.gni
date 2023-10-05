@@ -153,7 +153,7 @@ template("in_process_proto_fuzzer") {
       sources = invoker.sources
       deps = [
         ":${proto_target_name}",
-        "//chrome/test/fuzzing:in_process_fuzzer_runner",
+        "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
         "//third_party/libprotobuf-mutator",
       ]
 
