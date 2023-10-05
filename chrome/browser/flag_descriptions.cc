@@ -5215,10 +5215,6 @@ const char kCupsIppPrintingBackendDescription[] =
     "that calls the PPD API.";
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
-const char kEnableUniversalLinksName[] = "Universal Links";
-const char kEnableUniversalLinksDescription[] =
-    "Include Universal Links in the intent picker.";
-
 const char kImmersiveFullscreenName[] = "Immersive Fullscreen Toolbar";
 const char kImmersiveFullscreenDescription[] =
     "Automatically hide and show the toolbar in fullscreen.";

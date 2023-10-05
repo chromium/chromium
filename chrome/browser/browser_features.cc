@@ -70,13 +70,6 @@ BASE_FEATURE(kPromoBrowserCommands,
 // ui/webui/resources/js/browser_command/browser_command.mojom
 const char kBrowserCommandIdParam[] = "BrowserCommandIdParam";
 
-#if BUILDFLAG(IS_MAC)
-// Enables integration with the macOS feature Universal Links.
-BASE_FEATURE(kEnableUniveralLinks,
-             "EnableUniveralLinks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables reading and writing PWA notification permissions from quick settings
 // menu.

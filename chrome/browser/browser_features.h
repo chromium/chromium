@@ -39,10 +39,6 @@ BASE_DECLARE_FEATURE(kQuickSettingsPWANotifications);
 BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 #endif
 
-#if BUILDFLAG(IS_MAC)
-BASE_DECLARE_FEATURE(kEnableUniveralLinks);
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kCopyLinkToText);
 BASE_DECLARE_FEATURE(kMuteNotificationSnoozeAction);

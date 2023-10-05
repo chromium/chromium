@@ -12,7 +12,6 @@
 #include "base/mac/launch_application.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
-#include "chrome/browser/browser_features.h"
 #include "net/base/mac/url_conversions.h"
 #include "ui/base/models/image_model.h"
 
@@ -64,11 +63,6 @@ absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
     return AppInfoForAppUrl(
         [NSURL fileURLWithPath:base::SysUTF8ToNSString(fake_app)]);
   }
-
-  static bool universal_links_enabled =
-      base::FeatureList::IsEnabled(features::kEnableUniveralLinks);
-  if (!universal_links_enabled)
-    return absl::nullopt;
 
   NSURL* nsurl = net::NSURLWithGURL(url);
   if (!nsurl) {

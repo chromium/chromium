@@ -6131,12 +6131,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kGlanceablesV2)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_MAC)
-    {"enable-universal-links", flag_descriptions::kEnableUniversalLinksName,
-     flag_descriptions::kEnableUniversalLinksDescription, kOsMac,
-     FEATURE_VALUE_TYPE(features::kEnableUniveralLinks)},
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_ANDROID)
     {"omnibox-cache-suggestion-resources",
      flag_descriptions::kOmniboxCacheSuggestionResourcesName,
