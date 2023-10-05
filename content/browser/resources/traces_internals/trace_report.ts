@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
@@ -53,10 +54,12 @@ export class TraceReportElement extends PolymerElement {
         value: UploadState,
         readOnly: true,
       },
+      isLoading: Boolean,
     };
   }
 
   private trace: ClientTraceReport;
+  private isLoading: boolean = false;
   private traceReportProxy_: TraceReportBrowserProxy =
       TraceReportBrowserProxy.getInstance();
 
@@ -141,12 +144,18 @@ export class TraceReportElement extends PolymerElement {
   }
 
   private async onDownloadTraceClick_(): Promise<void> {
+    this.isLoading = true;
     const {trace} =
         await this.traceReportProxy_.handler.downloadTrace(this.trace.uuid);
     if (trace !== null) {
+      // TODO(b/299476756): |result| can be empty/null/false in some
+      // methods which should be handled differently than currently
+      // for the user to know if an action has return the value
+      // expected or not. Not simply if the call to the method failed
       this.downloadData_(
           `${this.trace.uuid.high}-${this.trace.uuid.low}.gz`, trace);
     }
+    this.isLoading = false;
   }
 
   private downloadData_(fileName: string, data: BigBuffer): void {
@@ -174,20 +183,31 @@ export class TraceReportElement extends PolymerElement {
     }
   }
 
-  private onDeleteTraceClick_(): void {
-    // TODO(b/299476756): |result| can be empty/null/false in some
-    // methods which should be handled differently than currently
-    // for the user to know if an action has return the value
-    // expected or not. Not simply if the call to the method failed
-    this.traceReportProxy_.handler.deleteSingleTrace(this.trace.uuid);
+  private async onDeleteTraceClick_(): Promise<void> {
+    this.isLoading = true;
+    const {success} =
+        await this.traceReportProxy_.handler.deleteSingleTrace(this.trace.uuid);
+    if (success) {
+      // TODO(b/299476756): |result| can be empty/null/false in some
+      // methods which should be handled differently than currently
+      // for the user to know if an action has return the value
+      // expected or not. Not simply if the call to the method failed
+    }
+    this.isLoading = false;
   }
 
-  private onUploadTraceClick_(): void {
-    // TODO(b/299476756): |result| can be empty/null/false in some
-    // methods which should be handled differently than currently
-    // for the user to know if an action has return the value
-    // expected or not. Not simply if the call to the method failed
-    this.traceReportProxy_.handler.userUploadSingleTrace(this.trace.uuid);
+  private async onUploadTraceClick_(): Promise<void> {
+    this.isLoading = true;
+    const {success} =
+        await this.traceReportProxy_.handler.userUploadSingleTrace(
+            this.trace.uuid);
+    if (success) {
+      // TODO(b/299476756): |result| can be empty/null/false in some
+      // methods which should be handled differently than currently
+      // for the user to know if an action has return the value
+      // expected or not. Not simply if the call to the method failed
+    }
+    this.isLoading = false;
   }
 
   private uploadStateEqual(value1: number, value2: UploadState): boolean {

@@ -10,6 +10,7 @@
     border-radius: 4px;
     height: 48px;
     align-items: center;
+    position: relative;
   }
 
   .trace-card > div {
@@ -129,8 +130,32 @@
     margin-right: 5%;
     width: 285px;
   }
+
+  .trace-spinner {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    left: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+  }
+
+  .trace-spinner > paper-spinner-lite {
+    width: 20px;
+    height: 20px;
+    --cr-checked-color: red;
+  }
 </style>
 <div class="trace-card">
+  <template is="dom-if" if="[[isLoading]]">
+    <div class="trace-spinner">
+      <paper-spinner-lite active>
+      </paper-spinner-lite>
+    </div>
+  </template>
   <div class="trace-id-container">
     <button class="clickable-field" on-click="onCopyUuidClick_">
       [[trace.uuid.high]]-[[trace.uuid.low]]
@@ -190,11 +215,13 @@
   </div>
   <div class="actions-container">
     <cr-icon-button class="action-button" iron-icon="cr:file-download"
-        aria-label="Download Trace" on-click="onDownloadTraceClick_"
-        title="Download">
+        title="Download" on-click="onDownloadTraceClick_"
+        disabled="[[isLoading]]" aria-disabled="[[isLoading]]"
+        aria-label="Download Trace">
     </cr-icon-button>
     <cr-icon-button class="action-button" iron-icon="cr:delete"
-        aria-label="Delete Trace" on-click="onDeleteTraceClick_" title="Delete">
+        title="Delete" on-click="onDeleteTraceClick_" disabled="[[isLoading]]"
+        aria-disabled="[[isLoading]]" aria-label="Delete Trace">
     </cr-icon-button>
   </div>
 </div>
