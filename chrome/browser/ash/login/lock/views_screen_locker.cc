@@ -120,6 +120,9 @@ void ViewsScreenLocker::HandleAuthenticateUserWithPasswordOrPin(
   auto user_context = std::make_unique<UserContext>(*user);
   user_context->SetKey(
       Key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), password));
+  if (!authenticated_by_pin) {
+    user_context->SetLocalPasswordInput(LocalPasswordInput{password});
+  }
   user_context->SetIsUsingPin(authenticated_by_pin);
   user_context->SetSyncPasswordData(password_manager::PasswordHashData(
       account_id.GetUserEmail(), base::UTF8ToUTF16(password),

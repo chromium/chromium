@@ -15,6 +15,7 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/shared_session_handler.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -58,6 +59,7 @@ void LoginAsh::LaunchManagedGuestSession(
                              user->GetAccountId());
     if (password) {
       context.SetKey(ash::Key(*password));
+      context.SetSamlPassword(ash::SamlPassword{*password});
       context.SetCanLockManagedGuestSession(true);
     }
 
@@ -161,6 +163,7 @@ void LoginAsh::LaunchSamlUserSession(const std::string& email,
   ash::Key key(password);
   key.SetLabel(ash::kCryptohomeGaiaKeyLabel);
   context.SetKey(key);
+  context.SetSamlPassword(ash::SamlPassword{password});
   context.SetPasswordKey(ash::Key(password));
   context.SetAuthFlow(ash::UserContext::AUTH_FLOW_GAIA_WITH_SAML);
   context.SetIsUsingSamlPrincipalsApi(false);

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/ash/login/offline_login_screen_handler.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/user_manager/known_user.h"
@@ -149,6 +150,7 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
 
   UserContext user_context(*user);
   user_context.SetKey(Key(password));
+  user_context.SetLocalPasswordInput(LocalPasswordInput{password});
   // Save the user's plaintext password for possible authentication to a
   // network. See https://crbug.com/386606 for details.
   user_context.SetPasswordKey(Key(password));

@@ -26,6 +26,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
+#include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/version/version_loader.h"
@@ -398,6 +399,7 @@ void LockScreenReauthHandler::OnPasswordConfirmed(const std::string& password) {
   key.SetLabel(kCryptohomeGaiaKeyLabel);
   user_context_->SetKey(key);
   user_context_->SetPasswordKey(Key(password));
+  user_context_->SetSamlPassword(SamlPassword{password});
   CheckCredentials(std::move(user_context_));
   user_context_.reset();
   scraped_saml_passwords_.clear();

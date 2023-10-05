@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
@@ -709,6 +710,9 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
   UserContext user_context(*user);
   user_context.SetIsUsingPin(authenticated_by_pin);
   user_context.SetKey(Key(Key::KEY_TYPE_PASSWORD_PLAIN, "" /*salt*/, password));
+  if (!authenticated_by_pin) {
+    user_context.SetLocalPasswordInput(LocalPasswordInput{password});
+  }
   user_context.SetPasswordKey(Key(password));
   user_context.SetLoginInputMethodIdUsed(input_method::InputMethodManager::Get()
                                              ->GetActiveIMEState()

@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/values.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
+#include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
@@ -22,6 +22,7 @@ void SetKeyForUserContext(UserContext& user_context,
   Key key(password);
   key.SetLabel(kCryptohomeGaiaKeyLabel);
   user_context.SetKey(key);
+  user_context.SetSamlPassword(SamlPassword{password});
   user_context.SetPasswordKey(Key(password));
 }
 
