@@ -117,7 +117,6 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
 
     network_connect_delegate_ =
         std::make_unique<NetworkConnectTestDelegate>(std::move(notifier));
-
     NetworkConnect::Initialize(network_connect_delegate_.get());
   }
 
@@ -154,13 +153,12 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetCellularDeviceLocked(bool is_locked) {
+  void SetCellularDeviceLocked(std::string lock_type) {
     ShillDeviceClient::TestInterface* device_test =
         network_handler_test_helper_->device_test();
 
-    std::string lock_pin = is_locked ? shill::kSIMLockPin : "";
     base::Value::Dict sim_lock_status;
-    sim_lock_status.Set(shill::kSIMLockTypeProperty, lock_pin);
+    sim_lock_status.Set(shill::kSIMLockTypeProperty, lock_type);
     device_test->SetDeviceProperty(
         kCellularDevicePath, shill::kSIMLockStatusProperty,
         base::Value(std::move(sim_lock_status)), /*notify_changed=*/true);
@@ -243,7 +241,7 @@ TEST_F(NetworkStateNotifierTest, WiFiConnectionFailure) {
 
 TEST_F(NetworkStateNotifierTest, CellularLockedSimConnectionFailure) {
   Init();
-  SetCellularDeviceLocked(/*is_locked=*/true);
+  SetCellularDeviceLocked(shill::kSIMLockPin);
   TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
       std::make_unique<SystemNotificationHelper>());
   NotificationDisplayServiceTester tester(nullptr /* profile */);
@@ -269,7 +267,7 @@ TEST_F(NetworkStateNotifierTest, CellularLockedSimConnectionFailure) {
 
 TEST_F(NetworkStateNotifierTest, CellularEsimConnectionFailure) {
   Init();
-  SetCellularDeviceLocked(/*is_locked=*/true);
+  SetCellularDeviceLocked(shill::kSIMLockPin);
   SetupESimNetwork();
   TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
       std::make_unique<SystemNotificationHelper>());
@@ -295,7 +293,7 @@ TEST_F(NetworkStateNotifierTest, CellularEsimConnectionFailure) {
 
   // Set device locked status to false, this will allow for network connection
   // to succeed.
-  SetCellularDeviceLocked(/*is_locked=*/false);
+  SetCellularDeviceLocked(/*lock_type=*/"");
   NetworkConnect::Get()->ConnectToNetworkId("esim_guidiccid");
   base::RunLoop().RunUntilIdle();
 
@@ -367,4 +365,50 @@ TEST_F(NetworkStateNotifierTest,
             test_system_tray_client_.last_network_settings_network_id());
 }
 
+TEST_F(NetworkStateNotifierTest, CellularCarrierLockedSimConnectionFailure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
+  Init();
+  SetCellularDeviceLocked(shill::kSIMLockNetworkPin);
+  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+      std::make_unique<SystemNotificationHelper>());
+  NotificationDisplayServiceTester tester(nullptr /* profile */);
+  NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+  base::RunLoop().RunUntilIdle();
+
+  // Failure should spawn a notification.
+  absl::optional<message_center::Notification> notification =
+      tester.GetNotification(
+          NetworkStateNotifier::kNetworkConnectNotificationId);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(
+      notification->message(),
+      l10n_util::GetStringFUTF16(
+          IDS_NETWORK_CONNECTION_ERROR_MESSAGE, kCellular1NetworkName16,
+          l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_CARRIER_LOCKED)));
+
+  // Clicking the notification should open network settings page.
+  notification->delegate()->Click(/*button_index=*/absl::nullopt,
+                                  /*reply=*/absl::nullopt);
+  EXPECT_EQ(1, test_system_tray_client_.show_network_settings_count());
+}
+
+TEST_F(NetworkStateNotifierTest,
+       CellularCarrierLockedSimConnectionFailureFeatureFlagDisable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kCellularCarrierLock);
+  Init();
+  SetCellularDeviceLocked(shill::kSIMLockNetworkPin);
+  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+      std::make_unique<SystemNotificationHelper>());
+  NotificationDisplayServiceTester tester(nullptr /* profile */);
+  NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+  base::RunLoop().RunUntilIdle();
+
+  // with feature flag disabled, failure should not show notification.
+  absl::optional<message_center::Notification> notification =
+      tester.GetNotification(
+          NetworkStateNotifier::kNetworkConnectNotificationId);
+  EXPECT_FALSE(notification);
+}
 }  // namespace ash

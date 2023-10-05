@@ -1592,6 +1592,9 @@
       <message name="IDS_NETWORK_LIST_SIM_CARD_LOCKED" desc="Text in the network list element when a Cellular network's SIM card is locked.">
         Your SIM is locked
       </message>
+      <message name="IDS_NETWORK_LIST_SIM_CARD_CARRIER_LOCKED" desc="Text in the network list element when a Cellular network's SIM card is carrier locked.">
+        Mobile network provider is locked. Contact your provider for support.
+      </message>
       <message name="IDS_WIFI_NETWORK_STATUS_SECURED" desc="a11y label used when a Wi-Fi network is secured.">
         Secured
       </message>

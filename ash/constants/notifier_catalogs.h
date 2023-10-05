@@ -188,7 +188,8 @@ enum class NotificationCatalogName {
   kScalableIphNotification = 173,
   kUpdateNotification = 174,
   kSubAppsUninstall = 175,
-  kMaxValue = kSubAppsUninstall
+  kNetworkCarrierUnlock = 176,
+  kMaxValue = kNetworkCarrierUnlock
 };
 
 // A living catalog that registers system nudges.

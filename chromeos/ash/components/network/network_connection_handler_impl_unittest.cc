@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/cellular_connection_handler.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
@@ -427,6 +428,27 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
         base::Value::Dict()
             .Set(shill::kSIMSlotInfoICCID, kTestIccid)
             .Set(shill::kSIMSlotInfoPrimary, true));
+    helper_.device_test()->SetDeviceProperty(
+        kTestCellularDevicePath, shill::kSIMSlotInfoProperty,
+        base::Value(std::move(sim_slot_infos)), /*notify_changed=*/true);
+
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetCellularSimCarrierLocked() {
+    // Simulate a locked SIM.
+    base::Value::Dict sim_lock_status;
+    sim_lock_status.Set(shill::kSIMLockTypeProperty, shill::kSIMLockNetworkPin);
+    helper_.device_test()->SetDeviceProperty(
+        kTestCellularDevicePath, shill::kSIMLockStatusProperty,
+        base::Value(std::move(sim_lock_status)), /*notify_changed=*/true);
+
+    // Set the cellular service to be the active profile.
+    base::Value::List sim_slot_infos;
+    base::Value::Dict slot_info_item;
+    slot_info_item.Set(shill::kSIMSlotInfoICCID, kTestIccid);
+    slot_info_item.Set(shill::kSIMSlotInfoPrimary, true);
+    sim_slot_infos.Append(std::move(slot_info_item));
     helper_.device_test()->SetDeviceProperty(
         kTestCellularDevicePath, shill::kSIMSlotInfoProperty,
         base::Value(std::move(sim_slot_infos)), /*notify_changed=*/true);
@@ -1154,6 +1176,19 @@ TEST_F(NetworkConnectionHandlerImplTest, SimLocked) {
 
   Connect(kTestCellularServicePath);
   EXPECT_EQ(NetworkConnectionHandler::kErrorSimLocked, GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest, SimCarrierLocked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
+  Init();
+  AddNonConnectablePSimService();
+  SetCellularSimCarrierLocked();
+  SetCellularServiceConnectable();
+
+  Connect(kTestCellularServicePath);
+  EXPECT_EQ(NetworkConnectionHandler::kErrorSimCarrierLocked,
+            GetResultAndReset());
 }
 
 TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_AlreadyConnectable) {

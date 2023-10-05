@@ -231,6 +231,13 @@ bool DeviceState::IsSimLocked() const {
          sim_lock_type_ == shill::kSIMLockPuk;
 }
 
+bool DeviceState::IsSimCarrierLocked() const {
+  if (technology_family_ == shill::kTechnologyFamilyCdma || !sim_present_) {
+    return false;
+  }
+  return sim_lock_type_ == shill::kSIMLockNetworkPin;
+}
+
 bool DeviceState::HasAPN(const std::string& access_point_name) const {
   for (const auto& apn : apn_list_) {
     // bogus empty entries in the list might have been converted to a list while

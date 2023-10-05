@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
@@ -348,6 +349,21 @@ TEST_F(NetworkConnectTest, ConnectToCellularNetwork_SimLocked) {
   service_test_->SetServiceProperty(kCellular1ServicePath,
                                     shill::kErrorProperty,
                                     base::Value(shill::kErrorSimLocked));
+  service_test_->SetErrorForNextConnectionAttempt(shill::kErrorConnectFailed);
+
+  NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(NetworkConnectTest, ConnectToCellularNetwork_SimCarrierLocked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
+
+  EXPECT_CALL(*mock_delegate_, ShowNetworkSettings(kCellular1Guid)).Times(0);
+
+  service_test_->SetServiceProperty(kCellular1ServicePath,
+                                    shill::kErrorProperty,
+                                    base::Value(shill::kErrorSimCarrierLocked));
   service_test_->SetErrorForNextConnectionAttempt(shill::kErrorConnectFailed);
 
   NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);

@@ -94,6 +94,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   // The following return false if the technology does not require a SIM.
   bool IsSimAbsent() const;
   bool IsSimLocked() const;
+  bool IsSimCarrierLocked() const;
 
   // Returns true if |access_point_name| exists in apn_list for this device.
   bool HasAPN(const std::string& access_point_name) const;

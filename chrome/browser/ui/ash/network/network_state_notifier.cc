@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/network/shill_property_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/shill_error.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -82,6 +83,10 @@ std::u16string GetConnectErrorString(const std::string& error_name) {
   }
   if (error_name == NetworkConnectionHandler::kErrorSimLocked)
     return l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_LOCKED);
+  if (features::IsCellularCarrierLockEnabled() &&
+      error_name == NetworkConnectionHandler::kErrorSimCarrierLocked) {
+    return l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_CARRIER_LOCKED);
+  }
   return std::u16string();
 }
 
@@ -127,7 +132,9 @@ bool ShouldConnectFailedNotificationBeShown(const std::string& error_name,
       error_name != NetworkConnectionHandler::kErrorNotFound &&
       error_name != NetworkConnectionHandler::kErrorConfigureFailed &&
       error_name != NetworkConnectionHandler::kErrorCertLoadTimeout &&
-      error_name != NetworkConnectionHandler::kErrorSimLocked) {
+      error_name != NetworkConnectionHandler::kErrorSimLocked &&
+      (!features::IsCellularCarrierLockEnabled() ||
+       error_name != NetworkConnectionHandler::kErrorSimCarrierLocked)) {
     return false;
   }
 
@@ -165,6 +172,8 @@ const char NetworkStateNotifier::kNetworkActivateNotificationId[] =
     "chrome://settings/internet/activate";
 const char NetworkStateNotifier::kNetworkOutOfCreditsNotificationId[] =
     "chrome://settings/internet/out-of-credits";
+const char NetworkStateNotifier::kNetworkCarrierUnlockNotificationId[] =
+    "chrome://settings/internet/carrier-unlock";
 
 NetworkStateNotifier::NetworkStateNotifier() {
   if (!NetworkHandler::IsInitialized())
@@ -449,6 +458,11 @@ void NetworkStateNotifier::RemoveConnectNotification() {
   connect_error_notification_network_guid_.clear();
 }
 
+void NetworkStateNotifier::RemoveCarrierUnlockNotification() {
+  SystemNotificationHelper::GetInstance()->Close(
+      kNetworkCarrierUnlockNotificationId);
+}
+
 void NetworkStateNotifier::OnConnectErrorGetProperties(
     const std::string& error_name,
     const std::string& service_path,
@@ -604,6 +618,19 @@ void NetworkStateNotifier::ShowVpnDisconnectedNotification(VpnDetails* vpn) {
       error_msg,
       base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
                           weak_ptr_factory_.GetWeakPtr(), vpn->guid));
+}
+
+void NetworkStateNotifier::ShowCarrierUnlockNotification() {
+  std::u16string message =
+      l10n_util::GetStringUTF16(IDS_NETWORK_CARRIER_UNLOCK_BODY);
+  ShowErrorNotification(
+      /*identifier=*/"", kNetworkCarrierUnlockNotificationId,
+      NotificationCatalogName::kNetworkCarrierUnlock, shill::kTypeCellular,
+      l10n_util::GetStringFUTF16(IDS_NETWORK_CARRIER_UNLOCK_TITLE,
+                                 ui::GetChromeOSDeviceName()),
+      message,
+      base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
+                          weak_ptr_factory_.GetWeakPtr(), ""));
 }
 
 void NetworkStateNotifier::ShowNetworkSettings(const std::string& network_id) {

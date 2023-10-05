@@ -126,6 +126,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   // The SIM must be unlocked before a connection can succeed.
   static const char kErrorSimLocked[];
 
+  // Connection attempt failed because SIM is incompatible with Carrier lock
+  // policy.
+  static const char kErrorSimCarrierLocked[];
+
   // Connect failed because cellular device is busy.
   static const char kErrorCellularDeviceBusy[];
 

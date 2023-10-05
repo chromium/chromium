@@ -51,6 +51,10 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   void ShowNetworkConnectErrorForGuid(const std::string& error_name,
                                       const std::string& guid);
 
+  // Shows a notification indicating the device is unlocked by the carrier and
+  // can now connect to any available cellular network.
+  void ShowCarrierUnlockNotification();
+
   // Show a mobile activation error notification.
   void ShowMobileActivationErrorForGuid(const std::string& guid);
 
@@ -61,6 +65,7 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   static const char kNetworkConnectNotificationId[];
   static const char kNetworkActivateNotificationId[];
   static const char kNetworkOutOfCreditsNotificationId[];
+  static const char kNetworkCarrierUnlockNotificationId[];
 
  private:
   friend class NetworkStateNotifierTest;
@@ -104,6 +109,9 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
 
   // Removes any existing connect notifications.
   void RemoveConnectNotification();
+
+  // Removes any existing carrier unlock notifications.
+  void RemoveCarrierUnlockNotification();
 
   // Returns true if the default network changed.
   bool UpdateDefaultNetwork(const NetworkState* network);

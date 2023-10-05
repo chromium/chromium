@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -154,8 +155,13 @@ void NetworkConnectImpl::HandleUnconfiguredNetwork(
 
     // If network is unconfigured because it's SIM locked, do nothing, as this
     // is handled by NetworkStateNotifier.
-    if (network->GetError() == shill::kErrorSimLocked)
+    if (network->GetError() == shill::kErrorSimLocked) {
       return;
+    }
+    if (features::IsCellularCarrierLockEnabled() &&
+        network->GetError() == shill::kErrorSimCarrierLocked) {
+      return;
+    }
 
     // No special configure or setup for |network|, show the settings UI.
     if (LoginState::Get()->IsUserLoggedIn())

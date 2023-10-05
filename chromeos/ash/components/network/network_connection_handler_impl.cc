@@ -7,6 +7,7 @@
 #include <memory>
 #include <ostream>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -369,15 +370,25 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
       const DeviceState* cellular_device =
           network_state_handler_->GetDeviceState(network->device_path());
 
-      // If the SIM is active and the active SIM is locked, we are attempting to
-      // connect to a locked SIM. A SIM must be unlocked before a connection can
-      // succeed.
       if (cellular_device &&
-          cellular_utils::IsSimPrimary(network->iccid(), cellular_device) &&
-          cellular_device->IsSimLocked()) {
-        InvokeConnectErrorCallback(service_path, std::move(error_callback),
-                                   kErrorSimLocked);
-        return;
+          cellular_utils::IsSimPrimary(network->iccid(), cellular_device)) {
+        // If device is carrier locked, it could be unlocked only by the
+        // carrier, so notification to the user is different from the case where
+        // where SIM is locked using PIN/PUK code.
+        if (features::IsCellularCarrierLockEnabled() &&
+            cellular_device->IsSimCarrierLocked()) {
+          InvokeConnectErrorCallback(service_path, std::move(error_callback),
+                                     kErrorSimCarrierLocked);
+          return;
+        }
+        // If the SIM is active and the active SIM is locked, we are attempting
+        // to connect to a locked SIM. A SIM must be unlocked before a
+        // connection can succeed.
+        if (cellular_device->IsSimLocked()) {
+          InvokeConnectErrorCallback(service_path, std::move(error_callback),
+                                     kErrorSimLocked);
+          return;
+        }
       }
 
       cellular_network_iccid = network->iccid();

@@ -1910,7 +1910,12 @@
   <message name="IDS_NETWORK_ACTIVATION_NEEDS_CONNECTION" desc="Message when attempting to activate a mobile network that requires a connection">
     To activate '<ph name="name">$1<ex>Generic Wireless</ex></ph>' data, first connect to a Wi-Fi network
   </message>
-
+  <message name="IDS_NETWORK_CARRIER_UNLOCK_TITLE" desc="Title for notification shown when device is carrier unlocked">
+    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is now unlocked
+  </message>
+ <message name="IDS_NETWORK_CARRIER_UNLOCK_BODY" desc="Message in notification shown when device is carrier unlocked informing the user any eligible mobile network is available for connection">
+    You can connect to any eligible mobile network in Settings
+  </message>
   <!-- ONC (Open Network Configuration) strings have moved to //chromeos/chromeos_strings.grd -->
 
   <!-- Strings shown within Tether notifications -->
