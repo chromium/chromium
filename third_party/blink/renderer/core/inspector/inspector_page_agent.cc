@@ -674,6 +674,7 @@ protocol::Response InspectorPageAgent::reload(
   pending_script_to_evaluate_on_load_once_ =
       optional_script_to_evaluate_on_load.value_or("");
   v8_session_->setSkipAllPauses(true);
+  v8_session_->resume(true /* terminate on resume */);
   return protocol::Response::Success();
 }
 
