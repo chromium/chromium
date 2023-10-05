@@ -151,8 +151,6 @@ BuiltInBackendToAndroidBackendMigrator::
 
 void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary(
     bool should_attempt_upm_reenrollment) {
-  DCHECK(features::RequiresMigrationForUnifiedPasswordManager());
-
   // Don't try to migrate passwords if there was an attempt earlier today.
   base::TimeDelta time_passed_since_last_migration_attempt =
       base::Time::Now() -

@@ -545,7 +545,6 @@ if (current_toolchain == default_toolchain) {
       "//components/paint_preview/browser/android:java",
       "//components/paint_preview/player/android:java",
       "//components/password_manager/core/browser:password_manager_java_enums",
-      "//components/password_manager/core/common:password_manager_common_java_enums",
       "//components/payments/content/android:java",
       "//components/payments/content/android:service_java",
       "//components/payments/mojom:mojom_java",

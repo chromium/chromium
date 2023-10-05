@@ -3385,13 +3385,6 @@ const char kTailoredSecurityRetryForSyncUsersName[] =
 const char kTailoredSecurityRetryForSyncUsersDescription[] =
     "Enables a stateful recovery mechanism for the Tailored Security feature";
 
-const char kUnifiedPasswordManagerAndroidName[] =
-    "Google Mobile Services for passwords";
-const char kUnifiedPasswordManagerAndroidDescription[] =
-    "Uses Google Mobile Services to store and retrieve passwords."
-    "Warning: Highly experimental. May lead to loss of passwords and "
-    "impact performance.";
-
 const char kUnifiedPasswordManagerAndroidReenrollmentName[] =
     "Automatic reenrollement of users who were evicted from using Google "
     "Mobile Services after experiencing errors.";

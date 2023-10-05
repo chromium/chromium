@@ -854,11 +854,9 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   PrivacySandboxServiceFactory::GetForProfile(this);
 
 #if BUILDFLAG(IS_ANDROID)
-  if (password_manager::features::UsesUnifiedPasswordManagerUi()) {
     // The password settings service needs to start listening to settings
     // changes from Google Mobile Services, as early as possible.
     PasswordManagerSettingsServiceFactory::GetForProfile(this);
-  }
 #endif
 
   // The announcement notification  service might not be available for some

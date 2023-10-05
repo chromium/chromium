@@ -132,12 +132,6 @@ BASE_FEATURE(kPasswordSuggestionBottomSheetV2,
              "PasswordSuggestionBottomSheetV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables use of Google Mobile Services for password storage. Chrome's local
-// database will be unused but kept in sync for local passwords.
-BASE_FEATURE(kUnifiedPasswordManagerAndroid,
-             "UnifiedPasswordManagerAndroid_LAUNCHED",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables use of Google Mobile services for non-synced password storage.
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
              "kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration",
@@ -238,43 +232,6 @@ const char kGenerationRequirementsPrefixLength[] = "prefix_length";
 // high values is not strong.
 // Default to 5000 ms.
 const char kGenerationRequirementsTimeout[] = "timeout";
-
-#if BUILDFLAG(IS_ANDROID)
-bool UsesUnifiedPasswordManagerUi() {
-  if (!base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid)) {
-    return false;
-  }
-  UpmExperimentVariation variation = kUpmExperimentVariationParam.Get();
-  switch (variation) {
-    case UpmExperimentVariation::kEnableForSyncingUsers:
-    case UpmExperimentVariation::kEnableForAllUsers:
-      return true;
-    case UpmExperimentVariation::kShadowSyncingUsers:
-    case UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
-      return false;
-  }
-  NOTREACHED() << "Define explicitly whether UI is required!";
-  return false;
-}
-
-bool RequiresMigrationForUnifiedPasswordManager() {
-  if (!base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid)) {
-    return false;
-  }
-  UpmExperimentVariation variation = kUpmExperimentVariationParam.Get();
-  switch (variation) {
-    case UpmExperimentVariation::kEnableForSyncingUsers:
-    case UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
-    case UpmExperimentVariation::kEnableForAllUsers:
-      return true;
-    case UpmExperimentVariation::kShadowSyncingUsers:
-      return false;
-  }
-  NOTREACHED() << "Define explicitly whether migration is required!";
-  return false;
-}
-
-#endif  // IS_ANDROID
 
 #if BUILDFLAG(IS_IOS)
 bool IsPasswordCheckupEnabled() {

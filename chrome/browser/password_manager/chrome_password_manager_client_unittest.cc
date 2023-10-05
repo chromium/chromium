@@ -1459,11 +1459,6 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
 TEST_F(ChromePasswordManagerClientAndroidTest,
        RefreshPasswordManagerSettingsIfNeededUPMFeatureEnabled) {
-  const std::map<std::string, std::string> params = {
-      {"stage", base::NumberToString(static_cast<int>(
-                    password_manager::features::UpmExperimentVariation::
-                        kEnableForSyncingUsers))}};
-
   EXPECT_CALL(settings_service(), RequestSettingsFromBackend);
   GetClient()->RefreshPasswordManagerSettingsIfNeeded();
 }

@@ -15,10 +15,8 @@ using password_manager::AndroidBackendErrorType;
 
 PasswordSyncControllerDelegateBridgeImpl::
     PasswordSyncControllerDelegateBridgeImpl() {
-  if (password_manager::features::UsesUnifiedPasswordManagerUi()) {
-    java_object_ = Java_PasswordSyncControllerDelegateBridgeImpl_create(
-        base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
-  }
+  java_object_ = Java_PasswordSyncControllerDelegateBridgeImpl_create(
+      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
 }
 
 PasswordSyncControllerDelegateBridgeImpl::

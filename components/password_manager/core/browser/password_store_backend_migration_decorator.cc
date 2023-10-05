@@ -29,9 +29,8 @@ constexpr int kMigrationToAndroidBackendDelay = 30;
 // Check the experiment stage allows migration and that user wasn't kicked out
 // from the experiment after receiving errors from the backend.
 bool ShouldAttemptMigration(const PrefService* prefs) {
-  return features::RequiresMigrationForUnifiedPasswordManager() &&
-         !prefs->GetBoolean(
-             prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
+  return !prefs->GetBoolean(
+      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
 }
 
 }  // namespace
@@ -160,10 +159,6 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
   active_backend_->InitBackend(
       affiliated_match_helper, std::move(remote_form_changes_received),
       std::move(sync_enabled_or_disabled_cb), std::move(completion));
-
-  // Create a migrator only if the current experiment stage allows it.
-  if (!features::RequiresMigrationForUnifiedPasswordManager())
-    return;
 
   migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
       built_in_backend_.get(), android_backend_.get(), prefs_);

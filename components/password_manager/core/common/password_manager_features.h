@@ -14,10 +14,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/password_manager/core/common/password_manager_feature_variations_android.h"
-#endif
-
 namespace password_manager::features {
 
 // All features in alphabetical order. The features should be documented
@@ -51,8 +47,6 @@ BASE_DECLARE_FEATURE(kPasskeyManagementUsingAccountSettingsAndroid);
 BASE_DECLARE_FEATURE(kPasswordEditDialogWithDetails);
 BASE_DECLARE_FEATURE(kPasswordGenerationBottomSheet);
 BASE_DECLARE_FEATURE(kPasswordSuggestionBottomSheetV2);
-// TODO(crbug.com/1439191): Clean up the UnifiedPasswordManagerAndroid flag.
-BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroid);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
 BASE_DECLARE_FEATURE(
     kUnifiedPasswordManagerLocalPasswordsAndroidWithoutMigration);
@@ -112,20 +106,6 @@ inline constexpr base::FeatureParam<PasswordGenerationVariation>
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
-
-inline constexpr base::FeatureParam<UpmExperimentVariation>::Option
-    kUpmExperimentVariationOption[] = {
-        {UpmExperimentVariation::kEnableForSyncingUsers, "0"},
-        {UpmExperimentVariation::kShadowSyncingUsers, "1"},
-        {UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers, "2"},
-        {UpmExperimentVariation::kEnableForAllUsers, "3"},
-};
-
-inline constexpr base::FeatureParam<UpmExperimentVariation>
-    kUpmExperimentVariationParam{&kUnifiedPasswordManagerAndroid, "stage",
-                                 UpmExperimentVariation::kEnableForSyncingUsers,
-                                 &kUpmExperimentVariationOption};
-
 extern const base::FeatureParam<int> kSaveUpdatePromptSyncingStringVersion;
 
 // Whether to ignore the 1 month timeout in between migration warning prompts.
@@ -152,17 +132,6 @@ extern const char kGenerationRequirementsTimeout[];
 #if BUILDFLAG(IS_ANDROID)
 // Touch To Fill submission feature's variations.
 extern const char kTouchToFillPasswordSubmissionWithConservativeHeuristics[];
-#endif  // IS_ANDROID
-
-#if BUILDFLAG(IS_ANDROID)
-// Returns true if the unified password manager feature is active and in a stage
-// that allows to use the new feature end-to-end.
-bool UsesUnifiedPasswordManagerUi();
-
-// Returns true if the unified password manager feature is active and in a stage
-// that requires migrating existing credentials. Independent of
-// whether only non-syncable data needs to be migrated or full credentials.
-bool RequiresMigrationForUnifiedPasswordManager();
 #endif  // IS_ANDROID
 
 #if BUILDFLAG(IS_IOS)
