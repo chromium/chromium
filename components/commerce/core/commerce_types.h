@@ -41,16 +41,16 @@ struct DiscountInfo {
   DiscountInfo& operator=(const DiscountInfo&);
   ~DiscountInfo();
 
-  DiscountClusterType cluster_type;
-  DiscountType type;
+  DiscountClusterType cluster_type = DiscountClusterType::kUnspecified;
+  DiscountType type = DiscountType::kUnspecified;
   std::string language_code;
   std::string description_detail;
   absl::optional<std::string> terms_and_conditions;
   std::string value_in_text;
   absl::optional<std::string> discount_code;
   uint64_t id = 0;
-  bool is_merchant_wide;
-  double expiry_time_sec;
+  bool is_merchant_wide = false;
+  double expiry_time_sec = 0;
   uint64_t offer_id = 0;
 };
 
@@ -63,13 +63,13 @@ struct MerchantInfo {
   MerchantInfo& operator=(MerchantInfo&&) = default;
   ~MerchantInfo();
 
-  float star_rating;
-  uint32_t count_rating;
+  float star_rating = 0;
+  uint32_t count_rating = 0;
   GURL details_page_url;
-  bool has_return_policy;
-  float non_personalized_familiarity_score;
-  bool contains_sensitive_content;
-  bool proactive_message_disabled;
+  bool has_return_policy = false;
+  float non_personalized_familiarity_score = 0;
+  bool contains_sensitive_content = false;
+  bool proactive_message_disabled = false;
 };
 
 // Position of current price with respect to the typical price range.
@@ -95,8 +95,8 @@ struct PriceInsightsInfo {
   absl::optional<std::string> catalog_attributes;
   std::vector<std::tuple<std::string, int64_t>> catalog_history_prices;
   absl::optional<GURL> jackpot_url;
-  PriceBucket price_bucket;
-  bool has_multiple_catalogs;
+  PriceBucket price_bucket = PriceBucket::kUnknown;
+  bool has_multiple_catalogs = false;
 };
 
 // Information returned by the product info APIs.
@@ -136,9 +136,9 @@ struct ParcelTrackingStatus {
   ParcelTrackingStatus& operator=(const ParcelTrackingStatus&);
   ~ParcelTrackingStatus();
 
-  ParcelIdentifier::Carrier carrier;
+  ParcelIdentifier::Carrier carrier = ParcelIdentifier::UNKNOWN;
   std::string tracking_id;
-  ParcelStatus::ParcelState state;
+  ParcelStatus::ParcelState state = ParcelStatus::UNKNOWN;
   GURL tracking_url;
   base::Time estimated_delivery_time;
 };
