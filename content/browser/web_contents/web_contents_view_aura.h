@@ -15,8 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
-#include "content/browser/site_instance_group.h"
 #include "content/browser/web_contents/web_contents_view.h"
+#include "content/browser/web_contents/web_contents_view_drag_security_info.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -176,11 +176,6 @@ class CONTENT_EXPORT WebContentsViewAura
 
   // Returns GetNativeView unless overridden for testing.
   gfx::NativeView GetRenderWidgetHostViewParent() const;
-
-  // Returns whether |target_rwh| is a valid RenderWidgetHost to be dragging
-  // over. This enforces that same-page, cross-site drags are not allowed. See
-  // crbug.com/666858, crbug.com/1266953, crbug.com/1485266.
-  bool IsValidDragTarget(RenderWidgetHostImpl* target_rwh) const;
 
   // Called from CreateView() to create |window_|.
   void CreateAuraWindow(aura::Window* context);
@@ -387,22 +382,8 @@ class CONTENT_EXPORT WebContentsViewAura
   // avoid sending the drag exited message after leaving the current view.
   GlobalRoutingID current_rvh_for_drag_;
 
-  // Used to track security-salient details about a drag source. See
-  // documentation in `IsValidDragTarget()` for `site_instance_group_id`.
-  // See crbug.com/1264873 for `image_accessible_from_frame`.
-  struct DragStart {
-    DragStart(SiteInstanceGroupId site_instance_group_id,
-              bool image_accessible_from_frame)
-        : site_instance_group_id(site_instance_group_id),
-          image_accessible_from_frame(image_accessible_from_frame) {}
-    ~DragStart() = default;
-
-    SiteInstanceGroupId site_instance_group_id;
-    bool image_accessible_from_frame;
-  };
-  // Will hold a value when the current drag started in this page (outermost
-  // WebContents).
-  absl::optional<DragStart> drag_start_;
+  // Holds the security info for the current drag.
+  WebContentsViewDragSecurityInfo drag_security_info_;
 
   // Responsible for handling gesture-nav and pull-to-refresh UI.
   std::unique_ptr<GestureNavSimple> gesture_nav_simple_;

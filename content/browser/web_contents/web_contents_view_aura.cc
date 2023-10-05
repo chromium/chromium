@@ -738,12 +738,9 @@ void WebContentsViewAura::PrepareDropData(
   // Do not add FileContents if this is a tainted-cross-origin same-page image
   // (https://crbug.com/1264873).
   bool access_allowed =
-      // Drag started outside of this top-level WebContents, including outside
-      // the browser.
-      !drag_start_ ||
       // Drag began in this top-level WebContents, and image access is allowed
       // (not cross-origin).
-      drag_start_->image_accessible_from_frame;
+      drag_security_info_.IsImageAccessibleFromFrame();
   data.GetFilenames(&drop_data->filenames);
   if (access_allowed && drop_data->filenames.empty()) {
     base::FilePath filename;
@@ -785,7 +782,7 @@ void WebContentsViewAura::PrepareDropData(
 void WebContentsViewAura::EndDrag(
     base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
     DragOperation op) {
-  drag_start_ = absl::nullopt;
+  drag_security_info_.OnDragEnded();
 
   if (!web_contents_)
     return;
@@ -862,36 +859,6 @@ gfx::NativeView WebContentsViewAura::GetRenderWidgetHostViewParent() const {
   return window_.get();
 }
 
-bool WebContentsViewAura::IsValidDragTarget(
-    RenderWidgetHostImpl* target_rwh) const {
-  // This is the browser-side check for https://crbug.com/59081 to block
-  // drags between cross-origin frames within the same page. Otherwise, a
-  // malicious attacker could abuse drag interactions to leak information
-  // across origins without explicit user intent.
-  // `drag_start_` is null when the drag started outside of the browser or from
-  // a different top-level WebContents.
-  if (!drag_start_)
-    return true;
-
-  // For site isolation, it is desirable to avoid having the renderer
-  // perform the check unless it already has access to the starting
-  // document's origin. If the SiteInstanceGroups match, then the process
-  // allocation policy decided that it is OK for the source and target
-  // frames to live in the same renderer process. Furthermore, having matching
-  // SiteInstanceGroups means that either (1) the source and target frame are
-  // part of the same blink::Page, or (2) that they are in the same Browsing
-  // Context Group and the drag would cross tab boundaries (the latter of which
-  // can't happen here since `drag_start_` is null). Allow this drag to the
-  // renderer. Blink will perform an additional check against
-  // `blink::DragController::drag_initiator_` to decide whether or not to
-  // allow the drag operation. This can be done in the renderer, as the
-  // browser-side checks only have local tree fragment (potentially with
-  // multiple origins) granularity at best, but a drag operation eventually
-  // targets one single frame in that local tree fragment.
-  return target_rwh->GetSiteInstanceGroup()->GetId() ==
-         drag_start_->site_instance_group_id;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // WebContentsViewAura, WebContentsView implementation:
 
@@ -964,14 +931,14 @@ DropData* WebContentsViewAura::GetDropData() const {
 void WebContentsViewAura::CancelDragDropForPortalActivation() {
   // Note: We only want to cancel drags that originate from the predecessor
   // WebContents to prevent possible unintentional cross-origin data accesses.
-  // |drag_start_| is only set if the drag originated in this WebContents. Drags
-  // from other tabs or from outside Chrome are not subject to this restriction
-  // (as they demonstrate sufficient user intent), and should continue to work
-  // across portal activations.
+  // |drag_security_info_| is only initiated if the drag originated in this
+  // WebContents. Drags from other tabs or from outside Chrome are not subject
+  // to this restriction (as they demonstrate sufficient user intent), and
+  // should continue to work across portal activations.
   if (auto* drag_drop_client =
           aura::client::GetDragDropClient(GetNativeView()->GetRootWindow());
       drag_drop_client && drag_drop_client->IsDragDropInProgress() &&
-      drag_start_) {
+      drag_security_info_.did_initiate()) {
     drag_drop_client->DragCancel();
   }
 }
@@ -1165,9 +1132,7 @@ void WebContentsViewAura::StartDragging(
   // during the nested run loop. See https://crbug.com/1312144.
   base::WeakPtr<WebContentsViewAura> weak_this = weak_ptr_factory_.GetWeakPtr();
 
-  drag_start_ =
-      DragStart(source_rwh->GetSiteInstanceGroup()->GetId(),
-                drop_data.file_contents_image_accessible);
+  drag_security_info_.OnDragInitiated(source_rwh, drop_data);
 
   ui::TouchSelectionController* selection_controller = GetSelectionController();
   if (selection_controller)
@@ -1392,8 +1357,9 @@ void WebContentsViewAura::DragEnteredCallback(
     return;
   RenderWidgetHostImpl* target_rwh =
       RenderWidgetHostImpl::From(target->GetRenderWidgetHost());
-  if (!IsValidDragTarget(target_rwh))
+  if (!drag_security_info_.IsValidDragTarget(target_rwh)) {
     return;
+  }
 
   current_rwh_for_drag_ = target_rwh->GetWeakPtr();
   current_rvh_for_drag_ =
@@ -1484,8 +1450,9 @@ void WebContentsViewAura::DragUpdatedCallback(
     return;
   RenderWidgetHostImpl* target_rwh =
       RenderWidgetHostImpl::From(target->GetRenderWidgetHost());
-  if (!IsValidDragTarget(target_rwh))
+  if (!drag_security_info_.IsValidDragTarget(target_rwh)) {
     return;
+  }
 
   aura::Window* root_window = GetNativeView()->GetRootWindow();
   aura::client::ScreenPositionClient* screen_position_client =
@@ -1627,8 +1594,8 @@ void WebContentsViewAura::CompleteDragExit() {
 // like this method itself, OnGotVirtualFilesAsTempFiles(),
 // GotModifiedDropDataFromDelegate().  Therefore these methods begin with
 // similar checks to make sure the drop is still allowed. For example, checks
-// to make sure the target RWH has not changed.  See IsValidDragTarget() for
-// details.
+// to make sure the target RWH has not changed.  See
+// drag_security_info_.IsValidDragTarget() for details.
 void WebContentsViewAura::PerformDropCallback(
     DropMetadata drop_metadata,
     std::unique_ptr<ui::OSExchangeData> data,
@@ -1641,8 +1608,9 @@ void WebContentsViewAura::PerformDropCallback(
     return;
   RenderWidgetHostImpl* target_rwh =
       RenderWidgetHostImpl::From(target->GetRenderWidgetHost());
-  if (!IsValidDragTarget(target_rwh))
+  if (!drag_security_info_.IsValidDragTarget(target_rwh)) {
     return;
+  }
 
   DCHECK(transformed_pt.has_value());
 
@@ -1713,7 +1681,7 @@ void WebContentsViewAura::GotModifiedDropDataFromDelegate(
     absl::optional<DropData> drop_data) {
   // This is possibly an async callback.  Make sure the RWH is still valid.
   if (!drop_context.target_rwh ||
-      !IsValidDragTarget(drop_context.target_rwh.get())) {
+      !drag_security_info_.IsValidDragTarget(drop_context.target_rwh.get())) {
     return;
   }
 
@@ -1818,7 +1786,7 @@ void WebContentsViewAura::OnGotVirtualFilesAsTempFiles(
     // valid target.
     if (!drop_observer->drop_allowed() ||
         !(target_rwh && target_rwh == current_rwh_for_drag_.get() &&
-          IsValidDragTarget(target_rwh))) {
+          drag_security_info_.IsValidDragTarget(target_rwh))) {
       // Signal test code that the drop is disallowed.
       if (!drop_callback_for_testing_.is_null()) {
         std::move(drop_callback_for_testing_)

@@ -100,14 +100,13 @@ CONTENT_EXPORT
     GetRenderWidgetHostAtPoint:(const gfx::PointF&)viewPoint
                  transformedPt:(gfx::PointF*)transformedPt;
 
-// Sets |dragStartProcessID_| and |dragStartViewID_|.
-- (void)setDragStartTrackersForProcess:(int)processID;
-- (void)resetDragStartTrackers;
+// Called to indicate that the owning WebContents has initiated a drag.
+- (void)initiateDragWithRenderWidgetHost:(content::RenderWidgetHostImpl*)rwhi
+                                dropData:(const content::DropData&)dropData;
 
-// Returns whether |targetRWH| is a valid RenderWidgetHost to be dragging
-// over. This enforces that same-page, cross-site drags are not allowed. See
-// https://crbug.com/666858.
-- (bool)isValidDragTarget:(content::RenderWidgetHostImpl*)targetRWH;
+// Called to indicate that, if the owning WebContents has initiated a drag, that
+// drag has ended.
+- (void)endDrag;
 
 @end
 

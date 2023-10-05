@@ -174,7 +174,8 @@ void WebContentsViewMac::StartDragging(
   // processing events.
   base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
   NSDragOperation mask = static_cast<NSDragOperation>(allowed_operations);
-  [drag_dest_ setDragStartTrackersForProcess:source_rwh->GetProcess()->GetID()];
+
+  [drag_dest_ initiateDragWithRenderWidgetHost:source_rwh dropData:drop_data];
   drag_source_start_rwh_ = source_rwh->GetWeakPtr();
 
   WebContentsDelegate* contents_delegate = web_contents_->GetDelegate();
@@ -561,7 +562,7 @@ bool WebContentsViewMac::DragPromisedFileTo(const base::FilePath& file_path,
 void WebContentsViewMac::EndDrag(uint32_t drag_operation,
                                  const gfx::PointF& local_point,
                                  const gfx::PointF& screen_point) {
-  [drag_dest_ resetDragStartTrackers];
+  [drag_dest_ endDrag];
 
   web_contents_->SystemDragEnded(drag_source_start_rwh_.get());
 

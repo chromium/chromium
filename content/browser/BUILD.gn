@@ -2261,6 +2261,8 @@ source_set("browser") {
     "web_contents/web_contents_view_aura.h",
     "web_contents/web_contents_view_child_frame.cc",
     "web_contents/web_contents_view_child_frame.h",
+    "web_contents/web_contents_view_drag_security_info.cc",
+    "web_contents/web_contents_view_drag_security_info.h",
     "web_database/web_database_host_impl.cc",
     "web_database/web_database_host_impl.h",
     "web_exposed_isolation_info.cc",
