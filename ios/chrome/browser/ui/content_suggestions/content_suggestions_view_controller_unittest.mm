@@ -87,12 +87,13 @@ TEST_F(ContentSuggestionsViewControllerTest,
        TestMagicStackTopImpressionMetric) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures({kMagicStack}, {});
-  histogram_tester_->ExpectBucketCount(
-      kMagicStackTopModuleImpressionHistogram,
-      ContentSuggestionsModuleType::kMostVisited, 0);
   [view_controller_ setMagicStackOrder:@[
     @(int(ContentSuggestionsModuleType::kMostVisited))
   ]];
+  [view_controller_ loadViewIfNeeded];
+  histogram_tester_->ExpectBucketCount(
+      kMagicStackTopModuleImpressionHistogram,
+      ContentSuggestionsModuleType::kMostVisited, 0);
   [view_controller_ setMostVisitedTilesWithConfigs:@[
     [[ContentSuggestionsMostVisitedItem alloc] init]
   ]];
@@ -143,6 +144,38 @@ TEST_F(ContentSuggestionsViewControllerTest,
   histogram_tester_->ExpectBucketCount(
       kMagicStackTopModuleImpressionHistogram,
       ContentSuggestionsModuleType::kSetUpListSync, 1);
+}
+
+// Tests that the Magic Stack top module impression metric logs correctly even
+// if the Magic Stack module rank is ready after the top module is. This
+// simulates an environment where kSegmentationPlatformFeature is enabled, so
+// the magic stack module rank is asynchonously fetched and could be available
+// only after the initial view construction.
+TEST_F(ContentSuggestionsViewControllerTest,
+       TestMagicStackTopImpressionMetricSegmentation) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{segmentation_platform::features::kSegmentationPlatformFeature, {}},
+       {segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
+        {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
+       {kMagicStack, {}}},
+      {});
+
+  [view_controller_ setShortcutTilesWithConfigs:@[ BookmarkActionItem() ]];
+  histogram_tester_->ExpectBucketCount(kMagicStackTopModuleImpressionHistogram,
+                                       ContentSuggestionsModuleType::kShortcuts,
+                                       0);
+  [view_controller_ loadViewIfNeeded];
+  histogram_tester_->ExpectBucketCount(kMagicStackTopModuleImpressionHistogram,
+                                       ContentSuggestionsModuleType::kShortcuts,
+                                       0);
+  [view_controller_ setMagicStackOrder:@[
+    @(int(ContentSuggestionsModuleType::kShortcuts)),
+    @(int(ContentSuggestionsModuleType::kMostVisited))
+  ]];
+  histogram_tester_->ExpectBucketCount(kMagicStackTopModuleImpressionHistogram,
+                                       ContentSuggestionsModuleType::kShortcuts,
+                                       1);
 }
 
 // Tests that modules are inserted in their correct final positions in the Magic
