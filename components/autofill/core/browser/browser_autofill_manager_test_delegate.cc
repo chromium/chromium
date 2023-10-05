@@ -26,8 +26,7 @@ void BrowserAutofillManagerTestDelegate::OnFillOrPreviewDataModelForm(
     AutofillManager& manager,
     FormGlobalId form,
     mojom::AutofillActionPersistence action_persistence,
-    base::span<const std::pair<const FormFieldData*, const AutofillField*>>
-        filled_fields,
+    base::span<const FormFieldData* const> filled_fields,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card) {
   switch (action_persistence) {

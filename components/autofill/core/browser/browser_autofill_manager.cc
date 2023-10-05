@@ -2655,16 +2655,14 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
   // This will hold the fields (and corresponding autofill fields) in the
   // intersection of safe_fields and newly_filled_fields.
-  std::vector<std::pair<const FormFieldData*, const AutofillField*>>
-      safe_newly_filled_fields;
+  std::vector<const FormFieldData*> safe_newly_filled_fields;
 
   // Report the fields that were not filled due to the iframe security policy.
   for (FieldGlobalId field_global_id : newly_filled_fields) {
     if (base::Contains(safe_fields, field_global_id)) {
       // A safe field was filled.
-      safe_newly_filled_fields.emplace_back(
-          form.FindFieldByGlobalId(field_global_id),
-          form_structure->GetFieldById(field_global_id));
+      safe_newly_filled_fields.push_back(
+          form.FindFieldByGlobalId(field_global_id));
       continue;
     }
     // Find and report index of fields that were not filled.
@@ -2681,11 +2679,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
   // Save filling history to support undoing it later if needed.
   if (action_persistence == mojom::AutofillActionPersistence::kFill) {
-    std::vector<const FormFieldData*> fields_for_autofill_history;
-    for (auto& [cur_field, cur_autofill_field] : safe_newly_filled_fields) {
-      fields_for_autofill_history.push_back(cur_field);
-    }
-    form_autofill_history_.AddFormFillEntry(fields_for_autofill_history,
+    form_autofill_history_.AddFormFillEntry(safe_newly_filled_fields,
                                             is_refill);
   }
 

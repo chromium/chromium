@@ -399,36 +399,38 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   Attach();
   // Create a profile to read information from and send to devtools.
   AutofillProfile profile = CreateTestProfile();
+
   // Create fake filled fields.
-  // First field. Please note that we only use `form_field_data` to grab the
-  // field value, everything else comes from `autofill_field`.
   // TODO(crbug.com/1331312): Get rid of FormFieldData.
-  FormFieldData form_field_data = test::CreateTestFormField(
-      /*label*/ "", "name_1", "value_1", FormControlType::kInputText);
-  form_field_data.id_attribute = u"id_1";
-  AutofillField autofill_field(form_field_data);
-  // set `autofill_field_2` to empty to assert that we always use
-  // `form_field_data_2`.
-  autofill_field.value = u"";
-  autofill_field.set_server_predictions(
+  FormData form;
+  form.host_frame = form_id().frame_token;
+  form.unique_renderer_id = form_id().renderer_id;
+  form.fields.push_back(test::CreateTestFormField(
+      /*label=*/"", "name_1", "value_1", FormControlType::kInputText));
+  form.fields.back().id_attribute = u"id_1";
+  form.fields.push_back(test::CreateTestFormField(
+      /*label=*/"", "name_2", "value_2", FormControlType::kInputText));
+  form.fields.back().id_attribute = u"id_2";
+
+  // The parsed form is queried by
+  // AutofillHandler::OnFillOrPreviewDataModelForm() to obtain the type
+  // predictions.
+  auto form_structure = std::make_unique<FormStructure>(form);
+  form_structure->field(0)->value = u"";
+  form_structure->field(0)->set_server_predictions(
       {test::CreateFieldPrediction(NAME_FULL)});
-  autofill_field.SetHtmlType(autofill::mojom::HtmlFieldType::kName,
-                             autofill::mojom::HtmlFieldMode::kShipping);
-  // Second field.
-  FormFieldData form_field_data_2 = test::CreateTestFormField(
-      /*label*/ "", "name_2", "value_2", FormControlType::kInputText);
-  form_field_data_2.id_attribute = u"id_2";
-  AutofillField autofill_field_2(form_field_data_2);
-  // set `autofill_field_2` to empty to assert that we always use
-  // `form_field_data_2`.
-  autofill_field_2.value = u"";
-  autofill_field_2.set_server_predictions(
+  form_structure->field(0)->SetHtmlType(HtmlFieldType::kName,
+                                        HtmlFieldMode::kShipping);
+  form_structure->field(1)->value = u"";
+  form_structure->field(1)->set_server_predictions(
       {test::CreateFieldPrediction(NAME_FULL)});
-  autofill_field_2.SetHtmlType(autofill::mojom::HtmlFieldType::kUnspecified,
-                               autofill::mojom::HtmlFieldMode::kShipping);
-  std::vector<const std::pair<const FormFieldData*, const AutofillField*>>
-      filled_fields_by_autofill = {{{&form_field_data, &autofill_field},
-                                    {&form_field_data_2, &autofill_field_2}}};
+  form_structure->field(1)->SetHtmlType(HtmlFieldType::kUnspecified,
+                                        HtmlFieldMode::kShipping);
+  (*test_api(main_autofill_manager()).mutable_form_structures())[form_id()] =
+      std::move(form_structure);
+
+  std::vector<const FormFieldData* const> filled_fields_by_autofill = {
+      {&form.fields[0], &form.fields[1]}};
 
   // Enabled events and emit event about forming being filled.
   SendCommandSync("Autofill.enable");
@@ -456,9 +458,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
       notification.FindListByDottedPath("filledFields");
   ASSERT_EQ(filled_fields->size(), filled_fields_by_autofill.size());
   for (size_t i = 0; i < filled_fields->size(); ++i) {
+    FormStructure& fs =
+        CHECK_DEREF(main_autofill_manager().FindCachedFormById(form_id()));
     const base::Value& ff = (*filled_fields)[i];
-    const FormFieldData* ffd = filled_fields_by_autofill[i].first;
-    const AutofillField* af = filled_fields_by_autofill[i].second;
+    const FormFieldData* ffd = filled_fields_by_autofill[i];
+    const AutofillField* af = fs.GetFieldById(ffd->global_id());
 
     EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16("id", af->id_attribute));
     EXPECT_THAT(ff, FilledFieldHasAttributeWithValue(

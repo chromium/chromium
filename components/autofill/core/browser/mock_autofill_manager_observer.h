@@ -111,8 +111,7 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
               (AutofillManager&,
                FormGlobalId,
                mojom::AutofillActionPersistence action_persistence,
-               (base::span<const std::pair<const FormFieldData*,
-                                           const AutofillField*>>),
+               (base::span<const FormFieldData* const>),
                (absl::variant<const AutofillProfile*, const CreditCard*>
                     profile_or_credit_card)),
               (override));
