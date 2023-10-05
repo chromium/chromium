@@ -34,6 +34,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1149401351239820326">Expiry month</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Rename</translation>
+<translation id="1174479719160874822">Chrome will request the mobile site when the screen is narrow</translation>
 <translation id="1177863135347784049">Customised</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
@@ -592,6 +593,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4116038641877404294">Download pages to use them offline</translation>
 <translation id="4121654769234887259">You won’t need to remember this password. It will be saved to Google Password Manager for <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Notification permission flow opened at full height</translation>
+<translation id="4126285640274188657">Page Insights</translation>
 <translation id="4135200667068010335">List of devices with which to share a tab is closed.</translation>
 <translation id="4137746084635924146">Current device language</translation>
 <translation id="4139654229316918773">Chrome Canary</translation>
@@ -1243,6 +1245,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7376560087009844242">By including more of a page’s text, you might see better results when using Touch to Search. You can always visit <ph name="BEGIN_LINK" />settings<ph name="END_LINK" /> to change this.</translation>
 <translation id="7379900596734708416">Dark theme for sites is available</translation>
 <translation id="7388615499319468910">Sites and advertisers can understand how ads perform. This setting is off.</translation>
+<translation id="7397416715506917976">View page insights</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome First Run Experience</translation>
 <translation id="7411224099004328643">Google Account user</translation>
@@ -1416,6 +1419,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8127542551745560481">Edit homepage</translation>
 <translation id="8130309322784422030">Your stored sign-in info might be out of date</translation>
 <translation id="813082847718468539">View site information</translation>
+<translation id="8136852699834914183">Playback is unavailable for this page.</translation>
 <translation id="8137562778192957619">You won’t need to remember this password. It will be saved to Google Password Manager.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> files left</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>

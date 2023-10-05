@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Dispozitivul este conectat.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Elimini pagina?}=1{Elimini pagina {PAGE_NUMBER}?}few{Elimini pagina {PAGE_NUMBER}?}other{Elimini pagina {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Exclusiv pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Date mobile</translation>
 <translation id="3156846309055100599">Se scanează pagina <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">S-a detectat un portal captiv</translation>

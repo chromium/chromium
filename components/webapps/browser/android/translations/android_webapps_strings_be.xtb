@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1213425325105380833">Аднавіце праграмы, якія вы нядаўна выкарыстоўвалі на прыладах, падключаных да гэтага ўліковага запісу</translation>
+<translation id="2065911435109240297">Аднаўленне вэб-праграм</translation>
+<translation id="2111649875343992405">Разгляд вэб-праграм для аднаўлення</translation>
 <translation id="2139186145475833000">Дадаць на галоўны экран</translation>
+<translation id="2172982519592313442">Разгледзець вэб-праграмы</translation>
 <translation id="2478076885740497414">Усталяваць праграму</translation>
 <translation id="3789841737615482174">Усталяваць</translation>
 <translation id="3910402514791813257">Збой усталявання</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Здымак экрана. Дакраніцеся, каб закрыць.</translation>
 <translation id="6990079615885386641">Усталяваць праграму з Крамы Google Play: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Ідзе дадаванне папярэдняга сайта</translation>
+<translation id="7672888405515738928">Выберыце, якія вэб-праграмы трэба аднавіць на гэтай прыладзе. Тут паказаны праграмы на падставе гісторыі Chrome.</translation>
+<translation id="8163051092261298861">Аднавіць вэб-праграмы</translation>
 <translation id="962979164594783469">Усталяваць гэту праграму</translation>
 </translationbundle>

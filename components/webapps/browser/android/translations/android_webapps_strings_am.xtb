@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
+<translation id="1213425325105380833">ከዚህ መለያ ጋር በተገናኙ መሣሪያዎች ላይ በቅርብ ጊዜ የተጠቀሙቧቸውን የድር መተግበሪያዎች ወደነበረበት ይመልሱ</translation>
+<translation id="2065911435109240297">የእርስዎን የድር መተግበሪያዎች ወደነበረበት ይመልሱ</translation>
+<translation id="2111649875343992405">የትኛዎቹን የድር መተግበሪያዎች ወደነበረበት መመለስ እንዳለባቸው ይገምግሙ</translation>
 <translation id="2139186145475833000">ወደ መነሻ ማያ ገፅ አክል</translation>
+<translation id="2172982519592313442">የድር መተግበሪያዎችን ይገምግሙ</translation>
 <translation id="2478076885740497414">መተግበሪያ ይጫኑ</translation>
 <translation id="3789841737615482174">ጫን  </translation>
 <translation id="3910402514791813257">መጫን አልተሳካም</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">ቅጽበታዊ ገፅ ዕይታ። ለመዝጋት መታ ያድርጉ።</translation>
 <translation id="6990079615885386641">መተግበሪያውን ከGoogle Play መደብር ያግኙ፦ <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">አሁንም ቀዳሚ ጣቢያን በማከል ላይ</translation>
+<translation id="7672888405515738928">በዚህ መሣሪያ ላይ ወደነበረበት ለመመለስ የድር መተግበሪያዎችን ይምረጡ። እዚህ የሚታዩ መተግበሪያዎች በChrome ታሪክዎ ላይ የተመሰረቱ ናቸው።</translation>
+<translation id="8163051092261298861">የድር መተግበሪያዎችን ወደነበሩበት መልስ</translation>
 <translation id="962979164594783469">ይህን መተግበሪያ ይጫኑ</translation>
 </translationbundle>

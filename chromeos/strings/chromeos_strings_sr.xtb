@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Уређај је повезан.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Желите да уклоните страницу?}=1{Желите да уклоните {PAGE_NUMBER}. страницу?}one{Желите да уклоните {PAGE_NUMBER}. страницу?}few{Желите да уклоните {PAGE_NUMBER}. страницу?}other{Желите да уклоните {PAGE_NUMBER}. страницу?}}</translation>
+<translation id="3146655726035122603">Ексклузивно за <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мобилни подаци</translation>
 <translation id="3156846309055100599">Скенира се <ph name="PAGE_NUMBER" />. страница...</translation>
 <translation id="315738237743207937">Откривен је улазни портал</translation>
@@ -896,7 +897,7 @@
 <translation id="7955587717700691983">Bluetooth тастатура</translation>
 <translation id="7960831585769876809">Температура</translation>
 <translation id="7971535376154084247">Опште контроле</translation>
-<translation id="7977800524392185497">Да бисте се придружили <ph name="NETWORK_NAME" /> мрежи, идите у Подешавања</translation>
+<translation id="7977800524392185497">Да бисте се повезали са <ph name="NETWORK_NAME" /> мрежи, идите у Подешавања</translation>
 <translation id="7978412674231730200">Приватни кључ</translation>
 <translation id="7994702968232966508">EAP метод</translation>
 <translation id="8004582292198964060">Прегледач</translation>

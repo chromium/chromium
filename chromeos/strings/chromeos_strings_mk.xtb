@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">ЦПУ</translation>
 <translation id="3124039320086536031">Поврзан е уред.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Да се отстрани страницата?}=1{Да се отстрани страницата {PAGE_NUMBER}?}one{Да се отстрани страницата {PAGE_NUMBER}?}other{Да се отстрани страницата {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Ексклузивно за <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мобилен интернет</translation>
 <translation id="3156846309055100599">Се скенира страницата <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Откриен е портал за проверка</translation>

@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1213425325105380833">Pulihkan apl web yang anda gunakan baru-baru ini pada peranti yang disambungkan pada akaun ini</translation>
+<translation id="2065911435109240297">Pulihkan apl web anda</translation>
+<translation id="2111649875343992405">Semak jenis apl web yang mahu dipulihkan</translation>
 <translation id="2139186145475833000">Tambahkan kepada Skrin utama</translation>
+<translation id="2172982519592313442">Semak apl web</translation>
 <translation id="2478076885740497414">Pasang apl</translation>
 <translation id="3789841737615482174">Pasang</translation>
 <translation id="3910402514791813257">Gagal memasang</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Tangkapan skrin. Ketik untuk tutup.</translation>
 <translation id="6990079615885386641">Dapatkan apl daripada Gedung Play Google: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Masih menambahkan tapak yang terdahulu</translation>
+<translation id="7672888405515738928">Pilih apl web untuk dipulihkan pada peranti ini. Apl yang ditunjukkan di sini adalah berdasarkan sejarah Chrome anda.</translation>
+<translation id="8163051092261298861">Pulihkan apl web</translation>
 <translation id="962979164594783469">Pasang apl ini</translation>
 </translationbundle>

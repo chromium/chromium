@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">تغيير صورة الخلفية يوميًا</translation>
 <translation id="1644574205037202324">السجل</translation>
 <translation id="1651925268237749928">لقد اختَرت ألبومًا مشترَكًا. يمكن للمستخدمين الآخرين إضافة صور أو تغييرها. قد يتم استخدام صور غير متوفّرة حاليًا في هذا الألبوم لتعيينها كخلفية.</translation>
+<translation id="1661865805917886535">‏قد يتم إرسال بعض المعلومات عن الحساب والنظام إلى Google. ونستخدم هذه المعلومات للمساعدة في حل المشاكل التقنية وتحسين خدماتنا بما يتوافق مع سياسة الخصوصية (<ph name="PRIVACYPOLICYURL" />) وبنود الخدمة (<ph name="TERMSOFSERVICEURL" />) لدينا. لطلب تغيير المحتوى، يُرجى الانتقال إلى صفحة "المساعدة القانونية" (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">توقّفت الطابعة - نفد الحبر</translation>
 <translation id="1664796644829245314">معاينة <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">الشبكة الافتراضية الخاصة المُدمجة</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">وحدة المعالجة المركزية</translation>
 <translation id="3124039320086536031">الجهاز متصل.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{هل تريد إزالة الصفحة؟}=1{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}two{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}few{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}many{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}other{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}}</translation>
+<translation id="3146655726035122603">حصريًا في <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">بيانات الجوال</translation>
 <translation id="3156846309055100599">جارٍ مسح الصفحة <ph name="PAGE_NUMBER" /> ضوئيًا...</translation>
 <translation id="315738237743207937">تم رصد مدخل مشروط الوصول إليه.</translation>

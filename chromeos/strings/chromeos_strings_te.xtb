@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">ప్రతిరోజూ వాల్‌పేపర్ ఇమేజ్‌ను మార్చండి</translation>
 <translation id="1644574205037202324">హిస్టరీ</translation>
 <translation id="1651925268237749928">మీరు షేర్ చేసిన ఆల్బమ్‌ను ఎంచుకున్నారు. ఇతర వ్యక్తులు ఫోటోలను జోడించవచ్చు లేదా మార్చవచ్చు. మీ వాల్‌పేపర్ ప్రస్తుతం ఈ ఆల్బమ్‌లో లేని ఫోటోలను ఉపయోగించవచ్చు.</translation>
+<translation id="1661865805917886535">ఖాతా, సిస్టమ్‌కు సంబంధించిన కొంత సమాచారం Googleకు పంపబడవచ్చు. మా గోప్యతా పాలసీ (<ph name="PRIVACYPOLICYURL" />), సర్వీస్ నియమాలకు (<ph name="TERMSOFSERVICEURL" />) లోబడి టెక్నికల్ సమస్యలను పరిష్కరించడంలో, మా సర్వీస్‌లను మెరుగుపరచడంలో సహాయపడటానికి మేము ఈ సమాచారాన్ని ఉపయోగిస్తాము. కంటెంట్ మార్పులను రిక్వెస్ట్ చేయడానికి, చట్టపరమైన సహాయం (<ph name="LEGALHELPPAGEURL" />) లింక్‌కు వెళ్లండి.</translation>
 <translation id="1662989795263954667">ఆగిపోయింది - ఇంక్ లేదు</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />ను ప్రివ్యూ చేయండి</translation>
 <translation id="1668469839109562275">బిల్ట్-ఇన్ VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">పరికరం కనెక్ట్ చేయబడింది.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{పేజీని తీసివేయాలా?}=1{{PAGE_NUMBER}వ పేజీని తీసివేయాలా?}other{{PAGE_NUMBER}వ పేజీని తీసివేయాలా?}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> కోసం ప్రత్యేకమైనది</translation>
 <translation id="315116470104423982">మొబైల్ డేటా</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />వ పేజీని స్కాన్ చేస్తోంది...</translation>
 <translation id="315738237743207937">క్యాప్టివ్ పోర్టల్ గుర్తించబడింది</translation>

@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Shintsha umfanekiso wesithombe sangemuva nsuku zonke</translation>
 <translation id="1644574205037202324">Umlando</translation>
 <translation id="1651925268237749928">Ukhethe i-albhamu eyabiwe. Abanye abantu bangangeza noma bashintshe izithombe. Isithombe sakho sangemuva singasebenzisa izithombe manje ezingekho kule albhamu.</translation>
+<translation id="1661865805917886535">Olunye ulwazi lwe-akhawunti nolwesistimu lungathunyelwa ku-Google. Sisebenzisa lolu lwazi ukuze sisize ukubhekana nezinkinga zobuchwepheshe kanye nokuthuthukisa amasevisi ethu, ngaphansi Kwenqubomgomo yethu Yobumfihlo(<ph name="PRIVACYPOLICYURL" />) kanye Nemigomo Yesevisi (<ph name="TERMSOFSERVICEURL" />). Ukuze ucele izinguquko zokuqukethwe, hamba kokuthi Usizo Lwezomthetho (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Imile - Uyinki uphelile</translation>
 <translation id="1664796644829245314">Hlola kuqala i-<ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">I-VPN eyakhelwe ngaphakathi</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">I-CPU</translation>
 <translation id="3124039320086536031">Idivayisi ixhunyiwe.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Susa ikhasi?}=1{Susa ikhasi {PAGE_NUMBER}?}one{Susa ikhasi {PAGE_NUMBER}?}other{Susa ikhasi {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Okukhethekile ku-<ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Idatha yeselula</translation>
 <translation id="3156846309055100599">Iskena ikhasi <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Iphothali yabathunjiweyo itholiwe</translation>

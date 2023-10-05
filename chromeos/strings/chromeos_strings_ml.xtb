@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">വാൾപേപ്പർ ചിത്രം ദിവസേന മാറ്റുക</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
 <translation id="1651925268237749928">നിങ്ങളൊരു പങ്കിട്ട ആൽബം തിരഞ്ഞെടുത്തു. മറ്റ് ആളുകൾക്ക് ഫോട്ടോകൾ ചേർക്കാനോ മാറ്റം വരുത്താനോ കഴിയും. നിങ്ങളുടെ വാൾപേപ്പർ നിലവിൽ ഈ ആൽബത്തിൽ ഇല്ലാത്ത ഫോട്ടോകൾ ഉപയോഗിച്ചേക്കാം.</translation>
+<translation id="1661865805917886535">അക്കൗണ്ടും സിസ്‌റ്റവുമായി ബന്ധപ്പെട്ട ചില വിവരങ്ങൾ Google-ന് അയച്ചേക്കാം. ഞങ്ങളുടെ സ്വകാര്യതാ നയത്തിനും (<ph name="PRIVACYPOLICYURL" />) സേവന നിബന്ധനകൾക്കും (<ph name="TERMSOFSERVICEURL" />) വിധേയമായി, സാങ്കേതിക പ്രശ്നങ്ങൾ പരിഹരിക്കാനും സേവനങ്ങൾ മെച്ചപ്പെടുത്താനും സഹായിക്കുന്നതിന് ഞങ്ങൾ ഈ വിവരങ്ങൾ ഉപയോഗിക്കുന്നു. ഉള്ളടക്ക മാറ്റങ്ങൾ അഭ്യർത്ഥിക്കാൻ, നിയമ സഹായം (<ph name="LEGALHELPPAGEURL" />) എന്നതിലേക്ക് പോകുക.</translation>
 <translation id="1662989795263954667">പ്രിന്റ് ജോലി നിർത്തി - മഷിയില്ല</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> പ്രിവ്യൂ ചെയ്യുക</translation>
 <translation id="1668469839109562275">ബിൽറ്റ് ഇൻ VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ഉപകരണം കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{പേജ് നീക്കം ചെയ്യണോ?}=1{{PAGE_NUMBER}-ാം പേജ് നീക്കം ചെയ്യണോ?}other{{PAGE_NUMBER}-ാം പേജ് നീക്കം ചെയ്യണോ?}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> എന്നതിൽ മാത്രം</translation>
 <translation id="315116470104423982">മൊബൈല്‍ ഡാറ്റ</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="315738237743207937">ക്യാപ്റ്റീവ് പോർട്ടൽ തിരിച്ചറിഞ്ഞു</translation>

@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
+<translation id="1213425325105380833">ਇਸ ਖਾਤੇ ਨਾਲ ਕਨੈਕਟ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਹਾਲ ਹੀ ਵਿੱਚ ਵਰਤੀਆਂ ਗਈਆਂ ਵੈੱਬ ਐਪਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
+<translation id="2065911435109240297">ਆਪਣੀਆਂ ਵੈੱਬ ਐਪਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
+<translation id="2111649875343992405">ਸਮੀਖਿਆ ਕਰੋ ਕਿ ਕਿਹੜੀਆਂ ਵੈੱਬ ਐਪਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨਾ ਹੈ</translation>
 <translation id="2139186145475833000">ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="2172982519592313442">ਵੈੱਬ ਐਪਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="2478076885740497414">ਐਪ ਇੰਸਟੌਲ ਕਰੋ</translation>
 <translation id="3789841737615482174">ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="3910402514791813257">ਸਥਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">ਸਕ੍ਰੀਨਸ਼ਾਟ। ਬੰਦ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ।</translation>
 <translation id="6990079615885386641">Google Play Store ਵਿੱਚੋਂ ਐਪ ਪ੍ਰਾਪਤ ਕਰੋ: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">ਹਾਲੇ ਪਿਛਲੀ ਸਾਈਟ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="7672888405515738928">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ ਵੈੱਬ ਐਪਾਂ ਨੂੰ ਚੁਣੋ। ਇੱਥੇ ਦਿਖਾਈਆਂ ਗਈਆਂ ਐਪਾਂ ਤੁਹਾਡੇ Chrome ਇਤਿਹਾਸ 'ਤੇ ਆਧਾਰਿਤ ਹਨ।</translation>
+<translation id="8163051092261298861">ਵੈੱਬ ਐਪਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="962979164594783469">ਇਹ ਐਪ ਸਥਾਪਤ ਕਰੋ</translation>
 </translationbundle>

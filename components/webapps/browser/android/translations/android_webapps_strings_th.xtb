@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1213425325105380833">คืนค่าเว็บแอปที่คุณเพิ่งใช้ในอุปกรณ์ที่เชื่อมต่อกับบัญชีนี้</translation>
+<translation id="2065911435109240297">คืนค่าเว็บแอป</translation>
+<translation id="2111649875343992405">ตรวจสอบเว็บแอปที่ควรคืนค่า</translation>
 <translation id="2139186145475833000">เพิ่มลงในหน้าจอหลัก</translation>
+<translation id="2172982519592313442">ตรวจสอบเว็บแอป</translation>
 <translation id="2478076885740497414">ติดตั้งแอป</translation>
 <translation id="3789841737615482174">ติดตั้ง</translation>
 <translation id="3910402514791813257">ติดตั้งไม่สำเร็จ</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">ภาพหน้าจอ แตะเพื่อปิด</translation>
 <translation id="6990079615885386641">รับแอปจาก Google Play Store: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">ยังเพิ่มไซต์ก่อนหน้าอยู่</translation>
+<translation id="7672888405515738928">เลือกเว็บแอปที่จะคืนค่าในอุปกรณ์นี้ แอปที่แสดงที่นี่จะอิงตามประวัติการเข้าชมใน Chrome</translation>
+<translation id="8163051092261298861">คืนค่าเว็บแอป</translation>
 <translation id="962979164594783469">ติดตั้งแอปนี้</translation>
 </translationbundle>

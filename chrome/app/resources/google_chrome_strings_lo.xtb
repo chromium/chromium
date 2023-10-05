@@ -213,6 +213,7 @@
 <translation id="4571503333518166079">ໄປຫາການຕັ້ງຄ່າການແຈ້ງເຕືອນຂອງ Chrome</translation>
 <translation id="459622048091363950">ເມື່ອ Chrome ມີການເຂົ້າເຖິງ, ເວັບໄຊຈະສາມາດຮ້ອງຂໍການເຂົ້າເຖິງນຳທ່ານ.</translation>
 <translation id="4600710005438004015">Chrome ບໍ່ສາມາດອັບເດດເປັນເວີຊັນຫຼ້າສຸດໄດ້, ສະນັ້ນທ່ານກຳລັງພາດຄຸນສົມບັດ ແລະ ການແກ້ໄຂດ້ານຄວາມປອດໄພໃໝ່ໆຢູ່.</translation>
+<translation id="4624065194742029982">ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນໃນ Chrome</translation>
 <translation id="4627412468266359539">ຕົວເລືອກເສີມ: ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ ChromeOS Flex ໂດຍການສົ່ງຂໍ້ມູນການວິນິໄສ ແລະ ການນຳໃຊ້ໄປໃຫ້ Google ໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="4633000520311261472">ເພື່ອເຮັດໃຫ້  Chrome ປອດໄພຂຶ້ນ, ພວກເຮົາປິດໃຊ້ງານບາງສ່ວນຂະຫຍາຍທີ່ບໍ່ໄດ້ມີລາຍຊື່ຢູ່ໃນ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ແລະອາດຈະຖືກເພີ່ມເຂົ້າໂດຍທີ່ທ່ານບໍ່ຮູ້ຈັກ.</translation>
 <translation id="4680828127924988555">ຍົກເລີກການຕິດຕັ້ງ</translation>
@@ -222,6 +223,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">ໄຟລ໌ນີ້ອາດຈະເປັນອັນຕະລາຍ, ສະນັ້ນ Chrome ໄດ້ບລັອກມັນໄວ້ແລ້ວ.</translation>
 <translation id="479167709087336770">ນີ້ໃຊ້ຕົວກວດການສະກົດຄໍາດຽວກັນກັບທີ່ໃຊ້ໃນ Google ຊອກຫາ. ຂໍ້ຄວາມທີ່ທ່ານພິມໃນໂປຣແກຣມທ່ອງເວັບຖືກສົ່ງໃຫ້ Google. ທ່ານສາມາດປ່ຽນລັກສະນະການນໍາໃຊ້ນີ້ໄດ້ສະເໝີໃນການຕັ້ງຄ່າ.</translation>
+<translation id="4793679854893018356">ສຶກສາວິທີການທີ່ Chrome ຮັກສາຄວາມປອດໄພໃຫ້ທ່ານ</translation>
 <translation id="4828579605166583682">Google Chrome ກຳລັງພະຍາຍາມປ່ຽນແທນລະຫັດຜ່ານທີ່ມີຢູ່. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານໃສ່ເພື່ອອະນຸຍາດສິ່ງນີ້.</translation>
 <translation id="4842397268809523050">ChromeOS Flex ບໍ່ສາມາດຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ເນື່ອງຈາກບໍ່ສາມາດໃຊ້ການຊິ້ງຂໍ້ມູນສຳລັບໂດເມນຂອງທ່ານ.</translation>
 <translation id="4873783916118289636">ກວດສອບການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພຫຼັກໃນ Chrome</translation>
@@ -272,6 +274,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="5756509061973259733">ມີໂປຣໄຟລ໌ Chrome ກັບບັນຊີນີ້ຢູ່ອຸປະກອນນີ້ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">ບໍ່ສາມາດເປີດໃຊ້ Chrome. ກະລຸນາລອງອີກຄັ້ງ.</translation>
+<translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome ຈະເຕືອນທ່ານ<ph name="END_LINK" /> ກ່ຽວກັບເວັບໄຊ ແລະ ການດາວໂຫຼດທີ່ບໍ່ປອດໄພ</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ</translation>
 <translation id="5924017743176219022">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່​ອິນ​ເຕີ​ເນັດ...</translation>
@@ -281,6 +284,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="5941830788786076944">ເຮັດ Google Chrome ເປັນບຣາວເຊີມາດຕະຖານ</translation>
 <translation id="6003112304606738118">ກຳລັງດາວໂຫຼດ... ຍັງເຫຼືອ <ph name="HOURS" /> ຊົ່ວໂມງ</translation>
 <translation id="6010556343189461180">ເພື່ອຮັບການອັບເດດ Google Chrome ໃນອະນາຄົດ, ທ່ານຈະຕ້ອງໃຊ້ macOS 10.15 ຂຶ້ນໄປ. ຄອມພິວເຕີນີ້ກຳລັງໃຊ້ macOS 10.14.</translation>
+<translation id="6014316319780893079">ດ້ວຍ <ph name="BEGIN_LINK" />ເຄື່ອງມືຈາກ Chrome<ph name="END_LINK" />, ທ່ານຈະສາມາດທ່ອງເວັບໄດ້ຢ່າງປອດໄພ ແລະ ຄວບຄຸມສິ່ງຕ່າງໆໄດ້</translation>
 <translation id="6022659036123304283">ເຮັດໃຫ້ Chrome ເປັນຂອງທ່ານ</translation>
 <translation id="6025087594896450715">Google Chrome ຈະຣີສະຕາດໃນ <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">ປິດ</translation>
@@ -370,6 +374,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7651907282515937834">ໂລໂກ້ Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome ບລັອກການດາວໂຫຼດນີ້ ເນື່ອງຈາກທ່ານປິດ Safe Browsing ແລະ ເຮັດໃຫ້ບໍ່ສາມາດຢັ້ງຢືນໄຟລ໌ໄດ້</translation>
 <translation id="7655455401911432608">ປະຫວັດການທ່ອງເວັບຂອງທ່ານ, ບັນທຶກຂອງເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງໂດຍໃຊ້ Chrome ຢູ່ອຸປະກອນນີ້.</translation>
+<translation id="769538538642757151">Chrome ຈະແຈ້ງໃຫ້ທ່ານຮູ້ຫາກມີສິ່ງໃດທີ່ທ່ານຕ້ອງກວດສອບ</translation>
 <translation id="7747138024166251722">ຕົວຕິດຕັ້ງບໍ່ສາມາດສ້າງໄດເຣັກຕໍຣີຊົ່ວຄາວໄດ້. ກະລຸນາກວດເບິ່ງບ່ອນ​ວ່າງດິສກ໌ ແລະການອະນຸຍາດ ເພື່ອຕິດຕັ້ງຊອບແວ.</translation>
 <translation id="7761834446675418963">ຄລິກ​ທີ່​ຊື່​ຂອງ​ທ່ານ​ເພື່ອ​ເປີດ Chrome ແລະ​ເລີ່ມ​ຕົ້ນທ່ອງເນັດ.</translation>
 <translation id="7777080907402804672">ຖ້າຮູບບໍ່ມີລາຍລະອຽດທີ່ເປັນປະໂຫຍດ, Chrome ຈະພະຍາຍາມໃຫ້ລາຍລະອຽດແກ່ທ່ານ. ເພື່ອສ້າງລາຍລະອຽດ, ລະບົບຈະສົ່ງຮູບພາບໃຫ້ Google. ທ່ານສາມາດປິດສິ່ງນີ້ໃນການຕັ້ງຄ່າໄດ້ທຸກເວລາ.</translation>
@@ -398,6 +403,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8129812357326543296">ກ່ຽວກັບ Google Chrome</translation>
 <translation id="813913629614996137">ກຳລັງລິເລີ່ມ...</translation>
 <translation id="8255190535488645436">Google Chrome ກໍາລັງໃຊ້​ກ້ອງ​ຖ່າຍ​ຮູບ​ ແລະໄມໂຄຣໂຟນຂອງ​ທ່ານ​.</translation>
+<translation id="8267953129876836456">Chrome ພົບຄຳແນະນຳດ້ານຄວາມປອດໄພບາງຢ່າງທີ່ທ່ານຕ້ອງກວດສອບ</translation>
 <translation id="8270775718612349140">ໃບຮັບຮອງທີ່ຈັດການໂດຍ Chrome</translation>
 <translation id="8286862437124483331">Google Chrome ກໍາລັງພະຍາຍາມສະແດງລະຫັດຜ່ານ. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດອັນນີ້.</translation>
 <translation id="8290100596633877290">ໂຮ້! Google Chrome ​ເກີດ​ຂັດຂ້ອງ. ເປີດໃຊ້ໃໝ່ດຽວນີ້ບໍ?</translation>
@@ -412,6 +418,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8403038600646341038">ໂລໂກ້ Chrome ໃນໜ້າຈໍຄອມພິວເຕີ.</translation>
 <translation id="8416347857511542594">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວໃນ Chrome</translation>
 <translation id="8418845734693287262">ChromeOS ບໍ່ສາມາດຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ເນື່ອງຈາກລາຍລະອຽດການເຂົ້າສູ່ລະບົບບັນຊີຂອງທ່ານເກົ່າແລ້ວ.</translation>
+<translation id="842386925677997438">ເຄື່ອງມືຄວາມປອດໄພຂອງ Chrome</translation>
 <translation id="8433638294851456451">ເພື່ອສົ່ງເບີຈາກບ່ອນນີ້ໃຫ້ໂທລະສັບ Android ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ຢູ່ໃນທັງສອງອຸປະກອນ.</translation>
 <translation id="8451192282033883849">ບັນຊີຂອງທ່ານແມ່ນຈັດການໂດຍ <ph name="MANAGER_NAME" />. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດເບິ່ງ ແລະ ແກ້ໄຂໂປຣໄຟລ໌ໂປຣແກຣມທ່ອງເວັບ Chrome ນີ້ ແລະ ຂໍ້ມູນຂອງມັນໄດ້ ເຊັ່ນ: ບຸກມາກ, ປະຫວັດ ແລະ ລະຫັດຜ່ານ.</translation>
 <translation id="8496177819998570653">ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
@@ -452,6 +459,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="9195993889682885387">Chrome ສາມາດປະເມີນຄວາມສົນໃຈຂອງທ່ານໂດຍອ້າງອີງໃສ່ປະຫວັດການທ່ອງເວັບຈາກສອງສາມອາທິດທີ່ຜ່ານມາໄດ້. ຂໍ້ມູນນີ້ຈະຖືກຈັດເກັບໄວ້ຢູ່ອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="919706545465235479">ອັບເດດ Chrome ເພື່ອເລີ່ມຊິ້ງຂໍ້ມູນ</translation>
 <translation id="922152298093051471">ປັບແຕ່ງ Chrome</translation>
+<translation id="92460355979482493">ເມື່ອເປີດ, Chrome ຈະໂຫຼດໜ້າເວັບກ່ອນລ່ວງໜ້າເຊິ່ງເຮັດໃຫ້ທ່ອງເວັບ ແລະ ຊອກຫາໄດ້ໄວຂຶ້ນ.</translation>
 <translation id="93760716455950538">ຣີສະຕາດ ChromeOS Flex</translation>
 <translation id="940313311831216333">ເພື່ອເຂົ້າເຖິງຂໍ້ມູນໃນ Chrome ຂອງທ່ານຢູ່ໃນອຸປະກອນທັງໝົດ, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລ້ວເປີດການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="943390475793766444">Chrome ແນະນຳໃຫ້ສະແກນໄຟລ໌ນີ້ເນື່ອງຈາກມັນອາດເປັນອັນຕະລາຍໄດ້.</translation>

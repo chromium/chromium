@@ -392,6 +392,9 @@ Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính 
 <translation id="1372618949173323717">Tắt JavaScript</translation>
 <translation id="1376119291123231789">Bật chế độ sạc pin nâng cao</translation>
 <translation id="1376765488559847650">Tải lên đám mây</translation>
+<translation id="1379689277107868399">Khi bạn đặt chính sách này thành DoNotPrompt hoặc không đặt, <ph name="PRODUCT_NAME" /> sẽ không tự động nhắc người dùng xác thực lại trong trình duyệt.
+
+Nếu bạn đặt chính sách này thành PromptInTab, thì khi phiên xác thực của người dùng hết hạn, một thẻ mới có trang đăng nhập Google sẽ ngay lập tức mở ra. Trường hợp này chỉ xảy ra nếu người dùng sử dụng <ph name="CHROME_SYNC_NAME" />.</translation>
 <translation id="1384459581748403878">Tham khảo: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Chính sách này khiến trình duyệt không bao giờ loại bỏ URL khớp với một hoặc nhiều mẫu được chỉ định (bằng định dạng bộ lọc <ph name="URL_BLOCKLIST_POLICY_NAME" />).
       Điều này áp dụng cho hoạt động loại bỏ ở chế độ hiệu suất cao và có áp lực bộ nhớ
@@ -3414,6 +3417,7 @@ Chính sách này là giải pháp tạm thời và sẽ bị xoá ở một và
 <translation id="3870300103958000506">Nếu bạn không đặt <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> thành False, thì việc đặt <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME" /> thành 1 hoặc không đặt sẽ cho phép quảng cáo chạy trên tất cả trang web.
 
       Việc đặt chính sách thành 2 sẽ chặn quảng cáo xâm nhập trên các trang web.</translation>
+<translation id="3876564097829884243">Bật tính năng EphemeralNetworkPolicies.</translation>
 <translation id="3877517141460819966">Chế độ xác thực hai yếu tố tích hợp</translation>
 <translation id="3877908683993837673">Chính sách này quy định ngăn phần mềm nào được dùng để giao tiếp với máy chủ DNS: máy khách DNS của hệ điều hành hay máy khách DNS tích hợp sẵn của <ph name="PRODUCT_NAME" />. Chính sách này không ảnh hưởng đến việc máy chủ DNS nào được sử dụng: chẳng hạn như nếu hệ điều hành được định cấu hình để sử dụng một máy chủ DNS của doanh nghiệp, thì máy khách DNS tích hợp sẵn sẽ sử dụng chính máy chủ đó. Chính sách này cũng không quy định việc sử dụng DNS-over-HTTPS. <ph name="PRODUCT_NAME" /> sẽ luôn sử dụng trình phân giải tích hợp sẵn cho các yêu cầu DNS-over-HTTPS. Vui lòng xem chính sách <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> để biết thông tin về cách kiểm soát DNS-over-HTTPS.
 
@@ -3530,6 +3534,7 @@ Chính sách này là giải pháp tạm thời và sẽ bị xoá ở một và
 <translation id="3977304360459208438">Dùng chế độ cài đặt mặc định cho bộ thuật toán mật mã 3DES trong TLS</translation>
 <translation id="3979738908158213640">Các URL sẽ được cấp quyền truy cập để chứng thực thiết bị trong khi xác thực SAML</translation>
 <translation id="3982322576186033243">Không cho phép hàm băm không an toàn trong quá trình giao tiếp qua TLS</translation>
+<translation id="3982465141749620677">Lời nhắc xác thực lại trong một thẻ</translation>
 <translation id="3983162212222338509">Quá trình phân giải DNS của hệ thống có thể chạy trong hoặc ngoài quy trình mạng, hoặc có một phần chạy trong và một phần chạy ngoài quy trình mạng, tuỳ vào cấu hình hệ thống và cờ tính năng.</translation>
 <translation id="3986700049001404598">Cho phép người dùng kết thúc quá trình bằng trình quản lý tác vụ Chrome</translation>
 <translation id="398884292557092447">Nếu bạn đặt chính sách này thành True hoặc không đặt, thì người dùng có thể kiểm soát các nội dung đề xuất tự động điền cho thẻ tín dụng trong giao diện người dùng.
@@ -4826,6 +4831,18 @@ Khi bạn tắt hoặc không đặt chính sách này, dữ liệu và cookie c
       Khi không ưu tiên chính sách cụ thể nào, vui lòng tham khảo <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> và <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Mẫu URL giữa 3 chính sách này không được xung đột với nhau.
 
       Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Đối với chính sách này, chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" />.</translation>
+<translation id="5174547204575752627">Chính sách này kiểm soát hoạt động cải tiến mã gần đây của VideoDecoder API trong trình bổ trợ PPAPI.
+
+Quá trình di chuyển chỉ ảnh hưởng đến thông tin triển khai nội bộ và không
+thay đổi hành vi nào. Tuy nhiên, bạn có thể sử dụng chính sách này trong trường hợp
+một ứng dụng PPAPI nào đó hoạt động không như dự kiến.
+
+Khi bạn không đặt chính sách này hoặc đặt thành Enabled (Bật), trình duyệt sẽ quyết định phương thức triển khai nào được sử dụng.
+Khi bạn đặt chính sách này thành Disabled (Tắt), trình duyệt sẽ sử dụng phương thức triển khai cũ
+cho đến khi chính sách này hết hạn.
+
+LƯU Ý: Chỉ các quy trình kết xuất đồ hoạ mới bắt đầu mới thể hiện các thay đổi đối với
+chính sách này trong khi trình duyệt đang chạy.</translation>
 <translation id="5177260184597743704">Chính sách cấu hình dành cho Trình kết nối OnSecurityEvent của Chrome Enterprise</translation>
 <translation id="5178479074002209469">Một cờ boolean cho biết liệu các phiên của người dùng không được quản lý có phải nhận thông báo và buộc đăng xuất nếu cần cập nhật theo chính sách này hay không.</translation>
 <translation id="5179853299156742425">Người dùng có thể tải mẫu không gian làm việc xuống qua URL này.</translation>
@@ -4843,6 +4860,7 @@ Khi bạn tắt hoặc không đặt chính sách này, dữ liệu và cookie c
 <translation id="519247340330463721">Định cấu hình các chính sách liên quan đến Duyệt web an toàn.</translation>
 <translation id="5194683382395300627">Cho phép dùng <ph name="ASSISTANT_PRODUCT_NAME" /> trên web, ví dụ: để bật chế độ tự động thay đổi mật khẩu</translation>
 <translation id="5196630732055960309">Cho phép API Xử lý tệp trên các ứng dụng web này</translation>
+<translation id="5205352023880027050">Không bật tính năng EphemeralNetworkPolicies.</translation>
 <translation id="5206454085187851382">Nếu bạn chọn <ph name="PRINTERS_ALLOWLIST" /> cho <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, việc đặt <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> sẽ chỉ định những máy in mà người dùng có thể sử dụng. Người dùng chỉ có thể sử dụng những máy in có mã nhận dạng khớp với giá trị trong chính sách này. Các mã nhận dạng này phải tương ứng với trường <ph name="ID_FIELD" /> hoặc <ph name="GUID_FIELD" /> ở tệp được chỉ định trong <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Định cấu hình liệu <ph name="PRODUCT_NAME" /> trên Linux có sử dụng các thông báo hệ thống hay không.
 
@@ -5371,6 +5389,31 @@ Khi bạn đặt chính sách này cho Kiosk <ph name="PRODUCT_OS_NAME" />, chí
 <translation id="5622924058222112599">Cho phép thực hiện quy trình phát hành mặc định đối với thuật toán CECPQ2</translation>
 <translation id="5623304306796942802">Lời nhắc khi có nhiều chứng chỉ khớp</translation>
 <translation id="5625771176514429288">Ứng dụng Chrome sẽ được phép chạy trên các nền tảng này.</translation>
+<translation id="5627094573311711592">Định cấu hình danh sách các quy tắc Kiểm soát dữ liệu để ngăn chặn rò rỉ dữ liệu. Dữ liệu có thể bị rò rỉ khi bạn sao chép và dán dữ liệu, đính kèm tệp vào trang web, in, tải xuống, v.v.
+
+      Mỗi quy tắc bao gồm nội dung sau:
+      – Thuộc tính nguồn của một hành động. Quy tắc sẽ chỉ kích hoạt nếu hành động của người dùng khớp với tất cả các trường được điền sẵn trong trường <ph name="DATA_CONTROLS_SOURCES" />. Đối với trường phụ của danh sách, chỉ cần khớp với một mục nhập (ví dụ: chỉ cần khớp với một mẫu URL để kích hoạt quy tắc).
+      – Thuộc tính đích đến của một hành động. Quy tắc sẽ chỉ kích hoạt nếu hành động của người dùng khớp với tất cả các trường được điền sẵn trong trường <ph name="DATA_CONTROLS_DESTINATIONS" />. Đối với trường phụ của danh sách, chỉ cần khớp với một mục nhập (ví dụ: chỉ cần khớp với một mẫu URL để kích hoạt quy tắc).
+      – Một danh sách các mức hạn chế được áp dụng cho dữ liệu của những nguồn đó.
+
+      Bạn có thể thêm các quy tắc để:
+      – Kiểm soát dữ liệu trong bảng nhớ tạm được chia sẻ giữa các nguồn và đích đến.
+      – Kiểm soát việc in từ bất kỳ nguồn nào.
+      – Kiểm soát việc tệp được đính kèm vào bất kỳ đích đến nào.
+      – Kiểm soát việc tệp được tải xuống từ bất kỳ nguồn nào.
+
+      Nếu bạn đặt chính sách <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> thành True, thì các quy tắc đã kích hoạt sẽ được báo cáo cho quản trị viên.
+      Bạn có thể đặt mức hạn chế thành ALLOW, BLOCK, WARN, REPORT.
+      – Nếu bạn đặt thành ALLOW, mức hạn chế này sẽ cho phép thực hiện thao tác. ALLOW cũng ghi đè các mức hạn chế do các quy tắc khác áp dụng.
+      – Nếu bạn đặt thành BLOCK, mức hạn chế này sẽ không cho phép thực hiện thao tác.
+      – Nếu bạn đặt mức hạn chế này thành WARN, người dùng sẽ nhận được cảnh báo và họ có thể chọn tiếp tục hoặc huỷ thao tác.
+      – Nếu bạn đặt mức hạn chế thành REPORT, thao tác của người dùng sẽ không bị gián đoạn. Tuy nhiên, hệ thống sẽ gửi báo cáo nếu bạn bật chính sách <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />.
+
+      Lưu ý:
+      – Định dạng mẫu URL theo định dạng này (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+      – Đối với các quy tắc ngăn chặn rò rỉ dữ liệu dành riêng cho <ph name="PRODUCT_OS_NAME" />, hãy xem thêm chính sách <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
+
+      Nếu bạn không đặt chính sách này, sẽ không có mức hạn chế nào được áp dụng.</translation>
 <translation id="5630352020869108293">Khôi phục phiên trước đó</translation>
 <translation id="5633871703004128675">Bật tính năng hỗ trợ tiếp cận về làm nổi bật dấu chèn</translation>
 <translation id="5634032995857968056">Bật hộp cát Hộp chứa ứng dụng kết xuất</translation>
@@ -6080,6 +6123,7 @@ Xem thêm thông tin chi tiết tại https://developer.chrome.com/blog/immutabl
 <translation id="6299554629216555326">Cài đặt quyền Quản lý cửa sổ</translation>
 <translation id="6302021021024941085">Tắt các công cụ khắc phục sự cố Kiosk.</translation>
 <translation id="6303118494824248488">URL của hình ảnh đĩa cần tải xuống.</translation>
+<translation id="6303278429164386663">Kiểm soát việc bật tính năng EphemeralNetworkPolicies</translation>
 <translation id="6305373713165475629">Việc đặt chính sách này sẽ ghi đè chế độ in màu mặc định. Nếu không có chế độ nêu trên, chính sách này sẽ bị bỏ qua.</translation>
 <translation id="6308109234708949641">Chính sách này bật tính năng Screencast cho người dùng Family Link và cấp cho tính năng này quyền tạo và chép lời trên bản ghi màn hình cũng như tải lên Drive.
       Chính sách này không ảnh hưởng đến các loại người dùng khác.
@@ -6496,6 +6540,7 @@ Nếu bạn không đặt thời gian, thì chu kỳ mặc định là 15 phút 
       Nếu bạn không đặt chính sách này, người dùng có thể chọn các tùy chọn cài đặt proxy.
 
       Lưu ý: Để xem các ví dụ cụ thể, hãy truy cập vào trang The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
+<translation id="6559643481486165125">Không nhắc xác thực lại</translation>
 <translation id="656130159911161669">Bản cập nhật ChromeOS bỏ qua phiên bản được xác định trong tệp kê khai ứng dụng kiosk</translation>
 <translation id="6561396069801924653">Hiển thị tùy chọn trợ năng trong menu của khay hệ thống</translation>
 <translation id="6562889469672829421">Khoảng thời gian (tính bằng mili giây) kể từ khi không có hoạt động đầu vào của người dùng cho đến thời điểm màn hình tối đi</translation>
@@ -6919,6 +6964,7 @@ LƯU Ý: Chỉ các quy trình kết xuất đồ hoạ mới bắt đầu mới
 Nếu bạn đặt chính sách này thành sai hoặc không đặt thì bố cục này sẽ không được áp dụng. Bạn cần khởi động lại để chính sách có hiệu lực.</translation>
 <translation id="685769593149966548">Buộc sử dụng Chế độ hạn chế nghiêm ngặt cho YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 trở lên</translation>
+<translation id="6866755486434471318">Cho phép <ph name="PEPPER_NAME" /> sử dụng hình ảnh được chia sẻ để giải mã video.</translation>
 <translation id="6881447940489194100">Hàm băm SHA-256 được mã hoá thập lục phân của dữ liệu.</translation>
 <translation id="68818134518270542">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định những ứng dụng mà người dùng có thể bật làm ứng dụng ghi chú trên màn hình khóa của <ph name="PRODUCT_OS_NAME" />.
 
@@ -7277,6 +7323,10 @@ Trường <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> cho biết lượ
 
       Nếu bạn không đặt chính sách này, thì trình duyệt có thể gửi các yêu cầu DNS qua HTTPS đến trình phân giải liên kết với trình phân giải hệ thống đã định cấu hình của người dùng.</translation>
 <translation id="7152640356717355643">Bật tính năng báo cáo giao diện mạng của thiết bị</translation>
+<translation id="7153786895642570081">Chính sách này kiểm soát việc bật tính năng EphemeralNetworkPolicies.
+Khi bạn đặt chính sách này thành true, các mục nhập DeviceOpenNetworkConfiguration, RecommendedValuesAreEphemeral và UserCreatedNetworkConfigurationsAreEphemeral sẽ được áp dụng.
+Khi bạn không đặt hoặc đặt chính sách này thành false, các chính sách mạng đã đề cập sẽ chỉ được áp dụng nếu tính năng EphemeralNetworkPolicies được bật.
+Chính sách này sẽ bị loại bỏ khi tính năng EphemeralNetworkPolicies bật theo mặc định.</translation>
 <translation id="7157329428182136164">Bật tính năng hỗ trợ cho API đồ họa 3D</translation>
 <translation id="7158358621906236999">Tùy chọn cài đặt mặc định của cảm biến</translation>
 <translation id="7161568070244869726">Buộc bật Bộ nhớ đệm của ứng dụng</translation>
@@ -9070,6 +9120,9 @@ Nếu bạn không đặt chính sách này, thì hệ thống sẽ không nhậ
       Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi chức năng này. Nếu bạn không đặt chính sách này, thì người dùng có thể thay đổi tùy chọn cài đặt này.</translation>
 <translation id="8707790573162457301">Chạy chế độ tự động dọn dẹp ổ đĩa trong quá trình đăng nhập</translation>
 <translation id="8713535263782304771">Tắt tính năng Duyệt web an toàn</translation>
+<translation id="8714556680280715750">Đây là URL để người dùng truy cập khi cần tìm hiểu thêm. Nếu bạn không đặt thì
+trình cài đặt sẽ không có URL "tìm hiểu thêm". Nếu bạn đặt thì URL phải sử dụng
+giao thức https.</translation>
 <translation id="8715181294371649277">Cho phép dịch vụ bảo vệ tệp tải xuống trong thời gian thực của tính năng duyệt web an toàn</translation>
 <translation id="8715885991031124968">Cho phép các hộp thoại JavaScript được kích hoạt từ một khung phụ có nguồn gốc khác.</translation>
 <translation id="8720547069538712402">Cho phép người dùng bật hoặc tắt tùy chọn kiểm tra chính tả</translation>
@@ -9094,6 +9147,7 @@ Nếu bạn không đặt chính sách này, thì hệ thống sẽ không nhậ
 <translation id="8744844164152340112">Cài đặt giao diện dùng để kết xuất giao diện người dùng khi OOBE và trong phiên sử dụng (tối/sáng/tự động).
       Chế độ tự động sẽ tự động chuyển đổi giữa giao diện tối và giao diện sáng tại thời điểm bình minh và hoàng hôn.
       Nên đề xuất chính sách này, cho phép người dùng thay đổi giao diện trong phần cài đặt hệ thống.</translation>
+<translation id="8744997936011793680">Nhắc người dùng xác thực lại trong hồ sơ</translation>
 <translation id="8749536858950505376">Khi bạn đặt chính sách này thành True, con trỏ lớn sẽ luôn bật. Khi bạn đặt chính sách này thành False, con trỏ lớn sẽ luôn tắt.
 
       Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi tính năng này. Nếu bạn không đặt chính sách này, thì ban đầu, con trỏ lớn sẽ tắt, nhưng người dùng có thể bật bất cứ lúc nào.</translation>

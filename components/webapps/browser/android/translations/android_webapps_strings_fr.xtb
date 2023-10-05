@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="1213425325105380833">Restaurer les applications Web récemment utilisées sur les appareils connectés à ce compte</translation>
+<translation id="2065911435109240297">Restaurer vos applications Web</translation>
+<translation id="2111649875343992405">Examiner les applications Web à restaurer</translation>
 <translation id="2139186145475833000">Ajouter à l'écran d'accueil</translation>
+<translation id="2172982519592313442">Examiner les applications Web</translation>
 <translation id="2478076885740497414">Installer l'application</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3910402514791813257">Échec de l'installation</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Capture d'écran. Appuyez pour fermer.</translation>
 <translation id="6990079615885386641">Télécharger l'application sur le Google Play Store : <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">L'ajout du site précédent est toujours en cours</translation>
+<translation id="7672888405515738928">Sélectionnez les applications Web à restaurer sur cet appareil. Les applis affichées ici sont basées sur votre historique Chrome.</translation>
+<translation id="8163051092261298861">Restaurer des applications Web</translation>
 <translation id="962979164594783469">Installez cette application</translation>
 </translationbundle>

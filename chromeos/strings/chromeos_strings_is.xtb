@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">Örgjörvi</translation>
 <translation id="3124039320086536031">Tæki er tengt.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Fjarlægja síðu?}=1{Fjarlægja síðu {PAGE_NUMBER}?}one{Fjarlægja síðu {PAGE_NUMBER}?}other{Fjarlægja síðu {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Aðeins í <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Farsímagögn</translation>
 <translation id="3156846309055100599">Skannar síðu <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Innskráningarsíða greind</translation>

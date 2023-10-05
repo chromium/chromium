@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Iskanje z govorom v Chromiumu.</translation>
 <translation id="1047130070405668746">Izberite Chromium.</translation>
 <translation id="1091252999271033193">To pomeni, da bo Chromium vsakič zahteval spletno mesto za mobilne naprave.</translation>
+<translation id="1171824629317156389">V sistemu iOS odprite nastavitve za Chromium, nato se dotaknite »Default Browser App« (Privzeti brskalnik) in izberite Chromium.</translation>
 <translation id="1185134272377778587">O Chromiumu</translation>
 <translation id="1257458525759135959">Če želite shraniti slike, se dotaknite aplikacije Settings in dovolite, da Chromium dodaja fotografijam</translation>
 <translation id="1289216811211435351">Preklop na Chromium</translation>
@@ -94,7 +95,6 @@
 <translation id="4736424910885271643">Vaš račun upravlja domena <ph name="HOSTED_DOMAIN" />, zato bodo podatki v Chromiumu izbrisani iz te naprave.</translation>
 <translation id="4790638144988730920">Še naprej uporabljajte podatke v Chromiumu v računu Google.</translation>
 <translation id="4828317641996116749">Chromiumu ni uspelo preveriti vseh gesel. Poskusite znova pozneje.</translation>
-<translation id="4935539884203837577">Chromium lahko zazna številke za sledenje, ki jih vnesete, in spremlja pakete na strani »Nov zavihek«, hkrati pa pomaga pri drugih nakupovalnih izkušnjah v Chromiumu.</translation>
 <translation id="4985291216379576555">Chromium brez povezave ne more preveriti, ali so na voljo posodobitve</translation>
 <translation id="4996471330284142407">Opravite več s preprostim in varnim Chromiumom, ki je hitrejši kot kdaj prej.</translation>
 <translation id="4999538639245140991">Ker se boste odjavili iz računa, ki ga upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, boste iz te naprave izbrisali podatke v Chromiumu. Vaši podatki bodo še vedno na voljo v Google Računu.</translation>
@@ -140,6 +140,7 @@ Kaj je treba upoštevati:
 1. Odprite nastavitve.
 2. Dotaknite se možnosti za privzeto aplikacijo za brskanje.
 3. Izberite Chromium.</translation>
+<translation id="6197255575340902638">Če skrijete »<ph name="MODULE_NAME" />«, Chromium ne bo več samodejno sledil prihodnjim paketom in bo izbrisal vse pretekle podatke o sledenju paketu.</translation>
 <translation id="6247557882553405851">Google Upravitelj gesel</translation>
 <translation id="6268381023930128611">Se želite odjaviti iz Chromiuma?</translation>
 <translation id="6324041800010509197">Odpiranje mreže zavihkov v Chromiumu</translation>

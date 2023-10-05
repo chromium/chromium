@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">দৈনিক ৱালপেপাৰৰ প্ৰতিচ্ছবি সলনি কৰক</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1651925268237749928">আপুনি এটা শ্বেয়াৰ কৰা এলবাম বাছনি কৰিছে। আন লোকসকলে ফট’ যোগ দিব অথবা সলনি কৰিব পাৰে। আপোনাৰ ৱালপেপাৰে বৰ্তমান এই এলবামটোত নথকা ফট’ ব্যৱহাৰ কৰিব পাৰে।</translation>
+<translation id="1661865805917886535">একাউণ্ট আৰু ছিষ্টেম সম্পৰ্কীয় কিছুমান তথ্য Googleলৈ পঠিওৱা হ’ব পাৰে। আমি এই তথ্যখিনি আমাৰ গোপনীয়তাৰ নীতি (<ph name="PRIVACYPOLICYURL" />) আৰু সেৱাৰ চৰ্তাৱলী (<ph name="TERMSOFSERVICEURL" />) অনুসৰি কাৰিকৰী সমস্যাসমূহ সমাধান কৰিবলৈ আৰু আমাৰ সেৱা উন্নত কৰিবলৈ ব্যৱহাৰ কৰোঁ। সমল সলনি কৰাৰ বিষয়ে অনুৰোধ কৰিবলৈ, আইনী সহায়লৈ (<ph name="LEGALHELPPAGEURL" />) যাওক।</translation>
 <translation id="1662989795263954667">বন্ধ হৈছে - চিয়াঁহী শেষ হৈছে</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> পূৰ্বদৰ্শন কৰক</translation>
 <translation id="1668469839109562275">বিল্ট-ইন ভিপিএন</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ডিভাইচটো সংযোগ কৰা হৈছে।</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{পৃষ্ঠাখন আঁতৰাবনে?}=1{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন আঁতৰাবনে?}one{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন আঁতৰাবনে?}other{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন আঁতৰাবনে?}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" />ত বিশেষভাৱে উপলব্ধ</translation>
 <translation id="315116470104423982">ম’বাইল ডেটা</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> নম্বৰৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে…</translation>
 <translation id="315738237743207937">কেপ্টিভ প’ৰ্টেল চিনাক্ত কৰা হৈছে</translation>

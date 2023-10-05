@@ -29,7 +29,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="2329392777730037872">Hapja e <ph name="URL" /> në pajisjen e klientit dështoi.</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2366718077645204424">Strehuesi nuk mund të arrihet. Kjo ndodh ndoshta për shkak të konfigurimit të rrjetit që po përdor.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Parë për herë të fundit në linjë <ph name="RELATIVE_TIMESTAMP" />.</translation>
+<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Parë për herë të fundit online <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Jepi autorizim "Qasshmërisë" te <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">U lidh me <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Dëshiron ta ndash këtë kompjuter për t'u parë dhe kontrolluar nga një përdorues tjetër?</translation>
@@ -43,7 +43,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="2919669478609886916">Aktualisht po e ndan këtë kompjuter me një përdorues tjetër. Dëshiron që të vazhdosh me ndarjen?</translation>
 <translation id="2939145106548231838">Vërteto për të strehuar</translation>
 <translation id="3027681561976217984">Modaliteti "me prekje"</translation>
-<translation id="3106379468611574572">Kompjuteri në largësi nuk po i përgjigjet kërkesave për lidhje. Verifiko që është në linjë dhe provo përsëri.</translation>
+<translation id="3106379468611574572">Kompjuteri në largësi nuk po i përgjigjet kërkesave për lidhje. Verifiko që është online dhe provo përsëri.</translation>
 <translation id="3150823315463303127">Strehuesi nuk arriti ta lexonte politikën.</translation>
 <translation id="3171922709365450819">Pajisja nuk mbështetet nga ky klient pasi kërkohet vërtetimi nga një palë e tretë.</translation>
 <translation id="3197730452537982411">Desktopi në distancë</translation>
@@ -52,9 +52,9 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="3339299787263251426">Qasu në kompjuterin tënd në mënyrë të sigurt nga interneti</translation>
 <translation id="3385242214819933234">Zotërues i pavlefshëm strehimi.</translation>
 <translation id="3423542133075182604">Procesi në largësi i çelësit të sigurisë</translation>
-<translation id="3581045510967524389">Nuk mund të lidhej me rrjetin. Kontrollo që pajisja jote të jetë në linjë.</translation>
+<translation id="3581045510967524389">Nuk mund të lidhej me rrjetin. Kontrollo që pajisja jote të jetë online.</translation>
 <translation id="3596628256176442606">Ky shërbim bën të mundur lidhjet hyrëse nga klientët e Chromoting.</translation>
-<translation id="369442766917958684">Jashtë linje.</translation>
+<translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Mëso se si</translation>
 <translation id="3776024066357219166">Sesioni yt i "Desktopit në distancë të Chrome" ka përfunduar.</translation>
 <translation id="3858860766373142691">Emri</translation>
@@ -93,7 +93,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="4974476491460646149">Lidhja u mbyll për <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Në fillim duhet të konfigurosh kompjuterin për qasjen në largësi</translation>
 <translation id="4987330545941822761">"Desktopi në distancë i Chrome" nuk mund të përcaktojë shfletuesin për hapjen e URL-ve në nivel lokal. Zgjidhe atë nga lista më poshtë.</translation>
-<translation id="5064360042339518108"><ph name="HOSTNAME" /> (jashtë linje)</translation>
+<translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">A je i sigurt se dëshiron t'i çaktivizosh lidhjet me <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">ID e pavlefshme strehuesi.</translation>
 <translation id="5204575267916639804">Pyetjet më të shpeshta</translation>
@@ -102,7 +102,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="5308380583665731573">Lidh</translation>
 <translation id="533625276787323658">Nuk ka asnjë për t'u lidhur</translation>
 <translation id="5397086374758643919">Çinstaluesi i strehuesit të desktopit në distancë të Chrome</translation>
-<translation id="5419418238395129586">Për herë të fundit në linjë: <ph name="DATE" /></translation>
+<translation id="5419418238395129586">Për herë të fundit online: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Strehuesi ka ndërprerë punën</translation>
 <translation id="5601503069213153581">Kodi PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -117,7 +117,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6062854958530969723">Fillimi i strehuesit dështoi.</translation>
 <translation id="6099500228377758828">Shërbimi i "Desktopit në distancë të Chrome"</translation>
-<translation id="6122191549521593678">Në linjë</translation>
+<translation id="6122191549521593678">Online</translation>
 <translation id="6178645564515549384">Strehuesi origjinal i mesazheve për ndihmë në distancë</translation>
 <translation id="618120821413932081">Përditëso rezolucionin në largësi për përputhjen e dritares</translation>
 <translation id="6223301979382383752">Hap preferencat e "Regjistrimit të ekranit"</translation>
@@ -138,7 +138,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="7067321367069083429">Ekrani vepron si ekran me prekje</translation>
 <translation id="7116737094673640201">Mirë se vjen te "Desktopi në distancë i Chrome"</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
-<translation id="7312846573060934304">Strehuesi është jashtë linje.</translation>
+<translation id="7312846573060934304">Strehuesi është offline.</translation>
 <translation id="7319983568955948908">Ndalo ndarjen</translation>
 <translation id="7359298090707901886">Shfletuesi i zgjedhur nuk mund të përdoret për të hapur URL-të në pajisjen lokale.</translation>
 <translation id="7401733114166276557">"Desktopi në distancë" i Chrome</translation>
@@ -164,7 +164,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="806699900641041263">Po lidhet me <ph name="HOSTNAME" /></translation>
 <translation id="8073845705237259513">Për të përdorur "Desktopin në distancë" të Chrome, duhet të shtosh një llogari të Google në pajisjen tënde.</translation>
 <translation id="809687642899217504">Kompjuterët e mi</translation>
-<translation id="8116630183974937060">Ndodhi një gabim me rrjetin. Kontrollo që pajisja jote është në linjë dhe provo përsëri.</translation>
+<translation id="8116630183974937060">Ndodhi një gabim me rrjetin. Kontrollo që pajisja jote është online dhe provo përsëri.</translation>
 <translation id="8295077433896346116">Për të përdorur <ph name="PRODUCT_NAME" />, duhet t'i japësh autorizim "Qasshmërisë" në mënyrë që të dhënat nga makineria në distancë të mund të injektohen në këtë Mac.
 
 Për të dhënë këtë autorizim, kliko "<ph name="BUTTON_NAME" />" më poshtë. Në panelin e preferencave të "Qasshmërisë" që hapet, zgjidh kutinë pranë "<ph name="SERVICE_SCRIPT_NAME" />".
@@ -190,7 +190,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="916856682307586697">Nis XSession të parazgjedhur</translation>
 <translation id="9187628920394877737">Jepi autorizim "Regjistrimit të ekranit" në <ph name="PRODUCT_NAME" /></translation>
 <translation id="9213184081240281106">Konfigurim i pavlefshëm i strehuesit.</translation>
-<translation id="981121421437150478">Jashtë linje</translation>
+<translation id="981121421437150478">Offline</translation>
 <translation id="985602178874221306">Autorët e Chromium</translation>
-<translation id="992215271654996353"><ph name="HOSTNAME" /> (për herë të fundit në linjë <ph name="DATE_OR_TIME" />)</translation>
+<translation id="992215271654996353"><ph name="HOSTNAME" /> (për herë të fundit online <ph name="DATE_OR_TIME" />)</translation>
 </translationbundle>

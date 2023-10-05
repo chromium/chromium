@@ -34,6 +34,7 @@
 <translation id="1149401351239820326">သက်တမ်းကုန်ဆုံးမည့်လ</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ကို Chrome တွင် ဖွင့်ပါမည်။ ရှေ့ဆက်ခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။</translation>
 <translation id="1173894706177603556">အမည်ပြောင်းရန်</translation>
+<translation id="1174479719160874822">ဖန်သားပြင်ကျဉ်းသွားသောအခါ Chrome သည် မိုဘိုင်းဝဘ်ဆိုက်ကို တောင်းဆိုပါမည်</translation>
 <translation id="1177863135347784049">စိတ်ကြိုက်</translation>
 <translation id="1178581264944972037">ဆိုင်းငံ့ထားရန်</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
@@ -1415,6 +1416,7 @@
 <translation id="8127542551745560481">ပင်မစာမျက်နှာအား တည်းဖြတ်ရန်</translation>
 <translation id="8130309322784422030">သိမ်းထားသော လက်မှတ်ထိုးဝင်သည့် အချက်အလက် ဟောင်းနေခြင်း ဖြစ်နိုင်သည်</translation>
 <translation id="813082847718468539">ဆိုက် အချက်အလက်များကို ကြည့်ရန်</translation>
+<translation id="8136852699834914183">ဤစာမျက်နှာအတွက် ဖွင့်ခြင်း မရနိုင်ပါ။</translation>
 <translation id="8137562778192957619">ဤစကားဝှက်ကို မှတ်ထားရန် မလိုပါ။ ၎င်းကို Google Password Manager တွင် သိမ်းပါမည်။</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ဖိုင် ကျန်ပါသည်</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>

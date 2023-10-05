@@ -69,7 +69,6 @@ Stvari za razmatranje:
 <translation id="3345341804167540816">Koristite Chrome svugdje</translation>
 <translation id="3472587960215700950">Chrome koristi Google Mape da vam dâ upute i lokalne informacije o otkrivenim adresama.</translation>
 <translation id="3503014945441706099">Preuzmite i poboljšano Sigurno pregledanje za ovaj Chrome profil</translation>
-<translation id="3506309791702511623">Chrome može otkriti brojeve za praćenje koje unesete i pratiti vaše pakete na stranici Nova kartica dok pomaže drugim iskustvima s kupovinom s Googlea.</translation>
 <translation id="3522659714780527202">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chrome, uključite sinhronizaciju</translation>
 <translation id="3533694711092285624">Nema sačuvanih lozinki. Chrome može provjeravati vaše lozinke kada ih sačuvate.</translation>
 <translation id="3594076341410558780">Sakrijte "Iskoristite sve prednosti Chromea"</translation>
@@ -154,6 +153,7 @@ Stvari za razmatranje:
 
 Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz. Pristupni izraz se ne šalje Googleu niti ga Google pohranjuje. Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea na računu<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome nije mogao provjeriti sve lozinke. Pokušajte ponovo kasnije.</translation>
+<translation id="6851982868877411675">Otvorite Postavke Chromea u iOS-u, a zatim dodirnite "Zadana aplikacija preglednika" i odaberite Chrome.</translation>
 <translation id="6916015246697034114">Pretražujte glasom u Chromeu</translation>
 <translation id="6964931465519938134">Sada možete koristiti Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="6975725306479268850">Odaberite Chrome za automatsko popunjavanje</translation>

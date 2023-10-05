@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1011749477052068769">ここに移動</translation>
+<translation id="1014147525163127655">このデバイスに <ph name="ORIGIN" /> のパスキーがありません</translation>
 <translation id="1016498331642356377">音声ですばやく検索します。このショートカットを編集するには、長押ししてください。</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> に送信しています...</translation>
@@ -33,6 +34,7 @@
 <translation id="1149401351239820326">有効期限（月）</translation>
 <translation id="1150263420752757504">Chrome で <ph name="APP_NAME" /> を開きます。続行すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したものと見なされます。</translation>
 <translation id="1173894706177603556">名前を変更</translation>
+<translation id="1174479719160874822">画面が小さい場合、Chrome はモバイルサイトをリクエストします</translation>
 <translation id="1177863135347784049">カスタム</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
@@ -671,6 +673,7 @@
 <translation id="452750746583162491">同期したデータを確認する</translation>
 <translation id="4528638190900283934">ログインすると追加の機能を使用できます</translation>
 <translation id="4532845899244822526">フォルダの選択</translation>
+<translation id="4543131175509360848">パスキーシートはありません</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個のタブ}other{<ph name="TAB_COUNT_MANY" /> 個のタブ、<ph name="TAB_COUNT_INCOGNITO" /> 個のシークレット タブ}}</translation>
 <translation id="4554077758708533499">USB ケーブルで接続しました</translation>
 <translation id="4558311620361989323">ウェブページのショートカット</translation>
@@ -945,6 +948,7 @@
 <translation id="5869522115854928033">保存したパスワード</translation>
 <translation id="587735546353481577">サイトをフォローするには、サイトにアクセスして、Chrome メニューを開き、[フォロー] をタップします。</translation>
 <translation id="5879072387416556377">おすすめの精度を上げる</translation>
+<translation id="5899667542927581604">閉じられたパスキー シートはありません</translation>
 <translation id="5916664084637901428">ON</translation>
 <translation id="5919204609460789179">同期を開始するには <ph name="PRODUCT_NAME" /> を更新してください</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> を追加</translation>
@@ -1414,6 +1418,7 @@
 <translation id="8127542551745560481">ホームページを編集</translation>
 <translation id="8130309322784422030">保存されているログイン情報が最新でない可能性があります。</translation>
 <translation id="813082847718468539">サイト情報を表示</translation>
+<translation id="8136852699834914183">このページは再生できません。</translation>
 <translation id="8137562778192957619">このパスワードを覚えておく必要はありません。パスワードは Google パスワード マネージャーに保存されます。</translation>
 <translation id="8186512483418048923">残り <ph name="FILES" /> ファイル</translation>
 <translation id="8189750580333936930">プライバシー サンドボックス</translation>
@@ -1588,6 +1593,7 @@
 <translation id="9063523880881406963">[PC 版サイトを見る] をオフにします</translation>
 <translation id="9065203028668620118">編集</translation>
 <translation id="9065383040763568503">Chrome で重要度が低いと判断される保存データ（設定を保存していないサイトやアクセス頻度の少ないサイトのデータなど）</translation>
+<translation id="9067341854474068781">画面全体に表示されているパスキーシートはありません</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">未読ページはありません</translation>
 <translation id="9070377983101773829">音声検索を開始</translation>

@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
+<translation id="1213425325105380833">還原最近在連接至此帳戶的裝置上使用的網頁應用程式</translation>
+<translation id="2065911435109240297">還原網絡應用程式</translation>
+<translation id="2111649875343992405">審核要還原的網絡應用程式</translation>
 <translation id="2139186145475833000">新增至主螢幕</translation>
+<translation id="2172982519592313442">審核網絡應用程式</translation>
 <translation id="2478076885740497414">安裝應用程式</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="3910402514791813257">無法安裝</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">螢幕截圖。輕按以關閉。</translation>
 <translation id="6990079615885386641">從 Google Play 商店取得應用程式：<ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">仍在新增先前的網站</translation>
+<translation id="7672888405515738928">選擇要在此裝置上還原的網絡應用程式。系統是根據 Chrome 記錄在這裡顯示應用程式。</translation>
+<translation id="8163051092261298861">還原網絡應用程式</translation>
 <translation id="962979164594783469">安裝此應用程式</translation>
 </translationbundle>

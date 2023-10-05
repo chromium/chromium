@@ -34,6 +34,7 @@
 <translation id="1149401351239820326">میعاد کے اختتام کا مہینہ</translation>
 <translation id="1150263420752757504">‏<ph name="APP_NAME" /> Chrome میں کھلے گی۔ جاری رکھ کر آپ، <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />Google Chrome اور ChromeOS کی اضافی سروس کی شرائط سے اتفاق کرتے ہیں<ph name="END_LINK2" />۔</translation>
 <translation id="1173894706177603556">نام بدلیں</translation>
+<translation id="1174479719160874822">‏اسکرین تنگ ہونے پر Chrome موبائل سائٹ سے درخواست کرے گا۔</translation>
 <translation id="1177863135347784049">حسب ضرورت</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
@@ -592,6 +593,7 @@
 <translation id="4116038641877404294">آف لائن صفحات استعمال کرنے کے لیے انہیں ڈاؤن لوڈ کریں</translation>
 <translation id="4121654769234887259">‏آپ کو یہ پاس ورڈ یاد رکھنے کی ضرورت نہیں ہوگی۔ اسے Google پاس ورڈ مینیجر میں <ph name="USERNAME" /> کے لیے محفوظ کیا جائے گا۔</translation>
 <translation id="4124152339699379357">اطلاع کی اجازت کا فلو مکمل اونچائی پر کھلا ہوا ہے</translation>
+<translation id="4126285640274188657">صفحہ کی بصیرتیں</translation>
 <translation id="4135200667068010335">ان آلات کی فہرست بند ہے جن کے ساتھ ٹیب کا اشتراک کرنا ہے۔</translation>
 <translation id="4137746084635924146">آلہ کی موجودہ زبان</translation>
 <translation id="4139654229316918773">Chrome Canary</translation>
@@ -1243,6 +1245,7 @@
 <translation id="7376560087009844242">صفحے کے مزید متن کو شامل کر کے، آپ تلاش کرنے کے لیے ٹچ کریں کا استعمال کرتے وقت بہتر نتائج دیکھ سکتے ہیں۔ آپ اسے تبدیل کرنے کے لیے ہمیشہ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> ملاحظہ کر سکتے ہیں۔</translation>
 <translation id="7379900596734708416">سائٹس کے لیے گہری تھیم دستیاب ہے</translation>
 <translation id="7388615499319468910">سائٹس اور مشتہرین اشتہارات کی کارکردگی کا طریقہ سمجھ سکتے ہیں۔ یہ ترتیب آف ہے۔</translation>
+<translation id="7397416715506917976">صفحے کی بصیرتیں دیکھیں</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">‏Chrome کے پہلی بار چلانے کا تجربہ</translation>
 <translation id="7411224099004328643">‏Google اکاؤنٹ کا صارف</translation>
@@ -1416,6 +1419,7 @@
 <translation id="8127542551745560481">ہوم صفحہ میں ترمیم کریں</translation>
 <translation id="8130309322784422030">آپ کی اسٹور کردہ سائن ان کی معلومات پرانی ہو سکتی ہے</translation>
 <translation id="813082847718468539">سائٹ کی معلومات دیکھیں</translation>
+<translation id="8136852699834914183">پلے بیک اس صفحہ کے لیے دستیاب نہیں ہے۔</translation>
 <translation id="8137562778192957619">‏آپ کو یہ پاس ورڈ یاد رکھنے کی ضرورت نہیں ہوگی۔ اسے Google پاس ورڈ مینیجر میں محفوظ کیا جائے گا۔</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> فائلیں باقی ہیں</translation>
 <translation id="8189750580333936930">رازداری سینڈ باکس</translation>

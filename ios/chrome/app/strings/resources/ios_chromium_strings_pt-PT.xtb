@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Pesquise com a voz no Chromium.</translation>
 <translation id="1047130070405668746">Selecione o Chromium</translation>
 <translation id="1091252999271033193">Isto significa que o Chromium irá pedir sempre o site para dispositivos móveis.</translation>
+<translation id="1171824629317156389">Abra as Definições do Chromium no iOS, toque em "App de navegador predefinida" e selecione o Chromium.</translation>
 <translation id="1185134272377778587">Acerca do Chromium</translation>
 <translation id="1257458525759135959">Para guardar imagens, toque em Definições para permitir que o Chromium adicione as suas fotos.</translation>
 <translation id="1289216811211435351">Mude para o Chromium</translation>
@@ -94,7 +95,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chromiu
 <translation id="4736424910885271643">A sua conta é gerida pelo domínio <ph name="HOSTED_DOMAIN" />, pelo que os seus dados do Chromium serão limpos deste dispositivo</translation>
 <translation id="4790638144988730920">Continue a usar os dados do Chromium na sua Conta Google.</translation>
 <translation id="4828317641996116749">O Chromium não conseguiu verificar todas as palavras-passe. Tente mais tarde.</translation>
-<translation id="4935539884203837577">O Chromium pode detetar os números de acompanhamento introduzidos e acompanhar os seus pacotes na página Novo separador, ao mesmo tempo que ajuda outras experiências de compras do Chromium.</translation>
 <translation id="4985291216379576555">Está offline. O Chromium não consegue verificar se existem atualizações.</translation>
 <translation id="4996471330284142407">Faça mais com um Chromium simples, seguro e mais rápido do que nunca.</translation>
 <translation id="4999538639245140991">Uma vez que está a terminar sessão numa conta gerida por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os seus dados do Chromium serão eliminados deste dispositivo. Contudo, permanecem na sua Conta Google.</translation>
@@ -140,6 +140,7 @@ Aspetos a considerar:
 1. Abra as Definições
 2. Toque em App de navegador predefinida
 3. Selecione o Chromium.</translation>
+<translation id="6197255575340902638">Se ocultar "<ph name="MODULE_NAME" />", o Chromium vai deixar de acompanhar automaticamente as suas embalagens futuras e vai eliminar todos os dados de acompanhamento de embalagens anteriores.</translation>
 <translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
 <translation id="6268381023930128611">Quer terminar sessão no Chromium?</translation>
 <translation id="6324041800010509197">Aceda à grelha de separadores no Chromium</translation>

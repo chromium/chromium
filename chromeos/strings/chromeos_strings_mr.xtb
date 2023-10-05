@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">सीपीयू</translation>
 <translation id="3124039320086536031">डिव्हाइस हे कनेक्ट केलेले आहे.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Remove page?}=1{{PAGE_NUMBER} पेज काढून टाकायचे का?}other{{PAGE_NUMBER} पेज काढून टाकायची का?}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> साठी खास</translation>
 <translation id="315116470104423982">मोबाइल डेटा</translation>
 <translation id="3156846309055100599">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे...</translation>
 <translation id="315738237743207937">कॅप्टिव्ह पोर्टल डिटेक्ट केले</translation>

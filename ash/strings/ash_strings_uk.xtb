@@ -65,6 +65,7 @@
 <translation id="1225748608451425081">Ваш пристрій Chromebook заблоковано через відому проблему. Ви зможете ввійти через <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">неактивний робочий стіл</translation>
 <translation id="1229194443904279055">Припинити вибір</translation>
+<translation id="1233979878541157665">Спробуйте ввести "захід сонця" або "дерево" замість назви файлу. Пошук за зображенням можна вимкнути в рядку пошуку.</translation>
 <translation id="1235458158152011030">Відомі мережі</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> підключено.</translation>
 <translation id="1240638468526743569">Додаток</translation>
@@ -206,6 +207,7 @@
 <translation id="1775598828170459419">Показано <ph name="NUM_SHOWN_ITEMS" /> з <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Налаштувати перегляд нещодавніх фотографій, медіафайлів і сповіщень на телефоні</translation>
 <translation id="1787955149152357925">Вимкнено</translation>
+<translation id="1796561540704213354">Веб-сайти, зокрема відвідані й відкриті сторінки</translation>
 <translation id="1797271123677381264">Не пам’ятаю пароль</translation>
 <translation id="181103072419391116">Рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="1815245884418711390">Увімкнути/вимкнути точку доступу. Точку доступу вимкнено.</translation>
@@ -225,6 +227,7 @@
 <translation id="1831565490995294689">Виберіть, щоб відкрити <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838895407229022812">Нічний екран вимкнено.</translation>
 <translation id="1854180393107901205">Зупинити трансляцію</translation>
+<translation id="1862077610023398675">Сховати елементи керування</translation>
 <translation id="1862380676329487333">Оновити й вийти</translation>
 <translation id="1864454756846565995">Пристрій із портом USB типу C (на задній панелі)</translation>
 <translation id="1869497990620230175">Швидкий доступ до файлів</translation>
@@ -248,6 +251,7 @@
 <translation id="1962969542251276847">Блокування екрана</translation>
 <translation id="1967970931040389207">Увімкнути точку доступу</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
+<translation id="1971815855639997522">Робочий стіл і вікна вилучено. Щоб відмінити дію, натисніть комбінацію клавіш Ctrl + Z.</translation>
 <translation id="1972950159383891558">Вітаємо, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Ввести текст</translation>
 <translation id="1980808257969311265">Приєднатися до події "<ph name="EVENT_SUMMARY" />"</translation>
@@ -304,6 +308,7 @@
 <translation id="2268130516524549846">Bluetooth вимкнено</translation>
 <translation id="2268813581635650749">Вийти з усіх</translation>
 <translation id="2269016722240250274">Додаток використовує ваш мікрофон</translation>
+<translation id="2276987123919776440">15 хвилин</translation>
 <translation id="2277103315734023688">Перейти вперед</translation>
 <translation id="2282073721614284166">Відкрити посилання на вкладці</translation>
 <translation id="2284237890386182187">Увімкнено, пристрої не підключено</translation>
@@ -513,6 +518,7 @@
 <translation id="3153444934357957346">Максимальна кількість паралельних входів в обліковий запис: <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
 <translation id="3154351730702813399">Адміністратор пристрою може відстежувати дані веб-перегляду.</translation>
 <translation id="316086887565479535">Непідтримувані додатки в шаблоні</translation>
+<translation id="3160929076476941240">2 години</translation>
 <translation id="3161500364292033097">Закрити робочий стіл і вікна</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> повертає на пристрої <ph name="DEVICE_TYPE" /> попередню версію. Налаштування пристрою буде скинуто, а дані – видалено.</translation>
 <translation id="3171170659304083361">Налаштування методів введення</translation>
@@ -581,6 +587,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Змінити нагадування</translation>
 <translation id="3435967511775410570">Відбиток пальця розпізнано</translation>
+<translation id="3437677362970530951">Ігри в Google Play і на інших ігрових платформах</translation>
 <translation id="3439896670700055005">Оновити поточну сторінку без кешованого контенту</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
@@ -786,6 +793,7 @@
 <translation id="4215497585250573029">Налаштування VPN</translation>
 <translation id="4217571870635786043">Диктування</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, установлений додаток, призупинено</translation>
+<translation id="4228078597006700451">Елементи керування не налаштовано</translation>
 <translation id="4231053948789591973">Трансляцію зараз призупинено. Ви можете будь-коли відновити або припинити її.</translation>
 <translation id="423685346499232137">Наразі не вдається скопіювати або вставити контент</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -820,6 +828,7 @@
 <translation id="4333628967105022692">Lacros не підтримується, коли вхід здійснено в декілька облікових записів.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4356872429719185452">Показати відомості про точку доступу. Точка доступу вмикається.</translation>
+<translation id="4364101114148522660"><ph name="DURATION" />  Записується</translation>
 <translation id="4371348193907997655">Налаштування трансляції</translation>
 <translation id="4375482231364171368">Шукати в адресному рядку</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -929,6 +938,7 @@
 <translation id="4814539958450445987">Екран входу</translation>
 <translation id="481455355267255546">Найближчі події</translation>
 <translation id="4826588772550366629">камеру та мікрофон</translation>
+<translation id="482908187605862807">Доступні додатки з Google Play</translation>
 <translation id="4831034276697007977">Вимкнути автоматичні кліки?</translation>
 <translation id="4849058404725798627">Підсвічувати об’єкт, вибраний на клавіатурі</translation>
 <translation id="485592688953820832">Нічого не робити (призупинити)</translation>
@@ -980,6 +990,7 @@
 <translation id="5004607513195820459">Мережею керує адміністратор</translation>
 <translation id="5009463889040999939">Триває перейменування профілю. Це може зайняти кілька хвилин.</translation>
 <translation id="5016558321564993266">Перемкнути маркер. <ph name="STATE_TEXT" /></translation>
+<translation id="5020360656995955353">Пошук за категоріями</translation>
 <translation id="5029356738310729434">Доступ до мікрофона пристрою ввімкнено</translation>
 <translation id="5030659775136592441">Показати диспетчер закладок</translation>
 <translation id="5030687792513154421">Час закінчився</translation>
@@ -1034,6 +1045,7 @@
 <translation id="5234764350956374838">Закрити</translation>
 <translation id="523505283826916779">Налаштування доступності</translation>
 <translation id="5238719049014159442">Відкрити або закрити панель запуску</translation>
+<translation id="5240725217819182328">Швидкий доступ до певних сторінок або дій у встановлених додатках</translation>
 <translation id="5245201184978705914">Не вдалося створити текстову версію</translation>
 <translation id="5253783950165989294">Підключено до пристрою "<ph name="DEVICE_NAME" />", заряд акумулятора – <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Немає збережених робочих столів</translation>
@@ -1252,6 +1264,7 @@
 <translation id="6095008505822982596">Темп мовлення</translation>
 <translation id="6095425951508823973">Додати з’єднання за допомогою ПЗ постачальника VPN "<ph name="PROVIDER" />"</translation>
 <translation id="6099678161144790572">Змінено минулого місяця</translation>
+<translation id="6099793635444444289">Не вдається почати диктування, оскільки мікрофон вимкнено</translation>
 <translation id="6103838137565245112">система</translation>
 <translation id="6114505516289286752">Файли живих субтитрів завантажено (<ph name="LANGUAGE" />)</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1269,6 +1282,7 @@
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6166852626429024716">Шукайте на пристрої, в додатках, налаштуваннях та Інтернеті…</translation>
 <translation id="6168318496333165060">Відкрити додаток Діагностика</translation>
+<translation id="6168622430237609329">Ваші встановлені додатки</translation>
 <translation id="6173151025443907148">Під час роботи Lacros вхід у кілька облікових записів не підтримується. Скористайтесь іншим профілем веб-переглядача або закрийте Lacros і повторіть спробу.</translation>
 <translation id="6179832488876878285">Тут можна закріпити важливі файли. Щоб почати, відкрийте додаток Файли.</translation>
 <translation id="6182592640011875895">Відкрити робочий стіл</translation>
@@ -1322,6 +1336,7 @@
 <translation id="6442259747294754014">Доступ до мікрофона пристрою вимкнено</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> транслюється на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6445915701151710649">ЦП</translation>
+<translation id="6446225358675593408">Шукайте зображення за їх вмістом</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, подій: <ph name="NUMBER" /></translation>
 <translation id="6449483711453944360">Додатки Linux і вікна в режимі анонімного перегляду наразі не підтримуються</translation>
 <translation id="6450245544201845082">Комбінацію клавіш для імітації кліку правою кнопкою миші зараз вимкнено</translation>
@@ -1351,6 +1366,7 @@
 <translation id="6537924328260219877">Рівень сигналу – <ph name="SIGNAL_STRENGTH" />, рівень заряду акумулятора – <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Сканування завантаженого файлу "<ph name="FILENAME" />"</translation>
 <translation id="6542521951477560771">Трансляція на пристрій "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="6546062506073634094">Пошук зображень за вмістом і попереднім переглядом</translation>
 <translation id="6555373427270923730">Введіть веб-адресу в адресному рядку й натисніть <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Нове встановлення</translation>
@@ -1404,6 +1420,7 @@
 <translation id="6752912906630585008">Робочий стіл "<ph name="REMOVED_DESK" />" видалено й об'єднано з робочим столом "<ph name="RECEIVE_DESK" />"</translation>
 <translation id="6753390234084146956">вкладки</translation>
 <translation id="6757237461819837179">Медіаконтент не відтворюється</translation>
+<translation id="6760438044935091345">Ігрова панель</translation>
 <translation id="6768043681523654438">сховище</translation>
 <translation id="6777216307882431711">Живлення підключених пристроїв USB-C</translation>
 <translation id="6781002679438061620">Робочий стіл 9</translation>
@@ -1417,6 +1434,7 @@
 <translation id="6802196538183166658">Натисніть час, щоб відкрити Швидкі налаштування</translation>
 <translation id="6802687695197837794">Буде надано доступ для додатків <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> і всіх додатків та веб-сайтів, які мають дозволи на доступ до камери й мікрофона</translation>
 <translation id="6803622936009808957">Не вдалося дублювати зображення екранів, оскільки не знайдено підтримувані значення роздільної здатності. Натомість запущено режим розширеного робочого столу.</translation>
+<translation id="6809556495807506746">Елементи керування недоступні</translation>
 <translation id="6812232930908427253">Не вдалося зберегти робочий стіл. Забагато вікон або вкладок.</translation>
 <translation id="6818242057446442178">Назад на одне слово</translation>
 <translation id="6819327813400217281">Зображення з камери закріплено в нижньому лівому куті</translation>
@@ -1426,12 +1444,14 @@
 <translation id="6836499262298959512">Небезпечний файл</translation>
 <translation id="6852052252232534364">Активувати</translation>
 <translation id="6855029042976311970">Змінено щойно</translation>
+<translation id="6856708615407876657">Перемикач результатів пошуку за категоріями</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> с</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Залишилась одна цифра}one{Залишилася # цифра}few{Залишилося # цифри}many{Залишилося # цифр}other{Залишилося # цифри}}</translation>
 <translation id="6867938213751067702">Завантаження файлу <ph name="FILENAME" /> призупинено</translation>
 <translation id="6874854809828346832">Показати відомості про точку доступу. Точку доступу ввімкнено.</translation>
 <translation id="6878400149835617132">Комбінацію клавіш вимкнено</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 додаток}one{# додаток}few{# додатки}many{# додатків}other{# додатка}}</translation>
+<translation id="6883768636838842873">Комбінації клавіш, поради щодо використання пристрою тощо</translation>
 <translation id="6884665277231944629">Повернутися до сьогоднішнього дня</translation>
 <translation id="6886172995547742638">Продуктивність пристрою <ph name="DEVICE_TYPE" /> може знизитися. Використовуйте сертифікований адаптер живлення USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт або більше.</translation>
 <translation id="688631446150864480">Щоб переходити між вікнами, використовуйте клавішу зі стрілкою вниз</translation>
@@ -1441,6 +1461,7 @@
 <translation id="6919251195245069855">Не вдається розпізнати розумну картку. Повторіть спробу.</translation>
 <translation id="6920245099716267363">Увімкнути/вимкнути точку доступу. Точку доступу ввімкнено. До неї підключено 1 пристрій.</translation>
 <translation id="692135145298539227">видалити</translation>
+<translation id="6929081673585394903">Показати елементи керування</translation>
 <translation id="6931576957638141829">Зберегти в</translation>
 <translation id="6942518653766415536">Меню форматів запису</translation>
 <translation id="6945221475159498467">Вибрати</translation>
@@ -1501,7 +1522,6 @@
 <translation id="7188494361780961876">Меню переміщено у верхній лівий кут екрана.</translation>
 <translation id="7189412385142492784">Яка відстань від Землі до Венери</translation>
 <translation id="7198435252016571249">Зображення з камери закріплено в нижньому правому куті, що конфліктує із системною платформою.</translation>
-<translation id="7219573373513695352">Немає підключених пристроїв</translation>
 <translation id="7229029500464092426">Обсяг використаної пам’яті: <ph name="AVAILABLE_MEMORY" /> | Усього: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Щоб оновлення почали діяти, Chromebook потрібно перезапустити. Це може зайняти до 1 хвилини.</translation>
 <translation id="7256634071279256947">Мікрофон на задній панелі</translation>
@@ -1519,6 +1539,7 @@
 <translation id="7312210124139670355">Адміністратор скидає вашу eSIM-карту. Це може зайняти кілька хвилин.</translation>
 <translation id="7313193732017069507">Розгорнути вікно камери</translation>
 <translation id="7316261577130609484">Додати нове завдання</translation>
+<translation id="7321889295239318128">Щоб дізнатися більше, натисніть комбінацію клавіш Shift + Tab</translation>
 <translation id="7330397557116570022">Щоб використати функцію "Диктування", перейдіть у текстове поле</translation>
 <translation id="7331646370422660166">alt + стрілка вниз</translation>
 <translation id="7340731148882810149">Меню автоматичних кліків</translation>
@@ -1638,6 +1659,7 @@
 <translation id="7773536009433685931">Увімкнути Wi-Fi</translation>
 <translation id="7780094051999721182">комбінації клавіш</translation>
 <translation id="7780159184141939021">Обернути екран</translation>
+<translation id="7792590255364786396">Відображається</translation>
 <translation id="7796735576426975947">Нове сповіщення приховано</translation>
 <translation id="7798302898096527229">Щоб скасувати, натисніть клавішу Search або Shift.</translation>
 <translation id="780301667611848630">Ні, дякую</translation>
@@ -1831,6 +1853,7 @@
 <translation id="8619138598101195078">Зменшити гучність</translation>
 <translation id="8627191004499078455">Під’єднано до пристрою: <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Налаштування функцій доступності</translation>
+<translation id="8634326941504371857">Ваші файли на цьому пристрої і Google Диску</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="8638637208069328956">Увімкнути або вимкнути мікрофон</translation>
 <translation id="8639760480004882931">Залишилося <ph name="PERCENTAGE" /></translation>
@@ -1906,6 +1929,7 @@
 <translation id="8940956008527784070">Низький заряд акумулятора (<ph name="PERCENTAGE" />%)</translation>
 <translation id="8949925099261528566">Підключено, але немає доступу до Інтернету</translation>
 <translation id="8951539504029375108">З вашим Chromebook сумісні лише схвалені пристрої Thunderbolt</translation>
+<translation id="8964525410783593407">1 година</translation>
 <translation id="8973885907461690937">Виділити значок меню</translation>
 <translation id="8980862970816311842">Перемістити значок додатка в папку чи з папки в сітці додатків</translation>
 <translation id="8982906748181120328">Видимість поблизу</translation>
@@ -1942,7 +1966,6 @@
 <translation id="9089416786594320554">Методи введення</translation>
 <translation id="9091626656156419976">Дисплей <ph name="DISPLAY_NAME" /> вилучено</translation>
 <translation id="9098969848082897657">Вимкнути звук на телефоні</translation>
-<translation id="9120448753905017833">Ми вимкнули Wi-Fi, щоб використовувати точку доступу через мобільний Інтернет. За передавання даних може стягуватися плата.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> або <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Відмінити останню дію</translation>
 <translation id="9133335900048457298">Не вдається записати захищений контент</translation>
@@ -1978,6 +2001,7 @@
 <translation id="951991426597076286">Відхилити</translation>
 <translation id="953431725143473984">Завершити роботу пристрою?</translation>
 <translation id="954052413789300507">Недостатньо місця для файлу "<ph name="FILENAME" />". Очистьте пам’ять.</translation>
+<translation id="954520015070501466">30 хвилин</translation>
 <translation id="974545358917229949">Показано результати (<ph name="RESULT_COUNT" />) для запиту "<ph name="QUERY" />"</translation>
 <translation id="981011780479609956">Термін здачі не вказано</translation>
 <translation id="98120814841227350">Перейти в кінець документа</translation>

@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">ຊອກຫາດ້ວຍສຽງໃນ Chromium.</translation>
 <translation id="1047130070405668746">ເລືອກ Chromium</translation>
 <translation id="1091252999271033193">ນີ້ໝາຍຄວາມວ່າ Chromium ຈະຮ້ອງຂໍເວັບໄຊມືຖືທຸກເທື່ອ.</translation>
+<translation id="1171824629317156389">ເປີດການຕັ້ງຄ່າ Chromium ໃນ iOS, ຈາກນັ້ນແຕະໃສ່ "Default Browser App" ແລ້ວເລືອກ Chromium.</translation>
 <translation id="1185134272377778587">ກ່ຽວ​ກັບ Chromium</translation>
 <translation id="1257458525759135959">ເພື່ອບັນທຶກຮູບພາບ, ກະລຸນາແຕະໃສ່ການຕັ້ງຄ່າເພື່ອອະນຸຍາດໃຫ້ Chromium ເພີ່ມໃສ່ຮູບພາບຂອງທ່ານ</translation>
 <translation id="1289216811211435351">ປ່ຽນເປັນ Chromium</translation>
@@ -94,7 +95,6 @@
 <translation id="4736424910885271643">ບັນຊີຂອງທ່ານຖືກຈັດການໂດຍ <ph name="HOSTED_DOMAIN" />, ດັ່ງນັ້ນຂໍ້ມູນ Chromium ຂອງທ່ານຈະຖືກລຶບລ້າງຈາກອຸປະກອນນີ້</translation>
 <translation id="4790638144988730920">ໃຊ້ຂໍ້ມູນ Chromium ໃນບັນຊີ Google ຂອງທ່ານຕໍ່ໄປ.</translation>
 <translation id="4828317641996116749">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນພາຍຫລັງ.</translation>
-<translation id="4935539884203837577">Chromium ສາມາດກວດຫາໝາຍເລກຕິດຕາມທີ່ທ່ານປ້ອນ ແລະ ຕິດຕາມແພັກເກດຂອງທ່ານໃນໜ້າແຖບໃໝ່ໄດ້ໃນຂະນະທີ່ຊ່ວຍມອບປະສົບການອື່ນໆໃນການຊື້ເຄື່ອງຈາກ Chromium.</translation>
 <translation id="4985291216379576555">ອອບລາຍຢູ່, Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
 <translation id="4996471330284142407">ເຮັດສິ່ງຕ່າງໆໃຫ້ແລ້ວຫຼາຍຂຶ້ນດ້ວຍ Chromium ທີ່ງ່າຍ, ປອດໄພ ແລະ ໄວກວ່າທີ່ເຄີຍ.</translation>
 <translation id="4999538639245140991">ເພາະວ່າທ່ານກຳລັງອອກຈາກລະບົບບັນຊີທີ່ຈັດການໂດຍ <ph name="SIGNOUT_MANAGED_DOMAIN" />, ຂໍ້ມູນ Chromium ຂອງທ່ານຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຢູ່ໃນບັນຊີ Google ຂອງທ່ານ.</translation>

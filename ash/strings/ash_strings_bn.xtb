@@ -65,6 +65,7 @@
 <translation id="1225748608451425081">কোনও পরিচিত সমস্যার কারণে আপনার Chromebook লক হয়ে গেছে। আপনি এতক্ষণ পর আবার সাইন-ইন করতে পারবেন: <ph name="TIME_LEFT" />।</translation>
 <translation id="1226877728704622336">ডেস্ক অ্যাক্টিভ নেই</translation>
 <translation id="1229194443904279055">বেছে নেওয়ার কাজটি থামান</translation>
+<translation id="1233979878541157665">ফাইলের নামের পরিবর্তে "সানসেট" বা "ট্রি" লিখে সার্চ করে দেখুন। আপনি সার্চ বারে ছবি সার্চ করার সুবিধা বন্ধ করে দিতে পারেন।</translation>
 <translation id="1235458158152011030">পরিচিত নেটওয়ার্কগুলি</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ফিচারটি কানেক্ট করা আছে।</translation>
 <translation id="1240638468526743569">একটি অ্যাপ</translation>
@@ -206,6 +207,7 @@
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />টির মধ্যে <ph name="NUM_SHOWN_ITEMS" />টি টাস্ক দেখানো হচ্ছে</translation>
 <translation id="178347895271755507">আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া ও বিজ্ঞপ্তি দেখা সংক্রান্ত পদ্ধতি সেট-আপ করুন</translation>
 <translation id="1787955149152357925">বন্ধ আছে</translation>
+<translation id="1796561540704213354">যেসব ওয়েবসাইটের পৃষ্ঠা আপনি ঘুরে দেখেছেন ও পৃষ্ঠা খোলা রয়েছে, সেগুলি সহ</translation>
 <translation id="1797271123677381264">পাসওয়ার্ড ভুলে গেছেন</translation>
 <translation id="181103072419391116">সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="1815245884418711390">হটস্পট টগল করুন। হটস্পট বন্ধ করা আছে।</translation>
@@ -225,6 +227,7 @@
 <translation id="1831565490995294689"><ph name="APP_TO_OPEN" /> খুলতে বেছে নিন।</translation>
 <translation id="1838895407229022812">নাইট লাইট ফিচার বন্ধ করা আছে।</translation>
 <translation id="1854180393107901205">কাস্ট করা বন্ধ করুন</translation>
+<translation id="1862077610023398675">কন্ট্রোল লুকান</translation>
 <translation id="1862380676329487333">আপডেট করে সাইন-আউট করুন</translation>
 <translation id="1864454756846565995">USB-C ডিভাইস (পিছনের পোর্ট)</translation>
 <translation id="1869497990620230175">ঝটপট অ্যাক্সেসযোগ্য ফাইল</translation>
@@ -248,6 +251,7 @@
 <translation id="1962969542251276847">স্ক্রিন লক করুন</translation>
 <translation id="1967970931040389207">হটস্পট চালু করুন</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
+<translation id="1971815855639997522">ডেস্ক ও উইন্ডো সরানো হয়েছে। অ্যাকশন আগের অবস্থায় ফেরাতে Control + Z প্রেস করুন।</translation>
 <translation id="1972950159383891558">হাই, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">টেক্সট লেখার ফিল্ড</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" />-এ যোগ দিন</translation>
@@ -304,6 +308,7 @@
 <translation id="2268130516524549846">ব্লুটুথ অক্ষমিত</translation>
 <translation id="2268813581635650749">সবগুলি থেকে সাইন-আউট</translation>
 <translation id="2269016722240250274">কোনও অ্যাপ্লিকেশন আপনার মাইক্রোফোন ব্যবহার করছে</translation>
+<translation id="2276987123919776440">১৫মিনিট</translation>
 <translation id="2277103315734023688">এগিয়ে যান</translation>
 <translation id="2282073721614284166">ট্যাবে লিঙ্ক খুলুন</translation>
 <translation id="2284237890386182187">চালু রয়েছে, কোনও ডিভাইস কানেক্ট করা নেই</translation>
@@ -513,6 +518,7 @@
 <translation id="3153444934357957346">একধিক সাইন-ইনে আপনার সর্বাধিক <ph name="MULTI_PROFILE_USER_LIMIT" />টি অ্যাকাউন্ট থাকতে পারে।</translation>
 <translation id="3154351730702813399">ডিভাইস প্রশাসক আপনার ব্রাউজিং অ্যাক্টিভিটি পর্যবেক্ষণ করতে পারেন।</translation>
 <translation id="316086887565479535">টেমপ্লেটে এমন কিছু অ্যাপ আছে যা কাজ করে না</translation>
+<translation id="3160929076476941240">২ঘঃ</translation>
 <translation id="3161500364292033097">ডেস্ক ও উইন্ডো বন্ধ করুন</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> আপনার <ph name="DEVICE_TYPE" /> আগের ভার্সনে ফিরিয়ে নিয়ে যাচ্ছে। আপনার ডিভাইস রিসেট করা হবে এবং সব ডেটা মুছে যাবে।</translation>
 <translation id="3171170659304083361">'ইনপুট পদ্ধতি' সম্পর্কিত সেটিংস</translation>
@@ -581,6 +587,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">রিমাইন্ডার এডিট করুন</translation>
 <translation id="3435967511775410570">আঙুলের ছাপ শনাক্ত করা হয়েছে</translation>
+<translation id="3437677362970530951">Play Store ও অন্যান্য গেমিং প্ল্যাটফর্মের গেম</translation>
 <translation id="3439896670700055005">ক্যাশ করা কন্টেন্ট ব্যবহার না করেই আপনার বর্তমান পৃষ্ঠাটি আবার লোড করুন</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
@@ -786,6 +793,7 @@
 <translation id="4215497585250573029">ভিপিএন সেটিংস</translation>
 <translation id="4217571870635786043">ডিক্টেশন</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ইনস্টল করা অ্যাপ, পজ করা হয়েছে</translation>
+<translation id="4228078597006700451">কন্ট্রোল সেট-আপ করা নেই</translation>
 <translation id="4231053948789591973">বর্তমানে কাস্টিং পজ করা আছে। যেকোনও সময় আপনার স্ক্রিন কাস্টিং আবার চালু অথবা বন্ধ করতে পারবেন।</translation>
 <translation id="423685346499232137">এই মুহূর্তে কন্টেন্ট কপি বা পেস্ট করা যাচ্ছে না</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -820,6 +828,7 @@
 <translation id="4333628967105022692">একাধিক ব্যবহারকারী সাইন-ইন করে থাকাকালীন, Lacros কাজ করে না।</translation>
 <translation id="4338109981321384717">আতস কাচ</translation>
 <translation id="4356872429719185452">হটস্পটের বিবরণ দেখুন। হটস্পট চালু করা হচ্ছে।</translation>
+<translation id="4364101114148522660"><ph name="DURATION" />  রেকর্ডিং</translation>
 <translation id="4371348193907997655">কাস্ট সেটিংস</translation>
 <translation id="4375482231364171368">অ্যাড্রেস বারে সার্চ করুন</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" /> শতাংশ</translation>
@@ -929,6 +938,7 @@
 <translation id="4814539958450445987">লগ-ইন স্ক্রিন</translation>
 <translation id="481455355267255546">এর পরে</translation>
 <translation id="4826588772550366629">ক্যামেরা এবং মাইক্রোফোন</translation>
+<translation id="482908187605862807">Play Store-এ উপলভ্য অ্যাপ</translation>
 <translation id="4831034276697007977">অটোমেটিক ক্লিক বন্ধ করতে চান কিনা সেই বিষয়টি ভাল করে দেখে নিন?</translation>
 <translation id="4849058404725798627">কিবোর্ড ফোকাসের মাধ্যমে হাইলাইট করুন</translation>
 <translation id="485592688953820832">কোনও অ্যাকশন নেবেন না (পজ)</translation>
@@ -980,6 +990,7 @@
 <translation id="5004607513195820459">নেটওয়ার্ক ম্যানেজ করা হয়</translation>
 <translation id="5009463889040999939">প্রোফাইলের নাম পরিবর্তন করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="5016558321564993266">মার্কার টগল করুন। <ph name="STATE_TEXT" /></translation>
+<translation id="5020360656995955353">বিভাগ অনুযায়ী সার্চ করুন</translation>
 <translation id="5029356738310729434">ডিভাইস মাইক্রোফোন অ্যাক্সেস চালু আছে</translation>
 <translation id="5030659775136592441">বুকমার্ক পরিচালক দেখান</translation>
 <translation id="5030687792513154421">সময় শেষ</translation>
@@ -1034,6 +1045,7 @@
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="523505283826916779">অ্যাক্সেসিবিলিটি সেটিংস</translation>
 <translation id="5238719049014159442">লঞ্চার খুলুন/বন্ধ করুন</translation>
+<translation id="5240725217819182328">ইনস্টল করা অ্যাপের নির্দিষ্ট কোনও পৃষ্ঠা বা অ্যাকশনে দ্রুত অ্যাক্সেস</translation>
 <translation id="5245201184978705914">ট্রান্সক্রিপ্ট তৈরি করা যাচ্ছে না</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> নামের ডিভাইসে কানেক্ট করা হয়েছে, ব্যাটারি চার্জ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">সেভ করা কোনও ডেস্ক নেই</translation>
@@ -1252,6 +1264,7 @@
 <translation id="6095008505822982596">স্পিচ রেট</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" />-এর মাধ্যমে কানেকশন যোগ করুন</translation>
 <translation id="6099678161144790572">গত মাসে এডিট করা হয়েছে</translation>
+<translation id="6099793635444444289">মাইক্রোফোন মিউট থাকায় 'ডিকটেশন' শুরু করা যাচ্ছে না</translation>
 <translation id="6103838137565245112">সিস্টেম</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> স্পিচ ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1269,6 +1282,7 @@
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6166852626429024716">আপনার ডিভাইস, অ্যাপ, সেটিংস, ওয়েবে সার্চ করুন...</translation>
 <translation id="6168318496333165060">'ডায়াগনস্টিকস অ্যাপ' খুলুন</translation>
+<translation id="6168622430237609329">আপনার ইনস্টল করা অ্যাপ</translation>
 <translation id="6173151025443907148">Lacros চালু থাকাকালীন দ্বিতীয় কোনও ব্যবহারকারী সাইন-ইন করতে পারবেন না। পরিবর্তে Lacros-এ দ্বিতীয় কোনও ব্রাউজার প্রোফাইল ব্যবহার করুন অথবা Lacros বন্ধ করে আবার চেষ্টা করুন।</translation>
 <translation id="6179832488876878285">গুরুত্বপূর্ণ ফাইলগুলি আপনি এখানে পিন করে রাখতে পারবেন। শুরু করার জন্য, Files অ্যাপ খুলুন।</translation>
 <translation id="6182592640011875895">ডেস্ক খুলুন</translation>
@@ -1322,6 +1336,7 @@
 <translation id="6442259747294754014">ডিভাইস মাইক্রোফোন অ্যাক্সেস বন্ধ আছে</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />-এ <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
+<translation id="6446225358675593408">কন্টেন্ট অনুযায়ী আপনার ছবি খুঁজুন</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" />টি ইভেন্ট</translation>
 <translation id="6449483711453944360">বর্তমানে Linux অ্যাপ ও ছদ্মবেশী উইন্ডো ব্যবহারের সুবিধা নেই</translation>
 <translation id="6450245544201845082">'ডানদিকের বোতামে ক্লিক করুন' শর্টকার্ট বর্তমানে বন্ধ করা আছে</translation>
@@ -1351,6 +1366,7 @@
 <translation id="6537924328260219877">সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">ডাউনলোডের জন্য <ph name="FILENAME" /> ফাইল স্ক্যান করা হচ্ছে</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> এ কাস্ট করা হচ্ছে</translation>
+<translation id="6546062506073634094">কন্টেন্ট ও ছবির প্রিভিউর মাধ্যমে ছবি সার্চ করা</translation>
 <translation id="6555373427270923730">অ্যাড্রেস বারে ওয়েব অ্যাড্রেস টাইপ করুন, তারপর <ph name="MODIFIER" /><ph name="KEY" /> প্রেস করুন</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 নতুন ইনস্টল</translation>
@@ -1404,6 +1420,7 @@
 <translation id="6752912906630585008">ডেস্ক <ph name="REMOVED_DESK" />-কে সরিয়ে দিয়ে <ph name="RECEIVE_DESK" />-এর সাথে মার্জ করা হয়েছে</translation>
 <translation id="6753390234084146956">ট্যাব</translation>
 <translation id="6757237461819837179">কোনও মিডিয়া চলছে না</translation>
+<translation id="6760438044935091345">গেম ড্যাশবোর্ড</translation>
 <translation id="6768043681523654438">স্টোরেজ</translation>
 <translation id="6777216307882431711">কানেক্ট করা USB-C ডিভাইসগুলি চার্জ করা হচ্ছে</translation>
 <translation id="6781002679438061620">ডেস্ক ৯</translation>
@@ -1417,6 +1434,7 @@
 <translation id="6802196538183166658">সময় বেছে নিয়ে দ্রুত সেটিংস খুলুন</translation>
 <translation id="6802687695197837794">এটি ক্যামেরা ও মাইক্রোফোন ব্যবহার করার অনুমতির মাধ্যমে <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> এবং সব অ্যাপ ও ওয়েবসাইট অ্যাক্সেস করার অনুমতি দেয়</translation>
 <translation id="6803622936009808957">সমর্থিত রেসুলিউশানগুলি খুঁজে না পাওয়ায় প্রদর্শনগুলি মিরর মানে প্রতিবিম্বিত করতে পারেনি। এর পরিবর্তে প্রসারিত ডেস্কটপে প্রবেশ করেছে।</translation>
+<translation id="6809556495807506746">কন্ট্রোল উপলভ্য নেই</translation>
 <translation id="6812232930908427253">ডেস্ক সেভ করা যায়নি। অনেক বেশি উইন্ডো বা ট্যাব রয়েছে।</translation>
 <translation id="6818242057446442178">শব্দ অনুযায়ী পেছনে যান</translation>
 <translation id="6819327813400217281">ক্যামেরাটি নিচে বাঁদিকের কোণে স্ন্যাপ করা হয়েছে</translation>
@@ -1426,12 +1444,14 @@
 <translation id="6836499262298959512">বিপজ্জনক ফাইল</translation>
 <translation id="6852052252232534364">চালু করতে ক্লিক করুন</translation>
 <translation id="6855029042976311970">এইমাত্র এডিট করা হয়েছে</translation>
+<translation id="6856708615407876657">সার্চ ফলাফলের বিভাগ টগল করুন</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> সে</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{আরও ১টি সংখ্যা লিখতে হবে}one{আরও #টি সংখ্যা লিখতে হবে}other{আরও #টি সংখ্যা লিখতে হবে}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> ডাউনলোড পজ করা হয়েছে</translation>
 <translation id="6874854809828346832">হটস্পটের বিবরণ দেখুন। হটস্পট চালু আছে।</translation>
 <translation id="6878400149835617132">শর্টকাট বন্ধ করা আছে</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{১টি অ্যাপ}one{#টি অ্যাপ}other{#টি অ্যাপ}}</translation>
+<translation id="6883768636838842873">ডিভাইস ব্যবহার ও আরও অনেক কিছু করার জন্য কীবোর্ড শর্টকাট, পরামর্শ</translation>
 <translation id="6884665277231944629">আজকের তারিখ বেছে নিন</translation>
 <translation id="6886172995547742638">আপনার <ph name="DEVICE_TYPE" />-এর পারফর্ম্যান্স আশানুরূপ নাও হতে পারে। একটি <ph name="PREFERRED_MINIMUM_POWER" />W অথবা আরও ভাল USB-C পাওয়ার অ্যাডাপ্টার ব্যবহার করুন।</translation>
 <translation id="688631446150864480">উইন্ডো পাল্টাতে, 'নিম্নমুখী তীরচিহ্ন' কী প্রেস করুন</translation>
@@ -1441,6 +1461,7 @@
 <translation id="6919251195245069855">আপনার স্মার্ট কার্ড শনাক্ত করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="6920245099716267363">হটস্পট টগল করুন। হটস্পট চালু করা আছে, ১টি ডিভাইস কানেক্ট করা আছে।</translation>
 <translation id="692135145298539227">মুছুন</translation>
+<translation id="6929081673585394903">কন্ট্রোল দেখুন</translation>
 <translation id="6931576957638141829">এখানে সেভ করুন</translation>
 <translation id="6942518653766415536">রেকর্ডিং ফর্ম্যাট মেনু</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
@@ -1501,7 +1522,6 @@
 <translation id="7188494361780961876">স্ক্রিনের উপরে বাঁদিকের কোণায় মেনু সরে গেছে।</translation>
 <translation id="7189412385142492784">পৃথিবী থেকে শুক্র গ্রহের দুরত্ব কত</translation>
 <translation id="7198435252016571249">ক্যামেরাটি নিচে ডানদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>
-<translation id="7219573373513695352">কোনও ডিভাইস কানেক্ট করা নেই</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> মেমরি | মোট <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। একটি আপডেট প্রয়োগ করতে Chromebook রিস্টার্ট করতে হবে। এতে ১ মিনিট পর্যন্ত সময় লাগতে পারে।</translation>
 <translation id="7256634071279256947">পেছনের মাইক্রোফোন</translation>
@@ -1519,6 +1539,7 @@
 <translation id="7312210124139670355">আপনার অ্যাডমিনিস্ট্রেটর আপনার ই-সিম রিসেট করছেন। এতে কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="7313193732017069507">ক্যামেরা সামনে আনুন</translation>
 <translation id="7316261577130609484">নতুন টাস্ক যোগ করুন</translation>
+<translation id="7321889295239318128">আরও জানতে Shift কীয়ের সাথে 'ট্যাব' কী প্রেস করুন</translation>
 <translation id="7330397557116570022">'ডিকটেশন' ব্যবহার করতে টেক্সট ফিল্ডে যান</translation>
 <translation id="7331646370422660166">alt + নিম্নমুখী তীরচিহ্ন</translation>
 <translation id="7340731148882810149">অটোমেটিক ক্লিক মেনু</translation>
@@ -1638,6 +1659,7 @@
 <translation id="7773536009433685931">পরিবর্তে ওয়াই-ফাই চালু করুন</translation>
 <translation id="7780094051999721182">শর্টকাট</translation>
 <translation id="7780159184141939021">স্ক্রিন ঘোরান</translation>
+<translation id="7792590255364786396">দেখা যাচ্ছে</translation>
 <translation id="7796735576426975947">নতুন বিজ্ঞপ্তি লুকানো আছে</translation>
 <translation id="7798302898096527229">Search টিপুন বা বাতিল করতে Shift টিপুন</translation>
 <translation id="780301667611848630">না থাক</translation>
@@ -1831,6 +1853,7 @@
 <translation id="8619138598101195078">ভলিউম কমান</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" />-এর সাথে কানেক্ট হয়েছে</translation>
 <translation id="8631727435199967028">অ্যাক্সেসিবিলিটি সেটিংস</translation>
+<translation id="8634326941504371857">এই ডিভাইস ও Google Drive-এ আপনার ফাইল</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="8638637208069328956">মাইক্রোফোন চালু/বন্ধ করুন</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> বাকি আছে</translation>
@@ -1906,6 +1929,7 @@
 <translation id="8940956008527784070">(<ph name="PERCENTAGE" />%) কম ব্যাটারি</translation>
 <translation id="8949925099261528566">কানেক্ট করা আছে, ইন্টারনেট নেই</translation>
 <translation id="8951539504029375108">শুধুমাত্র অনুমোদিত Thunderbolt ডিভাইসে আপনার Chromebook ব্যবহার করা যাবে</translation>
+<translation id="8964525410783593407">১ঘঃ</translation>
 <translation id="8973885907461690937">মেনু আইকনে ফোকাস রাখুন</translation>
 <translation id="8980862970816311842">অ্যাপ গ্রিডে একটি অ্যাপ আইকন ফোল্ডারের মধ্যে/বাইরে সরান</translation>
 <translation id="8982906748181120328">'নিয়ারবাই শেয়ার'-এর ডিভাইস দৃশ্যমানতা</translation>
@@ -1942,7 +1966,6 @@
 <translation id="9089416786594320554">ইনপুট পদ্ধতিগুলি</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> প্রদর্শন সরানো হয়েছে</translation>
 <translation id="9098969848082897657">সাইলেন্স ফোন</translation>
-<translation id="9120448753905017833">আমরা মোবাইল ডেটার মাধ্যমে হটস্পট ব্যবহার শুরু করতে ওয়াই-ফাই বন্ধ করে দিয়েছি। এর জন্য ডেটা খরচ হতে পারে।</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> বা <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">শেষ অ্যাকশনটি আগের অবস্থায় ফেরান</translation>
 <translation id="9133335900048457298">সুরক্ষিত কন্টেন্ট রেকর্ড করা যাবে না</translation>
@@ -1978,6 +2001,7 @@
 <translation id="951991426597076286">প্রত্যাখ্যান</translation>
 <translation id="953431725143473984">ডিভাইস বন্ধ করবেন?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" />-এর জন্য পর্যাপ্ত স্টোরেজ নেই। স্টোরেজ খালি করুন।</translation>
+<translation id="954520015070501466">৩০মিনিট</translation>
 <translation id="974545358917229949"><ph name="QUERY" />-এর জন্য <ph name="RESULT_COUNT" />টি ফলাফল দেখানো হচ্ছে</translation>
 <translation id="981011780479609956">শেষ করার কোনও তারিখ নেই</translation>
 <translation id="98120814841227350">ডকুমেন্টের শেষে যান</translation>

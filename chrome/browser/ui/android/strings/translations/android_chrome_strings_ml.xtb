@@ -34,6 +34,7 @@
 <translation id="1149401351239820326">കാലാവധി കഴിയുന്ന മാസം</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു.</translation>
 <translation id="1173894706177603556">പേരുമാറ്റുക</translation>
+<translation id="1174479719160874822">സ്‌ക്രീൻ ഇടുങ്ങിയിരിക്കുമ്പോൾ Chrome മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കും</translation>
 <translation id="1177863135347784049">ഇഷ്ടാനുസൃതം</translation>
 <translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
@@ -344,6 +345,7 @@
 <translation id="2856503607207334158">സൈൻ ഇൻ ചെയ്യാനായില്ല</translation>
 <translation id="2860954141821109167">ഈ ഉപകരണത്തിൽ Phone ആപ്പ് പ്രവർത്തനക്ഷമമാക്കിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="2861923151411510142">ചില Chrome ഫീച്ചറുകൾ ഇനി ലഭ്യമായിരിക്കില്ല</translation>
+<translation id="2869430948265924908">കാറിലെ നിങ്ങളുടെ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട ഉള്ളടക്കം പരിരക്ഷിക്കാൻ, നിങ്ങളൊരു കാർ പ്രൊഫൈൽ ലോക്ക് സൃഷ്‌ടിക്കണം.  ഒരു പിന്നോ കോഡോ പാസ്‌വേഡോ ഉപയോഗിച്ച് നിങ്ങൾക്ക് ഇത് ചെയ്യാനാകും.</translation>
 <translation id="2870560284913253234">സൈറ്റ്</translation>
 <translation id="2871733351037274014">പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്യുക</translation>
 <translation id="2876136027428473467">ഈ വെബ്സൈറ്റിന് അനുമതി നൽകാൻ <ph name="CHILD_NAME" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു:</translation>
@@ -465,6 +467,7 @@
 <translation id="3421726884497337397">മൂന്നാം കക്ഷി കുക്കികൾ എപ്പോഴാണ് ബ്ലോക്ക് ചെയ്യേണ്ടതെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3428747202529429621">നിങ്ങൾ സൈൻ ഇൻ ആയിരിക്കുമ്പോൾ Chrome-ൽ നിങ്ങളെ സുരക്ഷിതരാക്കുകയും മറ്റ് Google ആപ്പുകളിൽ നിങ്ങളുടെ സുരക്ഷ മെച്ചപ്പെടുത്താനും ഉപയോഗിച്ചേക്കാം</translation>
 <translation id="3429160811076349561">ട്രയൽ ഫീച്ചറുകൾ ഓഫാണ്</translation>
+<translation id="3430670036890315772">പ്രൊഫൈൽ ലോക്ക് ഓഫാക്കുന്നത് നിങ്ങളുടെ സംരക്ഷിച്ച വിവരങ്ങൾ നീക്കം ചെയ്യും</translation>
 <translation id="3435465986463792564">നിരവധി വിൻഡോകളുണ്ടോ? അവ നിങ്ങൾക്ക് ഇവിടെ മാനേജ് ചെയ്യാം</translation>
 <translation id="3435738964857648380">സുരക്ഷ</translation>
 <translation id="3439276997620616816">നിങ്ങളുടെ സമീപകാല ടാബുകൾ ഇവിടെ കാണാം</translation>
@@ -592,6 +595,7 @@
 <translation id="4116038641877404294">ഓഫ്‌ലൈനായി ഉപയോഗിക്കാൻ പേജുകൾ ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="4121654769234887259">നിങ്ങൾ ഈ പാസ്‌വേഡ് ഓർമ്മിക്കേണ്ടതില്ല. <ph name="USERNAME" /> എന്നതിനുള്ള Google Password Manager-ൽ ഇത് സംരക്ഷിക്കും.</translation>
 <translation id="4124152339699379357">അറിയിപ്പ് അനുമതി ഫ്ലോ മുഴുവനായും തുറന്നിരിക്കുന്നു</translation>
+<translation id="4126285640274188657">പേജ് ഉൾക്കാഴ്‌ചകൾ</translation>
 <translation id="4135200667068010335">ടാബ് പങ്കിടാനാകുന്ന ഉപകരണങ്ങളുടെ ലിസ്‌റ്റ് അടച്ചിരിക്കുന്നു.</translation>
 <translation id="4137746084635924146">നിലവിലെ ഉപകരണ ഭാഷ</translation>
 <translation id="4139654229316918773">Chrome Canary</translation>
@@ -643,6 +647,7 @@
 <translation id="4378154925671717803">ഫോൺ</translation>
 <translation id="438319986296050901">കാർഡ് മാത്രം പങ്കിടുക</translation>
 <translation id="4384468725000734951">തിരയാൻ Sogou ഉപയോഗിക്കുന്നു</translation>
+<translation id="4387647248986092471">കാർ പ്രൊഫൈൽ ലോക്ക് സൃഷ്ടിക്കുക</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ഡൗൺലോഡ് ചെയ്യുന്നു…</translation>
 <translation id="4404568932422911380">ബുക്ക്‌മാർക്കുകളൊന്നുമില്ല</translation>
 <translation id="4405224443901389797">ഇതിലേക്ക് നീക്കുക…</translation>
@@ -822,6 +827,7 @@
 <translation id="5210286577605176222">മുമ്പത്തെ ടാബിലേക്ക് പോകുക</translation>
 <translation id="5210365745912300556">ടാബ് അടയ്ക്കൂക</translation>
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
+<translation id="5226378907213531272">കാർ ഉപയോഗിക്കുമ്പോഴെല്ലാം നിങ്ങളുടെ സ്‌ക്രീൻ അൺലോക്ക് ചെയ്യും</translation>
 <translation id="5227554086496586518">തിരയൽ ഫലങ്ങൾ കാണാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5233638681132016545">പുതിയ ടാബ്</translation>
 <translation id="5234971936051226002">“ഈ പേജ് കേൾക്കുക” പ്ലേയർ ചെറുതാക്കി.</translation>
@@ -1243,6 +1249,7 @@
 <translation id="7376560087009844242">പേജിലുള്ള കൂടുതൽ ടെക്സ്റ്റ് ഉൾപ്പെടുത്തുന്നതിലൂടെ, 'തിരയാൻ സ്‌പർശിക്കുക' ഉപയോഗിക്കുമ്പോൾ നിങ്ങൾക്ക് മെച്ചപ്പെട്ട ഫലങ്ങൾ ലഭിച്ചേക്കാം. ഇത് മാറ്റാൻ നിങ്ങൾക്ക് എപ്പോൾ വേണമെങ്കിലും <ph name="BEGIN_LINK" />ക്രമീകരണം<ph name="END_LINK" /> സന്ദർശിക്കാം.</translation>
 <translation id="7379900596734708416">സൈറ്റുകൾക്കുള്ള ഡാർക്ക് തീം ലഭ്യമാണ്</translation>
 <translation id="7388615499319468910">പരസ്യങ്ങളുടെ പ്രകടനം എങ്ങനെയുണ്ടെന്ന് സൈറ്റുകൾക്കും പരസ്യദാതാക്കൾക്കും മനസ്സിലാക്കാനാകും. ഈ ക്രമീകരണം ഓഫാണ്.</translation>
+<translation id="7397416715506917976">പേജ് ഉൾക്കാഴ്ചകൾ കാണുക</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome ആദ്യ പ്രവർത്തന അനുഭവം</translation>
 <translation id="7411224099004328643">Google Account ഉപയോക്താവ്</translation>
@@ -1315,6 +1322,7 @@
 <translation id="7691043218961417207">പിന്തുടരാൻ ഉള്ളടക്കം അടുത്തറിയുക</translation>
 <translation id="7697383401610880082">വലിച്ചിടുന്നതിനുള്ള ഹാൻഡിൽ</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> ആപ്പിൽ ഇമെയിൽ സൃഷ്‌ടിക്കുക</translation>
+<translation id="7702388902581909985">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുന്നത് Google Account-ൽ നിന്ന് നിങ്ങളെ സൈൻ ഔട്ട് ആക്കില്ല. അത് ചെയ്യാൻ, <ph name="BEGIN_LINK1" />Chrome-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കുക</translation>
 <translation id="7709094866268987903">നിങ്ങൾ നീക്കം ചെയ്ത താൽപ്പര്യങ്ങൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="7709918231054955894">നിങ്ങളുടെ എല്ലാ ടാബുകളും നേടുക</translation>
@@ -1416,6 +1424,7 @@
 <translation id="8127542551745560481">ഹോംപേജ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="8130309322784422030">സംഭരിച്ചിരിക്കുന്ന സൈൻ ഇൻ വിവരങ്ങൾ കാലഹരണപ്പെട്ടതാകാം</translation>
 <translation id="813082847718468539">സൈറ്റ് വിവരങ്ങള്‍ കാണുക</translation>
+<translation id="8136852699834914183">ഈ പേജിന് പ്ലേബാക്ക് ലഭ്യമല്ല.</translation>
 <translation id="8137562778192957619">നിങ്ങൾ ഈ പാസ്‌വേഡ് ഓർമ്മിക്കേണ്ടതില്ല. Google Password Manager-ൽ ഇത് സംരക്ഷിക്കും.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ഫയലുകൾ ശേഷിക്കുന്നു</translation>
 <translation id="8189750580333936930">സ്വകാര്യതാ സാൻഡ്‌ബോക്‌സ്</translation>

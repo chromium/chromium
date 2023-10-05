@@ -69,7 +69,6 @@
 <translation id="3345341804167540816">隨時隨地使用 Chrome</translation>
 <translation id="3472587960215700950">偵測到地址後，Chrome 會使用「Google 地圖」規劃路線及提供當地資訊。</translation>
 <translation id="3503014945441706099">同時為此 Chrome 個人檔案取得「強化安全瀏覽」功能</translation>
-<translation id="3506309791702511623">Chrome 可以偵測你輸入的追蹤號碼，在「新分頁」頁面追蹤包裹，並協助你享受其他 Google 購物體驗。</translation>
 <translation id="3522659714780527202">如要在任何使用 Chrome 的裝置上查看分頁，請開啟同步處理功能</translation>
 <translation id="3533694711092285624">沒有已儲存的密碼。儲存密碼時，Chrome 可檢查您的密碼。</translation>
 <translation id="3594076341410558780">隱藏「充分運用 Chrome 的功能」</translation>
@@ -104,7 +103,7 @@
         請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除此資料。</translation>
 <translation id="484033449593719797">Chrome Beta 版本上不支援此功能</translation>
 <translation id="4840404732697892756">當您登入 Google 帳戶後，「Google 密碼管理工具」可檢查您的密碼。</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome 可以在新分頁上追蹤這個包裹。}other{Chrome 可以在新分頁上追蹤這些包裹。}}</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome 可在「新分頁」上追蹤此包裹。}other{Chrome 可在「新分頁」上追蹤這些包裹。}}</translation>
 <translation id="4903674399067644695">此資訊卡會建議您如何充分運用 Chrome 的功能。</translation>
 <translation id="49200511069271369">你的機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chrome 的方式。管理員可設定或限制特定功能。</translation>
 <translation id="5030102366287574140">Chrome 能確保系統安全，避免發生資料外洩或瀏覽不安全網站等問題。</translation>
@@ -114,12 +113,12 @@
 <translation id="5156818928311866442">開啟 Chrome 設定，將 Chrome 設定為預設瀏覽器。</translation>
 <translation id="5162467219239570114">Chrome 版本過舊。如果<ph name="BEGIN_LINK" />應用程式商店<ph name="END_LINK" />沒有提供任何更新，您的裝置可能已停止支援新版本的 Chrome。</translation>
 <translation id="5190139289262548459">你的機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chrome 的方式。</translation>
-<translation id="5278862365980079760">離開 Chrome 或切換到其他應用程式時，鎖定無痕分頁。</translation>
+<translation id="5278862365980079760">在你離開 Chrome 或切換至其他應用程式時鎖定無痕式分頁。</translation>
 <translation id="5389212809648216794">由於另一個應用程式正在使用相機，因此 Google Chrome 暫時無法使用</translation>
 <translation id="5395376160638294582">請確保您可隨時使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="5439191312780166229">此防護機制分析的網站資料比標準保護多，因此即使是 Google 不知道的網站，此防護機制亦能提供危險網站警告。你可選擇略過 Chrome 警告。</translation>
 <translation id="5460571915754665838">4. 選取 [Chrome]</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome 會在新分頁上追蹤這個包裹。}other{Chrome 會在新分頁上追蹤這些包裹。}}</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome 將會在「新分頁」上追蹤此包裹。}other{Chrome 將會在「新分頁」上追蹤這些包裹。}}</translation>
 <translation id="5492504007368565877">「Google 密碼管理工具」無法檢查您的密碼。</translation>
 <translation id="5527026824954593399">輕按「在 Chrome 中使用『Google 地圖』查看」。</translation>
 <translation id="5552137475244467770">Chrome 會定期將您的密碼與網上發佈的清單互相核對。核對時，您的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>
@@ -154,6 +153,7 @@
 
 只有知道密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼。請稍後再試。</translation>
+<translation id="6851982868877411675">在 iOS 中開啟 Chromium 設定，輕按 [預設瀏覽器應用程式]，然後選取 [Chrome]。</translation>
 <translation id="6916015246697034114">在 Chromium 中使用語音搜尋</translation>
 <translation id="6964931465519938134">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
 <translation id="6975725306479268850">選擇使用 Chrome 的自動填入功能</translation>

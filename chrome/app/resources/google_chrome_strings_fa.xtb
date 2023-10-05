@@ -42,7 +42,7 @@
 <translation id="1662146548738125461">‏درباره ChromeOS Flex</translation>
 <translation id="1674870198290878346">‏باز کردن پیوند در پنجره &amp;ناشناس Chrome</translation>
 <translation id="1682634494516646069">‏Google Chrome نمی‌تواند مسیر داده‌های خود را بخواند یا در آن بنویسد: <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="1698376642261615901">‏Google Chrome یک مرورگر وب است که برنامه‌های کاربردی و صفحات وب را در یک چشم به هم زدن اجرا و باز می‌کند. استفاده از آن سریع و آسان است و همیشه در دسترس است. با برنامه‌های حفاظت در برابر رمزگیری و بدافزار تعبیه شده در Google Chrome، وب را با امنیت بیشتر مرور کنید.</translation>
+<translation id="1698376642261615901">‏Google Chrome یک مرورگر وب است که برنامه‌های کاربردی و صفحات وب را در یک چشم به هم زدن اجرا و باز می‌کند. استفاده از آن سریع و آسان است و همیشه در دسترس است. با برنامه‌های حفاظت دربرابر رمزگیری و بدافزار تعبیه شده در Google Chrome، وب را با امنیت بیشتر مرور کنید.</translation>
 <translation id="1713301662689114961">{0,plural, =1{‏Chrome یک ساعت دیگر راه‌اندازی مجدد می‌شود}one{‏Chrome # ساعت دیگر راه‌اندازی مجدد می‌شود}other{‏Chrome # ساعت دیگر راه‌اندازی مجدد می‌شود}}</translation>
 <translation id="1734234790201236882">‏Chrome این گذرواژه را در حساب Google شما ذخیره می‌کند. لازم نیست آن را به خاطر بسپارید.</translation>
 <translation id="1786003790898721085">‏مطمئن شوید در <ph name="TARGET_DEVICE_NAME" /> به سیستم Chrome وارد شده باشید و سپس دوباره ارسال کنید.</translation>
@@ -157,6 +157,7 @@
 <translation id="3582972582564653026">‏Chrome را در همه دستگاه‌هایتان همگام‌سازی و شخصی‌سازی کنید</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید}=1{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. پنجره ناشناس بازگشایی نمی‌شود.}one{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. # پنجره ناشناس بازگشایی نمی‌شود.}other{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. # پنجره ناشناس بازگشایی نمی‌شود.}}</translation>
 <translation id="3622797965165704966">‏اکنون استفاده از Chrome با حساب Google شما و در رایانه‌های مشترک آسان‌تر شده است.</translation>
+<translation id="3635073343384702370">‏‫Chrome زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید</translation>
 <translation id="3673813398384385993">‏Chrome متوجه شده است که این «<ph name="EXTENSION_NAME" />» حاوی بدافزار است</translation>
 <translation id="3703994572283698466">‏ارائه ChromeOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی مثل <ph name="BEGIN_LINK_LINUX_OSS" />محیط توسعه نرم‌افزار Linux<ph name="END_LINK_LINUX_OSS" /> ممکن شده است.</translation>
 <translation id="3716540481907974026">‏نسخه ChromeOS Flex</translation>
@@ -195,7 +196,7 @@
 <translation id="430327780270213103">‏مجاز کردن افزونه برای نمایش درخواست‌های دسترسی در نوارابزار Chrome</translation>
 <translation id="4328355335528187361">‏Google Chrome نسخه Dev‏، (mDNS-In)</translation>
 <translation id="4334294535648607276">بارگیری کامل شد.</translation>
-<translation id="4335235004908507846">‏Chrome می‌تواند به ایمن ماندن شما در برابر نقض داده، افزونه‌های مخرب، و خطرهای دیگر کمک کند</translation>
+<translation id="4335235004908507846">‏Chrome می‌تواند به ایمن ماندن شما دربرابر نقض داده، افزونه‌های مخرب، و خطرهای دیگر کمک کند</translation>
 <translation id="4343195214584226067">‏<ph name="EXTENSION_NAME" /> به Chrome اضافه شده است</translation>
 <translation id="4384570495110188418">‏چون به سیستم وارد نشده‌اید، Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند</translation>
 <translation id="4393248995085527349">‏برای دریافت به‌روزرسانی‌های بعدی Google Chrome، باید macOS نسخه ۱۰.۱۵ یا بالاتر داشته باشید. این رایانه از macOS نسخه ۱۰.۱۳ استفاده می‌کند.</translation>
@@ -208,6 +209,7 @@
 <translation id="4571503333518166079">‏رفتن به تنظیمات اعلان Chrome</translation>
 <translation id="459622048091363950">‏وقتی Chrome دسترسی داشته باشد، وب‌سایت‌ها می‌توانند مجوز دسترسی درخواست کنند.</translation>
 <translation id="4600710005438004015">‏Chrome به جدیدترین نسخه به‌روزرسانی نشد، بنابراین قابلیت‌های جدید و رفع اشکال‌های امنیتی را ندارید.</translation>
+<translation id="4624065194742029982">‏حالت ناشناس Chrome</translation>
 <translation id="4627412468266359539">‏اختیاری: با ارسال خودکار داده‌های عیب‌یابی و داده‌های استفاده به Google، به بهبود ویژگی‌ها و عملکرد ChromeOS Flex کمک کنید.</translation>
 <translation id="4633000520311261472">‏برای ایمن‌تر کردن Chrome، برخی از افزونه‌هایی را که در<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست نشده‌اند و ممکن است بدون اطلاع شما اضافه شده باشند، غیرفعال کردیم.</translation>
 <translation id="4680828127924988555">لغو نصب</translation>
@@ -217,6 +219,7 @@
 <translation id="4754614261631455953">‏Google Chrome Canary (ورودی mDNS)</translation>
 <translation id="4771048833395599659">‏این فایل ممکن است خطرناک باشد، بنابراین Chrome آن را مسدود کرده است.</translation>
 <translation id="479167709087336770">‏از همان غلط‌یاب املا استفاده می‌کند که در جستجوی Google استفاده می‌شود. نوشتاری که در مرورگر تایپ کرده‌اید برای Google ارسال می‌شود. هروقت بخواهید می‌توانید این رفتار را در تنظیمات تغییر دهید.</translation>
+<translation id="4793679854893018356">‏ببینید Chrome چگونه ایمنی شما را حفظ می‌کند</translation>
 <translation id="4828579605166583682">‏Google Chrome می‌خواهد گذرواژه‌های موجود را جایگزین کند. برای مجاز کردن این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="4842397268809523050">‏ChromeOS Flex نتوانست داده‌هایتان را همگام‌سازی کند زیرا همگام‌سازی برای دامنه شما دردسترس نیست.</translation>
 <translation id="4873783916118289636">‏مرور کنترل‌های اصلی امنیت و حریم خصوصی در Chrome</translation>
@@ -263,6 +266,7 @@
 <translation id="5756509061973259733">‏درحال‌حاضر یک نمایه Chrome با این حساب در این دستگاه وجود دارد</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">‏Chrome راه‌اندازی نشد. دوباره امتحان کنید.</translation>
+<translation id="586971344380992563">‏‫Chrome درباره بارگیری‌ها و سایت‌های ناامن <ph name="BEGIN_LINK" />به شما هشدار می‌دهد<ph name="END_LINK" /></translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ورود به سیستم شبکه</translation>
 <translation id="5924017743176219022">درحال اتصال به اینترنت…</translation>
@@ -272,6 +276,7 @@
 <translation id="5941830788786076944">‏Google Chrome مرورگر پیش‌فرض شود</translation>
 <translation id="6003112304606738118">درحال بارگیری… <ph name="HOURS" /> ساعت باقی مانده است</translation>
 <translation id="6010556343189461180">‏برای دریافت به‌روزرسانی‌های بعدی Google Chrome، باید macOS نسخه ۱۰.۱۵ یا بالاتر داشته باشید. این رایانه از macOS نسخه ۱۰.۱۴ استفاده می‌کند.</translation>
+<translation id="6014316319780893079">‏با <ph name="BEGIN_LINK" />ابزارهای Chrome<ph name="END_LINK" />، می‌توانید به‌طور ایمن مرور کنید و کنترل را دردست بگیرید</translation>
 <translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
 <translation id="6025087594896450715">‏Google Chrome تا <ph name="REMAINING_TIME" /> دیگر بازراه‌اندازی خواهد شد</translation>
 <translation id="6040143037577758943">بستن</translation>
@@ -361,6 +366,7 @@
 <translation id="7651907282515937834">‏نشان‌واره Chrome Enterprise</translation>
 <translation id="76531479118467370">‏‫Chrome این بارگیری را مسدود کرد زیرا «مرور ایمن» خاموش است و نمی‌توان فایل را تأیید کرد</translation>
 <translation id="7655455401911432608">‏سابقه مرور شما، سابقه سایت‌هایی که بااستفاده از Chrome در این دستگاه از آن‌ها بازدید کرده‌اید.</translation>
+<translation id="769538538642757151">‏اگر موردی نیاز به بررسی داشته باشد، Chrome به شما اطلاع می‌دهد</translation>
 <translation id="7747138024166251722">نصب‌کننده نتوانست دایرکتوری موقت ایجاد کند. لطفاً فضای خالی دیسک و اجازه نصب نرم‌افزار را بررسی کنید.</translation>
 <translation id="7761834446675418963">‏برای باز کردن Chrome و شروع به مرور، روی نامتان کلیک کنید.</translation>
 <translation id="7777080907402804672">‏اگر تصویری توضیح مفیدی نداشته باشد، Chrome توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود. هروقت خواستید می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>
@@ -389,6 +395,7 @@
 <translation id="8129812357326543296">‏درباره &amp;Google Chrome</translation>
 <translation id="813913629614996137">درحال مقداردهی اولیه…</translation>
 <translation id="8255190535488645436">‏Google Chrome درحال استفاده از دوربین و میکروفون شما است.</translation>
+<translation id="8267953129876836456">‏Chrome چند توصیه ایمنی برای بررسی پیدا کرد</translation>
 <translation id="8270775718612349140">‏گواهینامه‌های تحت‌مدیریت Chrome</translation>
 <translation id="8286862437124483331">‏Google Chrome در حال تلاش برای نشان دادن گذرواژه‌هاست. برای اجازه به این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="8290100596633877290">‏اوه! Google Chrome با اشکال مواجه شده است. دوباره راه‌اندازی شود؟</translation>
@@ -403,6 +410,7 @@
 <translation id="8403038600646341038">‏نشان‌واره Chrome درون صفحه‌نمایش رایانه.</translation>
 <translation id="8416347857511542594">‏درباره شخصی‌سازی آگهی در Chrome بیشتر بدانید</translation>
 <translation id="8418845734693287262">‏ChromeOS نتوانست داده‌هایتان را همگام‌سازی کند، چون جزئیات ورود به حساب شما به‌روز نیست.</translation>
+<translation id="842386925677997438">‏ابزارهای ایمنی Chrome</translation>
 <translation id="8433638294851456451">‏برای ارسال شماره از اینجا به تلفن Android خود، در هر دو دستگاه به سیستم Chrome وارد شوید.</translation>
 <translation id="8451192282033883849">‏<ph name="MANAGER_NAME" /> حساب شما را مدیریت می‌کند. سرپرست شما می‌تواند این نمایه مرورگر Chrome و داده‌های آن را (مانند نشانک‌ها، سابقه، و گذرواژه‌ها) ببیند و ویرایش کند.</translation>
 <translation id="8496177819998570653">‏مدیر گذرواژه Google</translation>
@@ -443,6 +451,7 @@
 <translation id="9195993889682885387">‏Chrome می‌توانند علایقتان را براساس سابقه مرور چند هفته گذشته برآورد کند. این اطلاعات از دستگاهتان خارج نمی‌شود.</translation>
 <translation id="919706545465235479">‏به‌روزرسانی Chrome برای شروع همگام‌سازی</translation>
 <translation id="922152298093051471">‏سفارشی کردن Chrome</translation>
+<translation id="92460355979482493">‏وقتی روشن باشد، Chrome صفحه‌ها را پیش‌بارگیری می‌کند تا مرور و جستجو سریع‌تر شود.</translation>
 <translation id="93760716455950538">‏بازراه‌اندازی ChromeOS Flex</translation>
 <translation id="940313311831216333">‏برای دسترسی به چیزهای Chrome در همه دستگاه‌هایتان، به سیستم وارد شوید، سپس همگام‌سازی را روشن کنید.</translation>
 <translation id="943390475793766444">‏Chrome توصیه می‌کند این فایل را اسکن کنید زیرا ممکن است خطرناک باشد.</translation>

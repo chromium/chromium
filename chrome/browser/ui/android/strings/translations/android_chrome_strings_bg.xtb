@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1011749477052068769">Преместване тук</translation>
+<translation id="1014147525163127655">На това устройство няма ключове за достъп за <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Бързо търсене с гласа ви. За да редактирате този пряк път, докоснете и задръжте.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Изпраща се до <ph name="DEVICE_NAME" />...</translation>
@@ -33,6 +34,7 @@
 <translation id="1149401351239820326">Месец на валидност</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Преименуване</translation>
+<translation id="1174479719160874822">Chrome ще заявява мобилната версия на сайта, когато екранът е тесен</translation>
 <translation id="1177863135347784049">По избор</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Премахване</translation>
@@ -670,6 +672,7 @@
 <translation id="452750746583162491">Преглед на синхронизираните ви данни</translation>
 <translation id="4528638190900283934">За допълнителни функции влезте в профила си</translation>
 <translation id="4532845899244822526">Избиране на папка</translation>
+<translation id="4543131175509360848">Долен лист без налични ключове за достъп</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_COUNT_MANY" /> раздела, <ph name="TAB_COUNT_INCOGNITO" /> в режим „инкогнито“}}</translation>
 <translation id="4554077758708533499">Установена е връзка с USB кабел</translation>
 <translation id="4558311620361989323">Комбинации за уеб страници</translation>
@@ -944,6 +947,7 @@
 <translation id="5869522115854928033">Запазени пароли</translation>
 <translation id="587735546353481577">За да последвате даден сайт, посетете го, отворете менюто на Chrome и докоснете съответната опция.</translation>
 <translation id="5879072387416556377">Получавайте по-добри предложения</translation>
+<translation id="5899667542927581604">Долният лист без налични ключове за достъп бе затворен</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5919204609460789179">Актуализирайте <ph name="PRODUCT_NAME" />, за да стартира синхронизирането</translation>
 <translation id="5938820472109305350">Добавяне на <ph name="INTEREST" /></translation>
@@ -1413,6 +1417,7 @@
 <translation id="8127542551745560481">Редактиране на началната страница</translation>
 <translation id="8130309322784422030">Съхранената ви информация за вход може да не е актуална</translation>
 <translation id="813082847718468539">Преглед на информацията за сайта</translation>
+<translation id="8136852699834914183">Възпроизвеждането не е възможно за тази страница.</translation>
 <translation id="8137562778192957619">Няма да е нужно да помните тази парола. Тя ще бъде запазена в Google Мениджър на пароли.</translation>
 <translation id="8186512483418048923">Остават <ph name="FILES" /> файла</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -1586,6 +1591,7 @@
 <translation id="9063523880881406963">Изключване на функцията за заявяване на настолни сайтове</translation>
 <translation id="9065203028668620118">Редактиране</translation>
 <translation id="9065383040763568503">Съхранявани данни, които Chrome не счита за важни (напр. рядко посещавани сайтове или такива без запазени настройки)</translation>
+<translation id="9067341854474068781">Долният лист без налични ключове за достъп е отворен на пълната височина</translation>
 <translation id="906781307897697745">в(ъв) <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Няма непрочетени страници</translation>
 <translation id="9070377983101773829">Стартиране на гласово търсене</translation>

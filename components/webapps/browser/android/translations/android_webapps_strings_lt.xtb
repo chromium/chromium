@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1213425325105380833">Atkurkite žiniatinklio programas, kurias neseniai naudojote su šia paskyra susietuose įrenginiuose</translation>
+<translation id="2065911435109240297">Žiniatinklio programų atkūrimas</translation>
+<translation id="2111649875343992405">Peržiūrėkite, kurias žiniatinklio programas reikia atkurti</translation>
 <translation id="2139186145475833000">Pridėti prie pagr. ekrano</translation>
+<translation id="2172982519592313442">Peržiūrėti žiniatinklio programas</translation>
 <translation id="2478076885740497414">Įdiegti programą</translation>
 <translation id="3789841737615482174">Įdiegti</translation>
 <translation id="3910402514791813257">Nepavyko įdiegti</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Ekrano kopija. Palieskite, kad uždarytumėte.</translation>
 <translation id="6990079615885386641">Gauti programą iš „Google Play“ parduotuvės: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Vis dar pridedama ankstesnė svetainė</translation>
+<translation id="7672888405515738928">Pasirinkite žiniatinklio programas, kurias norite atkurti šiame įrenginyje. Čia rodomos programos yra pagrįstos jūsų „Chrome“ istorija.</translation>
+<translation id="8163051092261298861">Atkurti žiniatinklio programas</translation>
 <translation id="962979164594783469">Įdiegti šią programą</translation>
 </translationbundle>

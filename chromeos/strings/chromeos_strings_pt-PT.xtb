@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Alterar imagem de fundo diariamente</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1651925268237749928">Selecionou um álbum partilhado. Outras pessoas podem adicionar ou alterar fotos. A imagem de fundo pode usar fotos que não estão atualmente neste álbum.</translation>
+<translation id="1661865805917886535">Algumas informações da conta e do sistema podem ser enviadas para a Google. Usamos estas informações para ajudar a resolver problemas técnicos e melhorar os nossos serviços, sujeitas à nossa Política de Privacidade (<ph name="PRIVACYPOLICYURL" />) e Termos de Utilização (<ph name="TERMSOFSERVICEURL" />). Para pedir alterações de conteúdo, aceda à Ajuda Legal (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Parada – Sem tinta</translation>
 <translation id="1664796644829245314">Pré-visualizar <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN incorporada</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">O dispositivo está ligado.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Quer remover a página?}=1{Quer remover a página {PAGE_NUMBER}?}other{Quer remover a página {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Exclusivo do <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dados móveis</translation>
 <translation id="3156846309055100599">A digitalizar a página <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Portal cativo detetado</translation>

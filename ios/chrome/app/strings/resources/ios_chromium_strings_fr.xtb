@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Faire une recherche vocale dans Chromium.</translation>
 <translation id="1047130070405668746">Sélectionnez Chromium</translation>
 <translation id="1091252999271033193">Cela signifie que Chromium demandera la version pour mobile à chaque fois.</translation>
+<translation id="1171824629317156389">Ouvrez les paramètres Chromium dans iOS, appuyez sur "Appli du navigateur par défaut", puis sélectionnez Chromium.</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1257458525759135959">Pour enregistrer une image, appuyez sur "Paramètres" afin que Chromium puisse l'ajouter à vos photos</translation>
 <translation id="1289216811211435351">Passer à Chromium</translation>
@@ -94,7 +95,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 <translation id="4736424910885271643">Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chromium seront effacées de cet appareil</translation>
 <translation id="4790638144988730920">Continuez d'utiliser les données Chromium de votre compte Google.</translation>
 <translation id="4828317641996116749">Chromium n'est pas parvenu à vérifier tous les mots de passe. Réessayez plus tard.</translation>
-<translation id="4935539884203837577">Chromium peut détecter les numéros de suivi que vous saisissez et suivre vos colis sur la page "Nouvel onglet" tout en facilitant d'autres expériences d'achat sur Chromium.</translation>
 <translation id="4985291216379576555">Chromium ne parvient pas à rechercher les mises à jour, car vous êtes hors connexion</translation>
 <translation id="4996471330284142407">Soyez plus efficace grâce à Chromium, un navigateur simple, sécurisé et encore plus rapide.</translation>
 <translation id="4999538639245140991">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>

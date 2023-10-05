@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1213425325105380833">Palauta verkkosovellukset, joita olet käyttänyt äskettäin tähän tiliin yhdistetyillä laitteilla</translation>
+<translation id="2065911435109240297">Palauta verkkosovellukset</translation>
+<translation id="2111649875343992405">Tarkista palautettavat verkkosovellukset</translation>
 <translation id="2139186145475833000">Lisää aloitusnäyttöön</translation>
+<translation id="2172982519592313442">Tarkista verkkosovellukset</translation>
 <translation id="2478076885740497414">Asenna sovellus</translation>
 <translation id="3789841737615482174">Asenna</translation>
 <translation id="3910402514791813257">Asennus epäonnistui</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Kuvakaappaus. Sulje napauttamalla.</translation>
 <translation id="6990079615885386641">Hanki sovellus Google Play Kaupasta: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Edellisen sivuston lisääminen kesken</translation>
+<translation id="7672888405515738928">Valitse tälle laitteelle palautettavat verkkosovellukset. Täällä näkyvät sovellukset perustuvat Chrome-historiaasi.</translation>
+<translation id="8163051092261298861">Palauta verkkosovelluksia</translation>
 <translation id="962979164594783469">Asenna tämä sovellus</translation>
 </translationbundle>

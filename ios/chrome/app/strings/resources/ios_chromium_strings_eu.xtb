@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Bilatu Voice-rekin Chromium-en.</translation>
 <translation id="1047130070405668746">Hautatu Chromium.</translation>
 <translation id="1091252999271033193">Ondorioz, Chromium-ek beti eskatuko du mugikorretarako webgunea.</translation>
+<translation id="1171824629317156389">Ireki Chromium-en ezarpenak iOS-en, sakatu "Default Browser App" (arakatzaile-aplikazio lehenetsia) eta hautatu Chromium.</translation>
 <translation id="1185134272377778587">Chromium arakatzaileari buruz</translation>
 <translation id="1257458525759135959">Irudiak gordetzeko, sakatu Ezarpenak eta eman argazkiak gehitzeko baimena Chromium-i</translation>
 <translation id="1289216811211435351">Aldatu Chromium-era</translation>
@@ -43,6 +44,7 @@
 <translation id="2574528844022712255">Ikusi Chromium-eko laster-markak</translation>
 <translation id="2590893390871230428">Sinkronizatu Chromium-eko datuak</translation>
 <translation id="2618596336309823556">Gailuaren ezarpenetan, ireki "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" eta hautatu "Chromium"</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium-ek Fitxa berria orrian pakete honen jarraipena egiten lagunduko dizu.}other{Chromium-ek Fitxa berria orrian pakete hauen jarraipena egiten lagunduko dizu.}}</translation>
 <translation id="2650312721222849884">Chromium erabiltzen duzun gailu guztietan zure fitxak eskura izateko, aktibatu sinkronizazioa</translation>
 <translation id="2684230048001240293">Ezarri Chromium arakatzaile lehenetsi gisa fitxak, pasahitzak eta ordainketa-informazioa gailu guztietan sinkronizatzeko</translation>
 <translation id="2730884209570016437">Chromium-ek ezin du erabili kamera, beste aplikazio bat ari delako hura erabiltzen</translation>
@@ -52,6 +54,7 @@
 <translation id="2918709798697875261">Chromium-en saioa amaituta edukitzea eskatzen dizu zure erakundeak.</translation>
 <translation id="2942241131342758843">Erabili Chromium modu lehenetsian estekak irekitzeko, widgetetatik bilaketak egiteko eta beste aplikazio batzuetako pasahitzak automatikoki betetzeko</translation>
 <translation id="2977470724722393594">Eguneratuta dago Chromium</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium-ek Fitxa berria orrian pakete honen jarraipena egiten lagundu ahal dizu.}other{Chromium-ek Fitxa berria orrian pakete hauen jarraipena egiten lagundu ahal dizu.}}</translation>
 <translation id="3102849287235003384">Google-ko kontuko saioa webgune guztietan amaitzeko, <ph name="BEGIN_LINK" />amaitu Chromium-eko saioa<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Bilatu Voice-rekin Chromium-en</translation>
 <translation id="3228349498066165585">Chromium-eko datu batzuk ez dira gorde Google-ko kontuan oraindik.
@@ -92,7 +95,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chromium-eko dat
 <translation id="4736424910885271643">Kontua <ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen duenez, Chromium-eko datuak garbitu egingo dira gailu honetatik</translation>
 <translation id="4790638144988730920">Jarraitu Google-ko kontuan dauzkazun Chromium-eko datuak erabiltzen.</translation>
 <translation id="4828317641996116749">Chromium-ek ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro geroago.</translation>
-<translation id="4935539884203837577">Chromium-ek idazten dituzun jarraipen-zenbakiak hauteman ditzake, eta "Fitxa berria" orrian paketeen jarraipena egin, Chromium-en beste erosketa-zerbitzu batzuk errazten dituen bitartean.</translation>
 <translation id="4985291216379576555">Interneteko konexiorik gabe, Chromium-ek ezin ditu bilatu eguneratzeak</translation>
 <translation id="4996471330284142407">Egin gauza gehiago Chromium-ekin: sinplea, segurua eta inoiz baino bizkorragoa da.</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> domeinuak kudeatutako kontu baten saioa amaituko duzunez, Chromium-en dituzun datuak ezabatu egingo dira gailu honetatik. Hala ere, datu horiek Google-ko kontuan egoten jarraituko dute.</translation>
@@ -113,6 +115,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chromium-eko dat
 <translation id="5521125884468363740">Chromium erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa eta aktibatu sinkronizazioa</translation>
 <translation id="5522297504975449419">Chromium-en eginbide batzuk eskaintzeari utziko diogu.</translation>
 <translation id="5571094606370987472">Chromium-en azken fitxak irekitzen ditu.</translation>
+<translation id="5623083843656850677">Blokeatu ezkutuko moduko fitxak Chromium-etik irtetean edo beste aplikazio batera aldatzean.</translation>
 <translation id="5688047395118852662">Txartel horretan, Chromium-i ahalik eta etekin handiena ateratzeko iradokizunak agertzen dira.</translation>
 <translation id="5700709190537129682">Chromium-ek ezin ditu egiaztatu pasahitzak</translation>
 <translation id="5777187867430702742">Chromium-eko orri bat</translation>

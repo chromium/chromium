@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">ሲፒዩ</translation>
 <translation id="3124039320086536031">መሣሪያ ተገናኝቷል።</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ገፅ ይወገድ?}=1{ገፅ {PAGE_NUMBER} ይወገድ?}one{ገፅ {PAGE_NUMBER} ይወገድ?}other{ገፅ {PAGE_NUMBER} ይወገድ?}}</translation>
+<translation id="3146655726035122603">ለ<ph name="PRODUCT_NAME" /> የተወሰነ</translation>
 <translation id="315116470104423982">የተንቀሳቃሽ ስልክ ውሂብ</translation>
 <translation id="3156846309055100599">ገፅ <ph name="PAGE_NUMBER" />ን በመቃኘት ላይ...</translation>
 <translation id="315738237743207937">ተያዥ መግቢያ ተገኝቷል</translation>

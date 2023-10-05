@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Vyhľadávajte hlasom v prehliadači Chromium.</translation>
 <translation id="1047130070405668746">Vyberte Chromium</translation>
 <translation id="1091252999271033193">Znamená to, že Chromium bude zakaždým žiadať o mobilný web.</translation>
+<translation id="1171824629317156389">V zariadení so systémom iOS otvorte nastavenia prehliadača Chromium, klepnite na Predvolený prehliadač a vyberte Chromium.</translation>
 <translation id="1185134272377778587">Informácie o prehliadači Chromium</translation>
 <translation id="1257458525759135959">Ak chcete ukladať obrázky, klepnutím na Nastavenia povoľte prehliadaču Chromium pridávať do vašich fotiek</translation>
 <translation id="1289216811211435351">Prejdite na Chromium</translation>
@@ -94,7 +95,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="4736424910885271643">Váš účet spravuje <ph name="HOSTED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia vymazané</translation>
 <translation id="4790638144988730920">Naďalej používajte údaje prehliadača Chromium vo svojom účte Google.</translation>
 <translation id="4828317641996116749">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to neskôr.</translation>
-<translation id="4935539884203837577">Chromium dokáže rozpoznať čísla zásielok, ktoré zadáte, a sledovať príslušné zásielky na stránke na novej karte, pričom vám zároveň môže pomáhať pri iných nákupoch, ktoré v ňom uskutočňujete.</translation>
 <translation id="4985291216379576555">Offline, Chromium nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="4996471330284142407">Zvýšte svoju výkonnosť pomocou jednoduchého a zabezpečeného prehliadača Chromium, ktorý je rýchlejší než kedykoľvek predtým.</translation>
 <translation id="4999538639245140991">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>

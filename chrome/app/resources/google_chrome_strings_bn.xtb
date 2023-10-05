@@ -159,6 +159,7 @@
 <translation id="3582972582564653026">আপনার সব ডিভাইস জুড়ে Chrome সিঙ্ক করুন এবং নিজের মতো সাজিয়ে নিন</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন}=1{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার ছদ্মবেশী উইন্ডো আবার খুলবে না।}one{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}other{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}}</translation>
 <translation id="3622797965165704966">এখন আপনার Google অ্যাকাউন্ট ও শেয়ার করা কম্পিউটারগুলিতে Chrome ব্যবহার করা আরো সহজ৷</translation>
+<translation id="3635073343384702370">আপনি পাসওয়ার্ড সেভ করলে Chrome তা চেক করতে পারবে</translation>
 <translation id="3673813398384385993">Chrome "<ph name="EXTENSION_NAME" />"-এ ম্যালওয়্যার আছে বলে খুঁজে পেয়েছে</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ডেভেলপমেন্ট এনভায়রনমেন্ট<ph name="END_LINK_LINUX_OSS" />-এর ক্ষেত্রে যেমন করা হয়েছে, তেমনভাবে অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromeOS তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="3716540481907974026">ChromeOS Flex ভার্সন</translation>
@@ -210,6 +211,7 @@
 <translation id="4571503333518166079">Chrome বিজ্ঞপ্তি সেটিংসে যান</translation>
 <translation id="459622048091363950">Chrome অ্যাক্সেস পেলেই, ওয়েবসাইটগুলি আপনাকে অ্যাক্সেসের অনুরোধ করতে পারবে।</translation>
 <translation id="4600710005438004015">Chrom লেটেস্ট ভার্সনে আপডেট করা যাচ্ছে না, তাই আপনি নতুন বৈশিষ্ট্য এবং সুরক্ষা সমাধানগুলি পাচ্ছেন না।</translation>
+<translation id="4624065194742029982">Chrome-এর 'ছদ্মবেশী' মোড</translation>
 <translation id="4627412468266359539">ঐচ্ছিক: Google-কে অটোমেটিক ডায়াগনস্টিক ও ব্যবহারের ডেটা পাঠিয়ে ChromeOS Flex-এর ফিচার ও পারফর্ম্যান্সের উন্নতিতে সাহায্য করুন।</translation>
 <translation id="4633000520311261472">Chrome কে আরও নিরাপদ করতে, আমরা কিছু এক্সটেনশান অক্ষম করেছি যা <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> এ তালিকাবদ্ধ করা হয়নি এবং হয়ত আপনাকে না জানিয়ে যোগ করা হয়েছে৷</translation>
 <translation id="4680828127924988555">ইনস্টলেশন বাতিল করুন</translation>
@@ -219,6 +221,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">এই ফাইলটি বিপজ্জনক হতে পারে, তাই Chrome এটিকে অবরুদ্ধ করেছে।</translation>
 <translation id="479167709087336770">এটি Google সার্চ-এ যে বানান পরীক্ষা করার টুল ব্যবহার করা হয় সেটিই ব্যবহার করে। আপনি ব্রাউজারে যে টেক্সট লেখেন, সেটি Google-এ পাঠানো হয়। সেটিংস থেকে আপনি এটি পরিবর্তন করতে পারেন।</translation>
+<translation id="4793679854893018356">Chrome কীভাবে আপনাকে নিরাপদে রাখে তা জানুন</translation>
 <translation id="4828579605166583682">Google Chrome, বর্তমানে থাকা পাসওয়ার্ড পরিবর্তনের চেষ্টা করছে। এটি করার অনুমতি দিতে, আপনার Windows-এর পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="4842397268809523050">আপনার ডোমেনে সিঙ্ক করার সুবিধা উপলভ্য না থাকার জন্য ChromeOS Flex আপনার ডেটা সিঙ্ক পারেনি।</translation>
 <translation id="4873783916118289636">Chrome-এ মূল গোপনীয়তা এবং নিরাপত্তা নিয়ন্ত্রণ পর্যালোচনা করুন</translation>
@@ -267,6 +270,7 @@
 <translation id="5756509061973259733">এই ডিভাইসে এই অ্যাকাউন্টের সাথে Chrome প্রোফাইল আগে থেকেই আছে</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome লঞ্চ করা যায়নি। আবার চেষ্টা করুন।</translation>
+<translation id="586971344380992563">নিরাপদ নয় এমন সাইট ও ডাউনলোড সম্পর্কে <ph name="BEGIN_LINK" />Chrome আপনাকে সতর্ক করে দেয়<ph name="END_LINK" /></translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - নেটওয়ার্ক সাইন-ইন</translation>
 <translation id="5924017743176219022">ইন্টারনেটের সাথে কানেক্ট করা হচ্ছে...</translation>
@@ -276,6 +280,7 @@
 <translation id="5941830788786076944">Google Chrome-কে ডিফল্ট ব্রাউজার করুন</translation>
 <translation id="6003112304606738118">ডাউনলোড হচ্ছে... <ph name="HOURS" /> ঘণ্টা বাকি আছে</translation>
 <translation id="6010556343189461180">ভবিষ্যতে Google Chrome আপডেট পেতে হলে, আপনার macOS 10.15 বা এর পরবর্তী ভার্সন থাকতে হবে। এই কম্পিউটারে macOS 10.14 ভার্সন ব্যবহার করা হচ্ছে।</translation>
+<translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-এর টুল<ph name="END_LINK" /> দিয়ে আপনি নিরাপদে ব্রাউজ ও কন্ট্রোল করতে পারবেন</translation>
 <translation id="6022659036123304283">Chrome-কে আপনার করে নিন</translation>
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" />-এর মধ্যে রিস্টার্ট হবে</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
@@ -407,6 +412,7 @@
 <translation id="8403038600646341038">কম্পিউটার স্ক্রিনের মধ্যে Chrome লোগো।</translation>
 <translation id="8416347857511542594">Chrome-এ পছন্দ অনুযায়ী বিজ্ঞাপন বেছে নেওয়া সম্পর্কে আরও জানুন</translation>
 <translation id="8418845734693287262">আপনার অ্যাকাউন্টের সাইন-ইনের বিবরণ পুরানো হয়ে যাওয়ার কারণে ChromeOS আপনার ডেটা সিঙ্ক করতে পারেনি।</translation>
+<translation id="842386925677997438">Chrome-এর নিরাপত্তা টুল</translation>
 <translation id="8433638294851456451">এখান থেকে আপনার Android ফোনে একটি নম্বর পাঠাতে, উভয় ডিভাইসের Chrome-এ সাইন-ইন করুন।</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> আপনার অ্যাকাউন্ট ম্যানেজ করে। আপনার অ্যাডমিনিস্ট্রেটর এই Chrome ব্রাউজার প্রোফাইল ও বুকমার্ক, ইতিহাস ও পাসওয়ার্ডের মতো ডেটা দেখতে এবং ম্যানেজ করতে পারবেন।</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>

@@ -69,7 +69,6 @@ Aspectes que cal tenir en compte:
 <translation id="3345341804167540816">Utilitzeu Chrome a tot arreu</translation>
 <translation id="3472587960215700950">Chrome utilitza Google Maps per oferir-te indicacions i informació local sobre les adreces detectades.</translation>
 <translation id="3503014945441706099">Obtén també Navegació segura millorada per a aquest perfil de Chrome</translation>
-<translation id="3506309791702511623">Chrome pot detectar els números de seguiment que introdueixes i fer un seguiment dels paquets a la pàgina Pestanya nova, alhora que contribueix a altres experiències de compra des de Google.</translation>
 <translation id="3522659714780527202">Per veure les pestanyes des de tots els llocs on facis servir Chrome, activa la sincronització</translation>
 <translation id="3533694711092285624">No hi ha cap contrasenya desada. Chrome pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="3594076341410558780">Amaga "Treu el màxim profit de Chrome"</translation>
@@ -154,6 +153,7 @@ Aspectes que cal tenir en compte:
 
 Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
+<translation id="6851982868877411675">Obre la configuració de Chrome a iOS, toca Aplicació de navegació predeterminada i selecciona Chrome.</translation>
 <translation id="6916015246697034114">Cerca amb la veu a Chrome</translation>
 <translation id="6964931465519938134">Ara pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="6975725306479268850">Tria Chrome a Emplenament automàtic</translation>

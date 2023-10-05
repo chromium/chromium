@@ -389,6 +389,9 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
 <translation id="1372618949173323717">JavaScript uitzetten</translation>
 <translation id="1376119291123231789">Geavanceerde batterijoplaadmodus aanzetten</translation>
 <translation id="1376765488559847650">CloudUpload</translation>
+<translation id="1379689277107868399">Als je dit beleid instelt op DoNotPrompt of niet instelt, vraagt <ph name="PRODUCT_NAME" /> de gebruiker niet automatisch om opnieuw te verifiëren voor de browser.
+
+Als je dit beleid instelt op PromptInTab, wordt na het verlopen van de verificatie van de gebruiker meteen een nieuw tabblad met de inlogpagina van Google geopend. Dit gebeurt alleen als je <ph name="CHROME_SYNC_NAME" /> gebruikt.</translation>
 <translation id="1384459581748403878">Referentie: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Dit beleid zorgt ervoor dat elke URL die overeenkomt met een of meer patronen uit het beleid (met de filterindeling <ph name="URL_BLOCKLIST_POLICY_NAME" />), nooit door de browser wordt verwijderd.
       Dit is van toepassing op geheugenbelasting en weggooien in de modus voor hoge efficiëntie.
@@ -3488,6 +3491,7 @@ Dit beleid is een tijdelijke oplossing en wordt na bepaalde tijd verwijderd (de 
 <translation id="3977304360459208438">Gebruik de standaardinstellingen voor 3DES cipher suites in TLS</translation>
 <translation id="3979738908158213640">URL's die toegang krijgen om apparaatattesten uit te voeren tijdens SAML-verificatie</translation>
 <translation id="3982322576186033243">Onveilige hashes niet toestaan in TLS-handshakes</translation>
+<translation id="3982465141749620677">Vragen om opnieuw te verifiëren in een tabblad</translation>
 <translation id="3983162212222338509">De DNS-omzetting van het systeem kan binnen of buiten het netwerkproces worden uitgevoerd, of gedeeltelijk binnen en gedeeltelijk buiten het netwerkproces, afhankelijk van de systeemconfiguratie en functievlaggen.</translation>
 <translation id="3986700049001404598">Gebruikers toestaan processen te beëindigen met taakbeheer van Chrome</translation>
 <translation id="398884292557092447">Als je het beleid instelt op True of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor creditcards in de UI.
@@ -6386,6 +6390,7 @@ Als je ervoor kiest het volgende te gebruiken:
       Als je het beleid niet instelt, kunnen gebruikers de proxyinstellingen kiezen.
 
       Opmerking: Voor gedetailleerde voorbeelden ga je naar The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
+<translation id="6559643481486165125">Niet vragen om opnieuw te verifiëren</translation>
 <translation id="656130159911161669">ChromeOS-updates negeren de versie die is gedefinieerd in het manifest van de kiosk-app</translation>
 <translation id="6561396069801924653">Toegankelijkheidsopties tonen in het systeemvakmenu</translation>
 <translation id="6562889469672829421">De tijdsduur zonder gebruikersinvoer waarna het scherm wordt gedimd (in milliseconden)</translation>
@@ -8948,6 +8953,7 @@ Als je het beleid niet instelt, worden er geen opgeslagen wachtwoorden geïmport
 <translation id="8744844164152340112">Bepaalt het thema dat wordt gebruikt om de UI weer te geven tijdens OOBE en in sessies (donker/licht/automatisch).
       De automatische modus schakelt automatisch tussen het donkere en lichte thema bij zonsopgang en -ondergang.
       Dit beleid moet worden aanbevolen, om gebruikers de mogelijkheid te geven het thema te wijzigen in de systeeminstellingen.</translation>
+<translation id="8744997936011793680">Gebruikers vragen opnieuw te verifiëren voor het profiel</translation>
 <translation id="8749536858950505376">Als het beleid is ingesteld op True, blijft de grote cursor aan. Als het beleid is ingesteld op False, blijft de grote cursor uit.
 
       Als je dit beleid instelt, kunnen gebruikers de functie niet wijzigen. Als je dit beleid niet instelt, staat de grote cursor in eerste instantie uit, maar kunnen gebruikers deze op elk moment aanzetten.</translation>

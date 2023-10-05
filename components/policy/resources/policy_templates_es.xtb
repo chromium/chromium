@@ -392,6 +392,9 @@ Si se inhabilita la política o se deja sin definir, la configuración de restau
 <translation id="1372618949173323717">Inhabilitar JavaScript</translation>
 <translation id="1376119291123231789">Habilita el modo Avanzado de carga de la batería</translation>
 <translation id="1376765488559847650">CloudUpload</translation>
+<translation id="1379689277107868399">Si a esta política se le asigna el valor "DoNotPrompt" o no se define, <ph name="PRODUCT_NAME" /> no solicitará automáticamente al usuario que se vuelva a autenticar en el navegador.
+
+Si se le asigna el valor "PromptInTab", cuando la autenticación del usuario caduque, se abrirá inmediatamente una nueva pestaña con la página de inicio de sesión de Google. Esto solo ocurre si se usa <ph name="CHROME_SYNC_NAME" />.</translation>
 <translation id="1384459581748403878">Referencia: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Esta política impide que el navegador descarte cualquier URL que coincida con uno o varios de los patrones que se especifiquen (usando el formato de filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />).
       Esto se aplica al descarte de la presión de memoria y del modo Alta eficiencia.
@@ -3505,6 +3508,7 @@ Esta política es una solución temporal y se eliminará gradualmente (está pre
 <translation id="3977304360459208438">Utilizar el valor predeterminado para los paquetes de cifrado 3DES en TLS</translation>
 <translation id="3979738908158213640">Direcciones URL a las que se otorgará acceso para realizar la atestación del dispositivo durante la autenticación de SAML</translation>
 <translation id="3982322576186033243">No permitir hashes no seguros en handshakes de TLS</translation>
+<translation id="3982465141749620677">Solicitar reautenticación en una pestaña</translation>
 <translation id="3983162212222338509">La resolución de DNS del sistema puede ejecutarse dentro o fuera del proceso de red, o bien parcialmente dentro y fuera de él, en función de la configuración del sistema y las marcas de funciones.</translation>
 <translation id="3986700049001404598">Permitir que los usuarios finalicen procesos con el administrador de tareas de Chrome</translation>
 <translation id="398884292557092447">Si se asigna el valor "True" a esta política o no se le asigna ninguno, los usuarios podrán controlar las sugerencias de Autocompletar para la información de tarjetas de crédito en la interfaz.
@@ -6448,6 +6452,7 @@ Si no se establece esta política, se aplicará el intervalo predeterminado de 1
       Si no se asigna ningún valor a esta política, los usuarios pueden elegir los ajustes del proxy.
 
       Nota: Puedes consultar ejemplos detallados en The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
+<translation id="6559643481486165125">No solicitar reautenticación</translation>
 <translation id="656130159911161669">Las actualizaciones de ChromeOS ignoran la versión definida en el manifiesto de la aplicación de kiosco</translation>
 <translation id="6561396069801924653">Mostrar opciones de accesibilidad en el menú de la bandeja del sistema</translation>
 <translation id="6562889469672829421">El tiempo que debe transcurrir (en milisegundos) sin que el usuario realice ninguna acción antes de que se atenúe la pantalla</translation>
@@ -9035,6 +9040,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 <translation id="8744844164152340112">Controla el tema utilizado para renderizar la interfaz de usuario la primera vez que se usa el dispositivo y durante la sesión (oscuro/claro/automático).
       El modo automático cambia automáticamente entre los temas oscuro y claro al amanecer y al atardecer.
       Esta política debería recomendarse para ofrecer a los usuarios la opción de cambiar el tema en la configuración del sistema.</translation>
+<translation id="8744997936011793680">Solicitar a los usuarios que vuelvan a autenticarse en el perfil</translation>
 <translation id="8749536858950505376">Si se le asigna el valor "true" a esta política, el cursor grande permanece activado. Si se le asigna el valor "false", el cursor grande permanece desactivado.
 
       Si se configura esta política, los usuarios no pueden cambiar la función. Si no se le asigna ningún valor, el cursor grande está desactivado en un principio, pero los usuarios pueden activarlo en cualquier momento.</translation>

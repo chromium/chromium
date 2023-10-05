@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
+<translation id="1213425325105380833">Bu hisobga ulangan qurilmalarda yaqinda foydalangan veb-ilovalarni tiklang</translation>
+<translation id="2065911435109240297">Veb-ilovalarni tiklash</translation>
+<translation id="2111649875343992405">Qaysi veb-ilovalar tiklanishini tekshiring</translation>
 <translation id="2139186145475833000">Bosh ekranga qo‘shish</translation>
+<translation id="2172982519592313442">Veb-ilovalarni tekshirish</translation>
 <translation id="2478076885740497414">Ilovani o‘rnatish</translation>
 <translation id="3789841737615482174">O‘rnatish</translation>
 <translation id="3910402514791813257">Oʻrnatilmadi.</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Skrinshot. Bosib yopish.</translation>
 <translation id="6990079615885386641">Google Play do‘konidagi ilova: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Avvalgi sayt qo‘shilmoqda</translation>
+<translation id="7672888405515738928">Bu qurilmada tiklanadigan veb-ilovalarni tanlang. Bu yerdagi ilovalar Chrome tarixiga asoslangan.</translation>
+<translation id="8163051092261298861">Veb-ilovalarni tiklash</translation>
 <translation id="962979164594783469">Bu ilovani oʻrnatish</translation>
 </translationbundle>

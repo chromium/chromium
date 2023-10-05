@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="1011749477052068769">Flyt hertil</translation>
+<translation id="1014147525163127655">Der er ingen adgangsnøgler til <ph name="ORIGIN" /> på denne enhed</translation>
 <translation id="1016498331642356377">Søg hurtigt med din stemme. Hold fingeren på genvejen for at redigere.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Sender til <ph name="DEVICE_NAME" />...</translation>
@@ -33,6 +34,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1149401351239820326">Udløbsmåned</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> åbnes i Chrome. Når du fortsætter, accepterer du <ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" /> og de <ph name="BEGIN_LINK2" />yderligere servicevilkår for Google Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Omdøb</translation>
+<translation id="1174479719160874822">Chrome anmoder om mobilwebsitet, når skærmen er smal</translation>
 <translation id="1177863135347784049">Tilpasset</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Fjern</translation>
@@ -670,6 +672,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="452750746583162491">Gennemgå dine synkroniserede data</translation>
 <translation id="4528638190900283934">Log ind for at få adgang til yderligere funktioner</translation>
 <translation id="4532845899244822526">Vælg mappe</translation>
+<translation id="4543131175509360848">Feltet "Ingen tilgængelige adgangsnøgler"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}one{<ph name="TAB_COUNT_MANY" /> fane og <ph name="TAB_COUNT_INCOGNITO" /> inkognitofane}other{<ph name="TAB_COUNT_MANY" /> faner og <ph name="TAB_COUNT_INCOGNITO" /> inkognitofaner}}</translation>
 <translation id="4554077758708533499">Tilsluttet via USB-kabel</translation>
 <translation id="4558311620361989323">Genveje på websider</translation>
@@ -944,6 +947,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5869522115854928033">Gemte adgangskoder</translation>
 <translation id="587735546353481577">Følg et website ved at gå til websitet, åbne Chrome-menuen og trykke på Følg.</translation>
 <translation id="5879072387416556377">Få bedre forslag</translation>
+<translation id="5899667542927581604">Feltet "Ingen tilgængelige adgangsnøgler" blev lukket</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5919204609460789179">Opdater <ph name="PRODUCT_NAME" /> for at starte synkroniseringen</translation>
 <translation id="5938820472109305350">Tilføj <ph name="INTEREST" /></translation>
@@ -1413,6 +1417,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8127542551745560481">Rediger startside</translation>
 <translation id="8130309322784422030">Dine gemte loginoplysninger kan være forældede</translation>
 <translation id="813082847718468539">Se websiteoplysninger</translation>
+<translation id="8136852699834914183">Afspilning er ikke tilgængelig for denne side.</translation>
 <translation id="8137562778192957619">Du behøver ikke at huske denne adgangskode. Den gemmes i Google Adgangskodeadministrator.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> filer tilbage</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -1586,6 +1591,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="9063523880881406963">Slå anmodning om computerversionen af websitet fra</translation>
 <translation id="9065203028668620118">Rediger</translation>
 <translation id="9065383040763568503">Gemte data, som Chrome ikke mener er vigtige (f.eks. websites uden gemte indstillinger, eller som du ikke besøger så ofte)</translation>
+<translation id="9067341854474068781">Feltet "Ingen tilgængelige adgangsnøgler" er åbnet i fuld højde</translation>
 <translation id="906781307897697745">i <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Der er ingen ulæste sider</translation>
 <translation id="9070377983101773829">Start talesøgning</translation>

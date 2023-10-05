@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1213425325105380833">Restore web apps you have recently used on devices connected to this account</translation>
+<translation id="2065911435109240297">Restore your web apps</translation>
+<translation id="2111649875343992405">Review which web apps to restore</translation>
 <translation id="2139186145475833000">Add to Home screen</translation>
+<translation id="2172982519592313442">Review web apps</translation>
 <translation id="2478076885740497414">Install app</translation>
 <translation id="3789841737615482174">Install</translation>
 <translation id="3910402514791813257">Failed to install</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Screenshot. Tap to close.</translation>
 <translation id="6990079615885386641">Get the app from the Google Play Store: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Still adding previous site</translation>
+<translation id="7672888405515738928">Choose web apps to restore on this device. Apps shown here are based on your Chrome history.</translation>
+<translation id="8163051092261298861">Restore web apps</translation>
 <translation id="962979164594783469">Install this app</translation>
 </translationbundle>

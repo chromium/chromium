@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Hangalapú keresés a Chromiumban.</translation>
 <translation id="1047130070405668746">Válassza ki a Chromium böngészőt.</translation>
 <translation id="1091252999271033193">Ez azt jelenti, hogy a Chromium mindig a mobilwebhelyet kéri majd.</translation>
+<translation id="1171824629317156389">Nyissa meg a Chromium beállításait iOS rendszeren, majd koppintson az „Alapértelmezett böngészőalkalmazás” elemre, és válassza ki a Chromiumot.</translation>
 <translation id="1185134272377778587">A Chromium névjegye</translation>
 <translation id="1257458525759135959">A képek mentéséhez koppintson a Beállítások lehetőségre, hogy a Chromium hozzáadhassa őket a fotóihoz.</translation>
 <translation id="1289216811211435351">Váltás Chromiumra</translation>
@@ -94,7 +95,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="4736424910885271643">Fiókját a(z) <ph name="HOSTED_DOMAIN" /> kezeli, ezért Chromium-adatai törölve lesznek erről az eszközről.</translation>
 <translation id="4790638144988730920">Továbbra is használhatja a Google-fiókjában lévő Chromium-adatokat.</translation>
 <translation id="4828317641996116749">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra később.</translation>
-<translation id="4935539884203837577">A Chromium képes észlelni az Ön által megadott azonosítószámokat, és nyomon tudja követni a csomagjait az Új lap oldalon, miközben segít a Chromium más vásárlási élményeiben is.</translation>
 <translation id="4985291216379576555">Offline állapotban van, ezért a Chromium nem tud frissítéseket keresni</translation>
 <translation id="4996471330284142407">Még több mindent elvégezhet az egyszerű, biztonságos és minden eddiginél gyorsabb Chromium segítségével.</translation>
 <translation id="4999538639245140991">Mivel kijelentkezik a(z) <ph name="SIGNOUT_MANAGED_DOMAIN" /> által felügyelt fiókból, törli az eszközön található Chromium-adatokat. Ezek az adatok Google-fiókjában továbbra is megmaradnak.</translation>
@@ -140,6 +140,7 @@ Megjegyzések:
 1. Nyissa meg a Beállításokat.
 2. Koppintson az Alapértelmezett böngésző lehetőségre.
 3. Válassza ki a Chromium böngészőt.</translation>
+<translation id="6197255575340902638">Ha elrejti a(z) „<ph name="MODULE_NAME" />” modult, a Chromium a továbbiakban nem követi automatikusan a jövőbeli csomagokat, és törli az Ön összes korábbi csomagkövetési adatát.</translation>
 <translation id="6247557882553405851">Google Jelszókezelő</translation>
 <translation id="6268381023930128611">Kijelentkezik a Chromiumból?</translation>
 <translation id="6324041800010509197">A laprács megnyitása Chromiumban</translation>

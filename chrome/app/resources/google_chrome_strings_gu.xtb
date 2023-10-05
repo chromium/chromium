@@ -213,6 +213,7 @@
 <translation id="4571503333518166079">Chromeની નોટિફિકેશનની સેટિંગ પર જાઓ</translation>
 <translation id="459622048091363950">એકવાર Chromeને ઍક્સેસ મળે, તે પછી વેબસાઇટ તમારી પાસે ઍક્સેસ માગી શકશે.</translation>
 <translation id="4600710005438004015">Chromeનું નવું વર્ઝન અપડેટ ન થવાથી, તમે નવી સુવિધાઓ અને સુરક્ષાના સુધારા ચૂકી રહ્યા છો.</translation>
+<translation id="4624065194742029982">Chrome છૂપો મોડ</translation>
 <translation id="4627412468266359539">વૈકલ્પિક: Googleને ડાયગ્નોસ્ટિક અને વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને ChromeOS Flexની સુવિધાઓ અને કાર્યપ્રદર્શનને બહેતર બનાવવામાં સહાય કરો.</translation>
 <translation id="4633000520311261472">Chrome ને સુરક્ષિત બનાવવા માટે, અમે <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યાં હોઈ શકે છે તેવા કેટલાક એક્સ્ટેન્શન્સને અક્ષમ કર્યા છે.</translation>
 <translation id="4680828127924988555">ઇન્સ્ટૉલેશનની પ્રક્રિયા રદ કરો</translation>
@@ -222,6 +223,7 @@
 <translation id="4754614261631455953">Google Chrome કૅનેરી (mDNS-In)</translation>
 <translation id="4771048833395599659">આ ફાઇલ જોખમી હોઈ શકે છે, તેથી Chrome એ તેને અવરોધિત કરેલ છે.</translation>
 <translation id="479167709087336770">આ પણ Google Searchમાં જે જોડણી તપાસનારનો ઉપયોગ થાય છે તેનો જ ઉપયોગ કરે છે. તમે બ્રાઉઝરમાં ટાઇપ કરો છો તે ટેક્સ્ટ Googleને મોકલવામાં આવે છે. તમે સેટિંગમાં આ વર્તણૂકને હંમેશાં બદલી શકો છો.</translation>
+<translation id="4793679854893018356">Chromeની તમને સલામત રાખવાની રીત વિશે જાણો</translation>
 <translation id="4828579605166583682">Google Chrome વર્તમાન પાસવર્ડ બદલવાનો પ્રયાસ કરી રહ્યું છે. આને મંજૂરી આપવા માટે Windowsનો પાસવર્ડ ટાઇપ કરો.</translation>
 <translation id="4842397268809523050">ChromeOS Flex તમારા ડેટાને સિંક કરી શક્યું નથી, કારણ કે તમારા ડોમેન માટે સિંક કરવાની સુવિધા ઉપલબ્ધ નથી.</translation>
 <translation id="4873783916118289636">Chromeમાં પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોનો રિવ્યૂ કરો</translation>
@@ -272,6 +274,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="5756509061973259733">આ એકાઉન્ટ સાથેની Chrome પ્રોફાઇલ પહેલેથી જ આ ડિવાઇસ પર અસ્તિત્વમાં છે</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome લૉન્ચ કરી શકાયું નથી. ફરી પ્રયાસ કરો.</translation>
+<translation id="586971344380992563">અસુરક્ષિત સાઇટ અને ડાઉનલોડ વિશે <ph name="BEGIN_LINK" />Chrome તમને ચેતવણી આપે છે<ph name="END_LINK" /></translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન</translation>
 <translation id="5924017743176219022">ઇન્ટરનેટ સાથે કનેક્ટ કરી રહ્યાં છીએ...</translation>
@@ -281,6 +284,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="5941830788786076944">Google Chrome ને ડિફૉલ્ટ બ્રાઉઝર બનાવો</translation>
 <translation id="6003112304606738118">ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="HOURS" /> કલાક બાકી છે</translation>
 <translation id="6010556343189461180">Google Chromeની ભાવિ અપડેટ મેળવવા માટે, તમારે macOS 10.15 કે તે પછીના વર્ઝન પર અપડેટ કરવું જરૂરી રહેશે. આ કમ્પ્યુટર macOS 10.14નો ઉપયોગ કરી રહ્યું છે.</translation>
+<translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chromeના ટૂલ<ph name="END_LINK" /> વડે, તમે સલામત રીતે બ્રાઉઝ કરી શકો છો તેમજ નિયંત્રણ જાળવી શકો છો</translation>
 <translation id="6022659036123304283">Chromeને તમારી જરૂરિયાત અનુરૂપ બનાવો</translation>
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" />માં ફરી શરૂ થશે</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
@@ -370,6 +374,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7651907282515937834">Chrome એન્ટરપ્રાઇઝ લૉગો</translation>
 <translation id="76531479118467370">Chrome દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું કારણ કે તમે Safe Browsingની સુવિધા બંધ કરેલી છે અને ફાઇલની ચકાસણી કરી શકાતી નથી</translation>
 <translation id="7655455401911432608">તમારો બ્રાઉઝિંગ ઇતિહાસ કે જેમાં આ ડિવાઇસ પર તમે Chrome વડે મુલાકાત લીધેલી સાઇટનો રેકોર્ડ હોય છે.</translation>
+<translation id="769538538642757151">જો કંઈપણ માટે તમારા રિવ્યૂની જરૂર હોય, તો Chrome તમને જણાવશે</translation>
 <translation id="7747138024166251722">ઇન્સ્ટૉલર અસ્થાયી ડિરેક્ટરી બનાવી શક્યું નથી. કૃપા કરીને ખાલી ડિસ્ક સ્પેસ માટે અને સૉફ્ટવેર ઇન્સ્ટૉલ કરવાની પરવાનગી માટે તપાસો.</translation>
 <translation id="7761834446675418963">Chrome ને ખોલવા માટે તમારા નામને ક્લિક કરો અને બ્રાઉઝ કરવાનું પ્રારંભ કરો.</translation>
 <translation id="7777080907402804672">જો છબીમાં ઉપયોગી વર્ણન ન હોય, તો Chrome તમને વર્ણન પૂરું પાડવાનો પ્રયાસ કરશે. વર્ણન બનાવવા માટે, Googleને છબીઓ મોકલવામાં આવે છે. તમે આને કોઈપણ સમયે સેટિંગમાં જઈને બંધ કરી શકો છો.</translation>
@@ -398,6 +403,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8129812357326543296">&amp;Google Chrome વિશે</translation>
 <translation id="813913629614996137">પ્રારંભ કરી રહ્યું છે...</translation>
 <translation id="8255190535488645436">Google Chrome તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરી રહ્યું છે.</translation>
+<translation id="8267953129876836456">Chromeને તમારા રિવ્યૂ માટે કેટલાક સલામતી સંબંધિત સુઝાવો મળ્યા છે</translation>
 <translation id="8270775718612349140">Chrome દ્વારા મેનેજ કરાતા પ્રમાણપત્રો</translation>
 <translation id="8286862437124483331">Google Chrome પાસવર્ડ્સ બતાવવાનો પ્રયાસ કરી રહ્યું છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
 <translation id="8290100596633877290">ઓહ! Google Chrome ક્રેશ થઈ ગયું. હમણાં ફરીથી લોંચ કરીએ?</translation>
@@ -412,6 +418,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8403038600646341038">કમ્પ્યૂટરની સ્ક્રીનમાં Chromeનો લોગો.</translation>
 <translation id="8416347857511542594">Chromeમાં રુચિ મુજબ જાહેરાત વિશે વધુ જાણો</translation>
 <translation id="8418845734693287262">તમારા એકાઉન્ટની સાઇન ઇન વિગતો જૂની હોવાને કારણે ChromeOS તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
+<translation id="842386925677997438">Chromeના સલામતી માટેના ટૂલ</translation>
 <translation id="8433638294851456451">અહીંથી તમારા Android ફોન પર નંબર મોકલવા માટે, બન્ને ડિવાઇસ પર Chromeમાં સાઇન ઇન કરો.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> દ્વારા તમારું એકાઉન્ટ મેનેજ કરવામાં આવે છે. તમારા ઍડમિનિસ્ટ્રેટર આ Chrome બ્રાઉઝરની પ્રોફાઇલ અને બુકમાર્ક, ઇતિહાસ તથા પાસવર્ડ જેવો તેનો ડેટા જોઈ શકે છે અને તેમાં ફેરફાર કરી શકે છે.</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
@@ -452,6 +459,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="9195993889682885387">Chrome છેલ્લા અમુક અઠવાડિયાઓના તમારા બ્રાઉઝિંગ ઇતિહાસને આધારે તમારી રુચિઓનું અનુમાન લગાવી શકે છે. આ માહિતી તમારા ડિવાઇસમાં જ રહે છે.</translation>
 <translation id="919706545465235479">સમન્વયન પ્રારંભ કરવા માટે Chrome અપડેટ કરો</translation>
 <translation id="922152298093051471">Chrome કસ્ટમાઇઝ કરો</translation>
+<translation id="92460355979482493">જ્યારે ચાલુ હોય, ત્યારે Chrome પેજને પહેલેથી લોડ કરે છે, જે બ્રાઉઝ કરવાનું અને શોધવાનું વધુ ઝડપી બનાવે છે.</translation>
 <translation id="93760716455950538">ChromeOS Flex ફરી શરૂ કરો</translation>
 <translation id="940313311831216333">Chrome પરની તમારી વસ્તુઓને તમારા બધા ડિવાઇસ પર ઍક્સેસ કરવા માટે, સાઇન ઇન કરો અને પછી સિંક કરવાની સુવિધા ચાલુ કરો.</translation>
 <translation id="943390475793766444">Chrome આ ફાઇલને સ્કૅન કરવાનો સુઝાવ આપે છે, કારણ કે તે જોખમકારક હોઈ શકે છે.</translation>

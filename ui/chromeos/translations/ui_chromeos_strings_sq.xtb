@@ -44,7 +44,7 @@
 <translation id="1358735829858566124">Skedari ose direktoria nuk është i përdorshëm.</translation>
 <translation id="1363028406613469049">Pjesa muzikore</translation>
 <translation id="1378727793141957596">Mirë se vjen te "Disku i Google"!</translation>
-<translation id="1379911846207762492">Mund t'i bësh skedarët të disponueshëm jashtë linje për qasje kur nuk ke lidhje në internet.</translation>
+<translation id="1379911846207762492">Mund t'i bësh skedarët të disponueshëm offline për qasje kur nuk ke lidhje në internet.</translation>
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1388045380422025115">Të gjitha llojet</translation>
 <translation id="1395262318152388157">Rrëshqitësi i kërkimit</translation>
@@ -74,7 +74,7 @@
 <translation id="162175252992296058">Portugalisht me tastierë ndërkombëtare amerikane</translation>
 <translation id="1629521517399325891">Certifikata e përdoruesit nuk është e disponueshme për vërtetimin e rrjetit.</translation>
 <translation id="1641780993263690097">Kinezisht Pinyin</translation>
-<translation id="1646019627374511909">Po i bën të disponueshëm jashtë linje <ph name="NUMBER_OF_ITEMS" /> skedarë</translation>
+<translation id="1646019627374511909">Po i bën të disponueshëm offline <ph name="NUMBER_OF_ITEMS" /> skedarë</translation>
 <translation id="164969095109328410">Pajisje Chrome</translation>
 <translation id="1661207570040737402">E ke përdorur të gjithë hapësirën ruajtëse të Google Workspace për diskun e ndarë.</translation>
 <translation id="1661867754829461514">Kodi PIN mungon</translation>
@@ -99,7 +99,7 @@
 <translation id="1761091787730831947">Ndaj me <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certifikata e vërtetimit u refuzua nga afër</translation>
 <translation id="1775381402323441512">Informacionet e videos</translation>
-<translation id="180035236176489073">Duhet të jesh në linjë për t'u qasur te këta skedarë.</translation>
+<translation id="180035236176489073">Duhet të jesh online për t'u qasur te këta skedarë.</translation>
 <translation id="1807938677607439181">Të gjithë skedarët</translation>
 <translation id="1810764548349082891">Nuk ka asnjë pamje paraprake</translation>
 <translation id="1812302367230252929">Amarikisht me transliterim</translation>
@@ -187,7 +187,7 @@
 <translation id="2464089476039395325">Përfaqësuesi i HTTP-së</translation>
 <translation id="2467267713099745100">Rrjeti <ph name="NETWORK_TYPE" />, joaktiv</translation>
 <translation id="2468402215065996499">Tamagoçi</translation>
-<translation id="2468470447085858632">Qasu te skedarët e tu të "Diskut të Google" jashtë linje me sinkronizimin e skedarëve</translation>
+<translation id="2468470447085858632">Qasu te skedarët e tu të "Diskut të Google" offline me sinkronizimin e skedarëve</translation>
 <translation id="2470939964922472929">Është futur shumë herë një kod PIN i gabuar. Për të konfiguruar një kod të ri PIN, fut "Çelësin personal të zhbllokimit" (PUK) me 8 shifra të dhënë nga operatori celular.</translation>
 <translation id="2500392669976258912">Guxharatisht fonetike</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -248,7 +248,7 @@
 <translation id="3003189754374775221">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, lidhu</translation>
 <translation id="3003633581067744647">Kalo te pamja e miniaturës</translation>
 <translation id="3016566519832145558">Kujdes! Këta skedarë janë të përkohshëm dhe mund të fshihen automatikisht për të liruar hapësirën në disk.</translation>
-<translation id="3029114385395636667">Aktivizo "Dokumentet e Google jashtë linje" për t'i bërë "Dokumentet", "Fletët" dhe "Diapozitivat" të disponueshme jashtë linje.</translation>
+<translation id="3029114385395636667">Aktivizo "Dokumentet e Google offline" për t'i bërë "Dokumentet", "Fletët" dhe "Diapozitivat" të disponueshme offline.</translation>
 <translation id="303198083543495566">Gjeografia</translation>
 <translation id="3044404008258011032">Për t'i restauruar këta artikuj, zvarriti ata te një dosje e re jashtë koshit. Dosja origjinale "<ph name="PARENT_FOLDER_NAME" />" për këta artikuj është fshirë.</translation>
 <translation id="3047197340186497470">Kinezisht Dayi</translation>
@@ -318,10 +318,10 @@
 <translation id="3553048479571901246">Për të hapur skedarët me <ph name="APP_NAME" />, në fillim kopjoji në dosjen e skedarëve të Windows.</translation>
 <translation id="3556731189587832921">Anglisht (SHBA) me tastierën ndërkombëtare për PC</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> po zhvendoset te koshi</translation>
-<translation id="3567221313191587603">Zgjidh një skedar dhe aktivizo <ph name="OFFLINE_CHECKBOX_NAME" /> për qasje jashtë linje te skedarët e tu.</translation>
+<translation id="3567221313191587603">Zgjidh një skedar dhe aktivizo <ph name="OFFLINE_CHECKBOX_NAME" /> për qasje offline te skedarët e tu.</translation>
 <translation id="357479282490346887">Lituanisht</translation>
 <translation id="3587482841069643663">Të gjitha</translation>
-<translation id="3592251141500063301"><ph name="FILE_NAME" /> nuk mund të ofrohej jashtë linje</translation>
+<translation id="3592251141500063301"><ph name="FILE_NAME" /> nuk mund të ofrohej offline</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Frëngjishte kanadeze</translation>
 <translation id="3606220979431771195">Turke me F</translation>
@@ -340,7 +340,7 @@
 <translation id="3727148787322499904">Ndryshimi i këtij cilësimi do të ndikojë në të gjitha rrjetet e ndara</translation>
 <translation id="3737576078404241332">Hiq nga shiriti anësor</translation>
 <translation id="3749289110408117711">Emri i skedarit</translation>
-<translation id="3786301125658655746">Je jashtë linje</translation>
+<translation id="3786301125658655746">Je offline</translation>
 <translation id="3789841737615482174">Instalo</translation>
 <translation id="3793469551756281394">Koha e mbetur: <ph name="REMAINING_TIME_HOUR" /> e <ph name="REMAINING_TIME_MINUTE" /></translation>
 <translation id="3798449238516105146">Versioni</translation>
@@ -388,12 +388,12 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> është zhvendosur.</translation>
 <translation id="4176286497474237543">Boshatise koshin tani</translation>
 <translation id="4179621117429069925">Ky artikull është te koshi</translation>
-<translation id="4186579485882418952">Aktivizo jashtë linje</translation>
+<translation id="4186579485882418952">Aktivizo offline</translation>
 <translation id="4193154014135846272">Dokument i Google</translation>
 <translation id="4197674956721858839">Përzgjedhja e ngjeshjes</translation>
 <translation id="4202378258276439759">Spanjisht (Amerika Latine)</translation>
 <translation id="4202977638116331303">Gjeorgjisht</translation>
-<translation id="421017592316736757">Duhet të jesh në linjë për t'u qasur te ky skedar.</translation>
+<translation id="421017592316736757">Duhet të jesh online për t'u qasur te ky skedar.</translation>
 <translation id="4212740939091998969">Dosja e emërtuar "<ph name="FOLDER_NAME" />" ekziston tashmë. Zgjidh një emër tjetër.</translation>
 <translation id="4218274196133425560">Hiq përjashtimin për <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Prezantim i Google</translation>
@@ -452,7 +452,7 @@
 <translation id="4635373743001040938">Hapësira ruajtëse ishte jashtëzakonisht e ulët. Sinkronizimi i skedarëve është çaktivizuar.</translation>
 <translation id="4642769377300286600">Po instalon profilin e celularit, rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Çekisht me tastierë Qwerty</translation>
-<translation id="4656777537938206294">Bëji skedarët të disponueshëm jashtë linje</translation>
+<translation id="4656777537938206294">Bëji skedarët të disponueshëm offline</translation>
 <translation id="4658782175094886150">Person në dëborë</translation>
 <translation id="4669606053856530811">Anëtarët e "<ph name="SOURCE_NAME" />" do të humbin qasjen në rast se këta artikuj nuk ndahen me ta.</translation>
 <translation id="467809019005607715">Google Slides</translation>
@@ -546,7 +546,7 @@
 <translation id="5253070652067921974">Krijuar nga</translation>
 <translation id="5254207638927440400">Skedari nuk mund të zhvendoset. Skedari është në përdorim.</translation>
 <translation id="5257456363153333584">Pilivesa</translation>
-<translation id="5262311848634918433"><ph name="MARKUP_1" />Qasu te skedarët nga çdo vend, edhe kur je jashtë linje.<ph name="MARKUP_2" />
+<translation id="5262311848634918433"><ph name="MARKUP_1" />Qasu te skedarët nga çdo vend, edhe kur je offline.<ph name="MARKUP_2" />
     Skedarët në "Diskun e Google" janë të përditësuar dhe të disponueshëm nga çdo pajisje.<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />Mbaji të sigurt skedarët e tu.<ph name="MARKUP_5" />
     Pavarësisht se çfarë ndodh me pajisjen tënde, skedarët e tu janë ruajtur në mënyrë të sigurt në "Diskun e Google".<ph name="MARKUP_6" />
@@ -664,7 +664,7 @@
 <translation id="613750717151263950">Japonisht me tastierë amerikane</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nuk ka rrjet</translation>
 <translation id="6146563240635539929">Videot</translation>
-<translation id="6150853954427645995">Për ta ruajtur këtë skedar për përdorim jashtë linje, kthehu në linjë, kliko me të djathtën te skedari dhe zgjidh opsionin <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="6150853954427645995">Për ta ruajtur këtë skedar për përdorim offline, kthehu online, kliko me të djathtën te skedari dhe zgjidh opsionin <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Flutura</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6170470584681422115">Sandviç</translation>
@@ -741,13 +741,13 @@
 <translation id="6806699711453372963">Menaxho ndarjen në Linux</translation>
 <translation id="6806796368146926706">Alfanumerike me tastierë japoneze</translation>
 <translation id="6808193438228982088">Dhelpër</translation>
-<translation id="6823166707458800069">Të gjithë skedarët e ruajtur në këtë dosje rezervohen automatikisht në linjë.</translation>
+<translation id="6823166707458800069">Të gjithë skedarët e ruajtur në këtë dosje rezervohen automatikisht online.</translation>
 <translation id="6825883775269213504">Rusisht</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> u hoq nga zgjedhja.</translation>
 <translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> ka përdorur të gjithë hapësirën e vet ruajtëse të Google Workspace.</translation>
 <translation id="6856459657722366306">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detaje</translation>
 <translation id="6861394552169064235">Persisht</translation>
-<translation id="6862635236584086457">Të gjithë skedarët e ruajtur në këtë dosje janë ruajtur në linjë automatikisht</translation>
+<translation id="6862635236584086457">Të gjithë skedarët e ruajtur në këtë dosje janë ruajtur online automatikisht</translation>
 <translation id="6864328437977279120">Sanskritisht</translation>
 <translation id="6874758081814639712">Person duke bërë tai-çi</translation>
 <translation id="6876155724392614295">Biçikletë</translation>
@@ -844,9 +844,9 @@
 <translation id="7547811415869834682">Hollandisht</translation>
 <translation id="7551643184018910560">Gozhdo në raft</translation>
 <translation id="7553492409867692754">Jepu leje aplikacioneve të Linux që të qasen në skedarët në dosjen <ph name="FOLDER_NAME" /></translation>
-<translation id="7555339735447658365">Aktualisht je jashtë linje. Sinkronizimi i skedarëve do të vazhdojë kur të jesh lidhur me internetin.</translation>
+<translation id="7555339735447658365">Aktualisht je offline. Sinkronizimi i skedarëve do të vazhdojë kur të jesh lidhur me internetin.</translation>
 <translation id="7589661784326793847">Prit vetëm një sekondë</translation>
-<translation id="7592775719802218421">Po bën <ph name="FILE_NAME" /> të disponueshëm jashtë linje</translation>
+<translation id="7592775719802218421">Po bën <ph name="FILE_NAME" /> të disponueshëm offline</translation>
 <translation id="7600126690270271294">Serbisht</translation>
 <translation id="7603724359189955920">Rrjeta</translation>
 <translation id="7627790789328695202">Mos, <ph name="FILE_NAME" /> ekziston tashmë. Riemërtoje dhe provo sërish.</translation>
@@ -876,8 +876,8 @@
 <translation id="7774365994322694683">Zog</translation>
 <translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> artikuj u restauruan</translation>
 <translation id="7781829728241885113">Dje</translation>
-<translation id="7788080748068240085">Për të ruajtur "<ph name="FILE_NAME" />" jashtë linje duhet të lirosh <ph name="TOTAL_FILE_SIZE" /> hapësirë shtesë:<ph name="MARKUP_1" />
-    <ph name="MARKUP_2" />zhgozhdo skedarët që nuk të nevojiten më për të pasur qasje te ato jashtë linje<ph name="MARKUP_3" />
+<translation id="7788080748068240085">Për të ruajtur "<ph name="FILE_NAME" />" offline duhet të lirosh <ph name="TOTAL_FILE_SIZE" /> hapësirë shtesë:<ph name="MARKUP_1" />
+    <ph name="MARKUP_2" />zhgozhdo skedarët që nuk të nevojiten më për të pasur qasje te ato offline<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />fshi skedarët nga dosja "Shkarkimet"<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Formato pajisjen</translation>
 <translation id="7799329977874311193">Dokument HTML</translation>
@@ -936,7 +936,7 @@
 <translation id="8175799081768705361">Po sinkronizohen <ph name="NUMBER_OF_FILES_SYNCING" /> skedarë të "Diskut"</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Modeli i pajisjes</translation>
-<translation id="8223479393428528563">Për të ruajtur këta skedarë për përdorim jashtë linje, kthehu në linjë, kliko me të djathtën te skedarët dhe zgjidh opsionin <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8223479393428528563">Për të ruajtur këta skedarë për përdorim offline, kthehu online, kliko me të djathtën te skedarët dhe zgjidh opsionin <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Shiko hapësirën ruajtëse</translation>
 <translation id="8249296373107784235">Ndërprite</translation>
 <translation id="8250690786522693009">Alfabet latin</translation>
@@ -982,7 +982,7 @@
 <translation id="8475647382427415476">"Disku i Google" nuk mund ta sinkronizonte "<ph name="FILENAME" />" për momentin. "Disku i Google" do të provojë përsëri më vonë.</translation>
 <translation id="8477649328507734757">Rrotullim</translation>
 <translation id="8484284835977497781">Zgjidh nga fotografitë e tua të fundit.</translation>
-<translation id="8487700953926739672">Mundësohet jashtë linje</translation>
+<translation id="8487700953926739672">Mundësohet offline</translation>
 <translation id="8492972329130824181">Rrjeti i shtëpisë nuk ofrohet. Duhet të aktivizohet roaming-u për të dhënat celulare për t'u lidhur.</translation>
 <translation id="8499098729323186194">Po nxjerr <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="8502913769543567768">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivizoje pas konfigurimit të pajisjes, menaxhohet nga administratori yt</translation>
@@ -1007,7 +1007,7 @@
 <translation id="8609695766746872526">Islandisht</translation>
 <translation id="863903787380594467">Kodi PIN është i pasaktë. Të kanë mbetur edhe <ph name="RETRIES" /> përpjekje.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - porta</translation>
-<translation id="8656407365183407932">Skedarët e tu jashtë linje duhej të hiqeshin</translation>
+<translation id="8656407365183407932">Skedarët e tu offline duhej të hiqeshin</translation>
 <translation id="8656768832129462377">Mos e kontrollo</translation>
 <translation id="8688591111840995413">Fjalëkalim i gabuar</translation>
 <translation id="8698464937041809063">Vizatimi Google</translation>
@@ -1083,7 +1083,7 @@
 <translation id="954194396377670556">Politika e administratorit parandalon:</translation>
 <translation id="965477715979482472">Anglisht (Afrika e Jugut)</translation>
 <translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> artikuj po zhvendosen te koshi</translation>
-<translation id="981121421437150478">Jashtë linje</translation>
+<translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Skedari me emrin "<ph name="FILE_NAME" />" ekziston. Dëshiron ta zëvendësosh?</translation>
 <translation id="992401651319295351">Të kanë mbetur edhe <ph name="RETRIES" /> përpjekje. Nuk do të mund ta përdorësh këtë rrjet derisa të konfigurosh një kod të ri PIN.</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

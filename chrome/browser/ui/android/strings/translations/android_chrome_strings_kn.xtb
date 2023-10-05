@@ -34,6 +34,7 @@
 <translation id="1149401351239820326">ಮುಕ್ತಾಯದ ತಿಂಗಳು</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ. ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು ChromeOS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ.</translation>
 <translation id="1173894706177603556">ಮರುಹೆಸರಿಸು</translation>
+<translation id="1174479719160874822">ಸ್ಕ್ರೀನ್ ಕಿರಿದಾಗಿರುವಾಗ ಮೊಬೈಲ್ ಸೈಟ್‌ಗೆ ಬದಲಿಸುವಂತೆ Chrome ವಿನಂತಿಸುತ್ತದೆ</translation>
 <translation id="1177863135347784049">ಕಸ್ಟಮ್</translation>
 <translation id="1178581264944972037">ವಿರಾಮ</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
@@ -592,6 +593,7 @@
 <translation id="4116038641877404294">ಪುಟಗಳನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಬಳಸಲು ಅವುಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="4121654769234887259">ನೀವು ಈ ಪಾಸ್‌ವರ್ಡ್ ನೆನಪಿಟ್ಟುಕೊಳ್ಳುವ ಅಗತ್ಯವಿಲ್ಲ. ಅದನ್ನು <ph name="USERNAME" /> ನ Google Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="4124152339699379357">ಅಧಿಸೂಚನೆಯ ಅನುಮತಿಯ ಫ್ಲೋ ಅನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
+<translation id="4126285640274188657">ಪುಟದ ಒಳನೋಟಗಳು</translation>
 <translation id="4135200667068010335">ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕಾದ ಸಾಧನಗಳ ಪಟ್ಟಿಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>
 <translation id="4137746084635924146">ಪ್ರಸ್ತುತ ಸಾಧನ ಭಾಷೆ</translation>
 <translation id="4139654229316918773">Chrome Canary</translation>
@@ -1242,6 +1244,7 @@
 <translation id="7376560087009844242">ಪುಟದಲ್ಲಿರುವ ಇನ್ನಷ್ಟು ಪಠ್ಯವನ್ನು ಸೇರಿಸುವ ಮೂಲಕ, ಹುಡುಕಲು ಸ್ಪರ್ಶಿಸಿ ಎಂಬುದನ್ನು ಬಳಸುವಾಗ ನೀವು ಉತ್ತಮ ಫಲಿತಾಂಶಗಳನ್ನು ನೋಡಬಹುದು. ಇದನ್ನು ಬದಲಾಯಿಸಲು ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="END_LINK" /> ಭೇಟಿ ನೀಡಬಹುದು.</translation>
 <translation id="7379900596734708416">ಸೈಟ್‌ಗಳ ಡಾರ್ಕ್ ಥೀಮ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="7388615499319468910">ಜಾಹೀರಾತುಗಳು ಹೇಗೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತವೆ ಎಂಬುದನ್ನು ಸೈಟ್‌ಗಳು ಮತ್ತು ಜಾಹೀರಾತುದಾರರು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಬಹುದು. ಈ ಸೆಟ್ಟಿಂಗ್ ಆಫ್ ಆಗಿದೆ.</translation>
+<translation id="7397416715506917976">ಪುಟದ ಒಳನೋಟಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome ಮೊದಲ ರನ್ ಅನುಭವ</translation>
 <translation id="7411224099004328643">Google ಖಾತೆ ಬಳಕೆದಾರರು</translation>
@@ -1415,6 +1418,7 @@
 <translation id="8127542551745560481">ಮುಖಪುಟವನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="8130309322784422030">ನೀವು ಸಂಗ್ರಹಿಸಿದ ಸೈನ್-ಇನ್ ಮಾಹಿತಿಯು ಹಳೆಯದಾಗಿರಬಹುದು</translation>
 <translation id="813082847718468539">ಸೈಟ್ ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸಿ</translation>
+<translation id="8136852699834914183">ಈ ಪುಟಕ್ಕೆ ಪ್ಲೇಬ್ಯಾಕ್ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="8137562778192957619">ನೀವು ಈ ಪಾಸ್‌ವರ್ಡ್ ನೆನಪಿಟ್ಟುಕೊಳ್ಳುವ ಅಗತ್ಯವಿಲ್ಲ. ಅದನ್ನು Google Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಫೈಲ್‌ಗಳು</translation>
 <translation id="8189750580333936930">ಪ್ರೈವೆಸಿ ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್</translation>

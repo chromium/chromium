@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Change wallpaper image daily</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1651925268237749928">You’ve selected a shared album. Other people can add or change photos. Your wallpaper might use photos that are not currently in this album.</translation>
+<translation id="1661865805917886535">Some account and system information may be sent to Google. We use this information to help address technical issues and improve our services, subject to our Privacy Policy (<ph name="PRIVACYPOLICYURL" />) and Terms of Service (<ph name="TERMSOFSERVICEURL" />). To request content changes, go to Legal Help (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Stopped – out of ink</translation>
 <translation id="1664796644829245314">Preview <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Built-in VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Device is connected.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Remove page?}=1{Remove page {PAGE_NUMBER}?}other{Remove page {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Exclusive to <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobile data</translation>
 <translation id="3156846309055100599">Scanning page <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Captive portal detected</translation>

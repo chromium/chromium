@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1011749477052068769">Flytta hit</translation>
+<translation id="1014147525163127655">Det finns inga nycklar för <ph name="ORIGIN" /> på den här enheten</translation>
 <translation id="1016498331642356377">Gör en röstsökning snabbt. Tryck länge om du vill ändra genvägen.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Skickar till <ph name="DEVICE_NAME" /> …</translation>
@@ -33,6 +34,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1149401351239820326">Utgångsmånad</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> öppnas i Chrome. Genom att fortsätta godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Ändra namn</translation>
+<translation id="1174479719160874822">Chrome begär den mobila webbplatsen när skärmen är smal</translation>
 <translation id="1177863135347784049">Anpassat</translation>
 <translation id="1178581264944972037">Paus</translation>
 <translation id="1181037720776840403">Ta bort</translation>
@@ -592,6 +594,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="4116038641877404294">Ladda ned sidor så att du kan använda dem offline</translation>
 <translation id="4121654769234887259">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering för <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Behörighetsflödet för aviseringar har öppnats över hela skärmen</translation>
+<translation id="4126285640274188657">Sidinsikter</translation>
 <translation id="4135200667068010335">Listan över enheter som fliken kan delas med är stängd.</translation>
 <translation id="4137746084635924146">Aktuellt enhetsspråk</translation>
 <translation id="4139654229316918773">Chrome Canary</translation>
@@ -671,6 +674,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="452750746583162491">Granska din synkroniserade data</translation>
 <translation id="4528638190900283934">Logga in för fler funktioner</translation>
 <translation id="4532845899244822526">Välj mapp</translation>
+<translation id="4543131175509360848">Inget nyckelark</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> flik}other{<ph name="TAB_COUNT_MANY" /> flikar, <ph name="TAB_COUNT_INCOGNITO" /> inkognitoflikar}}</translation>
 <translation id="4554077758708533499">Ansluten med USB-kabel</translation>
 <translation id="4558311620361989323">Kortkommandon på webbsidor</translation>
@@ -945,6 +949,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5869522115854928033">Sparade lösenord</translation>
 <translation id="587735546353481577">Om du vill följa en webbplats besöker du den, öppnar Chrome-menyn och trycker på Följ.</translation>
 <translation id="5879072387416556377">Få bättre förslag</translation>
+<translation id="5899667542927581604">Inget nyckelark har stängts</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5919204609460789179">Uppdatera <ph name="PRODUCT_NAME" /> för att starta synkronisering</translation>
 <translation id="5938820472109305350">Lägg till <ph name="INTEREST" /></translation>
@@ -1241,6 +1246,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7376560087009844242">Om du tar med mer av sidans text kanske du får bättre resultat när du använder Tryck för att söka. Du kan alltid öppna <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" /> om du vill ändra detta.</translation>
 <translation id="7379900596734708416">Mörkt tema för webbplatser är tillgängligt</translation>
 <translation id="7388615499319468910">Webbplatser och annonsörer kan mäta annonsernas resultat. Inställningen är inaktiverad.</translation>
+<translation id="7397416715506917976">Visa sidinsikter</translation>
 <translation id="7400418766976504921">Webbadress</translation>
 <translation id="7403691278183511381">Första körningen av Chrome</translation>
 <translation id="7411224099004328643">Användare av Google-konto</translation>
@@ -1414,6 +1420,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8127542551745560481">Redigera startsida</translation>
 <translation id="8130309322784422030">Dina sparade inloggningsuppgifter kan vara inaktuella</translation>
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
+<translation id="8136852699834914183">Uppspelning är inte tillgängligt på den här sidan.</translation>
 <translation id="8137562778192957619">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> filer återstår</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -1587,6 +1594,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="9063523880881406963">Inaktivera begäran av webbplats för stationär dator</translation>
 <translation id="9065203028668620118">Redigera</translation>
 <translation id="9065383040763568503">Sparad data som bedöms som oviktig i Chrome (t.ex. webbplatser utan sparade inställningar eller som du inte besöker ofta)</translation>
+<translation id="9067341854474068781">Inget nyckelark har öppnats över hela skärmen</translation>
 <translation id="906781307897697745">i <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Det finns inga olästa sidor</translation>
 <translation id="9070377983101773829">Starta röstsökning</translation>

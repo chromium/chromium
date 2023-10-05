@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
 <translation id="1011749477052068769">აქ გადმოტანა</translation>
+<translation id="1014147525163127655">ამ მოწყობილობაზე არ არის წვდომის გასაღებები <ph name="ORIGIN" />-ისთვის</translation>
 <translation id="1016498331642356377">სწრაფად მოიძიეთ ხმის მეშვეობით. ამ მალსახმობის რედაქტირებისთვის შეეხეთ ხანგრძლივად.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">იგზავნება <ph name="DEVICE_NAME" />-ზე…</translation>
@@ -33,6 +34,7 @@
 <translation id="1149401351239820326">ვადის გასვლის თვე</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> გაიხსნება Chrome-ში. გაგრძელებით ეთანხმებით <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობებს<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Google Chrome-ისა და ChromeOS-ის მომსახურების დამატებით პირობებს<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">სახელის შეცვლა</translation>
+<translation id="1174479719160874822">Chrome მოითხოვს მობილურ საიტს, როცა ეკრანი ვიწროა</translation>
 <translation id="1177863135347784049">მორგებული</translation>
 <translation id="1178581264944972037">პაუზა</translation>
 <translation id="1181037720776840403">ამოშლა</translation>
@@ -670,6 +672,7 @@
 <translation id="452750746583162491">სინქრონიზებული მონაცემების გადახედვა</translation>
 <translation id="4528638190900283934">შედით სისტემაში, დამატებითი ფუნქციებით რომ ისარგებლოთ</translation>
 <translation id="4532845899244822526">აირჩიეთ საქაღალდე</translation>
+<translation id="4543131175509360848">წვდომის გასაღებების არარსებობის ფურცელი</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ჩანართი}other{<ph name="TAB_COUNT_MANY" /> ჩანართი, <ph name="TAB_COUNT_INCOGNITO" /> ინკოგნიტო}}</translation>
 <translation id="4554077758708533499">დაკავშირებულია USB კაბელით</translation>
 <translation id="4558311620361989323">ვებგვერდის მალსახმობები</translation>
@@ -944,6 +947,7 @@
 <translation id="5869522115854928033">შენახული პაროლები</translation>
 <translation id="587735546353481577">საიტისთვის თვალის მისადევნებლად გადადით საიტზე, გახსენით Chrome-ის მენიუ და შეეხეთ „თვალის მიდევნებას“.</translation>
 <translation id="5879072387416556377">მიიღეთ უკეთესი შემოთავაზებები</translation>
+<translation id="5899667542927581604">წვდომის გასაღებების არარსებობის ფურცელი დახურულია</translation>
 <translation id="5916664084637901428">ჩართვა</translation>
 <translation id="5919204609460789179">სინქრონიზაციის დასაწყებად, განაახლეთ <ph name="PRODUCT_NAME" /></translation>
 <translation id="5938820472109305350">დაემატოს <ph name="INTEREST" /></translation>
@@ -1413,6 +1417,7 @@
 <translation id="8127542551745560481">მთავარი გვერდის რედაქტირება</translation>
 <translation id="8130309322784422030">სისტემაში შესვლის თქვენ მიერ შენახული ინფორმაცია, შესაძლოა, მოძველებული იყოს</translation>
 <translation id="813082847718468539">საიტის ინფორმაციის ნახვა</translation>
+<translation id="8136852699834914183">დაკვრა მიუწვდომელია ამ გვერდისთვის.</translation>
 <translation id="8137562778192957619">ამ პაროლის დამახსოვრება არ დაგჭირდებათ. ის შეინახება Google პაროლების მმართველში.</translation>
 <translation id="8186512483418048923">დარჩენილია <ph name="FILES" /> ფაილი</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -1586,6 +1591,7 @@
 <translation id="9063523880881406963">საიტის დესკტოპის ვერსიის მოთხოვნის გამორთვა</translation>
 <translation id="9065203028668620118">რედაქტირება</translation>
 <translation id="9065383040763568503">შენახული მონაცემები, რომლებსაც Chrome უმნიშვნელოდ თვლის (მაგ., საიტები შენახული პარამეტრების გარეშე ან რომლებსაც ხშირად არ სტუმრობთ)</translation>
+<translation id="9067341854474068781">წვდომის გასაღებების არარსებობის ფურცელი გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" />-ში</translation>
 <translation id="9069999660519089861">წაუკითხავი გვერდები არ არის</translation>
 <translation id="9070377983101773829">ხმოვანი ძიების დაწყება</translation>

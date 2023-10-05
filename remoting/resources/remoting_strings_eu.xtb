@@ -174,7 +174,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia. Erabilerr
 <translation id="8383794970363966105">Chromoting erabili ahal izateko, Google-ko kontu bat gehitu beharko duzu gailuan.</translation>
 <translation id="8386846956409881180">Balio ez duten OAuth kredentzialekin dago konfiguratuta ostalaria.</translation>
 <translation id="8397385476380433240">Eman <ph name="PRODUCT_NAME" /> erabiltzeko baimena</translation>
-<translation id="8406498562923498210">Hautatu saio bat Chrome-ren Urruneko pantaila aplikazioaren ingurunean abiarazteko. Gogoan izan saio mota batzuk ezin direla aldi berean abiarazi Chrome-ren Urruneko pantaila aplikazioan eta kontsola lokalean.</translation>
+<translation id="8406498562923498210">Hautatu saio bat Chrome-ren Urruneko pantaila aplikazioaren ingurunean exekutatzeko. Gogoan izan saio mota batzuk ezin direla aldi berean exekutatu Chrome-ren Urruneko pantaila aplikazioan eta kontsola lokalean.</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8445362773033888690">Ikusi Google Play Store-n</translation>
 <translation id="8509907436388546015">Pantailak integratzeko prozesua</translation>
@@ -187,7 +187,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia. Erabilerr
 <translation id="8906511416443321782">Mikrofonoa erabiltzeko baimena behar da audioa grabatzeko eta Chrome-ren Urruneko pantaila bezero-aplikaziora igortzeko.</translation>
 <translation id="9111855907838866522">Urruneko gailura konektatuta zaude. Menua irekitzeko, sakatu pantaila lau hatzekin.</translation>
 <translation id="9126115402994542723">Ez eskatu PINa berriro ostalari honetara gailu honetatik konektatzean.</translation>
-<translation id="916856682307586697">Abiarazi XSession lehenetsia</translation>
+<translation id="916856682307586697">Exekutatu XSession lehenetsia</translation>
 <translation id="9187628920394877737">Eman pantaila grabatzeko baimena <ph name="PRODUCT_NAME" /> zerbitzuari</translation>
 <translation id="9213184081240281106">Ez du balio ostalariaren konfigurazioak.</translation>
 <translation id="981121421437150478">Konexiorik gabekoak</translation>

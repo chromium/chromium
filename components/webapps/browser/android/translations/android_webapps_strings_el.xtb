@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
+<translation id="1213425325105380833">Επαναφέρετε τις εφαρμογές ιστού που έχετε χρησιμοποιήσει πρόσφατα σε συσκευές που είναι συνδεδεμένες σε αυτόν τον λογαριασμό</translation>
+<translation id="2065911435109240297">Επαναφορά εφαρμογών ιστού</translation>
+<translation id="2111649875343992405">Εξετάστε ποιες εφαρμογές ιστού θα επαναφέρετε</translation>
 <translation id="2139186145475833000">Προσθήκη στην αρχική οθόνη</translation>
+<translation id="2172982519592313442">Έλεγχος εφαρμογών ιστού</translation>
 <translation id="2478076885740497414">Εγκατάσταση εφαρμογής</translation>
 <translation id="3789841737615482174">Εγκατάσταση</translation>
 <translation id="3910402514791813257">Η εγκατάσταση απέτυχε</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Στιγμιότυπο οθόνης. Πατήστε για κλείσιμο.</translation>
 <translation id="6990079615885386641">Λήψη της εφαρμογής από το Google Play Store: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Η προσθήκη του προηγούμενου ιστοτόπου δεν έχει ολοκληρωθεί</translation>
+<translation id="7672888405515738928">Επιλέξτε εφαρμογές ιστού για επαναφορά σε αυτή τη συσκευή. Οι εφαρμογές που εμφανίζονται εδώ βασίζονται στο ιστορικό Chrome.</translation>
+<translation id="8163051092261298861">Επαναφορά εφαρμογών ιστού</translation>
 <translation id="962979164594783469">Εγκατάσταση αυτής της εφαρμογής</translation>
 </translationbundle>

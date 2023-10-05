@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1011749477052068769">Flytt hit</translation>
+<translation id="1014147525163127655">Det finnes ingen passnøkler for <ph name="ORIGIN" /> på denne enheten</translation>
 <translation id="1016498331642356377">Søk raskt med stemmen din. Trykk og hold for å redigere denne snarveien.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Sender til <ph name="DEVICE_NAME" /> …</translation>
@@ -33,6 +34,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1149401351239820326">Utløpsmåned</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> åpnes i Chrome. Ved å fortsette samtykker du i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Google Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Gi nytt navn</translation>
+<translation id="1174479719160874822">Chrome forespør mobilnettstedet når skjermen er smal</translation>
 <translation id="1177863135347784049">Tilpasset</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
 <translation id="1181037720776840403">Fjern</translation>
@@ -591,6 +593,7 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="4116038641877404294">Last ned sidene for å bruke dem uten nett</translation>
 <translation id="4121654769234887259">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring for <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Flyt for varslingstillatelser er åpnet i full høyde</translation>
+<translation id="4126285640274188657">Sidestatistikk</translation>
 <translation id="4135200667068010335">Listen over enheter du kan dele faner med, er lukket.</translation>
 <translation id="4137746084635924146">Nåværende enhetsspråk</translation>
 <translation id="4139654229316918773">Chrome Canary</translation>
@@ -670,6 +673,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="452750746583162491">Gjennomgå de synkroniserte dataene dine</translation>
 <translation id="4528638190900283934">Logg på for å få tilgang til flere funksjoner</translation>
 <translation id="4532845899244822526">Velg en mappe</translation>
+<translation id="4543131175509360848">Ark for ingen passnøkler</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}other{<ph name="TAB_COUNT_MANY" /> faner, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4554077758708533499">Tilkoblet med USB-kabel</translation>
 <translation id="4558311620361989323">Hurtigtaster for nettsider</translation>
@@ -944,6 +948,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5869522115854928033">Lagrede passord</translation>
 <translation id="587735546353481577">For å følge et nettsted, gå til nettstedet, åpne Chrome-menyen og trykk på Følg.</translation>
 <translation id="5879072387416556377">Få bedre forslag</translation>
+<translation id="5899667542927581604">Arket for ingen passnøkler er lukket</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5919204609460789179">Oppdater <ph name="PRODUCT_NAME" /> for å starte synkroniseringen</translation>
 <translation id="5938820472109305350">Legg til <ph name="INTEREST" /></translation>
@@ -1240,6 +1245,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7376560087009844242">Hvis du inkluderer mer av teksten på siden, kan det hende du får bedre resultater når du bruker Trykk for å søke. Du kan når som helst gå til <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" /> for å endre dette.</translation>
 <translation id="7379900596734708416">Mørkt tema for nettsteder er tilgjengelig</translation>
 <translation id="7388615499319468910">Nettsteder og annonsører kan forstå hvordan annonser innfrir. Denne innstillingen er slått av.</translation>
+<translation id="7397416715506917976">Se sidestatistikk</translation>
 <translation id="7400418766976504921">Nettadresse</translation>
 <translation id="7403691278183511381">Førsteinntrykk ved bruk av Chrome</translation>
 <translation id="7411224099004328643">Google-kontobruker</translation>
@@ -1413,6 +1419,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8127542551745560481">Endre startsiden</translation>
 <translation id="8130309322784422030">Den lagrede påloggingsinformasjonen din er kanskje utdatert</translation>
 <translation id="813082847718468539">Vis nettstedsinformasjon</translation>
+<translation id="8136852699834914183">Avspilling er utilgjengelig for denne siden.</translation>
 <translation id="8137562778192957619">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> filer gjenstår</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -1586,6 +1593,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="9063523880881406963">Slå av Bruk skrivebordsversjon</translation>
 <translation id="9065203028668620118">Endre</translation>
 <translation id="9065383040763568503">Lagrede data som Chrome ikke tror er viktige (for eksempel nettsteder uten lagrede innstillinger eller som du ikke besøker ofte)</translation>
+<translation id="9067341854474068781">Arket for ingen passnøkler er åpnet i full høyde</translation>
 <translation id="906781307897697745">i <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Ingen uleste sider</translation>
 <translation id="9070377983101773829">Start talesøk</translation>

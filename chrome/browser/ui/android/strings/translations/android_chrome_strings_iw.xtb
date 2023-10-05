@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1011749477052068769">העברה לכאן</translation>
+<translation id="1014147525163127655">אין מפתחות גישה עבור <ph name="ORIGIN" /> במכשיר הזה</translation>
 <translation id="1016498331642356377">חיפוש מהיר באמצעות הקול. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
 <translation id="1024113959924243553">‏Chrome פיתוח</translation>
 <translation id="1028699632127661925">הכרטיסייה נשלחת אל <ph name="DEVICE_NAME" />...</translation>
@@ -33,6 +34,7 @@
 <translation id="1149401351239820326">חודש פקיעת התוקף</translation>
 <translation id="1150263420752757504">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה <ph name="BEGIN_LINK1" />לתנאים ולהגבלות של Google<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">שינוי שם</translation>
+<translation id="1174479719160874822">‏אם המסך צר, Chrome יבקש את האתר לנייד</translation>
 <translation id="1177863135347784049">מותאם אישית</translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1181037720776840403">הסרה</translation>
@@ -670,6 +672,7 @@
 <translation id="452750746583162491">סקירת הנתונים המסונכרנים</translation>
 <translation id="4528638190900283934">כדאי להיכנס לחשבון כדי ליהנות מתכונות נוספות</translation>
 <translation id="4532845899244822526">בחירת תיקייה</translation>
+<translation id="4543131175509360848">אין גיליון של מפתחות גישה</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />)}one{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}two{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}other{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}}</translation>
 <translation id="4554077758708533499">‏הטלפון מחובר באמצעות כבל USB</translation>
 <translation id="4558311620361989323">קיצורי דרך בדפי אינטרנט</translation>
@@ -944,6 +947,7 @@
 <translation id="5869522115854928033">סיסמאות שמורות</translation>
 <translation id="587735546353481577">‏כדי לעקוב אחר אתר כלשהו, עוברים אליו, פותחים את תפריט Chrome ומקישים על 'מעקב'.</translation>
 <translation id="5879072387416556377">קבלת הצעות טובות יותר</translation>
+<translation id="5899667542927581604">אין גיליון של מפתחות גישה שנסגר</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5919204609460789179">יש לעדכן את <ph name="PRODUCT_NAME" /> כדי להתחיל סנכרון</translation>
 <translation id="5938820472109305350">הוספה של תחום העניין '<ph name="INTEREST" />'</translation>
@@ -1413,6 +1417,7 @@
 <translation id="8127542551745560481">עריכת דף הבית</translation>
 <translation id="8130309322784422030">יכול להיות שהפרטים שנשמרו לכניסה לחשבון לא עדכניים</translation>
 <translation id="813082847718468539">הצגת נתוני אתר</translation>
+<translation id="8136852699834914183">ההפעלה לא זמינה בדף הזה.</translation>
 <translation id="8137562778192957619">‏אין צורך לזכור את הסיסמה הזו. היא תישמר במנהל הסיסמאות של Google.</translation>
 <translation id="8186512483418048923">נותרו עוד <ph name="FILES" /> קבצים</translation>
 <translation id="8189750580333936930">ארגז חול לפרטיות</translation>
@@ -1586,6 +1591,7 @@
 <translation id="9063523880881406963">כיבוי של 'בקשת אתר עבור מחשב שולחני'</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9065383040763568503">‏נתונים מאוחסנים שלא מוגדרים כחשובים ב-Chrome (למשל: אתרים ללא הגדרות שמורות או כאלה שתדירות הביקור בהם נמוכה)</translation>
+<translation id="9067341854474068781">אין גיליון של מפתחות גישה שנפתח בגובה מלא</translation>
 <translation id="906781307897697745">מיקום הסימנייה: <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">אין דפים שלא נקראו</translation>
 <translation id="9070377983101773829">ביצוע חיפוש קולי</translation>

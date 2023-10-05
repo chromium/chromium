@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1213425325105380833">Memulihkan aplikasi web yang baru-baru ini Anda gunakan di perangkat yang terhubung ke akun ini</translation>
+<translation id="2065911435109240297">Pulihkan aplikasi web Anda</translation>
+<translation id="2111649875343992405">Meninjau aplikasi web yang akan dipulihkan</translation>
 <translation id="2139186145475833000">Tambahkan ke Layar Utama</translation>
+<translation id="2172982519592313442">Tinjau aplikasi web</translation>
 <translation id="2478076885740497414">Instal aplikasi</translation>
 <translation id="3789841737615482174">Instal</translation>
 <translation id="3910402514791813257">Gagal menginstal</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Screenshot. Ketuk untuk menutup.</translation>
 <translation id="6990079615885386641">Dapatkan aplikasi dari Google Play Store: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Masih menambahkan situs sebelumnya</translation>
+<translation id="7672888405515738928">Pilih aplikasi web yang ingin dipulihkan di perangkat ini. Aplikasi yang ditampilkan di sini didasarkan pada histori Chrome Anda.</translation>
+<translation id="8163051092261298861">Pulihkan aplikasi web</translation>
 <translation id="962979164594783469">Instal aplikasi ini</translation>
 </translationbundle>

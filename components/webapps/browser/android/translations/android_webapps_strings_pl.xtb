@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1213425325105380833">Przywróć aplikacje internetowe używane ostatnio na urządzeniach połączonych z tym kontem</translation>
+<translation id="2065911435109240297">Przywróć aplikacje internetowe</translation>
+<translation id="2111649875343992405">Sprawdź, które aplikacje internetowe mają zostać przywrócone</translation>
 <translation id="2139186145475833000">Dodaj do ekranu głównego</translation>
+<translation id="2172982519592313442">Przejrzyj aplikacje internetowe</translation>
 <translation id="2478076885740497414">Zainstaluj aplikację</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
 <translation id="3910402514791813257">Nie udało się zainstalować</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Zrzut ekranu. Kliknij, by zamknąć.</translation>
 <translation id="6990079615885386641">Pobierz aplikację ze sklepu Google Play: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Nadal dodaję poprzednią stronę</translation>
+<translation id="7672888405515738928">Wybierz aplikacje internetowe do przywrócenia na tym urządzeniu. Aplikacje są tutaj pokazywane na podstawie Twojej historii Chrome.</translation>
+<translation id="8163051092261298861">Przywróć aplikacje internetowe</translation>
 <translation id="962979164594783469">Zainstaluj tę aplikację</translation>
 </translationbundle>

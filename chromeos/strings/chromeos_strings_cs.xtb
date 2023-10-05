@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Zařízení je připojeno.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Odstranit stránku?}=1{Odstranit stránku {PAGE_NUMBER}?}few{Odstranit stránku {PAGE_NUMBER}?}many{Odstranit stránku {PAGE_NUMBER}?}other{Odstranit stránku {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Exkluzivní pro <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilní datové přenosy</translation>
 <translation id="3156846309055100599">Skenování stránky <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Byl nalezen captive portál</translation>
@@ -293,7 +294,7 @@
 <translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">nastavení</translation>
 <translation id="3359218928534347896">přepnout ztlumení mikrofonu</translation>
-<translation id="3360306038446926262">Windows</translation>
+<translation id="3360306038446926262">Okna</translation>
 <translation id="3368922792935385530">Připojeno</translation>
 <translation id="3369013195428705271">Opravdu chcete vymazat celou historii tisku? Probíhající tiskové úlohy vymazány nebudou.</translation>
 <translation id="3373141842870501561">Tapeta Plynoucí Země</translation>

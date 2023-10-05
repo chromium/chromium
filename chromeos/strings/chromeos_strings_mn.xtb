@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Төхөөрөмж холбогдсон байна.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Хуудсыг хасах уу?}=1{{PAGE_NUMBER}-р хуудсыг хасах уу?}other{{PAGE_NUMBER}-р хуудсыг хасах уу?}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" />-д онцгой</translation>
 <translation id="315116470104423982">Гар утасны дата</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна...</translation>
 <translation id="315738237743207937">Дамжих портал илэрсэн</translation>

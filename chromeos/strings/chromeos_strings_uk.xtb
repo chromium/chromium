@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">ЦП</translation>
 <translation id="3124039320086536031">Пристрій підключено.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Видалити сторінку?}=1{Видалити сторінку {PAGE_NUMBER}?}one{Видалити сторінку {PAGE_NUMBER}?}few{Видалити сторінку {PAGE_NUMBER}?}many{Видалити сторінку {PAGE_NUMBER}?}other{Видалити сторінку {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Ексклюзивно для <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мобільне передавання даних</translation>
 <translation id="3156846309055100599">Сканування сторінки <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Виявлено адаптивний портал</translation>

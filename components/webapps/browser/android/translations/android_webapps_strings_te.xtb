@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
+<translation id="1213425325105380833">ఈ ఖాతాకు కనెక్ట్ చేయబడిన పరికరాలలో మీరు ఇటీవల ఉపయోగించిన వెబ్ యాప్‌లను రీస్టోర్ చేయండి</translation>
+<translation id="2065911435109240297">మీ వెబ్ యాప్‌లను రీస్టోర్ చేయండి</translation>
+<translation id="2111649875343992405">ఏ వెబ్ యాప్‌లను రీస్టోర్ చేయాలో రివ్యూ చేయండి</translation>
 <translation id="2139186145475833000">హోమ్ స్క్రీన్‌కు జోడించండి</translation>
+<translation id="2172982519592313442">వెబ్ యాప్‌లను రివ్యూ చేయండి</translation>
 <translation id="2478076885740497414">యాప్‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="3789841737615482174">ఇన్‌స్టాల్ చేయి</translation>
 <translation id="3910402514791813257">ఇన్‌స్టాల్ చేయడంలో విఫలమైంది</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">స్క్రీన్‌షాట్. మూసివేయడానికి ట్యాప్ చేయండి.</translation>
 <translation id="6990079615885386641">Google Play Store నుండి యాప్‌ను పొందండి: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">ఇంకా మునుపటి సైట్‌ను జోడిస్తోంది</translation>
+<translation id="7672888405515738928">ఈ పరికరంలో రీస్టోర్ చేయడానికి వెబ్ యాప్‌లను ఎంచుకోండి. ఇక్కడ చూపబడిన యాప్‌లు మీ Chrome హిస్టరీ ఆధారంగా చూపబడతాయి.</translation>
+<translation id="8163051092261298861">వెబ్ యాప్‌లను రీస్టోర్ చేయండి</translation>
 <translation id="962979164594783469">ఈ యాప్‌ను ఇన్‌స్టాల్ చేయండి</translation>
 </translationbundle>

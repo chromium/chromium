@@ -70,7 +70,6 @@ Bularni hisobga olish kerak:
 <translation id="3345341804167540816">Chrome’ni o‘zingiz bilan olib yuring</translation>
 <translation id="3472587960215700950">Manzillar aniqlanganda Chrome marshrut va mahalliy axborotlarni Google Xaritalar orqali ochadi.</translation>
 <translation id="3503014945441706099">Bu Chrome profili orqali xavfsiz qidiruvni ham kuchaytirilgan rejimda himoyalang</translation>
-<translation id="3506309791702511623">Chrome siz kiritgan kuzatuv raqamlarini aniqlay oladi va yangi varaq sahifasida paketlaringizni kuzatib boradi, shu bilan birga Google orqali boshqa xaridlarni amalga oshirishda yordam beradi.</translation>
 <translation id="3522659714780527202">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun sinxronizatsiyani yoqing</translation>
 <translation id="3533694711092285624">Hech qanday parol saqlanmagan. Chrome faqat saqlangan parollaringizni tekshira oladi.</translation>
 <translation id="3594076341410558780">“Chromening barcha imkoniyatlaridan foydalanish” bildirgisini berkitish</translation>
@@ -155,6 +154,7 @@ Bularni hisobga olish kerak:
 
 Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome ayrim parollarni tekshira olmadi. Keyinroq qayta urining.</translation>
+<translation id="6851982868877411675">iOSda Chrome sozlamalarini ochib, keyin “Birlamchi brauzer ilovasi” ustiga bosib, Chromeni tanlang.</translation>
 <translation id="6916015246697034114">Chromeda ovoz bilan qidirish</translation>
 <translation id="6964931465519938134">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="6975725306479268850">Avtomatik kiritish uchun Chromeni tanlang</translation>

@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Pretražujte glasovno u Chromiumu.</translation>
 <translation id="1047130070405668746">Odaberite Chromium</translation>
 <translation id="1091252999271033193">To znači da će Chromium svaki put zahtijevati web-lokaciju za mobilne uređaje.</translation>
+<translation id="1171824629317156389">Otvorite postavke Chromiuma u iOS-u, zatim dodirnite opciju "Zadana aplikacija preglednika" i odaberite Chromium.</translation>
 <translation id="1185134272377778587">O pregledniku Chromium</translation>
 <translation id="1257458525759135959">Da bi se slike spremale, dodirnite Postavke kako biste dopustili Chromiumu da dodaje vašim fotografijama</translation>
 <translation id="1289216811211435351">Prelazak na Chromium</translation>
@@ -94,7 +95,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="4736424910885271643">Vašim računom upravlja <ph name="HOSTED_DOMAIN" />, pa će se vaši podaci iz Chromiuma izbrisati s ovog uređaja</translation>
 <translation id="4790638144988730920">Nastavite upotrebljavati podatke iz Chromiuma na svom Google računu.</translation>
 <translation id="4828317641996116749">Chromium nije uspio provjeriti sve zaporke. Pokušajte ponovo kasnije.</translation>
-<translation id="4935539884203837577">Chromium može otkriti evidencijske brojeve koje unesete i pratiti vaše pakete na stranici Nova kartica te istodobno pomoći drugim doživljajima kupnje na Chromiumu.</translation>
 <translation id="4985291216379576555">Chromium ne može provjeriti ima li ažuriranja jer ste offline</translation>
 <translation id="4996471330284142407">Veća učinkovitost uz Chromium, jednostavniji, sigurniji i brži nego ikad.</translation>
 <translation id="4999538639245140991">Budući da se odjavljujete s računa kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromiuma izbrisat će se s ovog uređaja, no ostat će na vašem Google računu.</translation>

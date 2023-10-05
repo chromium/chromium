@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Qurilma ulandi.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Sahifa olib tashlansinmi?}=1{{PAGE_NUMBER} ta sahifa olib tashlansinmi?}other{{PAGE_NUMBER} ta sahifa olib tashlansinmi?}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> uchun ekskluziv</translation>
 <translation id="315116470104423982">Mobil internet</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> ta sahifa skanerlandi...</translation>
 <translation id="315738237743207937">Kirish portali aniqlandi</translation>

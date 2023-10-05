@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="1011749477052068769">Déplacer ici</translation>
+<translation id="1014147525163127655">Il n'existe aucune clé d'accès pour <ph name="ORIGIN" /> sur cet appareil</translation>
 <translation id="1016498331642356377">Effectuez une recherche rapide à l'aide de commandes vocales. Pour modifier ce raccourci, maintenez le doigt sur celui-ci.</translation>
 <translation id="1024113959924243553">Chrome pour les développeurs</translation>
 <translation id="1028699632127661925">Envoi à <ph name="DEVICE_NAME" /> en cours…</translation>
@@ -33,6 +34,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1149401351239820326">Mois d'expiration</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> s'ouvrira dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Renommer</translation>
+<translation id="1174479719160874822">Chrome demandera le site pour appareils mobiles lorsque l'écran est étroit</translation>
 <translation id="1177863135347784049">Personnalisé</translation>
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
@@ -670,6 +672,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4528638190900283934">Connectez-vous et profitez de plus de fonctionnalités</translation>
 <translation id="4532845899244822526">Sélectionner un dossier</translation>
+<translation id="4543131175509360848">Aucune feuille de clé d'accès</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_COUNT_MANY" /> onglet, <ph name="TAB_COUNT_INCOGNITO" /> onglet de navigation privée}other{<ph name="TAB_COUNT_MANY" /> onglets, <ph name="TAB_COUNT_INCOGNITO" /> onglets de navigation privée}}</translation>
 <translation id="4554077758708533499">Connecté à l'aide d'un câble USB</translation>
 <translation id="4558311620361989323">Raccourcis relatifs à la page Web</translation>
@@ -944,6 +947,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
 <translation id="587735546353481577">Pour suivre un site, accédez à ce dernier, ouvrez le menu Chrome et touchez Suivre.</translation>
 <translation id="5879072387416556377">Obtenir de meilleures suggestions</translation>
+<translation id="5899667542927581604">Aucune feuille de clé d'accès n'a été fermée</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5919204609460789179">Mettez à jour <ph name="PRODUCT_NAME" /> pour commencer la synchronisation</translation>
 <translation id="5938820472109305350">Ajoutez <ph name="INTEREST" /></translation>
@@ -1321,6 +1325,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7757787379047923882">Texte partagé à partir de <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Carte SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Ajouter une adresse</translation>
+<translation id="7766587497031415281">Plus d'options pour effacer les données de navigation</translation>
 <translation id="7772032839648071052">Confirmer la phrase de passe</translation>
 <translation id="7772375229873196092">Fermer <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre mode de paiement}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre mode de paiement}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autres modes de paiement}}</translation>
@@ -1412,6 +1417,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8127542551745560481">Modifier la page d'accueil</translation>
 <translation id="8130309322784422030">Vos données de connexion enregistrées peuvent être obsolètes</translation>
 <translation id="813082847718468539">Afficher l'information sur le site</translation>
+<translation id="8136852699834914183">La lecture n'est pas accessible pour cette page.</translation>
 <translation id="8137562778192957619">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe Google.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fichiers restants</translation>
 <translation id="8189750580333936930">Bac à sable de confidentialité</translation>
@@ -1585,6 +1591,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="9063523880881406963">Désactiver l’option Demander site pour ordinateurs de bureau</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9065383040763568503">Les données stockées que Chrome ne considère pas comme importantes (comme les sites qui n'ont pas de paramètres enregistrés ou que vous ne consultez pas souvent)</translation>
+<translation id="9067341854474068781">Aucune feuille de clé d'accès ouverte à pleine hauteur</translation>
 <translation id="906781307897697745">en <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Aucune page non lue</translation>
 <translation id="9070377983101773829">Démarrer la recherche vocale</translation>

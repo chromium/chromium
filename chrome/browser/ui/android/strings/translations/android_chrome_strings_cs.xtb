@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1011749477052068769">Přesunout sem</translation>
+<translation id="1014147525163127655">V tomto zařízení nejsou pro web <ph name="ORIGIN" /> žádné přístupové klíče</translation>
 <translation id="1016498331642356377">Rychle vyhledávat hlasem. Pokud tuto zkratku chcete upravit, podržte ji.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Odesílání na zařízení <ph name="DEVICE_NAME" />...</translation>
@@ -33,6 +34,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1149401351239820326">Měsíc vypršení platnosti</translation>
 <translation id="1150263420752757504">Aplikace <ph name="APP_NAME" /> se otevře v Chromu. Pokračováním vyjadřujete souhlas se <ph name="BEGIN_LINK1" />smluvními podmínkami společnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatečnými smluvními podmínkami prohlížeče Chrome a systému ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Přejmenovat</translation>
+<translation id="1174479719160874822">Když je obrazovka úzká, vyžádá si Chrome mobilní web</translation>
 <translation id="1177863135347784049">Vlastní</translation>
 <translation id="1178581264944972037">Pozastavit</translation>
 <translation id="1181037720776840403">Odebrat</translation>
@@ -670,6 +672,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="452750746583162491">Zkontrolovat synchronizovaná data</translation>
 <translation id="4528638190900283934">Po přihlášení budete mít k dispozici další funkce</translation>
 <translation id="4532845899244822526">Výběr složky</translation>
+<translation id="4543131175509360848">Tabulka s oznámením, že nejsou k dispozici žádné přístupové klíče</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}many{<ph name="TAB_COUNT_MANY" /> karty, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}other{<ph name="TAB_COUNT_MANY" /> karet, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}}</translation>
 <translation id="4554077758708533499">Připojeno kabelem USB</translation>
 <translation id="4558311620361989323">Zkratky webových stránek</translation>
@@ -944,6 +947,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5869522115854928033">Uložená hesla</translation>
 <translation id="587735546353481577">Pokud nějaký web chcete sledovat, přejděte na něj, otevřené nabídku Chrome a klepněte na Sledovat.</translation>
 <translation id="5879072387416556377">Získejte lepší návrhy</translation>
+<translation id="5899667542927581604">Tabulka s oznámením, že nejsou k dispozici žádné přístupové klíče, byla zavřena</translation>
 <translation id="5916664084637901428">Zapnuto</translation>
 <translation id="5919204609460789179">Chcete-li zahájit synchronizaci, aktualizujte aplikaci <ph name="PRODUCT_NAME" /></translation>
 <translation id="5938820472109305350">Přidat zájem <ph name="INTEREST" /></translation>
@@ -1413,6 +1417,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8127542551745560481">Upravit domovskou stránku</translation>
 <translation id="8130309322784422030">Uložené přihlašovací údaje mohou být zastaralé</translation>
 <translation id="813082847718468539">Zobrazit informace o stránkách</translation>
+<translation id="8136852699834914183">Přehrávání není pro tuto stránku dostupné.</translation>
 <translation id="8137562778192957619">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel Google.</translation>
 <translation id="8186512483418048923">Zbývající soubory: <ph name="FILES" /></translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -1586,6 +1591,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="9063523880881406963">Vypnout funkci Verzi webu pro PC</translation>
 <translation id="9065203028668620118">Upravit</translation>
 <translation id="9065383040763568503">Uložená data, která Chrome nepovažuje za důležitá (např. weby bez uložených nastavení nebo weby, které nenavštěvujete často)</translation>
+<translation id="9067341854474068781">Tabulka s oznámením, že nejsou k dispozici žádné přístupové klíče, otevřená na celou výšku</translation>
 <translation id="906781307897697745">v prohlížeči <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Žádné nepřečtené stránky</translation>
 <translation id="9070377983101773829">Spustit hlasové vyhledávání</translation>

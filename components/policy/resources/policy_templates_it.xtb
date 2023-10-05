@@ -389,6 +389,9 @@ Se il criterio viene disattivato o se non viene configurato, gli elementi da avv
 <translation id="1372618949173323717">Viene disattivato JavaScript</translation>
 <translation id="1376119291123231789">Attiva modalità di ricarica avanzata della batteria</translation>
 <translation id="1376765488559847650">Cloud Upload</translation>
+<translation id="1379689277107868399">Se il criterio viene impostato su NonChiedere o se non viene configurato, <ph name="PRODUCT_NAME" /> non chiede automaticamente all'utente di eseguire nuovamente l'autenticazione sul browser.
+
+Se impostato su ChiediInUnaScheda, quando l'autenticazione dell'utente scade, apri immediatamente una nuova scheda con la pagina di accesso di Google. Questo si verifica solo se utilizzi <ph name="CHROME_SYNC_NAME" />.</translation>
 <translation id="1384459581748403878">Riferimento: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Questo criterio consente di fare in modo che qualsiasi URL corrispondente a uno o più pattern specificati nel criterio (usando il formato del filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />) non venga mai ignorato dal browser.
       Questo criterio viene applicato per ignorare l'utilizzo della memoria e la modalità ad alta efficienza.
@@ -3511,6 +3514,7 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
 <translation id="3977304360459208438">Utilizza l'impostazione predefinita per le suite di crittografia 3DES in TLS</translation>
 <translation id="3979738908158213640">URL a cui verrà concesso l'accesso per eseguire l'attestazione del dispositivo durante l'autenticazione SAML</translation>
 <translation id="3982322576186033243">Non consentire hash non sicuri in handshake TLS</translation>
+<translation id="3982465141749620677">Chiedi una nuova autorizzazione in una scheda</translation>
 <translation id="3983162212222338509">La risoluzione DNS di sistema può essere essere eseguita nel processo di rete, all'esterno del processo di rete o parzialmente all'interno e all'esterno, a seconda della configurazione del sistema e dei flag funzionalità.</translation>
 <translation id="3986700049001404598">Consenti agli utenti di terminare i processi con il Task Manager di Chrome</translation>
 <translation id="398884292557092447">Se il criterio viene impostato su true o se non viene configurato, gli utenti possono controllare i suggerimenti di compilazione automatica per le carte di credito nella UI.
@@ -6452,6 +6456,7 @@ Se il criterio non viene configurato, viene applicata la frequenza predefinita d
       Se il criterio non viene configurato, gli utenti possono scegliere le impostazioni del proxy.
 
       Nota: per esempi approfonditi, consulta la pagina The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
+<translation id="6559643481486165125">Non richiedere una nuova autorizzazione</translation>
 <translation id="656130159911161669">Gli aggiornamenti di ChromeOS ignorano la versione definita nel file manifest dell'app kiosk</translation>
 <translation id="6561396069801924653">Mostra le opzioni di accessibilità nel menu della barra delle applicazioni di sistema</translation>
 <translation id="6562889469672829421">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene oscurato.</translation>
@@ -9015,6 +9020,7 @@ lo schema HTTPS.</translation>
 <translation id="8744844164152340112">Consente di stabilire il tema (scuro/chiaro/automatico) usato per eseguire il rendering dell'UI durante l'OOBE e nella sessione.
       Con la modalità automatica viene effettuato il passaggio automatico tra tema scuro e tema chiaro all'alba e al tramonto.
       Questo criterio dovrebbe essere consigliato per dare agli utenti la possibilità di cambiare il tema nelle impostazioni di sistema.</translation>
+<translation id="8744997936011793680">Chiedi agli utenti di eseguire nuovamente l'autenticazione nel profilo</translation>
 <translation id="8749536858950505376">Se il criterio è impostato su True, il cursore grande rimane attivato. Se il criterio è impostato su False, il cursore grande rimane disattivato.
 
       Se imposti il criterio, gli utenti non possono modificare la funzionalità. Se il criterio non è impostato, il cursore grande risulta disattivato all'inizio, ma gli utenti possono attivarlo in qualsiasi momento.</translation>

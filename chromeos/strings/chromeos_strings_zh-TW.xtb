@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">已連接裝置。</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{要移除頁面嗎？}=1{要移除第 {PAGE_NUMBER} 頁嗎？}other{要移除第 {PAGE_NUMBER} 頁嗎？}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 專屬影片</translation>
 <translation id="315116470104423982">行動數據</translation>
 <translation id="3156846309055100599">正在掃描第 <ph name="PAGE_NUMBER" /> 頁…</translation>
 <translation id="315738237743207937">已偵測到網頁認證入口</translation>

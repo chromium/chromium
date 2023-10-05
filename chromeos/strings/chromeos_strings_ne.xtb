@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">वालपेपर दैनिक रूपमा बदल्नुहोस्</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1651925268237749928">तपाईंले साझा एल्बम चयन गर्नुभएको छ। अन्य मान्छेहरू फोटो हाल्न वा बदल्न सक्छन्। तपाईंको वालपेपरले अहिले यो एल्बममा नभएका फोटोहरू प्रयोग गर्न सक्छ।</translation>
+<translation id="1661865805917886535">खाता तथा सिस्टमसम्बन्धी केही जानकारी Google मा पठाइन सक्छ। हामी यो जानकारी प्राविधिक समस्याहरू समाधान गर्ने र हाम्रा सेवाहरूको गुणस्तर सुधार गर्ने प्रयोजनका लागि हाम्रो गोपनीयता नीति (<ph name="PRIVACYPOLICYURL" />) तथा सेवाका सर्तहरू (<ph name="TERMSOFSERVICEURL" />) बमोजिम प्रयोग गर्छौँ। सामग्री संशोधन गर्ने अनुरोध गर्न कानुनी सहायता (<ph name="LEGALHELPPAGEURL" />) मा जानुहोस्।</translation>
 <translation id="1662989795263954667">रोकियो - प्रिन्टरको मसी सकियो</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> प्रिभ्यू गर्नुहोस्</translation>
 <translation id="1668469839109562275">अन्तर्निर्मित VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">डिभाइस कनेक्ट गरिएको छ।</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{पेज हटाउने हो?}=1{{PAGE_NUMBER} नम्बरको पेज हटाउने हो?}other{{PAGE_NUMBER} नम्बरको पेज हटाउने हो?}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> मा मात्र उपलब्ध</translation>
 <translation id="315116470104423982">मोबाइल डाटा</translation>
 <translation id="3156846309055100599">पेज <ph name="PAGE_NUMBER" /> स्क्यान गरिँदै छ...</translation>
 <translation id="315738237743207937">क्याप्टिभ पोर्टल भेटियो</translation>

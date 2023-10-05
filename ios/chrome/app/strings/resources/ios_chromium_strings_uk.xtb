@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Шукати за допомогою голосу в Chromium.</translation>
 <translation id="1047130070405668746">Виберіть Chromium</translation>
 <translation id="1091252999271033193">Це означає, що Chromium щоразу буде запитувати мобільний сайт.</translation>
+<translation id="1171824629317156389">На пристрої iOS відкрийте налаштування Chromium, натисніть "Веб-переглядач за умовчанням" і виберіть Chromium.</translation>
 <translation id="1185134272377778587">Про Chromium</translation>
 <translation id="1257458525759135959">Щоб зберегти зображення, натисніть "Налаштування" та дозвольте Chromium додавати фотографії</translation>
 <translation id="1289216811211435351">Переходьте на Chromium</translation>
@@ -94,7 +95,6 @@
 <translation id="4736424910885271643">Ваш обліковий запис зареєстровано в домені <ph name="HOSTED_DOMAIN" />, тож дані Chromium буде видалено з цього пристрою</translation>
 <translation id="4790638144988730920">Продовжуйте використовувати дані Chromium в обліковому записі Google.</translation>
 <translation id="4828317641996116749">Chromium не вдалося перевірити всі паролі. Повторіть спробу пізніше.</translation>
-<translation id="4935539884203837577">Chromium може виявляти введені вами номери відстеження й відслідковувати ваші посилки на сторінці нової вкладки, водночас допомагаючи робити інші покупки в Chromium.</translation>
 <translation id="4985291216379576555">Офлайн, Chromium не може перевірити наявність оновлень</translation>
 <translation id="4996471330284142407">Більше можливостей у простому, безпечному та швидкому веб-переглядачі Chromium.</translation>
 <translation id="4999538639245140991">Оскільки ви виходите з облікового запису, зареєстрованого в домені <ph name="SIGNOUT_MANAGED_DOMAIN" />, ваші дані Chromium буде видалено з цього пристрою. Вони залишаться в обліковому записі Google.</translation>

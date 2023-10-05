@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Սարքը միացված է։</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Հեռացնե՞լ էջը}=1{Հեռացնե՞լ էջ {PAGE_NUMBER}-ը}one{Հեռացնե՞լ էջ {PAGE_NUMBER}-ը}other{Հեռացնե՞լ էջ {PAGE_NUMBER}-ը}}</translation>
+<translation id="3146655726035122603">Հատուկ <ph name="PRODUCT_NAME" />-ի համար</translation>
 <translation id="315116470104423982">Բջջային կապի տվյալներ</translation>
 <translation id="3156846309055100599">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը...</translation>
 <translation id="315738237743207937">Հայտնաբերվել է մուտքի էջ</translation>

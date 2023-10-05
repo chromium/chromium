@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1213425325105380833">Restaure os apps da Web usados recentemente em dispositivos conectados a esta conta</translation>
+<translation id="2065911435109240297">Restaurar apps da Web</translation>
+<translation id="2111649875343992405">Conferir quais apps da Web serão restaurados</translation>
 <translation id="2139186145475833000">Adicionar à tela inicial</translation>
+<translation id="2172982519592313442">Analisar apps da Web</translation>
 <translation id="2478076885740497414">Instalar aplicativo</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3910402514791813257">Falha ao instalar</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Captura de tela. Toque para fechar.</translation>
 <translation id="6990079615885386641">Comprar aplicativo na Google Play Store: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Ainda adicionando o site anterior</translation>
+<translation id="7672888405515738928">Escolha apps da Web para restaurar neste dispositivo. Os apps mostrados aqui são baseados no seu histórico do Chrome.</translation>
+<translation id="8163051092261298861">Restaurar apps da Web</translation>
 <translation id="962979164594783469">Instalar este app</translation>
 </translationbundle>

@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Chromium-де дауыспен іздеу.</translation>
 <translation id="1047130070405668746">Chromium браузерін таңдаңыз.</translation>
 <translation id="1091252999271033193">Chromium браузерін әрдайым телефонда ашу қажет болады.</translation>
+<translation id="1171824629317156389">iOS жүйесінде Chromium параметрлерін ашып, "Әдепкі браузер қолданбасы" түймесін түртіп, Chromium опциясын таңдаңыз.</translation>
 <translation id="1185134272377778587">Chromium туралы ақпарат</translation>
 <translation id="1257458525759135959">Суреттерді сақтау үшін "Параметрлер" бөлімін түртіп, Chromium браузеріне суреттер қосуға рұқсат етіңіз.</translation>
 <translation id="1289216811211435351">Chromium браузеріне ауысыңыз</translation>
@@ -94,7 +95,6 @@
 <translation id="4736424910885271643">Аккаунтыңызды <ph name="HOSTED_DOMAIN" /> басқарады, сондықтан Chromium деректеріңіз бұл құрылғыдан өшіріледі</translation>
 <translation id="4790638144988730920">Google аккаунтыңызда Chromium деректерін пайдалануды жалғастырыңыз.</translation>
 <translation id="4828317641996116749">Chromium барлық құпия сөзді тексере алмады. Кейінірек қайталап көріңіз.</translation>
-<translation id="4935539884203837577">Chromium браузері сіз енгізетін бақылау нөмірлерін анықтап, пакеттеріңізді жаңа қойынды бетінде бақылай алады және Chromium-дегі басқа сатып алу мүмкіндіктеріне көмектеседі.</translation>
 <translation id="4985291216379576555">Офлайн, Chromium жаңа нұсқалардың бар-жоғын тексере алмайды.</translation>
 <translation id="4996471330284142407">Қарапайым, қауіпсіз әрі ең жылдам Chromium-мен жұмыс өнімділігін арттырыңыз.</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> басқаратын аккаунттан шықсаңыз, Chromium деректеріңіз құрылғыдан жойылады. Деректеріңіз Google аккаунтында қалады.</translation>

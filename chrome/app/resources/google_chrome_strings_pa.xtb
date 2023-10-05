@@ -161,6 +161,7 @@
 <translation id="3582972582564653026">ਸਿੰਕ ਕਰਕੇ ਆਪਣੇ ਡੀਵਾਈਸਾਂ ਵਿਚਾਲੇ Chrome ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਓ</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਚਾਹੁੰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ}=1{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਚਾਹੁੰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ। ਤੁਹਾਡੀ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਦੁਬਾਰਾ ਨਹੀਂ ਖੁੱਲ੍ਹੇਗੀ।}other{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਚਾਹੁੰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ। ਤੁਹਾਡੀਆਂ # ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਦੁਬਾਰਾ ਨਹੀਂ ਖੁੱਲ੍ਹਣਗੀਆਂ।}}</translation>
 <translation id="3622797965165704966">ਹੁਣ Chrome ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਅਤੇ ਸਾਂਝੇ ਕੀਤੇ ਕੰਪਿਊਟਰ 'ਤੇ ਵਰਤਣਾ ਵੱਧ ਆਸਾਨ ਹੈ।</translation>
+<translation id="3635073343384702370">ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ 'ਤੇ Chrome ਉਨ੍ਹਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="3673813398384385993">Chrome ਨੂੰ ਇਹ ਪਤਾ ਲੱਗਾ ਕਿ <ph name="EXTENSION_NAME" /> ਵਿੱਚ ਮਾਲਵੇਅਰ ਸ਼ਾਮਲ ਹਨ</translation>
 <translation id="3703994572283698466">ChromeOS ਨੂੰ ਵਧੀਕ <ph name="BEGIN_LINK_CROS_OSS" />ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਸਾਫ਼ਟਵੇਅਰ<ph name="END_LINK_CROS_OSS" /> ਕਰਕੇ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ, ਜਿਵੇਂ ਕਿ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ਵਿਕਾਸ ਵਾਤਾਵਰਨ<ph name="END_LINK_LINUX_OSS" />।</translation>
 <translation id="3716540481907974026">ChromeOS Flex ਵਰਜਨ</translation>
@@ -212,6 +213,7 @@
 <translation id="4571503333518166079">Chrome ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="459622048091363950">Chrome ਤੱਕ ਪਹੁੰਚ ਹੋਣ 'ਤੇ, ਵੈੱਬਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਪਹੁੰਚ ਲਈ ਪੁੱਛ ਸਕਣਗੀਆਂ।</translation>
 <translation id="4600710005438004015">Chrome ਨਵੀਨਤਮ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਇਸ ਲਈ ਤੁਹਾਨੂੰ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਸੁਰੱਖਿਆ ਸਥਿਰ ਨਹੀਂ ਮਿਲ ਰਹੇ ਹਨ।</translation>
+<translation id="4624065194742029982">Chrome ਇਨਕੋਗਨਿਟੋ</translation>
 <translation id="4627412468266359539">ਵਿਕਲਪਿਕ: ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤਸ਼ਖੀਸ ਅਤੇ ਵਰਤੋਂ ਡਾਟਾ Google ਨੂੰ ਭੇਜ ਕੇ ChromeOS Flex ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ।</translation>
 <translation id="4633000520311261472">Chrome ਨੂੰ ਵੱਧ ਸੁਰੱਖਿਅਤ ਬਣਾਉਣ ਲਈ, ਅਸੀਂ ਕੁਝ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕੀਤਾ ਹੈ, ਜੋ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ਵਿੱਚ ਸੂਚੀਬੱਧ ਨਹੀਂ ਹਨ ਅਤੇ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਤੋਂ ਬਿਨਾਂ ਸ਼ਾਮਲ ਕੀਤੀਆਂ ਗਈਆਂ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="4680828127924988555">ਸਥਾਪਨਾ ਰੱਦ ਕਰੋ</translation>
@@ -221,6 +223,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">ਇਹ ਫ਼ਾਈਲ ਖਤਰਨਾਕ ਹੋ ਸਕਦੀ ਹੈ, ਇਸ ਕਰਕੇ Chrome ਨੇ ਇਸਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="479167709087336770">ਇਹ Google Search ਵੇਲੇ ਵਰਤੇ ਜਾਣ ਵਾਲੇ ਸਪੈੱਲ-ਚੈਕਰ ਨੂੰ ਹੀ ਵਰਤਦਾ ਹੈ। ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਟਾਈਪ ਕੀਤੀ ਜਾਣ ਵਾਲੀ ਲਿਖਤ Google ਨੂੰ ਭੇਜੀ ਜਾਵੇਗੀ। ਤੁਸੀਂ ਹਮੇਸ਼ਾਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਸ ਵਤੀਰੇ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
+<translation id="4793679854893018356">ਜਾਣੋ ਕਿ Chrome ਤੁਹਾਨੂੰ ਕਿਵੇਂ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ</translation>
 <translation id="4828579605166583682">Google Chrome ਮੌਜੂਦਾ ਪਾਸਵਰਡ ਬਦਲਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ। ਇਸਦੀ ਆਗਿਆ ਦੇਣ ਲਈ ਆਪਣਾ Windows ਪਾਸਵਰਡ ਟਾਈਪ ਕਰੋ।</translation>
 <translation id="4842397268809523050">ChromeOS Flex ਤੁਹਾਡਾ ਡਾਟਾ ਸਿੰਕ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿਉਂਕਿ ਸਿੰਕ ਤੁਹਾਡੇ ਡੋਮੇਨ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="4873783916118289636">Chrome 'ਤੇ ਪ੍ਰਮੁੱਖ ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ ਕੰਟਰੋਲਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
@@ -271,6 +274,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="5756509061973259733">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਇਸ ਖਾਤੇ ਨਾਲ ਕੋਈ Chrome ਪ੍ਰੋਫਾਈਲ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome ਨੂੰ ਲਾਂਚ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="586971344380992563">ਅਸੁਰੱਖਿਅਤ ਸਾਈਟਾਂ ਅਤੇ ਡਾਊਨਲੋਡਾਂ ਬਾਰੇ <ph name="BEGIN_LINK" />Chrome ਤੁਹਾਨੂੰ ਚਿਤਾਵਨੀ ਦਿੰਦਾ ਹੈ<ph name="END_LINK" /></translation>
 <translation id="5895138241574237353">ਰੀਸਟਾਰਟ ਕਰੋ</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ਨੈੱਟਵਰਕ ਸਾਈਨ-ਇਨ</translation>
 <translation id="5924017743176219022">ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
@@ -280,6 +284,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="5941830788786076944">Google Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ ਬਣਾਓ</translation>
 <translation id="6003112304606738118">ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ... <ph name="HOURS" /> ਘੰਟੇ ਬਾਕੀ</translation>
 <translation id="6010556343189461180">Google Chrome ਸੰਬੰਧੀ ਭਵਿੱਖੀ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ macOS 10.15 ਜਾਂ ਇਸ ਤੋਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ ਦੀ ਲੋੜ ਪਵੇਗੀ। ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ macOS 10.14 ਵਰਜਨ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ।</translation>
+<translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome ਤੋਂ ਟੂਲਾਂ<ph name="END_LINK" /> ਨਾਲ, ਤੁਸੀਂ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ ਖੁਦ ਕੰਟਰੋਲ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="6022659036123304283">Chrome ਨੂੰ ਆਪਣੇ ਅਨੁਸਾਰ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" /> ਵਿੱਚ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਵੇਗਾ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
@@ -369,6 +374,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="7651907282515937834">Chrome Enterprise ਲੋਗੋ</translation>
 <translation id="76531479118467370">Chrome ਨੇ ਇਸ ਡਾਊਨਲੋਡ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ ਕਿਉਂਕਿ ਤੁਸੀਂ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ ਅਤੇ ਫ਼ਾਈਲ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ</translation>
 <translation id="7655455401911432608">ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ, ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਦਾ ਰਿਕਾਰਡ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ Chrome ਦੀ ਵਰਤੋਂ ਨਾਲ ਗਏ ਹੋ।</translation>
+<translation id="769538538642757151">ਜੇ ਕਿਸੇ ਚੀਜ਼ ਨੂੰ ਤੁਹਾਡੀ ਸਮੀਖਿਆ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ, ਤਾਂ Chrome ਤੁਹਾਨੂੰ ਦੱਸੇਗਾ</translation>
 <translation id="7747138024166251722">ਸਥਾਪਨਾਕਾਰ ਇੱਕ ਅਸਥਾਈ ਡਾਇਰੈਕਟਰੀ ਨਹੀਂ ਬਣਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਫ਼ਟਵੇਅਰ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਖਾਲੀ ਡਿਸਕ ਸਪੇਸ ਅਤੇ ਇਜਾਜ਼ਤ ਦੀ ਜਾਂਚ ਕਰੋ।</translation>
 <translation id="7761834446675418963">Chrome ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਆਪਣੇ ਨਾਮ 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਅਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸ਼ੁਰੂ ਕਰੋ।</translation>
 <translation id="7777080907402804672">ਜੇ ਕਿਸੇ ਚਿੱਤਰ ਦਾ ਲਾਭਕਾਰੀ ਵਰਣਨ ਨਹੀਂ ਹੈ, ਤਾਂ Chrome ਤੁਹਾਡੇ ਲਈ ਇੱਕ ਵਰਣਨ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੇਗਾ। ਵਰਣਨ ਬਣਾਉਣ ਲਈ, ਚਿੱਤਰ Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ। ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
@@ -397,6 +403,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8129812357326543296">&amp;Google Chrome ਬਾਰੇ</translation>
 <translation id="813913629614996137">ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8255190535488645436">Google Chrome ਤੁਹਾਡਾ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤ ਰਿਹਾ ਹੈ।</translation>
+<translation id="8267953129876836456">Chrome ਨੂੰ ਤੁਹਾਡੀ ਸਮੀਖਿਆ ਲਈ ਕੁਝ ਸੁਰੱਖਿਆ ਸਿਫ਼ਾਰਸ਼ਾਂ ਮਿਲੀਆਂ ਹਨ</translation>
 <translation id="8270775718612349140">Chrome ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਜਾਂਦੇ ਸਰਟੀਫਿਕੇਟ</translation>
 <translation id="8286862437124483331">Google Chrome ਪਾਸਵਰਡ ਦਿਖਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ। ਇਸਦੀ ਆਗਿਆ ਦੇਣ ਲਈ ਆਪਣਾ Windows ਪਾਸਵਰਡ ਟਾਈਪ ਕਰੋ।</translation>
 <translation id="8290100596633877290">ਠਹਿਰੋ! Google Chrome ਕ੍ਰੈਸ਼ ਹੋ ਗਿਆ ਹੈ। ਕੀ ਹੁਣ ਮੁੜ-ਲਾਂਚ ਕਰਨਾ ਹੈ?</translation>
@@ -411,6 +418,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8403038600646341038">ਕਿਸੇ ਕੰਪਿਊਟਰ ਸਕ੍ਰੀਨ ਦੇ ਅੰਦਰ Chrome ਲੋਗੋ।</translation>
 <translation id="8416347857511542594">Chrome ਵਿੱਚ ਵਿਗਿਆਪਨ ਵਿਅਕਤੀਗਤਕਰਨ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="8418845734693287262">ChromeOS ਤੁਹਾਡਾ ਡਾਟਾ ਸਿੰਕ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਖਾਤਾ ਸਾਈਨ-ਇਨ ਵੇਰਵੇ ਪੁਰਾਣੇ ਹਨ।</translation>
+<translation id="842386925677997438">Chrome ਦੇ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਟੂਲ</translation>
 <translation id="8433638294851456451">ਇੱਥੋਂ ਆਪਣੇ Android ਫ਼ੋਨ 'ਤੇ ਨੰਬਰ ਭੇਜਣ ਲਈ, ਦੋਵੇਂ ਡੀਵਾਈਸਾਂ 'ਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="8451192282033883849">ਤੁਹਾਡਾ ਖਾਤਾ <ph name="MANAGER_NAME" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ Chrome ਬ੍ਰਾਊਜ਼ਰ ਪ੍ਰੋਫਾਈਲ ਅਤੇ ਇਸਦੇ ਡਾਟੇ ਨੂੰ ਦੇਖ ਸਕਦਾ ਹੈ ਅਤੇ ਇਸਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦਾ ਹੈ, ਜਿਵੇਂ ਕਿ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ ਅਤੇ ਪਾਸਵਰਡ।</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
@@ -451,6 +459,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="9195993889682885387">Chrome ਪਿਛਲੇ ਕੁਝ ਹਫ਼ਤਿਆਂ ਦੇ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾ ਸਕਦਾ ਹੈ। ਇਹ ਜਾਣਕਾਰੀ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਰਹਿੰਦੀ ਹੈ।</translation>
 <translation id="919706545465235479">ਸਿੰਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ Chrome ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="922152298093051471">Chrome ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
+<translation id="92460355979482493">ਚਾਲੂ ਹੋਣ 'ਤੇ, Chrome ਉਨ੍ਹਾਂ ਪੰਨਿਆਂ ਨੂੰ ਪ੍ਰੀਲੋਡ ਕਰਦਾ ਹੈ ਜੋ ਬ੍ਰਾਊਜ਼ ਅਤੇ ਖੋਜ ਕਰਨ ਵਿੱਚ ਤੇਜ਼ੀ ਲਿਆਉਂਦੇ ਹਨ।</translation>
 <translation id="93760716455950538">ChromeOS Flex ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="940313311831216333">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਵਿੱਚ ਆਪਣੀ Chrome ਸਮੱਗਰੀ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ, ਸਾਈਨ-ਇਨ ਕਰੋ, ਫਿਰ ਸਿੰਕ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="943390475793766444">Chrome ਵੱਲੋਂ ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਸਕੈਨ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਕਿਉਂਕਿ ਇਹ ਹਾਨੀਕਾਰਕ ਹੋ ਸਕਦੀ ਹੈ।</translation>

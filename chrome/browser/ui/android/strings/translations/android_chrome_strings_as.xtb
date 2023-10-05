@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
 <translation id="1011749477052068769">ইয়ালৈ আনক</translation>
+<translation id="1014147525163127655"><ph name="ORIGIN" />ৰ বাবে এই ডিভাইচটোত কোনো পাছকী নাই</translation>
 <translation id="1016498331642356377">আপোনাৰ কণ্ঠস্বৰৰ দ্বাৰা ক্ষিপ্ৰভাৱে সন্ধান কৰক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ, স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />লৈ পঠিয়াই থকা হৈছে...</translation>
@@ -33,6 +34,7 @@
 <translation id="1149401351239820326">ম্যাদ উকলা মাহ</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeত খুলিব। অব্যাহত ৰাখি আপুনি <ph name="BEGIN_LINK1" />Googleৰ সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />Google Chrome আৰু ChromeOSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী<ph name="END_LINK2" />ত সন্মতি দিয়ে।</translation>
 <translation id="1173894706177603556">নতুন নাম দিয়ক</translation>
+<translation id="1174479719160874822">Chromeএ স্ক্ৰীনখনৰ আকাৰ সৰু হ’লে ম’বাইল ছাইটৰ বাবে অনুৰোধ কৰিব</translation>
 <translation id="1177863135347784049">কাষ্টম</translation>
 <translation id="1178581264944972037">পজ কৰক</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
@@ -591,6 +593,7 @@
 <translation id="4116038641877404294">অফলাইন ব্যৱহাৰ কৰিবলৈ পৃষ্ঠা ডাউনল’ড কৰক</translation>
 <translation id="4121654769234887259">আপুনি এই পাছৱৰ্ডটো মনত ৰখাৰ প্ৰয়োজন নহ’ব। এইটো <ph name="USERNAME" />ৰ Google Password Managerত ছেভ কৰা হ’ব।</translation>
 <translation id="4124152339699379357">জাননীৰ অনুমতিৰ প্ৰৱাহ পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
+<translation id="4126285640274188657">পৃষ্ঠাৰ অন্তৰ্দৃষ্টি</translation>
 <translation id="4135200667068010335">এটা টেব শ্বেয়াৰ কৰিবলৈ থকা ডিভাইচসমূহৰ সূচী বন্ধ আছে।</translation>
 <translation id="4137746084635924146">বর্তমানৰ ডিভাইচটোৰ ভাষা</translation>
 <translation id="4139654229316918773">Chrome Canary</translation>
@@ -670,6 +673,7 @@
 <translation id="452750746583162491">আপোনাৰ ছিংক কৰা ডেটা পর্যালোচনা কৰক</translation>
 <translation id="4528638190900283934">অতিৰিক্ত সুবিধাৰ বাবে ছাইন ইন কৰক</translation>
 <translation id="4532845899244822526">ফ’ল্ডাৰ বাছনি কৰক</translation>
+<translation id="4543131175509360848">কোনো পাছকীৰ শ্বীট নাই</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> টা টেব}one{<ph name="TAB_COUNT_MANY" /> টা টেব, <ph name="TAB_COUNT_INCOGNITO" /> টা ইনক’গনিট’}other{<ph name="TAB_COUNT_MANY" /> টা টেব, <ph name="TAB_COUNT_INCOGNITO" /> টা ইনক’গনিট’}}</translation>
 <translation id="4554077758708533499">ইউএছবি কে’বলৰ জৰিয়তে সংযোগ কৰা হ’ল</translation>
 <translation id="4558311620361989323">ৱেবপৃষ্ঠাৰ শ্বৰ্টকাট</translation>
@@ -944,6 +948,7 @@
 <translation id="5869522115854928033">ছেভ কৰা পাছৱৰ্ডসমূহ</translation>
 <translation id="587735546353481577">এটা ছাইট ফ’ল’ কৰিবলৈ, ছাইটটোলৈ গৈ Chromeৰ মেনুখন খুলি ফ’ল’ কৰকত টিপক।</translation>
 <translation id="5879072387416556377">উন্নত পৰামৰ্শ পাওক</translation>
+<translation id="5899667542927581604">কোনো পাছকীৰ শ্বীট বন্ধ কৰা হোৱা নাই</translation>
 <translation id="5916664084637901428">অন আছে</translation>
 <translation id="5919204609460789179">ছিংক আৰম্ভ কৰিবলৈ <ph name="PRODUCT_NAME" /> আপডে'ট কৰক</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> যোগ দিয়ক</translation>
@@ -1240,6 +1245,7 @@
 <translation id="7376560087009844242">কোনো পৃষ্ঠাৰ অধিক পাঠ অন্তৰ্ভুক্ত কৰি, সন্ধান কৰিবলৈ স্পৰ্শ কৰক সুবিধাটো ব্যৱহাৰ কৰোঁতে আপুনি হয়তো উন্নত ফলাফল দেখা পাব পাৰে। এইটো সলনি কৰিবলৈ আপুনি যিকোনো সময়তে <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" /> লৈ যাব পাৰে।</translation>
 <translation id="7379900596734708416">ছাইটৰ বাবে গাঢ় ৰঙৰ থীম উপলব্ধ</translation>
 <translation id="7388615499319468910">বিজ্ঞাপনে কেনেকৈ কাম কৰে সেয়া ছাইট বিজ্ঞাপনদাতাসকলে বুজি পাব পাৰে। এই ছেটিংটো অফ হৈ আছে।</translation>
+<translation id="7397416715506917976">পৃষ্ঠাৰ অন্তৰ্দৃষ্টি চাওক</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome প্ৰথমবাৰ চলোৱাৰ অভিজ্ঞতা</translation>
 <translation id="7411224099004328643">Google একাউণ্টৰ ব্যৱহাৰকাৰী</translation>
@@ -1413,6 +1419,7 @@
 <translation id="8127542551745560481">গৃহপৃষ্ঠা সম্পাদনা কৰক</translation>
 <translation id="8130309322784422030">আপুনি ষ্ট’ৰ কৰি থোৱা ছাইন ইন কৰাৰ তথ্যখিনিৰ ম্যাদ উকলিব পাৰে</translation>
 <translation id="813082847718468539">ছাইটৰ তথ্য চাওক</translation>
+<translation id="8136852699834914183">এই পৃষ্ঠাখনৰ বাবে প্লে’বেক উপলব্ধ নহয়।</translation>
 <translation id="8137562778192957619">আপুনি এই পাছৱৰ্ডটো মনত ৰখাৰ প্ৰয়োজন নহ’ব। এইটো Google Password Managerত ছেভ কৰা হ’ব।</translation>
 <translation id="8186512483418048923"><ph name="FILES" />টা ফাইল বাকী আছে</translation>
 <translation id="8189750580333936930">প্ৰাইভেচি ছেণ্ডবক্স</translation>
@@ -1586,6 +1593,7 @@
 <translation id="9063523880881406963">ডেস্কটপ ছাইট অনুৰোধ কৰা সুবিধাটি বন্ধ কৰক</translation>
 <translation id="9065203028668620118">সম্পাদনা কৰক</translation>
 <translation id="9065383040763568503">Chromeএ গুৰুত্বপূৰ্ণ বুলি গণ্য নকৰা ষ্ট’ৰ কৰি ৰখা ডেটা (যেনে, এনে ছাইট যিবিলাকৰ ছেটিংসমূহ ছেভ কৰি ৰখা হোৱা নাই অথবা যিবিলাক আপুনি সঘনাই নাচায়)</translation>
+<translation id="9067341854474068781">পাছকীৰ কোনো শ্বীট সম্পূৰ্ণ উচ্চতাত খোলা নাই</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" />ত</translation>
 <translation id="9069999660519089861">কোনো নপঢ়া পৃষ্ঠা নাই</translation>
 <translation id="9070377983101773829">কণ্ঠধ্বনিৰ জৰিয়তে সন্ধান আৰম্ভ কৰক</translation>

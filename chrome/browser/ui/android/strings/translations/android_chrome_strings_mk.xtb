@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="1011749477052068769">Премести тука</translation>
+<translation id="1014147525163127655">Нема криптографски клучеви за <ph name="ORIGIN" /> на уредов</translation>
 <translation id="1016498331642356377">Брзо пребарајте со гласот. За да ја измените сликава од екранот, допрете и задржете.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Се испраќа до <ph name="DEVICE_NAME" />…</translation>
@@ -33,6 +34,7 @@
 <translation id="1149401351239820326">Месец на истекување</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ќе се отвори во Chrome. Ако продолжите, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Преименувај</translation>
+<translation id="1174479719160874822">Кога е тесен екранот, Chrome ќе го побара сајтот за мобилен</translation>
 <translation id="1177863135347784049">Приспособено</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Отстрани</translation>
@@ -670,6 +672,7 @@
 <translation id="452750746583162491">Прегледајте ги синхронизираните податоци</translation>
 <translation id="4528638190900283934">Најавете се за дополнителни функции</translation>
 <translation id="4532845899244822526">Избери папка</translation>
+<translation id="4543131175509360848">Нема лист со криптографски клучеви</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картичка}one{<ph name="TAB_COUNT_MANY" /> картичка, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}other{<ph name="TAB_COUNT_MANY" /> картички, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}}</translation>
 <translation id="4554077758708533499">Поврзано со USB-кабел</translation>
 <translation id="4558311620361989323">Кратенки на веб-страница</translation>
@@ -944,6 +947,7 @@
 <translation id="5869522115854928033">Зачувани лозинки</translation>
 <translation id="587735546353481577">За да следите сајт, одете на сајтот, отворете го менито на Chrome и допрете „Следи“.</translation>
 <translation id="5879072387416556377">Добијте подобри предлози</translation>
+<translation id="5899667542927581604">Нема лист со криптографски клучеви што е затворен</translation>
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5919204609460789179">Ажурирајте го <ph name="PRODUCT_NAME" /> за да започнете со синхронизирање</translation>
 <translation id="5938820472109305350">Додајте <ph name="INTEREST" /></translation>
@@ -1413,6 +1417,7 @@
 <translation id="8127542551745560481">Изменете ја почетната страница</translation>
 <translation id="8130309322784422030">Вашите складирани податоци за најавување можеби се застарени</translation>
 <translation id="813082847718468539">Прикажи информации за локација</translation>
+<translation id="8136852699834914183">Репродукцијата е недостапна за страницава.</translation>
 <translation id="8137562778192957619">Не треба да ја памтите лозинкава. Ќе се зачува во Google Password Manager.</translation>
 <translation id="8186512483418048923">Преостануваат <ph name="FILES" /> датотеки</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -1586,6 +1591,7 @@
 <translation id="9063523880881406963">Исклучи „Барај локација на работна површина“</translation>
 <translation id="9065203028668620118">Измени</translation>
 <translation id="9065383040763568503">Складирани податоци за кои Chrome смета дека не се важни (на пр., сајтови без зачувани поставки или коишто не ги посетувате често)</translation>
+<translation id="9067341854474068781">Нема лист со криптографски клучеви што е отворен на цел екран</translation>
 <translation id="906781307897697745">во <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Нема непрочитани страници</translation>
 <translation id="9070377983101773829">Започнете гласовно пребарување</translation>

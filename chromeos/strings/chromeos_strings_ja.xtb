@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">デバイスは接続されています。</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ページを削除しますか？}=1{ページ {PAGE_NUMBER} を削除しますか？}other{ページ {PAGE_NUMBER} を削除しますか？}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 限定</translation>
 <translation id="315116470104423982">モバイル データ</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています...</translation>
 <translation id="315738237743207937">キャプティブ ポータルが検出されました</translation>

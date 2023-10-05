@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="1213425325105380833">Stel webapps terug wat jy onlangs op toestelle gebruik het wat aan hierdie rekening gekoppel is</translation>
+<translation id="2065911435109240297">Stel jou webapps terug</translation>
+<translation id="2111649875343992405">Hersien watter webapps om terug te stel</translation>
 <translation id="2139186145475833000">Voeg by tuisskerm</translation>
+<translation id="2172982519592313442">Hersien webapps</translation>
 <translation id="2478076885740497414">Installeer program</translation>
 <translation id="3789841737615482174">Installeer</translation>
 <translation id="3910402514791813257">Kon nie installeer nie</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Skermkiekie. Tik om toe te maak.</translation>
 <translation id="6990079615885386641">Kry die program van die Google Play Winkel af: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Voeg steeds vorige werf by</translation>
+<translation id="7672888405515738928">Kies webapps om op hierdie toestel terug te stel. Apps wat hier gewys word, is gebaseer op jou Chrome-geskiedenis.</translation>
+<translation id="8163051092261298861">Herstel webapps</translation>
 <translation id="962979164594783469">Installeer hierdie program</translation>
 </translationbundle>

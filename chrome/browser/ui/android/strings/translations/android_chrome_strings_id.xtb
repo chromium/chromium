@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1011749477052068769">Pindahkan ke sini</translation>
+<translation id="1014147525163127655">Tidak ada kunci sandi untuk <ph name="ORIGIN" /> di perangkat ini</translation>
 <translation id="1016498331642356377">Telusuri dengan cepat menggunakan suara Anda. Sentuh lama untuk mengedit pintasan ini.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Mengirim ke <ph name="DEVICE_NAME" />...</translation>
@@ -33,6 +34,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1149401351239820326">Bulan akhir masa berlaku</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> akan dibuka di Chrome. Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> serta <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Google Chrome dan ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Ganti nama</translation>
+<translation id="1174479719160874822">Chrome akan meminta situs seluler jika layarnya sempit</translation>
 <translation id="1177863135347784049">Sesuaikan</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Hapus</translation>
@@ -670,6 +672,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="452750746583162491">Tinjau data Anda yang disinkronkan</translation>
 <translation id="4528638190900283934">Login untuk mendapatkan fitur tambahan</translation>
 <translation id="4532845899244822526">Pilih folder</translation>
+<translation id="4543131175509360848">Sheet tidak ada kunci sandi</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> samaran}}</translation>
 <translation id="4554077758708533499">Terhubung dengan kabel USB</translation>
 <translation id="4558311620361989323">Pintasan halaman web</translation>
@@ -944,6 +947,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5869522115854928033">Sandi tersimpan</translation>
 <translation id="587735546353481577">Untuk mengikuti situs, buka situs, buka menu Chrome, dan ketuk Ikuti.</translation>
 <translation id="5879072387416556377">Dapatkan saran yang lebih baik</translation>
+<translation id="5899667542927581604">Sheet tidak ada kunci sandi ditutup</translation>
 <translation id="5916664084637901428">Aktif</translation>
 <translation id="5919204609460789179">Perbarui <ph name="PRODUCT_NAME" /> untuk memulai sinkronisasi</translation>
 <translation id="5938820472109305350">Tambahkan <ph name="INTEREST" /></translation>
@@ -1413,6 +1417,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8127542551745560481">Edit halaman beranda</translation>
 <translation id="8130309322784422030">Info login tersimpan Anda mungkin sudah tidak berlaku</translation>
 <translation id="813082847718468539">Lihat informasi situs</translation>
+<translation id="8136852699834914183">Pemutaran tidak tersedia untuk halaman ini.</translation>
 <translation id="8137562778192957619">Anda tidak perlu mengingat sandi ini. Sandi akan disimpan ke Pengelola Sandi Google.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> file tersisa</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -1586,6 +1591,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="9063523880881406963">Nonaktifkan Ubah situs desktop</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9065383040763568503">Data tersimpan yang dianggap tidak penting oleh Chrome (misalnya situs yang tidak memiliki setelan tersimpan atau situs yang jarang Anda kunjungi)</translation>
+<translation id="9067341854474068781">Sheet tidak ada kunci sandi terbuka sepenuhnya</translation>
 <translation id="906781307897697745">di <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Tidak ada halaman yang belum dibaca</translation>
 <translation id="9070377983101773829">Mulai penelusuran suara</translation>

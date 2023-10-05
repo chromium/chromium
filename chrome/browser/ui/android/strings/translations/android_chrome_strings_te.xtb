@@ -34,6 +34,7 @@
 <translation id="1149401351239820326">గడువు ముగింపు నెల</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeలో తెరవబడుతుంది. కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS అదనపు సర్వీస్ నియమాలకు<ph name="END_LINK2" /> అంగీకరిస్తున్నారు.</translation>
 <translation id="1173894706177603556">పేరుమార్చు</translation>
+<translation id="1174479719160874822">స్క్రీన్ చిన్నదైనప్పుడు Chrome మొబైల్ సైట్‌ను రిక్వెస్ట్ చేస్తుంది</translation>
 <translation id="1177863135347784049">అనుకూల</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
@@ -344,6 +345,7 @@
 <translation id="2856503607207334158">సైన్ ఇన్ చేయడం విఫలమైంది</translation>
 <translation id="2860954141821109167">ఈ పరికరంలో ఫోన్ యాప్ ప్రారంభించబడిందని నిర్ధారించుకోండి</translation>
 <translation id="2861923151411510142">కొన్ని Chrome ఫీచర్‌లు ఇకపై అందుబాటులో ఉండవు</translation>
+<translation id="2869430948265924908">కారులో మీ గోప్యమైన కంటెంట్‌ను సురక్షితంగా ఉంచడం కోసం, మీరు తప్పనిసరిగా కారు ప్రొఫైల్ లాక్‌ను క్రియేట్ చేయాలి.  మీరు పిన్, కోడ్, లేదా పాస్‌వర్డ్‌ను ఉపయోగించి దీనిని క్రియేట్ చేయవచ్చు.</translation>
 <translation id="2870560284913253234">సైట్</translation>
 <translation id="2871733351037274014">పేజీలను ప్రీ - లోడ్ చేయండి</translation>
 <translation id="2876136027428473467">మీరు ఈ వెబ్‌సైట్‌ను ఆమోదించాలని <ph name="CHILD_NAME" /> కోరుతున్నారు:</translation>
@@ -465,6 +467,7 @@
 <translation id="3421726884497337397">థర్డ్-పార్టీ కుక్కీలను ఎప్పుడు బ్లాక్ చేయాలో ఎంచుకోండి</translation>
 <translation id="3428747202529429621">Chromeలో మిమ్మల్ని సురక్షితంగా ఉంచుతుంది, మీరు సైన్ ఇన్ చేసినప్పుడు ఇతర యాప్‌లలో మీ భద్రతను మెరుగుపరచడానికి ఉపయోగించబడవచ్చు</translation>
 <translation id="3429160811076349561">ట్రయల్ ఫీచర్‌లు ఆఫ్ చేయబడి ఉన్నాయి</translation>
+<translation id="3430670036890315772">మీ ప్రొఫైల్ లాక్‌ను ఆఫ్ చేస్తే, సేవ్ చేసిన మీ సమాచారం తీసివేయబడుతుంది</translation>
 <translation id="3435465986463792564">చాలా విండోలు ఉన్నాయా? మీరు వాటిని ఇక్కడ నుండి మేనేజ్ చేయవచ్చు</translation>
 <translation id="3435738964857648380">భద్రత</translation>
 <translation id="3439276997620616816">మీ ఇటీవలి ట్యాబ్‌లను ఇక్కడ చూడవచ్చు</translation>
@@ -592,6 +595,7 @@
 <translation id="4116038641877404294">పేజీలను ఆఫ్‌లైన్‌లో ఉపయోగించడం కోసం వాటిని డౌన్‌లోడ్ చేసుకోండి</translation>
 <translation id="4121654769234887259">మీరు ఈ పాస్‌వర్డ్‌ను గుర్తుపెట్టుకోవాల్సిన అవసరం లేదు. ఇది <ph name="USERNAME" /> కోసం Google Password Managerకు సేవ్ చేయబడుతుంది.</translation>
 <translation id="4124152339699379357">నోటిఫికేషన్ అనుమతుల ఫ్లో పూర్తి స్థాయిలో తెరవబడింది</translation>
+<translation id="4126285640274188657">పేజీ గణాంకాలు</translation>
 <translation id="4135200667068010335">ట్యాబ్‌ను షేర్ చేయాల్సిన పరికరాల లిస్ట్‌ మూసివేయబడింది.</translation>
 <translation id="4137746084635924146">ప్రస్తుత పరికర భాష</translation>
 <translation id="4139654229316918773">Chrome కెనరీ</translation>
@@ -643,6 +647,7 @@
 <translation id="4378154925671717803">ఫోన్</translation>
 <translation id="438319986296050901">కార్డ్‌ను మాత్రమే షేర్ చేయండి</translation>
 <translation id="4384468725000734951">శోధన కోసం Sogouను ఉపయోగిస్తుంది</translation>
+<translation id="4387647248986092471">కారు ప్రొఫైల్ లాక్‌ను క్రియేట్ చేయండి</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - డౌన్‌లోడ్ చేస్తోంది…</translation>
 <translation id="4404568932422911380">బుక్‌మార్క్‌లు లేవు</translation>
 <translation id="4405224443901389797">ఇక్కడికి తరలించండి…</translation>
@@ -822,6 +827,7 @@
 <translation id="5210286577605176222">మునుపటి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="5210365745912300556">ట్యాబ్‌ను మూసివేయి</translation>
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
+<translation id="5226378907213531272">మీరు కారును ఉపయోగించిన ప్రతిసారి మీ స్క్రీన్‌ను అన్‌లాక్ చేస్తారు</translation>
 <translation id="5227554086496586518">సెర్చ్ ఫలితాలను చూడటానికి ట్యాప్ చేయండి</translation>
 <translation id="5233638681132016545">కొత్త‌ ట్యాబ్</translation>
 <translation id="5234971936051226002">“ఈ పేజీలో ఉన్న కంటెంట్‌ను వినండి” ప్లేయర్ మినిమైజ్ చేయబడింది.</translation>
@@ -1243,6 +1249,7 @@
 <translation id="7376560087009844242">'వెతకడానికి తాకండి'ని ఉపయోగించినప్పుడు, పేజీ తాలూకు ఎక్కువ టెక్స్ట్‌ను చేర్చడం ద్వారా మీరు మెరుగైన ఫలితాలను చూడవచ్చు. దీనిని మార్చడానికి మీరు ఎప్పుడైనా <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />కు వెళ్లవచ్చు.</translation>
 <translation id="7379900596734708416">సైట్‌ల కోసం ముదురు రంగు రూపం అందుబాటులో ఉంది</translation>
 <translation id="7388615499319468910">యాడ్‌ల పనితీరు ఎలా ఉంది అనేది సైట్‌లు, అడ్వర్టయిజర్‌లు అర్థం చేసుకోగలరు. ఈ సెట్టింగ్ ఆఫ్ చేయబడింది.</translation>
+<translation id="7397416715506917976">పేజీ గణాంకాలను చూడండి</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome మొదటి అమలు అనుభవం</translation>
 <translation id="7411224099004328643">Google ఖాతా యూజర్</translation>
@@ -1315,6 +1322,7 @@
 <translation id="7691043218961417207">ఫాలో అవ్వాల్సిన కంటెంట్‌ను అన్వేషించండి</translation>
 <translation id="7697383401610880082">లాగే హ్యాండిల్</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />లో ఈమెయిల్‌ను క్రియేట్ చేయండి</translation>
+<translation id="7702388902581909985">మీ బ్రౌజింగ్ డేటాను క్లియర్ చేస్తే మీరు Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు. ఇలా చేయడం కోసం, <ph name="BEGIN_LINK1" />Chrome నుండి సైన్ అవుట్ అవ్వండి<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">మొబైల్ డేటాను ఉపయోగిస్తుంది</translation>
 <translation id="7709094866268987903">మీరు తీసివేసిన ఆసక్తులు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="7709918231054955894">మీ అన్ని ట్యాబ్‌లనూ పొందండి</translation>
@@ -1416,6 +1424,7 @@
 <translation id="8127542551745560481">హోమ్ పేజీని ఎడిట్ చేయండి</translation>
 <translation id="8130309322784422030">మీ స్టోర్ చేయబడిన సైన్ ఇన్ సమాచారం గడువు ముగిసి ఉండవచ్చు</translation>
 <translation id="813082847718468539">సైట్ సమాచారాన్ని చూడండి</translation>
+<translation id="8136852699834914183">ఈ పేజీకి ప్లేబ్యాక్ అందుబాటులో లేదు.</translation>
 <translation id="8137562778192957619">మీరు ఈ పాస్‌వర్డ్‌ను గుర్తుపెట్టుకోవాల్సిన అవసరం లేదు. ఇది Google Password Managerకు సేవ్ చేయబడుతుంది.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ఫైళ్లు మిగిలి ఉన్నాయి</translation>
 <translation id="8189750580333936930">గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్</translation>

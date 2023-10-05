@@ -69,7 +69,6 @@ Hafðu í huga:
 <translation id="3345341804167540816">Notaðu Chrome alls staðar</translation>
 <translation id="3472587960215700950">Chrome notar Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar um heimilisföng sem greinast.</translation>
 <translation id="3503014945441706099">Fáðu „Enn öruggari vefskoðun“ fyrir þennan Chrome-prófíl líka</translation>
-<translation id="3506309791702511623">Chrome getur greint rakningarnúmerin sem þú slærð inn og fylgst með pökkunum þínum á síðu nýrra flipa og hjálpað á sama tíma við aðrar verslunarupplifanir frá Google.</translation>
 <translation id="3522659714780527202">Kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chrome</translation>
 <translation id="3533694711092285624">Engin vistuð aðgangsorð. Chrome getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="3594076341410558780">Fela „Nýttu þér Chrome til fulls“</translation>
@@ -154,6 +153,7 @@ Hafðu í huga:
 
 Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til né vistað hjá Google. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome gat ekki athugað öll aðgangsorð. Reyndu aftur síðar.</translation>
+<translation id="6851982868877411675">Opnaðu stillingar Chrome í iOS, ýttu svo á „Default Browser APP“ og veldu Chrome.</translation>
 <translation id="6916015246697034114">Leita með röddinni í Chrome</translation>
 <translation id="6964931465519938134">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="6975725306479268850">Velja Chrome fyrir sjálfvirka útfyllingu</translation>

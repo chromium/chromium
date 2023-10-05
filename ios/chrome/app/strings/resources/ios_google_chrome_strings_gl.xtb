@@ -69,7 +69,6 @@ Cuestións que debes ter en conta:
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
 <translation id="3472587960215700950">Chrome usa Google Maps para darche indicacións e información local sobre os enderezos detectados.</translation>
 <translation id="3503014945441706099">Activa tamén neste perfil de Chrome a función Navegación segura mellorada</translation>
-<translation id="3506309791702511623">Chrome pode detectar os números de seguimento que indiques e levar un control dos teus paquetes na páxina Nova pestana, ademais de axudarche con outras experiencias de compra de Google.</translation>
 <translation id="3522659714780527202">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, activa a sincronización</translation>
 <translation id="3533694711092285624">Non hai contrasinais gardados. Chrome pode comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="3594076341410558780">Ocultar a mensaxe Tirar o máximo proveito de Chrome</translation>
@@ -154,6 +153,7 @@ Cuestións que debes ter en conta:
 
 Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Google non a recibirá nin a almacenará). Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
+<translation id="6851982868877411675">Abre a configuración de Chrome en iOS, toca Default Browser App (Aplicación de navegador predeterminada) e selecciona Chrome.</translation>
 <translation id="6916015246697034114">Fai buscas por voz en Chrome</translation>
 <translation id="6964931465519938134">Xa podes utilizar Chrome sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="6975725306479268850">Escolle Chrome para autocompletar</translation>

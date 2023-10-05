@@ -158,6 +158,7 @@
 <translation id="3582972582564653026">Chrome brauzerini barcha qurilmalringizda sinxronlang va o‘zingizga moslab oling</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="3622797965165704966">Endi Google hisobida Chrome bilan ishlash yanada qulay bo‘ladi, jumladan umumiy kompyuterlarda ham.</translation>
+<translation id="3635073343384702370">Chrome faqat saqlangan parollaringizni tekshira oladi</translation>
 <translation id="3673813398384385993">Chrome “<ph name="EXTENSION_NAME" />” kengaytmasi tarkibida zararli dastur aniqladi</translation>
 <translation id="3703994572283698466">ChromeOS tizimini ishlab chiqishda <ph name="BEGIN_LINK_LINUX_OSS" />Linux dasturlash muhiti<ph name="END_LINK_LINUX_OSS" /> <ph name="BEGIN_LINK_CROS_OSS" />ochiq kodli DT<ph name="END_LINK_CROS_OSS" /> vositalaridan foydalanilgan.</translation>
 <translation id="3716540481907974026">ChromeOS Flex versiyasi</translation>
@@ -209,6 +210,7 @@
 <translation id="4571503333518166079">Chrome bildirishnomalar sozlamalarini ochish</translation>
 <translation id="459622048091363950">Chrome saytlarga ulanganda sizdan ruxsat so‘raydi.</translation>
 <translation id="4600710005438004015">Chrome brauzerining so‘nggi versiyasini o‘rnatib bo‘lmadi. Xavfsizlik sozlamalariga kiritilgan tuzatishlar va yangi funksiyalardan bahramand bo‘la olmaysiz.</translation>
+<translation id="4624065194742029982">Chrome Inkognito</translation>
 <translation id="4627412468266359539">Ixtiyoriy: Google serverlariga diagnostika va foydalanish statistikasi maʼlumotlarini yuborish orqali ChromeOS Flex tizimini takomillashtirishga yordam bering.</translation>
 <translation id="4633000520311261472">Chrome brauzerini xavfsiz holda saqlash uchun <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ro‘yxatida keltirilmagan va sizga bildirmasdan qo‘shilgan bo‘lishi mumkin bo‘lgan ayrim kengaytmalar o‘chirib qo‘yildi.</translation>
 <translation id="4680828127924988555">Oʻrnatishni bekor qilish</translation>
@@ -218,6 +220,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Bu fayl zararli bo‘lishi mumkin va u Chrome tomonidan bloklandi.</translation>
 <translation id="479167709087336770">Google qidiruvida ishlatiladigan imlo tekshiruvi vositasidan foydalanadi. Brauzerda kiritiladigan matn Google serverlariga yuboriladi. Buni istalgan vaqtda sozlamalar orqali oʻzgartirish mumkin.</translation>
+<translation id="4793679854893018356">Chrome qanday qilib sizni himoya qilishi haqida batafsil</translation>
 <translation id="4828579605166583682">Google Chrome joriy parollarni almashtirishga urinmoqda. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
 <translation id="4842397268809523050">Domeningizda Sinxronlash xizmati mavjud emasligi sababli ChromeOS Flex maʼlumotlaringizni sinxronlay olmadi.</translation>
 <translation id="4873783916118289636">Chrome ichida asosiy maxfiylik va xavfsizlik boshqaruvini tekshiring</translation>
@@ -268,6 +271,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="5756509061973259733">Bu hisobli Chrome profili ushbu qurilmada allaqachon mavjud</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome ishga tushmadi. Qayta urining.</translation>
+<translation id="586971344380992563">Xavfli saytlar va yuklanmalar haqida <ph name="BEGIN_LINK" />Chrome sizni ogohlantiradi<ph name="END_LINK" /></translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Tarmoqqa kirish</translation>
 <translation id="5924017743176219022">Internetga ulanmoqda…</translation>
@@ -277,6 +281,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="5941830788786076944">Google Chrome standart brauzer qilib belgilansin</translation>
 <translation id="6003112304606738118">Yuklab olinmoqda... <ph name="HOURS" /> soat qoldi</translation>
 <translation id="6010556343189461180">Google Chrome yangilanishlari macOS 10.15 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: macOS 10.14.</translation>
+<translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome vositalari yordamida<ph name="END_LINK" /> xavfsiz kezishingiz va nazoratni ushlab turishingiz mumkin</translation>
 <translation id="6022659036123304283">Shaxsiy Chrome brauzeringiz</translation>
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" />dan keyin qayta ishga tushadi</translation>
 <translation id="6040143037577758943">Yopish</translation>
@@ -366,6 +371,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="7651907282515937834">Chrome Enterprise logotipi</translation>
 <translation id="76531479118467370">Chrome bu yuklamani blokladi, chunki Saytlarni xavfsiz kezish funksiyasini faolsizlantirgansiz, shuning uchun bu fayl tekshirilmaydi</translation>
 <translation id="7655455401911432608">Bu qurilmada Chrome orqali siz kirgan saytlar tarixidagi qaydlar.</translation>
+<translation id="769538538642757151">Chrome biror sozlamaga diqqat qilish kerak boʻlganda sizga xabar qiladi.</translation>
 <translation id="7747138024166251722">O‘rnatish dasturi vaqtinchalik katalog yarata olmadi. Sizda ilovalar o‘rnatish uchun yetarli vakolat yoki disk yetarli bo‘sh joy yo‘q bo‘lsa kerak.</translation>
 <translation id="7761834446675418963">Chrome‘ga kirish uchun o‘z ismingiz ustiga bosing va kezishni boshlang.</translation>
 <translation id="7777080907402804672">Agar rasmga foydali tavsif berilmagan boʻlsa, Google Chrome uni sizga tavsiflaydi. Tavsif yaratish uchun rasmlar Googlega yuboriladi. Bu sozlamani istalgan vaqtda faolsizlantirish mumkin.</translation>
@@ -394,6 +400,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8129812357326543296">&amp;Google Chrome haqida</translation>
 <translation id="813913629614996137">Ishga tushirilmoqda...</translation>
 <translation id="8255190535488645436">Google Chrome kamera va mikrofoningizdan foydalanmoqda.</translation>
+<translation id="8267953129876836456">Sizda Chrome bilan ishlashda xavfsizlikka oid bir nechta tavsiya bor</translation>
 <translation id="8270775718612349140">Chrome boshqaradigan sertifikatlar</translation>
 <translation id="8286862437124483331">Google Chrome parollarni ko‘rsatishga urinmoqda. Ruxsat berish uchun Windows platformasidagi parolingizni kiriting.</translation>
 <translation id="8290100596633877290">Google Chrome ishdan chiqdi. Qaytadan ishga tushirilsinmi?</translation>
@@ -408,6 +415,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8403038600646341038">Kompyuter ekranida Chrome logotipi aks etgan tasvir</translation>
 <translation id="8416347857511542594">Chromeda reklamani moslashtirish haqida batafsil</translation>
 <translation id="8418845734693287262">Hisobga kirish maʼlumotlaringiz eskirgani sababli ChromeOS maʼlumotlaringizni sinxronlay olmadi.</translation>
+<translation id="842386925677997438">Chrome xavfsizlik vositalari</translation>
 <translation id="8433638294851456451">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chrome hisobingizga kiring.</translation>
 <translation id="8451192282033883849">Hisobingiz <ph name="MANAGER_NAME" /> domenida boshqariladi. Administrator Chrome brauzeri profili va undagi bukmarklar, tarix va parollar kabi maʼlumotlarni koʻrib, tahrirlay oladi.</translation>
 <translation id="8496177819998570653">Google &amp;Parollar menejeri</translation>
@@ -448,6 +456,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="9195993889682885387">Chrome oxirgi bir nechta haftada siz ochgan sahifalar tarixi asosida qiziqishlaringiz taxmin qilishi mumkin. Bu maʼlumotlar qurilmangizda qoladi.</translation>
 <translation id="919706545465235479">Sinxronizatsiyani boshlash uchun Chrome brauzerini yangilang</translation>
 <translation id="922152298093051471">Chromeni moslash</translation>
+<translation id="92460355979482493">Yoniqligida, Chrome kezish va qidiruvni tezlashtirish uchun sahifalarni oldindan yuklaydi.</translation>
 <translation id="93760716455950538">ChromeOS Flex tizimini qayta ishga tushirish</translation>
 <translation id="940313311831216333">Chrome brauzeridagi axborotlardan barcha qurilmalaringizda foydalanish uchun hisobingizga kiring va sinxronizatsiyani yoqing.</translation>
 <translation id="943390475793766444">Bu fayl xavfli boʻlishi mumkin, Chrome uni tekshirishni tavsiya qiladi.</translation>

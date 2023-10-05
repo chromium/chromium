@@ -69,7 +69,6 @@ Pethau i'w hystyried:
 <translation id="3345341804167540816">Gallwch Ddefnyddio Chrome Ymhobman</translation>
 <translation id="3472587960215700950">Mae Chrome yn defnyddio Google Maps i roi cyfarwyddiadau a gwybodaeth leol i chi ar gyfeiriadau a ganfuwyd.</translation>
 <translation id="3503014945441706099">Cael Gwell Pori'n Ddiogel ar gyfer y proffil Chrome hwn hefyd</translation>
-<translation id="3506309791702511623">Gall Chrome ganfod y rhifau olrhain rydych yn eu mewnbynnu ac olrhain eich pecynnau ar y Dudalen Tab Newydd wrth helpu profiadau siopa eraill o Chrome.</translation>
 <translation id="3522659714780527202">I weld eich tabiau o ble bynnag rydych yn defnyddio Chrome, trowch gysoni ymlaen</translation>
 <translation id="3533694711092285624">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Chrome wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
 <translation id="3594076341410558780">Cuddio “Manteisio i'r eithaf ar Chrome”</translation>
@@ -154,6 +153,7 @@ Pethau i'w hystyried:
 
 Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Ni allai Chrome wirio'r holl gyfrineiriau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
+<translation id="6851982868877411675">Agorwch y Gosodiadau Chrome yn iOS yna tapiwch 'Default Browser App' a dewiswch Chrome.</translation>
 <translation id="6916015246697034114">Chwilio â Llais yn Chrome</translation>
 <translation id="6964931465519938134">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="6975725306479268850">Dewiswch Chrome ar gyfer Awtolenwi</translation>

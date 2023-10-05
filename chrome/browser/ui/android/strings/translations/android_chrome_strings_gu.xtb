@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
 <translation id="1011749477052068769">અહીં ખસેડો</translation>
+<translation id="1014147525163127655"><ph name="ORIGIN" /> માટે આ ડિવાઇસ પર કોઈપણ પાસકી ઉપલબ્ધ નથી</translation>
 <translation id="1016498331642356377">તમારા અવાજ વડે ઝડપથી શોધો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> પર મોકલી રહ્યાં છીએ...</translation>
@@ -33,6 +34,7 @@
 <translation id="1149401351239820326">સમય સમાપ્તિ મહિનો</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeમાં ખુલશે. આગળ વધીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા ChromeOSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો.</translation>
 <translation id="1173894706177603556">નામ બદલો</translation>
+<translation id="1174479719160874822">સ્ક્રીન નાની થાય ત્યારે દરેક વખતે Chrome, મોબાઇલ સાઇટની વિનંતી કરશે</translation>
 <translation id="1177863135347784049">કસ્ટમ</translation>
 <translation id="1178581264944972037">થોભો</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
@@ -670,6 +672,7 @@
 <translation id="452750746583162491">તમારા સિંક કરેલા ડેટાનો રિવ્યૂ કરો</translation>
 <translation id="4528638190900283934">વધારાની સુવિધાઓ માટે સાઇન ઇન કરો</translation>
 <translation id="4532845899244822526">ફોલ્ડર પસંદ કરો</translation>
+<translation id="4543131175509360848">કોઈ પાસકી શીટ નથી</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ટૅબ}one{<ph name="TAB_COUNT_MANY" /> ટૅબ, <ph name="TAB_COUNT_INCOGNITO" /> છૂપી}other{<ph name="TAB_COUNT_MANY" /> ટૅબ, <ph name="TAB_COUNT_INCOGNITO" /> છૂપી}}</translation>
 <translation id="4554077758708533499">USB કેબલ સાથે કનેક્ટ કરેલો છે</translation>
 <translation id="4558311620361989323">વેબ પેજના શૉર્ટકટ</translation>
@@ -944,6 +947,7 @@
 <translation id="5869522115854928033">સાચવેલા પાસવર્ડ્સ</translation>
 <translation id="587735546353481577">કોઈ સાઇટને ફૉલો કરવા માટે, તે સાઇટ પર જાઓ, Chrome મેનૂ ખોલો અને ફૉલો કરો પર ટૅપ કરો.</translation>
 <translation id="5879072387416556377">વધુ સારા સૂચનો મેળવો</translation>
+<translation id="5899667542927581604">કોઈ પાસકી શીટ બંધ ન હતી</translation>
 <translation id="5916664084637901428">ચાલુ</translation>
 <translation id="5919204609460789179">સમન્વયન પ્રારંભ કરવા માટે <ph name="PRODUCT_NAME" /> અપડેટ કરો</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> ઉમેરો</translation>
@@ -1413,6 +1417,7 @@
 <translation id="8127542551745560481">હોમપેજમાં ફેરફાર કરો</translation>
 <translation id="8130309322784422030">તમારી સ્ટોર કરેલી સાઇન ઇનની માહિતી જૂની હોઈ શકે છે</translation>
 <translation id="813082847718468539">સ્થાન માહિતી જુઓ</translation>
+<translation id="8136852699834914183">આ પેજ માટે પ્લેબૅક સુવિધા ઉપલબ્ધ નથી.</translation>
 <translation id="8137562778192957619">તમારે આ પાસવર્ડ યાદ રાખવાની જરૂર રહેશે નહીં. તેને Google Password Managerમાં સાચવવામાં આવશે.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ફાઇલ બાકી છે</translation>
 <translation id="8189750580333936930">પ્રાઇવસી સૅન્ડબૉક્સ</translation>
@@ -1586,6 +1591,7 @@
 <translation id="9063523880881406963">વિનંતી ડેસ્કટૉપ સાઇટ બંધ કરો</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>
 <translation id="9065383040763568503">Chromeને મહત્ત્વનો ન લાગતો હોય તેવો સ્ટોર કરેલો ડેટા (દા.ત., કોઇ સાચવેલા સેટિંગ ન હોય તેવી અથવા વારંવાર મુલાકાત ન લેવાતી હોય તેવી સાઇટ)</translation>
+<translation id="9067341854474068781">સંપૂર્ણ ઊંચાઈએ કોઈ પાસકી શીટ ખુલ્લી નથી</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" />માં</translation>
 <translation id="9069999660519089861">વાંચ્યા વગરનું કોઈ પેજ નથી</translation>
 <translation id="9070377983101773829">વૉઇસ શોધ શરૂ કરો</translation>

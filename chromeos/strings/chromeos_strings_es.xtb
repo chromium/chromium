@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">El dispositivo está conectado.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{¿Quitar página?}=1{¿Quitar página {PAGE_NUMBER}?}other{¿Quitar página {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Redes móviles</translation>
 <translation id="3156846309055100599">Escaneando página <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Portal cautivo detectado</translation>

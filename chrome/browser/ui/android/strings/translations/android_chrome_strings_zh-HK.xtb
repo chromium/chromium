@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1011749477052068769">移至這裡</translation>
+<translation id="1014147525163127655">此裝置上沒有 <ph name="ORIGIN" /> 的任何密鑰</translation>
 <translation id="1016498331642356377">透過語音快速搜尋。如要編輯此捷徑，請按住捷徑按鈕。</translation>
 <translation id="1024113959924243553">Chrome 開發人員版</translation>
 <translation id="1028699632127661925">正在傳送至 <ph name="DEVICE_NAME" />…</translation>
@@ -33,6 +34,7 @@
 <translation id="1149401351239820326">到期月份</translation>
 <translation id="1150263420752757504">「<ph name="APP_NAME" />」將在 Chrome 中開啟。繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_LINK2" />。</translation>
 <translation id="1173894706177603556">重新命名</translation>
+<translation id="1174479719160874822">Chrome 會在螢幕較窄時要求使用流動網站</translation>
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -670,6 +672,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="452750746583162491">查看您已同步的資料</translation>
 <translation id="4528638190900283934">登入即可使用額外的實用功能</translation>
 <translation id="4532845899244822526">選擇資料夾</translation>
+<translation id="4543131175509360848">冇密鑰嘅工作表</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_COUNT_MANY" /> 個分頁、<ph name="TAB_COUNT_INCOGNITO" /> 個無痕式分頁}}</translation>
 <translation id="4554077758708533499">已使用 USB 連接線連接</translation>
 <translation id="4558311620361989323">網頁快速鍵</translation>
@@ -944,6 +947,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5869522115854928033">已儲存的密碼</translation>
 <translation id="587735546353481577">如要追蹤網站，只要前往該網站並開啟 Chrome 選單，然後輕按 [追蹤] 即可。</translation>
 <translation id="5879072387416556377">取得更切題的建議</translation>
+<translation id="5899667542927581604">冇密鑰嘅工作表已經閂咗</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5919204609460789179">更新 <ph name="PRODUCT_NAME" /> 即可開始同步處理</translation>
 <translation id="5938820472109305350">新增<ph name="INTEREST" /></translation>
@@ -1321,7 +1325,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="7757787379047923882">透過 <ph name="DEVICE_NAME" /> 分享的文字</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">新增地址</translation>
-<translation id="7766587497031415281">用於清除瀏覽資料的其他選項</translation>
+<translation id="7766587497031415281">用嚟清除瀏覽資料嘅其他選項</translation>
 <translation id="7772032839648071052">確認複雜密碼</translation>
 <translation id="7772375229873196092">關閉 <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}}</translation>
@@ -1413,6 +1417,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8127542551745560481">編輯首頁</translation>
 <translation id="8130309322784422030">您儲存的登入資料可能已過期</translation>
 <translation id="813082847718468539">檢視網站資料</translation>
+<translation id="8136852699834914183">無法播放此頁面的內容。</translation>
 <translation id="8137562778192957619">您不需記住此密碼。系統會將密碼儲存至「Google 密碼管理工具」。</translation>
 <translation id="8186512483418048923">尚餘 <ph name="FILES" /> 個檔案</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -1586,6 +1591,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="9063523880881406963">關閉「切換為電腦版網站」</translation>
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9065383040763568503">已儲存 Chrome 認定為不重要的資料 (例如未儲存任何設定的網站，或您不常瀏覽的網站)</translation>
+<translation id="9067341854474068781">冇密鑰嘅工作表宜家顯示喺成個畫面</translation>
 <translation id="906781307897697745">在 <ph name="PRODUCT_NAME" /> 中</translation>
 <translation id="9069999660519089861">沒有未讀網頁</translation>
 <translation id="9070377983101773829">開始語音搜尋</translation>

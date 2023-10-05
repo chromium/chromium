@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1213425325105380833">이 계정에 연결된 기기에서 최근에 사용한 웹 앱을 복원합니다.</translation>
+<translation id="2065911435109240297">웹 앱 복원</translation>
+<translation id="2111649875343992405">복원할 웹 앱을 검토합니다.</translation>
 <translation id="2139186145475833000">홈 화면에 추가</translation>
+<translation id="2172982519592313442">웹 앱 검토</translation>
 <translation id="2478076885740497414">앱 설치</translation>
 <translation id="3789841737615482174">설치</translation>
 <translation id="3910402514791813257">설치하지 못했습니다.</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">스크린샷입니다. 닫으려면 탭하세요.</translation>
 <translation id="6990079615885386641">Google Play 스토어에서 앱 다운로드: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">아직 이전 사이트 추가 중</translation>
+<translation id="7672888405515738928">이 기기에서 복원할 웹 앱을 선택하세요. 여기에 표시되는 앱은 Chrome 방문 기록을 기반으로 합니다.</translation>
+<translation id="8163051092261298861">웹 앱 복원</translation>
 <translation id="962979164594783469">앱 설치</translation>
 </translationbundle>

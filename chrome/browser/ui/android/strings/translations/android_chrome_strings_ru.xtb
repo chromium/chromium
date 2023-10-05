@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="1011749477052068769">Переместить сюда</translation>
+<translation id="1014147525163127655">На этом устройстве нет ключей доступа для сайта <ph name="ORIGIN" />.</translation>
 <translation id="1016498331642356377">Выполнить голосовой поиск. Чтобы изменить функцию кнопки, нажмите и удерживайте ее.</translation>
 <translation id="1024113959924243553">Chrome для разработчиков</translation>
 <translation id="1028699632127661925">Отправка на устройство "<ph name="DEVICE_NAME" />"…</translation>
@@ -33,6 +34,7 @@
 <translation id="1149401351239820326">Месяц окончания срока действия</translation>
 <translation id="1150263420752757504">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Переименовать</translation>
+<translation id="1174479719160874822">Chrome будет запрашивать мобильный сайт при обнаружении узкого экрана</translation>
 <translation id="1177863135347784049">Персонализированные</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Удалить</translation>
@@ -317,7 +319,7 @@
 <translation id="2702516483241149200">Теперь можно поделиться ссылкой, которая прокручивает страницу до этого текста.</translation>
 <translation id="2708051474374549906">Эффективная защита в реальном времени от опасных сайтов, расширений и скачанных файлов основана на ваших данных о работе в браузере, которые отправляются в Google.</translation>
 <translation id="2708226184420201102">Открыть в браузере <ph name="PRODUCT_NAME" /></translation>
-<translation id="271033894570825754">Новый</translation>
+<translation id="271033894570825754">Новое</translation>
 <translation id="2711073837061989559">Эксперименты</translation>
 <translation id="2718352093833049315">Только Wi-Fi</translation>
 <translation id="2718846868787000099">Сайты, которые вы посещаете, могут видеть выбранные вами настройки, чтобы показывать контент на нужном языке.</translation>
@@ -670,6 +672,7 @@
 <translation id="452750746583162491">Проверить синхронизированные данные</translation>
 <translation id="4528638190900283934">Войдите в аккаунт и начните пользоваться дополнительными функциями</translation>
 <translation id="4532845899244822526">Выбор папки</translation>
+<translation id="4543131175509360848">Пустой список ключей доступа</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладка инкогнито}few{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}many{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладок инкогнито}other{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}}</translation>
 <translation id="4554077758708533499">Подключено с помощью USB-кабеля</translation>
 <translation id="4558311620361989323">Работа с веб-страницами</translation>
@@ -944,6 +947,7 @@
 <translation id="5869522115854928033">Сайты с сохраненными паролями</translation>
 <translation id="587735546353481577">Чтобы подписаться на сайт, откройте его, перейдите в меню Google Chrome и нажмите "Подписаться".</translation>
 <translation id="5879072387416556377">Получайте более точные подсказки</translation>
+<translation id="5899667542927581604">Пустой список ключей доступа был закрыт</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5919204609460789179">Обновите <ph name="PRODUCT_NAME" />, чтобы начать синхронизацию</translation>
 <translation id="5938820472109305350">Добавить интерес "<ph name="INTEREST" />"</translation>
@@ -1413,6 +1417,7 @@
 <translation id="8127542551745560481">Изменить главную страницу</translation>
 <translation id="8130309322784422030">Сохраненные учетные данные могли устареть.</translation>
 <translation id="813082847718468539">Сведения о сайте</translation>
+<translation id="8136852699834914183">Воспроизведение на этой странице невозможно.</translation>
 <translation id="8137562778192957619">Вам не нужно запоминать этот пароль. Он будет сохранен в Google Менеджере паролей.</translation>
 <translation id="8186512483418048923">Осталось файлов: <ph name="FILES" /></translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -1586,6 +1591,7 @@
 <translation id="9063523880881406963">Выключить полную версию сайта</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9065383040763568503">Маловажные данные, например относящиеся к сайтам, которые вы редко посещаете или на которых не сохранили настройки.</translation>
+<translation id="9067341854474068781">Пустой список ключей доступа открыт на весь экран</translation>
 <translation id="906781307897697745">(<ph name="PRODUCT_NAME" />)</translation>
 <translation id="9069999660519089861">Непрочитанных страниц не найдено</translation>
 <translation id="9070377983101773829">Голосовой поиск</translation>

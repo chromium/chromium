@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1011749477052068769">여기로 이동</translation>
+<translation id="1014147525163127655">이 기기에 <ph name="ORIGIN" />의 패스키가 없습니다</translation>
 <translation id="1016498331642356377">음성으로 빠르게 검색합니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
 <translation id="1024113959924243553">Chrome 개발자</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />에 보내는 중...</translation>
@@ -33,6 +34,7 @@
 <translation id="1149401351239820326">유효기간 월</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="1173894706177603556">이름 바꾸기</translation>
+<translation id="1174479719160874822">화면이 좁을 때 Chrome에서 모바일 사이트를 요청합니다</translation>
 <translation id="1177863135347784049">맞춤설정</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="1181037720776840403">삭제</translation>
@@ -670,6 +672,7 @@
 <translation id="452750746583162491">동기화된 데이터 검토</translation>
 <translation id="4528638190900283934">로그인하여 더 많은 기능을 사용하세요</translation>
 <translation id="4532845899244822526">폴더 선택</translation>
+<translation id="4543131175509360848">패스키 시트 없음</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개}other{탭 <ph name="TAB_COUNT_MANY" />개(시크릿 탭 <ph name="TAB_COUNT_INCOGNITO" />개)}}</translation>
 <translation id="4554077758708533499">USB 케이블로 연결됨</translation>
 <translation id="4558311620361989323">웹페이지 단축키</translation>
@@ -944,6 +947,7 @@
 <translation id="5869522115854928033">저장된 비밀번호</translation>
 <translation id="587735546353481577">사이트를 팔로우하려면 사이트로 이동해서 Chrome 메뉴를 연 다음 팔로우를 탭합니다.</translation>
 <translation id="5879072387416556377">추천 기능 개선</translation>
+<translation id="5899667542927581604">닫힌 패스키 시트 없음</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5919204609460789179"><ph name="PRODUCT_NAME" />을(를) 업데이트하여 동기화를 시작합니다.</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> 추가</translation>
@@ -1413,6 +1417,7 @@
 <translation id="8127542551745560481">홈페이지 수정</translation>
 <translation id="8130309322784422030">저장된 로그인 정보가 오래되었을 수 있습니다</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
+<translation id="8136852699834914183">이 페이지는 재생할 수 없습니다.</translation>
 <translation id="8137562778192957619">비밀번호를 기억하지 않아도 됩니다. 비밀번호가 Google 비밀번호 관리자에 저장됩니다</translation>
 <translation id="8186512483418048923">파일 <ph name="FILES" />개가 남았습니다.</translation>
 <translation id="8189750580333936930">개인 정보 보호 샌드박스</translation>
@@ -1586,6 +1591,7 @@
 <translation id="9063523880881406963">데스크톱 버전으로 보기 사용 중지</translation>
 <translation id="9065203028668620118">수정</translation>
 <translation id="9065383040763568503">Chrome에서 중요하다고 간주하지 않는 저장된 데이터(예: 저장된 설정이 없거나 사용자가 자주 방문하지 않는 사이트)</translation>
+<translation id="9067341854474068781">전체 높이로 열린 패스키 시트가 없음</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" />에서</translation>
 <translation id="9069999660519089861">읽지 않은 페이지 없음</translation>
 <translation id="9070377983101773829">음성 검색 시작</translation>

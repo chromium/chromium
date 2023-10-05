@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
 <translation id="1011749477052068769">Տեղափոխել այստեղ</translation>
+<translation id="1014147525163127655">Այս սարքում <ph name="ORIGIN" />-ի համար անցաբառեր չկան</translation>
 <translation id="1016498331642356377">Արագ որոնեք ձայնային հրահանգների օգնությամբ։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Ուղարկվում է <ph name="DEVICE_NAME" /> սարքին...</translation>
@@ -33,6 +34,7 @@
 <translation id="1149401351239820326">Ժամկետի սպառման ամիսը</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> հավելվածը կբացվի Chrome-ում։ Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։</translation>
 <translation id="1173894706177603556">Վերանվանել</translation>
+<translation id="1174479719160874822">Նեղ էկրան հայտնաբերելու դեպքում Chrome-ը կառաջարկի բացել կայքի բջջային տարբերակը</translation>
 <translation id="1177863135347784049">Անհատականացված</translation>
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
@@ -670,6 +672,7 @@
 <translation id="452750746583162491">Ստուգեք ձեր համաժամացված տվյալները</translation>
 <translation id="4528638190900283934">Մուտք գործեք՝ լրացուցիչ գործառույթներից օգտվելու համար</translation>
 <translation id="4532845899244822526">Պանակի ընտրություն</translation>
+<translation id="4543131175509360848">Հասանելի անցաբառեր չկան</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ներդիր}one{<ph name="TAB_COUNT_MANY" /> ներդիր, <ph name="TAB_COUNT_INCOGNITO" /> ինկոգնիտո ներդիր}other{<ph name="TAB_COUNT_MANY" /> ներդիր, <ph name="TAB_COUNT_INCOGNITO" /> ինկոգնիտո ներդիր}}</translation>
 <translation id="4554077758708533499">Միացված է USB մալուխով</translation>
 <translation id="4558311620361989323">Վեբէջերի դյուրանցումներ</translation>
@@ -944,6 +947,7 @@
 <translation id="5869522115854928033">Պահված գաղտնաբառեր</translation>
 <translation id="587735546353481577">Կայքին հետևելու համար անցեք այդ կայք, բացեք Chrome-ի ընտրացանկն ու հպեք «Հետևել»։</translation>
 <translation id="5879072387416556377">Ստացեք ավելի լավ առաջարկներ</translation>
+<translation id="5899667542927581604">«Հասանելի անցաբառեր չկան» թերթը փակվեց</translation>
 <translation id="5916664084637901428">Միացնել</translation>
 <translation id="5919204609460789179">Թարմացրեք <ph name="PRODUCT_NAME" />-ը՝ համաժամացումը սկսելու համար</translation>
 <translation id="5938820472109305350">Ավելացնել «<ph name="INTEREST" />» հետաքրքրությունը</translation>
@@ -1413,6 +1417,7 @@
 <translation id="8127542551745560481">Փոփոխել գլխավոր էջը</translation>
 <translation id="8130309322784422030">Հնարավոր է՝ մուտքի պահված տվյալները հնացել են</translation>
 <translation id="813082847718468539">Դիտել կայքի տեղեկությունները</translation>
+<translation id="8136852699834914183">Այս էջի համար նվագարկումը հասանելի չէ։</translation>
 <translation id="8137562778192957619">Այս գաղտնաբառը հիշելու կարիք չկա։ Այն կպահվի Google գաղտնաբառերի կառավարչում։</translation>
 <translation id="8186512483418048923">Մնաց <ph name="FILES" /> ֆայլ</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -1586,6 +1591,7 @@
 <translation id="9063523880881406963">Անջատել կայքի ամբողջական տարբերակը</translation>
 <translation id="9065203028668620118">Փոփոխել</translation>
 <translation id="9065383040763568503">Պահված տվյալները, որոնք ըստ Chrome-ի կարևոր չեն (օր.՝ առանց պահված կարգավորումների կայքերը կամ այն կայքերը, որոնք վաղուց չեք այցելել)</translation>
+<translation id="9067341854474068781">«Հասանելի անցաբառեր չկան» թերթը բացված է ամբողջությամբ</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" />-ում</translation>
 <translation id="9069999660519089861">Չկարդացված էջեր չկան</translation>
 <translation id="9070377983101773829">Սկսել ձայնային որոնումը</translation>

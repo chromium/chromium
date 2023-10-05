@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Dnevna sprememba slike zaslonskega ozadja</translation>
 <translation id="1644574205037202324">Zgodovina</translation>
 <translation id="1651925268237749928">Izbrali ste deljeni album. Drugi lahko dodajajo ali spreminjajo fotografije. Vaše zaslonsko ozadje bo morda uporabljalo fotografije, ki jih trenutno ni v tem albumu.</translation>
+<translation id="1661865805917886535">Nekateri podatki o računu in sistemu bodo morda poslani Googlu. Te podatke uporabljamo za odpravljanje tehničnih težav in izboljšanje svojih storitev v skladu s pravilnikom o zasebnosti (<ph name="PRIVACYPOLICYURL" />) in pogoji storitve (<ph name="TERMSOFSERVICEURL" />). Če želite zahtevati spremembe vsebine, obiščite pravno pomoč (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Ustavljeno – zmanjkalo je črnila</translation>
 <translation id="1664796644829245314">Predogled datoteke <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Vgrajeno omrežje VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="3122464029669770682">CPE</translation>
 <translation id="3124039320086536031">Naprava je povezana.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Želite odstrani stran?}=1{Želite odstraniti {PAGE_NUMBER}. stran?}one{Želite odstraniti {PAGE_NUMBER}. stran?}two{Želite odstraniti {PAGE_NUMBER}. stran?}few{Želite odstraniti {PAGE_NUMBER}. stran?}other{Želite odstraniti {PAGE_NUMBER}. stran?}}</translation>
+<translation id="3146655726035122603">Na voljo samo v napravi <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Prenos podatkov v mobilnih omrežjih</translation>
 <translation id="3156846309055100599">Optično branje <ph name="PAGE_NUMBER" />. strani ...</translation>
 <translation id="315738237743207937">Zaznan je bil prestrezni portal</translation>

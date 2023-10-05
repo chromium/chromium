@@ -69,7 +69,6 @@ Aspectos que debes tener en cuenta:
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
 <translation id="3472587960215700950">Chrome usa Google Maps para brindarte instrucciones sobre cómo llegar, así como información local sobre las direcciones detectadas.</translation>
 <translation id="3503014945441706099">También obtén la Navegación segura mejorada para este perfil de Chrome</translation>
-<translation id="3506309791702511623">Chrome puede detectar los números de seguimiento que ingresas y hacer un seguimiento de tus paquetes en la página Nueva pestaña, al mismo tiempo que te ayuda con otras experiencias de compras de Google.</translation>
 <translation id="3522659714780527202">Para ver tus pestañas donde sea que uses Chrome, activa la sincronización</translation>
 <translation id="3533694711092285624">No hay contraseñas guardadas. Chrome puede revisar las contraseñas cuando las guardas.</translation>
 <translation id="3594076341410558780">Ocultar "Aprovecha Chrome al máximo"</translation>
@@ -154,6 +153,7 @@ Aspectos que debes tener en cuenta:
 
 Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome no pudo verificar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
+<translation id="6851982868877411675">Abre la configuración de Chrome en iOS, presiona "App del navegador predeterminado" y selecciona Chrome.</translation>
 <translation id="6916015246697034114">Realizar búsquedas con la voz en Chrome</translation>
 <translation id="6964931465519938134">Ahora puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>
 <translation id="6975725306479268850">Elige Chrome para autocompletar</translation>

@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Hae puhumalla Chromiumista.</translation>
 <translation id="1047130070405668746">Valitse Chromium</translation>
 <translation id="1091252999271033193">Tämä tarkoittaa, että Chromium pyytää aina mobiilisivustoa.</translation>
+<translation id="1171824629317156389">Avaa Chromiumin asetukset iOS:lla, napauta sitten Oletusselainsovellus ja valitse Chromium.</translation>
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
 <translation id="1257458525759135959">Anna Chromiumin lisätä uusia kuvia valitsemalla Asetukset, niin voit tallentaa kuvia.</translation>
 <translation id="1289216811211435351">Vaihda Chromiumiin</translation>
@@ -94,7 +95,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliäsi, joten Chromium-datasi poistetaan tältä laitteelta</translation>
 <translation id="4790638144988730920">Jatka Chromium-datan käyttöä Google-tilillä.</translation>
 <translation id="4828317641996116749">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä myöhemmin uudelleen.</translation>
-<translation id="4935539884203837577">Chromium voi havaita lisäämäsi seurantanumerot ja seurata pakettejasi Uusi välilehti ‐sivulla samalla, kun se tukee muita Chromiumin ostoskokemuksia.</translation>
 <translation id="4985291216379576555">Chromium ei voi tarkistaa, onko päivityksiä saatavilla</translation>
 <translation id="4996471330284142407">Helppokäyttöisellä, turvallisella ja entistäkin nopeammalla Chromiumilla saat enemmän aikaan.</translation>
 <translation id="4999538639245140991">Koska kirjaudut ulos verkkotunnuksen <ph name="SIGNOUT_MANAGED_DOMAIN" /> ylläpitämältä tililtä, Chromium-datasi poistetaan tältä laitteelta. Se säilyy edelleen Google-tililläsi.</translation>

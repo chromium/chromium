@@ -3366,6 +3366,7 @@
 <translation id="3870300103958000506">如果 <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME" /> 设为 1 或不设置，系统会允许所有网站展示广告，除非 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 设为 False。
 
       如果此政策设为 2，系统会阻止含侵扰性广告的网站展示广告。</translation>
+<translation id="3876564097829884243">启用 EphemeralNetworkPolicies 功能。</translation>
 <translation id="3877517141460819966">集成的双重身份验证模式</translation>
 <translation id="3877908683993837673">此政策用于控制使用哪个软件堆栈与 DNS 服务器通信：操作系统 DNS 客户端或 <ph name="PRODUCT_NAME" /> 的内置 DNS 客户端。此政策不会影响使用哪些 DNS 服务器：例如，如果操作系统已配置为使用一台企业 DNS 服务器，内置 DNS 客户端也会使用这台服务器。此政策也不会控制是否使用 DNS-over-HTTPS；<ph name="PRODUCT_NAME" /> 将始终使用内置的解析器发送 DNS-over-HTTPS 请求。如需了解如何控制 DNS-over-HTTPS，请参阅 <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> 政策。
 
@@ -4728,6 +4729,14 @@
       另请查看一下 <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />。虽然这 3 项政策并无优先级差异，它们的网址格式不得互相冲突。
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
+<translation id="5174547204575752627">此政策用于控制 PPAPI 插件中 VideoDecoder API 的近期重构。
+
+迁移只会影响内部实现细节，应该不会改变任何行为。不过，如有任何 PPAPI 应用无法正常运行，可以使用此政策。
+
+如果此政策未设置或已启用，浏览器会决定使用哪种实现方案。
+如果此政策已停用，浏览器将会使用旧版实现方案，直至此政策到期。
+
+注意：在浏览器运行期间，只有新启动的渲染程序进程才会反映对此政策的更改。</translation>
 <translation id="5177260184597743704">OnSecurityEvent Chrome Enterprise Connector 的配置政策</translation>
 <translation id="5178479074002209469">一个布尔值标记，用于表明：如果此政策要求进行更新，不受管理的用户会话是否应收到通知以及用户是否应被强制退出登录。</translation>
 <translation id="5179853299156742425">可供下载桌面模板的网址。</translation>
@@ -4745,6 +4754,7 @@
 <translation id="519247340330463721">配置与安全浏览功能相关的政策。</translation>
 <translation id="5194683382395300627">允许在网页上使用 <ph name="ASSISTANT_PRODUCT_NAME" />来实现诸多目的（例如启用自动更改密码的功能）</translation>
 <translation id="5196630732055960309">允许在这些 Web 应用上使用 File Handling API</translation>
+<translation id="5205352023880027050">不启用 EphemeralNetworkPolicies 功能。</translation>
 <translation id="5206454085187851382">如果为 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_ALLOWLIST" />，您便可通过设置 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="5207543664699568887">配置 Linux 上的 <ph name="PRODUCT_NAME" /> 是否会使用系统通知。
 
@@ -5263,6 +5273,31 @@
 <translation id="5622924058222112599">启用默认 CECPQ2 发布流程</translation>
 <translation id="5623304306796942802">有多份证书匹配时发出提示</translation>
 <translation id="5625771176514429288">Chrome 应用可以在这些平台上运行。</translation>
+<translation id="5627094573311711592">配置一系列数据控制规则，以防止数据泄露。复制和粘贴数据、将文件附加到网页、打印、下载等操作都可能会导致数据泄露。
+
+      每条规则都包含以下内容：
+      - 操作来源的属性。只有当某项用户操作与其“<ph name="DATA_CONTROLS_SOURCES" />”字段中填充的所有字段均匹配时，才会触发规则。对于列表子字段，只需匹配 1 个条目，例如只需匹配 1 个网址格式即可触发规则。
+      - 操作目的地的属性。只有当某项用户操作与其“<ph name="DATA_CONTROLS_DESTINATIONS" />”字段中填充的所有字段均匹配时，才会触发规则。对于列表子字段，只需匹配 1 个条目，例如只需匹配 1 个网址格式即可触发规则。
+      - 一个限制条件列表，包含要应用到来源所含数据上的限制条件。
+
+      您可通过添加规则来实现以下目的：
+      - 控制在来源和目的地之间共享的剪贴板数据。
+      - 控制任何来源的打印操作。
+      - 控制附加到任何目的地的文件。
+      - 控制从任何来源下载的文件。
+
+      如果 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策设为 True，系统会将触发的规则报告给管理员。
+      限制级别可设为 ALLOW、BLOCK、WARN、REPORT。
+      - 如果限制级别设为 ALLOW，系统将允许执行该操作。其他规则已应用的限制也会被覆盖。
+      - 如果限制级别设为 BLOCK，系统将不允许执行该操作。
+      - 如果限制级别设为 WARN，用户将收到警告消息，但可选择是继续还是取消该操作。
+      - 如果限制级别设为 REPORT，用户操作将不会中断，但如果启用了 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策，系统会发送报告。
+
+      注意：
+      - 所列网址必须采用 https://support.google.com/chrome/a?p=url_blocklist_filter_format 规定的格式。
+      - 对于专门针对 <ph name="PRODUCT_OS_NAME" /> 的数据泄露防范规则，另请参阅 <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> 政策。
+
+      如果未设置此政策，系统将不会应用任何限制。</translation>
 <translation id="5630352020869108293">恢复上次的会话</translation>
 <translation id="5633871703004128675">启用“插入符号突出显示”无障碍功能</translation>
 <translation id="5634032995857968056">启用渲染程序应用容器沙盒</translation>
@@ -5951,6 +5986,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6299554629216555326">窗口管理设置</translation>
 <translation id="6302021021024941085">停用自助服务终端问题排查工具。</translation>
 <translation id="6303118494824248488">要下载的磁盘映像的网址。</translation>
+<translation id="6303278429164386663">控制 EphemeralNetworkPolicies 功能的启用状态</translation>
 <translation id="6305373713165475629">通过设置此政策，您可以替换默认打印颜色模式。如果这种模式不适用，系统会忽略此政策。</translation>
 <translation id="6308109234708949641">通过设置此政策，您可为 Family Link 用户启用“屏幕录制”功能，并授权该功能创建录屏、转录所录内容并将其上传到云端硬盘。
       此政策不会影响其他类型的用户。
@@ -6754,6 +6790,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果此政策设为 false 或未设置，布局将不可用。需要重新启动才能生效。</translation>
 <translation id="685769593149966548">强制启用 YouTube“严格”受限模式</translation>
 <translation id="686079137349561371">Microsoft Windows 7 或更高版本</translation>
+<translation id="6866755486434471318">允许 <ph name="PEPPER_NAME" /> 使用共享图片进行视频解码。</translation>
 <translation id="6881447940489194100">数据的十六进制编码 SHA-256 哈希。</translation>
 <translation id="68818134518270542">通过设置此政策，您可以指定用户能在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中将哪些应用作为笔记应用开启。
 
@@ -7109,6 +7146,10 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果未设置此政策，浏览器可能会向与用户配置的系统解析器关联的解析器发送 DNS-over-HTTPS 请求。</translation>
 <translation id="7152640356717355643">启用设备网络接口报告功能</translation>
+<translation id="7153786895642570081">此政策用于控制 EphemeralNetworkPolicies 功能的启用状态。
+如果此政策设为 true，系统将会遵循 DeviceOpenNetworkConfiguration 条目 RecommendedValuesAreEphemeral 和 UserCreatedNetworkConfigurationsAreEphemeral。
+如果此政策未设置或设为 false，仅当启用了 EphemeralNetworkPolicies 功能时，系统才会遵循上述网络政策。
+当 EphemeralNetworkPolicies 功能默认处于启用状态时，此政策将被移除。</translation>
 <translation id="7157329428182136164">启用对 3D 图形 API 的支持</translation>
 <translation id="7158358621906236999">默认传感器设置</translation>
 <translation id="7161568070244869726">强制启用 AppCache</translation>
@@ -8870,6 +8911,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果您设置了此政策，用户将无法更改这项功能。如果此政策未设置，用户便可以更改此设置。</translation>
 <translation id="8707790573162457301">在登录期间运行“自动清理磁盘”功能</translation>
 <translation id="8713535263782304771">停用安全浏览功能</translation>
+<translation id="8714556680280715750">一个网址，供用户访问以了解详情。如果未设置此政策，安装程序中就不会显示“了解详情”网址。如果该网址存在，它必须使用 HTTPS 协议方案。</translation>
 <translation id="8715181294371649277">启用“安全浏览”功能的实时下载保护服务</translation>
 <translation id="8715885991031124968">允许显示从其他来源的子框架触发的 JavaScript 对话框。</translation>
 <translation id="8720547069538712402">允许用户启用或停用拼写检查</translation>

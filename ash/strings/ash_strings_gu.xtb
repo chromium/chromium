@@ -65,6 +65,7 @@
 <translation id="1225748608451425081">એક જાણીતી સમસ્યાને કારણે તમારું Chromebook લૉક થઈ ગયું છે. અહીં જણાવેલા સમય પછી તમે સાઇન ઇન કરી શકશો: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">નિષ્ક્રિય ડેસ્ક</translation>
 <translation id="1229194443904279055">પસંદ કરવાનું બંધ કરો</translation>
+<translation id="1233979878541157665">ફાઇલનું નામ શોધવાને બદલે "સૂર્યાસ્ત" કે "ઝાડ" શોધવાનો પ્રયાસ કરી જુઓ. તમે શોધ બારમાં જઈને છબી વડે શોધની સુવિધા બંધ કરી શકો છો.</translation>
 <translation id="1235458158152011030">જાણીતા નેટવર્ક્સ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> કનેક્ટ કરેલું છે.</translation>
 <translation id="1240638468526743569">ઍપ</translation>
@@ -206,6 +207,7 @@
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />માંથી <ph name="NUM_SHOWN_ITEMS" /> બતાવી રહ્યું છે</translation>
 <translation id="178347895271755507">તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને નોટિફિકેશન જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા કરો</translation>
 <translation id="1787955149152357925">બંધ છે</translation>
+<translation id="1796561540704213354">વેબસાઇટ જેમાં તમે મુલાકાત લીધેલા પેજ અને ખોલેલા પેજ શામેલ છે</translation>
 <translation id="1797271123677381264">પાસવર્ડ ભૂલી ગયા</translation>
 <translation id="181103072419391116">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="1815245884418711390">હૉટસ્પૉટ ટૉગલ કરો. હૉટસ્પૉટ બંધ છે</translation>
@@ -249,6 +251,7 @@
 <translation id="1962969542251276847">સ્ક્રીન લૉક કરો</translation>
 <translation id="1967970931040389207">હૉટસ્પૉટ ચાલુ કરો</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
+<translation id="1971815855639997522">ડેસ્ક અને વિન્ડો કાઢી નાખવામાં આવ્યા છે. ક્રિયાનો છેલ્લો ફેરફાર રદ કરવા માટે Control + Z દબાવો.</translation>
 <translation id="1972950159383891558">નમસ્કાર, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ટેક્સ્ટ ઇનપુટ</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" />માં જોડાઓ</translation>
@@ -305,6 +308,7 @@
 <translation id="2268130516524549846">Bluetooth અક્ષમ છે</translation>
 <translation id="2268813581635650749">બધાને સાઇન આઉટ કરો</translation>
 <translation id="2269016722240250274">કોઈ ઍપ્લિકેશન તમારા માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
+<translation id="2276987123919776440">15 મિનિટ</translation>
 <translation id="2277103315734023688">આગળ લઈ જાઓ</translation>
 <translation id="2282073721614284166">ટૅબમાં લિંક ખોલો</translation>
 <translation id="2284237890386182187">ચાલુ છે, કોઈપણ ડિવાઇસ કનેક્ટ થયેલું નથી</translation>
@@ -514,6 +518,7 @@
 <translation id="3153444934357957346">તમે એકથી વધુ સાઇન ઇનમાં માત્ર <ph name="MULTI_PROFILE_USER_LIMIT" /> સુધી એકાઉન્ટ રાખી શકો છો.</translation>
 <translation id="3154351730702813399">ડિવાઇસ વ્યવસ્થાપક તમારી બ્રાઉઝિંગ પ્રવૃત્તિને મોનિટર કરી શકે છે.</translation>
 <translation id="316086887565479535">સપોર્ટ ન કરવામાં આવતી ઍપ નમૂનામાં છે</translation>
+<translation id="3160929076476941240">2 કલાક</translation>
 <translation id="3161500364292033097">ડેસ્ક અને વિન્ડો બંધ કરો</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> તમારા <ph name="DEVICE_TYPE" />ને અગાઉના વર્ઝન પર લઈ જાય છે. તમારું ડિવાઇસ રીસેટ થશે અને બધો ડેટા ડિલીટ કરાશે.</translation>
 <translation id="3171170659304083361">ઇનપુટ પદ્ધતિઓના સેટિંગ</translation>
@@ -582,6 +587,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">રિમાઇન્ડરમાં ફેરફાર કરો</translation>
 <translation id="3435967511775410570">ફિંગરપ્રિન્ટ ઓળખવામાં આવી છે</translation>
+<translation id="3437677362970530951">Play Store તેમજ અન્ય ગેમિંગ પ્લૅટફૉર્મ પરની ગેમ</translation>
 <translation id="3439896670700055005">કૅશ મેમરીમાં સાચવેલા કન્ટેન્ટનો ઉપયોગ કર્યા વિના વર્તમાન પેજ ફરીથી લોડ કરો</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> મિનિટ</translation>
@@ -822,6 +828,7 @@
 <translation id="4333628967105022692">એકથી વધુ વપરાશકર્તાઓએ સાઇન ઇન કર્યું હોય, ત્યારે Lacros કામ કરતું નથી.</translation>
 <translation id="4338109981321384717">બૃહદદર્શક કાચ</translation>
 <translation id="4356872429719185452">હૉટસ્પૉટની વિગતો બતાવો. હૉટસ્પૉટ ચાલુ કરવામાં આવ્યું છે.</translation>
+<translation id="4364101114148522660"><ph name="DURATION" />  રેકોર્ડિંગ</translation>
 <translation id="4371348193907997655">કાસ્ટ સેટિંગ</translation>
 <translation id="4375482231364171368">ઍડ્રેસ બારમાં શોધો</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" /> ટકા</translation>
@@ -931,6 +938,7 @@
 <translation id="4814539958450445987">લૉગ ઇન સ્ક્રીન</translation>
 <translation id="481455355267255546">આગામી ઇવેન્ટ</translation>
 <translation id="4826588772550366629">કૅમેરા અને માઇક્રોફોન</translation>
+<translation id="482908187605862807">Play Storeમાંથી ઉપલબ્ધ હોય તેવી ઍપ</translation>
 <translation id="4831034276697007977">શું તમારે ખરેખર ઑટોમૅટિક ક્લિક બંધ કરવા છે?</translation>
 <translation id="4849058404725798627">કીબોર્ડ ફોકસ વડે ઑબ્જેક્ટને હાઇલાઇટ કરો</translation>
 <translation id="485592688953820832">કોઈ ક્રિયા નથી (થોભાવો)</translation>
@@ -982,6 +990,7 @@
 <translation id="5004607513195820459">નેટવર્ક મેનેજ કરવામાં આવે છે</translation>
 <translation id="5009463889040999939">પ્રોફાઇલનું નામ બદલી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="5016558321564993266">માર્કરને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
+<translation id="5020360656995955353">શોધની કૅટેગરી</translation>
 <translation id="5029356738310729434">ડિવાઇસના માઇક્રોફોનનો ઍક્સેસ ચાલુ છે</translation>
 <translation id="5030659775136592441">બુકમાર્ક મેનેજર બતાવો</translation>
 <translation id="5030687792513154421">સમય પૂરો થયો</translation>
@@ -1036,6 +1045,7 @@
 <translation id="5234764350956374838">કાઢી નાખો</translation>
 <translation id="523505283826916779">ઍક્સેસિબિલિટી સેટિંગ</translation>
 <translation id="5238719049014159442">લૉન્ચર ખોલો/બંધ કરો</translation>
+<translation id="5240725217819182328">ચોક્કસ પેજનો કે ઇન્સ્ટૉલ કરેલી ઍપની ક્રિયાઓનો ઝડપી ઍક્સેસ</translation>
 <translation id="5245201184978705914">ટ્રાન્સક્રિપ્ટ જનરેટ કરી શકાતી નથી</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> નામના <ph name="BATTERY_PERCENTAGE" />% બૅટરી ધરાવતા ડિવાઇસ સાથે કનેક્ટેડ</translation>
 <translation id="5258528442992323769">કોઈ ડેસ્ક સાચવેલું નથી</translation>
@@ -1254,6 +1264,7 @@
 <translation id="6095008505822982596">સ્પીચ રેટ</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" />નો ઉપયોગ કરીને કનેક્શન ઉમેરો</translation>
 <translation id="6099678161144790572">ગયા મહિને ફેરફાર કરવામાં આવ્યો હતો</translation>
+<translation id="6099793635444444289">ડિક્ટેશન શરૂ કરી શકતા નથી કારણ કે માઇક્રોફોન મ્યૂટ કરેલું છે</translation>
 <translation id="6103838137565245112">સિસ્ટમ</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> સ્પીચ ફાઇલ ડાઉનલોડ કરી</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1271,6 +1282,7 @@
 <translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6166852626429024716">તમારા ડિવાઇસ, ઍપ, સેટિંગ અને વેબ પર શોધો...</translation>
 <translation id="6168318496333165060">Diagnostics ઍપ ખોલો</translation>
+<translation id="6168622430237609329">તમારી ઇન્સ્ટૉલ કરેલી ઍપ</translation>
 <translation id="6173151025443907148">જો Lacros ચાલુ કરવામાં આવ્યું હોય, તો બીજા વપરાશકર્તા દ્વારા સાઇન ઇન કરવાને સપોર્ટ કરવામાં આવતો નથી. કૃપા કરીને તેના બદલે Lacrosમાં બીજી બ્રાઉઝર પ્રોફાઇલનો ઉપયોગ કરો અથવા Lacros બંધ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="6179832488876878285">તમે તમારી મહત્ત્વની ફાઇલો અહીં પિન કરી શકો છો. શરૂ કરવા માટે Files ઍપ ખોલો.</translation>
 <translation id="6182592640011875895">ડેસ્ક ખોલો</translation>
@@ -1324,6 +1336,7 @@
 <translation id="6442259747294754014">ડિવાઇસના માઇક્રોફોનનો ઍક્સેસ બંધ છે</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> પર <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
+<translation id="6446225358675593408">છબીમાંના કન્ટેન્ટ વડે તમારી છબીઓ શોધો</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ઇવેન્ટ</translation>
 <translation id="6449483711453944360">Linux ઍપ અને છૂપી વિન્ડોને હાલમાં સપોર્ટ કરવામાં આવતો નથી</translation>
 <translation id="6450245544201845082">રાઇટ ક્લિક શૉર્ટકટ હાલમાં બંધ છે</translation>
@@ -1353,6 +1366,7 @@
 <translation id="6537924328260219877">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, ફોનની બૅટરી <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">ડાઉનલોડ <ph name="FILENAME" /> સ્કૅન કરી રહ્યું છે</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> પર કાસ્ટ કરી રહ્યાં છીએ</translation>
+<translation id="6546062506073634094">કન્ટેન્ટ દ્વારા છબી વડે શોધ તેમજ છબીના પ્રીવ્યૂ</translation>
 <translation id="6555373427270923730">ઍડ્રેસ બારમાં વેબ ઍડ્રેસ ટાઇપ કરો, પછી <ph name="MODIFIER" />+<ph name="KEY" /> દબાવો</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 નવી ઇન્સ્ટૉલ કરી છે</translation>
@@ -1406,6 +1420,7 @@
 <translation id="6752912906630585008">ડેસ્ક <ph name="REMOVED_DESK" /> કાઢી નાખ્યું અને ડેસ્ક <ph name="RECEIVE_DESK" /> સાથે મર્જ કર્યું</translation>
 <translation id="6753390234084146956">ટૅબ</translation>
 <translation id="6757237461819837179">કોઈ મીડિયા ચલાવી રહ્યાં નથી</translation>
+<translation id="6760438044935091345">ગેમ ડૅશબોર્ડ</translation>
 <translation id="6768043681523654438">સ્ટોરેજ</translation>
 <translation id="6777216307882431711">કનેક્ટ કરેલા બધા USB-C ડિવાઇસને પાવર સપ્લાય આપી રહ્યાં છીએ</translation>
 <translation id="6781002679438061620">ડેસ્ક 9</translation>
@@ -1429,12 +1444,14 @@
 <translation id="6836499262298959512">જોખમી ફાઇલ</translation>
 <translation id="6852052252232534364">ક્લિકથી સક્રિય</translation>
 <translation id="6855029042976311970">હમણાં જ ફેરફાર કરવામાં આવ્યો હતો</translation>
+<translation id="6856708615407876657">શોધ પરિણામની કૅટેગરીને ટૉગલ કરો</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> સેકન્ડ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{એક અંક બાકી}one{# અંક બાકી}other{# અંક બાકી}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" />નું ડાઉનલોડ થોભાવ્યું</translation>
 <translation id="6874854809828346832">હૉટસ્પૉટની વિગતો બતાવો. હૉટસ્પૉટ ચાલુ છે.</translation>
 <translation id="6878400149835617132">શૉર્ટકટ બંધ કર્યો</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ઍપ}one{# ઍપ}other{# ઍપ}}</translation>
+<translation id="6883768636838842873">કી શૉર્ટકટ, ડિવાઇસના ઉપયોગ સંબંધિત ટિપ અને બીજું ઘણું</translation>
 <translation id="6884665277231944629">આજની તારીખ પર પાછા જાઓ</translation>
 <translation id="6886172995547742638">તમારા <ph name="DEVICE_TYPE" />માં નબળું કાર્યપ્રદર્શન થઈ શકે છે. પ્રમાણિત <ph name="PREFERRED_MINIMUM_POWER" />W અથવા તેથી વધુના USB-C પાવર અડૅપ્ટરનો ઉપયોગ કરો.</translation>
 <translation id="688631446150864480">વિન્ડો સ્વિચ કરવા માટે, નીચેની ઍરો કી દબાવો</translation>
@@ -1505,7 +1522,6 @@
 <translation id="7188494361780961876">મેનૂને સ્ક્રીનની ઉપરના ડાબા ખૂણામાં ખસેડ્યું.</translation>
 <translation id="7189412385142492784">શુક્રનો ગ્રહ પૃથ્વીથી કેટલી દૂરીએ?</translation>
 <translation id="7198435252016571249">કૅમેરાને નીચેના જમણા ખૂણામાં સ્નેપ કર્યો. સિસ્ટમની સપાટીને ઓવરલેપ કરે છે.</translation>
-<translation id="7219573373513695352">કોઈ ડિવાઇસ કનેક્ટ કરેલું નથી</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> મેમરી | કુલ <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. અપડેટ લાગુ કરવા માટે આ Chromebookને ફરી શરૂ કરવાની જરૂર છે. આમાં 1 મિનિટ જેટલો સમય લાગી શકે છે.</translation>
 <translation id="7256634071279256947">પાછળનો માઇક્રોફોન</translation>
@@ -1523,6 +1539,7 @@
 <translation id="7312210124139670355">તમારા ઍડમિનિસ્ટ્રેટર તમારા ઇ-સિમને રીસેટ કરી રહ્યાં છે. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="7313193732017069507">કૅમેરાને મોટો કરો</translation>
 <translation id="7316261577130609484">નવું કાર્ય ઉમેરો</translation>
+<translation id="7321889295239318128">વધુ જાણવા માટે shift વત્તા ટૅબ કી દબાવો</translation>
 <translation id="7330397557116570022">ડિક્ટેશનનો ઉપયોગ કરવા માટે, ટેક્સ્ટ ફીલ્ડ પર જાઓ</translation>
 <translation id="7331646370422660166">alt + નીચેની ઍરો કી</translation>
 <translation id="7340731148882810149">ઑટોમૅટિક રીતે ક્લિક કરતું મેનૂ</translation>
@@ -1836,6 +1853,7 @@
 <translation id="8619138598101195078">વૉલ્યૂમ ઘટાડો</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> સાથે કનેક્ટ થયા</translation>
 <translation id="8631727435199967028">ઍક્સેસિબિલિટી સેટિંગ</translation>
+<translation id="8634326941504371857">આ ડિવાઇસ પરની અને Google Driveમાંની તમારી ફાઇલો</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="8638637208069328956">માઇક્રોફોન ચાલુ/બંધ કરો</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> બાકી</translation>
@@ -1911,6 +1929,7 @@
 <translation id="8940956008527784070">બૅટરી ઓછી (<ph name="PERCENTAGE" />%)</translation>
 <translation id="8949925099261528566">કનેક્ટ કર્યું, કોઈ ઇન્ટરનેટ નથી</translation>
 <translation id="8951539504029375108">તમારી Chromebook સાથે ફક્ત મંજૂરી ધરાવતા Thunderbolt ડિવાઇસ સુસંગત હોય છે</translation>
+<translation id="8964525410783593407">1 કલાક</translation>
 <translation id="8973885907461690937">મેનૂ આઇકન પર ફોકસ મૂકો</translation>
 <translation id="8980862970816311842">ઍપ ગ્રિડમાં ઍપ આઇકનને ફોલ્ડરની અંદર/બહાર ખસેડો</translation>
 <translation id="8982906748181120328">નજીકની દૃશ્યતા</translation>
@@ -1947,7 +1966,6 @@
 <translation id="9089416786594320554">ઇનપુટ પદ્ધતિઓ</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ડિસ્પ્લે કાઢી નાખ્યું</translation>
 <translation id="9098969848082897657">ફોન સાઇલન્ટ રાખો</translation>
-<translation id="9120448753905017833">અમે મોબાઇલ ડેટા મારફતે હૉટસ્પૉટનો ઉપયોગ શરૂ કરવા માટે વાઇ-ફાઇ બંધ કર્યું છે. આમ કરવાથી ડેટા વપરાશનો ખર્ચ લાગુ થઈ શકે છે.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> અથવા <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">ક્રિયામાં કરેલો છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="9133335900048457298">સંરક્ષિત કન્ટેન્ટ રેકોર્ડ કરી શકાતું નથી</translation>
@@ -1983,6 +2001,7 @@
 <translation id="951991426597076286">નકારો</translation>
 <translation id="953431725143473984">ડિવાઇસ શટ ડાઉન કરીએ?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> માટે પર્યાપ્ત સ્પેસ નથી. સ્પેસ ખાલી કરો.</translation>
+<translation id="954520015070501466">30 મિનિટ</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> માટે <ph name="RESULT_COUNT" /> પરિણામ બતાવી રહ્યાં છીએ</translation>
 <translation id="981011780479609956">નિયત તારીખ વગરના</translation>
 <translation id="98120814841227350">દસ્તાવેજના અંતે જાઓ</translation>

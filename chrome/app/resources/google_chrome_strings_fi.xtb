@@ -157,6 +157,7 @@
 <translation id="3582972582564653026">Voit synkronoida Chromen ja tehdä siitä yksilöllisemmän kaikilla laitteilla.</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Ylläpitäjä vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön.}=1{Ylläpitäjä vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Incognito-ikkunaasi ei avata uudelleen.}other{Ylläpitäjä vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="3622797965165704966">Nyt voit helpommin käyttää Chromea Google-tililläsi ja jaetuilla tietokoneilla.</translation>
+<translation id="3635073343384702370">Chrome voi tarkistaa salasanasi, kun tallennat niitä</translation>
 <translation id="3673813398384385993">Chrome havaitsi, että "<ph name="EXTENSION_NAME" />" sisältää haittaohjelmia</translation>
 <translation id="3703994572283698466">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chrome-käyttöjärjestelmää, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linux-kehitysympäristöä<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flexin versio</translation>
@@ -208,6 +209,7 @@
 <translation id="4571503333518166079">Siirry Chromen ilmoitusasetuksiin</translation>
 <translation id="459622048091363950">Kun Chromella on käyttöoikeus, sivustot voivat pyytää sitä sinulta.</translation>
 <translation id="4600710005438004015">Chromea ei voitu päivittää uusimpaan versioon, joten sinulta puuttuu joitakin uusia ominaisuuksia ja tietoturvakorjauksia.</translation>
+<translation id="4624065194742029982">Chromen incognito-tila</translation>
 <translation id="4627412468266359539">Valinnainen: Auta parantamaan ChromeOS Flexin ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa automaattisesti Googlelle.</translation>
 <translation id="4633000520311261472">Paransimme Chromen turvallisuutta poistamalla käytöstä sovelluksia, joita ei löydy kohteesta <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ja jotka on voitu lisätä ilman lupaasi.</translation>
 <translation id="4680828127924988555">Peru asennus</translation>
@@ -217,6 +219,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (saapuva mDNS)</translation>
 <translation id="4771048833395599659">Tämä tiedosto voi olla vaarallinen, joten Chrome on estänyt sen.</translation>
 <translation id="479167709087336770">Tämä käyttää samaa oikeinkirjoituksen tarkistusta kuin Google Haku. Selaimeen kirjoittamasi teksti lähetetään Googlelle. Voit vaihtaa valintasi milloin tahansa asetuksista.</translation>
+<translation id="4793679854893018356">Katso, miten Chrome pitää sinut turvassa</translation>
 <translation id="4828579605166583682">Google Chrome yrittää korvata nykyiset salasanat. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="4842397268809523050">ChromeOS Flex ei voinut synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="4873783916118289636">Tarkista Chromen tärkeimmät yksityisyys‑ ja turvallisuusasetukset</translation>
@@ -263,6 +266,7 @@
 <translation id="5756509061973259733">Tämän tilin Chrome-profiili on jo tällä laitteella</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chromen käynnistäminen epäonnistui. Yritä uudelleen.</translation>
+<translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome varoittaa sinua<ph name="END_LINK" /> vaarallisista sivustoista ja latauksista</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon</translation>
 <translation id="5924017743176219022">Muodostetaan internetyhteyttä…</translation>
@@ -272,6 +276,7 @@
 <translation id="5941830788786076944">Tee Google Chromesta oletusselain</translation>
 <translation id="6003112304606738118">Ladataan… <ph name="HOURS" /> tuntia jäljellä</translation>
 <translation id="6010556343189461180">Sinulla on oltava macOS 10.15 tai uudempi, jotta saat tulevia Google Chromen päivityksiä. Tällä tietokoneella on macOS 10.14.</translation>
+<translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chromen työkaluilla<ph name="END_LINK" /> voit selata turvallisesti ja pitää ohjat omissa käsissäsi</translation>
 <translation id="6022659036123304283">Tee Chromesta näköisesi</translation>
 <translation id="6025087594896450715">Google Chrome käynnistyy uudelleen, kun <ph name="REMAINING_TIME" /> on kulunut</translation>
 <translation id="6040143037577758943">Sulje</translation>
@@ -361,6 +366,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="7651907282515937834">Chrome Enterprise ‑logo</translation>
 <translation id="76531479118467370">Chrome on estänyt tämän latauksen, koska laitoit Selaussuojan pois päältä eikä tiedostoa voi vahvistaa</translation>
 <translation id="7655455401911432608">Selaushistoriaasi eli tietoa sivuista, jotka olet avannut Chromessa tällä laitteella</translation>
+<translation id="769538538642757151">Chrome ilmoittaa, jos jotain on tarkistettava</translation>
 <translation id="7747138024166251722">Asennusohjelma ei pystynyt luomaan väliaikaista hakemistoa. Tarkista, että käytettävissä on riittävästi levytilaa ja että sinulla on oikeus asentaa ohjelmia.</translation>
 <translation id="7761834446675418963">Avaa Chrome klikkaamalla nimeäsi ja aloita selaaminen.</translation>
 <translation id="7777080907402804672">Jos kuvalla ei ole hyödyllistä kuvausta, Chrome yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten. Voit milloin tahansa poistaa tämän käytöstä asetuksissa.</translation>
@@ -389,6 +395,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8129812357326543296">Tietoja &amp;Google Chromesta</translation>
 <translation id="813913629614996137">Käynnistetään…</translation>
 <translation id="8255190535488645436">Google Chrome käyttää kameraasi ja mikrofoniasi.</translation>
+<translation id="8267953129876836456">Chrome on löytänyt turvallisuussuosituksia, jotka sinun täytyy tarkistaa</translation>
 <translation id="8270775718612349140">Chromen hallinnoimat varmenteet</translation>
 <translation id="8286862437124483331">Google Chrome yrittää näyttää salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="8290100596633877290">Hups! Google Chrome kaatui. Käynnistetäänkö uudelleen?</translation>
@@ -403,6 +410,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8403038600646341038">Chrome-logo tietokoneen näytöllä.</translation>
 <translation id="8416347857511542594">Lue lisää mainosten personoinnista Chromessa</translation>
 <translation id="8418845734693287262">Chrome-käyttöjärjestelmä ei voinut synkronoida dataa, koska tilin kirjautumistiedot ovat vanhentuneet.</translation>
+<translation id="842386925677997438">Chromen turvallisuustyökalut</translation>
 <translation id="8433638294851456451">Jos haluat lähettää numeron täältä Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> ylläpitää tiliäsi. Järjestelmänvalvoja voi nähdä tämän Chrome-selainprofiilin ja sen datan (esim. kirjanmerkit, historian ja salasanat) sekä muokata niitä.</translation>
 <translation id="8496177819998570653">Google S&amp;alasanat</translation>
@@ -443,6 +451,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9195993889682885387">Chrome voi arvioida kiinnostuksen kohteitasi muutaman viime viikon selaushistoriasi perusteella. Tiedot pysyvät laitteellasi.</translation>
 <translation id="919706545465235479">Aloita synkronointi päivittämällä Chrome.</translation>
 <translation id="922152298093051471">Yksilöi Chromea</translation>
+<translation id="92460355979482493">Kun tämä on päällä, Chrome esilataa sivuja, mikä nopeuttaa selaamista ja hakemista.</translation>
 <translation id="93760716455950538">Käynnistä ChromeOS Flex uudelleen</translation>
 <translation id="940313311831216333">Jos haluat pääsyn Chrome-sisältöösi kaikilla laitteilla, kirjaudu sisään ja laita sitten synkronointi päälle.</translation>
 <translation id="943390475793766444">Chrome suosittelee tiedoston skannaamista, koska se voi olla vaarallinen.</translation>

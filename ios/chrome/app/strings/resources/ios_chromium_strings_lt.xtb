@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Paieška balsu naršyklėje „Chromium“.</translation>
 <translation id="1047130070405668746">Pasirinkite „Chromium“</translation>
 <translation id="1091252999271033193">Tai reiškia, kad kiekvieną kartą „Chromium“ teiks svetainės mobiliesiems užklausą.</translation>
+<translation id="1171824629317156389">Atidarykite „Chromium“ nustatymus sistemoje „iOS“, tada palieskite „Numatytoji naršyklės programa“ ir pasirinkite „Chromium“.</translation>
 <translation id="1185134272377778587">Apie „Chromium“</translation>
 <translation id="1257458525759135959">Jei norite išsaugoti vaizdus, palieskite „Nustatymai“ ir leiskite „Chromium“ pridėti jūsų nuotraukas</translation>
 <translation id="1289216811211435351">Perjungimas į „Chromium“</translation>
@@ -94,7 +95,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="4736424910885271643">Jūsų paskyrą tvarko <ph name="HOSTED_DOMAIN" />, todėl jūsų „Chromium“ duomenys bus išvalyti iš šio įrenginio</translation>
 <translation id="4790638144988730920">Toliau naudokite „Chromium“ duomenis „Google“ paskyroje.</translation>
 <translation id="4828317641996116749">„Chromium“ nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą vėliau.</translation>
-<translation id="4935539884203837577">„Chromium“ gali aptikti įvestus stebėjimo numerius ir stebėti jūsų paketus naujo skirtuko puslapyje, padėdama naudotis kitomis „Chromium“ apsipirkimo funkcijomis.</translation>
 <translation id="4985291216379576555">Neprisijungta, todėl „Chromium“ nepavyko patikrinti, ar yra naujinių</translation>
 <translation id="4996471330284142407">Nuveikite daugiau naudodami paprastą, saugią ir spartesnę nei bet kada anksčiau „Chromium“.</translation>
 <translation id="4999538639245140991">Atsijungiate nuo paskyros, kurią valdo <ph name="SIGNOUT_MANAGED_DOMAIN" />, todėl „Chromium“ duomenys bus ištrinti iš šio įrenginio. Duomenys išliks jūsų „Google“ paskyroje.</translation>

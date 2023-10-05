@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1213425325105380833">या खात्याशी कनेक्ट केलेल्या डिव्हाइसवर तुम्ही अलीकडे वापरलेली वेब अ‍ॅप्स रिस्टोअर करा</translation>
+<translation id="2065911435109240297">तुमची वेब अ‍ॅप्स रिस्टोअर करा</translation>
+<translation id="2111649875343992405">रिस्टोअर करायच्या असलेल्या वेब अ‍ॅप्सचे पुनरावलोकन करा</translation>
 <translation id="2139186145475833000">होम स्क्रीनवर जोडा</translation>
+<translation id="2172982519592313442">वेब अ‍ॅप्सचे पुनरावलोकन करा</translation>
 <translation id="2478076885740497414">अ‍ॅप इंस्टॉल करा</translation>
 <translation id="3789841737615482174">स्थापना करा</translation>
 <translation id="3910402514791813257">इंस्टॉल करता आला नाही</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">स्क्रीनशॉट. बंद करण्यासाठी टॅप करा.</translation>
 <translation id="6990079615885386641">Google Play Store मधून ॲप मिळवा: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">अद्याप मागील साइट जोडत आहे</translation>
+<translation id="7672888405515738928">या डिव्हाइसवर रिस्टोअर करायची असलेली वेब ॲप्स निवडा. येथे दाखवलेली ॲप्स ही तुमच्या Chrome इतिहासावर आधारित आहेत.</translation>
+<translation id="8163051092261298861">वेब ॲप्स रिस्टोअर करा</translation>
 <translation id="962979164594783469">हे ॲप इंस्टॉल करा</translation>
 </translationbundle>

@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">在 Chromium 中使用語音搜尋。</translation>
 <translation id="1047130070405668746">選取 [Chromium]</translation>
 <translation id="1091252999271033193">這代表 Chromium 每次都會要求取得流動網站。</translation>
+<translation id="1171824629317156389">在 iOS 中開啟 Chromium 設定，輕按 [預設瀏覽器應用程式]，然後選取 [Chromium]。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1257458525759135959">如要儲存圖片，請輕按 [設定] 並允許 Chromium 新增您的相片</translation>
 <translation id="1289216811211435351">切換至 Chromium</translation>
@@ -43,7 +44,7 @@
 <translation id="2574528844022712255">查看 Chromium 書籤</translation>
 <translation id="2590893390871230428">同步處理 Chromium 資料</translation>
 <translation id="2618596336309823556">在裝置的「設定」，開啟「<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />」並選取「Chromium」</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium 會在新分頁上追蹤這個包裹。}other{Chromium 會在新分頁上追蹤這些包裹。}}</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium 將會在「新分頁」上追蹤此包裹。}other{Chromium 將會在「新分頁」上追蹤這些包裹。}}</translation>
 <translation id="2650312721222849884">如要在任何使用 Chromium 的裝置上查看分頁，請開啟同步處理功能</translation>
 <translation id="2684230048001240293">將 Chromium 設定為預設瀏覽器，即可在所有裝置上同步分頁、密碼和付款資料</translation>
 <translation id="2730884209570016437">由於另一個應用程式正在使用相機，因此 Chromium 暫時無法使用</translation>
@@ -53,7 +54,7 @@
 <translation id="2918709798697875261">您的機構要求您保持登出 Chromium。</translation>
 <translation id="2942241131342758843">預設使用 Chromium 來開啟連結、從小工具搜尋，以及在其他應用程式中自動填入密碼</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium 可以在新分頁上追蹤這個包裹。}other{Chromium 可以在新分頁上追蹤這些包裹。}}</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium 可在「新分頁」上追蹤此包裹。}other{Chromium 可在「新分頁」上追蹤這些包裹。}}</translation>
 <translation id="3102849287235003384">如要在所有網站上登出 Google 帳戶，請<ph name="BEGIN_LINK" />登出 Chromium<ph name="END_LINK" />。</translation>
 <translation id="3219277919172823720">在 Chromium 中使用語音搜尋</translation>
 <translation id="3228349498066165585">部分 Chromium 資料尚未儲存至 Google 帳戶。
@@ -94,7 +95,6 @@
 <translation id="4736424910885271643">由於您的帳戶由 <ph name="HOSTED_DOMAIN" /> 管理，因此您的 Chromium 資料將會從此裝置上清除</translation>
 <translation id="4790638144988730920">繼續使用 Google 帳戶中的 Chromium 資料。</translation>
 <translation id="4828317641996116749">Chromium 無法檢查所有密碼。請稍後再試。</translation>
-<translation id="4935539884203837577">Chromium 可以偵測你輸入的追蹤號碼，在「新分頁」頁面追蹤包裹，並協助你享受其他 Chromium 購物體驗。</translation>
 <translation id="4985291216379576555">離線，Chromium 無法檢查更新</translation>
 <translation id="4996471330284142407">Chromium 比以前更簡便、安全而快速，讓您事半功倍。</translation>
 <translation id="4999538639245140991">由於您即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理的帳戶，系統將刪除您在此裝置上的 Chromium 資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
@@ -115,7 +115,7 @@
 <translation id="5521125884468363740">如要在任何使用 Chromium 的裝置上查看分頁，請登入並開啟同步功能</translation>
 <translation id="5522297504975449419">部分 Chromium 功能將無法再使用。</translation>
 <translation id="5571094606370987472">開啟 Chromium 最近開啟的分頁。</translation>
-<translation id="5623083843656850677">離開 Chromium 或切換到其他應用程式時，鎖定無痕分頁。</translation>
+<translation id="5623083843656850677">在你離開 Chromium 或切換至其他應用程式時鎖定無痕式分頁。</translation>
 <translation id="5688047395118852662">此資訊卡會建議您如何充分運用 Chromium 的功能。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查密碼</translation>
 <translation id="5777187867430702742">Chromium 頁面</translation>

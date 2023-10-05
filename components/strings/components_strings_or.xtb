@@ -52,8 +52,10 @@
 <translation id="1080116354587839789">ପ୍ରସ୍ଥ ସହିତ ଫିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1081061862829655580">ଟ୍ରେ 19</translation>
 <translation id="1089439967362294234">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
+<translation id="1090629319939036170">VR ମେନୁ</translation>
 <translation id="1094777233105318927">ଆପଣଙ୍କ ବ୍ରାଉଜର, OS, ଡିଭାଇସ, ଇନଷ୍ଟଲ କରାଯାଇଥିବା ସଫ୍ଟୱେର ଏବଂ ଫାଇଲଗୁଡ଼ିକ ବିଷୟରେ ସୂଚନା</translation>
 <translation id="1096545575934602868">ଏହି ଫିଲ୍ଡରେ <ph name="MAX_ITEMS_LIMIT" />ରୁ ଅଧିକ ଏଣ୍ଟ୍ରି ରହିବା ଉଚିତ ନୁହେଁ। ସମସ୍ତ ପରବର୍ତ୍ତୀ ଏଣ୍ଟ୍ରିଗୁଡ଼ିକୁ ଖାରଜ କରାଯିବ।</translation>
+<translation id="1099928364755383720">ସ୍ୱତଃ ପିକଚର-ଇନ-ପିକଚର</translation>
 <translation id="1100782917270858593">"ଆପଣଙ୍କ ସନ୍ଧାନ ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ" ବଟନ, ଆପଣଙ୍କ ସନ୍ଧାନ ପୁଣି ଆରମ୍ଭ କରି Chrome ଇତିହାସରେ ପ୍ରାସଙ୍ଗିକ କାର୍ଯ୍ୟକଳାପ ଦେଖିବାକୁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="1101672080107056897">ତ୍ରୁଟି ସମ୍ବନ୍ଧିତ କାର୍ଯ୍ୟ</translation>
 <translation id="1103523840287552314">ସର୍ବଦା <ph name="LANGUAGE" /> ଅନୁବାଦ କରନ୍ତୁ</translation>
@@ -187,6 +189,7 @@
 <translation id="1346748346194534595">ଡାହାଣ</translation>
 <translation id="1348198688976932919">ଆଗରେ ଥିବା ସାଇଟ୍‍‍ରେ ବିପଜ୍ଜନକ ଆପ୍ସ ରହିଛି</translation>
 <translation id="1348779747280417563">ନାମ ନିଶ୍ଚିତ କରନ୍ତୁ</translation>
+<translation id="1352798470428594123">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣଙ୍କୁ ଟ୍ରାକ କରିବା ପାଇଁ Chrome ଅଧିକାଂଶ ସାଇଟକୁ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାଠାରୁ ସୀମିତ କରେ। <ph name="LINK" />ରେ ସେଟିଂସକୁ ଭିଜିଟ କରନ୍ତୁ।</translation>
 <translation id="1354976809542763843">ହୋମ ଫାଇନାନ୍ସିଂ</translation>
 <translation id="1355158069018170842">ଟାବଗୁଡ଼ିକରେ ମୂଲ୍ୟ ହ୍ରାସ ଦେଖାନ୍ତୁ</translation>
 <translation id="1355301061807280185">ଚାକିରିଗୁଡ଼ିକ</translation>
@@ -478,6 +481,7 @@
 <translation id="192095259937375524">'ଏହି ଟାବକୁ ସେୟାର କରନ୍ତୁ' ବଟନ, ଲିଙ୍କ ସେୟାର କରି, ଏକ QR କୋଡ ତିଆରି କରି, କାଷ୍ଟ କରି ଏବଂ ଆହୁରି ଅନେକ ଉପାୟରେ ଏହି ଟାବକୁ ସେୟାର କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="1924727005275031552">ନୂଆ</translation>
 <translation id="1935995810530254458">ଯେ କୌଣସି ମତେ କପି କରନ୍ତୁ</translation>
+<translation id="1939059826036755332">ସ୍ୱତଃ ପିକଚର-ଇନ-ପିକଚର</translation>
 <translation id="1939175642807587452">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="1940441167050915935">ସେଭ କରାଯାଇଥିବା ସୁରକ୍ଷା କୋଡଗୁଡ଼ିକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="1943994668912612445">ଡିଜାଇନ</translation>
@@ -510,6 +514,7 @@
 <translation id="201174227998721785">Chrome ସେଟିଂସରେ ସମସ୍ତ ସାଇଟରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ଅନୁମତି ଏବଂ ଡାଟାକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2012276282211112603">ବର୍ତ୍ତମାନ ଦେଖାଇବା ପାଇଁ କୌଣସି ବିଷୟ ନାହିଁ</translation>
 <translation id="2018769312928511665">ଫେବ୍ରିକ (ଗ୍ଲସି)</translation>
+<translation id="2020779321517562133">କପିକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="2021333772895814435">ଏଥିପାଇଁ ଏହି ନୀତି ସ୍ୱତଃ ସମଗ୍ର ଡିଭାଇସରେ ସିଙ୍କ କରିବାକୁ ସକ୍ଷମ କରେ: <ph name="ACTION_LIST" />।</translation>
 <translation id="202224654587969958">12 x 19 ଇଞ୍ଚ</translation>
 <translation id="2022815493835288714">ନୂଆ ପେମେଣ୍ଟ ସେଟିଂ ବିଷୟରେ ଆଲର୍ଟକୁ ଖୋଲାଯାଇଛି</translation>
@@ -765,6 +770,7 @@
 <translation id="2551608178605132291">ଠିକଣା: <ph name="ADDRESS" />।</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">ବର୍ତ୍ତମାନ ଠାରୁ କାର୍ଡଗୁଡ଼ିକ ସୁନିଶ୍ଚିତ କରିବାକୁ ସ୍କ୍ରିନ୍ ଲକ୍ ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="2552532158894206888">ଡାହାଣ କୀ</translation>
 <translation id="2553853292994445426">ଆପଣଙ୍କର ସୁରକ୍ଷିତ DNS ସେଟିଂସ୍ ଯାଞ୍ଚ କରନ୍ତୁ। ଆପଣ ଏକ ସୁରକ୍ଷିତ DNS ସର୍ଭରକୁ କନଫିଗର୍ କରିଥାଇପାରନ୍ତି ଯେଉଁଥିରେ ସଂଯୋଗଗୁଡ଼ିକ ବିଫଳ ହେଉଛି।</translation>
 <translation id="255497580849974774">ଦୟାକରି ଅପଡେଟ ସମୟରେ ଆପଣଙ୍କ ଡିଭାଇସକୁ ଏକ ଚାର୍ଜର ସହ କନେକ୍ଟ କରି ରଖନ୍ତୁ।</translation>
 <translation id="2556876185419854533">&amp;ଏଡିଟ୍‍କୁ ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
@@ -830,6 +836,7 @@
 <translation id="2688969097326701645">ହଁ, ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2691924980723297736">ସୁରକ୍ଷା ଚେତାବନୀ</translation>
 <translation id="2692131511336778528">ସାଇନ୍ସ ଫିକ୍ସନ ଏବଂ ଫାଣ୍ଟାସି</translation>
+<translation id="2699273987028089219">ସବମେନୁ ଉପଲବ୍ଧ, ଅତିରିକ୍ତ ବିକଳ୍ପଗୁଡ଼ିକୁ ନାଭିଗେଟ କରିବା ପାଇଁ <ph name="SHORTCUT" /> ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="2701514975700770343">ଫେସ୍ ଡାଉନ୍</translation>
 <translation id="2702592986366989640">କମ ମୂଲ୍ୟ ଥିବା ବିକଳ୍ପ</translation>
 <translation id="2702801445560668637">ପଢ଼ିବା ତାଲିକା</translation>
@@ -974,6 +981,7 @@
 <translation id="3023165109041533893">ସାଇଟ ଦ୍ୱାରା-ପରାମର୍ଶ ଦିଆଯାଇଥିବା ବିଜ୍ଞାପନଗୁଡ଼ିକ, ଆପଣଙ୍କୁ ପ୍ରାସଙ୍ଗିକ ବିଜ୍ଞାପନ ଦେଖାଇବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ସକ୍ଷମ କରିବା ସମୟରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ ଏବଂ ପରିଚୟକୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରେ। ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପ ଆଧାରରେ, ଆପଣ ବ୍ରାଉଜ କରିବା ଜାରି ରଖିଥିବା ସମୟରେ, ଆପଣ ଭିଜିଟ କରିଥିବା କୌଣସି ସାଇଟ ସମ୍ବନ୍ଧିତ ବିଜ୍ଞାପନଗୁଡ଼ିକର ପରାମର୍ଶ ଦେଇପାରିବ। ଆପଣ ଏହି ସାଇଟଗୁଡ଼ିକର ଏକ ତାଲିକାକୁ ଦେଖିପାରିବେ ଏବଂ ସେଟିଂସରେ ଆପଣ ଚାହୁଁନଥିବା ସାଇଟଗୁଡ଼ିକୁ ବ୍ଲକ କରିପାରିବେ।</translation>
 <translation id="3024663005179499861">ଭୁଲ ନୀତି ପ୍ରକାର</translation>
 <translation id="3029752078111257850">ବିଶ୍ଵ ସମାଚାର</translation>
+<translation id="3030331669969285614">ଏହି ଫ୍ଲାଗଗୁଡ଼ିକ ଏକ ବ୍ରେକିଂ ପରିବର୍ତ୍ତନକୁ ପ୍ରତିରୋଧ କରେ ବା ମୂଳ ଅବସ୍ଥାକୁ ଆଣେ ଏବଂ ଏହା କେବଳ ସୀମିତ ସମୟ ପାଇଁ ଉପଲବ୍ଧ ହୁଏ।</translation>
 <translation id="3036894576201005614">ହାଉସହୋଲ୍ଡ ସଫେଇ ସାମଗ୍ରୀ</translation>
 <translation id="3037177537145227281">ମୂଲ୍ୟ ଟ୍ରାକ କରାଯାଉଛି</translation>
 <translation id="3037605927509011580">ଇସ!</translation>
@@ -1252,6 +1260,7 @@
 <translation id="3603507503523709">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ଆପ୍ଲିକେସନ୍ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="3605899229568538311">5 x 5 ଇଞ୍ଚ</translation>
 <translation id="3608932978122581043">ଫିଡ୍ ଓରିଏଣ୍ଟେସନ୍</translation>
+<translation id="3610142117915544498">ପରବର୍ତ୍ତୀ ଥର ଶୀଘ୍ର ପେମେଣ୍ଟ କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଊଣ୍ଟରେ ଆପଣଙ୍କର କାର୍ଡ, ନାମ ଏବଂ ବିଲିଂ ଠିକଣା ସେଭ କରନ୍ତୁ</translation>
 <translation id="3611317423880285981">ଘରୋଇ ସାମଗ୍ରୀ</translation>
 <translation id="3614103345592970299">ଆକାର 2</translation>
 <translation id="361438452008624280">ତାଲିକାର ଏଣ୍ଟ୍ରି "<ph name="LANGUAGE_ID" />": ଅଜଣା କିମ୍ବା ଅସମର୍ଥିତ ଭାଷା।</translation>
@@ -1322,6 +1331,7 @@
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slidesରେ ଶୀଘ୍ର ଏକ ନୂଆ Google ପ୍ରେଜେଣ୍ଟେସନ୍ ତିଆରି କରିବା ପାଇଁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="3733139489341305600">ସ୍ୱୟଂଚାଳିତ ଗାଡ଼ିଗୁଡ଼ିକ</translation>
 <translation id="3736520371357197498">ଆପଣଙ୍କ ସୁରକ୍ଷା ପ୍ରତି ଥିବା ବିପଦକୁ ଯଦି ଆପଣ ବୁଝିପାରନ୍ତି, ତେବେ ବିପଦପୂର୍ଣ୍ଣ ପ୍ରୋଗ୍ରାମ୍‍ଗୁଡ଼ିକୁ କଢ଼ାଯିବା ପୂର୍ବରୁ ଆପଣ ଏହି <ph name="BEGIN_LINK" />ଅସୁରକ୍ଷିତ ସାଇଟ୍‍କୁ ଯାଇପାରନ୍ତି<ph name="END_LINK" />।</translation>
+<translation id="3736739313435669994">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣଙ୍କୁ ଟ୍ରାକ କରିବା ପାଇଁ ଆପଣ ସାଇଟଗୁଡ଼ିକୁ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାଠାରୁ ବ୍ଲକ କରିଛନ୍ତି। <ph name="LINK" />ରେ ସେଟିଂସକୁ ଭିଜିଟ କରନ୍ତୁ।</translation>
 <translation id="3738166223076830879">ଆପଣଙ୍କର ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ଆପଣଙ୍କ ବ୍ରାଉଜର୍ ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="3740319564441798148">ଦୂରଗାମୀ ବସ ଏବଂ ରେଳ</translation>
 <translation id="3740447166056383374">କପି କରିବା ପୂର୍ବରୁ ସମୀକ୍ଷା କରିବା ଆବଶ୍ୟକ</translation>
@@ -1489,6 +1499,7 @@
 <translation id="4111546256784973544">ପେଣ୍ଟବଲ</translation>
 <translation id="4112140312785995938">ପଛକୁ ଆଣନ୍ତୁ</translation>
 <translation id="4113354056388982663">ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ Android ପରଫରମାନ୍ସ ଅପଡେଟ</translation>
+<translation id="4114007503059268298">ଆପଣ ଏହି କାର୍ଡକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ଏବଂ ଏହି ଡିଭାଇସରେ ସେଭ କରିବାକୁ ଚାହାଁନ୍ତି?</translation>
 <translation id="4114146879518089587">ସାଇଟର ବ୍ୟବହାର ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="4116663294526079822">ଏହି ସାଇଟ୍‌ରେ ସର୍ବଦା ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1512,6 +1523,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{ପୃଷ୍ଠା 1}other{ପୃଷ୍ଠା {COUNT}}}</translation>
 <translation id="4154277373259957087">ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପୂର୍ବରୁ Chrome ବର୍ତ୍ତମାନ ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଯାଞ୍ଚ କରିବ। ଆପଣ <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />ରେ ଯେ କୌଣସି ସମୟରେ ଏହାକୁ ଅପଡେଟ କରିପାରିବେ।</translation>
 <translation id="4159149286839604525">ଏହାର ଅର୍ଥ ହେଉଛି ଅଧିକାଂଶ ସାଇଟ ଫିଚର କାମ କରିବା ଉଚିତ, କିନ୍ତୁ ଆପଣଙ୍କର ସୁରକ୍ଷା କମ ଅଛି</translation>
+<translation id="4159575773617358878">ପରବର୍ତ୍ତୀ ଥର ଶୀଘ୍ର ପେମେଣ୍ଟ କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଊଣ୍ଟରେ ଆପଣଙ୍କର କାର୍ଡ, ସୁରକ୍ଷା କୋଡ ଏବଂ ବିଲିଂ ଠିକଣା ସେଭ କରନ୍ତୁ</translation>
 <translation id="4159784952369912983">ବାଇଗଣୀ</translation>
 <translation id="4165986682804962316">ସାଇଟ୍‍ ସେଟିଂସ୍‌</translation>
 <translation id="4169535189173047238">ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
@@ -1710,13 +1722,16 @@
 <translation id="4526465106919207193">ଲୋକ ଏବଂ ସମାଜ</translation>
 <translation id="4530347922939905757">ଟେକ୍ସଟ ମେସେଜ</translation>
 <translation id="4531477351494678589">ଭର୍ଚୁଆଲ କାର୍ଡ ନମ୍ବର:</translation>
+<translation id="4535523368173457420">ଏହି ସର୍ଚ୍ଚ ଇଞ୍ଜିନଗୁଡ଼ିକ ଆପଣଙ୍କ ଅଞ୍ଚଳରେ ଲୋକପ୍ରିୟ ଅଟେ ଏବଂ ସେଗୁଡ଼ିକୁ ରେଣ୍ଡମ କ୍ରମରେ ଦେଖାଯାଇଛି</translation>
 <translation id="4540780316273593836">କିଛି ତ୍ରୁଟି ହୋଇଛି</translation>
 <translation id="4541810033354695636">ଅଗମେଣ୍ଟେଡ୍ ରିଆଲିଟୀ</translation>
 <translation id="4542971377163063093">ଟ୍ରେ 6</translation>
+<translation id="4543072026714825470">ପରବର୍ତ୍ତୀ ଥର ଶୀଘ୍ର ପେମେଣ୍ଟ କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଊଣ୍ଟରେ ଆପଣଙ୍କର କାର୍ଡ ଏବଂ ବିଲିଂ ଠିକଣା ସେଭ କରନ୍ତୁ</translation>
 <translation id="4546730006268514143">ଟ୍ରାନ୍ସଫର କରିବା ସମୟ ସମାପ୍ତ ହୋଇଯାଇଛି</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">ଆପଣ ପାସୱାର୍ଡଗୁଡ଼ିକ ପୂରଣ କରିବା ପାଇଁ ଆପଣଙ୍କ ସ୍କ୍ରିନ ଲକ ବ୍ୟବହାର କରୁଛନ୍ତି</translation>
 <translation id="4558551763791394412">ଆପଣଙ୍କର ଏକ୍ସଟେନ୍‍ସନ୍‍ଗୁଡ଼ିକୁ ଅକ୍ଷମ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="456043042661026303">ଆପଣଙ୍କ ପେମେଣ୍ଟ ବିବରଣୀକୁ ସୁରକ୍ଷିତ ଭାବେ ଯାଞ୍ଚ କରାଯାଉଛି</translation>
 <translation id="4566017918361049074">ଆଉଟଡୋର</translation>
 <translation id="4567686777917670400">ଆପଣଙ୍କର ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଆପଣଙ୍କ ବ୍ରାଉଜର୍ ସେଟଅପକୁ ରିମୋଟ୍ ଭାବରେ ବଦଳାଇପାରିବେ। ଏହି ଡିଭାଇସରେ କରାଯାଉଥିବା କାର୍ଯ୍ୟକଳାପ Chromium ବାହାରେ ମଧ୍ୟ ପରିଚାଳନା କରାଯାଇପାରେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">ଏକ ନୂଆ ୱିଣ୍ଡୋରେ କୁକୀ ଏବଂ ସାଇଟ ଡାଟାର ଏକ ତାଲିକାର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
@@ -2471,6 +2486,7 @@
 <translation id="6126565365696310362">ଏନଭେଲପ ଚାଇନିଜ #2</translation>
 <translation id="6127379762771434464">ଆଇଟମକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chromeରେ ଇନକଗ୍ନିଟୋ ମୋଡ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="6133320744616005677">ଅନୁମତି ଦେବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="6133984428121856852">ଫାଇଲ ଏକ୍ସଟେନସନ ଖାଲି ଅଛି କିମ୍ବା ତ୍ରୁଟିପୂର୍ଣ୍ଣ ଅଟେ।</translation>
 <translation id="6139975341602920272">17 x 22 ଇଞ୍ଚ</translation>
 <translation id="6146055958333702838">ଯେକୌଣସି କେବଲ୍‌ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଦ୍ୱାରା ବ୍ୟବହାର କରାଯାଉଥିବା ଯେକୌଣସି ରାଉଟର୍‌, ମୋଡେମ୍‍ କିମ୍ବା ଅନ୍ୟ ରାଉଟର୍‌ ରିବୁଟ୍‌ କରନ୍ତୁ।</translation>
@@ -2504,6 +2520,7 @@
 <translation id="6217950634729714357">ରୋଷେଇ ଘର ଏବଂ ଡାଇନିଂ ଫର୍ନିଚର</translation>
 <translation id="6218753634732582820">Chromiumରୁ ଠିକଣା କାଢ଼ି ଦେବେ?</translation>
 <translation id="622039917539443112">ସମାନ୍ତରାଳ ଫୋଲ୍ଡ</translation>
+<translation id="6221311046884916259">ଆପଣ ଏହି କାର୍ଡକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରିବାକୁ ଚାହାଁନ୍ତି?</translation>
 <translation id="6221345481584921695">Google ସେଫ୍ ବ୍ରାଉଜିଂ, ସମ୍ପ୍ରତି <ph name="SITE" />ରେ <ph name="BEGIN_LINK" />ମାଲ୍‌ୱେର୍ ଚିହ୍ନଟ କରିଛି<ph name="END_LINK" />। ପ୍ରାୟତଃ ସୁରକ୍ଷିତ ରହୁଥିବା ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକ ବେଳେବେଳେ ମାଲ୍‌ୱେର୍ ଦ୍ୱାରା ସଂକ୍ରମିତ ହୋଇଥାନ୍ତି। ଏହି ଦ୍ୱେଷଯୁକ୍ତ ବିଷୟବସ୍ତୁ <ph name="SUBRESOURCE_HOST" />ରୁ ଆସିଥାଏ, ଯାହା ଏକ ଜଣାଶୁଣା ମାଲ୍‌ୱେର୍ ବିତରକ ଅଟେ।</translation>
 <translation id="6221892641068781024">ସରଳୀକୃତ ଭ୍ୟୁ</translation>
 <translation id="6222527803348563979">ଷ୍ଟେସନାରୀ</translation>
@@ -2563,6 +2580,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> ମୂଲ୍ୟ ଅବୈଧ ଅଟେ ଏବଂ ଏହାକୁ ବ୍ୟବହାର କରାଯିବ ନାହିଁ।</translation>
 <translation id="6340739886198108203">ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ଦେଖାଯାଉଥିବା ବେଳେ ସ୍କ୍ରିନସଟ ନେବା କିମ୍ବା ରେକର୍ଡ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ:</translation>
 <translation id="6341434961864773665">{0,plural, =1{<ph name="DESTINATION_NAME" />କୁ ଏହି ଫାଇଲ ଅପଲୋଡ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}other{<ph name="DESTINATION_NAME" />କୁ ଏହି ଫାଇଲଗୁଡ଼ିକ ଅପଲୋଡ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}}</translation>
+<translation id="6344622098450209924">ଟ୍ରାକିଂ ସୁରକ୍ଷା</translation>
 <translation id="634500758737709758">ଦିଗନିର୍ଦ୍ଦେଶ</translation>
 <translation id="6348220984832452017">ସକ୍ରିୟ ଭେରିଏସନଗୁଡ଼ିକ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ଇନଷ୍ଟଲ୍‍ କରନ୍ତୁ</translation>
@@ -2693,6 +2711,7 @@
 <translation id="6599642189720630047">ଟ୍ରାକ କରାଯାଇଥିବା ପ୍ରଡକ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="6611723696964473273">ଆର୍ଥିକ ସମାଚାର</translation>
 <translation id="6612010098632894193">ଅନଲାଇନ ଭିଡିଓ</translation>
+<translation id="6613866251791999074">Chromeରେ ଆପଣଙ୍କ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="6615297766614333076">ଷ୍ଟାକର୍ 2</translation>
 <translation id="6624427990725312378">ଯୋଗାଯୋଗ ସୂଚନା</translation>
 <translation id="6627727261837091711">ବିଜ୍ଞାପନ ପର୍ସନାଲାଇଜେସନର ବିବରଣୀ ଦେଖାନ୍ତୁ</translation>
@@ -2808,6 +2827,7 @@
 <translation id="6852204201400771460">ଆପ୍‌କୁ ରିଲୋଡ୍ କରିବେ କି?</translation>
 <translation id="6857776781123259569">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ...</translation>
 <translation id="6858034839887287663">A2x4</translation>
+<translation id="6860888819347870819">ପିକଚର-ଇନ-ପିକଚର ମୋଡରେ ପ୍ରବେଶ କରିବାକୁ ପଚାରିପାରିବ</translation>
 <translation id="6864189428899665393">267 x 389 ମିମି</translation>
 <translation id="686485648936420384">ଉପଭୋକ୍ତା ରିସୋର୍ସଗୁଡ଼ିକ</translation>
 <translation id="6865412394715372076">ବର୍ତ୍ତମାନ ଏହି କାର୍ଡ ଯାଞ୍ଚ କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -3217,6 +3237,7 @@
 <translation id="762844065391966283">ଥରକେ ଗୋଟିଏ</translation>
 <translation id="763042426047865637">ଅଗ୍ନିଶମ ଏବଂ ସୁରକ୍ଷା ସେବା</translation>
 <translation id="7630470133768862132">ସମ୍ମତି ସ୍ଥିତି:</translation>
+<translation id="7631072086707140121">URL https ହେବା ଆବଶ୍ୟକ।</translation>
 <translation id="7631444403134069754">ଟ୍ରାକ ଏବଂ ଫିଲ୍ଡ</translation>
 <translation id="7631527008834753063">ଟିଭି ଗେମ ଶୋ</translation>
 <translation id="7633909222644580952">କାର୍ଯ୍ୟଦକ୍ଷତା ଡାଟା ଏବଂ କ୍ରାସ୍ ରିପୋର୍ଟଗୁଡ଼ିକ</translation>
@@ -3338,6 +3359,7 @@
 <translation id="7865448901209910068">ଉତ୍ତମ ବେଗ</translation>
 <translation id="7870281855125116701">ରିହାତି ମିଳିଛି</translation>
 <translation id="7871445724586827387">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ପାସୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
+<translation id="7876615279559620350">ଶୀଘ୍ର ଚେକଆଉଟ ପାଇଁ, ଏହି କାର୍ଡ ପାଇଁ CVCକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="7877007680666472091">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ IDଗୁଡ଼ିକ</translation>
 <translation id="7878562273885520351">ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡରେ ହେର୍‍ଫେର୍‌ କରାଯାଇଥାଇପାରେ</translation>
 <translation id="7880146494886811634">ଠିକଣା ସେଭ୍ କରନ୍ତୁ</translation>
@@ -3396,6 +3418,7 @@
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">ବ୍ରାଉଜର</translation>
 <translation id="8009225694047762179">ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳିତ କରନ୍ତୁ</translation>
+<translation id="8009460986924589054"><ph name="BEGIN_LINK" />ଆପଣଙ୍କ କୁକୀଗୁଡ଼ିକୁ ଡିଲିଟ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 x 11 ଇଞ୍ଚ</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{ଏହି କାର୍ଡ ଏବଂ ଏହାର ବିଲିଂ ଠିକଣା ସେଭ୍‌ କରାଯିବ। <ph name="USER_EMAIL" />ରେ ସାଇନ୍‌ ଇନ୍‌ ରହିବା ଦ୍ୱାରା ଆପଣ ଏହାକୁ ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ହେବେ।}other{ଏହି କାର୍ଡଗୁଡ଼ିକ ଏବଂ ସେମାନଙ୍କର ବିଲିଂ ଠିକଣାଗୁଡ଼ିକ ସେଭ୍‌ କରାଯିବ। <ph name="USER_EMAIL" />ରେ ସାଇନ୍‌ ଇନ୍‌ ରହିବା ଦ୍ୱାରା ଆପଣ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ହେବେ।}}</translation>
 <translation id="8012647001091218357">ଆମେ ଏହି ସମୟରେ ଆପଣଙ୍କ ମାତାପିତାଙ୍କ ନିକଟରେ ପହଞ୍ଚି ପାରିଲୁ ନାହିଁ। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -3465,6 +3488,7 @@
 <translation id="8127301229239896662">ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍ ବା ନେଟ୍‌ୱାର୍କରେ "<ph name="SOFTWARE_NAME" />" ସଠିକ୍ ଭାବରେ ଇନ୍‌ଷ୍ଟଲ୍ ହେଲାନାହିଁ। ଏହି ତ୍ରୁଟିର ସମାଧାନ ପାଇଁ ଆପଣଙ୍କ IT ବ୍ୟବସ୍ଥାପକଙ୍କୁ ପଚାରନ୍ତୁ।</translation>
 <translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8134058435519644366">ନିଯୁକ୍ତି ଓ କର୍ମଚାରୀ</translation>
+<translation id="8135546115396015134">ବାମ କୀ</translation>
 <translation id="8144303576836498784">କିଛି ତ୍ରୁଟି ହୋଇଛି। ଆପଣଙ୍କ ପରିବର୍ତ୍ତନକୁ ସେଭ କରାଯାଇନାହିଁ</translation>
 <translation id="8148608574971654810">PDF ସଂସ୍କରଣ:</translation>
 <translation id="8149426793427495338">ଆପଣଙ୍କର କମ୍ପୁଟର୍‌ ନିଷ୍କ୍ରିୟ ହୋ‍ଇଯାଇଛି।</translation>
@@ -3637,6 +3661,7 @@
 <translation id="8473863474539038330">ଠିକଣାଗୁଡ଼ିକ ଏବଂ ଅଧିକ</translation>
 <translation id="8474910779563686872">ଡେଭେଲପରଙ୍କ ବିବରଣୀ ଦେଖାନ୍ତୁ</translation>
 <translation id="8479754468255770962">ତଳ ବାମ ପଟରେ ଷ୍ଟାପଲ୍</translation>
+<translation id="8479926481822108747">ଆପଣଙ୍କ ଟ୍ରାକିଂ ସୁରକ୍ଷାଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8483229036294884935">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ <ph name="ACCOUNT" />ରୁ ଏହି ଠିକଣା ଡିଲିଟ ହୋଇଯିବ</translation>
 <translation id="8488350697529856933">ରେ ଲାଗୁ ହୋଇଥାଏ</translation>
 <translation id="8490137692873530638">ଷ୍ଟାକର୍ 10</translation>
@@ -3689,9 +3714,11 @@
 <translation id="8576310925653847813">ହୋମ ଥିଏଟର ସିଷ୍ଟମଗୁଡ଼ିକ</translation>
 <translation id="8577192028579836704">ସମସ୍ତ ବିକଳ୍ପ ସାଧାରଣତଃ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ଭର୍ଚୁଆଲ୍ କାର୍ଡ ଉପଲବ୍ଧ ନାହିଁ</translation>
+<translation id="8585615573162100611"><ph name="PERMISSION" />କୁ ଅନୁମତି ଦେବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8586082901536468629">ସ୍କ୍ୱାସ ଏବଂ ରାକେଟବଲ ଇକ୍ୟୁପମେଣ୍ଟ</translation>
 <translation id="858637041960032120">ଫୋନ ନମ୍ବର ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8589998999637048520">ଉତ୍ତମ ଗୁଣବତ୍ତା</translation>
+<translation id="8590264442799989746"><ph name="HOST_NAME" /> ଏବଂ ଆହୁରି ଅନେକ କିଛି</translation>
 <translation id="8600271352425265729">କେବଳ ଏହି ସମୟ ପାଇଁ</translation>
 <translation id="860043288473659153">କାର୍ଡହୋଲ୍ଡର୍‌ର ନାମ</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />କେଉଁ ଡାଟା ବ୍ୟବହାର କରାଯାଏ:<ph name="END_BOLD" /> ଏହି ଡିଭାଇସରେ Chrome ବ୍ୟବହାର କରି ଆପଣ ଭିଜିଟ କରୁଥିବା କୌଣସି ସାଇଟରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପ।</translation>
@@ -3820,6 +3847,7 @@
 <translation id="8870494189203302833">ସେହି ସମାନ ଅର୍ଡରରେ ଫେସ୍ ଡାଉନ୍</translation>
 <translation id="8870700989640064057">ଗୋପନୀୟ ଫାଇଲ ପ୍ରିଣ୍ଟ କରିବେ?</translation>
 <translation id="8871553383647848643">ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୁକ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
+<translation id="8874790741333031443">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅସ୍ଥାୟୀ ଭାବରେ ଅନୁମତି ଦେବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ, ଯାହାର ଅର୍ଥ ହେଉଛି କମ ବ୍ରାଉଜ କରିବା ସୁରକ୍ଷା କିନ୍ତୁ ସାଇଟ ଫିଚରଗୁଡ଼ିକ ଆଶା କରାଯାଉଥିବା ପରି କାମ କରିବାର ସମ୍ଭାବନା ଅଧିକ</translation>
 <translation id="8874824191258364635">ଏକ ବୈଧ କାର୍ଡ ନମ୍ବର୍ ଲେଖନ୍ତୁ</translation>
 <translation id="8876033571432926051">କାଜୁଆଲ ଗେମଗୁଡ଼ିକ</translation>
 <translation id="8877780815363510165">ଫିସିଂ</translation>
@@ -3978,7 +4006,7 @@
 <translation id="9207861905230894330">ନିବନ୍ଧ ଯୋଗ କରିହେଲା ନାହିଁ।</translation>
 <translation id="9213433120051936369">ଏପିଏରେନ୍ସ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="9215416866750762878">ଏକ ଆପ୍ଲିକେସନ୍ Chromeକୁ ଏହି ସାଇଟ୍ ସହିତ ସୁରକ୍ଷିତ ରୂପେ ସଂଯୋଗ କରିବାକୁ ବାଧା ଦେଉଛି</translation>
-<translation id="9218430445555521422">ଡିଫଲ୍ଟ ଭାବେ ସେଟ୍ କରନ୍ତୁ</translation>
+<translation id="9218430445555521422">ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chromeକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="9222403027701923763">ପ୍ରାଇମେରୀ ଏବଂ ସେକେଣ୍ଡାରୀ ସ୍କୁଲିଂ (K-12)</translation>
@@ -4013,6 +4041,7 @@
 <translation id="984275831282074731">ପେମେଣ୍ଟ ପଦ୍ଧତି</translation>
 <translation id="985199708454569384">&lt;p&gt;ଯଦି ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍ କିମ୍ୱା ମୋବାଇଲ୍ ଡିଭାଇସ୍‌ର ତାରିଖ ଓ ସମୟ ଭୁଲ ଥିବ, ତେବେ ଆପଣ ଏହି ତ୍ରୁଟି ଦେଖିବେ।&lt;/p&gt;
     &lt;p&gt;ଏହି ତ୍ରୁଟି ଠିକ୍ କରିବା ପାଇଁ ନିଜ ଡିଭାଇସ୍‌ର ଘଣ୍ଟା ଖୋଲନ୍ତୁ। ଏହା ସୁନିଶ୍ଚିତ କରନ୍ତୁ ଯେ ସମୟ ଓ ତାରିଖ ଠିକ୍ ଅଛି।&lt;/p&gt;</translation>
+<translation id="986257639512122511">ଆପଣ <ph name="ORIGIN" />ରେ <ph name="PERMISSION" /> ଅନୁମତି ଦେଇଛନ୍ତି</translation>
 <translation id="987264212798334818">ସାଧାରଣ</translation>
 <translation id="988159990683914416">ଡେଭେଲପର୍ ବିଲ୍ଡ</translation>
 <translation id="989988560359834682">ଠିକଣା ଏଡିଟ୍ କରନ୍ତୁ</translation>

@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Chromium'да оозеки издеңиз.</translation>
 <translation id="1047130070405668746">Chromium'ду тандаңыз</translation>
 <translation id="1091252999271033193">Chromium'ду ар дайым мобилдик түзмөктө ачуу керек болот.</translation>
+<translation id="1171824629317156389">iOS'то Chromium параметрлерин ачып, андан соң "Демейки серепчини" таптап, Chromium'ду тандаңыз.</translation>
 <translation id="1185134272377778587">Chromium жөнүндө</translation>
 <translation id="1257458525759135959">Сүрөттөрдү сактоо үчүн, Параметрлерди таптап, Chromium'га сүрөттөрүңүздү кошууга уруксат бериңиз.</translation>
 <translation id="1289216811211435351">Chromium'га которулуу</translation>
@@ -94,7 +95,6 @@
 <translation id="4736424910885271643">Аккаунтуңуз <ph name="HOSTED_DOMAIN" /> домени тарабынан башкарылгандыктан, Chromium’дагы дайын-даректериңиз бул түзмөктөн өчүрүлөт</translation>
 <translation id="4790638144988730920">Google аккаунтуңуздагы Chromium маалыматын колдоно бериңиз.</translation>
 <translation id="4828317641996116749">Chromium бардык сырсөздөрдү текшере алган жок. Кийинчерээк кайталаңыз.</translation>
-<translation id="4935539884203837577">Chromium сиз киргизген көз салуу номерлерин аныктап, Chromium'да соода кылып жатканыңызда таңгактарга жаңы өтмөктө көз алып турат.</translation>
 <translation id="4985291216379576555">Оффлайнсыз. Chromium жаңыртууларды текшере алган жок</translation>
 <translation id="4996471330284142407">Бул жөнөкөй, коопсуз жана чагылгандай тез Chromium менен көбүрөөк жумуш бүтүрүңүз.</translation>
 <translation id="4999538639245140991">Сиз <ph name="SIGNOUT_MANAGED_DOMAIN" /> домениндеги аккаунтуңуздан чыгып жатканыңызга байланыштуу, Chromium'дагы дайын-даректериңиз бул түзмөктөн өчүрүлөт. Бирок дайын-даректериңиз Google аккаунтуңузда сакталып калат.</translation>

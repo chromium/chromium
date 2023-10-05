@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="1011749477052068769">Buraya taşı</translation>
+<translation id="1014147525163127655">Bu cihazda <ph name="ORIGIN" /> için şifre anahtarı yok</translation>
 <translation id="1016498331642356377">Hızlıca sesinizle arama yapın. Bu kısayolu düzenlemek için dokunup basılı tutun.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> cihazına gönderiliyor...</translation>
@@ -33,6 +34,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1149401351239820326">Son kullanım tarihinin ayı</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome'da açılacak. Devam ederek <ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" /> ile <ph name="BEGIN_LINK2" />Google Chrome ve ChromeOS Ek Hizmet Şartları<ph name="END_LINK2" />'nı kabul etmiş olursunuz.</translation>
 <translation id="1173894706177603556">Yeniden adlandır</translation>
+<translation id="1174479719160874822">Chrome, ekran dar olduğunda mobil siteyi ister</translation>
 <translation id="1177863135347784049">Özel</translation>
 <translation id="1178581264944972037">Duraklat</translation>
 <translation id="1181037720776840403">Kaldır</translation>
@@ -166,7 +168,7 @@ Belirli bir siteye ait veya tüm tarama geçmişinizi sildiğinizde bununla ili�
 <translation id="1900260903084164610">Devam ederek <ph name="BEGIN_TOS_LINK" />Hizmet Şartları<ph name="END_TOS_LINK" />'nı kabul etmiş olursunuz.</translation>
 <translation id="1904580727789512086">Ziyaret ettiğiniz URL'ler Google Hesabınıza kaydedilir</translation>
 <translation id="1910950723001426294">Paylaşım seçenekleri listesi kapalı.</translation>
-<translation id="1919130412786645364">Chrome'da oturum açmaya izin verin</translation>
+<translation id="1919130412786645364">Chrome'da oturum açmaya izin ver</translation>
 <translation id="1922362554271624559">Önerilen diller</translation>
 <translation id="1924255092154549435">Sekme genişletildi</translation>
 <translation id="1925021887439448749">Özel web adresini girin</translation>
@@ -670,6 +672,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="452750746583162491">Senkronize edilmiş verilerinizi inceleyin</translation>
 <translation id="4528638190900283934">Ek özellikler için oturum açın</translation>
 <translation id="4532845899244822526">Klasör seçin</translation>
+<translation id="4543131175509360848">Geçiş anahtarı yok sayfası</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> sekme}other{<ph name="TAB_COUNT_MANY" /> sekme, <ph name="TAB_COUNT_INCOGNITO" /> gizli mod}}</translation>
 <translation id="4554077758708533499">USB kablosuyla bağlandı</translation>
 <translation id="4558311620361989323">Web sayfası kısayolları</translation>
@@ -944,6 +947,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5869522115854928033">Kayıtlı şifreler</translation>
 <translation id="587735546353481577">Bir siteyi takip etmek için siteye gidin, Chrome menüsünü açıp Takip et'e dokunun.</translation>
 <translation id="5879072387416556377">Daha iyi öneriler alın</translation>
+<translation id="5899667542927581604">Geçiş anahtarı yok sayfası kapatıldı</translation>
 <translation id="5916664084637901428">Açık</translation>
 <translation id="5919204609460789179">Senkronizasyonu başlatmak için <ph name="PRODUCT_NAME" /> adlı uygulamayı güncelleyin</translation>
 <translation id="5938820472109305350">Ekle: <ph name="INTEREST" /></translation>
@@ -1413,6 +1417,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="8127542551745560481">Ana sayfayı düzenle</translation>
 <translation id="8130309322784422030">Kayıtlı oturum açma bilgileriniz güncel olmayabilir</translation>
 <translation id="813082847718468539">Site bilgilerini görüntüle</translation>
+<translation id="8136852699834914183">Oynatma işlemi bu sayfada kullanılamıyor.</translation>
 <translation id="8137562778192957619">Bu şifreyi hatırlamanız gerekmez. Şifre Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> dosya kaldı</translation>
 <translation id="8189750580333936930">Özel Korumalı Alan</translation>
@@ -1586,6 +1591,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="9063523880881406963">Masaüstü sitesi istemeyi devre dışı bırak</translation>
 <translation id="9065203028668620118">Düzenle</translation>
 <translation id="9065383040763568503">Chrome'un önemli olmadığını düşündüğü depolanmış veriler (ör. kayıtlı ayarları bulunmayan veya sık ziyaret etmediğiniz siteler)</translation>
+<translation id="9067341854474068781">Geçiş anahtarı yok sayfası tam ekranda açıldı</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> dahilinde</translation>
 <translation id="9069999660519089861">Okunmamış sayfa yok</translation>
 <translation id="9070377983101773829">Sesli arama başlat</translation>

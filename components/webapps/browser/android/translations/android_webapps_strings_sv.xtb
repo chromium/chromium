@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1213425325105380833">Återställ webbappar som du har använt nyligen på enheter som är anslutna till det här kontot</translation>
+<translation id="2065911435109240297">Återställ webbappar</translation>
+<translation id="2111649875343992405">Granska vilka webbappar som ska återställas</translation>
 <translation id="2139186145475833000">Lägg till på startskärmen</translation>
+<translation id="2172982519592313442">Granska webbappar</translation>
 <translation id="2478076885740497414">Installera appen</translation>
 <translation id="3789841737615482174">Installera</translation>
 <translation id="3910402514791813257">Installationen misslyckades</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Skärmbild. Tryck och stäng.</translation>
 <translation id="6990079615885386641">Hämta appen från Google Play Butik: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Processen pågår fortfarande för den förra webbplatsen</translation>
+<translation id="7672888405515738928">Välj vilka webbappar som ska återställas på enheten. Apparna visas utifrån din Chrome-historik.</translation>
+<translation id="8163051092261298861">Återställ webbappar</translation>
 <translation id="962979164594783469">Installera appen</translation>
 </translationbundle>

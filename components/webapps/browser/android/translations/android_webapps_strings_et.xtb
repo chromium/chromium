@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1213425325105380833">Taastage veebirakendused, mida olete hiljuti selle kontoga ühendatud seadmetes kasutanud</translation>
+<translation id="2065911435109240297">Veebirakenduste taastamine</translation>
+<translation id="2111649875343992405">Vaadake üle, millised veebirakendused taastada</translation>
 <translation id="2139186145475833000">Avaekraanile lisamine</translation>
+<translation id="2172982519592313442">Veebirakenduste ülevaatamine</translation>
 <translation id="2478076885740497414">Rakenduse installimine</translation>
 <translation id="3789841737615482174">Installi</translation>
 <translation id="3910402514791813257">Installimine ebaõnnestus</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">Ekraanipilt. Puudutage sulgemiseks.</translation>
 <translation id="6990079615885386641">Hankige rakendus Google Play poest: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Eelmist saiti alles lisatakse</translation>
+<translation id="7672888405515738928">Valige selles seadmes taastamiseks veebirakendused. Siin kuvatavad rakendused põhinevad teie Chrome'i ajalool.</translation>
+<translation id="8163051092261298861">Taasta veebirakendused</translation>
 <translation id="962979164594783469">Installige see rakendus</translation>
 </translationbundle>

@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">在 Chromium 中使用語音搜尋。</translation>
 <translation id="1047130070405668746">選取 [Chromium]</translation>
 <translation id="1091252999271033193">這代表 Chromium 每次都會對行動版網站發出要求。</translation>
+<translation id="1171824629317156389">在 iOS 設定中開啟 Chromium，然後依序輕觸「預設瀏覽器 App」和「Chromium」。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1257458525759135959">如要儲存圖片，請輕觸 [設定] 並允許 Chromium 新增相片</translation>
 <translation id="1289216811211435351">改為使用 Chromium</translation>
@@ -94,7 +95,6 @@
 <translation id="4736424910885271643">由於你的帳戶受到 <ph name="HOSTED_DOMAIN" /> 管理，因此系統會在你登出後，清除你在這部裝置上的 Chromium 資料</translation>
 <translation id="4790638144988730920">請繼續使用 Google 帳戶中的 Chromium 資料。</translation>
 <translation id="4828317641996116749">Chromium 無法檢查所有密碼，請稍後再試。</translation>
-<translation id="4935539884203837577">Chromium 可以偵測你輸入的追蹤號碼，並在新分頁上追蹤包裹，同時協助改進其他透過 Chromium 購物的體驗。</translation>
 <translation id="4985291216379576555">目前處於離線狀態，因此 Chromium 無法檢查更新</translation>
 <translation id="4996471330284142407">Chromium 操作簡便、安全且速度遠勝以往，讓你事半功倍。</translation>
 <translation id="4999538639245140991">由於你即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 所管理的帳戶，系統將刪除你在這個裝置上的 Chromium 資料，但這些資料仍會保留在你的 Google 帳戶中。</translation>

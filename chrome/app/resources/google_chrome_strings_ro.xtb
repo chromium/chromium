@@ -156,6 +156,7 @@
 <translation id="3582972582564653026">Sincronizează și personalizează Chrome pe toate dispozitivele</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare}=1{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="3622797965165704966">Acum este mai ușor să folosiți Chrome cu Contul Google și pe computerele utilizate în comun.</translation>
+<translation id="3635073343384702370">Chrome îți poate verifica parolele dacă le salvezi</translation>
 <translation id="3673813398384385993">Chrome a descoperit că <ph name="EXTENSION_NAME" /> conține programe malware</translation>
 <translation id="3703994572283698466">Sistemul de operare Chrome este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versiunea sistemului de operare Chrome Flex</translation>
@@ -207,6 +208,7 @@
 <translation id="4571503333518166079">Accesează setările pentru notificări Chrome</translation>
 <translation id="459622048091363950">Odată ce Chrome are acces, site-urile web îți vor putea solicita accesul.</translation>
 <translation id="4600710005438004015">Chrome nu s-a putut actualiza la cea mai recentă versiune. Astfel, pierzi noi funcții și remedieri de securitate.</translation>
+<translation id="4624065194742029982">Modul incognito din Chrome</translation>
 <translation id="4627412468266359539">Opțional: contribuie la îmbunătățirea funcțiilor și a performanței sistemului de operare Chrome Flex, trimițând automat la Google date de diagnosticare și de utilizare.</translation>
 <translation id="4633000520311261472">Pentru ca browserul Chrome să fie mai sigur, am dezactivat câteva extensii care nu sunt incluse în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugate fără știrea dvs.</translation>
 <translation id="4680828127924988555">Anulează instalarea</translation>
@@ -216,6 +218,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Este posibil ca fișierul să fie periculos, așadar Chrome l-a blocat.</translation>
 <translation id="479167709087336770">Folosește același verificator ortografic folosit în Căutarea Google. Textul pe care îl introduci în browser este trimis la Google. Poți schimba acest comportament în setări.</translation>
+<translation id="4793679854893018356">Află cum te protejează Chrome</translation>
 <translation id="4828579605166583682">Google Chrome încearcă să înlocuiască parolele existente. Introdu parola Windows pentru a permite acest lucru.</translation>
 <translation id="4842397268809523050">Sistemul de operare Chrome Flex nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
 <translation id="4873783916118289636">Examinează cele mai importante opțiuni de confidențialitate și de securitate din Chrome</translation>
@@ -262,6 +265,7 @@
 <translation id="5756509061973259733">Există deja un profil Chrome asociat acestui cont pe dispozitiv</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome nu a putut fi lansat. Încearcă din nou.</translation>
+<translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome te avertizează<ph name="END_LINK" /> cu privire la site-urile și descărcările nesigure</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – conectare la rețea</translation>
 <translation id="5924017743176219022">Se conectează la internet…</translation>
@@ -271,6 +275,7 @@
 <translation id="5941830788786076944">Setează Google Chrome ca browser prestabilit</translation>
 <translation id="6003112304606738118">Se descarcă… Au rămas <ph name="HOURS" /> ore</translation>
 <translation id="6010556343189461180">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de macOS 10.15 sau o versiune ulterioară. Acest computer folosește macOS 10.14.</translation>
+<translation id="6014316319780893079">Cu <ph name="BEGIN_LINK" />instrumentele din Chrome<ph name="END_LINK" />, navighezi în siguranță și deții controlul</translation>
 <translation id="6022659036123304283">Personalizează Chrome</translation>
 <translation id="6025087594896450715">Google Chrome va reporni în <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Închide</translation>
@@ -360,6 +365,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7651907282515937834">Sigla Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome a blocat descărcarea, deoarece ai dezactivat Navigarea sigură și fișierul nu poate fi confirmat</translation>
 <translation id="7655455401911432608">istoricul tău de navigare, o evidență a site-urilor pe care le-ai accesat folosind Chrome pe acest dispozitiv;</translation>
+<translation id="769538538642757151">Chrome te va anunța dacă trebuie să examinezi ceva</translation>
 <translation id="7747138024166251722">Programul de instalare nu a putut crea un director temporar. Verifică dacă există suficient spațiu liber și dacă ai drepturile necesare pentru a instala software-ul.</translation>
 <translation id="7761834446675418963">Dați clic pe numele dvs. pentru a deschide Chrome și a începe să navigați.</translation>
 <translation id="7777080907402804672">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google. Poți dezactiva această opțiune oricând din setări.</translation>
@@ -388,6 +394,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8129812357326543296">Despre &amp;Google Chrome</translation>
 <translation id="813913629614996137">Se inițializează...</translation>
 <translation id="8255190535488645436">Google Chrome utilizează camera foto și microfonul.</translation>
+<translation id="8267953129876836456">Chrome a găsit câteva recomandări privind siguranța pe care să le examinezi</translation>
 <translation id="8270775718612349140">Certificate gestionate de Chrome</translation>
 <translation id="8286862437124483331">Google Chrome încearcă să afișeze parolele. Pentru a permite acest lucru, introduceți parola pentru Windows.</translation>
 <translation id="8290100596633877290">Hopa! Google Chrome s-a blocat. Repornești acum?</translation>
@@ -402,6 +409,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8403038600646341038">Sigla Chrome pe un ecran de computer.</translation>
 <translation id="8416347857511542594">Află mai multe despre personalizarea anunțurilor în Chrome</translation>
 <translation id="8418845734693287262">Sistemul de operare Chrome nu a putut sincroniza datele, deoarece detaliile de conectare pentru cont nu sunt actualizate.</translation>
+<translation id="842386925677997438">Instrumentele de siguranță din Chrome</translation>
 <translation id="8433638294851456451">Pentru a trimite un număr de aici pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>
 <translation id="8451192282033883849">Contul tău este gestionat de <ph name="MANAGER_NAME" />. Administratorul poate să vadă și să editeze acest profil și datele asociate din browserul Chrome, cum ar fi marcajele, istoricul și parolele.</translation>
 <translation id="8496177819998570653">Manager de p&amp;arole Google</translation>
@@ -442,6 +450,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9195993889682885387">Chrome îți poate estima interesele pe baza istoricului tău de navigare din ultimele câteva săptămâni. Aceste informații rămân pe dispozitivul tău.</translation>
 <translation id="919706545465235479">Actualizează Chrome pentru a începe sincronizarea</translation>
 <translation id="922152298093051471">Personalizează Chrome</translation>
+<translation id="92460355979482493">Când opțiunea este activată, Chrome preîncarcă paginile, astfel încât navigarea și căutarea să fie mai rapide.</translation>
 <translation id="93760716455950538">Repornește sistemul de operare Chrome Flex</translation>
 <translation id="940313311831216333">Pentru a accesa informațiile din Chrome pe toate dispozitivele, conectează-te, apoi activează sincronizarea.</translation>
 <translation id="943390475793766444">Chrome îți recomandă să scanezi acest fișier, deoarece ar putea fi periculos.</translation>

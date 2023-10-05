@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1213425325105380833">এই একাউণ্টটোৰ সৈতে সংযুক্ত ডিভাইচসমূহত আপুনি শেহতীয়াকৈ ব্যৱহাৰ কৰা ৱেব এপ্‌সমূহ পুনঃস্থাপন কৰক</translation>
+<translation id="2065911435109240297">আপোনাৰ ৱেব এপ্‌ পুনঃস্থাপন কৰক</translation>
+<translation id="2111649875343992405">কোনবোৰ ৱেব এপ্ পুনঃস্থাপন কৰিব সেয়া পৰ্যালোচনা কৰক</translation>
 <translation id="2139186145475833000">গৃহ স্ক্ৰীনত যোগ কৰক</translation>
+<translation id="2172982519592313442">ৱেব এপৰ পৰ্যালোচনা কৰক</translation>
 <translation id="2478076885740497414">এপ্‌ ইনষ্টল কৰক</translation>
 <translation id="3789841737615482174">ইনষ্টল কৰক</translation>
 <translation id="3910402514791813257">ইনষ্টল কৰিব পৰা নগ’ল</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">স্ক্ৰীনশ্বট। বন্ধ কৰিবলৈ টিপক।</translation>
 <translation id="6990079615885386641">Google Play Storeত এপ্‌টো পাওক: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">এতিয়াও পূৰ্বৱৰ্তী ছাইট যোগ কৰি থকা হৈছে</translation>
+<translation id="7672888405515738928">এই ডিভাইচটোত পুনঃস্থাপন কৰিবলৈ ৱেব এপ্‌ বাছনি কৰক ইয়াত দেখুওৱা এপ্‌সমূহ আপোনাৰ Chromeৰ ইতিহাসৰ ভিত্তিক।</translation>
+<translation id="8163051092261298861">ৱেব এপ্‌ পুনঃস্থাপন কৰক</translation>
 <translation id="962979164594783469">এই এপ্‌টো ইনষ্টল কৰক</translation>
 </translationbundle>

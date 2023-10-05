@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
 <translation id="1011749477052068769">Мұнда жылжыту</translation>
+<translation id="1014147525163127655">Бұл құрылғыда <ph name="ORIGIN" /> үшін ешқандай кіру кілті жоқ.</translation>
 <translation id="1016498331642356377">Дауыспен жылдам іздеу. Бұл жылдам пәрменді өзгерту үшін оны басып тұрыңыз.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> құрылғысына жіберілуде…</translation>
@@ -33,6 +34,7 @@
 <translation id="1149401351239820326">Жарамдылық мерзімі бітетін ай</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> қолданбасы Chrome браузерінде ашылады. Жалғастыру арқылы <ph name="BEGIN_LINK1" />Google Қызмет көрсету шарттарына<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome және ChromeOS Қосымша қызмет көрсету шарттарына<ph name="END_LINK2" /> келісесіз.</translation>
 <translation id="1173894706177603556">Атын өзгерту</translation>
+<translation id="1174479719160874822">Экран тар болған кезде, Chrome мобильдік сайтты сұрайды</translation>
 <translation id="1177863135347784049">Реттелетін</translation>
 <translation id="1178581264944972037">Кідірту</translation>
 <translation id="1181037720776840403">Өшіру</translation>
@@ -670,6 +672,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="452750746583162491">Синхрондалған деректерді қарау</translation>
 <translation id="4528638190900283934">Қосымша мүмкіндіктер үшін аккаунтқа кіру</translation>
 <translation id="4532845899244822526">Қалтаны таңдау</translation>
+<translation id="4543131175509360848">Кіру кілттерінің ешқандай парағы жоқ.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> қойынды}other{<ph name="TAB_COUNT_MANY" /> қойынды, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито қойындысы}}</translation>
 <translation id="4554077758708533499">USB кабелімен жалғанды</translation>
 <translation id="4558311620361989323">Веббет пернелер тіркесімдері</translation>
@@ -944,6 +947,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5869522115854928033">Сақталған құпия сөздер</translation>
 <translation id="587735546353481577">Сайтқа жазылу үшін оған өтіңіз де, Chrome мәзірін ашып, "Жазылу" түймесін түртіңіз.</translation>
 <translation id="5879072387416556377">Жақсырақ ұсыныстар алыңыз</translation>
+<translation id="5899667542927581604">Кіру кілттерінің ешқандай парағы жабылмады.</translation>
 <translation id="5916664084637901428">Қосулы</translation>
 <translation id="5919204609460789179">Синхрондауды бастау үшін <ph name="PRODUCT_NAME" /> өнімін жаңартыңыз</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> қосу</translation>
@@ -1413,6 +1417,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8127542551745560481">Негізгі бетті өзгерту</translation>
 <translation id="8130309322784422030">Сақталған кіру ақпараты ескі болуы мүмкін</translation>
 <translation id="813082847718468539">Сайт ақпаратын көру</translation>
+<translation id="8136852699834914183">Бұл бетте ойнату функциясы қолжетімді емес.</translation>
 <translation id="8137562778192957619">Бұл құпия сөзді есте сақтаудың қажеті жоқ. Ол Google Password Manager қызметіне сақталады.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> файл қалды</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -1586,6 +1591,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="9063523880881406963">Жұмыс үстелі сайтын сұрау: өшіру</translation>
 <translation id="9065203028668620118">Өзгерту</translation>
 <translation id="9065383040763568503">Chrome маңызды деп санамайтын сақталған деректер (мысалы, сақталған параметрлері жоқ немесе сіз сирек кіретін сайттар)</translation>
+<translation id="9067341854474068781">Кіру кілттерінің ешқандай парағы толығымен ашылмады.</translation>
 <translation id="906781307897697745">Осында: <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Оқылмаған беттер жоқ.</translation>
 <translation id="9070377983101773829">Дауыспен іздеуді іске қосу</translation>

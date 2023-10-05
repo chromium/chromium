@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
 <translation id="1011749477052068769">النقل إلى هنا</translation>
+<translation id="1014147525163127655">ما مِن مفاتيح مرور محفوظة على هذا الجهاز لـ "<ph name="ORIGIN" />".</translation>
 <translation id="1016498331642356377">يتيح لك هذا الزر إجراء بحث صوتي بسرعة. ولتعديل هذا الاختصار، انقر مع الاستمرار.</translation>
 <translation id="1024113959924243553">‏إصدار مطوّري البرامج من Chrome</translation>
 <translation id="1028699632127661925">جارٍ الإرسال إلى <ph name="DEVICE_NAME" />...</translation>
@@ -33,6 +34,7 @@
 <translation id="1149401351239820326">شهر انتهاء الصلاحية</translation>
 <translation id="1150263420752757504">‏سيتم فتح تطبيق "<ph name="APP_NAME" />" في Chrome. تعني المتابعة موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">إعادة تسمية</translation>
+<translation id="1174479719160874822">‏‫Chrome سيطلب الوصول إلى الموقع الإلكتروني المتوافق مع الأجهزة الجوّالة عندما يكون عرض الشاشة محدودًا</translation>
 <translation id="1177863135347784049">مخصص</translation>
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="1181037720776840403">إزالة</translation>
@@ -593,6 +595,7 @@
 <translation id="4116038641877404294">تنزيل الصفحات لاستخدامها بلا اتصال بالإنترنت</translation>
 <translation id="4121654769234887259">‏لا حاجة إلى تذكُّر كلمة المرور هذه لأنها ستُحفظ في "مدير كلمات المرور في Google" ضِمن الحساب <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">تم فتح مسار إذن إرسال الإشعارات بطول الشاشة.</translation>
+<translation id="4126285640274188657">إحصاءات الصفحة</translation>
 <translation id="4135200667068010335">قائمة الأجهزة التي يمكن مشاركة علامة تبويب معها مغلقة.</translation>
 <translation id="4137746084635924146">لغة الجهاز الحالية</translation>
 <translation id="4139654229316918773">Chrome Canary</translation>
@@ -672,6 +675,7 @@
 <translation id="452750746583162491">مراجعة البيانات المتزامنة</translation>
 <translation id="4528638190900283934">سجِّل الدخول للحصول على ميزات إضافية.</translation>
 <translation id="4532845899244822526">اختيار مجلد</translation>
+<translation id="4543131175509360848">صفحة "ما من مفاتيح مرور"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />)}zero{<ph name="TAB_COUNT_MANY" /> علامة تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامة تبويب في وضع التصفُّح المتخفي}two{علامتا تبويب عاديتان (<ph name="TAB_COUNT_MANY" />) وعلامتا تبويب في وضع التصفُّح المتخفي (<ph name="TAB_COUNT_INCOGNITO" />)}few{<ph name="TAB_COUNT_MANY" /> علامات تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامات تبويب في وضع التصفُّح المتخفي}many{<ph name="TAB_COUNT_MANY" /> علامة تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامة تبويب في وضع التصفُّح المتخفي}other{<ph name="TAB_COUNT_MANY" /> علامة تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامة تبويب في وضع التصفُّح المتخفي}}</translation>
 <translation id="4554077758708533499">‏تم التوصيل باستخدام كابل USB.</translation>
 <translation id="4558311620361989323">اختصارات صفحة الويب</translation>
@@ -946,6 +950,7 @@
 <translation id="5869522115854928033">كلمات المرور المحفوظة</translation>
 <translation id="587735546353481577">‏لمتابعة موقع إلكتروني، انتقِل إلى الموقع الإلكتروني وافتح قائمة Chrome وانقر على "متابعة".</translation>
 <translation id="5879072387416556377">الحصول على اقتراحات أفضل</translation>
+<translation id="5899667542927581604">تمّ إغلاق صفحة "ما من مفاتيح مرور"</translation>
 <translation id="5916664084637901428">مفعّل</translation>
 <translation id="5919204609460789179">تحديث <ph name="PRODUCT_NAME" /> لبدء المزامنة</translation>
 <translation id="5938820472109305350">إضافة <ph name="INTEREST" /></translation>
@@ -1242,6 +1247,7 @@
 <translation id="7376560087009844242">من خلال تضمين المزيد من نص صفحة معيَّنة، يمكنك الحصول على نتائج أفضل عند استخدام ميزة "النقر للبحث". ويمكنك متى شئت الانتقال إلى <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" /> لتغيير هذا الإعداد.</translation>
 <translation id="7379900596734708416">يتوفّر المظهر الداكن للمواقع الإلكترونية</translation>
 <translation id="7388615499319468910">يمكن للمواقع الإلكترونية والمعلنين الاطّلاع على أداء إعلاناتهم. هذا الإعداد غير مفعَّل.</translation>
+<translation id="7397416715506917976">عرض إحصاءات الصفحة</translation>
 <translation id="7400418766976504921">‏عنوان URL</translation>
 <translation id="7403691278183511381">‏أول تجربة تشغيل لمتصفح Chrome</translation>
 <translation id="7411224099004328643">‏مستخدم حساب Google</translation>
@@ -1415,6 +1421,7 @@
 <translation id="8127542551745560481">تعديل الصفحة الرئيسية</translation>
 <translation id="8130309322784422030">معلومات تسجيل الدخول المُخزَّنة الخاصة بك قد تكون قديمة.</translation>
 <translation id="813082847718468539">عرض معلومات الموقع</translation>
+<translation id="8136852699834914183">تعذّرت قراءة محتوى هذه الصفحة بصوت عالٍ.</translation>
 <translation id="8137562778192957619">‏لن تحتاج إلى تذكُّر كلمة المرور هذه لأنها ستُحفظ في "مدير كلمات المرور في Google".</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> من الملفات المتبقية</translation>
 <translation id="8189750580333936930">مبادرة حماية الخصوصية</translation>
@@ -1588,6 +1595,7 @@
 <translation id="9063523880881406963">إيقاف طلب الموقع الإلكتروني لسطح المكتب</translation>
 <translation id="9065203028668620118">تعديل</translation>
 <translation id="9065383040763568503">‏البيانات المُخزَّنة التي لا يعتبرها متصفِّح Chrome مهمة (على سبيل المثال، المواقع الإلكترونية التي لا تتضمَّن إعدادات محفوظة أو تلك التي لا تزورها كثيرًا)</translation>
+<translation id="9067341854474068781">تم فتح صفحة "ما من مفاتيح مرور" بطول الشاشة.</translation>
 <translation id="906781307897697745">في <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">ما مِن صفحات غير مقروءة.</translation>
 <translation id="9070377983101773829">بدء البحث الصوتي</translation>

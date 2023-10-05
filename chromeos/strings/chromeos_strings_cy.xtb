@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Mae'r ddyfais wedi'i chysylltu.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Tynnu'r dudalen?}=1{Tynnu tudalen {PAGE_NUMBER}?}two{Tynnu tudalen {PAGE_NUMBER}?}few{Tynnu tudalen {PAGE_NUMBER}?}many{Tynnu tudalen {PAGE_NUMBER}?}other{Tynnu tudalen {PAGE_NUMBER}?}}</translation>
+<translation id="3146655726035122603">Ar gyfer <ph name="PRODUCT_NAME" /> yn unig</translation>
 <translation id="315116470104423982">Data symudol</translation>
 <translation id="3156846309055100599">Wrthi'n sganio tudalen <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Mae porth caeth wedi'i ganfod</translation>

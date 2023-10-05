@@ -265,6 +265,7 @@
 <translation id="3122464029669770682">Орталық процессор</translation>
 <translation id="3124039320086536031">Құрылғы жалғанды.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Бетті өшіру керек пе?}=1{{PAGE_NUMBER}-бетті өшіру керек пе?}other{{PAGE_NUMBER}-бетті өшіру керек пе?}}</translation>
+<translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> үшін эксклюзивті</translation>
 <translation id="315116470104423982">Мобильді деректер</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-бет сканерленуде…</translation>
 <translation id="315738237743207937">Адаптивті портал анықталды.</translation>
