@@ -20,6 +20,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace ui {
+class ImageModel;
+}  // namespace ui
+
 namespace companion {
 
 class CompanionPageHandler;
@@ -58,6 +62,23 @@ class CompanionTabHelper
     // loaded and the onload event was dispatched.
     virtual void AddCompanionFinishedLoadingCallback(
         base::OnceCallback<void()> callback) = 0;
+
+    // Create a contextual Lens entry.
+    virtual void CreateAndRegisterLensEntry(
+        const content::OpenURLParams& params,
+        std::u16string combobox_label,
+        const ui::ImageModel favicon) = 0;
+    // Opens a contextual Lens view that was already created.
+    virtual void OpenContextualLensView(
+        const content::OpenURLParams& params) = 0;
+    // Removes and deletes the contextual Lens view.
+    virtual void RemoveContextualLensView() = 0;
+    // Testing method to get the Lens view web contents.
+    virtual content::WebContents* GetLensViewWebContentsForTesting() = 0;
+    // Testing method to open lens results in a new tab.
+    virtual bool OpenLensResultsInNewTabForTesting() = 0;
+    // Testing method to check if the new tab button is enabled for Lens.
+    virtual bool IsLensLaunchButtonEnabledForTesting() = 0;
   };
 
   using CompanionLoadedCallback = base::OnceCallback<void()>;
@@ -142,6 +163,18 @@ class CompanionTabHelper
   // Called to get the most recent value of trigger and immediately reset it.
   absl::optional<SidePanelOpenTrigger>
   GetAndResetMostRecentSidePanelOpenTrigger();
+
+  // Create and register a contextual Lens entry.
+  void CreateAndRegisterLensEntry(const content::OpenURLParams& params,
+                                  std::u16string combobox_label,
+                                  const ui::ImageModel favicon);
+  // Open an already created contextual Lens view with provided params.
+  void OpenContextualLensView(const content::OpenURLParams& params);
+  // Delete the contextual lens view associated with this web contents.
+  void RemoveContextualLensView();
+  content::WebContents* GetLensViewWebContentsForTesting();
+  bool OpenLensResultsInNewTabForTesting();
+  bool IsLensLaunchButtonEnabledForTesting();
 
  private:
   explicit CompanionTabHelper(content::WebContents* web_contents);
