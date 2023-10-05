@@ -510,22 +510,22 @@ void CloudOpenTask::OpenOrMoveFiles() {
       PathIsOnDriveFS(profile_, file_urls_.front().path())) {
     // The files are on Drive already.
     transfer_required_ = OfficeFilesTransferRequired::kNotRequired;
-    UMA_HISTOGRAM_ENUMERATION(kDriveTransferRequiredMetric,
-                              OfficeFilesTransferRequired::kNotRequired);
+    cloud_open_metrics_->LogTransferRequired(
+        OfficeFilesTransferRequired::kNotRequired);
     OpenAlreadyHostedDriveUrls();
   } else if (cloud_provider_ == CloudProvider::kOneDrive &&
              UrlIsOnODFS(profile_, file_urls_.front())) {
     // The files are on OneDrive already, selected from ODFS.
     transfer_required_ = OfficeFilesTransferRequired::kNotRequired;
-    UMA_HISTOGRAM_ENUMERATION(kOneDriveTransferRequiredMetric,
-                              OfficeFilesTransferRequired::kNotRequired);
+    cloud_open_metrics_->LogTransferRequired(
+        OfficeFilesTransferRequired::kNotRequired);
     OpenODFSUrls(OfficeTaskResult::kOpened);
   } else if (cloud_provider_ == CloudProvider::kOneDrive &&
              UrlIsOnAndroidOneDrive(profile_, file_urls_.front())) {
     // The files are on OneDrive already, selected from Android OneDrive.
     transfer_required_ = OfficeFilesTransferRequired::kNotRequired;
-    UMA_HISTOGRAM_ENUMERATION(kOneDriveTransferRequiredMetric,
-                              OfficeFilesTransferRequired::kNotRequired);
+    cloud_open_metrics_->LogTransferRequired(
+        OfficeFilesTransferRequired::kNotRequired);
     OpenAndroidOneDriveUrlsIfAccountMatchedODFS(
         base::BindOnce(&LogOneDriveOpenResultUMA, OfficeTaskResult::kOpened));
   } else {
@@ -535,14 +535,7 @@ void CloudOpenTask::OpenOrMoveFiles() {
             ? OfficeFilesTransferRequired::kCopy
             : OfficeFilesTransferRequired::kMove;
     transfer_required_ = operation;
-    switch (cloud_provider_) {
-      case CloudProvider::kGoogleDrive:
-        UMA_HISTOGRAM_ENUMERATION(kDriveTransferRequiredMetric, operation);
-        break;
-      case CloudProvider::kOneDrive:
-        UMA_HISTOGRAM_ENUMERATION(kOneDriveTransferRequiredMetric, operation);
-        break;
-    }
+    cloud_open_metrics_->LogTransferRequired(operation);
     ConfirmMoveOrStartUpload();
   }
 }

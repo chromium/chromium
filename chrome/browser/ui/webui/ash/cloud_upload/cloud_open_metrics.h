@@ -28,12 +28,16 @@ class CloudOpenMetrics {
   CloudOpenMetrics(const CloudOpenMetrics&&) = delete;
   CloudOpenMetrics& operator=(CloudOpenMetrics&&) = delete;
 
+  // Log the `value` for the TransferRequired metric.
+  void LogTransferRequired(OfficeFilesTransferRequired value);
+
   base::SafeRef<CloudOpenMetrics> GetSafeRef() const;
 
   // For testing.
   base::WeakPtr<CloudOpenMetrics> GetWeakPtr();
 
  private:
+  CloudProvider cloud_provider_;
   base::WeakPtrFactory<CloudOpenMetrics> weak_ptr_factory_{this};
 };
 
