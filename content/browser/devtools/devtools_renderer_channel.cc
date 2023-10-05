@@ -221,4 +221,12 @@ void DevToolsRendererChannel::ChildTargetDestroyed(
   child_targets_.erase(host);
 }
 
+void DevToolsRendererChannel::MainThreadDebuggerPaused() {
+  owner_->MainThreadDebuggerPaused();
+}
+
+void DevToolsRendererChannel::MainThreadDebuggerResumed() {
+  owner_->MainThreadDebuggerResumed();
+}
+
 }  // namespace content

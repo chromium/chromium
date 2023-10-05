@@ -73,6 +73,9 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   void WillBeDestroyed();
   void FlushProtocolNotifications();
 
+  void MainThreadDebuggerPaused();
+  void MainThreadDebuggerResumed();
+
   bool HasOverlays() const { return !overlay_agents_.empty(); }
   void UpdateOverlaysPrePaint();
   void PaintOverlays(GraphicsContext&);

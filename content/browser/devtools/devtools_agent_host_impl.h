@@ -143,6 +143,13 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   // gets destroyed.
   [[nodiscard]] scoped_refptr<DevToolsAgentHost> ForceDetachAllSessionsImpl();
 
+  // Called when the corresponding renderer process notifies that the main
+  // thread debugger is paused or resumed.
+  // TODO(https://crbug.com/1449114): Remove this method when we collect enough
+  // data to understand how likely that situation could happen.
+  virtual void MainThreadDebuggerPaused();
+  virtual void MainThreadDebuggerResumed();
+
  private:
   // Note that calling this may result in the instance being deleted,
   // as instance may be owned by client sessions. This should not be
