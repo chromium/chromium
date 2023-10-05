@@ -107,6 +107,8 @@ enum {
   kDogfoodGroupsSyncPrefName = 62,
   kSyncableMergeableDictPrefForTesting = 63,  // For tests.
   kAutofillPaymentCvcStorage = 64,
+  kDeleteTimePeriodV2 = 65,
+  kDeleteTimePeriodV2Basic = 66,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -185,6 +187,12 @@ const auto& SyncablePreferences() {
               MergeBehavior::kNone}},
             {browsing_data::prefs::kDeleteTimePeriodBasic,
              {syncable_prefs_ids::kDeleteTimePeriodBasic, syncer::PREFERENCES,
+              false, MergeBehavior::kNone}},
+            {browsing_data::prefs::kDeleteTimePeriodV2,
+             {syncable_prefs_ids::kDeleteTimePeriodV2, syncer::PREFERENCES,
+              false, MergeBehavior::kNone}},
+            {browsing_data::prefs::kDeleteTimePeriodV2Basic,
+             {syncable_prefs_ids::kDeleteTimePeriodV2Basic, syncer::PREFERENCES,
               false, MergeBehavior::kNone}},
             {browsing_data::prefs::kLastClearBrowsingDataTime,
              {syncable_prefs_ids::kLastClearBrowsingDataTime,

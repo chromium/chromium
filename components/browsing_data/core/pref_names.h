@@ -20,6 +20,9 @@ extern const char kClearBrowsingDataOnExitList[];
 extern const char kDeleteTimePeriod[];
 extern const char kDeleteTimePeriodBasic[];
 
+extern const char kDeleteTimePeriodV2[];
+extern const char kDeleteTimePeriodV2Basic[];
+
 extern const char kDeleteBrowsingHistory[];
 extern const char kDeleteBrowsingHistoryBasic[];
 extern const char kDeleteDownloadHistory[];
