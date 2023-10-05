@@ -12,6 +12,7 @@
 #include "media/muxers/mp4_box_writer.h"
 #include "media/muxers/mp4_fragment_box_writer.h"
 #include "media/muxers/mp4_movie_box_writer.h"
+#include "media/muxers/mp4_type_conversion.h"
 #include "media/muxers/output_position_tracker.h"
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -47,7 +48,7 @@ uint32_t BuildFlags(const std::vector<T>& build_flags) {
 
 void BuildTrack(
     mp4::writable_boxes::Movie& moov,
-    int track_index,
+    size_t track_index,
     bool is_audio,
     uint32_t timescale,
     const mp4::writable_boxes::SampleDescription& sample_description) {
@@ -334,7 +335,8 @@ void Mp4MuxerDelegate::AddVideoFrame(
     video_frame_rate_ = params.frame_rate;
 
     video_track_index_ = GetNextTrackIndex();
-    context_->SetVideoIndex(video_track_index_.value());
+    uint32_t timescale = video_frame_rate_ * kMillisecondsTimeScale;
+    context_->SetVideoTrack({video_track_index_.value(), timescale});
 
     mp4::writable_boxes::Track track;
     moov_->tracks.emplace_back(std::move(track));
@@ -376,9 +378,10 @@ void Mp4MuxerDelegate::BuildVideoTrackWithKeyframe(
   visual_entry.pixel_aspect_ratio = mp4::writable_boxes::PixelAspectRatioBox();
   description.visual_sample_entry = std::move(visual_entry);
 #endif
+  description.entry_count = 1;
 
   BuildTrack(*moov_, *video_track_index_, false,
-             video_frame_rate_ * kMillisecondsTimeScale, description);
+             context_->GetVideoTrack().value().timescale, description);
 
   mp4::writable_boxes::Track& video_track = moov_->tracks[*video_track_index_];
 
@@ -445,8 +448,8 @@ void Mp4MuxerDelegate::AddAudioFrame(
     audio_sample_rate_ = params.sample_rate();
 
     audio_track_index_ = GetNextTrackIndex();
-    context_->SetAudioIndex(audio_track_index_.value());
-
+    context_->SetAudioTrack({audio_track_index_.value(),
+                             static_cast<uint32_t>(audio_sample_rate_)});
     mp4::writable_boxes::Track track;
     moov_->tracks.emplace_back(std::move(track));
 
@@ -475,8 +478,9 @@ void Mp4MuxerDelegate::BuildAudioTrack(
       std::move(codec_description);
   description.audio_sample_entry = std::move(audio_entry);
 #endif
-  BuildTrack(*moov_, *audio_track_index_, true, audio_sample_rate_,
-             description);
+
+  BuildTrack(*moov_, *audio_track_index_, true,
+             context_->GetAudioTrack().value().timescale, description);
 
   mp4::writable_boxes::Track& audio_track = moov_->tracks[*audio_track_index_];
 
@@ -660,8 +664,7 @@ void Mp4MuxerDelegate::BuildVideoTrackFragmentRandomAccess(
         fragment_random_access_box_writer,
     Fragment& fragment,
     size_t written_offset) {
-  if (*video_track_index_ >=
-      static_cast<int>(fragment.moof.track_fragments.size())) {
+  if (*video_track_index_ >= fragment.moof.track_fragments.size()) {
     // The front fragments could have only audio samples.
     return;
   }
@@ -675,7 +678,7 @@ void Mp4MuxerDelegate::BuildVideoTrackFragmentRandomAccess(
   CHECK(!run.sample_timestamps.empty());
   mp4::writable_boxes::TrackFragmentRandomAccessEntry entry;
   // `time` is a duration since its target track's start until the
-  // previous fragment.
+  // previous fragment, which is presentation time of the track.
   entry.time = run.sample_timestamps[0] - start_video_time_;
   entry.moof_offset = written_offset;
   entry.traf_number = 1;

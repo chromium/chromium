@@ -99,8 +99,8 @@ class MEDIA_EXPORT Mp4MuxerDelegate {
 
   // video and audio index is a 0 based index that is an item of the container.
   // The track id would be plus one on this index value.
-  absl::optional<int> video_track_index_;
-  absl::optional<int> audio_track_index_;
+  absl::optional<size_t> video_track_index_;
+  absl::optional<size_t> audio_track_index_;
   int next_track_index_ = 0;
 
   // Duration time delta for the video track.

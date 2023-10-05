@@ -27,20 +27,29 @@ class MEDIA_EXPORT Mp4MuxerContext {
   Mp4MuxerContext(const Mp4MuxerContext&) = delete;
   Mp4MuxerContext& operator=(const Mp4MuxerContext&) = delete;
 
+  // Per track data that will be provided by the client.
+  struct Track {
+    size_t index;
+    uint32_t timescale;
+  };
+
   // Track will be created and inserted to vector by the order of arrival
   // on Muxer so video or audio index could be different on new stream
-  // collection (e.g. after putRequest)
-  absl::optional<size_t> GetVideoIndex() const;
-  void SetVideoIndex(size_t index);
+  // collection (e.g. after putRequest).
 
-  absl::optional<size_t> GetAudioIndex() const;
-  void SetAudioIndex(size_t index);
+  // It also needs to set the timescale for the video/audio track that will
+  // be used to duration conversion.
+  void SetVideoTrack(Track track);
+  void SetAudioTrack(Track track);
+
+  absl::optional<Track> GetVideoTrack() const;
+  absl::optional<Track> GetAudioTrack() const;
 
   OutputPositionTracker& GetOutputPositionTracker() const;
 
  private:
-  absl::optional<size_t> video_index_;
-  absl::optional<size_t> audio_index_;
+  absl::optional<Track> video_track_;
+  absl::optional<Track> audio_track_;
 
   std::unique_ptr<OutputPositionTracker> output_position_tracker_;
 

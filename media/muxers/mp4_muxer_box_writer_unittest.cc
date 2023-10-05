@@ -123,10 +123,11 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
     return written_size;
   }
 
+  std::unique_ptr<Mp4MuxerContext> context_;
+
  private:
   base::test::TaskEnvironment task_environment;
   mp4::writable_boxes::Movie mp4_moov_box_;
-  std::unique_ptr<Mp4MuxerContext> context_;
   base::RunLoop run_loop_;
 };
 
@@ -185,6 +186,9 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieExtends) {
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
 
+  context_->SetVideoTrack({0, 3000u});
+  context_->SetAudioTrack({1, 44100u});
+
   // Populates the boxes during Mp4Muxer::OnEncodedVideo.
   mp4::writable_boxes::Movie mp4_moov_box;
   {
@@ -195,7 +199,6 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieExtends) {
     video_extends.default_sample_size = kDefaultSampleSize;
     video_extends.default_sample_flags = kVideoSampleFlags;
     mp4_moov_box.extends.track_extends.push_back(std::move(video_extends));
-    context()->SetVideoIndex(0);
 
     mp4::writable_boxes::Track video_track = {};
     mp4_moov_box.tracks.push_back(std::move(video_track));
@@ -209,7 +212,6 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieExtends) {
     audio_extends.default_sample_size = kDefaultSampleSize;
     audio_extends.default_sample_flags = kAudioSampleFlags;
     mp4_moov_box.extends.track_extends.push_back(std::move(audio_extends));
-    context()->SetAudioIndex(1);
 
     mp4::writable_boxes::Track audio_track = {};
     mp4_moov_box.tracks.push_back(std::move(audio_track));
@@ -263,6 +265,9 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
   constexpr size_t kVideoIndex = 0;
   constexpr size_t kAudioIndex = 1;
 
+  context_->SetVideoTrack({kVideoIndex, 3000u});
+  context_->SetAudioTrack({kAudioIndex, 44100u});
+
   mp4::writable_boxes::Movie mp4_moov_box;
   base::Time creation_time = base::Time::FromTimeT(0x1234567);
   base::Time modification_time = base::Time::FromTimeT(0x2345678);
@@ -292,7 +297,6 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
     video_track.media.handler.name = kVideoHandlerName;
 
     mp4_moov_box.tracks.push_back(std::move(video_track));
-    context()->SetVideoIndex(kVideoIndex);
   }
 
   {
@@ -317,7 +321,6 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
     audio_track.media.handler.name = kAudioHandlerName;
 
     mp4_moov_box.tracks.push_back(std::move(audio_track));
-    context()->SetAudioIndex(kAudioIndex);
   }
 
   // Flush at requested.
@@ -728,9 +731,16 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
 
+  context_->SetVideoTrack({0, 3000u});
+  context_->SetAudioTrack({1, 44100u});
+
   // TODO(crbug.com://1465031): The client passes the timestamp.
   // Duration conversion will be done in the box writer.
   constexpr uint32_t kSampleDurations[] = {960, 960, 960};
+  constexpr uint32_t kVideoSampleDurationsAfterTimescale[] = {2880, 2880, 2880};
+  constexpr uint32_t kAudioSampleDurationsAfterTimescale[] = {42336, 42336,
+                                                              42336};
+
   constexpr uint32_t kSampleSizes[] = {6400, 333, 333};
   constexpr uint32_t kSampleCount = 3u;
   constexpr uint32_t kVideoBaseDecodeTime = 123u;
@@ -919,9 +929,10 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
   mdat_video_data_offset = traf_boxes[0].runs[0].data_offset;
 
   ASSERT_EQ(kSampleCount, traf_boxes[0].runs[0].sample_durations.size());
-  EXPECT_EQ(std::vector<uint32_t>(std::begin(kSampleDurations),
-                                  std::end(kSampleDurations)),
-            traf_boxes[0].runs[0].sample_durations);
+  EXPECT_EQ(
+      std::vector<uint32_t>(std::begin(kVideoSampleDurationsAfterTimescale),
+                            std::end(kVideoSampleDurationsAfterTimescale)),
+      traf_boxes[0].runs[0].sample_durations);
   ASSERT_EQ(0u, traf_boxes[0].runs[0].sample_sizes.size());
   // kFirstSampleFlagsPresent enabled and no sample_flags entry,
   // then sample_flags will have a value of the first sample flags.
@@ -950,9 +961,10 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
   uint32_t audio_data_offset = mdat_video_data_offset + kVideoDataSize;
   EXPECT_EQ(audio_data_offset, traf_boxes[1].runs[0].data_offset);
   ASSERT_EQ(kSampleCount, traf_boxes[1].runs[0].sample_durations.size());
-  EXPECT_EQ(std::vector<uint32_t>(std::begin(kSampleDurations),
-                                  std::end(kSampleDurations)),
-            traf_boxes[1].runs[0].sample_durations);
+  EXPECT_EQ(
+      std::vector<uint32_t>(std::begin(kAudioSampleDurationsAfterTimescale),
+                            std::end(kAudioSampleDurationsAfterTimescale)),
+      traf_boxes[1].runs[0].sample_durations);
 
   ASSERT_EQ(kSampleCount, traf_boxes[1].runs[0].sample_sizes.size());
   ASSERT_EQ(0u, traf_boxes[1].runs[0].sample_flags.size());
@@ -1017,7 +1029,8 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MfraBox) {
   // Tests `mfra` box writer.
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
-  context()->SetVideoIndex(1);
+  context_->SetVideoTrack({1, 3000u});
+  context_->SetAudioTrack({0, 44100u});
 
   mp4::writable_boxes::TrackFragmentRandomAccess video_randome_access;
   video_randome_access.track_id = 2;

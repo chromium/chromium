@@ -6,6 +6,7 @@
 #define MEDIA_MUXERS_MP4_TYPE_CONVERSION_H_
 
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -22,6 +23,11 @@ static constexpr uint16_t kUndefinedLanguageCode =
 
 uint16_t MEDIA_EXPORT
 ConvertIso639LanguageCodeToU16(const base::StringPiece input_language);
+
+// Convert given default Time unit, e.g. 1000 milliseconds per 1 second, to
+// a given timescale, timescale value per second.
+uint64_t MEDIA_EXPORT ConvertToTimescale(base::TimeDelta time_diff,
+                                         uint32_t timescale);
 
 }  // namespace media
 

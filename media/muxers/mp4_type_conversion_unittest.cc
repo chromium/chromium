@@ -14,7 +14,7 @@ struct LanguageAndCode {
   uint16_t expected_code;
 };
 
-TEST(Mp4TypeConversionTest, Default) {
+TEST(Mp4TypeConversionTest, LanguageCode) {
   LanguageAndCode test_data[] = {
       {"ara", 0x0641},
       {"zho", 0x690f},
@@ -31,6 +31,16 @@ TEST(Mp4TypeConversionTest, Default) {
     uint16_t language_code = ConvertIso639LanguageCodeToU16(data.language);
     EXPECT_EQ(data.expected_code, language_code);
   }
+}
+
+TEST(Mp4TypeConversionTest, TimescaleConversion) {
+  base::TimeDelta time_diff = base::Milliseconds(321);
+  EXPECT_EQ(ConvertToTimescale(time_diff, 30000), 9630u);
+  EXPECT_EQ(ConvertToTimescale(time_diff, 44100), 14156u);
+
+  base::TimeDelta time_diff2 = base::Microseconds(321000);
+  EXPECT_EQ(ConvertToTimescale(time_diff2, 30000), 9630u);
+  EXPECT_EQ(ConvertToTimescale(time_diff2, 44100), 14156u);
 }
 
 }  // namespace media

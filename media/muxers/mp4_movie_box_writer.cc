@@ -88,16 +88,16 @@ Mp4MovieBoxWriter::Mp4MovieBoxWriter(const Mp4MuxerContext& context,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AddChildBox(std::make_unique<Mp4MovieHeaderBoxWriter>(context, box_.header));
 
-  if (auto video_index = context.GetVideoIndex()) {
-    DCHECK_LE(*video_index, box_.tracks.size());
+  if (auto video_track = context.GetVideoTrack()) {
+    DCHECK_LE(video_track.value().index, box_.tracks.size());
     AddChildBox(std::make_unique<Mp4MovieTrackBoxWriter>(
-        context, box_.tracks[*video_index]));
+        context, box_.tracks[video_track.value().index]));
   }
 
-  if (auto audio_index = context.GetAudioIndex()) {
-    DCHECK_LE(*audio_index, box_.tracks.size());
+  if (auto audio_track = context.GetAudioTrack()) {
+    DCHECK_LE(audio_track.value().index, box_.tracks.size());
     AddChildBox(std::make_unique<Mp4MovieTrackBoxWriter>(
-        context, box_.tracks[*audio_index]));
+        context, box_.tracks[audio_track.value().index]));
   }
 
   AddChildBox(
@@ -168,16 +168,16 @@ Mp4MovieExtendsBoxWriter::Mp4MovieExtendsBoxWriter(
     : Mp4BoxWriter(context), box_(box) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (auto video_index = context.GetVideoIndex()) {
-    DCHECK_LE(*video_index, box_.track_extends.size());
+  if (auto video_track = context.GetVideoTrack()) {
+    DCHECK_LE(video_track.value().index, box_.track_extends.size());
     AddChildBox(std::make_unique<Mp4MovieTrackExtendsBoxWriter>(
-        context, box_.track_extends[*video_index]));
+        context, box_.track_extends[video_track.value().index]));
   }
 
-  if (auto audio_index = context.GetAudioIndex()) {
-    DCHECK_LE(*audio_index, box_.track_extends.size());
+  if (auto audio_track = context.GetAudioTrack()) {
+    DCHECK_LE(audio_track.value().index, box_.track_extends.size());
     AddChildBox(std::make_unique<Mp4MovieTrackExtendsBoxWriter>(
-        context, box_.track_extends[*audio_index]));
+        context, box_.track_extends[audio_track.value().index]));
   }
 }
 

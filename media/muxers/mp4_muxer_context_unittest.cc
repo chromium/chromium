@@ -29,20 +29,25 @@ TEST(Mp4MuxerContextTest, Default) {
           &written_data, run_loop.QuitClosure()));
 
   Mp4MuxerContext mp4_context(std::move(output_position_tracker));
-  EXPECT_FALSE(mp4_context.GetVideoIndex().has_value());
-  EXPECT_FALSE(mp4_context.GetAudioIndex().has_value());
+  EXPECT_FALSE(mp4_context.GetVideoTrack().has_value());
+  EXPECT_FALSE(mp4_context.GetAudioTrack().has_value());
 
-  mp4_context.SetVideoIndex(1);
-  mp4_context.SetAudioIndex(2);
+  mp4_context.SetVideoTrack({1, 1111});
+  mp4_context.SetAudioTrack({2, 2222});
 
   std::string str1 = "abc";
   mp4_context.GetOutputPositionTracker().WriteString(str1);
   run_loop.Run();
 
-  EXPECT_TRUE(mp4_context.GetVideoIndex().has_value());
-  EXPECT_TRUE(mp4_context.GetAudioIndex().has_value());
-  EXPECT_EQ(mp4_context.GetVideoIndex(), static_cast<size_t>(1));
-  EXPECT_EQ(mp4_context.GetAudioIndex(), static_cast<size_t>(2));
+  EXPECT_TRUE(mp4_context.GetVideoTrack().has_value());
+  EXPECT_TRUE(mp4_context.GetAudioTrack().has_value());
+  EXPECT_EQ(mp4_context.GetVideoTrack().value().index, 1u);
+  EXPECT_EQ(mp4_context.GetAudioTrack().value().index, 2u);
+
+  EXPECT_TRUE(mp4_context.GetVideoTrack().has_value());
+  EXPECT_TRUE(mp4_context.GetAudioTrack().has_value());
+  EXPECT_EQ(mp4_context.GetVideoTrack().value().timescale, 1111u);
+  EXPECT_EQ(mp4_context.GetAudioTrack().value().timescale, 2222u);
   EXPECT_EQ(str1, written_data);
 }
 

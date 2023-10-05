@@ -179,7 +179,9 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
 
   base::TimeTicks base_time_ticks = base::TimeTicks::Now();
 
-  constexpr uint32_t kSampleDurations[] = {1020, 960, 900, 950};
+  constexpr uint32_t kSampleDurations[] = {29, 32, 31, 30};
+  constexpr uint32_t kSampleDurationsAfterTimescale[] = {870, 960, 930, 900};
+
   base::TimeDelta delta;
 
   media::Muxer::VideoParameters params(gfx::Size(kWidth, kHeight), 30,
@@ -343,8 +345,9 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
     mdat_video_data_offset = traf_boxes[0].runs[0].data_offset;
 
     ASSERT_EQ(4u, traf_boxes[0].runs[0].sample_durations.size());
-    EXPECT_EQ(std::vector<uint32_t>(std::begin(kSampleDurations),
-                                    std::end(kSampleDurations)),
+
+    EXPECT_EQ(std::vector<uint32_t>(std::begin(kSampleDurationsAfterTimescale),
+                                    std::end(kSampleDurationsAfterTimescale)),
               traf_boxes[0].runs[0].sample_durations);
 
     ASSERT_EQ(4u, traf_boxes[0].runs[0].sample_sizes.size());
@@ -411,10 +414,12 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
     mdat_video_data_offset = traf_boxes[0].runs[0].data_offset;
 
     ASSERT_EQ(3u, traf_boxes[0].runs[0].sample_durations.size());
-    EXPECT_EQ(kSampleDurations[0], traf_boxes[0].runs[0].sample_durations[0]);
-    EXPECT_EQ(kSampleDurations[1], traf_boxes[0].runs[0].sample_durations[1]);
+    EXPECT_EQ(kSampleDurationsAfterTimescale[0],
+              traf_boxes[0].runs[0].sample_durations[0]);
+    EXPECT_EQ(kSampleDurationsAfterTimescale[1],
+              traf_boxes[0].runs[0].sample_durations[1]);
     // The last sample duration of the last fragment will 1/frame_rate.
-    EXPECT_EQ(33u, traf_boxes[0].runs[0].sample_durations[2]);
+    EXPECT_EQ(999u, traf_boxes[0].runs[0].sample_durations[2]);
 
     ASSERT_EQ(3u, traf_boxes[0].runs[0].sample_sizes.size());
     // kFirstSampleFlagsPresent enabled and no sample_flags entry,
@@ -647,10 +652,10 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
     mdat_audio_data_offset = traf_boxes[0].runs[0].data_offset;
 
     ASSERT_EQ(30u, traf_boxes[0].runs[0].sample_durations.size());
-    EXPECT_EQ(30u, traf_boxes[0].runs[0].sample_durations[0]);
-    EXPECT_EQ(31u, traf_boxes[0].runs[0].sample_durations[1]);
-    EXPECT_EQ(58u, traf_boxes[0].runs[0].sample_durations[28]);
-    EXPECT_EQ(23u, traf_boxes[0].runs[0].sample_durations[29]);
+    EXPECT_EQ(1323u, traf_boxes[0].runs[0].sample_durations[0]);
+    EXPECT_EQ(1367u, traf_boxes[0].runs[0].sample_durations[1]);
+    EXPECT_EQ(2557u, traf_boxes[0].runs[0].sample_durations[28]);
+    EXPECT_EQ(1014u, traf_boxes[0].runs[0].sample_durations[29]);
 
     ASSERT_EQ(30u, traf_boxes[0].runs[0].sample_sizes.size());
     // kFirstSampleFlagsPresent is not enabled.
@@ -779,8 +784,8 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
     mdat_audio_data_offset = traf_boxes[0].runs[0].data_offset;
 
     ASSERT_EQ(4u, traf_boxes[0].runs[0].sample_durations.size());
-    EXPECT_EQ(30u, traf_boxes[0].runs[0].sample_durations[0]);
-    EXPECT_EQ(30u, traf_boxes[0].runs[0].sample_durations[1]);
+    EXPECT_EQ(1323u, traf_boxes[0].runs[0].sample_durations[0]);
+    EXPECT_EQ(1323u, traf_boxes[0].runs[0].sample_durations[1]);
 
     ASSERT_EQ(4u, traf_boxes[0].runs[0].sample_sizes.size());
 
@@ -940,10 +945,10 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
     EXPECT_EQ(27u, traf_boxes[0].runs[0].sample_count);
     EXPECT_EQ(388u, traf_boxes[0].runs[0].data_offset);
     ASSERT_EQ(27u, traf_boxes[0].runs[0].sample_durations.size());
-    EXPECT_EQ(30u, traf_boxes[0].runs[0].sample_durations[0]);
-    EXPECT_EQ(30u, traf_boxes[0].runs[0].sample_durations[1]);
-    EXPECT_EQ(30u, traf_boxes[0].runs[0].sample_durations[2]);
-    EXPECT_EQ(30u, traf_boxes[0].runs[0].sample_durations[3]);
+    EXPECT_EQ(1323u, traf_boxes[0].runs[0].sample_durations[0]);
+    EXPECT_EQ(1323u, traf_boxes[0].runs[0].sample_durations[1]);
+    EXPECT_EQ(1323u, traf_boxes[0].runs[0].sample_durations[2]);
+    EXPECT_EQ(1323u, traf_boxes[0].runs[0].sample_durations[3]);
 
     ASSERT_EQ(27u, traf_boxes[0].runs[0].sample_sizes.size());
 
@@ -960,7 +965,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
     ASSERT_EQ(1u, traf_boxes[1].runs[0].sample_durations.size());
 
     // The first and last item.
-    EXPECT_EQ(50u, traf_boxes[1].runs[0].sample_durations[0]);
+    EXPECT_EQ(1500u, traf_boxes[1].runs[0].sample_durations[0]);
   }
 
   {
@@ -1004,7 +1009,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
     ASSERT_EQ(1u, traf_boxes[1].runs[0].sample_durations.size());
 
     // The first and last item.
-    EXPECT_EQ(33u, traf_boxes[1].runs[0].sample_durations[0]);
+    EXPECT_EQ(999u, traf_boxes[1].runs[0].sample_durations[0]);
   }
 }
 
@@ -1315,7 +1320,7 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
     EXPECT_EQ(1u, traf_boxes[0].runs[0].sample_count);
     EXPECT_EQ(364u, traf_boxes[0].runs[0].data_offset);
     ASSERT_EQ(1u, traf_boxes[0].runs[0].sample_durations.size());
-    EXPECT_EQ(33u, traf_boxes[0].runs[0].sample_durations[0]);
+    EXPECT_EQ(999u, traf_boxes[0].runs[0].sample_durations[0]);
 
     ASSERT_EQ(1u, traf_boxes[0].runs[0].sample_sizes.size());
     // kFirstSampleFlagsPresent enabled and no sample_flags entry,
@@ -1338,8 +1343,8 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
     ASSERT_EQ(24u, traf_boxes[1].runs[0].sample_durations.size());
 
     // The first and last item.
-    EXPECT_EQ(30u, traf_boxes[1].runs[0].sample_durations[0]);
-    EXPECT_EQ(23u, traf_boxes[1].runs[0].sample_durations[23]);
+    EXPECT_EQ(1323u, traf_boxes[1].runs[0].sample_durations[0]);
+    EXPECT_EQ(1014u, traf_boxes[1].runs[0].sample_durations[23]);
   }
 }
 

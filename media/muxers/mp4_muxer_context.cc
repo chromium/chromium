@@ -17,22 +17,27 @@ Mp4MuxerContext::~Mp4MuxerContext() = default;
 
 // Track will be created and inserted to vector whatever arrives at
 // Muxer.
-absl::optional<size_t> Mp4MuxerContext::GetVideoIndex() const {
-  return video_index_;
+
+void Mp4MuxerContext::SetVideoTrack(Track track) {
+  CHECK(!video_track_.has_value());
+  CHECK_NE(track.timescale, 0u);
+
+  video_track_ = track;
 }
 
-void Mp4MuxerContext::SetVideoIndex(size_t index) {
-  CHECK(!video_index_.has_value());
-  video_index_ = index;
+void Mp4MuxerContext::SetAudioTrack(Track track) {
+  CHECK(!audio_track_.has_value());
+  CHECK_NE(track.timescale, 0u);
+
+  audio_track_ = track;
 }
 
-absl::optional<size_t> Mp4MuxerContext::GetAudioIndex() const {
-  return audio_index_;
+absl::optional<Mp4MuxerContext::Track> Mp4MuxerContext::GetVideoTrack() const {
+  return video_track_;
 }
 
-void Mp4MuxerContext::SetAudioIndex(size_t index) {
-  CHECK(!audio_index_.has_value());
-  audio_index_ = index;
+absl::optional<Mp4MuxerContext::Track> Mp4MuxerContext::GetAudioTrack() const {
+  return audio_track_;
 }
 
 OutputPositionTracker& Mp4MuxerContext::GetOutputPositionTracker() const {

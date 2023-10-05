@@ -202,11 +202,17 @@ void Mp4TrackFragmentRunBoxWriter::Write(BoxByteStream& writer) {
     writer.WriteOffsetPlaceholder();
   }
 
+  uint32_t timescale = 0;
   if (box_.flags &
       static_cast<uint16_t>(mp4::writable_boxes::TrackFragmentRunFlags::
                                 kFirstSampleFlagsPresent)) {
     ValidateSampleFlags(box_.first_sample_flags);
     writer.WriteU32(box_.first_sample_flags);
+
+    // `kFirstSampleFlagsPresent` exists for only Video track.
+    timescale = context().GetVideoTrack().value().timescale;
+  } else {
+    timescale = context().GetAudioTrack().value().timescale;
   }
 
   bool duration_exists =
@@ -242,11 +248,10 @@ void Mp4TrackFragmentRunBoxWriter::Write(BoxByteStream& writer) {
 
   for (uint32_t i = 0; i < box_.sample_count; ++i) {
     if (duration_exists) {
-      // TODO(crbug.com://1465031): sample_timestamps will be converted to
-      // per sample duration with timescale.
+      base::TimeDelta time_diff =
+          box_.sample_timestamps[i + 1] - box_.sample_timestamps[i];
       writer.WriteU32(
-          (box_.sample_timestamps[i + 1] - box_.sample_timestamps[i])
-              .InMilliseconds());
+          static_cast<uint32_t>(ConvertToTimescale(time_diff, timescale)));
     }
 
     if (size_exists) {
@@ -295,9 +300,9 @@ Mp4FragmentRandomAccessBoxWriter::Mp4FragmentRandomAccessBoxWriter(
 
   // It will add video track only because every sample are sync samples in the
   // audio.
-  if (auto video_index = context.GetVideoIndex()) {
+  if (auto video_track = context.GetVideoTrack()) {
     AddChildBox(std::make_unique<Mp4TrackFragmentRandomAccessBoxWriter>(
-        context, box_.tracks[*video_index]));
+        context, box_.tracks[video_track.value().index]));
   }
 
   AddChildBox(
@@ -344,7 +349,8 @@ void Mp4TrackFragmentRandomAccessBoxWriter::Write(BoxByteStream& writer) {
        box_.entries) {
     // TODO(crbug.com://1471314): convert the presentation time based on
     // the track's timescale.
-    writer.WriteU64(entry.time.InMilliseconds());
+    uint32_t timescale = context().GetVideoTrack().value().timescale;
+    writer.WriteU64(ConvertToTimescale(entry.time, timescale));
     writer.WriteU64(entry.moof_offset);
     writer.WriteU32(entry.traf_number);
     writer.WriteU32(entry.trun_number);

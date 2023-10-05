@@ -31,4 +31,8 @@ uint16_t ConvertIso639LanguageCodeToU16(const base::StringPiece language) {
   return code;
 }
 
+uint64_t ConvertToTimescale(base::TimeDelta time_diff, uint32_t timescale) {
+  return time_diff.InSecondsF() * timescale;
+}
+
 }  // namespace media
