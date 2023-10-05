@@ -162,6 +162,11 @@ public class BluetoothChooserDialogTest {
         clickItemAtPosition(items, position - 1);
 
         CriteriaHelper.pollUiThread(() -> button.isEnabled());
+        // Make sure the button is properly rendered before clicking.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(button.getHeight(), Matchers.greaterThan(0));
+                });
 
         TouchCommon.singleClickView(button);
 
@@ -274,6 +279,7 @@ public class BluetoothChooserDialogTest {
     @SmallTest
     public void testSelectItem() {
         Dialog dialog = mChooserDialog.mItemChooserDialog.getDialogForTesting();
+        Assert.assertTrue(dialog.isShowing());
 
         TextViewWithClickableSpans statusView =
                 (TextViewWithClickableSpans) dialog.findViewById(R.id.status);
