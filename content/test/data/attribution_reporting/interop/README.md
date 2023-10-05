@@ -38,10 +38,10 @@ and triggers.
 
   // Required input.
   "input": {
-    // List of zero or more sources to register.
-    "sources": [
+    // List of zero or more registrations.
+    "registrations": [
       {
-        // Required time at which to register the source in milliseconds since
+        // Required time at which to register in milliseconds since
         // the UNIX epoch formatted as a base-10 string.
         "timestamp": "123",
 
@@ -49,12 +49,13 @@ and triggers.
           // Required URL specified in the attributionsrc registration.
           "attribution_src_url": "https://reporting.example",
 
-          // Required origin on which to register the source.
-          "source_origin": "https://source.example",
+          // Required origin on which to register.
+          "context_origin": "https://context.example",
 
-          // Required source type, either "navigation" or "event",
+          // Either "navigation" or "event",
           // corresponding to whether the source is registered on click or
-          // view, respectively.
+          // view, respectively. Must be present for source registrations and
+          // omitted for trigger registrations.
           "source_type": "navigation"
         },
 
@@ -65,53 +66,17 @@ and triggers.
             // Required URL from which the response was sent.
             "url": "https://reporting.example",
 
-            // Whether the source will be processed with debug permission
+            // Whether the registration will be processed with debug permission
             // enabled. Defaults to false.
             "debug_permission": true,
 
+            // Exactly one of the below fields must be present. See
+            // https://github.com/WICG/attribution-reporting-api for the
+            // complete schema.
             "response": {
-              // Required dictionary data to register a source.
-              // See the explainer https://github.com/WICG/attribution-reporting-api for the complete schema.
-              "Attribution-Reporting-Register-Source": {
-                ...
-              }
-            }
-          }
-        ]
-      }
-    ],
+              "Attribution-Reporting-Register-Source": { ... },
 
-    // List of zero or more triggers to register.
-    "triggers": [
-      {
-        // Required time at which to register the trigger in milliseconds
-        // since the UNIX epoch.
-        "timestamp": "123",
-
-        "registration_request": {
-          // Required URL from which the response was sent.
-          "attribution_src_url": "https://reporting.example",
-
-          // Required origin on which the trigger is being registered.
-          "destination_origin": "https://destination.example"
-        },
-
-        // List of URLs and the corresponding responses. Currently only allows
-        // one.
-        "responses": [
-          {
-            // Required URL from which the response was sent.
-            "url": "https://reporting.example",
-
-            // Whether the trigger will be processed with debug permission
-            // enabled. Defaults to false.
-            "debug_permission": true,
-
-            "response": {
-              // See the explainer https://github.com/WICG/attribution-reporting-api for the complete schema.
-              "Attribution-Reporting-Register-Trigger": {
-                ...
-              }
+              "Attribution-Reporting-Register-Trigger": { ... }
             }
           }
         ]

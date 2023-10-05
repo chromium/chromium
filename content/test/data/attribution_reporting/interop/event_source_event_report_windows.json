@@ -4,11 +4,11 @@
     "max_event_info_gain": "6"
   },
   "input": {
-    "sources": [
+    "registrations": [
       {
         "timestamp": "0",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "event"
         },
@@ -26,15 +26,13 @@
             }
           }
         }]
-      }
-    ],
-    "triggers": [
+      },
       {
         // Should result in an event-level report in the first window.
         "timestamp": "1000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
@@ -56,7 +54,7 @@
         "timestamp": "21601000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
@@ -78,7 +76,7 @@
         "timestamp": "43201000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",

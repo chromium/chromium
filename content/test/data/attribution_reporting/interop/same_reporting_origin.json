@@ -1,11 +1,11 @@
 {
   "description": "source matching is based on the same reporting origin",
   "input": {
-    "sources": [
+    "registrations": [
       {
         "timestamp": "1643235573000",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
@@ -18,14 +18,12 @@
             }
           }
         }]
-      }
-    ],
-    "triggers": [
+      },
       {
         "timestamp": "1643235574000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
@@ -44,7 +42,7 @@
         "timestamp": "1643235575000",
         "registration_request": {
           "attribution_src_url": "https://another-reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://another-reporter.test/register-trigger",

@@ -1,11 +1,11 @@
 {
   "description": "1 event source and 1 trigger produce 1 report",
   "input": {
-    "sources": [
+    "registrations": [
       {
         "timestamp": "1643235573000",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "event"
         },
@@ -18,14 +18,12 @@
             }
           }
         }]
-      }
-    ],
-    "triggers": [
+      },
       {
         "timestamp": "1643235574000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",

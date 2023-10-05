@@ -1,11 +1,11 @@
 {
   "description": "Max reporting origins per source site and reporting site",
   "input": {
-    "sources": [
+    "registrations": [
       {
         "timestamp": "1643235573000",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
@@ -25,7 +25,7 @@
       {
         "timestamp": "1643235573001",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://another-reporter.test/register-source",
           "source_type": "navigation"
         },
@@ -45,7 +45,7 @@
       {
         "timestamp": "1643235573002",
         "registration_request": {
-          "source_origin": "https://another-source.test",
+          "context_origin": "https://another-source.test",
           "attribution_src_url": "https://a.reporter.test/register-source",
           "source_type": "navigation"
         },
@@ -65,7 +65,7 @@
        {
         "timestamp": "1643321972999",
         "registration_request": {
-          "source_origin": "https://b.source.test",
+          "context_origin": "https://b.source.test",
           "attribution_src_url": "https://b.reporter.test/register-source",
           "source_type": "navigation"
         },
@@ -86,7 +86,7 @@
       {
         "timestamp": "1643321973000",
         "registration_request": {
-          "source_origin": "https://b.source.test",
+          "context_origin": "https://b.source.test",
           "attribution_src_url": "https://b.reporter.test/register-source",
           "source_type": "navigation"
         },
@@ -101,15 +101,13 @@
             }
           }
         }]
-      }
-    ],
-    "triggers": [
+      },
       // Will result in an event-level report.
       {
         "timestamp": "1643235574000",
         "registration_request": {
           "attribution_src_url": "https://another-reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://another-reporter.test/register-trigger",
@@ -129,7 +127,7 @@
         "timestamp": "1643235574001",
         "registration_request": {
           "attribution_src_url": "https://a.reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://a.reporter.test/register-trigger",
@@ -149,7 +147,7 @@
         "timestamp": "1643321974000",
         "registration_request": {
           "attribution_src_url": "https://b.reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://b.reporter.test/register-trigger",

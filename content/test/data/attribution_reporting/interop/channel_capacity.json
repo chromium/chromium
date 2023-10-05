@@ -1,13 +1,13 @@
 {
   "description": "Different configurations surpassing the max info gain bar",
   "input": {
-    "sources": [
+    "registrations": [
       {
         // Should not register due to exceeding max info gain bar.
         // Value: 14.90655 bits
         "timestamp": "0",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
@@ -29,7 +29,7 @@
         // Value: 13.37130 bits
         "timestamp": "2000",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
@@ -52,7 +52,7 @@
         // Value: 9.73440 bits
         "timestamp": "4000",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
@@ -78,7 +78,7 @@
         // Value: 5.38066e-9 bits
         "timestamp": "6000",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter2.test/register-source",
           "source_type": "navigation"
         },
@@ -102,7 +102,7 @@
         // Value: 8.84346 bits
         "timestamp": "8000",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter3.test/register-source",
           "source_type": "event"
         },
@@ -126,7 +126,7 @@
         // Value: 2.80725 bits
         "timestamp": "10000",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter3.test/register-source",
           "source_type": "event"
         },
@@ -143,15 +143,13 @@
             }
           }
         }]
-      }
-    ],
-    "triggers": [
+      },
       {
         // Should not match to a source.
         "timestamp": "1000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
@@ -171,7 +169,7 @@
         "timestamp": "3000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
@@ -191,7 +189,7 @@
         "timestamp": "5000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
@@ -211,7 +209,7 @@
         "timestamp": "7000",
         "registration_request": {
           "attribution_src_url": "https://reporter2.test/register-trigger",
-          "destination_origin": "https://destination2.test"
+          "context_origin": "https://destination2.test"
         },
         "responses": [{
           "url": "https://reporter2.test/register-trigger",
@@ -231,7 +229,7 @@
         "timestamp": "9000",
         "registration_request": {
           "attribution_src_url": "https://reporter3.test/register-trigger",
-          "destination_origin": "https://destination3.test"
+          "context_origin": "https://destination3.test"
         },
         "responses": [{
           "url": "https://reporter3.test/register-trigger",
@@ -251,7 +249,7 @@
         "timestamp": "11000",
         "registration_request": {
           "attribution_src_url": "https://reporter3.test/register-trigger",
-          "destination_origin": "https://destination3.test"
+          "context_origin": "https://destination3.test"
         },
         "responses": [{
           "url": "https://reporter3.test/register-trigger",

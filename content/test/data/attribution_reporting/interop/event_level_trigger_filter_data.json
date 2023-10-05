@@ -1,11 +1,11 @@
 {
   "description": "First matched event trigger data is attributed",
   "input": {
-    "sources": [
+    "registrations": [
       {
         "timestamp": "0",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
@@ -26,7 +26,7 @@
       {
         "timestamp": "1",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "event"
         },
@@ -39,14 +39,12 @@
             }
           }
         }]
-      }
-    ],
-    "triggers": [
+      },
       {
         "timestamp": "10000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
@@ -94,7 +92,7 @@
         "timestamp": "20000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
@@ -142,7 +140,7 @@
         "timestamp": "30000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
@@ -208,7 +206,7 @@
         "timestamp": "40000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://another-destination.test"
+          "context_origin": "https://another-destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
@@ -239,7 +237,7 @@
         "timestamp": "50000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://another-destination.test"
+          "context_origin": "https://another-destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",

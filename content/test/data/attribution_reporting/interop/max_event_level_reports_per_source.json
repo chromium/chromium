@@ -1,12 +1,12 @@
 {
   "description": "1 navigation source and 1 trigger produce 1 report",
   "input": {
-    "sources": [
+    "registrations": [
       {
         // Should register but should not result in any reports.
         "timestamp": "0",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
@@ -25,7 +25,7 @@
         // Should register and only result in one report.
         "timestamp": "2000",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter2.test/register-source",
           "source_type": "navigation"
         },
@@ -39,15 +39,13 @@
             }
           }
         }]
-      }
-    ],
-    "triggers": [
+      },
       {
         // Should match but not result in an event-level report.
         "timestamp": "1000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
@@ -69,7 +67,7 @@
         "timestamp": "3000",
         "registration_request": {
           "attribution_src_url": "https://reporter2.test/register-trigger",
-          "destination_origin": "https://destination2.test"
+          "context_origin": "https://destination2.test"
         },
         "responses": [{
           "url": "https://reporter2.test/register-trigger",
@@ -91,7 +89,7 @@
         "timestamp": "4000",
         "registration_request": {
           "attribution_src_url": "https://reporter2.test/register-trigger",
-          "destination_origin": "https://destination2.test"
+          "context_origin": "https://destination2.test"
         },
         "responses": [{
           "url": "https://reporter2.test/register-trigger",

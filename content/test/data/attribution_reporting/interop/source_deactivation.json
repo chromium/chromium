@@ -1,11 +1,11 @@
 {
   "description": "Losing sources deactivated if trigger attributed",
   "input": {
-    "sources": [
+    "registrations": [
       {
         "timestamp": "1643235573000",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
@@ -24,7 +24,7 @@
       {
         "timestamp": "1643235574000",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
@@ -43,7 +43,7 @@
       {
         "timestamp": "1643235575000",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
@@ -60,16 +60,14 @@
             }
           }
         }]
-      }
-    ],
-    "triggers": [
+      },
       // Should not result in an event-level report as filter data doesn't match
       // and therefore should not deactivate the second and third sources.
       {
         "timestamp": "1643235576000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
@@ -92,7 +90,7 @@
         "timestamp": "1643321973000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
@@ -113,7 +111,7 @@
         "timestamp": "1643321973100",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination2.test"
+          "context_origin": "https://destination2.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
@@ -134,7 +132,7 @@
         "timestamp": "1643321974000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
