@@ -2403,43 +2403,6 @@ void SyncServiceImpl::GetLocalDataDescriptions(
   // Only retain the types that are enabled.
   types.RetainAll(GetPreferredDataTypes());
 
-  // Check whether to return dummy data for testing.
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEnableBatchUploadLocalDataWithDummyDataForTesting)) {
-    // Create dummy data.
-    std::map<syncer::ModelType, syncer::LocalDataDescription> result;
-    if (types.Has(syncer::PASSWORDS)) {
-      result.emplace(syncer::PASSWORDS,
-                     syncer::LocalDataDescription{
-                         syncer::PASSWORDS, /*item_count=*/5,
-                         std::vector<std::string>{"amazon.de", "airbnb.com",
-                                                  "facebook.com"},
-                         /*domain_count=*/4});
-    }
-    if (types.Has(syncer::BOOKMARKS)) {
-      result.emplace(syncer::BOOKMARKS,
-                     syncer::LocalDataDescription{
-                         syncer::BOOKMARKS, /*item_count=*/4,
-                         std::vector<std::string>{"amazon.de", "airbnb.com"},
-                         /*domain_count=*/2});
-    }
-    if (types.Has(syncer::READING_LIST)) {
-      result.emplace(syncer::READING_LIST,
-                     syncer::LocalDataDescription{
-                         syncer::READING_LIST, /*item_count=*/2,
-                         std::vector<std::string>{"medium.com", "nytimes.com"},
-                         /*domain_count=*/2});
-    }
-
-    // Run the callback asynchronously with configurable delay
-    // SyncResponseDelayForBatchUploadLocalDataWithDummyDataForTesting.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)),
-        syncer::kSyncResponseDelayForBatchUploadLocalDataWithDummyDataForTesting
-            .Get());
-    return;
-  }
-
   sync_client_->GetLocalDataDescriptions(types, std::move(callback));
 }
 
@@ -2453,12 +2416,6 @@ void SyncServiceImpl::TriggerLocalDataMigration(ModelTypeSet types) {
 
   // Only retain the types that are enabled.
   types.RetainAll(GetPreferredDataTypes());
-
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEnableBatchUploadLocalDataWithDummyDataForTesting)) {
-    // Return directly since there is nothing to do with the dummy data.
-    return;
-  }
 
   sync_client_->TriggerLocalDataMigration(types);
 }

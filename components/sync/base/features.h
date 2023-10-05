@@ -177,12 +177,6 @@ inline constexpr base::FeatureParam<base::TimeDelta>
 // Flag to enable the option to batch upload local data from the new account
 // settings panel.
 BASE_DECLARE_FEATURE(kSyncEnableBatchUploadLocalData);
-BASE_DECLARE_FEATURE(kSyncEnableBatchUploadLocalDataWithDummyDataForTesting);
-inline constexpr base::FeatureParam<base::TimeDelta>
-    kSyncResponseDelayForBatchUploadLocalDataWithDummyDataForTesting{
-        &kSyncEnableBatchUploadLocalDataWithDummyDataForTesting,
-        "SyncResponseDelayForBatchUploadLocalDataWithDummyDataForTesting",
-        base::Seconds(1)};
 
 #if BUILDFLAG(IS_ANDROID)
 // Feature flag for enabling the restoration of synced placeholder tabs missing

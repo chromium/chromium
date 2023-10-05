@@ -166,10 +166,6 @@ BASE_FEATURE(kSyncEnableBatchUploadLocalData,
              "SyncEnableBatchUploadLocalData",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncEnableBatchUploadLocalDataWithDummyDataForTesting,
-             "SyncEnableBatchUploadLocalDataWithDummyDataForTesting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kRestoreSyncedPlaceholderTabs,
              "RestoreSyncedPlaceholderTabs",
