@@ -22,7 +22,9 @@ class MODULES_EXPORT EncodedVideoChunk final : public ScriptWrappable {
  public:
   explicit EncodedVideoChunk(scoped_refptr<media::DecoderBuffer> buffer);
 
-  static EncodedVideoChunk* Create(EncodedVideoChunkInit* init);
+  static EncodedVideoChunk* Create(ScriptState* script_state,
+                                   const EncodedVideoChunkInit* init,
+                                   ExceptionState& exception_state);
 
   // encoded_video_chunk.idl implementation.
   String type() const;

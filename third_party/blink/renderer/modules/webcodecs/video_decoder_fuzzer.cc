@@ -91,7 +91,8 @@ DEFINE_TEXT_PROTO_FUZZER(
           }
           case wc_fuzzer::VideoDecoderApiInvocation::kDecode:
             video_decoder->decode(
-                MakeEncodedVideoChunk(invocation.decode().chunk()),
+                MakeEncodedVideoChunk(script_state,
+                                      invocation.decode().chunk()),
                 IGNORE_EXCEPTION_FOR_TESTING);
             break;
           case wc_fuzzer::VideoDecoderApiInvocation::kFlush: {

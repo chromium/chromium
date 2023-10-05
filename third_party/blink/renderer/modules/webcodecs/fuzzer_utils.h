@@ -59,6 +59,7 @@ AudioEncoderConfig* MakeAudioEncoderConfig(
     const wc_fuzzer::ConfigureAudioEncoder& proto);
 
 EncodedVideoChunk* MakeEncodedVideoChunk(
+    ScriptState* script_state,
     const wc_fuzzer::EncodedVideoChunk& proto);
 
 EncodedAudioChunk* MakeEncodedAudioChunk(
