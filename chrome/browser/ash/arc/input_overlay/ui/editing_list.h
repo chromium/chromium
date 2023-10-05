@@ -59,8 +59,8 @@ class EditingList : public views::View, public TouchInjectorObserver {
   void Init();
   bool HasControls() const;
 
-  // Add UI components to `container` as children.
-  void AddHeader(views::View* container);
+  // Add top buttons and title.
+  void AddHeader();
   // Add the zero state view when there are no actions / controls.
   void AddZeroStateContent();
   // Add the list view for the actions / controls.

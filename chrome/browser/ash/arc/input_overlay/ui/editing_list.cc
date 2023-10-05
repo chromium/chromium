@@ -10,7 +10,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
-#include "ash/style/rounded_container.h"
 #include "ash/style/typography.h"
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -30,7 +29,6 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
-#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace arc::input_overlay {
@@ -109,24 +107,16 @@ void EditingList::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void EditingList::Init() {
-  SetUseDefaultFillLayout(true);
-
-  // Main container.
-  auto* main_container =
-      AddChildView(std::make_unique<ash::RoundedContainer>());
-  main_container->SetBackground(views::CreateThemedSolidBackground(
-      cros_tokens::kCrosSysSystemBaseElevatedOpaque));
-  main_container->SetBorderInsets(
-      gfx::Insets::VH(kInsideBorderInsets, kInsideBorderInsets));
-  main_container
-      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical))
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemBaseElevatedOpaque, /*radius=*/24));
+  SetBorder(views::CreateEmptyBorder(kInsideBorderInsets));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+                       views::BoxLayout::Orientation::kVertical))
       ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
 
-  AddHeader(main_container);
+  AddHeader();
 
-  scroll_view_ =
-      main_container->AddChildView(std::make_unique<views::ScrollView>());
+  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetBackgroundColor(absl::nullopt);
   scroll_content_ = scroll_view_->SetContents(std::make_unique<views::View>());
   scroll_content_
@@ -151,9 +141,8 @@ bool EditingList::HasControls() const {
   return controller_->GetActiveActionsSize() != 0u;
 }
 
-void EditingList::AddHeader(views::View* container) {
-  auto* header_container =
-      container->AddChildView(std::make_unique<views::View>());
+void EditingList::AddHeader() {
+  auto* header_container = AddChildView(std::make_unique<views::View>());
   header_container->SetLayoutManager(std::make_unique<views::TableLayout>())
       ->AddColumn(/*h_align=*/views::LayoutAlignment::kStart,
                   /*v_align=*/views::LayoutAlignment::kCenter,
