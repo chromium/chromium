@@ -48,15 +48,11 @@ GoogleDrivePageHandler::GoogleDrivePageHandler(
       page_(std::move(page)),
       receiver_(this, std::move(receiver)) {
   if (DriveIntegrationService* const service = GetDriveService()) {
-    service->AddObserver(this);
+    drive_observer_.Observe(service);
   }
 }
 
-GoogleDrivePageHandler::~GoogleDrivePageHandler() {
-  if (DriveIntegrationService* const service = GetDriveService()) {
-    service->RemoveObserver(this);
-  }
-}
+GoogleDrivePageHandler::~GoogleDrivePageHandler() = default;
 
 void GoogleDrivePageHandler::CalculateRequiredSpace() {
   PinManager* const pin_manager = GetPinManager();
@@ -85,6 +81,10 @@ DriveIntegrationService* GoogleDrivePageHandler::GetDriveService() {
 PinManager* GoogleDrivePageHandler::GetPinManager() {
   DriveIntegrationService* const service = GetDriveService();
   return service ? service->GetPinManager() : nullptr;
+}
+
+void GoogleDrivePageHandler::OnDriveIntegrationServiceDestroyed() {
+  drive_observer_.Reset();
 }
 
 void GoogleDrivePageHandler::OnBulkPinProgress(const Progress& progress) {
