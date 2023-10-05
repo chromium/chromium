@@ -48,14 +48,6 @@ public class PwaRestoreBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public float getHalfHeightRatio() {
-        // By default `expandSheet` will result in the sheet expanding only to half-full height.
-        // This disables that functionality so we can go straight to full screen (minus the top
-        // system toolbar).
-        return BottomSheetContent.HeightMode.DISABLED;
-    }
-
-    @Override
     public int getVerticalScrollOffset() {
         return 0;
     }
