@@ -3248,11 +3248,13 @@ const FeatureEntry::FeatureParam kTabStripRedesignFolio[] = {
     {"enable_folio", "true"}};
 const FeatureEntry::FeatureParam kTabStripRedesignDetached[] = {
     {"enable_detached", "true"}};
-const FeatureEntry::FeatureParam kTabStripRedesignDisableNtbAnchorFolio[] = {
+const FeatureEntry::FeatureParam kTabStripRedesignDisableNtbAnchorAndBtnStyleFolio[] = {
     {"disable_ntb_anchor", "true"},
+    {"disable_btn_style", "true"},
     {"enable_folio", "true"}};
-const FeatureEntry::FeatureParam kTabStripRedesignDisableNtbAnchorDetached[] = {
+const FeatureEntry::FeatureParam kTabStripRedesignDisableNtbAnchorAndBtnStyleDetached[] = {
     {"disable_ntb_anchor", "true"},
+    {"disable_btn_style", "true"},
     {"enable_detached", "true"}};
 const FeatureEntry::FeatureParam kTabStripRedesignDisableButtonStyleFolio[] = {
     {"disable_btn_style", "true"},
@@ -3265,10 +3267,10 @@ const FeatureEntry::FeatureVariation kTabStripRedesignVariations[] = {
      nullptr},
     {"Detached", kTabStripRedesignDetached,
      std::size(kTabStripRedesignDetached), nullptr},
-    {"Folio NTB Unanchored ", kTabStripRedesignDisableNtbAnchorFolio,
-     std::size(kTabStripRedesignDisableNtbAnchorFolio), nullptr},
-    {"Detached NTB Unanchored", kTabStripRedesignDisableNtbAnchorDetached,
-     std::size(kTabStripRedesignDisableNtbAnchorDetached), nullptr},
+    {"Folio NTB Unanchored, Remove Style", kTabStripRedesignDisableNtbAnchorAndBtnStyleFolio,
+     std::size(kTabStripRedesignDisableNtbAnchorAndBtnStyleFolio), nullptr},
+    {"Detached NTB Unanchored, Remove Style", kTabStripRedesignDisableNtbAnchorAndBtnStyleDetached,
+     std::size(kTabStripRedesignDisableNtbAnchorAndBtnStyleDetached), nullptr},
     {"Folio Remove Button Style", kTabStripRedesignDisableButtonStyleFolio,
      std::size(kTabStripRedesignDisableButtonStyleFolio), nullptr},
     {"Detached Remove Button Style",
