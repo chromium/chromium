@@ -40,6 +40,12 @@ ui::EventDispatchDetails AutoclickDragEventRewriter::RewriteEvent(
       mouse_event->root_location(), mouse_event->time_stamp(), flags,
       mouse_event->changed_button_flags(), mouse_event->pointer_details());
   SetEventTarget(rewritten_event, event.target());
+  // SetNativeEvent must be called explicitly as native events are not copied on
+  // ChromeOS by default. This is because `PlatformEvent` is a pointer by
+  // default, so its lifetime can not be guaranteed in general. In this case,
+  // the lifetime of  `rewritten_event` is guaranteed to be less than the
+  // original `mouse_event`.
+  SetNativeEvent(rewritten_event, mouse_event->native_event());
   return SendEventFinally(continuation, &rewritten_event);
 }
 

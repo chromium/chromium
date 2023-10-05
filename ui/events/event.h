@@ -35,6 +35,7 @@ namespace ui {
 
 class CancelModeEvent;
 class Event;
+class EventRewriter;
 class EventTarget;
 class KeyEvent;
 class LocatedEvent;
@@ -312,6 +313,7 @@ class EVENTS_EXPORT Event {
 
  private:
   friend class EventTestApi;
+  friend class EventRewriter;
 
   EventType type_;
   base::TimeTicks time_stamp_;
