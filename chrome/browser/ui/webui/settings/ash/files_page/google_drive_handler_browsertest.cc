@@ -34,6 +34,9 @@ using testing::_;
 using testing::DoAll;
 using testing::InSequence;
 using testing::Return;
+using testing::TestParamInfo;
+using testing::ValuesIn;
+using testing::WithParamInterface;
 
 namespace ash::settings {
 namespace {
@@ -49,6 +52,16 @@ struct DriveItem {
   bool available_offline;
   bool pinned;
 };
+
+struct TestParam {
+  std::string test_suffix;
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+};
+
+std::string ParamToTestSuffix(const TestParamInfo<TestParam>& info) {
+  return info.param.test_suffix;
+}
 
 class FakeSearchQuery : public drivefs::mojom::SearchQuery {
  public:
@@ -87,18 +100,14 @@ class FakeSearchQuery : public drivefs::mojom::SearchQuery {
   std::vector<std::vector<drivefs::mojom::QueryItemPtr>> pages_;
 };
 
-class GoogleDriveHandlerTest
+class GoogleDriveHandlerBaseTest
     : public drive::DriveIntegrationServiceBrowserTestBase {
  public:
-  GoogleDriveHandlerTest() : receiver_(&fake_search_query_) {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kDriveFsBulkPinning,
-         ash::features::kFeatureManagementDriveFsBulkPinning},
-        {});
-  }
+  GoogleDriveHandlerBaseTest() : receiver_(&fake_search_query_) {}
 
-  GoogleDriveHandlerTest(const GoogleDriveHandlerTest&) = delete;
-  GoogleDriveHandlerTest& operator=(const GoogleDriveHandlerTest&) = delete;
+  GoogleDriveHandlerBaseTest(const GoogleDriveHandlerBaseTest&) = delete;
+  GoogleDriveHandlerBaseTest& operator=(const GoogleDriveHandlerBaseTest&) =
+      delete;
 
   void SetUp() override {
     drive::DriveIntegrationServiceBrowserTestBase::SetUp();
@@ -156,15 +165,25 @@ class GoogleDriveHandlerTest
  protected:
   OSSettingsBrowserTestMixin os_settings_mixin_{&mixin_host_};
   FakeSearchQuery fake_search_query_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   mojo::Remote<mojom::OSSettingsDriver> os_settings_driver_remote_;
   mojo::Remote<mojom::GoogleDriveSettings> google_drive_settings_remote_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   mojo::Receiver<drivefs::mojom::SearchQuery> receiver_;
 };
 
-IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
+class GoogleDriveHandlerBulkPinningTest : public GoogleDriveHandlerBaseTest {
+ public:
+  GoogleDriveHandlerBulkPinningTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kDriveFsBulkPinning,
+         ash::features::kFeatureManagementDriveFsBulkPinning},
+        {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerBulkPinningTest,
                        NoSearchResultsReturnsNoRequiredOnlyFreeSpace) {
   SetUpSearchResultExpectations();
   fake_search_query_.SetSearchResults({});
@@ -183,10 +202,9 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
   google_drive_settings.AssertBulkPinningSpace(required_space, remaining_space);
 }
 
-IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
+IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerBulkPinningTest,
                        OnlyUnpinnedResultsUpdateTheSpaceRequirements) {
   SetUpSearchResultExpectations();
-
 
   // Each item is 125 MB in size, total required space should be 500 MB.
   int64_t file_size = 125 * 1024 * 1024;
@@ -205,7 +223,16 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
   google_drive_settings.AssertBulkPinningSpace(required_space, free_space_str);
 }
 
-IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
+class GoogleDriveHandlerTest : public GoogleDriveHandlerBaseTest,
+                               public WithParamInterface<TestParam> {
+ public:
+  GoogleDriveHandlerTest() {
+    scoped_feature_list_.InitWithFeatures(GetParam().enabled_features,
+                                          GetParam().disabled_features);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(GoogleDriveHandlerTest,
                        TotalPinnedSizeUpdatesValueOnElement) {
   // Mock no search results are returned (this avoids the call to
   // `CalculateRequiredSpace` from being ran here).
@@ -215,10 +242,10 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
   CreateFileInContentCache(32);
 
   auto google_drive_settings = OpenGoogleDriveSettings();
-  google_drive_settings.AssertBulkPinningPinnedSize(FormatBytesToString(4096));
+  google_drive_settings.AssertContentCacheSize(FormatBytesToString(4096));
 }
 
-IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
+IN_PROC_BROWSER_TEST_P(GoogleDriveHandlerTest,
                        ClearingOfflineFilesCallsProperMethods) {
   // Mock no search results are returned (this avoids the call to
   // `CalculateRequiredSpace` from being ran here).
@@ -243,6 +270,35 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
   google_drive_settings.ClickClearOfflineFilesAndAssertNewSize(
       FormatBytesToString(0));
 }
+
+const TestParam kTestParams[] = {
+    {
+        .test_suffix = "BulkPinningAndGoogleDrivePage",
+        .enabled_features =
+            {ash::features::kDriveFsBulkPinning,
+             ash::features::kFeatureManagementDriveFsBulkPinning,
+             ash::features::kFilesGoogleDriveSettingsPage},
+        .disabled_features = {},
+    },
+    {
+        .test_suffix = "OnlyBulkPinning",
+        .enabled_features =
+            {ash::features::kDriveFsBulkPinning,
+             ash::features::kFeatureManagementDriveFsBulkPinning},
+        .disabled_features = {ash::features::kFilesGoogleDriveSettingsPage},
+    },
+    {
+        .test_suffix = "OnlyGoogleDrivePage",
+        .enabled_features = {ash::features::kFilesGoogleDriveSettingsPage},
+        .disabled_features =
+            {ash::features::kDriveFsBulkPinning,
+             ash::features::kFeatureManagementDriveFsBulkPinning},
+    }};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         GoogleDriveHandlerTest,
+                         ValuesIn(kTestParams),
+                         &ParamToTestSuffix);
 
 }  // namespace
 }  // namespace ash::settings
