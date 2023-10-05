@@ -25,7 +25,8 @@ TEST(SysStrings, SysWideToUTF8) {
   EXPECT_EQ("Hello, world", SysWideToUTF8(L"Hello, world"));
   EXPECT_EQ("\xe4\xbd\xa0\xe5\xa5\xbd", SysWideToUTF8(L"\x4f60\x597d"));
 
-  // >16 bits
+  // A value outside of the BMP and therefore not representable with one UTF-16
+  // code unit.
   EXPECT_EQ("\xF0\x90\x8C\x80", SysWideToUTF8(kSysWideOldItalicLetterA));
 
   // Error case. When Windows finds a UTF-16 character going off the end of
@@ -52,7 +53,9 @@ TEST(SysStrings, SysWideToUTF8) {
 TEST(SysStrings, SysUTF8ToWide) {
   EXPECT_EQ(L"Hello, world", SysUTF8ToWide("Hello, world"));
   EXPECT_EQ(L"\x4f60\x597d", SysUTF8ToWide("\xe4\xbd\xa0\xe5\xa5\xbd"));
-  // >16 bits
+
+  // A value outside of the BMP and therefore not representable with one UTF-16
+  // code unit.
   EXPECT_EQ(kSysWideOldItalicLetterA, SysUTF8ToWide("\xF0\x90\x8C\x80"));
 
   // Error case. When Windows finds an invalid UTF-8 character, it just skips
@@ -83,7 +86,8 @@ TEST(SysStrings, SysWideToNativeMB) {
   EXPECT_EQ("Hello, world", SysWideToNativeMB(L"Hello, world"));
   EXPECT_EQ("\xe4\xbd\xa0\xe5\xa5\xbd", SysWideToNativeMB(L"\x4f60\x597d"));
 
-  // >16 bits
+  // A value outside of the BMP and therefore not representable with one UTF-16
+  // code unit.
   EXPECT_EQ("\xF0\x90\x8C\x80", SysWideToNativeMB(kSysWideOldItalicLetterA));
 
   // Error case. When Windows finds a UTF-16 character going off the end of
@@ -114,7 +118,9 @@ TEST(SysStrings, SysNativeMBToWide) {
 #endif
   EXPECT_EQ(L"Hello, world", SysNativeMBToWide("Hello, world"));
   EXPECT_EQ(L"\x4f60\x597d", SysNativeMBToWide("\xe4\xbd\xa0\xe5\xa5\xbd"));
-  // >16 bits
+
+  // A value outside of the BMP and therefore not representable with one UTF-16
+  // code unit.
   EXPECT_EQ(kSysWideOldItalicLetterA, SysNativeMBToWide("\xF0\x90\x8C\x80"));
 
   // Error case. When Windows finds an invalid UTF-8 character, it just skips

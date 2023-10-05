@@ -69,8 +69,7 @@ class SecureEnclaveClientTest : public testing::Test {
         CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                   &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
-    CFDictionarySetValue(test_attributes, kSecAttrLabel,
-                         base::SysUTF8ToCFStringRef("fake-label"));
+    CFDictionarySetValue(test_attributes, kSecAttrLabel, CFSTR("fake-label"));
     CFDictionarySetValue(test_attributes, kSecAttrKeyType,
                          kSecAttrKeyTypeECSECPrimeRandom);
     CFDictionarySetValue(test_attributes, kSecAttrKeySizeInBits,

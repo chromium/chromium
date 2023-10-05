@@ -189,10 +189,9 @@ TEST_F(PolicyLoaderMacTest, Invalid) {
 TEST_F(PolicyLoaderMacTest, TestNonForcedValue) {
   ScopedCFTypeRef<CFStringRef> name(
       base::SysUTF8ToCFStringRef(test_keys::kKeyString));
-  ScopedCFTypeRef<CFPropertyListRef> test_value(
-      base::SysUTF8ToCFStringRef("string value"));
-  ASSERT_TRUE(test_value.get());
-  prefs_->AddTestItem(name, test_value.get(), /*is_forced=*/false,
+  CFPropertyListRef test_value = CFSTR("string value");
+  ASSERT_TRUE(test_value);
+  prefs_->AddTestItem(name, test_value, /*is_forced=*/false,
                       /*is_machine=*/true);
 
   // Make the provider read the updated |prefs_|.
@@ -208,10 +207,9 @@ TEST_F(PolicyLoaderMacTest, TestNonForcedValue) {
 TEST_F(PolicyLoaderMacTest, TestUserScopeValue) {
   ScopedCFTypeRef<CFStringRef> name(
       base::SysUTF8ToCFStringRef(test_keys::kKeyString));
-  ScopedCFTypeRef<CFPropertyListRef> test_value(
-      base::SysUTF8ToCFStringRef("string value"));
-  ASSERT_TRUE(test_value.get());
-  prefs_->AddTestItem(name, test_value.get(), /*is_forced=*/true,
+  CFPropertyListRef test_value = CFSTR("string value");
+  ASSERT_TRUE(test_value);
+  prefs_->AddTestItem(name, test_value, /*is_forced=*/true,
                       /*is_machine=*/false);
 
   // Make the provider read the updated |prefs_|.

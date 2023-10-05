@@ -576,7 +576,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey loadURL:GURL("about:blank")];
 
   // Clears the url and replace it with local url host.
-  [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString("abc")];
+  [ChromeEarlGreyUI focusOmniboxAndType:@"abc"];
 
   // Wait for the suggestions to show.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -633,7 +633,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)testUpDownArrowAutocomplete {
   // Focus omnibox from Web.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
-  [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString("testupdown")];
+  [ChromeEarlGreyUI focusOmniboxAndType:@"testupdown"];
 
   // Matcher for the first autocomplete suggestions.
   id<GREYMatcher> testupDownAutocomplete1 =
@@ -681,8 +681,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Typing the title of page1.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(
-                        base::SysUTF8ToNSString(std::string(kPage1Title)))];
+      performAction:grey_replaceText(base::SysUTF8ToNSString(kPage1Title))];
 
   // Wait for suggestions to show.
   [ChromeEarlGrey
