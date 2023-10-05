@@ -89,13 +89,12 @@ INSTANTIATE_TEST_SUITE_P(NativeMessagingLaunchExe,
                          NativeMessagingLaunchExeTest,
                          testing::Bool());
 
-// DISABLED due to missing executable; crbug.com/1487674
 IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest,
-                       DISABLED_UserLevelSendNativeMessageWinExe) {
+                       UserLevelSendNativeMessageWinExe) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
       "native_messaging_test_echo_host.exe", /*user_level=*/true));
 
-  ASSERT(RunExtensionTest("native_messaging_send_native_message_exe"));
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message_exe"));
 }
 
 // The Host's filename deliberately contains the character '&' which causes the
@@ -111,9 +110,8 @@ IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest,
 }
 
 // Make sure that a filename with a space is supported.
-// DISABLED due to missing executable; crbug.com/1487674
 IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest,
-                       DISABLED_SendNativeMessageWinExeSpace) {
+                       SendNativeMessageWinExeSpace) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
       "native_messaging_test_echo_ _host.exe", /*user_level=*/false));
 

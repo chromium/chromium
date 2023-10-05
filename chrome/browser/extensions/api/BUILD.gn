@@ -86,12 +86,30 @@ function_registration("api_registration") {
 }
 
 if (is_win) {
-  # The ampersand in the filename is required to exercise the code that properly
-  # launches Native Hosts with paths containing characters that are problematic
-  # for cmd.exe. crbug.com/335558
-  executable("native_messaging_test_echo_&_host") {
+  # The files below are required to exercise the code that properly launches
+  # Native Hosts with paths containing characters that are problematic for
+  # cmd.exe. crbug.com/335558
+  executable("native_messaging_test_echo_host") {
     testonly = true
     sources = [ "messaging/native_messaging_test_echo_host.cc" ]
     deps = [ "//base" ]
+  }
+
+  copy("native_messaging_test_echo_&_host") {
+    testonly = true
+    src_tool = ":native_messaging_test_echo_host"
+    sources = [ get_label_info(src_tool, "root_out_dir") +
+                "/native_messaging_test_echo_host.exe" ]
+    outputs = [ "$root_build_dir/native_messaging_test_echo_&_host.exe" ]
+    deps = [ src_tool ]
+  }
+
+  copy("native_messaging_test_echo_space_host") {
+    testonly = true
+    src_tool = ":native_messaging_test_echo_host"
+    sources = [ get_label_info(src_tool, "root_out_dir") +
+                "/native_messaging_test_echo_host.exe" ]
+    outputs = [ "$root_build_dir/native_messaging_test_echo_ _host.exe" ]
+    deps = [ src_tool ]
   }
 }

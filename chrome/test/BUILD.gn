@@ -3581,6 +3581,8 @@ if (!is_android) {
       if (is_win) {
         data_deps += [
           "//chrome/browser/extensions/api:native_messaging_test_echo_&_host",
+          "//chrome/browser/extensions/api:native_messaging_test_echo_host",
+          "//chrome/browser/extensions/api:native_messaging_test_echo_space_host",
         ]
       }
 
