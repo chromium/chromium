@@ -79,7 +79,7 @@ NET_EXPORT absl::optional<SignatureAlgorithm> ParseSignatureAlgorithm(
 
 // Returns the hash to be used with the tls-server-end-point channel binding
 // (RFC 5929) or `absl::nullopt`, if not supported for this signature algorithm.
-absl::optional<DigestAlgorithm> GetTlsServerEndpointDigestAlgorithm(
+NET_EXPORT absl::optional<DigestAlgorithm> GetTlsServerEndpointDigestAlgorithm(
     SignatureAlgorithm alg);
 
 }  // namespace net
