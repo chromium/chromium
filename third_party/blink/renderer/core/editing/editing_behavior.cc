@@ -205,10 +205,53 @@ const char* LookupCommandNameFromDomKeyKeyDown(const String& key,
   return nullptr;
 }
 
+const int kVkeyForwardChar = VKEY_RIGHT;
+const int kVkeyBackwardChar = VKEY_LEFT;
+const int kVkeyNextLine = VKEY_DOWN;
+const int kVkeyPreviousLine = VKEY_UP;
+
+// Each of the following arrays contains logical behaviors in kVerticalRl,
+// kVerticalLr, kSidewaysRl, and kSidewaysLr.
+const int kPhysicalLeftToLogical[] = {kVkeyNextLine, kVkeyPreviousLine,
+                                      kVkeyNextLine, kVkeyPreviousLine};
+const int kPhysicalRightToLogical[] = {kVkeyPreviousLine, kVkeyNextLine,
+                                       kVkeyPreviousLine, kVkeyNextLine};
+const int kPhysicalUpToLogical[] = {kVkeyBackwardChar, kVkeyBackwardChar,
+                                    kVkeyForwardChar, kVkeyForwardChar};
+const int kPhysicalDownToLogical[] = {kVkeyForwardChar, kVkeyForwardChar,
+                                      kVkeyBackwardChar, kVkeyBackwardChar};
+
+int TransposeArrowKey(int key_code, WritingMode writing_mode) {
+  if (writing_mode == WritingMode::kHorizontalTb) {
+    return key_code;
+  }
+  DCHECK_EQ(1, static_cast<uint8_t>(WritingMode::kVerticalRl));
+  DCHECK_EQ(2, static_cast<uint8_t>(WritingMode::kVerticalLr));
+  DCHECK_EQ(3, static_cast<uint8_t>(WritingMode::kSidewaysRl));
+  DCHECK_EQ(4, static_cast<uint8_t>(WritingMode::kSidewaysLr));
+  DCHECK_EQ(4, static_cast<uint8_t>(WritingMode::kMaxWritingMode));
+  unsigned index = static_cast<uint8_t>(writing_mode) - 1;
+  switch (key_code) {
+    case VKEY_LEFT:
+      CHECK_LT(index, std::size(kPhysicalLeftToLogical));
+      return kPhysicalLeftToLogical[index];
+    case VKEY_RIGHT:
+      CHECK_LT(index, std::size(kPhysicalRightToLogical));
+      return kPhysicalRightToLogical[index];
+    case VKEY_UP:
+      CHECK_LT(index, std::size(kPhysicalUpToLogical));
+      return kPhysicalUpToLogical[index];
+    case VKEY_DOWN:
+      CHECK_LT(index, std::size(kPhysicalDownToLogical));
+      return kPhysicalDownToLogical[index];
+  }
+  return key_code;
+}
+
 }  // anonymous namespace
 
-const char* EditingBehavior::InterpretKeyEvent(
-    const KeyboardEvent& event) const {
+const char* EditingBehavior::InterpretKeyEvent(const KeyboardEvent& event,
+                                               WritingMode writing_mode) const {
   const WebKeyboardEvent* key_event = event.KeyEvent();
   if (!key_event)
     return "";
@@ -246,7 +289,9 @@ const char* EditingBehavior::InterpretKeyEvent(
   };
 
   if (key_event->GetType() == WebInputEvent::Type::kRawKeyDown) {
-    const char* name = FindName(key_down_commands_map, event.keyCode());
+    const char* name =
+        FindName(key_down_commands_map,
+                 TransposeArrowKey(event.keyCode(), writing_mode));
     return name ? name
                 : LookupCommandNameFromDomKeyKeyDown(event.key(), modifiers);
   }

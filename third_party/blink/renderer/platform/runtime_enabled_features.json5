@@ -323,7 +323,7 @@
     {
       // crbug.com/484651
       name: "ArrowKeysInVerticalWritingModes",
-      status: "test",
+      status: "stable",
     },
     {
       name: "AttributionReporting",
@@ -1916,6 +1916,7 @@
       // writing mode: textarea and input types email, number, password, search,
       // tel, text, url.
       name: "FormControlsVerticalWritingModeTextSupport",
+      depends_on: ["ArrowKeysInVerticalWritingModes"],
       status: "experimental",
     },
     {

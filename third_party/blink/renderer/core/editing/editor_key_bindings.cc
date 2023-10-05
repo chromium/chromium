@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_command_filter.h"
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
@@ -34,9 +35,11 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
+#include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
@@ -45,7 +48,19 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
   if (!key_event)
     return false;
 
-  String command_name = Behavior().InterpretKeyEvent(*evt);
+  WritingMode writing_mode = WritingMode::kHorizontalTb;
+  const Node* node =
+      frame_->Selection().GetSelectionInDOMTree().Extent().AnchorNode();
+  if (!node) {
+    node = frame_->GetDocument()->FocusedElement();
+  }
+  if (RuntimeEnabledFeatures::ArrowKeysInVerticalWritingModesEnabled() &&
+      node) {
+    if (const ComputedStyle* style = node->GetComputedStyle()) {
+      writing_mode = style->GetWritingMode();
+    }
+  }
+  String command_name = Behavior().InterpretKeyEvent(*evt, writing_mode);
   if (IsCommandFilteredOut(command_name)) {
     return false;
   }

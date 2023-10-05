@@ -1,0 +1,112 @@
+<!doctype html>
+<title>crbug.com/484651</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:vertical-rl">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowLeft'),
+    `<pre contenteditable style="writing-mode:vertical-rl">     text1
+     text2
+     te|xt3
+     </pre>`);
+}, 'ArrowLeft in vertical-rl');
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:vertical-rl">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowRight'),
+    `<pre contenteditable style="writing-mode:vertical-rl">     te|xt1
+     text2
+     text3
+     </pre>`);
+}, 'ArrowRight in vertical-rl');
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:vertical-rl">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowUp'),
+    `<pre contenteditable style="writing-mode:vertical-rl">     text1
+     t|ext2
+     text3
+     </pre>`);
+}, 'ArrowUp in vertical-rl');
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:vertical-rl">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowDown'),
+    `<pre contenteditable style="writing-mode:vertical-rl">     text1
+     tex|t2
+     text3
+     </pre>`);
+}, 'ArrowDown in vertical-rl');
+
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:vertical-lr">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowLeft'),
+    `<pre contenteditable style="writing-mode:vertical-lr">     te|xt1
+     text2
+     text3
+     </pre>`);
+}, 'ArrowLeft in vertical-lr');
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:vertical-lr">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowRight'),
+    `<pre contenteditable style="writing-mode:vertical-lr">     text1
+     text2
+     te|xt3
+     </pre>`);
+}, 'ArrowRight in vertical-lr');
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:vertical-lr">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowUp'),
+    `<pre contenteditable style="writing-mode:vertical-lr">     text1
+     t|ext2
+     text3
+     </pre>`);
+}, 'ArrowUp in vertical-lr');
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:vertical-lr">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowDown'),
+    `<pre contenteditable style="writing-mode:vertical-lr">     text1
+     tex|t2
+     text3
+     </pre>`);
+}, 'ArrowDown in vertical-lr');
+</script>
