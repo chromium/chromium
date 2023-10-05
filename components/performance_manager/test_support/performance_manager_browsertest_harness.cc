@@ -4,22 +4,28 @@
 
 #include "components/performance_manager/test_support/performance_manager_browsertest_harness.h"
 
-#include <memory>
+#include <string>
 
+#include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/test/bind.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
-#include "components/performance_manager/performance_manager_impl.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
+#include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/performance_manager.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "content/shell/browser/shell_content_browser_client.h"
-#include "content/shell/browser/shell_web_contents_view_delegate_creator.h"
-#include "mojo/public/cpp/bindings/binder_map.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
+#include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 namespace performance_manager {
 
@@ -131,6 +137,30 @@ void PerformanceManagerBrowserTestHarness::WaitForLoad(
     content::WebContents* contents) {
   WaitForLoadObserver observer(contents);
   observer.Wait();
+}
+
+void PerformanceManagerBrowserTestHarness::RunInGraph(
+    base::FunctionRef<void(Graph*)> on_graph_callback) {
+  base::RunLoop run_loop;
+  PerformanceManager::CallOnGraph(
+      FROM_HERE, base::BindLambdaForTesting([quit_loop = run_loop.QuitClosure(),
+                                             &on_graph_callback](Graph* graph) {
+        on_graph_callback(graph);
+        quit_loop.Run();
+      }));
+  run_loop.Run();
+}
+
+void PerformanceManagerBrowserTestHarness::RunInGraph(
+    base::FunctionRef<void()> on_graph_callback) {
+  base::RunLoop run_loop;
+  PerformanceManager::CallOnGraph(
+      FROM_HERE, base::BindLambdaForTesting(
+                     [quit_loop = run_loop.QuitClosure(), &on_graph_callback] {
+                       on_graph_callback();
+                       quit_loop.Run();
+                     }));
+  run_loop.Run();
 }
 
 void PerformanceManagerBrowserTestHarness::OnGraphCreatedImpl(Graph* graph) {

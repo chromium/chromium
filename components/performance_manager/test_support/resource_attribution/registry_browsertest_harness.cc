@@ -19,6 +19,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace performance_manager::resource_attribution {
@@ -31,7 +32,7 @@ RegistryBrowserTestHarness::~RegistryBrowserTestHarness() = default;
 ResourceContext RegistryBrowserTestHarness::GetWebContentsPageContext() const {
   // This gets the ResourceContext from the PM node so that it doesn't
   // depend on the registries which are being tested.
-  ResourceContext resource_context;
+  absl::optional<ResourceContext> resource_context;
   base::WeakPtr<PageNode> page_node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
   base::RunLoop run_loop;
@@ -41,7 +42,7 @@ ResourceContext RegistryBrowserTestHarness::GetWebContentsPageContext() const {
                    resource_context = page_node->GetResourceContext();
                  }).Then(run_loop.QuitClosure()));
   run_loop.Run();
-  return resource_context;
+  return resource_context.value();
 }
 
 void RegistryBrowserTestHarness::CreateNodes() {

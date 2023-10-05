@@ -31,7 +31,6 @@
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "components/performance_manager/public/resource_attribution/frame_context_registry.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -1268,8 +1267,8 @@ TEST_F(CPUMeasurementMonitorTimingTest, ProcessLifetime) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://www.example.com/"));
 
-  const FrameContext frame_context =
-      FrameContextRegistry::ContextForRenderFrameHost(main_rfh()).value();
+  const auto frame_context =
+      FrameContext::FromRenderFrameHost(main_rfh()).value();
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForRenderProcessHost(process());
 

@@ -165,8 +165,7 @@ content::SiteInstanceId FrameNodeImpl::site_instance_id() const {
 
 resource_attribution::FrameContext FrameNodeImpl::resource_context() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Re-use the LocalFrameToken as the ResourceContext token.
-  return resource_attribution::FrameContext(frame_token_);
+  return resource_attribution::FrameContext::FromFrameNode(this);
 }
 
 const RenderFrameHostProxy& FrameNodeImpl::render_frame_host_proxy() const {

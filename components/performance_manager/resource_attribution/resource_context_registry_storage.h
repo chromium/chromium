@@ -18,7 +18,6 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/render_process_host_id.h"
-#include "components/performance_manager/public/resource_attribution/frame_context_registry.h"
 #include "components/performance_manager/public/resource_attribution/page_context_registry.h"
 #include "components/performance_manager/public/resource_attribution/process_context_registry.h"
 #include "components/performance_manager/public/resource_attribution/worker_context_registry.h"
@@ -57,13 +56,6 @@ class ResourceContextRegistryStorage final
 
   // Static UI thread accessors.
 
-  // FrameContext accessors.
-  static absl::optional<FrameContext> FrameContextForRenderFrameHost(
-      content::RenderFrameHost* host);
-
-  static content::RenderFrameHost* RenderFrameHostFromContext(
-      const FrameContext& context);
-
   // PageContext accessors.
   static absl::optional<PageContext> PageContextForId(
       const content::GlobalRenderFrameHostId& id);
@@ -98,7 +90,6 @@ class ResourceContextRegistryStorage final
       const WorkerContext& context);
 
   // PM sequence accessors.
-  const FrameNode* GetFrameNodeForContext(const FrameContext& context) const;
   const PageNode* GetPageNodeForContext(const PageContext& context) const;
   const ProcessNode* GetProcessNodeForContext(
       const ProcessContext& context) const;
@@ -134,8 +125,6 @@ class ResourceContextRegistryStorage final
 
   // Storage used only from the PM sequence. Mutable so that invalidated
   // WeakPtr's can be cleaned up from logically const methods.
-  mutable std::map<FrameContext, base::WeakPtr<FrameNode>>
-      frame_nodes_by_context_ GUARDED_BY_CONTEXT(sequence_checker_);
   mutable std::map<PageContext, base::WeakPtr<PageNode>> page_nodes_by_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
   mutable std::map<ProcessContext, base::WeakPtr<ProcessNode>>
@@ -151,7 +140,6 @@ class ResourceContextRegistryStorage final
 
   // Public accessors for the storage. ResourceContextRegistryStorage registers
   // these with the graph in OnPassedToGraph().
-  FrameContextRegistry frame_registry_{*this};
   PageContextRegistry page_registry_{*this};
   ProcessContextRegistry process_registry_{*this};
   WorkerContextRegistry worker_registry_{*this};

@@ -64,7 +64,7 @@ constexpr base::TimeDelta kTimeBetweenMeasurements = base::Minutes(5);
 // A struct holding node pointers for a renderer process containing a single
 // page with a single main frame.
 struct SinglePageRendererNodes {
-  TestNodeWrapper<ProcessNodeImpl> process_node;
+  TestNodeWrapper<TestProcessNodeImpl> process_node;
   TestNodeWrapper<PageNodeImpl> page_node;
   TestNodeWrapper<FrameNodeImpl> frame_node;
 
@@ -222,7 +222,8 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness,
   // tracking of CPU usage.
   SinglePageRendererNodes CreateSimpleCPUTrackingRenderer() {
     // CreateNode's default arguments create a renderer process node.
-    auto process_node = CreateNode<ProcessNodeImpl>();
+    // TestProcessNodeImpl from mock_graphs.h gets a valid child id.
+    auto process_node = CreateNode<TestProcessNodeImpl>();
     auto page_node = CreateNode<PageNodeImpl>();
     auto frame_node =
         CreateFrameNodeAutoId(process_node.get(), page_node.get());

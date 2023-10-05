@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/performance_manager_browsertest_harness.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
