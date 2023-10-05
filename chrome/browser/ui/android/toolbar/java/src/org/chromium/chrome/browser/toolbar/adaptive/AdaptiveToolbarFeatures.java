@@ -12,7 +12,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
+import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 
 /**
  * A utility class for handling feature flags used by {@link AdaptiveToolbarButtonController}.
@@ -205,10 +205,10 @@ public class AdaptiveToolbarFeatures {
     // getLastUsedRegularProfile, but for starters we use it, just like in
     // AdaptiveStatePredictor#readFromSegmentationPlatform.
     public static boolean isAdaptiveToolbarReadAloudEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)
-                && UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
-                        sProfileForTesting != null ? sProfileForTesting
-                                                   : Profile.getLastUsedRegularProfile());
+        return ReadAloudFeatures.isAllowed(
+                sProfileForTesting != null
+                        ? sProfileForTesting
+                        : Profile.getLastUsedRegularProfile());
     }
 
     /**

@@ -41,6 +41,7 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
+
 /**
  * Tests for {@link AdaptiveToolbarSettingsFragment}.
  */
@@ -69,6 +70,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
         ChromeSharedPreferences.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
                 new Pair<>(false, AdaptiveToolbarButtonVariant.NEW_TAB));
+        AdaptiveToolbarFeatures.setProfile(mProfile);
 
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
     }
@@ -265,7 +267,6 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.READALOUD)
     public void testReadAloudOption_Enabled() {
-        AdaptiveToolbarFeatures.setProfile(mProfile);
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
         FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
                 FragmentScenario.launchInContainer(AdaptiveToolbarSettingsFragment.class,

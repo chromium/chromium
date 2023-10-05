@@ -138,6 +138,7 @@ android_library("java") {
     "//chrome/browser/paint_preview/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/readaloud/android:features_java",
     "//chrome/browser/search_engines/android:java",
     "//chrome/browser/segmentation_platform:factory_java",
     "//chrome/browser/signin/services/android:java",
