@@ -2657,12 +2657,12 @@
   {
     "name": "enable-drdc",
     "owners": [ "vikassoni", "sunnyps" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 130
   },
   {
     "name": "enable-drdc-vulkan",
     "owners": [ "vikassoni", "sunnyps" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 130
   },
   {
     "name": "enable-edge-detection",
@@ -3692,7 +3692,7 @@
   {
     "name": "enable-surface-control",
     "owners": [ "vikassoni", "vasilyt" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 130
   },
   {
     "name": "enable-surface-polish",
