@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
+import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.version_info.VersionInfo;
@@ -574,7 +575,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         List<Bundle> menuItems =
                 IntentUtils.getParcelableArrayListExtra(intent, CustomTabsIntent.EXTRA_MENU_ITEMS);
         updateExtraMenuItems(menuItems);
-        addShareOption(intent, context);
+        // Disable CCT share options for automotive. See b/300292495.
+        if (ShareUtils.enableShareForAutomotive(true)) {
+            addShareOption(intent, context);
+        }
 
         mActivityType = IntentUtils.safeGetBooleanExtra(
                                 intent, TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false)

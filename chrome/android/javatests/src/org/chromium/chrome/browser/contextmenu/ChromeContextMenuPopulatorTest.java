@@ -21,6 +21,7 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -45,6 +46,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -72,6 +74,10 @@ public class ChromeContextMenuPopulatorTest {
     private static final String IMAGE_TITLE_TEXT = "IMAGE!";
     private static final String RETRIEVED_IMAGE_URL = "http://www.blah.com/retrieved_image.jpg";
 
+    @Rule
+    public AutomotiveContextWrapperTestRule mAutomotiveRule =
+            new AutomotiveContextWrapperTestRule();
+
     @Mock
     private Activity mActivity;
     @Mock
@@ -93,7 +99,7 @@ public class ChromeContextMenuPopulatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-
+        mAutomotiveRule.setIsAutomotive(false);
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         GURL pageUrl = new GURL(PAGE_URL);
@@ -639,5 +645,68 @@ public class ChromeContextMenuPopulatorTest {
         checkMenuOptions(other_expected);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP, params);
         checkMenuOptions(other_expected);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSharingLinkWithCctAutomotive() {
+        mAutomotiveRule.setIsAutomotive(true);
+        FirstRunStatus.setFirstRunFlowComplete(true);
+
+        ContextMenuParams linkParams =
+                new ContextMenuParams(
+                        0,
+                        0,
+                        new GURL(PAGE_URL),
+                        new GURL(LINK_URL),
+                        LINK_TEXT,
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        "",
+                        null,
+                        false,
+                        0,
+                        0,
+                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        false,
+                        /* additionalNavigationParams= */ null);
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, linkParams);
+        int[] linkExpected = {
+            R.id.contextmenu_open_in_browser_id,
+            R.id.contextmenu_open_in_ephemeral_tab,
+            R.id.contextmenu_copy_link_address,
+            R.id.contextmenu_copy_link_text,
+            R.id.contextmenu_save_link_as,
+            R.id.contextmenu_read_later
+        };
+        checkMenuOptions(linkExpected);
+
+        ContextMenuParams imageParams =
+                new ContextMenuParams(
+                        0,
+                        ContextMenuDataMediaType.IMAGE,
+                        new GURL(PAGE_URL),
+                        GURL.emptyGURL(),
+                        "",
+                        GURL.emptyGURL(),
+                        new GURL(IMAGE_SRC_URL),
+                        IMAGE_TITLE_TEXT,
+                        null,
+                        true,
+                        0,
+                        0,
+                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        false,
+                        /* additionalNavigationParams= */ null);
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, imageParams);
+        int[] imageExpected = {
+            R.id.contextmenu_open_in_browser_id,
+            R.id.contextmenu_open_image,
+            R.id.contextmenu_open_image_in_ephemeral_tab,
+            R.id.contextmenu_copy_image,
+            R.id.contextmenu_save_image
+        };
+        checkMenuOptions(imageExpected);
     }
 }

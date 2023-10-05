@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs;
 
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX;
+import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_ON;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -155,6 +156,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -231,6 +233,10 @@ public class CustomTabActivityTest {
             new ChromeTabbedActivityTestRule();
 
     @Rule
+    public AutomotiveContextWrapperTestRule mAutomotiveRule =
+            new AutomotiveContextWrapperTestRule();
+
+    @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static int sIdToIncrement = 1;
@@ -263,7 +269,7 @@ public class CustomTabActivityTest {
     @Before
     public void setUp() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
-
+        mAutomotiveRule.setIsAutomotive(false);
         Context appContext = getInstrumentation().getTargetContext().getApplicationContext();
         mTestServer = EmbeddedTestServer.createAndStartServer(appContext);
         mTestPage = mTestServer.getURL(TEST_PAGE);
@@ -2335,7 +2341,8 @@ public class CustomTabActivityTest {
     private void assertLastLaunchedClientAppRecorded(String histogramSuffix, String clientPackage,
             String url, int taskId, boolean umaRecorded) {
         SharedPreferencesManager pref = ChromeSharedPreferences.getInstance();
-        String histogramName = "CustomTabs.RetainableSessionsV2.TimeBetweenLaunch" + histogramSuffix;
+        String histogramName =
+                "CustomTabs.RetainableSessionsV2.TimeBetweenLaunch" + histogramSuffix;
 
         Assert.assertEquals("Client package name in shared pref is different.", clientPackage,
                 pref.readString(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLIENT_PACKAGE, ""));
@@ -2509,6 +2516,25 @@ public class CustomTabActivityTest {
                     ChromeTabUtils.getUrlStringOnUiThread(getActivity().getActivityTab()),
                     is(mTestPage2));
         });
+    }
+
+    @Test
+    @SmallTest
+    public void disableShareEntriesForAutomotive() {
+        mAutomotiveRule.setIsAutomotive(true);
+        Intent intent = createMinimalCustomTabIntent();
+        CustomTabsIntentTestUtils.setShareState(intent, SHARE_STATE_ON);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        ViewGroup toolbarButtons =
+                mCustomTabActivityTestRule.getActivity().findViewById(R.id.action_buttons);
+        Assert.assertEquals(
+                "No action buttons should be added.", 0, toolbarButtons.getChildCount());
+
+        openAppMenuAndAssertMenuShown();
+        Assert.assertNull(
+                "Share option should be hidden.",
+                mCustomTabActivityTestRule.getActivity().findViewById(R.id.share_row_menu_id));
     }
 
     private void rotateCustomTabActivity(CustomTabActivity activity, int orientation) {
