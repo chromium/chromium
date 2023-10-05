@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_section.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
@@ -16,8 +18,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/spellcheck/browser/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 
 namespace ash::settings {
 
@@ -81,9 +85,20 @@ class DeviceSectionTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("name");
+
+    // Mock Input method manager and register prefs for Inputs settings
+    input_method::InitializeForTesting(
+        new input_method::MockInputMethodManagerImpl());
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kEmojiSuggestionEnterpriseAllowed, true);
+    pref_service_.registry()->RegisterBooleanPref(
+        spellcheck::prefs::kSpellCheckEnable, true);
   }
 
   void TearDown() override {
+    // Ensure `device_section_` is destroyed before `pref_service_`.
+    device_section_.reset();
+
     profile_ = nullptr;
     profile_manager_->DeleteTestingProfile("name");
   }
@@ -120,7 +135,7 @@ TEST_F(DeviceSectionTest, SearchResultIncludeAudio) {
   EXPECT_TRUE(search_tag_registry()->GetTagMetadata(result_id));
 }
 
-// Verify resgistry updated with Printing search tags.
+// Verify registry updated with Printing search tags.
 TEST_F(DeviceSectionTest, SearchResultIncludePrinting) {
   feature_list_.InitAndEnableFeature(
       ash::features::kOsSettingsRevampWayfinding);

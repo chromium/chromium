@@ -10,6 +10,7 @@
 #include "ash/public/cpp/night_light_controller.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system/pointer_device_observer.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/inputs_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/power/power_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/printing_section.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
@@ -88,6 +89,7 @@ class DeviceSection : public OsSettingsSection,
   system::PointerDeviceObserver pointer_device_observer_;
   mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
       cros_display_config_;
+  absl::optional<InputsSection> inputs_subsection_;
   absl::optional<PowerSection> power_subsection_;
   absl::optional<PrintingSection> printing_subsection_;
   absl::optional<StorageSection> storage_subsection_;

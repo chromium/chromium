@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_keyboard_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_pointer_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_stylus_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/inputs_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/printing_section.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -49,11 +50,7 @@ using ::chromeos::settings::mojom::kCustomizePenButtonsSubpagePath;
 using ::chromeos::settings::mojom::kCustomizeTabletButtonsSubpagePath;
 using ::chromeos::settings::mojom::kDeviceSectionPath;
 using ::chromeos::settings::mojom::kDisplaySubpagePath;
-using ::chromeos::settings::mojom::kEditDictionarySubpagePath;
 using ::chromeos::settings::mojom::kGraphicsTabletSubpagePath;
-using ::chromeos::settings::mojom::kInputMethodOptionsSubpagePath;
-using ::chromeos::settings::mojom::kInputSubpagePath;
-using ::chromeos::settings::mojom::kJapaneseManageUserDictionarySubpagePath;
 using ::chromeos::settings::mojom::kKeyboardSubpagePath;
 using ::chromeos::settings::mojom::kPerDeviceKeyboardRemapKeysSubpagePath;
 using ::chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath;
@@ -972,6 +969,12 @@ DeviceSection::DeviceSection(Profile* profile,
                              CupsPrintersManager* printers_manager,
                              PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
+      inputs_subsection_(
+          ash::features::IsOsSettingsRevampWayfindingEnabled()
+              ? absl::make_optional<InputsSection>(profile,
+                                                   search_tag_registry,
+                                                   pref_service)
+              : absl::nullopt),
       power_subsection_(
           !ash::features::IsOsSettingsRevampWayfindingEnabled()
               ? absl::make_optional<PowerSection>(profile,
@@ -993,6 +996,7 @@ DeviceSection::DeviceSection(Profile* profile,
   CHECK(search_tag_registry);
   CHECK(pref_service);
   if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    CHECK(inputs_subsection_);
     CHECK(printing_subsection_);
   } else {
     CHECK(power_subsection_);
@@ -1092,7 +1096,8 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddDeviceDisplayStrings(html_source);
   AddDeviceAudioStrings(html_source);
 
-  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+  if (kIsRevampEnabled) {
+    inputs_subsection_->AddLoadTimeData(html_source);
     printing_subsection_->AddLoadTimeData(html_source);
   } else {
     power_subsection_->AddLoadTimeData(html_source);
@@ -1107,6 +1112,7 @@ void DeviceSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<StylusHandler>());
 
   if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    inputs_subsection_->AddHandlers(web_ui);
     printing_subsection_->AddHandlers(web_ui);
   } else {
     power_subsection_->AddHandlers(web_ui);
@@ -1287,53 +1293,6 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   RegisterNestedSettingBulk(mojom::Subpage::kKeyboard, kKeyboardSettings,
                             generator);
 
-  if (kIsRevampEnabled) {
-    // Input subpage
-    generator->RegisterTopLevelSubpage(
-        IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2, mojom::Subpage::kInput,
-        mojom::SearchResultIcon::kGlobe,
-        mojom::SearchResultDefaultRank::kMedium, mojom::kInputSubpagePath);
-    static constexpr mojom::Setting kInputSubpageSettings[] = {
-        mojom::Setting::kAddInputMethod,
-        mojom::Setting::kShowEmojiSuggestions,
-        mojom::Setting::kShowInputOptionsInShelf,
-        mojom::Setting::kShowOrca,
-        mojom::Setting::kSpellCheck,
-    };
-    RegisterNestedSettingBulk(mojom::Subpage::kInput, kInputSubpageSettings,
-                              generator);
-
-    // Edit dictionary subpage
-    generator->RegisterNestedSubpage(
-        IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_LABEL,
-        mojom::Subpage::kEditDictionary, mojom::Subpage::kInput,
-        mojom::SearchResultIcon::kGlobe,
-        mojom::SearchResultDefaultRank::kMedium,
-        mojom::kEditDictionarySubpagePath);
-
-    // Japanese Manage User Dictionary subpage
-    generator->RegisterNestedSubpage(
-        IDS_OS_SETTINGS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY_LABEL,
-        mojom::Subpage::kJapaneseManageUserDictionary, mojom::Subpage::kInput,
-        mojom::SearchResultIcon::kGlobe,
-        mojom::SearchResultDefaultRank::kMedium,
-        mojom::kJapaneseManageUserDictionarySubpagePath);
-
-    // Input method options subpage
-    generator->RegisterNestedSubpage(
-        IDS_SETTINGS_LANGUAGES_INPUT_METHOD_OPTIONS_TITLE,
-        mojom::Subpage::kInputMethodOptions, mojom::Subpage::kInput,
-        mojom::SearchResultIcon::kGlobe,
-        mojom::SearchResultDefaultRank::kMedium,
-        mojom::kInputMethodOptionsSubpagePath);
-    static constexpr mojom::Setting kInputMethodOptionsSubpageSettings[] = {
-        mojom::Setting::kShowPKAutoCorrection,
-        mojom::Setting::kShowVKAutoCorrection,
-    };
-    RegisterNestedSettingBulk(mojom::Subpage::kInputMethodOptions,
-                              kInputMethodOptionsSubpageSettings, generator);
-  }
-
   // Stylus.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_STYLUS_TITLE, mojom::Subpage::kStylus,
@@ -1371,6 +1330,9 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                             generator);
 
   if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    // Inputs.
+    inputs_subsection_->RegisterHierarchy(generator);
+
     // Printing.
     printing_subsection_->RegisterHierarchy(generator);
   } else {
