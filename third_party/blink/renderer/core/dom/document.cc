@@ -3389,22 +3389,26 @@ void Document::open(LocalDOMWindow* entered_window,
   // for this document with the entered window's url.
   if (dom_window_ && entered_window) {
     KURL new_url = entered_window->Url();
-    if ((new_url.IsAboutSrcdocURL() || new_url.IsAboutBlankURL()) &&
+    if (new_url.IsAboutBlankURL() &&
         blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
-      // When updating the URL to about:srcdoc due to a document.open() call,
+      // When updating the URL to about:blank due to a document.open() call,
       // the opened document should also end up with the same base URL as the
-      // opener about:srcdoc document. Propagate the fallback information here
+      // opener about:blank document. Propagate the fallback information here
       // so that SetURL() below will take it into account.
-      // TODO(https://crbug.com/751329): about:blank should also be handled
-      // here once it supports the new base url inheritance behavior.
       fallback_base_url_ = entered_window->BaseURL();
-      is_srcdoc_document_ = new_url.IsAboutSrcdocURL();
     }
     // Clear the hash fragment from the inherited URL to prevent a
     // scroll-into-view for any document.open()'d frame.
-    if (dom_window_ != entered_window)
+    if (dom_window_ != entered_window) {
       new_url.SetFragmentIdentifier(String());
-    SetURL(new_url);
+    }
+    // If an about:srcdoc frame .open()s another frame, then we don't set the
+    // url, and we leave the value of `is_srcdoc_document` untouched. Otherwise
+    // we should reset `is_srcdoc_document_`.
+    if (!new_url.IsAboutSrcdocURL()) {
+      is_srcdoc_document_ = false;
+      SetURL(new_url);
+    }
     if (Loader())
       Loader()->DidOpenDocumentInputStream(new_url);
 
