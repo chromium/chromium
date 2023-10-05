@@ -117,6 +117,7 @@ namespace recordreplay {
   Macro(V8RecordReplayRemoveOrderedSRWLock, (void* lock), (lock))       \
   Macro(V8RecordReplayMaybeTerminate,                                   \
         (void (*callback)(void*), void* data), (callback, data))        \
+  Macro(V8RecordReplayFinishRecording, (), ())                          \
   Macro(V8RecordReplayGetCurrentJSStack,                                \
         (std::string* stackTrace), (stackTrace))                        \
   Macro(V8RecordReplayEnterReplayCode, (), ())                          \
@@ -549,6 +550,10 @@ void RemoveOrderedSRWLock(void* lock) {
 
 void MaybeTerminate(void (*callback)(void*), void* data) {
   V8RecordReplayMaybeTerminate(callback, data);
+}
+
+void FinishRecording() {
+  V8RecordReplayFinishRecording();
 }
 
 // Callback to reset the paint surface.

@@ -26,6 +26,7 @@ bool IsRecordingOrReplaying(const char* feature = nullptr,
 bool IsRecording();
 bool IsReplaying();
 char* GetRecordingId();
+void FinishRecording();
 
 bool HadMismatch();
 

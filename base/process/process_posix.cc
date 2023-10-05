@@ -12,6 +12,7 @@
 
 #include <utility>
 
+#include "base/record_replay.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/debug/activity_tracker.h"
 #include "base/files/scoped_file.h"
@@ -270,14 +271,12 @@ Process Process::OpenWithExtraPrivileges(ProcessId pid) {
   return Open(pid);
 }
 
-extern "C" void V8RecordReplayFinishRecording();
-
 // static
 void Process::TerminateCurrentProcessImmediately(int exit_code) {
 #if BUILDFLAG(CLANG_PROFILING)
   WriteClangProfilingProfile();
 #endif
-  V8RecordReplayFinishRecording();
+  recordreplay::FinishRecording();
   _exit(exit_code);
 }
 
