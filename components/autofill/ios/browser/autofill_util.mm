@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -28,6 +29,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+using autofill::FormControlType;
 using base::NumberToString;
 using base::StringToUint;
 
@@ -59,6 +61,7 @@ void ConvertValueToBool(base::OnceCallback<void(BOOL)> callback,
   }
   std::move(callback).Run(result);
 }
+
 }  // namespace
 
 namespace autofill {
@@ -212,8 +215,8 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
   }
 
   field_data->name = base::UTF8ToUTF16(*name);
-  field_data->form_control_type =
-      autofill::StringToFormControlType(*form_control_type);
+  field_data->form_control_type = autofill::StringToFormControlTypeDiscouraged(
+      *form_control_type, /*fallback=*/std::nullopt);
 
   const std::string* unique_renderer_id =
       field.FindString("unique_renderer_id");

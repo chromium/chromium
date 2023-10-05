@@ -2626,7 +2626,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldTextArea) {
   expected.id_attribute = u"element";
   expected.name = expected.id_attribute;
   expected.max_length = FormFieldData::kDefaultMaxLength;
-  expected.form_control_type = StringToFormControlType("textarea");
+  expected.form_control_type = FormControlType::kTextArea;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result_sans_value);
 
   FormFieldData result_with_value;

@@ -5,6 +5,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 
 #include <algorithm>
+#include <optional>
 #include <tuple>
 
 #include "base/notreached.h"
@@ -102,7 +103,12 @@ bool DeserializeSection1(base::PickleIterator* iter,
                  iter->ReadUInt64(&field_data->max_length) &&
                  iter->ReadBool(&field_data->is_autofilled);
   if (success) {
-    field_data->form_control_type = StringToFormControlType(form_control_type);
+    // Form control types are serialized as strings for legacy reasons.
+    // TODO(crbug.com/1353392,crbug.com/1482526): Why does the Password Manager
+    // (de)serialize form control types? Remove it or migrate it to the enum
+    // values.
+    field_data->form_control_type = StringToFormControlTypeDiscouraged(
+        form_control_type, /*fallback=*/FormControlType::kInputText);
   }
   return success;
 }
@@ -441,53 +447,20 @@ std::string_view FormControlTypeToString(FormControlType type) {
   return "invalid";
 }
 
-FormControlType StringToFormControlType(std::string_view type) {
-  if (type == "checkbox") {
-    return FormControlType::kInputCheckbox;
+FormControlType StringToFormControlTypeDiscouraged(
+    std::string_view type_string,
+    std::optional<FormControlType> fallback) {
+  for (auto i = base::to_underlying(FormControlType::kMinValue);
+       i <= base::to_underlying(FormControlType::kMaxValue); ++i) {
+    FormControlType type = static_cast<FormControlType>(i);
+    if (type_string == autofill::FormControlTypeToString(type)) {
+      return type;
+    }
   }
-  if (type == "email") {
-    return FormControlType::kInputEmail;
+  if (fallback) {
+    return *fallback;
   }
-  if (type == "month") {
-    return FormControlType::kInputMonth;
-  }
-  if (type == "number") {
-    return FormControlType::kInputNumber;
-  }
-  if (type == "password") {
-    return FormControlType::kInputPassword;
-  }
-  if (type == "radio") {
-    return FormControlType::kInputRadio;
-  }
-  if (type == "search") {
-    return FormControlType::kInputSearch;
-  }
-  if (type == "tel") {
-    return FormControlType::kInputTelephone;
-  }
-  if (type == "text") {
-    return FormControlType::kInputText;
-  }
-  if (type == "url") {
-    return FormControlType::kInputUrl;
-  }
-  if (type == "select-one") {
-    return FormControlType::kSelectOne;
-  }
-  if (type == "select-multiple") {
-    return FormControlType::kSelectMultiple;
-  }
-  if (type == "selectlist") {
-    return FormControlType::kSelectList;
-  }
-  if (type == "textarea") {
-    return FormControlType::kTextArea;
-  }
-  if (type == "") {
-    return FormControlType::kEmpty;
-  }
-  return FormControlType::kEmpty;
+  NOTREACHED_NORETURN();
 }
 
 void SerializeFormFieldData(const FormFieldData& field_data,

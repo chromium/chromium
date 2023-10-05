@@ -332,24 +332,11 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   if (const std::string* label = field_dict.FindString("label_attr")) {
     field.label = base::UTF8ToUTF16(*label);
   }
-  // Token list taken from
-  // out/*/gen/third_party/blink/renderer/core/input_type_names.cc
-  // and extended by textarea.
-  constexpr std::string_view valid_control_types[] = {
-      "button",   "checkbox", "color",  "date",  "datetime", "datetime-local",
-      "email",    "file",     "hidden", "image", "month",    "number",
-      "password", "radio",    "range",  "reset", "search",   "submit",
-      "tel",      "text",     "time",   "url",   "week",     "textarea"};
-  if (const std::string* type = field_dict.FindString("type_attr")) {
-    if (*type == "select") {
-      field.form_control_type = FormControlType::kSelectOne;
-    } else if (*type == "input") {
-      field.form_control_type = FormControlType::kInputText;
-    } else if (base::Contains(valid_control_types, *type)) {
-      field.form_control_type = StringToFormControlType(*type);
-    } else {
-      field.form_control_type = FormControlType::kInputText;
-    }
+  field.form_control_type = FormControlType::kInputText;
+  if (const std::string* json_type = field_dict.FindString("type_attr")) {
+    std::string type = *json_type == "select" ? "select-one" : *json_type;
+    field.form_control_type = autofill::StringToFormControlTypeDiscouraged(
+        type, /*fallback=*/autofill::FormControlType::kInputText);
   }
   if (const std::string* autocomplete =
           field_dict.FindString("autocomplete_attr")) {

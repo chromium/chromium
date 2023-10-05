@@ -47,8 +47,8 @@ FormData GenerateWithProto(const ::form_data_fuzzer::Form& form_proto) {
     result.fields[i].id_attribute = UTF8ToUTF16(form_data_proto.id());
     result.fields[i].name_attribute = UTF8ToUTF16(form_data_proto.name());
     result.fields[i].is_focusable = form_data_proto.is_focusable();
-    result.fields[i].form_control_type =
-        autofill::StringToFormControlType(form_data_proto.form_control_type());
+    result.fields[i].form_control_type = static_cast<autofill::FormControlType>(
+        form_data_proto.form_control_type());
     result.fields[i].autocomplete_attribute =
         form_data_proto.autocomplete_attribute();
     result.fields[i].label = UTF8ToUTF16(form_data_proto.label());

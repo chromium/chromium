@@ -4534,7 +4534,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_RichMetadata) {
                                          RandomizedEncoder::FIELD_NAME,
                                          field.name_attribute));
     }
-    if (FormControlTypeToString(field.form_control_type).empty()) {
+    if (field.form_control_type == FormControlType::kEmpty) {
       EXPECT_FALSE(metadata.has_type());
     } else {
       EXPECT_EQ(

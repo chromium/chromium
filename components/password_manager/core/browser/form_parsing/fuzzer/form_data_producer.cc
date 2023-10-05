@@ -6,6 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -125,8 +126,11 @@ autofill::FormData GenerateWithDataAccessor(
 
   // And finally do the same for all the fields.
   for (size_t i = 0; i < number_of_fields; ++i) {
-    result.fields[i].form_control_type = autofill::StringToFormControlType(
-        accessor->ConsumeString(field_params[i].form_control_type_length));
+    result.fields[i].form_control_type = static_cast<autofill::FormControlType>(
+        base::to_underlying(autofill::FormControlType::kMinValue) +
+        (accessor->ConsumeNumber(32) %
+         (base::to_underlying(autofill::FormControlType::kMaxValue) -
+          base::to_underlying(autofill::FormControlType::kMinValue) + 1)));
     result.fields[i].autocomplete_attribute =
         accessor->ConsumeString(field_params[i].autocomplete_attribute_length);
     result.fields[i].label =
