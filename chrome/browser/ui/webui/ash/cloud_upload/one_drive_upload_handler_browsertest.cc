@@ -351,7 +351,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
   histogram_.ExpectUniqueSample(kOneDriveMoveErrorMetricName,
                                 -base::File::FILE_ERROR_ACCESS_DENIED, 1);
   histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
-                                OfficeFilesUploadResult::kCloudAuthError, 1);
+                                OfficeFilesUploadResult::kCloudReauthRequired,
+                                1);
 }
 
 // Test that when the upload to ODFS fails due an access error that is not
@@ -396,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
   histogram_.ExpectUniqueSample(kOneDriveMoveErrorMetricName,
                                 -base::File::FILE_ERROR_ACCESS_DENIED, 1);
   histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
-                                OfficeFilesUploadResult::kCloudAuthError, 1);
+                                OfficeFilesUploadResult::kCloudAccessDenied, 1);
 }
 
 }  // namespace ash::cloud_upload
