@@ -162,10 +162,15 @@ BASE_FEATURE(kCdmStorageDatabase,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This guards between using the MediaLicense* code path and the CdmStorage*
-// code path for storing Cdm data. This will be disabled by default.
+// code path for storing Cdm data. This will be enabled by default as we do not
+// want the CdmStorageDatabase to be used solely, and instead when we conduct
+// our experiments, we will enable kCdmStorageDatabase to flow the migration.
+// Later when the migration is finished, we will remove this flag so that
+// kCdmStorageDatabase serves as the only flag. Refer to
+// go/cdm-storage-migration-details for more details.
 BASE_FEATURE(kCdmStorageDatabaseMigration,
              "CdmStorageDatabaseMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Clear the window.name property for the top-level cross-site navigations that
 // swap BrowsingContextGroups(BrowsingInstances).
