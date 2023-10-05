@@ -5,7 +5,7 @@
 import {assert, assertExists, assertInstanceof} from '../assert.js';
 import {AsyncJobQueue} from '../async_job_queue.js';
 import * as dom from '../dom.js';
-import {SvgWrapper} from '../lit/svg_wrapper.js';
+import {SvgWrapper} from '../lit/svg-wrapper.js';
 import * as metrics from '../metrics.js';
 import * as state from '../state.js';
 import * as tooltip from '../tooltip.js';

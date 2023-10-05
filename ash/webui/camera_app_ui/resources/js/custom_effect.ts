@@ -6,7 +6,7 @@ import * as animation from './animation.js';
 import {assertEnumVariant, assertExists, assertNotReached} from './assert.js';
 import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
-import {SvgWrapper} from './lit/svg_wrapper.js';
+import {SvgWrapper} from './lit/svg-wrapper.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
 import {PerfEvent} from './type.js';

@@ -42,7 +42,7 @@ compile_js_files = [
   "lib/comlink.ts",
   "lib/comlink_protocol.ts",
   "lib/ffmpeg.js",
-  "lit/svg_wrapper.ts",
+  "lit/svg-wrapper.ts",
   "local_dev.ts",
   "main.ts",
   "memory_usage.ts",
