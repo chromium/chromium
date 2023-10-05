@@ -56,7 +56,9 @@ import org.chromium.base.Promise;
  *
  */
 public interface IdentityCredentialsDelegate {
-    public Promise<String> get(String origin, String request);
+    public default Promise<String> get(String origin, String request) {
+        return Promise.rejected();
+    }
 
     public default Promise<byte[]> get(Activity activity, String origin, String request) {
         return Promise.rejected();
