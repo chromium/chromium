@@ -81,9 +81,6 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
-  // True if the page is prerendered.
-  bool is_prerender_ = false;
-
   // The URL of the last navigation commit.
   absl::optional<GURL> commit_url_;
 
