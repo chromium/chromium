@@ -10,6 +10,7 @@
 #import "base/functional/bind.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/sync/base/features.h"
 #import "components/sync_sessions/sync_sessions_client.h"
 #import "components/sync_sessions/synced_tab_delegate.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
@@ -113,6 +114,13 @@ void IOSChromeLocalSessionEventRouter::Observer::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
   router_->OnWebStateChange(web_state);
+}
+
+void IOSChromeLocalSessionEventRouter::Observer::WasShown(
+    web::WebState* web_state) {
+  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
+    router_->OnWebStateChange(web_state);
+  }
 }
 
 void IOSChromeLocalSessionEventRouter::Observer::DidChangeBackForwardState(

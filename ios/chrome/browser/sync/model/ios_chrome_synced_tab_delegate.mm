@@ -68,6 +68,10 @@ bool IOSChromeSyncedTabDelegate::IsBeingDestroyed() const {
   return web_state_->IsBeingDestroyed();
 }
 
+base::Time IOSChromeSyncedTabDelegate::GetLastActiveTime() const {
+  return web_state_->GetLastActiveTime();
+}
+
 std::string IOSChromeSyncedTabDelegate::GetExtensionAppId() const {
   return std::string();
 }

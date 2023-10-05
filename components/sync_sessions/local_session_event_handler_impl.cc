@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/time.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_sessions/sync_sessions_client.h"
@@ -423,6 +424,9 @@ sync_pb::SessionTab LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegate(
   specifics.set_pinned(
       window_delegate ? window_delegate->IsTabPinned(&tab_delegate) : false);
   specifics.set_extension_app_id(tab_delegate.GetExtensionAppId());
+  specifics.set_last_active_time_unix_epoch_millis(
+      (tab_delegate.GetLastActiveTime() - base::Time::UnixEpoch())
+          .InMilliseconds());
   const int current_index = tab_delegate.GetCurrentEntryIndex();
   const int min_index = std::max(0, current_index - kMaxSyncNavigationCount);
   const int max_index = std::min(current_index + kMaxSyncNavigationCount,

@@ -34,6 +34,7 @@ class TabContentsSyncedTabDelegate : public sync_sessions::SyncedTabDelegate {
   ~TabContentsSyncedTabDelegate() override = default;
 
   // SyncedTabDelegate:
+  base::Time GetLastActiveTime() const override;
   bool IsBeingDestroyed() const override;
   std::string GetExtensionAppId() const override;
   bool IsInitialBlankNavigation() const override;

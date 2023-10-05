@@ -60,6 +60,7 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
   SessionID GetWindowId() const override;
   SessionID GetSessionId() const override;
   bool IsBeingDestroyed() const override;
+  base::Time GetLastActiveTime() const override;
   std::string GetExtensionAppId() const override;
   bool ProfileHasChildAccount() const override;
   void set_has_child_account(bool has_child_account);
@@ -111,6 +112,7 @@ class PlaceholderTabDelegate : public SyncedTabDelegate {
   // Everything else is invalid to invoke as it depends on a valid WebContents.
   SessionID GetWindowId() const override;
   bool IsBeingDestroyed() const override;
+  base::Time GetLastActiveTime() const override;
   std::string GetExtensionAppId() const override;
   bool IsInitialBlankNavigation() const override;
   int GetCurrentEntryIndex() const override;

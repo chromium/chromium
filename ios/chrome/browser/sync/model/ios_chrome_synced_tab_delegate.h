@@ -29,6 +29,7 @@ class IOSChromeSyncedTabDelegate
   SessionID GetWindowId() const override;
   SessionID GetSessionId() const override;
   bool IsBeingDestroyed() const override;
+  base::Time GetLastActiveTime() const override;
   std::string GetExtensionAppId() const override;
   bool IsInitialBlankNavigation() const override;
   int GetCurrentEntryIndex() const override;

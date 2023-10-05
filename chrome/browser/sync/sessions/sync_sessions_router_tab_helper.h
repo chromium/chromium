@@ -10,6 +10,7 @@
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/sessions/core/session_id.h"
 #include "components/translate/core/browser/translate_driver.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -54,6 +55,7 @@ class SyncSessionsRouterTabHelper
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
   // TranslateDriver::LanguageDetectionObserver implementation.
   void OnLanguageDetermined(
