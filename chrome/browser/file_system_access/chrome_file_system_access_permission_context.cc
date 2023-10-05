@@ -867,6 +867,11 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       base::OnceCallback<void(PermissionRequestOutcome)> callback,
       PermissionAction result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (context_) {
+      context_->UpdateGrantsOnPermissionRequestResult(origin_);
+    }
+
     switch (result) {
       case PermissionAction::GRANTED:
         SetStatus(PermissionStatus::GRANTED,
@@ -900,6 +905,12 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       base::OnceCallback<void(PermissionRequestOutcome)> callback,
       PermissionAction result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (!context_) {
+      std::move(callback).Run(PermissionRequestOutcome::kRequestAborted);
+      return;
+    }
+
     // TODO(crbug.com/1011533): Record UMA metric once defined. Consider adding
     // more `PermissionRequestOutcome` types to account for "restore every time"
     // case and invalid state case.
@@ -2238,6 +2249,24 @@ void ChromeFileSystemAccessPermissionContext::
   // Revoke all of the persistent permissions for the given origin.
   if (!OriginHasExtendedPermission(origin)) {
     ObjectPermissionContextBase::RevokeObjectPermissions(origin);
+  }
+}
+
+void ChromeFileSystemAccessPermissionContext::
+    UpdateGrantsOnPermissionRequestResult(const url::Origin& origin) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
+    return;
+  }
+
+  if (GetGrantStatus(origin) != GrantStatus::kCurrent) {
+    // Requesting permission triggered the regular permission prompt, not the
+    // restore permission prompt. Clear persisted grants and reset the grant
+    // status so that dormant grants are not carried over to the next session.
+    SetGrantStatus(origin, GrantStatus::kCurrent);
+    if (!OriginHasExtendedPermission(origin)) {
+      ObjectPermissionContextBase::RevokeObjectPermissions(origin);
+    }
   }
 }
 

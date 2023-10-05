@@ -376,17 +376,18 @@ class ChromeFileSystemAccessPermissionContext
   // `PermissionDecisionAutoblocker`.
   void OnRestorePermissionIgnored(const url::Origin& origin);
 
-  // Updates the grant status and the active / persistent permissions grant sets
-  // when the user selects either the 'Allow this time' or
-  // 'Allow on every visit' option from the restore permission prompt.
-  // Assumes that persisted grants are still dormant type.
+  // Updates active and persisted grants when the user selects either the
+  // 'Allow this time' or 'Allow on every visit' option from the restore
+  // permission prompt. Assumes that persisted grants are dormant type.
   void UpdateGrantsOnRestorePermissionAllowed(const url::Origin& origin);
 
-  // Updates the `grant_status` and / or the persisted grants for a given
-  // origin, in the case that either the restore permission prompt is denied,
-  // dismissed, or ignored by the user. Assumes that persisted grants are still
+  // Updates active and persisted grants when the user denies, dismisses or
+  // ignores the restore permission prompt. Assumes that persisted grants are
   // dormant type.
   void UpdateGrantsOnRestorePermissionNotAllowed(const url::Origin& origin);
+
+  // Updates persist grants when the user responses to the permission prompt.
+  void UpdateGrantsOnPermissionRequestResult(const url::Origin& origin);
 
   // Returns whether a matching persisted grant object exists.
   bool HasPersistedGrantObject(const url::Origin& origin,

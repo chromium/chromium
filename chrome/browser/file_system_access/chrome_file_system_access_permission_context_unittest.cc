@@ -2117,6 +2117,38 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       RequestPermission_ClearOutdatedDormantGrants) {
+  // If the restore permission prompt is not triggered when requesting
+  // permission, dormant grants should be cleared such that old dormant grants
+  // are not carried over to the next session.
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+
+  // Create a persisted grant by granting a directory handle.
+  auto grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future.GetCallback());
+  EXPECT_EQ(future.Get(), PermissionRequestOutcome::kUserGranted);
+  EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Navigate away so that the persisted grant becomes dormant.
+  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
+  // instead of manually resetting the grant.
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+  EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
+
+  // On a revisit, requesting permission does not trigger the restore permission
+  // prompt, as there is no dormant grant.
+  base::test::TestFuture<PermissionRequestOutcome> future2;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future2.GetCallback());
+  EXPECT_NE(future2.Get(), PermissionRequestOutcome::kGrantedByRestorePrompt);
+  EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RequestPermission_Dismissed) {
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::DISMISSED);
