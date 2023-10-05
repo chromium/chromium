@@ -178,6 +178,9 @@ tast_disabled_tests_from_chrome_all = [
   # b/303353334: Until LKGM 15630 onward lands
   "tast.platform.MLServiceBootstrap",
 
+  # b/299290705: Until LKGM to mark this informationl lands
+  "crostini.AppAndroidStudio.bullseye_clamshell_stable",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
