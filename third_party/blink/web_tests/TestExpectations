@@ -2937,7 +2937,6 @@ crbug.com/626703 virtual/main-thread-clip-path-animation/external/wpt/css/css-ma
 crbug.com/626703 external/wpt/css/css-color/border-color-currentcolor.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/text-combine-upright-rtl-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/text-combine-upright-rtl-002.html [ Failure ]
-crbug.com/626703 [ Mac13 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/content-with-clip.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-text/text-transform/text-transform-capitalize-034.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-text/text-transform/text-transform-capitalize-034.html [ Failure ]
 crbug.com/626703 [ Mac12 ] external/wpt/pointerevents/pointerevent_touch-action-pan-up-css_touch.html [ Timeout ]
