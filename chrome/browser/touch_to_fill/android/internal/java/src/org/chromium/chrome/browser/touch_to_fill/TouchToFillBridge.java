@@ -74,13 +74,24 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     }
 
     @CalledByNative
-    private void showCredentials(GURL url, boolean isOriginSecure,
-            WebAuthnCredential[] webAuthnCredentials, Credential[] credentials,
-            boolean submitCredential, boolean managePasskeysHidesPasswords,
-            boolean showHybridPasskeyOption) {
-        mTouchToFillComponent.showCredentials(url, isOriginSecure,
-                Arrays.asList(webAuthnCredentials), Arrays.asList(credentials), submitCredential,
-                managePasskeysHidesPasswords, showHybridPasskeyOption);
+    private void showCredentials(
+            GURL url,
+            boolean isOriginSecure,
+            WebAuthnCredential[] webAuthnCredentials,
+            Credential[] credentials,
+            boolean submitCredential,
+            boolean managePasskeysHidesPasswords,
+            boolean showHybridPasskeyOption,
+            boolean showCredManEntry) {
+        mTouchToFillComponent.showCredentials(
+                url,
+                isOriginSecure,
+                Arrays.asList(webAuthnCredentials),
+                Arrays.asList(credentials),
+                submitCredential,
+                managePasskeysHidesPasswords,
+                showHybridPasskeyOption,
+                showCredManEntry);
     }
 
     @Override

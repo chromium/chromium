@@ -8,11 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
@@ -22,13 +20,15 @@
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
-#include "components/strings/grit/components_strings.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "ui/base/l10n/l10n_util.h"
 
 using password_manager::ContentPasswordManagerDriver;
 using password_manager::PasskeyCredential;
+using webauthn::WebAuthnCredManDelegate;
+using webauthn::WebAuthnCredManDelegateFactory;
 
 // static
 WebAuthnRequestDelegateAndroid*
@@ -110,6 +110,8 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
       std::vector<password_manager::UiCredential>(), display_credentials,
       std::make_unique<TouchToFillControllerWebAuthnDelegate>(
           this, !hybrid_callback_.is_null()),
+      WebAuthnCredManDelegateFactory::GetFactory(web_contents())
+          ->GetRequestDelegate(frame_host),
       base::AsWeakPtr(
           ContentPasswordManagerDriver::GetForRenderFrameHost(frame_host)));
 }

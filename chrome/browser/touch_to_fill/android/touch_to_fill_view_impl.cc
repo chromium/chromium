@@ -139,7 +139,8 @@ void TouchToFillViewImpl::Show(
       is_origin_secure.value(), passkey_array, credential_array,
       !!(flags & TouchToFillView::kTriggerSubmission),
       !(flags & TouchToFillView::kCanManagePasswordsWhenPasskeysPresent),
-      !!(flags & TouchToFillView::kShouldShowHybridOption));
+      !!(flags & TouchToFillView::kShouldShowHybridOption),
+      !!(flags & TouchToFillView::kShouldShowCredManEntry));
 }
 
 void TouchToFillViewImpl::OnCredentialSelected(const UiCredential& credential) {

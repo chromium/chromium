@@ -34,6 +34,10 @@ class TouchToFillView {
     // Indicates whether the footer should contain a button that invokes hybrid
     // passkey sign-in.
     kShouldShowHybridOption = 1 << 2,
+
+    // Indicates if there should be a list item to open Android Credential
+    // Manager UI.
+    kShouldShowCredManEntry = 1 << 3,
   };
 
   TouchToFillView() = default;

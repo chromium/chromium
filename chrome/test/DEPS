@@ -99,6 +99,7 @@ include_rules = [
   "+components/user_prefs",
   "+components/version_info",
   "+components/web_modal",
+  "+components/webauthn/android",
   "+components/webdata_services",
   "+components/zoom",
   "+device/bluetooth/dbus",

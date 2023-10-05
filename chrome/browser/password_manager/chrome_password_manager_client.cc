@@ -462,6 +462,7 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
               driver->GetLastCommittedURL().DeprecatedGetOriginAsURL()))
           .GetCredentials(),
       passkeys, std::move(ttf_controller_autofill_delegate),
+      GetWebAuthnCredManDelegateForDriver(driver),
       base::AsWeakPtr(content_driver));
 }
 #endif

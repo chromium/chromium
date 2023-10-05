@@ -86,7 +86,7 @@ class CredManControllerTest : public testing::Test {
 TEST_F(CredManControllerTest, DoesNotShowIfNonWebAuthnForm) {
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
   EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(0);
-  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false))).Times(1);
+  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
   EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
                                  std::move(filler),
                                  /*frame_driver=*/nullptr,
@@ -96,7 +96,19 @@ TEST_F(CredManControllerTest, DoesNotShowIfNonWebAuthnForm) {
 TEST_F(CredManControllerTest, DoesNotShowIfFeatureDisabled) {
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
   EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(0);
-  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false))).Times(1);
+  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
+  EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
+                                 std::move(filler),
+                                 /*frame_driver=*/nullptr,
+                                 /*is_webauthn_form=*/true));
+}
+
+TEST_F(CredManControllerTest, DoesNotShowIfGpmNotInCredMan) {
+  base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
+
+  std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
+  EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(0);
+  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
   EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
                                  std::move(filler),
                                  /*frame_driver=*/nullptr,
@@ -104,9 +116,14 @@ TEST_F(CredManControllerTest, DoesNotShowIfFeatureDisabled) {
 }
 
 TEST_F(CredManControllerTest, DoesNotShowIfNoResults) {
-  base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams feature_params;
+  feature_params[device::kWebAuthnAndroidGpmInCredMan.name] = "true";
+  feature_list.InitAndEnableFeatureWithParameters(
+      device::kWebAuthnAndroidCredMan, feature_params);
+
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
-  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false))).Times(1);
+  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
 
   base::MockCallback<base::RepeatingCallback<void(bool)>>
       mock_full_assertion_request;
@@ -121,7 +138,11 @@ TEST_F(CredManControllerTest, DoesNotShowIfNoResults) {
 }
 
 TEST_F(CredManControllerTest, ShowIfResultsExist) {
-  base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams feature_params;
+  feature_params[device::kWebAuthnAndroidGpmInCredMan.name] = "true";
+  feature_list.InitAndEnableFeatureWithParameters(
+      device::kWebAuthnAndroidCredMan, feature_params);
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
 
   base::MockCallback<base::RepeatingCallback<void(bool)>>
@@ -129,7 +150,7 @@ TEST_F(CredManControllerTest, ShowIfResultsExist) {
   web_authn_cred_man_delegate()->OnCredManConditionalRequestPending(
       /*has_results=*/true, mock_full_assertion_request.Get());
 
-  EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(1);
+  EXPECT_CALL(visibility_controller(), SetVisible(_));
   EXPECT_TRUE(controller().Show(web_authn_cred_man_delegate(),
                                 std::move(filler),
                                 /*frame_driver=*/nullptr,
@@ -137,7 +158,11 @@ TEST_F(CredManControllerTest, ShowIfResultsExist) {
 }
 
 TEST_F(CredManControllerTest, Fill) {
-  base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams feature_params;
+  feature_params[device::kWebAuthnAndroidGpmInCredMan.name] = "true";
+  feature_list.InitAndEnableFeatureWithParameters(
+      device::kWebAuthnAndroidCredMan, feature_params);
   base::HistogramTester uma_recorder;
   const std::u16string kUsername = u"test_user";
   const std::u16string kPassword = u"38kAy5Er1Sp0r38";

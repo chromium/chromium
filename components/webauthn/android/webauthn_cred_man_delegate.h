@@ -34,45 +34,45 @@ class WebAuthnCredManDelegate {
   WebAuthnCredManDelegate(const WebAuthnCredManDelegate&) = delete;
   WebAuthnCredManDelegate& operator=(const WebAuthnCredManDelegate&) = delete;
 
-  ~WebAuthnCredManDelegate();
+  virtual ~WebAuthnCredManDelegate();
 
   // Called when a Web Authentication Conditional UI request is received. This
   // caches the callback that will complete the request after user
   // interaction.
-  void OnCredManConditionalRequestPending(
+  virtual void OnCredManConditionalRequestPending(
       bool has_results,
       base::RepeatingCallback<void(bool)> show_cred_man_ui_callback);
 
   // Called when the CredMan UI is closed.
-  void OnCredManUiClosed(bool success);
+  virtual void OnCredManUiClosed(bool success);
 
   // Called when the user focuses a webauthn login form. This will trigger
   // CredMan UI.
-  void TriggerCredManUi();
+  virtual void TriggerCredManUi();
 
   // Returns whether there are passkeys in the Android Credential Manager UI.
   // Returns `kNotReady` if Credential Manager has not replied yet.
-  State HasPasskeys();
+  virtual State HasPasskeys();
 
   // Clears the cached `show_cred_man_ui_callback_` and `has_results_`.
-  void CleanUpConditionalRequest();
+  virtual void CleanUpConditionalRequest();
 
   // The setter for `request_completion_callback_`. Classes can set
   // `request_completion_callback_` to be notified about when CredMan UI is
   // closed (i.e. to show / hide keyboard).
-  void SetRequestCompletionCallback(
+  virtual void SetRequestCompletionCallback(
       base::RepeatingCallback<void(bool)> callback);
 
   // The setter for `filling_callback_`.  Classes should use this method before
   // `FillUsernameAndPassword`.
-  void SetFillingCallback(
+  virtual void SetFillingCallback(
       base::OnceCallback<void(const std::u16string&, const std::u16string&)>
           filling_callback);
 
   // If a password credential is received from CredMan UI, this method will be
   // called. A password credential can be filled only once.
-  void FillUsernameAndPassword(const std::u16string& username,
-                               const std::u16string& password);
+  virtual void FillUsernameAndPassword(const std::u16string& username,
+                                       const std::u16string& password);
 
   static CredManEnabledMode CredManMode();
 

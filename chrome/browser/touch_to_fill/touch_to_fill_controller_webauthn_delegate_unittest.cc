@@ -150,7 +150,8 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectCredential) {
   touch_to_fill_controller().Show(
       {}, credentials,
       MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false),
-      /*render_widget_host=*/nullptr);
+      /*cred_man_delegate=*/nullptr,
+      /*frame_driver=*/nullptr);
 
   EXPECT_CALL(request_delegate(), OnWebAuthnAccountSelected(kCredentialId1));
   touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[0]);
@@ -167,7 +168,8 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectWithMultipleCredential) {
   touch_to_fill_controller().Show(
       {}, credentials,
       MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false),
-      /*render_widget_host=*/nullptr);
+      /*cred_man_delegate=*/nullptr,
+      /*frame_driver=*/nullptr);
 
   EXPECT_CALL(request_delegate(), OnWebAuthnAccountSelected(kCredentialId2));
   touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[1]);
@@ -183,7 +185,8 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndCancel) {
   touch_to_fill_controller().Show(
       {}, credentials,
       MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false),
-      /*render_widget_host=*/nullptr);
+      /*cred_man_delegate=*/nullptr,
+      /*frame_driver=*/nullptr);
 
   EXPECT_CALL(request_delegate(),
               OnWebAuthnAccountSelected(std::vector<uint8_t>()));
@@ -200,7 +203,8 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectHybrid) {
   touch_to_fill_controller().Show(
       {}, credentials,
       MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/true),
-      /*render_widget_host=*/nullptr);
+      /*cred_man_delegate=*/nullptr,
+      /*frame_driver=*/nullptr);
   EXPECT_CALL(request_delegate(), ShowHybridSignIn());
   touch_to_fill_controller().OnHybridSignInSelected();
 }

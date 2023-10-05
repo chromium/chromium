@@ -45,9 +45,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
@@ -64,6 +62,10 @@ using autofill::password_generation::PasswordGenerationType;
 using base::TimeTicks;
 using password_manager_util::IsSingleUsernameType;
 using signin::GaiaIdHash;
+
+#if BUILDFLAG(IS_ANDROID)
+using webauthn::WebAuthnCredManDelegate;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using Logger = autofill::SavePasswordProgressLogger;
 
@@ -765,22 +767,31 @@ void PasswordFormManager::OnTimeout() {
 }
 
 bool PasswordFormManager::WebAuthnCredentialsAvailable() const {
+  auto check_credentials_delegate = [=]() {
+    WebAuthnCredentialsDelegate* delegate =
+        client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
+    return delegate && delegate->GetPasskeys().has_value();
+  };
 #if BUILDFLAG(IS_ANDROID)
-  if (webauthn::WebAuthnCredManDelegate::CredManMode() !=
-      webauthn::WebAuthnCredManDelegate::kNotEnabled) {
-    webauthn::WebAuthnCredManDelegate* delegate =
+  auto check_cred_man_delegate = [=]() {
+    WebAuthnCredManDelegate* delegate =
         client_->GetWebAuthnCredManDelegateForDriver(driver_.get());
-    return delegate ? delegate->HasPasskeys() ==
-                          webauthn::WebAuthnCredManDelegate::kHasPasskeys
-                    : false;
+    return delegate &&
+           delegate->HasPasskeys() == WebAuthnCredManDelegate::kHasPasskeys;
+  };
+  switch (WebAuthnCredManDelegate::CredManMode()) {
+    case webauthn::WebAuthnCredManDelegate::kNotEnabled:
+      return check_credentials_delegate();
+    case webauthn::WebAuthnCredManDelegate::kAllCredMan:
+      return check_cred_man_delegate();
+    case webauthn::WebAuthnCredManDelegate::kNonGpmPasskeys:
+      // In this mode, passkeys can exist in WebAuthnCredentialsDelegate or
+      // WebAuthnCredManDelegate.
+      return check_cred_man_delegate() || check_credentials_delegate();
   }
+#else
+  return check_credentials_delegate();
 #endif  // BUILDFLAG(IS_ANDROID)
-  WebAuthnCredentialsDelegate* delegate =
-      client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
-  if (delegate) {
-    return delegate->GetPasskeys().has_value();
-  }
-  return false;
 }
 
 void PasswordFormManager::CreatePendingCredentials() {
