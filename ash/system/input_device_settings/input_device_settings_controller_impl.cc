@@ -1633,7 +1633,8 @@ void InputDeviceSettingsControllerImpl::StartObservingButtons(DeviceId id) {
     const auto* duplicate_ids =
         duplicate_id_finder_->GetDuplicateDeviceIds(mouse->id);
     for (const auto& duplicate_id : *duplicate_ids) {
-      rewriter->StartObservingMouse(duplicate_id);
+      rewriter->StartObservingMouse(duplicate_id,
+                                    /*can_rewrite_key_event=*/true);
     }
     return;
   }
