@@ -37,7 +37,7 @@
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/history/top_sites_factory.h"
 #import "ios/chrome/browser/history/web_history_service_factory.h"
-#import "ios/chrome/browser/invalidation/ios_chrome_profile_invalidation_provider_factory.h"
+#import "ios/chrome/browser/invalidation/model/ios_chrome_profile_invalidation_provider_factory.h"
 #import "ios/chrome/browser/language/accept_languages_service_factory.h"
 #import "ios/chrome/browser/language/language_model_manager_factory.h"
 #import "ios/chrome/browser/language/url_language_histogram_factory.h"

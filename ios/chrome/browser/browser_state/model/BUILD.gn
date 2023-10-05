@@ -93,7 +93,7 @@ source_set("model") {
     "//ios/chrome/browser/gcm",
     "//ios/chrome/browser/google:google_logo",
     "//ios/chrome/browser/history",
-    "//ios/chrome/browser/invalidation",
+    "//ios/chrome/browser/invalidation/model",
     "//ios/chrome/browser/language",
     "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/metrics",

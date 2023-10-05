@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/invalidation/ios_chrome_profile_invalidation_provider_factory.h"
+#import "ios/chrome/browser/invalidation/model/ios_chrome_profile_invalidation_provider_factory.h"
 
 #import <memory>
 #import <utility>

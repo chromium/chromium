@@ -70,7 +70,7 @@ source_set("model") {
     "//ios/chrome/browser/gcm",
     "//ios/chrome/browser/gcm/instance_id",
     "//ios/chrome/browser/history",
-    "//ios/chrome/browser/invalidation",
+    "//ios/chrome/browser/invalidation/model",
     "//ios/chrome/browser/metrics:google_groups_updater",
     "//ios/chrome/browser/passwords:sharing_factory",
     "//ios/chrome/browser/passwords:store_factory",
