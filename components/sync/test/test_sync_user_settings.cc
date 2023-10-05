@@ -125,6 +125,15 @@ UserSelectableTypeSet TestSyncUserSettings::GetRegisteredSelectableTypes()
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+bool TestSyncUserSettings::IsSyncFeatureDisabledViaDashboard() const {
+  return sync_feature_disabled_via_dashboard_;
+}
+
+void TestSyncUserSettings::SetSyncFeatureDisabledViaDashboard(
+    bool disabled_via_dashboard) {
+  sync_feature_disabled_via_dashboard_ = disabled_via_dashboard;
+}
+
 bool TestSyncUserSettings::IsSyncAllOsTypesEnabled() const {
   return sync_all_os_types_enabled_;
 }

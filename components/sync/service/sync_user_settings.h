@@ -87,6 +87,11 @@ class SyncUserSettings {
   virtual UserSelectableTypeSet GetRegisteredSelectableTypes() const = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Relevant only on ChromeOS (Ash), since the state is unreachable otherwise.
+  // Returns if sync-the-feature is disabled because the user cleared data from
+  // the Sync dashboard.
+  virtual bool IsSyncFeatureDisabledViaDashboard() const = 0;
+
   // As above, but for Chrome OS-specific data types. These are controlled by
   // toggles in the OS Settings UI.
   virtual bool IsSyncAllOsTypesEnabled() const = 0;

@@ -577,7 +577,8 @@ TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
   // removed, for historic reasons. It is unclear if this behavior is optional,
   // because it is indistinguishable from the sync-reset-via-dashboard case.
   // It can be resolved by invoking SetSyncFeatureRequested().
-  EXPECT_TRUE(sync_service()->IsSyncFeatureDisabledViaDashboard());
+  EXPECT_TRUE(
+      sync_service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard());
 #else
   EXPECT_FALSE(
       sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());

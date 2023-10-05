@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/model_type.h"
@@ -38,6 +39,14 @@ class SyncUserSettingsImpl : public SyncUserSettings {
       base::RepeatingCallback<CoreAccountInfo()> sync_account_info_callback);
   ~SyncUserSettingsImpl() override;
 
+  ModelTypeSet GetPreferredDataTypes() const;
+  bool IsEncryptedDatatypeEnabled() const;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetSyncFeatureDisabledViaDashboard();
+  void ClearSyncFeatureDisabledViaDashboard();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // SyncUserSettings implementation.
   bool IsInitialSyncFeatureSetupComplete() const override;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -58,6 +67,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
 #endif  // BUILDFLAG(IS_IOS)
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool IsSyncFeatureDisabledViaDashboard() const override;
   bool IsSyncAllOsTypesEnabled() const override;
   UserSelectableOsTypeSet GetSelectedOsTypes() const override;
   bool IsOsTypeManagedByPolicy(UserSelectableOsType type) const override;
@@ -85,9 +95,6 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   bool SetDecryptionPassphrase(const std::string& passphrase) override;
   void SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) override;
   std::unique_ptr<Nigori> GetDecryptionNigoriKey() const override;
-
-  ModelTypeSet GetPreferredDataTypes() const;
-  bool IsEncryptedDatatypeEnabled() const;
 
  private:
   bool ShouldUsePerAccountPrefs() const;

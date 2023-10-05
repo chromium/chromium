@@ -736,7 +736,7 @@ void SyncServiceImpl::SetSyncFeatureRequested() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  sync_prefs_.ClearSyncFeatureDisabledViaDashboard();
+  user_settings_->ClearSyncFeatureDisabledViaDashboard();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // If the Sync engine was already initialized (probably running in transport
@@ -1065,7 +1065,7 @@ void SyncServiceImpl::OnActionableProtocolError(
       // On Ash, the primary account is always set and sync the feature
       // turned on, so a dedicated bit is needed to ensure that
       // Sync-the-feature remains off.
-      sync_prefs_.SetSyncFeatureDisabledViaDashboard();
+      user_settings_->SetSyncFeatureDisabledViaDashboard();
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
       // On every platform except ash, revoke the Sync consent/Clear primary
       // account after a dashboard clear.
@@ -1311,12 +1311,6 @@ bool SyncServiceImpl::RequiresClientUpgrade() const {
   return last_actionable_error_.action == UPGRADE_CLIENT;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-bool SyncServiceImpl::IsSyncFeatureDisabledViaDashboard() const {
-  return sync_prefs_.IsSyncFeatureDisabledViaDashboard();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 bool SyncServiceImpl::CanConfigureDataTypes(
     bool bypass_setup_in_progress_check) const {
   return data_type_manager_ &&
@@ -1393,7 +1387,7 @@ bool SyncServiceImpl::IsSyncFeatureConsideredRequested() const {
   // On Ash, `has_sync_consent` should always be true, and what actually matters
   // is whether sync was disabled via dashboard, which is detected when the
   // server responds with DISABLE_SYNC_ON_CLIENT.
-  return !IsSyncFeatureDisabledViaDashboard();
+  return !user_settings_->IsSyncFeatureDisabledViaDashboard();
 #else
   // On all platforms except Chrome Ash, IdentityManager determines via
   // consent level whether or not sync is condered requested.

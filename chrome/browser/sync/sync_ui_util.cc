@@ -109,7 +109,7 @@ SyncStatusLabels GetSyncStatusLabelsImpl(
   // Check to see if sync has been disabled via the dashboard and needs to be
   // set up once again.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (service->IsSyncFeatureDisabledViaDashboard()) {
+  if (service->GetUserSettings()->IsSyncFeatureDisabledViaDashboard()) {
     return {SyncStatusMessageType::kSyncError,
             IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD,
             IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};

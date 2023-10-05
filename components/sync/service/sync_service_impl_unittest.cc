@@ -417,7 +417,8 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInitThenPolicyRemoved) {
   // removed, for historic reasons. It is unclear if this behavior is optional,
   // because it is indistinguishable from the sync-reset-via-dashboard case.
   // It can be resolved by invoking SetSyncFeatureRequested().
-  EXPECT_TRUE(service()->IsSyncFeatureDisabledViaDashboard());
+  EXPECT_TRUE(
+      service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard());
   service()->SetSyncFeatureRequested();
 
 #else
@@ -1207,7 +1208,8 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ASSERT_FALSE(service()->IsSyncFeatureDisabledViaDashboard());
+  ASSERT_FALSE(
+      service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // TODO(crbug.com/1462552): Update once kSync becomes unreachable or is
@@ -1241,7 +1243,8 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  EXPECT_TRUE(service()->IsSyncFeatureDisabledViaDashboard());
+  EXPECT_TRUE(
+      service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard());
 #elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // On iOS and Android, the primary account is cleared.
   EXPECT_FALSE(

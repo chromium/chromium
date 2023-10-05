@@ -50,6 +50,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool IsSyncFeatureDisabledViaDashboard() const override;
   bool IsSyncAllOsTypesEnabled() const override;
   UserSelectableOsTypeSet GetSelectedOsTypes() const override;
   bool IsOsTypeManagedByPolicy(UserSelectableOsType type) const override;
@@ -95,6 +96,9 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetTrustedVaultKeyRequiredForPreferredDataTypes(bool required);
   void SetTrustedVaultRecoverabilityDegraded(bool degraded);
   void SetIsUsingExplicitPassphrase(bool enabled);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetSyncFeatureDisabledViaDashboard(bool disabled_via_dashboard);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   const raw_ptr<TestSyncService> service_;
@@ -117,6 +121,10 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool trusted_vault_key_required_for_preferred_data_types_ = false;
   bool trusted_vault_recoverability_degraded_ = false;
   bool using_explicit_passphrase_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool sync_feature_disabled_via_dashboard_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace syncer

@@ -198,7 +198,7 @@ SyncStatusLabels SetUpDistinctCase(
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case STATUS_CASE_SYNC_RESET_FROM_DASHBOARD: {
-      service->SetSyncFeatureDisabledViaDashboard(true);
+      service->GetUserSettings()->SetSyncFeatureDisabledViaDashboard(true);
       service->SetInitialSyncFeatureSetupComplete(true);
       service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
       service->SetPassphraseRequired(false);

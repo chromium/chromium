@@ -44,7 +44,7 @@ class SyncDisabledViaDashboardChecker : public SingleClientStatusChangeChecker {
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for sync disabled by dashboard";
-    return service()->IsSyncFeatureDisabledViaDashboard();
+    return service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard();
   }
 };
 #else

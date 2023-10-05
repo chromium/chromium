@@ -196,6 +196,18 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetRegisteredSelectableTypes()
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+void SyncUserSettingsImpl::SetSyncFeatureDisabledViaDashboard() {
+  prefs_->SetSyncFeatureDisabledViaDashboard();
+}
+
+void SyncUserSettingsImpl::ClearSyncFeatureDisabledViaDashboard() {
+  prefs_->ClearSyncFeatureDisabledViaDashboard();
+}
+
+bool SyncUserSettingsImpl::IsSyncFeatureDisabledViaDashboard() const {
+  return prefs_->IsSyncFeatureDisabledViaDashboard();
+}
+
 bool SyncUserSettingsImpl::IsSyncAllOsTypesEnabled() const {
   return prefs_->IsSyncAllOsTypesEnabled();
 }
