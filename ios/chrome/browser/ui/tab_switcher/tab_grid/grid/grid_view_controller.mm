@@ -4,9 +4,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 
-#import <algorithm>
-#import <memory>
-
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/debug/dump_without_crashing.h"
