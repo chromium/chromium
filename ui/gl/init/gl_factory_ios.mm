@@ -89,7 +89,7 @@ scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
     }
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
-      return new InitializeGLSurface(new GLSurfaceStub());
+      return InitializeGLSurface(new GLSurfaceStub());
     default:
       NOTREACHED();
       return nullptr;
