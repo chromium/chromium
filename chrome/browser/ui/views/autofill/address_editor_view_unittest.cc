@@ -11,16 +11,24 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
-#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::ReturnRef;
+
+// TODO(crbug.com/1470459): write interactive UI tests instead of unit tests.
 class AddressEditorViewTest : public ChromeViewsTestBase {
  public:
   AddressEditorViewTest() = default;
@@ -28,18 +36,20 @@ class AddressEditorViewTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kAutofillProfileEnabled, true);
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kAutofillCreditCardEnabled, true);
+    pdm_.SetPrefService(&pref_service_);
 
     profile_to_edit_ = test::GetFullProfile();
-    test_web_contents_ =
-        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     auto controller = std::make_unique<AddressEditorController>(
-        profile_to_edit_, test_web_contents_.get(), true);
+        profile_to_edit_, &pdm_, true);
     controller_ = controller.get();
     view_ = std::make_unique<AddressEditorView>(std::move(controller));
   }
 
   void TearDown() override {
-    test_web_contents_.reset();
     controller_ = nullptr;
     view_.reset();
     ChromeViewsTestBase::TearDown();
@@ -50,7 +60,8 @@ class AddressEditorViewTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   autofill::AutofillProfile profile_to_edit_;
   TestingProfile profile_;
-  std::unique_ptr<content::WebContents> test_web_contents_;
+  TestingPrefServiceSimple pref_service_;
+  TestPersonalDataManager pdm_;
   raw_ptr<AddressEditorController> controller_;
   std::unique_ptr<AddressEditorView> view_;
 };
@@ -106,8 +117,8 @@ TEST_F(AddressEditorViewTest, FormValidation) {
 }
 
 TEST_F(AddressEditorViewTest, NoValidatableFormValidation) {
-  auto controller = std::make_unique<AddressEditorController>(
-      profile_to_edit_, test_web_contents_.get(), false);
+  auto controller =
+      std::make_unique<AddressEditorController>(profile_to_edit_, &pdm_, false);
   controller_ = controller.get();
   view_ = std::make_unique<AddressEditorView>(std::move(controller));
 

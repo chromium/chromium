@@ -14,18 +14,13 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 
-namespace autofill {
-class CountryComboboxModel;
-class PersonalDataManager;
-}  // namespace autofill
-
-namespace content {
-class WebContents;
-}
-
 namespace ui {
 class ComboboxModel;
 }
+
+namespace autofill {
+class CountryComboboxModel;
+class PersonalDataManager;
 
 const size_t kInvalidCountryIndex = static_cast<size_t>(-1);
 
@@ -34,7 +29,7 @@ struct EditorField {
   enum class LengthHint : int { HINT_LONG, HINT_SHORT };
   enum class ControlType : int { TEXTFIELD, TEXTFIELD_NUMBER, COMBOBOX };
 
-  EditorField(autofill::ServerFieldType type,
+  EditorField(ServerFieldType type,
               std::u16string label,
               LengthHint length_hint,
               bool is_required,
@@ -46,7 +41,7 @@ struct EditorField {
         control_type(control_type) {}
 
   // Data type in the field.
-  autofill::ServerFieldType type;
+  ServerFieldType type;
   // Label to be shown alongside the field.
   std::u16string label;
   // Hint about the length of this field's contents.
@@ -61,8 +56,8 @@ class AddressEditorController {
  public:
   using OnIsValidChangeCallbackList = base::RepeatingCallbackList<void(bool)>;
 
-  AddressEditorController(const autofill::AutofillProfile& profile_to_edit,
-                          content::WebContents* web_contents,
+  AddressEditorController(const AutofillProfile& profile_to_edit,
+                          PersonalDataManager* pdm,
                           bool is_validatable);
   ~AddressEditorController();
 
@@ -85,12 +80,11 @@ class AddressEditorController {
   // Updates |editor_fields_| based on the current country.
   void UpdateEditorFields();
 
-  void SetProfileInfo(autofill::ServerFieldType type,
-                      const std::u16string& value);
+  void SetProfileInfo(ServerFieldType type, const std::u16string& value);
 
-  std::u16string GetProfileInfo(autofill::ServerFieldType type);
+  std::u16string GetProfileInfo(ServerFieldType type);
 
-  const autofill::AutofillProfile& GetAddressProfile();
+  const AutofillProfile& GetAddressProfile();
 
   [[nodiscard]] base::CallbackListSubscription AddIsValidChangedCallback(
       OnIsValidChangeCallbackList::CallbackType callback);
@@ -103,16 +97,16 @@ class AddressEditorController {
 
   // Updates |countries_| with the content of |model| if it's not null,
   // otherwise use a local model.
-  void UpdateCountries(autofill::CountryComboboxModel* model);
+  void UpdateCountries(CountryComboboxModel* model);
 
-  autofill::AutofillProfile profile_to_edit_;
+  AutofillProfile profile_to_edit_;
 
-  raw_ptr<autofill::PersonalDataManager> pdm_;
+  const raw_ref<PersonalDataManager> pdm_;
 
   // The currently chosen country. Defaults to an invalid constant until
   // |countries_| is properly initialized and then 0 as the first entry in
   // |countries_|, which is the generated default value received from
-  // autofill::CountryComboboxModel::countries() which is documented to always
+  // CountryComboboxModel::countries() which is documented to always
   // have the default country at the top as well as within the sorted list. If
   // |profile_to_edit_| is not null, then use the country from there to set
   // |chosen_country_index_|.
@@ -133,12 +127,14 @@ class AddressEditorController {
   std::vector<EditorField> editor_fields_;
 
   // Whether the editor should perform validation.
-  bool is_validatable_ = false;
+  const bool is_validatable_ = false;
 
   bool is_valid_ = true;
 
   // List of external callbacks subscribed to validity updates.
   OnIsValidChangeCallbackList on_is_valid_change_callbacks_;
 };
+
+}  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_ADDRESS_EDITOR_CONTROLLER_H_

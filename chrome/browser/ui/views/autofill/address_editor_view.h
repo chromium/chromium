@@ -21,7 +21,6 @@ class View;
 class Label;
 }  // namespace views
 
-class AddressEditorController;
 
 namespace autofill {
 

@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
@@ -16,6 +18,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -71,8 +74,12 @@ EditAddressProfileView::~EditAddressProfileView() = default;
 void EditAddressProfileView::ShowForWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto address_editor_controller = std::make_unique<AddressEditorController>(
-      controller_->GetProfileToEdit(), web_contents,
+      controller_->GetProfileToEdit(),
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          profile->GetOriginalProfile()),
       controller_->GetIsValidatable());
 
   // Storing subscription (which gets canceled in the destructor) in a property
