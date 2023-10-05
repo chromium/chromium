@@ -334,7 +334,8 @@ using SharedWorkerMainScriptRequestNetworkIsolationKeyBrowserTest =
 // "b.test" and creates an iframe also having origin "c.test" that creates
 // |worker1| again.
 //
-// We expect the second creation request for |worker1| to exist in the cache.
+// We expect the second creation request for |worker1| to not exist in the
+// cache since the workers should be partitioned by top-level site.
 //
 // Note that it's sufficient not to test the cache miss when subframe origins
 // are different as in that case the two script urls must be different.
@@ -361,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(
               if (num_completed == 1) {
                 EXPECT_FALSE(status.exists_in_cache);
               } else if (num_completed == 2) {
-                EXPECT_TRUE(status.exists_in_cache);
+                EXPECT_FALSE(status.exists_in_cache);
                 cache_status_waiter.Quit();
               } else {
                 NOTREACHED();

@@ -723,7 +723,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest,
   // have SameSite cookies, but SharedWorker could (though eventually this will
   // need to be changed, to protect against cross-site user tracking).
   EXPECT_EQ(kNoCookie, GetReceivedCookie(test_url.path()));
-  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie(worker_url.path()));
+  EXPECT_EQ(kNoCookie, GetReceivedCookie(worker_url.path()));
   EXPECT_EQ(kSameSiteCookie, GetReceivedCookie(script_url.path()));
   EXPECT_EQ(kSameSiteCookie, GetReceivedCookie(resource_url.path()));
 }
