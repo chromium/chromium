@@ -1397,9 +1397,36 @@ message ChromeGraphicsPipeline {
   optional FrameSkippedReason frame_skipped_reason = 6;
 };
 
+message LibunwindstackUnwinder {
+  // The enum is a copy of ErrorCode enum inside third_party/libunwindstack,
+  // ideally this should be in sync with that.
+  enum ErrorCode {
+    ERROR_NONE = 0;            // No error.
+    ERROR_MEMORY_INVALID = 1;  // Memory read failed.
+    ERROR_UNWIND_INFO = 2;     // Unable to use unwind information to unwind.
+    ERROR_UNSUPPORTED = 3;     // Encountered unsupported feature.
+    ERROR_INVALID_MAP = 4;     // Unwind in an invalid map.
+    ERROR_MAX_FRAMES_EXCEEDED = 5;  // The number of frames exceed the total
+                                    // allowed.
+    ERROR_REPEATED_FRAME = 6;  // The last frame has the same pc/sp as the next.
+    ERROR_INVALID_ELF = 7;     // Unwind in an invalid elf.
+    ERROR_THREAD_DOES_NOT_EXIST = 8;  // Attempt to unwind a local thread that
+                                      // does not exist.
+    ERROR_THREAD_TIMEOUT = 9;  // Timeout trying to unwind a local thread.
+    ERROR_SYSTEM_CALL = 10;    // System call failed while unwinding.
+    ERROR_BAD_ARCH = 11;       // Arch invalid (none, or mismatched).
+    ERROR_MAPS_PARSE = 12;     // Failed to parse maps data.
+    ERROR_INVALID_PARAMETER_LIBUNWINDSTACK =
+        13;                  // Invalid parameter passed to function.
+    ERROR_PTRACE_CALL = 14;  // Ptrace call failed while unwinding.
+  }
+  optional ErrorCode error_code = 1;
+  optional int32 num_frames = 2;
+};
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1053
+  // Next ID: 1055
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1513,5 +1540,7 @@ message ChromeTrackEvent {
     optional ChromeGraphicsPipeline chrome_graphics_pipeline = 1052;
 
     optional CrasUnified chromeos_cras_unified = 1053;
+
+    optional LibunwindstackUnwinder libunwindstack_unwinder = 1054;
   }
 }

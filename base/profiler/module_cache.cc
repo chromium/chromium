@@ -8,12 +8,8 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/debug/crash_logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/trace_event/base_tracing.h"
-#include "base/tracing_buildflags.h"
-#include "build/build_config.h"
 
 namespace base {
 
@@ -33,17 +29,6 @@ struct ModuleAddressCompare {
     return address < module->GetBaseAddress();
   }
 };
-
-// TODO(crbug/1446766): Cleanup after finishing crash investigation.
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_BASE_TRACING)
-std::string ModuleToString(const ModuleCache::Module& module) {
-  trace_event::TracedValueJSON value;
-  value.SetPointer("base", reinterpret_cast<void*>(module.GetBaseAddress()));
-  value.SetInteger("size", static_cast<int>(module.GetSize()));
-  value.SetString("path", module.GetDebugBasename().value());
-  return value.ToJSON();
-}
-#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_BASE_TRACING)
 
 }  // namespace
 
@@ -153,21 +138,6 @@ void ModuleCache::UpdateNonNativeModules(
 }
 
 void ModuleCache::AddCustomNativeModule(std::unique_ptr<const Module> module) {
-// TODO(1446766): Cleanup after finishing crash investigation.
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_BASE_TRACING)
-  auto it = native_modules_.find(module);
-  if (it != native_modules_.end()) {
-    static auto* const crash_key = base::debug::AllocateCrashKeyString(
-        "module_cache", base::debug::CrashKeySize::Size1024);
-    trace_event::TracedValueJSON value;
-    value.SetString("new_module", ModuleToString(*module));
-
-    auto& existing_module = *it;
-    value.SetString("existing_module", ModuleToString(*existing_module));
-
-    base::debug::SetCrashKeyString(crash_key, value.ToJSON());
-  }
-#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_BASE_TRACING)
   const bool was_inserted = native_modules_.insert(std::move(module)).second;
   // |module| should have been inserted into |native_modules_|, indicating that
   // there was no equivalent module already present. While this scenario would
