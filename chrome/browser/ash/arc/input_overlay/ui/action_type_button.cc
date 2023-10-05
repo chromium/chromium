@@ -5,19 +5,28 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_type_button.h"
 
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 
 namespace arc::input_overlay {
 
 namespace {
 
+constexpr int kCornerRadius = 16;
 constexpr int kButtonWidth = 110;
 constexpr int kActionTypeButtonHeight = 94;
 constexpr int kActionTypeIconSize = 48;
 constexpr int kLabelIconSpacing = 8;
+
+// Gap between focus ring outer edge to label.
+constexpr float kHaloInset = -5;
+// Thickness of focus ring.
+constexpr float kHaloThickness = 3;
 
 }  // namespace
 
@@ -31,7 +40,20 @@ ActionTypeButton::ActionTypeButton(PressedCallback callback,
       icon_(icon) {
   SetPreferredSize(gfx::Size(kButtonWidth, kActionTypeButtonHeight));
   SetVisible(true);
-  SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
+  SetBackground(views::CreateRoundedRectBackground(SK_ColorTRANSPARENT,
+                                                   /*radius=*/kCornerRadius));
+  // Set highlight path.
+  views::HighlightPathGenerator::Install(
+      this, std::make_unique<views::RoundRectHighlightPathGenerator>(
+                gfx::Insets(), /*corner_radius=*/kCornerRadius));
+  ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                        /*highlight_on_hover=*/true,
+                                        /*highlight_on_focus=*/false);
+  // Set focus ring style.
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
+  focus_ring->SetHaloInset(kHaloInset);
+  focus_ring->SetHaloThickness(kHaloThickness);
 }
 
 ActionTypeButton::~ActionTypeButton() = default;

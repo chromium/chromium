@@ -222,12 +222,11 @@ void ButtonOptionsMenu::AddActionSelection() {
   // ----------------------------------
   // | |feature_tile| |feature_title| |
   // ----------------------------------
-  auto* container = AddChildView(std::make_unique<ash::RoundedContainer>(
-      ash::RoundedContainer::Behavior::kTopRounded));
-  // Create a 1x2 table with a column padding of 8.
-  container->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  auto* container = AddChildView(std::make_unique<views::View>());
+  container->SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase, /*top_radius=*/16,
+      /*bottom_radius=*/0, /*for_border_thickness=*/0));
+  container->SetUseDefaultFillLayout(true);
   container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 2, 0));
 
   button_group_ = container->AddChildView(
