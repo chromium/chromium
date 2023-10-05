@@ -15139,9 +15139,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_SCStream_20230927",
+                    "name": "Enabled_SCScreenshotManager_20231004",
                     "params": {
-                        "capture_mode": "sc_stream"
+                        "capture_mode": "sc_screenshot_manager"
                     },
                     "enable_features": [
                         "ScreenCaptureKitStreamPickerSonoma",
