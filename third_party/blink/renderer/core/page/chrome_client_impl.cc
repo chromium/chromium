@@ -404,6 +404,8 @@ void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,
       String::FromUTF8(&stack_trace_str[0], stack_trace_str.length());
 
   if (!message.IsNull()) {
+    mojo::internal::AutoRecordReplayAssertBufferAllocations rraba(
+        "RUN-2650-2651");
     local_frame->GetLocalFrameHostRemote().DidAddMessageToConsole(
         level, message, static_cast<int32_t>(line_number), source_id,
         new_stack_trace);
