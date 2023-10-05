@@ -281,8 +281,11 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
-            ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures({
+        ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
+        ChromeFeatureList.START_SURFACE_ON_TABLET
+    })
+    @DisableFeatures(ChromeFeatureList.SURFACE_POLISH)
     // clang-format off
     public void testFakeSearchBoxWidthShortenedWith1RowMvTitles() {
         // clang-format on
@@ -314,8 +317,11 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @DisableFeatures(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
+    @DisableFeatures({
+        ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
+        ChromeFeatureList.SURFACE_POLISH
+    })
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
     // clang-format off
     public void testFakeSearchBoxWidthShortenedWith2RowMvTitles() {
         // clang-format on
