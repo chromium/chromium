@@ -1527,6 +1527,7 @@ TEST_F(AuthenticatorImplTest, GPMPasskeys_IsConditionalMediationAvailable) {
   scoped_feature_list.InitWithFeatures(
       {device::kWebAuthnListSyncedPasskeys, device::kWebAuthnNewPasskeyUI},
       /*disabled_features=*/{});
+  NavigateAndCommit(GURL(kTestOrigin1));
   ASSERT_TRUE(AuthenticatorIsConditionalMediationAvailable());
 }
 
@@ -9999,6 +10000,35 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, IsUVPAA) {
 }
 
 TEST_F(AuthenticatorImplWithRequestProxyTest, IsConditionalMediationAvailable) {
+  // We can't autofill credentials over the request proxy. Hence, conditional
+  // mediation is unavailable, even if IsUVPAA returns true.
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  // Ensure there is no test override set and we're testing the real
+  // implementation.
+  ASSERT_EQ(test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override,
+            absl::nullopt);
+
+  // Proxy says `IsUVPAA()` is true.
+  request_proxy().config().is_uvpaa = true;
+  EXPECT_TRUE(AuthenticatorIsUvpaa());
+  EXPECT_EQ(request_proxy().observations().num_isuvpaa, 1u);
+
+  // But `IsConditionalMediationAvailable()` still returns false, bypassing the
+  // proxy.
+  EXPECT_FALSE(AuthenticatorIsConditionalMediationAvailable());
+  EXPECT_EQ(request_proxy().observations().num_isuvpaa, 1u);
+}
+
+// Temporary regression test for crbug.com/1489468.
+// TODO(crbug.com/1489482): Remove after passkey metadata syncing is enabled by
+// default.
+TEST_F(AuthenticatorImplWithRequestProxyTest,
+       IsConditionalMediationAvailable_MetadataSyncing) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {device::kWebAuthnListSyncedPasskeys, device::kWebAuthnNewPasskeyUI}, {});
+
   // We can't autofill credentials over the request proxy. Hence, conditional
   // mediation is unavailable, even if IsUVPAA returns true.
   NavigateAndCommit(GURL(kTestOrigin1));
