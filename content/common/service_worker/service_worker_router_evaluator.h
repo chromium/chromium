@@ -36,7 +36,6 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
   std::string ToString() const;
 
  private:
-  class BaseCondition;
   class RouterRule;
   void Compile();
   std::vector<blink::ServiceWorkerRouterSource> EvaluateInternal(
