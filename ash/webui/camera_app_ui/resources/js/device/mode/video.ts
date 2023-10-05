@@ -435,29 +435,25 @@ export class Video extends ModeBase {
     }
 
     const waitable = new WaitableEvent();
-    const onToggled = () => {
-      assert(this.mediaRecorder !== null);
-      this.mediaRecorder.removeEventListener(toggledEvent, onToggled);
+    function onToggled() {
       state.set(state.State.RECORDING_PAUSED, toBePaused);
       waitable.signal();
-    };
-
-    this.mediaRecorder.addEventListener(toggledEvent, onToggled);
-    if (toBePaused) {
-      // This is for playing pause effect after the toggle is done, and
-      // shouldn't be included in the returned promise.
-      // TODO(pihsun): Reconsider if we should return a Promise for audio /
-      // animation.
-      void waitable.wait().then(() => this.playPauseEffect(toBePaused));
-      this.recordTime.pause();
-      this.mediaRecorder.pause();
-    } else {
-      await this.playPauseEffect(toBePaused);
-      this.recordTime.resume();
-      this.mediaRecorder.resume();
     }
 
-    return waitable.wait();
+    this.mediaRecorder.addEventListener(toggledEvent, onToggled, {once: true});
+    // Pause: Pause Timer & Recorder -> Wait Recorder pause -> Sound/Button UI
+    // Resume: Sound/Button UI -> Update Timer -> Resume Recorder
+    if (toBePaused) {
+      this.recordTime.pause();
+      this.mediaRecorder.pause();
+      await waitable.wait();
+      await this.playPauseEffect(true);
+    } else {
+      await this.playPauseEffect(false);
+      this.recordTime.resume();
+      this.mediaRecorder.resume();
+      await waitable.wait();
+    }
   }
 
   private async togglePausedTimeLapse(): Promise<void> {
@@ -482,9 +478,7 @@ export class Video extends ModeBase {
 
   private async playPauseEffect(toBePaused: boolean): Promise<void> {
     state.set(state.State.RECORDING_UI_PAUSED, toBePaused);
-    await sound.play(dom.get(
-        toBePaused ? '#sound-rec-pause' : '#sound-rec-start',
-        HTMLAudioElement));
+    await sound.play(toBePaused ? 'recordPause' : 'recordStart').result;
   }
 
   /**
@@ -558,10 +552,9 @@ export class Video extends ModeBase {
       }
     }
 
-    const isSoundEnded =
-        await sound.play(dom.get('#sound-rec-start', HTMLAudioElement));
-    if (!isSoundEnded) {
-      throw new CanceledError('Recording sound is canceled');
+    await sound.play('recordStart').result;
+    if (this.stopped) {
+      throw new CanceledError('Recording stopped');
     }
 
     if (this.captureStream === null) {
@@ -676,8 +669,7 @@ export class Video extends ModeBase {
           videoSaver = await this.captureVideo();
         } finally {
           this.recordTime.stop();
-          // TODO(pihsun): Reconsider if sound.play should return a Promise.
-          void sound.play(dom.get('#sound-rec-end', HTMLAudioElement));
+          sound.play('recordEnd');
           await this.snapshottingQueue.flush();
         }
       } catch (e) {
@@ -722,7 +714,7 @@ export class Video extends ModeBase {
       state.set(state.State.RECORDING_PAUSED, false);
       state.set(state.State.RECORDING_UI_PAUSED, false);
     } else {
-      sound.cancel(dom.get('#sound-rec-start', HTMLAudioElement));
+      sound.cancel('recordStart');
 
       if (this.mediaRecorder !== null &&
           (this.mediaRecorder.state === 'recording' ||

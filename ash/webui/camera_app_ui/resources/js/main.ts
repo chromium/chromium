@@ -40,6 +40,7 @@ import {WindowInstance} from './multi_window_manager.js';
 import * as nav from './nav.js';
 import {PerfLogger} from './perf.js';
 import {preloadImagesList} from './preload_images.js';
+import {preloadSounds} from './sound.js';
 import * as state from './state.js';
 import * as toast from './toast.js';
 import * as tooltip from './tooltip.js';
@@ -530,6 +531,7 @@ async function main() {
   setupNewFeatureToast(cameraManager, cameraView);
   setupExperimentalFeatures();
   preloadImages();
+  preloadSounds();
   setupSvgs();
 
   const launchType = openFrom === 'assistant' ? metrics.LaunchType.ASSISTANT :
