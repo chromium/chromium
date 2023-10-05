@@ -71,11 +71,11 @@ TEST_F(ArcAppLaunchThrottleObserverTest, TestOnAppLaunchRequested) {
   EXPECT_FALSE(observer()->active());
 
   // App1 launch requested, observer is active.
-  observer()->OnAppLaunchRequested(app1);
+  observer()->OnArcAppLaunchRequested(app1.package_name);
   EXPECT_TRUE(observer()->active());
 
   // App2 launch requested but finishes before App1, observer is still active.
-  observer()->OnAppLaunchRequested(app2);
+  observer()->OnArcAppLaunchRequested(app2.package_name);
   observer()->OnTaskCreated(0, app2.package_name, "", "", /*session_id=*/0);
   EXPECT_TRUE(observer()->active());
 
@@ -89,7 +89,7 @@ TEST_F(ArcAppLaunchThrottleObserverTest, TestOnAppLaunchRequested) {
   EXPECT_FALSE(observer()->active());
 
   // Re-launch App1, observer is active
-  observer()->OnAppLaunchRequested(app1);
+  observer()->OnArcAppLaunchRequested(app1.package_name);
   EXPECT_TRUE(observer()->active());
 
   // App1 finishes launch, observer is inactive.
@@ -103,7 +103,7 @@ TEST_F(ArcAppLaunchThrottleObserverTest, TestLaunchRequestExpires) {
       CreateAppInfoForPackage("com.android.app");
   EXPECT_FALSE(observer()->active());
 
-  observer()->OnAppLaunchRequested(app);
+  observer()->OnArcAppLaunchRequested(app.package_name);
   EXPECT_TRUE(observer()->active());
 
   environment()->FastForwardUntilNoTasksRemain();

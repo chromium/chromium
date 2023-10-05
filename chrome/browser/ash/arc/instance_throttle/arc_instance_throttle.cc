@@ -247,6 +247,7 @@ class ArcInstanceThrottleFactory
   ArcInstanceThrottleFactory() {
     DependsOn(ArcBootPhaseMonitorBridgeFactory::GetInstance());
     DependsOn(ArcMetricsServiceFactory::GetInstance());
+    DependsOn(ArcAppLaunchNotifierFactory::GetInstance());
   }
   ~ArcInstanceThrottleFactory() override = default;
 };

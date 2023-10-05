@@ -9,12 +9,14 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/app/arc_app_launch_notifier.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/mojom/file_system.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -295,6 +297,13 @@ void ExecuteArcTaskAfterContentUrlsResolved(
         extensions::api::file_manager_private::TASK_RESULT_FAILED,
         "OpenUrlsWithPermission is not supported");
     return;
+  }
+
+  auto* notifier = arc::ArcAppLaunchNotifier::GetForBrowserContext(profile);
+  if (notifier) {
+    notifier->NotifyArcAppLaunchRequest(task.app_id);
+  } else {
+    CHECK_IS_TEST();
   }
 
   arc::mojom::OpenUrlsRequestPtr request =

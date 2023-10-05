@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/app/arc_app_launch_notifier.h"
 #include "ash/components/arc/appfuse/arc_appfuse_bridge.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
@@ -241,6 +242,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   // List in lexicographical order.
   ArcAccessibilityHelperBridge::GetForBrowserContext(profile);
   ArcAdbdMonitorBridge::GetForBrowserContext(profile);
+  ArcAppLaunchNotifier::GetForBrowserContext(profile);
   ArcAppPerformanceTracing::GetForBrowserContext(profile);
   ArcAudioBridge::GetForBrowserContext(profile);
   ArcAuthService::GetForBrowserContext(profile);
@@ -432,6 +434,7 @@ void ArcServiceLauncher::OnGetTpmStatus(
 void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcAccessibilityHelperBridge::EnsureFactoryBuilt();
   ArcAdbdMonitorBridge::EnsureFactoryBuilt();
+  ArcAppLaunchNotifier::EnsureFactoryBuilt();
   ArcAppPerformanceTracing::EnsureFactoryBuilt();
   ArcAppfuseBridge::EnsureFactoryBuilt();
   ArcAudioBridge::EnsureFactoryBuilt();

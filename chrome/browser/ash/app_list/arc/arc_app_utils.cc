@@ -10,6 +10,7 @@
 #include <tuple>
 #include <utility>
 
+#include "ash/components/arc/app/arc_app_launch_notifier.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
@@ -19,6 +20,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -104,26 +106,6 @@ bool IsMouseOrTouchEventFromFlags(int event_flags) {
                          ui::EF_FORWARD_MOUSE_BUTTON | ui::EF_FROM_TOUCH)) != 0;
 }
 
-using AppLaunchObserverMap =
-    std::map<content::BrowserContext*, base::ObserverList<AppLaunchObserver>>;
-
-AppLaunchObserverMap* GetAppLaunchObserverMap() {
-  static base::NoDestructor<
-      std::map<content::BrowserContext*, base::ObserverList<AppLaunchObserver>>>
-      instance;
-  return instance.get();
-}
-
-void NotifyAppLaunchObservers(content::BrowserContext* context,
-                              const ArcAppListPrefs::AppInfo& app_info) {
-  AppLaunchObserverMap* const map = GetAppLaunchObserverMap();
-  auto it = map->find(context);
-  if (it != map->end()) {
-    for (auto& observer : it->second)
-      observer.OnAppLaunchRequested(app_info);
-  }
-}
-
 bool Launch(Profile* profile,
             const std::string& app_id,
             apps::IntentPtr intent,
@@ -158,7 +140,13 @@ bool Launch(Profile* profile,
 
   // Unthrottle the ARC instance before launching an ARC app. This is done
   // to minimize lag on an app launch.
-  NotifyAppLaunchObservers(profile, *app_info);
+  auto* notifier = ArcAppLaunchNotifier::GetForBrowserContext(profile);
+  if (notifier) {
+    // ArcAppLaunchNotifier may not exist in test environment.
+    notifier->NotifyArcAppLaunchRequest(app_info->package_name);
+  } else {
+    CHECK_IS_TEST();
+  }
 
   if (app_info->shortcut || intent) {
     const std::string intent_uri =
@@ -430,7 +418,13 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
       // default to avoid slowing down Chrome's user session restoration.
       // However, the restriction should be lifted once the user explicitly
       // tries to launch an ARC app.
-      NotifyAppLaunchObservers(context, *app_info);
+      auto* notifier = ArcAppLaunchNotifier::GetForBrowserContext(profile);
+      if (notifier) {
+        // ArcAppLaunchNotifier may not exist in test environment.
+        notifier->NotifyArcAppLaunchRequest(app_info->package_name);
+      } else {
+        CHECK_IS_TEST();
+      }
     }
     prefs->SetLastLaunchTime(app_id);
     return true;
@@ -698,51 +692,6 @@ std::string ArcPackageNameToAppId(const std::string& package_name,
   ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile);
   return arc_prefs ? arc_prefs->GetAppIdByPackageName(package_name)
                    : std::string();
-}
-
-void AddAppLaunchObserver(content::BrowserContext* context,
-                          AppLaunchObserver* observer) {
-  class ProfileDestroyedObserver : public ProfileObserver {
-   public:
-    ProfileDestroyedObserver() = default;
-
-    ProfileDestroyedObserver(const ProfileDestroyedObserver&) = delete;
-    ProfileDestroyedObserver& operator=(const ProfileDestroyedObserver&) =
-        delete;
-
-    ~ProfileDestroyedObserver() override = default;
-
-    void Observe(Profile* profile) {
-      if (!observed_profiles_.IsObservingSource(profile))
-        observed_profiles_.AddObservation(profile);
-    }
-
-    void OnProfileWillBeDestroyed(Profile* profile) override {
-      observed_profiles_.RemoveObservation(profile);
-      GetAppLaunchObserverMap()->erase(profile);
-    }
-
-   private:
-    base::ScopedMultiSourceObservation<Profile, ProfileObserver>
-        observed_profiles_{this};
-  };
-  static base::NoDestructor<ProfileDestroyedObserver>
-      profile_destroyed_observer;
-
-  AppLaunchObserverMap* const map = GetAppLaunchObserverMap();
-  auto result =
-      map->emplace(std::piecewise_construct, std::forward_as_tuple(context),
-                   std::forward_as_tuple());
-  profile_destroyed_observer->Observe(Profile::FromBrowserContext(context));
-  result.first->second.AddObserver(observer);
-}
-
-void RemoveAppLaunchObserver(content::BrowserContext* context,
-                             AppLaunchObserver* observer) {
-  AppLaunchObserverMap* const map = GetAppLaunchObserverMap();
-  auto it = map->find(context);
-  if (it != map->end())
-    it->second.RemoveObserver(observer);
 }
 
 const std::string GetAppFromAppOrGroupId(content::BrowserContext* context,

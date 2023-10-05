@@ -8,6 +8,8 @@ assert(is_chromeos_ash)
 
 static_library("arc") {
   sources = [
+    "app/arc_app_launch_notifier.cc",
+    "app/arc_app_launch_notifier.h",
     "appfuse/arc_appfuse_bridge.cc",
     "appfuse/arc_appfuse_bridge.h",
     "audio/arc_audio_bridge.cc",
@@ -409,6 +411,7 @@ source_set("arc_metrics_constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "app/arc_app_launch_notifier_unittest.cc",
     "appfuse/arc_appfuse_bridge_unittest.cc",
     "arc_features_parser_unittest.cc",
     "arc_util_unittest.cc",
