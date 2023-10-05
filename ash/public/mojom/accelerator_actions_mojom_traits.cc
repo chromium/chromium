@@ -174,8 +174,8 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kToggleImeMenuBubble;
     case ash::AcceleratorAction::kShowShortcutViewer:
       return mojom_accelerator_action::kShowShortcutViewer;
-    case ash::AcceleratorAction::kShowStylusTools:
-      return mojom_accelerator_action::kShowStylusTools;
+    case ash::AcceleratorAction::kToggleStylusTools:
+      return mojom_accelerator_action::kToggleStylusTools;
     case ash::AcceleratorAction::kShowTaskManager:
       return mojom_accelerator_action::kShowTaskManager;
     case ash::AcceleratorAction::kStartAssistant:
@@ -574,8 +574,8 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
     case mojom_accelerator_action::kShowShortcutViewer:
       *out = ash::AcceleratorAction::kShowShortcutViewer;
       return true;
-    case mojom_accelerator_action::kShowStylusTools:
-      *out = ash::AcceleratorAction::kShowStylusTools;
+    case mojom_accelerator_action::kToggleStylusTools:
+      *out = ash::AcceleratorAction::kToggleStylusTools;
       return true;
     case mojom_accelerator_action::kShowTaskManager:
       *out = ash::AcceleratorAction::kShowTaskManager;

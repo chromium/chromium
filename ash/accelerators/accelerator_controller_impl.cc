@@ -801,7 +801,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kScaleUiReset:
     case AcceleratorAction::kScaleUiUp:
       return true;
-    case AcceleratorAction::kShowStylusTools:
+    case AcceleratorAction::kToggleStylusTools:
       return accelerators::CanShowStylusTools();
     case AcceleratorAction::kStartAssistant:
       return true;
@@ -1305,9 +1305,9 @@ void AcceleratorControllerImpl::PerformAction(
         accelerators::ShowKeyboardShortcutViewer();
       }
       break;
-    case AcceleratorAction::kShowStylusTools:
+    case AcceleratorAction::kToggleStylusTools:
       base::RecordAction(UserMetricsAction("Accel_Show_Stylus_Tools"));
-      accelerators::ShowStylusTools();
+      accelerators::ToggleStylusTools();
       break;
     case AcceleratorAction::kShowTaskManager:
       base::RecordAction(UserMetricsAction("Accel_Show_Task_Manager"));

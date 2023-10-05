@@ -3967,8 +3967,8 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_SHORTCUT_VIEWER" desc="Label for accelerator action - Open Keyboard shortcuts app.">
         Open Key Shortcuts app
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_STYLUS_TOOLS" desc="Label for accelerator action - Show stylus tools.">
-        Show stylus tools
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_STYLUS_TOOLS" desc="Label for accelerator action - Show or hide the stylus tools.">
+        Toggle stylus tools
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_TASK_MANAGER" desc="Label for accelerator action - Open task manager.">
         Open task manager

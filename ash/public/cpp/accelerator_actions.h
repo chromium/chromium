@@ -106,7 +106,6 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(ShowEmojiPicker)                             \
   ACCELERATOR_ACTION_ENTRY(ToggleImeMenuBubble)                         \
   ACCELERATOR_ACTION_ENTRY(ShowShortcutViewer)                          \
-  ACCELERATOR_ACTION_ENTRY(ShowStylusTools)                             \
   ACCELERATOR_ACTION_ENTRY(ShowTaskManager)                             \
   ACCELERATOR_ACTION_ENTRY(StartAssistant)                              \
   ACCELERATOR_ACTION_ENTRY(StopScreenRecording)                         \
@@ -141,6 +140,7 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(ToggleSnapGroupWindowsGroupAndUngroup)       \
   ACCELERATOR_ACTION_ENTRY(ToggleSnapGroupWindowsMinimizeAndRestore)    \
   ACCELERATOR_ACTION_ENTRY(ToggleSpokenFeedback)                        \
+  ACCELERATOR_ACTION_ENTRY(ToggleStylusTools)                           \
   ACCELERATOR_ACTION_ENTRY(ToggleSystemTrayBubble)                      \
   ACCELERATOR_ACTION_ENTRY(ToggleWifi)                                  \
   ACCELERATOR_ACTION_ENTRY(TouchHudClear)                               \
