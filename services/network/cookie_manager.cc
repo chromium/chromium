@@ -322,6 +322,11 @@ void CookieManager::BlockTruncatedCookies(bool block) {
   cookie_settings_.set_block_truncated_cookies(block);
 }
 
+void CookieManager::SetMitigationsEnabledFor3pcd(bool enable) {
+  OnSettingsWillChange();
+  cookie_settings_.set_mitigations_enabled_for_3pcd(enable);
+}
+
 void CookieManager::SetContentSettingsForLegacyCookieAccess(
     const ContentSettingsForOneType& settings) {
   OnSettingsWillChange();
@@ -374,6 +379,7 @@ void CookieManager::ConfigureCookieSettings(
     CookieSettings* out) {
   out->set_block_third_party_cookies(params.block_third_party_cookies);
   out->set_block_truncated_cookies(params.block_truncated_cookies);
+  out->set_mitigations_enabled_for_3pcd(params.mitigations_enabled_for_3pcd);
   out->set_content_settings(params.settings);
   out->set_secure_origin_cookies_allowed_schemes(
       params.secure_origin_cookies_allowed_schemes);
@@ -386,6 +392,8 @@ void CookieManager::ConfigureCookieSettings(
   out->set_storage_access_grants(params.settings_for_storage_access);
   out->set_top_level_storage_access_grants(
       params.settings_for_top_level_storage_access);
+  out->set_content_settings_for_3pcd_metadata_grants(
+      params.settings_for_3pcd_metadata_grants);
 }
 
 void CookieManager::CrashOnGetCookieList() {

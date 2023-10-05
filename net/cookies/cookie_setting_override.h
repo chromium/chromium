@@ -21,9 +21,7 @@ enum class CookieSettingOverride {
   // a matching grant exists) to access third-party cookies. Otherwise, Storage
   // Access API grants do not apply.
   kStorageAccessGrantEligible = 1,
-  // When present, 3PCD metadata grants content settings will be respected.
-  k3pcdMetadataGrantEligible = 2,
-  kMaxValue = k3pcdMetadataGrantEligible,
+  kMaxValue = kStorageAccessGrantEligible,
 };
 
 using CookieSettingOverrides = base::EnumSet<CookieSettingOverride,

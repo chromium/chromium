@@ -218,8 +218,7 @@ class CookieSettingsBase {
   bool ShouldConsider3pcdSupportSettings(
       net::CookieSettingOverrides overrides) const;
 
-  bool ShouldConsider3pcdMetadataGrantsSettings(
-      net::CookieSettingOverrides overrides) const;
+  bool ShouldConsider3pcdMetadataGrantsSettings() const;
 
   // Returns a set of overrides that includes Storage Access API and Top-Level
   // Storage Access API overrides iff the config booleans indicate that Storage
@@ -284,6 +283,10 @@ class CookieSettingsBase {
 
   // Returns whether the global 3p cookie blocking setting is enabled.
   virtual bool ShouldBlockThirdPartyCookies() const = 0;
+
+  // Returns whether Third Party Cookie Deprecation mitigations should take
+  // effect.
+  virtual bool MitigationsEnabledFor3pcd() const = 0;
 
   // Returns whether |scheme| is always allowed to access 3p cookies.
   virtual bool IsThirdPartyCookiesAllowedScheme(

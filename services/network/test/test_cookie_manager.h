@@ -59,6 +59,7 @@ class TestCookieManager : public network::mojom::CookieManager {
   void SetForceKeepSessionState() override {}
   void BlockThirdPartyCookies(bool block) override {}
   void BlockTruncatedCookies(bool block) override {}
+  void SetMitigationsEnabledFor3pcd(bool enable) override {}
   void SetContentSettingsForLegacyCookieAccess(
       const std::vector<::ContentSettingPatternSource>& settings) override {}
   void SetContentSettingsFor3pcd(

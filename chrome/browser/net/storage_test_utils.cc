@@ -48,6 +48,7 @@ std::string GetFrameContent(content::RenderFrameHost* frame) {
 
 void SetStorageForFrame(content::RenderFrameHost* frame,
                         bool include_cookies,
+                        bool expected_to_be_set,
                         const base::Location& location) {
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected;
@@ -60,7 +61,7 @@ void SetStorageForFrame(content::RenderFrameHost* frame,
       // Third-party context WebSQL is disabled as of M97.
       expected[data_type] = false;
     } else {
-      expected[data_type] = true;
+      expected[data_type] = expected_to_be_set;
     }
   }
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected))

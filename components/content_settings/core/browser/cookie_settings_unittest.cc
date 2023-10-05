@@ -155,7 +155,12 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     std::vector<base::test::FeatureRef> disabled_features;
     enabled_features.push_back(
         {content_settings::features::kUserBypassUI, {{"expiration", "0d"}}});
-    enabled_features.push_back({net::features::kTpcdMetadataGrants, {}});
+
+    if (Is3pcdMetadataGrantEligible()) {
+      enabled_features.push_back({net::features::kTpcdMetadataGrants, {}});
+    } else {
+      disabled_features.push_back(net::features::kTpcdMetadataGrants);
+    }
 #if BUILDFLAG(IS_IOS)
     enabled_features.push_back({kImprovedCookieControls, {}});
     disabled_features.push_back(net::features::kTpcdSupportSettings);
@@ -225,9 +230,6 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
       overrides.Put(
           net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
     }
-    if (Is3pcdMetadataGrantEligible()) {
-      overrides.Put(net::CookieSettingOverride::k3pcdMetadataGrantEligible);
-    }
     return overrides;
   }
 
@@ -257,7 +259,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   }
 
   // Assumes that cookie access would be blocked if not for a
-  // `net::CookieSettingOverride::k3pcdMetadataGrantEligible` override.
+  // `net::features::kThirdPartyStoragePartitioning` enablement.
   ContentSetting SettingWith3pcdMetadataGrantEligibleOverride() const {
     return Is3pcdMetadataGrantEligible() ? CONTENT_SETTING_ALLOW
                                          : CONTENT_SETTING_BLOCK;
@@ -301,7 +303,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   }
 
   // The storage access result would be blocked if not for a
-  // `net::CookieSettingOverride::k3pcdMetadataGrantEligible` override.
+  // `net::features::kThirdPartyStoragePartitioning` enablement.
   net::cookie_util::StorageAccessResult
   BlockedStorageAccessResultWith3pcdMetadataGrantOverride() const {
     if (Is3pcdMetadataGrantEligible()) {

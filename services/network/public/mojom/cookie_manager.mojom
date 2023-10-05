@@ -26,6 +26,10 @@ struct CookieManagerParams {
   // the value).
   bool block_truncated_cookies = true;
 
+  // Whether Third Party Cookie Deprecation mitigations efforts such as Third
+  // Party Cookie Deprecation Metadata grants are permitted.
+  bool mitigations_enabled_for_3pcd = false;
+
   // Content settings for cookies.
   array<content_settings.mojom.ContentSettingPatternSource> settings;
 
@@ -487,6 +491,9 @@ interface CookieManager {
   // change the setting at runtime, which allows the corresponding enterprise
   // policy to not require a restart to take affect.
   BlockTruncatedCookies(bool block);
+
+  // Enables/Disables mitigations for third-party cookies deprecation.
+  SetMitigationsEnabledFor3pcd(bool enable);
 
   // Sets content settings for which domains are allowed to use legacy cookie
   // access rules.

@@ -120,6 +120,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     block_truncated_cookies_ = block_truncated_cookies;
   }
 
+  void set_mitigations_enabled_for_3pcd(bool enable) {
+    mitigations_enabled_for_3pcd_ = enable;
+  }
+
   bool are_truncated_cookies_blocked() const {
     return block_truncated_cookies_;
   }
@@ -185,6 +189,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool IsThirdPartyCookiesAllowedScheme(
       const std::string& scheme) const override;
   bool ShouldBlockThirdPartyCookies() const override;
+  bool MitigationsEnabledFor3pcd() const override;
   bool IsStorageAccessApiEnabled() const override;
 
   const ContentSettingsForOneType& GetContentSettings(
@@ -222,6 +227,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool block_third_party_cookies_ =
       net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
   bool block_truncated_cookies_ = true;
+  bool mitigations_enabled_for_3pcd_ = false;
   std::set<std::string> secure_origin_cookies_allowed_schemes_;
   std::set<std::string> matching_scheme_cookies_allowed_schemes_;
   std::set<std::string> third_party_cookies_allowed_schemes_;

@@ -24,6 +24,7 @@ std::string GetFrameContent(content::RenderFrameHost* frame);
 // used on page like //chrome/test/data/browsing_data/site_data.html
 void SetStorageForFrame(content::RenderFrameHost* frame,
                         bool include_cookies,
+                        bool expected_to_be_set = true,
                         const base::Location& location = FROM_HERE);
 void SetStorageForWorker(content::RenderFrameHost* frame,
                          const base::Location& location = FROM_HERE);
