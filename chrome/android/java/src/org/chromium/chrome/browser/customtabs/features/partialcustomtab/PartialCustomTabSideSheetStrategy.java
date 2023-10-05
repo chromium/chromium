@@ -146,6 +146,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             toolbar.initSideSheetMaximizeButton(mIsMaximized, () -> toggleMaximize(true));
         }
         toolbar.setHandleStrategy(handleStrategy);
+        toolbar.setMinimizeButtonEnabled(false);
         updateDragBarVisibility(/*dragHandlebarVisibility*/ View.GONE);
     }
 

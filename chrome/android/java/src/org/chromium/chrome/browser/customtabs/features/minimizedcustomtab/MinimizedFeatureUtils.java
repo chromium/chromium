@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
-import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -44,15 +43,18 @@ public class MinimizedFeatureUtils {
     }
 
     private static Boolean sIsMinimizedCustomTabAvailable;
+    private static boolean sMinimizedCustomTabAvailableForTesting;
 
     /**
      * Computes the availability of the Minimized Custom Tab feature based on multiple signals and
      * emits histograms accordingly.
      *
-     * @param activity The {@link Activity}.
+     * @param context The {@link Context}.
      * @return Whether the Minimized Custom Tab feature is available.
      */
-    public static boolean isMinimizedCustomTabAvailable(Activity activity) {
+    public static boolean isMinimizedCustomTabAvailable(Context context) {
+        if (sMinimizedCustomTabAvailableForTesting) return true;
+
         if (sIsMinimizedCustomTabAvailable != null) {
             return sIsMinimizedCustomTabAvailable;
         }
@@ -66,17 +68,16 @@ public class MinimizedFeatureUtils {
         } else if (SysUtils.isLowEndDevice()) {
             availability = MinimizedFeatureAvailability.UNAVAILABLE_LOW_END_DEVICE;
             sIsMinimizedCustomTabAvailable = false;
-        } else if (!activity.getPackageManager().hasSystemFeature(
-                           PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+        } else if (!context.getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
             availability = MinimizedFeatureAvailability.UNAVAILABLE_SYSTEM_FEATURE;
             sIsMinimizedCustomTabAvailable = false;
-        } else if (!isPipAllowed(activity)) {
+        } else if (!isPipAllowed(context)) {
             availability = MinimizedFeatureAvailability.UNAVAILABLE_PIP_PERMISSION;
             sIsMinimizedCustomTabAvailable = false;
         } else {
             availability = MinimizedFeatureAvailability.AVAILABLE;
-            sIsMinimizedCustomTabAvailable =
-                    ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_MINIMIZED);
+            sIsMinimizedCustomTabAvailable = ChromeFeatureList.sCctMinimized.isEnabled();
         }
 
         RecordHistogram.recordEnumeratedHistogram("CustomTabs.MinimizedFeatureAvailability",
@@ -86,11 +87,19 @@ public class MinimizedFeatureUtils {
     }
 
     @RequiresApi(api = VERSION_CODES.O)
-    private static boolean isPipAllowed(Activity activity) {
+    private static boolean isPipAllowed(Context context) {
         AppOpsManager appOpsManager =
-                (AppOpsManager) activity.getSystemService(Context.APP_OPS_SERVICE);
-        int result = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
-                activity.getApplicationInfo().uid, activity.getPackageName());
+                (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        int result =
+                appOpsManager.checkOpNoThrow(
+                        AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
+                        context.getApplicationInfo().uid,
+                        context.getPackageName());
         return result == AppOpsManager.MODE_ALLOWED;
+    }
+
+    public static void setMinimizeCustomTabAvailableForTesting(boolean availability) {
+        sMinimizedCustomTabAvailableForTesting = availability;
+        ResettersForTesting.register(() -> sMinimizedCustomTabAvailableForTesting = false);
     }
 }
