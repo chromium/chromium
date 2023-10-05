@@ -38,6 +38,11 @@ ASH_PUBLIC_EXPORT ReportCallback
 ForSmoothness(SmoothnessCallback callback,
               bool exclude_from_data_collection = false);
 
+// As ForSmoothness, but using the validated V3 graphics smoothness metrics.
+ASH_PUBLIC_EXPORT ReportCallback
+ForSmoothnessV3(SmoothnessCallback callback,
+                bool exclude_from_data_collection = false);
+
 // Starts to collect data reported by all trackers unless they opt out.
 // Note this DCHECKs if called again without StopDataCollection().
 ASH_PUBLIC_EXPORT void StartDataCollection();
@@ -51,9 +56,13 @@ ASH_PUBLIC_EXPORT std::vector<AnimationData> GetCollectedData();
 // Returns smoothness calculated from given data.
 ASH_PUBLIC_EXPORT int CalculateSmoothness(
     const cc::FrameSequenceMetrics::CustomReportData& data);
+ASH_PUBLIC_EXPORT int CalculateSmoothnessV3(
+    const cc::FrameSequenceMetrics::CustomReportData& data);
 
 // Returns jank percentage calculated from given data.
 ASH_PUBLIC_EXPORT int CalculateJank(
+    const cc::FrameSequenceMetrics::CustomReportData& data);
+ASH_PUBLIC_EXPORT int CalculateJankV3(
     const cc::FrameSequenceMetrics::CustomReportData& data);
 
 }  // namespace ash::metrics_util

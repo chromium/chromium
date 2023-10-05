@@ -106,6 +106,9 @@ class CC_EXPORT FrameSequenceMetrics {
     uint32_t frames_expected = 0;
     uint32_t frames_produced = 0;
     int jank_count = 0;
+    uint32_t frames_expected_v3 = 0;
+    uint32_t frames_dropped_v3 = 0;
+    uint32_t jank_count_v3 = 0;
   };
   using CustomReporter = base::OnceCallback<void(const CustomReportData& data)>;
   // Sets reporter callback for kCustom typed sequence.

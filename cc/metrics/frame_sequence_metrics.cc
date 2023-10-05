@@ -280,11 +280,20 @@ void FrameSequenceMetrics::ReportMetrics() {
             main_throughput_.frames_expected,
             main_throughput_.frames_produced,
             jank_reporter_->jank_count(),
+            v3_.frames_expected,
+            v3_.frames_dropped,
+            v3_.jank_count,
         });
 
     main_throughput_ = {};
     impl_throughput_ = {};
     jank_reporter_->Reset();
+
+    v3_.frames_expected = 0u;
+    v3_.frames_dropped = 0u;
+    v3_.frames_missing_content = 0u;
+    v3_.no_update_count = 0u;
+    v3_.jank_count = 0u;
     return;
   }
 
