@@ -1126,17 +1126,3 @@ testcase.searchImageByContent = async () => {
       appId, TestEntryInfo.getExpectedRows([ENTRIES.image3]),
       {ignoreLastModifiedTime: true});
 };
-
-/**
- * Checks that any search, regardless if it has results or not, is closed if we
- * navigate to another directory.
- */
-testcase.changingDirectoryClosesSearch = async () => {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
-  await remoteCall.typeSearchText(appId, 'hello');
-  await remoteCall.waitForFiles(
-      appId, TestEntryInfo.getExpectedRows([ENTRIES.hello]));
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.navigateToPath('/My files/Downloads/photos');
-  await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
-};

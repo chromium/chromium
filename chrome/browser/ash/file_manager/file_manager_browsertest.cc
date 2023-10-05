@@ -1460,8 +1460,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchFileSystemProvider").EnableSearchV2(),
         TestCase("searchImageByContent")
             .EnableImageContentSearch()
-            .EnableSearchV2(),
-        TestCase("changingDirectoryClosesSearch").EnableSearchV2()
+            .EnableSearchV2()
         // TODO(b/189173190): Enable
         // TestCase("searchQueryLaunchParam")
         ));

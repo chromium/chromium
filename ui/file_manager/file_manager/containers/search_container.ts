@@ -6,14 +6,13 @@ import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.j
 
 import {queryRequiredElement} from '../common/js/dom_utils.js';
 import {recordUserAction} from '../common/js/metrics.js';
-import {str, strf} from '../common/js/util.js';
+import {str} from '../common/js/util.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 import {CurrentDirectory, PropStatus, SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
 import {VolumeManager} from '../externs/volume_manager.js';
 import {PathComponent} from '../foreground/js/path_component.js';
-import {A11yAnnounce} from '../foreground/js/ui/a11y_announce.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
-import {clearSearch, getDefaultSearchOptions, isSearchEmpty, updateSearch} from '../state/ducks/search.js';
+import {clearSearch, getDefaultSearchOptions, updateSearch} from '../state/ducks/search.js';
 import type {FileKey} from '../state/file_key.js';
 import {getStore, type Store} from '../state/store.js';
 import {type BreadcrumbClickedEvent, XfBreadcrumb} from '../widgets/xf_breadcrumb.js';
@@ -191,9 +190,6 @@ export class SearchContainer extends EventTarget {
   private pathComponents_: FileKey[] = [];
   // Volume manager, used by us to resolve paths of selected entries.
   private volumeManager_: VolumeManager;
-  // The accessibility interface that is used to announce the outcomes of file
-  // searches.
-  private a11y_: A11yAnnounce;
 
 
   /**
@@ -208,8 +204,7 @@ export class SearchContainer extends EventTarget {
    */
   constructor(
       volumeManager: VolumeManager, searchWrapper: HTMLElement,
-      optionsContainer: HTMLElement, pathContainer: HTMLElement,
-      a11y: A11yAnnounce) {
+      optionsContainer: HTMLElement, pathContainer: HTMLElement) {
     super();
     this.volumeManager_ = volumeManager;
     // The "box" around the search button, query input, and clear button.
@@ -236,7 +231,6 @@ export class SearchContainer extends EventTarget {
 
     this.optionsContainer_ = optionsContainer;
     this.pathContainer_ = pathContainer;
-    this.a11y_ = a11y;
     this.store_ = getStore();
     this.store_.subscribe(this);
 
@@ -271,11 +265,20 @@ export class SearchContainer extends EventTarget {
   }
 
   /**
+   * Sets the new query. This method does not post events, even if the query
+   * changed as a result.
+   */
+  setQuery(query: string) {
+    this.inputElement_.value = query;
+    this.openSearch();
+  }
+
+  /**
    * Returns the user entered search query. This method trims white spaces from
    * the left side of the query.
    */
   getQuery(): string {
-    return this.inputElement_.value.trimStart();
+    return this.inputElement_.value.trimLeft();
   }
 
   /**
@@ -298,32 +301,18 @@ export class SearchContainer extends EventTarget {
       return;
     }
     // Cache the last received search state for future comparisons.
-    const lastSearch = this.searchState_;
-    this.searchState_ = state.search;
-
-    if (lastSearch?.query && search && search.query === undefined) {
-      this.a11y_.speakA11yMessage(str('SEARCH_A11Y_CLEAR_SEARCH'));
-    }
-    if (!search || isSearchEmpty(search)) {
+    this.searchState_ = search;
+    if (!search) {
       this.closeSearch();
       return;
     }
-
     const query = search.query;
     if (query !== undefined && query !== this.getQuery()) {
-      this.inputElement_.value = query;
-      this.openSearch();
+      this.setQuery(query);
     }
     if (search.status === PropStatus.STARTED && query) {
       this.showOptionsElement_(state);
       this.showBreadcrumbElement_();
-    }
-    if (search.status === PropStatus.SUCCESS && query) {
-      const content = state.currentDirectory?.content;
-      const count = content ? content.keys.length : 0;
-      const messageId =
-          count === 0 ? 'SEARCH_A11Y_NO_RESULT' : 'SEARCH_A11Y_RESULT';
-      this.a11y_.speakA11yMessage(strf(messageId, query));
     }
   }
 
@@ -588,14 +577,6 @@ export class SearchContainer extends EventTarget {
   }
 
   /**
-   * Returns whether the search container is open. In the open state the user
-   * may enter a search query, interact with options, etc.
-   */
-  public isOpen() {
-    return this.inputState_ === SearchInputState.OPEN;
-  }
-
-  /**
    * Starts the process of opening the search widget. We use CSS transitions to
    * open the widget and thus the widget it not fully opened until the CSS
    * transition finishes.
@@ -604,7 +585,6 @@ export class SearchContainer extends EventTarget {
     // Do not initiate open transition if we are not closed. This would leave us
     // in the OPENING state, without ever getting to OPEN state.
     if (this.inputState_ === SearchInputState.CLOSED) {
-      this.inputState_ = SearchInputState.OPEN;
       this.inputElement_.addEventListener('transitionend', () => {
         this.searchWrapper_.removeAttribute('collapsed');
       }, {once: true, passive: true, capture: true});
@@ -615,6 +595,7 @@ export class SearchContainer extends EventTarget {
       this.searchBox_.classList.add('has-cursor', 'has-text');
       this.searchButton_.tabIndex = -1;
       this.updateClearButton_(this.getQuery());
+      this.inputState_ = SearchInputState.OPEN;
     }
   }
 
@@ -627,7 +608,6 @@ export class SearchContainer extends EventTarget {
     // Do not initiate close transition if we are not open. This would leave us
     // in the CLOSING state, without ever getting to CLOSED state.
     if (this.inputState_ === SearchInputState.OPEN) {
-      this.inputState_ = SearchInputState.CLOSED;
       this.inputElement_.addEventListener('transitionend', () => {
         this.searchWrapper_.setAttribute('collapsed', '');
       }, {once: true, passive: true, capture: true});
@@ -642,6 +622,7 @@ export class SearchContainer extends EventTarget {
       this.searchBox_.classList.remove('has-cursor', 'has-text');
       this.searchButton_.tabIndex = 0;
       this.currentOptions_ = getDefaultSearchOptions();
+      this.inputState_ = SearchInputState.CLOSED;
     }
   }
 
@@ -661,8 +642,8 @@ export class SearchContainer extends EventTarget {
     this.updateClearButton_(query);
     this.store_.dispatch(updateSearch({
       query: query,
-      status: undefined,  // do not change
-      options: this.currentOptions_,
+      status: undefined,   // do not change
+      options: undefined,  // do not change
     }));
   }
 }
