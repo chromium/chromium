@@ -20,20 +20,24 @@ const char AppServiceShortcutItem::kItemType[] = "AppServiceShortcutItem";
 AppServiceShortcutItem::AppServiceShortcutItem(
     Profile* profile,
     AppListModelUpdater* model_updater,
-    const apps::ShortcutUpdate& update)
+    const apps::ShortcutUpdate& update,
+    const app_list::AppListSyncableService::SyncItem* sync_item)
     : AppServiceShortcutItem(profile,
                              model_updater,
                              update.ShortcutId(),
-                             update.Name()) {}
+                             update.Name(),
+                             sync_item) {}
 
 AppServiceShortcutItem::AppServiceShortcutItem(
     Profile* profile,
     AppListModelUpdater* model_updater,
-    const apps::ShortcutView& view)
+    const apps::ShortcutView& view,
+    const app_list::AppListSyncableService::SyncItem* sync_item)
     : AppServiceShortcutItem(profile,
                              model_updater,
                              view->shortcut_id,
-                             view->name.value_or("")) {}
+                             view->name.value_or(""),
+                             sync_item) {}
 
 AppServiceShortcutItem::~AppServiceShortcutItem() = default;
 
@@ -51,14 +55,19 @@ AppServiceShortcutItem::AppServiceShortcutItem(
     Profile* profile,
     AppListModelUpdater* model_updater,
     const apps::ShortcutId& shortcut_id,
-    const std::string& shortcut_name)
+    const std::string& shortcut_name,
+    const app_list::AppListSyncableService::SyncItem* sync_item)
     : ChromeAppListItem(profile, shortcut_id.value()),
       shortcut_id_(shortcut_id) {
   SetName(shortcut_name);
   // TODO(crbug.com/1412708): Consider renaming this interface.
   SetAppStatus(ash::AppStatus::kReady);
 
-  SetPosition(CalculateDefaultPositionIfApplicable());
+  if (sync_item && sync_item->item_ordinal.IsValid()) {
+    InitFromSync(sync_item);
+  } else {
+    SetPosition(CalculateDefaultPositionIfApplicable());
+  }
 
   // Set model updater last to avoid being called during construction.
   set_model_updater(model_updater);

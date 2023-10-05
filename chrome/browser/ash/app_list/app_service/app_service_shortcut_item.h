@@ -23,12 +23,16 @@ class AppServiceShortcutItem : public ChromeAppListItem,
  public:
   static const char kItemType[];
 
-  AppServiceShortcutItem(Profile* profile,
-                         AppListModelUpdater* model_updater,
-                         const apps::ShortcutUpdate& shortcut_update);
-  AppServiceShortcutItem(Profile* profile,
-                         AppListModelUpdater* model_updater,
-                         const apps::ShortcutView& shortcut_view);
+  AppServiceShortcutItem(
+      Profile* profile,
+      AppListModelUpdater* model_updater,
+      const apps::ShortcutUpdate& shortcut_update,
+      const app_list::AppListSyncableService::SyncItem* sync_item);
+  AppServiceShortcutItem(
+      Profile* profile,
+      AppListModelUpdater* model_updater,
+      const apps::ShortcutView& shortcut_view,
+      const app_list::AppListSyncableService::SyncItem* sync_item);
   AppServiceShortcutItem(const AppServiceShortcutItem&) = delete;
   AppServiceShortcutItem& operator=(const AppServiceShortcutItem&) = delete;
   ~AppServiceShortcutItem() override;
@@ -38,10 +42,12 @@ class AppServiceShortcutItem : public ChromeAppListItem,
   void OnShortcutUpdate(const apps::ShortcutUpdate& update);
 
  private:
-  AppServiceShortcutItem(Profile* profile,
-                         AppListModelUpdater* model_updater,
-                         const apps::ShortcutId& shortcut_id,
-                         const std::string& shortcut_name);
+  AppServiceShortcutItem(
+      Profile* profile,
+      AppListModelUpdater* model_updater,
+      const apps::ShortcutId& shortcut_id,
+      const std::string& shortcut_name,
+      const app_list::AppListSyncableService::SyncItem* sync_item);
 
   // ChromeAppListItem overrides:
   const char* GetItemType() const override;

@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/profiles/profile.h"
@@ -441,6 +442,38 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, IconVersionUpdated) {
   cache()->UpdateShortcut(std::move(delta));
 
   EXPECT_EQ(app_list_item->CloneMetadata()->icon_version, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, SetToSyncPosition) {
+  // Register a shortcut in the shortcut registry cache.
+  apps::ShortcutPtr shortcut =
+      std::make_unique<Shortcut>("host_app_id", "local_id");
+  shortcut->shortcut_source = ShortcutSource::kUser;
+  shortcut->name = "Test";
+  apps::ShortcutId shortcut_id = shortcut->shortcut_id;
+
+  syncer::StringOrdinal ordinal = syncer::StringOrdinal::CreateInitialOrdinal();
+
+  // Add entry in sync data that has a matching id with the shortcut.
+  syncer::SyncDataList sync_list;
+  sync_list.push_back((app_list::CreateAppRemoteData(
+      shortcut_id.value(), shortcut->name.value(), /*parent_id=*/std::string(),
+      ordinal.ToInternalValue(), /*item_pin_ordinal=*/std::string())));
+  app_list::AppListSyncableServiceFactory::GetForProfile(profile())
+      ->MergeDataAndStartSyncing(
+          syncer::APP_LIST, sync_list,
+          std::make_unique<syncer::FakeSyncChangeProcessor>());
+  content::RunAllTasksUntilIdle();
+
+  // Register a shortcut in the shortcut registry cache.
+  cache()->UpdateShortcut(std::move(shortcut));
+
+  // Shortcut item should exist in the model at the correct position.
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ChromeAppListItem* item = model_updater->FindItem(shortcut_id.value());
+  ASSERT_TRUE(item);
+  EXPECT_EQ(item->position(), ordinal);
 }
 
 }  // namespace apps
