@@ -1076,9 +1076,16 @@ class EphemeralUserOobeTest : public OobeBaseTest,
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 };
 
+// TODO(crbug.com/1396268): Flaky on Linux Chrome OS ASan LSan and dbg.
+// Re-enable this test.
+#if BUILDFLAG(IS_CHROMEOS) && (defined(ADDRESS_SANITIZER) || !defined(NDEBUG))
+#define MAYBE_RegularEphemeralUser DISABLED_RegularEphemeralUser
+#else
+#define MAYBE_RegularEphemeralUser RegularEphemeralUser
+#endif
 // In this test we login as a regular user, which means it is not affilated
 // with the domain of the device. Thus we still need a consent from user.
-IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, RegularEphemeralUser) {
+IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, MAYBE_RegularEphemeralUser) {
   LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
 
   WaitForGaiaSignInScreen();
