@@ -43,6 +43,7 @@ class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
 
     profile_ptr1_ = profile_manager_.CreateTestingProfile("test_profile1");
     profile_ptr2_ = profile_manager_.CreateTestingProfile("test_profile2");
+    guest_profile_ptr_ = profile_manager_.CreateGuestProfile();
   }
 
   void TearDown() override {
@@ -50,6 +51,7 @@ class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
     // deleting testing profiles.
     profile_ptr1_ = nullptr;
     profile_ptr2_ = nullptr;
+    guest_profile_ptr_ = nullptr;
     profile_manager_.DeleteAllTestingProfiles();
   }
 
@@ -58,6 +60,8 @@ class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
   TestingProfile* profile1() { return profile_ptr1_; }
 
   TestingProfile* profile2() { return profile_ptr2_; }
+
+  TestingProfile* guest_profile() { return guest_profile_ptr_; }
 
   const device_reauth::DeviceAuthParams& GetDeviceAuthenticatorParams() {
     return device_authenticator_params_;
@@ -70,6 +74,7 @@ class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<TestingProfile> profile_ptr1_;
   raw_ptr<TestingProfile> profile_ptr2_;
+  raw_ptr<TestingProfile> guest_profile_ptr_;
 };
 
 // Checks if user can perform an operation without reauthenticating during
@@ -102,4 +107,10 @@ TEST_F(ChromeDeviceAuthenticatorFactoryTest, NeedAuthentication) {
                       profile1(), GetDeviceAuthenticatorParams())
                       .get())
                   ->NeedsToAuthenticate());
+}
+
+// Checks whether factory is instantiated correctly on a Guest profile.
+TEST_F(ChromeDeviceAuthenticatorFactoryTest, Guest) {
+  ChromeDeviceAuthenticatorFactory::GetForProfile(
+      guest_profile(), GetDeviceAuthenticatorParams());
 }
