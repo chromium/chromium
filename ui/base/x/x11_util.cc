@@ -197,14 +197,8 @@ void LowerWindow(x11::Window window) {
 }
 
 void DefineCursor(x11::Window window, x11::Cursor cursor) {
-  // TODO(https://crbug.com/1066670): Sync() should be removed.  It's added for
-  // now because Xlib's XDefineCursor() sync'ed and removing it perturbs the
-  // timing on BookmarkBarViewTest8.DNDBackToOriginatingMenu on
-  // linux-chromeos-rel, causing it to flake.
-  x11::Connection::Get()
-      ->ChangeWindowAttributes(x11::ChangeWindowAttributesRequest{
-          .window = window, .cursor = cursor})
-      .Sync();
+  x11::Connection::Get()->ChangeWindowAttributes(
+      x11::ChangeWindowAttributesRequest{.window = window, .cursor = cursor});
 }
 
 size_t RowBytesForVisualWidth(const x11::Connection::VisualInfo& visual_info,
