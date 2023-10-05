@@ -181,7 +181,7 @@ void ContextualSearchDelegateImpl::ResolveSearchTermFromContext(
 
   // Populates the discourse context and adds it to the HTTP header of the
   // search term resolution request.
-  resource_request->headers.CopyFrom(GetDiscourseContext(*context));
+  resource_request->headers = GetDiscourseContext(*context);
 
   // Disable cookies for this request.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;

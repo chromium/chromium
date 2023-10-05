@@ -62,7 +62,7 @@ bool PartialData::Init(const HttpRequestHeaders& headers) {
 
 void PartialData::SetHeaders(const HttpRequestHeaders& headers) {
   DCHECK(extra_headers_.IsEmpty());
-  extra_headers_.CopyFrom(headers);
+  extra_headers_ = headers;
 }
 
 void PartialData::RestoreHeaders(HttpRequestHeaders* headers) const {
@@ -71,7 +71,7 @@ void PartialData::RestoreHeaders(HttpRequestHeaders* headers) const {
                     ? byte_range_.suffix_length()
                     : byte_range_.last_byte_position();
 
-  headers->CopyFrom(extra_headers_);
+  *headers = extra_headers_;
   if (truncated_ || !byte_range_.IsValid())
     return;
 
@@ -143,7 +143,7 @@ void PartialData::PrepareCacheValidation(disk_cache::Entry* entry,
   }
   range_present_ = false;
 
-  headers->CopyFrom(extra_headers_);
+  *headers = extra_headers_;
 
   if (!cached_min_len_) {
     // We don't have anything else stored.

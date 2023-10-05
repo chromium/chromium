@@ -112,7 +112,7 @@ int WebSocketHttp2HandshakeStream::SendRequest(
 
   auto request = std::make_unique<WebSocketHandshakeRequestInfo>(
       request_info_->url, base::Time::Now());
-  request->headers.CopyFrom(headers);
+  request->headers = headers;
 
   AddVectorHeaderIfNonEmpty(websockets::kSecWebSocketExtensions,
                             requested_extensions_, &request->headers);

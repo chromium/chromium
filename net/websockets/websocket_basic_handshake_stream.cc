@@ -250,9 +250,8 @@ int WebSocketBasicHandshakeStream::SendRequest(
   http_response_info_ = response;
 
   // Create a copy of the headers object, so that we can add the
-  // Sec-WebSockey-Key header.
-  HttpRequestHeaders enriched_headers;
-  enriched_headers.CopyFrom(headers);
+  // Sec-WebSocket-Key header.
+  HttpRequestHeaders enriched_headers = headers;
   std::string handshake_challenge;
   if (handshake_challenge_for_testing_.has_value()) {
     handshake_challenge = handshake_challenge_for_testing_.value();
@@ -275,7 +274,7 @@ int WebSocketBasicHandshakeStream::SendRequest(
   DCHECK(connect_delegate_);
   auto request =
       std::make_unique<WebSocketHandshakeRequestInfo>(url_, base::Time::Now());
-  request->headers.CopyFrom(enriched_headers);
+  request->headers = enriched_headers;
   connect_delegate_->OnStartOpeningHandshake(std::move(request));
 
   return parser()->SendRequest(

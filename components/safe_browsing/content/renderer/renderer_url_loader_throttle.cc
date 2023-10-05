@@ -146,12 +146,11 @@ void RendererURLLoaderThrottle::WillStartRequest(
   is_start_request_called_ = true;
   // Use a weak pointer to self because |safe_browsing_| may not be owned by
   // this object.
-  net::HttpRequestHeaders headers;
-  headers.CopyFrom(request->headers);
   safe_browsing_->CreateCheckerAndCheck(
       render_frame_id_, url_checker_.BindNewPipeAndPassReceiver(), request->url,
-      request->method, headers, request->load_flags, request->destination,
-      request->has_user_gesture, request->originated_from_service_worker,
+      request->method, request->headers, request->load_flags,
+      request->destination, request->has_user_gesture,
+      request->originated_from_service_worker,
       base::BindOnce(&RendererURLLoaderThrottle::OnCheckUrlResult,
                      weak_factory_.GetWeakPtr()));
   safe_browsing_ = nullptr;

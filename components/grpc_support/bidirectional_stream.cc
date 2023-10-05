@@ -97,7 +97,7 @@ int BidirectionalStream::Start(const char* url,
   request_info->method = method;
   if (!net::HttpUtil::IsValidHeaderName(request_info->method))
     return -1;
-  request_info->extra_headers.CopyFrom(headers);
+  request_info->extra_headers = headers;
   request_info->end_stream_on_headers = end_of_stream;
   write_end_of_stream_ = end_of_stream;
   PostToNetworkThread(FROM_HERE,

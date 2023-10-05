@@ -148,8 +148,8 @@ void URLLoaderThrottle::WillStartRequest(network::ResourceRequest* request,
   // We need to keep a full copy of the request headers for later calls to
   // FixAccountConsistencyRequestHeader. Perhaps this could be replaced with
   // more specific per-request state.
-  request_headers_.CopyFrom(request->headers);
-  request_cors_exempt_headers_.CopyFrom(request->cors_exempt_headers);
+  request_headers_ = request->headers;
+  request_cors_exempt_headers_ = request->cors_exempt_headers;
 }
 
 void URLLoaderThrottle::WillRedirectRequest(

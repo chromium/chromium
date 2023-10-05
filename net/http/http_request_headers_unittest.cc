@@ -4,10 +4,6 @@
 
 #include "net/http/http_request_headers.h"
 
-#include <memory>
-
-#include "base/values.h"
-#include "net/log/net_log_capture_mode.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -155,7 +151,7 @@ TEST(HttpRequestHeaders, MergeFrom) {
   EXPECT_EQ("A: A\r\nB: b\r\nC: c\r\n\r\n", headers.ToString());
 }
 
-TEST(HttpRequestHeaders, CopyFrom) {
+TEST(HttpRequestHeaders, Assign) {
   HttpRequestHeaders headers;
   headers.SetHeader("A", "A");
   headers.SetHeader("B", "B");
@@ -163,8 +159,17 @@ TEST(HttpRequestHeaders, CopyFrom) {
   HttpRequestHeaders headers2;
   headers2.SetHeader("B", "b");
   headers2.SetHeader("C", "c");
-  headers.CopyFrom(headers2);
+  headers = headers2;
   EXPECT_EQ("B: b\r\nC: c\r\n\r\n", headers.ToString());
+}
+
+TEST(HttpRequestHeaders, Copy) {
+  HttpRequestHeaders headers;
+  headers.SetHeader("A", "A");
+  headers.SetHeader("B", "B");
+
+  HttpRequestHeaders headers2 = headers;
+  EXPECT_EQ(headers.ToString(), headers2.ToString());
 }
 
 }  // namespace

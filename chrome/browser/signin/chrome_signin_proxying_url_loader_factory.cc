@@ -352,8 +352,8 @@ ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
 
     // We need to keep a full copy of the request headers in case there is a
     // redirect and the request headers need to be modified again.
-    headers_.CopyFrom(request.headers);
-    cors_exempt_headers_.CopyFrom(request.cors_exempt_headers);
+    headers_ = request.headers;
+    cors_exempt_headers_ = request.cors_exempt_headers;
   } else {
     network::ResourceRequest request_copy = request;
     request_copy.headers.MergeFrom(modified_headers);
