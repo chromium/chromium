@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
@@ -65,7 +66,8 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
     const std::string& password = args[1].GetString();
     auth::mojom::PasswordFactorEditor& password_factor_editor =
         auth::GetPasswordFactorEditor(
-            quick_unlock::QuickUnlockFactory::GetDelegate());
+            quick_unlock::QuickUnlockFactory::GetDelegate(),
+            g_browser_process->local_state());
 
     password_factor_editor.SetLocalPassword(
         GetToken(), password,

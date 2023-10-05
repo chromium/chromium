@@ -10,6 +10,7 @@
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -25,7 +26,8 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
                                       mojom::AuthFactor::kMinValue,
                                       mojom::AuthFactor::kMaxValue>;
 
-  explicit AuthFactorConfig(QuickUnlockStorageDelegate*);
+  explicit AuthFactorConfig(QuickUnlockStorageDelegate*,
+                            PrefService* local_state);
   ~AuthFactorConfig() override;
 
   AuthFactorConfig(const AuthFactorConfig&) = delete;
@@ -102,6 +104,11 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
       absl::optional<AuthenticationError> error);
 
   raw_ptr<QuickUnlockStorageDelegate> quick_unlock_storage_;
+  // This instance is held by browser process (see in_process_instances)
+  // as well as local_state_, so they should be local state would become
+  // invalid quite late in the flow, by that time it should not be possible
+  // to interact with AuthFactorConfig.
+  raw_ptr<PrefService, DisableDanglingPtrDetection> local_state_;
   mojo::ReceiverSet<mojom::AuthFactorConfig> receivers_;
   mojo::RemoteSet<mojom::FactorObserver> observers_;
   AuthFactorEditor auth_factor_editor_;

@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
@@ -109,7 +110,8 @@ void CryptohomeRecoverySetupScreen::SetupRecovery() {
         *context()->extra_factors_auth_session);
   }
   auto& recovery_editor = auth::GetRecoveryFactorEditor(
-      quick_unlock::QuickUnlockFactory::GetDelegate());
+      quick_unlock::QuickUnlockFactory::GetDelegate(),
+      g_browser_process->local_state());
   recovery_editor.Configure(
       token, /*enabled=*/true,
       base::BindOnce(&CryptohomeRecoverySetupScreen::OnRecoveryConfigured,

@@ -650,7 +650,8 @@ void OobeUI::BindInterface(
 void OobeUI::BindInterface(
     mojo::PendingReceiver<auth::mojom::AuthFactorConfig> receiver) {
   auth::BindToAuthFactorConfig(std::move(receiver),
-                               quick_unlock::QuickUnlockFactory::GetDelegate());
+                               quick_unlock::QuickUnlockFactory::GetDelegate(),
+                               g_browser_process->local_state());
 }
 
 void OobeUI::BindInterface(
@@ -659,13 +660,14 @@ void OobeUI::BindInterface(
   CHECK(pin_backend);
   auth::BindToPinFactorEditor(std::move(receiver),
                               quick_unlock::QuickUnlockFactory::GetDelegate(),
-                              *pin_backend);
+                              g_browser_process->local_state(), *pin_backend);
 }
 
 void OobeUI::BindInterface(
     mojo::PendingReceiver<auth::mojom::PasswordFactorEditor> receiver) {
   auth::BindToPasswordFactorEditor(
-      std::move(receiver), quick_unlock::QuickUnlockFactory::GetDelegate());
+      std::move(receiver), quick_unlock::QuickUnlockFactory::GetDelegate(),
+      g_browser_process->local_state());
 }
 
 OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)

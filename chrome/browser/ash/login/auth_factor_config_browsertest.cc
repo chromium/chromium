@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_ash_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -101,7 +102,8 @@ IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
   absl::optional<std::string> auth_token = MakeAuthToken(kPassword);
   ASSERT_TRUE(auth_token.has_value());
   mojom::PasswordFactorEditor& password_editor =
-      GetPasswordFactorEditor(quick_unlock::QuickUnlockFactory::GetDelegate());
+      GetPasswordFactorEditor(quick_unlock::QuickUnlockFactory::GetDelegate(),
+                              g_browser_process->local_state());
 
   base::test::TestFuture<mojom::ConfigureResult> result;
   password_editor.SetLocalPassword(*auth_token, kGoodPassword,
@@ -123,7 +125,8 @@ IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
   absl::optional<std::string> auth_token = MakeAuthToken(kPassword);
   ASSERT_TRUE(auth_token.has_value());
   mojom::PasswordFactorEditor& password_editor =
-      GetPasswordFactorEditor(quick_unlock::QuickUnlockFactory::GetDelegate());
+      GetPasswordFactorEditor(quick_unlock::QuickUnlockFactory::GetDelegate(),
+                              g_browser_process->local_state());
 
   base::test::TestFuture<mojom::ConfigureResult> result;
   password_editor.SetLocalPassword(*auth_token, kBadPassword,

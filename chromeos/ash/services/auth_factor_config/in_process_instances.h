@@ -23,25 +23,33 @@ namespace ash::auth {
 
 void BindToAuthFactorConfig(
     mojo::PendingReceiver<mojom::AuthFactorConfig> receiver,
-    QuickUnlockStorageDelegate&);
-mojom::AuthFactorConfig& GetAuthFactorConfig(QuickUnlockStorageDelegate&);
+    QuickUnlockStorageDelegate&,
+    PrefService* local_state);
+mojom::AuthFactorConfig& GetAuthFactorConfig(QuickUnlockStorageDelegate&,
+                                             PrefService* local_state);
 
 void BindToRecoveryFactorEditor(
     mojo::PendingReceiver<mojom::RecoveryFactorEditor> receiver,
-    QuickUnlockStorageDelegate&);
+    QuickUnlockStorageDelegate&,
+    PrefService* local_state);
 mojom::RecoveryFactorEditor& GetRecoveryFactorEditor(
-    QuickUnlockStorageDelegate&);
+    QuickUnlockStorageDelegate&,
+    PrefService* local_state);
 
 void BindToPinFactorEditor(
     mojo::PendingReceiver<mojom::PinFactorEditor> receiver,
     QuickUnlockStorageDelegate&,
+    PrefService* local_state,
     PinBackendDelegate&);
 
 void BindToPasswordFactorEditor(
     mojo::PendingReceiver<mojom::PasswordFactorEditor> receiver,
-    QuickUnlockStorageDelegate&);
+    QuickUnlockStorageDelegate&,
+    PrefService* local_state);
+
 mojom::PasswordFactorEditor& GetPasswordFactorEditor(
-    QuickUnlockStorageDelegate& delegate);
+    QuickUnlockStorageDelegate& delegate,
+    PrefService* local_state);
 
 }  // namespace ash::auth
 
