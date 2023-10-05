@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERFORMANCE_MANAGER_BROWSERTEST_HARNESS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERFORMANCE_MANAGER_BROWSERTEST_HARNESS_H_
 
+#include <set>
+
 #include "base/functional/function_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "content/public/test/content_browser_test.h"
@@ -18,6 +21,7 @@ class CommandLine;
 }
 
 namespace content {
+class BrowserContext;
 class Shell;
 class WebContents;
 }  // namespace content
@@ -45,6 +49,7 @@ class PerformanceManagerBrowserTestHarness
 
   // content::BrowserTestBase:
   void PreRunTestOnMainThread() override;
+  void PostRunTestOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   // An additional seam that gets invoked as part of the PM initialization. This
@@ -93,6 +98,8 @@ class PerformanceManagerBrowserTestHarness
   void OnGraphCreatedImpl(Graph* graph);
 
   GraphFeatures graph_features_;
+
+  std::set<raw_ptr<content::BrowserContext>> tracked_browser_contexts_;
 };
 
 }  // namespace performance_manager

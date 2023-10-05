@@ -13,6 +13,7 @@
 #include "components/performance_manager/graph/graph_impl.h"
 
 namespace content {
+class BrowserContext;
 class WebContents;
 }  // namespace content
 
@@ -74,6 +75,14 @@ class PerformanceManagerTestHarnessHelper {
   // creation to automatically add our observers; it suffices to ensure that the
   // PM is initialized (ie, initialize an instance of this helper).
   void OnWebContentsCreated(content::WebContents* contents);
+
+  // Creates worker helpers for the provided `browser_context`. The helpers must
+  // be deleted with OnBrowserContextRemoved() before calling TearDown().
+  void OnBrowserContextAdded(content::BrowserContext* browser_context);
+
+  // Deletes the worker helpers for the provided `browser_context`. The helpers
+  // must have been created with OnBrowserContextAdded() before calling this.
+  void OnBrowserContextRemoved(content::BrowserContext* browser_context);
 
   // Allows configuring which Graph features are initialized during "SetUp".
   // This defaults to initializing no features.

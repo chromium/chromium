@@ -18,7 +18,6 @@
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/resource_attribution/registry_browsertest_harness.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -52,18 +51,9 @@ class WorkerContextRegistryTest : public RegistryBrowserTestHarness {
     https_server_.AddDefaultHandlers(GetTestDataFilePath());
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     ASSERT_TRUE(https_server_.Start());
-
-    // Enable WorkerWatcher for the WebContents. In production this is done in
-    // ChromeBrowserMainExtraPartsPerformanceManager.
-    tracked_browser_context_ = web_contents()->GetBrowserContext();
-    PerformanceManagerRegistry::GetInstance()->NotifyBrowserContextAdded(
-        tracked_browser_context_);
   }
 
   void TearDownOnMainThread() override {
-    PerformanceManagerRegistry::GetInstance()->NotifyBrowserContextRemoved(
-        tracked_browser_context_);
-    tracked_browser_context_ = nullptr;
     ASSERT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
     Super::TearDownOnMainThread();
   }
@@ -105,10 +95,6 @@ class WorkerContextRegistryTest : public RegistryBrowserTestHarness {
   base::WeakPtr<WorkerNode> weak_worker_node_b_;
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-
- private:
-  // A BrowserContext that PerformanceManagerRegistry is tracking.
-  raw_ptr<content::BrowserContext> tracked_browser_context_;
 };
 
 class WorkerContextRegistryDisabledTest : public WorkerContextRegistryTest {
