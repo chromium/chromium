@@ -9,6 +9,30 @@
 
 #include "chrome/test/base/in_process_browser_test.h"
 
+enum class RunLoopTimeoutBehavior {
+  // Default behavior that doesn't alter the current way run loop internal
+  // mechanism handles timeouts.
+  kDefault,
+  // Continues the normal execution after the call to RunLoop::Run. This
+  // basically ignores the timeouts.
+  kContinue,
+  // Calls InProcessFuzzer::DeclareInfiniteLoop. This will still run the fuzz
+  // case as `kContinue` would until the Fuzz method returns.
+  kDeclareInfiniteLoop,
+};
+
+struct InProcessFuzzerOptions {
+  // The behavior to be set when a run loop times out.
+  RunLoopTimeoutBehavior run_loop_timeout_behavior =
+      RunLoopTimeoutBehavior::kDefault;
+
+  // Overrides the default 60s run loop timeout set by `BrowserTestBase`. See
+  // https://source.chromium.org/chromium/chromium/src/+/main:content/public/test/browser_test_base.cc?q=ScopedRunLoopTimeout.
+  // Mind that it doesn't guarantee that this will be the maximum time a fuzzing
+  // loop will take since ScopedRunLoopTimeout can be nested.
+  absl::optional<base::TimeDelta> run_loop_timeout = absl::nullopt;
+};
+
 // In-process fuzz test.
 //
 // This is equivalent to a browser test, in that the entire browser
@@ -40,7 +64,8 @@ class InProcessFuzzer : virtual public InProcessBrowserTest {
   // This is called prior to all the normal browser test setup,
   // so don't do anything important in your constructor.
   // Furthermore, this will be re-run even for child Chromium processes.
-  InProcessFuzzer();
+  // NOLINTNEXTLINE(runtime/explicit)
+  InProcessFuzzer(InProcessFuzzerOptions options = {});
   ~InProcessFuzzer() override;
 
   // Called by the main function to run this fuzzer, after the browser_test
@@ -51,6 +76,7 @@ class InProcessFuzzer : virtual public InProcessBrowserTest {
   void SetUpOnMainThread() override;
   void RunTestOnMainThread() override;
   void TestBody() override {}
+  void SetUp() override;
 
   friend int fuzz_callback(const uint8_t* data, size_t size);
 
@@ -92,9 +118,18 @@ class InProcessFuzzer : virtual public InProcessBrowserTest {
  private:
   int DoFuzz(const uint8_t* data, size_t size);
 
+  // Changes run loop timeout behavior to silently continue running the
+  // test/fuzzer instead of failing. Timed out run loops will stop running,
+  // but the rest of the test will continue executing.
+  void KeepRunningOnTimeout();
+
+  // Changes run loop timeouts behaviour to call `DeclareInfiniteLoop()`.
+  void DeclareInfiniteLoopOnTimeout();
+
  private:
   std::vector<std::string> libfuzzer_command_line_;
-  bool exit_after_fuzz_case_;
+  bool exit_after_fuzz_case_ = false;
+  InProcessFuzzerOptions options_;
 };
 
 class InProcessFuzzerFactoryBase {

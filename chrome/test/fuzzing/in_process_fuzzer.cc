@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/test/base/chrome_test_launcher.h"
 #include "chrome/test/fuzzing/in_process_fuzzer.h"
 #include "chrome/test/fuzzing/in_process_fuzzer_buildflags.h"
@@ -27,7 +28,8 @@ extern "C" int LLVMFuzzerRunDriver(int* argc,
 
 InProcessFuzzerFactoryBase* g_in_process_fuzzer_factory;
 
-InProcessFuzzer::InProcessFuzzer() : exit_after_fuzz_case_(false) {}
+InProcessFuzzer::InProcessFuzzer(InProcessFuzzerOptions options)
+    : options_(options) {}
 
 InProcessFuzzer::~InProcessFuzzer() = default;
 
@@ -35,6 +37,42 @@ base::CommandLine::StringVector
 InProcessFuzzer::GetChromiumCommandLineArguments() {
   base::CommandLine::StringVector empty;
   return empty;
+}
+
+void InProcessFuzzer::SetUp() {
+  absl::optional<base::test::ScopedRunLoopTimeout> scoped_timeout;
+  if (options_.run_loop_timeout) {
+    scoped_timeout.emplace(FROM_HERE, *options_.run_loop_timeout);
+  }
+
+  switch (options_.run_loop_timeout_behavior) {
+    case RunLoopTimeoutBehavior::kContinue:
+      KeepRunningOnTimeout();
+      break;
+    case RunLoopTimeoutBehavior::kDeclareInfiniteLoop:
+      DeclareInfiniteLoopOnTimeout();
+      break;
+    case RunLoopTimeoutBehavior::kDefault:
+      break;
+  }
+
+  // Note that browser tests are being launched by the `SetUp` method.
+  InProcessBrowserTest::SetUp();
+}
+
+void InProcessFuzzer::KeepRunningOnTimeout() {
+  base::test::ScopedRunLoopTimeout::SetTimeoutCallbackForTesting(
+      std::make_unique<base::test::ScopedRunLoopTimeout::TimeoutCallback>(
+          base::DoNothing()));
+}
+
+void InProcessFuzzer::DeclareInfiniteLoopOnTimeout() {
+  base::test::ScopedRunLoopTimeout::SetTimeoutCallbackForTesting(
+      std::make_unique<base::test::ScopedRunLoopTimeout::TimeoutCallback>(
+          base::IgnoreArgs<const base::Location&,
+                           base::RepeatingCallback<std::string()>,
+                           const base::Location&>(base::BindRepeating(
+              &InProcessFuzzer::DeclareInfiniteLoop, base::Unretained(this)))));
 }
 
 void InProcessFuzzer::Run(
