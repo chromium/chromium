@@ -5307,19 +5307,11 @@ if (is_chromeos_lacros) {
       # TODO(crbug/1489118): The test fails the flakiness test.
       "../browser/extensions/api/shared_storage/shared_storage_private_apitest.cc",
 
-      # download_controller_client_lacros_browsertest.cc should become a unit
-      # test.
-      "../browser/lacros/download_controller_client_lacros_browsertest.cc",
-      "../browser/lacros/field_trial_service_lacros_browsertest.cc",
       "../browser/lacros/file_manager_lacros_browsertest.cc",
-      "../browser/lacros/idle_service_lacros_browsertest.cc",
       "../browser/lacros/multitask_menu_nudge_delegate_lacros_browsertest.cc",
-      "../browser/lacros/parent_access_lacros_browsertest.cc",
       "../browser/policy/policy_extension_controlling_proxy_browsertest.cc",
       "../browser/sync/test/lacros/sync_apps_toggle_sharing_lacros_browsertest.cc",
       "../browser/sync/test/lacros/sync_custom_passphrase_sharing_lacros_browsertest.cc",
-      "../browser/upgrade_detector/get_installed_version_lacros_browsertest.cc",
-      "base/in_process_browser_test_browsertest_lacros.cc",
 
       # ScreenCapturer should work for lacros with crosapi.
       "base/save_desktop_snapshot_browsertest.cc",
@@ -5403,8 +5395,10 @@ if (is_chromeos_lacros) {
       "../browser/lacros/device_attributes_lacros_browsertest.cc",
       "../browser/lacros/download_status_updater_lacros_browsertest.cc",
       "../browser/lacros/embedded_a11y_manager_lacros_browsertest.cc",
+      "../browser/lacros/field_trial_service_lacros_browsertest.cc",
       "../browser/lacros/geolocation/system_geolocation_source_lacros_browsertest.cc",
       "../browser/lacros/holding_space_service_lacros_browsertest.cc",
+      "../browser/lacros/idle_service_lacros_browsertest.cc",
       "../browser/lacros/input_method_lacros_browsertest.cc",
       "../browser/lacros/keystore_service_lacros_browsertest.cc",
       "../browser/lacros/lacros_extension_apps_controller_lacros_browsertest.cc",
@@ -5419,6 +5413,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/net/proxy_config_service_lacros_browsertest.cc",
       "../browser/lacros/networking_attributes_lacros_browsertest.cc",
       "../browser/lacros/overview_lacros_browsertest.cc",
+      "../browser/lacros/parent_access_lacros_browsertest.cc",
       "../browser/lacros/policy_ui_lacros_browsertest.cc",
       "../browser/lacros/popup_lacros_browsertest.cc",
       "../browser/lacros/power_api_lacros_browsertest.cc",
@@ -5452,8 +5447,14 @@ if (is_chromeos_lacros) {
       "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc",
+      "../browser/upgrade_detector/get_installed_version_lacros_browsertest.cc",
       "../browser/web_applications/app_service/lacros_web_apps_controller_lacros_browsertest.cc",
       "../browser/web_applications/externally_managed_app_manager_browsertest.cc",
+      "base/in_process_browser_test_browsertest_lacros.cc",
+
+      # download_controller_client_lacros_browsertest.cc should become a unit
+      # test.
+      "../browser/lacros/download_controller_client_lacros_browsertest.cc",
 
       # dlp_content_manager_lacros_browsertest.cc should become a unit test.
       "../browser/chromeos/policy/dlp/dlp_content_manager_lacros_browsertest.cc",
