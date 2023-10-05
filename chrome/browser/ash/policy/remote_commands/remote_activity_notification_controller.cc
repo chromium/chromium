@@ -106,6 +106,8 @@ void RemoteActivityNotificationController::ShowNotification() {
           &RemoteActivityNotificationController::OnNotificationCloseButtonClick,
           base::Unretained(this))));
   widget_->Show();
+  widget_->SetBounds(
+      ash::Shell::GetPrimaryRootWindow()->GetBoundsInRootWindow());
 }
 
 }  // namespace policy
