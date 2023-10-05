@@ -93,7 +93,6 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void Enable() override;
   void Disable() override;
   void UpdateDownloadIcon(const IconUpdateInfo& updates) override;
-  void UpdateIconProgress(const ProgressInfo& info) override;
   void ShowDetails() override;
   void HideDetails() override;
   bool IsShowingDetails() const override;
@@ -189,6 +188,10 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void ShowPendingDownloadStartedAnimation();
 
   bool ShouldShowBubbleAsInactive() const;
+
+  // Whether to show the progress ring as a continuously spinning ring, during
+  // deep scanning or if the progress is indeterminate.
+  bool ShouldShowScanningAnimation() const;
 
   SkColor GetProgressColor(bool is_disabled, bool is_active) const;
 

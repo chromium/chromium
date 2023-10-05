@@ -269,9 +269,10 @@ void DownloadDisplayController::UpdateToolbarButtonState(
                                 last_complete_time)) {
     ShowToolbarButton();
   }
-  display_->UpdateDownloadIcon(updates);
 
-  display_->UpdateIconProgress(progress_info);
+  updates.new_progress = progress_info;
+
+  display_->UpdateDownloadIcon(updates);
 }
 
 void DownloadDisplayController::UpdateDownloadIconToInactive() {

@@ -85,10 +85,9 @@ class FakeDownloadDisplay : public DownloadDisplay {
     if (updates.new_active) {
       active_ = *updates.new_active;
     }
-  }
-
-  void UpdateIconProgress(const ProgressInfo& info) override {
-    progress_info_ = info;
+    if (updates.new_progress) {
+      progress_info_ = *updates.new_progress;
+    }
   }
 
   void ShowDetails() override { detail_shown_ = true; }
