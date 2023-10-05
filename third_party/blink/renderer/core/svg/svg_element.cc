@@ -592,7 +592,7 @@ void SVGElement::AddInstance(SVGElement* instance) {
   DCHECK(instance->HasSVGRareData());
   DCHECK_EQ(instance->SvgRareData()->CorrespondingElement(), this);
 
-  HeapHashSet<WeakMember<SVGElement>>& instances =
+  HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>>& instances =
       EnsureSVGRareData()->ElementInstances();
   DCHECK(!instances.Contains(instance));
 
@@ -610,7 +610,7 @@ void SVGElement::RemoveInstance(SVGElement* instance) {
   DCHECK(instance->HasSVGRareData());
   DCHECK_EQ(instance->SvgRareData()->CorrespondingElement(), this);
 
-  HeapHashSet<WeakMember<SVGElement>>& instances =
+  HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>>& instances =
       SvgRareData()->ElementInstances();
 
   instances.erase(instance);
@@ -619,14 +619,15 @@ void SVGElement::RemoveInstance(SVGElement* instance) {
     EnsureSVGRareData()->ReplayStrongElementInstances().erase(instance);
 }
 
-static HeapHashSet<WeakMember<SVGElement>>& EmptyInstances() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<HeapHashSet<WeakMember<SVGElement>>>, empty_instances,
-      (MakeGarbageCollected<HeapHashSet<WeakMember<SVGElement>>>()));
+using ReplaySVGElementSet = HeapHashSet<WeakMember<SVGElement>,WTF::MemberHashRecordReplayId<SVGElement>>;
+
+static ReplaySVGElementSet& EmptyInstances() {
+  DEFINE_STATIC_LOCAL(Persistent<ReplaySVGElementSet>, empty_instances,
+                      (MakeGarbageCollected<ReplaySVGElementSet>()));
   return *empty_instances;
 }
 
-const HeapHashSet<WeakMember<SVGElement>>& SVGElement::InstancesForElement()
+const HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>>& SVGElement::InstancesForElement()
     const {
   if (!HasSVGRareData())
     return EmptyInstances();
@@ -836,7 +837,7 @@ bool SVGElement::HaveLoadedRequiredResources() {
 
 static inline void CollectInstancesForSVGElement(
     SVGElement* element,
-    HeapHashSet<WeakMember<SVGElement>>& instances) {
+    HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>>& instances) {
   DCHECK(element);
   if (element->ContainingShadowRoot())
     return;
@@ -853,7 +854,7 @@ void SVGElement::AddedEventListener(
   Node::AddedEventListener(event_type, registered_listener);
 
   // Add event listener to all shadow tree DOM element instances
-  HeapHashSet<WeakMember<SVGElement>> instances;
+  HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>> instances;
   CollectInstancesForSVGElement(this, instances);
   AddEventListenerOptionsResolved* options = registered_listener.Options();
   EventListener* listener = registered_listener.Callback();
@@ -870,7 +871,7 @@ void SVGElement::RemovedEventListener(
   Node::RemovedEventListener(event_type, registered_listener);
 
   // Remove event listener from all shadow tree DOM element instances
-  HeapHashSet<WeakMember<SVGElement>> instances;
+  HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>> instances;
   CollectInstancesForSVGElement(this, instances);
   EventListenerOptions* options = registered_listener.Options();
   const EventListener* listener = registered_listener.Callback();
@@ -1111,7 +1112,7 @@ void SVGElement::InvalidateInstances() {
   if (InstanceUpdatesBlocked())
     return;
 
-  const HeapHashSet<WeakMember<SVGElement>>& set = InstancesForElement();
+  const HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>>& set = InstancesForElement();
   if (set.empty())
     return;
 
@@ -1134,7 +1135,7 @@ void SVGElement::InvalidateInstances() {
 void SVGElement::SetNeedsStyleRecalcForInstances(
     StyleChangeType change_type,
     const StyleChangeReasonForTracing& reason) {
-  const HeapHashSet<WeakMember<SVGElement>>& set = InstancesForElement();
+  const HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>>& set = InstancesForElement();
   if (set.empty())
     return;
 
