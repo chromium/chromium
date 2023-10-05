@@ -984,8 +984,15 @@
       'filepath': 'dbus/',
     },
     'desktop_in_product_help': {
-      'filepath': 'chrome/browser/ui/in_product_help|'\
-                  'chrome/browser/ui/views/in_product_help',
+      'filepath': 'components/feature_engagement/|'\
+                  'components/user_education/|'\
+                  'chrome/browser/resources/internals/user_education/|'\
+                  'chrome/browser/resources/whats_new/|'\
+                  'chrome/browser/user_education/|'\
+                  'chrome/browser/ui/user_education/|'\
+                  'chrome/browser/ui/views/user_education/|'\
+                  'chrome/browser/ui/webui/internals/user_education/|'\
+                  'chrome/browser/ui/webui/whats_new/',
     },
     'device_bluetooth': {
       'filepath': 'device/.*bluetooth'
@@ -2738,7 +2745,9 @@
                    'pnevase@microsoft.com'],
     'data_decoder': ['mbarowsky+watch-data-decoder@chromium.org'],
     'dbus': ['hashimoto+watch@chromium.org'],
-    'desktop_in_product_help': ['collinbaker+watch@chromium.org'],
+    'desktop_in_product_help': ['dfried+watch@chromium.org',
+                                'mickeyburks+watch@chromium.org',
+                                'estalin+watch@chromium.org'],
     'device_bluetooth': ['mattreynolds+watch@chromium.org'],
     'device_chooser': ['mattreynolds+watch@chromium.org',
                        'odejesush+watch@chromium.org'],
