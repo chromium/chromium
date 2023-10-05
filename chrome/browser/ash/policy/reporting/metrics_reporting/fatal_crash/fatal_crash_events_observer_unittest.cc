@@ -540,7 +540,10 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
       FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTimeLate));
 }
 
-TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
+// Tests that if the thread is interrupted somehow when the event is being
+// processed (e.g., ash crashes), a crash with the same local ID should still be
+// reported.
+TEST_F(FatalCrashEventsObserverReportedLocalIdsTest,
        RepeatedLocalIDReportedIfFirstTimeIsInterrupted) {
   base::test::TestFuture<MetricData> result_metric_data;
   auto fatal_crash_events_observer =
@@ -551,14 +554,14 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
   CreateFatalCrashEvent(
       /*local_id=*/kLocalId, /*capture_time=*/kCaptureTime,
       *fatal_crash_events_observer, &result_metric_data);
-  if (reload()) {
-    fatal_crash_events_observer =
-        CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
-  }
 
-  // Now back to what production code does.
+  // Now back to what production code does (no interruption).
   fatal_crash_test_environment_.SetInterruptedAfterEventObserved(
       *fatal_crash_events_observer, /*interrupted_after_event_observed=*/false);
+
+  // Always reload to simulate what happens practically, e.g., ash crashes.
+  fatal_crash_events_observer =
+      CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
 
   // Event with the same local ID is reported again.
   auto crash_event_info = NewCrashEventInfo(/*is_uploaded=*/false);
@@ -785,6 +788,7 @@ struct FatalCrashEventsObserverUploadedCrashCase {
   uint64_t offset;
   bool should_be_reported;
   bool creatable_save_file = true;
+  bool interrupt_after_event_observed = false;
 };
 
 // Tests whether uploads.log creation time and offset are respected in deciding
@@ -857,6 +861,13 @@ class FatalCrashEventsObserverUploadedCrashTest
   bool creatable_save_file() const {
     return std::get<0>(GetParam()).creatable_save_file;
   }
+
+  // Should the first event be interrupted after the event observed callback.
+  // Used to simulate the thread is interrupted somehow when the event is being
+  // processed (e.g., ash crashes).
+  bool interrupt_after_event_observed() const {
+    return std::get<0>(GetParam()).interrupt_after_event_observed;
+  }
 };
 
 TEST_P(FatalCrashEventsObserverUploadedCrashTest,
@@ -875,8 +886,19 @@ TEST_P(FatalCrashEventsObserverUploadedCrashTest,
   base::test::TestFuture<MetricData> result_metric_data;
   auto fatal_crash_events_observer =
       CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
+
+  // If required by the test, simulate the thread is interrupted after event
+  // observed callback is called.
+  fatal_crash_test_environment_.SetInterruptedAfterEventObserved(
+      *fatal_crash_events_observer, interrupt_after_event_observed());
+
   CreateFatalCrashEvent(kCrashReportId, kCreationTime, kOffset,
                         *fatal_crash_events_observer, &result_metric_data);
+
+  // Now back to what production code does (no interruption).
+  fatal_crash_test_environment_.SetInterruptedAfterEventObserved(
+      *fatal_crash_events_observer, /*interrupted_after_event_observed=*/false);
+
   if (reload()) {
     fatal_crash_events_observer =
         CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
@@ -996,9 +1018,34 @@ INSTANTIATE_TEST_SUITE_P(
            "_"sv,
            FatalCrashEventsObserverUploadedCrashTest::GetTestNameForOffset(
                std::get<0>(info.param).offset),
+           "_uncreatable_file"sv});
+    });
+
+// Tests that if the thread is interrupted right after the on event callback
+// (e.g., ash crashes), the event that has been processed would not affect the
+// state of the observer and a later crash with the same creation time and
+// offset should still be reported.
+INSTANTIATE_TEST_SUITE_P(
+    FatalCrashEventsObserverUploadedCrashTestsForInterruptionAfterOnEvent,
+    FatalCrashEventsObserverUploadedCrashTest,
+    ::testing::Values(
+        std::make_tuple<FatalCrashEventsObserverUploadedCrashCase, bool>(
+            {.creation_time =
+                 FatalCrashEventsObserverUploadedCrashTest::kCreationTime,
+             .offset = FatalCrashEventsObserverUploadedCrashTest::kOffset,
+             .should_be_reported = true,
+             .interrupt_after_event_observed = true},
+            /*reload=*/true)),
+    [](const testing::TestParamInfo<
+        FatalCrashEventsObserverUploadedCrashTest::ParamType>& info) {
+      return base::StrCat(
+          {FatalCrashEventsObserverUploadedCrashTest::
+               GetTestNameForCreationTime(
+                   std::get<0>(info.param).creation_time),
            "_"sv,
-           std::get<0>(info.param).creatable_save_file ? "creatable_file"sv
-                                                       : "uncreatable_file"sv});
+           FatalCrashEventsObserverUploadedCrashTest::GetTestNameForOffset(
+               std::get<0>(info.param).offset),
+           "_interrupted"sv});
     });
 
 struct FatalCrashEventsObserverUploadedCrashCorruptSaveFileCase {
