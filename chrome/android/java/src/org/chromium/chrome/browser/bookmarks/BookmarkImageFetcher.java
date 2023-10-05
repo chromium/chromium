@@ -12,7 +12,6 @@ import android.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -55,8 +54,7 @@ public class BookmarkImageFetcher {
         mBookmarkModel = bookmarkModel;
         mImageFetcher = imageFetcher;
         mLargeIconBridge = largeIconBridge;
-        mFaviconFetchSize =
-                mContext.getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
+        mFaviconFetchSize = BookmarkUtils.getFaviconFetchSize(mContext.getResources());
         mRoundedIconGenerator = roundedIconGenerator;
         mImageSize = imageSize;
         mFaviconSize = faviconSize;
@@ -116,11 +114,19 @@ public class BookmarkImageFetcher {
      * @param callback The callback to receive the favicon.
      */
     public void fetchFaviconForBookmark(BookmarkItem item, Callback<Drawable> callback) {
-        mLargeIconBridge.getLargeIconForUrl(item.getUrl(), mFaviconFetchSize,
+        mLargeIconBridge.getLargeIconForUrl(
+                item.getUrl(),
+                /*minSize*/ mFaviconFetchSize,
+                /*desiredSize*/ mFaviconSize,
                 (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault, int iconType) -> {
-                    callback.onResult(FaviconUtils.getIconDrawableWithoutFilter(icon, item.getUrl(),
-                            fallbackColor, mRoundedIconGenerator, mContext.getResources(),
-                            mFaviconSize));
+                    callback.onResult(
+                            FaviconUtils.getIconDrawableWithoutFilter(
+                                    icon,
+                                    item.getUrl(),
+                                    fallbackColor,
+                                    mRoundedIconGenerator,
+                                    mContext.getResources(),
+                                    mFaviconSize));
                 });
     }
 

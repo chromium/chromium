@@ -230,6 +230,7 @@ found in the LICENSE file.
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
     <dimen name="bookmark_reading_list_section_header_padding_top">15dp</dimen>
     <dimen name="bookmark_favicon_display_size">20dp</dimen>
+    <dimen name="improved_bookmark_favicon_text_size">18dp</dimen>
 
      <!-- Improved bookmark row properties. -->
      <!-- The size of the start image for compact rows. -->

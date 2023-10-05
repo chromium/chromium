@@ -112,41 +112,72 @@ public class BookmarkImageFetcherTest {
 
     @Before
     public void setUp() {
-        mActivityScenarioRule.getScenario().onActivity((activity) -> {
-            mActivity = spy(activity);
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        (activity) -> {
+                            mActivity = spy(activity);
 
-            // Setup BookmarkModel.
-            doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
-            doReturn(Arrays.asList(mBookmarkId1, mBookmarkId2))
-                    .when(mBookmarkModel)
-                    .getChildIds(mFolderId);
-            doReturn(mFolderItem).when(mBookmarkModel).getBookmarkById(mFolderId);
-            doReturn(mBookmarkItem1).when(mBookmarkModel).getBookmarkById(mBookmarkId1);
-            doReturn(mBookmarkItem2).when(mBookmarkModel).getBookmarkById(mBookmarkId2);
+                            // Setup BookmarkModel.
+                            doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
+                            doReturn(Arrays.asList(mBookmarkId1, mBookmarkId2))
+                                    .when(mBookmarkModel)
+                                    .getChildIds(mFolderId);
+                            doReturn(mFolderItem).when(mBookmarkModel).getBookmarkById(mFolderId);
+                            doReturn(mBookmarkItem1)
+                                    .when(mBookmarkModel)
+                                    .getBookmarkById(mBookmarkId1);
+                            doReturn(mBookmarkItem2)
+                                    .when(mBookmarkModel)
+                                    .getBookmarkById(mBookmarkId2);
 
-            // Setup LargeIconBridge.
-            doCallback(2, (LargeIconCallback callback) -> {
-                callback.onLargeIconAvailable(mBitmap, Color.GREEN, false, IconType.FAVICON);
-            }).when(mLargeIconBridge).getLargeIconForUrl(any(), anyInt(), any());
+                            // Setup LargeIconBridge.
+                            doCallback(
+                                            3,
+                                            (LargeIconCallback callback) -> {
+                                                callback.onLargeIconAvailable(
+                                                        mBitmap,
+                                                        Color.GREEN,
+                                                        false,
+                                                        IconType.FAVICON);
+                                            })
+                                    .when(mLargeIconBridge)
+                                    .getLargeIconForUrl(any(), anyInt(), anyInt(), any());
 
-            // Setup image fetching.
-            doCallback(1, (Callback<GURL> callback) -> {
-                callback.onResult(JUnitTestGURLs.EXAMPLE_URL);
-            }).when(mBookmarkModel).getImageUrlForBookmark(any(), any());
-            doCallback(1, (Callback<Bitmap> callback) -> {
-                callback.onResult(mBitmap);
-            }).when(mImageFetcher).fetchImage(any(), any());
+                            // Setup image fetching.
+                            doCallback(
+                                            1,
+                                            (Callback<GURL> callback) -> {
+                                                callback.onResult(JUnitTestGURLs.EXAMPLE_URL);
+                                            })
+                                    .when(mBookmarkModel)
+                                    .getImageUrlForBookmark(any(), any());
+                            doCallback(
+                                            1,
+                                            (Callback<Bitmap> callback) -> {
+                                                callback.onResult(mBitmap);
+                                            })
+                                    .when(mImageFetcher)
+                                    .fetchImage(any(), any());
 
-            // Setup SyncService.
-            doReturn(true).when(mSyncService).isSyncFeatureActive();
-            doReturn(Collections.singleton(ModelType.BOOKMARKS))
-                    .when(mSyncService)
-                    .getActiveDataTypes();
+                            // Setup SyncService.
+                            doReturn(true).when(mSyncService).isSyncFeatureActive();
+                            doReturn(Collections.singleton(ModelType.BOOKMARKS))
+                                    .when(mSyncService)
+                                    .getActiveDataTypes();
 
-            mBookmarkImageFetcher = new BookmarkImageFetcher(mActivity, mBookmarkModel,
-                    mImageFetcher, mLargeIconBridge, mIconGenerator, 1, 1, mSyncService);
-            mBookmarkImageFetcher.setupFetchProperties(mIconGenerator, 100, 100);
-        });
+                            mBookmarkImageFetcher =
+                                    new BookmarkImageFetcher(
+                                            mActivity,
+                                            mBookmarkModel,
+                                            mImageFetcher,
+                                            mLargeIconBridge,
+                                            mIconGenerator,
+                                            1,
+                                            1,
+                                            mSyncService);
+                            mBookmarkImageFetcher.setupFetchProperties(mIconGenerator, 100, 100);
+                        });
     }
 
     @Test
@@ -177,7 +208,7 @@ public class BookmarkImageFetcherTest {
                 mBookmarkItem1, mDrawableCallback);
         verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
         // There shouldn't be any interaction with large icon bridge since an image was found.
-        verify(mLargeIconBridge, times(0)).getLargeIconForUrl(any(), anyInt(), any());
+        verify(mLargeIconBridge, times(0)).getLargeIconForUrl(any(), anyInt(), anyInt(), any());
 
         assertNotNull(mDrawableCaptor.getValue());
     }
@@ -191,7 +222,7 @@ public class BookmarkImageFetcherTest {
         mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
                 mBookmarkItem1, mDrawableCallback);
         verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
-        verify(mLargeIconBridge).getLargeIconForUrl(any(), anyInt(), any());
+        verify(mLargeIconBridge).getLargeIconForUrl(any(), anyInt(), anyInt(), any());
 
         assertNotNull(mDrawableCaptor.getValue());
     }
@@ -201,7 +232,7 @@ public class BookmarkImageFetcherTest {
         mBookmarkImageFetcher.fetchFaviconForBookmark(mBookmarkItem1, mDrawableCallback);
         verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
         // There shouldn't be any interaction with large icon bridge since an image was found.
-        verify(mLargeIconBridge).getLargeIconForUrl(any(), anyInt(), any());
+        verify(mLargeIconBridge).getLargeIconForUrl(any(), anyInt(), anyInt(), any());
 
         assertNotNull(mDrawableCaptor.getValue());
     }
@@ -213,7 +244,7 @@ public class BookmarkImageFetcherTest {
         verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
         verify(mImageFetcher, times(1)).fetchImage(any(), any());
         // There shouldn't be any interaction with large icon bridge since an image was found.
-        verify(mLargeIconBridge, times(0)).getLargeIconForUrl(any(), anyInt(), any());
+        verify(mLargeIconBridge, times(0)).getLargeIconForUrl(any(), anyInt(), anyInt(), any());
 
         assertNotNull(mDrawableCaptor.getValue());
     }

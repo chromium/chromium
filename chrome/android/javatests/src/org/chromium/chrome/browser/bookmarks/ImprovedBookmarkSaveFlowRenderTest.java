@@ -29,7 +29,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkSaveFlowProperties.FolderText;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -127,8 +126,8 @@ public class ImprovedBookmarkSaveFlowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testFavicon() throws IOException {
-        int bitmapSize = BookmarkUtils.getFaviconDisplaySize(
-                mActivityTestRule.getActivity().getResources(), BookmarkRowDisplayPref.VISUAL);
+        int bitmapSize =
+                BookmarkUtils.getFaviconDisplaySize(mActivityTestRule.getActivity().getResources());
         Bitmap bitmap = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         bitmap.eraseColor(Color.GREEN);
         TestThreadUtils.runOnUiThreadBlocking(() -> {

@@ -310,22 +310,24 @@ class BookmarkManagerMediator
         }
     };
 
-    private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver = new Observer() {
-        @Override
-        public void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {
-            Resources res = mContext.getResources();
-            mBookmarkImageFetcher.setupFetchProperties(
-                    BookmarkUtils.getRoundedIconGenerator(mContext, displayPref),
-                    BookmarkUtils.getImageIconSize(res, displayPref),
-                    BookmarkUtils.getFaviconDisplaySize(res, displayPref));
-            refresh();
-        }
+    private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
+            new Observer() {
+                @Override
+                public void onBookmarkRowDisplayPrefChanged(
+                        @BookmarkRowDisplayPref int displayPref) {
+                    Resources res = mContext.getResources();
+                    mBookmarkImageFetcher.setupFetchProperties(
+                            BookmarkUtils.getRoundedIconGenerator(mContext, displayPref),
+                            BookmarkUtils.getImageIconSize(res, displayPref),
+                            BookmarkUtils.getFaviconDisplaySize(res));
+                    refresh();
+                }
 
-        @Override
-        public void onBookmarkRowSortOrderChanged(@BookmarkRowSortOrder int sortOrder) {
-            refresh();
-        }
-    };
+                @Override
+                public void onBookmarkRowSortOrderChanged(@BookmarkRowSortOrder int sortOrder) {
+                    refresh();
+                }
+            };
 
     private final ObserverList<BookmarkUiObserver> mUiObservers = new ObserverList<>();
     private final BookmarkDragStateDelegate mDragStateDelegate = new BookmarkDragStateDelegate();

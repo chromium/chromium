@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -47,10 +46,11 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     public BookmarkItemRow(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        final @BookmarkRowDisplayPref int displayPref = BookmarkUiPrefs.getDisplayPrefForLegacy();
-        mIconGenerator = BookmarkUtils.getRoundedIconGenerator(getContext(), displayPref);
+        mIconGenerator =
+                BookmarkUtils.getRoundedIconGenerator(
+                        getContext(), BookmarkUiPrefs.getDisplayPrefForLegacy());
         mFetchFaviconSize = BookmarkUtils.getFaviconFetchSize(getResources());
-        mDisplayFaviconSize = BookmarkUtils.getFaviconDisplaySize(getResources(), displayPref);
+        mDisplayFaviconSize = BookmarkUtils.getFaviconDisplaySize(getResources());
     }
 
     // BookmarkRow implementation.

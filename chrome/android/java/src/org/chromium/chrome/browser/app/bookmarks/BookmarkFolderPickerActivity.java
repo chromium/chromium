@@ -70,14 +70,19 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
 
         Resources res = getResources();
         Profile profile = Profile.getLastUsedRegularProfile();
-        mBookmarkImageFetcher = new BookmarkImageFetcher(this, mBookmarkModel,
-                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
-                        profile.getProfileKey(), GlobalDiscardableReferencePool.getReferencePool()),
-                new LargeIconBridge(profile),
-                BookmarkUtils.getRoundedIconGenerator(this, BookmarkRowDisplayPref.VISUAL),
-                BookmarkUtils.getImageIconSize(res, BookmarkRowDisplayPref.VISUAL),
-                BookmarkUtils.getFaviconDisplaySize(res, BookmarkRowDisplayPref.VISUAL),
-                SyncServiceFactory.getForProfile(profile));
+        mBookmarkImageFetcher =
+                new BookmarkImageFetcher(
+                        this,
+                        mBookmarkModel,
+                        ImageFetcherFactory.createImageFetcher(
+                                ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                                profile.getProfileKey(),
+                                GlobalDiscardableReferencePool.getReferencePool()),
+                        new LargeIconBridge(profile),
+                        BookmarkUtils.getRoundedIconGenerator(this, BookmarkRowDisplayPref.VISUAL),
+                        BookmarkUtils.getImageIconSize(res, BookmarkRowDisplayPref.VISUAL),
+                        BookmarkUtils.getFaviconDisplaySize(res),
+                        SyncServiceFactory.getForProfile(profile));
         BookmarkAddNewFolderCoordinator addNewFolderCoordinator =
                 new BookmarkAddNewFolderCoordinator(this,
                         new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP),

@@ -163,10 +163,14 @@ public class BookmarkManagerCoordinator
         final @BookmarkRowDisplayPref int displayPref =
                 mBookmarkUiPrefs.getBookmarkRowDisplayPref();
         BookmarkImageFetcher bookmarkImageFetcher =
-                new BookmarkImageFetcher(context, mBookmarkModel, mImageFetcher, largeIconBridge,
+                new BookmarkImageFetcher(
+                        context,
+                        mBookmarkModel,
+                        mImageFetcher,
+                        largeIconBridge,
                         BookmarkUtils.getRoundedIconGenerator(context, displayPref),
                         BookmarkUtils.getImageIconSize(res, displayPref),
-                        BookmarkUtils.getFaviconDisplaySize(res, displayPref),
+                        BookmarkUtils.getFaviconDisplaySize(res),
                         SyncServiceFactory.getForProfile(profile));
 
         BookmarkUndoController bookmarkUndoController =

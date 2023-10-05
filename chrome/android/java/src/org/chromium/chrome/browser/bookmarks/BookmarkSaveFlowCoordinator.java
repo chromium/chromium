@@ -91,15 +91,18 @@ public class BookmarkSaveFlowCoordinator {
         }
 
         Resources res = mContext.getResources();
-        BookmarkImageFetcher bookmarkImageFetcher = new BookmarkImageFetcher(context,
-                mBookmarkModel,
-                ImageFetcherFactory.createImageFetcher(
-                        ImageFetcherConfig.DISK_CACHE_ONLY, mProfile.getProfileKey()),
-                new LargeIconBridge(mProfile),
-                BookmarkUtils.getRoundedIconGenerator(mContext, BookmarkRowDisplayPref.VISUAL),
-                res.getDimensionPixelSize(R.dimen.improved_bookmark_save_flow_image_size),
-                BookmarkUtils.getFaviconDisplaySize(res, BookmarkRowDisplayPref.VISUAL),
-                SyncServiceFactory.getForProfile(profile));
+        BookmarkImageFetcher bookmarkImageFetcher =
+                new BookmarkImageFetcher(
+                        context,
+                        mBookmarkModel,
+                        ImageFetcherFactory.createImageFetcher(
+                                ImageFetcherConfig.DISK_CACHE_ONLY, mProfile.getProfileKey()),
+                        new LargeIconBridge(mProfile),
+                        BookmarkUtils.getRoundedIconGenerator(
+                                mContext, BookmarkRowDisplayPref.VISUAL),
+                        res.getDimensionPixelSize(R.dimen.improved_bookmark_save_flow_image_size),
+                        BookmarkUtils.getFaviconDisplaySize(res),
+                        SyncServiceFactory.getForProfile(profile));
 
         mMediator = new BookmarkSaveFlowMediator(mBookmarkModel, mPropertyModel, mContext,
                 this::close, shoppingService, bookmarkImageFetcher, mProfile);

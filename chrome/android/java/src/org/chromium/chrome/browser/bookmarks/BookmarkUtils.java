@@ -664,18 +664,23 @@ public class BookmarkUtils {
     public static RoundedIconGenerator getRoundedIconGenerator(
             Context context, @BookmarkRowDisplayPref int displayPref) {
         Resources res = context.getResources();
-        boolean visual = displayPref == BookmarkRowDisplayPref.VISUAL;
-        int displayIconSize = getFaviconDisplaySize(res, displayPref);
+        int iconSize = getFaviconDisplaySize(res);
 
-        return visual
-                ? new RoundedIconGenerator(displayIconSize, displayIconSize, displayIconSize / 2,
-                        context.getColor(R.color.default_favicon_background_color),
+        return displayPref == BookmarkRowDisplayPref.VISUAL
+                ? new RoundedIconGenerator(
+                        iconSize,
+                        iconSize,
+                        iconSize / 2,
+                        res.getColor(R.color.default_favicon_background_color),
                         getDisplayTextSize(res))
                 : FaviconUtils.createCircularIconGenerator(context);
     }
 
     /** Returns the size to use when fetching favicons. */
     public static int getFaviconFetchSize(Resources resources) {
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            return resources.getDimensionPixelSize(R.dimen.tile_view_icon_min_size);
+        }
         return resources.getDimensionPixelSize(R.dimen.default_favicon_min_size);
     }
 
@@ -696,8 +701,10 @@ public class BookmarkUtils {
     }
 
     /** Returns the size to use when displaying the favicon. */
-    public static int getFaviconDisplaySize(
-            Resources resources, @BookmarkRowDisplayPref int displayPref) {
+    public static int getFaviconDisplaySize(Resources resources) {
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            return resources.getDimensionPixelSize(R.dimen.tile_view_icon_size_modern);
+        }
         return resources.getDimensionPixelSize(R.dimen.bookmark_favicon_display_size);
     }
 
@@ -811,7 +818,7 @@ public class BookmarkUtils {
 
     private static int getDisplayTextSize(Resources resources) {
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return resources.getDimensionPixelSize(R.dimen.circular_monogram_text_size);
+            return resources.getDimensionPixelSize(R.dimen.improved_bookmark_favicon_text_size);
         }
 
         return BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled()

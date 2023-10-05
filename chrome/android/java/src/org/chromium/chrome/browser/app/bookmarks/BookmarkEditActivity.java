@@ -153,17 +153,25 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
 
             Resources res = getResources();
             Profile profile = Profile.getLastUsedRegularProfile();
-            mFolderSelectRowCoordinator = new ImprovedBookmarkRowCoordinator(this,
-                    new BookmarkImageFetcher(this, mModel,
-                            ImageFetcherFactory.createImageFetcher(
-                                    ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey()),
-                            new LargeIconBridge(profile),
-                            BookmarkUtils.getRoundedIconGenerator(
-                                    this, BookmarkRowDisplayPref.VISUAL),
-                            BookmarkUtils.getImageIconSize(res, BookmarkRowDisplayPref.VISUAL),
-                            BookmarkUtils.getFaviconDisplaySize(res, BookmarkRowDisplayPref.VISUAL),
-                            SyncServiceFactory.getForProfile(profile)),
-                    mModel, mBookmarkUiPrefs, ShoppingServiceFactory.getForProfile(profile));
+            mFolderSelectRowCoordinator =
+                    new ImprovedBookmarkRowCoordinator(
+                            this,
+                            new BookmarkImageFetcher(
+                                    this,
+                                    mModel,
+                                    ImageFetcherFactory.createImageFetcher(
+                                            ImageFetcherConfig.DISK_CACHE_ONLY,
+                                            profile.getProfileKey()),
+                                    new LargeIconBridge(profile),
+                                    BookmarkUtils.getRoundedIconGenerator(
+                                            this, BookmarkRowDisplayPref.VISUAL),
+                                    BookmarkUtils.getImageIconSize(
+                                            res, BookmarkRowDisplayPref.VISUAL),
+                                    BookmarkUtils.getFaviconDisplaySize(res),
+                                    SyncServiceFactory.getForProfile(profile)),
+                            mModel,
+                            mBookmarkUiPrefs,
+                            ShoppingServiceFactory.getForProfile(profile));
 
             mFolderPickerRowContainer = findViewById(R.id.improved_folder_row_container);
         } else {
