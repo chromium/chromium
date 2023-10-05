@@ -181,8 +181,9 @@ bool DawnPlatform::IsFeatureEnabled(dawn::platform::Features feature) {
   switch (feature) {
     case dawn::platform::Features::kWebGPUUseDXC:
       return base::FeatureList::IsEnabled(features::kWebGPUUseDXC);
+    default:
+      return false;
   }
-  return false;
 }
 
 }  // namespace gpu::webgpu
