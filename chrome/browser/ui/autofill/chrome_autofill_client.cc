@@ -163,6 +163,7 @@
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/compose/chrome_compose_client.h"
+#include "components/compose/core/browser/compose_manager.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -263,7 +264,7 @@ IbanManager* ChromeAutofillClient::GetIbanManager() {
   return IbanManagerFactory::GetForProfile(profile);
 }
 
-compose::ComposeManager* ChromeAutofillClient::GetComposeManager() {
+AutofillComposeDelegate* ChromeAutofillClient::GetComposeDelegate() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   auto* client = ChromeComposeClient::FromWebContents(web_contents());
   return client ? &client->manager() : nullptr;

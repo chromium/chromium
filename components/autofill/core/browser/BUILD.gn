@@ -79,6 +79,7 @@ static_library("browser") {
     "autofill_browser_util.h",
     "autofill_client.cc",
     "autofill_client.h",
+    "autofill_compose_delegate.h",
     "autofill_credit_card_policy_handler.cc",
     "autofill_credit_card_policy_handler.h",
     "autofill_data_util.cc",
@@ -729,10 +730,6 @@ static_library("browser") {
       "//ui/native_theme:native_theme_browser",
     ]
   }
-
-  if (!is_android && !is_ios && !is_chromeos) {
-    deps += [ "//components/compose/core/browser:browser" ]
-  }
 }
 
 static_library("legal_message_line") {
@@ -783,6 +780,8 @@ static_library("test_support") {
     "metrics/ukm_metrics_test_utils.h",
     "mock_autocomplete_history_manager.cc",
     "mock_autocomplete_history_manager.h",
+    "mock_autofill_compose_delegate.cc",
+    "mock_autofill_compose_delegate.h",
     "mock_autofill_manager_observer.cc",
     "mock_autofill_manager_observer.h",
     "mock_autofill_optimization_guide.cc",
@@ -1185,7 +1184,6 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//components/autofill/core/common",
     "//components/commerce/core:shopping_service_test_support",
-    "//components/compose/core/browser:test_support",
     "//components/device_reauth:test_support",
     "//components/feature_engagement",
     "//components/image_fetcher/core:core",

@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
+#include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
@@ -68,7 +69,7 @@ IbanManager* AutofillClient::GetIbanManager() {
   return nullptr;
 }
 
-compose::ComposeManager* AutofillClient::GetComposeManager() {
+AutofillComposeDelegate* AutofillClient::GetComposeDelegate() {
   return nullptr;
 }
 

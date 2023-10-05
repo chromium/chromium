@@ -43,10 +43,6 @@
 
 class PrefService;
 
-namespace compose {
-class ComposeManager;
-}
-
 namespace plus_addresses {
 class PlusAddressService;
 }
@@ -78,6 +74,7 @@ namespace autofill {
 class AddressNormalizer;
 class AutocompleteHistoryManager;
 class AutofillAblationStudy;
+class AutofillComposeDelegate;
 class AutofillDriver;
 class AutofillDownloadManager;
 struct AutofillErrorDialogContext;
@@ -423,8 +420,8 @@ class AutofillClient : public RiskDataLoader {
   // KeyedService that manages that data.
   virtual plus_addresses::PlusAddressService* GetPlusAddressService();
 
-  // Returns the `ComposeManager` instance for the tab of this client.
-  virtual compose::ComposeManager* GetComposeManager();
+  // Returns the `AutofillComposeDelegate` instance for the tab of this client.
+  virtual AutofillComposeDelegate* GetComposeDelegate();
 
   // Orchestrates UI for enterprise plus address creation; no-op except on
   // supported platforms.

@@ -19,7 +19,7 @@ ComposeManagerImpl::ComposeManagerImpl(ComposeClient* client)
 ComposeManagerImpl::~ComposeManagerImpl() = default;
 
 bool ComposeManagerImpl::ShouldOfferCompose(
-    TriggerMethod trigger_method,
+    UiEntryPoint ui_entry_point,
     const autofill::FormFieldData& trigger_field) {
   // TODO(b/300941076): Improve should-offer logic.
   return IsEnabled();

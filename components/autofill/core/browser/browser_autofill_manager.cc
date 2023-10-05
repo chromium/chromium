@@ -49,6 +49,7 @@
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
@@ -123,10 +124,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
-#include "components/compose/core/browser/compose_manager.h"  // nogncheck
-#endif
 
 namespace autofill {
 
@@ -3854,19 +3851,15 @@ BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
 
 absl::optional<Suggestion> BrowserAutofillManager::MaybeGetComposeSuggestion(
     const FormFieldData& field) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
-  return absl::nullopt;
-#else
-  compose::ComposeManager* compose_manager = client().GetComposeManager();
-  if (!compose_manager ||
-      !compose_manager->ShouldOfferCompose(
-          compose::ComposeManager::TriggerMethod::kAutofillPopup, field)) {
+  AutofillComposeDelegate* compose_delegate = client().GetComposeDelegate();
+  if (!compose_delegate ||
+      !compose_delegate->ShouldOfferCompose(
+          AutofillComposeDelegate::UiEntryPoint::kAutofillPopup, field)) {
     return absl::nullopt;
   }
-
-  return Suggestion(/*main_text=*/"Compose", /*label=*/"",
+  // Suggestion texts for compose suggestions are set during view creation.
+  return Suggestion(/*main_text=*/"", /*label=*/"",
                     /*icon=*/"", PopupItemId::kCompose);
-#endif
 }
 
 void BrowserAutofillManager::LogEventCountsUMAMetric(

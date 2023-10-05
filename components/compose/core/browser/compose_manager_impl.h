@@ -20,7 +20,7 @@ class ComposeManagerImpl : public ComposeManager {
 
   // ComposeManager:
   bool ShouldOfferCompose(
-      TriggerMethod trigger_method,
+      UiEntryPoint ui_entry_point,
       const autofill::FormFieldData& trigger_field) override;
   void OpenCompose(ComposeCallback callback) override;
 
