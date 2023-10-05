@@ -6,14 +6,12 @@
 
 module ash.input_method.mojom;
 
-[Stable, Extensible]
 enum TextQueryCategory {
   kCustom,
-  [Default] kUnknown,
+  kUnknown,
 };
 
 // Next ordinal: 4
-[Stable]
 struct PresetTextQuery {
   string text_query_id@0;
   string name@1;
@@ -27,7 +25,6 @@ struct PresetTextQuery {
 // with this interface.
 //
 // Next ordinal: 2
-[Stable]
 interface EditorInstance {
   // Returns the currently available preset text queries. The ids returned
   // from this method can be used with the `RequestPresetRewrite` method.
