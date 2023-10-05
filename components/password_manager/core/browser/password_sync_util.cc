@@ -112,7 +112,8 @@ bool IsSyncFeatureEnabledIncludingPasswords(
              syncer::UserSelectableType::kPasswords);
 }
 
-bool IsPasswordSyncActive(const syncer::SyncService* sync_service) {
+bool IsSyncFeatureActiveIncludingPasswords(
+    const syncer::SyncService* sync_service) {
   return IsSyncFeatureEnabledIncludingPasswords(sync_service) &&
          sync_service->GetActiveDataTypes().Has(syncer::PASSWORDS);
 }

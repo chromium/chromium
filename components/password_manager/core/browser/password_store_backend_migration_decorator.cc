@@ -103,7 +103,9 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     OnSyncCycleCompleted(syncer::SyncService* sync) {
   // Reenrollment check is made on the first sync cycle when password sync is
   // active.
-  if (!sync_util::IsPasswordSyncActive(sync) ||
+  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  if (!sync_util::IsSyncFeatureActiveIncludingPasswords(sync) ||
       !is_waiting_for_the_first_sync_cycle_) {
     return;
   }
@@ -118,7 +120,9 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     return;
   }
 
-  if (sync_util::IsPasswordSyncActive(sync)) {
+  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  if (sync_util::IsSyncFeatureActiveIncludingPasswords(sync)) {
     int reenrollment_attempts = prefs_->GetInteger(
         prefs::kTimesAttemptedToReenrollToGoogleMobileServices);
     prefs_->SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices,
