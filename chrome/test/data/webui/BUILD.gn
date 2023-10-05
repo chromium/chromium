@@ -131,13 +131,17 @@ source_set("browser_tests") {
   }
 
   if (!is_chromeos_lacros) {
-    sources += [ "bluetooth_internals/bluetooth_internals_browsertest.cc" ]
+    sources += [
+      "bluetooth_internals/bluetooth_internals_browsertest.cc",
+      "webview/webui_webview_browsertest.cc",
+    ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
     "//build/config/coverage:buildflags",
+    "//chrome/app:command_ids",
     "//chrome/browser/devtools:devtools",
     "//chrome/browser/devtools:test_support",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
@@ -164,7 +168,15 @@ source_set("browser_tests") {
     "//components/search:search",
     "//components/site_engagement/content:content",
     "//components/user_notes:features",
+    "//net:test_support",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/ash:ash",
+      "//chrome/browser/ash:test_support",
+    ]
+  }
 }
 
 source_set("interactive_ui_tests") {
@@ -196,6 +208,8 @@ source_set("interactive_ui_tests") {
   if (enable_print_preview) {
     sources += [ "print_preview/print_preview_focus_test.cc" ]
   }
+
+  data = [ "//chrome/test/data/" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
@@ -657,6 +671,11 @@ generate_grd("build_grd") {
   if (is_chromeos_ash || is_win || is_mac) {
     deps += [ "inline_login:build_grdp" ]
     grdp_files += [ "$target_gen_dir/inline_login/resources.grdp" ]
+  }
+
+  if (!is_chromeos_lacros) {
+    deps += [ "webview:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/webview/resources.grdp" ]
   }
 
   manifest_files =

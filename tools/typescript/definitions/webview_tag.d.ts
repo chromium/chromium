@@ -263,6 +263,12 @@ declare global {
       export interface WebView extends HTMLIFrameElement {
         request: WebRequestEventInterface;
         back(): void;
+        reload(): void;
+        addContentScripts(contentScriptList: ContentScriptDetails[]): void;
+        removeContentScripts(scriptNameList?: string[]): void;
+        executeScript(
+            details: InjectDetails, callback?: (results: any[]) => void): void;
+        terminate(): void;
       }
 
       export enum ZoomMode {

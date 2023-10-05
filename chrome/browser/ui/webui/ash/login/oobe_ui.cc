@@ -361,6 +361,9 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   AddTestAPIResources(source);
 
   source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://webui-test 'self';");
+  source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc, "object-src chrome:;");
 
   // Only add a filter when runing as test.

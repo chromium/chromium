@@ -48,6 +48,10 @@ void WebUIMochaBrowserTest::set_test_loader_host(const std::string& host) {
   test_loader_host_ = host;
 }
 
+content::WebContents* WebUIMochaBrowserTest::GetWebContentsForSetup() {
+  return chrome_test_utils::GetActiveWebContents(this);
+}
+
 void WebUIMochaBrowserTest::SetUpOnMainThread() {
   // Load browser_tests.pak.
   base::FilePath pak_path;
@@ -57,8 +61,7 @@ void WebUIMochaBrowserTest::SetUpOnMainThread() {
       pak_path, ui::kScaleFactorNone);
 
   // Register the chrome://webui-test data source.
-  content::WebContents* web_contents =
-      chrome_test_utils::GetActiveWebContents(this);
+  content::WebContents* web_contents = GetWebContentsForSetup();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   webui::CreateAndAddWebUITestDataSource(profile);

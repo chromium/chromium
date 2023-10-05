@@ -65,6 +65,10 @@ class WebUIMochaBrowserTest : public InProcessBrowserTest {
   // WebContents than the WebContents of the test tab.
   virtual void SubstituteWebContents(content::WebContents** out_new_contents);
 
+  // Gets the WebContents instance to set up the chrome://webui-test data
+  // source for. Defaults to chrome_test_utils::GetActiveWebContents(this);
+  virtual content::WebContents* GetWebContentsForSetup();
+
   // InProcessBrowserTest overrides.
   void SetUpOnMainThread() override;
 

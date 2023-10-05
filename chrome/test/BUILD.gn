@@ -2772,7 +2772,6 @@ if (!is_android) {
       sources += [
         # Lacros does not seem to have any actual WebView-based UI to test.
         "../browser/accessibility/live_translate_controller_browsertest.cc",
-        "../browser/ui/webui/webui_webview_browsertest.cc",
 
         # These tests also run on Lacros, as part of
         # lacros_chrome_browsertests_run_in_series below.
