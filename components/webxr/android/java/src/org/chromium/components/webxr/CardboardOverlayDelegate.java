@@ -73,8 +73,20 @@ public class CardboardOverlayDelegate
         });
     }
 
+    /**
+     * Returns the view which contains the Content and Controls of the underlying Chrome instance
+     * which are hidden when in VR.
+     */
+    private View getContentView() {
+        return mActivity.getWindow().findViewById(android.R.id.content);
+    }
+
+    /**
+     * Returns the view that should be used as the parent root for the cardboard UI. Must not be
+     * below the content view.
+     */
     private ViewGroup getParentView() {
-        return (ViewGroup) mActivity.getWindow().findViewById(android.R.id.content);
+        return (ViewGroup) getContentView().getParent();
     }
 
     public void showSettings(View view) {
@@ -121,6 +133,12 @@ public class CardboardOverlayDelegate
             Log.i(TAG, "Parenting Surface for AR");
         }
 
+        // We need to hide the Content View from Accessibility while we are in VR, otherwise the
+        // tools will try to go through all of the tab control and web content rather than just the
+        // controls that are actually visible. Note that we also need to hide descendants.
+        getContentView()
+                .setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+
         int flags = mActivity.getWindow().getDecorView().getSystemUiVisibility();
         mActivity.getWindow().getDecorView().setSystemUiVisibility(flags | VR_SYSTEM_UI_FLAGS);
 
@@ -139,6 +157,10 @@ public class CardboardOverlayDelegate
         if (surfaceView == null) {
             return;
         }
+
+        // Restore the accessibility state of the underlying Chrome content when we stop covering it
+        // with the Cardboard view.
+        getContentView().setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
 
         int flags = mActivity.getWindow().getDecorView().getSystemUiVisibility();
         mActivity.getWindow().getDecorView().setSystemUiVisibility(flags & ~VR_SYSTEM_UI_FLAGS);
