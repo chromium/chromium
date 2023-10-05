@@ -23,8 +23,8 @@ class PwaRestoreBottomSheetMediator {
     PwaRestoreBottomSheetMediator(
             Activity activity, Runnable onReviewButtonClicked, Runnable onBackButtonClicked) {
         mActivity = activity;
-        mModel = PwaRestoreProperties.createModel(
-                onReviewButtonClicked, onBackButtonClicked, this::onRestoreButtonClicked);
+        mModel = PwaRestoreProperties.createModel(onReviewButtonClicked, onBackButtonClicked,
+                this::onDeselectButtonClicked, this::onRestoreButtonClicked);
 
         initializeState();
         setPeekingState();
@@ -44,6 +44,8 @@ class PwaRestoreBottomSheetMediator {
                 mActivity.getString(R.string.pwa_restore_description_expanded));
         mModel.set(PwaRestoreProperties.EXPANDED_BUTTON_LABEL,
                 mActivity.getString(R.string.pwa_restore_button_expanded));
+        mModel.set(PwaRestoreProperties.DESELECT_BUTTON_LABEL,
+                mActivity.getString(R.string.pwa_restore_button_deselect));
     }
 
     protected void setPeekingState() {
@@ -52,6 +54,10 @@ class PwaRestoreBottomSheetMediator {
 
     protected void setPreviewState() {
         mModel.set(PwaRestoreProperties.VIEW_STATE, ViewState.VIEW_PWA_LIST);
+    }
+
+    private void onDeselectButtonClicked() {
+        // TODO(finnur): Implement.
     }
 
     private void onRestoreButtonClicked() {

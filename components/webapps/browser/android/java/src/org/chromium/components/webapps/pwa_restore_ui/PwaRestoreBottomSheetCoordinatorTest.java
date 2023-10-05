@@ -87,8 +87,14 @@ public class PwaRestoreBottomSheetCoordinatorTest {
                     + "your Chrome history.";
             Assert.assertEquals(expected, description.getText());
 
-            View button = contentSheetView.findViewById(R.id.restore_button);
-            Assert.assertTrue(button.isEnabled());
+            View pwaList = contentSheetView.findViewById(R.id.pwa_list);
+            Assert.assertTrue(pwaList.getVisibility() == View.VISIBLE);
+
+            View deselectButton = contentSheetView.findViewById(R.id.deselect_button);
+            Assert.assertTrue(deselectButton.isEnabled());
+
+            View restoreButton = contentSheetView.findViewById(R.id.restore_button);
+            Assert.assertTrue(restoreButton.isEnabled());
         }
     }
 
