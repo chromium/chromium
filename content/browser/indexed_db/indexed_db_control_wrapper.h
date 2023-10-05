@@ -47,7 +47,7 @@ class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
   // mojom::IndexedDBControl implementation:
   void BindIndexedDB(
       const storage::BucketLocator& bucket_locator,
-      mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void GetUsage(GetUsageCallback usage_callback) override;

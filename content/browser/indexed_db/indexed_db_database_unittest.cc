@@ -119,8 +119,7 @@ class IndexedDBDatabaseTest : public ::testing::Test {
 
   scoped_refptr<IndexedDBClientStateCheckerWrapper>
   CreateTestClientStateWrapper() {
-    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
-        remote;
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker> remote;
     return base::MakeRefCounted<IndexedDBClientStateCheckerWrapper>(
         std::move(remote));
   }
@@ -509,8 +508,7 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         std::make_unique<ThunkFactoryClient>(request_), std::move(callbacks_),
         transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
         base::DoNothing());
-    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
-        remote;
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker> remote;
     db_->ScheduleOpenConnection(
         std::move(connection),
         base::MakeRefCounted<IndexedDBClientStateCheckerWrapper>(

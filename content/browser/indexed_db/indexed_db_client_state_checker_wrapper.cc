@@ -7,7 +7,7 @@
 namespace content {
 
 IndexedDBClientStateCheckerWrapper::IndexedDBClientStateCheckerWrapper(
-    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote) {
   if (client_state_checker_remote.is_valid()) {
     client_state_checker_remote_.Bind(std::move(client_state_checker_remote));

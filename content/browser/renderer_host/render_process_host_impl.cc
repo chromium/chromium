@@ -1815,8 +1815,7 @@ void RenderProcessHostImpl::BindIndexedDB(
 
   storage_partition_impl_->GetIndexedDBControl().BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(storage_key),
-      IndexedDBClientStateCheckerFactory::InitializePendingAssociatedRemote(
-          rfh_id),
+      IndexedDBClientStateCheckerFactory::InitializePendingRemote(rfh_id),
       std::move(receiver));
 }
 

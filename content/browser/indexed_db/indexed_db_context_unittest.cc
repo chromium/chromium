@@ -91,7 +91,7 @@ class IndexedDBContextTest : public testing::Test {
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
-  MockIndexedDBClientStateChecker example_checker;
+  MockIndexedDBClientStateChecker example_checker_;
 
   const blink::StorageKey example_storage_key_ =
       blink::StorageKey::CreateFromStringForTesting("https://example.com");
@@ -101,19 +101,19 @@ class IndexedDBContextTest : public testing::Test {
 
 TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   mojo::Remote<blink::mojom::IDBFactory> example_remote;
-  mojo::AssociatedReceiver<storage::mojom::IndexedDBClientStateChecker>
-      example_checker_receiver(&example_checker);
+  mojo::Receiver<storage::mojom::IndexedDBClientStateChecker>
+      example_checker_receiver(&example_checker_);
   indexed_db_context_->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(example_storage_key_),
-      example_checker_receiver.BindNewEndpointAndPassDedicatedRemote(),
+      example_checker_receiver.BindNewPipeAndPassRemote(),
       example_remote.BindNewPipeAndPassReceiver());
 
   mojo::Remote<blink::mojom::IDBFactory> google_remote;
-  mojo::AssociatedReceiver<storage::mojom::IndexedDBClientStateChecker>
-      google_checker_receiver(&example_checker);
+  mojo::Receiver<storage::mojom::IndexedDBClientStateChecker>
+      google_checker_receiver(&example_checker_);
   indexed_db_context_->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(google_storage_key_),
-      google_checker_receiver.BindNewEndpointAndPassDedicatedRemote(),
+      google_checker_receiver.BindNewPipeAndPassRemote(),
       google_remote.BindNewPipeAndPassReceiver());
 
   storage::QuotaManagerProxySync quota_manager_proxy_sync(
@@ -157,11 +157,11 @@ TEST_F(IndexedDBContextTest, GetDefaultBucketError) {
   quota_manager_->SetDisableDatabase(true);
 
   mojo::Remote<blink::mojom::IDBFactory> example_remote;
-  mojo::AssociatedReceiver<storage::mojom::IndexedDBClientStateChecker>
-      example_checker_receiver(&example_checker);
+  mojo::Receiver<storage::mojom::IndexedDBClientStateChecker>
+      example_checker_receiver(&example_checker_);
   indexed_db_context_->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(example_storage_key_),
-      example_checker_receiver.BindNewEndpointAndPassDedicatedRemote(),
+      example_checker_receiver.BindNewPipeAndPassRemote(),
       example_remote.BindNewPipeAndPassReceiver());
 
   // IDBFactory::GetDatabaseInfo

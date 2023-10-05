@@ -67,7 +67,7 @@ class CONTENT_EXPORT IndexedDBFactory
 
   void AddReceiver(
       absl::optional<storage::BucketInfo> bucket,
-      mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver);
 
@@ -173,10 +173,10 @@ class CONTENT_EXPORT IndexedDBFactory
   // The data structure that stores everything bound to the receiver. This will
   // be stored together with the receiver in the `mojo::ReceiverSet`.
   struct ReceiverContext {
-    ReceiverContext(absl::optional<storage::BucketInfo> bucket,
-                    mojo::PendingAssociatedRemote<
-                        storage::mojom::IndexedDBClientStateChecker>
-                        client_state_checker_remote);
+    ReceiverContext(
+        absl::optional<storage::BucketInfo> bucket,
+        mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+            client_state_checker_remote);
 
     ~ReceiverContext();
 

@@ -276,14 +276,6 @@ class IndexedDBTest
     return std::get<0>(GetParam());
   }
 
-  scoped_refptr<IndexedDBClientStateCheckerWrapper>
-  CreateTestClientStateWrapper() {
-    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
-        remote;
-    return base::MakeRefCounted<IndexedDBClientStateCheckerWrapper>(
-        std::move(remote));
-  }
-
   bool DeleteForStorageKeySync(blink::StorageKey key) {
     base::test::TestFuture<bool> success;
     context()->DeleteForStorageKey(key, success.GetCallback());
@@ -291,7 +283,7 @@ class IndexedDBTest
   }
 
   void BindIndexedDBFactory(
-      mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
       storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
@@ -321,7 +313,7 @@ class IndexedDBTest
     base::FilePath test_path = GetFilePathForTesting(bucket_locator);
 
     // Bind the IDBFactory.
-    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         checker_remote;
     BindIndexedDBFactory(std::move(checker_remote),
                          factory_remote_.BindNewPipeAndPassReceiver(),

@@ -11,7 +11,7 @@
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 
@@ -20,12 +20,11 @@ class CONTENT_EXPORT IndexedDBClientStateCheckerFactory {
   IndexedDBClientStateCheckerFactory() = delete;
   ~IndexedDBClientStateCheckerFactory() = delete;
 
-  // Factory method that returns the `PendingAssociatedRemote` bound to either
-  // an `NoDocumentIndexedDBClientStateChecker` or a
+  // Factory method that returns the `PendingRemote` bound to either a
+  // `NoDocumentIndexedDBClientStateChecker` or a
   // `DocumentIndexedDBClientStateChecker` depending on the `rfh_id`.
-  static mojo::PendingAssociatedRemote<
-      storage::mojom::IndexedDBClientStateChecker>
-  InitializePendingAssociatedRemote(const GlobalRenderFrameHostId& rfh_id);
+  static mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+  InitializePendingRemote(const GlobalRenderFrameHostId& rfh_id);
 
   // Factory method that returns the pointer to the implementation of
   // `storage::mojom::IndexedDBClientStateChecker`. `rfh_id` should be a valid

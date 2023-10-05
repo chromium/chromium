@@ -10,7 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
@@ -22,7 +22,7 @@ class CONTENT_EXPORT IndexedDBClientStateCheckerWrapper
     : public base::RefCounted<IndexedDBClientStateCheckerWrapper> {
  public:
   explicit IndexedDBClientStateCheckerWrapper(
-      mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote);
 
   IndexedDBClientStateCheckerWrapper(
@@ -43,7 +43,7 @@ class CONTENT_EXPORT IndexedDBClientStateCheckerWrapper
  private:
   friend class base::RefCounted<IndexedDBClientStateCheckerWrapper>;
 
-  mojo::AssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+  mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
       client_state_checker_remote_;
 };
 

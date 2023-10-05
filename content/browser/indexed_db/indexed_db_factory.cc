@@ -196,7 +196,7 @@ IndexedDBFactory::~IndexedDBFactory() {
 
 void IndexedDBFactory::AddReceiver(
     absl::optional<storage::BucketInfo> bucket,
-    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1121,7 +1121,7 @@ void IndexedDBFactory::CallOnDatabaseDeletedForTesting(
 
 IndexedDBFactory::ReceiverContext::ReceiverContext(
     absl::optional<storage::BucketInfo> bucket,
-    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote)
     : bucket(bucket),
       client_state_checker(

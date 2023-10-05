@@ -54,8 +54,8 @@ interface IndexedDBControl {
   // the default bucket, its ID may be invalid.
   BindIndexedDB(
     storage.mojom.BucketLocator bucket_locator,
-    pending_associated_remote<storage.mojom.IndexedDBClientStateChecker>
-      client_state_checker_remote,
+    pending_remote<storage.mojom.IndexedDBClientStateChecker>
+        client_state_checker_remote,
     pending_receiver<blink.mojom.IDBFactory> receiver);
 
   // Retrieves some basic usage information about the IndexedDB state. The

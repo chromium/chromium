@@ -140,8 +140,7 @@ class IndexedDBTransactionTest : public testing::Test {
   }
 
   std::unique_ptr<IndexedDBConnection> CreateConnection() {
-    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
-        remote;
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker> remote;
     auto connection = std::make_unique<IndexedDBConnection>(
         *bucket_context_, db_->AsWeakPtr(), base::DoNothing(),
         base::DoNothing(),

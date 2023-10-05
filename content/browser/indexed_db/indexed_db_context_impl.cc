@@ -181,7 +181,7 @@ void IndexedDBContextImpl::Bind(
 
 void IndexedDBContextImpl::BindIndexedDB(
     const storage::BucketLocator& bucket_locator,
-    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   auto on_got_bucket = base::BindOnce(
@@ -202,7 +202,7 @@ void IndexedDBContextImpl::BindIndexedDB(
 }
 
 void IndexedDBContextImpl::BindIndexedDBImpl(
-    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
     storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {

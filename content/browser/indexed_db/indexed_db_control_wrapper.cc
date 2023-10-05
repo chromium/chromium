@@ -45,7 +45,7 @@ IndexedDBControlWrapper::~IndexedDBControlWrapper() {
 
 void IndexedDBControlWrapper::BindIndexedDB(
     const storage::BucketLocator& bucket_locator,
-    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
