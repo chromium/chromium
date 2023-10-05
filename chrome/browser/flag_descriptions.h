@@ -687,6 +687,9 @@ extern const char kPipPinchToResizeDescription[];
 extern const char kPipTiltName[];
 extern const char kPipTiltDescription[];
 
+extern const char kPipTuckName[];
+extern const char kPipTuckDescription[];
+
 extern const char kPrivateNetworkAccessSendPreflightsName[];
 extern const char kPrivateNetworkAccessSendPreflightsDescription[];
 

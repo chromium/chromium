@@ -7995,6 +7995,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPipTiltDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPipTilt)},
 
+    {"enable-pip-tuck", flag_descriptions::kPipTuckName,
+     flag_descriptions::kPipTuckDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPipTuck)},
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-fenced-frames", flag_descriptions::kEnableFencedFramesName,

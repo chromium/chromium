@@ -1327,6 +1327,9 @@ const char kPipTiltDescription[] =
     "Enables window tilting using pinch gesture on existing PiP windows. "
     "This requires #enable-pip-pinch-to-resize to also be enabled.";
 
+const char kPipTuckName[] = "Enable tuck for PiP windows";
+const char kPipTuckDescription[] = "Enables window tucking for PiP windows. ";
+
 const char kPrivateNetworkAccessSendPreflightsName[] =
     "Send Private Network Access preflights";
 const char kPrivateNetworkAccessSendPreflightsDescription[] =
