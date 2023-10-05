@@ -188,7 +188,7 @@ function controlElementInputListener_(evt) {
  *
  * @param {!FormData} data Autofill data to fill in.
  * @param {number} forceFillFieldID Identified field will always be
- *     filled even if non-empty. May be __gCrWeb.fill.RENDERER_ID_NOT_SET.
+ *     filled even if non-empty. May be RENDERER_ID_NOT_SET.
  * @return {string} JSON encoded list of renderer IDs of filled elements.
  */
 __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {

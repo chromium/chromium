@@ -440,7 +440,7 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
 
   const roleAttribute = element.getAttribute('role');
   if (roleAttribute && roleAttribute.toLowerCase() === 'presentation') {
-    field['role'] = __gCrWeb.fill.ROLE_ATTRIBUTE_PRESENTATION;
+    field['role'] = fillConstants.ROLE_ATTRIBUTE_PRESENTATION;
   }
 
   field['placeholder_attribute'] = element.getAttribute('placeholder') || '';

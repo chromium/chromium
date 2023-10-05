@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EXTRACT_MASK_VALUE} from '//components/autofill/ios/form_util/resources/fill_constants.js';
+import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 
 /**
  * @fileoverview Installs Passwords management functions on the __gCrWeb object.
@@ -78,7 +78,7 @@ const onSubmitButtonTouchEnd = function(evt) {
  * @return {HTMLInputElement}
  */
 const findInputByUniqueFieldId = function(inputs, identifier) {
-  if (identifier.toString() === __gCrWeb.fill.RENDERER_ID_NOT_SET) {
+  if (identifier.toString() === fillConstants.RENDERER_ID_NOT_SET) {
     return null;
   }
   for (let i = 0; i < inputs.length; ++i) {
@@ -108,7 +108,7 @@ const getFormInputElements = function(form) {
  */
 __gCrWeb.passwords['getPasswordFormDataAsString'] = function(identifier) {
   const hasFormTag =
-      identifier.toString() !== __gCrWeb.fill.RENDERER_ID_NOT_SET;
+      identifier.toString() !== fillConstants.RENDERER_ID_NOT_SET;
   const form = hasFormTag ?
       __gCrWeb.form.getFormElementFromUniqueFormId(identifier) :
       null;
@@ -174,7 +174,7 @@ __gCrWeb.passwords['fillPasswordFormWithGeneratedPassword'] = function(
     formIdentifier, newPasswordIdentifier, confirmPasswordIdentifier,
     password) {
   const hasFormTag =
-      formIdentifier.toString() !== __gCrWeb.fill.RENDERER_ID_NOT_SET;
+      formIdentifier.toString() !== fillConstants.RENDERER_ID_NOT_SET;
   if (fillGeneratedPassword(
           formIdentifier, newPasswordIdentifier, confirmPasswordIdentifier,
           password, hasFormTag)) {
@@ -231,7 +231,7 @@ const fillGeneratedPassword = function(
  *     null if the input element wasn't found.
  */
 function getUsernameInputElementForFill_(inputs, rendererId) {
-  if (rendererId === Number(__gCrWeb.fill.RENDERER_ID_NOT_SET)) {
+  if (rendererId === Number(fillConstants.RENDERER_ID_NOT_SET)) {
     return null;
   }
 
@@ -256,7 +256,7 @@ function getUsernameInputElementForFill_(inputs, rendererId) {
  *     null if the input element wasn't found.
  */
 function getPasswordInputElementForFill_(inputs, rendererId) {
-  if (rendererId === Number(__gCrWeb.fill.RENDERER_ID_NOT_SET)) {
+  if (rendererId === Number(fillConstants.RENDERER_ID_NOT_SET)) {
     return null;
   }
 
@@ -287,7 +287,7 @@ function getPasswordInputElementForFill_(inputs, rendererId) {
 function fillUsernameAndPassword_(inputs, formData, username, password) {
   const usernameRendererId = formData.fields[0].unique_renderer_id;
   let usernameInput;
-  if (usernameRendererId !== Number(__gCrWeb.fill.RENDERER_ID_NOT_SET)) {
+  if (usernameRendererId !== Number(fillConstants.RENDERER_ID_NOT_SET)) {
     usernameInput = getUsernameInputElementForFill_(inputs, usernameRendererId);
     if (!usernameInput || !__gCrWeb.common.isTextField(usernameInput)) {
       // Don't fill anything if the username can't be filled when it should be
@@ -298,7 +298,7 @@ function fillUsernameAndPassword_(inputs, formData, username, password) {
 
   const passwordRendererId = formData.fields[1].unique_renderer_id;
   let passwordInput;
-  if (passwordRendererId !== Number(__gCrWeb.fill.RENDERER_ID_NOT_SET)) {
+  if (passwordRendererId !== Number(fillConstants.RENDERER_ID_NOT_SET)) {
     passwordInput = getPasswordInputElementForFill_(inputs, passwordRendererId);
     if (!passwordInput) {
       // Don't fill anything if the password can't be filled when it should be
@@ -363,7 +363,7 @@ const getPasswordFormDataList = function(formDataList) {
  * @return {Object} Object of data from formElement.
  */
 __gCrWeb.passwords.getPasswordFormDataFromUnownedElements = function() {
-  const extractMask = EXTRACT_MASK_VALUE;
+  const extractMask = fillConstants.EXTRACT_MASK_VALUE;
   const fieldsets = [];
   const unownedControlElements =
       __gCrWeb.fill.getUnownedAutofillableFormFieldElements(
@@ -386,7 +386,7 @@ __gCrWeb.passwords.getPasswordFormDataFromUnownedElements = function() {
  * @return {Object} Object of data from formElement.
  */
 __gCrWeb.passwords.getPasswordFormData = function(formElement) {
-  const extractMask = EXTRACT_MASK_VALUE;
+  const extractMask = fillConstants.EXTRACT_MASK_VALUE;
   const formData = {};
   const ok = __gCrWeb.fill.webFormElementToFormData(
       window, formElement, null /* formControlElement */, extractMask, formData,

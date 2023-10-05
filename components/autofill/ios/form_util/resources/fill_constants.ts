@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+
 /**
  * The maximum length allowed for form data.
  *
@@ -64,24 +66,18 @@ const EXTRACT_MASK_OPTIONS = 1 << 2;
  *
  * This variable is from enum RoleAttribute in
  * chromium/src/components/autofill/core/common/form_field_data.h
- *
- * @const {number}
  */
-__gCrWeb.fill.ROLE_ATTRIBUTE_PRESENTATION = 0;
+const ROLE_ATTRIBUTE_PRESENTATION = 0;
 
 /**
  * The value for a unique form or field ID not set or missing.
- *
- * @const {string}
  */
-__gCrWeb.fill.RENDERER_ID_NOT_SET = '0';
+const RENDERER_ID_NOT_SET = '0';
 
 /**
  * The JS Symbol object used to set stable unique form and field IDs.
- *
- * @const {symbol}
  */
-__gCrWeb.fill.ID_SYMBOL = window.Symbol.for('__gChrome~uniqueID');
+const ID_SYMBOL = window.Symbol.for('__gChrome~uniqueID');
 
 export {
   MAX_DATA_LENGTH,
@@ -90,4 +86,8 @@ export {
   EXTRACT_MASK_VALUE,
   EXTRACT_MASK_OPTION_TEXT,
   EXTRACT_MASK_OPTIONS,
+  ROLE_ATTRIBUTE_PRESENTATION,
+  RENDERER_ID_NOT_SET,
 };
+
+gCrWeb.fill.ID_SYMBOL = ID_SYMBOL;

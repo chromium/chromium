@@ -94,7 +94,10 @@ optimize_js("password_controller_js") {
   primary_script = "resources/password_controller.js"
   sources = [ "resources/password_controller.js" ]
 
-  deps = [ "//components/autofill/ios/form_util:fill_js_dependencies" ]
+  deps = [
+    "//components/autofill/ios/form_util:fill_js_dependencies",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
 }
 
 static_library("test_support") {

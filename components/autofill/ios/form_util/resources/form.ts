@@ -6,6 +6,7 @@
  * @fileoverview Contains method needed to access the forms and their elements.
  */
 
+import {RENDERER_ID_NOT_SET} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -266,7 +267,7 @@ function getFormElementFromIdentifier(name: string): HTMLFormElement|null {
  */
 function getFormElementFromUniqueFormId(identifier: number): HTMLFormElement|
     null {
-  if (identifier.toString() === gCrWeb.fill.RENDERER_ID_NOT_SET) {
+  if (identifier.toString() === RENDERER_ID_NOT_SET) {
     return null;
   }
   for (const form of document.forms) {

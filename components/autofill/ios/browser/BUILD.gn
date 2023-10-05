@@ -90,7 +90,10 @@ optimize_js("autofill_js") {
   primary_script = "resources/autofill_controller.js"
   sources = [ "resources/autofill_controller.js" ]
 
-  deps = [ "//components/autofill/ios/form_util:fill_js_dependencies" ]
+  deps = [
+    "//components/autofill/ios/form_util:fill_js_dependencies",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
 }
 
 optimize_ts("child_frame_registration_ts") {
