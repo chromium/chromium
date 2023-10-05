@@ -587,10 +587,6 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean(
       "realboxLensDirectUpload",
       base::FeatureList::IsEnabled(ntp_features::kNtpLensDirectUpload));
-
-  source->AddBoolean(
-      "omniboxActionsUISimplification",
-      base::FeatureList::IsEnabled(omnibox::kOmniboxActionsUISimplification));
 }
 
 // static
@@ -603,6 +599,10 @@ void RealboxHandler::SetupDropdownWebUIDataSource(
       {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
       {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON}};
   source->AddLocalizedStrings(kStrings);
+
+  source->AddBoolean(
+      "omniboxActionsUISimplification",
+      base::FeatureList::IsEnabled(omnibox::kOmniboxActionsUISimplification));
 }
 
 // static
