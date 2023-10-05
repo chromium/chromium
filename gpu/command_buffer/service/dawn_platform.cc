@@ -181,6 +181,8 @@ bool DawnPlatform::IsFeatureEnabled(dawn::platform::Features feature) {
   switch (feature) {
     case dawn::platform::Features::kWebGPUUseDXC:
       return base::FeatureList::IsEnabled(features::kWebGPUUseDXC);
+    case dawn::platform::Features::kWebGPUUseTintIR:
+      return base::FeatureList::IsEnabled(features::kWebGPUUseTintIR);
     default:
       return false;
   }
