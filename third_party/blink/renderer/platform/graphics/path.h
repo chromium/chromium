@@ -65,7 +65,7 @@ enum PathElementType {
 // returns two tangent points and the endpoint.
 struct PathElement {
   PathElementType type;
-  raw_ptr<gfx::PointF, ExperimentalRenderer> points;
+  raw_ptr<gfx::PointF, ExperimentalRenderer | AllowPtrArithmetic> points;
 };
 
 // Result structure from Path::PointAndNormalAtLength() (and similar).

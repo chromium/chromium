@@ -59,8 +59,8 @@ String FormatErrorMessage(Error error, int line, int column) {
 template <typename CharType>
 struct Cursor {
   int line;
-  raw_ptr<const CharType, ExperimentalRenderer> line_start;
-  raw_ptr<const CharType, ExperimentalRenderer> pos;
+  raw_ptr<const CharType, ExperimentalRenderer | AllowPtrArithmetic> line_start;
+  raw_ptr<const CharType, ExperimentalRenderer | AllowPtrArithmetic> pos;
 };
 
 enum Token {

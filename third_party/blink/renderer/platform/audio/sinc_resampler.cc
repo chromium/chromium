@@ -183,7 +183,7 @@ class BufferSourceProvider final : public AudioSourceProvider {
   }
 
  private:
-  raw_ptr<const float, ExperimentalRenderer> source_;
+  raw_ptr<const float, ExperimentalRenderer | AllowPtrArithmetic> source_;
   int source_frames_available_;
 };
 
