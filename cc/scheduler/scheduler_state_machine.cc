@@ -1013,24 +1013,25 @@ void SchedulerStateMachine::WillDrawInternal() {
 
 void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
   switch (draw_result) {
-    case INVALID_RESULT:
-      NOTREACHED() << "Invalid return DrawResult:" << draw_result;
+    case DrawResult::kInvalidResult:
+      NOTREACHED() << "Invalid return DrawResult:"
+                   << static_cast<int>(DrawResult::kInvalidResult);
       break;
-    case DRAW_ABORTED_CANT_DRAW:
+    case DrawResult::kAbortedCantDraw:
       if (consecutive_cant_draw_count_++ < 3u) {
         needs_redraw_ = true;
       } else {
         NOTREACHED() << consecutive_cant_draw_count_ << " consecutve draws"
-                     << " with DRAW_ABORTED_CANT_DRAW result";
+                     << " with DrawResult::kAbortedCantDraw result";
       }
       break;
-    case DRAW_ABORTED_DRAINING_PIPELINE:
-    case DRAW_SUCCESS:
+    case DrawResult::kAbortedDrainingPipeline:
+    case DrawResult::kSuccess:
       consecutive_checkerboard_animations_ = 0;
       consecutive_cant_draw_count_ = 0;
       forced_redraw_state_ = ForcedRedrawOnTimeoutState::IDLE;
       break;
-    case DRAW_ABORTED_CHECKERBOARD_ANIMATIONS:
+    case DrawResult::kAbortedCheckerboardAnimations:
       DCHECK(!did_submit_in_last_frame_);
       needs_begin_main_frame_ = true;
       needs_redraw_ = true;
@@ -1045,7 +1046,7 @@ void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
         forced_redraw_state_ = ForcedRedrawOnTimeoutState::WAITING_FOR_COMMIT;
       }
       break;
-    case DRAW_ABORTED_MISSING_HIGH_RES_CONTENT:
+    case DrawResult::kAbortedMissingHighResContent:
       DCHECK(!did_submit_in_last_frame_);
       // It's not clear whether this missing content is because of missing
       // pictures (which requires a commit) or because of memory pressure
@@ -1067,7 +1068,7 @@ void SchedulerStateMachine::WillDraw() {
 }
 
 void SchedulerStateMachine::DidDraw(DrawResult draw_result) {
-  draw_succeeded_in_last_frame_ = draw_result == DRAW_SUCCESS;
+  draw_succeeded_in_last_frame_ = draw_result == DrawResult::kSuccess;
   DidDrawInternal(draw_result);
 }
 
@@ -1091,7 +1092,7 @@ void SchedulerStateMachine::AbortDraw() {
   // Note: We may abort at any time and cannot DCHECK that
   // we haven't drawn in or swapped in the last frame here.
   WillDrawInternal();
-  DidDrawInternal(DRAW_ABORTED_DRAINING_PIPELINE);
+  DidDrawInternal(DrawResult::kAbortedDrainingPipeline);
 }
 
 void SchedulerStateMachine::WillPrepareTiles() {

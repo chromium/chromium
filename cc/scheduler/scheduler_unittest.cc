@@ -172,7 +172,7 @@ class FakeSchedulerClient : public SchedulerClient,
     PushAction("ScheduledActionDrawIfPossible");
     num_draws_++;
     if (!draw_will_happen_)
-      return DRAW_ABORTED_CHECKERBOARD_ANIMATIONS;
+      return DrawResult::kAbortedCheckerboardAnimations;
 
     if (swap_will_happen_if_draw_happens_) {
       last_begin_frame_ack_ = scheduler_->CurrentBeginFrameAckForActiveTree();
@@ -183,14 +183,14 @@ class FakeSchedulerClient : public SchedulerClient,
       if (automatic_ack_)
         scheduler_->DidReceiveCompositorFrameAck();
     }
-    return DRAW_SUCCESS;
+    return DrawResult::kSuccess;
   }
   DrawResult ScheduledActionDrawForced() override {
     EXPECT_FALSE(inside_action_);
     base::AutoReset<bool> mark_inside(&inside_action_, true);
     PushAction("ScheduledActionDrawForced");
     last_begin_frame_ack_ = scheduler_->CurrentBeginFrameAckForActiveTree();
-    return DRAW_SUCCESS;
+    return DrawResult::kSuccess;
   }
   void ScheduledActionCommit() override {
     EXPECT_FALSE(inside_action_);
@@ -858,7 +858,7 @@ class SchedulerClientThatsetNeedsDrawInsideDraw : public FakeSchedulerClient {
 
   DrawResult ScheduledActionDrawForced() override {
     NOTREACHED();
-    return DRAW_SUCCESS;
+    return DrawResult::kSuccess;
   }
 
  private:
@@ -965,7 +965,7 @@ class SchedulerClientThatSetNeedsBeginMainFrameInsideDraw
 
   DrawResult ScheduledActionDrawForced() override {
     NOTREACHED();
-    return DRAW_SUCCESS;
+    return DrawResult::kSuccess;
   }
 
   void SetNeedsBeginMainFrameOnNextDraw() {

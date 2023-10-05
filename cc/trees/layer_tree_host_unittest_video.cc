@@ -69,7 +69,7 @@ class LayerTreeHostVideoTestSetNeedsDisplay
         break;
     }
 
-    EXPECT_EQ(DRAW_SUCCESS, draw_result);
+    EXPECT_EQ(DrawResult::kSuccess, draw_result);
     return draw_result;
   }
 

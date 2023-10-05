@@ -298,7 +298,7 @@ class LayerTreeHostAnimationTestCheckerboardDoesNotStarveDraws
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
                                    LayerTreeHostImpl::FrameData* frame,
                                    DrawResult draw_result) override {
-    return DRAW_ABORTED_CHECKERBOARD_ANIMATIONS;
+    return DrawResult::kAbortedCheckerboardAnimations;
   }
 
  private:
@@ -744,7 +744,7 @@ class LayerTreeHostAnimationTestCheckerboardDoesntStartAnimations
     ++prevented_draw_;
     if (prevented_draw_ > 2)
       EndTest();
-    return DRAW_ABORTED_CHECKERBOARD_ANIMATIONS;
+    return DrawResult::kAbortedCheckerboardAnimations;
   }
 
   void DidCommitAndDrawFrame() override {

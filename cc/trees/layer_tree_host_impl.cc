@@ -1248,7 +1248,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     frame->has_no_damage = true;
     DCHECK(!resourceless_software_draw_);
     consecutive_frame_with_damage_count_ = 0;
-    return DRAW_SUCCESS;
+    return DrawResult::kSuccess;
   }
 
   TRACE_EVENT_BEGIN2("cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
@@ -1311,7 +1311,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // still draw the frame. However when the layer being checkerboarded is moving
   // due to an impl-animation, we drop the frame to avoid flashing due to the
   // texture suddenly appearing in the future.
-  DrawResult draw_result = DRAW_SUCCESS;
+  DrawResult draw_result = DrawResult::kSuccess;
 
   const DrawMode draw_mode = GetDrawMode();
 
@@ -1419,7 +1419,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // so there's no reason to stop the draw now (and this is not supported by
   // SingleThreadProxy).
   if (have_missing_animated_tiles && !CommitToActiveTree())
-    draw_result = DRAW_ABORTED_CHECKERBOARD_ANIMATIONS;
+    draw_result = DrawResult::kAbortedCheckerboardAnimations;
 
   // When we require high res to draw, abort the draw (almost) always. This does
   // not cause the scheduler to do a main frame, instead it will continue to try
@@ -1427,7 +1427,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // TODO(weiliangc): Remove RequiresHighResToDraw. crbug.com/469175
   if (num_incomplete_tiles || num_missing_tiles) {
     if (RequiresHighResToDraw())
-      draw_result = DRAW_ABORTED_MISSING_HIGH_RES_CONTENT;
+      draw_result = DrawResult::kAbortedMissingHighResContent;
   }
 
   // Only enable frame rate estimation if it would help lower the composition
@@ -1440,7 +1440,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // complete, the previous frame has already been potentially lost, so an
   // incomplete frame is better than nothing, so this takes highest precidence.
   if (resourceless_software_draw_)
-    draw_result = DRAW_SUCCESS;
+    draw_result = DrawResult::kSuccess;
 
 #if DCHECK_IS_ON()
   for (const auto& render_pass : frame->render_passes) {
@@ -1495,7 +1495,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // destroyed.
   // TODO(weiliangc): Test copy request w/ LayerTreeFrameSink recreation. Would
   // trigger this DCHECK.
-  DCHECK(!have_copy_request || draw_result == DRAW_SUCCESS);
+  DCHECK(!have_copy_request || draw_result == DrawResult::kSuccess);
 
   // TODO(crbug.com/564832): This workaround to prevent creating unnecessarily
   // persistent render passes. When a copy request is made, it may force a
@@ -1604,14 +1604,14 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
   // Dump render passes and draw quads if VerboseLogEnabled().
   VERBOSE_LOG() << "Prepare to draw\n" << frame->ToString();
 
-  if (draw_result != DRAW_SUCCESS) {
+  if (draw_result != DrawResult::kSuccess) {
     DCHECK(!resourceless_software_draw_);
     return draw_result;
   }
 
-  // If we return DRAW_SUCCESS, then we expect DrawLayers() to be called before
-  // this function is called again.
-  return DRAW_SUCCESS;
+  // If we return DrawResult::kSuccess, then we expect DrawLayers() to be called
+  // before this function is called again.
+  return DrawResult::kSuccess;
 }
 
 void LayerTreeHostImpl::RemoveRenderPasses(FrameData* frame) {

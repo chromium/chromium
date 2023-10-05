@@ -463,10 +463,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   virtual bool PrepareTiles();
 
-  // Returns `DRAW_SUCCESS` unless problems occurred preparing the frame, and we
-  // should try to avoid displaying the frame. If `PrepareToDraw()` is called,
-  // `DidDrawAllLayers()` must also be called, regardless of whether
-  // `DrawLayers()` is called between the two.
+  // Returns `DrawResult::kSuccess` unless problems occurred preparing the
+  // frame, and we should try to avoid displaying the frame. If
+  // `PrepareToDraw()` is called, `DidDrawAllLayers()` must also be called,
+  // regardless of whether `DrawLayers()` is called between the two.
   virtual DrawResult PrepareToDraw(FrameData* frame);
 
   // If there is no damage, returns `absl::nullopt`; otherwise, returns
@@ -984,8 +984,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool HasDamage() const;
 
   // This function should only be called from PrepareToDraw, as DidDrawAllLayers
-  // must be called if this helper function is called.  Returns DRAW_SUCCESS if
-  // the frame should be drawn.
+  // must be called if this helper function is called.  Returns
+  // DrawResult::kSuccess if the frame should be drawn.
   DrawResult CalculateRenderPasses(FrameData* frame);
 
   void StartScrollbarFadeRecursive(LayerImpl* layer);

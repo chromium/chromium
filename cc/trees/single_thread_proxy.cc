@@ -859,7 +859,7 @@ DrawResult SingleThreadProxy::DoComposite(LayerTreeHostImpl::FrameData* frame) {
     // DrawLayers() depends on the result of PrepareToDraw(), it is guarded on
     // CanDraw() as well.
     if (!ShouldComposite()) {
-      return DRAW_ABORTED_CANT_DRAW;
+      return DrawResult::kAbortedCantDraw;
     }
 
     // This CapturePostTasks should be destroyed before
@@ -872,7 +872,7 @@ DrawResult SingleThreadProxy::DoComposite(LayerTreeHostImpl::FrameData* frame) {
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
 
     draw_result = host_impl_->PrepareToDraw(frame);
-    draw_frame = draw_result == DRAW_SUCCESS;
+    draw_frame = draw_result == DrawResult::kSuccess;
     if (draw_frame) {
       if (absl::optional<LayerTreeHostImpl::SubmitInfo> submit_info =
               host_impl_->DrawLayers(frame)) {
@@ -1166,7 +1166,7 @@ DrawResult SingleThreadProxy::ScheduledActionDrawIfPossible() {
 
 DrawResult SingleThreadProxy::ScheduledActionDrawForced() {
   NOTREACHED();
-  return INVALID_RESULT;
+  return DrawResult::kInvalidResult;
 }
 
 void SingleThreadProxy::ScheduledActionCommit() {

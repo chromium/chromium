@@ -879,9 +879,9 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
   DrawResult result;
   if (host_impl_->CanDraw()) {
     result = host_impl_->PrepareToDraw(&frame);
-    draw_frame = forced_draw || result == DRAW_SUCCESS;
+    draw_frame = forced_draw || result == DrawResult::kSuccess;
   } else {
-    result = DRAW_ABORTED_CANT_DRAW;
+    result = DrawResult::kAbortedCantDraw;
   }
 
   if (draw_frame) {
@@ -893,9 +893,9 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
           frame.frame_token, submit_info->time,
           std::move(submit_info->events_metrics), frame.has_missing_content);
     }
-    result = DRAW_SUCCESS;
+    result = DrawResult::kSuccess;
   } else {
-    DCHECK_NE(DRAW_SUCCESS, result);
+    DCHECK_NE(DrawResult::kSuccess, result);
   }
 
   host_impl_->DidDrawAllLayers(frame);
@@ -918,7 +918,7 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
   if (host_impl_->pending_tree())
     host_impl_->pending_tree()->UpdateDrawProperties();
 
-  DCHECK_NE(INVALID_RESULT, result);
+  DCHECK_NE(DrawResult::kInvalidResult, result);
   return result;
 }
 

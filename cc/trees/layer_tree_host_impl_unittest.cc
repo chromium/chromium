@@ -257,7 +257,7 @@ class LayerTreeHostImplTest : public testing::Test,
   void OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
                                    bool skip_draw) override {
     std::unique_ptr<TestFrameData> frame(new TestFrameData);
-    EXPECT_EQ(DRAW_SUCCESS, host_impl_->PrepareToDraw(frame.get()));
+    EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(frame.get()));
     last_on_draw_render_passes_.clear();
     viz::CompositorRenderPass::CopyAllForTest(frame->render_passes,
                                               &last_on_draw_render_passes_);
@@ -694,7 +694,7 @@ class LayerTreeHostImplTest : public testing::Test,
         BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
         base::TimeTicks() + base::Milliseconds(1));
     host_impl_->WillBeginImplFrame(args);
-    EXPECT_EQ(DRAW_SUCCESS, host_impl_->PrepareToDraw(&frame));
+    EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
     host_impl_->DrawLayers(&frame);
     host_impl_->DidDrawAllLayers(frame);
     host_impl_->DidFinishImplFrame(args);
@@ -702,7 +702,7 @@ class LayerTreeHostImplTest : public testing::Test,
 
   RenderFrameMetadata StartDrawAndProduceRenderFrameMetadata() {
     TestFrameData frame;
-    EXPECT_EQ(DRAW_SUCCESS, host_impl_->PrepareToDraw(&frame));
+    EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
     return host_impl_->MakeRenderFrameMetadata(&frame);
   }
 
@@ -6509,7 +6509,7 @@ TEST_F(LayerTreeHostImplTest, DamageShouldNotCareAboutContributingLayers) {
         BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
         base::TimeTicks() + base::Milliseconds(1));
     host_impl_->WillBeginImplFrame(args);
-    EXPECT_EQ(DRAW_SUCCESS, host_impl_->PrepareToDraw(&frame));
+    EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
 
     EXPECT_FALSE(frame.has_no_damage);
     EXPECT_NE(frame.render_passes.size(), 0u);
@@ -6540,7 +6540,7 @@ TEST_F(LayerTreeHostImplTest, DamageShouldNotCareAboutContributingLayers) {
         BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
         base::TimeTicks() + base::Milliseconds(1));
     host_impl_->WillBeginImplFrame(args);
-    EXPECT_EQ(DRAW_SUCCESS, host_impl_->PrepareToDraw(&frame));
+    EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
 
     EXPECT_FALSE(frame.has_no_damage);
     EXPECT_NE(frame.render_passes.size(), 0u);
@@ -6561,7 +6561,7 @@ TEST_F(LayerTreeHostImplTest, DamageShouldNotCareAboutContributingLayers) {
         BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
         base::TimeTicks() + base::Milliseconds(1));
     host_impl_->WillBeginImplFrame(args);
-    EXPECT_EQ(DRAW_SUCCESS, host_impl_->PrepareToDraw(&frame));
+    EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
 
     EXPECT_TRUE(frame.has_no_damage);
     EXPECT_EQ(frame.render_passes.size(), 0u);
@@ -6773,68 +6773,68 @@ TEST_F(LayerTreeHostImplPrepareToDrawTest, PrepareToDrawSucceedsAndFails) {
 
   std::vector<PrepareToDrawSuccessTestCase> cases;
   // 0. Default case.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   // 1. Animated layer first.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   cases.back().layer_before.is_animating = true;
   // 2. Animated layer between.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   cases.back().layer_between.is_animating = true;
   // 3. Animated layer last.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   cases.back().layer_after.is_animating = true;
   // 4. Missing tile first.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   cases.back().layer_before.has_missing_tile = true;
   // 5. Missing tile between.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   cases.back().layer_between.has_missing_tile = true;
   // 6. Missing tile last.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   cases.back().layer_after.has_missing_tile = true;
   // 7. Incomplete tile first.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   cases.back().layer_before.has_incomplete_tile = true;
   // 8. Incomplete tile between.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   cases.back().layer_between.has_incomplete_tile = true;
   // 9. Incomplete tile last.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   cases.back().layer_after.has_incomplete_tile = true;
   // 10. Animation with missing tile.
   cases.push_back(
-      PrepareToDrawSuccessTestCase(DRAW_ABORTED_CHECKERBOARD_ANIMATIONS));
+      PrepareToDrawSuccessTestCase(DrawResult::kAbortedCheckerboardAnimations));
   cases.back().layer_between.has_missing_tile = true;
   cases.back().layer_between.is_animating = true;
   // 11. Animation with incomplete tile.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   cases.back().layer_between.has_incomplete_tile = true;
   cases.back().layer_between.is_animating = true;
 
   // 12. High res required.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   cases.back().high_res_required = true;
   // 13. High res required with incomplete tile.
   cases.push_back(
-      PrepareToDrawSuccessTestCase(DRAW_ABORTED_MISSING_HIGH_RES_CONTENT));
+      PrepareToDrawSuccessTestCase(DrawResult::kAbortedMissingHighResContent));
   cases.back().high_res_required = true;
   cases.back().layer_between.has_incomplete_tile = true;
   // 14. High res required with missing tile.
   cases.push_back(
-      PrepareToDrawSuccessTestCase(DRAW_ABORTED_MISSING_HIGH_RES_CONTENT));
+      PrepareToDrawSuccessTestCase(DrawResult::kAbortedMissingHighResContent));
   cases.back().high_res_required = true;
   cases.back().layer_between.has_missing_tile = true;
 
   // 15. High res required is higher priority than animating missing tiles.
   cases.push_back(
-      PrepareToDrawSuccessTestCase(DRAW_ABORTED_MISSING_HIGH_RES_CONTENT));
+      PrepareToDrawSuccessTestCase(DrawResult::kAbortedMissingHighResContent));
   cases.back().high_res_required = true;
   cases.back().layer_between.has_missing_tile = true;
   cases.back().layer_after.has_missing_tile = true;
   cases.back().layer_after.is_animating = true;
   // 16. High res required is higher priority than animating missing tiles.
   cases.push_back(
-      PrepareToDrawSuccessTestCase(DRAW_ABORTED_MISSING_HIGH_RES_CONTENT));
+      PrepareToDrawSuccessTestCase(DrawResult::kAbortedMissingHighResContent));
   cases.back().high_res_required = true;
   cases.back().layer_between.has_missing_tile = true;
   cases.back().layer_before.has_missing_tile = true;
@@ -6889,17 +6889,17 @@ TEST_F(LayerTreeHostImplPrepareToDrawTest,
   std::vector<PrepareToDrawSuccessTestCase> cases;
 
   // 0. Default case.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   // 1. Animation with missing tile.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   cases.back().layer_between.has_missing_tile = true;
   cases.back().layer_between.is_animating = true;
   // 2. High res required with incomplete tile.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   cases.back().high_res_required = true;
   cases.back().layer_between.has_incomplete_tile = true;
   // 3. High res required with missing tile.
-  cases.push_back(PrepareToDrawSuccessTestCase(DRAW_SUCCESS));
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
   cases.back().high_res_required = true;
   cases.back().layer_between.has_missing_tile = true;
 
@@ -9391,7 +9391,7 @@ TEST_F(LayerTreeHostImplTest,
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
       base::TimeTicks() + base::Milliseconds(1));
   host_impl_->WillBeginImplFrame(args);
-  EXPECT_EQ(DRAW_SUCCESS, host_impl_->PrepareToDraw(&frame));
+  EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
   host_impl_->DrawLayers(&frame);
   host_impl_->DidDrawAllLayers(frame);
   host_impl_->DidFinishImplFrame(args);
@@ -10899,7 +10899,7 @@ static bool MayContainVideoBitSetOnFrameData(LayerTreeHostImpl* host_impl) {
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
       base::TimeTicks() + base::Milliseconds(1));
   host_impl->WillBeginImplFrame(args);
-  EXPECT_EQ(DRAW_SUCCESS, host_impl->PrepareToDraw(&frame));
+  EXPECT_EQ(DrawResult::kSuccess, host_impl->PrepareToDraw(&frame));
   host_impl->DrawLayers(&frame);
   host_impl->DidDrawAllLayers(frame);
   host_impl->DidFinishImplFrame(args);
@@ -11002,7 +11002,7 @@ class LayerTreeHostImplViewportCoveredTest : public LayerTreeHostImplTest {
     SetLayerGeometry(gfx::Rect(viewport_size_));
 
     TestFrameData frame;
-    EXPECT_EQ(DRAW_SUCCESS, host_impl_->PrepareToDraw(&frame));
+    EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
     ASSERT_EQ(1u, frame.render_passes.size());
 
     EXPECT_EQ(0u, CountGutterQuads(frame.render_passes[0]->quad_list));
@@ -11273,7 +11273,7 @@ TEST_F(LayerTreeHostImplTest, PartialSwapReceivesDamageRect) {
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
       base::TimeTicks() + base::Milliseconds(1));
   layer_tree_host_impl->WillBeginImplFrame(args);
-  EXPECT_EQ(DRAW_SUCCESS, layer_tree_host_impl->PrepareToDraw(&frame));
+  EXPECT_EQ(DrawResult::kSuccess, layer_tree_host_impl->PrepareToDraw(&frame));
   layer_tree_host_impl->DrawLayers(&frame);
   layer_tree_host_impl->DidDrawAllLayers(frame);
   layer_tree_host_impl->DidFinishImplFrame(args);
@@ -11288,7 +11288,7 @@ TEST_F(LayerTreeHostImplTest, PartialSwapReceivesDamageRect) {
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
       base::TimeTicks() + base::Milliseconds(1));
   layer_tree_host_impl->WillBeginImplFrame(args);
-  EXPECT_EQ(DRAW_SUCCESS, layer_tree_host_impl->PrepareToDraw(&frame));
+  EXPECT_EQ(DrawResult::kSuccess, layer_tree_host_impl->PrepareToDraw(&frame));
   layer_tree_host_impl->DrawLayers(&frame);
   layer_tree_host_impl->DidDrawAllLayers(frame);
   layer_tree_host_impl->DidFinishImplFrame(args);
@@ -11303,7 +11303,7 @@ TEST_F(LayerTreeHostImplTest, PartialSwapReceivesDamageRect) {
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
       base::TimeTicks() + base::Milliseconds(1));
   layer_tree_host_impl->WillBeginImplFrame(args);
-  EXPECT_EQ(DRAW_SUCCESS, layer_tree_host_impl->PrepareToDraw(&frame));
+  EXPECT_EQ(DrawResult::kSuccess, layer_tree_host_impl->PrepareToDraw(&frame));
   layer_tree_host_impl->DrawLayers(&frame);
   layer_tree_host_impl->DidDrawAllLayers(frame);
   layer_tree_host_impl->DidFinishImplFrame(args);
@@ -11327,7 +11327,7 @@ TEST_F(LayerTreeHostImplTest, RootLayerDoesntCreateExtraSurface) {
 
   TestFrameData frame;
 
-  EXPECT_EQ(DRAW_SUCCESS, host_impl_->PrepareToDraw(&frame));
+  EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
   EXPECT_EQ(1u, frame.render_surface_list->size());
   EXPECT_EQ(1u, frame.render_passes.size());
   host_impl_->DidDrawAllLayers(frame);
@@ -11404,7 +11404,7 @@ TEST_F(LayerTreeHostImplTest, HasTransparentBackground) {
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
       base::TimeTicks() + base::Milliseconds(1));
   host_impl_->WillBeginImplFrame(args);
-  EXPECT_EQ(DRAW_SUCCESS, host_impl_->PrepareToDraw(&frame));
+  EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
   {
     const auto& root_pass = frame.render_passes.back();
     ASSERT_EQ(1u, root_pass->quad_list.size());
@@ -11425,7 +11425,7 @@ TEST_F(LayerTreeHostImplTest, HasTransparentBackground) {
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
       base::TimeTicks() + base::Milliseconds(1));
   host_impl_->WillBeginImplFrame(args);
-  EXPECT_EQ(DRAW_SUCCESS, host_impl_->PrepareToDraw(&frame));
+  EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
   {
     const auto& root_pass = frame.render_passes.back();
     ASSERT_EQ(0u, root_pass->quad_list.size());
@@ -11443,7 +11443,7 @@ TEST_F(LayerTreeHostImplTest, HasTransparentBackground) {
   host_impl_->WillBeginImplFrame(viz::CreateBeginFrameArgsForTesting(
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
       base::TimeTicks() + base::Milliseconds(1)));
-  EXPECT_EQ(DRAW_SUCCESS, host_impl_->PrepareToDraw(&frame));
+  EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
   {
     const auto& root_pass = frame.render_passes.back();
     ASSERT_EQ(0u, root_pass->quad_list.size());
@@ -11468,7 +11468,7 @@ class LayerTreeHostImplTestDrawAndTestDamage : public LayerTreeHostImplTest {
         BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
         base::TimeTicks() + base::Milliseconds(1));
     host_impl_->WillBeginImplFrame(args);
-    EXPECT_EQ(DRAW_SUCCESS, host_impl_->PrepareToDraw(&frame));
+    EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
 
     if (!expect_to_draw) {
       // With no damage, we don't draw, and no quads are created.
@@ -11578,7 +11578,7 @@ TEST_F(LayerTreeHostImplTest, FarAwayQuadsDontNeedAA) {
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
       base::TimeTicks() + base::Milliseconds(1));
   host_impl_->WillBeginImplFrame(args);
-  EXPECT_EQ(DRAW_SUCCESS, host_impl_->PrepareToDraw(&frame));
+  EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
 
   ASSERT_EQ(1u, frame.render_passes.size());
   ASSERT_LE(1u, frame.render_passes[0]->quad_list.size());
@@ -11759,7 +11759,7 @@ void ExpectFullDamageAndDraw(LayerTreeHostImpl* host_impl) {
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
       base::TimeTicks() + base::Milliseconds(1));
   host_impl->WillBeginImplFrame(args);
-  EXPECT_EQ(DRAW_SUCCESS, host_impl->PrepareToDraw(&frame));
+  EXPECT_EQ(DrawResult::kSuccess, host_impl->PrepareToDraw(&frame));
   ASSERT_EQ(1u, frame.render_passes.size());
   const viz::CompositorRenderPass* root_render_pass =
       frame.render_passes.back().get();
