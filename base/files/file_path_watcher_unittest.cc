@@ -299,8 +299,7 @@ bool FilePathWatcherTest::SetupWatch(const FilePath& target,
                                      FilePathWatcher::Type watch_type) {
   return watcher->Watch(
       target, watch_type,
-      BindPostTaskToCurrentDefault(BindRepeating(
-          &TestDelegateBase::OnFileChanged, delegate->AsWeakPtr())));
+      BindRepeating(&TestDelegateBase::OnFileChanged, delegate->AsWeakPtr()));
 }
 
 bool FilePathWatcherTest::SetupWatchWithOptions(
@@ -310,8 +309,7 @@ bool FilePathWatcherTest::SetupWatchWithOptions(
     FilePathWatcher::WatchOptions watch_options) {
   return watcher->WatchWithOptions(
       target, watch_options,
-      BindPostTaskToCurrentDefault(BindRepeating(
-          &TestDelegateBase::OnFileChanged, delegate->AsWeakPtr())));
+      BindRepeating(&TestDelegateBase::OnFileChanged, delegate->AsWeakPtr()));
 }
 
 // Basic test: Create the file and verify that we notice.
