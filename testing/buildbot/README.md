@@ -17,10 +17,12 @@ components should be in components_unittests.
 
 ## A tour of the directory
 
+[tests in starlark]: /infra/config/targets#tests-in-starlark
+
 *** note
 **NOTE:** information in many of the .pyl files listed here will be migrated to
 starlark in the near-to-medium future, so if you are accustomed to modifying
-these files, see [below](#starlark-inputs) for information on files that have
+these files, see [here][tests in starlark] for information on files that have
 been migrated.
 ***
 
@@ -37,15 +39,15 @@ waterfalls, and which test suites they run. By design, this file can only refer
 * [test_suites.pyl](./test_suites.pyl) -- describes the test suites that are
 referred to by waterfalls.pyl. A test suite describes groups of tests that are
 run on one or more bots. This file is actually generated from starlark
-definitions (see [below](#starlark-inputs)).
+definitions (see [here][tests in starlark]).
 * [mixins.pyl](./mixins.pyl) -- describes reusable bits of configuration that
 can be used to modify the expansion of tests from waterfalls.pyl into the
 generated test specs. This file is actually generated from starlark definitions
-(see [below](#starlark-inputs)).
+(see [here][tests in starlark]).
 * [variants.pyl](./variants.pyl) -- describes reusable bits of configuration
 that can be used to expand a single test suite into multiple test specs so that
 a test can be run under multiple configurations. This file is actually generated
-from starlark definitions (see [below](#starlark-inputs)).
+from starlark definitions (see [here][tests in starlark]).
 * [test_suite_exceptions.pyl](./test_suite_exceptions.pyl) -- describes
 exceptions to the test suites, for example excluding a particular test from
 running on one bot. The goal is to have very few or no exceptions, which is why
@@ -53,7 +55,7 @@ this information is factored into a separate file.
 * [gn_isolate_map.pyl](./gn_isolate_map.pyl) -- maps Ninja build target names to
 GN labels. Allows for certain overrides to get certain tests targets to work
 with GN (and properly run when isolated). This file is actually generated from
-starlark definitions (see [below](#starlark-inputs)).
+starlark definitions (see [here][tests in starlark]).
 * [trybot_analyze_config.json](./trybot_analyze_config.json) -- used to provide
 exclusions to
 [the analyze step](https://www.chromium.org/developers/testing/commit-queue/chromium_trybot-json)
@@ -62,32 +64,6 @@ on trybots.
 run in a particular mode.
 * [check.py](./check.py) -- makes sure the buildbot configuration json
 satisifies certain criteria.
-
-### Starlark inputs
-
-The following files in //infra/config now contain definitions that produce
-inputs to the generator. After modifying the starlark files, before running
-generate_buildbot_json.py, run [main.star](../../infra/config/main.star) to
-produce the pyl files that the generator consumes and
-[sync-pyl-files.py](../../infra/config/scripts/sync-pyl-files.py) to update the
-pyl files in this directory.
-
-* [basic_suites.star](../../infra/config/targets/basic_suites.star) -- Contains
-the basic suite definitions that produce the basic_suites entries in
-test_suites.pyl.
-* [compound_suites.star](../../infra/config/targets/compound_suites.star) --
-Contains the compound suite definitions that produce the compound_suites entries
-in test_suites.pyl.
-* [matrix_compound_suites.star](
-  ../../infra/config/targets/matrix_compound_suites.star) -- Contains the matrix
-  compound suite definitions that produce the matrix_compound_suites entries in
-  test_suites.pyl.
-* [mixins.star](../../infra/config/targets/mixins.star) -- contains the test
-  suite mixins that produce mixins.pyl.
-* [variants.star](../../infra/config/targets/variants.star) -- contains the
-  variants that produce variants.pyl.
-* [targets.star](../../infra/config/targets) -- contains the target definitions
-  that produce gn_isolate_map.pyl.
 
 ## How the files are consumed
 ### Buildbot configuration json
