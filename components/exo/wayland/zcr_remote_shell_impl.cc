@@ -1040,6 +1040,8 @@ SurfaceFrameType RemoteShellSurfaceFrameType(uint32_t frame_type) {
       return SurfaceFrameType::AUTOHIDE;
     case ZCR_REMOTE_SURFACE_V1_FRAME_TYPE_OVERLAY:
       return SurfaceFrameType::OVERLAY;
+    case ZCR_REMOTE_SURFACE_V2_FRAME_TYPE_OVERLAP:
+      return SurfaceFrameType::OVERLAP;
     default:
       VLOG(2) << "Unknown remote-shell frame type: " << frame_type;
       return SurfaceFrameType::NONE;

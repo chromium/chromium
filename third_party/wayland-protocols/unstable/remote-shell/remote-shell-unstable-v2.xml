@@ -162,7 +162,7 @@
 
   </interface>
 
-  <interface name="zcr_remote_surface_v2" version="5">
+  <interface name="zcr_remote_surface_v2" version="6">
     <description summary="A desktop window">
       An interface that may be implemented by a wl_surface, for
       implementations that provide a desktop-style user interface
@@ -596,6 +596,7 @@
       <entry name="shadow" value="2" summary="shadow only"/>
       <entry name="autohide" value="3" summary="autohide frame with shadow"/>
       <entry name="overlay" value="4" summary="overlay frame with shadow"/>
+      <entry name="overlap" value="5" summary="overlap frame with the window" since="6"/>
     </enum>
 
     <request name="set_frame" since="1">

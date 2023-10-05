@@ -31,6 +31,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
+#include "ui/views/window/hit_test_utils.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/tooltip_observer.h"
 
@@ -335,6 +336,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool frame_enabled() const {
     return frame_type_ != SurfaceFrameType::NONE &&
            frame_type_ != SurfaceFrameType::SHADOW;
+  }
+
+  bool frame_overlapped() const {
+    return frame_type_ == SurfaceFrameType::OVERLAP;
   }
 
   Surface* surface_for_testing() { return root_surface(); }

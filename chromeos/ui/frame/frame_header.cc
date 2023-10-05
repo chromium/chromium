@@ -204,6 +204,11 @@ FrameHeader::~FrameHeader() {
     center_button_ = nullptr;
   }
 
+  if (underneath_layer_owner_) {
+    underneath_layer_owner_->RemoveObserver(this);
+    underneath_layer_owner_ = nullptr;
+  }
+
   auto* target_window = target_widget_->GetNativeView();
   if (target_window && target_window->GetProperty(kFrameHeaderKey) == this)
     target_window->ClearProperty(kFrameHeaderKey);
@@ -351,6 +356,35 @@ FrameHeader::FrameHeader(views::Widget* target_widget, views::View* view)
 
 void FrameHeader::UpdateFrameHeaderKey() {
   target_widget_->GetNativeView()->SetProperty(kFrameHeaderKey, this);
+}
+
+void FrameHeader::OnLayerRecreated(ui::Layer* old_layer) {
+  if (underneath_layer_owner_) {
+    frame_animator_->RemoveLayerFromRegionsKeepInLayerTree(old_layer);
+    frame_animator_->AddLayerToRegion(underneath_layer_owner_->layer(),
+                                      views::LayerRegion::kBelow);
+  }
+}
+
+void FrameHeader::AddLayerBeneath(ui::LayerOwner* layer_owner) {
+  if (layer_owner) {
+    underneath_layer_owner_ = layer_owner;
+    // A relationship between the layer_owner's layer and animation view is
+    // created, we need to observe the layer_owner in case of the layer gets
+    // recreated.
+    layer_owner->AddObserver(this);
+    frame_animator_->AddLayerToRegion(layer_owner->layer(),
+                                      views::LayerRegion::kBelow);
+  }
+}
+
+void FrameHeader::RemoveLayerBeneath() {
+  if (underneath_layer_owner_) {
+    frame_animator_->RemoveLayerFromRegionsKeepInLayerTree(
+        underneath_layer_owner_->layer());
+    underneath_layer_owner_->RemoveObserver(this);
+    underneath_layer_owner_ = nullptr;
+  }
 }
 
 gfx::Rect FrameHeader::GetPaintedBounds() const {

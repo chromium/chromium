@@ -2605,4 +2605,49 @@ TEST_P(ClientControlledShellSurfaceTest,
   }
 }
 
+TEST_P(ClientControlledShellSurfaceTest, FrameOverlap) {
+  gfx::Rect client_bounds(20, 50, 300, 200);
+  auto shell_surface = exo::test::ShellSurfaceBuilder({client_bounds.size()})
+                           .SetGeometry(client_bounds)
+                           .BuildClientControlledShellSurface();
+  auto* surface = shell_surface->root_surface();
+  views::Widget* widget = shell_surface->GetWidget();
+  aura::Window* window = widget->GetNativeWindow();
+  ash::NonClientFrameViewAsh* frame_view =
+      static_cast<ash::NonClientFrameViewAsh*>(
+          widget->non_client_view()->frame_view());
+
+  // 1) Initial state, no frame (SurfaceFrameType is NONE). Client bounds
+  // should be the same as the window bounds.
+  EXPECT_FALSE(frame_view->GetHeaderView()->GetVisible());
+  EXPECT_FALSE(frame_view->GetFrameEnabled());
+  EXPECT_FALSE(frame_view->GetFrameOverlapped());
+  EXPECT_FALSE(wm::ShadowController::GetShadowForWindow(window));
+  EXPECT_EQ(client_bounds, widget->GetWindowBoundsInScreen());
+  EXPECT_EQ(client_bounds,
+            frame_view->GetWindowBoundsForClientBounds(client_bounds));
+
+  // 2) Set frame to OVERLAP, the frame should be visible. Client bounds
+  // should not be affected.
+  surface->SetFrame(SurfaceFrameType::OVERLAP);
+  surface->Commit();
+  EXPECT_TRUE(frame_view->GetHeaderView()->GetVisible());
+  EXPECT_TRUE(frame_view->GetFrameEnabled());
+  EXPECT_TRUE(frame_view->GetFrameOverlapped());
+  EXPECT_TRUE(wm::ShadowController::GetShadowForWindow(window));
+  EXPECT_EQ(client_bounds, widget->GetWindowBoundsInScreen());
+  EXPECT_EQ(client_bounds,
+            frame_view->GetWindowBoundsForClientBounds(client_bounds));
+
+  // 3) Maximize the surface, it should be maximized properly.
+  shell_surface->SetMaximized();
+  surface->Commit();
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMaximized());
+
+  // 4) Minimize the surface, it should be maximized properly.
+  shell_surface->SetMinimized();
+  surface->Commit();
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
+}
+
 }  // namespace exo

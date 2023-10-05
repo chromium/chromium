@@ -108,6 +108,10 @@ int NonClientFrameView::NonClientHitTest(const gfx::Point& point) {
   return HTNOWHERE;
 }
 
+bool NonClientFrameView::GetFrameOverlapped() const {
+  return false;
+}
+
 void NonClientFrameView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kClient;
 }

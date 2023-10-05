@@ -92,9 +92,12 @@ int NonClientFrameViewBase::NonClientTopBorderHeight() const {
   // not visible, disabled, in immersive mode or in tablet mode.
   // TODO(crbug.com/1385920): Support NonClientFrameViewAshImmersiveHelper on
   // Lacros so that we can remove InTabletMode() && IsMaximized() condition.
+  // Also for the cases where the frame is overlapped with the window area, the
+  // client area is the same as window area, we should also return 0.
   if (frame_->IsFullscreen() || !GetFrameEnabled() ||
       header_view_->in_immersive_mode() ||
-      (chromeos::TabletState::Get()->InTabletMode() && frame_->IsMaximized())) {
+      (chromeos::TabletState::Get()->InTabletMode() && frame_->IsMaximized()) ||
+      frame_overlapped_) {
     return 0;
   }
   return header_view_->GetPreferredHeight();
@@ -115,6 +118,10 @@ gfx::Rect NonClientFrameViewBase::GetWindowBoundsForClientBounds(
 
 int NonClientFrameViewBase::NonClientHitTest(const gfx::Point& point) {
   return FrameBorderNonClientHitTest(this, point);
+}
+
+bool NonClientFrameViewBase::GetFrameOverlapped() const {
+  return frame_overlapped_;
 }
 
 void NonClientFrameViewBase::GetWindowMask(const gfx::Size& size,

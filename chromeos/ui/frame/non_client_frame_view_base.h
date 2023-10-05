@@ -30,6 +30,7 @@ class NonClientFrameViewBase : public views::NonClientFrameView {
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
   int NonClientHitTest(const gfx::Point& point) override;
+  bool GetFrameOverlapped() const override;
   void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override;
   void ResetWindowControls() override;
   void UpdateWindowIcon() override;
@@ -64,6 +65,7 @@ class NonClientFrameViewBase : public views::NonClientFrameView {
   raw_ptr<OverlayView, ExperimentalAsh> overlay_view_ = nullptr;
 
   bool frame_enabled_ = true;
+  bool frame_overlapped_ = false;
 
  private:
   // Called when |frame_|'s "paint as active" state has changed.
