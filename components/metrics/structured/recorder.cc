@@ -11,16 +11,20 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/structured_metrics_features.h"
-#include "components/metrics/structured/structured_metrics_validator.h"
 
 namespace metrics::structured {
 
-Recorder::Recorder() = default;
+Recorder::Recorder() : validators_(std::make_unique<validator::Validators>()) {}
+
 Recorder::~Recorder() = default;
 
 Recorder* Recorder::GetInstance() {
   static base::NoDestructor<Recorder> recorder;
   return recorder.get();
+}
+
+validator::Validators* Recorder::GetValidator() {
+  return validators_.get();
 }
 
 void Recorder::RecordEvent(Event&& event) {
@@ -68,7 +72,8 @@ void Recorder::ProfileAdded(const base::FilePath& profile_path) {
 }
 
 absl::optional<int> Recorder::LastKeyRotation(const Event& event) {
-  auto project_validator = validator::GetProjectValidator(event.project_name());
+  auto project_validator =
+      GetValidator()->GetProjectValidator(event.project_name());
   if (!project_validator.has_value()) {
     return absl::nullopt;
   }

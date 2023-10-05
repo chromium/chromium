@@ -10,8 +10,11 @@ HEADER_FILE_TEMPLATE = """\
 #ifndef {file.guard_path}
 #define {file.guard_path}
 
+#include <memory>
 #include <string>
+#include <unordered_map>
 
+#include "base/strings/string_piece.h"
 #include "components/metrics/structured/project_validator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -19,10 +22,25 @@ namespace metrics {{
 namespace structured {{
 namespace validator {{
 
-absl::optional<const ProjectValidator*>
-  GetProjectValidator(const std::string& project_name);
+class Validators final {{
 
-}} // namespace validator
+public:
+  Validators();
+
+  Validators(const Validators&) = delete;
+  Validators& operator=(const Validators&) = delete;
+
+  void Initialize();
+
+  absl::optional<const ProjectValidator*>
+    GetProjectValidator(const std::string& project_name);
+
+private:
+  std::unordered_map<base::StringPiece, std::unique_ptr<ProjectValidator>>
+      validators_;
+}};
+
+}}  // namespace validator
 }}  // namespace structured
 }}  // namespace metrics
 
@@ -38,8 +56,6 @@ IMPL_FILE_TEMPLATE = """\
 #include <cstdint>
 #include <string>
 
-#include "base/containers/fixed_flat_map.h"
-#include "base/strings/string_piece.h"
 #include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/event_validator.h"
@@ -54,27 +70,27 @@ namespace {{
 
 //---------------------EventValidator Classes----------------------------------
 {event_code}
-//---------------------EventValidator Declarations------------------------------
-{event_validators}
-//---------------------EventValidator Maps--------------------------------------
-{project_event_maps}
 //---------------------ProjectValidator Classes---------------------------------
 {projects_code}
-//---------------------ProjectValidator Declarations----------------------------
-{project_validators}
-//---------------------ProjectValidator Map-------------------------------------
-{project_map}
 
 }}
 
 namespace validator {{
 
+Validators::Validators() {{
+  Initialize();
+}}
+
+void Validators::Initialize() {{
+  {project_map};
+}}
+
 absl::optional<const ProjectValidator*>
-  GetProjectValidator(const std::string& project_name) {{
-  const auto it = kStructuredMetricsProjectValidatorMap.find(project_name);
-   if (it == kStructuredMetricsProjectValidatorMap.end())
-      return absl::nullopt;
-   return it->second;
+  Validators::GetProjectValidator(const std::string& project_name) {{
+    const auto it = validators_.find(project_name);
+     if (it == validators_.end())
+        return absl::nullopt;
+     return it->second.get();
 }}
 
 }} // namespace validator
@@ -92,6 +108,8 @@ class {project.validator} final :
     absl::optional<const EventValidator*> GetEventValidator(
       const std::string& event_name) const override;
 
+    void Initialize();
+
     static constexpr uint64_t kProjectNameHash = UINT64_C({project.name_hash});
     static constexpr IdType kIdType = IdType::{project.id_type};
     static constexpr IdScope kIdScope = IdScope::{project.id_scope};
@@ -99,6 +117,10 @@ class {project.validator} final :
         StructuredEventProto_EventType_{project.event_type};
     static constexpr int kKeyRotationPeriod =
         {project.key_rotation_period};
+
+  private:
+    std::unordered_map<base::StringPiece,
+        std::unique_ptr<EventValidator>> event_validators_;
 }};
 
 {project.validator}::{project.validator}() :
@@ -109,31 +131,23 @@ class {project.validator} final :
   {project.validator}::kEventType,
   {project.validator}::kKeyRotationPeriod
 )
-  {{}}
+  {{
+  Initialize();
+}}
+
+void {project.validator}::Initialize() {{
+  {event_validator_map};
+}}
 
 {project.validator}::~{project.validator}() = default;
 
 absl::optional<const EventValidator*> {project.validator}::GetEventValidator(
                                         const std::string& event_name) const {{
-   const auto it = k{project.validator}EventMap.find(event_name);
-   if (it == k{project.validator}EventMap.end())
+   const auto it = event_validators_.find(event_name);
+   if (it == event_validators_.end())
       return absl::nullopt;
-   return it->second;
+   return it->second.get();
 }}
-"""
-
-IMPL_PROJECT_EVENT_MAP_TEMPLATE = """\
-static constexpr auto k{project.validator}EventMap = base::MakeFixedFlatMap
-  <base::StringPiece, const EventValidator*>({{
-  {event_validator_map}
-}});
-"""
-
-IMPL_PROJECT_MAP_TEMPLATE = """\
-static constexpr auto kStructuredMetricsProjectValidatorMap =
-  base::MakeFixedFlatMap<base::StringPiece, const ProjectValidator*>({{
-    {project_map}
-}});
 """
 
 IMPL_EVENT_VALIDATOR_TEMPLATE = """\
@@ -143,32 +157,38 @@ class {event.validator_name} final :
     {event.validator_name}();
     ~{event.validator_name}() override;
 
+    void Initialize();
+
     static constexpr uint64_t kEventNameHash = UINT64_C({event.name_hash});
 
     absl::optional<MetricMetadata>
       GetMetricMetadata(const std::string& metric_name) const override;
+
+  private:
+    std::unordered_map<base::StringPiece, EventValidator::MetricMetadata>
+        metric_metadata_;
 }};
 
 {event.validator_name}::{event.validator_name}() :
   ::metrics::structured::EventValidator({event.validator_name}::kEventNameHash)
-  {{}}
+  {{
+  Initialize();
+}}
 
 {event.validator_name}::~{event.validator_name}() = default;
+
+void {event.validator_name}::Initialize() {{
+  metric_metadata_ = {{
+    {metric_hash_map}
+   }};
+}}
 
 absl::optional<EventValidator::MetricMetadata>
 {event.validator_name}::GetMetricMetadata(const std::string& metric_name)
 const {{
-  {get_metrics_metadata_impl}
-}}
-"""
-
-IMPL_GET_METRICS_METADATA = """\
-static constexpr auto metric_hash_map = base::MakeFixedFlatMap<
-      base::StringPiece, EventValidator::MetricMetadata>({{
-    {metric_hash_map}
-   }});
-   const auto* it = metric_hash_map.find(metric_name);
-   if (it == metric_hash_map.end())
+   const auto it = metric_metadata_.find(metric_name);
+   if (it == metric_metadata_.end())
       return absl::nullopt;
    return it->second;
+}}
 """

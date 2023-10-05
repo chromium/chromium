@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/structured_metrics_client.h"
+#include "components/metrics/structured/structured_metrics_validator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -67,6 +68,8 @@ class Recorder {
 
   static Recorder* GetInstance();
 
+  validator::Validators* GetValidator();
+
   // This signals to StructuredMetricsProvider that the event should be
   // recorded.
   void RecordEvent(Event&& event);
@@ -118,6 +121,8 @@ class Recorder {
   base::ObserverList<RecorderImpl> observers_;
 
   DelegatingEventsProcessor delegating_events_processor_;
+
+  std::unique_ptr<validator::Validators> validators_;
 };
 
 }  // namespace metrics::structured

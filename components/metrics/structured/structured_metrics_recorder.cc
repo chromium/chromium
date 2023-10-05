@@ -379,7 +379,8 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
   // Validates the event. If valid, retrieve the metadata associated
   // with the event.
   auto maybe_project_validator =
-      validator::GetProjectValidator(event.project_name());
+      Recorder::GetInstance()->GetValidator()->GetProjectValidator(
+          event.project_name());
 
   DCHECK(maybe_project_validator.has_value());
   if (!maybe_project_validator.has_value()) {
