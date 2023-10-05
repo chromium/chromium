@@ -907,6 +907,9 @@
   <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info bubble after the user has allowed third-party cookies on a site explaining the trade-off of their decision.">
     This means that most site features should work, but you have less protection
   </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info Tracking Protection subpage if the user is visiting a site on their third-party cookies allow list.">
+    This means site features should work as expected, but you may have less browsing protection.
+  </message>
   <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_ALLOWED_TOGGLE_A11Y" desc="Accessible name in the page info bubble, for the third-party cookies toggle, if third party cookies are allowed indicating how many third-party sites were allowed to access cookies.">
     {NUM_COOKIES, plural,
       =0 {Third-party cookies, No sites allowed}

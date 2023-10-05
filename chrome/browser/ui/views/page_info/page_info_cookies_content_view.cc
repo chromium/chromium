@@ -288,7 +288,9 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
     title = l10n_util::GetStringUTF16(
         IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE);
     description = l10n_util::GetStringUTF16(
-        IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_DESCRIPTION);
+        presenter_->IsTrackingProtection3pcdEnabled()
+            ? IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_PERMANENT_ALLOWED_DESCRIPTION
+            : IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_DESCRIPTION);
   } else if (presenter_->IsTrackingProtection3pcdEnabled()) {
     title = l10n_util::GetPluralStringFUTF16(
         presenter_->AreAllThirdPartyCookiesBlocked()
