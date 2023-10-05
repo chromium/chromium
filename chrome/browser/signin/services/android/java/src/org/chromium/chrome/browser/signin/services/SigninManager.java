@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -144,34 +145,70 @@ public interface SigninManager {
     /**
      * Starts the sign-in flow, and executes the callback when finished.
      *
-     * The sign-in flow goes through the following steps:
+     * <p>The sign-in flow goes through the following steps:
      *
-     *   - Wait for AccountTrackerService to be seeded.
-     *   - Complete sign-in with the native IdentityManager.
-     *   - Call the callback if provided.
-     *  @param account The account to sign in to.
+     * <p>- Wait for AccountTrackerService to be seeded. - Complete sign-in with the native
+     * IdentityManager. - Call the callback if provided.
+     *
+     * @param account The account to sign in to.
      * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
      * @param callback Optional callback for when the sign-in process is finished.
      */
+    @Deprecated
     void signin(
             Account account, @SigninAccessPoint int accessPoint, @Nullable SignInCallback callback);
 
     /**
      * Starts the sign-in flow, and executes the callback when finished.
      *
-     * The sign-in flow goes through the following steps:
+     * <p>The sign-in flow goes through the following steps:
      *
-     *   - Wait for AccountTrackerService to be seeded.
-     *   - Wait for policy to be checked for the account.
-     *   - If managed, wait for the policy to be fetched.
-     *   - Complete sign-in with the native IdentityManager.
-     *   - Call the callback if provided.
-     *  @param account The account to sign in to.
+     * <p>- Wait for AccountTrackerService to be seeded. - Complete sign-in with the native
+     * IdentityManager. - Call the callback if provided.
+     *
+     * @param coreAccountInfo The {@link CoreAccountInfo} to sign in to.
+     * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
+     * @param callback Optional callback for when the sign-in process is finished.
+     */
+    void signin(
+            CoreAccountInfo coreAccountInfo,
+            @SigninAccessPoint int accessPoint,
+            @Nullable SignInCallback callback);
+
+    /**
+     * Starts the sign-in flow, and executes the callback when finished.
+     *
+     * <p>The sign-in flow goes through the following steps:
+     *
+     * <p>- Wait for AccountTrackerService to be seeded. - Wait for policy to be checked for the
+     * account. - If managed, wait for the policy to be fetched. - Complete sign-in with the native
+     * IdentityManager. - Call the callback if provided.
+     *
+     * @param account The account to sign in to.
+     * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
+     * @param callback Optional callback for when the sign-in process is finished.
+     */
+    @Deprecated
+    void signinAndEnableSync(
+            Account account, @SigninAccessPoint int accessPoint, @Nullable SignInCallback callback);
+
+    /**
+     * Starts the sign-in flow, and executes the callback when finished.
+     *
+     * <p>The sign-in flow goes through the following steps:
+     *
+     * <p>- Wait for AccountTrackerService to be seeded. - Wait for policy to be checked for the
+     * account. - If managed, wait for the policy to be fetched. - Complete sign-in with the native
+     * IdentityManager. - Call the callback if provided.
+     *
+     * @param coreAccountInfo The {@link CoreAccountInfo} to sign in to.
      * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
      * @param callback Optional callback for when the sign-in process is finished.
      */
     void signinAndEnableSync(
-            Account account, @SigninAccessPoint int accessPoint, @Nullable SignInCallback callback);
+            CoreAccountInfo coreAccountInfo,
+            @SigninAccessPoint int accessPoint,
+            @Nullable SignInCallback callback);
 
     /**
      * Schedules the runnable to be invoked after all sign-in, sign-out, or sync data wipe operation

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.contacts_picker;
 
-import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -111,9 +110,10 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
         if (coreAccountInfo != null) {
             return coreAccountInfo.getEmail();
         }
-        final @Nullable Account defaultAccount = AccountUtils.getDefaultAccountIfFulfilled(
-                AccountManagerFacadeProvider.getInstance().getAccounts());
-        return defaultAccount != null ? defaultAccount.name : null;
+        final @Nullable CoreAccountInfo defaultCoreAccountInfo =
+                AccountUtils.getDefaultCoreAccountInfoIfFulfilled(
+                        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
+        return defaultCoreAccountInfo != null ? defaultCoreAccountInfo.getEmail() : null;
     }
 
     @Override

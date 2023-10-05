@@ -263,9 +263,29 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     }
 
     @Override
+    public void signin(
+            CoreAccountInfo coreAccountInfo,
+            @SigninAccessPoint int accessPoint,
+            @Nullable SignInCallback callback) {
+        // TODO(crbug.com/1462264): Replace Account with CoreAccountInfo.
+        Account account = CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo);
+        signin(account, accessPoint, callback);
+    }
+
+    @Override
     public void signinAndEnableSync(Account account, @SigninAccessPoint int accessPoint,
             @Nullable SignInCallback callback) {
         signinInternal(SignInState.createForSigninAndEnableSync(accessPoint, account, callback));
+    }
+
+    @Override
+    public void signinAndEnableSync(
+            CoreAccountInfo coreAccountInfo,
+            @SigninAccessPoint int accessPoint,
+            @Nullable SignInCallback callback) {
+        // TODO(crbug.com/1462264): Replace Account with CoreAccountInfo.
+        Account account = CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo);
+        signinAndEnableSync(account, accessPoint, callback);
     }
 
     private void signinInternal(SignInState signInState) {

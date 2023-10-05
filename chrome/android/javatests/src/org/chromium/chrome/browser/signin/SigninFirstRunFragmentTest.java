@@ -32,6 +32,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
 
+import android.accounts.Account;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
@@ -672,7 +673,7 @@ public class SigninFirstRunFragmentTest {
                 R.string.sync_promo_continue_as, GIVEN_NAME1);
         clickContinueButton(continueAsText);
 
-        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
+        verify(mSigninManagerMock, never()).signin(any(Account.class), anyInt(), any());
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
@@ -1314,8 +1315,9 @@ public class SigninFirstRunFragmentTest {
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
 
         // Sign-in isn't processed by SigninFirstRunFragment for child accounts.
-        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
-        verify(mSigninManagerMock, never()).signinAndEnableSync(any(), anyInt(), any());
+        verify(mSigninManagerMock, never()).signin(any(Account.class), anyInt(), any());
+        verify(mSigninManagerMock, never())
+                .signinAndEnableSync(any(Account.class), anyInt(), any());
     }
 
     @SuppressWarnings("CheckReturnValue")
