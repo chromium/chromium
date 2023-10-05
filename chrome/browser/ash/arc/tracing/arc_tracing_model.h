@@ -84,10 +84,9 @@ class ArcTracingModel {
   // tracing events.
   std::map<std::string, TracingEvents> group_events_;
 
-  ArcSystemModel system_model_;
+  TracingEvents nongroup_events_;
 
-  // Metadata events.
-  TracingEvents metadata_events_;
+  ArcSystemModel system_model_;
 
   uint64_t min_timestamp_ = 0;
   uint64_t max_timestamp_ = std::numeric_limits<uint64_t>::max();

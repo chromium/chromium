@@ -194,17 +194,10 @@ TEST_F(ArcTracingModelTest, TopLevel) {
   commits.Add(base::TimeTicks::FromUptimeMillis(42));
   ASSERT_TRUE(graphics_model.Build(model, commits));
 
-  EXPECT_EQ(2U, graphics_model.chrome_top_level().buffer_events().size());
+  EXPECT_EQ(1U, graphics_model.chrome_top_level().buffer_events().size());
   for (const auto& chrome_top_level_band :
        graphics_model.chrome_top_level().buffer_events()) {
-    EXPECT_TRUE(ValidateGrahpicsEvents(
-        chrome_top_level_band, {
-                                   GraphicsEventType::kChromeOSDraw,
-                                   GraphicsEventType::kChromeOSSwap,
-                                   GraphicsEventType::kChromeOSWaitForAck,
-                                   GraphicsEventType::kChromeOSPresentationDone,
-                                   GraphicsEventType::kChromeOSSwapDone,
-                               }));
+    EXPECT_TRUE(ValidateGrahpicsEvents(chrome_top_level_band, {}));
   }
   EXPECT_FALSE(graphics_model.view_buffers().empty());
   for (const auto& view : graphics_model.view_buffers()) {
@@ -242,6 +235,24 @@ TEST_F(ArcTracingModelTest, TopLevel) {
 
   // Models should match.
   EnsureGraphicsModelsEqual(graphics_model, graphics_model_loaded);
+}
+
+TEST_F(ArcTracingModelTest, FrameDisplayed) {
+  std::string tracing_data = R"({"traceEvents":[
+{"args":{},"cat":"benchmark,viz,disabled-by-default-display.framedisplayed","name":"Display::FrameDisplayed","ph":"I","pid":18869,"s":"t","tid":18912,"ts":4966534893},
+{"args":{},"cat":"benchmark,viz,disabled-by-default-display.framedisplayed","name":"Display::FrameDisplayed","ph":"I","pid":18869,"s":"t","tid":18912,"ts":4966551562},
+{"args":{},"cat":"benchmark,viz,disabled-by-default-display.framedisplayed","name":"Display::FrameDisplayed","ph":"I","pid":18869,"s":"t","tid":18912,"ts":4966568229}
+],"systemTraceEvents":""})";
+
+  ArcTracingModel model;
+  ASSERT_TRUE(model.Build(tracing_data));
+
+  ArcTracingGraphicsModel graphics_model;
+  ASSERT_TRUE(graphics_model.Build(model, {}));
+
+  EXPECT_TRUE(ValidateGrahpicsEvents(
+      graphics_model.chrome_top_level().buffer_events()[0],
+      {GraphicsEventType::kChromeOSSwapDone}));
 }
 
 // Validates basic system event timestamp processing

@@ -95,12 +95,12 @@ class ArcTracingGraphicsModel {
     kVsyncTimestamp                  = 406,  // Obsolete
 
     // Chrome OS top level events.
-    kChromeOSDraw = 500,        // 500
-    kChromeOSSwap,              // 501
-    kChromeOSWaitForAck,        // 502
-    kChromeOSPresentationDone,  // 503
-    kChromeOSSwapDone,          // 504
-    kChromeOSJank,              // 505,
+    kChromeOSDraw             = 500,  // Obsolete
+    kChromeOSSwap             = 501,  // Obsolete
+    kChromeOSWaitForAck       = 502,  // Obsolete
+    kChromeOSPresentationDone = 503,  // Obsolete
+    kChromeOSSwapDone         = 504,
+    kChromeOSJank             = 505,  // Obsolete
 
     // Custom event.
     kCustomEvent = 600,

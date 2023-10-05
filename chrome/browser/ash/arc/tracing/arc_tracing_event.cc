@@ -207,12 +207,22 @@ bool ArcTracingEvent::AppendChild(std::unique_ptr<ArcTracingEvent> child) {
 }
 
 bool ArcTracingEvent::Validate() const {
-  if (!GetPid() || GetCategory().empty() || GetName().empty())
+  const std::string name = GetName();
+  if (GetCategory().empty() || name.empty()) {
     return false;
+  }
+  if (name == "ActiveProcesses") {
+    // Does not have pid or tid, so will not pass below checks.
+    return true;
+  }
+  if (!GetPid()) {
+    return false;
+  }
 
   switch (GetPhase()) {
     case TRACE_EVENT_PHASE_COMPLETE:
     case TRACE_EVENT_PHASE_COUNTER:
+    case TRACE_EVENT_PHASE_INSTANT:
       if (!GetTid())
         return false;
       break;
