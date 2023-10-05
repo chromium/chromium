@@ -19,8 +19,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -124,18 +126,19 @@ public class StartupPaintPreviewHelperTest {
         UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()).pressHome();
         assertHasCaptureForTab(mActivityTestRule.getActivity().getActivityTab(), true);
 
-        // Restart Chrome. Paint preview should be shown on startup.
+        // Emulate browser cold start. Paint preview should be shown on startup.
+        pretendColdStartBeforeForegrounded();
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-        TestThreadUtils.runOnUiThreadBlocking(() -> activity.finish());
-        CriteriaHelper.pollUiThread(() -> activity.isDestroyed(), "Activity didn't get destroyed.");
+        TestThreadUtils.runOnUiThreadBlocking(activity::finish);
+        CriteriaHelper.pollUiThread(activity::isDestroyed, "Activity didn't get destroyed.");
 
         mActivityTestRule.startMainActivityFromLauncher();
         final Tab previewTab = mActivityTestRule.getActivity().getActivityTab();
         tabbedPaintPreview =
                 TestThreadUtils.runOnUiThreadBlocking(() -> TabbedPaintPreview.get(previewTab));
 
-        // Paint Preview might be showed and get removed before we can assert it's showing. Hence,
-        // we assert that is was *ever* shown for this tab, instead.
+        // Paint Preview might be showed and get removed before we can assert it's showing. Instead
+        // assert that it was shown for this tab at least once.
         TabbedPaintPreviewTest.assertWasEverShown(tabbedPaintPreview, true);
 
         // Closing the tab should delete its captured paint preview.
@@ -145,6 +148,15 @@ public class StartupPaintPreviewHelperTest {
                                                                  .getCurrentModel()
                                                                  .closeTab(previewTab));
         assertHasCaptureForTab(previewTab, false);
+    }
+
+    private void pretendColdStartBeforeForegrounded() {
+        // Paint preview is shown only on cold start, but it is not possible to restart the process
+        // within a test. Instead set up the ColdStartTracker to report a cold start.
+        ColdStartTracker.setStartedAsColdForTesting();
+        // Reset the SimpleStartupForegroundSessionDetector to the initial state as if the
+        // foreground session has not started.
+        SimpleStartupForegroundSessionDetector.resetForTesting();
     }
 
     private static void assertHasCaptureForTab(Tab tab, boolean shouldHaveCapture) {

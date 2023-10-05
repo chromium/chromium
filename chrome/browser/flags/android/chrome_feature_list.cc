@@ -265,6 +265,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kNotificationPermissionVariant,
     &kNotificationPermissionBottomSheet,
     &kPageAnnotationsService,
+    &kPaintPreviewNewColdStartHeuristic,
     &kPreconnectOnTabCreation,
     &kBookmarksImprovedSaveFlow,
     &kBookmarksRefresh,
@@ -833,6 +834,10 @@ BASE_FEATURE(kInstanceSwitcher,
 BASE_FEATURE(kPageAnnotationsService,
              "PageAnnotationsService",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPaintPreviewNewColdStartHeuristic,
+             "PaintPreviewNewColdStartHeuristic",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPreconnectOnTabCreation,
              "PreconnectOnTabCreation",

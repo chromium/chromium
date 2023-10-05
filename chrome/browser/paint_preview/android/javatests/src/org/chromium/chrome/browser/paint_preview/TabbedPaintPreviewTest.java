@@ -269,11 +269,13 @@ public class TabbedPaintPreviewTest {
     }
 
     public static void assertWasEverShown(
-            TabbedPaintPreview tabbedPaintPreview, boolean everShown) {
-        String shownMessage = everShown ? "Paint Preview should was never shown."
-                                        : "Paint Preview should was shown.";
+            TabbedPaintPreview tabbedPaintPreview, boolean expectedShown) {
+        String message =
+                expectedShown
+                        ? "Paint Preview should have been shown, but never was."
+                        : "Paint Preview should not have been shown, but was.";
         CriteriaHelper.pollUiThread(
-                () -> tabbedPaintPreview.wasEverShown() == everShown, shownMessage);
+                () -> tabbedPaintPreview.wasEverShown() == expectedShown, message);
     }
 
     private static class TestControlsVisibilityDelegate

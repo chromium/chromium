@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFac
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
+import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -116,6 +117,7 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.AndroidSessionDurationsServiceState;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
+import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
 import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity;
@@ -1175,6 +1177,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
+    private void disablePaintPreviewOnRestore() {
+        StartupPaintPreviewHelper.setShouldShowOnRestore(false);
+    }
+
     private void setTrackColdStartupMetrics(boolean shouldTrackColdStartupMetrics) {
         assert getActivityTabStartupMetricsTracker() != null;
 
@@ -1183,11 +1189,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         } else {
             getActivityTabStartupMetricsTracker().cancelTrackingStartupMetrics();
         }
-
-        // Paint Preview should follow the same logic as startup UMA histograms as the feature
-        // should only run on cold startup of Chrome when the user is unable to interact before
-        // entering a tab.
-        StartupPaintPreviewHelper.setShouldShowOnRestore(shouldTrackColdStartupMetrics);
     }
 
     private void setInitialOverviewState(boolean shouldShowOverviewPageOnStart) {
@@ -1207,6 +1208,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // Cancel recording cold startup metrics if an overview is shown as they expect a tab to
             // be the first thing shown after startup.
             setTrackColdStartupMetrics(false);
+            disablePaintPreviewOnRestore();
             showOverview(StartSurfaceState.SHOWING_START);
             mAppLaunchDrawBlocker.onOverviewPageAvailable(
                     mOverviewShownOnStart && !isInstantStartEnabled());
@@ -1219,6 +1221,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // Cancel recording cold startup metrics if an overview is shown as they expect a tab to
             // be the first thing shown after startup.
             setTrackColdStartupMetrics(false);
+            disablePaintPreviewOnRestore();
             showOverview(StartSurfaceState.SHOWING_START);
         }
 
@@ -1720,6 +1723,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 || TextUtils.equals(externalAppId, getPackageName());
     }
 
+    private boolean useNewColdStartHeuristic() {
+        return ChromeFeatureList.sPaintPreviewNewColdStartHeuristic.isEnabled();
+    }
+
     @Override
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
@@ -1732,23 +1739,33 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mJankTracker = new PlaceholderJankTracker();
         }
 
-        // Decide whether to record startup UMA histograms. This is done  early in the main
+        // Decide whether to record startup UMA histograms. This is done early in the main
         // Activity.onCreate() to avoid recording navigation delays when they require user input to
-        // proceed. For example, FRE (First Run Experience) happens before the activity is created,
-        // and triggers initialization of the native library.
-        //
-        // An uninitialized native library is an indication of an application start that is followed
-        // by navigation immediately without user input.
+        // proceed. Having an uninitialized native library has been taken as a sign of starting
+        // Chrome with an immediate navigation without user input.
+        // TODO(crbug.com/1471136): Native library initialization was moved to another thread, and
+        //  it now proceeds faster, making the metrics think that the start is not cold enough.
+        //  To cover more startup cases change the heuristic detecting cold startup that happens
+        //  without user interaction.
         if (!LibraryLoader.getInstance().isInitialized()) {
+            if (!useNewColdStartHeuristic()) {
+                StartupPaintPreviewHelper.setShouldShowOnRestore(true);
+            }
             setTrackColdStartupMetrics(true);
         }
 
+        // Enable Paint Preview only on a cold start. This way the Paint preview is most useful by
+        // being much faster than the real load of the page. Also cold start detection excludes user
+        // interactions changing the course of restoring the page.
+        if (useNewColdStartHeuristic()
+                && ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
+                && !SimpleStartupForegroundSessionDetector.isSessionDiscarded()) {
+            StartupPaintPreviewHelper.setShouldShowOnRestore(true);
+        }
+
         supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
-
         IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
-
         mStartupPaintPreviewHelperSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
-
         if (DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled()) {
             mDseNewTabUrlManager = new DseNewTabUrlManager(mTabModelProfileSupplier);
         }
