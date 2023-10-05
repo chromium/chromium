@@ -84,7 +84,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/supervised_user:sync_settings_factory",
+    "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
     "//ios/chrome/browser/sync/model/glue",
     "//ios/chrome/browser/sync/model/sessions",
     "//ios/chrome/browser/tabs",

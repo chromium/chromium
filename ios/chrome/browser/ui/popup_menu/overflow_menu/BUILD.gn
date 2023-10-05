@@ -210,7 +210,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/signin:system_identity_manager",
     "//ios/chrome/browser/signin:test_support",
-    "//ios/chrome/browser/supervised_user",
+    "//ios/chrome/browser/supervised_user/model",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history",

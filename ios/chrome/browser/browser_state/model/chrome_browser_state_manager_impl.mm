@@ -35,8 +35,8 @@
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/account_reconcilor_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/supervised_user/child_account_service_factory.h"
-#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 
 namespace {

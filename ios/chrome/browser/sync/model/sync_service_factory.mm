@@ -65,7 +65,7 @@
 #import "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace {

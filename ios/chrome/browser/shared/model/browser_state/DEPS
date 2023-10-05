@@ -12,6 +12,6 @@ specific_include_rules = {
     "+ios/chrome/browser/policy",
     "+ios/chrome/browser/browser_state/model",
     "+ios/chrome/browser/prefs/model",
-    "+ios/chrome/browser/supervised_user",
+    "+ios/chrome/browser/supervised_user/model",
   ],
 }

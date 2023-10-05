@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/supervised_user/list_family_members_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
 
 #import "components/supervised_user/core/browser/list_family_members_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"

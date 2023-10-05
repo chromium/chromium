@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_ERROR_CONTAINER_H_
-#define IOS_CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_ERROR_CONTAINER_H_
+#ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_ERROR_CONTAINER_H_
+#define IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_ERROR_CONTAINER_H_
 
 #include <set>
 
@@ -150,7 +150,8 @@ class SupervisedUserInterstitialBlockingPage
   // Marks the SU interstitial first time banner as shown for a visible page.
   void MaybeUpdateFirstTimeInterstitialBanner();
 
-  const std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial_;
+  const std::unique_ptr<supervised_user::SupervisedUserInterstitial>
+      interstitial_;
   std::unique_ptr<security_interstitials::IOSBlockingPageControllerClient>
       controller_client_;
   raw_ptr<web::WebState> web_state_;
@@ -159,4 +160,4 @@ class SupervisedUserInterstitialBlockingPage
       scoped_observation_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_ERROR_CONTAINER_H_
+#endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_ERROR_CONTAINER_H_

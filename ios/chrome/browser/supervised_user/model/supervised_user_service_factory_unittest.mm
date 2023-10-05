@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 
 #import "base/threading/thread_restrictions.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -64,7 +64,6 @@ TEST_F(SupervisedUserServiceFactoryTest, CreateService) {
       SupervisedUserServiceFactory::GetForBrowserState(browser_state_.get());
   ASSERT_TRUE(service);
 }
-
 
 // Tests that SupervisedUserServiceFactory retuns null
 // with an off-the-record ChromeBrowserState.

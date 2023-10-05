@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/supervised_user/supervised_user_error.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_error.h"
 
 const NSErrorDomain kSupervisedUserInterstitialErrorDomain =
     @"com.google.chrome.supervised_user.show_intestitial";

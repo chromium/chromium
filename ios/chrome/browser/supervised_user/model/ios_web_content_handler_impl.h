@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_IOS_WEB_CONTENT_HANDLER_IMPL_H_
-#define IOS_CHROME_BROWSER_SUPERVISED_USER_IOS_WEB_CONTENT_HANDLER_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_IOS_WEB_CONTENT_HANDLER_IMPL_H_
+#define IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_IOS_WEB_CONTENT_HANDLER_IMPL_H_
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
@@ -41,4 +41,4 @@ class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
   base::WeakPtrFactory<IOSWebContentHandlerImpl> weak_factory_{this};
 };
 
-#endif  // IOS_CHIOS_CHROME_BROWSER_SUPERVISED_USER_IOS_WEB_CONTENT_HANDLER_IMPL_H_
+#endif  // IOS_CHIOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_IOS_WEB_CONTENT_HANDLER_IMPL_H_

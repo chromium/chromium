@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/supervised_user/supervised_user_error_container.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 
 #import <string>
 
@@ -11,8 +11,8 @@
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/supervised_user/ios_web_content_handler_impl.h"
-#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/ios_web_content_handler_impl.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"

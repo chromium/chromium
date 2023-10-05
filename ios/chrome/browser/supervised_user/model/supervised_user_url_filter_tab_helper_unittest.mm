@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/supervised_user/supervised_user_url_filter_tab_helper.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_url_filter_tab_helper.h"
 
 #import "base/memory/scoped_refptr.h"
 #import "base/task/single_thread_task_runner.h"
@@ -23,10 +23,10 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/identity_test_environment_browser_state_adaptor.h"
-#import "ios/chrome/browser/supervised_user/child_account_service_factory.h"
-#import "ios/chrome/browser/supervised_user/supervised_user_error_container.h"
-#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
-#import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"

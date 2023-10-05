@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/supervised_user/child_account_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
 
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
@@ -10,8 +10,8 @@
 #import "components/supervised_user/core/browser/permission_request_creator_impl.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/supervised_user/list_family_members_service_factory.h"
-#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 
 namespace {
 

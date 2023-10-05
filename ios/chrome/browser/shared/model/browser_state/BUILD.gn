@@ -86,7 +86,7 @@ source_set("test_support") {
     "//ios/chrome/browser/policy:policy",
     "//ios/chrome/browser/prefs/model",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
-    "//ios/chrome/browser/supervised_user:sync_settings_factory",
+    "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/test:test_support",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/supervised_user/kids_chrome_management_client_factory.h"
+#import "ios/chrome/browser/supervised_user/model/kids_chrome_management_client_factory.h"
 
 #import "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"

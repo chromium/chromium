@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("supervised_user") {
+source_set("model") {
   sources = [
     "child_account_service_factory.h",
     "child_account_service_factory.mm",
@@ -74,7 +74,7 @@ source_set("unit_tests") {
     "supervised_user_url_filter_tab_helper_unittest.mm",
   ]
   deps = [
-    ":supervised_user",
+    ":model",
     ":sync_settings_factory",
     "//base/test:test_support",
     "//components/prefs",

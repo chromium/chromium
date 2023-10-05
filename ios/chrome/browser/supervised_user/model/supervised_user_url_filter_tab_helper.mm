@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/supervised_user/supervised_user_url_filter_tab_helper.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_url_filter_tab_helper.h"
 
 #import "base/functional/callback.h"
 #import "base/memory/weak_ptr.h"
@@ -18,10 +18,10 @@
 #import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/supervised_user/kids_chrome_management_client_factory.h"
-#import "ios/chrome/browser/supervised_user/supervised_user_error.h"
-#import "ios/chrome/browser/supervised_user/supervised_user_error_container.h"
-#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/kids_chrome_management_client_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_error.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/net/protocol_handler_util.h"
 #import "net/base/mac/url_conversions.h"
 #import "net/base/net_errors.h"

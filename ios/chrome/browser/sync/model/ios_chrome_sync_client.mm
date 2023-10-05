@@ -72,7 +72,7 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace {
