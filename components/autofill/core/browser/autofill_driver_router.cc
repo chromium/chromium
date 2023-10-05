@@ -10,6 +10,8 @@
 #include "base/functional/invoke.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/form_forest.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -418,9 +420,16 @@ std::vector<FieldGlobalId> AutofillDriverRouter::ApplyAutofillAction(
                      mojom::AutofillActionType action_type,
                      mojom::AutofillActionPersistence action_persistence,
                      const FormData& form)) {
+  // Since Undo only affects fields that were already filled, and only sets
+  // values to fields to something that already existed in it prior to the
+  // filling, it is okay to bypass the filling security checks and hence passing
+  // `TrustAllOrigins()`.
   internal::FormForest::RendererForms renderer_forms =
       form_forest_.GetRendererFormsOfBrowserForm(
-          data, {&triggered_origin, &field_type_map});
+          data, action_type == mojom::AutofillActionType::kUndo
+                    ? internal::FormForest::SecurityOptions::TrustAllOrigins()
+                    : internal::FormForest::SecurityOptions(&triggered_origin,
+                                                            &field_type_map));
   for (const FormData& renderer_form : renderer_forms.renderer_forms) {
     if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
       callback(target, action_type, action_persistence, renderer_form);

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <iterator>
 #include <limits>
 #include <map>
 #include <memory>
@@ -124,6 +125,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -1449,9 +1451,13 @@ void BrowserAutofillManager::UndoAutofill(
         operation.GetAutofillValue(field.global_id());
   }
 
+  // Since Undo only affects fields that were already filled, and only sets
+  // values to fields to something that already existed in it prior to the
+  // filling, it is okay to bypass the filling security checks and hence passing
+  // dummy values for `triggered_origin` and `field_type_map`.
   driver().ApplyAutofillAction(mojom::AutofillActionType::kUndo,
-                               action_persistence, form, operation.GetOrigin(),
-                               operation.GetFieldTypeMap());
+                               action_persistence, form, url::Origin(),
+                               /*field_type_map=*/{});
   // Do not clear history on previews as it might be used for future previews or
   // for the filling.
   if (action_persistence == mojom::AutofillActionPersistence::kFill) {
@@ -2675,8 +2681,12 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
   // Save filling history to support undoing it later if needed.
   if (action_persistence == mojom::AutofillActionPersistence::kFill) {
-    form_autofill_history_.AddFormFillEntry(safe_newly_filled_fields,
-                                            field.origin, is_refill);
+    std::vector<const FormFieldData*> fields_for_autofill_history;
+    for (auto& [cur_field, cur_autofill_field] : safe_newly_filled_fields) {
+      fields_for_autofill_history.push_back(cur_field);
+    }
+    form_autofill_history_.AddFormFillEntry(fields_for_autofill_history,
+                                            is_refill);
   }
 
   LOG_AF(buffer) << CTag{"table"};

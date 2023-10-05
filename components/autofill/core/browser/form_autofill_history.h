@@ -5,52 +5,34 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_AUTOFILL_HISTORY_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_AUTOFILL_HISTORY_H_
 
+#include <list>
 #include <map>
 #include <string>
 
-#include "base/containers/flat_map.h"
-#include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "url/origin.h"
 
 namespace autofill {
 
 // Holds history of Autofill filling operations so that they can be undone
 // later. The class is used to add, remove and access filling operations, which
-// are maps from fields to their corresponding types and values before filling.
+// are maps from fields to their corresponding value and state before filling.
 // It is assumed here that between a fill and a refill no user interaction
 // happens with the form. Owned by `BrowserAutofillManager`.
 class FormAutofillHistory {
  private:
-  struct FieldTypeAndValue {
-    ServerFieldType type;
-    std::u16string value;
-    bool is_autofilled;
-  };
+  // This represents the value of a field as well as its autofill state.
+  using FieldFillingEntry = std::pair<std::u16string, bool>;
 
-  struct AutofillHistoryEntry {
-    AutofillHistoryEntry();
-    ~AutofillHistoryEntry();
-
-    std::map<FieldGlobalId, FieldTypeAndValue> field_history_;
-    url::Origin filling_origin_;
-  };
+  using FormFillingEntry = std::map<FieldGlobalId, FieldFillingEntry>;
 
  public:
   class FillOperation {
    public:
-    // Returns the map held by `iterator_` without field values.
-    base::flat_map<FieldGlobalId, ServerFieldType> GetFieldTypeMap() const;
-
-    // Returns the field value stored in history for `field_id` as well as the
-    // boolean is_autofilled state. Assumes the underlying map contains a entry
-    // with key `field_id`.
-    std::pair<std::u16string, bool> GetAutofillValue(
-        FieldGlobalId field_id) const;
-
-    const url::Origin& GetOrigin() const { return iterator_->filling_origin_; }
+    // Returns the field value and autofill state stored in history for
+    // `field_id`. Assumes the underlying map contains a entry with key
+    // `field_id`.
+    FieldFillingEntry GetAutofillValue(FieldGlobalId field_id) const;
 
     friend bool operator==(const FillOperation& lhs, const FillOperation& rhs) {
       return lhs.iterator_ == rhs.iterator_;
@@ -62,11 +44,10 @@ class FormAutofillHistory {
    private:
     friend class FormAutofillHistory;
 
-    explicit FillOperation(
-        std::list<AutofillHistoryEntry>::const_iterator iterator)
+    explicit FillOperation(std::list<FormFillingEntry>::const_iterator iterator)
         : iterator_(iterator) {}
 
-    std::list<AutofillHistoryEntry>::const_iterator iterator_;
+    std::list<FormFillingEntry>::const_iterator iterator_;
   };
 
   FormAutofillHistory();
@@ -80,11 +61,8 @@ class FormAutofillHistory {
   // Adds a new history entry in the beginning of the list.
   // FormFieldData's are needed to get the most recent value of a field.
   // AutofillField's are needed to get the type of a field.
-  void AddFormFillEntry(
-      base::span<std::pair<const FormFieldData*, const AutofillField*>>
-          filled_fields,
-      url::Origin filling_origin,
-      bool is_refill);
+  void AddFormFillEntry(base::span<const FormFieldData* const> filled_fields,
+                        bool is_refill);
 
   // Erases the history entry from the list represented by `fill_operation`.
   void EraseFormFillEntry(FillOperation fill_operation);
@@ -106,9 +84,9 @@ class FormAutofillHistory {
  private:
   // Holds, for each filling operation in reverse chronological order, a map
   // from the IDs of the fields that were affected by the corresponding filling
-  // operation to the value of the field prior to the filling and the field
-  // type.
-  std::list<AutofillHistoryEntry> history_;
+  // operation to the value and autofill state of the field prior to the
+  // filling.
+  std::list<FormFillingEntry> history_;
 
   // Holds the number of field entries stored in `history`
   // which is the sum of sizes of each individual map.
