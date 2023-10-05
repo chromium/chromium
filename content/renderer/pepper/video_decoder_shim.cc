@@ -404,7 +404,8 @@ void VideoDecoderShim::DecoderImpl::OnResetComplete() {
 std::unique_ptr<VideoDecoderShim> VideoDecoderShim::Create(
     PepperVideoDecoderHost* host,
     uint32_t texture_pool_size,
-    bool use_hw_decoder) {
+    bool use_hw_decoder,
+    bool use_shared_images) {
   scoped_refptr<viz::ContextProviderCommandBuffer>
       shared_main_thread_context_provider =
           RenderThreadImpl::current()->SharedMainThreadContextProvider();
@@ -421,16 +422,17 @@ std::unique_ptr<VideoDecoderShim> VideoDecoderShim::Create(
       return nullptr;
   }
 
-  return base::WrapUnique(
-      new VideoDecoderShim(host, texture_pool_size, use_hw_decoder,
-                           std::move(shared_main_thread_context_provider),
-                           std::move(pepper_video_decode_context_provider)));
+  return base::WrapUnique(new VideoDecoderShim(
+      host, texture_pool_size, use_hw_decoder, use_shared_images,
+      std::move(shared_main_thread_context_provider),
+      std::move(pepper_video_decode_context_provider)));
 }
 
 VideoDecoderShim::VideoDecoderShim(
     PepperVideoDecoderHost* host,
     uint32_t texture_pool_size,
     bool use_hw_decoder,
+    bool use_shared_images,
     scoped_refptr<viz::ContextProviderCommandBuffer>
         shared_main_thread_context_provider,
     scoped_refptr<viz::ContextProviderCommandBuffer>
@@ -445,7 +447,8 @@ VideoDecoderShim::VideoDecoderShim(
           std::move(pepper_video_decode_context_provider)),
       texture_pool_size_(texture_pool_size),
       num_pending_decodes_(0),
-      use_hw_decoder_(use_hw_decoder) {
+      use_hw_decoder_(use_hw_decoder),
+      use_shared_images_(use_shared_images) {
   DCHECK(host_);
   DCHECK(media_task_runner_.get());
   DCHECK(shared_main_thread_context_provider_.get());
@@ -457,6 +460,9 @@ VideoDecoderShim::VideoDecoderShim(
 VideoDecoderShim::~VideoDecoderShim() {
   DCHECK(RenderThreadImpl::current());
   texture_mailbox_map_.clear();
+
+  CHECK(available_shared_images_.empty())
+      << "VideoDecoderShim::Destroy() must be called before destructor";
 
   FlushCommandBuffer();
 
@@ -548,6 +554,8 @@ void VideoDecoderShim::Decode(media::BitstreamBuffer bitstream_buffer) {
 
 void VideoDecoderShim::AssignPictureBuffers(
     const std::vector<media::PictureBuffer>& buffers) {
+  CHECK(!use_shared_images_);
+
   DCHECK(RenderThreadImpl::current());
   DCHECK_NE(state_, UNINITIALIZED);
   if (buffers.empty()) {
@@ -568,6 +576,9 @@ void VideoDecoderShim::AssignPictureBuffers(
 }
 
 void VideoDecoderShim::ReusePictureBuffer(int32_t picture_buffer_id) {
+  CHECK(!use_shared_images_);
+  CHECK(available_shared_images_.empty());
+
   DCHECK(RenderThreadImpl::current());
   uint32_t texture_id = static_cast<uint32_t>(picture_buffer_id);
   if (base::Contains(textures_to_dismiss_, texture_id)) {
@@ -580,6 +591,23 @@ void VideoDecoderShim::ReusePictureBuffer(int32_t picture_buffer_id) {
     return;
   }
   NOTREACHED();
+}
+
+void VideoDecoderShim::ReuseSharedImage(const gpu::Mailbox& mailbox,
+                                        gfx::Size size) {
+  CHECK(use_shared_images_);
+  CHECK(available_textures_.empty());
+  DCHECK(RenderThreadImpl::current());
+
+  // Video resolution could have changed from the time the image was sent to
+  // plugin and so this image is not reusable anymore. Delete it in this case.
+  if (size != texture_size_) {
+    host_->DestroySharedImage(mailbox);
+    return;
+  }
+
+  available_shared_images_.push_back(mailbox);
+  SendPictures();
 }
 
 void VideoDecoderShim::Flush() {
@@ -603,7 +631,12 @@ void VideoDecoderShim::Reset() {
 }
 
 void VideoDecoderShim::Destroy() {
-  delete this;
+  for (auto mailbox : available_shared_images_) {
+    host_->DestroySharedImage(mailbox);
+  }
+  available_shared_images_.clear();
+
+  FlushCommandBuffer();
 }
 
 void VideoDecoderShim::OnInitializeFailed() {
@@ -656,23 +689,38 @@ void VideoDecoderShim::OnOutputComplete(std::unique_ptr<PendingFrame> frame) {
   DCHECK(frame->video_frame);
 
   if (texture_size_ != frame->video_frame->coded_size()) {
-    // If the size has changed, all current textures must be dismissed. Add
-    // all textures to |textures_to_dismiss_| and dismiss any that aren't in
-    // use by the plugin. We will dismiss the rest as they are recycled.
-    for (IdToMailboxMap::const_iterator it = texture_mailbox_map_.begin();
-         it != texture_mailbox_map_.end(); ++it) {
-      textures_to_dismiss_.insert(it->first);
-    }
-    for (auto it = available_textures_.begin(); it != available_textures_.end();
-         ++it) {
-      DismissTexture(*it);
-    }
-    available_textures_.clear();
-    FlushCommandBuffer();
+    if (use_shared_images_) {
+      // If the size has changed, all current SharedImages must be destroyed.
+      // Destroy images that aren't in use by the plugin. We will destroy the
+      // rest as they are recycled.
+      for (const auto& mailbox : available_shared_images_) {
+        host_->DestroySharedImage(mailbox);
+      }
 
-    host_->ProvidePictureBuffers(texture_pool_size_, media::PIXEL_FORMAT_ARGB,
-                                 1, frame->video_frame->coded_size(),
-                                 GL_TEXTURE_2D);
+      available_shared_images_.clear();
+
+      for (uint32_t i = 0; i < texture_pool_size_; i++) {
+        available_shared_images_.push_back(
+            host_->CreateSharedImage(frame->video_frame->coded_size()));
+      }
+    } else {
+      // If the size has changed, all current textures must be dismissed. Add
+      // all textures to |textures_to_dismiss_| and dismiss any that aren't in
+      // use by the plugin. We will dismiss the rest as they are recycled.
+      for (IdToMailboxMap::const_iterator it = texture_mailbox_map_.begin();
+           it != texture_mailbox_map_.end(); ++it) {
+        textures_to_dismiss_.insert(it->first);
+      }
+      for (auto texture : available_textures_) {
+        DismissTexture(texture);
+      }
+      available_textures_.clear();
+      FlushCommandBuffer();
+      host_->ProvidePictureBuffers(texture_pool_size_, media::PIXEL_FORMAT_ARGB,
+                                   1, frame->video_frame->coded_size(),
+                                   GL_TEXTURE_2D);
+    }
+
     texture_size_ = frame->video_frame->coded_size();
   }
 
@@ -683,6 +731,10 @@ void VideoDecoderShim::OnOutputComplete(std::unique_ptr<PendingFrame> frame) {
 void VideoDecoderShim::SendPictures() {
   DCHECK(RenderThreadImpl::current());
   DCHECK(host_);
+
+  if (use_shared_images_) {
+    return SendSharedImages();
+  }
 
   gpu::gles2::GLES2Interface* gl = nullptr;
   if (use_hw_decoder_) {
@@ -789,6 +841,63 @@ void VideoDecoderShim::SendPictures() {
   }
 }
 
+void VideoDecoderShim::SendSharedImages() {
+  CHECK(use_shared_images_);
+  DCHECK(RenderThreadImpl::current());
+  DCHECK(host_);
+
+  while (!pending_frames_.empty() && !available_shared_images_.empty()) {
+    const std::unique_ptr<PendingFrame>& frame = pending_frames_.front();
+
+    if (!frame->decode_id.has_value()) {
+      // This signals the completion of a flush: all frames should have been
+      // output by the underlying decoder (as required by the
+      // media::VideoDecoder API) and the plugin should not have sent any other
+      // decode requests while the flush was pending (this is validated by the
+      // PepperVideoDecoderHost).
+      pending_frames_.pop();
+      DCHECK(pending_frames_.empty());
+      DCHECK(!num_pending_decodes_);
+      DCHECK_EQ(state_, FLUSHING);
+      break;
+    }
+
+    auto it = available_shared_images_.begin();
+    // Plugin's GLES2Interface and Renderer's RasterInterface are synchronized
+    // by issued `ShallowFlushCHROMIUM` after each work. Synchronization with
+    // SharedImageInterface happens during Creation/Destruction, so we don't
+    // need SyncToken here and ignore one returned from
+    // CopyVideoFrameToSharedImage.
+    auto destination = gpu::MailboxHolder(*it, gpu::SyncToken(), GL_TEXTURE_2D);
+    std::ignore = video_renderer_->CopyVideoFrameToSharedImage(
+        shared_main_thread_context_provider_.get(), frame->video_frame,
+        destination, /*use_visible_rect=*/false);
+    available_shared_images_.erase(it);
+
+    DCHECK(frame->decode_id.has_value());
+    host_->SharedImageReady(
+        base::checked_cast<int32_t>(frame->decode_id.value()),
+        destination.mailbox, frame->video_frame->coded_size(),
+        frame->video_frame->visible_rect());
+    pending_frames_.pop();
+  }
+
+  // Flush our commands so they are executed before plugins command that use
+  // this frame. This requires us to be on the same sequence.
+  FlushCommandBuffer();
+
+  if (pending_frames_.empty()) {
+    // If frames aren't backing up, notify the host of any completed decodes so
+    // it can send more buffers.
+    NotifyCompletedDecodes();
+
+    if (state_ == FLUSHING && !num_pending_decodes_) {
+      state_ = DECODING;
+      host_->NotifyFlushDone();
+    }
+  }
+}
+
 void VideoDecoderShim::OnResetComplete() {
   DCHECK(RenderThreadImpl::current());
   DCHECK(host_);
@@ -798,8 +907,17 @@ void VideoDecoderShim::OnResetComplete() {
   NotifyCompletedDecodes();
 
   // Dismiss any old textures now.
-  while (!textures_to_dismiss_.empty())
-    DismissTexture(*textures_to_dismiss_.begin());
+  if (use_shared_images_) {
+    // With SharedImages we don't have any textures. `textures_to_dismiss_` are
+    // textures that were in use by plugin when we handled resolution change and
+    // they are wrong size. With shared images we destroy wrong sized images
+    // right when plugin returns them to us.
+    CHECK(textures_to_dismiss_.empty());
+  } else {
+    while (!textures_to_dismiss_.empty()) {
+      DismissTexture(*textures_to_dismiss_.begin());
+    }
+  }
 
   state_ = DECODING;
   host_->NotifyResetDone();
@@ -813,6 +931,8 @@ void VideoDecoderShim::NotifyCompletedDecodes() {
 }
 
 void VideoDecoderShim::DismissTexture(uint32_t texture_id) {
+  CHECK(!use_shared_images_);
+
   DCHECK(host_);
   textures_to_dismiss_.erase(texture_id);
   DCHECK(base::Contains(texture_mailbox_map_, texture_id));
