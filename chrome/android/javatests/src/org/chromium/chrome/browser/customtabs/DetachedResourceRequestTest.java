@@ -345,7 +345,6 @@ public class DetachedResourceRequestTest {
      */
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.SAFE_BROWSING_SKIP_SUBRESOURCES)
     public void testSafeBrowsingSubresource() throws Exception {
         testSafeBrowsingSubresource(true);
     }
@@ -368,7 +367,6 @@ public class DetachedResourceRequestTest {
      */
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.SAFE_BROWSING_SKIP_SUBRESOURCES)
     public void testSafeBrowsingSubresourceBeforeNative() throws Exception {
         testSafeBrowsingSubresource(false);
     }

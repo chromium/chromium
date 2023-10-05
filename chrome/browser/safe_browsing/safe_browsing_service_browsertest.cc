@@ -750,38 +750,24 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   Mock::VerifyAndClear(&observer_);
 
   // Navigate to page which has malware subresource, should show interstitial
-  // and have first page in referrer. This happens only if the feature
-  // |kSafeBrowsingSkipSubresources| is disabled.
-  bool check_subresources =
-      !base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources);
+  // and have first page in referrer.
   EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(bad_url)))
-      .Times(check_subresources ? 1 : 0);
+      .Times(1);
 
   NavigateParams params(browser(), second_url, ui::PAGE_TRANSITION_LINK);
   params.referrer.url = first_url;
   ui_test_utils::NavigateToURL(&params);
 
-  if (check_subresources) {
-    EXPECT_TRUE(ShowingInterstitialPage());
-    EXPECT_TRUE(got_hit_report());
-    EXPECT_EQ(bad_url, hit_report().malicious_url);
-    EXPECT_EQ(second_url, hit_report().page_url);
-    EXPECT_EQ(first_url, hit_report().referrer_url);
-    EXPECT_TRUE(hit_report().is_subresource);
-  } else {
-    EXPECT_FALSE(ShowingInterstitialPage());
-    EXPECT_FALSE(got_hit_report());
-  }
+  EXPECT_TRUE(ShowingInterstitialPage());
+  EXPECT_TRUE(got_hit_report());
+  EXPECT_EQ(bad_url, hit_report().malicious_url);
+  EXPECT_EQ(second_url, hit_report().page_url);
+  EXPECT_EQ(first_url, hit_report().referrer_url);
+  EXPECT_TRUE(hit_report().is_subresource);
 }
 
 IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
                        SubResourceHitWithMainFrameRendererInitiatedSlowLoad) {
-  // If |kSafeBrowsingSkipSubresources| is enabled, skip this test.
-  // See https://crbug.com/1487858
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
   GURL first_url = embedded_test_server()->GetURL(kEmptyPage);
   GURL second_url = embedded_test_server()->GetURL(kMalwareDelayedLoadsPage);
   GURL third_url = embedded_test_server()->GetURL(kNeverCompletesPath);
@@ -829,12 +815,6 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
 
 IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
                        SubResourceHitWithMainFrameBrowserInitiatedSlowLoad) {
-  // If |kSafeBrowsingSkipSubresources| is enabled, skip this test.
-  // See https://crbug.com/1487858
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
   GURL first_url = embedded_test_server()->GetURL(kEmptyPage);
   GURL second_url = embedded_test_server()->GetURL(kMalwareDelayedLoadsPage);
   GURL third_url = embedded_test_server()->GetURL(kNeverCompletesPath);
@@ -894,12 +874,6 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
 #endif
 IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
                        MAYBE_SubResourceHitOnFreshTab) {
-  // If |kSafeBrowsingSkipSubresources| is enabled, skip this test.
-  // See https://crbug.com/1487858
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
   // Allow popups.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
       ->SetDefaultContentSetting(ContentSettingsType::POPUPS,
@@ -1124,12 +1098,6 @@ using V4SafeBrowsingServiceJsRequestInterstitialTest =
 
 IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestInterstitialTest,
                        MalwareBlocked) {
-  // If |kSafeBrowsingSkipSubresources| is enabled, skip this test.
-  // See https://crbug.com/1487858
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
   GURL base_url = embedded_test_server()->GetURL(kMalwareJsRequestPage);
   JsRequestTestParam param = GetParam();
   GURL js_request_url = ConstructJsRequestURL(base_url, param.request_type);
@@ -1178,21 +1146,11 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestNoInterstitialTest,
   auto new_title = JsRequestTestNavigateAndWaitForTitle(
       browser(), AddJsRequestParam(base_url, param));
 
-  // When |kSafeBrowsingSkipSubresources| is enabled, do not show a warning for
-  // |JsRequestType::kFetch|.
-  // crbug.com/1488077 deals with warnings for |JsRequestType::kWebSocket|
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources) &&
-      (param.request_type != JsRequestType::kWebSocket)) {
-    EXPECT_EQ("NOT BLOCKED", new_title);
-    EXPECT_FALSE(ShowingInterstitialPage());
-    EXPECT_FALSE(got_hit_report());
-  } else {
-    EXPECT_EQ("ERROR", new_title);
-    EXPECT_FALSE(ShowingInterstitialPage());
+  EXPECT_EQ("ERROR", new_title);
+  EXPECT_FALSE(ShowingInterstitialPage());
 
-    // got_hit_report() is only set when an interstitial is shown.
-    EXPECT_FALSE(got_hit_report());
-  }
+  // got_hit_report() is only set when an interstitial is shown.
+  EXPECT_FALSE(got_hit_report());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1344,25 +1302,18 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, MalwareIFrame) {
   // Add the iframe url as malware and then load the parent page.
   MarkUrlForMalwareUnexpired(iframe_url, GetParam());
 
-  bool check_subresources =
-      !base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources);
-  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(main_url)))
-      .Times(check_subresources ? 1 : 0);
+  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(iframe_url)))
+      .Times(1);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  if (check_subresources) {
-    // All types should show the interstitial.
-    EXPECT_TRUE(ShowingInterstitialPage());
+  // All types should show the interstitial.
+  EXPECT_TRUE(ShowingInterstitialPage());
 
-    EXPECT_TRUE(got_hit_report());
-    EXPECT_EQ(iframe_url, hit_report().malicious_url);
-    EXPECT_EQ(main_url, hit_report().page_url);
-    EXPECT_EQ(GURL(), hit_report().referrer_url);
-    EXPECT_TRUE(hit_report().is_subresource);
-  } else {
-    EXPECT_FALSE(ShowingInterstitialPage());
-    EXPECT_FALSE(got_hit_report());
-  }
+  EXPECT_TRUE(got_hit_report());
+  EXPECT_EQ(iframe_url, hit_report().malicious_url);
+  EXPECT_EQ(main_url, hit_report().page_url);
+  EXPECT_EQ(GURL(), hit_report().referrer_url);
+  EXPECT_TRUE(hit_report().is_subresource);
 }
 
 // Depending on the threat_type classification, if an embedded resource is

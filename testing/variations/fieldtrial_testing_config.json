@@ -14406,7 +14406,7 @@
             ]
         }
     ],
-    "SafeBrowsingSkipSubResources": [
+    "SafeBrowsingSkipSubresources": [
         {
             "platforms": [
                 "android",
@@ -14421,7 +14421,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SafeBrowsingSkipSubResources"
+                        "SafeBrowsingSkipSubresources"
                     ]
                 }
             ]
