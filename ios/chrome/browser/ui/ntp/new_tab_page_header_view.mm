@@ -60,6 +60,10 @@ const CGFloat kHintLabelOmniboxLeadingSpace = 13.0;
 const CGFloat kLargeFakeboxHintLabelFakeboxLeadingSpace = 26.0;
 const CGFloat kLargeFakeboxHintLabelOmniboxLeadingSpace = 21.0;
 
+// The amount to inset the Fakebox from the rest of the modules on Home, when
+// Large Fakebox is enabled.
+const CGFloat kLargeFakeboxHorizontalMargin = 8.0;
+
 // The constants for the constraints affecting the separation between the Lens
 // and Voice Search buttons.
 const CGFloat kEndButtonSeparation = 19.0;
@@ -74,6 +78,14 @@ CGFloat HintLabelFakeboxLeadingSpace() {
 CGFloat HintLabelOmniboxLeadingSpace() {
   return IsIOSLargeFakeboxEnabled() ? kLargeFakeboxHintLabelOmniboxLeadingSpace
                                     : kHintLabelOmniboxLeadingSpace;
+}
+
+// The amount to inset the Fakebox from the rest of the modules on Home.
+CGFloat FakeboxHorizontalMargin(id<UITraitEnvironment> environment) {
+  if (IsSplitToolbarMode(environment) && IsIOSLargeFakeboxEnabled()) {
+    return kLargeFakeboxHorizontalMargin;
+  }
+  return 0.0;
 }
 
 // Returns the top color of the Fakebox's gradient background.
@@ -355,9 +367,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.fakeLocationBarTopConstraint = [self.fakeLocationBar.topAnchor
       constraintEqualToAnchor:searchField.topAnchor];
   self.fakeLocationBarLeadingConstraint = [self.fakeLocationBar.leadingAnchor
-      constraintEqualToAnchor:searchField.leadingAnchor];
+      constraintEqualToAnchor:searchField.leadingAnchor
+                     constant:FakeboxHorizontalMargin(self)];
   self.fakeLocationBarTrailingConstraint = [self.fakeLocationBar.trailingAnchor
-      constraintEqualToAnchor:searchField.trailingAnchor];
+      constraintEqualToAnchor:searchField.trailingAnchor
+                     constant:FakeboxHorizontalMargin(self)];
   self.fakeLocationBarHeightConstraint = [self.fakeLocationBar.heightAnchor
       constraintEqualToConstant:content_suggestions::FakeOmniboxHeight()];
   [NSLayoutConstraint activateConstraints:@[
@@ -531,10 +545,13 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   // Calculate the amount to shrink the width and height of background so that
   // it's where the focused adapative toolbar focuses.
+  CGFloat horizontalMargin = FakeboxHorizontalMargin(self);
   self.fakeLocationBarLeadingConstraint.constant = Interpolate(
-      0, safeAreaInsets.left + kExpandedLocationBarHorizontalMargin, percent);
+      horizontalMargin,
+      safeAreaInsets.left + kExpandedLocationBarHorizontalMargin, percent);
   self.fakeLocationBarTrailingConstraint.constant = -Interpolate(
-      0, safeAreaInsets.right + kExpandedLocationBarHorizontalMargin, percent);
+      horizontalMargin,
+      safeAreaInsets.right + kExpandedLocationBarHorizontalMargin, percent);
 
   self.fakeLocationBarTopConstraint.constant =
       ntp_header::kFakeLocationBarTopConstraint * percent;
