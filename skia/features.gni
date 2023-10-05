@@ -15,7 +15,7 @@ declare_args() {
   skia_use_metal = is_mac && !is_official_build
 
   # Enable gtests using SkiaRenderer on Skia Graphite.
-  enable_skia_graphite_gtests = is_mac
+  enable_skia_graphite_gtests = is_mac || is_win
 }
 
 # Skia only needs to support GPU rasterization if we use the full Chromium
