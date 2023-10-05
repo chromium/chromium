@@ -821,69 +821,61 @@ function getCdpButton(button: number) {
   }
 }
 
-function getTilt(
-  action:
-    | {tiltX?: number; tiltY?: number}
-    | {azimuthAngle?: number; altitudeAngle?: number}
-): {tiltX: number; tiltY: number} {
-  let tiltX = 0;
-  let tiltY = 0;
-  if ('tiltX' in action || 'tiltY' in action) {
-    tiltX = action.tiltX ?? tiltX;
-    tiltY = action.tiltY ?? tiltY;
-  }
-  if ('azimuthAngle' in action || 'altitudeAngle' in action) {
-    // https://w3c.github.io/pointerevents/#converting-between-tiltx-tilty-and-altitudeangle-azimuthangle
-    const altitudeAngle = action.altitudeAngle ?? 0;
-    const azimuthAngle = action.azimuthAngle ?? 0;
-    let tiltXRadians = 0;
-    let tiltYRadians = 0;
+function getTilt(action: {azimuthAngle?: number; altitudeAngle?: number}): {
+  tiltX: number;
+  tiltY: number;
+} {
+  // https://w3c.github.io/pointerevents/#converting-between-tiltx-tilty-and-altitudeangle-azimuthangle
+  const altitudeAngle = action.altitudeAngle ?? 0;
+  const azimuthAngle = action.azimuthAngle ?? 0;
+  let tiltXRadians = 0;
+  let tiltYRadians = 0;
 
-    if (altitudeAngle === 0) {
-      // the pen is in the X-Y plane
-      if (azimuthAngle === 0 || azimuthAngle === 2 * Math.PI) {
-        // pen is on positive X axis
-        tiltXRadians = Math.PI / 2;
-      }
-      if (azimuthAngle === Math.PI / 2) {
-        // pen is on positive Y axis
-        tiltYRadians = Math.PI / 2;
-      }
-      if (azimuthAngle === Math.PI) {
-        // pen is on negative X axis
-        tiltXRadians = -Math.PI / 2;
-      }
-      if (azimuthAngle === (3 * Math.PI) / 2) {
-        // pen is on negative Y axis
-        tiltYRadians = -Math.PI / 2;
-      }
-      if (azimuthAngle > 0 && azimuthAngle < Math.PI / 2) {
-        tiltXRadians = Math.PI / 2;
-        tiltYRadians = Math.PI / 2;
-      }
-      if (azimuthAngle > Math.PI / 2 && azimuthAngle < Math.PI) {
-        tiltXRadians = -Math.PI / 2;
-        tiltYRadians = Math.PI / 2;
-      }
-      if (azimuthAngle > Math.PI && azimuthAngle < (3 * Math.PI) / 2) {
-        tiltXRadians = -Math.PI / 2;
-        tiltYRadians = -Math.PI / 2;
-      }
-      if (azimuthAngle > (3 * Math.PI) / 2 && azimuthAngle < 2 * Math.PI) {
-        tiltXRadians = Math.PI / 2;
-        tiltYRadians = -Math.PI / 2;
-      }
+  if (altitudeAngle === 0) {
+    // the pen is in the X-Y plane
+    if (azimuthAngle === 0 || azimuthAngle === 2 * Math.PI) {
+      // pen is on positive X axis
+      tiltXRadians = Math.PI / 2;
     }
-
-    if (altitudeAngle !== 0) {
-      const tanAlt = Math.tan(altitudeAngle);
-      tiltXRadians = Math.atan(Math.cos(azimuthAngle) / tanAlt);
-      tiltYRadians = Math.atan(Math.sin(azimuthAngle) / tanAlt);
+    if (azimuthAngle === Math.PI / 2) {
+      // pen is on positive Y axis
+      tiltYRadians = Math.PI / 2;
     }
-
-    const factor = 180 / Math.PI;
-    tiltX = tiltXRadians * factor;
-    tiltY = tiltYRadians * factor;
+    if (azimuthAngle === Math.PI) {
+      // pen is on negative X axis
+      tiltXRadians = -Math.PI / 2;
+    }
+    if (azimuthAngle === (3 * Math.PI) / 2) {
+      // pen is on negative Y axis
+      tiltYRadians = -Math.PI / 2;
+    }
+    if (azimuthAngle > 0 && azimuthAngle < Math.PI / 2) {
+      tiltXRadians = Math.PI / 2;
+      tiltYRadians = Math.PI / 2;
+    }
+    if (azimuthAngle > Math.PI / 2 && azimuthAngle < Math.PI) {
+      tiltXRadians = -Math.PI / 2;
+      tiltYRadians = Math.PI / 2;
+    }
+    if (azimuthAngle > Math.PI && azimuthAngle < (3 * Math.PI) / 2) {
+      tiltXRadians = -Math.PI / 2;
+      tiltYRadians = -Math.PI / 2;
+    }
+    if (azimuthAngle > (3 * Math.PI) / 2 && azimuthAngle < 2 * Math.PI) {
+      tiltXRadians = Math.PI / 2;
+      tiltYRadians = -Math.PI / 2;
+    }
   }
-  return {tiltX, tiltY};
+
+  if (altitudeAngle !== 0) {
+    const tanAlt = Math.tan(altitudeAngle);
+    tiltXRadians = Math.atan(Math.cos(azimuthAngle) / tanAlt);
+    tiltYRadians = Math.atan(Math.sin(azimuthAngle) / tanAlt);
+  }
+
+  const factor = 180 / Math.PI;
+  return {
+    tiltX: Math.round(tiltXRadians * factor),
+    tiltY: Math.round(tiltYRadians * factor),
+  };
 }
