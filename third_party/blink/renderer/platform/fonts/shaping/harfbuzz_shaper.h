@@ -45,7 +45,7 @@ class Font;
 class SimpleFontData;
 class HarfBuzzShaper;
 struct ReshapeQueueItem;
-struct RangeData;
+struct RangeContext;
 struct BufferSlice;
 
 class PLATFORM_EXPORT HarfBuzzShaper final {
@@ -129,11 +129,11 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
   // one or more times taking font fallback into account. The start and end
   // parameters are for the entire text run, not the segment, and are used to
   // determine pre- and post-context for shaping.
-  void ShapeSegment(RangeData*,
+  void ShapeSegment(RangeContext*,
                     const RunSegmenter::RunSegmenterRange&,
                     ShapeResult*) const;
 
-  void ExtractShapeResults(RangeData*,
+  void ExtractShapeResults(RangeContext*,
                            bool& font_cycle_queued,
                            const ReshapeQueueItem&,
                            const SimpleFontData*,
@@ -146,7 +146,7 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
                                 bool needs_hint_list,
                                 Vector<UChar32>& hint) const;
 
-  void CommitGlyphs(RangeData*,
+  void CommitGlyphs(RangeContext*,
                     const SimpleFontData* current_font,
                     UScriptCode current_run_script,
                     CanvasRotationInVertical,
