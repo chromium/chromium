@@ -408,12 +408,29 @@ UsbDeviceWin::FunctionInfo GetFunctionInfo(const std::wstring& instance_id) {
   }
   base::win::RegKey scoped_key(key);
 
+  // Devices may either have DeviceInterfaceGUID or DeviceInterfaceGUIDs
+  // registry keys. Read both and only consider it an error if there are no
+  // useful results.
   std::vector<std::wstring> device_interface_guids;
-  LONG result =
+  LONG guids_result =
       scoped_key.ReadValues(L"DeviceInterfaceGUIDs", &device_interface_guids);
-  if (result != ERROR_SUCCESS) {
-    USB_LOG(ERROR) << "Could not read device interface GUIDs: "
-                   << logging::SystemErrorCodeToString(result);
+
+  std::wstring device_interface_guid;
+  LONG guid_result =
+      scoped_key.ReadValue(L"DeviceInterfaceGUID", &device_interface_guid);
+  if (SUCCEEDED(guid_result)) {
+    device_interface_guids.push_back(std::move(device_interface_guid));
+  }
+
+  if (device_interface_guids.empty()) {
+    if (FAILED(guids_result)) {
+      USB_LOG(ERROR) << "Could not read DeviceInterfaceGUIDs: "
+                     << logging::SystemErrorCodeToString(guids_result);
+    }
+    if (FAILED(guid_result)) {
+      USB_LOG(ERROR) << "Could not read DeviceInterfaceGUID: "
+                     << logging::SystemErrorCodeToString(guid_result);
+    }
     return info;
   }
 
