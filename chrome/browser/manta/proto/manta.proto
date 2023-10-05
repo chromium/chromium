@@ -24,8 +24,9 @@ enum ImageResolution {
 }
 
 message RequestConfig {
-  reserved 1, 4;
+  reserved 4;
 
+  optional uint32 generation_seed = 1;
   optional ImageResolution image_resolution = 2;
   optional uint32 num_outputs = 3;
 
