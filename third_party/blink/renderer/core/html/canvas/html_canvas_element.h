@@ -244,9 +244,10 @@ class CORE_EXPORT HTMLCanvasElement final
                                   viz::ResourceId resource_id) override;
   void Trace(Visitor*) const override;
 
-  void SetResourceProviderForTesting(std::unique_ptr<CanvasResourceProvider>,
-                                     std::unique_ptr<Canvas2DLayerBridge>,
-                                     const gfx::Size&);
+  void SetResourceProviderForTesting(
+      std::unique_ptr<CanvasResourceProvider> provider,
+      std::unique_ptr<Canvas2DLayerBridge> bridge,
+      const gfx::Size& size);
 
   static void RegisterRenderingContextFactory(
       std::unique_ptr<CanvasRenderingContextFactory>);
