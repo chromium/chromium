@@ -2,8 +2,6 @@
 import path from "path";
 import { spawnChecked, updateRepo } from "./replay_build_scripts/common.mjs";
 
-updateRepo();
-
 const dockerArgs = [
   "run",
   "-e",
