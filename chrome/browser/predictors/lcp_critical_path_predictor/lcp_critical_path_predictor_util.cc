@@ -432,7 +432,12 @@ bool RecordFetchedFontUrlsHistogram(const LoadingPredictorConfig& config,
   std::unique_ptr<LcppFrequencyStatDataUpdater> updater =
       LcppFrequencyStatDataUpdater::FromLcppStringFrequencyStatData(
           config, data.mutable_lcpp_stat()->fetched_font_url_stat());
+  std::set<GURL> used_urls;
   for (const auto& url : fetched_font_urls) {
+    // Deduplicate the font URLs.
+    if (!used_urls.insert(url).second) {
+      continue;
+    }
     const std::string& font_spec = url.spec();
     if (!IsValidUrlInLcppStringFrequencyStatData(font_spec)) {
       continue;
