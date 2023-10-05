@@ -54,7 +54,7 @@ BASE_FEATURE(kEnableFeedBackgroundRefresh,
 
 BASE_FEATURE(kEnableFeedInvisibleForegroundRefresh,
              "EnableFeedInvisibleForegroundRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCreateDiscoverFeedServiceEarly,
              "CreateDiscoverFeedServiceEarly",
@@ -270,7 +270,7 @@ bool IsFeedAppCloseForegroundRefreshEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnableFeedInvisibleForegroundRefresh,
       kEnableFeedAppCloseForegroundRefresh,
-      /*default=*/false);
+      /*default=*/true);
 }
 
 bool IsFeedAppCloseBackgroundRefreshEnabled() {
