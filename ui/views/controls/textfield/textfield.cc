@@ -1036,8 +1036,11 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
   if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
     node_data->AddState(ax::mojom::State::kProtected);
+    node_data->SetValue(std::u16string(
+        GetText().size(), gfx::RenderText::kPasswordReplacementChar));
+  } else {
+    node_data->SetValue(GetText());
   }
-  node_data->SetValue(GetRenderText()->GetDisplayText());
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kPlaceholder,
                                 base::UTF16ToUTF8(GetPlaceholderText()));
 

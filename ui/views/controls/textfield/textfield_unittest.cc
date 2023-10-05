@@ -4598,23 +4598,6 @@ TEST_F(TextfieldTest, AccessibleRole) {
   EXPECT_EQ(textfield_->GetAccessibleRole(), ax::mojom::Role::kSearchBox);
 }
 
-TEST_F(TextfieldTest, AccessibleValueElided) {
-  InitTextfield();
-
-  constexpr int kGlyphWidth = 10;
-  test_api_->GetRenderText()->set_glyph_width_for_test(kGlyphWidth);
-  test_api_->GetRenderText()->SetDisplayRect(
-      gfx::Rect(0, 0, 3 * kGlyphWidth, 100));
-  test_api_->GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
-
-  textfield_->SetText(u"abc def");
-
-  ui::AXNodeData node_data;
-  textfield_->GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(u"a…",
-            node_data.GetString16Attribute(ax::mojom::StringAttribute::kValue));
-}
-
 // Verify that cursor visibility is controlled by SetCursorEnabled.
 TEST_F(TextfieldTest, CursorVisibility) {
   InitTextfield();
