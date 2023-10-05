@@ -93,9 +93,15 @@ class LocalTabGroupListener {
   void OpenWebContentsFromSync(SavedTabGroupTab tab,
                                Browser* browser,
                                int index_in_tabstrip);
+
   // Removes any tabs in the local group that aren't in the saved group.
   void RemoveLocalWebContentsNotInSavedGroup();
-  void RemoveWebContentsFromSync(content::WebContents* contents);
+
+  // Removes the WebContents from the mapping and removes the corresponding tab
+  // from the group in the Tabstrip then closing it if should_close_tab is true.
+  void RemoveWebContentsFromSync(content::WebContents* contents,
+                                 bool should_close_tab);
+
   const SavedTabGroup* saved_group() const { return model_->Get(saved_guid_); }
 
   // Whether local tab group changes will be ignored (`paused_` is true) or

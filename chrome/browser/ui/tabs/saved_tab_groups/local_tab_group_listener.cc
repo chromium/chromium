@@ -198,7 +198,7 @@ void LocalTabGroupListener::GroupRemovedFromSync() {
     contentses.push_back(contents);
   }
   for (content::WebContents* const contents : contentses) {
-    RemoveWebContentsFromSync(contents);
+    RemoveWebContentsFromSync(contents, /*should_close_tab=*/false);
   }
 
   ResumeTracking();
@@ -306,13 +306,14 @@ void LocalTabGroupListener::RemoveLocalWebContentsNotInSavedGroup() {
     const auto& it = web_contents_to_tab_id_map_.find(contents);
     CHECK(it != web_contents_to_tab_id_map_.end());
     if (!saved_group->ContainsTab(it->second.token())) {
-      RemoveWebContentsFromSync(contents);
+      RemoveWebContentsFromSync(contents, /*should_close_tab=*/true);
     }
   }
 }
 
 void LocalTabGroupListener::RemoveWebContentsFromSync(
-    content::WebContents* contents) {
+    content::WebContents* contents,
+    bool should_close_tab) {
   web_contents_to_tab_id_map_.erase(contents);
 
   Browser* const browser =
@@ -327,9 +328,11 @@ void LocalTabGroupListener::RemoveWebContentsFromSync(
   // this happens.
   browser->tab_strip_model()->RemoveFromGroup({model_index});
 
-  // Removing the tab from the group may have moved the tab to maintain group
-  // contiguity. Find the tab again and close it.
-  model_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
-  browser->tab_strip_model()->CloseWebContentsAt(
-      model_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  if (should_close_tab) {
+    // Removing the tab from the group may have moved the tab to maintain group
+    // contiguity. Find the tab again and close it.
+    model_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
+    browser->tab_strip_model()->CloseWebContentsAt(
+        model_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  }
 }
