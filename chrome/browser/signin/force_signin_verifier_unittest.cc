@@ -47,6 +47,10 @@ class ForceSigninVerifierWithAccessToInternalsForTesting
     token_is_valid_ = token_is_valid;
   }
 
+  bool IsRequestWaitingForRefreshToken() const {
+    return GetRequestIsWaitingForRefreshTokensForTesting();
+  }
+
  public:
   absl::optional<bool> token_is_valid_;
 };
@@ -178,6 +182,40 @@ TEST(ForceSigninVerifierTest, OnGetTokenSuccess) {
   ASSERT_NE(nullptr, verifier.access_token_fetcher());
   ASSERT_FALSE(verifier.IsDelayTaskPosted());
   ASSERT_FALSE(verifier.GetTokenIsValid().has_value());
+
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      account_info.account_id, /*token=*/"", base::Time());
+
+  ASSERT_EQ(nullptr, verifier.access_token_fetcher());
+  absl::optional<bool> token = verifier.GetTokenIsValid().has_value();
+  ASSERT_TRUE(token.has_value());
+  ASSERT_TRUE(token.value());
+  ASSERT_FALSE(verifier.IsDelayTaskPosted());
+  ASSERT_EQ(0, verifier.FailureCount());
+}
+
+TEST(ForceSigninVerifierTest, OnGetTokenWaitForRefreshTokenThenSuccess) {
+  base::test::TaskEnvironment scoped_task_env;
+  signin::IdentityTestEnvironment identity_test_env;
+  const AccountInfo account_info =
+      identity_test_env.MakePrimaryAccountAvailable(
+          "email@test.com", signin::ConsentLevel::kSync);
+
+  // Simulate a reset to make the refresh tokens unavailable at first.
+  identity_test_env.ResetToAccountsNotYetLoadedFromDiskState();
+
+  ForceSigninVerifierWithAccessToInternalsForTesting verifier(
+      identity_test_env.identity_manager());
+
+  EXPECT_TRUE(verifier.IsRequestWaitingForRefreshToken());
+
+  // Simlate a relaod to make the refresh tokens available.
+  identity_test_env.ReloadAccountsFromDisk();
+  identity_test_env.WaitForRefreshTokensLoaded();
+
+  EXPECT_FALSE(verifier.IsRequestWaitingForRefreshToken());
+  EXPECT_FALSE(verifier.GetTokenIsValid().has_value());
+  EXPECT_NE(nullptr, verifier.access_token_fetcher());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       account_info.account_id, /*token=*/"", base::Time());

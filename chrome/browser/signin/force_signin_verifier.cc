@@ -138,8 +138,12 @@ void ForceSigninVerifier::SendRequest() {
 
 void ForceSigninVerifier::SendRequestIfNetworkAvailable(
     network::mojom::ConnectionType network_type) {
-  if (!identity_manager_ ||
-      network_type == network::mojom::ConnectionType::CONNECTION_NONE ||
+  if (!identity_manager_ || !identity_manager_->AreRefreshTokensLoaded()) {
+    request_waiting_for_refresh_tokens_ = true;
+    return;
+  }
+
+  if (network_type == network::mojom::ConnectionType::CONNECTION_NONE ||
       !ShouldSendRequest()) {
     return;
   }
@@ -180,4 +184,16 @@ void ForceSigninVerifier::OnIdentityManagerShutdown(
   identity_manager_observer.Reset();
 
   identity_manager_ = nullptr;
+}
+
+void ForceSigninVerifier::OnRefreshTokensLoaded() {
+  if (request_waiting_for_refresh_tokens_) {
+    SendRequest();
+    request_waiting_for_refresh_tokens_ = false;
+  }
+}
+
+bool ForceSigninVerifier::GetRequestIsWaitingForRefreshTokensForTesting()
+    const {
+  return request_waiting_for_refresh_tokens_;
 }
