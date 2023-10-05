@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
+import './tab_organization_failure.js';
 import './tab_organization_in_progress.js';
 import './tab_organization_not_started.js';
 import './tab_organization_results.js';

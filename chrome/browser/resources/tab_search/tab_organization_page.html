@@ -11,7 +11,7 @@
   </tab-organization-not-started>
   <tab-organization-in-progress
       hidden="[[!isState_(tabOrganizationStateEnum_.IN_PROGRESS, state_)]]"
-      on-success="onCycleStateClick_">
+      on-click="onCycleStateClick_">
   </tab-organization-in-progress>
   <tab-organization-results
       hidden="[[!isState_(tabOrganizationStateEnum_.SUCCESS, state_)]]"
@@ -19,11 +19,8 @@
       tabs="[[tabs_]]"
       on-create-group-click="onCreateGroupClick_">
   </tab-organization-results>
-  <div id="failure"
-      hidden="[[!isState_(tabOrganizationStateEnum_.FAILURE, state_)]]">
-    Placeholder: Failure
-    <cr-button class="action-button" on-click="onCycleStateClick_">
-      Set state to not started
-    </cr-button>
-  </div>
+  <tab-organization-failure
+      hidden="[[!isState_(tabOrganizationStateEnum_.FAILURE, state_)]]"
+      on-click="onCycleStateClick_">
+  </tab-organization-failure>
 </div>

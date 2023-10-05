@@ -67,6 +67,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       // Tab organization UI strings
       {"createGroup", IDS_TAB_ORGANIZATION_CREATE_GROUP},
       {"dismiss", IDS_TAB_ORGANIZATION_DISMISS},
+      {"failureBodyGeneric", IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC},
+      {"failureTitleGeneric", IDS_TAB_ORGANIZATION_FAILURE_TITLE_GENERIC},
       {"inProgressTitle", IDS_TAB_ORGANIZATION_IN_PROGRESS_TITLE},
       {"notStartedBody", IDS_TAB_ORGANIZATION_NOT_STARTED_BODY},
       {"notStartedButton", IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON},
