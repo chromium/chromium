@@ -73,6 +73,9 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
                            HandleExtendedAccountInformation);
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
                            CloseBrowserBeforeCreatingNewProfile);
+  FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest, DeleteProfile);
+  FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
+                           DeleteProfileFromOwnTab);
   FRIEND_TEST_ALL_PREFIXES(
       ProfilePickerEnterpriseCreationFlowBrowserTest,
       CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch);
