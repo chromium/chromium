@@ -31,6 +31,7 @@ class EventGenerator;
 
 namespace ash {
 
+class AutomationTestUtils;
 class ExtensionConsoleErrorObserver;
 class MockIMEInputContextHandler;
 
@@ -58,14 +59,11 @@ class DictationTestUtils {
 
   // Convenience methods for faking speech and waiting for a condition.
   void SendFinalResultAndWaitForEditableValue(
-      content::WebContents* web_contents,
       const std::string& result,
       const std::string& value);
   void SendFinalResultAndWaitForSelectionChanged(
-      content::WebContents* web_contents,
       const std::string& result);
   void SendFinalResultAndWaitForCaretBoundsChanged(
-      content::WebContents* web_contents,
       ui::InputMethod* input_method,
       const std::string& result);
   void SendFinalResultAndWaitForClipboardChanged(const std::string& result);
@@ -108,6 +106,10 @@ class DictationTestUtils {
     wait_for_accessibility_common_extension_load_ = wait;
   }
 
+  AutomationTestUtils* automation_test_utils() {
+    return automation_test_utils_.get();
+  }
+
   ui::test::EventGenerator* generator() { return generator_.get(); }
 
  private:
@@ -123,6 +125,7 @@ class DictationTestUtils {
   speech::SpeechRecognitionType speech_recognition_type_;
   EditableType editable_type_;
   raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  std::unique_ptr<AutomationTestUtils> automation_test_utils_;
   std::unique_ptr<SpeechRecognitionTestHelper> test_helper_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
   std::unique_ptr<ui::test::EventGenerator> generator_;

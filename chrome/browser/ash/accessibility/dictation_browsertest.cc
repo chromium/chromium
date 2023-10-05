@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/autoclick_test_utils.h"
+#include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
 #include "chrome/browser/ash/accessibility/dictation_test_utils.h"
 #include "chrome/browser/ash/accessibility/select_to_speak_test_utils.h"
@@ -45,9 +46,7 @@
 #include "components/soda/soda_installer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/api/audio/audio_api.h"
 #include "extensions/browser/api/audio/audio_service.h"
@@ -238,20 +237,17 @@ class DictationTestBase : public InProcessBrowserTest,
 
   void SendFinalResultAndWaitForEditableValue(const std::string& result,
                                               const std::string& value) {
-    utils_->SendFinalResultAndWaitForEditableValue(
-        browser()->tab_strip_model()->GetActiveWebContents(), result, value);
+    utils_->SendFinalResultAndWaitForEditableValue(result, value);
   }
 
   void SendFinalResultAndWaitForSelectionChanged(const std::string& result) {
-    utils_->SendFinalResultAndWaitForSelectionChanged(
-        browser()->tab_strip_model()->GetActiveWebContents(), result);
+    utils_->SendFinalResultAndWaitForSelectionChanged(result);
   }
 
   // TODO(b:259353252): Update this method to use testSupport JS, similar to
   // what's done in DictationFormattedContentEditableTest::WaitForSelection.
   void SendFinalResultAndWaitForCaretBoundsChanged(const std::string& result) {
     utils_->SendFinalResultAndWaitForCaretBoundsChanged(
-        browser()->tab_strip_model()->GetActiveWebContents(),
         browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod(),
         result);
   }
@@ -734,15 +730,15 @@ IN_PROC_BROWSER_TEST_P(DictationTest,
   speech::SodaInstaller::GetInstance()->NotifySodaProgressForTesting(
       30, speech::LanguageCode::kEnUs);
   ExecuteAccessibilityCommonScript(
-      "testSupport.installFakeSpeechRecognitionPrivateStart();");
+      "dictationTestSupport.installFakeSpeechRecognitionPrivateStart();");
   ToggleDictationWithKeystroke();
   // Sanity check that speech recognition is off and that no calls to
   // chrome.speechRecognitionPrivate.start() were made.
   WaitForRecognitionStopped();
   ExecuteAccessibilityCommonScript(
-      "testSupport.ensureNoSpeechRecognitionPrivateStartCalls();");
+      "dictationTestSupport.ensureNoSpeechRecognitionPrivateStartCalls();");
   ExecuteAccessibilityCommonScript(
-      "testSupport.restoreSpeechRecognitionPrivateStart();");
+      "dictationTestSupport.restoreSpeechRecognitionPrivateStart();");
 
   // Dictation should work again once the SODA download is finished.
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
@@ -800,11 +796,6 @@ IN_PROC_BROWSER_TEST_P(DictationWithAutoclickTest, UseBothFeatures) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 
-  content::AccessibilityNotificationWaiter selection_waiter(
-      browser()->tab_strip_model()->GetActiveWebContents(), ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
-  content::BoundingBoxUpdateWaiter bounding_box_waiter(
-      browser()->tab_strip_model()->GetActiveWebContents());
   autoclick_test_utils()->SetAutoclickEventTypeWithHover(
       generator(), AutoclickEventType::kDoubleClick);
   autoclick_test_utils()->SetAutoclickDelayMs(5);
@@ -812,8 +803,7 @@ IN_PROC_BROWSER_TEST_P(DictationWithAutoclickTest, UseBothFeatures) {
   autoclick_test_utils()->HoverOverHtmlElement(
       browser()->tab_strip_model()->GetActiveWebContents(), generator(),
       "input");
-  bounding_box_waiter.Wait();
-  ASSERT_TRUE(selection_waiter.WaitForNotification());
+  utils()->automation_test_utils()->WaitForTextSelectionChangedEvent();
 }
 
 IN_PROC_BROWSER_TEST_P(DictationWithAutoclickTest, UseAutoclickToToggle) {
@@ -2186,7 +2176,7 @@ class DictationFormattedContentEditableTest : public DictationPumpkinTest {
 
     // Place the selection at the end of the content editable (the pre-populated
     // editable value has a length of 14).
-    std::string script = "testSupport.setSelection(14, 14);";
+    std::string script = "dictationTestSupport.setSelection(14, 14);";
     ExecuteAccessibilityCommonScript(script);
   }
 };
@@ -2322,7 +2312,7 @@ class DictationKeyboardImprovementsTest : public DictationTestBase {
     // Reduce the no focused IME timeout so that the nudge will be shown
     // promptly.
     ExecuteAccessibilityCommonScript(
-        "testSupport.setNoFocusedImeTimeout(500);");
+        "dictationTestSupport.setNoFocusedImeTimeout(500);");
   }
 
   void WaitForToastShown(AccessibilityToastType type) {

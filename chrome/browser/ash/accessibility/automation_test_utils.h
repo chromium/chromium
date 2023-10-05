@@ -43,6 +43,17 @@ class AutomationTestUtils {
   // Will wait for the node to exist if it does not exist already.
   void SetFocusOnNode(const std::string& name, const std::string& role);
 
+  // Various event waiters. This is the automation equivalent of
+  // AccessibilityNotificationWaiter.
+
+  // Waits for a chrome.automation.EventType.TEXT_SELECTION_CHANGED event to be
+  // fired on the desktop node.
+  void WaitForTextSelectionChangedEvent();
+
+  // Waits for a chrome.automation.EventType.VALUE_CHANGED event to be fired
+  // on the desktop node.
+  void WaitForValueChangedEvent();
+
  private:
   std::string ExecuteScriptInExtensionPage(const std::string& script);
   std::string extension_id_;

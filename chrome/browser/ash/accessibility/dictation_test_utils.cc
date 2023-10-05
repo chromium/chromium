@@ -14,6 +14,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
+#include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/ash/accessibility/caret_bounds_changed_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/speech_recognition_constants.h"
@@ -22,7 +23,6 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
@@ -120,6 +120,8 @@ DictationTestUtils::DictationTestUtils(
     : wait_for_accessibility_common_extension_load_(true),
       speech_recognition_type_(speech_recognition_type),
       editable_type_(editable_type) {
+  automation_test_utils_ = std::make_unique<AutomationTestUtils>(
+      extension_misc::kAccessibilityCommonExtensionId);
   test_helper_ =
       std::make_unique<SpeechRecognitionTestHelper>(speech_recognition_type);
 }
@@ -180,6 +182,9 @@ void DictationTestUtils::EnableDictation(Browser* browser) {
   // the main object to be created before installing test support.
   WaitForDictationJSReady();
 
+  // Setup automation test support.
+  automation_test_utils_->SetUpTestSupport();
+
   // Create an instance of the DictationTestSupport JS class, which can be
   // used from these tests to interact with Dictation JS. For more
   // information, see kTestSupportPath.
@@ -190,7 +195,8 @@ void DictationTestUtils::EnableDictation(Browser* browser) {
 
   // Increase Dictation's NO_FOCUSED_IME timeout to reduce flakiness on slower
   // builds.
-  std::string script = "testSupport.setNoFocusedImeTimeout(20 * 1000);";
+  std::string script =
+      "dictationTestSupport.setNoFocusedImeTimeout(20 * 1000);";
   ExecuteAccessibilityCommonScript(script);
 
   // Dictation will request a Pumpkin install when it starts up. Wait for
@@ -204,42 +210,29 @@ void DictationTestUtils::ToggleDictationWithKeystroke() {
 }
 
 void DictationTestUtils::SendFinalResultAndWaitForEditableValue(
-    content::WebContents* web_contents,
     const std::string& result,
     const std::string& value) {
   // Ensure that the accessibility tree and the text area value are updated.
-  content::AccessibilityNotificationWaiter waiter(
-      web_contents, ui::kAXModeComplete, ax::mojom::Event::kValueChanged);
   SendFinalResultAndWait(result);
-  ASSERT_TRUE(waiter.WaitForNotification());
+  automation_test_utils_->WaitForValueChangedEvent();
   WaitForEditableValue(value);
 }
 
 void DictationTestUtils::SendFinalResultAndWaitForSelectionChanged(
-    content::WebContents* web_contents,
     const std::string& result) {
-  content::AccessibilityNotificationWaiter selection_waiter(
-      web_contents, ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
-  content::BoundingBoxUpdateWaiter bounding_box_waiter(web_contents);
   SendFinalResultAndWait(result);
-  bounding_box_waiter.Wait();
-  ASSERT_TRUE(selection_waiter.WaitForNotification());
+  automation_test_utils_->WaitForTextSelectionChangedEvent();
 }
 
 // TODO(b:259353252): Update this method to use testSupport JS, similar to
 // what's done in DictationFormattedContentEditableTest::WaitForSelection.
 void DictationTestUtils::SendFinalResultAndWaitForCaretBoundsChanged(
-    content::WebContents* web_contents,
     ui::InputMethod* input_method,
     const std::string& result) {
-  content::AccessibilityNotificationWaiter selection_waiter(
-      web_contents, ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   CaretBoundsChangedWaiter caret_waiter(input_method);
   SendFinalResultAndWait(result);
+  automation_test_utils_->WaitForTextSelectionChangedEvent();
   caret_waiter.Wait();
-  ASSERT_TRUE(selection_waiter.WaitForNotification());
 }
 
 void DictationTestUtils::SendFinalResultAndWaitForClipboardChanged(
@@ -291,7 +284,7 @@ void DictationTestUtils::ExecuteAccessibilityCommonScript(
 }
 
 void DictationTestUtils::DisablePumpkin() {
-  std::string script = "testSupport.disablePumpkin();";
+  std::string script = "dictationTestSupport.disablePumpkin();";
   ExecuteAccessibilityCommonScript(script);
 }
 
@@ -317,13 +310,13 @@ std::string DictationTestUtils::GetEditableValue(
 
 void DictationTestUtils::WaitForEditableValue(const std::string& value) {
   std::string script = base::StringPrintf(
-      "testSupport.waitForEditableValue(`%s`);", value.c_str());
+      "dictationTestSupport.waitForEditableValue(`%s`);", value.c_str());
   ExecuteAccessibilityCommonScript(script);
 }
 
 void DictationTestUtils::WaitForSelection(int start, int end) {
-  std::string script =
-      base::StringPrintf("testSupport.waitForSelection(%d, %d);", start, end);
+  std::string script = base::StringPrintf(
+      "dictationTestSupport.waitForSelection(%d, %d);", start, end);
   ExecuteAccessibilityCommonScript(script);
 }
 
@@ -386,7 +379,7 @@ void DictationTestUtils::WaitForDictationJSReady() {
 }
 
 void DictationTestUtils::WaitForEditableFocus() {
-  std::string script = "testSupport.waitForEditableFocus();";
+  std::string script = "dictationTestSupport.waitForEditableFocus();";
   ExecuteAccessibilityCommonScript(script);
 }
 
@@ -402,13 +395,13 @@ void DictationTestUtils::WaitForPumpkinTaggerReady() {
     return;
   }
 
-  std::string script = "testSupport.waitForPumpkinTaggerReady();";
+  std::string script = "dictationTestSupport.waitForPumpkinTaggerReady();";
   ExecuteAccessibilityCommonScript(script);
 }
 
 void DictationTestUtils::WaitForFocusHandler() {
   std::string script = R"(
-    testSupport.waitForFocusHandler('editableForDictation');
+    dictationTestSupport.waitForFocusHandler('editableForDictation');
   )";
   ExecuteAccessibilityCommonScript(script);
 }

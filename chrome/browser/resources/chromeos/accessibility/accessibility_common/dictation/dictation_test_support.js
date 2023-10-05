@@ -241,4 +241,4 @@ class DictationTestSupport {
   }
 }
 
-globalThis.testSupport = new DictationTestSupport();
+globalThis.dictationTestSupport = new DictationTestSupport();

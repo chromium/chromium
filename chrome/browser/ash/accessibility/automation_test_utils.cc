@@ -89,6 +89,20 @@ void AutomationTestUtils::SetFocusOnNode(const std::string& name,
       name.c_str(), role.c_str()));
 }
 
+void AutomationTestUtils::WaitForTextSelectionChangedEvent() {
+  std::string script = R"(
+    globalThis.automationTestSupport.waitForTextSelectionChangedEvent();
+  )";
+  ExecuteScriptInExtensionPage(script);
+}
+
+void AutomationTestUtils::WaitForValueChangedEvent() {
+  std::string script = R"(
+    globalThis.automationTestSupport.waitForValueChangedEvent();
+  )";
+  ExecuteScriptInExtensionPage(script);
+}
+
 std::string AutomationTestUtils::ExecuteScriptInExtensionPage(
     const std::string& script) {
   // Note SpokenFeedbackTest uses ExecuteScriptInBackgroundPageDeprecated.

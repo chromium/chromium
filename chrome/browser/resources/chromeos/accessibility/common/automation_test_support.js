@@ -113,6 +113,37 @@ class AutomationTestSupport {
   }
 
   /**
+   * Waits for a chrome.automation.EventType.TEXT_SELECTION_CHANGED event to be
+   * fired on the desktop node.
+   */
+  async waitForTextSelectionChangedEvent() {
+    await this.waitForEventHelper_(
+        chrome.automation.EventType.TEXT_SELECTION_CHANGED);
+  }
+
+  /**
+   * Waits for a chrome.automation.EventType.VALUE_CHANGED event to be fired on
+   * the desktop node.
+   */
+  async waitForValueChangedEvent() {
+    await this.waitForEventHelper_(chrome.automation.EventType.VALUE_CHANGED);
+  }
+
+  /**
+   * @param {chrome.automation.EventType} event
+   * @private
+   */
+  async waitForEventHelper_(event) {
+    const desktop = await new Promise(resolve => {
+      chrome.automation.getDesktop(d => resolve(d));
+    });
+    await new Promise(resolve => {
+      desktop.addEventListener(event, resolve);
+    });
+    this.notifyCcTests_('ready');
+  }
+
+  /**
    * @param {string} The result to send to the C++ tests.
    * @private
    */
