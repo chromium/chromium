@@ -15,11 +15,21 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_urls.h"
+
+namespace {
+
+GURL GetLoadingScreenURL() {
+  GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
+  return url.Resolve(chrome::kChromeUISyncConfirmationLoadingPath);
+}
+
+}  // namespace
 
 ProfilePickerDiceReauthProvider::ProfilePickerDiceReauthProvider(
     ProfilePickerWebContentsHost* host,
@@ -46,8 +56,15 @@ void ProfilePickerDiceReauthProvider::SwitchToReauth() {
       &*profile_, ProfileKeepAliveOrigin::kProfileCreationFlow);
   scoped_identity_manager_observation_.Observe(&*identity_manager_);
 
-  // TODO(https://crbug.com/1478217): Add a loading screen + timer in order not
-  // to potentially hang.
+  contents_ = content::WebContents::Create(
+      content::WebContents::CreateParams(&*profile_));
+  host_->ShowScreen(contents_.get(), GetLoadingScreenURL());
+
+  timer_.Start(
+      FROM_HERE, base::Seconds(kDiceTokenFetchTimeoutSeconds),
+      base::BindOnce(
+          &ProfilePickerDiceReauthProvider::OnForceSigninVerifierTimeOut,
+          base::Unretained(this)));
 
   // Attempt to create the `force_signin_verifier_` here, otherwise it will be
   // done after the refresh tokens are loaded in `OnRefreshTokensLoaded()`.
@@ -61,6 +78,13 @@ void ProfilePickerDiceReauthProvider::OnRefreshTokensLoaded() {
   TryCreateForceSigninVerifier();
 }
 
+void ProfilePickerDiceReauthProvider::OnForceSigninVerifierTimeOut() {
+  // TODO(https://crbug.com/1478217): Improve the error message if this timeout
+  // occurs. Currently the error that will be displayed is the one that is shown
+  // if the wrong account is being reauth-ed.
+  Finish(false);
+}
+
 void ProfilePickerDiceReauthProvider::TryCreateForceSigninVerifier() {
   if (!force_signin_verifier_ && identity_manager_->AreRefreshTokensLoaded()) {
     force_signin_verifier_ = std::make_unique<ForceSigninVerifier>(
@@ -72,6 +96,9 @@ void ProfilePickerDiceReauthProvider::TryCreateForceSigninVerifier() {
 
 void ProfilePickerDiceReauthProvider::OnTokenFetchComplete(
     bool token_is_valid) {
+  // Stop the timeout check for the ForceSigninVerifier. The response happened.
+  timer_.Stop();
+
   // If the token is valid, we do not need to reauth and proceed to finish
   // with success directly.
   if (token_is_valid) {
@@ -83,11 +110,10 @@ void ProfilePickerDiceReauthProvider::OnTokenFetchComplete(
 }
 
 void ProfilePickerDiceReauthProvider::ShowReauth() {
-  CHECK(!contents_);
-
+  // Recreating the web contents so that the loading screen is not part of the
+  // history when pressing the back button.
   contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(&*profile_));
-
   // Show the back button, the reactions are handled by the host itself.
   // Use the continue_url to know that the user finalized the reauth flow, in
   // case no refresh token were generated.
@@ -160,10 +186,8 @@ void ProfilePickerDiceReauthProvider::DidFinishNavigation(
     // Otherwise we just wait for the refersh token to be valid with a timeout
     // check through the `DiceTabHelper` and the `ProcessDiceHeaderDelegateImpl`
     // after fetching the tokens.
-
-    // TODO(https://crbug.com/1478217): Add a loading screen to let the user
-    // know that something is being checked which should be better than a blank
-    // page.
+    // Show a loading screen while waiting.
+    host_->ShowScreen(contents_.get(), GetLoadingScreenURL());
   }
 }
 

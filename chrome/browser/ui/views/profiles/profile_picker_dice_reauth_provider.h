@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_REAUTH_PROVIDER_H_
 
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -68,6 +69,10 @@ class ProfilePickerDiceReauthProvider
   // Attempt to create the ForceSigninVerifier, refresh tokens should be loaded.
   void TryCreateForceSigninVerifier();
 
+  // Timeout callback if the ForceSigninVerifier timed out. Finishing the flow
+  // with a failure.
+  void OnForceSigninVerifierTimeOut();
+
   // Callback to the ForceSigninVerifier after fetching the tokens.
   void OnTokenFetchComplete(bool token_is_valid);
 
@@ -98,11 +103,16 @@ class ProfilePickerDiceReauthProvider
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   // The web contents backed by `profile_`. This is used for displaying the
-  // sign-in flow.
+  // reauth flow.
+  // Before displaying the reauth, this is used to display a loading screen
+  // while the ForceSigninVerifier is performing a network call.
   std::unique_ptr<content::WebContents> contents_;
   std::unique_ptr<ForceSigninVerifier> force_signin_verifier_;
 
   bool signin_event_received_ = false;
+
+  // The timer is used for a timeout delay for the ForceSigninVerifier.
+  base::OneShotTimer timer_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
