@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
-#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
@@ -564,32 +563,36 @@ class CopyOrMoveIOTaskWithScansTest
       blocked_files.push_back(file.source_url.path());
     }
 
-    EXPECT_CALL(*fpnm_, AddConnectorsBlockedFiles(
+    EXPECT_CALL(*fpnm_, SetConnectorsBlockedFiles(
                             /*task_id=*/{kTaskId},
-                            UnorderedElementsAreArray(blocked_files),
                             GetOperationType() == OperationType::kCopy
                                 ? policy::dlp::FileAction::kCopy
                                 : policy::dlp::FileAction::kMove,
-                            reason));
+                            reason,
+                            policy::FilesPolicyDialog::Info::Error(
+                                reason, blocked_files)));
   }
 
-  void ExpectFPNMFilesWarningDialogAndProceed(
-      CopyOrMoveIOTask& task,
-      policy::FilesPolicyWarnSettings warn_settings =
-          policy::FilesPolicyWarnSettings()) {
+  void ExpectFPNMFilesWarningDialogAndProceed(CopyOrMoveIOTask& task) {
     std::vector<base::FilePath> warned_files;
     for (auto&& file : warned_files_) {
       warned_files.push_back(file.path());
     }
 
+    // Enterprise connectors file transfer currently only considers warning mode
+    // for sensitive data.
+    auto dialog_info = policy::FilesPolicyDialog::Info::Warn(
+        policy::FilesPolicyDialog::BlockReason::
+            kEnterpriseConnectorsSensitiveData,
+        warned_files);
+
     EXPECT_CALL(*fpnm_, ShowConnectorsWarning(
                             /*callback=*/_,
                             /*task_id=*/{kTaskId},
-                            UnorderedElementsAreArray(warned_files),
                             GetOperationType() == OperationType::kCopy
                                 ? policy::dlp::FileAction::kCopy
                                 : policy::dlp::FileAction::kMove,
-                            warn_settings))
+                            std::move(dialog_info)))
         .WillOnce([&](auto&&... args) {
           warning_callback_ = std::move(std::get<0>(std::tie(args...)));
 
@@ -608,14 +611,20 @@ class CopyOrMoveIOTaskWithScansTest
       warned_files.push_back(file.path());
     }
 
+    // Enterprise connectors file transfer currently only considers warning mode
+    // for sensitive data.
+    auto dialog_settings = policy::FilesPolicyDialog::Info::Warn(
+        policy::FilesPolicyDialog::BlockReason::
+            kEnterpriseConnectorsSensitiveData,
+        warned_files);
+
     EXPECT_CALL(*fpnm_, ShowConnectorsWarning(
                             /*callback=*/_,
                             /*task_id=*/{kTaskId},
-                            UnorderedElementsAreArray(warned_files),
                             GetOperationType() == OperationType::kCopy
                                 ? policy::dlp::FileAction::kCopy
                                 : policy::dlp::FileAction::kMove,
-                            policy::FilesPolicyWarnSettings()))
+                            std::move(dialog_settings)))
         .WillOnce([&, cancelCallback](auto&&... args) {
           warning_callback_ = std::move(std::get<0>(std::tie(args...)));
 

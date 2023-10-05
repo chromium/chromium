@@ -11,11 +11,15 @@
 #include <vector>
 
 #include "ash/style/typography.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_error_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_warn_dialog.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_string_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
@@ -26,6 +30,101 @@
 namespace policy {
 
 FilesPolicyDialogFactory* factory_;
+
+// static
+FilesPolicyDialog::Info FilesPolicyDialog::Info::Warn(
+    BlockReason reason,
+    const std::vector<base::FilePath>& paths) {
+  CHECK(!paths.empty());
+
+  Info settings;
+  settings.files_ =
+      std::vector<DlpConfidentialFile>(paths.begin(), paths.end());
+  // TODO(b/300705572): we probably want to have a default message for every
+  // block reason.
+  int message_id = IDS_POLICY_DLP_FILES_WARN_MESSAGE;
+  settings.learn_more_url_ = GURL(dlp::kDlpLearnMoreUrl);
+  settings.message_ = base::ReplaceStringPlaceholders(
+      l10n_util::GetPluralStringFUTF16(message_id, paths.size()),
+      base::NumberToString16(paths.size()),
+      /*offset=*/nullptr);
+
+  return settings;
+}
+
+// static
+FilesPolicyDialog::Info FilesPolicyDialog::Info::Error(
+    BlockReason reason,
+    const std::vector<base::FilePath>& paths) {
+  CHECK(!paths.empty());
+
+  size_t file_count = paths.size();
+
+  Info settings;
+  settings.files_ =
+      std::vector<DlpConfidentialFile>(paths.begin(), paths.end());
+  settings.message_ =
+      files_string_util::GetBlockReasonMessage(reason, file_count);
+  // Only DLP has a default learn more URL.
+  if (reason == FilesPolicyDialog::BlockReason::kDlp) {
+    settings.learn_more_url_ = GURL(dlp::kDlpLearnMoreUrl);
+  }
+
+  return settings;
+}
+
+FilesPolicyDialog::Info::Info() = default;
+
+FilesPolicyDialog::Info::~Info() = default;
+
+FilesPolicyDialog::Info::Info(const Info& other) = default;
+
+FilesPolicyDialog::Info& FilesPolicyDialog::Info::operator=(Info&& other) =
+    default;
+
+bool FilesPolicyDialog::Info::operator==(const Info& other) const {
+  return bypass_requires_justification_ ==
+             other.bypass_requires_justification_ &&
+         message_ == other.message_ &&
+         learn_more_url_ == other.learn_more_url_ && files_ == other.files_;
+}
+
+bool FilesPolicyDialog::Info::operator!=(const Info& other) const {
+  return !(*this == other);
+}
+
+const std::vector<DlpConfidentialFile>& FilesPolicyDialog::Info::files() const {
+  return files_;
+}
+
+bool FilesPolicyDialog::Info::bypass_requires_justification() const {
+  return bypass_requires_justification_;
+}
+
+void FilesPolicyDialog::Info::SetBypassRequiresJustification(bool value) {
+  bypass_requires_justification_ = value;
+}
+
+std::u16string FilesPolicyDialog::Info::GetMessage() const {
+  return message_;
+}
+
+void FilesPolicyDialog::Info::SetMessage(
+    const absl::optional<std::u16string>& message) {
+  if (message.has_value() && !message->empty()) {
+    message_ = message.value();
+  }
+}
+
+absl::optional<GURL> FilesPolicyDialog::Info::GetLearnMoreURL() const {
+  return learn_more_url_;
+}
+
+void FilesPolicyDialog::Info::SetLearnMoreURL(const absl::optional<GURL>& url) {
+  if (url.has_value() && url->is_valid()) {
+    learn_more_url_ = url.value();
+  }
+}
 
 FilesPolicyDialog::FilesPolicyDialog(size_t file_count,
                                      dlp::FileAction action,
@@ -43,36 +142,35 @@ FilesPolicyDialog::~FilesPolicyDialog() = default;
 
 views::Widget* FilesPolicyDialog::CreateWarnDialog(
     OnDlpRestrictionCheckedWithJustificationCallback callback,
-    const std::vector<DlpConfidentialFile>& files,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent,
-    absl::optional<DlpFileDestination> destination,
-    FilesPolicyWarnSettings settings) {
+    Info dialog_info,
+    absl::optional<DlpFileDestination> destination) {
   if (factory_) {
-    return factory_->CreateWarnDialog(std::move(callback), files, action,
-                                      modal_parent, destination,
-                                      std::move(settings));
+    return factory_->CreateWarnDialog(std::move(callback), action, modal_parent,
+                                      destination, std::move(dialog_info));
   }
 
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      std::make_unique<FilesPolicyWarnDialog>(std::move(callback), files,
-                                              action, modal_parent, destination,
-                                              std::move(settings)),
+      std::make_unique<FilesPolicyWarnDialog>(std::move(callback), action,
+                                              modal_parent, destination,
+                                              std::move(dialog_info)),
       /*context=*/nullptr, /*parent=*/modal_parent);
   widget->Show();
   return widget;
 }
 
 views::Widget* FilesPolicyDialog::CreateErrorDialog(
-    const std::map<DlpConfidentialFile, BlockReason>& files,
+    const std::map<BlockReason, Info>& dialog_info_map,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent) {
   if (factory_) {
-    return factory_->CreateErrorDialog(files, action, modal_parent);
+    return factory_->CreateErrorDialog(dialog_info_map, action, modal_parent);
   }
 
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      std::make_unique<FilesPolicyErrorDialog>(files, action, modal_parent),
+      std::make_unique<FilesPolicyErrorDialog>(dialog_info_map, action,
+                                               modal_parent),
       /*context=*/nullptr, /*parent=*/modal_parent);
   widget->Show();
   return widget;

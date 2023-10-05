@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
-#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
@@ -40,11 +39,11 @@ class MockFilesPolicyNotificationManager
               (override));
 
   MOCK_METHOD(void,
-              AddConnectorsBlockedFiles,
+              SetConnectorsBlockedFiles,
               (file_manager::io_task::IOTaskId task_id,
-               std::vector<base::FilePath> blocked_files,
                dlp::FileAction action,
-               FilesPolicyDialog::BlockReason reason),
+               FilesPolicyDialog::BlockReason reason,
+               FilesPolicyDialog::Info dialog_into),
               (override));
 
   MOCK_METHOD(void,
@@ -60,9 +59,8 @@ class MockFilesPolicyNotificationManager
               ShowConnectorsWarning,
               (OnDlpRestrictionCheckedWithJustificationCallback callback,
                file_manager::io_task::IOTaskId task_id,
-               std::vector<base::FilePath> warning_files,
                dlp::FileAction action,
-               FilesPolicyWarnSettings warn_settings),
+               FilesPolicyDialog::Info dialog_info),
               (override));
 
   MOCK_METHOD(void,

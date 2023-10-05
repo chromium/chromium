@@ -11,7 +11,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_string_util.h"
-#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
@@ -80,14 +79,13 @@ const std::u16string GetDestination(DlpFileDestination destination) {
 
 FilesPolicyWarnDialog::FilesPolicyWarnDialog(
     OnDlpRestrictionCheckedWithJustificationCallback callback,
-    const std::vector<DlpConfidentialFile>& files,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent,
     absl::optional<DlpFileDestination> destination,
-    FilesPolicyWarnSettings settings)
-    : FilesPolicyDialog(files.size(), action, modal_parent),
-      files_(files),
-      destination_(destination) {
+    Info dialog_info)
+    : FilesPolicyDialog(dialog_info.files().size(), action, modal_parent),
+      destination_(destination),
+      dialog_info_(dialog_info) {
   auto split = base::SplitOnceCallback(std::move(callback));
   SetAcceptCallback(base::BindOnce(&FilesPolicyWarnDialog::ProceedWarning,
                                    weak_ptr_factory_.GetWeakPtr(),
@@ -111,12 +109,12 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
 FilesPolicyWarnDialog::~FilesPolicyWarnDialog() = default;
 
 void FilesPolicyWarnDialog::MaybeAddConfidentialRows() {
-  if (action_ == dlp::FileAction::kDownload || files_.empty()) {
+  if (action_ == dlp::FileAction::kDownload || dialog_info_.files().empty()) {
     return;
   }
 
   SetupScrollView();
-  for (const auto& file : files_) {
+  for (const auto& file : dialog_info_.files()) {
     AddConfidentialRow(file.icon, file.title);
   }
 }
@@ -185,11 +183,7 @@ std::u16string FilesPolicyWarnDialog::GetTitle() {
 
 std::u16string FilesPolicyWarnDialog::GetMessage() {
   if (base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
-    return base::ReplaceStringPlaceholders(
-        l10n_util::GetPluralStringFUTF16(IDS_POLICY_DLP_FILES_WARN_MESSAGE,
-                                         files_.size()),
-        base::NumberToString16(files_.size()),
-        /*offset=*/nullptr);
+    return dialog_info_.GetMessage();
   }
   CHECK(destination_.has_value());
   DlpFileDestination destination_val = destination_.value();

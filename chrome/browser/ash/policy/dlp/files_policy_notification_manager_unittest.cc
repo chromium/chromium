@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
-#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
@@ -295,35 +294,37 @@ class FPNMIOTaskTest : public FilesPolicyNotificationManagerTest {
       FilesPolicyDialog::FilesPolicyDialog::BlockReason block_reason,
       file_manager::io_task::IOTaskId task_id,
       std::vector<base::FilePath> blocked_files,
-      dlp::FileAction action) {
+      dlp::FileAction action,
+      absl::optional<FilesPolicyDialog::Info> dialog_info = absl::nullopt) {
     if (block_reason ==
         FilesPolicyDialog::FilesPolicyDialog::BlockReason::kDlp) {
       fpnm_->ShowDlpBlockedFiles(task_id, std::move(blocked_files), action);
     } else {
-      fpnm_->AddConnectorsBlockedFiles(task_id, std::move(blocked_files),
-                                       action, block_reason);
+      EXPECT_TRUE(dialog_info.has_value());
+      fpnm_->SetConnectorsBlockedFiles(task_id, action, block_reason,
+                                       std::move(dialog_info.value()));
     }
   }
 
   // Depending on the policy, calls FPNM::ShowDlpWarning() or
   // FPNM::ShowConnectorsWarning(), both of which store all the info about the
   // task to later show notifications/dialogs.
-  void AddWarnedFiles(
-      Policy policy,
-      OnDlpRestrictionCheckedWithJustificationCallback cb,
-      file_manager::io_task::IOTaskId task_id,
-      std::vector<base::FilePath> warned_files,
-      dlp::FileAction action,
-      FilesPolicyWarnSettings warn_settings = FilesPolicyWarnSettings()) {
+  void AddWarnedFiles(Policy policy,
+                      OnDlpRestrictionCheckedWithJustificationCallback cb,
+                      file_manager::io_task::IOTaskId task_id,
+                      std::vector<base::FilePath> warned_files,
+                      dlp::FileAction action) {
     switch (policy) {
       case Policy::kDlp:
         fpnm_->ShowDlpWarning(std::move(cb), task_id, std::move(warned_files),
                               DlpFileDestination(), action);
         break;
       case Policy::kEnterpriseConnectors:
-        fpnm_->ShowConnectorsWarning(std::move(cb), task_id,
-                                     std::move(warned_files), action,
-                                     std::move(warn_settings));
+        auto dialog_info = FilesPolicyDialog::Info::Warn(
+            FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
+            warned_files);
+        fpnm_->ShowConnectorsWarning(std::move(cb), task_id, action,
+                                     std::move(dialog_info));
         break;
     }
   }
@@ -739,9 +740,10 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsBlockTest,
   ASSERT_FALSE(src_file_path.empty());
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
-  AddBlockedFiles(GetBlockReason(), task_id,
-                  std::vector<base::FilePath>{src_file_path},
-                  dlp::FileAction::kCopy);
+  const std::vector<base::FilePath> paths = {src_file_path};
+  auto dialog_info = FilesPolicyDialog::Info::Error(GetBlockReason(), paths);
+  AddBlockedFiles(GetBlockReason(), task_id, paths, dlp::FileAction::kCopy,
+                  dialog_info);
 
   // Task in progress.
   EXPECT_CALL(
@@ -765,11 +767,14 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsBlockTest,
   // Task is not removed after completion.
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
-  std::map<DlpConfidentialFile, FilesPolicyDialog::BlockReason>
-      expected_blocked_files{
-          {DlpConfidentialFile(src_file_path), GetBlockReason()}};
-  EXPECT_EQ(fpnm_->GetIOTaskBlockedFilesForTesting(task_id),
-            expected_blocked_files);
+  std::map<FilesPolicyDialog::BlockReason, FilesPolicyDialog::Info>
+      expected_dialog_info_map;
+  auto confidential_files =
+      std::vector<DlpConfidentialFile>(paths.begin(), paths.end());
+  expected_dialog_info_map.insert({GetBlockReason(), dialog_info});
+
+  EXPECT_EQ(fpnm_->GetIOTaskDialogInfoMapForTesting(task_id),
+            expected_dialog_info_map);
 
   if (GetBlockReason() == FilesPolicyDialog::BlockReason::kDlp) {
     EXPECT_THAT(
@@ -798,15 +803,21 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsBlockTest,
   fpnm_ = std::make_unique<FilesPolicyNotificationManager>(profile_);
   ASSERT_FALSE(fpnm_->HasIOTask(task_id));
 
-  AddBlockedFiles(GetBlockReason(), task_id, {base::FilePath(src_file_path)},
-                  dlp::FileAction::kCopy);
+  const std::vector<base::FilePath> paths = {src_file_path};
+  auto dialog_info = FilesPolicyDialog::Info::Error(GetBlockReason(), paths);
+  AddBlockedFiles(GetBlockReason(), task_id, paths, dlp::FileAction::kCopy,
+                  dialog_info);
 
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
-  std::map<DlpConfidentialFile, FilesPolicyDialog::BlockReason>
-      expected_blocked_files{
-          {DlpConfidentialFile(src_file_path), GetBlockReason()}};
-  EXPECT_EQ(fpnm_->GetIOTaskBlockedFilesForTesting(task_id),
-            expected_blocked_files);
+
+  std::map<FilesPolicyDialog::BlockReason, FilesPolicyDialog::Info>
+      expected_dialog_info_map;
+  auto confidential_files =
+      std::vector<DlpConfidentialFile>(paths.begin(), paths.end());
+  expected_dialog_info_map.insert({GetBlockReason(), dialog_info});
+
+  EXPECT_EQ(fpnm_->GetIOTaskDialogInfoMapForTesting(task_id),
+            expected_dialog_info_map);
 
   if (GetBlockReason() == FilesPolicyDialog::BlockReason::kDlp) {
     EXPECT_THAT(
@@ -973,8 +984,13 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
   auto src_file_path = AddCopyOrMoveIOTask(task_id, is_copy);
   ASSERT_FALSE(src_file_path.empty());
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
-  AddBlockedFiles(ConvertPolicy(policy), task_id, {base::FilePath(kFile1)},
-                  is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+
+  const std::vector<base::FilePath> files = {base::FilePath(kFile1)};
+  auto dialog_info =
+      FilesPolicyDialog::Info::Error(ConvertPolicy(policy), files);
+  AddBlockedFiles(ConvertPolicy(policy), task_id, std::move(files),
+                  is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove,
+                  std::move(dialog_info));
 
   // Only the task_id field is important.
   file_manager::io_task::ProgressStatus status;
@@ -1024,9 +1040,14 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Multi) {
   bool is_copy = type == file_manager::io_task::OperationType::kCopy;
   ASSERT_FALSE(AddCopyOrMoveIOTask(task_id, is_copy).empty());
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
-  AddBlockedFiles(ConvertPolicy(policy), task_id,
-                  {base::FilePath(kFile1), base::FilePath(kFile2)},
-                  is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+
+  const std::vector<base::FilePath> files = {base::FilePath(kFile1),
+                                             base::FilePath(kFile2)};
+  auto dialog_info =
+      FilesPolicyDialog::Info::Error(ConvertPolicy(policy), files);
+  AddBlockedFiles(ConvertPolicy(policy), task_id, std::move(files),
+                  is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove,
+                  std::move(dialog_info));
 
   // Only the task_id field is important.
   file_manager::io_task::ProgressStatus status;

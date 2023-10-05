@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_warn_dialog.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
-#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_dlp_files_controller_ash.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -81,24 +80,23 @@ constexpr base::TimeDelta kWarningTimeout = base::Minutes(5);
 
 }  // namespace
 
-using BlockedFilesMap =
-    std::map<DlpConfidentialFile, FilesPolicyDialog::BlockReason>;
+using DialogInfoMap =
+    std::map<FilesPolicyDialog::BlockReason, FilesPolicyDialog::Info>;
 
 class MockFilesPolicyDialogFactory : public FilesPolicyDialogFactory {
  public:
   MOCK_METHOD(views::Widget*,
               CreateWarnDialog,
               (OnDlpRestrictionCheckedWithJustificationCallback,
-               const std::vector<DlpConfidentialFile>&,
                dlp::FileAction,
                gfx::NativeWindow,
                absl::optional<DlpFileDestination>,
-               FilesPolicyWarnSettings),
+               FilesPolicyDialog::Info),
               (override));
 
   MOCK_METHOD(views::Widget*,
               CreateErrorDialog,
-              (const BlockedFilesMap&, dlp::FileAction, gfx::NativeWindow),
+              (const DialogInfoMap&, dlp::FileAction, gfx::NativeWindow),
               (override));
 };
 
@@ -338,24 +336,22 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
   std::vector<base::FilePath> warning_files;
   warning_files.emplace_back("file1.txt");
   warning_files.emplace_back("file2.txt");
-  EXPECT_CALL(
-      *factory_,
-      CreateWarnDialog(base::test::IsNotNullCallback(),
-                       std::vector<DlpConfidentialFile>(
-                           {warning_files.begin(), warning_files.end()}),
-                       action, testing::NotNull(), testing::Eq(absl::nullopt),
-                       FilesPolicyWarnSettings()))
+  EXPECT_CALL(*factory_,
+              CreateWarnDialog(
+                  base::test::IsNotNullCallback(), action, testing::NotNull(),
+                  testing::Eq(absl::nullopt),
+                  FilesPolicyDialog::Info::Warn(
+                      FilesPolicyDialog::BlockReason::kDlp, warning_files)))
       .Times(2)
       .WillRepeatedly(
           [](OnDlpRestrictionCheckedWithJustificationCallback callback,
-             const std::vector<DlpConfidentialFile>& files,
              dlp::FileAction file_action, gfx::NativeWindow modal_parent,
              absl::optional<DlpFileDestination> destination,
-             FilesPolicyWarnSettings warn_settings) {
+             FilesPolicyDialog::Info dialog_info) {
             views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
                 std::make_unique<FilesPolicyWarnDialog>(
-                    std::move(callback), files, file_action, modal_parent,
-                    destination, std::move(warn_settings)),
+                    std::move(callback), file_action, modal_parent, destination,
+                    std::move(dialog_info)),
                 /*context=*/nullptr, modal_parent);
             widget->Show();
             return widget;
@@ -429,23 +425,21 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest,
   warning_files.emplace_back("file2.txt");
   // Set factory to create a real dialog.
   // Null modal parent means the dialog is a system modal.
-  EXPECT_CALL(
-      *factory_,
-      CreateWarnDialog(base::test::IsNotNullCallback(),
-                       std::vector<DlpConfidentialFile>(
-                           {warning_files.begin(), warning_files.end()}),
-                       action, testing::IsNull(), testing::Eq(absl::nullopt),
-                       FilesPolicyWarnSettings()))
+  EXPECT_CALL(*factory_,
+              CreateWarnDialog(
+                  base::test::IsNotNullCallback(), action, testing::IsNull(),
+                  testing::Eq(absl::nullopt),
+                  FilesPolicyDialog::Info::Warn(
+                      FilesPolicyDialog::BlockReason::kDlp, warning_files)))
       .Times(1)
       .WillOnce([](OnDlpRestrictionCheckedWithJustificationCallback callback,
-                   const std::vector<DlpConfidentialFile>& files,
                    dlp::FileAction file_action, gfx::NativeWindow modal_parent,
                    absl::optional<DlpFileDestination> destination,
-                   FilesPolicyWarnSettings warn_settings) {
+                   FilesPolicyDialog::Info dialog_info) {
         views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
             std::make_unique<FilesPolicyWarnDialog>(
-                std::move(callback), files, file_action, nullptr, destination,
-                std::move(warn_settings)),
+                std::move(callback), file_action, nullptr, destination,
+                std::move(dialog_info)),
             /*context=*/nullptr, /*parent=*/nullptr);
         widget->Show();
         return widget;
@@ -550,13 +544,16 @@ class NonIOErrorBrowserTest
 // files shows a dialog.
 IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog) {
   auto action = GetParam();
-  BlockedFilesMap blocked_map;
-  blocked_map.emplace(base::FilePath("file1.txt"),
-                      FilesPolicyDialog::BlockReason::kDlp);
-  blocked_map.emplace(base::FilePath("file2.txt"),
-                      FilesPolicyDialog::BlockReason::kDlp);
+
+  DialogInfoMap dialog_info_map;
+  const std::vector<base::FilePath> paths = {base::FilePath("file1.txt"),
+                                             base::FilePath("file2.txt")};
+  auto dialog_info = FilesPolicyDialog::Info::Error(
+      FilesPolicyDialog::BlockReason::kDlp, paths);
+  dialog_info_map.insert({FilesPolicyDialog::BlockReason::kDlp, dialog_info});
+
   EXPECT_CALL(*factory_,
-              CreateErrorDialog(blocked_map, action, testing::NotNull()))
+              CreateErrorDialog(dialog_info_map, action, testing::NotNull()))
       .Times(1);
 
   // No Files app opened.
@@ -649,21 +646,25 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileCloseCancels) {
 // timeout.
 IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog_Timeout) {
   auto action = GetParam();
-  BlockedFilesMap blocked_map;
-  blocked_map.emplace(base::FilePath("file1.txt"),
-                      FilesPolicyDialog::BlockReason::kDlp);
-  blocked_map.emplace(base::FilePath("file2.txt"),
-                      FilesPolicyDialog::BlockReason::kDlp);
+
+  DialogInfoMap dialog_info_map;
+  const std::vector<base::FilePath> paths = {base::FilePath("file1.txt"),
+                                             base::FilePath("file2.txt")};
+  dialog_info_map.insert({FilesPolicyDialog::BlockReason::kDlp,
+                          FilesPolicyDialog::Info::Error(
+                              FilesPolicyDialog::BlockReason::kDlp, paths)});
+
   // Set factory to create a real dialog.
   // Null modal parent means the dialog is a system modal.
   EXPECT_CALL(*factory_,
-              CreateErrorDialog(blocked_map, action, testing::IsNull()))
+              CreateErrorDialog(dialog_info_map, action, testing::IsNull()))
       .Times(1)
-      .WillOnce([](const BlockedFilesMap& files, dlp::FileAction file_action,
+      .WillOnce([](const DialogInfoMap& dialog_info_map,
+                   dlp::FileAction file_action,
                    gfx::NativeWindow modal_parent) {
         views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-            std::make_unique<FilesPolicyErrorDialog>(files, file_action,
-                                                     modal_parent),
+            std::make_unique<FilesPolicyErrorDialog>(dialog_info_map,
+                                                     file_action, modal_parent),
             /*context=*/nullptr, /*parent=*/modal_parent);
         widget->Show();
         return widget;
@@ -816,8 +817,7 @@ class IOTaskBrowserTest
       const dlp::FileAction action,
       const bool expected_should_proceed,
       const std::vector<base::FilePath>& warning_files,
-      Policy type = Policy::kDlp,
-      FilesPolicyWarnSettings warn_settings = FilesPolicyWarnSettings()) {
+      Policy type = Policy::kDlp) {
     bool is_move = (action == dlp::FileAction::kMove) ? true : false;
     auto warn_on_check =
         [=](absl::optional<file_manager::io_task::IOTaskId> task_id,
@@ -839,9 +839,20 @@ class IOTaskBrowserTest
             fpnm_->ShowDlpWarning(std::move(warn_cb), task_id.value(),
                                   warning_files, DlpFileDestination(), action);
           } else {
+            // Enterprise connectors file transfer currently support warning
+            // mode only for sensitive data.
+            auto dialog_info = FilesPolicyDialog::Info::Warn(
+                FilesPolicyDialog::BlockReason::
+                    kEnterpriseConnectorsSensitiveData,
+                warning_files);
+
+            // Override default dialog settings.
+            dialog_info.SetMessage(u"Custom warning message");
+            dialog_info.SetLearnMoreURL(GURL("https://learnmore.com"));
+            dialog_info.SetBypassRequiresJustification(true);
+
             fpnm_->ShowConnectorsWarning(std::move(warn_cb), task_id.value(),
-                                         warning_files, action,
-                                         std::move(warn_settings));
+                                         action, std::move(dialog_info));
           }
         };
 
@@ -1023,50 +1034,6 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
                          /*action_timedout_buckets=*/{base::Bucket(action, 1)});
 }
 
-// Test that warning settings are properly propagated to the warn dialog for
-// Enterprise Connectors.
-IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, FilesPolicyWarnSettings) {
-  auto [type, action] = GetParam();
-
-  std::vector<base::FilePath> warning_files;
-  warning_files.emplace_back("file1.txt");
-  warning_files.emplace_back("file2.txt");
-
-  FilesPolicyWarnSettings settings;
-  settings.bypass_requires_justification = true;
-  settings.warning_message = u"Custom warning message";
-  settings.learn_more_url = GURL("https://learnmore.com");
-
-  ExpectCheckIfTransferAllowedToWarn(
-      kTaskId1, action, /*expected_should_proceed=*/false, warning_files,
-      Policy::kEnterpriseConnectors, std::move(settings));
-
-  // Add the task.
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_FALSE(policy::AddCopyOrMoveIOTask(
-                     browser()->profile(), file_system_context_, kTaskId1, type,
-                     temp_dir_.GetPath(), "test1.txt", kTestStorageKey)
-                     .empty());
-  }
-
-  ASSERT_TRUE(fpnm_->HasIOTask(kTaskId1));
-
-  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
-  ASSERT_TRUE(notification.has_value());
-
-  bridge_->Click(kNotificationId1, NotificationButton::OK);
-
-  // By waiting for the Files app, we make sure that
-  // FilesPolicyNotificationManager::LaunchFilesApp called when the dialog is
-  // show successfully completes before the test ends, since it will at some
-  // point asynchronously call AppServiceProxyAsh::LaunchAppWithIntent and we
-  // need to make sure the files controller is still alive at that point.
-  Browser* first_app = ui_test_utils::WaitForBrowserToOpen();
-  ASSERT_TRUE(first_app);
-  ASSERT_EQ(first_app, FindFilesApp());
-}
-
 // Tests that clicking the OK button on a warning notification shown for copy or
 // move IO task with multiple warning files shows a dialog instead of continuing
 // the action, and opens the Files App only if there's not one opened already.
@@ -1078,20 +1045,20 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   std::vector<base::FilePath> warning_files;
   warning_files.emplace_back("file1.txt");
   warning_files.emplace_back("file2.txt");
-  EXPECT_CALL(
-      *factory_,
-      CreateWarnDialog(base::test::IsNotNullCallback(),
-                       std::vector<DlpConfidentialFile>(
-                           {warning_files.begin(), warning_files.end()}),
-                       action, testing::NotNull(), testing::Eq(absl::nullopt),
-                       FilesPolicyWarnSettings()))
+
+  auto dialog_info = FilesPolicyDialog::Info::Warn(
+      FilesPolicyDialog::BlockReason::kDlp, warning_files);
+
+  EXPECT_CALL(*factory_,
+              CreateWarnDialog(base::test::IsNotNullCallback(), action,
+                               testing::NotNull(), testing::Eq(absl::nullopt),
+                               std::move(dialog_info)))
       .Times(2)
       .WillRepeatedly(
           [](OnDlpRestrictionCheckedWithJustificationCallback callback,
-             std::vector<DlpConfidentialFile> files,
              dlp::FileAction file_action, gfx::NativeWindow modal_parent,
              absl::optional<DlpFileDestination> destination,
-             FilesPolicyWarnSettings warn_settings) {
+             FilesPolicyDialog::Info dialog_info) {
             // Cancel the task so it's deleted properly.
             std::move(callback).Run(/*user_justification=*/absl::nullopt,
                                     /*should_proceed=*/false);
@@ -1286,13 +1253,15 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
                        MultiFileOKShowsDialogOverFilesApp_Error) {
   auto [type, action] = GetParam();
 
-  BlockedFilesMap blocked_map;
-  blocked_map.emplace(base::FilePath("file1.txt"),
-                      FilesPolicyDialog::BlockReason::kDlp);
-  blocked_map.emplace(base::FilePath("file2.txt"),
-                      FilesPolicyDialog::BlockReason::kDlp);
+  DialogInfoMap dialog_info_map;
+  const std::vector<base::FilePath> paths = {base::FilePath("file1.txt"),
+                                             base::FilePath("file2.txt")};
+  auto dialog_info = FilesPolicyDialog::Info::Error(
+      FilesPolicyDialog::BlockReason::kDlp, paths);
+  dialog_info_map.insert({FilesPolicyDialog::BlockReason::kDlp, dialog_info});
+
   EXPECT_CALL(*factory_,
-              CreateErrorDialog(blocked_map, action, testing::NotNull()))
+              CreateErrorDialog(dialog_info_map, action, testing::NotNull()))
       .Times(2);
 
   // No Files app opened.
@@ -1303,12 +1272,8 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   // notify FPNM with the error status and trigger the notification. Do this
   // before any Files App is opened so that we are sure we show system
   // notifications.
-  ExpectCheckIfTransferAllowedToBlock(
-      kTaskId1, action,
-      {base::FilePath("file1.txt"), base::FilePath("file2.txt")});
-  ExpectCheckIfTransferAllowedToBlock(
-      kTaskId2, action,
-      {base::FilePath("file1.txt"), base::FilePath("file2.txt")});
+  ExpectCheckIfTransferAllowedToBlock(kTaskId1, action, paths);
+  ExpectCheckIfTransferAllowedToBlock(kTaskId2, action, paths);
 
   // Add the tasks.
   {

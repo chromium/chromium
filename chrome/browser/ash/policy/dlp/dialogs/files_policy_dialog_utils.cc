@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog_utils.h"
 
+#include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
@@ -60,6 +61,47 @@ FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
                   "with an unexpected tag.";
 
   return FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown;
+}
+
+policy::FilesPolicyDialog::Info GetDialogInfoForEnterpriseConnectorsBlockReason(
+    policy::FilesPolicyDialog::BlockReason reason,
+    const std::vector<base::FilePath>& paths,
+    const std::vector<
+        std::unique_ptr<enterprise_connectors::FileTransferAnalysisDelegate>>&
+        file_transfer_analysis_delegates) {
+  auto dialog_settings = policy::FilesPolicyDialog::Info::Error(reason, paths);
+
+  // Find the first valid delegate, since every delegate contains the same copy
+  // of custom messaging settings.
+  auto delegate = base::ranges::find_if(
+      file_transfer_analysis_delegates,
+      [](const std::unique_ptr<
+          enterprise_connectors::FileTransferAnalysisDelegate>& delegate) {
+        return delegate != nullptr;
+      });
+
+  if (delegate == file_transfer_analysis_delegates.end()) {
+    return dialog_settings;
+  }
+
+  std::string tag;
+  // Currently, only sensitive data and malware block reasons support custom
+  // admin defined dialog settings.
+  if (reason == policy::FilesPolicyDialog::BlockReason::
+                    kEnterpriseConnectorsSensitiveData) {
+    tag = enterprise_connectors::kDlpTag;
+  } else if (reason == policy::FilesPolicyDialog::BlockReason::
+                           kEnterpriseConnectorsMalware) {
+    tag = enterprise_connectors::kMalwareTag;
+  } else {
+    return dialog_settings;
+  }
+
+  // Override default values with admin defined ones.
+  dialog_settings.SetMessage(delegate->get()->GetCustomMessage(tag));
+  dialog_settings.SetLearnMoreURL(delegate->get()->GetCustomLearnMoreUrl(tag));
+
+  return dialog_settings;
 }
 
 }  // namespace policy

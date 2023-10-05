@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
-#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/common/chrome_features.h"
@@ -208,12 +207,15 @@ void CopyOrMoveIOTaskPolicyImpl::MaybeSendConnectorsBlockedFilesNotification() {
   }
 
   for (const auto& [block_reason, paths] : connectors_blocked_files_) {
-    files_policy_manager->AddConnectorsBlockedFiles(
-        progress_->task_id, std::move(paths),
+    auto dialog_settings =
+        policy::GetDialogInfoForEnterpriseConnectorsBlockReason(
+            block_reason, paths, file_transfer_analysis_delegates_);
+    files_policy_manager->SetConnectorsBlockedFiles(
+        progress_->task_id,
         progress_->type == file_manager::io_task::OperationType::kMove
             ? policy::dlp::FileAction::kMove
             : policy::dlp::FileAction::kCopy,
-        block_reason);
+        block_reason, std::move(dialog_settings));
   }
 }
 
@@ -409,28 +411,31 @@ bool CopyOrMoveIOTaskPolicyImpl::MaybeShowConnectorsWarning() {
         return delegate != nullptr;
       });
 
-  policy::FilesPolicyWarnSettings warn_settings;
+  // Warning mode is only available for the "dlp" tag (sensitive data), since
+  // "malware" results are always blocked.
+  auto dialog_info = policy::FilesPolicyDialog::Info::Warn(
+      policy::FilesPolicyDialog::BlockReason::
+          kEnterpriseConnectorsSensitiveData,
+      warning_files_paths);
   if (delegate_it != file_transfer_analysis_delegates_.end()) {
     auto* valid_delegate = delegate_it->get();
-    // Warning mode is only available for the "dlp" tag, since "malware" results
-    // are always blocked.
-    warn_settings.bypass_requires_justification =
+    dialog_info.SetBypassRequiresJustification(
         valid_delegate->BypassRequiresJustification(
-            enterprise_connectors::kDlpTag);
-    warn_settings.warning_message =
-        valid_delegate->GetCustomMessage(enterprise_connectors::kDlpTag);
-    warn_settings.learn_more_url =
-        valid_delegate->GetCustomLearnMoreUrl(enterprise_connectors::kDlpTag);
+            enterprise_connectors::kDlpTag));
+    dialog_info.SetMessage(
+        valid_delegate->GetCustomMessage(enterprise_connectors::kDlpTag));
+    dialog_info.SetLearnMoreURL(
+        valid_delegate->GetCustomLearnMoreUrl(enterprise_connectors::kDlpTag));
   }
 
   fpnm->ShowConnectorsWarning(
       base::BindOnce(&CopyOrMoveIOTaskPolicyImpl::OnConnectorsWarnDialogResult,
                      weak_ptr_factory_.GetWeakPtr()),
-      std::move(progress_->task_id), std::move(warning_files_paths),
+      std::move(progress_->task_id),
       progress_->type == file_manager::io_task::OperationType::kMove
           ? policy::dlp::FileAction::kMove
           : policy::dlp::FileAction::kCopy,
-      std::move(warn_settings));
+      std::move(dialog_info));
   return true;
 }
 

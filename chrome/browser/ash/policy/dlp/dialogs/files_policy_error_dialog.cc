@@ -20,20 +20,12 @@
 
 namespace policy {
 
-namespace {
-// Returns the block reason description.
-std::u16string GetPolicyString(FilesPolicyDialog::BlockReason reason,
-                               size_t file_count) {
-  return policy::files_string_util::GetBlockReasonMessage(reason, file_count,
-                                                          u"");
-}
-}  // namespace
-
 FilesPolicyErrorDialog::FilesPolicyErrorDialog(
-    const std::map<DlpConfidentialFile, FilesPolicyDialog::BlockReason>& files,
+    const std::map<BlockReason, Info>& files,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent)
-    : FilesPolicyDialog(files.size(), action, modal_parent) {
+    : FilesPolicyDialog(files.size(), action, modal_parent),
+      dialog_info_map_(files) {
   SetAcceptCallback(base::BindOnce(&FilesPolicyErrorDialog::Dismiss,
                                    weak_factory_.GetWeakPtr()));
   SetCancelCallback(base::BindOnce(&FilesPolicyErrorDialog::OpenLearnMore,
@@ -41,14 +33,10 @@ FilesPolicyErrorDialog::FilesPolicyErrorDialog(
   SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
   SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
 
-  for (const auto& [file, reason] : files) {
-    if (!base::Contains(files_, reason)) {
-      files_.emplace(reason, std::vector<DlpConfidentialFile>{file});
-    } else {
-      files_.at(reason).push_back(file);
-    }
+  file_count_ = 0;
+  for (const auto& [reason, info] : files) {
+    file_count_ += info.files().size();
   }
-  file_count_ = files.size();
 
   AddGeneralInformation();
   MaybeAddConfidentialRows();
@@ -59,17 +47,17 @@ FilesPolicyErrorDialog::FilesPolicyErrorDialog(
 FilesPolicyErrorDialog::~FilesPolicyErrorDialog() = default;
 
 void FilesPolicyErrorDialog::MaybeAddConfidentialRows() {
-  if (files_.empty()) {
+  if (dialog_info_map_.empty()) {
     return;
   }
 
   SetupScrollView();
-  for (const auto& reason : files_) {
-    if (files_.size() > 1) {
+  for (const auto& [reason, info] : dialog_info_map_) {
+    if (dialog_info_map_.size() > 1) {
       // Only add the reason if it's a mixed errors dialog.
-      AddPolicyRow(reason.first);
+      AddPolicyRow(reason);
     }
-    for (const auto& file : reason.second) {
+    for (const auto& file : info.files()) {
       AddConfidentialRow(file.icon, file.title);
     }
   }
@@ -89,9 +77,10 @@ std::u16string FilesPolicyErrorDialog::GetTitle() {
 
 std::u16string FilesPolicyErrorDialog::GetMessage() {
   // Single error dialogs specify the policy reason before the scrollable list.
-  if (files_.size() == 1) {
-    return GetPolicyString(files_.begin()->first,
-                           files_.begin()->second.size());
+  if (dialog_info_map_.size() == 1) {
+    auto reason = dialog_info_map_.begin()->first;
+    CHECK(dialog_info_map_.contains(reason));
+    return dialog_info_map_.at(reason).GetMessage();
   }
   // Mixed error dialogs don't have a single message, but use `AddPolicyRow()`
   // to add the policy reason directly in the scrollable file list.
@@ -107,8 +96,9 @@ void FilesPolicyErrorDialog::AddPolicyRow(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::TLBR(10, 16, 10, 16), 0));
 
+  CHECK(dialog_info_map_.contains(reason));
   views::Label* title_label =
-      AddRowTitle(GetPolicyString(reason, files_.at(reason).size()), row);
+      AddRowTitle(dialog_info_map_.at(reason).GetMessage(), row);
   title_label->SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosBody1));

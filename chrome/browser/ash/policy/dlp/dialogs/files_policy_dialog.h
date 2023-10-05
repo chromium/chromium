@@ -6,9 +6,10 @@
 #define CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_DIALOG_H_
 
 #include <string>
+#include <utility>
 
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
@@ -43,6 +44,7 @@ class FilesPolicyDialog : public PolicyDialogBase {
 
   // Reasons for which a file can be blocked either because of an Enterprise
   // Connectors or DLP policy.
+  // TODO(b/302653030): consider whether unifying BlockReason and Policy.
   enum class BlockReason {
     // File was blocked because of Data Leak Prevention policies.
     kDlp,
@@ -58,6 +60,65 @@ class FilesPolicyDialog : public PolicyDialogBase {
     kEnterpriseConnectorsLargeFile,
   };
 
+  // Class holding information to build a dialog such as a message to the user,
+  // a list of files involved, an optional learn more link, and for warning
+  // scenarios whether the user is required to provide a justification to bypass
+  // the warning. These info map to a section in the dialog.
+  class Info {
+   public:
+    // Creates default dialog settings for warning scenarios.
+    static Info Warn(BlockReason reason,
+                     const std::vector<base::FilePath>& paths);
+
+    // Creates default dialog settings for error scenarios.
+    static Info Error(BlockReason reason,
+                      const std::vector<base::FilePath>& paths);
+
+    ~Info();
+    Info(const Info& other);
+    Info& operator=(Info&& other);
+
+    bool operator==(const Info& other) const;
+    bool operator!=(const Info& other) const;
+
+    const std::vector<DlpConfidentialFile>& files() const;
+
+    // For warning scenarios only, returns whether bypassing the warning
+    // requires a user justification.
+    bool bypass_requires_justification() const;
+
+    // Sets whether bypassing a warning requires a user justification.
+    void SetBypassRequiresJustification(bool value);
+
+    // Returns the message that should be shown in the dialog.
+    std::u16string GetMessage() const;
+
+    // Overrides the default message.
+    void SetMessage(const absl::optional<std::u16string>& message);
+
+    // Returns the learn more URL that should be shown in the dialog, if any.
+    absl::optional<GURL> GetLearnMoreURL() const;
+
+    // Overrides the default learn more URL.
+    void SetLearnMoreURL(const absl::optional<GURL>& url);
+
+   private:
+    Info();
+
+    // The files that should be displayed.
+    std::vector<DlpConfidentialFile> files_;
+
+    // Whether the user is required to write a justification to bypass the
+    // warning. This is only relevant for warning scenarios.
+    bool bypass_requires_justification_ = false;
+
+    // Default or admin defined message.
+    std::u16string message_;
+
+    // Default, admin defined learn more URL, or none of them.
+    absl::optional<GURL> learn_more_url_;
+  };
+
   FilesPolicyDialog() = delete;
   FilesPolicyDialog(size_t file_count,
                     dlp::FileAction action,
@@ -70,16 +131,15 @@ class FilesPolicyDialog : public PolicyDialogBase {
   // Widget.
   static views::Widget* CreateWarnDialog(
       OnDlpRestrictionCheckedWithJustificationCallback callback,
-      const std::vector<DlpConfidentialFile>& files,
       dlp::FileAction action,
       gfx::NativeWindow modal_parent,
-      absl::optional<DlpFileDestination> destination = absl::nullopt,
-      FilesPolicyWarnSettings settings = FilesPolicyWarnSettings());
+      Info dialog_info,
+      absl::optional<DlpFileDestination> destination = absl::nullopt);
 
   // Creates and shows an instance of FilesPolicyErrorDialog. Returns owning
   // Widget.
   static views::Widget* CreateErrorDialog(
-      const std::map<DlpConfidentialFile, BlockReason>& files,
+      const std::map<BlockReason, Info>& dialog_info_map,
       dlp::FileAction action,
       gfx::NativeWindow modal_parent);
 
@@ -109,15 +169,14 @@ class FilesPolicyDialogFactory {
 
   virtual views::Widget* CreateWarnDialog(
       OnDlpRestrictionCheckedWithJustificationCallback callback,
-      const std::vector<DlpConfidentialFile>& files,
       dlp::FileAction action,
       gfx::NativeWindow modal_parent,
       absl::optional<DlpFileDestination> destination,
-      FilesPolicyWarnSettings settings) = 0;
+      FilesPolicyDialog::Info settings) = 0;
 
   virtual views::Widget* CreateErrorDialog(
-      const std::map<DlpConfidentialFile, FilesPolicyDialog::BlockReason>&
-          files,
+      const std::map<FilesPolicyDialog::BlockReason, FilesPolicyDialog::Info>&
+          dialog_info_map,
       dlp::FileAction action,
       gfx::NativeWindow modal_parent) = 0;
 };

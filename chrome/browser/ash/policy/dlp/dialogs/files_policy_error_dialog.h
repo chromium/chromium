@@ -23,8 +23,7 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
   METADATA_HEADER(FilesPolicyErrorDialog);
 
   FilesPolicyErrorDialog() = delete;
-  FilesPolicyErrorDialog(const std::map<DlpConfidentialFile,
-                                        FilesPolicyDialog::BlockReason>& files,
+  FilesPolicyErrorDialog(const std::map<BlockReason, Info>& dialog_info_map,
                          dlp::FileAction action,
                          gfx::NativeWindow modal_parent);
   FilesPolicyErrorDialog(const FilesPolicyErrorDialog&) = delete;
@@ -53,10 +52,12 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
   // Dismisses the dialog.
   void Dismiss();
 
-  // Maps each policy reason to the list of files blocked because of it.
-  std::map<FilesPolicyDialog::BlockReason, std::vector<DlpConfidentialFile>>
-      files_;
-  // Total number of blocked files for all policies.
+  // Maps policy reasons to their associated dialog info. It holds the
+  // information that allow to populate the dialog UI such as the list of warned
+  // files and the message shown for every block reason.
+  std::map<FilesPolicyDialog::BlockReason, Info> dialog_info_map_;
+
+  // Total number of blocked files for all policy reasons.
   size_t file_count_;
 
   base::WeakPtrFactory<FilesPolicyErrorDialog> weak_factory_{this};

@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_string_util.h"
-#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
@@ -285,21 +284,21 @@ void FilesPolicyNotificationManager::ShowDlpBlockedFiles(
     if (!HasIOTask(task_id.value())) {
       AddIOTask(task_id.value(), action);
     }
-    for (const auto& file : blocked_files) {
-      io_tasks_.at(task_id.value())
-          .AddBlockedFile(DlpConfidentialFile(file),
-                          FilesPolicyDialog::BlockReason::kDlp);
-    }
+    io_tasks_.at(task_id.value())
+        .SetBlockedFiles(
+            FilesPolicyDialog::BlockReason::kDlp,
+            FilesPolicyDialog::Info::Error(FilesPolicyDialog::BlockReason::kDlp,
+                                           blocked_files));
   } else {
     ShowDlpBlockNotification(std::move(blocked_files), action);
   }
 }
 
-void FilesPolicyNotificationManager::AddConnectorsBlockedFiles(
+void FilesPolicyNotificationManager::SetConnectorsBlockedFiles(
     file_manager::io_task::IOTaskId task_id,
-    std::vector<base::FilePath> blocked_files,
     dlp::FileAction action,
-    FilesPolicyDialog::BlockReason reason) {
+    FilesPolicyDialog::BlockReason reason,
+    FilesPolicyDialog::Info dialog_info) {
   // Sometimes EC checks are done before FilesPolicyNotificationManager is
   // lazily created, so the task is not tracked and the blocked files won't
   // be added. On the other hand, the IOTask may be aborted/canceled already so
@@ -307,9 +306,7 @@ void FilesPolicyNotificationManager::AddConnectorsBlockedFiles(
   if (!HasIOTask(task_id)) {
     AddIOTask(task_id, action);
   }
-  for (const auto& file : blocked_files) {
-    io_tasks_.at(task_id).AddBlockedFile(DlpConfidentialFile(file), reason);
-  }
+  io_tasks_.at(task_id).SetBlockedFiles(reason, std::move(dialog_info));
 }
 
 void FilesPolicyNotificationManager::ShowDlpWarning(
@@ -323,8 +320,9 @@ void FilesPolicyNotificationManager::ShowDlpWarning(
 
   // If `task_id` has value, the corresponding IOTask should be paused.
   if (task_id.has_value()) {
-    PauseIOTask(task_id.value(), std::move(callback), std::move(warning_files),
-                action, Policy::kDlp);
+    PauseIOTask(task_id.value(), std::move(callback), action, Policy::kDlp,
+                FilesPolicyDialog::Info::Warn(
+                    FilesPolicyDialog::BlockReason::kDlp, warning_files));
   } else {
     ShowDlpWarningNotification(std::move(callback), std::move(warning_files),
                                destination, action);
@@ -334,11 +332,10 @@ void FilesPolicyNotificationManager::ShowDlpWarning(
 void FilesPolicyNotificationManager::ShowConnectorsWarning(
     OnDlpRestrictionCheckedWithJustificationCallback callback,
     file_manager::io_task::IOTaskId task_id,
-    std::vector<base::FilePath> warning_files,
     dlp::FileAction action,
-    FilesPolicyWarnSettings warn_settings) {
-  PauseIOTask(task_id, std::move(callback), std::move(warning_files), action,
-              Policy::kEnterpriseConnectors, std::move(warn_settings));
+    FilesPolicyDialog::Info dialog_info) {
+  PauseIOTask(task_id, std::move(callback), action,
+              Policy::kEnterpriseConnectors, std::move(dialog_info));
 }
 
 void FilesPolicyNotificationManager::ShowFilesPolicyNotification(
@@ -451,13 +448,13 @@ void FilesPolicyNotificationManager::OnErrorItemDismissed(
   io_tasks_.erase(task_id);
 }
 
-std::map<DlpConfidentialFile, FilesPolicyDialog::BlockReason>
-FilesPolicyNotificationManager::GetIOTaskBlockedFilesForTesting(
+std::map<FilesPolicyDialog::BlockReason, FilesPolicyDialog::Info>
+FilesPolicyNotificationManager::GetIOTaskDialogInfoMapForTesting(
     file_manager::io_task::IOTaskId task_id) const {
   if (!HasIOTask(task_id)) {
     return {};
   }
-  return io_tasks_.at(task_id).blocked_files();
+  return io_tasks_.at(task_id).block_info_map();
 }
 
 bool FilesPolicyNotificationManager::HasWarningTimerForTesting(
@@ -487,9 +484,9 @@ void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
       break;
 
     case NotificationButton::OK:
-      CHECK(warning_info->files.size() >= 1);
+      CHECK(warning_info->dialog_info.files().size() >= 1);
 
-      if (warning_info->files.size() == 1) {
+      if (warning_info->dialog_info.files().size() == 1) {
         // Action anyway.
         std::move(warning_info->warning_callback)
             .Run(/*user_justification=*/absl::nullopt, /*should_proceed=*/true);
@@ -517,7 +514,7 @@ void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
 
 void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
     std::string notification_id,
-    std::vector<DlpConfidentialFile> files,
+    std::vector<base::FilePath> files,
     dlp::FileAction action,
     absl::optional<int> button_index) {
   if (!button_index.has_value()) {
@@ -540,10 +537,9 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
       } else {
         // Review.
         FileTaskInfo info(action);
-        for (const auto& file : files) {
-          info.AddBlockedFile(DlpConfidentialFile(file.file_path),
-                              FilesPolicyDialog::BlockReason::kDlp);
-        }
+        info.SetBlockedFiles(FilesPolicyDialog::BlockReason::kDlp,
+                             FilesPolicyDialog::Info::Error(
+                                 FilesPolicyDialog::BlockReason::kDlp, files));
         non_io_tasks_.emplace(notification_id, std::move(info));
         // Always open the Files app. This should notify us through
         // OnBrowserSetLastActive() to show the dialog.
@@ -564,37 +560,20 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
 }
 
 FilesPolicyNotificationManager::WarningInfo::WarningInfo(
-    std::vector<base::FilePath> files_paths,
     Policy warning_reason,
     OnDlpRestrictionCheckedWithJustificationCallback warning_callback,
     OnDlpRestrictionCheckedWithJustificationCallback dialog_callback,
-    FilesPolicyWarnSettings warn_settings)
+    FilesPolicyDialog::Info dialog_info)
     : warning_reason(warning_reason),
       warning_callback(std::move(warning_callback)),
       dialog_callback(std::move(dialog_callback)),
-      warn_settings(std::move(warn_settings)) {
-  for (const auto& file_path : files_paths) {
-    files.emplace_back(file_path);
-  }
-}
+      dialog_info(std::move(dialog_info)) {}
 
-FilesPolicyNotificationManager::WarningInfo::WarningInfo(
-    std::vector<DlpConfidentialFile> files,
-    Policy warning_reason,
-    OnDlpRestrictionCheckedWithJustificationCallback warning_callback,
-    OnDlpRestrictionCheckedWithJustificationCallback dialog_callback)
-    : files(std::move(files)),
-      warning_reason(warning_reason),
-      warning_callback(std::move(warning_callback)),
-      dialog_callback(std::move(dialog_callback)) {}
-
-FilesPolicyNotificationManager::WarningInfo::WarningInfo(WarningInfo&& other) {
-  files = std::move(other.files);
-  warning_reason = other.warning_reason;
-  warning_callback = std::move(other.warning_callback);
-  dialog_callback = std::move(other.dialog_callback);
-  warn_settings = std::move(other.warn_settings);
-}
+FilesPolicyNotificationManager::WarningInfo::WarningInfo(WarningInfo&& other)
+    : warning_reason(other.warning_reason),
+      warning_callback(std::move(other.warning_callback)),
+      dialog_callback(std::move(other.dialog_callback)),
+      dialog_info(std::move(other.dialog_info)) {}
 
 FilesPolicyNotificationManager::WarningInfo::~WarningInfo() = default;
 
@@ -607,7 +586,7 @@ FilesPolicyNotificationManager::FileTaskInfo::FileTaskInfo(
   if (other.warning_info_.has_value()) {
     warning_info_.emplace(std::move(other.warning_info_.value()));
   }
-  blocked_files_ = std::move(other.blocked_files_);
+  block_info_map_ = std::move(other.block_info_map_);
   action_ = other.action_;
   widget_ = other.widget_;
   if (widget_) {
@@ -654,15 +633,27 @@ bool FilesPolicyNotificationManager::FileTaskInfo::HasWarningInfo() const {
   return warning_info_.has_value();
 }
 
-void FilesPolicyNotificationManager::FileTaskInfo::AddBlockedFile(
-    DlpConfidentialFile file,
-    FilesPolicyDialog::BlockReason reason) {
-  // If a file is already added as blocked, don't re-add it so we keep the first
-  // blocking reason.
-  if (base::Contains(blocked_files_, file)) {
+void FilesPolicyNotificationManager::FileTaskInfo::SetBlockedFiles(
+    FilesPolicyDialog::BlockReason reason,
+    FilesPolicyDialog::Info dialog_info) {
+  if (dialog_info.files().empty()) {
     return;
   }
-  blocked_files_.emplace(file, reason);
+  auto it = block_info_map_.find(reason);
+  if (it == block_info_map_.end()) {
+    block_info_map_.insert({reason, std::move(dialog_info)});
+  } else {
+    it->second = std::move(dialog_info);
+  }
+}
+
+size_t FilesPolicyNotificationManager::FileTaskInfo::GetBlockedFilesSize()
+    const {
+  size_t size = 0;
+  for (const auto& [_, dialog_info] : block_info_map_) {
+    size += dialog_info.files().size();
+  }
+  return size;
 }
 
 void FilesPolicyNotificationManager::FileTaskInfo::OnWidgetDestroying(
@@ -717,15 +708,17 @@ void FilesPolicyNotificationManager::ShowFilesPolicyNotification(
   size_t file_count;
   std::u16string file_name;
   absl::optional<FilesPolicyDialog::BlockReason> reason;
+  FileTaskInfo& task_info = io_tasks_.at(task_id);
   if (HasWarning(task_id)) {
-    CHECK(!io_tasks_.at(task_id).GetWarningInfo()->files.empty());
-    file_count = io_tasks_.at(task_id).GetWarningInfo()->files.size();
-    file_name = io_tasks_.at(task_id).GetWarningInfo()->files.begin()->title;
+    CHECK(!task_info.GetWarningInfo()->dialog_info.files().empty());
+    file_count = task_info.GetWarningInfo()->dialog_info.files().size();
+    file_name = task_info.GetWarningInfo()->dialog_info.files().begin()->title;
   } else {
     CHECK(HasBlockedFiles(task_id));
-    file_count = io_tasks_.at(task_id).blocked_files().size();
-    file_name = io_tasks_.at(task_id).blocked_files().begin()->first.title;
-    reason = io_tasks_.at(task_id).blocked_files().begin()->second;
+    file_count = task_info.GetBlockedFilesSize();
+    file_name =
+        task_info.block_info_map().begin()->second.files().front().title;
+    reason = task_info.block_info_map().begin()->first;
   }
   auto notification = file_manager::CreateSystemNotification(
       notification_id, GetNotificationTitle(type, action, file_count),
@@ -765,7 +758,8 @@ void FilesPolicyNotificationManager::HandleFilesPolicyWarningNotificationClick(
       Cancel(task_id);
       break;
     case NotificationButton::OK:
-      if (io_tasks_.at(task_id).GetWarningInfo()->files.size() == 1) {
+      if (io_tasks_.at(task_id).GetWarningInfo()->dialog_info.files().size() ==
+          1) {
         // Single file - proceed.
         Resume(task_id);
       } else {
@@ -799,7 +793,7 @@ void FilesPolicyNotificationManager::HandleFilesPolicyErrorNotificationClick(
       OnErrorItemDismissed(task_id);
       return;
     case NotificationButton::OK:
-      if (io_tasks_.at(task_id).blocked_files().size() == 1) {
+      if (io_tasks_.at(task_id).GetBlockedFilesSize() == 1) {
         // Single file - open help page.
         // TODO(b/291896216): Open page based on policy.
         dlp::OpenLearnMore();
@@ -856,11 +850,11 @@ void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
       return;
 
     case FilesDialogType::kError:
-      if (info.blocked_files().empty() || info.widget()) {
+      if (info.block_info_map().empty() || info.widget()) {
         return;
       }
       info.AddWidget(FilesPolicyDialog::CreateErrorDialog(
-          info.blocked_files(), info.action(), modal_parent));
+          info.block_info_map(), info.action(), modal_parent));
       return;
 
     case FilesDialogType::kWarning:
@@ -870,9 +864,9 @@ void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
       WarningInfo* warning_info = info.GetWarningInfo();
       CHECK(!warning_info->warning_callback.is_null());
       info.AddWidget(FilesPolicyDialog::CreateWarnDialog(
-          std::move(warning_info->dialog_callback), warning_info->files,
-          info.action(), modal_parent, /*destination=*/absl::nullopt,
-          std::move(warning_info->warn_settings)));
+          std::move(warning_info->dialog_callback), info.action(), modal_parent,
+          std::move(warning_info->dialog_info),
+          /*destination=*/absl::nullopt));
       return;
   }
 }
@@ -977,7 +971,7 @@ void FilesPolicyNotificationManager::OnIOTaskStatus(
 
 bool FilesPolicyNotificationManager::HasBlockedFiles(
     file_manager::io_task::IOTaskId task_id) const {
-  return HasIOTask(task_id) && !io_tasks_.at(task_id).blocked_files().empty();
+  return HasIOTask(task_id) && !io_tasks_.at(task_id).block_info_map().empty();
 }
 
 bool FilesPolicyNotificationManager::HasWarning(
@@ -993,7 +987,7 @@ bool FilesPolicyNotificationManager::HasNonIOTask(
 bool FilesPolicyNotificationManager::HasBlockedFiles(
     const std::string notification_id) const {
   return HasNonIOTask(notification_id) &&
-         !non_io_tasks_.at(notification_id).blocked_files().empty();
+         !non_io_tasks_.at(notification_id).block_info_map().empty();
 }
 
 bool FilesPolicyNotificationManager::HasWarning(
@@ -1098,9 +1092,7 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
             FilesPolicyDialog::BlockReason::kDlp),
         base::MakeRefCounted<PolicyNotificationClickHandler>(base::BindOnce(
             &FilesPolicyNotificationManager::HandleDlpErrorNotificationClick,
-            weak_factory_.GetWeakPtr(), notification_id,
-            std::vector<DlpConfidentialFile>(blocked_files.begin(),
-                                             blocked_files.end()),
+            weak_factory_.GetWeakPtr(), notification_id, blocked_files,
             action)),
         optional_fields);
     notification->set_buttons(
@@ -1167,12 +1159,12 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
     // Store the task info.
     FileTaskInfo info(action);
     info.SetWarningInfo(
-        {std::vector<DlpConfidentialFile>{warning_files.begin(),
-                                          warning_files.end()},
-         Policy::kDlp, std::move(callback),
+        {Policy::kDlp, std::move(callback),
          base::BindOnce(
              &FilesPolicyNotificationManager::OnNonIOTaskWarningDialogClicked,
-             weak_factory_.GetWeakPtr(), notification_id)});
+             weak_factory_.GetWeakPtr(), notification_id),
+         FilesPolicyDialog::Info::Warn(FilesPolicyDialog::BlockReason::kDlp,
+                                       warning_files)});
     non_io_tasks_.emplace(notification_id, std::move(info));
 
     std::vector<message_center::ButtonInfo> buttons = {
@@ -1212,20 +1204,19 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
             weak_factory_.GetWeakPtr(), notification_id));
   } else {
     FilesPolicyDialog::CreateWarnDialog(
-        std::move(callback),
-        std::vector<DlpConfidentialFile>{warning_files.begin(),
-                                         warning_files.end()},
-        action, /*modal_parent=*/nullptr, destination);
+        std::move(callback), action, /*modal_parent=*/nullptr,
+        FilesPolicyDialog::Info::Warn(FilesPolicyDialog::BlockReason::kDlp,
+                                      warning_files),
+        destination);
   }
 }
 
 void FilesPolicyNotificationManager::PauseIOTask(
     file_manager::io_task::IOTaskId task_id,
     OnDlpRestrictionCheckedWithJustificationCallback callback,
-    std::vector<base::FilePath> warning_files,
     dlp::FileAction action,
     Policy warning_reason,
-    FilesPolicyWarnSettings warn_settings) {
+    FilesPolicyDialog::Info dialog_info) {
   auto* io_task_controller = GetIOTaskController(context_);
   if (!io_task_controller) {
     // Proceed because the IO task can't be paused.
@@ -1242,18 +1233,20 @@ void FilesPolicyNotificationManager::PauseIOTask(
   }
 
   io_tasks_.at(task_id).SetWarningInfo(
-      {std::move(warning_files), warning_reason, std::move(callback),
+      {warning_reason, std::move(callback),
        base::BindOnce(
            &FilesPolicyNotificationManager::OnIOTaskWarningDialogClicked,
            weak_factory_.GetWeakPtr(), task_id, warning_reason),
-       std::move(warn_settings)});
+       std::move(dialog_info)});
 
   file_manager::io_task::PauseParams pause_params;
   pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
-      warning_reason, io_tasks_.at(task_id).GetWarningInfo()->files.size(),
+      warning_reason,
+      io_tasks_.at(task_id).GetWarningInfo()->dialog_info.files().size(),
       io_tasks_.at(task_id)
           .GetWarningInfo()
-          ->files.begin()
+          ->dialog_info.files()
+          .begin()
           ->file_path.BaseName()
           .value());
   io_task_controller->Pause(task_id, std::move(pause_params));

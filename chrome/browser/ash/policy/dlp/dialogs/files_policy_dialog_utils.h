@@ -16,6 +16,15 @@ FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
     const enterprise_connectors::FileTransferAnalysisDelegate::
         FileTransferAnalysisResult& result);
 
+// Retrieve dialog info for the given Enterprise Connectors block `reason` and
+// vector of `paths`.
+policy::FilesPolicyDialog::Info GetDialogInfoForEnterpriseConnectorsBlockReason(
+    policy::FilesPolicyDialog::BlockReason reason,
+    const std::vector<base::FilePath>& paths,
+    const std::vector<
+        std::unique_ptr<enterprise_connectors::FileTransferAnalysisDelegate>>&
+        file_transfer_analysis_delegates);
+
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_DIALOG_UTILS_H_
