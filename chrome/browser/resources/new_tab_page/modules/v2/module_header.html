@@ -1,7 +1,7 @@
 <style include="cr-icons">
   :host {
     --menu-item-margin: 12px;
-    background: var(--color-new-tab-page-module-item-background);
+    background-color: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
     display: flex;
     flex-direction: column;
@@ -11,7 +11,7 @@
     align-items: center;
     display: flex;
     height: 20px;
-    padding: 16px;
+    padding: 16px 16px 8px 16px;
   }
 
   #title {
@@ -19,6 +19,8 @@
     font-size: 13px;
     font-weight: normal;
     line-height: 20px;
+    margin-block-start: 0;
+    margin-block-end: 0;
   }
 
   #headerSpacer {
