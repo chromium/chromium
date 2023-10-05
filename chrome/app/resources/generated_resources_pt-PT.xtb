@@ -4145,7 +4145,7 @@ Quer pará-lo?</translation>
 <translation id="4477015793815781985">Inclua Ctrl, Alt ou ⌘.</translation>
 <translation id="4478161224666880173">Pode usar a sua conta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> neste site. Para continuar, inicie sessão na conta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4478664379124702289">Guardar Lin&amp;k Como...</translation>
-<translation id="4479424953165245642">Gerir aplicações de quiosque</translation>
+<translation id="4479424953165245642">Gerir apps de quiosque</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4479877282574735775">A configurar a máquina virtual… Esta ação pode demorar alguns minutos.</translation>
 <translation id="4481448477173043917">O dispositivo <ph name="DEVICE_TYPE" /> reiniciou inesperadamente</translation>
@@ -8587,7 +8587,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8286227656784970313">Usar o dicionário do sistema</translation>
 <translation id="828642162569365647">Esta palavra-passe ou PIN protege os seus dados neste <ph name="DEVICE_TYPE" /> e em todas as informações a que aceda a partir do telemóvel. Tem de desbloquear o <ph name="DEVICE_TYPE" /> sempre que este sair do modo de suspensão.</translation>
 <translation id="8287902281644548111">Pesquisar por chamada da API/URL</translation>
-<translation id="8288032458496410887">Desinstalar a aplicação <ph name="APP" />…</translation>
+<translation id="8288032458496410887">Desinstalar app <ph name="APP" />…</translation>
 <translation id="8289128870594824098">Tamanho do disco</translation>
 <translation id="8289509909262565712">Damos-lhe as boas-vindas ao <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Transfira o Chrome</translation>

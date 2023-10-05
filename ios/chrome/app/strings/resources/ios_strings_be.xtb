@@ -141,7 +141,7 @@
 <translation id="1789803444939621101">З вяртаннем, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Імя ўладальніка карткі</translation>
 <translation id="1809939268435598390">Выдаліць папку</translation>
-<translation id="1813414402673211292">Выдаленне гісторыі праглядаў</translation>
+<translation id="1813414402673211292">Выдаленне гісторыі</translation>
 <translation id="1815941218935345331">Код доступу</translation>
 <translation id="1820259098641718022">Дададзена ў Спіс чытання</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Раскрытыя паролі}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
@@ -424,7 +424,7 @@
 <translation id="3533436815740441613">Новая ўкладка</translation>
 <translation id="3540141921715814660">Дадаць у закладкі</translation>
 <translation id="3551320343578183772">Закрыць укладку</translation>
-<translation id="3565207542107370586">Выдаліць даныя прагляду…</translation>
+<translation id="3565207542107370586">Выдаліць даныя пра работу ў браўзеры…</translation>
 <translation id="3575234738189584619">Пошук з дапамогай Аб'ектыва</translation>
 <translation id="3577555362230509265">Выкарыстоўвайце Chrome у іншых праграмах.</translation>
 <translation id="3581564640715911333">Прапаноўваць перакладаць старонкі на іншых мовах</translation>
@@ -799,7 +799,7 @@
 <translation id="6012140227487808125">Ідзе шыфраванне…</translation>
 <translation id="6021332621416007159">Адкрыць у праграме...</translation>
 <translation id="6027945736510816438">Ці мелі вы на ўвазе <ph name="WEBSITE" />?</translation>
-<translation id="6036215966221662377">Выдаліць даныя прагляду</translation>
+<translation id="6036215966221662377">Выдаліць даныя пра работу ў браўзеры</translation>
 <translation id="6036514205982097558">Усе вашы ўкладкі ў адным браўзеры</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Закрыць</translation>

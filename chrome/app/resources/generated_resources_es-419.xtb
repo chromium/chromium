@@ -1878,7 +1878,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2519517390894391510">Nombre de perfil del certificado</translation>
 <translation id="2520644704042891903">Esperando el socket disponible…</translation>
 <translation id="2521854691574443804">Controlando <ph name="FILE_NAME" /> respecto de las políticas de seguridad de tu organización…</translation>
-<translation id="2523184218357549926">Envía a Google las URL de las páginas que visitas</translation>
+<translation id="2523184218357549926">Envía a Google las URLs de las páginas que visitas</translation>
 <translation id="252418934079508528">Instalar <ph name="DEVICE_OS" /></translation>
 <translation id="2526590354069164005">Escritorio</translation>
 <translation id="2526619973349913024">Verificar actualización</translation>
@@ -5076,7 +5076,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="529986401483187205">inhabilitada</translation>
 <translation id="5300426565656326054">Personalización de anuncios basada en el navegador</translation>
 <translation id="5300589172476337783">Mostrar</translation>
-<translation id="5300719150368506519">Envía a Google las URL de las páginas que visitas</translation>
+<translation id="5300719150368506519">Envía a Google las URLs de las páginas que visitas</translation>
 <translation id="5301751748813680278">Accediendo como invitado</translation>
 <translation id="5301954838959518834">Entendido</translation>
 <translation id="5302048478445481009">Idioma</translation>
@@ -5724,7 +5724,7 @@ Puedes enviarlo a Google para comprobar que sea seguro. Los análisis suelen tar
 <translation id="5864754048328252126">Acción de inactividad durante la carga</translation>
 <translation id="5865508026715185451">Pronto se pausará <ph name="APP_NAME" /></translation>
 <translation id="586567932979200359">Estás ejecutando <ph name="PRODUCT_NAME" /> desde la imagen de disco. Instalarlo en tu computadora te permite ejecutarlo sin la imagen de disco y garantiza que se mantenga actualizado.</translation>
-<translation id="5865733239029070421">Envía automáticamente informes de fallos y estadísticas de uso a Google</translation>
+<translation id="5865733239029070421">Envía automáticamente informes de fallas y estadísticas de uso a Google</translation>
 <translation id="5867841422488265304">Busca o escribe la dirección web</translation>
 <translation id="5867855474018538405">Sigue las instrucciones que se muestran en tu teléfono para escanear el código QR. Asegúrate de que las conexiones Bluetooth y Wi-Fi del teléfono estén activadas.
     <ph name="BR" />

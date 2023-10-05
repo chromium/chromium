@@ -241,7 +241,7 @@
 <translation id="5412236728747081950">यह साइट आपकी दिलचस्पी के बारे में Chrome से पता करती है, ताकि आपको ज़्यादा काम के विज्ञापन दिखा सके</translation>
 <translation id="5438097262470833822">यह विकल्प <ph name="WEBSITE" /> के लिए अनुमतियां रीसेट करेगा</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> में से <ph name="ELAPSED_TIME" /> का समय बीत चुका है.</translation>
-<translation id="5494752089476963479">तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाने वाली साइटों पर विज्ञापन ब्लॉक करें</translation>
+<translation id="5494752089476963479">परेशाान या गुमराह करने वाले विज्ञापन दिखाने वाली साइटों पर विज्ञापन ब्लॉक करें</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> इस्तेमाल करने की अनुमति दी गई और <ph name="PERMISSION_2" /> को ब्लॉक किया गया</translation>
 <translation id="5505264765875738116">साइटें आपको सूचनाएं भेजने के लिए नहीं पूछ सकती हैं</translation>
 <translation id="5516455585884385570">सूचना सेटिंग खोलें</translation>
@@ -251,7 +251,7 @@
 <translation id="5556459405103347317">फिर लोड करें</translation>
 <translation id="5596627076506792578">ज़्यादा विकल्प</translation>
 <translation id="5649053991847567735">अपने-आप होने वाले डाउनलोड</translation>
-<translation id="5668404140385795438">किसी वेबसाइट के वेबपेज ज़ूम इन न करने के नियम को बदल देता है</translation>
+<translation id="5668404140385795438">किसी वेबसाइट का, वेबपेज को ज़ूम इन न करने का अनुरोध अमान्य हो जाता है</translation>
 <translation id="5677928146339483299">ब्लॉक किया गया है</translation>
 <translation id="5689516760719285838">जगह की जानकारी</translation>
 <translation id="5690795753582697420">Android की सेटिंग में कैमरा बंद है</translation>
@@ -290,7 +290,7 @@
 <translation id="6231752747840485235">क्या आपको '<ph name="APP_NAME" />' अनइंस्टॉल करना है?</translation>
 <translation id="6262191102408817757">आपके आखिरी टैब के आधार पर</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> और <ph name="PERMISSION_2" /> को ब्लॉक किया गया</translation>
-<translation id="6270391203985052864">साइटें आपको सूचनाएं भेजने के लिए पूछ सकती हैं</translation>
+<translation id="6270391203985052864">साइटें, सूचनाएं भेजने के लिए आपकी अनुमति मांग सकती हैं</translation>
 <translation id="6295158916970320988">सभी साइटें</translation>
 <translation id="6320088164292336938">कंपन</translation>
 <translation id="6367753977865761591">किसी साइट पर, तीसरे पक्ष के खाते से साइन इन को ब्लॉक करें.</translation>
@@ -423,7 +423,7 @@
 <translation id="857943718398505171">अनुमति दी गई (सुझाया गया)</translation>
 <translation id="8609465669617005112">ऊपर जाएं</translation>
 <translation id="8676374126336081632">इनपुट साफ़ करें</translation>
-<translation id="8681886425883659911">तंग या गुमराह करने वाले विज्ञापन दिखाने वाली साइटों पर विज्ञापन ब्लॉक कर दिए जाते हैं</translation>
+<translation id="8681886425883659911">परेशाान या गुमराह करने वाले विज्ञापन दिखाने वाली साइटों पर विज्ञापन ब्लॉक कर दिए जाते हैं</translation>
 <translation id="868929229000858085">अपने संपर्क खोजें</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर, <ph name="APP_NAME" /> के लिए अनुमति चालू करें.</translation>
@@ -438,7 +438,7 @@
 <translation id="8823559166155093873">कुकी ब्लॉक करें</translation>
 <translation id="8847988622838149491">यूएसबी</translation>
 <translation id="8889294078294184559">आपके ब्राउज़ करने के दौरान, साइटें Chrome की मदद से यह जांच कर सकती हैं कि आप असली उपयोगकर्ता हैं या नहीं. ऐसा, आपकी पहले विज़िट की गई साइट की जानकारी से किया जाता है</translation>
-<translation id="8899807382908246773">तंग करने वाले विज्ञापन</translation>
+<translation id="8899807382908246773">परेशान करने वाले विज्ञापन</translation>
 <translation id="8903921497873541725">ज़ूम इन करें</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">इस डिवाइस पर NFC बंद है. <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में इसे चालू करें.</translation>
@@ -458,6 +458,6 @@
 <translation id="9162462602695099906">यह पेज सुरक्षित नहीं है</translation>
 <translation id="9201023452444595544">ऑफ़लाइन डेटा को मिटा दिया जाएगा</translation>
 <translation id="930525582205581608">क्या आप इस साइट की सेव की गई जानकारी मिटाना चाहते हैं?</translation>
-<translation id="947156494302904893">किसी साइट को विज़िट करने पर, वह इस बात पुष्टि कर सकती है कि आप बॉट के बजाय असली उपयोगकर्ता हैं</translation>
+<translation id="947156494302904893">किसी साइट को विज़िट करने पर, वह इस बात की पुष्टि कर सकती है कि आप बॉट के बजाय असली उपयोगकर्ता हैं</translation>
 <translation id="967624055006145463">डेटा सेव किया गया</translation>
 </translationbundle>

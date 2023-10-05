@@ -1732,7 +1732,7 @@
 <translation id="2411666601450687801">這部裝置不允許使用任何虛擬機器</translation>
 <translation id="2412015533711271895">你必須取得家長或監護人允許，才能使用這個擴充功能</translation>
 <translation id="2412753904894530585">Kerberos</translation>
-<translation id="2414159296888870200">繼續瀏覽「<ph name="MODULE_TITLE" />」</translation>
+<translation id="2414159296888870200">繼續瀏覽<ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">深色</translation>
 <translation id="2416435988630956212">鍵盤功能鍵</translation>
 <translation id="2418307627282545839">讓畫面色調保持明亮輕盈</translation>
@@ -2836,7 +2836,7 @@
 <translation id="3371140690572404006">USB-C 裝置 (右前方連接埠)</translation>
 <translation id="3371351218553893534">這一行過長：<ph name="ERROR_LINE" /></translation>
 <translation id="337286756654493126">讀取你在應用程式中開啟的資料夾</translation>
-<translation id="3373059063088819384">以唯讀模式開啟</translation>
+<translation id="3373059063088819384">以閱讀模式開啟</translation>
 <translation id="3373196968211632036">Google 孩童帳戶無法使用 Steam for Chromebook (Beta 版)</translation>
 <translation id="3373701465337594448">設定開啟後，這裡會列出你造訪的哪些網站可推斷你的興趣喜好</translation>
 <translation id="3374294321938930390">已將「<ph name="BOOKMARK_TITLE" />」移入「<ph name="NEW_FOLDER_TITLE" />」。</translation>
@@ -9646,7 +9646,7 @@
 <translation id="9214695392875603905">杯子蛋糕</translation>
 <translation id="9215293857209265904">已新增「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="9215742531438648683">解除安裝 Google Play 商店</translation>
-<translation id="9218430445555521422">設定為預設瀏覽器</translation>
+<translation id="9218430445555521422">設為預設</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (不支援的應用程式)</translation>
 <translation id="9219582468404818260">協助我們打造更完善的網路瀏覽器</translation>
 <translation id="9219741625496141320">瀏覽資料已自動刪除</translation>

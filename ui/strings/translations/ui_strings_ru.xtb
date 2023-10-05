@@ -65,7 +65,7 @@
 <translation id="2653844658857826081">НОВИНКА</translation>
 <translation id="2666092431469916601">Наверх</translation>
 <translation id="2701330563083355633">С устройства "<ph name="DEVICE_NAME" />"</translation>
-<translation id="271033894570825754">Новый</translation>
+<translation id="271033894570825754">Новое</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{год назад}one{# год назад}few{# года назад}many{# лет назад}other{# года назад}}</translation>
 <translation id="2878511608894704031">Удалить все</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{через 1 д.}one{через # д.}few{через # д.}many{через # д.}other{через # д.}}</translation>

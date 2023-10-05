@@ -346,7 +346,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1275718070701477396">Sélectionnée</translation>
 <translation id="1276994519141842946">Impossible de désinstaller <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Créez un code différent de l'actuel</translation>
-<translation id="1277597051786235230">&amp;Rechercher "<ph name="SEARCH_TERMS" />" dans un nouvel onglet dans <ph name="SEARCH_ENGINE" /></translation>
+<translation id="1277597051786235230">&amp;Rechercher "<ph name="SEARCH_TERMS" />" dans un nouvel onglet <ph name="SEARCH_ENGINE" /></translation>
 <translation id="1278859221870828664">Examiner les applis et services Google Play</translation>
 <translation id="127946606521051357">Un appareil à proximité essaie de partager un contenu</translation>
 <translation id="1280965841156951489">Modifier les fichiers</translation>
@@ -2095,7 +2095,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2715751256863167692">Cette mise à niveau entraîne la réinitialisation de votre Chromebook et la suppression des informations sur l'utilisateur actuelles.</translation>
 <translation id="2716986496990888774">Ce paramètre est géré par un parent.</translation>
 <translation id="271749239614426244">Ignorer les mouvements mineurs du curseur</translation>
-<translation id="2718395828230677721">Écl. nocturne</translation>
+<translation id="2718395828230677721">Éclairage nocturne</translation>
 <translation id="2718998670920917754">Le logiciel antivirus a détecté un virus.</translation>
 <translation id="2719936478972253983">Les cookies suivants ont été bloqués</translation>
 <translation id="2721037002783622288">&amp;Rechercher une image avec <ph name="SEARCH_ENGINE" /></translation>
@@ -2669,7 +2669,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="32101887417650595">Connexion à l'imprimante impossible</translation>
 <translation id="3210736980143419785">Impossible de terminer le téléchargement</translation>
 <translation id="321084946921799184">Jaune et blanc</translation>
-<translation id="3211126692872351610">&amp;Rechercher "<ph name="SEARCH_TERMS" />" dans un nouvel onglet dans <ph name="SEARCH_ENGINE" /></translation>
+<translation id="3211126692872351610">&amp;Rechercher "<ph name="SEARCH_TERMS" />" dans un nouvel onglet <ph name="SEARCH_ENGINE" /></translation>
 <translation id="321356136776075234">UO de l'appareil (par exemple, OU=Chromebooks, DC=example, DC=com)</translation>
 <translation id="321367297115597343">Ajouter un favori à ce dossier</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Il se peut qu'une voix similaire ou un enregistrement puissent accéder aux résultats personnels de <ph name="SUPERVISED_USER_NAME" />.</translation>
@@ -9662,7 +9662,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ajoutée</translation>
 <translation id="9215742531438648683">Désinstaller Google Play Store</translation>
-<translation id="9218430445555521422">Définir comme navigateur par défaut</translation>
+<translation id="9218430445555521422">Définir par défaut</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (appli non compatible)</translation>
 <translation id="9219582468404818260">Aidez-nous à améliorer l'expérience en ligne</translation>
 <translation id="9219741625496141320">Les données de navigation ont été supprimées automatiquement</translation>
