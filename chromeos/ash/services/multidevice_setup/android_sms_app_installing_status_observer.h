@@ -11,7 +11,6 @@
 #include "chromeos/ash/services/multidevice_setup/feature_state_manager.h"
 #include "chromeos/ash/services/multidevice_setup/host_status_provider.h"
 
-class PrefRegistrySimple;
 class PrefService;
 
 namespace ash {
@@ -54,8 +53,6 @@ class AndroidSmsAppInstallingStatusObserver
 
   ~AndroidSmsAppInstallingStatusObserver() override;
 
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-
  private:
   AndroidSmsAppInstallingStatusObserver(
       HostStatusProvider* host_status_provider,
@@ -73,7 +70,6 @@ class AndroidSmsAppInstallingStatusObserver
 
   bool DoesFeatureStateAllowInstallation();
   void UpdatePwaInstallationState();
-  void ReenableIfAppropriate();
 
   raw_ptr<HostStatusProvider, ExperimentalAsh> host_status_provider_;
   raw_ptr<FeatureStateManager, ExperimentalAsh> feature_state_manager_;

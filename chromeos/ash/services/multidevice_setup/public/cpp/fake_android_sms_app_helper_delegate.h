@@ -33,11 +33,6 @@ class FakeAndroidSmsAppHelperDelegate
     return is_default_to_persist_cookie_set_;
   }
 
-  void set_has_app_been_manually_uninstalled(
-      bool has_app_been_manually_uninstalled) {
-    has_app_been_manually_uninstalled_ = has_app_been_manually_uninstalled;
-  }
-
   void set_is_app_registry_ready(bool is_app_registry_ready) {
     is_app_registry_ready_ = is_app_registry_ready;
   }
@@ -50,7 +45,6 @@ class FakeAndroidSmsAppHelperDelegate
   void SetUpAndroidSmsApp() override;
   void SetUpAndLaunchAndroidSmsApp() override;
   void TearDownAndroidSmsApp() override;
-  bool HasAppBeenManuallyUninstalledByUser() override;
   bool IsAppInstalled() override;
   bool IsAppRegistryReady() override;
   void ExecuteOnAppRegistryReady(base::OnceClosure task) override;
@@ -58,7 +52,6 @@ class FakeAndroidSmsAppHelperDelegate
   bool has_installed_app_ = false;
   bool has_launched_app_ = false;
   bool is_default_to_persist_cookie_set_ = false;
-  bool has_app_been_manually_uninstalled_ = false;
   bool is_app_registry_ready_ = false;
 };
 

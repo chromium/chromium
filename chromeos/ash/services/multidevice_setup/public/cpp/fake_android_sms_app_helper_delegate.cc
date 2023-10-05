@@ -35,10 +35,6 @@ void FakeAndroidSmsAppHelperDelegate::TearDownAndroidSmsApp() {
   is_default_to_persist_cookie_set_ = false;
 }
 
-bool FakeAndroidSmsAppHelperDelegate::HasAppBeenManuallyUninstalledByUser() {
-  return has_app_been_manually_uninstalled_;
-}
-
 bool FakeAndroidSmsAppHelperDelegate::IsAppInstalled() {
   return has_installed_app_;
 }

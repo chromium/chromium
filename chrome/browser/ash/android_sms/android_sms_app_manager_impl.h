@@ -16,7 +16,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-class PrefRegistrySimple;
 class PrefService;
 class Profile;
 
@@ -59,8 +58,6 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
 
   ~AndroidSmsAppManagerImpl() override;
 
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
  private:
   friend class AndroidSmsAppManagerImplTest;
 
@@ -71,7 +68,6 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
   void SetUpAndroidSmsApp() override;
   void SetUpAndLaunchAndroidSmsApp() override;
   void TearDownAndroidSmsApp() override;
-  bool HasAppBeenManuallyUninstalledByUser() override;
   bool IsAppInstalled() override;
   bool IsAppRegistryReady() override;
   void ExecuteOnAppRegistryReady(base::OnceClosure task) override;

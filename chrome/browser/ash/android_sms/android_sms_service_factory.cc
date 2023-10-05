@@ -77,10 +77,5 @@ bool AndroidSmsServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-void AndroidSmsServiceFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  AndroidSmsAppManagerImpl::RegisterProfilePrefs(registry);
-}
-
 }  // namespace android_sms
 }  // namespace ash

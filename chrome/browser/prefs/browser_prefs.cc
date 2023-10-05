@@ -560,28 +560,6 @@ const char kLoadCryptoTokenExtension[] =
 const char kOriginTrialPrefKey[] = "origin_trials.persistent_trials";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 09/2022.
-constexpr char kClipboardHistoryNewFeatureBadgeCount[] =
-    "ash.clipboard.multipaste_nudges.new_feature_shown_count";
-constexpr char kUsersLastInputMethod[] = "UsersLRUInputMethod";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 09/2022.
-const char kPrivacySandboxFirstPartySetsDataAccessAllowed[] =
-    "privacy_sandbox.first_party_sets_data_access_allowed";
-
-#if BUILDFLAG(IS_ANDROID)
-// Deprecated 09/2022.
-const char kDeprecatedAutofillAssistantConsent[] = "autofill_assistant_switch";
-const char kDeprecatedAutofillAssistantEnabled[] =
-    "AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED";
-const char kDeprecatedAutofillAssistantTriggerScriptsEnabled[] =
-    "Chrome.AutofillAssistant.ProactiveHelp";
-const char kDeprecatedAutofillAssistantTriggerScriptsIsFirstTimeUser[] =
-    "Chrome.AutofillAssistant.LiteScriptFirstTimeUser";
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 10/2022.
 const char kSuggestedContentInfoShownInLauncher[] =
     "ash.launcher.suggested_content_info_shown";
@@ -958,14 +936,15 @@ const char kSettingsMigratedToUPM[] = "profile.settings_migrated_to_upm";
 // Deprecated 10/2023.
 inline constexpr char kSyncRequested[] = "sync.requested";
 
+// Deprecated 10/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kLastSuccessfulDomainPref[] = "android_sms.last_successful_domain";
+const char kShouldAttemptReenable[] = "android_sms.should_attempt_reenable";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Deprecated 09/2022
-  registry->RegisterDictionaryPref(kUsersLastInputMethod);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Deprecated 11/2022.
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE) && BUILDFLAG(IS_MAC)
   registry->RegisterBooleanPref(kUserRemovedLoginItem, false);
@@ -1104,14 +1083,6 @@ void RegisterProfilePrefsForMigration(
   // TODO(crbug.com/1476489): Remove when unit test code is updated.
   registry->RegisterBooleanPref(kTokenServiceDiceCompatible, false);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-  // Deprecated 09/2022
-  registry->RegisterBooleanPref(kPrivacySandboxFirstPartySetsDataAccessAllowed,
-                                true);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterIntegerPref(kClipboardHistoryNewFeatureBadgeCount, 0);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Deprecated 10/2022.
@@ -1343,6 +1314,12 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kSettingsMigratedToUPM, false);
 #endif
   registry->RegisterBooleanPref(kSyncRequested, false);
+
+  // Deprecated 10/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterStringPref(kLastSuccessfulDomainPref, std::string());
+  registry->RegisterBooleanPref(kShouldAttemptReenable, true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2073,11 +2050,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 09/2022
-  local_state->ClearPref(kUsersLastInputMethod);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE) && BUILDFLAG(IS_MAC)
   // Added 11/2022.
   local_state->ClearPref(kUserRemovedLoginItem);
@@ -2243,36 +2215,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs) {
   // TODO(crbug.com/1476489): Remove when unit test code is updated.
   profile_prefs->ClearPref(kTokenServiceDiceCompatible);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-  // Added 09/2022.
-  profile_prefs->ClearPref(kPrivacySandboxFirstPartySetsDataAccessAllowed);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 09/2022.
-  profile_prefs->ClearPref(kClipboardHistoryNewFeatureBadgeCount);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Added 09/2022.
-#if BUILDFLAG(IS_ANDROID)
-  auto migrate_shared_pref = [profile_prefs](const std::string& source,
-                                             const std::string& target) {
-    if (absl::optional<bool> shared_pref =
-            android::shared_preferences::GetAndClearBoolean(source);
-        shared_pref) {
-      profile_prefs->SetBoolean(target, shared_pref.value());
-    }
-  };
-
-  // These settings will also need to be deleted from ChromePreferenceKeys.java.
-  migrate_shared_pref(kDeprecatedAutofillAssistantConsent,
-                      kAutofillAssistantConsent);
-  migrate_shared_pref(kDeprecatedAutofillAssistantEnabled,
-                      kAutofillAssistantEnabled);
-  migrate_shared_pref(kDeprecatedAutofillAssistantTriggerScriptsEnabled,
-                      kAutofillAssistantTriggerScriptsEnabled);
-  migrate_shared_pref(kDeprecatedAutofillAssistantTriggerScriptsIsFirstTimeUser,
-                      kAutofillAssistantTriggerScriptsIsFirstTimeUser);
-#endif
 
   // Added 10/2022
 #if BUILDFLAG(IS_ANDROID)
@@ -2532,6 +2474,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs) {
 
   // Added 10/2023.
   ClearSyncRequestedPrefAndMaybeMigrate(profile_prefs);
+
+// Added 10/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kLastSuccessfulDomainPref);
+  profile_prefs->ClearPref(kShouldAttemptReenable);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

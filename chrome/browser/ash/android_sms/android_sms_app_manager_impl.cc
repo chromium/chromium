@@ -30,15 +30,7 @@ namespace {
 const PwaDomain kDomains[] = {PwaDomain::kProdAndroid, PwaDomain::kProdGoogle,
                               PwaDomain::kStaging};
 
-const char kLastSuccessfulDomainPref[] = "android_sms.last_successful_domain";
-
 }  // namespace
-
-// static
-void AndroidSmsAppManagerImpl::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(kLastSuccessfulDomainPref, std::string());
-}
 
 AndroidSmsAppManagerImpl::PwaDelegate::PwaDelegate() = default;
 
@@ -142,20 +134,12 @@ void AndroidSmsAppManagerImpl::SetUpAndLaunchAndroidSmsApp() {
 }
 
 void AndroidSmsAppManagerImpl::TearDownAndroidSmsApp() {
-  pref_service_->SetString(kLastSuccessfulDomainPref, std::string());
-
   absl::optional<GURL> installed_app_url = GetCurrentAppUrl();
   if (!installed_app_url)
     return;
 
   setup_controller_->DeleteRememberDeviceByDefaultCookie(*installed_app_url,
                                                          base::DoNothing());
-}
-
-bool AndroidSmsAppManagerImpl::HasAppBeenManuallyUninstalledByUser() {
-  GURL url = GetAndroidMessagesURL(true /* use_install_url */);
-  return pref_service_->GetString(kLastSuccessfulDomainPref) == url.spec() &&
-         !setup_controller_->GetPwa(url);
 }
 
 bool AndroidSmsAppManagerImpl::IsAppInstalled() {
@@ -242,9 +226,6 @@ void AndroidSmsAppManagerImpl::OnSetUpNewAppResult(
     is_app_launch_pending_ = false;
     return;
   }
-
-  if (success)
-    pref_service_->SetString(kLastSuccessfulDomainPref, install_url.spec());
 
   // If there is no PWA installed at the old URL, no migration is needed and
   // setup is finished.
