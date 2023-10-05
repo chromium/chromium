@@ -172,9 +172,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
 // The layout for the tab grid.
 @property(nonatomic, strong) GridLayout* gridLayout;
-// By how much the user scrolled past the view's content size. A negative value
-// means the user hasn't scrolled past the end of the scroll view.
-@property(nonatomic, assign, readonly) CGFloat offsetPastEndOfScrollView;
 // The view controller that holds the view of the suggested search actions.
 @property(nonatomic, strong)
     SuggestedActionsViewController* suggestedActionsViewController;
@@ -2004,15 +2001,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
 - (NSUInteger)selectedIndex {
   return [self indexOfItemWithID:self.selectedItemID];
-}
-
-- (CGFloat)offsetPastEndOfScrollView {
-  // Use collectionViewLayout.collectionViewContentSize because it has the
-  // correct size during a batch update.
-  return self.collectionView.contentOffset.x +
-         self.collectionView.frame.size.width -
-         self.collectionView.collectionViewLayout.collectionViewContentSize
-             .width;
 }
 
 #pragma mark - Private
