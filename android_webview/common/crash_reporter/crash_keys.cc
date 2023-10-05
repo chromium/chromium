@@ -160,6 +160,12 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "db_init_error-diagnostics",
     "db_init_error-path",
 
+    // Used to report switches/feature flags overridden in the DevUI
+    "commandline-enabled-feature-*",
+    "commandline-disabled-feature-*",
+    "switch-*",
+    "num-switches",
+
     nullptr};
 // clang-format on
 
