@@ -93,10 +93,10 @@ void DeviceSettingsTestBase::TearDown() {
   chromeos::PowerManagerClient::Shutdown();
   CryptohomeMiscClient::Shutdown();
   UserDataAuthClient::Shutdown();
-  ConciergeClient::Shutdown();
   device_policy_.reset();
   base::RunLoop().RunUntilIdle();
   profile_.reset();
+  ConciergeClient::Shutdown();
 }
 
 void DeviceSettingsTestBase::ReloadDevicePolicy() {
