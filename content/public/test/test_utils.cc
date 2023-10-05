@@ -230,8 +230,7 @@ bool WillSameSiteNavigationChangeRenderFrameHosts(bool is_main_frame,
 }
 
 bool CanSameSiteMainFrameNavigationsChangeSiteInstances() {
-  return IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled() ||
-         IsBackForwardCacheEnabled();
+  return IsBackForwardCacheEnabled();
 }
 
 bool IsNavigationQueueingEnabled() {

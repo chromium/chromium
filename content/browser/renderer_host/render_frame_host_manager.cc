@@ -2434,10 +2434,9 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
   if (render_frame_host_->HasTestDisabledProactiveBrowsingInstanceSwap())
     return BrowsingContextGroupSwap::CreateNoSwap(
         ShouldSwapBrowsingInstance::kNo_ProactiveSwapDisabled);
-  // We should only do proactive swap when either the flag is enabled, or if
-  // it's needed for the back-forward cache (and the bfcache flag is enabled).
-  if (!IsProactivelySwapBrowsingInstanceEnabled() &&
-      !IsBackForwardCacheEnabled()) {
+  // We should only do proactive swap if it's needed for
+  // the back-forward cache (and the bfcache flag is enabled).
+  if (!IsBackForwardCacheEnabled()) {
     return BrowsingContextGroupSwap::CreateNoSwap(
         ShouldSwapBrowsingInstance::kNo_ProactiveSwapDisabled);
   }
@@ -2519,29 +2518,6 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
   }
 
   bool same_site = is_same_site.Get(*render_frame_host_, destination_url_info);
-  if (same_site) {
-    // If it's a same-site navigation, we should only swap if same-site
-    // ProactivelySwapBrowsingInstance is enabled, or if BackForwardCache
-    // is enabled and the current RFH is eligible for back/forward cache
-    // (checked later).
-    if (IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled()) {
-      return BrowsingContextGroupSwap::CreateProactiveSwap(
-          ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap);
-    }
-    if (!IsBackForwardCacheEnabled()) {
-      return BrowsingContextGroupSwap::CreateNoSwap(
-          ShouldSwapBrowsingInstance::kNo_SameSiteNavigation);
-    }
-  }
-
-  if (IsProactivelySwapBrowsingInstanceEnabled()) {
-    return BrowsingContextGroupSwap::CreateProactiveSwap(
-        ShouldSwapBrowsingInstance::kYes_CrossSiteProactiveSwap);
-  }
-
-  // If BackForwardCache is enabled, swap BrowsingInstances only when the
-  // previous page can be stored in the back-forward cache.
-  DCHECK(IsBackForwardCacheEnabled());
 
   auto bfcache_eligibility = GetNavigationController()
                                  .GetBackForwardCache()
@@ -2714,8 +2690,6 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
       new_instance.get(), frame_tree_node_);
 
-  bool is_proactive_swap = (should_swap_result->type() ==
-                            BrowsingContextGroupSwapType::kProactiveSwap);
   bool is_same_site_proactive_swap =
       (should_swap_result->reason() ==
        ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap);
@@ -2733,27 +2707,16 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   RenderProcessHost* process_to_reuse = nullptr;
 
   // Process-reuse cases include:
-  // 1) When ProactivelySwapBrowsingInstance with process-reuse is explicitly
-  // enabled. In this case, we will try to reuse process on both cross-site and
-  // same-site navigations.
-  if (IsProactivelySwapBrowsingInstanceWithProcessReuseEnabled() &&
-      is_proactive_swap &&
-      (!current_instance->RequiresDedicatedProcess() ||
-       is_same_site_proactive_swap)) {
-    process_to_reuse = current_instance->GetProcess();
-  }
-
-  // 2) When BackForwardCache is enabled.
+  // 1) When BackForwardCache is enabled and we did a same-site proactive
+  // BrowsingInstance swap.
   // Note 1: When BackForwardCache is disabled, we typically reuse processes on
   // same-site navigations. This follows that behavior.
-  // Note 2: This doesn't cover cross-site navigations. Cross-site process-reuse
-  // is being experimented independently and is covered in path #1 above.
   // See crbug.com/1122974 for further details.
   if (IsBackForwardCacheEnabled() && is_same_site_proactive_swap) {
     process_to_reuse = current_instance->GetProcess();
   }
 
-  // 3) When we're doing a same-site history navigation with different
+  // 2) When we're doing a same-site history navigation with different
   // BrowsingInstances. We typically do not swap BrowsingInstances on same-site
   // navigations. This might indicate that the original navigation did a
   // proactive BrowsingInstance swap (and process-reuse) before, so we should
@@ -2762,7 +2725,6 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   bool swapped_browsing_instance =
       !new_instance->IsRelatedSiteInstance(current_instance);
   bool is_same_site_proactive_swap_enabled =
-      IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled() ||
       IsBackForwardCacheEnabled();
   if (is_same_site_proactive_swap_enabled && is_history_navigation &&
       swapped_browsing_instance &&
@@ -2770,7 +2732,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     process_to_reuse = current_instance->GetProcess();
   }
 
-  // 4) When we're swapping BrowsingInstances due to a COOP mismatch, and we
+  // 3) When we're swapping BrowsingInstances due to a COOP mismatch, and we
   // have an existing process that's suitable for the new SiteInstance. This
   // has two cases:
   //

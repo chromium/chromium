@@ -58,7 +58,6 @@ bool ExpectSiteInstanceChange(SiteInstanceImpl* site_instance) {
 bool ExpectSiteInstanceChangeWithoutBackForwardCache(
     SiteInstanceImpl* site_instance) {
   return AreAllSitesIsolatedForTesting() ||
-         IsProactivelySwapBrowsingInstanceEnabled() ||
          !site_instance->IsDefaultSiteInstance();
 }
 

@@ -34,54 +34,8 @@ CONTENT_EXPORT bool IsBackForwardCacheDisabledByCommandLine();
 CONTENT_EXPORT bool DeviceHasEnoughMemoryForBackForwardCache();
 
 // Whether proactive BrowsingInstance swap can happen on cross-site navigations.
-// This can be caused by either the ProactivelySwapBrowsingInstance or the
-// BackForwardCache flag.
+// This can be caused by the BackForwardCache flag.
 CONTENT_EXPORT bool CanCrossSiteNavigationsProactivelySwapBrowsingInstances();
-
-// Levels of ProactivelySwapBrowsingInstance support.
-// These are additive; features enabled at lower levels remain enabled at all
-// higher levels.
-enum class ProactivelySwapBrowsingInstanceLevel {
-  kDisabled = 0,
-  // Swap BrowsingInstance and renderer process on cross-site navigations.
-  kCrossSiteSwapProcess = 1,
-  // Swap BrowsingInstance on cross-site navigations, but try to reuse the
-  // current renderer process if possible.
-  kCrossSiteReuseProcess = 2,
-  // Swap BrowsingInstance swap on same-site navigations, with process reuse.
-  kSameSite = 3,
-
-  kMaxValue = kSameSite,
-};
-
-// Levels of ProactivelySwapBrowsingInstance as strings (excluding kDisabled).
-CONTENT_EXPORT std::array<
-    std::string,
-    static_cast<size_t>(ProactivelySwapBrowsingInstanceLevel::kMaxValue)>
-ProactivelySwapBrowsingInstanceFeatureEnabledLevelValues();
-
-// Whether the ProactivelySwapBrowsingInstance flag is enabled or not. Will
-// return true if the value is set to either of {kCrossSiteSwapProcess,
-// kCrossSiteReuseProcess, kSameSite}.
-// Note that even if this returns false, we might still trigger proactive
-// BrowsingInstance swaps if IsBackForwardCacheEnabled() is true.
-CONTENT_EXPORT bool IsProactivelySwapBrowsingInstanceEnabled();
-
-// Whether ProactivelySwapBrowsingInstance with process reuse is enabled or not.
-// Will return true if the value is set to either of {kCrossSiteReuseProcess,
-// kSameSite}.
-CONTENT_EXPORT bool IsProactivelySwapBrowsingInstanceWithProcessReuseEnabled();
-
-// Whether ProactivelySwapBrowsingInstance for same-site navigation is enabled
-// or not. Will return true if the value is set to kSameSite.
-// Note that even if this returns false, we might still trigger proactive
-// BrowsingInstance swaps on same-site navigations if
-// IsBackForwardCacheEnabled() is true.
-CONTENT_EXPORT bool
-IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled();
-
-CONTENT_EXPORT extern const char
-    kProactivelySwapBrowsingInstanceLevelParameterName[];
 
 // Levels of RenderDocument support. These are additive in that features enabled
 // at lower levels remain enabled at all higher levels.

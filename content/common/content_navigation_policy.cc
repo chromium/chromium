@@ -101,64 +101,7 @@ bool IsBackForwardCacheEnabled() {
 }
 
 bool CanCrossSiteNavigationsProactivelySwapBrowsingInstances() {
-  return IsProactivelySwapBrowsingInstanceEnabled() ||
-         IsBackForwardCacheEnabled();
-}
-
-const char kProactivelySwapBrowsingInstanceLevelParameterName[] = "level";
-
-constexpr base::FeatureParam<ProactivelySwapBrowsingInstanceLevel>::Option
-    proactively_swap_browsing_instance_levels[] = {
-        {ProactivelySwapBrowsingInstanceLevel::kDisabled, "Disabled"},
-        {ProactivelySwapBrowsingInstanceLevel::kCrossSiteSwapProcess,
-         "CrossSiteSwapProcess"},
-        {ProactivelySwapBrowsingInstanceLevel::kCrossSiteReuseProcess,
-         "CrossSiteReuseProcess"},
-        {ProactivelySwapBrowsingInstanceLevel::kSameSite, "SameSite"}};
-const base::FeatureParam<ProactivelySwapBrowsingInstanceLevel>
-    proactively_swap_browsing_instance_level{
-        &features::kProactivelySwapBrowsingInstance,
-        kProactivelySwapBrowsingInstanceLevelParameterName,
-        ProactivelySwapBrowsingInstanceLevel::kDisabled,
-        &proactively_swap_browsing_instance_levels};
-
-std::string GetProactivelySwapBrowsingInstanceLevelName(
-    ProactivelySwapBrowsingInstanceLevel level) {
-  return proactively_swap_browsing_instance_level.GetName(level);
-}
-
-std::array<std::string,
-           static_cast<size_t>(ProactivelySwapBrowsingInstanceLevel::kMaxValue)>
-ProactivelySwapBrowsingInstanceFeatureEnabledLevelValues() {
-  return {
-      GetProactivelySwapBrowsingInstanceLevelName(
-          ProactivelySwapBrowsingInstanceLevel::kCrossSiteSwapProcess),
-      GetProactivelySwapBrowsingInstanceLevelName(
-          ProactivelySwapBrowsingInstanceLevel::kCrossSiteReuseProcess),
-      GetProactivelySwapBrowsingInstanceLevelName(
-          ProactivelySwapBrowsingInstanceLevel::kSameSite),
-  };
-}
-
-ProactivelySwapBrowsingInstanceLevel GetProactivelySwapBrowsingInstanceLevel() {
-  if (base::FeatureList::IsEnabled(features::kProactivelySwapBrowsingInstance))
-    return proactively_swap_browsing_instance_level.Get();
-  return ProactivelySwapBrowsingInstanceLevel::kDisabled;
-}
-
-bool IsProactivelySwapBrowsingInstanceEnabled() {
-  return GetProactivelySwapBrowsingInstanceLevel() >=
-         ProactivelySwapBrowsingInstanceLevel::kCrossSiteSwapProcess;
-}
-
-bool IsProactivelySwapBrowsingInstanceWithProcessReuseEnabled() {
-  return GetProactivelySwapBrowsingInstanceLevel() >=
-         ProactivelySwapBrowsingInstanceLevel::kCrossSiteReuseProcess;
-}
-
-bool IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled() {
-  return GetProactivelySwapBrowsingInstanceLevel() >=
-         ProactivelySwapBrowsingInstanceLevel::kSameSite;
+  return IsBackForwardCacheEnabled();
 }
 
 const char kRenderDocumentLevelParameterName[] = "level";

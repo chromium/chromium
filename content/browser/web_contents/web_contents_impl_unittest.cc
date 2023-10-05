@@ -1137,8 +1137,7 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   // back/forward cache to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(contents(),
                                     BackForwardCache::TEST_REQUIRES_NO_CACHING);
-  const bool will_change_site_instance =
-      IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled();
+
   // This test assumes no interaction with the back/forward cache. Indeed, it
   // isn't possible to perform the second back navigation in between the
   // ReadyToCommit and Commit of the first back/forward cache one. Both steps
@@ -1182,21 +1181,14 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   SiteInstance* instance3 = contents()->GetSiteInstance();
 
   EXPECT_FALSE(contents()->CrossProcessNavigationPending());
-  if (will_change_site_instance || ShouldCreateNewHostForAllFrames()) {
-    // If same-site ProactivelySwapBrowsingInstance or main-frame RenderDocument
-    // is enabled, the RFH should change.
+  if (ShouldCreateNewHostForAllFrames()) {
+    // If main-frame RenderDocument is enabled, the RFH should change.
     EXPECT_NE(google_rfh, main_test_rfh());
     google_rfh = main_test_rfh();
   } else {
     EXPECT_EQ(google_rfh, main_test_rfh());
   }
-  if (will_change_site_instance) {
-    // When ProactivelySwapBrowsingInstance is enabled on same-site navigations,
-    // the SiteInstance will change.
-    EXPECT_NE(instance2, instance3);
-  } else {
-    EXPECT_EQ(instance2, instance3);
-  }
+
   EXPECT_FALSE(contents()->GetSpeculativePrimaryMainFrame());
   EXPECT_EQ(url3, entry3->GetURL());
   EXPECT_EQ(instance3,
@@ -1206,11 +1198,6 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   auto back_navigation1 = NavigationSimulator::CreateHistoryNavigation(
       -1, contents(), false /* is_renderer_initiated */);
   back_navigation1->Start();
-  if (will_change_site_instance) {
-    EXPECT_TRUE(contents()->CrossProcessNavigationPending());
-  } else {
-    EXPECT_FALSE(contents()->CrossProcessNavigationPending());
-  }
   EXPECT_EQ(entry2, controller().GetPendingEntry());
 
   // Before that commits, go back again.
