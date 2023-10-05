@@ -30,10 +30,6 @@ class FakeAccessibilityHelperInstance
   void PerformAction(
       ax::android::mojom::AccessibilityActionDataPtr action_data_ptr,
       PerformActionCallback callback) override;
-  void SetNativeChromeVoxArcSupportForFocusedWindowDeprecated(
-      bool enabled,
-      SetNativeChromeVoxArcSupportForFocusedWindowDeprecatedCallback callback)
-      override;
   void SetNativeChromeVoxArcSupportForFocusedWindow(
       bool enabled,
       SetNativeChromeVoxArcSupportForFocusedWindowCallback callback) override;

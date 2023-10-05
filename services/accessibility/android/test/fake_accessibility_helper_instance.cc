@@ -34,14 +34,6 @@ void FakeAccessibilityHelperInstance::PerformAction(
 }
 
 void FakeAccessibilityHelperInstance::
-    SetNativeChromeVoxArcSupportForFocusedWindowDeprecated(
-        bool enabled,
-        SetNativeChromeVoxArcSupportForFocusedWindowDeprecatedCallback
-            callback) {
-  std::move(callback).Run(true);
-}
-
-void FakeAccessibilityHelperInstance::
     SetNativeChromeVoxArcSupportForFocusedWindow(
         bool enabled,
         SetNativeChromeVoxArcSupportForFocusedWindowCallback callback) {

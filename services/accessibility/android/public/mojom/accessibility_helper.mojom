@@ -560,7 +560,7 @@ enum SetNativeChromeVoxResponse {
 };
 
 // Interface for communicating to Android.
-// Deprecated method IDs: 0, 1, 3, 5, 10
+// Deprecated method IDs: 0, 1, 3, 5, 6, 10
 // Next method ID: 13
 interface AccessibilityHelperInstance {
   // Establishes full-duplex communication with the host.
@@ -573,11 +573,6 @@ interface AccessibilityHelperInstance {
   // Perform an action on a node requested by a Chrome client.
   [MinVersion=4] PerformAction@4(AccessibilityActionData action_data)
       => (bool result);
-
-  // Sets the focused window's package to use ChromeVox (true) or TalkBack
-  // (false).
-  [MinVersion=8] SetNativeChromeVoxArcSupportForFocusedWindowDeprecated@6(
-      bool enabled) => (bool processed);
 
   // Requests the service to enable or disable Explore By Touch.
   [MinVersion=11] SetExploreByTouchEnabled@8(bool enabled);
