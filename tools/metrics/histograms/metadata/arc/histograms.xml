@@ -2834,6 +2834,7 @@ chromium-metrics-reviews@google.com.
     state is changed to be maximized. The data is collected once when a
     maximizing operation happens.
   </summary>
+  <token key="ChromeOSAppType" variants="ChromeOSAppType"/>
 </histogram>
 
 <histogram name="Arc.WM.WindowMinimizedDelayTime.{ChromeOSAppType}" units="ms"
@@ -2845,6 +2846,7 @@ chromium-metrics-reviews@google.com.
     state is changed to be minimized. The data is collected once when a
     minimizing operation happens.
   </summary>
+  <token key="ChromeOSAppType" variants="ChromeOSAppType"/>
 </histogram>
 
 </histograms>
