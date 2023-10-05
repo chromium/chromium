@@ -535,6 +535,9 @@ class WebState : public base::SupportsUserData {
   // Returns the page theme color.
   virtual UIColor* GetThemeColor() = 0;
 
+  // Returns the under page background color.
+  virtual UIColor* GetUnderPageBackgroundColor() = 0;
+
  protected:
   friend class WebStatePolicyDecider;
 

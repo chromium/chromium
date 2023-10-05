@@ -22,6 +22,10 @@
 /// flag is enabled.
 - (UIColor*)pageThemeColor;
 
+/// Returns the under page background color. Only available when
+/// kThemeColorInTopToolbar flag is enabled.
+- (UIColor*)underPageBackgroundColor;
+
 /// Updates the toolbar background color.
 - (void)updateBackgroundColor;
 

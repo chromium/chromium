@@ -368,6 +368,7 @@ class WebStateImpl final : public WebState {
   id<CRWFindInteraction> GetFindInteraction() final API_AVAILABLE(ios(16));
   id GetActivityItem() final API_AVAILABLE(ios(16.4));
   UIColor* GetThemeColor() final;
+  UIColor* GetUnderPageBackgroundColor() final;
 
  protected:
   // WebState:

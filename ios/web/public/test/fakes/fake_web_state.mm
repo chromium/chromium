@@ -582,6 +582,10 @@ UIColor* FakeWebState::GetThemeColor() {
   return nil;
 }
 
+UIColor* FakeWebState::GetUnderPageBackgroundColor() {
+  return nil;
+}
+
 FakeWebStateWithPolicyCache::FakeWebStateWithPolicyCache(
     BrowserState* browser_state)
     : FakeWebState(),

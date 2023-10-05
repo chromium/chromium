@@ -55,6 +55,8 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 @property(nonatomic, assign) CGFloat previousFullscreenProgress;
 // The page's theme color.
 @property(nonatomic, strong) UIColor* pageThemeColor;
+// The under page background color.
+@property(nonatomic, strong) UIColor* underPageBackgroundColor;
 
 @end
 
@@ -333,6 +335,11 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 
 - (void)setPageThemeColor:(UIColor*)pageThemeColor {
   _pageThemeColor = pageThemeColor;
+  [self updateBackgroundColor];
+}
+
+- (void)setUnderPageBackgroundColor:(UIColor*)underPageBackgroundColor {
+  _underPageBackgroundColor = underPageBackgroundColor;
   [self updateBackgroundColor];
 }
 

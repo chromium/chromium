@@ -996,6 +996,10 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
   return self.webView.themeColor;
 }
 
+- (UIColor*)underPageBackgroundColor {
+  return self.webView.underPageBackgroundColor;
+}
+
 #pragma mark - JavaScript
 
 - (void)retrieveExistingFramesInContentWorld:(WKContentWorld*)contentWorld {

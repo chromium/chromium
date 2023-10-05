@@ -250,6 +250,9 @@ class WebStateImpl;
 // Returns the page theme color.
 - (UIColor*)themeColor;
 
+// Returns the under page background color.
+- (UIColor*)underPageBackgroundColor;
+
 #pragma mark Navigation Message Handlers
 
 // Handles a navigation hash change message for the current webpage.

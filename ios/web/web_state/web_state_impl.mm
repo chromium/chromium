@@ -841,6 +841,13 @@ UIColor* WebStateImpl::GetThemeColor() {
   return [GetWebController() themeColor];
 }
 
+UIColor* WebStateImpl::GetUnderPageBackgroundColor() {
+  if (UNLIKELY(!IsRealized())) {
+    return nil;
+  }
+  return [GetWebController() underPageBackgroundColor];
+}
+
 #pragma mark - WebStateImpl private methods
 
 WebStateImpl::RealizedWebState* WebStateImpl::RealizedState() {

@@ -325,6 +325,9 @@
   [self updateShareMenuForWebState:self.webState];
   if (base::FeatureList::IsEnabled(kThemeColorInTopToolbar)) {
     [self.consumer setPageThemeColor:self.webState->GetThemeColor()];
+    [self.consumer
+        setUnderPageBackgroundColor:self.webState
+                                        ->GetUnderPageBackgroundColor()];
   }
 }
 
