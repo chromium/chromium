@@ -42,12 +42,6 @@ if (fuzzing_engine_supports_custom_main) {
 if (!is_android) {
   in_process_fuzzer("html_in_process_fuzzer") {
     sources = [ "html_in_process_fuzzer.cc" ]
-    centipede_options = [
-      "shmem_size=40960",
-      "timeout_per_input=60",
-      "rss_limit_mb=0",
-      "address_space_limit_mb=0",
-    ]
   }
   in_process_proto_fuzzer("kombucha_in_process_fuzzer") {
     sources = [
