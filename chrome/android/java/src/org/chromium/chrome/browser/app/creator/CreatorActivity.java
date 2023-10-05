@@ -16,7 +16,7 @@ import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.SnackbarActivity;
-import org.chromium.chrome.browser.WebContentsFactory;
+import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.creator.CreatorCoordinator;
 import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
 import org.chromium.chrome.browser.feed.webfeed.CreatorIntentConstants;

@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.payments.handler;
 
 import android.app.Activity;
 
-import org.chromium.chrome.browser.WebContentsFactory;
+import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;

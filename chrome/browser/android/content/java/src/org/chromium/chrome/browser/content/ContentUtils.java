@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.content;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * A utility class to expose content functionality.
- */
+/** A utility class to expose content functionality. */
 public class ContentUtils {
     /**
      * @return The user agent string of Chrome.
@@ -19,10 +17,10 @@ public class ContentUtils {
     }
 
     /**
-     * Set the user agent used for override. Currently, the only use case we have
-     * for overriding a user agent involves spoofing a desktop Linux user agent
-     * for "Request desktop site". Set it for WebContents so that it is available
-     * when a NavigationEntry requires the user agent to be overridden.
+     * Set the user agent used for override. Currently, the only use case we have for overriding a
+     * user agent involves spoofing a desktop Linux user agent for "Request desktop site". Set it
+     * for WebContents so that it is available when a NavigationEntry requires the user agent to be
+     * overridden.
      */
     public static void setUserAgentOverride(WebContents webContents, boolean overrideInNewTabs) {
         ContentUtilsJni.get().setUserAgentOverride(webContents, overrideInNewTabs);
@@ -31,6 +29,7 @@ public class ContentUtils {
     @NativeMethods
     interface Natives {
         String getBrowserUserAgent();
+
         void setUserAgentOverride(WebContents webContents, boolean overrideInNewTabs);
     }
 }

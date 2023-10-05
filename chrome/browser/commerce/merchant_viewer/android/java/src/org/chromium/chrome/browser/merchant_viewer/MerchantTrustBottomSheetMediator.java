@@ -13,6 +13,8 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.content.ContentUtils;
+import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -186,13 +188,13 @@ public class MerchantTrustBottomSheetMediator {
             mWebContents = mWebContentsForTesting;
             return;
         }
-        mWebContents = WebContentsHelpers.createWebContents(false, false);
+        mWebContents = WebContentsFactory.createWebContents(mProfileSupplier.get(), false, false);
         mWebContentView = ContentView.createContentView(mContext, null, mWebContents);
         final ViewAndroidDelegate delegate =
                 ViewAndroidDelegate.createBasicDelegate(mWebContentView);
         mWebContents.initialize(VersionInfo.getProductVersion(), delegate, mWebContentView,
                 mWindowAndroid, WebContents.createDefaultInternalsHolder());
-        WebContentsHelpers.setUserAgentOverride(mWebContents);
+        ContentUtils.setUserAgentOverride(mWebContents, false);
     }
 
     void destroyWebContents() {
