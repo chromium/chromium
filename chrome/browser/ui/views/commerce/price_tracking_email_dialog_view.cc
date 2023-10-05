@@ -30,6 +30,7 @@
 #include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -83,6 +84,9 @@ PriceTrackingEmailDialogView::PriceTrackingEmailDialogView(
                  l10n_util::GetStringUTF16(IDS_PRICE_TRACKING_YES_IM_IN));
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  l10n_util::GetStringUTF16(IDS_PRICE_TRACKING_NOT_NOW));
+  SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, features::IsChromeRefresh2023()
+                                               ? ui::ButtonStyle::kTonal
+                                               : ui::ButtonStyle::kDefault);
   SetAcceptCallback(base::BindOnce(&PriceTrackingEmailDialogView::OnAccepted,
                                    weak_factory_.GetWeakPtr()));
   SetCancelCallback(base::BindOnce(&PriceTrackingEmailDialogView::OnCanceled,
