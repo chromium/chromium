@@ -120,15 +120,18 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::AUTO_PICTURE_IN_PICTURE, 106},
     {ContentSettingsType::TPCD_METADATA_GRANTS, 107},
     {ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION, 108},
+    {ContentSettingsType::TPCD_HEURISTICS_GRANTS, 109},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!
 });
 
-constexpr int kkHistogramValueMax = std::max_element(
-    kHistogramValue.begin(),
-    kHistogramValue.end(),
-    [](const auto a, const auto b) { return a.second < b.second; }) -> second;
+constexpr int kkHistogramValueMax =
+    std::max_element(
+        kHistogramValue.begin(),
+        kHistogramValue.end(),
+        [](const auto a, const auto b) { return a.second < b.second; })
+        ->second;
 
 std::string GetProviderNameForHistograms(
     HostContentSettingsMap::ProviderType provider_type) {

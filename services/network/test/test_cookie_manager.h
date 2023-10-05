@@ -66,6 +66,8 @@ class TestCookieManager : public network::mojom::CookieManager {
       const std::vector<::ContentSettingPatternSource>& settings) override {}
   void SetContentSettingsFor3pcdMetadataGrants(
       const std::vector<::ContentSettingPatternSource>& settings) override {}
+  void SetContentSettingsFor3pcdHeuristicsGrants(
+      const std::vector<::ContentSettingPatternSource>& settings) override {}
   void SetStorageAccessGrantSettings(
       const std::vector<::ContentSettingPatternSource>& settings,
       SetStorageAccessGrantSettingsCallback callback) override {}

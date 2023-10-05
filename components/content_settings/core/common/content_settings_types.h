@@ -365,6 +365,10 @@ enum class ContentSettingsType : int32_t {
   // request.
   FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
 
+  // Content Setting for temporary 3PC accesses granted by user behavior
+  // heuristics.
+  TPCD_HEURISTICS_GRANTS,
+
   NUM_TYPES,
 };
 

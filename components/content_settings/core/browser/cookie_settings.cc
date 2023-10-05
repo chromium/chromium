@@ -13,6 +13,7 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -92,6 +93,19 @@ void CookieSettings::SetCookieSetting(const GURL& primary_url,
   DCHECK(IsValidSetting(setting));
   host_content_settings_map_->SetContentSettingDefaultScope(
       primary_url, GURL(), ContentSettingsType::COOKIES, setting);
+}
+
+void CookieSettings::SetTemporaryCookieGrantForHeuristic(
+    const GURL& first_party_url,
+    const GURL& third_party_url,
+    const base::TimeDelta& ttl) {
+  ContentSettingConstraints constraints;
+  constraints.set_lifetime(ttl);
+
+  host_content_settings_map_->SetContentSettingDefaultScope(
+      first_party_url, third_party_url,
+      ContentSettingsType::TPCD_HEURISTICS_GRANTS, CONTENT_SETTING_ALLOW,
+      constraints);
 }
 
 void CookieSettings::SetCookieSettingForUserBypass(

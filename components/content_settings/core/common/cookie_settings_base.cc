@@ -282,6 +282,16 @@ CookieSettingsBase::GetCookieSettingInternal(
         net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD);
   }
 
+  if (block_third &&
+      base::FeatureList::IsEnabled(net::features::kTpcdReadHeuristicsGrants) &&
+      GetContentSetting(url, first_party_url,
+                        ContentSettingsType::TPCD_HEURISTICS_GRANTS) ==
+          CONTENT_SETTING_ALLOW) {
+    block_third = false;
+    FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
+                                   ACCESS_ALLOWED_3PCD_HEURISTICS_GRANT);
+  }
+
   if (block_third) {
     bool has_storage_access_opt_in =
         ShouldConsiderStorageAccessGrants(overrides);

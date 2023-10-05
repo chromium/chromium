@@ -244,6 +244,19 @@ void Update3pcdSettings(Profile* profile) {
       settings));
 }
 
+void Update3pcdHeuristicsGrantsSettings(Profile* profile) {
+  ContentSettingsForOneType settings =
+      HostContentSettingsMapFactory::GetForProfile(profile)
+          ->GetSettingsForOneType(ContentSettingsType::TPCD_HEURISTICS_GRANTS);
+  profile->ForEachLoadedStoragePartition(base::BindRepeating(
+      [](ContentSettingsForOneType settings,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetCookieManagerForBrowserProcess()
+            ->SetContentSettingsFor3pcdHeuristicsGrants(settings);
+      },
+      settings));
+}
+
 // `kPermissionStorageAccessAPI` enables feature: Storage Access API with
 // Prompts (https://chromestatus.com/feature/5085655327047680). StorageAccessAPI
 // is considered enabled when either feature is enabled (by different field
@@ -636,6 +649,10 @@ ProfileNetworkContextService::CreateCookieManagerParams(
       ContentSettingsType::TPCD_SUPPORT);
 
   out->settings_for_3pcd_metadata_grants = ContentSettingsForOneType();
+
+  out->settings_for_3pcd_heuristics_grants =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::TPCD_HEURISTICS_GRANTS);
 
   if (StorageAccessAPIEnabled()) {
     out->settings_for_storage_access =
@@ -1114,6 +1131,9 @@ void ProfileNetworkContextService::OnContentSettingChanged(
     case ContentSettingsType::TPCD_SUPPORT:
       Update3pcdSettings(profile_);
       break;
+    case ContentSettingsType::TPCD_HEURISTICS_GRANTS:
+      Update3pcdHeuristicsGrantsSettings(profile_);
+      break;
     case ContentSettingsType::STORAGE_ACCESS:
       UpdateStorageAccessSettings(profile_);
       break;
@@ -1125,6 +1145,7 @@ void ProfileNetworkContextService::OnContentSettingChanged(
       UpdateCookieSettings(profile_);
       UpdateLegacyCookieSettings(profile_);
       Update3pcdSettings(profile_);
+      Update3pcdHeuristicsGrantsSettings(profile_);
       UpdateAllStorageAccessSettings(profile_);
       break;
     default:

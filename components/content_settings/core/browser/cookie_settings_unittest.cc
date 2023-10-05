@@ -163,6 +163,8 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     } else {
       disabled_features.push_back(net::features::kTpcdMetadataGrants);
     }
+
+    enabled_features.push_back({net::features::kTpcdReadHeuristicsGrants, {}});
 #if BUILDFLAG(IS_IOS)
     enabled_features.push_back({kImprovedCookieControls, {}});
     disabled_features.push_back(net::features::kTpcdSupportSettings);
@@ -1552,6 +1554,49 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdMetadataGrants) {
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 third_url, top_level_url, GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
+}
+
+TEST_P(CookieSettingsTest, GetCookieSetting3pcdHeuristicsGrants) {
+  const GURL first_party_url(kFirstPartySite);
+  const GURL third_party_url(kAllowedSite);
+  const GURL third_url(kBlockedSite);
+  const base::TimeDelta expiration = base::Seconds(5);
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+
+  // Expect that cookies are blocked before setting the temporary grant.
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(first_party_url, third_party_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+
+  cookie_settings_->SetTemporaryCookieGrantForHeuristic(
+      first_party_url, third_party_url, expiration);
+
+  // Expect that cookies are now allowed, and the histogram has been updated.
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(first_party_url, third_party_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_ALLOW);
+  // Expect 2 total requests for the two calls to GetCookieSetting.
+  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 2);
+  histogram_tester.ExpectBucketCount(
+      kAllowedRequestsHistogram,
+      static_cast<int>(net::cookie_util::StorageAccessResult::
+                           ACCESS_ALLOWED_3PCD_HEURISTICS_GRANT),
+      1);
+
+  FastForwardTime(expiration + base::Seconds(1));
+
+  // Expect that cookies are blocked again after the grant expires.
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(first_party_url, third_party_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
 }
 #endif
 

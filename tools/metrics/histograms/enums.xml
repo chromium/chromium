@@ -19193,6 +19193,7 @@ Called by update_net_error_codes.py.-->
   <int value="106" label="Auto Picture-in-Picture"/>
   <int value="107" label="3PCD Metadata Grants"/>
   <int value="108" label="File System Access extended permission"/>
+  <int value="109" label="3PCD Heuristics Grants"/>
 </enum>
 
 <enum name="ContentTypeParseableResult">
@@ -102990,6 +102991,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Storage access allowed by 3PCD setting"/>
   <int value="6"
       label="Storage access allowed by 3PCD metadata grants content settings"/>
+  <int value="7" label="Temporary storage access allowed by 3PCD heuristics"/>
 </enum>
 
 <enum name="StorageBucketDurabilityParameter">

@@ -107,6 +107,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     settings_for_3pcd_metadata_grants_ = settings;
   }
 
+  void set_content_settings_for_3pcd_heuristics_grants(
+      const ContentSettingsForOneType& settings) {
+    settings_for_3pcd_heuristics_grants_ = settings;
+  }
+
   void set_storage_access_grants(const ContentSettingsForOneType& settings) {
     storage_access_grants_ = settings;
   }
@@ -240,6 +245,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // component updater service. This type will only be populated when
   // `net::features::kTpcdMetadataGrants` is enabled.
   ContentSettingsForOneType settings_for_3pcd_metadata_grants_;
+  // Used to represent content settings for temporary 3PC accesses granted via
+  // detection of client-side heuristics.
+  ContentSettingsForOneType settings_for_3pcd_heuristics_grants_;
   // Used to represent storage access grants provided by the StorageAccessAPI.
   // Will only be populated when the StorageAccessAPI feature is enabled
   // https://crbug.com/989663.

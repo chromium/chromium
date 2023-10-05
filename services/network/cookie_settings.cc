@@ -298,6 +298,8 @@ const ContentSettingsForOneType& CookieSettings::GetContentSettings(
       return settings_for_3pcd_;
     case ContentSettingsType::TPCD_METADATA_GRANTS:
       return settings_for_3pcd_metadata_grants_;
+    case ContentSettingsType::TPCD_HEURISTICS_GRANTS:
+      return settings_for_3pcd_heuristics_grants_;
     default:
       // Only implements types that are actually used by CookieSettings since
       // settings need to be copied to the network service.

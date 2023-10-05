@@ -265,7 +265,8 @@ class CookieSettingsBase {
   // Returns a content setting for the requested parameters and populates |info|
   // if not null. Implementations might only implement a subset of all
   // ContentSettingsTypes. Currently only COOKIES, TPCD_SUPPORT, STORAGE_ACCESS,
-  // TPCD_METADATA_GRANTS, and TOP_LEVEL_STORAGE_ACCESS are required.
+  // TPCD_METADATA_GRANTS, TPCD_HEURISTICS_GRANTS, and TOP_LEVEL_STORAGE_ACCESS
+  // are required.
   virtual ContentSetting GetContentSetting(
       const GURL& primary_url,
       const GURL& secondary_url,
