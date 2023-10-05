@@ -12,7 +12,6 @@ namespace tpcd::experiment {
 
 const char kVersionName[] = "version";
 const char kDisable3PCookiesName[] = "disable_3p_cookies";
-const char kDisableAdsAPIsName[] = "disable_ads_apis";
 const char kForceEligibleForTestingName[] = "force_eligible";
 
 // Set the version of the experiment finch config.
@@ -25,12 +24,6 @@ const base::FeatureParam<int> kVersion{
 const base::FeatureParam<bool> kDisable3PCookies{
     &features::kCookieDeprecationFacilitatedTesting,
     /*name=*/kDisable3PCookiesName,
-    /*default_value=*/false};
-
-// Whether Ads APIs should be disabled.
-const base::FeatureParam<bool> kDisableAdsAPIs{
-    &features::kCookieDeprecationFacilitatedTesting,
-    /*name=*/kDisableAdsAPIsName,
     /*default_value=*/false};
 
 extern const base::FeatureParam<base::TimeDelta> kDecisionDelayTime{
