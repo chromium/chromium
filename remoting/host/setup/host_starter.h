@@ -67,9 +67,7 @@ class HostStarter : public gaia::GaiaOAuthClient::Delegate,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Registers a new host with the Chromoting service, and starts it.
-  void StartHost(const Params& params,
-                 bool consent_to_data_collection,
-                 CompletionCallback on_done);
+  void StartHost(const Params& params, CompletionCallback on_done);
 
   // gaia::GaiaOAuthClient::Delegate
   void OnGetTokensResponse(const std::string& refresh_token,
@@ -118,7 +116,6 @@ class HostStarter : public gaia::GaiaOAuthClient::Delegate,
   gaia::OAuthClientInfo oauth_client_info_;
   std::string host_name_;
   std::string host_pin_;
-  bool consent_to_data_collection_;
   CompletionCallback on_done_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   std::string host_refresh_token_;

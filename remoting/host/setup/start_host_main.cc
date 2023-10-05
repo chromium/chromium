@@ -276,8 +276,7 @@ int StartHostMain(int argc, char** argv) {
   // Start the host.
   std::unique_ptr<HostStarter> host_starter(
       HostStarter::Create(url_loader_factory_owner.GetURLLoaderFactory()));
-  host_starter->StartHost(params, /*consent_to_data_collection=*/true,
-                          base::BindOnce(&OnDone));
+  host_starter->StartHost(params, base::BindOnce(&OnDone));
 
   // Run the task executor until the StartHost completion callback.
   base::RunLoop run_loop;

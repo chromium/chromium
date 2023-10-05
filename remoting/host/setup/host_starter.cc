@@ -19,7 +19,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
-const int kMaxGetTokensRetries = 3;
+constexpr int kMaxGetTokensRetries = 3;
+constexpr bool kConsentToDataCollection = true;
 }  // namespace
 
 namespace remoting {
@@ -36,7 +37,6 @@ HostStarter::HostStarter(
       service_client_(std::move(service_client)),
       daemon_controller_(daemon_controller),
       host_stopper_(std::move(host_stopper)),
-      consent_to_data_collection_(false),
       unregistering_host_(false) {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
   main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
@@ -55,9 +55,7 @@ std::unique_ptr<HostStarter> HostStarter::Create(
           controller)));
 }
 
-void HostStarter::StartHost(const Params& params,
-                            bool consent_to_data_collection,
-                            CompletionCallback on_done) {
+void HostStarter::StartHost(const Params& params, CompletionCallback on_done) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DCHECK(!on_done_);
 
@@ -65,7 +63,6 @@ void HostStarter::StartHost(const Params& params,
   host_name_ = params.host_name;
   host_pin_ = params.host_pin;
   host_owner_ = params.host_owner;
-  consent_to_data_collection_ = consent_to_data_collection;
   on_done_ = std::move(on_done);
   oauth_client_info_.client_id =
       google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING);
@@ -194,8 +191,9 @@ void HostStarter::StartHostProcess() {
   config.Set("host_name", host_name_);
   config.Set("private_key", key_pair_->ToString());
   config.Set("host_secret_hash", host_secret_hash);
+
   daemon_controller_->SetConfigAndStart(
-      std::move(config), consent_to_data_collection_,
+      std::move(config), kConsentToDataCollection,
       base::BindOnce(&HostStarter::OnHostStarted, base::Unretained(this)));
 }
 
