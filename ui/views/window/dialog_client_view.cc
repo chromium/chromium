@@ -107,6 +107,7 @@ DialogClientView::DialogClientView(Widget* owner, View* contents_view)
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   button_row_container_ =
       AddChildView(std::make_unique<ButtonRowContainer>(this));
+  SetProperty(views::kElementIdentifierKey, kTopViewId);
 }
 
 DialogClientView::~DialogClientView() {
@@ -520,6 +521,7 @@ void DialogClientView::RemoveFillerView(size_t view_index) {
 BEGIN_METADATA(DialogClientView, ClientView)
 END_METADATA
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DialogClientView, kTopViewId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DialogClientView, kOkButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DialogClientView, kCancelButtonElementId);
 

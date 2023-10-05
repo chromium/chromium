@@ -42,6 +42,7 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
  public:
   METADATA_HEADER(DialogClientView);
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOkButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonElementId);
 

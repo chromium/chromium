@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_client_view.h"
 
 namespace autofill {
 
@@ -27,13 +28,15 @@ void ShowDeleteAddressProfileDialogView(
           .AddOkButton(
               base::BindOnce(&DeleteAddressProfileDialogController::OnAccepted,
                              controller),
-              ui::DialogModelButton::Params().SetLabel(
-                  controller->GetAcceptButtonText()))
+              ui::DialogModelButton::Params()
+                  .SetId(views::DialogClientView::kOkButtonElementId)
+                  .SetLabel(controller->GetAcceptButtonText()))
           .AddCancelButton(
               base::BindOnce(&DeleteAddressProfileDialogController::OnCanceled,
                              controller),
-              ui::DialogModelButton::Params().SetLabel(
-                  controller->GetDeclineButtonText()))
+              ui::DialogModelButton::Params()
+                  .SetId(views::DialogClientView::kCancelButtonElementId)
+                  .SetLabel(controller->GetDeclineButtonText()))
           .AddParagraph(
               ui::DialogModelLabel(controller->GetDeleteConfirmationText())
                   .set_is_secondary())

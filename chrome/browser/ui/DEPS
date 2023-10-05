@@ -46,6 +46,9 @@ specific_include_rules = {
   "dark_mode_manager_linux(_unittest)?\.cc": [
     "+dbus",
   ],
+  "delete_address_profile_dialog_controller_impl_interactive_uitest.cc": [
+    "+chrome/browser/ui/views/autofill"
+  ],
   "edit_address_profile_dialog_controller_impl_interactive_uitest.cc": [
     "+chrome/browser/ui/views/autofill"
   ],
