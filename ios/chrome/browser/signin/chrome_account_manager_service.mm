@@ -245,6 +245,9 @@ bool ChromeAccountManagerService::IsServiceSupported() const {
 }
 
 void ChromeAccountManagerService::Shutdown() {
+  for (auto& observer : observer_list_) {
+    observer.OnChromeAccountManagerServiceShutdown(this);
+  }
   if (pref_service_) {
     registrar_.RemoveAll();
     pref_service_ = nullptr;

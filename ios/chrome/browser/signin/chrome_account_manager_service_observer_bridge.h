@@ -15,6 +15,8 @@
 @optional
 - (void)identityListChanged;
 - (void)identityUpdated:(id<SystemIdentity>)identity;
+- (void)onChromeAccountManagerServiceShutdown:
+    (ChromeAccountManagerService*)accountManagerService;
 @end
 
 // Simple observer bridge that forwards all events to its delegate observer.
@@ -34,6 +36,8 @@ class ChromeAccountManagerServiceObserverBridge
   // ChromeAccountManagerService::Observer implementation.
   void OnIdentityListChanged(bool need_user_approval) override;
   void OnIdentityUpdated(id<SystemIdentity> identity) override;
+  void OnChromeAccountManagerServiceShutdown(
+      ChromeAccountManagerService* chrome_account_manager_service) override;
 
   __weak id<ChromeAccountManagerServiceObserver> observer_ = nil;
   base::ScopedObservation<ChromeAccountManagerService,
