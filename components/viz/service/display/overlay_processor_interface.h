@@ -192,9 +192,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   // benefits of individual overlay candidates.
   virtual void SetFrameSequenceNumber(uint64_t frame_sequence_number) {}
 
-  // If true, video capture is enabled for this frame.
-  virtual void SetIsVideoCaptureEnabled(bool enabled) {}
-
   // If true, page fullscreen mode is enabled for this frame.
   virtual void SetIsPageFullscreen(bool enabled) {}
 

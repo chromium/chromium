@@ -92,6 +92,9 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
   // Indicates if any its quad needs to draw with blending.
   bool ShouldDrawWithBlending() const;
 
+  // Indicates if this pass has copy requests or video capture enabled.
+  bool HasCapture() const;
+
   // Uniquely identifies the render pass in the aggregated frame.
   AggregatedRenderPassId id;
 
@@ -107,6 +110,13 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
   // video holes that need to line up with other overlays or is itself presented
   // as an overlay.
   bool needs_synchronous_dcomp_commit = false;
+
+  // Indicates whether video capture has been enabled for this render pass.
+  //
+  // This is useful to avoid flipping back and forth between promoting quads to
+  // overlays since a 30fps capture on a 60fps monitor can make a copy request
+  // every other frame.
+  bool video_capture_enabled = false;
 
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 

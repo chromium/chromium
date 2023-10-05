@@ -45,9 +45,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // processor.
   bool NeedsSurfaceDamageRectList() const override;
 
-  // Sets |is_video_capture_enabled_|.
-  void SetIsVideoCaptureEnabled(bool enabled) override;
-
   // Sets |is_page_fullscreen_mode_|.
   void SetIsPageFullscreen(bool enabled) override;
 
@@ -87,7 +84,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
-      bool is_video_capture_enabled,
       bool is_page_fullscreen_mode,
       DCLayerOverlayProcessor::RenderPassOverlayDataMap&
           render_pass_overlay_data_map);
@@ -116,8 +112,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
 
   // TODO(weiliangc): Eventually fold DCLayerOverlayProcessor into this class.
   std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor_;
-
-  bool is_video_capture_enabled_ = false;
 
   bool is_page_fullscreen_mode_ = false;
 };

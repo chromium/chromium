@@ -219,6 +219,10 @@ bool AggregatedRenderPass::ShouldDrawWithBlending() const {
   return false;
 }
 
+bool AggregatedRenderPass::HasCapture() const {
+  return !copy_requests.empty() || video_capture_enabled;
+}
+
 void AggregatedRenderPass::AsValueInto(
     base::trace_event::TracedValue* value) const {
   RenderPassInternal::AsValueInto(value);
@@ -227,6 +231,8 @@ void AggregatedRenderPass::AsValueInto(
                     base::to_underlying(content_color_usage));
 
   value->SetBoolean("is_color_conversion_pass", is_color_conversion_pass);
+
+  value->SetBoolean("video_capture_enabled", video_capture_enabled);
 
   TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
       TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "AggregatedRenderPass",

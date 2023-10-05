@@ -494,7 +494,9 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
   // Skip overlay processing
   if (!overlays_allowed_ || !enable_ca_renderer_) {
     result = gfx::kCALayerFailedOverlayDisabled;
-  } else if (video_capture_enabled_) {
+  } else if (render_pass->video_capture_enabled) {
+    // The CARenderer is disabled when video capture is enabled.
+    // https://crbug.com/836351, https://crbug.com/1290384
     result = gfx::kCALayerFailedVideoCaptureEnabled;
   } else if (!render_pass->copy_requests.empty()) {
     result = gfx::kCALayerFailedCopyRequests;

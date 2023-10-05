@@ -89,8 +89,8 @@ void OverlayProcessorWin::ProcessForOverlays(
   root_render_pass_overlay_data.damage_rect = *root_damage_rect;
   dc_layer_overlay_processor_->Process(
       resource_provider, render_pass_filters, render_pass_backdrop_filters,
-      surface_damage_rect_list_in_root_space, is_video_capture_enabled_,
-      is_page_fullscreen_mode_, render_pass_overlay_data_map);
+      surface_damage_rect_list_in_root_space, is_page_fullscreen_mode_,
+      render_pass_overlay_data_map);
   *root_damage_rect = root_render_pass_overlay_data.damage_rect;
   *candidates = root_render_pass_overlay_data.promoted_overlays;
 
@@ -105,7 +105,7 @@ void OverlayProcessorWin::ProcessForOverlays(
   // read back from a DComp surface, which fails later in
   // |SkiaOutputSurfaceImplOnGpu::CopyOutput|.
   const bool force_swap_chain_due_to_copy_request =
-      is_video_capture_enabled_ || !root_render_pass->copy_requests.empty();
+      root_render_pass->HasCapture();
   bool was_using_dc_layers = using_dc_layers_;
   if (!candidates->empty()) {
     using_dc_layers_ = true;
@@ -212,10 +212,6 @@ bool OverlayProcessorWin::NeedsSurfaceDamageRectList() const {
   return true;
 }
 
-void OverlayProcessorWin::SetIsVideoCaptureEnabled(bool enabled) {
-  is_video_capture_enabled_ = enabled;
-}
-
 void OverlayProcessorWin::SetIsPageFullscreen(bool enabled) {
   is_page_fullscreen_mode_ = enabled;
 }
@@ -225,15 +221,14 @@ void OverlayProcessorWin::ProcessOnDCLayerOverlayProcessorForTesting(
     const FilterOperationsMap& render_pass_filters,
     const FilterOperationsMap& render_pass_backdrop_filters,
     SurfaceDamageRectList surface_damage_rect_list,
-    bool is_video_capture_enabled,
     bool is_page_fullscreen_mode,
     DCLayerOverlayProcessor::RenderPassOverlayDataMap&
         render_pass_overlay_data_map) {
   CHECK_IS_TEST();
   dc_layer_overlay_processor_->Process(
       resource_provider, render_pass_filters, render_pass_backdrop_filters,
-      surface_damage_rect_list, is_video_capture_enabled,
-      is_page_fullscreen_mode, render_pass_overlay_data_map);
+      surface_damage_rect_list, is_page_fullscreen_mode,
+      render_pass_overlay_data_map);
 }
 
 }  // namespace viz

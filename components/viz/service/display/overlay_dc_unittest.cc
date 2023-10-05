@@ -1300,7 +1300,6 @@ TEST_P(DCLayerOverlayTest, VideoCapture) {
     SurfaceDamageRectList surface_damage_rect_list = {
         gfx::Rect(0, 0, 32, 32), gfx::Rect(0, 0, 256, 256)};
     // No video capture in this frame.
-    overlay_processor_->SetIsVideoCaptureEnabled(false);
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
@@ -1339,7 +1338,7 @@ TEST_P(DCLayerOverlayTest, VideoCapture) {
         gfx::Rect(0, 0, 256, 256)};
 
     // Now video capture is enabled.
-    overlay_processor_->SetIsVideoCaptureEnabled(true);
+    pass_list.back()->video_capture_enabled = true;
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
@@ -1355,6 +1354,61 @@ TEST_P(DCLayerOverlayTest, VideoCapture) {
     int quad_count = root_pass->quad_list.size();
     EXPECT_EQ(2, quad_count);
   }
+}
+
+// Check that video capture on a non-root pass does not affect overlay promotion
+// on the root pass itself.
+TEST_P(DCLayerOverlayTest, VideoCaptureOnIsolatedRenderPass) {
+  InitializeOverlayProcessor();
+
+  AggregatedRenderPassList pass_list;
+
+  // Create a render pass with video capture enabled. This could represent e.g.
+  // capture of a background tab for stream.
+  {
+    auto pass = CreateRenderPass();
+    CreateOpaqueQuadAt(resource_provider_.get(),
+                       pass->shared_quad_state_list.back(), pass.get(),
+                       gfx::Rect(0, 0, 32, 32), SkColors::kRed);
+    pass->video_capture_enabled = true;
+    pass_list.push_back(std::move(pass));
+  }
+
+  // Create a root render pass with a video quad that can be promoted to
+  // overlay.
+  {
+    auto root_pass = CreateRenderPass();
+    // Create a solid quad.
+    CreateOpaqueQuadAt(
+        resource_provider_.get(), root_pass->shared_quad_state_list.back(),
+        root_pass.get(), gfx::Rect(0, 0, 32, 32), SkColors::kRed);
+
+    // Create a video YUV quad below the red solid quad.
+    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), root_pass->shared_quad_state_list.back(),
+        root_pass.get());
+    gfx::Rect rect(0, 0, 256, 256);
+    video_quad->rect = rect;
+    video_quad->visible_rect = rect;
+    root_pass->shared_quad_state_list.back()->overlay_damage_index = 0;
+    pass_list.push_back(std::move(root_pass));
+  }
+
+  OverlayCandidateList dc_layer_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  damage_rect_ = gfx::Rect(0, 0, 256, 256);
+
+  SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(0, 0, 256, 256)};
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
+      &dc_layer_list, &damage_rect_, &content_bounds_);
+
+  EXPECT_EQ(1U, dc_layer_list.size());
 }
 
 TEST_P(DCLayerOverlayTest, RenderPassRootTransformOverlay) {
@@ -1505,10 +1559,7 @@ TEST_P(DCLayerOverlayTest, MultipleRenderPassesOneOverlay) {
     overlay_processor_->ProcessOnDCLayerOverlayProcessorForTesting(
         resource_provider_.get(), render_pass_filters,
         render_pass_backdrop_filters, std::move(surface_damage_rect_list),
-        false /*is_video_capture_enabled*/,
-        false
-        /*is_page_fullscreen_mode*/,
-        render_pass_overlay_data_map);
+        /*is_page_fullscreen_mode=*/false, render_pass_overlay_data_map);
 
     for (auto& [render_pass, overlay_data] : render_pass_overlay_data_map) {
       LOG(INFO) << "frame " << frame << " render pass " << render_pass->id
@@ -1606,10 +1657,7 @@ TEST_P(DCLayerOverlayTest, MultipleRenderPassesExceedsOverlayAllowance) {
     overlay_processor_->ProcessOnDCLayerOverlayProcessorForTesting(
         resource_provider_.get(), render_pass_filters,
         render_pass_backdrop_filters, std::move(surface_damage_rect_list),
-        false /*is_video_capture_enabled*/,
-        false
-        /*is_page_fullscreen_mode*/,
-        render_pass_overlay_data_map);
+        /*is_page_fullscreen_mode=*/false, render_pass_overlay_data_map);
 
     // Verify that the previous frame states contain only 3 render passes and
     // that they have the IDs that we set them to.

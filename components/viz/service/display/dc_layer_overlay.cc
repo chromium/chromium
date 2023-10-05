@@ -779,7 +779,6 @@ void DCLayerOverlayProcessor::CollectCandidates(
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPass* render_pass,
     const FilterOperationsMap& render_pass_backdrop_filters,
-    bool is_video_capture_enabled,
     RenderPassOverlayData& overlay_data,
     RenderPassCurrentFrameState& render_pass_state,
     GlobalOverlayState& global_overlay_state) {
@@ -789,7 +788,7 @@ void DCLayerOverlayProcessor::CollectCandidates(
   std::vector<gfx::Rect> backdrop_filter_rects;
 
   // Skip overlay for copy request, video capture or HDR P010 format.
-  if (ShouldSkipOverlay(render_pass, is_video_capture_enabled)) {
+  if (ShouldSkipOverlay(render_pass)) {
     auto it = previous_frame_render_pass_states_.find(render_pass->id);
     if (it != previous_frame_render_pass_states_.end()) {
       // Add any overlay damage from the previous frame. Since we're not
@@ -997,7 +996,6 @@ void DCLayerOverlayProcessor::Process(
     const FilterOperationsMap& render_pass_filters,
     const FilterOperationsMap& render_pass_backdrop_filters,
     const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
-    bool is_video_capture_enabled,
     bool is_page_fullscreen_mode,
     RenderPassOverlayDataMap& render_pass_overlay_data_map) {
   GlobalOverlayState global_overlay_state;
@@ -1025,8 +1023,8 @@ void DCLayerOverlayProcessor::Process(
     }
 
     CollectCandidates(resource_provider, render_pass,
-                      render_pass_backdrop_filters, is_video_capture_enabled,
-                      overlay_data, current_frame_state, global_overlay_state);
+                      render_pass_backdrop_filters, overlay_data,
+                      current_frame_state, global_overlay_state);
   }
 
   // We might not save power if there are more than one videos and only part of
@@ -1103,18 +1101,17 @@ void DCLayerOverlayProcessor::Process(
 }
 
 bool DCLayerOverlayProcessor::ShouldSkipOverlay(
-    AggregatedRenderPass* render_pass,
-    bool is_video_capture_enabled) const {
+    AggregatedRenderPass* render_pass) const {
   QuadList* quad_list = &render_pass->quad_list;
 
   // Skip overlay processing if we have copy request or video capture is
   // enabled. When video capture is enabled, some frames might not have copy
   // request.
-  if (!render_pass->copy_requests.empty() || is_video_capture_enabled) {
+  if (render_pass->HasCapture()) {
     // Find a valid overlay candidate from quad_list.
     QuadList::Iterator it = FindAnOverlayCandidate(*quad_list);
     if (it != quad_list->end()) {
-      is_video_capture_enabled
+      render_pass->video_capture_enabled
           ? RecordDCLayerResult(DC_LAYER_FAILED_VIDEO_CAPTURE_ENABLED, it)
           : RecordDCLayerResult(DC_LAYER_FAILED_COPY_REQUESTS, it);
     }

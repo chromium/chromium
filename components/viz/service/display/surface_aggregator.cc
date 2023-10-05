@@ -428,7 +428,6 @@ struct SurfaceAggregator::PrewalkResult {
   // This is the set of Surfaces that were referenced by another Surface, but
   // not included in a SurfaceDrawQuad.
   base::flat_set<SurfaceId> undrawn_surfaces;
-  bool video_capture_enabled = false;
   bool frame_sinks_changed = false;
   bool page_fullscreen_mode = false;
   gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
@@ -935,7 +934,14 @@ void SurfaceAggregator::EmitSurfaceContent(
       mask_filter_info.CanMergeMaskFilterInfo(*render_pass_list.back(),
                                               combined_transform);
 
-  const bool merge_pass = pass_is_mergeable && copy_requests.empty();
+  // When a surface has video capture enabled, but no copy requests, we do not
+  // require an intermediate surface. However, video capture being enabled is a
+  // hint that we will have a copy request soon, so we prevent |merge_pass| to
+  // avoid thrashing on the render pass backing allocation.
+  const bool has_video_capture =
+      !copy_requests.empty() || surface->IsVideoCaptureOnFromClient();
+
+  const bool merge_pass = pass_is_mergeable && !has_video_capture;
 
   // Update PersistentPassData.merge_status of the root render pass of the
   // current frame before making a call to AddSurfaceDamageToDamageList() where
@@ -1007,6 +1013,11 @@ void SurfaceAggregator::EmitSurfaceContent(
     SetRenderPassDamageRect(copy_pass.get(), resolved_pass);
 
     dest_pass_list_->push_back(std::move(copy_pass));
+  }
+
+  if (surface->IsVideoCaptureOnFromClient()) {
+    CHECK(!merge_pass);
+    dest_pass_list_->back()->video_capture_enabled = true;
   }
 
   const auto& last_pass = *render_pass_list.back();
@@ -2097,8 +2108,6 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
   // If any CopyOutputRequests were made at FrameSink level, make sure we grab
   // them too.
   surface->TakeCopyOutputRequestsFromClient();
-  if (surface->IsVideoCaptureOnFromClient())
-    result.video_capture_enabled = true;
 
   if (root_resolved_pass.aggregation().will_draw)
     surface->OnWillBeDrawn();
@@ -2290,7 +2299,6 @@ AggregatedFrame SurfaceAggregator::Aggregate(
     manager_->AggregatedFrameSinksChanged();
 
   frame.has_copy_requests = has_copy_requests_ && take_copy_requests_;
-  frame.video_capture_enabled = prewalk_result.video_capture_enabled;
   frame.content_color_usage = prewalk_result.content_color_usage;
   frame.page_fullscreen_mode = prewalk_result.page_fullscreen_mode;
 

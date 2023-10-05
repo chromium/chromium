@@ -76,7 +76,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
-      bool is_video_capture_enabled,
       bool is_page_fullscreen_mode,
       RenderPassOverlayDataMap& render_pass_overlay_data_map);
 
@@ -229,7 +228,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
       DisplayResourceProvider* resource_provider,
       AggregatedRenderPass* render_pass,
       const FilterOperationsMap& render_pass_backdrop_filters,
-      bool is_video_capture_enabled,
       RenderPassOverlayData& overlay_data,
       RenderPassCurrentFrameState& render_pass_state,
       GlobalOverlayState& global_overlay_state);
@@ -256,8 +254,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
       GlobalOverlayState& global_overlay_state);
 
   // Detects overlay processing skip inside |render_pass|.
-  bool ShouldSkipOverlay(AggregatedRenderPass* render_pass,
-                         bool is_video_capture_enabled) const;
+  bool ShouldSkipOverlay(AggregatedRenderPass* render_pass) const;
 
   // Creates an OverlayCandidate for a quad candidate and updates the states
   // for the render pass.

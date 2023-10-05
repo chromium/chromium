@@ -2374,6 +2374,85 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
             original_frame.render_pass_list[0]->copy_requests[0].get());
 }
 
+TEST_F(SurfaceAggregatorValidSurfaceTest, VideoCapturePreventsMerge) {
+  auto embedded_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryFrameSinkId1, /*is_root=*/false);
+  TestSurfaceIdAllocator embedded_surface_id(embedded_support->frame_sink_id());
+
+  CompositorFrame embedded_frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kGreen))
+          .Build();
+  embedded_support->SubmitCompositorFrame(
+      embedded_surface_id.local_surface_id(), std::move(embedded_frame));
+
+  CompositorFrame root_frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                                  SurfaceRange(embedded_surface_id))
+                  .Build())
+          .Build();
+  root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                    std::move(root_frame));
+
+  // Frame #1: Video capture is enabled with a copy request
+  {
+    embedded_support->OnClientCaptureStarted();
+
+    auto copy_request = CopyOutputRequest::CreateStubForTesting();
+    auto* copy_request_ptr = copy_request.get();
+    embedded_support->RequestCopyOfOutput(
+        {embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+         std::move(copy_request)});
+
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+    // We expect the child pass to remain unmerged due to a copy request.
+    ASSERT_EQ(2u, aggregated_frame.render_pass_list.size());
+
+    EXPECT_TRUE(aggregated_frame.render_pass_list[0]->video_capture_enabled);
+
+    // We don't expect video capture on the root pass, only the embedded pass.
+    EXPECT_FALSE(
+        aggregated_frame.render_pass_list.back()->video_capture_enabled);
+
+    ASSERT_EQ(1u, aggregated_frame.render_pass_list[0]->copy_requests.size());
+    EXPECT_EQ(copy_request_ptr,
+              aggregated_frame.render_pass_list[0]->copy_requests[0].get());
+  }
+
+  // Frame #2: Video capture is still enabled, but no copy requests
+  {
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+    // We expect the child pass to remain unmerged due to a copy request.
+    ASSERT_EQ(2u, aggregated_frame.render_pass_list.size());
+
+    EXPECT_TRUE(aggregated_frame.render_pass_list[0]->video_capture_enabled);
+    EXPECT_FALSE(
+        aggregated_frame.render_pass_list.back()->video_capture_enabled);
+
+    EXPECT_TRUE(aggregated_frame.render_pass_list[0]->copy_requests.empty());
+  }
+
+  // Frame #3: Video capture is disabled
+  {
+    embedded_support->OnClientCaptureStopped();
+
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+    // No more video capture, so we expect the pass to merge.
+    ASSERT_EQ(1u, aggregated_frame.render_pass_list.size());
+
+    EXPECT_FALSE(
+        aggregated_frame.render_pass_list.back()->video_capture_enabled);
+  }
+}
+
 TEST_F(SurfaceAggregatorValidSurfaceTest, UnreferencedSurface) {
   auto embedded_support = std::make_unique<CompositorFrameSinkSupport>(
       nullptr, &manager_, kArbitraryFrameSinkId1, /*is_root=*/false);
