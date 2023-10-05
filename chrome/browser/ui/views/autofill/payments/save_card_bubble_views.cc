@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -16,6 +17,7 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -137,12 +139,10 @@ std::unique_ptr<views::View> SaveCardBubbleViews::CreateMainContentView() {
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
 
   const CreditCard& card = controller_->GetCard();
-  auto* const card_network_icon =
-      description_view->AddChildView(std::make_unique<views::ImageView>());
-  card_network_icon->SetImage(
-      ui::ResourceBundle::GetSharedInstance()
-          .GetImageNamed(CreditCard::IconResourceId(card.network()))
-          .AsImageSkia());
+  auto* const card_network_icon = description_view->AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromImage(
+          ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+              CreditCard::IconResourceId(card.network())))));
   card_network_icon->SetTooltipText(card.NetworkForDisplay());
   auto* card_identifier_view =
       description_view->AddChildView(GetCardIdentifierView());
@@ -194,7 +194,14 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
   }
 
   const CreditCard& card = controller_->GetCard();
-  if (!card.IsExpired(base::Time::Now())) {
+  // Show CVC icon for CVC only save cases and card expiration in other cases
+  if (controller()->GetBubbleType() == BubbleType::LOCAL_CVC_SAVE ||
+      controller()->GetBubbleType() == BubbleType::UPLOAD_CVC_SAVE) {
+    card_identifier_view->AddChildView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromImage(
+            ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                IDR_CREDIT_CARD_CVC_HINT_BACK))));
+  } else if (!card.IsExpired(base::Time::Now())) {
     auto* expiration_date_label =
         card_identifier_view->AddChildView(std::make_unique<views::Label>(
             card.AbbreviatedExpirationDateForDisplay(false),
