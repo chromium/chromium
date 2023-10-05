@@ -737,8 +737,9 @@ void HWNDMessageHandler::SetSize(const gfx::Size& size) {
 
 void HWNDMessageHandler::CenterWindow(const gfx::Size& size) {
   HWND parent = GetParent(hwnd());
-  if (!IsWindow(hwnd()))
+  if (!IsWindow(parent)) {
     parent = ::GetWindow(hwnd(), GW_OWNER);
+  }
   gfx::CenterAndSizeWindow(parent, hwnd(), size);
 }
 
