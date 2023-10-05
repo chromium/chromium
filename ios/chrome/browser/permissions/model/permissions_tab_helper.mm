@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/permissions/permissions_tab_helper.h"
+#import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_request_queue_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/permissions_dialog_overlay.h"
-#import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
+#import "ios/chrome/browser/permissions/model/permissions_infobar_delegate.h"
 
 namespace {
 

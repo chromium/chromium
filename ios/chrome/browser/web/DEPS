@@ -22,7 +22,7 @@ include_rules = [
   "+ios/chrome/browser/optimization_guide",
   "+ios/chrome/browser/overlays/public",
   "+ios/chrome/browser/parcel_tracking",
-  "+ios/chrome/browser/permissions/permissions_tab_helper.h",
+  "+ios/chrome/browser/permissions/model/permissions_tab_helper.h",
   "+ios/chrome/browser/policy",
   "+ios/chrome/browser/prerender/model",
   "+ios/chrome/browser/promos_manager",

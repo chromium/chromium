@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
+#import "ios/chrome/browser/permissions/model/permissions_infobar_delegate.h"
 
 #import "components/infobars/core/infobar_delegate.h"
 

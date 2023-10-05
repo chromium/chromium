@@ -94,7 +94,7 @@ source_set("delegate") {
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",
-    "//ios/chrome/browser/permissions:tab_helper",
+    "//ios/chrome/browser/permissions/model:tab_helper",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",

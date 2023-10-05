@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/permissions/permissions_tab_helper.h"
+#import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 
 #import "base/test/task_environment.h"
 #import "base/threading/platform_thread.h"
@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
-#import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
+#import "ios/chrome/browser/permissions/model/permissions_infobar_delegate.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
