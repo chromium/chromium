@@ -2160,8 +2160,8 @@
   },
   {
     "name": "enable-auto-disable-accessibility-v2",
-    "owners": [ "jacklynch@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 120
+    "owners": [ "mschillaci@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 130
   },
   {
     "name": "enable-autofill-credit-card-upload",
