@@ -205,10 +205,13 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
     suggestion_view_ = suggestion_and_buttons->AddChildView(
         std::make_unique<OmniboxMatchCellView>(this));
     if (OmniboxFieldTrial::IsActionsUISimplificationEnabled()) {
+      // Allocate space for the suggestion text only after accounting
+      // for the space needed to render the inline action chip row.
       suggestion_view_->SetProperty(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                   views::MaximumFlexSizeRule::kPreferred));
+                                   views::MaximumFlexSizeRule::kPreferred)
+              .WithOrder(2));
     } else {
       suggestion_view_->SetProperty(
           views::kFlexBehaviorKey,
@@ -240,10 +243,16 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
         std::make_unique<OmniboxSuggestionButtonRowView>(popup_view_,
                                                          model_index));
     if (OmniboxFieldTrial::IsActionsUISimplificationEnabled()) {
+      // If there's insufficient space for rendering both the suggestion text
+      // and the action chip row together, then allow the inline action chip row
+      // to disappear entirely.
+      // TODO(crbug/1479721): Finalize proper width shrinkage behavior once
+      //   we've received detailed UX guidance.
       button_row_->SetProperty(
           views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                   views::MaximumFlexSizeRule::kPreferred));
+          views::FlexSpecification(
+              views::MinimumFlexSizeRule::kPreferredSnapToZero,
+              views::MaximumFlexSizeRule::kPreferred));
     }
 
     mouse_enter_exit_handler_.ObserveMouseEnterExitOn(this);
