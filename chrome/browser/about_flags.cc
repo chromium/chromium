@@ -233,7 +233,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/process/process.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif
 

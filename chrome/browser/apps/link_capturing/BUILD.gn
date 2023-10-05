@@ -11,6 +11,8 @@ source_set("link_capturing") {
   sources = [
     "intent_picker_info.cc",
     "intent_picker_info.h",
+    "link_capturing_features.cc",
+    "link_capturing_features.h",
     "link_capturing_navigation_throttle.cc",
     "link_capturing_navigation_throttle.h",
   ]

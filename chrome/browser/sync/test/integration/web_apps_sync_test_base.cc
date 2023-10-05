@@ -7,7 +7,7 @@
 #include "base/containers/extend.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

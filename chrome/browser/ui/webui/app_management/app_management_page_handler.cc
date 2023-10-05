@@ -24,6 +24,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
@@ -36,7 +37,6 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -595,7 +595,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
 #else
   // This allows us to bypass showing the supported links item on the PWA app
   // settings page on Windows, Mac and Linux platforms.
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsLinkCapturing)) {
+  if (base::FeatureList::IsEnabled(apps::features::kDesktopPWAsLinkCapturing)) {
     app->supported_links = GetSupportedLinksForPWAs(app->id, *provider);
   } else {
     app->supported_links = std::vector<std::string>();

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -73,7 +74,7 @@ class AppManagementPageHandlerTestBase : public testing::Test {
         page.InitWithNewPipeAndPassRemote(), profile_.get(), *delegate_.get());
 #if !BUILDFLAG(IS_CHROMEOS)
     scoped_feature_list_.InitAndEnableFeature(
-        features::kDesktopPWAsLinkCapturing);
+        apps::features::kDesktopPWAsLinkCapturing);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 

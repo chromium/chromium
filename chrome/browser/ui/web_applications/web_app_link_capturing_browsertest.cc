@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -65,7 +66,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
     std::vector<base::test::FeatureRef> features = {
         blink::features::kWebAppEnableLaunchHandler};
 #if !BUILDFLAG(IS_CHROMEOS)
-    features.push_back(features::kDesktopPWAsLinkCapturing);
+    features.push_back(apps::features::kDesktopPWAsLinkCapturing);
 #endif
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
@@ -497,7 +498,7 @@ class WebAppTabStripLinkCapturingBrowserTest
         blink::features::kDesktopPWAsTabStrip,
         features::kDesktopPWAsTabStripSettings};
 #if !BUILDFLAG(IS_CHROMEOS)
-    features.push_back(features::kDesktopPWAsLinkCapturing);
+    features.push_back(apps::features::kDesktopPWAsLinkCapturing);
 #endif
     features_.InitWithFeatures(
         /*enabled_features=*/features,

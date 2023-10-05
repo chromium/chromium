@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
@@ -22,6 +22,10 @@ BASE_FEATURE(kLinkCapturingUiUpdate,
 
 BASE_FEATURE(kLinkCapturingInfoBar,
              "LinkCapturingInfoBar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDesktopPWAsLinkCapturing,
+             "DesktopPWAsLinkCapturing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool LinkCapturingUiUpdateEnabled() {

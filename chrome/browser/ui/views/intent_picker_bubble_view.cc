@@ -17,9 +17,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_constants.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -398,7 +397,8 @@ class IntentPickerAppListView
     const int row_height =
         contents()->children().front()->GetPreferredSize().height();
     // Use |kMaxAppResults| as a measure of how many apps we want to show.
-    ClipHeightTo(row_height, (apps::kMaxAppResults + 0.5) * row_height);
+    constexpr int kMaxAppResults = 3;
+    ClipHeightTo(row_height, (kMaxAppResults + 0.5) * row_height);
   }
 
   ~IntentPickerAppListView() override = default;
