@@ -462,6 +462,7 @@ cc_component("cc") {
     "//base",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
+    "//components/miracle_parameter/common",
     "//components/viz/client",
     "//device/base/synchronization",
     "//gpu",

@@ -8,8 +8,8 @@
 #include "cc/tiles/image_decode_cache_utils.h"
 
 #include "base/check.h"
-#include "base/metrics/field_trial_params.h"
 #include "cc/paint/paint_flags.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -26,29 +26,27 @@ BASE_FEATURE(kImageDecodeConfigurableFeature,
              "ImageDecodeConfigurableFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<int> kDefaultDecodedImageWorkingSetBudgetBytes(
-    &kImageDecodeConfigurableFeature,
-    "DefaultDecodedImageWorkingSetBudgetBytes",
-    128 * 1024 * 1024);
+MIRACLE_PARAMETER_FOR_INT(GetDefaultDecodedImageWorkingSetBudgetBytes,
+                          kImageDecodeConfigurableFeature,
+                          "DefaultDecodedImageWorkingSetBudgetBytes",
+                          128 * 1024 * 1024)
 
 #if !BUILDFLAG(IS_ANDROID)
 
-constexpr base::FeatureParam<int>
-    kDecodedImageWorkingSetBudgetBytesForLowEndDevice(
-        &kImageDecodeConfigurableFeature,
-        "DecodedImageWorkingSetBudgetBytesForLowEndDevice",
-        32 * 1024 * 1024);
+MIRACLE_PARAMETER_FOR_INT(GetDecodedImageWorkingSetBudgetBytesForLowEndDevice,
+                          kImageDecodeConfigurableFeature,
+                          "DecodedImageWorkingSetBudgetBytesForLowEndDevice",
+                          32 * 1024 * 1024)
 
-constexpr base::FeatureParam<int>
-    kDecodedImageWorkingSetBudgetBytesForAboveThreshold(
-        &kImageDecodeConfigurableFeature,
-        "DecodedImageWorkingSetBudgetBytesForAboveThreshold",
-        256 * 1024 * 1024);
+MIRACLE_PARAMETER_FOR_INT(GetDecodedImageWorkingSetBudgetBytesForAboveThreshold,
+                          kImageDecodeConfigurableFeature,
+                          "DecodedImageWorkingSetBudgetBytesForAboveThreshold",
+                          256 * 1024 * 1024)
 
-constexpr base::FeatureParam<int> kImageDecodeMemoryThresholdMB(
-    &kImageDecodeConfigurableFeature,
-    "ImageDecodeMemoryThresholdMB",
-    4 * 1024);
+MIRACLE_PARAMETER_FOR_INT(GetImageDecodeMemoryThresholdMB,
+                          kImageDecodeConfigurableFeature,
+                          "ImageDecodeMemoryThresholdMB",
+                          4 * 1024)
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -72,7 +70,7 @@ bool ImageDecodeCacheUtils::ShouldEvictCaches(
 size_t ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
     bool for_renderer) {
   size_t decoded_image_working_set_budget_bytes =
-      kDefaultDecodedImageWorkingSetBudgetBytes.Get();
+      GetDefaultDecodedImageWorkingSetBudgetBytes();
 #if !BUILDFLAG(IS_ANDROID)
   if (for_renderer) {
     const bool using_low_memory_policy = base::SysInfo::IsLowEndDevice();
@@ -81,11 +79,11 @@ size_t ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
     // for both gpu and software.
     if (using_low_memory_policy) {
       decoded_image_working_set_budget_bytes =
-          kDecodedImageWorkingSetBudgetBytesForLowEndDevice.Get();
+          GetDecodedImageWorkingSetBudgetBytesForLowEndDevice();
     } else if (base::SysInfo::AmountOfPhysicalMemoryMB() >=
-               kImageDecodeMemoryThresholdMB.Get()) {
+               GetImageDecodeMemoryThresholdMB()) {
       decoded_image_working_set_budget_bytes =
-          kDecodedImageWorkingSetBudgetBytesForAboveThreshold.Get();
+          GetDecodedImageWorkingSetBudgetBytesForAboveThreshold();
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
