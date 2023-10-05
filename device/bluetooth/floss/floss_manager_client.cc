@@ -159,6 +159,17 @@ void FlossManagerClient::SetAdapterEnabled(int adapter,
       command, adapter);
 }
 
+uint32_t FlossManagerClient::GetFlossApiVersion() const {
+  return version_;
+}
+
+void FlossManagerClient::DoGetFlossApiVersion() {
+  CallManagerMethod<uint32_t>(
+      base::BindOnce(&FlossManagerClient::HandleGetFlossApiVersion,
+                     weak_ptr_factory_.GetWeakPtr()),
+      manager::kGetFlossApiVersion);
+}
+
 void FlossManagerClient::OnSetAdapterEnabled(DBusResult<Void> response) {
   // Only handle error cases since non-error called in OnHciEnabledChange
   if (adapter_enabled_callback_ && !response.has_value()) {
@@ -466,6 +477,18 @@ void FlossManagerClient::CompleteSetFlossEnabled(DBusResult<bool> ret) {
   } else {
     DVLOG(1) << "Completed SetFlossEnabled with value " << *ret;
   }
+}
+
+void FlossManagerClient::HandleGetFlossApiVersion(
+    DBusResult<uint32_t> response) {
+  if (!response.has_value()) {
+    LOG(WARNING) << "Floss API version is not available. Default version is 0."
+                    " Error="
+                 << response.error();
+    return;
+  }
+
+  version_ = response.value();
 }
 
 dbus::PropertySet* FlossManagerClient::CreateProperties(

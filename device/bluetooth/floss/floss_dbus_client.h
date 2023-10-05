@@ -133,6 +133,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kGetState[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetAvailableAdapters[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetDefaultAdapter[];
 extern DEVICE_BLUETOOTH_EXPORT const char kSetDesiredDefaultAdapter[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetFlossApiVersion[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
 
@@ -231,7 +232,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnServerNotificationSent[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnServerMtuChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnServerSubrateChange[];
 }  // namespace gatt
-   //
+
 namespace advertiser {
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterCallback[];

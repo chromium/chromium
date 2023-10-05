@@ -124,6 +124,7 @@ const char kGetState[] = "GetState";
 const char kGetAvailableAdapters[] = "GetAvailableAdapters";
 const char kGetDefaultAdapter[] = "GetDefaultAdapter";
 const char kSetDesiredDefaultAdapter[] = "SetDesiredDefaultAdapter";
+const char kGetFlossApiVersion[] = "GetFlossApiVersion";
 const char kRegisterCallback[] = "RegisterCallback";
 const char kCallbackInterface[] = "org.chromium.bluetooth.ManagerCallback";
 const char kOnHciDeviceChanged[] = "OnHciDeviceChanged";

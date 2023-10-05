@@ -122,6 +122,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
                                  bool enabled,
                                  ResponseCallback<Void> callback);
 
+  // Gets Floss API version.
+  virtual uint32_t GetFlossApiVersion() const;
+
   // Invoke D-Bus API to enable or disable LL privacy.
   virtual void SetLLPrivacy(ResponseCallback<bool> callback, const bool enable);
 
@@ -154,6 +157,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
                        int retry_wait_ms,
                        absl::optional<ResponseCallback<bool>> cb);
 
+  // Make actual D-Bus call to retrieve Floss API version from daemon.
+  void DoGetFlossApiVersion();
+
   // Handle response to |GetDefaultAdapter| DBus method call.
   void HandleGetDefaultAdapter(DBusResult<int32_t> response);
 
@@ -183,6 +189,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
 
   // Completion of |SetFlossEnabled|.
   void CompleteSetFlossEnabled(DBusResult<bool> ret);
+
+  // Handles response to |DoGetFlossApiVersion|.
+  void HandleGetFlossApiVersion(DBusResult<uint32_t> response);
 
   // Get active adapters and register for callbacks with manager object.
   void RegisterWithManager();
@@ -223,6 +232,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
 
   // List of observers interested in event notifications from this client.
   base::ObserverList<Observer> observers_;
+
+  // Floss API version.
+  uint32_t version_ = 0;
 
  private:
   // Handle response to SetAdapterEnabled
