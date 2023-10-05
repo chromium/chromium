@@ -186,10 +186,13 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
           confidence_ == CookieControlsBreakageConfidenceLevel::kHigh) {
         auto label = GetLabelForStatus();
         AnimateIn(label);
+// VoiceOver on Mac already announces this text.
+#if !BUILDFLAG(IS_MAC)
         if (label.has_value()) {
           GetViewAccessibility().AnnounceText(
               l10n_util::GetStringUTF16(label.value()));
         }
+#endif
         if (controller_) {
           controller_->OnEntryPointAnimated();
         } else {
