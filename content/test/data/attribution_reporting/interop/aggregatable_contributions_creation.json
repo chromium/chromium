@@ -3,7 +3,7 @@
   "input": {
     "registrations": [
       {
-        "timestamp": "1643235573000",
+        "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -30,7 +30,7 @@
         }]
       },
       {
-        "timestamp": "1643235574000",
+        "timestamp": "1000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -81,7 +81,7 @@
         }]
       },
       {
-        "timestamp": "1643235575000",
+        "timestamp": "2000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -127,7 +127,7 @@
         }]
       },
       {
-        "timestamp": "1643235576000",
+        "timestamp": "3000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -179,7 +179,7 @@
       },
       // Should not result in an aggregatable report due to no contributions.
       {
-        "timestamp": "1643235577000",
+        "timestamp": "4000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -200,7 +200,7 @@
        // Should not result in an aggregatable report due to no contributions
        // and verbose debug report is not created as debug_reporting is not set.
        {
-        "timestamp": "1643235578000",
+        "timestamp": "5000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -221,7 +221,7 @@
       // Should result in an aggregatable report with the key pieces defined in
       // the source.
       {
-        "timestamp": "1643235579000",
+        "timestamp": "6000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -262,7 +262,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174000"
+        "report_time": "3601000"
       },
       {
         "payload": {
@@ -279,7 +279,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239175000"
+        "report_time": "3602000"
       },
       {
         "payload": {
@@ -296,7 +296,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239176000"
+        "report_time": "3603000"
       },
       {
         "payload": {
@@ -309,7 +309,7 @@
              "value": 666
           } ]
        },
-       "report_time": "1643239179000",
+       "report_time": "3606000",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
@@ -321,7 +321,7 @@
           },
           "type": "trigger-aggregate-no-contributions"
        } ],
-       "report_time": "1643235577000",
+       "report_time": "4000",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
