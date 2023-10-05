@@ -573,7 +573,12 @@ class CSSProperties(object):
 
     @property
     def computable(self):
-        is_prefixed = lambda p: p.name.original.startswith('-')
+        # Use the name of the ultimate property as the sorting key,
+        # otherwise '-alternative-foo' will sort according to
+        # '-alternative-...', when it will really be exposed to
+        # parsing/serialization as just 'foo'.
+        sorting_name = lambda p: p.ultimate_property.name.original
+        is_prefixed = lambda p: sorting_name(p).startswith('-')
         is_not_prefixed = lambda p: not is_prefixed(p)
 
         prefixed = filter(is_prefixed, self._properties_including_aliases)
@@ -596,10 +601,8 @@ class CSSProperties(object):
         prefixed = filter(is_computable, prefixed)
         unprefixed = filter(is_computable, unprefixed)
 
-        original_name = lambda x: x.name.original
-
-        return sorted(unprefixed, key=original_name) + \
-            sorted(prefixed, key=original_name)
+        return sorted(unprefixed, key=sorting_name) + \
+            sorted(prefixed, key=sorting_name)
 
     @property
     def shorthands(self):
