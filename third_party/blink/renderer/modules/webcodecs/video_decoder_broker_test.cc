@@ -196,6 +196,14 @@ class VideoDecoderBrokerTest : public testing::Test {
     Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
         media::mojom::InterfaceFactory::Name_,
         base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)>());
+
+    // `decoder_broker` schedules deletion of internal data including decoders
+    // which keep pointers to `gpu_factories_`. The deletion is scheduled in
+    // `media_thread_`, wait for completion of all its tasks.
+    decoder_broker_.reset();
+    if (media_thread_) {
+      media_thread_->FlushForTesting();
+    }
   }
 
   void OnInitWithClosure(base::RepeatingClosure done_cb,
@@ -326,9 +334,11 @@ class VideoDecoderBrokerTest : public testing::Test {
  protected:
   media::NullMediaLog null_media_log_;
   std::unique_ptr<base::Thread> media_thread_;
+  // `gpu_factories_` must outlive `decoder_broker_` because it's stored as a
+  // raw_ptr.
+  std::unique_ptr<media::MockGpuVideoAcceleratorFactories> gpu_factories_;
   std::unique_ptr<VideoDecoderBroker> decoder_broker_;
   std::vector<scoped_refptr<media::VideoFrame>> output_frames_;
-  std::unique_ptr<media::MockGpuVideoAcceleratorFactories> gpu_factories_;
   std::unique_ptr<FakeInterfaceFactory> interface_factory_;
 
   base::test::ScopedFeatureList feature_list_;
