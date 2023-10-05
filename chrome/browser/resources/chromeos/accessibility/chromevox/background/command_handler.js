@@ -27,7 +27,7 @@ import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {PermissionChecker} from '../common/permission_checker.js';
-import {Personality, QueueMode, TtsSettings, TtsSpeechProperties} from '../common/tts_types.js';
+import {QueueMode, TtsSettings, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {AutoScrollHandler} from './auto_scroll_handler.js';
 import {BrailleCaptionsBackground} from './braille/braille_captions_background.js';
@@ -150,7 +150,7 @@ export class CommandHandler extends CommandHandlerInterface {
         ChromeVox.earcons.toggle();
         return false;
       case Command.CYCLE_TYPING_ECHO:
-        this.cycleTypingEcho_();
+        TypingEcho.cycleWithAnnouncement();
         return false;
       case Command.CYCLE_PUNCTUATION_ECHO:
         ChromeVox.tts.speak(
@@ -1012,28 +1012,6 @@ export class CommandHandler extends CommandHandlerInterface {
         .withString(richTextDescription)
         .withQueueMode(QueueMode.CATEGORY_FLUSH)
         .go();
-  }
-
-  /** @private */
-  cycleTypingEcho_() {
-    LocalStorage.set(
-        'typingEcho', TypingEcho.cycle(LocalStorage.getNumber('typingEcho')));
-    let announce = '';
-    switch (LocalStorage.get('typingEcho')) {
-      case TypingEchoState.CHARACTER:
-        announce = Msgs.getMsg('character_echo');
-        break;
-      case TypingEchoState.WORD:
-        announce = Msgs.getMsg('word_echo');
-        break;
-      case TypingEchoState.CHARACTER_AND_WORD:
-        announce = Msgs.getMsg('character_and_word_echo');
-        break;
-      case TypingEchoState.NONE:
-        announce = Msgs.getMsg('none_echo');
-        break;
-    }
-    ChromeVox.tts.speak(announce, QueueMode.FLUSH, Personality.ANNOTATION);
   }
 
   /** @private */

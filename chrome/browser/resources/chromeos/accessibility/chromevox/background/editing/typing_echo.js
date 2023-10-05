@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 import {LocalStorage} from '../../../common/local_storage.js';
+import {Msgs} from '../../common/msgs.js';
+import {Personality, QueueMode} from '../../common/tts_types.js';
+import {ChromeVox} from '../chromevox.js';
+
 
 /**
  * A list of typing echo options.
@@ -38,6 +42,27 @@ export class TypingEcho {
    */
   static cycle(cur) {
     return ((cur ?? TypingEcho.current) + 1) % STATE_COUNT;
+  }
+
+  static cycleWithAnnouncement() {
+    LocalStorage.set(
+        'typingEcho', TypingEcho.cycle(LocalStorage.getNumber('typingEcho')));
+    let announce = '';
+    switch (LocalStorage.get('typingEcho')) {
+      case TypingEchoState.CHARACTER:
+        announce = Msgs.getMsg('character_echo');
+        break;
+      case TypingEchoState.WORD:
+        announce = Msgs.getMsg('word_echo');
+        break;
+      case TypingEchoState.CHARACTER_AND_WORD:
+        announce = Msgs.getMsg('character_and_word_echo');
+        break;
+      case TypingEchoState.NONE:
+        announce = Msgs.getMsg('none_echo');
+        break;
+    }
+    ChromeVox.tts.speak(announce, QueueMode.FLUSH, Personality.ANNOTATION);
   }
 
   /**
