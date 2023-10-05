@@ -32,6 +32,8 @@
 namespace reporting {
 namespace {
 
+using std::literals::string_view_literals::operator""sv;
+
 using ::ash::cros_healthd::FakeCrosHealthd;
 using ::ash::cros_healthd::mojom::CrashEventInfo;
 using ::ash::cros_healthd::mojom::CrashEventInfoPtr;
@@ -782,9 +784,6 @@ struct FatalCrashEventsObserverUploadedCrashCase {
   base::Time creation_time;
   uint64_t offset;
   bool should_be_reported;
-  // Even if the save file can't be created, the unreloaded result should be the
-  // same. No need to test it for all situations; only pick 2 cases, one that
-  // should report and another one that should not be reported.
   bool creatable_save_file = true;
 };
 
@@ -807,6 +806,31 @@ class FatalCrashEventsObserverUploadedCrashTest
       const FatalCrashEventsObserverUploadedCrashTest&) = delete;
   FatalCrashEventsObserverUploadedCrashTest& operator=(
       const FatalCrashEventsObserverUploadedCrashTest&) = delete;
+
+  // Gets the name as used in the test name given a creation time.
+  static constexpr std::string_view GetTestNameForCreationTime(
+      base::Time creation_time) {
+    if (creation_time >
+        FatalCrashEventsObserverUploadedCrashTest::kCreationTime) {
+      return "later_time"sv;
+    } else if (creation_time <
+               FatalCrashEventsObserverUploadedCrashTest::kCreationTime) {
+      return "earlier_time"sv;
+    } else {
+      return "same_time"sv;
+    }
+  }
+
+  // Gets the name as used in the test name given a offset.
+  static constexpr std::string_view GetTestNameForOffset(uint64_t offset) {
+    if (offset > FatalCrashEventsObserverUploadedCrashTest::kOffset) {
+      return "larger_offset"sv;
+    } else if (offset < FatalCrashEventsObserverUploadedCrashTest::kOffset) {
+      return "smaller_offset"sv;
+    } else {
+      return "same_offset"sv;
+    }
+  }
 
  protected:
   FatalCrashEventsObserverUploadedCrashTest() = default;
@@ -843,11 +867,6 @@ TEST_P(FatalCrashEventsObserverUploadedCrashTest,
 
   static constexpr std::string_view kAnotherCrashReportId =
       "Another Crash Report ID";
-
-  if (!creatable_save_file() && reload()) {
-    GTEST_SKIP() << "Skipping when both uncreatable save file and reload are "
-                    "required as this is expected to not work properly";
-  }
 
   if (!creatable_save_file()) {
     ASSERT_TRUE(base::MakeFileUnwritable(GetSaveFilePath().DirName()));
@@ -888,7 +907,7 @@ TEST_P(FatalCrashEventsObserverUploadedCrashTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    FatalCrashEventsObserverUploadedCrashTests,
+    FatalCrashEventsObserverUploadedCrashTestsForCorrectlyComparingCreationTimeAndOffset,
     FatalCrashEventsObserverUploadedCrashTest,
     ::testing::Combine(
         ::testing::ValuesIn(std::vector<
@@ -932,6 +951,30 @@ INSTANTIATE_TEST_SUITE_P(
                  FatalCrashEventsObserverUploadedCrashTest::kLaterCreationTime,
              .offset = FatalCrashEventsObserverUploadedCrashTest::kLargerOffset,
              .should_be_reported = true},
+        }),
+        /*reload=*/::testing::Bool()),
+    [](const testing::TestParamInfo<
+        FatalCrashEventsObserverUploadedCrashTest::ParamType>& info) {
+      return base::StrCat(
+          {FatalCrashEventsObserverUploadedCrashTest::
+               GetTestNameForCreationTime(
+                   std::get<0>(info.param).creation_time),
+           "_"sv,
+           FatalCrashEventsObserverUploadedCrashTest::GetTestNameForOffset(
+               std::get<0>(info.param).offset),
+           "_"sv, std::get<1>(info.param) ? "reload"sv : "same_session"sv});
+    });
+
+// Even if the save file can't be created, the unreloaded result should be the
+// same. No need to test it for all combinations of creation times and offsets;
+// only pick 2 cases, one that should report and another one that should not be
+// reported.
+INSTANTIATE_TEST_SUITE_P(
+    FatalCrashEventsObserverUploadedCrashTestsForUncreatableSaveFile,
+    FatalCrashEventsObserverUploadedCrashTest,
+    ::testing::Combine(
+        ::testing::ValuesIn(std::vector<
+                            FatalCrashEventsObserverUploadedCrashCase>{
             {.creation_time = FatalCrashEventsObserverUploadedCrashTest::
                  kEarlierCreationTime,
              .offset = FatalCrashEventsObserverUploadedCrashTest::kOffset,
@@ -943,36 +986,17 @@ INSTANTIATE_TEST_SUITE_P(
              .should_be_reported = true,
              .creatable_save_file = false},
         }),
-        ::testing::Bool()),
+        /*reload=*/::testing::Values(false)),
     [](const testing::TestParamInfo<
         FatalCrashEventsObserverUploadedCrashTest::ParamType>& info) {
-      using std::literals::string_view_literals::operator""sv;
-
-      std::string_view creation_time;
-      if (std::get<0>(info.param).creation_time >
-          FatalCrashEventsObserverUploadedCrashTest::kCreationTime) {
-        creation_time = "later"sv;
-      } else if (std::get<0>(info.param).creation_time <
-                 FatalCrashEventsObserverUploadedCrashTest::kCreationTime) {
-        creation_time = "earlier"sv;
-      } else {
-        creation_time = "same"sv;
-      }
-
-      std::string_view offset;
-      if (std::get<0>(info.param).offset >
-          FatalCrashEventsObserverUploadedCrashTest::kOffset) {
-        offset = "larger"sv;
-      } else if (std::get<0>(info.param).offset <
-                 FatalCrashEventsObserverUploadedCrashTest::kOffset) {
-        offset = "smaller"sv;
-      } else {
-        offset = "same"sv;
-      }
-
       return base::StrCat(
-          {creation_time, "_time_"sv, offset, "_offset_"sv,
-           std::get<1>(info.param) ? "reload"sv : "same_session"sv, "_"sv,
+          {FatalCrashEventsObserverUploadedCrashTest::
+               GetTestNameForCreationTime(
+                   std::get<0>(info.param).creation_time),
+           "_"sv,
+           FatalCrashEventsObserverUploadedCrashTest::GetTestNameForOffset(
+               std::get<0>(info.param).offset),
+           "_"sv,
            std::get<0>(info.param).creatable_save_file ? "creatable_file"sv
                                                        : "uncreatable_file"sv});
     });
