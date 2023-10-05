@@ -8,7 +8,7 @@
     test(() => {
       internals.clearUseCounter(document, WebFeature.kObservableConstructor);
       assert_false(internals.isUseCounted(document, WebFeature.kObservableConstructor));
-      const observable = new Observable();
+      const observable = new Observable(() => {});
       assert_true(internals.isUseCounted(document, WebFeature.kObservableConstructor));
     });
   </script>

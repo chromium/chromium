@@ -13,6 +13,7 @@ namespace blink {
 
 class ExecutionContext;
 class ScriptState;
+class V8SubscribeCallback;
 
 // Implementation of the DOM `Observable` API. See
 // https://github.com/WICG/observable and
@@ -23,11 +24,20 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
 
  public:
   // Called by v8 bindings.
-  static Observable* Create(ScriptState* script_state);
+  static Observable* Create(ScriptState*, V8SubscribeCallback*);
 
-  explicit Observable(ExecutionContext*);
+  Observable(ExecutionContext*, V8SubscribeCallback*);
+
+  // API methods:
+  void subscribe();
 
   void Trace(Visitor*) const override;
+
+ private:
+  // This gets called when the `subscribe` method is invoked. When this callback
+  // is run, errors are caught and "reported":
+  // https://html.spec.whatwg.org/C#report-the-exception.
+  const Member<V8SubscribeCallback> subscribe_callback_;
 };
 
 }  // namespace blink

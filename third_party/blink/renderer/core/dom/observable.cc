@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/observable.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_callback.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -12,16 +13,31 @@
 namespace blink {
 
 // static
-Observable* Observable::Create(ScriptState* script_state) {
-  return MakeGarbageCollected<Observable>(ExecutionContext::From(script_state));
+Observable* Observable::Create(ScriptState* script_state,
+                               V8SubscribeCallback* subscribe_callback) {
+  return MakeGarbageCollected<Observable>(ExecutionContext::From(script_state),
+                                          subscribe_callback);
 }
 
-Observable::Observable(ExecutionContext* execution_context)
-    : ExecutionContextClient(execution_context) {
+Observable::Observable(ExecutionContext* execution_context,
+                       V8SubscribeCallback* subscribe_callback)
+    : ExecutionContextClient(execution_context),
+      subscribe_callback_(subscribe_callback) {
+  DCHECK(subscribe_callback);
   DCHECK(RuntimeEnabledFeatures::ObservableAPIEnabled(execution_context));
 }
 
+void Observable::subscribe() {
+  DCHECK(subscribe_callback_);
+  // Exceptions are "reported", per
+  // https://html.spec.whatwg.org/C#report-the-exception, and do not interrupt
+  // the ordinary control flow here.
+  subscribe_callback_->InvokeAndReportException(nullptr);
+}
+
 void Observable::Trace(Visitor* visitor) const {
+  visitor->Trace(subscribe_callback_);
+
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
