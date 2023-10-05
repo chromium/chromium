@@ -190,15 +190,14 @@ CookieSettingsBase::GetCookieAccessSemanticsForDomain(
   return net::CookieAccessSemantics::UNKNOWN;
 }
 
-bool CookieSettingsBase::ShouldConsider3pcdSupportSettings(
-    net::CookieSettingOverrides overrides) const {
-  // TODO(crbug.com/1466156): Once able, check that third-party cookie blocking
-  // isn't being forced.
-  return base::FeatureList::IsEnabled(net::features::kTpcdSupportSettings);
+bool CookieSettingsBase::ShouldConsider3pcdSupportSettings() const {
+  return base::FeatureList::IsEnabled(net::features::kTpcdSupportSettings) &&
+         MitigationsEnabledFor3pcd();
 }
 
 bool CookieSettingsBase::ShouldConsider3pcdMetadataGrantsSettings() const {
-  return base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants);
+  return base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants) &&
+         MitigationsEnabledFor3pcd();
 }
 
 bool CookieSettingsBase::ShouldConsiderStorageAccessGrants(
@@ -271,6 +270,18 @@ CookieSettingsBase::GetCookieSettingInternal(
                                    ACCESS_ALLOWED_3PCD_METADATA_GRANT);
   }
 
+  if (block_third && ShouldConsider3pcdSupportSettings() &&
+      GetContentSetting(url, first_party_url,
+                        ContentSettingsType::TPCD_SUPPORT) ==
+          CONTENT_SETTING_ALLOW) {
+    // TODO (crbug.com/1466156): Revisit this after a decision has been made
+    // on how an explicit 3PC setting will be differentiated from an
+    // experimental one.
+    block_third = false;
+    FireStorageAccessHistogram(
+        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD);
+  }
+
   if (block_third) {
     bool has_storage_access_opt_in =
         ShouldConsiderStorageAccessGrants(overrides);
@@ -297,18 +308,6 @@ CookieSettingsBase::GetCookieSettingInternal(
           net::cookie_util::StorageAccessResult::
               ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT);
     }
-  }
-
-  if (block_third && ShouldConsider3pcdSupportSettings(overrides) &&
-      GetContentSetting(url, first_party_url,
-                        ContentSettingsType::TPCD_SUPPORT) ==
-          CONTENT_SETTING_ALLOW) {
-    // TODO (crbug.com/1466156): Revisit this after a decision has been made on
-    // how an explicit 3PC setting will be differentiated from an experimental
-    // one.
-    block_third = false;
-    FireStorageAccessHistogram(
-        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD);
   }
 
   if (!IsAllowed(setting) || block_third) {

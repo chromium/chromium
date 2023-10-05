@@ -215,8 +215,7 @@ class CookieSettingsBase {
   // access.
   static bool IsValidSettingForLegacyAccess(ContentSetting setting);
 
-  bool ShouldConsider3pcdSupportSettings(
-      net::CookieSettingOverrides overrides) const;
+  bool ShouldConsider3pcdSupportSettings() const;
 
   bool ShouldConsider3pcdMetadataGrantsSettings() const;
 

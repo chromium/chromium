@@ -53,6 +53,10 @@ CookieSettings::CookieSettings(
       base::BindRepeating(&CookieSettings::OnCookiePreferencesChanged,
                           base::Unretained(this)));
   OnCookiePreferencesChanged();
+
+#if BUILDFLAG(USE_BLINK)
+  OnBlockAllThirdPartyCookiesChanged();
+#endif
 }
 
 ContentSetting CookieSettings::GetDefaultCookieSetting(
@@ -279,6 +283,14 @@ bool CookieSettings::IsStorageAccessApiEnabled() const {
 
 CookieSettings::~CookieSettings() = default;
 
+bool CookieSettings::IsTrackingProtection3pcdEnabled() {
+  // NOTE: TrackingProtectionSettings will set kTrackingProtection3pcd to false
+  // if kCookieControlsMode is enterprise controlled.
+  return base::FeatureList::IsEnabled(features::kTrackingProtection3pcd) ||
+         pref_change_registrar_.prefs()->GetBoolean(
+             prefs::kTrackingProtection3pcdEnabled);
+}
+
 bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -293,12 +305,7 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
   }
 
   // Cookies should always be blocked in 3PCD experiment or if debug flag is on.
-  // Note: TrackingProtectionSettings will set kTrackingProtection3pcd to false
-  // if kCookieControlsMode is enterprise controlled.
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kTrackingProtection3pcd) ||
-      pref_change_registrar_.prefs()->GetBoolean(
-          prefs::kTrackingProtection3pcdEnabled)) {
+  if (IsTrackingProtection3pcdEnabled()) {
     return true;
   }
 
@@ -329,12 +336,13 @@ bool CookieSettings::MitigationsEnabledFor3pcdInternal() {
     return false;
   }
 
-  if (!ShouldBlockThirdPartyCookiesInternal()) {
-    return false;
+  if (IsTrackingProtection3pcdEnabled()) {
+    // If the user has chosen to block all 3PC then respect user's choice by
+    // switching mitigations off.
+    return !pref_change_registrar_.prefs()->GetBoolean(
+        prefs::kBlockAll3pcToggleEnabled);
   }
 
-  // TODO(njeunje): Integrate this method with the new 3PC Prefs and migrate all
-  // mitigations + test coverage.
   return false;
 }
 
@@ -346,6 +354,21 @@ void CookieSettings::OnContentSettingChanged(
     for (auto& observer : observers_) {
       observer.OnCookieSettingChanged();
     }
+  }
+}
+
+void CookieSettings::OnBlockAllThirdPartyCookiesChanged() {
+  bool new_mitigations_enabled_for_3pcd = MitigationsEnabledFor3pcdInternal();
+  {
+    base::AutoLock auto_lock(lock_);
+    if (mitigations_enabled_for_3pcd_ == new_mitigations_enabled_for_3pcd) {
+      return;
+    }
+    mitigations_enabled_for_3pcd_ = new_mitigations_enabled_for_3pcd;
+  }
+
+  for (Observer& obs : observers_) {
+    obs.OnMitigationsEnabledFor3pcdChanged(new_mitigations_enabled_for_3pcd);
   }
 }
 
@@ -367,33 +390,16 @@ void CookieSettings::OnCookiePreferencesChanged() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   bool new_block_third_party_cookies = ShouldBlockThirdPartyCookiesInternal();
-  bool new_mitigations_enabled_for_3pcd = MitigationsEnabledFor3pcdInternal();
 
-  // TODO(njeunje): Look into if it would be better to use std::atomic<bool>
-  // instead of all these locks and unlocks.
-  base::AutoLock auto_lock(lock_);
-
-  if (block_third_party_cookies_ != new_block_third_party_cookies) {
+  {
+    base::AutoLock auto_lock(lock_);
+    if (block_third_party_cookies_ == new_block_third_party_cookies) {
+      return;
+    }
     block_third_party_cookies_ = new_block_third_party_cookies;
-
-    {
-      base::AutoUnlock auto_unlock(lock_);
-      for (Observer& obs : observers_) {
-        obs.OnThirdPartyCookieBlockingChanged(new_block_third_party_cookies);
-      }
-    }
   }
-
-  if (mitigations_enabled_for_3pcd_ != new_mitigations_enabled_for_3pcd) {
-    mitigations_enabled_for_3pcd_ = new_mitigations_enabled_for_3pcd;
-
-    {
-      base::AutoUnlock auto_unlock(lock_);
-      for (Observer& obs : observers_) {
-        obs.OnMitigationsEnabledFor3pcdChanged(
-            new_mitigations_enabled_for_3pcd);
-      }
-    }
+  for (Observer& obs : observers_) {
+    obs.OnThirdPartyCookieBlockingChanged(new_block_third_party_cookies);
   }
 }
 

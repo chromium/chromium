@@ -7,11 +7,13 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -51,6 +53,7 @@ CookieSettingsFactory::CookieSettingsFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }
 
 CookieSettingsFactory::~CookieSettingsFactory() = default;
@@ -93,7 +96,13 @@ CookieSettingsFactory::BuildServiceInstanceFor(
       content_settings::kDummyExtensionScheme;
 #endif
 
-  return new content_settings::CookieSettings(
+  auto* cookie_settings = new content_settings::CookieSettings(
       HostContentSettingsMapFactory::GetForProfile(profile), prefs,
       profile->IsIncognitoProfile(), extension_scheme);
+
+  privacy_sandbox::TrackingProtectionSettings* tps =
+      TrackingProtectionSettingsFactory::GetForProfile(profile);
+  tps->AddObserver(cookie_settings);
+
+  return cookie_settings;
 }
