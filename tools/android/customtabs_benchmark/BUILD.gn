@@ -19,7 +19,7 @@ android_apk("customtabs_benchmark_apk") {
   ]
   android_manifest = "java/AndroidManifest.xml"
   min_sdk_version = 21
-  target_sdk_version = 22
+  target_sdk_version = 33
   apk_name = "CustomTabsBenchmark"
   deps = [
     ":customtabs_benchmark_apk_resources",

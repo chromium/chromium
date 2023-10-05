@@ -68,6 +68,7 @@ def _ParseConfiguration(filename):
   config.setdefault('pin_offset', -1)
   config.setdefault('pin_length', -1)
   config.setdefault('extra_brief_memory_mb', 0)
+  config.setdefault('delay_to_may_launch_url', -1)
 
   has_all_values = all(k in config for k in _KEYS)
   assert has_all_values
