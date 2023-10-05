@@ -252,6 +252,9 @@ public class Fido2CredentialRequest
         // password manager that they cannot then assert.
         final boolean prfOverHybrid = frameHost == null && options.prfEnable;
 
+        // Send requests to Android 14+ CredMan if CredMan is enabled and
+        // `gpm_in_cred_man` parameter is enabled.
+        //
         // residentKey=discouraged requests are often for the traditional,
         // non-syncing platform authenticator on Android. A number of sites use
         // this and, so as not to disrupt them with Android 14, these requests
@@ -260,13 +263,21 @@ public class Fido2CredentialRequest
         // Otherwise these requests are for security keys, and Play Services is
         // currently the best answer for those requests too.
         //
-        // Payments requests are also routed to Play Services since we haven't defined how SPC works
-        // in CredMan yet.
-        if (!rkDiscouraged && !options.isPaymentCredentialCreation && !prfOverHybrid
-                && isCredManEnabled()) {
-            int result = mCredManHelper.startMakeRequest(mContext, mFrameHost, options,
-                    convertOriginToString(origin), maybeClientDataHash, callback,
-                    this::returnErrorAndResetCallback);
+        // Payments requests are also routed to Play Services since we haven't
+        // defined how SPC works in CredMan yet.
+        if (!rkDiscouraged
+                && !options.isPaymentCredentialCreation
+                && !prfOverHybrid
+                && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
+            int result =
+                    mCredManHelper.startMakeRequest(
+                            mContext,
+                            mFrameHost,
+                            options,
+                            convertOriginToString(origin),
+                            maybeClientDataHash,
+                            callback,
+                            this::returnErrorAndResetCallback);
             if (result != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(result);
             return;
         }
