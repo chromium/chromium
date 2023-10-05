@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/source_type.mojom.h"
-#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "net/base/schemeful_site.h"
@@ -307,23 +306,18 @@ bool To56(sql::Database& db) {
     }
 
     int max_event_level_reports;
-    std::vector<base::TimeDelta> end_times;
     switch (source_type.value()) {
       case attribution_reporting::mojom::SourceType::kNavigation:
         max_event_level_reports = 3;
-        end_times = {kDefaultNavigationReportWindow1,
-                     kDefaultNavigationReportWindow2};
         break;
       case attribution_reporting::mojom::SourceType::kEvent:
         max_event_level_reports = 1;
         break;
     }
 
-    absl::optional<attribution_reporting::EventReportWindows>
-        event_report_windows =
-            attribution_reporting::EventReportWindows::CreateWindowsAndTruncate(
-                /*start_time=*/base::Seconds(0), std::move(end_times),
-                /*expiry=*/event_report_window_time - source_time);
+    auto event_report_windows =
+        attribution_reporting::EventReportWindows::FromDefaults(
+            event_report_window_time - source_time, *source_type);
     if (!event_report_windows.has_value()) {
       continue;
     }

@@ -58,7 +58,6 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
@@ -478,19 +477,6 @@ absl::optional<uint64_t> ColumnUint64OrNull(sql::Statement& statement,
                    DeserializeUint64(statement.ColumnInt64(col)));
 }
 
-absl::optional<EventReportWindows> ValidateEventReportWindows(
-    absl::optional<EventReportWindows> registered_windows,
-    const EventReportWindows& default_windows) {
-  DCHECK(!registered_windows->OnlySingularWindow());
-
-  base::TimeDelta default_end_duration = *default_windows.end_times().rbegin();
-  if (registered_windows->start_time() > default_end_duration ||
-      !registered_windows->MaybeTruncate(default_end_duration)) {
-    return absl::nullopt;
-  }
-  return registered_windows;
-}
-
 constexpr int kSourceColumnCount = 19;
 
 int64_t StorageFileSizeKB(const base::FilePath& path_to_database) {
@@ -821,39 +807,12 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   const base::Time expiry_time = source_time + reg.expiry;
 
-  EventReportWindows event_report_windows;
-  if (!reg.event_report_windows.has_value()) {
-    event_report_windows = delegate_->GetDefaultEventReportWindows(
-        common_info.source_type(), expiry_time - source_time);
-  } else if (reg.event_report_windows->OnlySingularWindow()) {
-    absl::optional<base::Time> report_window_time =
-        delegate_->GetReportWindowTime(reg.event_report_windows->window_time(),
-                                       source_time);
-
-    base::Time event_report_window_time =
-        ComputeReportWindowTime(report_window_time, expiry_time);
-
-    event_report_windows = delegate_->GetDefaultEventReportWindows(
-        common_info.source_type(), event_report_window_time - source_time);
-  } else {
-    auto maybe_event_report_windows = ValidateEventReportWindows(
-        reg.event_report_windows,
-        delegate_->GetDefaultEventReportWindows(common_info.source_type(),
-                                                expiry_time - source_time));
-
-    if (!maybe_event_report_windows.has_value()) {
-      return StoreSourceResult(
-          StorableSource::Result::kEventReportWindowsInvalidStartTime);
-    }
-    event_report_windows = std::move(*maybe_event_report_windows);
-  }
-
   const base::Time aggregatable_report_window_time =
       source_time + reg.aggregatable_report_window;
 
   ASSIGN_OR_RETURN(const auto randomized_response_data,
                    delegate_->GetRandomizedResponse(
-                       common_info.source_type(), event_report_windows,
+                       common_info.source_type(), reg.event_report_windows,
                        reg.max_event_level_reports, source_time),
                    [](auto) {
                      return StoreSourceResult(
@@ -907,9 +866,10 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   statement.BindBlob(14, SerializeAggregationKeys(reg.aggregation_keys));
   statement.BindBlob(15, SerializeFilterData(reg.filter_data));
-  statement.BindBlob(16, SerializeReadOnlySourceData(
-                             event_report_windows, reg.max_event_level_reports,
-                             randomized_response_data.rate()));
+  statement.BindBlob(
+      16, SerializeReadOnlySourceData(reg.event_report_windows,
+                                      reg.max_event_level_reports,
+                                      randomized_response_data.rate()));
 
   if (!statement.Run()) {
     return StoreSourceResult(StorableSource::Result::kInternalError);
@@ -933,7 +893,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   absl::optional<StoredSource> stored_source = StoredSource::Create(
       source.common_info(), reg.source_event_id, reg.destination_set,
-      source_time, expiry_time, std::move(event_report_windows),
+      source_time, expiry_time, reg.event_report_windows,
       aggregatable_report_window_time, reg.max_event_level_reports,
       reg.priority, reg.filter_data, reg.debug_key, reg.aggregation_keys,
       attribution_logic, *active_state, source_id,

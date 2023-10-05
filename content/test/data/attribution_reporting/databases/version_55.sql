@@ -42,6 +42,7 @@ CREATE INDEX rate_limit_time_idx ON rate_limits(time);
 
 CREATE INDEX rate_limit_source_id_idx ON rate_limits(source_id);
 
-INSERT INTO sources VALUES(1,2,3,4,5,6,7,8,9,10,11,0,13,14,15,16,17,18,19,20);
+-- Unusual value is 1 hour in microseconds after the source time.
+INSERT INTO sources VALUES(1,2,3,4,5,6,3600000005,8,9,10,11,0,13,14,15,16,17,18,19,20);
 
 COMMIT;

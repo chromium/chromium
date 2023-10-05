@@ -70,15 +70,6 @@ base::Uuid DefaultExternalReportID() {
   return base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");
 }
 
-absl::optional<base::Time> GetReportWindowTimeForTesting(
-    absl::optional<base::TimeDelta> declared_window,
-    base::Time source_time) {
-  if (!declared_window) {
-    return absl::nullopt;
-  }
-  return source_time + *declared_window;
-}
-
 // Builds an impression with default values. This is done as a builder because
 // all values needed to be provided at construction time.
 SourceBuilder::SourceBuilder(base::Time time)
@@ -239,9 +230,7 @@ StoredSource SourceBuilder::BuildStored() const {
   StoredSource source = *StoredSource::Create(
       BuildCommonInfo(), registration_.source_event_id,
       registration_.destination_set, source_time_, expiry_time,
-      registration_.event_report_windows.value_or(
-          *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Milliseconds(0), {registration_.expiry})),
+      registration_.event_report_windows,
       source_time_ + registration_.aggregatable_report_window,
       registration_.max_event_level_reports, registration_.priority,
       registration_.filter_data, registration_.debug_key,

@@ -21,5 +21,5 @@ enum StoreSourceResult {
   kDestinationBothLimitsReached = 9,
   kReportingOriginsPerSiteLimitReached = 10,
   kExceedsMaxChannelCapacity = 11,
-  kEventReportWindowsInvalidStartTime = 12,
+  // Reserved: 12
 };

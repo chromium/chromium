@@ -85,8 +85,7 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 bool operator==(const EventReportWindows& a, const EventReportWindows& b) {
-  return a.start_time_or_window_time() == b.start_time_or_window_time() &&
-         a.end_times() == b.end_times();
+  return a.start_time() == b.start_time() && a.end_times() == b.end_times();
 }
 
 std::ostream& operator<<(std::ostream& out,

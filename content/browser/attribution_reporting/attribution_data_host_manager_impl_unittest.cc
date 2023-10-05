@@ -29,6 +29,7 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
@@ -485,6 +486,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   // Non-whole-day expiry is invalid for `SourceType::kEvent`.
   source_data.expiry = base::Days(1) + base::Microseconds(1);
   source_data.aggregatable_report_window = source_data.expiry;
+  source_data.event_report_windows =
+      *attribution_reporting::EventReportWindows::FromDefaults(
+          source_data.expiry, SourceType::kEvent);
 
   {
     mojo::test::BadMessageObserver bad_message_observer;

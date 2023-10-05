@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
+#include "components/attribution_reporting/source_type.mojom-shared.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,6 +22,7 @@ namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
+using ::attribution_reporting::mojom::SourceType;
 using ::base::test::ErrorIs;
 using ::base::test::ValueIs;
 using ::testing::AllOf;
@@ -31,13 +33,80 @@ using ::testing::Property;
 
 using WindowResult = EventReportWindows::WindowResult;
 
-TEST(EventReportWindowsTest, CreateWindow) {
-  EXPECT_EQ(EventReportWindows::CreateSingularWindow(base::Seconds(-1)),
-            absl::nullopt);
+TEST(EventReportWindowsTest, FromDefaults) {
+  const struct {
+    const char* desc;
+    base::TimeDelta report_window;
+    SourceType source_type;
+    ::testing::Matcher<absl::optional<EventReportWindows>> matches;
+  } kTestCases[] = {
+      {
+          "negative-navigation",
+          base::Seconds(-1),
+          SourceType::kNavigation,
+          Eq(absl::nullopt),
+      },
+      {
+          "negative-event",
+          base::Seconds(-1),
+          SourceType::kEvent,
+          Eq(absl::nullopt),
+      },
+      {
+          "=-last-navigation",
+          base::Days(7),
+          SourceType::kNavigation,
+          Optional(AllOf(
+              Property(&EventReportWindows::start_time, base::TimeDelta()),
+              Property(&EventReportWindows::end_times,
+                       ElementsAre(base::Days(2), base::Days(7))))),
+      },
+      {
+          ">-last-navigation",
+          base::Days(7) + base::Seconds(1),
+          SourceType::kNavigation,
+          Optional(AllOf(
+              Property(&EventReportWindows::start_time, base::TimeDelta()),
+              Property(&EventReportWindows::end_times,
+                       ElementsAre(base::Days(2), base::Days(7),
+                                   base::Days(7) + base::Seconds(1))))),
+      },
+      {
+          "<-last-navigation",
+          base::Days(7) - base::Seconds(1),
+          SourceType::kNavigation,
+          Optional(AllOf(
+              Property(&EventReportWindows::start_time, base::TimeDelta()),
+              Property(&EventReportWindows::end_times,
+                       ElementsAre(base::Days(2),
+                                   base::Days(7) - base::Seconds(1))))),
+      },
+      {
+          "<-first-navigation",
+          base::Days(2) - base::Seconds(1),
+          SourceType::kNavigation,
+          Optional(AllOf(
+              Property(&EventReportWindows::start_time, base::TimeDelta()),
+              Property(&EventReportWindows::end_times,
+                       ElementsAre(base::Days(2) - base::Seconds(1))))),
+      },
+      {
+          "event",
+          base::Days(30),
+          SourceType::kEvent,
+          Optional(AllOf(
+              Property(&EventReportWindows::start_time, base::TimeDelta()),
+              Property(&EventReportWindows::end_times,
+                       ElementsAre(base::Days(30))))),
+      },
+  };
 
-  EXPECT_THAT(
-      EventReportWindows::CreateSingularWindow(base::Seconds(0)),
-      Optional(Property(&EventReportWindows::window_time, base::Seconds(0))));
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+    EXPECT_THAT(EventReportWindows::FromDefaults(test_case.report_window,
+                                                 test_case.source_type),
+                test_case.matches);
+  }
 }
 
 TEST(EventReportWindowsTest, CreateWindows) {
@@ -49,32 +118,32 @@ TEST(EventReportWindowsTest, CreateWindows) {
   } kTestCases[] = {
       {
           .name = "end_time-eq-start_time",
-          .start_time = base::Seconds(1),
-          .end_times = {base::Seconds(1)},
+          .start_time = base::Hours(1),
+          .end_times = {base::Hours(1)},
           .matches = Eq(absl::nullopt),
       },
       {
           .name = "end_time-lt-start_time",
-          .start_time = base::Seconds(2),
-          .end_times = {base::Seconds(1)},
+          .start_time = base::Hours(2),
+          .end_times = {base::Hours(2) - base::Microseconds(1)},
           .matches = Eq(absl::nullopt),
       },
       {
           .name = "end_time-eq-prev-end_time",
           .start_time = base::Seconds(0),
-          .end_times = {base::Seconds(1), base::Seconds(1)},
+          .end_times = {base::Hours(1), base::Hours(1)},
           .matches = Eq(absl::nullopt),
       },
       {
           .name = "end_time-lt-prev-end_time",
           .start_time = base::Seconds(0),
-          .end_times = {base::Seconds(2), base::Seconds(1)},
+          .end_times = {base::Hours(2), base::Hours(2) - base::Microseconds(1)},
           .matches = Eq(absl::nullopt),
       },
       {
           .name = "negative-start_time",
           .start_time = base::Seconds(-1),
-          .end_times = {base::Seconds(1)},
+          .end_times = {base::Hours(1)},
           .matches = Eq(absl::nullopt),
       },
       {
@@ -86,33 +155,39 @@ TEST(EventReportWindowsTest, CreateWindows) {
       {
           .name = "too-many-end_times",
           .start_time = base::Seconds(0),
-          .end_times = {base::Seconds(1), base::Seconds(2), base::Seconds(3),
-                        base::Seconds(4), base::Seconds(5), base::Seconds(6)},
+          .end_times = {base::Hours(1), base::Hours(2), base::Hours(3),
+                        base::Hours(4), base::Hours(5), base::Hours(6)},
+          .matches = Eq(absl::nullopt),
+      },
+      {
+          .name = "end-time-less-than-min-report-window",
+          .start_time = base::Seconds(0),
+          .end_times = {base::Hours(1) - base::Microseconds(1)},
           .matches = Eq(absl::nullopt),
       },
       {
           .name = "valid",
           .start_time = base::Seconds(0),
-          .end_times = {base::Seconds(1), base::Seconds(2), base::Seconds(3),
-                        base::Seconds(4), base::Seconds(5)},
-          .matches = Optional(
-              AllOf(Property(&EventReportWindows::start_time, base::Seconds(0)),
-                    Property(&EventReportWindows::end_times,
-                             ElementsAre(base::Seconds(1), base::Seconds(2),
-                                         base::Seconds(3), base::Seconds(4),
-                                         base::Seconds(5))))),
+          .end_times = {base::Hours(1), base::Hours(2), base::Hours(3),
+                        base::Hours(4), base::Hours(5)},
+          .matches = Optional(AllOf(
+              Property(&EventReportWindows::start_time, base::Seconds(0)),
+              Property(
+                  &EventReportWindows::end_times,
+                  ElementsAre(base::Hours(1), base::Hours(2), base::Hours(3),
+                              base::Hours(4), base::Hours(5))))),
       },
       {
           .name = "valid-non-zero_start_time",
           .start_time = base::Seconds(1),
-          .end_times = {base::Seconds(2), base::Seconds(3), base::Seconds(4),
-                        base::Seconds(5), base::Seconds(6)},
-          .matches = Optional(
-              AllOf(Property(&EventReportWindows::start_time, base::Seconds(1)),
-                    Property(&EventReportWindows::end_times,
-                             ElementsAre(base::Seconds(2), base::Seconds(3),
-                                         base::Seconds(4), base::Seconds(5),
-                                         base::Seconds(6))))),
+          .end_times = {base::Hours(2), base::Hours(3), base::Hours(4),
+                        base::Hours(5), base::Hours(6)},
+          .matches = Optional(AllOf(
+              Property(&EventReportWindows::start_time, base::Seconds(1)),
+              Property(
+                  &EventReportWindows::end_times,
+                  ElementsAre(base::Hours(2), base::Hours(3), base::Hours(4),
+                              base::Hours(5), base::Hours(6))))),
       },
   };
   for (const auto& test_case : kTestCases) {
@@ -123,80 +198,47 @@ TEST(EventReportWindowsTest, CreateWindows) {
   }
 }
 
-TEST(EventReportWindowsTest, CreateWindowsAndTruncate) {
-  const base::TimeDelta kStartTime = base::Seconds(5);
-  const std::vector<base::TimeDelta> kEndTimes = {base::Seconds(10),
-                                                  base::Seconds(30)};
-
-  const struct {
-    base::TimeDelta expiry;
-    ::testing::Matcher<absl::optional<EventReportWindows>> matches;
-  } kTestCases[] = {
-      {
-          .expiry = base::Seconds(5),
-          .matches = Eq(absl::nullopt),
-      },
-      {
-          .expiry = base::Seconds(6),
-          .matches = Optional(
-              AllOf(Property(&EventReportWindows::start_time, kStartTime),
-                    Property(&EventReportWindows::end_times,
-                             ElementsAre(base::Seconds(6))))),
-      },
-      {
-          .expiry = base::Seconds(10),
-          .matches = Optional(
-              AllOf(Property(&EventReportWindows::start_time, kStartTime),
-                    Property(&EventReportWindows::end_times,
-                             ElementsAre(base::Seconds(10))))),
-      },
-      {
-          .expiry = base::Seconds(11),
-          .matches = Optional(AllOf(
-              Property(&EventReportWindows::start_time, kStartTime),
-              Property(&EventReportWindows::end_times,
-                       ElementsAre(base::Seconds(10), base::Seconds(11))))),
-      },
-      {
-          .expiry = base::Seconds(31),
-          .matches = Optional(
-              AllOf(Property(&EventReportWindows::start_time, kStartTime),
-                    Property(&EventReportWindows::end_times,
-                             ElementsAre(base::Seconds(10), base::Seconds(30),
-                                         base::Seconds(31))))),
-      },
-  };
-  for (const auto& test_case : kTestCases) {
-    EXPECT_THAT(EventReportWindows::CreateWindowsAndTruncate(
-                    kStartTime, kEndTimes, test_case.expiry),
-                test_case.matches);
-  }
-}
-
 TEST(EventReportWindowsTest, Parse) {
   const struct {
     const char* desc;
     const char* json;
-    ::testing::Matcher<base::expected<absl::optional<EventReportWindows>,
-                                      SourceRegistrationError>>
+    ::testing::Matcher<
+        base::expected<EventReportWindows, SourceRegistrationError>>
         matches;
+    SourceType source_type = SourceType::kNavigation;
+    base::TimeDelta expiry = base::Days(30);
   } kTestCases[] = {
       {
-          "neither_field_present",
+          "neither_field_present_navigation",
           R"json({})json",
-          ValueIs(absl::nullopt),
+          ValueIs(*EventReportWindows::FromDefaults(base::Days(30),
+                                                    SourceType::kNavigation)),
+          SourceType::kNavigation,
       },
       {
-          "event_report_window_valid",
+          "neither_field_present_event",
+          R"json({})json",
+          ValueIs(*EventReportWindows::FromDefaults(base::Days(30),
+                                                    SourceType::kEvent)),
+          SourceType::kEvent,
+      },
+      {
+          "event_report_window_valid_navigation",
           R"json({"event_report_window":"86401"})json",
-          ValueIs(Optional(Property(&EventReportWindows::window_time,
-                                    base::Seconds(86401)))),
+          ValueIs(*EventReportWindows::FromDefaults(base::Seconds(86401),
+                                                    SourceType::kNavigation)),
+      },
+      {
+          "event_report_window_valid_event",
+          R"json({"event_report_window":"86401"})json",
+          ValueIs(*EventReportWindows::FromDefaults(base::Seconds(86401),
+                                                    SourceType::kEvent)),
       },
       {
           "event_report_window_valid_int",
           R"json({"event_report_window":86401})json",
-          ValueIs(Optional(Property(&EventReportWindows::window_time,
-                                    base::Seconds(86401)))),
+          ValueIs(*EventReportWindows::FromDefaults(base::Seconds(86401),
+                                                    SourceType::kNavigation)),
       },
       {
           "event_report_window_wrong_type",
@@ -217,6 +259,19 @@ TEST(EventReportWindowsTest, Parse) {
           "event_report_window_negative_int",
           R"json({"event_report_window":-86401})json",
           ErrorIs(SourceRegistrationError::kEventReportWindowValueInvalid),
+      },
+      {
+          "event_report_window_clamped_min",
+          R"json({"event_report_window":3599})json",
+          ValueIs(*EventReportWindows::FromDefaults(base::Seconds(3600),
+                                                    SourceType::kNavigation)),
+      },
+      {
+          .desc = "event_report_window_clamped_max",
+          .json = R"json({"event_report_window":86401})json",
+          .matches = ValueIs(*EventReportWindows::FromDefaults(
+              base::Seconds(86400), SourceType::kNavigation)),
+          .expiry = base::Seconds(86400),
       },
       {
           "event_report_windows_wrong_type",
@@ -244,6 +299,16 @@ TEST(EventReportWindowsTest, Parse) {
             "end_times":[96000,172800]
           }})json",
           ErrorIs(SourceRegistrationError::kEventReportWindowsStartTimeInvalid),
+      },
+      {
+          .desc = "event_report_windows_start_time_gt_expiry",
+          .json = R"json({"event_report_windows":{
+            "start_time":86401,
+            "end_times":[96000]
+          }})json",
+          .matches = ErrorIs(
+              SourceRegistrationError::kEventReportWindowsStartTimeInvalid),
+          .expiry = base::Seconds(86400),
       },
       {
           "event_report_windows_end_times_missing",
@@ -334,27 +399,47 @@ TEST(EventReportWindowsTest, Parse) {
                       kEventReportWindowsEndTimeDurationLTEStart),
       },
       {
+          "event_report_windows_end_time_clamped_min",
+          R"json({"event_report_windows":{
+            "start_time":3599,
+            "end_times":[3599]
+          }})json",
+          ValueIs(AllOf(
+              Property(&EventReportWindows::start_time, base::Seconds(3599)),
+              Property(&EventReportWindows::end_times,
+                       ElementsAre(base::Seconds(3600))))),
+      },
+      {
+          .desc = "event_report_windows_end_time_clamped_max",
+          .json = R"json({"event_report_windows":{"end_times":[86401]}})json",
+          .matches = ValueIs(
+              AllOf(Property(&EventReportWindows::start_time, base::Seconds(0)),
+                    Property(&EventReportWindows::end_times,
+                             ElementsAre(base::Seconds(86400))))),
+          .expiry = base::Seconds(86400),
+      },
+      {
           "event_report_windows_valid",
           R"json({"event_report_windows":{
             "start_time":0,
             "end_times":[3600,10800,21600]
           }})json",
-          ValueIs(Optional(AllOf(
+          ValueIs(AllOf(
               Property(&EventReportWindows::start_time, base::Seconds(0)),
               Property(&EventReportWindows::end_times,
                        ElementsAre(base::Seconds(3600), base::Seconds(10800),
-                                   base::Seconds(21600)))))),
+                                   base::Seconds(21600))))),
       },
       {
           "event_report_windows_valid_start_time_missing",
           R"json({"event_report_windows":{
             "end_times":[3600,10800,21600]
           }})json",
-          ValueIs(Optional(AllOf(
+          ValueIs(AllOf(
               Property(&EventReportWindows::start_time, base::Seconds(0)),
               Property(&EventReportWindows::end_times,
                        ElementsAre(base::Seconds(3600), base::Seconds(10800),
-                                   base::Seconds(21600)))))),
+                                   base::Seconds(21600))))),
       },
       {
           "event_report_windows_valid_start_time_set",
@@ -362,21 +447,21 @@ TEST(EventReportWindowsTest, Parse) {
             "start_time":7200,
             "end_times":[16000,32000,48000]
           }})json",
-          ValueIs(Optional(AllOf(
+          ValueIs(AllOf(
               Property(&EventReportWindows::start_time, base::Seconds(7200)),
               Property(&EventReportWindows::end_times,
                        ElementsAre(base::Seconds(16000), base::Seconds(32000),
-                                   base::Seconds(48000)))))),
+                                   base::Seconds(48000))))),
       },
       {
           "event_report_windows_valid_end_time_less_than_default",
           R"json({"event_report_windows":{
             "end_times":[1800]
           }})json",
-          ValueIs(Optional(
+          ValueIs(
               AllOf(Property(&EventReportWindows::start_time, base::Seconds(0)),
                     Property(&EventReportWindows::end_times,
-                             ElementsAre(base::Seconds(3600)))))),
+                             ElementsAre(base::Seconds(3600))))),
       },
       {
           "both_event_report_window_fields_present",
@@ -394,7 +479,8 @@ TEST(EventReportWindowsTest, Parse) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
     auto actual =
-        EventReportWindows::FromJSON(base::test::ParseJsonDict(test_case.json));
+        EventReportWindows::FromJSON(base::test::ParseJsonDict(test_case.json),
+                                     test_case.expiry, test_case.source_type);
     EXPECT_THAT(actual, test_case.matches);
   }
 }
@@ -528,10 +614,6 @@ TEST(EventReportWindowsTest, Serialize) {
     EventReportWindows input;
     const char* expected;
   } kTestCases[] = {
-      {
-          *EventReportWindows::CreateSingularWindow(base::Days(1)),
-          R"json({"event_report_window": 86400})json",
-      },
       {
           *EventReportWindows::CreateWindows(base::Seconds(0),
                                              {base::Days(1), base::Days(5)}),

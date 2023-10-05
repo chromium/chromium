@@ -58,10 +58,6 @@ enum class RateLimitResult : int;
 
 base::Uuid DefaultExternalReportID();
 
-absl::optional<base::Time> GetReportWindowTimeForTesting(
-    absl::optional<base::TimeDelta> declared_window,
-    base::Time source_time);
-
 // Helper class to construct a StorableSource for tests using default data.
 // StorableSource members are not mutable after construction requiring a
 // builder pattern.

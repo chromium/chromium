@@ -8,7 +8,6 @@
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -32,15 +31,6 @@ std::string SerializeAttributionJson(base::ValueView body, bool pretty_print) {
       base::JSONWriter::WriteWithOptions(body, options, &output_json);
   DCHECK(success);
   return output_json;
-}
-
-base::Time ComputeReportWindowTime(
-    absl::optional<base::Time> report_window_time,
-    base::Time expiry_time) {
-  return report_window_time.has_value() &&
-                 report_window_time.value() <= expiry_time
-             ? report_window_time.value()
-             : expiry_time;
 }
 
 }  // namespace content

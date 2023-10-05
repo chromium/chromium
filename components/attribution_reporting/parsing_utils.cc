@@ -180,14 +180,12 @@ void SerializeDeduplicationKey(base::Value::Dict& dict,
 
 void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
                                  base::StringPiece key,
-                                 absl::optional<base::TimeDelta> value) {
-  if (value) {
-    int64_t seconds = value->InSeconds();
-    if (base::IsValueInRangeForNumericType<int>(seconds)) {
-      dict.Set(key, static_cast<int>(seconds));
-    } else {
-      SerializeInt64(dict, key, seconds);
-    }
+                                 base::TimeDelta value) {
+  int64_t seconds = value.InSeconds();
+  if (base::IsValueInRangeForNumericType<int>(seconds)) {
+    dict.Set(key, static_cast<int>(seconds));
+  } else {
+    SerializeInt64(dict, key, seconds);
   }
 }
 

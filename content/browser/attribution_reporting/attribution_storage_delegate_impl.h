@@ -98,16 +98,10 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       const attribution_reporting::EventReportWindows&,
       int max_event_level_reports,
       base::Time source_time) const override;
-  absl::optional<base::Time> GetReportWindowTime(
-      absl::optional<base::TimeDelta> declared_window,
-      base::Time source_time) override;
   std::vector<NullAggregatableReport> GetNullAggregatableReports(
       const AttributionTrigger&,
       base::Time trigger_time,
       absl::optional<base::Time> attributed_source_time) const override;
-  attribution_reporting::EventReportWindows GetDefaultEventReportWindows(
-      attribution_reporting::mojom::SourceType source_type,
-      base::TimeDelta last_report_window) const override;
 
   // Exposed for testing.
   int64_t GetNumStates(attribution_reporting::mojom::SourceType,

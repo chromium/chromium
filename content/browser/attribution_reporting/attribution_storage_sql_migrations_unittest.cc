@@ -366,14 +366,8 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion55ToCurrent) {
     EXPECT_EQ(3, msg.max_event_level_reports());
     EXPECT_FALSE(msg.has_randomized_response_rate());
     EXPECT_EQ(0, msg.event_level_report_window_start_time());
-    // Note: The test's SQL file uses 5 (microseconds) as the value of the
-    // source_time column and 7 (microseconds) as the value of the
-    // event_report_window_time column, so the default windows of 2 days and 7
-    // days are truncated and the only end time is 7 - 5 = 2 microseconds. This
-    // is not possible in production, because the minimum report window is 1
-    // hour, but the migration code and `EventReportWindows` class do not
-    // currently enforce this.
-    EXPECT_THAT(msg.event_level_report_window_end_times(), ElementsAre(2));
+    EXPECT_THAT(msg.event_level_report_window_end_times(),
+                ElementsAre(base::Hours(1).InMicroseconds()));
     ASSERT_FALSE(s.Step());
   }
 

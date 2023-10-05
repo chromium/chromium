@@ -8,7 +8,6 @@
 #include <string>
 
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Time;
@@ -22,10 +21,6 @@ CONTENT_EXPORT base::Time LastTriggerTimeForReportTime(base::Time report_time);
 
 CONTENT_EXPORT std::string SerializeAttributionJson(base::ValueView body,
                                                     bool pretty_print = false);
-
-base::Time ComputeReportWindowTime(
-    absl::optional<base::Time> report_window_time,
-    base::Time expiry_time);
 
 }  // namespace content
 

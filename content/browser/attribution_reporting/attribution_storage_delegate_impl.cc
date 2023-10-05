@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <cstdlib>
 #include <iterator>
 #include <utility>
@@ -27,8 +26,6 @@
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
-#include "content/browser/attribution_reporting/attribution_constants.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
@@ -341,18 +338,6 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
   return fake_reports;
 }
 
-absl::optional<base::Time> AttributionStorageDelegateImpl::GetReportWindowTime(
-    absl::optional<base::TimeDelta> declared_window,
-    base::Time source_time) {
-  if (!declared_window.has_value()) {
-    return absl::nullopt;
-  }
-
-  return source_time + std::clamp(*declared_window,
-                                  attribution_reporting::kMinReportWindow,
-                                  attribution_reporting::kMaxSourceExpiry);
-}
-
 std::vector<AttributionStorageDelegate::NullAggregatableReport>
 AttributionStorageDelegateImpl::GetNullAggregatableReports(
     const AttributionTrigger& trigger,
@@ -415,28 +400,6 @@ AttributionStorageDelegateImpl::GetNullAggregatableReportsImpl(
               .null_reports_rate_exclude_source_registration_time);
     }
   }
-}
-
-EventReportWindows AttributionStorageDelegateImpl::GetDefaultEventReportWindows(
-    SourceType source_type,
-    base::TimeDelta last_report_window) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<base::TimeDelta> end_times;
-  switch (source_type) {
-    case SourceType::kNavigation:
-      end_times = {kDefaultNavigationReportWindow1,
-                   kDefaultNavigationReportWindow2};
-      break;
-    case SourceType::kEvent:
-      break;
-  }
-
-  absl::optional<EventReportWindows> event_report_windows =
-      EventReportWindows::CreateWindowsAndTruncate(
-          /*start_time=*/base::Days(0), std::move(end_times),
-          /*expiry=*/last_report_window);
-  DCHECK(event_report_windows.has_value());
-  return event_report_windows.value();
 }
 
 }  // namespace content

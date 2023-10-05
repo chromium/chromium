@@ -20,7 +20,6 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/combinatorics.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -30,6 +29,7 @@
 namespace content {
 namespace {
 
+using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::mojom::SourceType;
 using ::testing::AllOf;
 using ::testing::Ge;
@@ -40,22 +40,6 @@ using ::testing::Lt;
 using FakeReport = ::content::AttributionStorageDelegate::FakeReport;
 
 constexpr base::TimeDelta kDefaultExpiry = base::Days(30);
-constexpr base::TimeDelta kDefaultFirstWindow = base::Days(2);
-constexpr base::TimeDelta kDefaultSecondWindow = base::Days(7);
-
-AttributionReport GetReport(base::Time source_time,
-                            base::Time trigger_time,
-                            base::TimeDelta expiry = kDefaultExpiry) {
-  auto event_report_windows =
-      *attribution_reporting::EventReportWindows::CreateWindowsAndTruncate(
-          base::Days(0), {kDefaultFirstWindow, kDefaultSecondWindow}, expiry);
-  return ReportBuilder(AttributionInfoBuilder().SetTime(trigger_time).Build(),
-                       SourceBuilder(source_time)
-                           .SetExpiry(expiry)
-                           .SetEventReportWindows(event_report_windows)
-                           .BuildStored())
-      .Build();
-}
 
 void RunRandomFakeReportsTest(const SourceType source_type,
                               const int num_stars,
@@ -66,9 +50,8 @@ void RunRandomFakeReportsTest(const SourceType source_type,
       SourceBuilder()
           .SetSourceType(source_type)
           .SetExpiry(kDefaultExpiry)
-          .SetEventReportWindows(
-              AttributionStorageDelegateImpl().GetDefaultEventReportWindows(
-                  source_type, /*last_report_window=*/kDefaultExpiry))
+          .SetEventReportWindows(*EventReportWindows::FromDefaults(
+              /*report_window=*/kDefaultExpiry, source_type))
           .SetMaxEventLevelReports(
               source_type ==
                       attribution_reporting::mojom::SourceType::kNavigation
@@ -130,85 +113,19 @@ void RunRandomFakeReportsTest(const SourceType source_type,
   }
 }
 
-TEST(AttributionStorageDelegateImplTest, ImmediateConversion_FirstWindowUsed) {
-  base::Time source_time = base::Time::Now();
-  const AttributionReport report =
-      GetReport(source_time, /*trigger_time=*/source_time);
-  EXPECT_EQ(source_time + kDefaultFirstWindow,
-            AttributionStorageDelegateImpl().GetEventLevelReportTime(
-                report.GetStoredSource()->event_report_windows(), source_time,
-                report.attribution_info().time));
-}
+// This is more comprehensively tested in
+// //components/attribution_reporting/event_report_windows_unittest.cc.
+TEST(AttributionStorageDelegateImplTest, GetEventLevelReportTime) {
+  constexpr base::Time kSourceTime;
+  constexpr base::Time kTriggerTime = kSourceTime + base::Seconds(1);
+  constexpr base::TimeDelta kEnd = base::Days(3);
 
-TEST(AttributionStorageDelegateImplTest,
-     ConversionImmediatelyBeforeWindow_SameWindowUsed) {
-  base::Time source_time = base::Time::Now();
-  base::Time trigger_time =
-      source_time + kDefaultFirstWindow - base::Minutes(1);
-  const AttributionReport report = GetReport(source_time, trigger_time);
-  EXPECT_EQ(source_time + kDefaultFirstWindow,
-            AttributionStorageDelegateImpl().GetEventLevelReportTime(
-                report.GetStoredSource()->event_report_windows(), source_time,
-                report.attribution_info().time));
-}
-
-TEST(AttributionStorageDelegateImplTest,
-     ConversionImmediatelyAfterWindow_NextWindowUsed) {
-  base::Time source_time = base::Time::Now();
-
-  // The deadline for a window is 1 hour before the window. Use a time just
-  // after the deadline.
-  base::Time trigger_time =
-      source_time + kDefaultFirstWindow + base::Minutes(1);
-  const AttributionReport report = GetReport(source_time, trigger_time);
-  EXPECT_EQ(source_time + kDefaultSecondWindow,
-            AttributionStorageDelegateImpl().GetEventLevelReportTime(
-                report.GetStoredSource()->event_report_windows(), source_time,
-                report.attribution_info().time));
-}
-
-TEST(AttributionStorageDelegateImplTest,
-     ImpressionExpiryBeforeFirstWindow_ExpiryUsed) {
-  base::Time source_time = base::Time::Now();
-  base::Time trigger_time = source_time + base::Hours(1);
-
-  // Set the impression to expire before the first window.
-  const AttributionReport report = GetReport(source_time, trigger_time,
-                                             /*expiry=*/base::Hours(2));
-  EXPECT_EQ(source_time + base::Hours(2),
-            AttributionStorageDelegateImpl().GetEventLevelReportTime(
-                report.GetStoredSource()->event_report_windows(), source_time,
-                report.attribution_info().time));
-}
-
-TEST(AttributionStorageDelegateImplTest,
-     ImpressionExpiryBeforeSecondWindow_ExpiryWindowUsed) {
-  base::Time source_time = base::Time::Now();
-  base::Time trigger_time = source_time + base::Days(3);
-
-  // Set the impression to expire before the first window.
-  const AttributionReport report = GetReport(source_time, trigger_time,
-                                             /*expiry=*/base::Days(4));
-
-  EXPECT_EQ(source_time + base::Days(4),
-            AttributionStorageDelegateImpl().GetEventLevelReportTime(
-                report.GetStoredSource()->event_report_windows(), source_time,
-                report.attribution_info().time));
-}
-
-TEST(AttributionStorageDelegateImplTest,
-     ImpressionExpiryAfterSecondWindow_ExpiryWindowUsed) {
-  base::Time source_time = base::Time::Now();
-  base::Time trigger_time = source_time + kDefaultSecondWindow + base::Hours(1);
-
-  // Set the impression to expire before the first window.
-  const AttributionReport report = GetReport(source_time, trigger_time,
-                                             /*expiry=*/base::Days(9));
-
-  EXPECT_EQ(source_time + base::Days(9),
-            AttributionStorageDelegateImpl().GetEventLevelReportTime(
-                report.GetStoredSource()->event_report_windows(), source_time,
-                report.attribution_info().time));
+  EXPECT_EQ(
+      kSourceTime + kEnd,
+      AttributionStorageDelegateImpl().GetEventLevelReportTime(
+          *EventReportWindows::CreateWindows(/*start_time=*/base::Seconds(0),
+                                             /*end_times=*/{kEnd}),
+          kSourceTime, kTriggerTime));
 }
 
 TEST(AttributionStorageDelegateImplTest, GetAggregatableReportTime) {
@@ -301,10 +218,8 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
   constexpr base::Time kImpressionTime = base::Time();
   constexpr base::TimeDelta kExpiry = base::Days(9);
 
-  constexpr base::Time kEarlyReportTime1 =
-      kImpressionTime + kDefaultFirstWindow;
-  constexpr base::Time kEarlyReportTime2 =
-      kImpressionTime + kDefaultSecondWindow;
+  constexpr base::Time kEarlyReportTime1 = kImpressionTime + base::Days(2);
+  constexpr base::Time kEarlyReportTime2 = kImpressionTime + base::Days(7);
   constexpr base::Time kExpiryReportTime = kImpressionTime + kExpiry;
 
   const struct {
@@ -414,9 +329,8 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
         SourceBuilder(kImpressionTime)
             .SetSourceType(test_case.source_type)
             .SetExpiry(kExpiry)
-            .SetEventReportWindows(
-                AttributionStorageDelegateImpl().GetDefaultEventReportWindows(
-                    test_case.source_type, /*last_report_window=*/kExpiry))
+            .SetEventReportWindows(*EventReportWindows::FromDefaults(
+                /*report_window=*/kExpiry, test_case.source_type))
             .SetMaxEventLevelReports(
                 test_case.source_type ==
                         attribution_reporting::mojom::SourceType::kNavigation
@@ -475,10 +389,8 @@ TEST(AttributionStorageDelegateImplTest,
     const auto source =
         SourceBuilder(base::Time())
             .SetSourceType(test_case.source_type)
-            .SetEventReportWindows(
-                AttributionStorageDelegateImpl().GetDefaultEventReportWindows(
-                    test_case.source_type,
-                    /*last_report_window=*/base::Days(30)))
+            .SetEventReportWindows(*EventReportWindows::FromDefaults(
+                /*report_window=*/base::Days(30), test_case.source_type))
             .SetMaxEventLevelReports(
                 test_case.source_type ==
                         attribution_reporting::mojom::SourceType::kNavigation
@@ -523,95 +435,6 @@ TEST(AttributionStorageDelegateImplTest, SanitizeTriggerData) {
   }
 }
 
-TEST(AttributionStorageDelegateImplTest,
-     NoReportWindowForImpression_NullOptReturned) {
-  EXPECT_EQ(absl::nullopt, AttributionStorageDelegateImpl().GetReportWindowTime(
-                               /*declared_window=*/absl::nullopt,
-                               /*source_time=*/base::Time::Now()));
-}
-
-TEST(AttributionStorageDelegateImplTest,
-     LargeReportWindowSpecified_ClampedTo30Days) {
-  constexpr base::TimeDelta declared_report_window = base::Days(60);
-  const base::Time source_time = base::Time::Now();
-
-  EXPECT_EQ(source_time + base::Days(30),
-            AttributionStorageDelegateImpl().GetReportWindowTime(
-                declared_report_window, source_time));
-}
-
-TEST(AttributionStorageDelegateImplTest,
-     SmallReportWindowSpecified_ClampedTo1Day) {
-  const struct {
-    base::TimeDelta declared_report_window;
-    base::TimeDelta want_report_window;
-  } kTestCases[] = {
-      {base::Hours(-1), base::Hours(1)},
-      {base::Hours(0), base::Hours(1)},
-      {base::Hours(1) - base::Milliseconds(1), base::Hours(1)},
-  };
-
-  const base::Time source_time = base::Time::Now();
-
-  for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(source_time + test_case.want_report_window,
-              AttributionStorageDelegateImpl().GetReportWindowTime(
-                  test_case.declared_report_window, source_time));
-  }
-}
-
-TEST(AttributionStorageDelegateImplTest,
-     ReportWindowSpecified_WindowOverrideDefault) {
-  constexpr base::TimeDelta declared_expiry =
-      base::Days(10) + base::Milliseconds(1);
-  const base::Time source_time = base::Time::Now();
-
-  // Verify no rounding occurs.
-  EXPECT_EQ(source_time + declared_expiry,
-            AttributionStorageDelegateImpl().GetReportWindowTime(
-                declared_expiry, source_time));
-}
-
-TEST(AttributionStorageDelegateImplTest, GetDefaultReportWindows_AsExpected) {
-  const struct {
-    SourceType source_type;
-    base::TimeDelta last_report_window;
-    attribution_reporting::EventReportWindows expected;
-  } kTestCases[] = {
-      {
-          .source_type = SourceType::kNavigation,
-          .last_report_window = base::Days(30),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(2), base::Days(7), base::Days(30)}),
-      },
-      {
-          .source_type = SourceType::kNavigation,
-          .last_report_window = base::Days(5),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(2), base::Days(5)}),
-      },
-      {
-          .source_type = SourceType::kNavigation,
-          .last_report_window = base::Days(1),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(1)}),
-      },
-      {
-          .source_type = SourceType::kEvent,
-          .last_report_window = base::Days(5),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(5)}),
-      },
-  };
-  for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected,
-              AttributionStorageDelegateImpl().GetDefaultEventReportWindows(
-                  test_case.source_type, test_case.last_report_window));
-  }
-}
-
-// Change test to verify that expected value is returned (test
-// GetDefaultReportWindows())
 class AttributionStorageDelegateImplTestFeatureConfigured
     : public testing::Test {
  public:

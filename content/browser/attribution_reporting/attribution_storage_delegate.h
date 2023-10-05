@@ -190,15 +190,6 @@ class CONTENT_EXPORT AttributionStorageDelegate {
       int max_event_level_reports,
       base::Time source_time) const = 0;
 
-  virtual absl::optional<base::Time> GetReportWindowTime(
-      absl::optional<base::TimeDelta> declared_window,
-      base::Time source_time) = 0;
-
-  virtual attribution_reporting::EventReportWindows
-  GetDefaultEventReportWindows(
-      attribution_reporting::mojom::SourceType source_type,
-      base::TimeDelta last_report_window) const = 0;
-
   // Returns the maximum sum of the contributions (values) across all buckets
   // per source.
   int64_t GetAggregatableBudgetPerSource() const;

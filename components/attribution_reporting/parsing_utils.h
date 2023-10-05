@@ -84,7 +84,7 @@ void SerializeDeduplicationKey(base::Value::Dict&,
 
 void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
                                  base::StringPiece key,
-                                 absl::optional<base::TimeDelta> value);
+                                 base::TimeDelta value);
 
 }  // namespace attribution_reporting
 

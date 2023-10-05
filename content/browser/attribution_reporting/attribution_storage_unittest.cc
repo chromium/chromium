@@ -224,19 +224,22 @@ TEST_F(AttributionStorageTest, UniqueReportWindowsStored_ValuesIdentical) {
       SourceBuilder()
           .SetExpiry(base::Days(30))
           .SetEventReportWindows(
-              *attribution_reporting::EventReportWindows::CreateSingularWindow(
-                  base::Days(15)))
+              *attribution_reporting::EventReportWindows::CreateWindows(
+                  /*start_time=*/base::Days(3),
+                  /*end_times=*/{base::Days(15)}))
           .SetAggregatableReportWindow(base::Days(5))
           .Build());
-  EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(CommonSourceInfoIs(
-                  SourceBuilder()
-                      .SetExpiry(base::Days(30))
-                      .SetEventReportWindows(
-                          *attribution_reporting::EventReportWindows::
-                              CreateSingularWindow(base::Days(15)))
-                      .SetAggregatableReportWindow(base::Days(5))
-                      .BuildCommonInfo())));
+  EXPECT_THAT(
+      storage()->GetActiveSources(),
+      ElementsAre(CommonSourceInfoIs(
+          SourceBuilder()
+              .SetExpiry(base::Days(30))
+              .SetEventReportWindows(
+                  *attribution_reporting::EventReportWindows::CreateWindows(
+                      /*start_time=*/base::Days(3),
+                      /*end_times=*/{base::Days(15)}))
+              .SetAggregatableReportWindow(base::Days(5))
+              .BuildCommonInfo())));
 }
 
 TEST_F(AttributionStorageTest,
@@ -403,51 +406,13 @@ TEST_F(AttributionStorageTest,
       SourceBuilder()
           .SetEventReportWindows(
               *attribution_reporting::EventReportWindows::CreateWindows(
-                  base::Milliseconds(0), {base::Milliseconds(1)}))
+                  base::Milliseconds(0), {base::Hours(1)}))
           .Build());
 
-  task_environment_.FastForwardBy(base::Milliseconds(2));
+  task_environment_.FastForwardBy(base::Hours(1) + base::Microseconds(1));
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kReportWindowPassed,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
-}
-
-TEST_F(AttributionStorageTest,
-       ImpressionWithReportWindowsOverDefault_WindowsTruncated) {
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetEventReportWindows(
-              *attribution_reporting::EventReportWindows::CreateWindows(
-                  base::Seconds(0), {base::Days(10)}))
-          .SetExpiry(base::Days(5))
-          .Build());
-
-  ASSERT_THAT(storage()->GetActiveSources(),
-              ElementsAre(EventReportWindowsIs(
-                  attribution_reporting::EventReportWindows::CreateWindows(
-                      base::Seconds(0), {base::Days(5)}))));
-}
-
-TEST_F(AttributionStorageTest,
-       ImpressionWithReportWindowsStartGTEDefaultEnd_RegistrationFailure) {
-  auto source =
-      SourceBuilder()
-          .SetEventReportWindows(
-              *attribution_reporting::EventReportWindows::CreateWindows(
-                  base::Days(2), {base::Days(5)}))
-          .SetExpiry(base::Days(1))
-          .Build();
-  EXPECT_EQ(storage()->StoreSource(source).status,
-            StorableSource::Result::kEventReportWindowsInvalidStartTime);
-
-  source = SourceBuilder()
-               .SetEventReportWindows(
-                   *attribution_reporting::EventReportWindows::CreateWindows(
-                       base::Days(1), {base::Days(5)}))
-               .SetExpiry(base::Days(1))
-               .Build();
-  EXPECT_EQ(storage()->StoreSource(source).status,
-            StorableSource::Result::kEventReportWindowsInvalidStartTime);
 }
 
 TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
@@ -635,116 +600,6 @@ TEST_F(
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(ReportSourceIs(SourceEventIdIs(10))));
-}
-
-TEST_F(AttributionStorageTest, ReportTimes) {
-  const attribution_reporting::DestinationSet destinations =
-      *attribution_reporting::DestinationSet::Create(
-          {net::SchemefulSite::Deserialize("https://dest.test")});
-
-  const auto reporting_origin =
-      *SuitableOrigin::Deserialize("https://report.test");
-
-  const base::Time kSourceTime = base::Time::Now();
-
-  const struct {
-    const char* desc;
-    absl::optional<base::TimeDelta> expiry;
-    absl::optional<base::TimeDelta> event_report_window;
-    absl::optional<base::TimeDelta> aggregatable_report_window;
-    base::Time expected_expiry_time;
-    attribution_reporting::EventReportWindows expected_event_report_windows;
-    base::Time expected_aggregatable_report_window_time;
-  } kTestCases[] = {
-      {
-          .desc = "expiry",
-          .expiry = base::Days(4),
-          .expected_expiry_time = kSourceTime + base::Days(4),
-          .expected_event_report_windows =
-              *attribution_reporting::EventReportWindows::CreateWindows(
-                  base::Days(0), {base::Days(4)}),
-          .expected_aggregatable_report_window_time =
-              kSourceTime + base::Days(4),
-      },
-      {
-          .desc = "event-report-window",
-          .event_report_window = base::Days(4),
-          .expected_expiry_time = kSourceTime + base::Days(30),
-          .expected_event_report_windows =
-              *attribution_reporting::EventReportWindows::CreateWindows(
-                  base::Days(0), {base::Days(4)}),
-          .expected_aggregatable_report_window_time =
-              kSourceTime + base::Days(30),
-      },
-      {
-          .desc = "clamp-event-report-window",
-          .expiry = base::Days(4),
-          .event_report_window = base::Days(30),
-          .expected_expiry_time = kSourceTime + base::Days(4),
-          .expected_event_report_windows =
-              *attribution_reporting::EventReportWindows::CreateWindows(
-                  base::Days(0), {base::Days(4)}),
-          .expected_aggregatable_report_window_time =
-              kSourceTime + base::Days(4),
-      },
-      {
-          .desc = "aggregatable-report-window",
-          .aggregatable_report_window = base::Days(4),
-          .expected_expiry_time = kSourceTime + base::Days(30),
-          .expected_event_report_windows =
-              *attribution_reporting::EventReportWindows::CreateWindows(
-                  base::Days(0), {base::Days(30)}),
-          .expected_aggregatable_report_window_time =
-              kSourceTime + base::Days(4),
-      },
-      {
-          .desc = "all",
-          .expiry = base::Days(9),
-          .event_report_window = base::Days(7),
-          .aggregatable_report_window = base::Days(5),
-          .expected_expiry_time = kSourceTime + base::Days(9),
-          .expected_event_report_windows =
-              *attribution_reporting::EventReportWindows::CreateWindows(
-                  base::Days(0), {base::Days(7)}),
-          .expected_aggregatable_report_window_time =
-              kSourceTime + base::Days(5),
-      },
-  };
-
-  for (const auto& test_case : kTestCases) {
-    attribution_reporting::SourceRegistration reg(destinations);
-    reg.expiry = test_case.expiry.value_or(base::Days(30));
-    reg.event_report_windows =
-        attribution_reporting::EventReportWindows::CreateSingularWindow(
-            test_case.event_report_window.value_or(reg.expiry));
-    reg.aggregatable_report_window =
-        test_case.aggregatable_report_window.value_or(reg.expiry);
-
-    storage()->StoreSource(
-        StorableSource(reporting_origin, std::move(reg),
-                       *SuitableOrigin::Deserialize("https://source.test"),
-                       attribution_reporting::mojom::SourceType::kNavigation,
-                       /*is_within_fenced_frame=*/false));
-
-    std::vector<StoredSource> sources = storage()->GetActiveSources();
-    ASSERT_THAT(sources, SizeIs(1)) << test_case.desc;
-    const StoredSource& actual = sources.front();
-
-    EXPECT_EQ(actual.expiry_time(), test_case.expected_expiry_time)
-        << test_case.desc;
-
-    EXPECT_EQ(actual.event_report_windows(),
-              test_case.expected_event_report_windows)
-        << test_case.desc;
-
-    EXPECT_EQ(actual.aggregatable_report_window_time(),
-              test_case.expected_aggregatable_report_window_time)
-        << test_case.desc;
-
-    storage()->ClearData(/*delete_begin=*/base::Time::Min(),
-                         /*delete_end=*/base::Time::Max(),
-                         /*filter=*/base::NullCallback());
-  }
 }
 
 TEST_F(AttributionStorageTest,

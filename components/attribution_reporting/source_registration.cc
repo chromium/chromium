@@ -113,9 +113,6 @@ SourceRegistration::Parse(base::Value::Dict registration,
   ASSIGN_OR_RETURN(result.filter_data,
                    FilterData::FromJSON(registration.Find(kFilterData)));
 
-  ASSIGN_OR_RETURN(result.event_report_windows,
-                   EventReportWindows::FromJSON(registration));
-
   ASSIGN_OR_RETURN(
       result.aggregation_keys,
       AggregationKeys::FromJSON(registration.Find(kAggregationKeys)));
@@ -156,6 +153,10 @@ SourceRegistration::Parse(base::Value::Dict registration,
   } else {
     result.aggregatable_report_window = result.expiry;
   }
+
+  ASSIGN_OR_RETURN(
+      result.event_report_windows,
+      EventReportWindows::FromJSON(registration, result.expiry, source_type));
 
   if (const base::Value* value = registration.Find(kMaxEventLevelReports)) {
     ASSIGN_OR_RETURN(result.max_event_level_reports,
@@ -215,9 +216,7 @@ base::Value::Dict SourceRegistration::ToJson() const {
 
   SerializeTimeDeltaInSeconds(dict, kExpiry, expiry);
 
-  if (event_report_windows.has_value()) {
-    event_report_windows->Serialize(dict);
-  }
+  event_report_windows.Serialize(dict);
 
   SerializeTimeDeltaInSeconds(dict, kAggregatableReportWindow,
                               aggregatable_report_window);
@@ -232,6 +231,10 @@ base::Value::Dict SourceRegistration::ToJson() const {
 
 bool SourceRegistration::IsValid() const {
   if (expiry < kMinSourceExpiry || expiry > kMaxSourceExpiry) {
+    return false;
+  }
+
+  if (!event_report_windows.IsValidForExpiry(expiry)) {
     return false;
   }
 
