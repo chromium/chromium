@@ -967,7 +967,7 @@ bool UpgradeV18SchemaToV19(sql::Database& db, sql::MetaTable& meta_table) {
               "LENGTH(interest_groups.update_url)+"
               "LENGTH(interest_groups.trusted_bidding_signals_url)+"
               "LENGTH(interest_groups.trusted_bidding_signals_keys)+"
-              "LENGTH(interest_groups.user_bidding_signals)+"
+              "IFNULL(LENGTH(interest_groups.user_bidding_signals),0)+"
               "LENGTH(interest_groups.ads_pb)+"
               "LENGTH(interest_groups.ad_components_pb)+"
               "LENGTH(interest_groups.ad_sizes)+"
