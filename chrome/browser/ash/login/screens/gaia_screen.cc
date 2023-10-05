@@ -22,6 +22,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -173,6 +174,7 @@ void GaiaScreen::Reset() {
     return;
   context()->gaia_config.gaia_path = WizardContext::GaiaPath::kDefault;
   context()->gaia_config.prefilled_account = EmptyAccountId();
+  view_->SetIsGaiaPasswordRequired(false);
   view_->Reset();
 }
 
@@ -305,16 +307,25 @@ void GaiaScreen::HandleIdentifierEntered(const std::string& user_email) {
 void GaiaScreen::OnGetAuthFactorsConfiguration(
     std::unique_ptr<UserContext> user_context,
     absl::optional<AuthenticationError> error) {
-  bool is_recovery_configured;
+  bool is_recovery_configured = false;
+  bool is_gaia_password_configured = true;
   if (error.has_value()) {
     LOG(WARNING) << "Failed to get auth factors configuration, code "
                  << error->get_cryptohome_code()
                  << ", skip fetching reauth request token";
-    is_recovery_configured = false;
   } else {
     const auto& config = user_context->GetAuthFactorsConfiguration();
     is_recovery_configured =
         config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
+    auto* password_factor =
+        config.FindFactorByType(cryptohome::AuthFactorType::kPassword);
+    is_gaia_password_configured =
+        password_factor && auth::IsGaiaPassword(*password_factor);
+  }
+
+  if (is_gaia_password_configured) {
+    // Disallow passwordless login when Gaia password is configured.
+    view_->SetIsGaiaPasswordRequired(true);
   }
 
   const AccountId& account_id = user_context->GetAccountId();
