@@ -8207,9 +8207,6 @@ TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
         run_loop2.Quit();
       }));
   run_loop2.Run();
-
-  // Clear this before the page expires to avoid the dangling ptr error.
-  ad_auction_page_data_ = nullptr;
 }
 
 // An auction where the winning additional bid claims to be from an IG the user
@@ -8449,9 +8446,6 @@ TEST_F(AuctionRunnerTest, AdditionalBidDistinctFromInterestGroup) {
         run_loop2.Quit();
       }));
   run_loop2.Run();
-
-  // Clear this before the page expires to avoid the dangling ptr error.
-  ad_auction_page_data_ = nullptr;
 }
 
 class AuctionRunnerDfssAdSlotTest : public AuctionRunnerTest {
@@ -8598,9 +8592,6 @@ TEST_F(AuctionRunnerDfssAdSlotTest,
   EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
-
-  // Clear this before the page expires to avoid the dangling ptr error.
-  ad_auction_page_data_ = nullptr;
 }
 
 // An auction that passes nullopt directFromSellerSignalsHeaderAdSlot via a
@@ -8654,9 +8645,6 @@ TEST_F(AuctionRunnerDfssAdSlotTest,
   EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
-
-  // Clear this before the page expires to avoid the dangling ptr error.
-  ad_auction_page_data_ = nullptr;
 }
 
 // An auction that passes directFromSellerSignalsHeaderAdSlot via a promise.
@@ -8722,9 +8710,6 @@ TEST_F(AuctionRunnerDfssAdSlotTest,
   EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
-
-  // Clear this before the page expires to avoid the dangling ptr error.
-  ad_auction_page_data_ = nullptr;
 }
 
 // An auction that passes directFromSellerSignalsHeaderAdSlot via a promise --
@@ -8787,9 +8772,6 @@ TEST_F(AuctionRunnerDfssAdSlotTest,
               "\"sellerSignals\": 3\n}"),
           testing::Eq("When looking for directFromSellerSignalsHeaderAdSlot "
                       "adSlot1, failed to find a matching response.")));
-
-  // Clear this before the page expires to avoid the dangling ptr error.
-  ad_auction_page_data_ = nullptr;
 }
 
 // An auction that passes directFromSellerSignalsHeaderAdSlot via a promise, but
@@ -9272,9 +9254,6 @@ TEST_F(AuctionRunnerTest, PromiseServerResponseResolveTwice) {
   task_environment()->RunUntilIdle();
   EXPECT_EQ("ResolvedAuctionAdResponsePromise updating non-promise",
             TakeBadMessage());
-
-  // Clear this before the page expires to avoid the dangling ptr error.
-  ad_auction_page_data_ = nullptr;
 }
 
 // Trying to update perBuyerCurrencies twice.
@@ -9467,9 +9446,6 @@ TEST_F(AuctionRunnerDfssAdSlotTest,
   task_environment()->RunUntilIdle();
   EXPECT_EQ("ResolvedDirectFromSellerSignalsHeaderAdSlot updating non-promise",
             TakeBadMessage());
-
-  // Clear this before the page expires to avoid the dangling ptr error.
-  ad_auction_page_data_ = nullptr;
 }
 
 class AuctionRunnerDfssAdSlotDisabledTest : public AuctionRunnerTest {
@@ -20253,9 +20229,6 @@ TEST_P(AuctionRunnerKAnonTest, AdditionalBidBuyerReporting) {
               testing::UnorderedElementsAre(
                   "https://reporting.example.com/40",
                   "https://contextual.test/?additionalPseudoIG"));
-
-  // Clear this before the page expires to avoid the dangling ptr error.
-  ad_auction_page_data_ = nullptr;
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -20449,9 +20422,6 @@ TEST_F(AuctionRunnerTest, ServerResponseLogsErrors) {
     hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result",
                             test_case.result, 1);
   }
-
-  // Clear this before the page expires to avoid the dangling ptr error.
-  ad_auction_page_data_ = nullptr;
 }
 
 }  // namespace
