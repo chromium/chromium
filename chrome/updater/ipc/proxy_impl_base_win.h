@@ -100,44 +100,50 @@ class ProxyImplBase {
 
     Microsoft::WRL::ComPtr<Interface> server_interface;
     REFIID iid = IsSystemInstall(scope_) ? iid_system : iid_user;
-    HRESULT hr = server.CopyTo(iid, IID_PPV_ARGS_Helper(&server_interface));
-    if (FAILED(hr)) {
-      VLOG(2) << "Failed to query the interface: "
-              << base::win::WStringFromGUID(iid) << ": " << std::hex << hr;
-      [&]() {
-        if (hr != E_NOINTERFACE) {
-          return;
-        }
+    constexpr int kNumTries = 2;
+    HRESULT hr = E_FAIL;
+    for (int i = 0; i != kNumTries; ++i) {
+      hr = server.CopyTo(iid, IID_PPV_ARGS_Helper(&server_interface));
+      if (SUCCEEDED(hr)) {
+        return server_interface;
+      }
+      if (hr != E_NOINTERFACE) {
+        return base::unexpected(hr);
+      }
 
-        static bool dumped_once = false;
-        if (dumped_once) {
-          return;
-        }
-        dumped_once = true;
-
-        const wchar_t* hkey_root = IsSystemInstall(scope_) ? L"HKLM" : L"HKCU";
-        const wchar_t* path = IsSystemInstall(scope_)
-                                  ? L"\\SOFTWARE\\WOW6432Node\\Classes"
-                                    L"\\Interface\\"
-                                  : L"\\SOFTWARE\\Classes\\WOW6432Node"
-                                    L"\\Interface\\";
-        for (const auto& iid : iids_) {
-          const std::wstring reg_key =
-              base::StrCat({hkey_root, path, base::win::WStringFromGUID(iid)});
-          absl::optional<std::wstring> contents = GetRegKeyContents(reg_key);
-          LOG(ERROR) << reg_key << ": "
-                     << (contents && !base::ContainsOnlyChars(
-                                         *contents, base::kWhitespaceWide)
-                             ? *contents
-                             : L"*Missing*");
-        }
-        DUMP_WILL_BE_CHECK(false);
-      }();
-
-      return base::unexpected(hr);
+      // Sleep before trying again.
+      base::PlatformThread::Sleep(kCreateUpdaterInstanceDelay);
     }
 
-    return server_interface;
+    VLOG(2) << "Failed to query the interface: "
+            << base::win::WStringFromGUID(iid) << ": " << std::hex << hr;
+    [&]() {
+      static bool dumped_once = false;
+      if (dumped_once) {
+        return;
+      }
+      dumped_once = true;
+
+      const wchar_t* hkey_root = IsSystemInstall(scope_) ? L"HKLM" : L"HKCU";
+      const wchar_t* path = IsSystemInstall(scope_)
+                                ? L"\\SOFTWARE\\WOW6432Node\\Classes"
+                                  L"\\Interface\\"
+                                : L"\\SOFTWARE\\Classes\\WOW6432Node"
+                                  L"\\Interface\\";
+      for (const auto& iid : iids_) {
+        const std::wstring reg_key =
+            base::StrCat({hkey_root, path, base::win::WStringFromGUID(iid)});
+        absl::optional<std::wstring> contents = GetRegKeyContents(reg_key);
+        LOG(ERROR) << reg_key << ": "
+                   << (contents && !base::ContainsOnlyChars(
+                                       *contents, base::kWhitespaceWide)
+                           ? *contents
+                           : L"*Missing*");
+      }
+      DUMP_WILL_BE_CHECK(false);
+    }();
+
+    return base::unexpected(hr);
   }
 
   HRESULT hresult() const {
