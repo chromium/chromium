@@ -478,7 +478,9 @@ TEST_F(PeopleHandlerTest,
 }
 
 // Verifies the case where the user cancels after the sync engine has
-// initialized.
+// initialized. This isn't reachable on Ash because
+// IsInitialSyncFeatureSetupComplete() always returns true.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PeopleHandlerTest,
        DisplayConfigureWithEngineDisabledAndCancelAfterSigninSuccess) {
   SigninUser();
@@ -509,6 +511,7 @@ TEST_F(PeopleHandlerTest,
       nullptr,
       LoginUIServiceFactory::GetForProfile(profile())->current_login_ui());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PeopleHandlerTest, RestartSyncAfterDashboardClear) {
   SigninUser();

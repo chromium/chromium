@@ -760,36 +760,30 @@ void PeopleHandler::CloseSyncSetup() {
 
     // Don't log a cancel event if the sync setup dialog is being
     // automatically closed due to an auth error.
-    if ((service->current_login_ui() == this) &&
-        (!sync_service || (!sync_service->GetUserSettings()
-                                ->IsInitialSyncFeatureSetupComplete() &&
-                           sync_service->GetAuthError().state() ==
-                               GoogleServiceAuthError::NONE))) {
-      if (configuring_sync_) {
-        // If the user clicked "Cancel" while setting up sync, disable sync
-        // because we don't want the sync engine to remain in the
-        // first-setup-incomplete state.
-        // Note: In order to disable sync across restarts on Chrome OS,
-        // we must call StopAndClear(), which suppresses sync startup in
-        // addition to disabling it.
-        if (sync_service) {
-          DVLOG(1) << "Sync setup aborted by user action";
-          sync_service->StopAndClear();
-// ChromeOS ash doesn't support signing out.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-          // Revoke sync consent on desktop Chrome if they click cancel during
-          // initial setup or close sync setup without confirming sync.
-          if (!sync_service->GetUserSettings()
-                   ->IsInitialSyncFeatureSetupComplete()) {
-            IdentityManagerFactory::GetForProfile(profile_)
-                ->GetPrimaryAccountMutator()
-                ->RevokeSyncConsent(
-                    signin_metrics::ProfileSignout::kAbortSignin,
-                    signin_metrics::SignoutDelete::kIgnoreMetric);
-          }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-        }
-      }
+    if (service->current_login_ui() == this && sync_service &&
+        configuring_sync_ &&
+        !sync_service->GetUserSettings()->IsInitialSyncFeatureSetupComplete() &&
+        sync_service->GetAuthError().state() == GoogleServiceAuthError::NONE) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // ChromeOS Ash doesn't support signing out and hence the code below
+      // cannot build (RevokeSyncConsent() doesn't exist). However, this code is
+      // unreachable on Ash because IsInitialSyncFeatureSetupComplete() always
+      // returns true.
+      NOTREACHED_NORETURN();
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+      // If the user clicked "Cancel" while setting up sync, disable sync
+      // because we don't want the sync engine to remain in the
+      // first-setup-incomplete state.
+      DVLOG(1) << "Sync setup aborted by user action";
+      sync_service->StopAndClear();
+
+      // Revoke sync consent on desktop Chrome if they click cancel during
+      // initial setup or close sync setup without confirming sync.
+      IdentityManagerFactory::GetForProfile(profile_)
+          ->GetPrimaryAccountMutator()
+          ->RevokeSyncConsent(signin_metrics::ProfileSignout::kAbortSignin,
+                              signin_metrics::SignoutDelete::kIgnoreMetric);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
 
     service->LoginUIClosed(this);
