@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"

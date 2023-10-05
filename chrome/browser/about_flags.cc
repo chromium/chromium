@@ -36,6 +36,7 @@
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/follow/follow_features.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
@@ -7790,6 +7791,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFileSystemAccessLockingSchemeName,
      flag_descriptions::kFileSystemAccessLockingSchemeDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kFileSystemAccessLockingScheme)},
+
+    {"file-system-access-persistent-permission",
+     flag_descriptions::kFileSystemAccessPersistentPermissionName,
+     flag_descriptions::kFileSystemAccessPersistentPermissionDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kFileSystemAccessPersistentPermissions)},
 
     {"file-system-observer", flag_descriptions::kFileSystemObserverName,
      flag_descriptions::kFileSystemObserverDescription, kOsAll,

@@ -4503,6 +4503,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "file-system-access-persistent-permission",
+    "owners": [ "dslee", "chrome-owp-storage@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "file-system-observer",
     "owners": [ "asully", "chrome-owp-storage@google.com" ],
     "expiry_milestone": 120

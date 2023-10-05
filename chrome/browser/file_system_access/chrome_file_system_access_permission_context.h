@@ -8,13 +8,13 @@
 #include <map>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
@@ -38,16 +38,6 @@ enum ContentSetting;
 namespace content {
 class BrowserContext;
 }  // namespace content
-
-namespace features {
-// Enables persistent permissions for the File System Access API.
-BASE_DECLARE_FEATURE(kFileSystemAccessPersistentPermissions);
-
-#if BUILDFLAG(IS_WIN)
-// Enables blocking local UNC path on Windows for the File System Access API.
-BASE_DECLARE_FEATURE(kFileSystemAccessLocalUNCPathBlock);
-#endif
-}  // namespace features
 
 // Chrome implementation of FileSystemAccessPermissionContext. This class
 // implements a permission model where permissions are shared across an entire

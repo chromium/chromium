@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/base_paths.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -76,18 +75,6 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
-namespace features {
-BASE_FEATURE(kFileSystemAccessPersistentPermissions,
-             "kFileSystemAccessPersistentPermissions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kFileSystemAccessLocalUNCPathBlock,
-             "kFileSystemAccessLocalUNCPathBlock",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-}  // namespace features
-
 namespace {
 
 using FileRequestData =
@@ -129,8 +116,6 @@ const char kPathKey[] = "path";
 const char kPathTypeKey[] = "path-type";
 const char kTimestampKey[] = "timestamp";
 
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature flag checks before launch.
 bool UseOneTimePermissionNavigationHandler() {
   return base::FeatureList::IsEnabled(
              features::kFileSystemAccessPersistentPermissions) &&
@@ -993,8 +978,6 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     return PathAsPermissionKey(path_);
   }
 
-  // TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-  // feature flag checks before launch.
   void SetPath(const base::FilePath& new_path) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1070,8 +1053,6 @@ ChromeFileSystemAccessPermissionContext::
   }
 #endif
 
-  // TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-  // feature flag checks before launch.
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {
 #if !BUILDFLAG(IS_ANDROID)
@@ -1329,8 +1310,6 @@ ChromeFileSystemAccessPermissionContext::GetExtendedPersistedObjects(
 }
 
 // Returns extended grants or active grants for an origin.
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature flag checks before launch.
 std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
 ChromeFileSystemAccessPermissionContext::GetGrantedObjects(
     const url::Origin& origin) {
@@ -1385,8 +1364,6 @@ ChromeFileSystemAccessPermissionContext::GetAllGrantedObjects() {
 }
 
 // Returns origins that have either extended grants or active grants.
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature flag checks before launch.
 std::set<url::Origin>
 ChromeFileSystemAccessPermissionContext::GetOriginsWithGrants() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1746,8 +1723,6 @@ std::u16string ChromeFileSystemAccessPermissionContext::GetPickerTitle(
   return title;
 }
 
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature flag checks before launch.
 void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
     const url::Origin& origin,
     const base::FilePath& old_path,
@@ -1835,8 +1810,6 @@ ChromeFileSystemAccessPermissionContext::ConvertObjectsToGrants(
   return grants;
 }
 
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature flag checks before launch.
 void ChromeFileSystemAccessPermissionContext::
     CreatePersistedGrantsFromActiveGrants(const url::Origin& origin) {
   if (base::FeatureList::IsEnabled(
@@ -1862,8 +1835,6 @@ void ChromeFileSystemAccessPermissionContext::
   }
 }
 
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature flag checks before launch.
 void ChromeFileSystemAccessPermissionContext::RevokeGrant(
     const url::Origin& origin,
     const base::FilePath& file_path) {
@@ -1890,8 +1861,6 @@ void ChromeFileSystemAccessPermissionContext::RevokeGrant(
   }
 }
 
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature flag checks before launch.
 void ChromeFileSystemAccessPermissionContext::RevokeGrants(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1917,8 +1886,6 @@ void ChromeFileSystemAccessPermissionContext::RevokeGrants(
   }
 }
 
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature flag checks before launch.
 bool ChromeFileSystemAccessPermissionContext::OriginHasReadAccess(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1947,8 +1914,6 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasReadAccess(
   });
 }
 
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature flag checks before launch.
 bool ChromeFileSystemAccessPermissionContext::OriginHasWriteAccess(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1978,8 +1943,6 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasWriteAccess(
   });
 }
 
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature flag checks before launch.
 // All tabs for a given origin have been backgrounded or cleared in the past
 // 16 hours. When this happens, we update the given origin's `OriginState` to
 // note that all tabs were recently backgrounded.
@@ -2004,8 +1967,6 @@ void ChromeFileSystemAccessPermissionContext::OnAllTabsInBackgroundTimerExpired(
   }
 }
 
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature flag checks before launch.
 void ChromeFileSystemAccessPermissionContext::OnLastPageFromOriginClosed(
     const url::Origin& origin) {
   CleanupPermissions(origin);
@@ -2475,8 +2436,6 @@ bool ChromeFileSystemAccessPermissionContext::HasExtendedPermission(
   return true;
 }
 
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature flag checks before launch.
 bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
     const url::Origin& origin) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
