@@ -57,11 +57,9 @@
 class PaymentsSuggestionBottomSheetMediatorTest;
 class Profile;
 class PrefService;
-class RemoveAutofillTester;
 
 namespace autofill {
 class AutofillImageFetcherBase;
-class AutofillInteractiveTest;
 struct CreditCardArtImage;
 class PersonalDataManagerObserver;
 class PersonalDataManagerFactory;
@@ -654,33 +652,8 @@ class PersonalDataManager : public KeyedService,
  protected:
   // Only PersonalDataManagerFactory and certain tests can create instances of
   // PersonalDataManager.
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, AddProfile_CrazyCharacters);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, AddProfile_Invalid);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           AddCreditCard_CrazyCharacters);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, AddCreditCard_Invalid);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, GetCreditCardByServerId);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            AddAndGetCreditCardArtImage);
-  FRIEND_TEST_ALL_PREFIXES(
-      PersonalDataManagerTest,
-      ConvertWalletAddressesAndUpdateWalletCards_NewProfile);
-  FRIEND_TEST_ALL_PREFIXES(
-      PersonalDataManagerTest,
-      ConvertWalletAddressesAndUpdateWalletCards_MergedProfile);
-  FRIEND_TEST_ALL_PREFIXES(
-      PersonalDataManagerTest,
-      ConvertWalletAddressesAndUpdateWalletCards_NewCrd_AddressAlreadyConverted);  // NOLINT
-  FRIEND_TEST_ALL_PREFIXES(
-      PersonalDataManagerTest,
-      ConvertWalletAddressesAndUpdateWalletCards_AlreadyConverted);
-  FRIEND_TEST_ALL_PREFIXES(
-      PersonalDataManagerTest,
-      ConvertWalletAddressesAndUpdateWalletCards_MultipleSimilarWalletAddresses);  // NOLINT
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           DoNotConvertWalletAddressesInEphemeralStorage);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           DeleteDisusedCreditCards_DoNothingWhenDisabled);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            GetProfilesToSuggest_ProfileAutofillDisabled);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
@@ -698,24 +671,10 @@ class PersonalDataManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerCleanerTest,
                            UpdateCardsBillingAddressReference);
 
-  friend class autofill::AutofillInteractiveTest;
   friend class autofill::PersonalDataManagerCleaner;
-  friend class autofill::PersonalDataManagerFactory;
-  friend class AutofillMetricsTest;
-  friend class FormDataImporterTestBase;
   friend class ::PaymentsSuggestionBottomSheetMediatorTest;
-  friend class PersonalDataManagerTest;
-  friend class PersonalDataManagerTestBase;
-  friend class PersonalDataManagerHelper;
-  friend class PersonalDataManagerMockTest;
   friend class VirtualCardEnrollmentManagerTest;
-  friend class ::RemoveAutofillTester;
   friend std::default_delete<PersonalDataManager>;
-  friend void autofill_helper::SetCreditCards(
-      int,
-      std::vector<autofill::CreditCard>*);
-  friend void SetTestProfiles(Profile* base_profile,
-                              std::vector<AutofillProfile>* profiles);
 
   // Used to get a pointer to the strike database for migrating existing
   // profiles. Note, the result can be a nullptr, for example, on incognito
