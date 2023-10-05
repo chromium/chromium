@@ -61,7 +61,7 @@ inline absl::optional<float> MathConstant(
   const SimpleFontData* font_data = style.GetFont().PrimaryFont();
   return font_data ? OpenTypeMathSupport::MathConstant(
                          font_data->PlatformData().GetHarfBuzzFace(), constant)
-                   : constant;
+                   : absl::nullopt;
 }
 
 LayoutUnit FractionLineThickness(const ComputedStyle&);
