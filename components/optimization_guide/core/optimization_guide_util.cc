@@ -36,7 +36,7 @@ optimization_guide::proto::Platform GetPlatform() {
 #elif BUILDFLAG(IS_LINUX)
   return optimization_guide::proto::PLATFORM_LINUX;
 #else
-  return optimization_guide::proto::PLATFORM_UNKNOWN;
+  return optimization_guide::proto::PLATFORM_UNDEFINED;
 #endif
 }
 }  // namespace
