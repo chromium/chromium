@@ -7,7 +7,10 @@ import("../build_webui_tests.gni")
 build_webui_tests("build") {
   resource_path_prefix = "compose"
 
-  files = [ "compose_textarea_test.ts" ]
+  files = [
+    "compose_app_test.ts",
+    "compose_textarea_test.ts",
+  ]
 
   ts_path_mappings =
       [ "chrome://compose/*|" +

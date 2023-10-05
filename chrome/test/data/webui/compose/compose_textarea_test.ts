@@ -46,4 +46,17 @@ suite('ComposeTextarea', () => {
     await whenValueChanged;
     assertEquals('My new value', textarea.value);
   });
+
+  test('Validates', () => {
+    // No input yet, so should be invalid.
+    assertFalse(textarea.validate());
+
+    // Has some input, should be valid.
+    textarea.$.input.value = 'Here is some input.';
+    assertTrue(textarea.validate());
+
+    // No input again, should be invalid.
+    textarea.$.input.value = '';
+    assertFalse(textarea.validate());
+  });
 });

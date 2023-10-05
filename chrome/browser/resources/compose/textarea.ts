@@ -35,6 +35,11 @@ export class ComposeTextareaElement extends PolymerElement {
         value: false,
         reflectToAttribute: true,
       },
+      invalid_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
       readonly: {
         type: Boolean,
         value: false,
@@ -48,11 +53,17 @@ export class ComposeTextareaElement extends PolymerElement {
   }
 
   allowExitingReadonlyMode: boolean;
+  private invalid_: boolean;
   readonly: boolean;
   value: string;
 
   private shouldShowEditIcon_(): boolean {
     return this.allowExitingReadonlyMode && this.readonly;
+  }
+
+  validate() {
+    this.invalid_ = !this.$.input.checkValidity();
+    return !this.invalid_;
   }
 }
 

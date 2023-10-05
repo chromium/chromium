@@ -16,6 +16,10 @@ class ComposeTest : public WebUIMochaBrowserTest {
       compose::features::kEnableCompose};
 };
 
+IN_PROC_BROWSER_TEST_F(ComposeTest, App) {
+  RunTest("compose/compose_app_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ComposeTest, Textarea) {
   RunTest("compose/compose_textarea_test.js", "mocha.run()");
 }

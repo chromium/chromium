@@ -708,6 +708,9 @@
   E_CPONLY(kColorPreviousReadAloudHighlightYellow) \
   /* Compose colors */ \
   E_CPONLY(kColorComposeDialogBackground) \
+  E_CPONLY(kColorComposeDialogResultBackground) \
+  E_CPONLY(kColorComposeDialogResultForeground) \
+  E_CPONLY(kColorComposeDialogResultIcon) \
   E_CPONLY(kColorComposeDialogTitle) \
   E_CPONLY(kColorComposeDialogTextarea) \
   E_CPONLY(kColorComposeDialogTextareaOutline) \

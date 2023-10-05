@@ -1,15 +1,16 @@
-<style>
+<style include="cr-hidden-style md-select">
   :host {
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    gap: 16px;
+    padding: 20px 0;
   }
 
   #heading {
     display: flex;
     height: 24px;
-    margin-block-end: 21px;
     align-items: center;
+    padding: 0 20px;
   }
 
   h1 {
@@ -25,6 +26,58 @@
     margin: 0;
     margin-inline-end: -6px;
   }
+
+  #body {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 20px;
+  }
+
+  #resultContainer {
+    border-radius: 8px;
+    padding: 16px;
+    background: var(--color-compose-dialog-result-background);
+    color: var(--color-compose-dialog-result-foreground);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  #resultOptions {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    margin-block-start: 16px;
+  }
+
+  #resultOptions .md-select {
+    width: 82px;
+  }
+
+  #resultOptionsIcons {
+    display: grid;
+    grid-auto-columns: var(--cr-icon-size);
+    grid-auto-rows: var(--cr-icon-size);
+    grid-auto-flow: column;
+    gap: 12px;
+    align-items: center;
+    justify-items: center;
+    margin-inline-start: auto;
+  }
+
+  #resultOptionsIcons cr-icon-button {
+    --cr-icon-button-fill-color: var(--color-compose-dialog-result-icon);
+    margin: 0;
+  }
+
+  .footer {
+    align-items: center;
+    display: flex;
+    padding: 0 20px;
+    justify-content: flex-end;
+  }
 </style>
 
 <div id="heading">
@@ -32,8 +85,40 @@
   <cr-icon-button iron-icon="cr:close"></cr-icon-button>
 </div>
 
-<compose-textarea></compose-textarea>
-<compose-textarea value="Some input string"></compose-textarea>
-<compose-textarea value="Some input string" readonly></compose-textarea>
-<compose-textarea value="Some input string" readonly
-    allow-exiting-readonly-mode></compose-textarea>
+<div id="body">
+  <compose-textarea id="textarea"
+      on-value-changed="onTextareaValueChanged_"
+      readonly="[[submitted_]]"
+      allow-exiting-readonly-mode="[[submitted_]]">
+  </compose-textarea>
+
+  <div id="resultContainer" hidden="[[!result_]]">
+    [[result_]]
+
+    <div id="resultOptions">
+      <select class="md-select"><option>Menu 1</option></select>
+      <select class="md-select"><option>Menu 2</option></select>
+
+      <div id="resultOptionsIcons">
+        <cr-icon-button id="undo" iron-icon="cr:arrow-back"
+            disabled="[[!undoEnabled_]]"
+            on-click="onUndoClick_">
+        </cr-icon-button>
+        <cr-icon-button id="refresh" iron-icon="cr:sync"
+            on-click="onRefreshClick_">
+        </cr-icon-button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="submitFooter" class="footer" hidden$="[[submitted_]]">
+  <cr-button id="submitButton" class="action-button" on-click="onSubmit_"
+      disabled="[[!isSubmitEnabled_]]">
+    Submit
+  </cr-button>
+</div>
+
+<div id="resultFooter" class="footer" hidden="[[!result_]]">
+  <cr-button id="insertButton" class="action-button">Insert</cr-button>
+</div>
