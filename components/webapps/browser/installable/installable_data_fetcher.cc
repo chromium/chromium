@@ -39,9 +39,9 @@ InstallableDataFetcher::InstallableDataFetcher(
 InstallableDataFetcher::~InstallableDataFetcher() = default;
 
 void InstallableDataFetcher::FetchManifest(FetcherCallback finish_callback) {
-  if (page_data_->manifest->fetched) {
+  if (page_data_->manifest_fetched()) {
     // Stop and run the callback if manifest is already fetched.
-    std::move(finish_callback).Run(page_data_->manifest->error);
+    std::move(finish_callback).Run(page_data_->manifest_error());
     return;
   }
 
@@ -56,24 +56,22 @@ void InstallableDataFetcher::OnDidGetManifest(
     FetcherCallback finish_callback,
     const GURL& manifest_url,
     blink::mojom::ManifestPtr manifest) {
+  InstallableStatusCode error = NO_ERROR_DETECTED;
   if (manifest_url.is_empty()) {
-    page_data_->manifest->error = NO_MANIFEST;
+    error = NO_MANIFEST;
   } else if (blink::IsEmptyManifest(manifest)) {
-    page_data_->manifest->error = MANIFEST_EMPTY;
+    error = MANIFEST_EMPTY;
   }
 
-  page_data_->manifest->url = manifest_url;
-  page_data_->manifest->manifest = std::move(manifest);
-  page_data_->manifest->fetched = true;
-
-  std::move(finish_callback).Run(page_data_->manifest->error);
+  page_data_->OnManifestFetched(std::move(manifest), manifest_url, error);
+  std::move(finish_callback).Run(error);
 }
 
 void InstallableDataFetcher::FetchWebPageMetadata(
     FetcherCallback finish_callback) {
-  if (page_data_->web_page_metadata->fetched) {
+  if (page_data_->web_page_metadata_fetched()) {
     // Stop and run the callback if metadata is already fetched.
-    std::move(finish_callback).Run(page_data_->web_page_metadata->error);
+    std::move(finish_callback).Run(NO_ERROR_DETECTED);
     return;
   }
 
@@ -96,8 +94,7 @@ void InstallableDataFetcher::OnDidGetWebPageMetadata(
     mojo::AssociatedRemote<mojom::WebPageMetadataAgent> metadata_agent,
     FetcherCallback finish_callback,
     mojom::WebPageMetadataPtr web_page_metadata) {
-  page_data_->web_page_metadata->metadata = std::move(web_page_metadata);
-  page_data_->web_page_metadata->fetched = true;
+  page_data_->OnPageMetadataFetched(std::move(web_page_metadata));
   std::move(finish_callback).Run(NO_ERROR_DETECTED);
 }
 
@@ -105,17 +102,13 @@ void InstallableDataFetcher::CheckServiceWorker(
     FetcherCallback finish_callback,
     base::OnceClosure pause_callback,
     bool wait_for_worker) {
-  // Stop and run the callback if service worker is already checked.
-  // Sites can always register a service worker after we finish checking, so
-  // if the previous check result was a missing service worker error, we still
-  // check again.
-  if (page_data_->worker->fetched &&
-      page_data_->worker->error != NO_MATCHING_SERVICE_WORKER) {
-    std::move(finish_callback).Run(page_data_->worker->error);
+  // Stop and run the callback if we already have service worker result.
+  if (page_data_->HasWorkerResult()) {
+    std::move(finish_callback).Run(page_data_->worker_error());
     return;
   }
 
-  if (blink::IsEmptyManifest(*page_data_->manifest->manifest)) {
+  if (blink::IsEmptyManifest(page_data_->GetManifest())) {
     // Skip fetching service worker and return if manifest is empty.
     std::move(finish_callback).Run(NO_ERROR_DETECTED);
     return;
@@ -144,20 +137,17 @@ void InstallableDataFetcher::OnDidCheckHasServiceWorker(
     content::ServiceWorkerCapability capability) {
   switch (capability) {
     case content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER:
-      page_data_->worker->has_worker = true;
-      page_data_->worker->error = NO_ERROR_DETECTED;
+      page_data_->OnCheckWorkerResult(NO_ERROR_DETECTED);
       break;
     case content::ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER:
-      page_data_->worker->has_worker = false;
-      page_data_->worker->error = NOT_OFFLINE_CAPABLE;
+      page_data_->OnCheckWorkerResult(NOT_OFFLINE_CAPABLE);
       break;
     case content::ServiceWorkerCapability::NO_SERVICE_WORKER:
       if (wait_for_worker) {
         std::move(pause_callback).Run();
         return;
       } else {
-        page_data_->worker->has_worker = false;
-        page_data_->worker->error = NO_MATCHING_SERVICE_WORKER;
+        page_data_->OnCheckWorkerResult(NO_MATCHING_SERVICE_WORKER);
       }
       break;
   }
@@ -167,9 +157,8 @@ void InstallableDataFetcher::OnDidCheckHasServiceWorker(
   InstallableMetrics::RecordCheckServiceWorkerStatus(
       InstallableMetrics::ConvertFromServiceWorkerCapability(capability));
 
-  page_data_->worker->fetched = true;
   if (finish_callback) {
-    std::move(finish_callback).Run(page_data_->worker->error);
+    std::move(finish_callback).Run(page_data_->worker_error());
   }
 }
 
@@ -177,14 +166,13 @@ void InstallableDataFetcher::CheckAndFetchBestPrimaryIcon(
     FetcherCallback finish_callback,
     bool prefer_maskable,
     bool fetch_favicon) {
-  if (blink::IsEmptyManifest(*page_data_->manifest->manifest) &&
-      !fetch_favicon) {
+  if (blink::IsEmptyManifest(page_data_->GetManifest()) && !fetch_favicon) {
     std::move(finish_callback).Run(NO_ERROR_DETECTED);
     return;
   }
-  if (page_data_->primary_icon->fetched) {
+  if (page_data_->primary_icon_fetched()) {
     // Stop and run the callback if an icon is already fetched.
-    std::move(finish_callback).Run(page_data_->primary_icon->error);
+    std::move(finish_callback).Run(page_data_->icon_error());
     return;
   }
   icon_fetcher_ = std::make_unique<InstallableIconFetcher>(
@@ -194,7 +182,7 @@ void InstallableDataFetcher::CheckAndFetchBestPrimaryIcon(
 
 void InstallableDataFetcher::CheckAndFetchScreenshots(
     FetcherCallback finish_callback) {
-  if (page_data_->is_screenshots_fetch_complete) {
+  if (page_data_->is_screenshots_fetch_complete()) {
     // Stop and run the callback if screenshots was already fetched.
     std::move(finish_callback).Run(NO_ERROR_DETECTED);
     return;
@@ -247,7 +235,7 @@ void InstallableDataFetcher::CheckAndFetchScreenshots(
   }
 
   if (!screenshots_downloading_) {
-    page_data_->is_screenshots_fetch_complete = true;
+    page_data_->OnScreenshotsDownloaded(std::vector<Screenshot>());
     std::move(screenshot_complete_).Run(NO_ERROR_DETECTED);
   }
 }
@@ -268,6 +256,7 @@ void InstallableDataFetcher::OnScreenshotFetched(GURL screenshot_url,
     // Now that all images have finished downloading, populate screenshots in
     // the order they are declared in the manifest.
     int num_of_screenshots = 0;
+    std::vector<Screenshot> screenshots;
     for (const auto& url : page_data_->GetManifest().screenshots) {
       if (++num_of_screenshots > kMaximumNumOfScreenshots) {
         break;
@@ -286,11 +275,11 @@ void InstallableDataFetcher::OnScreenshotFetched(GURL screenshot_url,
 
       // Screenshots must have the same aspect ratio. Cross-multiplying
       // dimensions checks portrait vs landscape mode (1:2 vs 2:1 for instance).
-      if (page_data_->screenshots.size() &&
+      if (screenshots.size() &&
           screenshot.dimensions().width() *
-                  page_data_->screenshots[0].image.dimensions().height() !=
+                  screenshots[0].image.dimensions().height() !=
               screenshot.dimensions().height() *
-                  page_data_->screenshots[0].image.dimensions().width()) {
+                  screenshots[0].image.dimensions().width()) {
         continue;
       }
 
@@ -300,11 +289,11 @@ void InstallableDataFetcher::OnScreenshotFetched(GURL screenshot_url,
         continue;
       }
 
-      page_data_->screenshots.emplace_back(std::move(screenshot), url->label);
+      screenshots.emplace_back(std::move(screenshot), url->label);
     }
 
+    page_data_->OnScreenshotsDownloaded(std::move(screenshots));
     downloaded_screenshots_.clear();
-    page_data_->is_screenshots_fetch_complete = true;
     std::move(screenshot_complete_).Run(NO_ERROR_DETECTED);
   }
 }

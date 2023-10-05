@@ -124,23 +124,23 @@ void InstallableManager::SetSequencedTaskRunnerForTesting(
 }
 
 InstallableStatusCode InstallableManager::manifest_error() const {
-  return page_data_->manifest->error;
+  return page_data_->manifest_error();
 }
 
 InstallableStatusCode InstallableManager::worker_error() const {
-  return page_data_->worker->error;
+  return page_data_->worker_error();
 }
 
-InstallableStatusCode InstallableManager::icon_error() {
-  return page_data_->primary_icon->error;
+InstallableStatusCode InstallableManager::icon_error() const {
+  return page_data_->icon_error();
 }
 
-GURL& InstallableManager::icon_url() {
-  return page_data_->primary_icon->url;
+GURL InstallableManager::icon_url() const {
+  return page_data_->primary_icon_url();
 }
 
-const SkBitmap* InstallableManager::icon() {
-  return page_data_->primary_icon->icon.get();
+const SkBitmap* InstallableManager::icon() const {
+  return page_data_->primary_icon();
 }
 
 content::WebContents* InstallableManager::GetWebContents() {
@@ -233,15 +233,15 @@ void InstallableManager::WebContentsDestroyed() {
 }
 
 const GURL& InstallableManager::manifest_url() const {
-  return page_data_->manifest->url;
+  return page_data_->manifest_url();
 }
 
 const blink::mojom::Manifest& InstallableManager::manifest() const {
   return page_data_->GetManifest();
 }
 
-bool InstallableManager::has_worker() {
-  return page_data_->worker->has_worker;
+bool InstallableManager::has_worker() const {
+  return page_data_->has_worker();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(InstallableManager);

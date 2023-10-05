@@ -105,9 +105,9 @@ class InstallableManager
   // Gets/sets parts of particular properties. Exposed for testing.
   InstallableStatusCode manifest_error() const;
   InstallableStatusCode worker_error() const;
-  InstallableStatusCode icon_error();
-  GURL& icon_url();
-  const SkBitmap* icon();
+  InstallableStatusCode icon_error() const;
+  GURL icon_url() const;
+  const SkBitmap* icon() const;
 
   // Returns the WebContents to which this object is attached, or nullptr if the
   // WebContents doesn't exist or is currently being destroyed.
@@ -134,7 +134,7 @@ class InstallableManager
 
   const GURL& manifest_url() const;
   const blink::mojom::Manifest& manifest() const;
-  bool has_worker();
+  bool has_worker() const;
 
   std::unique_ptr<InstallablePageData> page_data_;
   InstallableTaskQueue task_queue_;

@@ -171,8 +171,7 @@ class TestInstallableManager : public InstallableManager {
   }
 
   void SetWebPageMetadata(mojom::WebPageMetadataPtr metadata) {
-    page_data_->web_page_metadata->metadata = std::move(metadata);
-    page_data_->web_page_metadata->fetched = true;
+    page_data_->OnPageMetadataFetched(std::move(metadata));
   }
 
   void SetManifest(blink::mojom::ManifestPtr manifest) {
@@ -180,17 +179,14 @@ class TestInstallableManager : public InstallableManager {
       SetPrimaryIcon(manifest->icons[0].src);
     }
 
-    page_data_->manifest->manifest = std::move(manifest);
-    page_data_->manifest->url = GURL(kDefaultManifestUrl);
-    page_data_->manifest->fetched = true;
+    page_data_->OnManifestFetched(std::move(manifest),
+                                  GURL(kDefaultManifestUrl));
   }
 
   void SetPrimaryIcon(const GURL& icon_url) {
-    page_data_->primary_icon->url = icon_url;
-    page_data_->primary_icon->icon = std::make_unique<SkBitmap>(
+    page_data_->OnPrimaryIconFetched(
+        icon_url, blink::mojom::ManifestImageResource_Purpose::ANY,
         gfx::test::CreateBitmap(kIconSizePx, kIconSizePx));
-    page_data_->primary_icon->error = NO_ERROR_DETECTED;
-    page_data_->primary_icon->fetched = true;
   }
 
   void SetShouldManifestTimeOut(bool should_time_out) {
@@ -201,19 +197,19 @@ class TestInstallableManager : public InstallableManager {
   void InitPageData() {
     // Initialize all default values and set "fetched" to be true so the
     // installable fetcher won't try to fetch the real data.
-    if (!page_data_->manifest->fetched) {
-      page_data_->manifest->fetched = true;
-      page_data_->manifest->error = MANIFEST_EMPTY;
+    if (!page_data_->manifest_fetched()) {
+      page_data_->OnManifestFetched(blink::mojom::Manifest::New(), GURL(),
+                                    MANIFEST_EMPTY);
     }
-    if (!page_data_->web_page_metadata->fetched) {
-      page_data_->web_page_metadata->metadata = BuildDefaultMetadata();
-      page_data_->web_page_metadata->fetched = true;
+    if (!page_data_->web_page_metadata_fetched()) {
+      page_data_->OnPageMetadataFetched(BuildDefaultMetadata());
     }
-    if (!page_data_->primary_icon->fetched) {
-      page_data_->primary_icon->fetched = true;
-      page_data_->primary_icon->error = NO_ACCEPTABLE_ICON;
+    if (!page_data_->primary_icon_fetched()) {
+      page_data_->OnPrimaryIconFetchedError(NO_ACCEPTABLE_ICON);
     }
-    page_data_->is_screenshots_fetch_complete = true;
+    if (!page_data_->is_screenshots_fetch_complete()) {
+      page_data_->OnScreenshotsDownloaded(std::vector<Screenshot>());
+    }
   }
 
   bool should_manifest_time_out_ = false;

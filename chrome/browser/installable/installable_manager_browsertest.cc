@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
   EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
   EXPECT_TRUE(manager->manifest_url().is_empty());
-  EXPECT_FALSE(manager->page_data_->primary_icon->fetched);
+  EXPECT_FALSE(manager->page_data_->primary_icon_fetched());
   EXPECT_FALSE(manager->has_worker());
 
   EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, ManagerInIncognito) {
 
   EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
   EXPECT_TRUE(manager->manifest_url().is_empty());
-  EXPECT_FALSE(manager->page_data_->primary_icon->fetched);
+  EXPECT_FALSE(manager->page_data_->primary_icon_fetched());
   EXPECT_FALSE(manager->has_worker());
 
   EXPECT_EQ(std::vector<InstallableStatusCode>{IN_INCOGNITO}, tester->errors());
@@ -820,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckWebapp) {
 
     EXPECT_FALSE(blink::IsEmptyManifest(manager->manifest()));
     EXPECT_FALSE(manager->manifest_url().is_empty());
-    EXPECT_TRUE(manager->page_data_->primary_icon->fetched);
+    EXPECT_TRUE(manager->page_data_->primary_icon_fetched());
     EXPECT_FALSE((manager->icon_url().is_empty()));
     EXPECT_NE(nullptr, (manager->icon()));
     EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
@@ -854,7 +854,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckWebapp) {
 
     EXPECT_FALSE(blink::IsEmptyManifest(manager->manifest()));
     EXPECT_FALSE(manager->manifest_url().is_empty());
-    EXPECT_TRUE(manager->page_data_->primary_icon->fetched);
+    EXPECT_TRUE(manager->page_data_->primary_icon_fetched());
     EXPECT_FALSE((manager->icon_url().is_empty()));
     EXPECT_NE(nullptr, (manager->icon()));
     EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
@@ -873,7 +873,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckWebapp) {
     EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
     EXPECT_TRUE(manager->manifest_url().is_empty());
     EXPECT_FALSE(manager->has_worker());
-    EXPECT_FALSE(manager->page_data_->primary_icon->fetched);
+    EXPECT_FALSE(manager->page_data_->primary_icon_fetched());
     EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
     EXPECT_EQ(NO_ERROR_DETECTED, manager->worker_error());
     EXPECT_TRUE(!manager->task_queue_.HasCurrent());
@@ -1202,7 +1202,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_FALSE(blink::IsEmptyManifest(manager->manifest()));
   EXPECT_FALSE(manager->manifest_url().is_empty());
   EXPECT_FALSE(manager->has_worker());
-  EXPECT_TRUE(manager->page_data_->primary_icon->fetched);
+  EXPECT_TRUE(manager->page_data_->primary_icon_fetched());
   EXPECT_FALSE((manager->icon_url().is_empty()));
   EXPECT_NE(nullptr, (manager->icon()));
   EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
@@ -1250,7 +1250,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   // Verify internal state.
   EXPECT_FALSE(blink::IsEmptyManifest(manager->manifest()));
   EXPECT_FALSE(manager->manifest_url().is_empty());
-  EXPECT_TRUE(manager->page_data_->primary_icon->fetched);
+  EXPECT_TRUE(manager->page_data_->primary_icon_fetched());
   EXPECT_FALSE((manager->icon_url().is_empty()));
   EXPECT_NE(nullptr, (manager->icon()));
   EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());

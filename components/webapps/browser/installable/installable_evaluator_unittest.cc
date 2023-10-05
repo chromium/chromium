@@ -92,19 +92,19 @@ class InstallableEvaluatorUnitTest : public content::RenderViewHostTestHarness {
   }
 
   void SetManifest(blink::mojom::ManifestPtr manifest) {
-    page_data_->manifest->manifest = std::move(manifest);
+    page_data_->manifest_->manifest = std::move(manifest);
   }
 
   void SetMetadata(mojom::WebPageMetadataPtr metadata) {
-    page_data_->web_page_metadata->metadata = std::move(metadata);
+    page_data_->web_page_metadata_->metadata = (std::move(metadata));
   }
 
   blink::mojom::Manifest* manifest() {
-    return page_data_->manifest->manifest.get();
+    return page_data_->manifest_->manifest.get();
   }
 
   mojom::WebPageMetadata* metadata() {
-    return page_data_->web_page_metadata->metadata.get();
+    return page_data_->web_page_metadata_->metadata.get();
   }
 
  private:

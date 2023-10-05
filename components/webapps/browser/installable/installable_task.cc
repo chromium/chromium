@@ -42,14 +42,14 @@ void InstallableTask::RunCallback() {
   if (callback_) {
     InstallableData data = {
         std::move(errors_),
-        page_data_->manifest->url,
+        page_data_->manifest_url(),
         page_data_->GetManifest(),
         page_data_->WebPageMetadata(),
-        page_data_->primary_icon->url,
-        page_data_->primary_icon->icon.get(),
-        page_data_->primary_icon->purpose ==
+        page_data_->primary_icon_url(),
+        page_data_->primary_icon(),
+        page_data_->primary_icon_purpose() ==
             blink::mojom::ManifestImageResource_Purpose::MASKABLE,
-        page_data_->screenshots,
+        page_data_->screenshots(),
         valid_manifest_,
     };
     std::move(callback_).Run(data);

@@ -136,8 +136,6 @@ InstallableIconFetcher::InstallableIconFetcher(
       prefer_maskable_(prefer_maskable),
       fetch_favicon_(fetch_favicon),
       finish_callback_(std::move(finish_callback)) {
-  page_data_->primary_icon->fetched = true;
-
   downloading_icons_type_.push_back(IconPurpose::ANY);
   if (prefer_maskable_) {
     downloading_icons_type_.push_back(IconPurpose::MASKABLE);
@@ -231,16 +229,12 @@ void InstallableIconFetcher::OnFaviconFetched(
 void InstallableIconFetcher::OnIconFetched(const GURL& icon_url,
                                            const IconPurpose purpose,
                                            const SkBitmap& bitmap) {
-  page_data_->primary_icon->url = icon_url;
-  page_data_->primary_icon->icon = std::make_unique<SkBitmap>(bitmap);
-  page_data_->primary_icon->purpose = purpose;
-  page_data_->primary_icon->error = NO_ERROR_DETECTED;
-
+  page_data_->OnPrimaryIconFetched(icon_url, purpose, bitmap);
   std::move(finish_callback_).Run(NO_ERROR_DETECTED);
 }
 
 void InstallableIconFetcher::EndWithError(InstallableStatusCode code) {
-  page_data_->primary_icon->error = code;
+  page_data_->OnPrimaryIconFetchedError(code);
   std::move(finish_callback_).Run(code);
 }
 
