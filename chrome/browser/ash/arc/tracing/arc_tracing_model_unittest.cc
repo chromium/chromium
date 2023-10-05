@@ -84,34 +84,33 @@ bool ValidateCpuEvents(const CpuEvents& cpu_events) {
 // each type is found at least once.
 bool ValidateGrahpicsEvents(const GraphicsEvents& events,
                             const std::set<GraphicsEventType>& allowed_types) {
-  if (events.empty()) {
-    return false;
-  }
+  bool ok = true;
   uint64_t previous_timestamp = 0;
   std::set<GraphicsEventType> used_types;
+
   for (const auto& event : events) {
     if (event.timestamp < previous_timestamp) {
       LOG(ERROR) << "Timestamp sequence broken: " << event.timestamp << " vs "
                  << previous_timestamp << ".";
-      return false;
+      ok = false;
     }
     previous_timestamp = event.timestamp;
     if (!allowed_types.count(event.type)) {
       LOG(ERROR) << "Unexpected event type " << event.type << ".";
-      return false;
+      ok = false;
     }
     used_types.insert(event.type);
   }
-  if (used_types.size() != allowed_types.size()) {
-    for (const auto& allowed_type : allowed_types) {
-      if (!used_types.count(allowed_type)) {
-        LOG(ERROR) << "Required event type " << allowed_type
-                   << " << is not found.";
-      }
+
+  for (const auto& allowed_type : allowed_types) {
+    if (!used_types.count(allowed_type)) {
+      LOG(ERROR) << "Required event type " << allowed_type
+                 << " << is not found.";
+      ok = false;
     }
-    return false;
   }
-  return true;
+
+  return ok;
 }
 
 std::unique_ptr<ArcTracingGraphicsModel> LoadGraphicsModel(
