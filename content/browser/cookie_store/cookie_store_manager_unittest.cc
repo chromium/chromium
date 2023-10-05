@@ -6,6 +6,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -429,8 +430,9 @@ class CookieStoreManagerTest
         ContentSettingsPattern::FromString("*"),
         base::Value(ContentSetting::CONTENT_SETTING_ALLOW), std::string(),
         false /* incognito */);
-    cookie_manager_->SetContentSettingsForLegacyCookieAccess(
-        std::move(legacy_settings));
+    cookie_manager_->SetContentSettings(
+        ContentSettingsType::LEGACY_COOKIE_ACCESS, std::move(legacy_settings),
+        base::NullCallback());
     cookie_manager_.FlushForTesting();
   }
 

@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/cookie_change_dispatcher.h"
@@ -80,7 +81,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
                           SetCanonicalCookieCallback callback) override;
   void DeleteCanonicalCookie(const net::CanonicalCookie& cookie,
                              DeleteCanonicalCookieCallback callback) override;
-  void SetContentSettings(const ContentSettingsForOneType& settings) override;
+  void SetContentSettings(ContentSettingsType content_settings_type,
+                          const ContentSettingsForOneType& settings,
+                          SetContentSettingsCallback callback) override;
   void DeleteCookies(mojom::CookieDeletionFilterPtr filter,
                      DeleteCookiesCallback callback) override;
   void DeleteSessionOnlyCookies(
@@ -106,21 +109,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   void BlockThirdPartyCookies(bool block) override;
   void BlockTruncatedCookies(bool block) override;
   void SetMitigationsEnabledFor3pcd(bool enable) override;
-  void SetContentSettingsForLegacyCookieAccess(
-      const ContentSettingsForOneType& settings) override;
-  void SetContentSettingsFor3pcd(
-      const ContentSettingsForOneType& settings) override;
-  void SetContentSettingsFor3pcdMetadataGrants(
-      const ContentSettingsForOneType& settings) override;
-  void SetContentSettingsFor3pcdHeuristicsGrants(
-      const ContentSettingsForOneType& settings) override;
-  void SetStorageAccessGrantSettings(
-      const ContentSettingsForOneType& settings,
-      SetStorageAccessGrantSettingsCallback callback) override;
-  void SetAllStorageAccessSettings(
-      const ContentSettingsForOneType& standard_settings,
-      const ContentSettingsForOneType& top_level_settings,
-      SetAllStorageAccessSettingsCallback callback) override;
 
   // Configures |out| based on |params|. (This doesn't honor
   // allow_file_scheme_cookies, which affects the cookie store rather than the

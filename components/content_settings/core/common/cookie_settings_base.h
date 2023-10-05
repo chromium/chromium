@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/fixed_flat_set.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -117,6 +118,16 @@ class CookieSettingsBase {
     // Whether the setting is for a specific pattern.
     bool is_explicit_setting_ = false;
   };
+
+  // Set of types relevant for CookieSettings.
+  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 6>;
+
+  // ContentSettings listed in this set will be automatically synced to the
+  // CookieSettings instance in the network service.
+  // If some types should only be synced when a certain flag is enabled, please
+  // add your flag to IsContentSettingsTypeEnabled() in
+  // profile_network_context_service.cc.
+  static const CookieSettingsTypeSet& GetContentSettingsTypes();
 
   // Returns true if the cookie associated with |domain| should be deleted
   // on exit.

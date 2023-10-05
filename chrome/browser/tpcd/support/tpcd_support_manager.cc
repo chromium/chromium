@@ -7,9 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -108,7 +110,8 @@ void TpcdSupportDelegate::Update3pcdSupportSettings(
 
   browser_context_->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
-      ->SetContentSettingsFor3pcd(enrollments);
+      ->SetContentSettings(ContentSettingsType::TPCD_SUPPORT,
+                           std::move(enrollments), base::NullCallback());
 }
 
 // Persistent Origin Trials can only be checked on the UI thread.

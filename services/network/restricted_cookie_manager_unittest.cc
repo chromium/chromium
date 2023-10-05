@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -697,11 +698,13 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlEqualsMatch_WithStorageAccess) {
   SetSessionCookie("cookie-name", "cookie-value", "example.com", "/");
 
   cookie_settings_.set_block_third_party_cookies(true);
-  cookie_settings_.set_storage_access_grants({ContentSettingPatternSource(
-      ContentSettingsPattern::FromURL(kDefaultUrl),
-      ContentSettingsPattern::FromURL(kOtherUrl),
-      base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*source=*/"",
-      /*incognito=*/false)});
+  cookie_settings_.set_content_settings(
+      ContentSettingsType::STORAGE_ACCESS,
+      {ContentSettingPatternSource(
+          ContentSettingsPattern::FromURL(kDefaultUrl),
+          ContentSettingsPattern::FromURL(kOtherUrl),
+          base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*source=*/"",
+          /*incognito=*/false)});
 
   auto options = mojom::CookieManagerGetOptions::New();
   options->name = "cookie-name";
@@ -1126,11 +1129,13 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookie_WithStorageAccess) {
   SetSessionCookie("cookie-name", "cookie-value", "example.com", "/");
 
   cookie_settings_.set_block_third_party_cookies(true);
-  cookie_settings_.set_storage_access_grants({ContentSettingPatternSource(
-      ContentSettingsPattern::FromURL(kDefaultUrl),
-      ContentSettingsPattern::FromURL(kOtherUrl),
-      base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*source=*/"",
-      /*incognito=*/false)});
+  cookie_settings_.set_content_settings(
+      ContentSettingsType::STORAGE_ACCESS,
+      {ContentSettingPatternSource(
+          ContentSettingsPattern::FromURL(kDefaultUrl),
+          ContentSettingsPattern::FromURL(kOtherUrl),
+          base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*source=*/"",
+          /*incognito=*/false)});
 
   EXPECT_FALSE(sync_service_->SetCanonicalCookie(
       *net::CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -1428,11 +1433,13 @@ TEST_P(RestrictedCookieManagerTest, CookiesEnabledFor_WithStorageAccess) {
   SetSessionCookie("cookie-name", "cookie-value", "example.com", "/");
 
   cookie_settings_.set_block_third_party_cookies(true);
-  cookie_settings_.set_storage_access_grants({ContentSettingPatternSource(
-      ContentSettingsPattern::FromURL(kDefaultUrl),
-      ContentSettingsPattern::FromURL(kOtherUrl),
-      base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*source=*/"",
-      /*incognito=*/false)});
+  cookie_settings_.set_content_settings(
+      ContentSettingsType::STORAGE_ACCESS,
+      {ContentSettingPatternSource(
+          ContentSettingsPattern::FromURL(kDefaultUrl),
+          ContentSettingsPattern::FromURL(kOtherUrl),
+          base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*source=*/"",
+          /*incognito=*/false)});
 
   bool result;
   EXPECT_TRUE(backend()->CookiesEnabledFor(

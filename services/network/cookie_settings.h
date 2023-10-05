@@ -10,8 +10,11 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "net/base/network_delegate.h"
 #include "net/cookies/canonical_cookie.h"
@@ -45,21 +48,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
 
   ~CookieSettings() override;
 
-  void set_content_settings(const ContentSettingsForOneType& content_settings) {
-    content_settings_ = content_settings;
-    // Ensure that a default setting is specified.
-    if (content_settings.empty() ||
-        content_settings.back().primary_pattern !=
-            ContentSettingsPattern::Wildcard() ||
-        content_settings.back().secondary_pattern !=
-            ContentSettingsPattern::Wildcard()) {
-      content_settings_.emplace_back(ContentSettingsPattern::Wildcard(),
-                                     ContentSettingsPattern::Wildcard(),
-                                     base::Value(CONTENT_SETTING_ALLOW),
-                                     std::string(), false);
-    }
-  }
-
   void set_block_third_party_cookies(bool block_third_party_cookies) {
     block_third_party_cookies_ = block_third_party_cookies;
   }
@@ -92,34 +80,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
         third_party_cookies_allowed_schemes.end());
   }
 
-  void set_content_settings_for_legacy_cookie_access(
-      const ContentSettingsForOneType& settings) {
-    settings_for_legacy_cookie_access_ = settings;
-  }
-
-  void set_content_settings_for_3pcd(
-      const ContentSettingsForOneType& settings) {
-    settings_for_3pcd_ = settings;
-  }
-
-  void set_content_settings_for_3pcd_metadata_grants(
-      const ContentSettingsForOneType& settings) {
-    settings_for_3pcd_metadata_grants_ = settings;
-  }
-
-  void set_content_settings_for_3pcd_heuristics_grants(
-      const ContentSettingsForOneType& settings) {
-    settings_for_3pcd_heuristics_grants_ = settings;
-  }
-
-  void set_storage_access_grants(const ContentSettingsForOneType& settings) {
-    storage_access_grants_ = settings;
-  }
-
-  void set_top_level_storage_access_grants(
-      const ContentSettingsForOneType& settings) {
-    top_level_storage_access_grants_ = settings;
-  }
+  void set_content_settings(ContentSettingsType type,
+                            const ContentSettingsForOneType& settings);
 
   void set_block_truncated_cookies(bool block_truncated_cookies) {
     block_truncated_cookies_ = block_truncated_cookies;
@@ -227,8 +189,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // Returns true if at least one content settings is session only.
   bool HasSessionOnlyOrigins() const;
 
-  // Content settings for ContentSettingsType::COOKIES.
-  ContentSettingsForOneType content_settings_;
   bool block_third_party_cookies_ =
       net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
   bool block_truncated_cookies_ = true;
@@ -236,25 +196,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   std::set<std::string> secure_origin_cookies_allowed_schemes_;
   std::set<std::string> matching_scheme_cookies_allowed_schemes_;
   std::set<std::string> third_party_cookies_allowed_schemes_;
-  ContentSettingsForOneType settings_for_legacy_cookie_access_;
-  // Used to represent content settings for 3PC accesses granted via 3PC
-  // deprecation trial. This type will only be populated when
-  // `net::features::kTpcdSupportSettings` is enabled.
-  ContentSettingsForOneType settings_for_3pcd_;
-  // Used to represent content settings for 3PC accesses granted via the
-  // component updater service. This type will only be populated when
-  // `net::features::kTpcdMetadataGrants` is enabled.
-  ContentSettingsForOneType settings_for_3pcd_metadata_grants_;
-  // Used to represent content settings for temporary 3PC accesses granted via
-  // detection of client-side heuristics.
-  ContentSettingsForOneType settings_for_3pcd_heuristics_grants_;
-  // Used to represent storage access grants provided by the StorageAccessAPI.
-  // Will only be populated when the StorageAccessAPI feature is enabled
-  // https://crbug.com/989663.
-  ContentSettingsForOneType storage_access_grants_;
-  // Used similarly to `storage_access_grants_`, but applicable at page-level.
-  // The two permissions are in the process of being split.
-  ContentSettingsForOneType top_level_storage_access_grants_;
+
+  base::flat_map<ContentSettingsType, ContentSettingsForOneType>
+      content_settings_;
 };
 
 }  // namespace network

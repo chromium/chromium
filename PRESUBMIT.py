@@ -1704,8 +1704,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       excluded_paths = (
         '^chrome/browser/ui/content_settings/',
         '^components/content_settings/',
-        '^services/network/cookie_settings/',
-        'test.cc',
+        '^services/network/cookie_settings.cc',
+        '.*test.cc',
       ),
     ),
     BanRule(

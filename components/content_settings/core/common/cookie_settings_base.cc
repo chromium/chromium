@@ -10,6 +10,7 @@
 #include "base/types/optional_util.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -66,6 +67,21 @@ bool CookieSettingsBase::CookieSettingWithMetadata::IsPartitionedStateAllowed()
   return IsAllowed(cookie_setting_) ||
          third_party_blocking_scope_ ==
              ThirdPartyBlockingScope::kUnpartitionedOnly;
+}
+
+// static
+const CookieSettingsBase::CookieSettingsTypeSet&
+CookieSettingsBase::GetContentSettingsTypes() {
+  static constexpr auto kInstance =
+      base::MakeFixedFlatSet<ContentSettingsType>({
+          ContentSettingsType::COOKIES,
+          ContentSettingsType::LEGACY_COOKIE_ACCESS,
+          ContentSettingsType::STORAGE_ACCESS,
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          ContentSettingsType::TPCD_HEURISTICS_GRANTS,
+          ContentSettingsType::TPCD_SUPPORT,
+      });
+  return kInstance;
 }
 
 // static

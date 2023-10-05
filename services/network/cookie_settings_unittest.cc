@@ -7,11 +7,13 @@
 
 #include "services/network/cookie_settings.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "net/base/features.h"
 #include "net/base/network_delegate.h"
 #include "net/base/schemeful_site.h"
@@ -222,6 +224,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingDefault) {
 TEST_P(CookieSettingsTest, GetCookieSetting) {
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting(kURL, kURL, CONTENT_SETTING_BLOCK)});
   EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL),
                                       GetCookieSettingOverrides(), nullptr),
@@ -232,6 +235,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingMustMatchBothPatterns) {
   CookieSettings settings;
   // This setting needs kOtherURL as the secondary pattern.
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_BLOCK)});
   EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL),
                                       GetCookieSettingOverrides(), nullptr),
@@ -251,6 +255,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingMustMatchBothPatterns) {
 TEST_P(CookieSettingsTest, GetCookieSettingGetsFirstSetting) {
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting(kURL, kURL, CONTENT_SETTING_BLOCK),
        CreateSetting(kURL, kURL, CONTENT_SETTING_SESSION_ONLY)});
   EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL),
@@ -264,6 +269,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingDontBlockThirdParty) {
 
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(false);
   EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL),
@@ -277,6 +283,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingDontBlockThirdParty) {
 TEST_P(CookieSettingsTest, GetCookieSettingBlockThirdParty) {
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
   EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL),
@@ -288,9 +295,11 @@ TEST_P(CookieSettingsTest,
        GetCookieSettingOverridePreservesSessionOnlySetting) {
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_SESSION_ONLY)});
 
-  settings.set_storage_access_grants(
+  settings.set_content_settings(
+      ContentSettingsType::STORAGE_ACCESS,
       {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
   EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL),
@@ -301,6 +310,7 @@ TEST_P(CookieSettingsTest,
 TEST_P(CookieSettingsTest, GetCookieSettingDontBlockThirdPartyWithException) {
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
   EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL),
@@ -320,10 +330,12 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
 
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
 
-  settings.set_storage_access_grants(
+  settings.set_content_settings(
+      ContentSettingsType::STORAGE_ACCESS,
       {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
 
   // When requesting our setting for the embedder/top-level combination our
@@ -388,6 +400,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
   // should both be ignored.
   {
     settings.set_content_settings(
+        ContentSettingsType::COOKIES,
         {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
     settings.set_block_third_party_cookies(true);
     base::HistogramTester histogram_tester_2;
@@ -413,11 +426,13 @@ TEST_P(CookieSettingsTest, GetCookieSettingTopLevelStorageAccessUnblocks) {
 
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
 
   // Only set the storage access granted by Top-Level Storage Access API.
-  settings.set_top_level_storage_access_grants(
+  settings.set_content_settings(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
       {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
 
   // When requesting our setting for the embedder/top-level combination our
@@ -474,6 +489,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingTopLevelStorageAccessUnblocks) {
   // override should both be ignored.
   {
     settings.set_content_settings(
+        ContentSettingsType::COOKIES,
         {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
     base::HistogramTester histogram_tester_2;
     EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
@@ -493,10 +509,12 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAResourceWildcards) {
 
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
 
-  settings.set_storage_access_grants(
+  settings.set_content_settings(
+      ContentSettingsType::STORAGE_ACCESS,
       {CreateSetting(kDomain, top_level_url.host(), CONTENT_SETTING_ALLOW)});
 
   EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
@@ -516,10 +534,12 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAATopLevelWildcards) {
 
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
 
-  settings.set_storage_access_grants(
+  settings.set_content_settings(
+      ContentSettingsType::STORAGE_ACCESS,
       {CreateSetting(url.host(), kDomain, CONTENT_SETTING_ALLOW)});
 
   EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
@@ -539,9 +559,11 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAARespectsSettings) {
 
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
 
-  settings.set_storage_access_grants(
+  settings.set_content_settings(
+      ContentSettingsType::STORAGE_ACCESS,
       {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
 
   base::HistogramTester histogram_tester;
@@ -560,11 +582,13 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
 
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
 
   base::Time expiration_time = base::Time::Now() + base::Seconds(100);
-  settings.set_storage_access_grants(
+  settings.set_content_settings(
+      ContentSettingsType::STORAGE_ACCESS,
       {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW,
                      expiration_time)});
 
@@ -606,11 +630,13 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdUnblocks) {
 
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
   settings.set_mitigations_enabled_for_3pcd(true);
 
-  settings.set_content_settings_for_3pcd(
+  settings.set_content_settings(
+      ContentSettingsType::TPCD_SUPPORT,
       {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
 
   // When requesting our setting for the embedder/top-level combination our
@@ -663,6 +689,7 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdUnblocks) {
   // If cookies are globally blocked, the 3PC overrides should both be ignored.
   {
     settings.set_content_settings(
+        ContentSettingsType::COOKIES,
         {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
     settings.set_block_third_party_cookies(true);
     settings.set_mitigations_enabled_for_3pcd(true);
@@ -687,9 +714,11 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdRespectsSettings) {
   settings.set_mitigations_enabled_for_3pcd(true);
 
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
 
-  settings.set_content_settings_for_3pcd(
+  settings.set_content_settings(
+      ContentSettingsType::TPCD_SUPPORT,
       {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
 
   base::HistogramTester histogram_tester;
@@ -714,11 +743,13 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdFeatureDisabled) {
 
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
   settings.set_mitigations_enabled_for_3pcd(true);
 
-  settings.set_content_settings_for_3pcd(
+  settings.set_content_settings(
+      ContentSettingsType::TPCD_SUPPORT,
       {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
 
   EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
@@ -737,6 +768,7 @@ TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateNoSettings) {
 TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateNoSessionOnly) {
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   EXPECT_FALSE(settings.CreateDeleteCookieOnExitPredicate());
 }
@@ -744,6 +776,7 @@ TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateNoSessionOnly) {
 TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateSessionOnly) {
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_SESSION_ONLY)});
   EXPECT_TRUE(settings.CreateDeleteCookieOnExitPredicate().Run(kURL, false));
 }
@@ -751,6 +784,7 @@ TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateSessionOnly) {
 TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateAllow) {
   CookieSettings settings;
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW),
        CreateSetting("*", "*", CONTENT_SETTING_SESSION_ONLY)});
   EXPECT_FALSE(settings.CreateDeleteCookieOnExitPredicate().Run(kURL, false));
@@ -839,7 +873,8 @@ TEST_P(CookieSettingsTest, LegacyCookieAccessDefault) {
 
 TEST_P(CookieSettingsTest, CookieAccessSemanticsForDomain) {
   CookieSettings settings;
-  settings.set_content_settings_for_legacy_cookie_access(
+  settings.set_content_settings(
+      ContentSettingsType::LEGACY_COOKIE_ACCESS,
       {CreateSetting(kDomain, "*", CONTENT_SETTING_ALLOW)});
   const struct {
     net::CookieAccessSemantics status;
@@ -860,7 +895,8 @@ TEST_P(CookieSettingsTest, CookieAccessSemanticsForDomain) {
 
 TEST_P(CookieSettingsTest, CookieAccessSemanticsForDomainWithWildcard) {
   CookieSettings settings;
-  settings.set_content_settings_for_legacy_cookie_access(
+  settings.set_content_settings(
+      ContentSettingsType::LEGACY_COOKIE_ACCESS,
       {CreateSetting(kDomainWildcardPattern, "*", CONTENT_SETTING_ALLOW)});
   const struct {
     net::CookieAccessSemantics status;
@@ -916,6 +952,7 @@ TEST_P(CookieSettingsTest, IsPrivacyModeEnabled) {
   // embedded on an unrelated site should not affect if partitioned state is
   // allowed.
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting(kOtherURL, kUnrelatedURL, CONTENT_SETTING_BLOCK)});
   EXPECT_EQ(third_party_partitioned_or_all_allowed,
             settings.IsPrivacyModeEnabled(GURL(kURL), net::SiteForCookies(),
@@ -925,6 +962,7 @@ TEST_P(CookieSettingsTest, IsPrivacyModeEnabled) {
   // No state is allowed if there's a site-specific rule that blocks access,
   // regardless of the kind of request.
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting(kURL, "*", CONTENT_SETTING_BLOCK)});
   // Third-party requests:
   EXPECT_EQ(net::NetworkDelegate::PrivacySetting::kStateDisallowed,
@@ -990,6 +1028,7 @@ TEST_P(CookieSettingsTest, IsCookieAccessible) {
               Not(IsStorageAccessGrantEligible()));
 
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting(kURL, "*", CONTENT_SETTING_BLOCK)});
 
   // No override can overrule a site-specific setting.
@@ -1006,6 +1045,7 @@ TEST_P(CookieSettingsTest, IsCookieAccessible) {
   // No override can overrule a global setting.
   status.ResetForTesting();
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
   EXPECT_FALSE(
       settings.IsCookieAccessible(*cookie, GURL(kURL), net::SiteForCookies(),
@@ -1044,6 +1084,7 @@ TEST_P(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
   // partitioned cookies should not be available.
   settings.set_block_third_party_cookies(false);
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting(kURL, "*", CONTENT_SETTING_BLOCK)});
   EXPECT_FALSE(settings.IsCookieAccessible(
       *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
@@ -1055,6 +1096,7 @@ TEST_P(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
   // partitioned cookie should be blocked as well.
   settings.set_block_third_party_cookies(true);
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting("*", kOtherURL, CONTENT_SETTING_BLOCK)});
   EXPECT_FALSE(settings.IsCookieAccessible(
       *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
@@ -1065,6 +1107,7 @@ TEST_P(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
   // setting for the top-frame origin that only applies on an unrelated site,
   // then the partitioned cookie should still be allowed.
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting(kUnrelatedURL, kOtherURL, CONTENT_SETTING_BLOCK)});
   EXPECT_TRUE(settings.IsCookieAccessible(
       *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
@@ -1076,8 +1119,10 @@ TEST_P(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
   // still be allowed.
   settings.set_block_third_party_cookies(true);
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting(kURL, kURL, CONTENT_SETTING_ALLOW)});
-  settings.set_storage_access_grants(
+  settings.set_content_settings(
+      ContentSettingsType::STORAGE_ACCESS,
       {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_BLOCK)});
   EXPECT_TRUE(settings.IsCookieAccessible(
       *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
@@ -1424,6 +1469,7 @@ TEST_P(
   net::CookieInclusionStatus status;
   settings.set_block_third_party_cookies(false);
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting(kFPSOwnerURL, kFPSOwnerURL, CONTENT_SETTING_BLOCK)});
 
   std::unique_ptr<net::CanonicalCookie> cookie =
@@ -1538,6 +1584,7 @@ TEST_P(CookieSettingsTest,
   excluded_cookies = {};
   settings.set_block_third_party_cookies(false);
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting(kURL, "*", CONTENT_SETTING_BLOCK)});
   EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
       GURL(kURL), net::SiteForCookies(), &top_level_origin,
@@ -1560,6 +1607,7 @@ TEST_P(CookieSettingsTest,
   excluded_cookies = {};
   settings.set_block_third_party_cookies(true);
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting(kURL, "*", CONTENT_SETTING_BLOCK)});
   EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
       GURL(kURL), net::SiteForCookies(), &top_level_origin,
@@ -1586,6 +1634,7 @@ TEST_P(CookieSettingsTest,
   excluded_cookies = {};
   settings.set_block_third_party_cookies(true);
   settings.set_content_settings(
+      ContentSettingsType::COOKIES,
       {CreateSetting(kOtherURL, kUnrelatedURL, CONTENT_SETTING_BLOCK)});
   EXPECT_TRUE(settings.AnnotateAndMoveUserBlockedCookies(
       GURL(kURL), net::SiteForCookies(), &top_level_origin,

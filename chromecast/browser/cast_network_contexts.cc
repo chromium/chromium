@@ -308,9 +308,10 @@ CastNetworkContexts::CreateCookieManagerParams() {
   settings_for_top_level_storage_access.push_back(CreateContentSetting(
       /*primary_pattern=*/"*",
       /*secondary_pattern=*/"*", ContentSetting::CONTENT_SETTING_BLOCK));
-  params->settings = std::move(settings);
-  params->settings_for_storage_access = std::move(settings_for_storage_access);
-  params->settings_for_top_level_storage_access =
+  params->content_settings[ContentSettingsType::COOKIES] = std::move(settings);
+  params->content_settings[ContentSettingsType::STORAGE_ACCESS] =
+      std::move(settings_for_storage_access);
+  params->content_settings[ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS] =
       std::move(settings_for_top_level_storage_access);
 
   return params;

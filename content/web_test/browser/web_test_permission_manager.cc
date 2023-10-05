@@ -12,9 +12,11 @@
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/browser/permissions/permission_util.h"
 #include "content/public/browser/browser_thread.h"
@@ -428,7 +430,8 @@ void WebTestPermissionManager::OnPermissionChanged(
     case blink::PermissionType::STORAGE_ACCESS_GRANT:
       browser_context_->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess()
-          ->SetStorageAccessGrantSettings(
+          ->SetContentSettings(
+              ContentSettingsType::STORAGE_ACCESS,
               GetContentSettings(
                   URLToSchemefulSitePattern(permission.origin),
                   URLToSchemefulSitePattern(permission.embedding_origin),
@@ -444,7 +447,7 @@ void WebTestPermissionManager::OnPermissionChanged(
       // whichever finishes last then runs the callback. The asynchronicity
       // comes in the form of the updates to the network service.
       auto barrier_callback = base::BarrierCallback<bool>(
-          /*num_callbacks=*/2,
+          /*num_callbacks=*/3,
           base::BindOnce(
               [](blink::test::mojom::PermissionAutomation::SetPermissionCallback
                      permission_callback,
@@ -456,18 +459,26 @@ void WebTestPermissionManager::OnPermissionChanged(
       SetPermission(blink::PermissionType::STORAGE_ACCESS_GRANT,
                     blink::mojom::PermissionStatus::GRANTED, permission.origin,
                     permission.embedding_origin, barrier_callback);
-      browser_context_->GetDefaultStoragePartition()
-          ->GetCookieManagerForBrowserProcess()
-          ->SetAllStorageAccessSettings(
-              GetContentSettings(
-                  ContentSettingsPattern::FromURL(permission.origin),
-                  ContentSettingsPattern::FromURL(permission.embedding_origin),
-                  status),
-              GetContentSettings(
-                  ContentSettingsPattern::FromURL(permission.origin),
-                  ContentSettingsPattern::FromURL(permission.embedding_origin),
-                  status),
-              base::BindOnce(barrier_callback, true));
+
+      auto* cookie_manager = browser_context_->GetDefaultStoragePartition()
+                                 ->GetCookieManagerForBrowserProcess();
+
+      cookie_manager->SetContentSettings(
+          ContentSettingsType::STORAGE_ACCESS,
+          GetContentSettings(
+              ContentSettingsPattern::FromURL(permission.origin),
+              ContentSettingsPattern::FromURL(permission.embedding_origin),
+              status),
+          base::BindOnce(barrier_callback, true));
+
+      cookie_manager->SetContentSettings(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          GetContentSettings(
+              ContentSettingsPattern::FromURL(permission.origin),
+              ContentSettingsPattern::FromURL(permission.embedding_origin),
+              status),
+          base::BindOnce(barrier_callback, true));
+
       break;
     }
     default:

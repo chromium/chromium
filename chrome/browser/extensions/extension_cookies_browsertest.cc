@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -25,6 +26,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -347,12 +349,14 @@ class ExtensionSameSiteCookiesTest
           ->GetNetworkContext()
           ->GetCookieManager(
               cookie_manager_remote_.BindNewPipeAndPassReceiver());
-      cookie_manager_remote_->SetContentSettingsForLegacyCookieAccess(
+      cookie_manager_remote_->SetContentSettings(
+          ContentSettingsType::LEGACY_COOKIE_ACCESS,
           {ContentSettingPatternSource(
               ContentSettingsPattern::Wildcard(),
               ContentSettingsPattern::Wildcard(),
               base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
-              /*source=*/std::string(), /*incognito=*/false)});
+              /*source=*/std::string(), /*incognito=*/false)},
+          base::NullCallback());
       cookie_manager_remote_.FlushForTesting();
     }
   }

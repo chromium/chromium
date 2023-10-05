@@ -9,6 +9,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -22,6 +23,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "net/base/features.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_access_result.h"
@@ -218,11 +221,12 @@ class SynchronousCookieManager {
   void SetStorageAccessGrantSettings() {
     std::vector<ContentSettingPatternSource> settings;
     base::RunLoop run_loop;
-    cookie_service_->SetStorageAccessGrantSettings(
-        std::move(settings), base::BindLambdaForTesting([&]() {
-          ++callback_counter_;
-          run_loop.Quit();
-        }));
+    cookie_service_->SetContentSettings(ContentSettingsType::STORAGE_ACCESS,
+                                        std::move(settings),
+                                        base::BindLambdaForTesting([&]() {
+                                          ++callback_counter_;
+                                          run_loop.Quit();
+                                        }));
     run_loop.Run();
   }
 
@@ -297,6 +301,13 @@ class CookieManagerTest : public testing::Test {
                                        ContentSettingsPattern::Wildcard(),
                                        base::Value(setting), std::string(),
                                        false);
+  }
+
+  void SetContentSettings(ContentSettingsForOneType settings) {
+    base::RunLoop runloop;
+    cookie_service_client()->SetContentSettings(
+        ContentSettingsType::COOKIES, settings, runloop.QuitClosure());
+    runloop.Run();
   }
 
   net::CookieStore* cookie_store() {
@@ -2710,9 +2721,7 @@ TEST_F(SessionCleanupCookieManagerTest, DeleteSessionCookiesOnShutdown) {
 
   EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
 
-  cookie_service_client()->SetContentSettings(
-      {CreateSetting(CONTENT_SETTING_SESSION_ONLY, kCookieURL)});
-  base::RunLoop().RunUntilIdle();
+  SetContentSettings({CreateSetting(CONTENT_SETTING_SESSION_ONLY, kCookieURL)});
 
   auto store = CreateCookieStore();
   InitializeCookieService(store, store);
@@ -2725,9 +2734,8 @@ TEST_F(SessionCleanupCookieManagerTest, SettingMustMatchDomainOnShutdown) {
 
   EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
 
-  cookie_service_client()->SetContentSettings(
+  SetContentSettings(
       {CreateSetting(CONTENT_SETTING_SESSION_ONLY, "http://other.com")});
-  base::RunLoop().RunUntilIdle();
 
   auto store = CreateCookieStore();
   InitializeCookieService(store, store);
@@ -2740,9 +2748,7 @@ TEST_F(SessionCleanupCookieManagerTest, DeleteSessionOnlyCookies) {
 
   EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
 
-  cookie_service_client()->SetContentSettings(
-      {CreateSetting(CONTENT_SETTING_SESSION_ONLY, kCookieURL)});
-  base::RunLoop().RunUntilIdle();
+  SetContentSettings({CreateSetting(CONTENT_SETTING_SESSION_ONLY, kCookieURL)});
 
   EXPECT_EQ(1u, service_wrapper()->DeleteSessionOnlyCookies());
   EXPECT_EQ(0u, service_wrapper()->GetAllCookies().size());
@@ -2753,16 +2759,13 @@ TEST_F(SessionCleanupCookieManagerTest, SettingMustMatchDomain) {
 
   EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
 
-  cookie_service_client()->SetContentSettings(
+  SetContentSettings(
       {CreateSetting(CONTENT_SETTING_SESSION_ONLY, "http://other.com")});
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(0u, service_wrapper()->DeleteSessionOnlyCookies());
   EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
 
-  cookie_service_client()->SetContentSettings(
-      {CreateSetting(CONTENT_SETTING_SESSION_ONLY, kCookieURL)});
-  base::RunLoop().RunUntilIdle();
+  SetContentSettings({CreateSetting(CONTENT_SETTING_SESSION_ONLY, kCookieURL)});
 
   EXPECT_EQ(1u, service_wrapper()->DeleteSessionOnlyCookies());
   EXPECT_EQ(0u, service_wrapper()->GetAllCookies().size());
@@ -2775,10 +2778,8 @@ TEST_F(SessionCleanupCookieManagerTest, FirstSettingTakesPrecedence) {
 
   // If a rule with ALLOW is before a SESSION_ONLY rule, the cookie should not
   // be deleted.
-  cookie_service_client()->SetContentSettings(
-      {CreateSetting(CONTENT_SETTING_ALLOW, kCookieURL),
-       CreateSetting(CONTENT_SETTING_SESSION_ONLY, kCookieURL)});
-  base::RunLoop().RunUntilIdle();
+  SetContentSettings({CreateSetting(CONTENT_SETTING_ALLOW, kCookieURL),
+                      CreateSetting(CONTENT_SETTING_SESSION_ONLY, kCookieURL)});
 
   auto store = CreateCookieStore();
   InitializeCookieService(store, store);
@@ -2791,8 +2792,7 @@ TEST_F(SessionCleanupCookieManagerTest, ForceKeepSessionState) {
 
   EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
 
-  cookie_service_client()->SetContentSettings(
-      {CreateSetting(CONTENT_SETTING_SESSION_ONLY, kCookieURL)});
+  SetContentSettings({CreateSetting(CONTENT_SETTING_SESSION_ONLY, kCookieURL)});
   cookie_service_client()->SetForceKeepSessionState();
   base::RunLoop().RunUntilIdle();
 
@@ -2808,11 +2808,10 @@ TEST_F(SessionCleanupCookieManagerTest, HttpCookieAllowedOnHttps) {
 
   EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
 
-  cookie_service_client()->SetContentSettings({
+  SetContentSettings({
       CreateSetting(CONTENT_SETTING_ALLOW, kCookieHttpsURL),
       CreateDefaultSetting(CONTENT_SETTING_SESSION_ONLY),
   });
-  base::RunLoop().RunUntilIdle();
 
   auto store = CreateCookieStore();
   InitializeCookieService(store, store);

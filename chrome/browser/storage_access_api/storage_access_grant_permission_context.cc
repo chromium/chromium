@@ -604,8 +604,9 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   browser_context()
       ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
-      ->SetStorageAccessGrantSettings(
-          grants, base::BindOnce(std::move(callback), content_setting));
+      ->SetContentSettings(
+          ContentSettingsType::STORAGE_ACCESS, grants,
+          base::BindOnce(std::move(callback), content_setting));
 }
 
 void StorageAccessGrantPermissionContext::UpdateContentSetting(

@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -21,6 +23,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -307,11 +310,18 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
       base::Value(CONTENT_SETTING_ALLOW), "preference",
       /*incognito=*/false);
 
-  browser()
-      ->profile()
-      ->GetDefaultStoragePartition()
-      ->GetCookieManagerForBrowserProcess()
-      ->SetAllStorageAccessSettings(settings, settings, base::DoNothing());
+  auto* cookie_manager = browser()
+                             ->profile()
+                             ->GetDefaultStoragePartition()
+                             ->GetCookieManagerForBrowserProcess();
+
+  base::RunLoop runloop;
+  auto barrier = base::BarrierClosure(2, runloop.QuitClosure());
+  cookie_manager->SetContentSettings(ContentSettingsType::STORAGE_ACCESS,
+                                     settings, barrier);
+  cookie_manager->SetContentSettings(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, settings, barrier);
+  runloop.Run();
 
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostC, "/echoheader?cookie");

@@ -11,6 +11,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/cookie_config/cookie_store_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -166,7 +167,8 @@ void ChromeExtensionCookies::IOData::ClearCookies(
 
 void ChromeExtensionCookies::IOData::OnContentSettingChanged(
     ContentSettingsForOneType settings) {
-  mojo_cookie_settings_->settings = std::move(settings);
+  mojo_cookie_settings_->content_settings[ContentSettingsType::COOKIES] =
+      std::move(settings);
   UpdateNetworkCookieSettings();
 }
 
