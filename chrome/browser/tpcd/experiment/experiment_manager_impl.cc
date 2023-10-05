@@ -29,6 +29,13 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tpcd::experiment {
+namespace {
+
+const base::FeatureParam<std::string> kSyntheticTrialGroupOverride{
+    &features::kCookieDeprecationFacilitatedTesting,
+    "synthetic_trial_group_override", ""};
+
+}  // namespace
 
 // TODO(b/302798031): This flag is needed to deflake
 // ExperimentManagerImplSyntheticTrialTest on CQ. Remove once test is fixed.
@@ -138,8 +145,12 @@ void ExperimentManagerImpl::UpdateSyntheticTrialRegistration() {
   absl::optional<bool> is_client_eligible = IsClientEligible();
   CHECK(is_client_eligible.has_value());
 
+  std::string eligible_group_name =
+      !kSyntheticTrialGroupOverride.Get().empty()
+          ? kSyntheticTrialGroupOverride.Get()
+          : features::kCookieDeprecationLabel.Get();
   std::string group_name = *is_client_eligible
-                               ? features::kCookieDeprecationLabel.Get()
+                               ? eligible_group_name
                                : kSyntheticTrialInvalidGroupName;
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       kSyntheticTrialName, group_name,

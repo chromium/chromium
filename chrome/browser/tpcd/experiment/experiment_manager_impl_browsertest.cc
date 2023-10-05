@@ -43,14 +43,17 @@ struct SyntheticTrialTestCase {
   utils::ExperimentState prev_state;
   bool new_state_eligible;
   std::string expected_group_name;
+  std::string group_name_override;
 };
 
 constexpr char kEligibleGroupName[] = "eligible";
+constexpr char kOverrideGroupName[] = "override";
 
 class ExperimentManagerImplBrowserTest : public InProcessBrowserTest {
  public:
   explicit ExperimentManagerImplBrowserTest(
-      bool force_profiles_eligible_chromeos = false) {
+      bool force_profiles_eligible_chromeos = false,
+      std::string group_name_override = "") {
     // Force profile eligibility on ChromeOS. There is a flaky issue where
     // `SetClientEligibility` is sometimes called twice, the second time with an
     // ineligible profile even if the first was eligible.
@@ -62,10 +65,9 @@ class ExperimentManagerImplBrowserTest : public InProcessBrowserTest {
 
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kCookieDeprecationFacilitatedTesting,
-        {{"disable_3p_cookies", "true"},
-         {"use_profile_filtering", "true"},
-         {"label", kEligibleGroupName},
-         {"force_profiles_eligible", force_profiles_eligible_str}});
+        {{"label", kEligibleGroupName},
+         {"force_profiles_eligible", force_profiles_eligible_str},
+         {"synthetic_trial_group_override", group_name_override}});
   }
 
   void Wait() {
@@ -87,8 +89,8 @@ class ExperimentManagerImplSyntheticTrialTest
  public:
   ExperimentManagerImplSyntheticTrialTest()
       : ExperimentManagerImplBrowserTest(
-            /*force_profiles_eligible_chromeos=*/GetParam()
-                .new_state_eligible) {}
+            /*force_profiles_eligible_chromeos=*/GetParam().new_state_eligible,
+            GetParam().group_name_override) {}
 };
 
 IN_PROC_BROWSER_TEST_P(ExperimentManagerImplSyntheticTrialTest,
@@ -141,11 +143,25 @@ const SyntheticTrialTestCase kTestCases[] = {
         .prev_state = utils::ExperimentState::kUnknownEligibility,
         .new_state_eligible = false,
         .expected_group_name = kSyntheticTrialInvalidGroupName,
+        .group_name_override = "",
+    },
+    {
+        .prev_state = utils::ExperimentState::kUnknownEligibility,
+        .new_state_eligible = false,
+        .expected_group_name = kSyntheticTrialInvalidGroupName,
+        .group_name_override = kOverrideGroupName,
     },
     {
         .prev_state = utils::ExperimentState::kUnknownEligibility,
         .new_state_eligible = true,
         .expected_group_name = kEligibleGroupName,
+        .group_name_override = "",
+    },
+    {
+        .prev_state = utils::ExperimentState::kUnknownEligibility,
+        .new_state_eligible = true,
+        .expected_group_name = kOverrideGroupName,
+        .group_name_override = kOverrideGroupName,
     },
     {
         .prev_state = utils::ExperimentState::kIneligible,

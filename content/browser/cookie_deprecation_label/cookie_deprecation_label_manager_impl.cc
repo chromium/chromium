@@ -15,13 +15,6 @@
 
 namespace content {
 
-namespace {
-
-const base::FeatureParam<bool> kSkipCookieDeprecationLabelForStoragePartitions{
-    &features::kCookieDeprecationFacilitatedTesting, "skip_label", false};
-
-}  // namespace
-
 CookieDeprecationLabelManagerImpl::CookieDeprecationLabelManagerImpl(
     BrowserContext* browser_context)
     : browser_context_(*browser_context) {}
@@ -51,10 +44,6 @@ absl::optional<std::string> CookieDeprecationLabelManagerImpl::GetValue(
 
 absl::optional<std::string>
 CookieDeprecationLabelManagerImpl::GetValueInternal() {
-  if (kSkipCookieDeprecationLabelForStoragePartitions.Get()) {
-    return absl::nullopt;
-  }
-
   if (!label_value_.has_value()) {
     label_value_ = features::kCookieDeprecationLabel.Get();
   }
