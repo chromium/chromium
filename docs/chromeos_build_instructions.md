@@ -82,6 +82,8 @@ or running `gn args out/Default`:
 
     # Enables many optimizations, leading to much slower compiles, links,
     # and no runtime stack traces.
+    #
+    # Note: not compatible with `is_component_build = true`.
     is_official_build = true
 
 NOTE: You may wish to replace 'Default' with something like 'Cros' if
