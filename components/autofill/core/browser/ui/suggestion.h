@@ -54,6 +54,42 @@ struct Suggestion {
     ShouldTruncate should_truncate = ShouldTruncate(false);
   };
 
+  enum class Icon {
+    kAccount,
+    kClear,
+    kCreate,
+    kDelete,
+    kDevice,
+    kEdit,
+    kEmpty,
+    kGlobe,
+    kGoogle,
+    kGooglePasswordManager,
+    kGooglePay,
+    kGooglePayDark,
+    kHttpWarning,
+    kHttpsInvalid,
+    kKey,
+    kLocation,
+    kMagic,
+    kOfferTag,
+    kScanCreditCard,
+    kSettings,
+    kUndo,
+    // Credit card icons
+    kCardGeneric,
+    kCardAmericanExpress,
+    kCardDiners,
+    kCardDiscover,
+    kCardElo,
+    kCardJCB,
+    kCardMaster,
+    kCardMir,
+    kCardTroy,
+    kCardUnionPay,
+    kCardVisa,
+  };
+
   Suggestion();
   explicit Suggestion(std::u16string main_text);
   explicit Suggestion(PopupItemId popup_item_id);
@@ -143,6 +179,7 @@ struct Suggestion {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // TODO(crbug.com/1019660): Identify icons with enum instead of strings.
+  // This is the icon which is shown on the side of a suggestion.
   // If |custom_icon| is empty, the name of the fallback built-in icon.
   std::string icon;
 
