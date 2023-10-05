@@ -29,6 +29,8 @@ static_library("tasks") {
     "//net",
     "//services/network/public/cpp",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("tasks_unittests") {

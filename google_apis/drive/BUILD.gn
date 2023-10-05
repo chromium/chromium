@@ -29,6 +29,8 @@ source_set("drive") {
     "//net",
     "//services/network/public/cpp",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("drive_unittests") {

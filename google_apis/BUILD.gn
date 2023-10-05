@@ -163,7 +163,10 @@ component("google_apis") {
     "google_api_keys.h",
   ]
 
-  configs += [ ":key_defines" ]
+  configs += [
+    ":key_defines",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 
   public_deps = [
     ":buildflags",
