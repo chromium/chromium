@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accelerators/accelerator_encoding.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -3045,7 +3046,9 @@ TEST_F(AcceleratorConfigurationProviderTest, AddRemoveAcceleratorMetrics) {
   const ui::Accelerator good_accelerator(ui::VKEY_M, ui::EF_COMMAND_DOWN);
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.AddAccelerator.ToggleMirrorMode",
-      GetEncodedShortcut(good_accelerator), 0);
+      GetEncodedShortcut(good_accelerator.modifiers(),
+                         good_accelerator.key_code()),
+      0);
 
   AcceleratorResultDataPtr result;
   ash::shortcut_customization::mojom::
@@ -3069,14 +3072,18 @@ TEST_F(AcceleratorConfigurationProviderTest, AddRemoveAcceleratorMetrics) {
 
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.AddAccelerator.ToggleMirrorMode",
-      GetEncodedShortcut(good_accelerator), 1);
+      GetEncodedShortcut(good_accelerator.modifiers(),
+                         good_accelerator.key_code()),
+      1);
 
   // Remove a default accelerator and expect a metric to be recorded.
   const ui::Accelerator removed_accelerator(ui::VKEY_SPACE,
                                             ui::EF_CONTROL_DOWN);
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.RemoveDefaultAccelerator.ToggleMirrorMode",
-      GetEncodedShortcut(removed_accelerator), 0);
+      GetEncodedShortcut(removed_accelerator.modifiers(),
+                         removed_accelerator.key_code()),
+      0);
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .RemoveAccelerator(mojom::AcceleratorSource::kAsh,
@@ -3084,7 +3091,9 @@ TEST_F(AcceleratorConfigurationProviderTest, AddRemoveAcceleratorMetrics) {
                              removed_accelerator, &result);
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.RemoveDefaultAccelerator.ToggleMirrorMode",
-      GetEncodedShortcut(removed_accelerator), 1);
+      GetEncodedShortcut(removed_accelerator.modifiers(),
+                         removed_accelerator.key_code()),
+      1);
 
   // Now remove the recently added Meta + M custom accelerator, expect no
   // metrics to be recorded.
@@ -3095,7 +3104,9 @@ TEST_F(AcceleratorConfigurationProviderTest, AddRemoveAcceleratorMetrics) {
                              good_accelerator, &result);
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.RemoveDefaultAccelerator.ToggleMirrorMode",
-      GetEncodedShortcut(good_accelerator), 0);
+      GetEncodedShortcut(good_accelerator.modifiers(),
+                         good_accelerator.key_code()),
+      0);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, UserActions) {

@@ -42,18 +42,6 @@ namespace ash {
 struct AcceleratorData;
 class ExitWarningHandler;
 
-/**
-Encode a shortcut as an int.
-- The low 16 bits represent the key code.
-- The high 16 bits represent the modififers.
-  - The 31 bit: Command key
-  - The 30 bit: Alt key
-  - The 29 bit: Control key
-  - The 28 bit: Shift key
-  - All other bits are 0
-*/
-ASH_EXPORT int GetEncodedShortcut(const ui::Accelerator& accelerator);
-
 // AcceleratorControllerImpl provides functions for registering or unregistering
 // global keyboard accelerators, which are handled earlier than any windows. It
 // also implements several handlers as an accelerator target.

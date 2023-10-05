@@ -12,6 +12,7 @@
 #include "ash/accelerators/accelerator_alias_converter.h"
 #include "ash/accelerators/accelerator_commands.h"
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accelerators/accelerator_encoding.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -592,7 +593,7 @@ void RecordEncodedAcceleratorHistogram(const std::string& histogram_name,
       base::StrCat(
           {histogram_name, GetAcceleratorActionName(
                                static_cast<AcceleratorAction>(action_id))}),
-      GetEncodedShortcut(accelerator));
+      GetEncodedShortcut(accelerator.modifiers(), accelerator.key_code()));
 }
 
 }  // namespace
