@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
 #include "chrome/browser/ash/input_method/editor_event_proxy.h"
 #include "chrome/browser/ash/input_method/editor_event_sink.h"
+#include "chrome/browser/ash/input_method/editor_instance_impl.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chrome/browser/ash/input_method/editor_service_connector.h"
 #include "chrome/browser/ash/input_method/editor_switch.h"
@@ -33,13 +34,16 @@ namespace input_method {
 // This includes all current (and future) trigger points, providing the required
 // plumbing to broker mojo connections from WebUIs and other clients, and
 // providing an overall unified interface for the backend of the project.
+
 class EditorMediator
-    : public EditorEventSink,
+    : public EditorInstanceImpl::Delegate,
+      public EditorEventSink,
       public ProfileObserver,
-      public EditorPanelManager::Delegate,
+      public EditorPanelManager::Delegate, 
       public EditorTextActuator::Delegate,
       public TabletModeObserver,
       public user_manager::UserManager::UserSessionStateObserver {
+
  public:
   // country_code that determines the country/territory in which the device is
   // situated.
@@ -111,6 +115,7 @@ class EditorMediator
   // Not owned by this class
   raw_ptr<Profile> profile_;
 
+  EditorInstanceImpl editor_instance_impl_;
   EditorPanelManager panel_manager_;
   MakoBubbleCoordinator mako_bubble_coordinator_;
 
