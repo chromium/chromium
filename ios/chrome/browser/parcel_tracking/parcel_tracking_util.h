@@ -7,9 +7,8 @@
 
 #import "base/feature_list.h"
 #import "components/commerce/core/proto/parcel.pb.h"
+#import "components/prefs/pref_service.h"
 #import "ios/web/public/annotations/custom_text_checking_result.h"
-
-class ChromeBrowserState;
 
 namespace commerce {
 class ShoppingService;
@@ -32,7 +31,9 @@ bool IsIOSParcelTrackingEnabled();
 
 // Returns true if the user is eligible for the parcel tracking opt-in prompt.
 // The user must have never before seen the prompt and must be signed in.
-bool IsUserEligibleParcelTrackingOptInPrompt(ChromeBrowserState* browser_state);
+bool IsUserEligibleParcelTrackingOptInPrompt(
+    PrefService* pref_service,
+    commerce::ShoppingService* shopping_service);
 
 // Takes NSArray<CustomTextCheckingResult*>* `result` and returns a
 // corresponding vector of parcel carrier and tracking number pairs.

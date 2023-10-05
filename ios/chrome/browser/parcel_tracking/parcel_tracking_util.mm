@@ -12,15 +12,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_types.h"
 #import "components/commerce/core/shopping_service.h"
-#import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
 
 BASE_FEATURE(kIOSParcelTracking,
              "IOSParcelTracking",
@@ -32,19 +30,12 @@ bool IsIOSParcelTrackingEnabled() {
 }
 
 bool IsUserEligibleParcelTrackingOptInPrompt(
-    ChromeBrowserState* browser_state) {
-  PrefService* pref_service = browser_state->GetPrefs();
-  AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  if (!authentication_service || !authentication_service->initialized()) {
-    return false;
-  }
-  bool signed_in =
-      authentication_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+    PrefService* pref_service,
+    commerce::ShoppingService* shopping_service) {
   return IsIOSParcelTrackingEnabled() &&
          !pref_service->GetBoolean(
              prefs::kIosParcelTrackingOptInPromptDisplayed) &&
-         signed_in;
+         shopping_service->IsParcelTrackingEligible();
 }
 
 std::vector<std::pair<commerce::ParcelIdentifier::Carrier, std::string>>

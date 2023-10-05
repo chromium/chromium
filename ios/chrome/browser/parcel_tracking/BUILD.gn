@@ -58,6 +58,7 @@ source_set("util") {
     "//components/commerce/core:shopping_service",
     "//components/prefs",
     "//components/signin/public/base",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -73,6 +74,7 @@ source_set("unit_tests") {
   deps = [
     ":util",
     "//base/test:test_support",
+    "//components/commerce/core:shopping_service_test_support",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
