@@ -360,7 +360,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     this.handleAcceleratorResultData(result!.result);
   }
 
-  // TODO(longbowei): Finalize and localize these messages.
   private handleAcceleratorResultData(result: AcceleratorResultData): void {
     switch (result.result) {
       // Shift is the only modifier.
@@ -385,7 +384,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         return;
       }
       // Search with function keys are not allowed.
-      // TODO(b/286268215): localize string.
       case AcceleratorConfigResult.kSearchWithFunctionKeyNotAllowed: {
         this.statusMessage =
             this.i18n('searchWithFunctionKeyNotAllowedStatusMessage');

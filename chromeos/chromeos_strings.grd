@@ -4122,9 +4122,8 @@
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEACH_WITH_FUNCTION_KEY_NOT_ALLOWED_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
-            that includes the search key with a function key."
-            translateable="false">
-          Shortcut with function keys and search are not allowed. Press a new shortcut.
+            that includes the search key with a function key.">
+          Shortcut not available. Press a new shortcut without using function and search keys.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_RESERVED_KEY_NOT_ALLOWED_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
