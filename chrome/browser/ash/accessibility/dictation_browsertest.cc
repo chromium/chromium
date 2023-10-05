@@ -130,6 +130,12 @@ AccessibilityManager* GetManager() {
   return AccessibilityManager::Get();
 }
 
+// TODO(b/301475127): remove this method once we can inherit from
+// AccessibilityFeatureBrowsertest.
+Profile* GetProfile() {
+  return GetManager()->profile();
+}
+
 void EnableChromeVox() {
   GetManager()->EnableSpokenFeedback(true);
 }
@@ -491,7 +497,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, ChromeVoxSilencedWhenToggledOn) {
   test::SpeechMonitor sm;
   EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
   extensions::ExtensionHostTestHelper host_helper(
-      browser()->profile(), extension_misc::kChromeVoxExtensionId);
+      GetProfile(), extension_misc::kChromeVoxExtensionId);
   EnableChromeVox();
   host_helper.WaitForHostCompletedFirstLoad();
   EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
@@ -761,8 +767,7 @@ class DictationWithAutoclickTest : public DictationTestBase {
     // Autoclick doesn't steal focus away from the textarea (either by clicking
     // or via the presence of the Autoclick UI, which steals focus when
     // initially shown).
-    autoclick_test_utils_ =
-        std::make_unique<AutoclickTestUtils>(browser()->profile());
+    autoclick_test_utils_ = std::make_unique<AutoclickTestUtils>(GetProfile());
     autoclick_test_utils_->SetAutoclickDelayMs(90 * 1000);
     autoclick_test_utils_->LoadAutoclick();
     EXPECT_TRUE(GetManager()->IsAutoclickEnabled());
@@ -841,7 +846,7 @@ class DictationWithSwitchAccessTest : public DictationTestBase {
  protected:
   void SetUpOnMainThread() override {
     switch_access_test_utils_ =
-        std::make_unique<SwitchAccessTestUtils>(browser()->profile());
+        std::make_unique<SwitchAccessTestUtils>(GetProfile());
     switch_access_test_utils_->EnableSwitchAccess({'1', 'A'} /* select */,
                                                   {'2', 'B'} /* next */,
                                                   {'3', 'C'} /* previous */);
@@ -878,7 +883,7 @@ class DictationJaTest : public DictationTestBase {
   void SetUpOnMainThread() override {
     locale_util::SwitchLanguage("ja", /*enable_locale_keyboard_layouts=*/true,
                                 /*login_layouts_only*/ false, base::DoNothing(),
-                                browser()->profile());
+                                GetProfile());
     g_browser_process->SetApplicationLocale("ja");
     GetActiveUserPrefs()->SetString(prefs::kAccessibilityDictationLocale, "ja");
 
@@ -1565,7 +1570,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, ChromeVoxAnnouncesHints) {
   test::SpeechMonitor sm;
   EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
   extensions::ExtensionHostTestHelper host_helper(
-      browser()->profile(), extension_misc::kChromeVoxExtensionId);
+      GetProfile(), extension_misc::kChromeVoxExtensionId);
   EnableChromeVox();
   host_helper.WaitForHostCompletedFirstLoad();
   EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
@@ -2328,7 +2333,7 @@ class DictationKeyboardImprovementsTest : public DictationTestBase {
     AudioCallbackManager audio_callback_manager = AudioCallbackManager();
     extensions::AudioService* service =
         extensions::AudioAPI::GetFactoryInstance()
-            ->Get(browser()->profile())
+            ->Get(GetProfile())
             ->GetService();
     service->SetMute(/*is_input=*/true, /*is_muted=*/mute,
                      base::BindOnce(&AudioCallbackManager::OnSetMute,
@@ -2389,7 +2394,7 @@ IN_PROC_BROWSER_TEST_P(DictationKeyboardImprovementsTest,
   test::SpeechMonitor sm;
   EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
   extensions::ExtensionHostTestHelper host_helper(
-      browser()->profile(), extension_misc::kChromeVoxExtensionId);
+      GetProfile(), extension_misc::kChromeVoxExtensionId);
   EnableChromeVox();
   host_helper.WaitForHostCompletedFirstLoad();
   EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
