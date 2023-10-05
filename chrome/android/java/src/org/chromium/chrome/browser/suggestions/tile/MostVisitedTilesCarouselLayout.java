@@ -127,6 +127,10 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
                         - 2 * mEdgePaddingsTabletForPolish
                 >= 0;
         if (!isFullFilled) {
+            // When splitting the window, this function is invoked with a different totalWidth value
+            // during the process. Therefore, we must update the edge padding with the appropriate
+            // value once the correct totalWidth is provided at the end of the split.
+            setEdgePaddings(mEdgePaddingsTabletForPolish);
             return;
         }
 
