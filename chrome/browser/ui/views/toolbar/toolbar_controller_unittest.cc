@@ -28,13 +28,14 @@ constexpr gfx::Size kButtonSize(34, 34);
 
 class MockToolbarController : public ToolbarController {
  public:
-  MockToolbarController(std::vector<ui::ElementIdentifier> element_ids,
-                        PopOutIdentifierMap pop_out_identifier_map,
-                        int element_flex_order_start,
-                        views::View* toolbar_container_view,
-                        views::View* overflow_button)
+  MockToolbarController(
+      std::vector<ui::ElementIdentifier> element_ids,
+      const ToolbarController::ResponsiveElementInfoMap& element_info_map,
+      int element_flex_order_start,
+      views::View* toolbar_container_view,
+      views::View* overflow_button)
       : ToolbarController(element_ids,
-                          pop_out_identifier_map,
+                          element_info_map,
                           element_flex_order_start,
                           toolbar_container_view,
                           overflow_button) {}
@@ -89,8 +90,10 @@ TEST_F(PopOutHandlerTest, PopOutAndEndPopOut) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyObservedView);
 
   MockToolbarController toolbar_controller(
-      {kDummyButton}, {{kDummyButton, kDummyObservedView}}, 1, container_view(),
-      overflow_button());
+      {kDummyButton},
+      ToolbarController::ResponsiveElementInfoMap(
+          {{kDummyButton, {0, kDummyObservedView}}}),
+      1, container_view(), overflow_button());
 
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(widget());
@@ -115,6 +118,37 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton3);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton4);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyObservedView);
+
+class TestToolbarController : public ToolbarController {
+ public:
+  TestToolbarController(
+      std::vector<ui::ElementIdentifier> element_ids,
+      const ToolbarController::ResponsiveElementInfoMap& element_info_map,
+      int element_flex_order_start,
+      views::View* toolbar_container_view,
+      views::View* overflow_button)
+      : ToolbarController(element_ids,
+                          element_info_map,
+                          element_flex_order_start,
+                          toolbar_container_view,
+                          overflow_button) {}
+
+  std::u16string GenerateMenuText(const views::View* element) override {
+    ui::ElementIdentifier id =
+        element->GetProperty(views::kElementIdentifierKey);
+    CHECK(id);
+
+    static const auto kToolbarToMenuTextMap =
+        base::MakeFixedFlatMap<ui::ElementIdentifier, std::u16string>({
+            {kDummyButton1, u"DummyButton1"},
+            {kDummyButton2, u"DummyButton2"},
+            {kDummyButton3, u"DummyButton3"},
+            {kDummyButton4, u"DummyButton4"},
+        });
+
+    return kToolbarToMenuTextMap.at(id);
+  }
+};
 
 class ToolbarControllerUnitTest : public ChromeViewsTestBase {
  public:
@@ -151,11 +185,12 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
     overflow_button_ =
         toolbar_container_view_->AddChildView(std::move(overflow_button));
     overflow_button_->SetVisible(false);
-    toolbar_controller_ = std::make_unique<ToolbarController>(
+    toolbar_controller_ = std::make_unique<TestToolbarController>(
         element_ids,
-        PopOutIdentifierMap{{kDummyButton1, kDummyObservedView},
-                            {kDummyButton2, kDummyObservedView},
-                            {kDummyButton3, kDummyObservedView}},
+        ToolbarController::ResponsiveElementInfoMap(
+            {{kDummyButton1, {0, kDummyObservedView}},
+             {kDummyButton2, {0, kDummyObservedView}},
+             {kDummyButton3, {0, kDummyObservedView}}}),
         kElementFlexOrderStart, toolbar_container_view_, overflow_button_);
     overflow_button_->set_create_menu_model_callback(
         base::BindRepeating(&ToolbarController::CreateOverflowMenuModel,
@@ -251,7 +286,8 @@ TEST_F(ToolbarControllerUnitTest, OverflowedButtonsMatchMenu) {
   EXPECT_TRUE(menu);
   EXPECT_EQ(overflowed_buttons.size(), menu->GetItemCount());
   for (size_t i = 0; i < overflowed_buttons.size(); ++i) {
-    EXPECT_EQ(overflowed_buttons[i]->GetAccessibleName(), menu->GetLabelAt(i));
+    EXPECT_EQ(toolbar_controller()->GenerateMenuText(overflowed_buttons[i]),
+              menu->GetLabelAt(i));
   }
 }
 

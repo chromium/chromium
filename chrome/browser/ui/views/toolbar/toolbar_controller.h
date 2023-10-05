@@ -16,19 +16,31 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view.h"
 
-// A map from identifier to its observed identifier. Used to create
-// PopOutHandlers for each element in the map.
-using PopOutIdentifierMap =
-    base::flat_map<ui::ElementIdentifier, ui::ElementIdentifier>;
-
 // Manages toolbar elements' visibility using flex rules.
 class ToolbarController : public ui::SimpleMenuModel::Delegate {
  public:
-  ToolbarController(std::vector<ui::ElementIdentifier> element_ids,
-                    PopOutIdentifierMap pop_out_identifier_map,
-                    int element_flex_order_start,
-                    views::View* toolbar_container_view,
-                    views::View* overflow_button);
+  // Data structure to store information of responsive elements.
+  struct ResponsiveElementInfo {
+    // Menu text when the element is overflow to the overflow menu.
+    int menu_text_id;
+
+    // Pop out button when `observed_identifier` is shown. End pop out when it's
+    // hidden.
+    absl::optional<ui::ElementIdentifier> observed_identifier;
+  };
+
+  // A map from identifier to its observed identifier. Used to create
+  // PopOutHandlers for each element in the map.
+  using ResponsiveElementInfoMap =
+      base::flat_map<ui::ElementIdentifier,
+                     ToolbarController::ResponsiveElementInfo>;
+
+  ToolbarController(
+      std::vector<ui::ElementIdentifier> element_ids,
+      const ToolbarController::ResponsiveElementInfoMap& element_info_map,
+      int element_flex_order_start,
+      views::View* toolbar_container_view,
+      views::View* overflow_button);
   ToolbarController(const ToolbarController&) = delete;
   ToolbarController& operator=(const ToolbarController&) = delete;
   ~ToolbarController() override;
@@ -80,6 +92,9 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
     std::unique_ptr<PopOutHandler> handler;
   };
 
+  // Return the default element info map used by the browser.
+  static ToolbarController::ResponsiveElementInfoMap GetDefaultElementInfoMap();
+
   // Force the UI element with the identifier to show. Return whether the action
   // is successful.
   virtual bool PopOut(ui::ElementIdentifier identifier);
@@ -104,6 +119,9 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
   // Create the overflow menu model for hidden buttons.
   std::unique_ptr<ui::SimpleMenuModel> CreateOverflowMenuModel();
 
+  // Generate menu text from the responsive element.
+  virtual std::u16string GenerateMenuText(const views::View* element);
+
  private:
   friend class ToolbarControllerInteractiveTest;
   friend class ToolbarControllerUnitTest;
@@ -126,6 +144,8 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
   // 1 starting from `element_flex_order_start_`. So the last element drops out
   // first once overflow starts.
   const std::vector<ui::ElementIdentifier> element_ids_;
+
+  const ToolbarController::ResponsiveElementInfoMap element_info_map_;
 
   // The starting flex order assigned to the first element in `elements_ids_`.
   const int element_flex_order_start_;

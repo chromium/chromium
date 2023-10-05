@@ -931,11 +931,11 @@ void ToolbarView::InitLayout() {
     // TODO(crbug.com/1479588): Ignore containers till issue addressed.
     toolbar_controller_ = std::make_unique<ToolbarController>(
         std::vector<ui::ElementIdentifier>{
-            kToolbarForwardButtonElementId, kToolbarAvatarButtonElementId,
-            kToolbarHomeButtonElementId, kToolbarChromeLabsButtonElementId},
-        PopOutIdentifierMap(),  // TODO(crbug.com/1445573): Fill in
-                                // PopOutIdentifierMap.
-        kToolbarFlexOrderStart, container_view_, overflow_button_);
+            kToolbarForwardButtonElementId, kToolbarDownloadButtonElementId,
+            kToolbarMediaButtonElementId, kToolbarHomeButtonElementId,
+            kToolbarChromeLabsButtonElementId},
+        ToolbarController::GetDefaultElementInfoMap(), kToolbarFlexOrderStart,
+        container_view_, overflow_button_);
 
     overflow_button_->set_create_menu_model_callback(
         base::BindRepeating(&ToolbarController::CreateOverflowMenuModel,

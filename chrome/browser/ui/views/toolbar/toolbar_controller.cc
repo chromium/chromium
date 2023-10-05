@@ -6,40 +6,14 @@
 
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
-
-namespace {
-
-std::u16string GenerateMenuText(const views::View* element) {
-  // TODO(crbug.com/1481273): Menu items might deserve their own text
-  // instead of using accessible name.
-  std::u16string accessible_name = element->GetAccessibleName();
-  if (!accessible_name.empty()) {
-    return accessible_name;
-  }
-
-  ui::ElementIdentifier id = element->GetProperty(views::kElementIdentifierKey);
-  CHECK(id);
-
-  // Containers have no accessible names. Hard code their texts here.
-  // TODO(crbug.com/1481273): Explore a more maintainable way to map container
-  // id to text.
-  if (id == kToolbarExtensionsContainerElementId) {
-    return u"Extensions";
-  } else if (id == kToolbarSidePanelContainerElementId) {
-    return u"Side panel";
-  }
-
-  // Buttons with an empty accessible name should raise an error.
-  NOTREACHED_NORETURN();
-}
-
-}  // namespace
 
 ToolbarController::PopOutState::PopOutState() = default;
 ToolbarController::PopOutState::~PopOutState() = default;
@@ -78,11 +52,12 @@ void ToolbarController::PopOutHandler::OnElementHidden(
 
 ToolbarController::ToolbarController(
     std::vector<ui::ElementIdentifier> element_ids,
-    PopOutIdentifierMap pop_out_identifier_map,
+    const ToolbarController::ResponsiveElementInfoMap& element_info_map,
     int element_flex_order_start,
     views::View* toolbar_container_view,
     views::View* overflow_button)
     : element_ids_(element_ids),
+      element_info_map_(element_info_map),
       element_flex_order_start_(element_flex_order_start),
       toolbar_container_view_(toolbar_container_view),
       overflow_button_(overflow_button) {
@@ -106,8 +81,9 @@ ToolbarController::ToolbarController(
     toolbar_element->SetProperty(views::kFlexBehaviorKey, flex_spec);
 
     // Create pop out state and pop out handlers to support pop out.
-    auto it = pop_out_identifier_map.find(id);
-    if (it != pop_out_identifier_map.end()) {
+    auto it = element_info_map.find(id);
+    if (it != element_info_map.end() &&
+        it->second.observed_identifier.has_value()) {
       auto state = std::make_unique<PopOutState>();
       if (original_spec) {
         state->original_spec =
@@ -117,13 +93,31 @@ ToolbarController::ToolbarController(
       state->handler = std::make_unique<PopOutHandler>(
           this,
           views::ElementTrackerViews::GetContextForView(toolbar_container_view),
-          id, it->second);
+          id, it->second.observed_identifier.value());
       pop_out_state_[id] = std::move(state);
     }
   }
 }
 
 ToolbarController::~ToolbarController() = default;
+
+ToolbarController::ResponsiveElementInfoMap
+ToolbarController::GetDefaultElementInfoMap() {
+  // TODO(crbug.com/1445573): Fill in observed identifier.
+  return ToolbarController::ResponsiveElementInfoMap({
+      {kToolbarExtensionsContainerElementId,
+       {IDS_OVERFLOW_MENU_ITEM_TEXT_EXTENSIONS}},
+      {kToolbarSidePanelContainerElementId,
+       {IDS_OVERFLOW_MENU_ITEM_TEXT_SIDE_PANEL}},
+      {kToolbarHomeButtonElementId, {IDS_OVERFLOW_MENU_ITEM_TEXT_HOME}},
+      {kToolbarChromeLabsButtonElementId, {IDS_OVERFLOW_MENU_ITEM_TEXT_LABS}},
+      {kToolbarMediaButtonElementId,
+       {IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS}},
+      {kToolbarDownloadButtonElementId,
+       {IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS}},
+      {kToolbarForwardButtonElementId, {IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD}},
+  });
+}
 
 bool ToolbarController::PopOut(ui::ElementIdentifier identifier) {
   views::View* element = FindToolbarElementWithId(identifier);
@@ -180,6 +174,13 @@ bool ToolbarController::ShouldShowOverflowButton() {
   // Once at least one button has been dropped by layout manager show overflow
   // button.
   return GetOverflowedElements().size() > 0;
+}
+
+std::u16string ToolbarController::GenerateMenuText(const views::View* element) {
+  ui::ElementIdentifier id = element->GetProperty(views::kElementIdentifierKey);
+  CHECK(id);
+
+  return l10n_util::GetStringUTF16(element_info_map_.at(id).menu_text_id);
 }
 
 const views::View* ToolbarController::FindToolbarElementWithId(

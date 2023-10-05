@@ -16040,6 +16040,29 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_PLUS_ADDRESS_MODAL_OK_TEXT" desc="Ok button text for the experimental enterprise plus addresses feature modal" translateable="false">
       Sit
     </message>
+
+    <!-- Responsive Toolbar -->
+    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS" desc="Overflow menu item text of download button">
+      Downloads
+    </message>
+    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_EXTENSIONS" desc="Overflow menu item text of extensions button">
+      Extensions
+    </message>
+    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD" desc="Overflow menu item text of forward button">
+      Forward
+    </message>
+    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_HOME" desc="Text of overflow menu item of home button">
+      Home
+    </message>
+    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_LABS" desc="Text of overflow menu item of labs button">
+      Labs
+    </message>
+    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS" desc="Text of overflow menu item of media controls">
+      Media controls
+    </message>
+    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_SIDE_PANEL" desc="Text of overflow menu item of side panel button">
+      Open side panel
+    </message>
   </messages>
 </release>
 </grit>

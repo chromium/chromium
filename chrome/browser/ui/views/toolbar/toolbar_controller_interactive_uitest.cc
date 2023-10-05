@@ -98,8 +98,8 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
       EXPECT_GT(menu->GetItemCount(), size_t(0));
       EXPECT_EQ(menu->GetItemCount(), overflowed_elements.size());
       for (size_t i = 0; i < menu->GetItemCount(); ++i) {
-        if (menu->GetLabelAt(i).compare(
-                overflowed_elements[i]->GetAccessibleName()) != 0) {
+        if (menu->GetLabelAt(i).compare(toolbar_controller_->GenerateMenuText(
+                overflowed_elements[i])) != 0) {
           return false;
         }
       }
