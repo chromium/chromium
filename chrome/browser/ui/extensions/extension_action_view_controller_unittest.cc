@@ -377,7 +377,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   toolbar_model()->SetActionVisibility(id, false);
   EXPECT_FALSE(container()->IsActionVisibleOnToolbar(id));
   base::RunLoop run_loop;
-  container()->PopOutAction(action, run_loop.QuitClosure());
+  container()->PopOutAction(id, run_loop.QuitClosure());
   EXPECT_TRUE(container()->IsActionVisibleOnToolbar(id));
   // The string should still just be "pin".
   check_visibility_string(action, IDS_EXTENSIONS_PIN_TO_TOOLBAR);

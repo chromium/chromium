@@ -35,6 +35,7 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -276,8 +277,10 @@ void ExtensionsToolbarContainer::HideExtensionsMenu() {
 
 bool ExtensionsToolbarContainer::ShouldForceVisibility(
     const std::string& extension_id) const {
-  if (popped_out_action_ && popped_out_action_->GetId() == extension_id)
+  if (popped_out_action_.has_value() &&
+      popped_out_action_.value() == extension_id) {
     return true;
+  }
 
   if (extension_with_open_context_menu_id_.has_value() &&
       extension_with_open_context_menu_id_.value() == extension_id) {
@@ -376,8 +379,8 @@ ToolbarActionViewController* ExtensionsToolbarContainer::GetActionForId(
   return nullptr;
 }
 
-ToolbarActionViewController* ExtensionsToolbarContainer::GetPoppedOutAction()
-    const {
+absl::optional<extensions::ExtensionId>
+ExtensionsToolbarContainer::GetPoppedOutActionId() const {
   return popped_out_action_;
 }
 
@@ -414,9 +417,9 @@ bool ExtensionsToolbarContainer::IsActionVisibleOnToolbar(
 
 void ExtensionsToolbarContainer::UndoPopOut() {
   DCHECK(popped_out_action_);
-  ToolbarActionViewController* const popped_out_action = popped_out_action_;
-  popped_out_action_ = nullptr;
-  UpdateIconVisibility(popped_out_action->GetId());
+  const extensions::ExtensionId popped_out_action = popped_out_action_.value();
+  popped_out_action_ = absl::nullopt;
+  UpdateIconVisibility(popped_out_action);
   UpdateContainerVisibilityAfterAnimation();
 }
 
@@ -452,12 +455,12 @@ bool ExtensionsToolbarContainer::CloseOverflowMenuIfOpen() {
 }
 
 void ExtensionsToolbarContainer::PopOutAction(
-    ToolbarActionViewController* action,
+    const extensions::ExtensionId& action_id,
     base::OnceClosure closure) {
   // TODO(pbos): Highlight popout differently.
-  DCHECK(!popped_out_action_);
-  popped_out_action_ = action;
-  UpdateIconVisibility(action->GetId());
+  DCHECK(!popped_out_action_.has_value());
+  popped_out_action_ = action_id;
+  UpdateIconVisibility(action_id);
   GetAnimatingLayoutManager()->PostOrQueueAction(std::move(closure));
   UpdateContainerVisibility();
 }
@@ -581,10 +584,12 @@ void ExtensionsToolbarContainer::OnToolbarActionRemoved(
   // Ensure the action outlives the UI element to perform any cleanup.
   std::unique_ptr<ToolbarActionViewController> controller = std::move(*iter);
   actions_.erase(iter);
+
   // Undo the popout, if necessary. Actions expect to not be popped out while
   // destroying.
-  if (popped_out_action_ == controller.get())
+  if (popped_out_action_ == action_id) {
     UndoPopOut();
+  }
 
   RemoveChildViewT(GetViewForId(action_id));
   icons_.erase(action_id);

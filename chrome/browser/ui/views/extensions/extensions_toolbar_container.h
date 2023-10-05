@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
+#include "extensions/common/extension.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
@@ -147,7 +148,7 @@ class ExtensionsToolbarContainer
   // ExtensionsContainer:
   ToolbarActionViewController* GetActionForId(
       const std::string& action_id) override;
-  ToolbarActionViewController* GetPoppedOutAction() const override;
+  absl::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;
   void OnContextMenuShown(const std::string& action_id) override;
   void OnContextMenuClosed() override;
   bool IsActionVisibleOnToolbar(const std::string& action_id) const override;
@@ -155,7 +156,7 @@ class ExtensionsToolbarContainer
   void SetPopupOwner(ToolbarActionViewController* popup_owner) override;
   void HideActivePopup() override;
   bool CloseOverflowMenuIfOpen() override;
-  void PopOutAction(ToolbarActionViewController* action,
+  void PopOutAction(const extensions::ExtensionId& action_id,
                     base::OnceClosure closure) override;
   bool ShowToolbarActionPopupForAPICall(const std::string& action_id,
                                         ShowPopupCallback callback) override;
@@ -338,7 +339,7 @@ class ExtensionsToolbarContainer
   // View for every action, does not imply pinned or currently shown.
   ToolbarIcons icons_;
   // Popped-out extension, if any.
-  raw_ptr<ToolbarActionViewController> popped_out_action_ = nullptr;
+  absl::optional<extensions::ExtensionId> popped_out_action_;
   // The action that triggered the current popup, if any.
   raw_ptr<ToolbarActionViewController> popup_owner_ = nullptr;
   // Extension with an open context menu, if any.

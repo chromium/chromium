@@ -555,9 +555,9 @@ void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
   extensions_container_->SetPopupOwner(this);
 
   extensions_container_->PopOutAction(
-      this, base::BindOnce(&ExtensionActionViewController::ShowPopup,
-                           weak_factory_.GetWeakPtr(), std::move(host), by_user,
-                           show_action, std::move(callback)));
+      GetId(), base::BindOnce(&ExtensionActionViewController::ShowPopup,
+                              weak_factory_.GetWeakPtr(), std::move(host),
+                              by_user, show_action, std::move(callback)));
 }
 
 void ExtensionActionViewController::ShowPopup(
@@ -589,8 +589,9 @@ void ExtensionActionViewController::OnPopupClosed() {
   popup_host_ = nullptr;
   has_opened_popup_ = false;
   extensions_container_->SetPopupOwner(nullptr);
-  if (extensions_container_->GetPoppedOutAction() == this)
+  if (extensions_container_->GetPoppedOutActionId() == GetId()) {
     extensions_container_->UndoPopOut();
+  }
   view_delegate_->OnPopupClosed();
 }
 

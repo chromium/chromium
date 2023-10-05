@@ -10,6 +10,8 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
+#include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ToolbarActionViewController;
 class ToolbarActionsBarBubbleDelegate;
@@ -22,10 +24,11 @@ class ExtensionsContainer {
   virtual ToolbarActionViewController* GetActionForId(
       const std::string& action_id) = 0;
 
-  // Get the currently popped out action if any.
+  // Get the currently popped out action id, if any.
   // TODO(pbos): Consider supporting multiple popped out actions for bubbles
   // that relate to more than one extension.
-  virtual ToolbarActionViewController* GetPoppedOutAction() const = 0;
+  virtual absl::optional<extensions::ExtensionId> GetPoppedOutActionId()
+      const = 0;
 
   // Called when a context menu is shown so the container can perform any
   // necessary setup.
@@ -53,9 +56,9 @@ class ExtensionsContainer {
   // overflow menu was closed.
   virtual bool CloseOverflowMenuIfOpen() = 0;
 
-  // Pops out a given |action|, ensuring it is visible.
-  // |closure| will be called once any animation is complete.
-  virtual void PopOutAction(ToolbarActionViewController* action,
+  // Pops out `action_id`, ensuring it is visible. `closure` will be called once
+  // any animation is complete.
+  virtual void PopOutAction(const extensions::ExtensionId& action_id,
                             base::OnceClosure closure) = 0;
 
   // Shows the popup for the action with |id| as the result of an API call,
