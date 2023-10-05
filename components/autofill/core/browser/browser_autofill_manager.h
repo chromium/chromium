@@ -360,11 +360,6 @@ class BrowserAutofillManager : public AutofillManager,
     return *autocomplete_unrecognized_fallback_logger_;
   }
 
-  // Sets the value of `consider_form_as_secure_for_testing_`. We want to
-  // set this to true for test purposes only.
-  void SetConsiderFormAsSecureForTesting(
-      absl::optional<bool> consider_form_as_secure_for_testing);
-
  protected:
   // Stores a `callback` for `form_signature`, possibly overriding an older
   // callback for `form_signature` or triggering a pending callback in case too

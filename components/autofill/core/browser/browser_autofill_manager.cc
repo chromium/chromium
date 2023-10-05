@@ -2821,11 +2821,6 @@ AutofillField* BrowserAutofillManager::GetAutofillField(
   return autofill_field;
 }
 
-void BrowserAutofillManager::SetConsiderFormAsSecureForTesting(
-    absl::optional<bool> consider_form_as_secure_for_testing) {
-  consider_form_as_secure_for_testing_ = consider_form_as_secure_for_testing;
-}
-
 bool BrowserAutofillManager::FormHasAddressField(const FormData& form) {
   for (const FormFieldData& field : form.fields) {
     const AutofillField* autofill_field = GetAutofillField(form, field);

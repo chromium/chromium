@@ -131,6 +131,12 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     manager_->four_digit_combinations_in_dom_ = combinations;
   }
 
+  void SetConsiderFormAsSecureForTesting(
+      absl::optional<bool> consider_form_as_secure_for_testing) {
+    manager_->consider_form_as_secure_for_testing_ =
+        consider_form_as_secure_for_testing;
+  }
+
  private:
   raw_ref<BrowserAutofillManager> manager_;
 };

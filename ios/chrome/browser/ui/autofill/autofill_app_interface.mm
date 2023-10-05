@@ -10,6 +10,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #import "components/autofill/core/browser/form_data_importer.h"
 #import "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
@@ -480,8 +481,9 @@ class SaveCardInfobarEGTestHelper
       autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
           web_state);
   web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
-  autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
-      ->GetAutofillManager()
+  test_api(autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state,
+                                                                main_frame)
+               ->GetAutofillManager())
       .SetConsiderFormAsSecureForTesting(true);
 }
 
