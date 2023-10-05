@@ -429,14 +429,17 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   defaultVoice(): SpeechSynthesisVoice|undefined {
     // TODO(crbug.com/1474951): Additional logic to find default voice if there
     // isn't a voice marked as default
+
+    // TODO(crbug.com/1474951): Filter by localService. Doing this now prevents
+    // voices from loading on Linux, which slows down development.
     return this.synth.getVoices().find(
-        ({localService, default: isDefaultVoice}) =>
-            localService && isDefaultVoice);
+        ({default: isDefaultVoice}) => isDefaultVoice);
   }
 
   getVoices(): VoicesByLanguage {
+    // TODO(crbug.com/1474951): Filter by localService. Doing this now prevents
+    // voices from loading on Linux, which slows down development.
     return this.synth.getVoices()
-        .filter(({localService}) => localService)
         .reduce(
             (voicesByLang: VoicesByLanguage, voice: SpeechSynthesisVoice) => {
               (voicesByLang[voice.lang] = voicesByLang[voice.lang] || [])
