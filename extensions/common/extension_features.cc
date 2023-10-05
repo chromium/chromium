@@ -209,4 +209,11 @@ BASE_FEATURE(kExtensionsServiceWorkerOptimizedEventDispatch,
              "ExtensionsServiceWorkerOptimizedEventDispatch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the button for visiting the chrome webstore in both the
+// extensions menu in the app menu and the chrome://extensions sidebar will send
+// the user to the new chrome webstore URL.
+BASE_FEATURE(kNewWebstoreURL,
+             "NewWebstoreURL",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features
