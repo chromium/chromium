@@ -1879,32 +1879,6 @@
             ]
         }
     ],
-    "AutofillUseParameterizedSectioning": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "NoParameters20230705",
-                    "params": {
-                        "create_gaps": "false",
-                        "expand_assigned_sections": "false",
-                        "ignore_autocomplete": "false"
-                    },
-                    "enable_features": [
-                        "AutofillUseParameterizedSectioning"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutomaticLazyFrameLoading": [
         {
             "platforms": [

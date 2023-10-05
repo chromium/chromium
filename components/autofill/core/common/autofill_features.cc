@@ -627,7 +627,7 @@ BASE_FEATURE(kAutofillUseNewSectioningMethod,
 // TODO(crbug.com/1153539): Remove the feature when the experiment is completed.
 BASE_FEATURE(kAutofillUseParameterizedSectioning,
              "AutofillUseParameterizedSectioning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // In the experiment, we test different combinations of these parameters.
 const base::FeatureParam<bool> kAutofillSectioningModeIgnoreAutocomplete{
     &kAutofillUseParameterizedSectioning, "ignore_autocomplete", false};
