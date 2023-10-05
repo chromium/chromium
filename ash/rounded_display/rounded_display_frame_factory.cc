@@ -122,7 +122,7 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
 
   auto resource = std::make_unique<RoundedDisplayUiResource>();
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
+  resource->gpu_memory_buffer =
       aura::Env::GetInstance()
           ->context_factory()
           ->GetGpuMemoryBufferManager()
@@ -133,7 +133,7 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
               gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, gpu::kNullSurfaceHandle,
               nullptr);
 
-  if (!gpu_memory_buffer) {
+  if (!resource->gpu_memory_buffer) {
     LOG(ERROR) << "Failed to create GPU memory buffer";
     return nullptr;
   }
@@ -160,7 +160,7 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
   resource->mailbox = sii->CreateSharedImage(
       format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType, usage, "RoundedDisplayFrameUi",
-      gpu_memory_buffer->CloneHandle());
+      resource->gpu_memory_buffer->CloneHandle());
 
   resource->sync_token = sii->GenVerifiedSyncToken();
   resource->damaged = true;
@@ -168,7 +168,6 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
   resource->is_overlay_candidate = is_overlay;
   resource->format = format;
   resource->resource_size = size;
-  resource->gpu_memory_buffer = std::move(gpu_memory_buffer);
 
   return resource;
 }
@@ -264,8 +263,7 @@ std::unique_ptr<RoundedDisplayUiResource> RoundedDisplayFrameFactory::Draw(
     return nullptr;
   }
 
-  DCHECK(resource->gpu_memory_buffer);
-  Paint(gutter, *resource->gpu_memory_buffer);
+  Paint(gutter, resource.get());
 
   if (resource->damaged) {
     DCHECK(resource->context_provider);
@@ -281,25 +279,29 @@ std::unique_ptr<RoundedDisplayUiResource> RoundedDisplayFrameFactory::Draw(
   return resource;
 }
 
-void RoundedDisplayFrameFactory::Paint(const RoundedDisplayGutter& gutter,
-                                       gfx::GpuMemoryBuffer& buffer) const {
+void RoundedDisplayFrameFactory::Paint(
+    const RoundedDisplayGutter& gutter,
+    RoundedDisplayUiResource* resource) const {
+  gfx::GpuMemoryBuffer* buffer = resource->gpu_memory_buffer.get();
+  DCHECK(buffer);
+
   gfx::Canvas canvas(gutter.bounds().size(), 1.0, true);
   gutter.Paint(&canvas);
 
-  if (!buffer.Map()) {
+  if (!buffer->Map()) {
     return;
   }
 
-  uint8_t* data = static_cast<uint8_t*>(buffer.memory(0));
-  int stride = buffer.stride(0);
+  uint8_t* data = static_cast<uint8_t*>(buffer->memory(0));
+  int stride = buffer->stride(0);
 
   canvas.GetBitmap().readPixels(
-      SkImageInfo::MakeN32Premul(buffer.GetSize().width(),
-                                 buffer.GetSize().height()),
+      SkImageInfo::MakeN32Premul(buffer->GetSize().width(),
+                                 buffer->GetSize().height()),
       data, stride, 0, 0);
 
   // Unmap to flush writes to buffer.
-  buffer.Unmap();
+  buffer->Unmap();
 }
 
 void RoundedDisplayFrameFactory::AppendQuad(

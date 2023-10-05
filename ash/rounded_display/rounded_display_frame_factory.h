@@ -88,9 +88,9 @@ class ASH_EXPORT RoundedDisplayFrameFactory {
       const RoundedDisplayGutter& gutter,
       UiResourceManager& resource_manager) const;
 
-  // Paints the gutter's texture into the `buffer`.
+  // Paints the gutter's texture into the buffer held by `resource`.
   void Paint(const RoundedDisplayGutter& gutter,
-             gfx::GpuMemoryBuffer& buffer) const;
+             RoundedDisplayUiResource* resource) const;
 };
 
 }  // namespace ash
