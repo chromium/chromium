@@ -391,9 +391,6 @@ targets.legacy_compound_suite(
         "telemetry_perf_unittests_isolated_scripts",
         "vulkan_swiftshader_isolated_scripts",
         "chromium_web_tests_high_dpi_isolated_scripts",
-        # TODO(weizhong): Remove wptrunner steps once experimenting completes.
-        "wpt_web_tests_content_shell",
-        "wpt_web_tests_highdpi",
     ],
 )
 
@@ -490,8 +487,6 @@ targets.legacy_compound_suite(
         "mac_specific_isolated_scripts",
         "mojo_python_unittests_isolated_scripts",
         "telemetry_perf_unittests_isolated_scripts",
-        # TODO(weizhong): Remove wptrunner steps once experimenting completes.
-        "wpt_web_tests_content_shell",
     ],
 )
 
@@ -603,8 +598,6 @@ targets.legacy_compound_suite(
         "telemetry_desktop_minidump_unittests_isolated_scripts",
         "telemetry_perf_unittests_isolated_scripts",
         "win_specific_isolated_scripts",
-        # TODO(weizhong): Remove wptrunner steps once experimenting completes.
-        "wpt_web_tests_content_shell",
     ],
 )
 

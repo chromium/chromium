@@ -6011,8 +6011,6 @@
       'telemetry_perf_unittests_isolated_scripts',
       'vulkan_swiftshader_isolated_scripts',
       'chromium_web_tests_high_dpi_isolated_scripts',
-      'wpt_web_tests_content_shell',
-      'wpt_web_tests_highdpi',
     ],
 
     'chromium_mac_gtests': [
@@ -6072,7 +6070,6 @@
       'mac_specific_isolated_scripts',
       'mojo_python_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts',
-      'wpt_web_tests_content_shell',
     ],
 
     'chromium_win10_gtests': [
@@ -6148,7 +6145,6 @@
       'telemetry_desktop_minidump_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts',
       'win_specific_isolated_scripts',
-      'wpt_web_tests_content_shell',
     ],
 
     'cronet_dbg_isolated_scripts': [
