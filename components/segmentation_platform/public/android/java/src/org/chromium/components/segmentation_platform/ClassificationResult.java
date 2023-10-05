@@ -15,6 +15,6 @@ public class ClassificationResult {
 
     public ClassificationResult(int status, String[] orderedLabels) {
         this.status = status;
-        this.orderedLabels = List.of(orderedLabels);
+        this.orderedLabels = orderedLabels == null ? null : List.of(orderedLabels);
     }
 }

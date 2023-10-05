@@ -18,10 +18,6 @@ namespace segmentation_platform {
 const char kAdaptiveToolbarSegmentationKey[] = "adaptive_toolbar";
 const char kAdaptiveToolbarUmaName[] = "AdaptiveToolbar";
 
-// The key is used to decide whether to show Chrome Start or not.
-const char kChromeStartAndroidSegmentationKey[] = "chrome_start_android";
-const char kChromeStartAndroidUmaName[] = "ChromeStartAndroid";
-
 // The key is used to decide how long to wait before showing Chrome Start.
 const char kChromeStartAndroidV2SegmentationKey[] = "chrome_start_android_v2";
 const char kChromeStartAndroidV2UmaName[] = "ChromeStartAndroidV2";
@@ -177,6 +173,15 @@ const char kSearchUserModelLabelNone[] = "None";
 const char kSearchUserModelLabelLow[] = "Low";
 const char kSearchUserModelLabelMedium[] = "Medium";
 const char kSearchUserModelLabelHigh[] = "High";
+
+// Labels for  user ChromeStartAndroidV2 model.
+// Any updates to these strings need to also update the field trials allowlist
+// in go/segmentation-field-trials-map.
+const char kChromeStartAndroidV2Label1HourInMs[] = "3600";
+const char kChromeStartAndroidV2Label2HourInMs[] = "7200";
+const char kChromeStartAndroidV2Label4HourInMs[] = "14400";
+const char kChromeStartAndroidV2Label8HourInMs[] = "28800";
+const char kChromeStartAndroidV2LabelNone[] = "0";
 
 // Labels for device tier model.
 // Any updates to these strings need to also update the field trials allowlist

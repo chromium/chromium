@@ -33,8 +33,7 @@ proto::Predictor::PredictorTypeCase GetClassifierTypeForMigration(
   if (segmentation_key == kAdaptiveToolbarSegmentationKey ||
       segmentation_key == kContextualPageActionsKey) {
     return proto::Predictor::kMultiClassClassifier;
-  } else if (segmentation_key == kChromeStartAndroidSegmentationKey ||
-             segmentation_key == kChromeStartAndroidV2SegmentationKey ||
+  } else if (segmentation_key == kChromeStartAndroidV2SegmentationKey ||
              segmentation_key == kChromeLowUserEngagementSegmentationKey ||
              segmentation_key == kCrossDeviceUserKey ||
              segmentation_key == kDeviceSwitcherKey ||

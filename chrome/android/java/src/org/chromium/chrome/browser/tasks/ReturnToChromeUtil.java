@@ -74,9 +74,10 @@ import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.segmentation_platform.SegmentSelectionResult;
+import org.chromium.components.segmentation_platform.ClassificationResult;
+import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
-import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
+import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -797,27 +798,25 @@ public final class ReturnToChromeUtil {
         SegmentationPlatformService segmentationPlatformService =
                 SegmentationPlatformServiceFactory.getForProfile(
                         Profile.getLastUsedRegularProfile());
-
-        segmentationPlatformService.getSelectedSegment(START_V2_SEGMENTATION_PLATFORM_KEY,
+        PredictionOptions predictionOptions = new PredictionOptions(false);
+        segmentationPlatformService.getClassificationResult(START_V2_SEGMENTATION_PLATFORM_KEY,
+                predictionOptions, null,
                 result -> { cacheReturnTimeFromSegmentationImpl(result); });
     }
 
     @VisibleForTesting
-    public static void cacheReturnTimeFromSegmentationImpl(SegmentSelectionResult result) {
+    public static void cacheReturnTimeFromSegmentationImpl(ClassificationResult result) {
         long returnTimeMs =
                 StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue()
                 * DateUtils.SECOND_IN_MILLIS;
-        if (result.isReady) {
-            if (result.selectedSegment
-                    != SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2) {
-                // If selected segment is not Start, then don't show.
-                returnTimeMs = -1;
-            } else {
-                // The value of result.rank is in the unit of seconds.
-                assert result.rank >= 0;
-                // Converts to milliseconds.
-                returnTimeMs = result.rank.longValue() * DateUtils.SECOND_IN_MILLIS;
-            }
+
+        if (result.status != PredictionStatus.SUCCEEDED || result.orderedLabels.isEmpty()) {
+            // Model execution failed or no label selected.
+            returnTimeMs = -1;
+        } else {
+            // Converts to milliseconds.
+            returnTimeMs = Long.parseLong(result.orderedLabels.get(0))
+                    * DateUtils.SECOND_IN_MILLIS;
         }
         ChromeSharedPreferences.getInstance().writeLong(
                 ChromePreferenceKeys.START_RETURN_TIME_SEGMENTATION_RESULT_MS, returnTimeMs);

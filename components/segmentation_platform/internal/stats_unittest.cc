@@ -206,18 +206,18 @@ TEST(StatsTest, SegmentComputedWithMultiOutput) {
 
 TEST(StatsTest, BooleanSegmentSwitch) {
   std::string histogram(
-      "SegmentationPlatform.ChromeStartAndroid.SegmentSwitched");
+      "SegmentationPlatform.ChromeStartAndroidV2.SegmentSwitched");
   base::HistogramTester tester;
   Config config;
-  config.segmentation_key = kChromeStartAndroidSegmentationKey;
-  config.segmentation_uma_name = kChromeStartAndroidUmaName;
+  config.segmentation_key = kChromeStartAndroidV2SegmentationKey;
+  config.segmentation_uma_name = kChromeStartAndroidV2UmaName;
   config.auto_execute_and_cache = true;
   config.is_boolean_segment = true;
 
   // Start to none.
   RecordSegmentSelectionComputed(
       config, SegmentId::OPTIMIZATION_TARGET_UNKNOWN,
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID);
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2);
 
   tester.ExpectTotalCount(histogram, 1);
   EXPECT_THAT(tester.GetAllSamples(histogram),
@@ -225,7 +225,8 @@ TEST(StatsTest, BooleanSegmentSwitch) {
                   static_cast<int>(BooleanSegmentSwitch::kEnabledToNone), 1)));
   // None to start.
   RecordSegmentSelectionComputed(
-      config, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
+      config,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2,
       absl::nullopt);
 
   tester.ExpectTotalCount(histogram, 2);
@@ -238,7 +239,8 @@ TEST(StatsTest, BooleanSegmentSwitch) {
           base::Bucket(static_cast<int>(BooleanSegmentSwitch::kEnabledToNone),
                        1)));
   tester.ExpectTotalCount(
-      "SegmentationPlatform.ChromeStartAndroid.SegmentSelection.Computed2", 2);
+      "SegmentationPlatform.ChromeStartAndroidV2.SegmentSelection.Computed2",
+      2);
 }
 
 TEST(StatsTest, SignalsListeningCount) {
