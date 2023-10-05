@@ -42,7 +42,7 @@ public class PermissionUtil {
             android.Manifest.permission.RECORD_AUDIO};
     /** The required android permissions associated with posting notifications post-Android T. */
     private static final String[] NOTIFICATION_PERMISSIONS_POST_T = {
-            "android.permission.POST_NOTIFICATIONS"};
+            android.Manifest.permission.POST_NOTIFICATIONS};
 
     /** Signifies there are no permissions associated. */
     private static final String[] EMPTY_PERMISSIONS = {};

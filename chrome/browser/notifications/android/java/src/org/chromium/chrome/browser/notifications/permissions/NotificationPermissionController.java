@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.notifications.permissions;
 
+import android.Manifest;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
@@ -23,7 +25,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
-import org.chromium.ui.permissions.PermissionConstants;
 import org.chromium.ui.permissions.PermissionPrefs;
 
 import java.lang.annotation.Retention;
@@ -218,11 +219,11 @@ public class NotificationPermissionController implements UnownedUserData {
             return PermissionRequestMode.DO_NOT_REQUEST;
         }
 
-        if (mAndroidPermissionDelegate.hasPermission(PermissionConstants.NOTIFICATION_PERMISSION)) {
+        if (mAndroidPermissionDelegate.hasPermission(Manifest.permission.POST_NOTIFICATIONS)) {
             return PermissionRequestMode.DO_NOT_REQUEST;
         }
         if (!mAndroidPermissionDelegate.canRequestPermission(
-                    PermissionConstants.NOTIFICATION_PERMISSION)) {
+                    Manifest.permission.POST_NOTIFICATIONS)) {
             return PermissionRequestMode.DO_NOT_REQUEST;
         }
 
@@ -245,7 +246,7 @@ public class NotificationPermissionController implements UnownedUserData {
         // Decide whether to show the rationale or just the system prompt.
         boolean meetsAndroidRationaleAPI =
                 mAndroidPermissionDelegate.shouldShowRequestPermissionRationale(
-                        PermissionConstants.NOTIFICATION_PERMISSION);
+                        Manifest.permission.POST_NOTIFICATIONS);
         boolean shouldShowRationale = shouldAlwaysShowRationaleFirst() || meetsAndroidRationaleAPI;
         return shouldShowRationale ? PermissionRequestMode.REQUEST_PERMISSION_WITH_RATIONALE
                                    : PermissionRequestMode.REQUEST_ANDROID_PERMISSION;
@@ -264,7 +265,7 @@ public class NotificationPermissionController implements UnownedUserData {
         boolean notificationsEnabledAtAppLevel = manager.areNotificationsEnabled();
         if (!BuildInfo.isAtLeastT()) return notificationsEnabledAtAppLevel;
 
-        if (mAndroidPermissionDelegate.hasPermission(PermissionConstants.NOTIFICATION_PERMISSION)) {
+        if (mAndroidPermissionDelegate.hasPermission(Manifest.permission.POST_NOTIFICATIONS)) {
             return true;
         }
 
@@ -273,7 +274,7 @@ public class NotificationPermissionController implements UnownedUserData {
                         ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
                         FIELD_TRIAL_ALLOW_SITE_NOTIFICATION_REQUESTS, true);
         boolean canRequestPermission = mAndroidPermissionDelegate.canRequestPermission(
-                PermissionConstants.NOTIFICATION_PERMISSION);
+                Manifest.permission.POST_NOTIFICATIONS);
         return allowRequestingPermissionsForSiteNotifications && canRequestPermission;
     }
 
@@ -282,14 +283,14 @@ public class NotificationPermissionController implements UnownedUserData {
      * include how many times we've asked or if the permission is denied by policy.
      */
     private void recordCurrentNotificationPermissionStatus() {
-        if (mAndroidPermissionDelegate.hasPermission(PermissionConstants.NOTIFICATION_PERMISSION)) {
+        if (mAndroidPermissionDelegate.hasPermission(Manifest.permission.POST_NOTIFICATIONS)) {
             NotificationUmaTracker.getInstance().recordNotificationPermissionState(
                     NotificationPermissionState.ALLOWED);
             return;
         }
 
         if (mAndroidPermissionDelegate.isPermissionRevokedByPolicy(
-                    PermissionConstants.NOTIFICATION_PERMISSION)) {
+                    Manifest.permission.POST_NOTIFICATIONS)) {
             NotificationUmaTracker.getInstance().recordNotificationPermissionState(
                     NotificationPermissionState.DENIED_BY_DEVICE_POLICY);
             return;
@@ -321,7 +322,7 @@ public class NotificationPermissionController implements UnownedUserData {
     }
 
     private void requestAndroidPermission() {
-        String[] permissionsToRequest = {PermissionConstants.NOTIFICATION_PERMISSION};
+        String[] permissionsToRequest = {Manifest.permission.POST_NOTIFICATIONS};
         mAndroidPermissionDelegate.requestPermissions(permissionsToRequest,
                 (permissions, grantResults)
                         -> NotificationUmaTracker.getInstance()

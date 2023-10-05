@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import android.Manifest;
 import android.app.Notification;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -24,7 +25,6 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.ui.permissions.PermissionConstants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -439,7 +439,7 @@ public class NotificationUmaTracker {
      */
     public void onNotificationPermissionRequestResult(String[] permissions, int[] grantResults) {
         if (permissions.length != 1 || grantResults.length != 1
-                || !permissions[0].equals(PermissionConstants.NOTIFICATION_PERMISSION)) {
+                || !permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS)) {
             assert false;
             return;
         }

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -40,7 +41,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
-import org.chromium.ui.permissions.PermissionConstants;
 import org.chromium.ui.permissions.PermissionPrefs;
 
 import java.lang.ref.WeakReference;
@@ -111,7 +111,7 @@ public class NotificationPermissionControllerTest {
     }
 
     private void grantNotificationPermission(Activity activity) {
-        shadowOf(activity).grantPermissions(PermissionConstants.NOTIFICATION_PERMISSION);
+        shadowOf(activity).grantPermissions(Manifest.permission.POST_NOTIFICATIONS);
     }
 
     private void invokeOSPermissionCallback(
@@ -120,15 +120,13 @@ public class NotificationPermissionControllerTest {
                                             : PackageManager.PERMISSION_DENIED;
 
         delegate.invokePermissionResultCallbackForLastRequest(
-                new String[] {PermissionConstants.NOTIFICATION_PERMISSION},
-                new int[] {resultValue});
+                new String[] {Manifest.permission.POST_NOTIFICATIONS}, new int[] {resultValue});
     }
 
     private void setShouldShowRequestPermissionRationale(
             Activity activity, boolean shouldShowRequestPermissionRationale) {
         shadowOf(activity.getPackageManager())
-                .setShouldShowRequestPermissionRationale(
-                        PermissionConstants.NOTIFICATION_PERMISSION,
+                .setShouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS,
                         shouldShowRequestPermissionRationale);
     }
 
@@ -308,7 +306,7 @@ public class NotificationPermissionControllerTest {
                     createNotificationPermissionController(activity);
 
             // First time ever. We should show OS prompt.
-            shadowOf(activity).denyPermissions(PermissionConstants.NOTIFICATION_PERMISSION);
+            shadowOf(activity).denyPermissions(Manifest.permission.POST_NOTIFICATIONS);
 
             notificationPermissionController.requestPermissionIfNeeded();
 
