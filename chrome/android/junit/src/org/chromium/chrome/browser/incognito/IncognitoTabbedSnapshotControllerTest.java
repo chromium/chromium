@@ -33,6 +33,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.FilterLayoutStateObserver;
@@ -121,8 +122,8 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT,
-            ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT})
+    @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
+    @MaxAndroidSdkLevel(Build.VERSION_CODES.S_V2)
     public void testSecureFlagsUnModified_ForIncognito_WhenAlreadyPresent() {
         mParams.flags = WindowManager.LayoutParams.FLAG_SECURE;
         // In incognito
@@ -137,8 +138,8 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT,
-            ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT})
+    @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
+    @MaxAndroidSdkLevel(Build.VERSION_CODES.S_V2)
     public void testSecureFlagsAdded_ForIncognito_WhenNotAlreadyPresent() {
         mParams.flags = 0;
 
@@ -154,7 +155,7 @@ public class IncognitoTabbedSnapshotControllerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
-    @DisableFeatures(ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT)
+    @MaxAndroidSdkLevel(Build.VERSION_CODES.S_V2)
     public void testFlagSecureCleared_ForIncognito_WhenIncognitoScreenshotEnabled() {
         mParams.flags = WindowManager.LayoutParams.FLAG_SECURE;
         // In incognito
@@ -168,8 +169,8 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT,
-            ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT})
+    @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
+    @MaxAndroidSdkLevel(Build.VERSION_CODES.S_V2)
     public void testFlagSecureCleared_AfterSwitchingToNonIncognito_WithScreenshotDisabled() {
         mParams.flags = WindowManager.LayoutParams.FLAG_SECURE;
 
@@ -185,7 +186,7 @@ public class IncognitoTabbedSnapshotControllerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
-    @DisableFeatures(ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT)
+    @MaxAndroidSdkLevel(Build.VERSION_CODES.S_V2)
     public void testFlagSecureCleared_AfterSwitchingToNonIncognito_ScreenshotEnabled() {
         mParams.flags = WindowManager.LayoutParams.FLAG_SECURE;
 
@@ -200,7 +201,6 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT)
     @Config(minSdk = Build.VERSION_CODES.TIRAMISU)
     public void testRecentsScreenshotsEnabled_ForAndroidTOrAbove_AfterSwitchingToNonIncognito() {
         // In regular mode.
@@ -215,7 +215,6 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT)
     @Config(minSdk = Build.VERSION_CODES.TIRAMISU)
     public void testRecentsScreenshotsDisabled_ForAndroidTOrAbove_AfterSwitchingToIncognito() {
         // In incognito
@@ -230,26 +229,6 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT,
-            ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT})
-    @Config(minSdk = Build.VERSION_CODES.TIRAMISU)
-    public void
-    testSecureFlagsAdded_ForIncognito_ForAndroidTOrAbove_WhenImprovedIncognitoScreenshotDisabled() {
-        mParams.flags = 0;
-
-        // In incognito
-        doReturn(mTabModelMock).when(mTabModelSelectorMock).getCurrentModel();
-        doReturn(true).when(mTabModelMock).isIncognito();
-
-        mTabModelSelectorObserver.onChange();
-
-        verify(mActivityMock, never()).setRecentsScreenshotEnabled(false);
-        verify(mWindowMock, times(1)).addFlags(WindowManager.LayoutParams.FLAG_SECURE);
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
     public void testIsShowingIncognito_CurrentModelRegular_ReturnsFalse() {
         // Regular mode
         doReturn(mTabModelMock).when(mTabModelSelectorMock).getCurrentModel();
@@ -260,7 +239,6 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
     public void testIsShowingIncognito_CurrentModelIncognito_ReturnsTrue() {
         doReturn(mTabModelMock).when(mTabModelSelectorMock).getCurrentModel();
         doReturn(true).when(mTabModelMock).isIncognito();

@@ -254,7 +254,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kGridTabSwitcherAndroidAnimations,
     &kGridTabSwitcherLandscapeAspectRatioPhones,
     &kHideTabOnTabSwitcher,
-    &kImprovedIncognitoScreenshot,
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
     &kInfobarScrollOptimization,
@@ -800,15 +799,11 @@ BASE_FEATURE(kHideTabOnTabSwitcher,
              "HideTabOnTabSwitcher",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Only affects devices on API version >= 33.
-BASE_FEATURE(kImprovedIncognitoScreenshot,
-             "ImprovedIncognitoScreenshot",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIncognitoReauthenticationForAndroid,
              "IncognitoReauthenticationForAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Only affects devices on API version < 33.
 BASE_FEATURE(kIncognitoScreenshot,
              "IncognitoScreenshot",
              base::FEATURE_DISABLED_BY_DEFAULT);

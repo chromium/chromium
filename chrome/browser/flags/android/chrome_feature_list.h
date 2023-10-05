@@ -113,7 +113,6 @@ BASE_DECLARE_FEATURE(kFocusOmniboxInIncognitoTabIntents);
 BASE_DECLARE_FEATURE(kGridTabSwitcherAndroidAnimations);
 BASE_DECLARE_FEATURE(kGridTabSwitcherLandscapeAspectRatioPhones);
 BASE_DECLARE_FEATURE(kHideTabOnTabSwitcher);
-BASE_DECLARE_FEATURE(kImprovedIncognitoScreenshot);
 BASE_DECLARE_FEATURE(kIncognitoReauthenticationForAndroid);
 BASE_DECLARE_FEATURE(kIncognitoScreenshot);
 BASE_DECLARE_FEATURE(kInfobarScrollOptimization);

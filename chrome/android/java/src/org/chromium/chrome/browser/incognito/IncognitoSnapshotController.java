@@ -10,7 +10,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -21,9 +20,6 @@ import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
  * for Incognito tabs across {@link ChromeTabbedActivity} and {@link CustomTabActivity}.
  */
 public abstract class IncognitoSnapshotController {
-    private static final MutableFlagWithSafeDefault sImprovedIncognitoScreenshotFlag =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT, false);
-
     private static final MutableFlagWithSafeDefault sIncognitoScreenshotFlag =
             new MutableFlagWithSafeDefault(ChromeFeatureList.INCOGNITO_SCREENSHOT, false);
     private final @NonNull Activity mActivity;
@@ -51,20 +47,10 @@ public abstract class IncognitoSnapshotController {
         boolean expectedSecureState = mIsShowingIncognitoSupplier.get();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            updateScreenshotStateForAndroidTOrAbove(expectedSecureState);
+            mActivity.setRecentsScreenshotEnabled(!expectedSecureState);
         } else {
             updateScreenshotState(expectedSecureState);
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private void updateScreenshotStateForAndroidTOrAbove(boolean expectedSecureState) {
-        if (!sImprovedIncognitoScreenshotFlag.isEnabled()) {
-            updateScreenshotState(expectedSecureState);
-            return;
-        }
-
-        mActivity.setRecentsScreenshotEnabled(!expectedSecureState);
     }
 
     private void updateScreenshotState(boolean expectedSecureState) {
