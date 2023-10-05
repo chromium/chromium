@@ -538,7 +538,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Preferences related to parcel tracking.
   registry->RegisterBooleanPref(prefs::kIosParcelTrackingOptInPromptDisplayed,
                                 false);
-  registry->RegisterIntegerPref(prefs::kIosParcelTrackingOptInStatus, 0);
+  registry->RegisterIntegerPref(prefs::kIosParcelTrackingOptInStatus, 2);
 
   registry->RegisterBooleanPref(kObsoleteIosSettingsPromoAlreadySeen, false);
   registry->RegisterIntegerPref(kObsoleteIosSettingsSigninPromoDisplayedCount,

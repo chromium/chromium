@@ -145,6 +145,13 @@
   return cell;
 }
 
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [self.modelDelegate
+      googleServicesSettingsViewControllerDidSelectItemAtIndexPath:indexPath];
+  [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {

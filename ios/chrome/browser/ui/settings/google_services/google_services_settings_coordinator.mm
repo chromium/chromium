@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_mediator.h"
+#import "ios/chrome/browser/ui/settings/google_services/parcel_tracking_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -61,7 +62,9 @@ using signin_metrics::PromoAction;
     SignoutActionSheetCoordinator* signoutActionSheetCoordinator;
 @end
 
-@implementation GoogleServicesSettingsCoordinator
+@implementation GoogleServicesSettingsCoordinator {
+  ParcelTrackingSettingsCoordinator* _parcelTrackingSettingsCoordinator;
+}
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -106,6 +109,8 @@ using signin_metrics::PromoAction;
 - (void)stop {
   [self.signOutCoordinator stop];
   _signOutCoordinator = nil;
+  [_parcelTrackingSettingsCoordinator stop];
+  _parcelTrackingSettingsCoordinator = nil;
 }
 
 #pragma mark - Private
@@ -197,6 +202,14 @@ using signin_metrics::PromoAction;
                 }
                  style:UIAlertActionStyleCancel];
   [self.signOutCoordinator start];
+}
+
+- (void)showParcelTrackingSettingsPage {
+  _parcelTrackingSettingsCoordinator =
+      [[ParcelTrackingSettingsCoordinator alloc]
+          initWithBaseNavigationController:_baseNavigationController
+                                   browser:self.browser];
+  [_parcelTrackingSettingsCoordinator start];
 }
 
 // Displays the option to keep or clear data for a syncing user.

@@ -30,6 +30,7 @@ source_set("google_services") {
   ]
   deps = [
     ":constants",
+    ":parcel_tracking",
     "resources:google_services_enterprise",
     "//base",
     "//components/browser_sync",
@@ -48,6 +49,7 @@ source_set("google_services") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/commerce/model:model",
     "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
@@ -90,6 +92,36 @@ source_set("google_services") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ios/web/common:features",
+    "//ui/base",
+  ]
+}
+
+source_set("parcel_tracking") {
+  sources = [
+    "parcel_tracking_settings_coordinator.h",
+    "parcel_tracking_settings_coordinator.mm",
+    "parcel_tracking_settings_mediator.h",
+    "parcel_tracking_settings_mediator.mm",
+    "parcel_tracking_settings_model_consumer.h",
+    "parcel_tracking_settings_model_delegate.h",
+    "parcel_tracking_settings_view_controller.h",
+    "parcel_tracking_settings_view_controller.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/parcel_tracking:util",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/ui/settings:settings_root",
     "//ui/base",
   ]
 }

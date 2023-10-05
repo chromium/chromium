@@ -15,6 +15,7 @@
 #import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/unified_consent/pref_names.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -57,6 +59,7 @@ NSString* const kTrackPricesOnTabsItemAccessibilityID =
 // List of sections.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   NonPersonalizedSectionIdentifier = kSectionIdentifierEnumZero,
+  ParcelTrackingSectionIdentifier
 };
 
 // List of items. For implementation details in
@@ -73,6 +76,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ImproveSearchSuggestionsItemType,
   ImproveSearchSuggestionsManagedItemType,
   TrackPricesOnTabsItemType,
+  ParcelTrackingItemType,
 };
 
 // TODO(crbug.com/1244632): Use the Authentication Service sign-in status API
@@ -276,6 +280,8 @@ bool GetStatusForSigninPolicy() {
         base::apple::ObjCCast<SyncSwitchItem>(item).on =
             self.trackPricesOnTabsPreference.value;
         break;
+      case ParcelTrackingItemType:
+        break;
     }
   }
   if (notifyConsumer) {
@@ -435,6 +441,21 @@ bool GetStatusForSigninPolicy() {
     (GoogleServicesSettingsViewController*)controller {
   DCHECK_EQ(self.consumer, controller);
   [self loadNonPersonalizedSection];
+
+  if (IsIOSParcelTrackingEnabled()) {
+    TableViewModel* model = self.consumer.tableViewModel;
+    [model addSectionWithIdentifier:ParcelTrackingSectionIdentifier];
+
+    TableViewDetailTextItem* parcelTrackingItem =
+        [[TableViewDetailTextItem alloc] initWithType:ParcelTrackingItemType];
+    parcelTrackingItem.text = l10n_util::GetNSString(
+        IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE);
+    parcelTrackingItem.accessoryType =
+        UITableViewCellAccessoryDisclosureIndicator;
+    parcelTrackingItem.accessibilityTraits = UIAccessibilityTraitButton;
+    [model addItem:parcelTrackingItem
+        toSectionWithIdentifier:ParcelTrackingSectionIdentifier];
+  }
 }
 
 - (BOOL)isAllowChromeSigninItem:(int)type {
@@ -443,6 +464,14 @@ bool GetStatusForSigninPolicy() {
 
 - (BOOL)isViewControllerSubjectToParentalControls {
   return supervised_user::IsSubjectToParentalControls(self.userPrefService);
+}
+
+- (void)googleServicesSettingsViewControllerDidSelectItemAtIndexPath:
+    (NSIndexPath*)indexPath {
+  if ([self.consumer.tableViewModel itemAtIndexPath:indexPath].type ==
+      ParcelTrackingItemType) {
+    [self.commandHandler showParcelTrackingSettingsPage];
+  }
 }
 
 #pragma mark - GoogleServicesSettingsServiceDelegate
@@ -493,6 +522,8 @@ bool GetStatusForSigninPolicy() {
     case ImproveChromeManagedItemType:
     case ImproveSearchSuggestionsManagedItemType:
       NOTREACHED();
+      break;
+    case ParcelTrackingItemType:
       break;
   }
 }

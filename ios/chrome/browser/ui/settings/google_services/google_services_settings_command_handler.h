@@ -17,6 +17,9 @@
 - (void)showSignOutFromTargetRect:(CGRect)targetRect
                        completion:(signin_ui::CompletionCallback)completion;
 
+// Presents the parcel tracking feature settings page.
+- (void)showParcelTrackingSettingsPage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_GOOGLE_SERVICES_SETTINGS_COMMAND_HANDLER_H_
