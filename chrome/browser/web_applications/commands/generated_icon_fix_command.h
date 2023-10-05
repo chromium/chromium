@@ -22,13 +22,16 @@ namespace web_app {
 
 class WebAppIconDownloader;
 
+// Used by metrics.
 enum class GeneratedIconFixResult {
-  kAppUninstalled,
-  kShutdown,
-  kDownloadFailure,
-  kStillGenerated,
-  kWriteFailure,
-  kSuccess,
+  kAppUninstalled = 0,
+  kShutdown = 1,
+  kDownloadFailure = 2,
+  kStillGenerated = 3,
+  kWriteFailure = 4,
+  kSuccess = 5,
+
+  kMaxValue = kSuccess,
 };
 
 class GeneratedIconFixCommand
