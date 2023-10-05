@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,13 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/base/web_ui_browser_test.h"
+#include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -30,18 +31,21 @@ using content::WebContents;
 namespace {
 
 const char kSharedWorkerTestPage[] = "/workers/workers_ui_shared_worker.html";
-const char kSharedWorkerJs[] = "/workers/workers_ui_shared_worker.js";
 
-class InspectUITest : public WebUIBrowserTest {
+class InspectUITest : public WebUIMochaBrowserTest {
  public:
   InspectUITest() {}
 
   InspectUITest(const InspectUITest&) = delete;
   InspectUITest& operator=(const InspectUITest&) = delete;
 
-  void SetUpOnMainThread() override {
-    WebUIBrowserTest::SetUpOnMainThread();
-    AddLibrary(base::FilePath(FILE_PATH_LITERAL("inspect_ui_test.js")));
+  testing::AssertionResult RunTestCase(const std::string& testCase) {
+    return RunTestOnWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        "inspect/inspect_ui_test.js",
+        base::StringPrintf("runMochaTest('InspectUITest', '%s');",
+                           testCase.c_str()),
+        /* skip_test_loader= */ true);
   }
 
   content::WebContents* LaunchUIDevtools(content::WebUI* web_ui) {
@@ -62,10 +66,7 @@ class InspectUITest : public WebUIBrowserTest {
 IN_PROC_BROWSER_TEST_F(InspectUITest, InspectUIPage) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIInspectURL)));
-  ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
-      "testTargetListed", base::Value("#pages"),
-      base::Value("populateWebContentsTargets"),
-      base::Value(chrome::kChromeUIInspectURL)));
+  ASSERT_TRUE(RunTestCase("InspectUIPage"));
 }
 
 // TODO(b/280457934): Fix shared worker crash for Javascript coverage builds
@@ -85,14 +86,7 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, MAYBE_SharedWorker) {
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
-      "testTargetListed", base::Value("#workers"),
-      base::Value("populateWorkerTargets"), base::Value(kSharedWorkerJs)));
-
-  ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
-      "testTargetListed", base::Value("#pages"),
-      base::Value("populateWebContentsTargets"),
-      base::Value(kSharedWorkerTestPage)));
+  ASSERT_TRUE(RunTestCase("SharedWorker"));
 }
 
 // Flaky due to failure to bind a hardcoded port. crbug.com/566057
@@ -108,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, DISABLED_AndroidTargets) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIInspectURL)));
 
-  ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest("testAdbTargetsListed"));
+  ASSERT_TRUE(RunTestCase("AdbTargetsListed"));
 
   StopMockAdbServer();
 }
@@ -133,7 +127,8 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, MAYBE_LaunchUIDevtools) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIInspectURL)));
-
+  content::WebContents* inspect_ui_contents =
+      tab_strip_model->GetActiveWebContents();
   const int inspect_ui_tab_idx = tab_strip_model->active_index();
 
   content::WebContents* front_end_tab =
@@ -141,19 +136,19 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, MAYBE_LaunchUIDevtools) {
 
   tab_strip_model->ActivateTabAt(inspect_ui_tab_idx);
 
+  // Run an empty test, to load the mocha test file on the page.
+  ASSERT_TRUE(RunTestCase("Empty"));
   // Ensure that "Inspect Native UI" button is disabled.
-  ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
-      "testElementDisabled", base::Value("#launch-ui-devtools"),
-      base::Value(true)));
+  ASSERT_TRUE(ExecJs(inspect_ui_contents->GetPrimaryMainFrame(),
+                     "assertNativeUIButtonDisabled(true);"));
 
   // Navigate away from the front-end page.
   ASSERT_TRUE(NavigateToURL(front_end_tab,
                             embedded_test_server()->GetURL("/title1.html")));
 
   // Ensure that "Inspect Native UI" button is enabled.
-  ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
-      "testElementDisabled", base::Value("#launch-ui-devtools"),
-      base::Value(false)));
+  ASSERT_TRUE(ExecJs(inspect_ui_contents->GetPrimaryMainFrame(),
+                     "assertNativeUIButtonDisabled(false);"));
 }
 
 class InspectUISharedStorageTest : public InspectUITest {
@@ -214,9 +209,7 @@ IN_PROC_BROWSER_TEST_F(InspectUISharedStorageTest, MAYBE_SharedStorageWorklet) {
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
-      "testTargetListed", base::Value("#shared-storage-worklets"),
-      base::Value("populateWorkerTargets"), base::Value(kModuleScriptFile)));
+  ASSERT_TRUE(RunTestCase("SharedStorageWorklet"));
 }
 
 class InspectUIFencedFrameTest : public InspectUITest {
@@ -239,16 +232,19 @@ IN_PROC_BROWSER_TEST_F(InspectUIFencedFrameTest,
                                            GURL(chrome::kChromeUIInspectURL)));
 
   const int inspect_ui_tab_idx = tab_strip_model->active_index();
+  content::WebContents* inspect_ui_contents =
+      tab_strip_model->GetActiveWebContents();
 
   content::WebContents* front_end_tab =
       LaunchUIDevtools(tab_strip_model->GetActiveWebContents()->GetWebUI());
 
   tab_strip_model->ActivateTabAt(inspect_ui_tab_idx);
 
+  // Run an empty test, to load the mocha test file on the page.
+  ASSERT_TRUE(RunTestCase("Empty"));
   // Ensure that "Inspect Native UI" button is disabled.
-  ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
-      "testElementDisabled", base::Value("#launch-ui-devtools"),
-      base::Value(true)));
+  ASSERT_TRUE(ExecJs(inspect_ui_contents->GetPrimaryMainFrame(),
+                     "assertNativeUIButtonDisabled(true);"));
 
   // Create a fenced frame into the front-end page.
   const GURL fenced_frame_url =
@@ -258,9 +254,8 @@ IN_PROC_BROWSER_TEST_F(InspectUIFencedFrameTest,
 
   // Ensure that the fenced frame doesn't affect to the the front-end observer.
   // "Inspect Native UI" button is still disabled.
-  ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
-      "testElementDisabled", base::Value("#launch-ui-devtools"),
-      base::Value(true)));
+  ASSERT_TRUE(ExecJs(inspect_ui_contents->GetPrimaryMainFrame(),
+                     "assertNativeUIButtonDisabled(true);"));
 }
 
 }  // namespace

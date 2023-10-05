@@ -328,11 +328,17 @@ static_library("test_support") {
       "//chrome/browser/ui",
       "//content/public/browser",
       "//content/test:test_support",
+      "//net",
+      "//net/traffic_annotation:test_support",
     ]
 
     sources += [
+      "device/adb/mock_adb_server.cc",
+      "device/adb/mock_adb_server.h",
       "devtools_window_testing.cc",
       "devtools_window_testing.h",
     ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
 }
