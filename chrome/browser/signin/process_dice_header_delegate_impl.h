@@ -41,6 +41,11 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   using ShowSigninErrorCallback = base::OnceCallback<
       void(Profile*, content::WebContents*, const SigninUIError&)>;
 
+  // Callback in response to the receiving the signin header.
+  // This is similar to `DiceTabHelper::OnSigninHeaderReceived` but is a once
+  // callback (vs repeating).
+  using OnSigninHeaderReceived = base::OnceCallback<void()>;
+
   // Helper function for creating `ProcessDiceHeaderDelegateImpl` from a
   // `content::WebContents`.
   static std::unique_ptr<ProcessDiceHeaderDelegateImpl> Create(
@@ -56,6 +61,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
       signin_metrics::Reason reason,
       GURL redirect_url,
       EnableSyncCallback enable_sync_callback,
+      OnSigninHeaderReceived on_signin_header_received,
       ShowSigninErrorCallback show_signin_error_callback);
 
   ProcessDiceHeaderDelegateImpl(const ProcessDiceHeaderDelegateImpl&) = delete;
@@ -71,6 +77,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   void HandleTokenExchangeFailure(const std::string& email,
                                   const GoogleServiceAuthError& error) override;
   signin_metrics::AccessPoint GetAccessPoint() override;
+  void OnDiceSigninHeaderReceived() override;
 
  private:
   // Returns true if sync should be enabled after the user signs in.
@@ -87,6 +94,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   const signin_metrics::Reason reason_;
   const GURL redirect_url_;
   EnableSyncCallback enable_sync_callback_;
+  OnSigninHeaderReceived on_signin_header_received_;
   ShowSigninErrorCallback show_signin_error_callback_;
 };
 

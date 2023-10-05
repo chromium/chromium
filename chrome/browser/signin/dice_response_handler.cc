@@ -414,6 +414,8 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
   VLOG(1) << "Start processing Dice signin response";
   RecordDiceResponseHeader(kSignin);
 
+  delegate->OnDiceSigninHeaderReceived();
+
   for (auto it = token_fetchers_.begin(); it != token_fetchers_.end(); ++it) {
     if ((it->get()->gaia_id() == gaia_id) && (it->get()->email() == email) &&
         (it->get()->authorization_code() == authorization_code)) {
@@ -421,6 +423,7 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
       return;  // There is already a request in flight with the same parameters.
     }
   }
+
   token_fetchers_.push_back(std::make_unique<DiceTokenFetcher>(
       gaia_id, email, authorization_code, signin_client_, account_reconcilor_,
       std::move(delegate), registration_token_helper_factory_, this));

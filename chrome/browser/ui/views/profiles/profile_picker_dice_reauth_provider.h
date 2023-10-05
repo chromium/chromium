@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_REAUTH_PROVIDER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_REAUTH_PROVIDER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/web_contents_observer.h"
 
 struct CoreAccountInfo;
 class ForceSigninVerifier;
@@ -27,12 +28,14 @@ class WebContents;
 // - If the token is valid, there is no need to reauth, and we finish with
 // success.
 // - If it is not, we show the reauth gaia page and await for user to reauth.
-// - Get the account that has been reauthed through
-// `OnRefreshTokenUpdatedForAccount()`.
+// - Await a sign in event and a refersh token for the account that is being
+// reauthed through `OnRefreshTokenUpdatedForAccount()`.
 // - We finish the flow by replying to the callback based on the success of the
-// last step.
+// last step (checking if the account that got reauthed matches with the
+// original one).
 class ProfilePickerDiceReauthProvider
-    : public signin::IdentityManager::Observer {
+    : public signin::IdentityManager::Observer,
+      public content::WebContentsObserver {
  public:
   explicit ProfilePickerDiceReauthProvider(
       ProfilePickerWebContentsHost* host,
@@ -57,6 +60,10 @@ class ProfilePickerDiceReauthProvider
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
 
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
  private:
   // Attempt to create the ForceSigninVerifier, refresh tokens should be loaded.
   void TryCreateForceSigninVerifier();
@@ -66,6 +73,15 @@ class ProfilePickerDiceReauthProvider
 
   // Display the reauth URL in `host_`.
   void ShowReauth();
+
+  // Callback for the dice tab helper;
+  //
+  // When a successful sign in occurs.
+  void OnDiceSigninHeaderReceived();
+  // When a signin error occurs.
+  void OnSigninError(Profile* profile,
+                     content::WebContents* web_contents,
+                     const SigninUIError& error);
 
   // Finish the reauth step on the Gaia side, and return to the caller
   // through the `on_reauth_completed_`.
@@ -85,6 +101,8 @@ class ProfilePickerDiceReauthProvider
   // sign-in flow.
   std::unique_ptr<content::WebContents> contents_;
   std::unique_ptr<ForceSigninVerifier> force_signin_verifier_;
+
+  bool signin_event_received_ = false;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

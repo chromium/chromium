@@ -386,6 +386,7 @@ void SigninViewController::ShowDiceSigninTab(
       signin_url, access_point, signin_reason, promo_action, redirect_url,
       /*record_signin_started_metrics=*/true,
       DiceTabHelper::GetEnableSyncCallbackForBrowser(),
+      DiceTabHelper::OnSigninHeaderReceived(),
       DiceTabHelper::GetShowSigninErrorCallbackForBrowser());
 }
 

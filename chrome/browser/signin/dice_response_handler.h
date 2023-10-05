@@ -64,6 +64,11 @@ class ProcessDiceHeaderDelegate {
   // after the refresh token was fetched and updated in the token service.
   virtual void EnableSync(const CoreAccountInfo& account_info) = 0;
 
+  // Called when a Dice signin header is received. This is received before
+  // navigating to the `continue_url`. Chrome has received the authorization
+  // code, but has not exchanged it for a token yet.
+  virtual void OnDiceSigninHeaderReceived() = 0;
+
   // Handles a failure in the token exchange (i.e. shows the error to the user).
   virtual void HandleTokenExchangeFailure(
       const std::string& email,

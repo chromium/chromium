@@ -14,6 +14,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/webview/webview.h"
@@ -94,5 +95,7 @@ GURL WithProfilePickerTestHelpers::GetSigninChromeSyncDiceUrl() {
 
 GURL WithProfilePickerTestHelpers::GetChromeReauthURL(
     const std::string& email) {
-  return signin::GetChromeReauthURL(email);
+  return signin::GetChromeReauthURL(
+      {.email = email,
+       .continue_url = GaiaUrls::GetInstance()->blank_page_url().spec()});
 }

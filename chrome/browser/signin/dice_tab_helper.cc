@@ -84,6 +84,7 @@ void DiceTabHelper::InitializeSigninFlow(
     const GURL& redirect_url,
     bool record_signin_started_metrics,
     EnableSyncCallback enable_sync_callback,
+    OnSigninHeaderReceived on_signin_header_received_callback,
     ShowSigninErrorCallback show_signin_error_callback) {
   DCHECK(signin_url.is_valid());
   DCHECK(state_.signin_url.is_empty() || state_.signin_url == signin_url);
@@ -95,6 +96,8 @@ void DiceTabHelper::InitializeSigninFlow(
   state_.signin_promo_action = promo_action;
   state_.signin_reason = reason;
   state_.enable_sync_callback = std::move(enable_sync_callback);
+  state_.on_signin_header_received_callback =
+      std::move(on_signin_header_received_callback);
   state_.show_signin_error_callback = std::move(show_signin_error_callback);
 
   is_chrome_signin_page_ = true;

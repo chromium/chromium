@@ -93,6 +93,7 @@ class ProcessDiceHeaderDelegateImplTest
  public:
   ProcessDiceHeaderDelegateImplTest()
       : enable_sync_called_(false),
+        signin_header_received_(false),
         show_error_called_(false),
         email_("foo@bar.com"),
         auth_error_(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS) {
@@ -150,6 +151,9 @@ class ProcessDiceHeaderDelegateImplTest
               &ProcessDiceHeaderDelegateImplTest::StartSyncCallback,
               base::Unretained(this)),
           base::BindRepeating(
+              &ProcessDiceHeaderDelegateImplTest::OnSigninHeaderReceived,
+              base::Unretained(this)),
+          base::BindRepeating(
               &ProcessDiceHeaderDelegateImplTest::ShowSigninErrorCallback,
               base::Unretained(this)));
     }
@@ -166,6 +170,9 @@ class ProcessDiceHeaderDelegateImplTest
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
           kTestPromoAction, signin_metrics::Reason::kUnknownReason, GURL(),
           ProcessDiceHeaderDelegateImpl::EnableSyncCallback(),
+          base::BindRepeating(
+              &ProcessDiceHeaderDelegateImplTest::OnSigninHeaderReceived,
+              base::Unretained(this)),
           base::BindOnce(
               &ProcessDiceHeaderDelegateImplTest::ShowSigninErrorCallback,
               base::Unretained(this)));
@@ -203,6 +210,8 @@ class ProcessDiceHeaderDelegateImplTest
     enable_sync_called_ = true;
   }
 
+  void OnSigninHeaderReceived() { signin_header_received_ = true; }
+
   // Callback for the ProcessDiceHeaderDelegateImpl.
   void ShowSigninErrorCallback(Profile* profile,
                                content::WebContents* contents,
@@ -224,6 +233,7 @@ class ProcessDiceHeaderDelegateImplTest
 
   const GURL signin_url_ = GURL("https://accounts.google.com");
   bool enable_sync_called_;
+  bool signin_header_received_;
   bool show_error_called_;
   CoreAccountInfo account_info_;
   std::string email_;
@@ -297,6 +307,40 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, TabReuse) {
   delegate->EnableSync(account_info_);
   EXPECT_FALSE(enable_sync_called_);
   EXPECT_FALSE(show_error_called_);
+}
+
+TEST_F(ProcessDiceHeaderDelegateImplTest, SigninHeaderReceived) {
+  // Complete a first signin flow.
+  std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
+      CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
+                                        /*redirect_url=*/GURL());
+  ASSERT_FALSE(signin_header_received_);
+
+  delegate->OnDiceSigninHeaderReceived();
+  EXPECT_TRUE(signin_header_received_);
+
+  // Delete content and reset the received value.
+  DeleteContents();
+  signin_header_received_ = false;
+
+  delegate->OnDiceSigninHeaderReceived();
+  // Make sure the message is not propagated after the content (and the attached
+  // DiceTabHelper as well) is deleted.
+  EXPECT_FALSE(signin_header_received_);
+}
+
+TEST_F(ProcessDiceHeaderDelegateImplTest, SigninHeaderReceived_SyncingTabOff) {
+  // Complete a first signin flow.
+  std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
+      CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/false,
+                                        /*redirect_url=*/GURL());
+  ASSERT_FALSE(signin_header_received_);
+
+  delegate->OnDiceSigninHeaderReceived();
+
+  // Since there is DiceTabHelper created, we do not expect the message to be
+  // redirected.
+  EXPECT_FALSE(signin_header_received_);
 }
 
 struct TestConfiguration {

@@ -304,6 +304,8 @@ class TestProcessDiceHeaderDelegate : public ProcessDiceHeaderDelegate {
     return signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
   }
 
+  void OnDiceSigninHeaderReceived() override {}
+
  private:
   raw_ptr<DiceResponseHandlerTest> owner_;
 };

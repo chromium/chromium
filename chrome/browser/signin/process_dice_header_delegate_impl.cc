@@ -45,6 +45,7 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
   signin_metrics::Reason reason = signin_metrics::Reason::kUnknownReason;
   GURL redirect_url;
   EnableSyncCallback enable_sync_callback;
+  OnSigninHeaderReceived on_signin_header_received;
   ShowSigninErrorCallback show_signin_error_callback;
 
   DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(web_contents);
@@ -61,6 +62,9 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
     if (is_sync_signin_tab) {
       enable_sync_callback = tab_helper->GetEnableSyncCallback();
     }
+
+    on_signin_header_received = tab_helper->GetOnSigninHeaderReceived();
+
   } else {
     access_point = signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
   }
@@ -75,6 +79,7 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
   return std::make_unique<ProcessDiceHeaderDelegateImpl>(
       web_contents, is_sync_signin_tab, access_point, promo_action, reason,
       std::move(redirect_url), std::move(enable_sync_callback),
+      std::move(on_signin_header_received),
       std::move(show_signin_error_callback));
 }
 
@@ -86,6 +91,7 @@ ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
     signin_metrics::Reason reason,
     GURL redirect_url,
     EnableSyncCallback enable_sync_callback,
+    OnSigninHeaderReceived on_signin_header_received,
     ShowSigninErrorCallback show_signin_error_callback)
     : web_contents_(web_contents->GetWeakPtr()),
       profile_(raw_ref<Profile>::from_ptr(
@@ -96,6 +102,7 @@ ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
       reason_(reason),
       redirect_url_(std::move(redirect_url)),
       enable_sync_callback_(std::move(enable_sync_callback)),
+      on_signin_header_received_(std::move(on_signin_header_received)),
       show_signin_error_callback_(std::move(show_signin_error_callback)) {
   DCHECK_EQ(!is_sync_signin_tab_, enable_sync_callback_.is_null());
   DCHECK(show_signin_error_callback_);
@@ -181,6 +188,32 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeFailure(
 
 signin_metrics::AccessPoint ProcessDiceHeaderDelegateImpl::GetAccessPoint() {
   return access_point_;
+}
+
+void ProcessDiceHeaderDelegateImpl::OnDiceSigninHeaderReceived() {
+  // TODO(b/303612320): The check for the `DiceTabHelper` here is needed since
+  // this is where we are getting the callback from and we will be redirected
+  // when calling it.
+  //
+  // We should cut down this dependency by not depending directly on the
+  // `DiceTabHelper` callback (this class receives a copy of the callback
+  // through the constructor) but rather providing an intermediate callback that
+  // would redirect to the proper one. This way the dependency would be direct
+  // with `ProcessDiceHeaderDelegateImpl` and then from
+  // `ProcessDiceHeaderDelegateImpl` to the `DiceTabHelper`.
+  //
+  // This should be done for the 3 callbacks in this class:
+  // `EnableSyncCallback`, `ShowSigninErrorCallback` and
+  // `OnSigninHeaderReceived`.
+  DiceTabHelper* tab_helper =
+      GetDiceTabHelperFromWebContents(web_contents_.get());
+  if (!tab_helper) {
+    return;
+  }
+
+  if (on_signin_header_received_) {
+    std::move(on_signin_header_received_).Run();
+  }
 }
 
 void ProcessDiceHeaderDelegateImpl::Redirect() {
