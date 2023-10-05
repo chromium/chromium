@@ -18636,26 +18636,6 @@
             ]
         }
     ],
-    "WebProtectUrlFiltering": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RealTimeUrlFilteringForEnterprise"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebRTC-Aec3DelayEstimateSmoothingDelayFoundOverride": [
         {
             "platforms": [

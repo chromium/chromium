@@ -72,11 +72,8 @@ bool ChromeEnterpriseRealTimeUrlLookupService::
     return false;
   }
 
-  if (safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(
-          IdentityManagerFactory::GetForProfile(profile_))) {
-    return base::FeatureList::IsEnabled((kRealTimeUrlFilteringForEnterprise));
-  }
-  return false;
+  return safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(
+      IdentityManagerFactory::GetForProfile(profile_));
 }
 
 int ChromeEnterpriseRealTimeUrlLookupService::GetReferrerUserGestureLimit()
@@ -112,7 +109,6 @@ void ChromeEnterpriseRealTimeUrlLookupService::GetAccessToken(
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-  DCHECK(base::FeatureList::IsEnabled((kRealTimeUrlFilteringForEnterprise)));
   token_fetcher_->Start(base::BindOnce(
       &ChromeEnterpriseRealTimeUrlLookupService::OnGetAccessToken,
       weak_factory_.GetWeakPtr(), url, last_committed_url, is_mainframe,

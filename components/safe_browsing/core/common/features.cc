@@ -211,10 +211,6 @@ constexpr base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter{
     &kRedWarningSurvey, "RedWarningSurveyDidProceedFilter",
     /*default_value=*/"TRUE,FALSE"};
 
-BASE_FEATURE(kRealTimeUrlFilteringForEnterprise,
-             "RealTimeUrlFilteringForEnterprise",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRedInterstitialFacelift,
              "RedInterstitialFacelift",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -367,7 +363,6 @@ constexpr struct {
     {&kLogAccountEnhancedProtectionStateInProtegoPings, true},
     {&kMmapSafeBrowsingDatabase, true},
     {&kNestedArchives, true},
-    {&kRealTimeUrlFilteringForEnterprise, true},
     {&kRedInterstitialFacelift, false},
     {&kSafeBrowsingCsbrrNewDownloadTrigger, true},
     {&kSafeBrowsingLookupMechanismExperiment, true},
