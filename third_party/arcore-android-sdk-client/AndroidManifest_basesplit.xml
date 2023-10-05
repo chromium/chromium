@@ -10,6 +10,6 @@ found in the LICENSE file.
         <package android:name="com.google.ar.core" />
     </queries>
     <application>
-        <meta-data android:name="com.google.ar.core.min_apk_version" android:value="221020000" />
+        <meta-data android:name="com.google.ar.core.min_apk_version" android:value="231450000" />
     </application>
 </manifest>

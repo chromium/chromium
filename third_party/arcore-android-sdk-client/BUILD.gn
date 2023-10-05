@@ -5,8 +5,8 @@
 import("//build/config/android/rules.gni")
 
 android_aar_prebuilt("com_google_ar_core_java") {
-  aar_path = "core-1.32.0.aar"
-  info_path = "core-1.32.0.info"
+  aar_path = "core-1.39.0.aar"
+  info_path = "core-1.39.0.info"
   extract_native_libraries = true
   ignore_manifest = true
   ignore_proguard_configs = true

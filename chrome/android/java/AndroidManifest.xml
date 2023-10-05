@@ -1290,6 +1290,9 @@ by a child template that "extends" this file.
       {% if enable_arcore == 'true' %}
       <!-- This tag indicates that this application optionally uses ARCore. -->
       <meta-data android:name="com.google.ar.core" android:value="optional" />
+      <meta-data
+          android:name="com.google.ar.core.load_32bit_so_from_split_module"
+          android:value="optional" />
 
       <!-- ARCore APK integration -->
       {% block base_application_extra_arcore_definitions %}
