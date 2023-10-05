@@ -142,4 +142,43 @@ bool IsUsingVideoDummyDriver(x11::Connection* connection) {
   return has_only_dummy_outputs;
 }
 
+x11::Atom GetX11Atom(x11::Connection* connection, const std::string& name) {
+  auto reply = connection->InternAtom({false, name}).Sync();
+  if (!reply) {
+    LOG(ERROR) << "Failed to intern atom " << name;
+    return x11::Atom::None;
+  }
+  return reply->atom;
+}
+
+void SetOutputPhysicalSizeInMM(x11::Connection* connection,
+                               x11::RandR::Output output,
+                               int width,
+                               int height) {
+  static const x11::Atom width_mm_atom = GetX11Atom(connection, "WIDTH_MM");
+  static const x11::Atom height_mm_atom = GetX11Atom(connection, "HEIGHT_MM");
+  if (width_mm_atom == x11::Atom::None || height_mm_atom == x11::Atom::None) {
+    return;
+  }
+
+  auto width_32 = static_cast<uint32_t>(width);
+  auto height_32 = static_cast<uint32_t>(height);
+
+  x11::RandR::ChangeOutputPropertyRequest request = {
+      .output = output,
+      .property = width_mm_atom,
+      .type = x11::Atom::INTEGER,
+      .format = 32,
+      .mode = x11::PropMode::Replace,
+      .num_units = 1,
+      .data = base::MakeRefCounted<base::RefCountedStaticMemory>(&width_32, 4),
+  };
+  connection->randr().ChangeOutputProperty(request).Sync();
+
+  request.property = height_mm_atom;
+  request.data =
+      base::MakeRefCounted<base::RefCountedStaticMemory>(&height_32, 4);
+  connection->randr().ChangeOutputProperty(request).Sync();
+}
+
 }  // namespace remoting

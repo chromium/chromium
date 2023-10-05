@@ -11,8 +11,11 @@
 // arbitrary code, please refrain from #including this header in
 // another header.
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/randr.h"
 
 namespace remoting {
 
@@ -41,6 +44,20 @@ bool IsVirtualSession(x11::Connection* connection);
 // Returns whether the video dummy driver is being used (all outputs are
 // DUMMY*).
 bool IsUsingVideoDummyDriver(x11::Connection* connection);
+
+// Returns the X11 Atom for the string, or x11::Atom::None if there was an
+// error. Callers can assign the result to a static local variable to avoid
+// repeated X11 round-trips.
+x11::Atom GetX11Atom(x11::Connection* connection, const std::string& name);
+
+// Sets the physical size of a RANDR Output device in mm. This is done by
+// setting some RANDR properties which are supported by the xf86-video-dummy
+// driver. The values are returned to the client in the X11 RRGetOutputInfo
+// response.
+void SetOutputPhysicalSizeInMM(x11::Connection* connection,
+                               x11::RandR::Output output,
+                               int width,
+                               int height);
 
 }  // namespace remoting
 

@@ -198,10 +198,9 @@ std::list<ScreenResolution> DesktopResizerX11::GetSupportedResolutions(
                    response->min_height, response->max_height);
     // Additionally impose a minimum size of 640x480, since anything smaller
     // doesn't seem very useful.
-    ScreenResolution actual(
+    result.emplace_back(
         webrtc::DesktopSize(std::max(640, width), std::max(480, height)),
-        webrtc::DesktopVector(kDefaultDPI, kDefaultDPI));
-    result.push_back(actual);
+        preferred.dpi());
   }
   return result;
 }
@@ -400,8 +399,9 @@ void DesktopResizerX11::SetResolutionForOutput(
   // that we have to detach the output from the mode in order to delete the
   // mode and re-create it with the new resolution. The output may also need to
   // be detached from all modes in order to reduce the root window size.
-  HOST_LOG << "Changing desktop size to " << resolution.dimensions().width()
-           << "x" << resolution.dimensions().height();
+  HOST_LOG << "Resizing RANDR Output " << base::to_underlying(output) << " to "
+           << resolution.dimensions().width() << "x"
+           << resolution.dimensions().height();
 
   X11CrtcResizer resizer(resources_.get(), connection_);
 
@@ -433,6 +433,13 @@ void DesktopResizerX11::SetResolutionForOutput(
   // Update |active_crtcs_| with new sizes and offsets.
   resizer.UpdateActiveCrtcs(crtc, mode, resolution.dimensions());
   UpdateRootWindow(resizer);
+
+  int width_mm = PixelsToMillimeters(resolution.dimensions().width(),
+                                     resolution.dpi().x());
+  int height_mm = PixelsToMillimeters(resolution.dimensions().height(),
+                                      resolution.dpi().y());
+  HOST_LOG << "Setting physical size in mm: " << width_mm << "x" << height_mm;
+  SetOutputPhysicalSizeInMM(connection_, output, width_mm, height_mm);
 }
 
 x11::RandR::Mode DesktopResizerX11::UpdateMode(x11::RandR::Output output,

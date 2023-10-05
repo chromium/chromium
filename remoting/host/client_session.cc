@@ -157,7 +157,9 @@ void ClientSession::NotifyClientResolution(
   if (desktop_environment_options_.enable_curtaining()) {
     dpi_vector.set(resolution.x_dpi(), resolution.y_dpi());
   }
-#endif  // BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_LINUX)
+  dpi_vector.set(resolution.x_dpi(), resolution.y_dpi());
+#endif
 
   // Try to match the client's resolution.
   ScreenResolution screen_resolution(client_size, dpi_vector);
