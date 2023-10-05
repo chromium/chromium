@@ -10,6 +10,7 @@ import android.app.Instrumentation;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -118,10 +119,15 @@ public final class BootstrapApplication extends Application {
                 }
             }
 
-            String realAppComponentFactory = appInfo.metaData.getString(REAL_APP_COMPONENT_FACTORY);
-            if (realAppComponentFactory != null) {
-                BootstrapAppComponentFactory.sDelegate = (AppComponentFactory) Reflect.newInstance(
-                        Class.forName(realAppComponentFactory));
+            // AppComponentFactory was introduced in Android P.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                String realAppComponentFactory =
+                        appInfo.metaData.getString(REAL_APP_COMPONENT_FACTORY);
+                if (realAppComponentFactory != null) {
+                    BootstrapAppComponentFactory.sDelegate =
+                            (AppComponentFactory)
+                                    Reflect.newInstance(Class.forName(realAppComponentFactory));
+                }
             }
 
             // mInstrumentationAppDir is one of a set of fields that is initialized only when
