@@ -184,6 +184,9 @@ extern const char kTangibleSyncDescription[];
 extern const char kMainThreadCompositingPriorityName[];
 extern const char kMainThreadCompositingPriorityDescription[];
 
+extern const char kMediaSessionEnterPictureInPictureName[];
+extern const char kMediaSessionEnterPictureInPictureDescription[];
+
 extern const char kPasspointARCSupportName[];
 extern const char kPasspointARCSupportDescription[];
 

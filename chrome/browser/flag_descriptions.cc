@@ -880,6 +880,12 @@ const char kMainThreadCompositingPriorityDescription[] =
     "Runs the main thread at compositing priority since it responds to input "
     "and is on the critical path.";
 
+const char kMediaSessionEnterPictureInPictureName[] =
+    "Media Session enterpictureinpicture action";
+const char kMediaSessionEnterPictureInPictureDescription[] =
+    "Enables the 'enterpictureinpicture' MediaSessionAction to allow websites "
+    "to register an action handler for entering picture-in-picture.";
+
 const char kMerchantWidePromotionsName[] = "Merchant wide promotions";
 const char kMerchantWidePromotionsDescription[] =
     "Enables the discount consent for all merchants, and show merchant wide "

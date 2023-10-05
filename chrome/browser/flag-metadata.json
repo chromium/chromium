@@ -5578,6 +5578,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "media-session-enter-picture-in-picture",
+    "owners": [ "steimel", "media-dev" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "memlog",
     "owners": [ "erikchen", "ssid", "etienneb", "alph" ],
     // Memlog is Chrome's heap profiler. It is used for both automated and
