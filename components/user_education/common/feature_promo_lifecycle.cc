@@ -103,8 +103,8 @@ FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
       switch (promo_type_) {
         case PromoType::kLegacy:
         case PromoType::kToast:
-        case PromoType::kCustomAction:
           return FeaturePromoResult::Success();
+        case PromoType::kCustomAction:
         case PromoType::kSnooze:
         case PromoType::kTutorial:
           return CanShowSnoozePromo(*data);

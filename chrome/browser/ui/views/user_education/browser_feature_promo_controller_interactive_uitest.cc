@@ -380,14 +380,14 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        CanShowPromoReturnsExpectedValue) {
-  RunTestSequence(QueryIPH(kCustomActionTestFeature,
+  RunTestSequence(QueryIPH(kToastTestFeature,
                            user_education::FeaturePromoResult::Success()),
-                  AttemptIPH(kCustomActionTestFeature,
+                  AttemptIPH(kToastTestFeature,
                              user_education::FeaturePromoResult::Success()),
-                  QueryIPH(kCustomActionTestFeature,
+                  QueryIPH(kToastTestFeature,
                            user_education::FeaturePromoResult::kBlockedByPromo),
-                  TriggerNonDefaultButton(),
-                  QueryIPH(kCustomActionTestFeature,
+                  CancelIPH(),
+                  QueryIPH(kToastTestFeature,
                            user_education::FeaturePromoResult::Success()));
 }
 
