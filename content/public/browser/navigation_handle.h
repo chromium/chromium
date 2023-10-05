@@ -299,12 +299,26 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // they don't commit a new document into a renderer process.
   virtual RenderFrameHost* GetRenderFrameHost() const = 0;
 
-  // Returns the id of the RenderFrameHost this navigation is committing from.
+  // Returns the id of the "current RenderFrameHost" before this navigation
+  // commits (which would potentially replace the "current RenderFrameHost").
   // In case a navigation happens within the same RenderFrameHost,
   // GetRenderFrameHost() and GetPreviousRenderFrameHostId() will refer to the
   // same RenderFrameHost.
-  // Note: This is not guaranteed to refer to a RenderFrameHost that still
-  // exists.
+  // Note: The value returned by this function may change over time, e.g. if
+  // another navigation committed a different RenderFrameHost during the
+  // lifetime of this navigation, causing the "current RenderFrameHost" to
+  // change to another RenderFrameHost. The value will only be guaranteed to
+  // not change again after the navigation reaches the "ReadyToCommit" stage,
+  // as at that point only that navigation can commit, guaranteeing no further
+  // changes to the "current RenderFrameHost" until that navigation itself
+  // potentially replaces the "current RenderFrameHost".
+  // Note 2: Because of the potential "current RenderFrameHost" changes in the
+  // middle of this navigation's lifetime, this function should not be assumed
+  // to be the value of the "original current RenderFrameHost" (i.e. the current
+  // RenderFrameHost value at NavigationHandle construction time). There is
+  // currently no way to get that value, but it is tracked internally in
+  // `NavigationRequest::current_render_frame_host_id_at_construction_`, so it
+  // can potentially be exposed if needed in the future.
   virtual GlobalRenderFrameHostId GetPreviousRenderFrameHostId() = 0;
 
   // Returns the id of the RenderProcessHost this navigation is expected to

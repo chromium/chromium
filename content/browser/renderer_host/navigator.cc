@@ -514,6 +514,12 @@ void Navigator::DidNavigate(
                                              was_within_same_document);
   }
 
+  // The current RenderFrameHost might change after the call below if a
+  // RenderFrameHost swap happens, so save the current RenderFrameHost's id in
+  // the NavigationRequest.
+  navigation_request->set_previous_render_frame_host_id(
+      old_frame_host->GetGlobalId());
+
   // DidNavigateFrame() must be called before replicating the new origin and
   // other properties to proxies.  This is because it destroys the subframes of
   // the frame we're navigating from, which might trigger those subframes to

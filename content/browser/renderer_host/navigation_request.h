@@ -1289,6 +1289,10 @@ class CONTENT_EXPORT NavigationRequest
     return early_render_frame_host_swap_type_;
   }
 
+  void set_previous_render_frame_host_id(GlobalRenderFrameHostId id) {
+    previous_render_frame_host_id_ = id;
+  }
+
  private:
   friend class NavigationRequestTest;
 
@@ -2308,8 +2312,21 @@ class CONTENT_EXPORT NavigationRequest
   // for this NavigationRequest.
   absl::optional<net::IsolationInfo> isolation_info_;
 
-  // This is used to store the current_frame_host id at request creation time.
-  const GlobalRenderFrameHostId previous_render_frame_host_id_;
+  // This is used to store the `RenderFrameHostManager::current_frame_host()` id
+  // when the navigation commits and about to potentially change the current
+  // RenderFrameHost. The ID (if set) refers to the RFH of the document that was
+  // replaced when this navigation committed, while the ID saved in
+  // `current_render_frame_host_id_at_construction_` below refers to the RFH of
+  // the document that was there when this navigation was started. The two might
+  // be different, since other navigations could commit and change the current
+  // RFH before this navigation commits, which can happen with navigation
+  // queueing or early RFH swap.
+  GlobalRenderFrameHostId previous_render_frame_host_id_;
+
+  // This is used to store the `RenderFrameHostManager::current_frame_host()` id
+  // at request creation time. See also the comment for
+  // `previous_render_frame_host_id_` above on how these two IDs may differ.
+  const GlobalRenderFrameHostId current_render_frame_host_id_at_construction_;
 
   // Frame token of the frame host that initiated the navigation, derived from
   // |begin_params().initiator_frame_token|. This is best effort: it is only

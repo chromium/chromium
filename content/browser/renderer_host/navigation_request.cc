@@ -1596,7 +1596,7 @@ NavigationRequest::NavigationRequest(
       is_back_forward_cache_restore_(
           rfh_restored_from_back_forward_cache.has_value()),
       // Store the old RenderFrameHost id at request creation to be used later.
-      previous_render_frame_host_id_(
+      current_render_frame_host_id_at_construction_(
           frame_tree_node->current_frame_host()->GetGlobalId()),
       initiator_frame_token_(begin_params_->initiator_frame_token),
       initiator_process_id_(initiator_process_id),
@@ -5499,7 +5499,8 @@ void NavigationRequest::CommitErrorPage(
 
   if (request_navigation_client_.is_bound()) {
     if (GetRenderFrameHost() ==
-        RenderFrameHostImpl::FromID(previous_render_frame_host_id_)) {
+        RenderFrameHostImpl::FromID(
+            current_render_frame_host_id_at_construction_)) {
       // Reuse the request NavigationClient for commit.
       commit_navigation_client_ = std::move(request_navigation_client_);
     } else {
@@ -5650,7 +5651,8 @@ void NavigationRequest::CommitNavigation() {
 
   if (request_navigation_client_.is_bound()) {
     if (GetRenderFrameHost() ==
-        RenderFrameHostImpl::FromID(previous_render_frame_host_id_)) {
+        RenderFrameHostImpl::FromID(
+            current_render_frame_host_id_at_construction_)) {
       // Reuse the request NavigationClient for commit.
       commit_navigation_client_ = std::move(request_navigation_client_);
     } else {
@@ -8236,7 +8238,22 @@ const net::ProxyServer& NavigationRequest::GetProxyServer() {
 }
 
 GlobalRenderFrameHostId NavigationRequest::GetPreviousRenderFrameHostId() {
-  return previous_render_frame_host_id_;
+  if (previous_render_frame_host_id_ != GlobalRenderFrameHostId()) {
+    CHECK_GE(state_, READY_TO_COMMIT);
+    // If `previous_render_frame_host_id_` is set to a non-default value, then
+    // the navigation had committed and potentially replaced the previous
+    // "current RenderFrameHost", so we return the saved value of that previous
+    // RenderFrameHost's ID here.
+    return previous_render_frame_host_id_;
+  }
+
+  // The navigation hasn't committed yet, so the previous RenderFrameHost is
+  // still the current RenderFrameHost. Note that this might be different from
+  // the current RFH at NavigationRequest construction time (whose FTN id value
+  // is saved in `current_render_frame_host_id_at_construction_`), if another
+  // navigation caused a new RenderFrameHost to be committed while this
+  // navigation is in progress.
+  return frame_tree_node_->current_frame_host()->GetGlobalId();
 }
 
 int NavigationRequest::GetExpectedRenderProcessHostId() {
