@@ -765,23 +765,6 @@ class SessionRestoreImpl : public BrowserListObserver {
     // TODO(https://crbug.com/1032348): Change to DCHECK once we understand
     // why some browsers don't have an active tab on startup.
     CHECK(!window.tabs.empty());
-    base::TimeTicks now = base::TimeTicks::Now();
-    base::TimeTicks latest_last_active_time = base::TimeTicks::UnixEpoch();
-    // The last active time of a WebContents is initially set to the
-    // creation time of the tab, which is not necessarly the same as the
-    // loading time, so we have to restore the values. Also, since TimeTicks
-    // only make sense in their current session, these values have to be
-    // sanitized first. To do so, we need to first figure out the largest
-    // time. This will then be used to set the last active time of
-    // each tab where the most recent tab will have its time set to |now|
-    // and the rest of the tabs will have theirs set earlier by the same
-    // delta as they originally had.
-    for (const std::unique_ptr<sessions::SessionTab>& session_tab :
-         window.tabs) {
-      const sessions::SessionTab& tab = *session_tab;
-      if (tab.last_active_time > latest_last_active_time)
-        latest_last_active_time = tab.last_active_time;
-    }
 
     // TODO(crbug.com/930991): Check that tab groups are contiguous in |window|
     // to ensure tabs will not be reordered when restoring. This is not possible
@@ -791,6 +774,8 @@ class SessionRestoreImpl : public BrowserListObserver {
     const int selected_tab_index = std::clamp(
         window.selected_tab_index, 0, static_cast<int>(window.tabs.size() - 1));
 
+    const base::Time epoch_time = base::Time::UnixEpoch();
+    const base::TimeTicks epoch_time_ticks = base::TimeTicks::UnixEpoch();
     for (int i = 0; i < static_cast<int>(window.tabs.size()); ++i) {
       const sessions::SessionTab& tab = *(window.tabs[i]);
 
@@ -799,16 +784,16 @@ class SessionRestoreImpl : public BrowserListObserver {
       bool is_selected_tab =
           (initial_tab_count == 0) && (i == selected_tab_index);
 
-      // Sanitize the last active time.
-      base::TimeDelta delta = latest_last_active_time - tab.last_active_time;
-      base::TimeTicks last_active_time = now - delta;
+      // Convert the last active time because WebContents needs a TimeTicks.
+      const base::TimeDelta delta = tab.last_active_time - epoch_time;
+      const base::TimeTicks last_active_time_ticks = epoch_time_ticks + delta;
 
       // If the browser already has tabs, we want to restore the new ones after
       // the existing ones. E.g. this happens in Win8 Metro where we merge
       // windows or when launching a hosted app from the app launcher.
       int tab_index = i + initial_tab_count;
       RestoreTab(tab, browser, created_contents, new_group_ids, tab_index,
-                 is_selected_tab, last_active_time, did_show_browser);
+                 is_selected_tab, last_active_time_ticks, did_show_browser);
     }
   }
 

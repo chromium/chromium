@@ -92,10 +92,9 @@ struct SESSIONS_EXPORT SessionTab {
   // Timestamp for when this tab was last modified.
   base::Time timestamp;
 
-  // Timestamp for when this tab was last activated. As these use TimeTicks,
-  // they should not be compared with one another, unless it's within the same
-  // chrome session.
-  base::TimeTicks last_active_time;
+  // Timestamp for when this tab was last activated.
+  // Corresponds to WebContents::GetLastActiveTime().
+  base::Time last_active_time;
 
   std::vector<sessions::SerializedNavigationEntry> navigations;
 
