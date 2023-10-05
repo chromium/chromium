@@ -7018,7 +7018,9 @@
       "behamilton@google.com",
       "//third_party/blink/renderer/modules/ad_auction/OWNERS"
     ],
-    "expiry_milestone": 120
+    // This is a debug flag to opt-in to providing debug information
+    // to operators of Bidding And Auction API Trusted Servers.
+    "expiry_milestone": 130
   },
   {
     "name": "pull-to-refresh",
