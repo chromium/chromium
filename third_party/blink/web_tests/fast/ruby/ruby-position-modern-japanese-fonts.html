@@ -16,6 +16,12 @@ body {
   width: 20px;
   background: lightblue;
 }
+.atomic-inner {
+  display: inline-block;
+  block-size: 50px;
+  inline-size: 20px;
+  background: rgba(255,0,0,0.5);
+}
 
 .container-modern {
   font-family: NotoSansCJK;
@@ -30,13 +36,13 @@ body {
 .v {
   display: inline-block;
   writing-mode: vertical-rl;
-  height: 5em;
+  height: 6em;
 }
 
 .vlr {
   display: inline-block;
   writing-mode: vertical-lr;
-  height: 5em;
+  height: 6em;
 }
 </style>
 <body>
@@ -55,10 +61,15 @@ body {
   <ruby style="ruby-position:under;">雨過天晴<rt>うか<span class="atomic"></span>てんせい</ruby>
 
 <tr>
-<td><div class="container-modern v"><ruby>弱肉強食<rt>やきにくていしょく</ruby></div>
-<div class="container-modern vlr"><ruby>弱肉強食<rt>やきにくていしょく</ruby></div>
-<td><div class="container-legacy v"><ruby>弱肉強食<rt>やきにくていしょく</ruby></div>
-<div class="container-legacy vlr"><ruby>弱肉強食<rt>やきにくていしょく</ruby></div>
+<td><div class="container-modern v"><ruby>弱肉強食<rt>やきにくていしょく</ruby><br>
+<ruby>温故知新<rt>おんこちしん<span class="atomic"><span class="atomic-inner"></span></span></ruby></div>
+<div class="container-modern vlr"><ruby>弱肉強食<rt>やきにくていしょく</ruby><br>
+<ruby>温故知新<rt>おんこちしん<span class="atomic"><span class="atomic-inner"></span></span></ruby></div>
+
+<td><div class="container-legacy v"><ruby>弱肉強食<rt>やきにくていしょく</ruby><br>
+<ruby>温故知新<rt>おんこちしん<span class="atomic"><span class="atomic-inner"></span></span></ruby></div>
+<div class="container-legacy vlr"><ruby>弱肉強食<rt>やきにくていしょく</ruby><br>
+<ruby>温故知新<rt>おんこちしん<span class="atomic"><span class="atomic-inner"></span></span></ruby></div>
 </table>
 
 <script>

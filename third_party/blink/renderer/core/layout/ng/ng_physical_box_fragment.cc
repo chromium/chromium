@@ -838,11 +838,11 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflow(
   if (height_type == TextHeightType::kEmHeight && IsRubyBox()) {
     return ScrollableOverflowFromChildren(height_type);
   }
-  if (layout_object->IsBox()) {
+  if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
     if (HasNonVisibleOverflow())
       return PhysicalRect({}, Size());
     // Legacy is the source of truth for overflow
-    return PhysicalRect(To<LayoutBox>(layout_object)->LayoutOverflowRect());
+    return layout_box->PhysicalLayoutOverflowRect();
   } else if (layout_object->IsLayoutInline()) {
     // Inline overflow is a union of child overflows.
     PhysicalRect overflow;
