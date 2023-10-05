@@ -1248,6 +1248,7 @@ export function FeedbackFlowTestSuite() {
     assertEquals(
         'fake description placeholder',
         page.getDescriptionPlaceholderTextForTesting());
+    assertFalse(page.getIsUserLoggedInForTesting());
 
     // Restore chrome.getVariableValue.
     chrome.getVariableValue = chromeGetVariableValue;
@@ -1283,6 +1284,7 @@ export function FeedbackFlowTestSuite() {
 
         assertTrue(!page.getDescriptionTemplateForTesting());
         assertTrue(!page.getDescriptionPlaceholderTextForTesting());
+        assertTrue(page.getIsUserLoggedInForTesting());
 
         // Restore chrome.getVariableValue.
         chrome.getVariableValue = chromeGetVariableValue;

@@ -42,6 +42,7 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
   static get properties() {
     return {
       sendReportStatus: {type: SendReportStatus, readOnly: false, notify: true},
+      isUserLoggedIn: {type: Boolean, readOnly: false, notify: true},
     };
   }
 
@@ -62,6 +63,12 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
      * @type {boolean}
      */
     this.isFirstAction = true;
+
+    /**
+     * Whether the user has logged in (not on oobe or on the login screen).
+     * @type {boolean}
+     */
+    this.isUserLoggedIn;
   }
 
   /** @override */
@@ -75,10 +82,19 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
   /**
    * The page shows different information when the device is offline.
    * @returns {boolean}
-   * @protected
+   * @private
    */
   isOffline_() {
     return this.sendReportStatus === SendReportStatus.kDelayed;
+  }
+
+  /**
+   * Hide the community link when offline or the user is not logged in.
+   * @returns {boolean}
+   * @protected
+   */
+  hideCommunityLink_() {
+    return this.isOffline_() || !this.isUserLoggedIn;
   }
 
   /**

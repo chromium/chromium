@@ -146,7 +146,7 @@ export function confirmationPageTest() {
 
     // Verify the community link.
     const communityLink = helpLinks[2];
-    if (isOnline) {
+    if (isOnline && page.isUserLoggedIn) {
       assertTrue(isVisible(communityLink));
     } else {
       assertFalse(isVisible(communityLink));
@@ -198,6 +198,27 @@ export function confirmationPageTest() {
 
     page.sendReportStatus = SendReportStatus.kDelayed;
     verifyElementsByStatus(/**isOnline=*/ false);
+  });
+
+  /**
+   * Test that when the user is not logged in, the community link should be
+   * invisible.
+   */
+  test('userNotLoggedIn_ShouldHideCommunityLink', async () => {
+    await initializePage();
+    page.sendReportStatus = SendReportStatus.kSuccess;
+    page.isUserLoggedIn = false;
+
+    const helpResourcesSection = getElement(page, '#helpResources');
+    const helpLinks = helpResourcesSection.querySelectorAll('cr-link-row');
+    assertTrue(!!helpLinks);
+    assertEquals(3, helpLinks.length);
+    const communityLink = helpLinks[2];
+
+    assertFalse(isVisible(communityLink));
+
+    page.isUserLoggedIn = true;
+    assertTrue(isVisible(communityLink));
   });
 
   /**

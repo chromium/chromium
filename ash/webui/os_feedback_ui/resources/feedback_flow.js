@@ -292,6 +292,13 @@ export class FeedbackFlowElement extends PolymerElement {
      * @private
      */
     this.dialogArgs_ = chrome.getVariableValue('dialogArguments');
+
+    /**
+     * Whether the user has logged in (not on oobe or on the login screen).
+     * @type {boolean}
+     * @private
+     */
+    this.isUserLoggedIn_;
   }
 
   connectedCallback() {
@@ -433,6 +440,7 @@ export class FeedbackFlowElement extends PolymerElement {
       this.feedbackContext_.extraDiagnostics =
           feedbackInfo.systemInformation[0].value;
     }
+    this.isUserLoggedIn_ = this.feedbackContext_.categoryTag !== 'Login';
     this.onFeedbackContextReceived_();
   }
 
@@ -442,6 +450,7 @@ export class FeedbackFlowElement extends PolymerElement {
   initializeForNonDialogMode_() {
     this.feedbackServiceProvider_.getFeedbackContext().then((response) => {
       this.feedbackContext_ = response.feedbackContext;
+      this.isUserLoggedIn_ = true;
       this.setAdditionalContextFromQueryParams_();
       this.onFeedbackContextReceived_();
     });
@@ -698,6 +707,13 @@ export class FeedbackFlowElement extends PolymerElement {
    */
   getDescriptionPlaceholderTextForTesting() {
     return this.descriptionPlaceholderText_;
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  getIsUserLoggedInForTesting() {
+    return this.isUserLoggedIn_;
   }
 
   /**
