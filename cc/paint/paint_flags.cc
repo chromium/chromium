@@ -187,6 +187,7 @@ bool PaintFlags::EqualsForTesting(const PaintFlags& other) const {
          getStrokeJoin() == other.getStrokeJoin() &&
          getStyle() == other.getStyle() &&
          getFilterQuality() == other.getFilterQuality() &&
+         getDynamicRangeLimit() == other.getDynamicRangeLimit() &&
          AreSkFlattenablesEqualForTesting(path_effect_,  // IN-TEST
                                           other.path_effect_) &&
          AreSkFlattenablesEqualForTesting(mask_filter_,  // IN-TEST

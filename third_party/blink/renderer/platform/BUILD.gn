@@ -1149,7 +1149,7 @@ component("platform") {
     "graphics/replaying_canvas.cc",
     "graphics/replaying_canvas.h",
     "graphics/resource_id_traits.h",
-    "graphics/scoped_interpolation_quality.h",
+    "graphics/scoped_image_rendering_settings.h",
     "graphics/scoped_raster_timer.cc",
     "graphics/scoped_raster_timer.h",
     "graphics/scrollbar_theme_settings.cc",

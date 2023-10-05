@@ -80,6 +80,18 @@ class CC_PAINT_EXPORT PaintFlags {
   ALWAYS_INLINE FilterQuality getFilterQuality() const {
     return static_cast<FilterQuality>(bitfields_.filter_quality_);
   }
+  enum class DynamicRangeLimit {
+    kStandard,
+    kHigh,
+    kConstrainedHigh,
+    kLast = kConstrainedHigh,
+  };
+  ALWAYS_INLINE void setDynamicRangeLimit(DynamicRangeLimit limit) {
+    bitfields_.dynamic_range_limit_ = static_cast<uint32_t>(limit);
+  }
+  ALWAYS_INLINE DynamicRangeLimit getDynamicRangeLimit() const {
+    return static_cast<DynamicRangeLimit>(bitfields_.dynamic_range_limit_);
+  }
   ALWAYS_INLINE bool useDarkModeForImage() const {
     return bitfields_.use_dark_mode_for_image_;
   }
@@ -213,6 +225,7 @@ class CC_PAINT_EXPORT PaintFlags {
     uint32_t join_type_ : 2;
     uint32_t style_ : 2;
     uint32_t filter_quality_ : 2;
+    uint32_t dynamic_range_limit_ : 2;
     // Specifies whether the compositor should use a dark mode filter when
     // rasterizing image on the draw op with this PaintFlags.
     uint32_t use_dark_mode_for_image_ : 1;

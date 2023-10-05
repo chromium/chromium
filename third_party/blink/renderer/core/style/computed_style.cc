@@ -33,6 +33,7 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "cc/input/overscroll_behavior.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/animation/css/css_transition_data.h"
@@ -2853,5 +2854,12 @@ STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kContain,
                    EOverscrollBehavior::kContain);
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kNone,
                    EOverscrollBehavior::kNone);
+
+STATIC_ASSERT_ENUM(cc::PaintFlags::DynamicRangeLimit::kStandard,
+                   EDynamicRangeLimit::kStandard);
+STATIC_ASSERT_ENUM(cc::PaintFlags::DynamicRangeLimit::kHigh,
+                   EDynamicRangeLimit::kHigh);
+STATIC_ASSERT_ENUM(cc::PaintFlags::DynamicRangeLimit::kConstrainedHigh,
+                   EDynamicRangeLimit::kConstrainedHigh);
 
 }  // namespace blink

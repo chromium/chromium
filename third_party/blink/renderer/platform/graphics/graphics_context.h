@@ -258,6 +258,13 @@ class PLATFORM_EXPORT GraphicsContext {
     return ImmutableState()->GetInterpolationQuality();
   }
 
+  void SetDynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit limit) {
+    MutableState()->SetDynamicRangeLimit(limit);
+  }
+  cc::PaintFlags::DynamicRangeLimit DynamicRangeLimit() const {
+    return ImmutableState()->GetDynamicRangeLimit();
+  }
+
   SkSamplingOptions ImageSamplingOptions() const {
     return cc::PaintFlags::FilterQualityToSkSamplingOptions(
         static_cast<cc::PaintFlags::FilterQuality>(

@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
-#include "third_party/blink/renderer/platform/graphics/scoped_interpolation_quality.h"
+#include "third_party/blink/renderer/platform/graphics/scoped_image_rendering_settings.h"
 
 namespace blink {
 
@@ -111,9 +111,11 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
   PaintTiming& timing = PaintTiming::From(layout_svg_image_.GetDocument());
   timing.MarkFirstContentfulPaint();
 
-  ScopedInterpolationQuality interpolation_quality_scope(
+  ScopedImageRenderingSettings image_rendering_settings_scope(
       paint_info.context,
-      layout_svg_image_.StyleRef().GetInterpolationQuality());
+      layout_svg_image_.StyleRef().GetInterpolationQuality(),
+      static_cast<cc::PaintFlags::DynamicRangeLimit>(
+          layout_svg_image_.StyleRef().DynamicRangeLimit()));
   Image::ImageDecodingMode decode_mode =
       image_element->GetDecodingModeForPainting(image->paint_image_id());
   auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(

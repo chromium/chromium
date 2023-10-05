@@ -112,6 +112,11 @@ class PLATFORM_EXPORT GraphicsContextState final {
   }
   void SetInterpolationQuality(InterpolationQuality);
 
+  cc::PaintFlags::DynamicRangeLimit GetDynamicRangeLimit() const {
+    return dynamic_range_limit_;
+  }
+  void SetDynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit limit);
+
   bool ShouldAntialias() const { return should_antialias_; }
   void SetShouldAntialias(bool);
 
@@ -129,6 +134,7 @@ class PLATFORM_EXPORT GraphicsContextState final {
   TextDrawingModeFlags text_drawing_mode_;
 
   InterpolationQuality interpolation_quality_;
+  cc::PaintFlags::DynamicRangeLimit dynamic_range_limit_;
 
   uint16_t save_count_;
 

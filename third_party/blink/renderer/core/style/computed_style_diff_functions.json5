@@ -284,8 +284,8 @@
     {
         name: "DiffNeedsPaintInvalidation",
         fields_to_diff: ["-webkit-user-modify", "user-select", "image-rendering",
-                "column-rule-style", "column-rule-width", "column-rule-color",
-                "-internal-visited-column-rule-color",
+                "dynamic-range-limit", "column-rule-style", "column-rule-width",
+                "column-rule-color", "-internal-visited-column-rule-color",
                 "-webkit-user-drag", "object-fit", "object-position",
                 "mix-blend-mode", "isolation", "Mask", "MaskBoxImage", "mask", "mask-type",
                 "stop-color", "stop-opacity", "flood-color", "flood-opacity",
