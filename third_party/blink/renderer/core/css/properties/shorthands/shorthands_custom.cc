@@ -3808,6 +3808,18 @@ bool WebkitMask::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
+  CHECK(!RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
+  return css_parsing_utils::ParseBackgroundOrMask(important, range, context,
+                                                  local_context, properties);
+}
+
+bool WebkitAlternativeMask::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
   return css_parsing_utils::ParseBackgroundOrMask(important, range, context,
                                                   local_context, properties);
 }

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Masking: mask-image and -webkit-mask-image</title>
+<link rel="match" href="reference/mask-image-and-webkit-mask-image-ref.html">
+<meta name="assert" content="Test checks precedence for mask-image and -webkit-mask-image">
+<style>
+  #prefixed-before-unprefixed {
+    width: 200px;
+    height: 50px;
+    background-color: green;
+    -webkit-mask-image: url(support/200x100-with-right-black.svg);
+    /* This mask-image should override the earlier -webkit-mask-image. */
+    mask-image: url(support/200x100-with-left-black.svg);
+  }
+  #unprefixed-before-prefixed {
+    width: 200px;
+    height: 50px;
+    background-color: green;
+    mask-image: url(support/200x100-with-right-black.svg);
+    /* This -webkit-mask-image should override the earlier mask-image. */
+    -webkit-mask-image: url(support/200x100-with-left-black.svg);
+  }
+</style>
+<div id="prefixed-before-unprefixed"></div>
+<div id="unprefixed-before-prefixed"></div>

@@ -21,7 +21,7 @@ Rules from the stylesheet:
 #q { cursor: url("url(q)"), pointer; }
 #r { list-style-image: url("url(r)"); }
 #s { background-image: url("url(s)"); }
-#t { -webkit-mask-image: url("url(t)"); }
+#t { mask-image: url("url(t)"); }
 #u { -webkit-border-image: url("url(u)") 1 2 3 4 fill stretch round; }
 #v { -webkit-mask-box-image-source: url("url(v)"); }
 #w { content: url("w\d w"); }
@@ -48,7 +48,7 @@ Expected result:
 #q { cursor: url("url(q)"), pointer; }
 #r { list-style-image: url("url(r)"); }
 #s { background-image: url("url(s)"); }
-#t { -webkit-mask-image: url("url(t)"); }
+#t { mask-image: url("url(t)"); }
 #u { -webkit-border-image: url("url(u)") 1 2 3 4 fill stretch round; }
 #v { -webkit-mask-box-image-source: url("url(v)"); }
 #w { content: url("w\d w"); }

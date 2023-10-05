@@ -9271,6 +9271,25 @@ const CSSValue* WebkitMaskImage::CSSValueFromComputedStyleInternal(
       style, allow_visited_style, fill_layer);
 }
 
+const CSSValue* MaskImage::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeImageOrNone, range, context);
+}
+
+const CSSValue* MaskImage::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
+  const FillLayer& fill_layer = style.MaskLayers();
+  return ComputedStyleUtils::BackgroundImageOrWebkitMaskImage(
+      style, allow_visited_style, fill_layer);
+}
+
 const CSSValue* WebkitMaskOrigin::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,

@@ -21,8 +21,8 @@ FAIL Property mask-clip has initial value border-box assert_true: mask-clip does
 FAIL Property mask-clip does not inherit assert_true: expected true got false
 FAIL Property mask-composite has initial value add assert_true: mask-composite doesn't seem to be supported in the computed style expected true got false
 FAIL Property mask-composite does not inherit assert_true: expected true got false
-FAIL Property mask-image has initial value none assert_true: mask-image doesn't seem to be supported in the computed style expected true got false
-FAIL Property mask-image does not inherit assert_true: expected true got false
+PASS Property mask-image has initial value none
+PASS Property mask-image does not inherit
 FAIL Property mask-mode has initial value match-source assert_true: mask-mode doesn't seem to be supported in the computed style expected true got false
 FAIL Property mask-mode does not inherit assert_true: expected true got false
 FAIL Property mask-origin has initial value border-box assert_true: mask-origin doesn't seem to be supported in the computed style expected true got false

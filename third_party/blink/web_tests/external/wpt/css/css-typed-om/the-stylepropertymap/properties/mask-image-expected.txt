@@ -1,11 +1,11 @@
 This is a testharness.js-based test.
-FAIL Can set 'mask-image' to CSS-wide keywords: initial Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: mask-image
-FAIL Can set 'mask-image' to CSS-wide keywords: inherit Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: mask-image
-FAIL Can set 'mask-image' to CSS-wide keywords: unset Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: mask-image
-FAIL Can set 'mask-image' to CSS-wide keywords: revert Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: mask-image
-FAIL Can set 'mask-image' to var() references:  var(--A) Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: mask-image
-FAIL Can set 'mask-image' to the 'none' keyword: none Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: mask-image
-FAIL Can set 'mask-image' to an image Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: mask-image
+PASS Can set 'mask-image' to CSS-wide keywords: initial
+PASS Can set 'mask-image' to CSS-wide keywords: inherit
+PASS Can set 'mask-image' to CSS-wide keywords: unset
+PASS Can set 'mask-image' to CSS-wide keywords: revert
+PASS Can set 'mask-image' to var() references:  var(--A)
+FAIL Can set 'mask-image' to the 'none' keyword: none Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'mask-image' to an image assert_class_string: Image value must be a CSSImageValue expected "[object CSSImageValue]" but got "[object CSSStyleValue]"
 PASS Setting 'mask-image' to a length: 0px throws TypeError
 PASS Setting 'mask-image' to a length: -3.14em throws TypeError
 PASS Setting 'mask-image' to a length: 3.14cm throws TypeError

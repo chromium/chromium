@@ -198,6 +198,12 @@ void StyleCascade::Apply(CascadeFilter filter) {
     LookupAndApply(GetCSSPropertyMathDepth(), resolver);
   }
 
+  if (map_.NativeBitset().Has(CSSPropertyID::kMaskImage)) {
+    // mask-image needs to be applied before {-webkit-}mask-composite,
+    // otherwise {-webkit-}mask-composite has no effect.
+    LookupAndApply(GetCSSPropertyMaskImage(), resolver);
+  }
+
   if (map_.NativeBitset().Has(CSSPropertyID::kWebkitMaskImage)) {
     // -webkit-mask-image needs to be applied before -webkit-mask-composite,
     // otherwise -webkit-mask-composite has no effect.

@@ -401,6 +401,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
         }
         break;
       }
+      case CSSPropertyID::kMaskImage:
       case CSSPropertyID::kWebkitMaskImage: {
         for (FillLayer* mask_layer = &builder.AccessMaskLayers(); mask_layer;
              mask_layer = mask_layer->Next()) {

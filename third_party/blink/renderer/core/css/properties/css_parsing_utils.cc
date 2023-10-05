@@ -4242,6 +4242,7 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
     case CSSPropertyID::kBackgroundOrigin:
       return ConsumeBackgroundBox(range);
     case CSSPropertyID::kBackgroundImage:
+    case CSSPropertyID::kMaskImage:
     case CSSPropertyID::kWebkitMaskImage:
       return ConsumeImageOrNone(range, context);
     case CSSPropertyID::kBackgroundPositionX:
@@ -4272,6 +4273,13 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
   return nullptr;
 }
 
+const StylePropertyShorthand& WebkitMaskShorthand(CSSPropertyID shorthand_id) {
+  if (shorthand_id == CSSPropertyID::kWebkitAlternativeMask) {
+    return webkitAlternativeMaskShorthand();
+  }
+  return webkitMaskShorthand();
+}
+
 }  // namespace
 
 // Note: this assumes y properties (e.g. background-position-y) follow the x
@@ -4289,10 +4297,12 @@ bool ParseBackgroundOrMask(bool important,
                            HeapVector<CSSPropertyValue, 64>& properties) {
   CSSPropertyID shorthand_id = local_context.CurrentShorthand();
   DCHECK(shorthand_id == CSSPropertyID::kBackground ||
-         shorthand_id == CSSPropertyID::kWebkitMask);
+         shorthand_id == CSSPropertyID::kWebkitMask ||
+         shorthand_id == CSSPropertyID::kWebkitAlternativeMask);
   const StylePropertyShorthand& shorthand =
-      shorthand_id == CSSPropertyID::kBackground ? backgroundShorthand()
-                                                 : webkitMaskShorthand();
+      shorthand_id == CSSPropertyID::kBackground
+          ? backgroundShorthand()
+          : WebkitMaskShorthand(shorthand_id);
 
   const unsigned longhand_count = shorthand.length();
   CSSValue* longhands[10] = {nullptr};

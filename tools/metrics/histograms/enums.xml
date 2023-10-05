@@ -71171,6 +71171,7 @@ Called by update_use_counter_css.py.-->
   <int value="769" label="dynamic-range-limit"/>
   <int value="770" label="form-sizing"/>
   <int value="771" label="text-spacing-trim"/>
+  <int value="772" label="mask-image"/>
 </enum>
 
 <enum name="MappedEditingCommands">

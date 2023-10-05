@@ -5841,6 +5841,22 @@
       },
     },
     {
+      name: "mask-image",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      style_builder_template: "mask_layer",
+      style_builder_template_args: {
+        fill_type: "Image",
+        fill_type_getter: "GetImage"
+      },
+      runtime_flag: "CSSMaskingInterop",
+    },
+    {
+      name: "-webkit-alternative-mask-image",
+      alternative_of: "-webkit-mask-image",
+      alias_for: "mask-image",
+      runtime_flag: "CSSMaskingInterop",
+    },
+    {
       name: "-webkit-mask-image",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
@@ -7502,6 +7518,19 @@
         "-webkit-mask-repeat-y", "-webkit-mask-origin", "-webkit-mask-clip"
       ],
       property_methods: ["ParseShorthand"],
+    },
+    // This alternative of -webkit-mask is active when CSSMaskingInterop is
+    // enabled.
+    {
+      name: "-webkit-alternative-mask",
+      alternative_of: "-webkit-mask",
+      longhands: [
+        "mask-image", "-webkit-mask-position-x",
+        "-webkit-mask-position-y", "-webkit-mask-size", "-webkit-mask-repeat-x",
+        "-webkit-mask-repeat-y", "-webkit-mask-origin", "-webkit-mask-clip"
+      ],
+      property_methods: ["ParseShorthand"],
+      runtime_flag: "CSSMaskingInterop",
     },
     {
       name: "-webkit-mask-box-image",

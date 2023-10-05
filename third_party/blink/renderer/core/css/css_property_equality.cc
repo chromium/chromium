@@ -784,6 +784,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWebkitMaskClip:
       return FillLayersEqual<CSSPropertyID::kWebkitMaskClip>(a.MaskLayers(),
                                                              b.MaskLayers());
+    case CSSPropertyID::kMaskImage:
     case CSSPropertyID::kWebkitMaskImage:
       return base::ValuesEquivalent(a.MaskImage(), b.MaskImage());
     case CSSPropertyID::kWebkitMaskOrigin:
@@ -913,6 +914,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAliasWebkitAlternativeAnimationDelay:
     case CSSPropertyID::kAliasWebkitAlternativeAnimationWithDelayStartEnd:
     case CSSPropertyID::kAliasWebkitAlternativeAnimationWithTimeline:
+    case CSSPropertyID::kAliasWebkitAlternativeMaskImage:
     case CSSPropertyID::kAliasWebkitAnimation:
     case CSSPropertyID::kAliasWebkitAnimationDelay:
     case CSSPropertyID::kAliasWebkitAnimationDirection:
@@ -1213,6 +1215,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kTransition:
     case CSSPropertyID::kViewTimeline:
     case CSSPropertyID::kAlternativeViewTimelineWithInset:
+    case CSSPropertyID::kWebkitAlternativeMask:
     case CSSPropertyID::kWebkitColumnBreakAfter:
     case CSSPropertyID::kWebkitColumnBreakBefore:
     case CSSPropertyID::kWebkitColumnBreakInside:

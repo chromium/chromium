@@ -400,6 +400,7 @@ static bool AllowInitialInShorthand(CSSPropertyID property_id) {
     case CSSPropertyID::kTextDecoration:
     case CSSPropertyID::kTextEmphasis:
     case CSSPropertyID::kWebkitMask:
+    case CSSPropertyID::kWebkitAlternativeMask:
     case CSSPropertyID::kWebkitTextStroke:
     case CSSPropertyID::kWhiteSpace:
       return true;
@@ -630,6 +631,8 @@ String StylePropertySerializer::SerializeShorthand(
       return GetLayeredShorthandValue(webkitMaskRepeatShorthand());
     case CSSPropertyID::kWebkitMask:
       return GetLayeredShorthandValue(webkitMaskShorthand());
+    case CSSPropertyID::kWebkitAlternativeMask:
+      return GetLayeredShorthandValue(webkitAlternativeMaskShorthand());
     case CSSPropertyID::kTextEmphasis:
       return GetShorthandValue(textEmphasisShorthand());
     case CSSPropertyID::kWebkitTextStroke:
