@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/common/chrome_features.h"
@@ -1145,9 +1146,9 @@ class SettingsSiteDetailsTest : public SettingsBrowserTest {
       privacy_sandbox::kPrivacySandboxSettings4};
 };
 
-// Disabling on debug due to flaky timeout on Win7 Tests (dbg)(1) bot.
-// https://crbug.com/825304 - later for other platforms in crbug.com/1021219.
-#if !defined(NDEBUG)
+// Dabling on debug due to flaky timeout (crbug.com/825304,
+// crbug.com/1021219) and win10 x64 (crbug.com/1490294).
+#if !defined(NDEBUG) || (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64))
 #define MAYBE_SiteDetails DISABLED_SiteDetails
 #else
 #define MAYBE_SiteDetails SiteDetails
