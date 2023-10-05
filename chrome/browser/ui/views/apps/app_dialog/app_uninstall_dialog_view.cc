@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -534,7 +535,11 @@ void AppUninstallDialogView::InitializeViewForWebApp(
   }
 #endif
 
-  InitializeCheckbox(app_start_url);
+  // Isolated Web Apps will always have their data cleared as part of
+  // uninstallation.
+  if (!app_start_url.SchemeIs(chrome::kIsolatedAppScheme)) {
+    InitializeCheckbox(app_start_url);
+  }
 
   if (async_) {
     std::move(uninstall_dialog_ready_callback_).Run(this);
