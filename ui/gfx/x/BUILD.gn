@@ -164,8 +164,6 @@ source_set("xproto") {
     "keyboard_state.h",
     "ref_counted_fd.cc",
     "ref_counted_fd.h",
-    "scoped_ignore_errors.cc",
-    "scoped_ignore_errors.h",
     "xlib_support.cc",
     "xlib_support.h",
     "xproto_internal.cc",

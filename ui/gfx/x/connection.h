@@ -62,7 +62,6 @@ class EVENTS_EXPORT EventObserver {
 class COMPONENT_EXPORT(X11) Connection : public XProto,
                                          public ExtensionManager {
  public:
-  using ErrorHandler = base::RepeatingCallback<void(const Error*, const char*)>;
   using IOErrorHandler = base::OnceClosure;
   using RawReply = scoped_refptr<base::RefCountedMemory>;
   using RawError = scoped_refptr<base::RefCountedMemory>;
@@ -187,9 +186,6 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   // Directly dispatch an event, bypassing the event queue.
   void DispatchEvent(const Event& event);
-
-  // Returns the old error handler.
-  ErrorHandler SetErrorHandler(ErrorHandler new_handler);
 
   void SetIOErrorHandler(IOErrorHandler new_handler);
 
@@ -363,7 +359,6 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   using ErrorParser = std::unique_ptr<Error> (*)(RawError error_bytes);
   std::array<ErrorParser, 256> error_parsers_{};
 
-  ErrorHandler error_handler_;
   IOErrorHandler io_error_handler_;
 
   SEQUENCE_CHECKER(sequence_checker_);

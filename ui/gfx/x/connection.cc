@@ -106,7 +106,6 @@ Connection::Connection(const std::string& address)
                                                       : display_string_.c_str(),
                               &default_screen_id_),
                   xcb_disconnect),
-      error_handler_(base::BindRepeating(DefaultErrorHandler)),
       io_error_handler_(base::BindOnce(DefaultIOErrorHandler)) {
   DUMP_WILL_BE_CHECK(connection_);
   if (Ready()) {
@@ -474,12 +473,6 @@ void Connection::DispatchEvent(const Event& event) {
   dispatching_event_ = nullptr;
 }
 
-Connection::ErrorHandler Connection::SetErrorHandler(ErrorHandler new_handler) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return std::exchange(error_handler_, new_handler);
-}
-
 void Connection::SetIOErrorHandler(IOErrorHandler new_handler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -628,13 +621,13 @@ std::unique_ptr<Connection::FutureImpl> Connection::SendRequest(
   // Install a default response-handler that throws away the reply and prints
   // the error if there is one.  This handler may be overridden by clients.
   auto callback = base::BindOnce(
-      [](const char* request_name, Connection::ErrorHandler error_handler,
-         RawReply raw_reply, std::unique_ptr<Error> error) {
+      [](const char* request_name, RawReply raw_reply,
+         std::unique_ptr<Error> error) {
         if (error) {
-          error_handler.Run(error.get(), request_name);
+          DefaultErrorHandler(error.get(), request_name);
         }
       },
-      request_name_for_tracing, error_handler_);
+      request_name_for_tracing);
   requests_.emplace_back(std::move(callback));
   if (generates_reply) {
     last_non_void_request_id_ = sequence;
