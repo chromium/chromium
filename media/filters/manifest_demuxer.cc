@@ -321,11 +321,11 @@ bool ManifestDemuxer::AddRole(base::StringPiece role,
   chunk_demuxer_->SetParseWarningCallback(
       std::string(role),
       base::BindRepeating(&ManifestDemuxer::OnChunkDemuxerParseWarning,
-                          weak_factory_.GetWeakPtr(), role));
+                          weak_factory_.GetWeakPtr(), std::string(role)));
   chunk_demuxer_->SetTracksWatcher(
       std::string(role),
       base::BindRepeating(&ManifestDemuxer::OnChunkDemuxerTracksChanged,
-                          weak_factory_.GetWeakPtr(), role));
+                          weak_factory_.GetWeakPtr(), std::string(role)));
   return true;
 }
 
@@ -572,14 +572,14 @@ void ManifestDemuxer::TryCompletePendingSeek() {
 }
 
 void ManifestDemuxer::OnChunkDemuxerParseWarning(
-    base::StringPiece role,
+    std::string role,
     SourceBufferParseWarning warning) {
   MEDIA_LOG(WARNING, media_log_)
       << "ParseWarning (" << role << "): " << static_cast<int>(warning);
 }
 
 void ManifestDemuxer::OnChunkDemuxerTracksChanged(
-    base::StringPiece role,
+    std::string role,
     std::unique_ptr<MediaTracks> tracks) {
   MEDIA_LOG(WARNING, media_log_) << "TracksChanged for role: " << role;
 }

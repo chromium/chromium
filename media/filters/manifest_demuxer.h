@@ -253,9 +253,9 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   void OnProgress();
   void OnEncryptedMediaData(EmeInitDataType type,
                             const std::vector<uint8_t>& data);
-  void OnChunkDemuxerParseWarning(base::StringPiece role,
+  void OnChunkDemuxerParseWarning(std::string role,
                                   SourceBufferParseWarning warning);
-  void OnChunkDemuxerTracksChanged(base::StringPiece role,
+  void OnChunkDemuxerTracksChanged(std::string role,
                                    std::unique_ptr<MediaTracks> tracks);
 
   void OnDemuxerStreamRead(DemuxerStream::ReadCB wrapped_read_cb,
