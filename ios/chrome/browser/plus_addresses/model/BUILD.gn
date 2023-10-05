@@ -1,0 +1,17 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "plus_address_service_factory.h",
+    "plus_address_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/ios",
+    "//components/plus_addresses",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin",
+  ]
+}
