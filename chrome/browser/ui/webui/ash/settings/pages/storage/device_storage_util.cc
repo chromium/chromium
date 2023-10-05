@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
 
 namespace ash::settings {
 
@@ -11,8 +11,9 @@ int64_t RoundByteSize(int64_t bytes) {
     return -1;
   }
 
-  if (bytes == 0)
+  if (bytes == 0) {
     return 0;
+  }
 
   // Subtract one to the original number of bytes.
   bytes--;
