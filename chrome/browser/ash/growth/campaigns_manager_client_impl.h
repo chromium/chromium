@@ -29,6 +29,7 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient {
   bool IsDeviceInDemoMode() const override;
   bool IsCloudGamingDevice() const override;
   bool IsFeatureAwareDevice() const override;
+  const std::string& GetApplicationLocale() const override;
 
  private:
   void OnComponentDownloaded(

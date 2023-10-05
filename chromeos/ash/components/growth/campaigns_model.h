@@ -125,6 +125,7 @@ class TargetingBase {
  protected:
   const base::Value::List* GetListCriteria(const char* path_suffix) const;
   const absl::optional<bool> GetBoolCriteria(const char* path_suffix) const;
+  const absl::optional<int> GetIntCriteria(const char* path_suffix) const;
   const std::string* GetStringCriteria(const char* path_suffix) const;
 
  private:
@@ -159,6 +160,26 @@ class DemoModeTargeting : public TargetingBase {
   const base::Value::List* GetCountries() const;
   const absl::optional<bool> TargetCloudGamingDevice() const;
   const absl::optional<bool> TargetFeatureAwareDevice() const;
+};
+
+// Wrapper around Device targeting dictionary. The structure looks like:
+// {
+//   "locales": ["en-US", "zh-CN"];
+//   "milestone": {
+//      "min": 117,
+//      "max": 120
+//   }
+// }
+class DeviceTargeting : public TargetingBase {
+ public:
+  explicit DeviceTargeting(const Targeting& targeting_dict);
+  DeviceTargeting(const DeviceTargeting&) = delete;
+  DeviceTargeting& operator=(const DeviceTargeting) = delete;
+  ~DeviceTargeting();
+
+  const base::Value::List* GetLocales() const;
+  const absl::optional<int> GetMinMilestone() const;
+  const absl::optional<int> GetMaxMilestone() const;
 };
 
 }  // namespace growth

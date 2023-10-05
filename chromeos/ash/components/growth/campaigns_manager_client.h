@@ -34,6 +34,9 @@ class CampaignsManagerClient {
 
   // True if the device is feature aware device.
   virtual bool IsFeatureAwareDevice() const = 0;
+
+  // Returns application locale.
+  virtual const std::string& GetApplicationLocale() const = 0;
 };
 
 }  // namespace growth

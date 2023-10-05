@@ -12,10 +12,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
+#include "base/version.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/mock_campaigns_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
@@ -160,6 +162,20 @@ class CampaignsManagerTest : public testing::Test {
               *payload->FindStringByDottedPath("attractionLoop.videoSrcLang1"));
     ASSERT_EQ("/asset/peripherals_lang2.mp4",
               *payload->FindStringByDottedPath("attractionLoop.videoSrcLang2"));
+  }
+
+  void LoadComponentWithDeviceTargeting(const std::string& milestone_range) {
+    auto device_targeting = base::StringPrintf(R"(
+            "device": {
+              "locales": ["en-US"],
+              "milestone": {
+                %s
+              }
+            }
+          )",
+                                               milestone_range.c_str());
+    LoadComponentAndVerifyLoadComplete(base::StringPrintf(
+        kValidCampaignsFileTemplate, device_targeting.c_str()));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -383,6 +399,101 @@ TEST_F(CampaignsManagerTest, LoadCampaignsEmptyFile) {
   observer.Wait();
 
   ASSERT_TRUE(observer.load_completed());
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampiagnDeviceTargeting) {
+  auto current_version = version_info::GetMajorVersionNumberAsInt();
+  LoadComponentWithDeviceTargeting(base::StringPrintf(
+      R"(
+      "min": %d,
+      "max": %d
+    )",
+      current_version, current_version + 1));
+  EXPECT_CALL(mock_client_, GetApplicationLocale())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampiagnMilestoneMinMismatch) {
+  auto current_version = version_info::GetMajorVersionNumberAsInt();
+  LoadComponentWithDeviceTargeting(base::StringPrintf(
+      R"(
+      "min": %d,
+      "max": %d
+    )",
+      current_version + 1, current_version + 1));
+  EXPECT_CALL(mock_client_, GetApplicationLocale())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampiagnMilestoneMaxMismatch) {
+  auto current_version = version_info::GetMajorVersionNumberAsInt();
+  LoadComponentWithDeviceTargeting(base::StringPrintf(
+      R"(
+        "min": %d,
+        "max": %d
+      )",
+      current_version - 2, current_version - 1));
+  EXPECT_CALL(mock_client_, GetApplicationLocale())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampiagnMinMilestoneOnly) {
+  auto current_version = version_info::GetMajorVersionNumberAsInt();
+  LoadComponentWithDeviceTargeting(
+      base::StringPrintf(R"("min": %d)", current_version));
+  EXPECT_CALL(mock_client_, GetApplicationLocale())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampiagnMinMilestoneOnlyMismatch) {
+  auto current_version = version_info::GetMajorVersionNumberAsInt();
+  LoadComponentWithDeviceTargeting(
+      base::StringPrintf(R"("min": %d)", current_version + 1));
+  EXPECT_CALL(mock_client_, GetApplicationLocale())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampiagnMaxMilestoneOnly) {
+  auto current_version = version_info::GetMajorVersionNumberAsInt();
+  LoadComponentWithDeviceTargeting(
+      base::StringPrintf(R"("max": %d)", current_version));
+  EXPECT_CALL(mock_client_, GetApplicationLocale())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampiagnMaxMilestoneOnlyMismatch) {
+  auto current_version = version_info::GetMajorVersionNumberAsInt();
+  LoadComponentWithDeviceTargeting(
+      base::StringPrintf(R"("max": %d)", current_version - 1));
+  EXPECT_CALL(mock_client_, GetApplicationLocale())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampiagnApplicationLocaleMismatch) {
+  auto current_version = version_info::GetMajorVersionNumberAsInt();
+  LoadComponentWithDeviceTargeting(
+      base::StringPrintf(R"("max": %d)", current_version));
+  EXPECT_CALL(mock_client_, GetApplicationLocale())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-CA")));
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }

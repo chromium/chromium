@@ -7,9 +7,11 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/version.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/version_info.h"
 
 namespace growth {
 namespace {
@@ -36,6 +38,10 @@ bool MatchPref(const base::Value::List* criterias,
   }
 
   return false;
+}
+
+int GetMilestone() {
+  return version_info::GetMajorVersionNumberAsInt();
 }
 
 }  // namespace
@@ -123,6 +129,38 @@ bool CampaignsMatcher::MaybeMatchDemoModeTargeting(
                    local_state_);
 }
 
+bool CampaignsMatcher::MatchMilestone(const DeviceTargeting& targeting) const {
+  const auto milestone = GetMilestone();
+
+  auto min_milestone = targeting.GetMinMilestone();
+  if (min_milestone && milestone < min_milestone) {
+    return false;
+  }
+
+  auto max_milestone = targeting.GetMaxMilestone();
+  if (max_milestone && milestone > max_milestone) {
+    return false;
+  }
+
+  return true;
+}
+
+bool CampaignsMatcher::MatchDeviceTargeting(
+    const DeviceTargeting& targeting) const {
+  if (!targeting.IsValid()) {
+    // Campaigns matched if there is no device targeting.
+    return true;
+  }
+
+  auto* targeting_locales = targeting.GetLocales();
+  if (targeting_locales &&
+      !Contains(*targeting_locales, client_->GetApplicationLocale())) {
+    return false;
+  }
+
+  return MatchMilestone(targeting);
+}
+
 bool CampaignsMatcher::Matched(const Targetings* targetings) const {
   // TODO(b/299305911): Add metrics to track matching latency.
   if (!targetings || targetings->empty()) {
@@ -139,7 +177,8 @@ bool CampaignsMatcher::Matched(const Targetings* targetings) const {
     return false;
   }
 
-  return MaybeMatchDemoModeTargeting(DemoModeTargeting(*targeting));
+  return MaybeMatchDemoModeTargeting(DemoModeTargeting(*targeting)) &&
+         MatchDeviceTargeting(DeviceTargeting(*targeting));
 }
 
 }  // namespace growth

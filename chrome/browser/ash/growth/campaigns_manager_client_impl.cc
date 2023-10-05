@@ -65,6 +65,10 @@ bool CampaignsManagerClientImpl::IsFeatureAwareDevice() const {
   return ash::demo_mode::IsFeatureAwareDevice();
 }
 
+const std::string& CampaignsManagerClientImpl::GetApplicationLocale() const {
+  return g_browser_process->GetApplicationLocale();
+}
+
 void CampaignsManagerClientImpl::OnComponentDownloaded(
     growth::CampaignComponentLoadedCallback loaded_callback,
     component_updater::CrOSComponentManager::Error error,

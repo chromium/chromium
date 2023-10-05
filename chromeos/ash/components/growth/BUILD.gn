@@ -20,6 +20,7 @@ component("growth") {
     "//ash/constants",
     "//base",
     "//components/prefs",
+    "//components/version_info",
   ]
 
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_GROWTH_IMPL" ]
@@ -48,6 +49,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
+    "//components/version_info",
     "//testing/gmock",
     "//testing/gtest",
   ]
