@@ -1011,9 +1011,10 @@ void AuthSessionAuthenticator::NotifyAuthSuccess(
   LOGIN_LOG(EVENT) << "Logged in successfully";
 
   if (HibernateManager::IsHibernateSupported()) {
-    // Pass the AuthSessionID to HibernateManager so once the user's profile is
-    // created we can notify hiberman.
-    HibernateManager::Get()->SetAuthSessionID(context->GetAuthSessionId());
+    // Pass the AccountID and AuthSessionID to HibernateManager so once the
+    // user's profile is created we can notify hiberman.
+    HibernateManager::Get()->SetAuthInfo(context->GetAccountId().GetUserEmail(),
+                                         context->GetAuthSessionId());
   }
 
   if (consumer_)

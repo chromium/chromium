@@ -82,12 +82,15 @@ class HibermanClientTest : public testing::Test {
     dbus::MessageWriter writer(response.get());
     if (method_call->GetMember() == ::hiberman::kResumeFromHibernateASMethod) {
       dbus::MessageReader reader(method_call);
+      std::string account_id;
       const uint8_t* bytes = nullptr;
       size_t length = 0;
       // The ResumeFromHibernateAS method should have an auth_session_id byte
       // array.
       EXPECT_TRUE(reader.PopArrayOfBytes(&bytes, &length));
       EXPECT_NE(length, static_cast<size_t>(0));
+      // The ResumeFromHibernateAS method should have an account_id string.
+      ASSERT_TRUE(reader.PopString(&account_id));
     } else if (method_call->GetMember() == "NameHasOwner") {
       dbus::MessageReader reader(method_call);
       std::string name;

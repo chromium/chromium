@@ -100,7 +100,9 @@ bool HibernateManager::IsHibernateSupported() {
   return ash::HasHibermanBinary();
 }
 
-void HibernateManager::SetAuthSessionID(const std::string& auth_session_id) {
+void HibernateManager::SetAuthInfo(const std::string& account_id,
+                                   const std::string& auth_session_id) {
+  account_id_ = account_id;
   auth_session_id_ = auth_session_id;
 }
 
@@ -143,9 +145,10 @@ void HibernateManager::MaybeResume(const std::set<std::string>& user_prefs) {
   }
 
   if (!aborted) {
-    client->ResumeFromHibernate(auth_session_id_);
+    client->ResumeFromHibernate(account_id_, auth_session_id_);
   }
 
+  account_id_.clear();
   auth_session_id_.clear();
 }
 

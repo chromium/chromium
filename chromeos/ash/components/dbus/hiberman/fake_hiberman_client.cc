@@ -46,6 +46,7 @@ bool FakeHibermanClient::IsHibernateToS4Enabled() const {
 }
 
 void FakeHibermanClient::ResumeFromHibernate(
+    const std::string& account_id,
     const std::string& auth_session_id) {}
 
 void FakeHibermanClient::WaitForServiceToBeAvailable(

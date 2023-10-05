@@ -86,11 +86,13 @@ class HibermanClientImpl : public HibermanClient {
     proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 
-  void ResumeFromHibernate(const std::string& auth_session_id) override {
+  void ResumeFromHibernate(const std::string& account_id,
+                           const std::string& auth_session_id) override {
     VLOG(1) << "ResumeFromHibernate";
     dbus::MethodCall method_call(::hiberman::kHibernateResumeInterface,
                                  ::hiberman::kResumeFromHibernateASMethod);
     dbus::MessageWriter writer(&method_call);
+    writer.AppendString(account_id);
     writer.AppendArrayOfBytes(
         reinterpret_cast<const uint8_t*>(&auth_session_id[0]),
         auth_session_id.length());

@@ -43,9 +43,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_HIBERNATE)
   // Determines if hibernate is supported.
   static bool IsHibernateSupported();
 
-  // Set auth_session_id. During the login flow we save the auth session id to
-  // pass to hiberman after the users profile has been created.
-  void SetAuthSessionID(const std::string& auth_session_id);
+  // Set auth info. During the login flow we save the account and auth session
+  // id to pass to hiberman after the users profile has been created.
+  void SetAuthInfo(const std::string& account_id,
+                   const std::string& auth_session_id);
 
   // Once the user's profile has been created and preferences loaded we will try
   // to resume. The reason this is necessary is because if a user has overridden
@@ -55,6 +56,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_HIBERNATE)
   void MaybeResume(const std::set<std::string>& user_prefs);
 
  private:
+  std::string account_id_;
   std::string auth_session_id_;
 
   void ResumeFromHibernateAuthOpCallback(
