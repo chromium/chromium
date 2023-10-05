@@ -211,6 +211,16 @@ void RemoveTempLCPMetadata(SampledProfile& profile) {
        *profile.mutable_call_stack_profile()->mutable_stack_sample()) {
     base::ranges::for_each(*stack_sample.mutable_metadata(), shift_index);
   }
+
+  // Remove timestamps
+  for (auto& stack_sample :
+       *profile.mutable_call_stack_profile()->mutable_stack_sample()) {
+    stack_sample.clear_sample_time_offset_ms();
+  }
+
+  if (profile.trigger_event() != SampledProfile::PERIODIC_HEAP_COLLECTION) {
+    profile.mutable_call_stack_profile()->clear_profile_time_offset_ms();
+  }
 }
 
 // static

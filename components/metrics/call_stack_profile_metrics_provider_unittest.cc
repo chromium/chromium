@@ -511,6 +511,71 @@ TEST_F(CallStackProfileMetricsProviderTest,
                    .name_hash_index());
 }
 
+namespace {
+void AttachSampleWithTimestamp(SampledProfile& profile,
+                               int32_t timestamp_offset) {
+  auto* stack_sample =
+      profile.mutable_call_stack_profile()->mutable_stack_sample()->Add();
+  stack_sample->set_sample_time_offset_ms(timestamp_offset);
+}
+}  // namespace
+
+// Timestamps on each stack sample are removed.
+TEST_F(CallStackProfileMetricsProviderTest,
+       InternalProfileMetadataRemovedTimestamps) {
+  CallStackProfileMetricsProvider provider;
+  base::TimeTicks profile_start_time = base::TimeTicks::Now();
+
+  SampledProfile profile;
+  profile.mutable_call_stack_profile()->set_profile_time_offset_ms(100);
+  AttachSampleWithTimestamp(profile, 100);
+  AttachSampleWithTimestamp(profile, 300);
+
+  // Receive serialized profiles.
+  std::string contents;
+  profile.SerializeToString(&contents);
+  CallStackProfileMetricsProvider::ReceiveSerializedProfile(
+      profile_start_time, /*is_heap_profile=*/false, std::move(contents));
+
+  ChromeUserMetricsExtension uma_proto;
+  provider.ProvideCurrentSessionData(&uma_proto);
+  ASSERT_EQ(1, uma_proto.sampled_profile_size());
+
+  const SampledProfile& result_profile = uma_proto.sampled_profile(0);
+  EXPECT_FALSE(
+      result_profile.call_stack_profile().has_profile_time_offset_ms());
+  ASSERT_EQ(2, result_profile.call_stack_profile().stack_sample_size());
+  for (int i = 0; i < 2; ++i) {
+    EXPECT_FALSE(result_profile.call_stack_profile()
+                     .stack_sample(i)
+                     .has_sample_time_offset_ms());
+  }
+}
+
+// Heap profiles should not be affected.
+TEST_F(CallStackProfileMetricsProviderTest,
+       InternalProfileMetadataRemovedTimestampsHeapProfile) {
+  CallStackProfileMetricsProvider provider;
+  base::TimeTicks profile_start_time = base::TimeTicks::Now();
+
+  SampledProfile profile;
+  profile.set_trigger_event(SampledProfile::PERIODIC_HEAP_COLLECTION);
+  profile.mutable_call_stack_profile()->set_profile_time_offset_ms(100);
+
+  // Receive serialized profiles.
+  std::string contents;
+  profile.SerializeToString(&contents);
+  CallStackProfileMetricsProvider::ReceiveSerializedProfile(
+      profile_start_time, /*is_heap_profile=*/true, std::move(contents));
+
+  ChromeUserMetricsExtension uma_proto;
+  provider.ProvideCurrentSessionData(&uma_proto);
+  ASSERT_EQ(1, uma_proto.sampled_profile_size());
+
+  const SampledProfile& result_profile = uma_proto.sampled_profile(0);
+  EXPECT_TRUE(result_profile.call_stack_profile().has_profile_time_offset_ms());
+}
+
 TEST_F(CallStackProfileMetricsProviderTest,
        InternalProfileMetadataRemovedMissingHashIndex) {
   CallStackProfileMetricsProvider provider;

@@ -617,4 +617,37 @@ TEST(CallStackProfileBuilderTest,
     EXPECT_EQ(0, sample.metadata_size());
 }
 
+// Test that timestamps are correctly attached.
+TEST(CallStackProfileBuilderTest, AttachTimestamps) {
+  base::MetadataRecorder metadata_recorder;
+  auto profile_builder =
+      std::make_unique<TestingCallStackProfileBuilder>(kProfileParams, nullptr);
+
+  base::TestModule module;
+  base::Frame frame = {0x10, &module};
+
+  const base::TimeTicks profile_start = base::TimeTicks::Now();
+
+  profile_builder->OnSampleCompleted({frame}, profile_start);
+
+  profile_builder->OnSampleCompleted({frame},
+                                     profile_start + base::Milliseconds(500));
+
+  profile_builder->OnProfileCompleted(base::Milliseconds(500),
+                                      base::Milliseconds(100));
+
+  const SampledProfile& proto = profile_builder->test_sampled_profile();
+
+  ASSERT_TRUE(proto.has_call_stack_profile());
+  const CallStackProfile& profile = proto.call_stack_profile();
+  EXPECT_EQ(profile_start.since_origin().InMilliseconds(),
+            profile.profile_time_offset_ms());
+
+  ASSERT_EQ(2, profile.stack_sample_size());
+  auto sample0 = profile.stack_sample(0);
+  auto sample1 = profile.stack_sample(1);
+  EXPECT_EQ(0, sample0.sample_time_offset_ms());
+  EXPECT_EQ(500, sample1.sample_time_offset_ms());
+}
+
 }  // namespace metrics
