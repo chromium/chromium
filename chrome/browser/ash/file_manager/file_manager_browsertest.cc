@@ -1200,6 +1200,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         // TODO(b/194255793): Fix this.
         // TestCase("openFileDialogDriveFromBrowser").WithBrowser(),
         TestCase("openFileDialogDriveHostedDoc").WithBrowser(),
+        TestCase("openFileDialogDriveEncryptedFile").WithBrowser(),
         TestCase("openFileDialogDriveHostedNeedsFile").WithBrowser(),
         TestCase("saveFileDialogDriveHostedNeedsFile").WithBrowser(),
         TestCase("openFileDialogDriveCSEGrey").WithBrowser(),

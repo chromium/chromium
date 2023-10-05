@@ -140,22 +140,20 @@ void GetSelectedFileInfoInternal(
         }
       }
     } else {
-      // Hosted docs can only accessed by navigating to their URLs. Get the
-      // metadata for the file from DriveFS and populate the |url| field in the
-      // SelectedFileInfo.
-      if (drive::util::HasHostedDocumentExtension(file_path)) {
-        auto* integration_service =
-            drive::util::GetIntegrationServiceByProfile(profile);
-        base::FilePath drive_mount_relative_path;
-        if (integration_service && integration_service->GetDriveFsInterface() &&
-            integration_service->GetRelativeDrivePath(
-                file_path, &drive_mount_relative_path)) {
-          integration_service->GetDriveFsInterface()->GetMetadata(
-              drive_mount_relative_path,
-              base::BindOnce(&ContinueGetSelectedFileInfoWithDriveFsMetadata,
-                             profile, std::move(params)));
-          return;
-        }
+      // Hosted docs and encrypted files can only accessed by navigating
+      // to their URLs. Get the metadata for the file from DriveFS and
+      // if needed populate the |url| field in the SelectedFileInfo.
+      auto* integration_service =
+          drive::util::GetIntegrationServiceByProfile(profile);
+      base::FilePath drive_mount_relative_path;
+      if (integration_service && integration_service->GetDriveFsInterface() &&
+          integration_service->GetRelativeDrivePath(
+              file_path, &drive_mount_relative_path)) {
+        integration_service->GetDriveFsInterface()->GetMetadata(
+            drive_mount_relative_path,
+            base::BindOnce(&ContinueGetSelectedFileInfoWithDriveFsMetadata,
+                           profile, std::move(params)));
+        return;
       }
       params->selected_files.emplace_back(file_path, file_path);
     }
@@ -204,7 +202,9 @@ void ContinueGetSelectedFileInfoWithDriveFsMetadata(
   const int index = params->selected_files.size();
   const auto& path = params->file_paths[index];
   params->selected_files.emplace_back(path, path);
-  if (metadata && drivefs::IsHosted(metadata->type) &&
+  if (metadata &&
+      (drivefs::IsHosted(metadata->type) ||
+       drive::util::IsEncryptedMimeType(metadata->content_mime_type)) &&
       !metadata->alternate_url.empty()) {
     params->selected_files.back().url.emplace(
         std::move(metadata->alternate_url));

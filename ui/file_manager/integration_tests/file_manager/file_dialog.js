@@ -503,6 +503,17 @@ testcase.openFileDialogDriveHostedDoc = async () => {
 };
 
 /**
+ * Tests opening a hosted doc in the browser, ensuring it correctly navigates to
+ * the doc's URL.
+ */
+testcase.openFileDialogDriveEncryptedFile = async () => {
+  chrome.test.assertEq(
+      await openFileDialogClickOkButton(
+          'drive', ENTRIES.testCSEFile.nameText, true),
+      'https://file_alternate_link/test-encrypted.txt');
+};
+
+/**
  * Tests that selecting a hosted doc from a dialog requiring a real file is
  * disabled.
  */
