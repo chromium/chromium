@@ -806,7 +806,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
   // If the fake omnibox is already at the final position, just focus it and
   // return early.
-  if (self.scrolledToMinimumHeight) {
+  if (self.scrolledToMinimumHeight || IsIOSLargeFakeboxEnabled()) {
     self.shouldAnimateHeader = NO;
     self.disableScrollAnimation = NO;
     [self.NTPContentDelegate focusOmnibox];
