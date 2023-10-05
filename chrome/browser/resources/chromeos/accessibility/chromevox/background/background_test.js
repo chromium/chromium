@@ -29,8 +29,6 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
       importModule(
           'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
       importModule(
-          'ChromeVoxBackground', '/chromevox/background/classic_background.js'),
-      importModule(
           'CommandHandlerInterface',
           '/chromevox/background/command_handler_interface.js'),
       importModule(
@@ -260,11 +258,6 @@ ChromeVoxBackgroundTestWithTestServer = class extends ChromeVoxBackgroundTest {
     return true;
   }
 };
-
-/** Tests that ChromeVox classic is in this context. */
-AX_TEST_F('ChromeVoxBackgroundTest', 'ClassicNamespaces', function() {
-  assertEquals('function', typeof (ChromeVoxBackground));
-});
 
 /** Tests that ChromeVox's background object is not available globally. */
 AX_TEST_F('ChromeVoxBackgroundTest', 'NextNamespaces', function() {
