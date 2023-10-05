@@ -52,15 +52,14 @@ source_set("blink_web_tests_filter") {
 source_set("cr23_pixel_browser_tests_filters") {
   testonly = true
 
-  data = [
-    "//testing/buildbot/filters/win.win-rel-cft.cr23_pixel_browser_tests.filter",
-  ]
+  data = [ "//testing/buildbot/filters/win.win-rel-cft.cr23_pixel_browser_tests.filter" ]
 }
 
 source_set("browser_tests_filters") {
   testonly = true
 
   data = [
+    "//testing/buildbot/filters/accessibility-linux.browser_tests.filter",
     "//testing/buildbot/filters/cft.official.browser_tests.filter",
     "//testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter",
     "//testing/buildbot/filters/chromeos.msan.browser_tests.oobe_positive.filter",
@@ -138,6 +137,7 @@ source_set("content_browsertests_filters") {
   testonly = true
 
   data = [
+    "//testing/buildbot/filters/accessibility-linux.content_browsertests.filter",
     "//testing/buildbot/filters/android.asan.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_12.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter",

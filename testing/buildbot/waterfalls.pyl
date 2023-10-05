@@ -558,6 +558,7 @@
           'linux-jammy',
         ],
         'test_suites': {
+          'gtest_tests': 'linux_force_accessibility_gtests',
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },

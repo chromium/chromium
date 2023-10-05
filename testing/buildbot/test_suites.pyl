@@ -4213,6 +4213,27 @@
       'sandbox_linux_unittests': {},
     },
 
+    'linux_force_accessibility_gtests': {
+      'browser_tests': {
+        'args': [
+          '--force-renderer-accessibility',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/accessibility-linux.browser_tests.filter',
+        ],
+        'swarming': {
+          'shards': 8,
+        },
+      },
+      'content_browsertests': {
+        'args': [
+          '--force-renderer-accessibility',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/accessibility-linux.content_browsertests.filter',
+        ],
+        'swarming': {
+          'shards': 8,
+        },
+      },
+    },
+
     'linux_lacros_chrome_browsertests_non_version_skew': {
       'lacros_chrome_browsertests': {
         'test': 'lacros_chrome_browsertests',

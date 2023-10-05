@@ -1,0 +1,18 @@
+# These tests are run on the main builders and don't need to also be
+# run here.
+-Accessibility*
+-All/DumpAccessibilityTreeTest.*
+-NavigationBrowserTest.SameDocumentLongURL204PopupHashNavigation
+-PortalBrowserTest.OrphanedPortalAccessibilityReset
+-SnapshotAXTree*
+-WebContentsImplBrowserTest.DumpAccessibilityTreeWithoutTreeID
+
+# These tests still need to be triaged and either okayed to skip or fixed.
+-PrerenderBrowserTest.ActivatePageWithInnerContents
+-RenderThreadImplBrowserTest.NonResourceDispatchIPCTasksDontGoThroughScheduler
+-RenderThreadImplBrowserTest.RendererIsBackgrounded
+-RenderThreadImplBrowserTest.RendererIsHidden
+-RenderThreadImplBrowserTest.RendererStateTransitionBackgrounded
+-RenderThreadImplBrowserTest.RendererStateTransitionForegrounded
+-RenderThreadImplBrowserTest.RendererStateTransitionHidden
+-RenderThreadImplBrowserTest.RendererStateTransitionVisible
