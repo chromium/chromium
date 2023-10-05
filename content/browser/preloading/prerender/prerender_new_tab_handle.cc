@@ -47,6 +47,7 @@ PrerenderNewTabHandle::PrerenderNewTabHandle(
   // The delegate is swapped with a proper one on activation.
   web_contents_delegate_ =
       GetContentClient()->browser()->CreatePrerenderWebContentsDelegate();
+  web_contents_delegate_->PrerenderWebContentsCreated(web_contents_.get());
   web_contents_->SetDelegate(web_contents_delegate_.get());
 
   CHECK_EQ(web_contents_->GetVisibility(), Visibility::HIDDEN);

@@ -65,9 +65,10 @@ class TabHelpers {
   // helpers.
   friend class BrowserNavigatorWebContentsAdoption;
 
-  // NoStatePrefetch loads pages that have arbitrary external content; it needs
-  // the full set of tab helpers to deal with it.
+  // NoStatePrefetch and Prerendering load pages that have arbitrary external
+  // content; they need the full set of tab helpers to deal with it.
   friend class prerender::ChromeNoStatePrefetchContentsDelegate;
+  friend class PrerenderWebContentsDelegateImpl;
 
   // FYI: Do NOT add any more friends here. The functions above are the ONLY
   // ones that need to call AttachTabHelpers; if you think you do, re-read the

@@ -33,6 +33,8 @@ class PrerenderWebContentsDelegateImpl
                           const std::string& frame_name,
                           const GURL& target_url,
                           content::WebContents* new_contents) override;
+  void PrerenderWebContentsCreated(
+      content::WebContents* prerender_web_contents) override;
   void PortalWebContentsCreated(
       content::WebContents* portal_web_contents) override;
   void WebContentsBecamePortal(

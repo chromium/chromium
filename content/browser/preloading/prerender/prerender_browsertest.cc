@@ -1651,6 +1651,8 @@ IN_PROC_BROWSER_TEST_F(
     GTEST_SKIP();
   }
 
+  ScopedPrerenderContentBrowserClient prerender_content_browser_client;
+
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/title1.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));

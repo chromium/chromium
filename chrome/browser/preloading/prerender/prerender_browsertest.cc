@@ -27,6 +27,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -61,7 +62,9 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
   PrerenderBrowserTest()
       : prerender_helper_(
             base::BindRepeating(&PrerenderBrowserTest::GetActiveWebContents,
-                                base::Unretained(this))) {}
+                                base::Unretained(this))) {
+    feature_list_.InitAndEnableFeature(blink::features::kPrerender2InNewTab);
+  }
 
   void SetUp() override {
     prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
@@ -97,10 +100,15 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
 
   net::test_server::EmbeddedTestServer* ssl_server() { return &ssl_server_; }
 
+ protected:
+  void TestPrerenderAndActivateInNewTab(const std::string& link_click_script,
+                                        bool should_be_activated);
+
  private:
   content::test::PrerenderTestHelper prerender_helper_;
   net::test_server::EmbeddedTestServer ssl_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class PrerenderHoldbackBrowserTest : public PrerenderBrowserTest {
@@ -138,6 +146,57 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderAndActivate) {
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       kFinalStatusActivated, 1);
+}
+
+void PrerenderBrowserTest::TestPrerenderAndActivateInNewTab(
+    const std::string& link_click_script,
+    bool should_be_activated) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/prerender/simple_links.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/prerender/empty.html");
+  content::TestNavigationObserver nav_observer(prerender_url);
+  nav_observer.StartWatchingNewWebContents();
+  prerender_helper().AddPrerendersAsync({prerender_url},
+                                        /*eagerness=*/absl::nullopt, "_blank");
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_EQ(nav_observer.last_navigation_url(), prerender_url);
+
+  // Activate.
+  EXPECT_TRUE(ExecJs(GetActiveWebContents(), link_click_script));
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      kFinalStatusActivated, should_be_activated ? 1 : 0);
+}
+
+// An end-to-end test of prerendering in a new tab and activating.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderAndActivate_InNewTab) {
+  TestPrerenderAndActivateInNewTab("clickSameSiteNewWindowLink();", true);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderAndActivate_InNewTab_Noopener) {
+  TestPrerenderAndActivateInNewTab("clickSameSiteNewWindowWithNoopenerLink();",
+                                   true);
+}
+
+// Prerendering in a new tab should not be activate for a new window with an
+// opener.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderAndActivate_InNewTab_Opener) {
+  TestPrerenderAndActivateInNewTab("clickSameSiteNewWindowWithOpenerLink();",
+                                   false);
+}
+
+// Prerendering in a new tab should not be activate for a current tab.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderAndActivate_InNewTab_CurrentTab) {
+  TestPrerenderAndActivateInNewTab("clickSameSiteLink();", false);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,

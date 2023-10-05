@@ -353,6 +353,19 @@ class CONTENT_EXPORT WebContentsDelegate {
                                   const GURL& target_url,
                                   WebContents* new_contents) {}
 
+  // Notifies the embedder that a new WebContents dedicated for hosting a
+  // prerendered page has been created. `prerender_web_contents` will host an
+  // initial empty primary page and a prerendered page. The prerendered page
+  // will be activated as a primary page on prerender activation.
+  // `prerender_web_contents` is not visible until the activation.
+  //
+  // This function is called only when this delegate is
+  // PrerenderWebContentsDelegate. This delegate and `prerender_web_contents`
+  // are owned by a prerender handle. `prerender_web_contents` outlives this
+  // delegate.
+  virtual void PrerenderWebContentsCreated(
+      WebContents* prerender_web_contents) {}
+
   // Notifies the embedder that a new WebContents has been created to contain
   // the contents of a portal.
   virtual void PortalWebContentsCreated(WebContents* portal_web_contents) {}

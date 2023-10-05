@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/preloading/prerender/prerender_web_contents_delegate.h"
+#include "chrome/browser/ui/tab_helpers.h"
 
 content::PreloadingEligibility
 PrerenderWebContentsDelegateImpl::IsPrerender2Supported(
@@ -45,6 +46,14 @@ void PrerenderWebContentsDelegateImpl::WebContentsCreated(
     content::WebContents* new_contents) {
   // A prerendered page should not create a new WebContents.
   NOTREACHED_NORETURN();
+}
+
+void PrerenderWebContentsDelegateImpl::PrerenderWebContentsCreated(
+    content::WebContents* prerender_web_contents) {
+  // TODO(https://crbug.com/1350676): Audit attached TabHelpers and add tests
+  // for cases that need special treatment like PageLoadMetricsObserver and
+  // Extensions.
+  TabHelpers::AttachTabHelpers(prerender_web_contents);
 }
 
 void PrerenderWebContentsDelegateImpl::PortalWebContentsCreated(

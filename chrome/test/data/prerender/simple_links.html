@@ -1,0 +1,35 @@
+<html>
+<head>
+<title>Simple links</title>
+</head>
+<script>
+function simulateClick(target_id) {
+  const target = document.getElementById(target_id);
+  const evt = document.createEvent("MouseEvents");
+  evt.initMouseEvent("click", true, true, window,
+    0, 0, 0, 0, 0, false, false,
+    false, false, 0, null);
+  return target.dispatchEvent(evt);
+}
+
+function clickSameSiteLink() {
+  return simulateClick("same_site_link");
+}
+
+function clickSameSiteNewWindowLink() {
+  return simulateClick("same_site_new_window_link");
+}
+
+function clickSameSiteNewWindowWithNoopenerLink() {
+  return simulateClick("same_site_new_window_with_noopener_link");
+}
+
+function clickSameSiteNewWindowWithOpenerLink() {
+  return simulateClick("same_site_new_window_with_opener_link");
+}
+</script>
+<a href="empty.html" id="same_site_link">same-site</a>
+<a href="empty.html" id="same_site_new_window_link" target="_blank">same-site new window</a>
+<a href="empty.html" id="same_site_new_window_with_noopener_link" rel="noopener" target="_blank">same-site new window with noopener</a>
+<a href="empty.html" id="same_site_new_window_with_opener_link" rel="opener" target="_blank">same-site new window with opener</a>
+</html>
