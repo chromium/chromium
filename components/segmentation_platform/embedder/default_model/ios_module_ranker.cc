@@ -47,9 +47,9 @@ constexpr std::array<int32_t, 1> kEnumValueForShortcuts{/*Shortcuts=*/1};
 // TODO(ritikagup) : Update this if needed once histogram is available.
 constexpr std::array<int32_t, 1> kEnumValueForSafetyCheck{/*SafetyCheck=*/7};
 constexpr std::array<int32_t, 1> kEnumValueForTabResumption{
-    /*TabResumption=*/8};
+    /*TabResumption=*/10};
 constexpr std::array<int32_t, 1> kEnumValueForParcelTracking{
-    /*ParcelTracking=*/9};
+    /*ParcelTracking=*/11};
 
 // TODO(ritikagup) : Loop through all the modules for these features for better
 // readability. Set UMA metrics to use as input.
