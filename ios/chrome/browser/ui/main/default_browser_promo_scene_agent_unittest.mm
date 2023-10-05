@@ -265,6 +265,8 @@ TEST_F(DefaultBrowserPromoSceneAgentTest, TestPromoRegistrationPostRestore) {
 // Tests that the DefaultPromoTypeMadeForIOS tailored promo is shown when it was
 // detected that the user is likely interested in the promo.
 TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeMadeForIOSShown) {
+  scoped_feature_list_.InitAndDisableFeature(
+      kDefaultBrowserRefactoringPromoManager);
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::DefaultBrowser))
@@ -286,6 +288,8 @@ TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeMadeForIOSShown) {
 // Tests that the DefaultPromoTypeStaySafe tailored promo is shown when it was
 // detected that the user is likely interested in the promo.
 TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeStaySafeShown) {
+  scoped_feature_list_.InitAndDisableFeature(
+      kDefaultBrowserRefactoringPromoManager);
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::DefaultBrowser))
@@ -307,6 +311,8 @@ TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeStaySafeShown) {
 // Tests that the DefaultPromoTypeAllTabs tailored promo is shown when it was
 // detected that the user is likely interested in the promo.
 TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeAllTabsShown) {
+  scoped_feature_list_.InitAndDisableFeature(
+      kDefaultBrowserRefactoringPromoManager);
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::DefaultBrowser))
@@ -328,6 +334,8 @@ TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeAllTabsShown) {
 // Tests that the DefaultPromoTypeGeneral tailored promo is shown when it was
 // detected that the user is likely interested in the promo.
 TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeGeneralShown) {
+  scoped_feature_list_.InitAndDisableFeature(
+      kDefaultBrowserRefactoringPromoManager);
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::DefaultBrowser))
