@@ -220,6 +220,7 @@ void ParcelsManager::GetAllParcelStatusesInternal(
     std::move(callback).Run(
         storage_status_ == StorageInitializationStatus::kSuccess,
         std::make_unique<std::vector<ParcelTrackingStatus>>());
+    OnCurrentOperationFinished();
     return;
   }
 
@@ -235,6 +236,7 @@ void ParcelsManager::GetAllParcelStatusesInternal(
     std::move(callback).Run(
         storage_status_ == StorageInitializationStatus::kSuccess,
         std::move(tracking_statuses));
+    OnCurrentOperationFinished();
     return;
   }
 
