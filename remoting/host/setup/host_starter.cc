@@ -5,30 +5,122 @@
 #include "remoting/host/setup/host_starter.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "google_apis/gaia/gaia_oauth_client.h"
 #include "google_apis/google_api_keys.h"
+#include "remoting/base/rsa_key_pair.h"
 #include "remoting/host/pin_hash.h"
+#include "remoting/host/setup/daemon_controller.h"
+#include "remoting/host/setup/host_stopper.h"
+#include "remoting/host/setup/service_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace {
-constexpr int kMaxGetTokensRetries = 3;
-constexpr bool kConsentToDataCollection = true;
-}  // namespace
-
 namespace remoting {
+
+HostStarter::~HostStarter() = default;
 
 HostStarter::Params::Params() = default;
 HostStarter::Params::~Params() = default;
 
-HostStarter::HostStarter(
+namespace {
+
+constexpr int kMaxGetTokensRetries = 3;
+constexpr bool kConsentToDataCollection = true;
+
+// A helper class that registers and starts a host.
+class HostStarterImpl : public HostStarter,
+                        public gaia::GaiaOAuthClient::Delegate,
+                        public remoting::ServiceClient::Delegate {
+ public:
+  HostStarterImpl(std::unique_ptr<gaia::GaiaOAuthClient> oauth_client,
+                  std::unique_ptr<remoting::ServiceClient> service_client,
+                  scoped_refptr<remoting::DaemonController> daemon_controller,
+                  std::unique_ptr<remoting::HostStopper> host_stopper);
+
+  HostStarterImpl(const HostStarterImpl&) = delete;
+  HostStarterImpl& operator=(const HostStarterImpl&) = delete;
+
+  ~HostStarterImpl() override;
+
+  // HostStarterImpl implementation.
+  void StartHost(const Params& params, CompletionCallback on_done) override;
+
+  // gaia::GaiaOAuthClient::Delegate
+  void OnGetTokensResponse(const std::string& refresh_token,
+                           const std::string& access_token,
+                           int expires_in_seconds) override;
+  void OnRefreshTokenResponse(const std::string& access_token,
+                              int expires_in_seconds) override;
+  void OnGetUserEmailResponse(const std::string& user_email) override;
+
+  // remoting::ServiceClient::Delegate
+  void OnHostRegistered(const std::string& authorization_code) override;
+  void OnHostUnregistered() override;
+
+  // TODO(sergeyu): Following methods are members of all three delegate
+  // interfaces implemented in this class. Fix ServiceClient and
+  // GaiaUserEmailFetcher so that Delegate interfaces do not overlap (ideally
+  // they should be changed to use Callback<>).
+  void OnOAuthError() override;
+  void OnNetworkError(int response_code) override;
+
+ private:
+  // GetTokensFromAuthCode() is used for getting an access token for the
+  // Directory API (to register/unregister a new host). It is also used for
+  // getting access+refresh tokens for the new host (for getting the robot
+  // email and for writing the new config file).
+  enum PendingGetTokensRequest {
+    GET_TOKENS_NONE,
+    GET_TOKENS_DIRECTORY,
+    GET_TOKENS_HOST
+  };
+
+  void StartHostProcess();
+
+  void OnLocalHostStopped();
+  void OnHostStarted(DaemonController::AsyncResult result);
+
+  std::unique_ptr<gaia::GaiaOAuthClient> oauth_client_;
+  std::unique_ptr<remoting::ServiceClient> service_client_;
+  scoped_refptr<remoting::DaemonController> daemon_controller_;
+  std::unique_ptr<remoting::HostStopper> host_stopper_;
+  gaia::OAuthClientInfo oauth_client_info_;
+  std::string host_name_;
+  std::string host_pin_;
+  CompletionCallback on_done_;
+  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  std::string host_refresh_token_;
+  std::string host_access_token_;
+  std::string directory_access_token_;
+  std::string host_owner_;
+  std::string xmpp_login_;
+  scoped_refptr<remoting::RsaKeyPair> key_pair_;
+  std::string host_id_;
+  bool auth_code_exchanged_ = false;
+
+  // True if the host was not started and unregistration was requested. If this
+  // is set and a network/OAuth error occurs during unregistration, this will
+  // be logged, but the error will still be reported as START_ERROR.
+  bool unregistering_host_ = false;
+
+  PendingGetTokensRequest pending_get_tokens_ = GET_TOKENS_NONE;
+
+  base::WeakPtr<HostStarterImpl> weak_ptr_;
+  base::WeakPtrFactory<HostStarterImpl> weak_ptr_factory_{this};
+};
+
+HostStarterImpl::HostStarterImpl(
     std::unique_ptr<gaia::GaiaOAuthClient> oauth_client,
     std::unique_ptr<remoting::ServiceClient> service_client,
     scoped_refptr<remoting::DaemonController> daemon_controller,
@@ -36,26 +128,15 @@ HostStarter::HostStarter(
     : oauth_client_(std::move(oauth_client)),
       service_client_(std::move(service_client)),
       daemon_controller_(daemon_controller),
-      host_stopper_(std::move(host_stopper)),
-      unregistering_host_(false) {
+      host_stopper_(std::move(host_stopper)) {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
   main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
-HostStarter::~HostStarter() = default;
+HostStarterImpl::~HostStarterImpl() = default;
 
-std::unique_ptr<HostStarter> HostStarter::Create(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  auto controller = remoting::DaemonController::Create();
-  return base::WrapUnique(new HostStarter(
-      std::make_unique<gaia::GaiaOAuthClient>(url_loader_factory),
-      std::make_unique<remoting::ServiceClient>(url_loader_factory), controller,
-      std::make_unique<remoting::HostStopper>(
-          std::make_unique<remoting::ServiceClient>(url_loader_factory),
-          controller)));
-}
-
-void HostStarter::StartHost(const Params& params, CompletionCallback on_done) {
+void HostStarterImpl::StartHost(const Params& params,
+                                CompletionCallback on_done) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DCHECK(!on_done_);
 
@@ -76,13 +157,13 @@ void HostStarter::StartHost(const Params& params, CompletionCallback on_done) {
                                        kMaxGetTokensRetries, this);
 }
 
-void HostStarter::OnGetTokensResponse(const std::string& refresh_token,
-                                      const std::string& access_token,
-                                      int expires_in_seconds) {
+void HostStarterImpl::OnGetTokensResponse(const std::string& refresh_token,
+                                          const std::string& access_token,
+                                          int expires_in_seconds) {
   if (!main_task_runner_->BelongsToCurrentThread()) {
     main_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&HostStarter::OnGetTokensResponse, weak_ptr_,
+        base::BindOnce(&HostStarterImpl::OnGetTokensResponse, weak_ptr_,
                        refresh_token, access_token, expires_in_seconds));
     return;
   }
@@ -102,18 +183,18 @@ void HostStarter::OnGetTokensResponse(const std::string& refresh_token,
   oauth_client_->GetUserEmail(access_token, 1, this);
 }
 
-void HostStarter::OnRefreshTokenResponse(const std::string& access_token,
-                                         int expires_in_seconds) {
+void HostStarterImpl::OnRefreshTokenResponse(const std::string& access_token,
+                                             int expires_in_seconds) {
   // We never request a refresh token, so this call is not expected.
   NOTREACHED();
 }
 
 // This function is called twice: once with the host owner credentials, and once
 // with the service account credentials.
-void HostStarter::OnGetUserEmailResponse(const std::string& user_email) {
+void HostStarterImpl::OnGetUserEmailResponse(const std::string& user_email) {
   if (!main_task_runner_->BelongsToCurrentThread()) {
     main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&HostStarter::OnGetUserEmailResponse,
+        FROM_HERE, base::BindOnce(&HostStarterImpl::OnGetUserEmailResponse,
                                   weak_ptr_, user_email));
     return;
   }
@@ -140,7 +221,7 @@ void HostStarter::OnGetUserEmailResponse(const std::string& user_email) {
     // with the directory.
     host_stopper_->StopLocalHost(
         directory_access_token_,
-        base::BindOnce(&HostStarter::OnLocalHostStopped,
+        base::BindOnce(&HostStarterImpl::OnLocalHostStopped,
                        base::Unretained(this)));
   } else {
     // This is the second callback, with the service account credentials.
@@ -150,10 +231,10 @@ void HostStarter::OnGetUserEmailResponse(const std::string& user_email) {
   }
 }
 
-void HostStarter::OnHostRegistered(const std::string& authorization_code) {
+void HostStarterImpl::OnHostRegistered(const std::string& authorization_code) {
   if (!main_task_runner_->BelongsToCurrentThread()) {
     main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&HostStarter::OnHostRegistered, weak_ptr_,
+        FROM_HERE, base::BindOnce(&HostStarterImpl::OnHostRegistered, weak_ptr_,
                                   authorization_code));
     return;
   }
@@ -180,7 +261,7 @@ void HostStarter::OnHostRegistered(const std::string& authorization_code) {
                                        kMaxGetTokensRetries, this);
 }
 
-void HostStarter::StartHostProcess() {
+void HostStarterImpl::StartHostProcess() {
   // Start the host.
   std::string host_secret_hash = remoting::MakeHostPinHash(host_id_, host_pin_);
   base::Value::Dict config;
@@ -194,10 +275,10 @@ void HostStarter::StartHostProcess() {
 
   daemon_controller_->SetConfigAndStart(
       std::move(config), kConsentToDataCollection,
-      base::BindOnce(&HostStarter::OnHostStarted, base::Unretained(this)));
+      base::BindOnce(&HostStarterImpl::OnHostStarted, base::Unretained(this)));
 }
 
-void HostStarter::OnLocalHostStopped() {
+void HostStarterImpl::OnLocalHostStopped() {
   if (host_id_.empty()) {
     host_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
   }
@@ -211,11 +292,11 @@ void HostStarter::OnLocalHostStopped() {
                                 host_client_id, directory_access_token_, this);
 }
 
-void HostStarter::OnHostStarted(DaemonController::AsyncResult result) {
+void HostStarterImpl::OnHostStarted(DaemonController::AsyncResult result) {
   if (!main_task_runner_->BelongsToCurrentThread()) {
     main_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&HostStarter::OnHostStarted, weak_ptr_, result));
+        base::BindOnce(&HostStarterImpl::OnHostStarted, weak_ptr_, result));
     return;
   }
   if (result != DaemonController::RESULT_OK) {
@@ -226,10 +307,10 @@ void HostStarter::OnHostStarted(DaemonController::AsyncResult result) {
   std::move(on_done_).Run(START_COMPLETE);
 }
 
-void HostStarter::OnOAuthError() {
+void HostStarterImpl::OnOAuthError() {
   if (!main_task_runner_->BelongsToCurrentThread()) {
     main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&HostStarter::OnOAuthError, weak_ptr_));
+        FROM_HERE, base::BindOnce(&HostStarterImpl::OnOAuthError, weak_ptr_));
     return;
   }
 
@@ -241,11 +322,11 @@ void HostStarter::OnOAuthError() {
   std::move(on_done_).Run(unregistering_host_ ? START_ERROR : OAUTH_ERROR);
 }
 
-void HostStarter::OnNetworkError(int response_code) {
+void HostStarterImpl::OnNetworkError(int response_code) {
   if (!main_task_runner_->BelongsToCurrentThread()) {
     main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HostStarter::OnNetworkError, weak_ptr_, response_code));
+        FROM_HERE, base::BindOnce(&HostStarterImpl::OnNetworkError, weak_ptr_,
+                                  response_code));
     return;
   }
 
@@ -257,13 +338,27 @@ void HostStarter::OnNetworkError(int response_code) {
   std::move(on_done_).Run(unregistering_host_ ? START_ERROR : NETWORK_ERROR);
 }
 
-void HostStarter::OnHostUnregistered() {
+void HostStarterImpl::OnHostUnregistered() {
   if (!main_task_runner_->BelongsToCurrentThread()) {
     main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&HostStarter::OnHostUnregistered, weak_ptr_));
+        FROM_HERE,
+        base::BindOnce(&HostStarterImpl::OnHostUnregistered, weak_ptr_));
     return;
   }
   std::move(on_done_).Run(START_ERROR);
+}
+
+}  // namespace
+
+std::unique_ptr<HostStarter> HostStarter::Create(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  auto controller = remoting::DaemonController::Create();
+  return std::make_unique<HostStarterImpl>(
+      std::make_unique<gaia::GaiaOAuthClient>(url_loader_factory),
+      std::make_unique<remoting::ServiceClient>(url_loader_factory), controller,
+      std::make_unique<remoting::HostStopper>(
+          std::make_unique<remoting::ServiceClient>(url_loader_factory),
+          controller));
 }
 
 }  // namespace remoting
