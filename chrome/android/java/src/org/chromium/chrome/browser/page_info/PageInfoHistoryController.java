@@ -79,7 +79,7 @@ public class PageInfoHistoryController
     @Override
     public View createViewForSubpage(ViewGroup parent) {
         assert !mDelegate.isIncognito();
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = (Profile) mDelegate.getBrowserContext();
         mContentManager = new HistoryContentManager(mMainController.getActivity(), this,
                 /* isSeparateActivity */ false,
                 /* profile */ profile, /* shouldShowPrivacyDisclaimers */ true,
@@ -99,9 +99,10 @@ public class PageInfoHistoryController
     }
 
     private void updateLastVisit() {
-        mHistoryProvider = sProviderForTests != null
-                ? sProviderForTests
-                : new BrowsingHistoryBridge(Profile.getLastUsedRegularProfile());
+        mHistoryProvider =
+                sProviderForTests != null
+                        ? sProviderForTests
+                        : new BrowsingHistoryBridge((Profile) mDelegate.getBrowserContext());
         mHistoryProvider.getLastVisitToHostBeforeRecentNavigations(mHost, (timestamp) -> {
             mLastVisitedTimestamp = timestamp;
             if (mHistoryProvider != null) {
