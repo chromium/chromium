@@ -7682,7 +7682,7 @@
   {
     "name": "skip-service-worker-fetch-handler",
     "owners": [ "yyanagisawa@google.com", "chrome-worker@google.com" ],
-    "expiry_milestone": 119
+    "expiry_milestone": 123
   },
   {
     "name": "skip-undecryptable-passwords",
