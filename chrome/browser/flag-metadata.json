@@ -3375,7 +3375,7 @@
   {
     "name": "enable-pip-tuck",
     "owners": ["massan", "takise"],
-    "expiry_milestone": 124  
+    "expiry_milestone": 124
   },
   {
     "name": "enable-pixel-canvas-recording",
@@ -6238,17 +6238,17 @@
   {
     "name": "omnibox-ml-log-url-scoring-signals",
     "owners": [ "junzou", "yoangela", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "omnibox-ml-url-scoring",
     "owners": ["yoangela", "junzou", "chrome-desktop-search@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "omnibox-ml-url-scoring-model",
     "owners": [ "junzou", "yoangela", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "omnibox-modernize-visual-update",
