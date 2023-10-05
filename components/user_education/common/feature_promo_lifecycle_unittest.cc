@@ -80,7 +80,8 @@ class FeaturePromoLifecycleTest : public testing::Test {
   FeaturePromoResult GetSnoozedResult() const {
     return promo_subtype() == PromoSubtype::kNormal &&
                    (promo_type() == PromoType::kSnooze ||
-                    promo_type() == PromoType::kTutorial)
+                    promo_type() == PromoType::kTutorial ||
+                    promo_type() == PromoType::kCustomAction)
                ? FeaturePromoResult::kSnoozed
                : FeaturePromoResult::Success();
   }
@@ -387,8 +388,7 @@ TEST_P(FeaturePromoLifecycleTypesTest, BlockDismissedIPH) {
   lifecycle = CreateLifecycle(kTestIPHFeature);
   const auto expect_can_show = (promo_subtype() == PromoSubtype::kNormal &&
                                 (promo_type() == PromoType::kLegacy ||
-                                 promo_type() == PromoType::kToast ||
-                                 promo_type() == PromoType::kCustomAction))
+                                 promo_type() == PromoType::kToast))
                                    ? FeaturePromoResult::Success()
                                    : FeaturePromoResult::kPermanentlyDismissed;
   EXPECT_EQ(expect_can_show, lifecycle->CanShow());
