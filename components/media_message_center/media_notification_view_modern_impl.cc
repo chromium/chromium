@@ -564,7 +564,7 @@ void MediaNotificationViewModernImpl::UpdateWithVolume(float volume) {
 
 void MediaNotificationViewModernImpl::UpdateDeviceSelectorVisibility(
     bool visible) {
-  GetMediaNotificationBackground()->UpdateDeviceSelectorAvailability(visible);
+  GetMediaNotificationBackground()->UpdateDeviceSelectorVisibility(visible);
 }
 
 void MediaNotificationViewModernImpl::UpdateActionButtonsVisibility() {

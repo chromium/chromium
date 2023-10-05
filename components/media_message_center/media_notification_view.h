@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationView
   virtual void UpdateWithVolume(float volume) = 0;
 
   // Called to update MediaNotificationView based on whether the device selector
-  // view is visible to users.
+  // view has been expanded and devices are visible to users.
   virtual void UpdateDeviceSelectorVisibility(bool visible) = 0;
 
   // Called to update MediaNotificationView based on whether the device selector

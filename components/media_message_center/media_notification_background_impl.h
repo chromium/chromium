@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationBackgroundImpl
   bool UpdateCornerRadius(int top_radius, int bottom_radius) override;
   bool UpdateArtworkMaxWidthPct(double max_width_pct) override;
   void UpdateFavicon(const gfx::ImageSkia& icon) override;
-  void UpdateDeviceSelectorAvailability(bool availability) override;
+  void UpdateDeviceSelectorVisibility(bool visible) override;
 
   SkColor GetBackgroundColor(const views::View& owner) const override;
   SkColor GetForegroundColor(const views::View& owner) const override;
@@ -81,7 +81,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationBackgroundImpl
   gfx::ImageSkia favicon_;
   gfx::ImageSkia artwork_;
   double artwork_max_width_pct_;
-  bool audio_device_selector_availability_ = false;
+  bool audio_device_selector_visible_ = false;
 
   absl::optional<SkColor> background_color_;
   absl::optional<SkColor> foreground_color_;

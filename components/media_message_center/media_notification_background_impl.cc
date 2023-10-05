@@ -317,7 +317,7 @@ void MediaNotificationBackgroundImpl::Paint(gfx::Canvas* canvas,
     canvas->DrawRect(draw_bounds, flags);
   }
 
-  if (audio_device_selector_availability_) {
+  if (audio_device_selector_visible_) {
     // Draw a gradient to fade the color background of the audio device picker
     // and the image together.
     gfx::Rect draw_bounds = GetBottomGradientBounds(*view);
@@ -381,12 +381,9 @@ void MediaNotificationBackgroundImpl::UpdateFavicon(
   UpdateColorsInternal();
 }
 
-void MediaNotificationBackgroundImpl::UpdateDeviceSelectorAvailability(
-    bool availability) {
-  if (audio_device_selector_availability_ == availability)
-    return;
-
-  audio_device_selector_availability_ = availability;
+void MediaNotificationBackgroundImpl::UpdateDeviceSelectorVisibility(
+    bool visible) {
+  audio_device_selector_visible_ = visible;
 }
 
 SkColor MediaNotificationBackgroundImpl::GetBackgroundColor(
