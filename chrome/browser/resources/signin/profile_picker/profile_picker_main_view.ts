@@ -181,12 +181,6 @@ export class ProfilePickerMainViewElement extends
       this.dragDelegate_ = new DragDropReorderTileListDelegate(
           this, this, 'profilesList_', this.profilesList_.length,
           this.dragDuration_);
-
-      listenOnce(this, 'dom-change', () => {
-        afterNextRender(this, () => {
-          this.dragDelegate_!.initializeListeners();
-        });
-      });
     }
   }
 
@@ -197,7 +191,11 @@ export class ProfilePickerMainViewElement extends
     this.profilesListLoaded_ = true;
     this.profilesList_ = profilesList;
 
-    this.initializeDragDelegate_();
+    listenOnce(this, 'dom-change', () => {
+      afterNextRender(this, () => {
+        this.initializeDragDelegate_();
+      });
+    });
   }
 
   /**

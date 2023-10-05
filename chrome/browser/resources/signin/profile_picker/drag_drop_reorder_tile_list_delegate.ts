@@ -57,10 +57,11 @@ export interface DraggableTileListInterface {
 // - 'dragend': triggered once when a tile drag stops, after a drop.
 // A full drag event cycle starts with 'dragstart' and ends with 'dragend'.
 //
-// To activate the drag and drop functionality, a call to
-// `initializeListeners()` (only once) will attach all necessary 'drag-' event
-// listeners to the proper tiles. This method must be called once the HTML
-// tiles, that are intended to be drag and dropped, are properly rendered.
+// The drag and drop functionality will be active once this object is
+// initialized, a call to `initializeListeners_()` will attach all necessary
+// 'drag-' event listeners to the proper tiles. This instance should be
+// constructed once the HTML tiles, that are intended to be drag and dropped,
+// are properly rendered.
 export class DragDropReorderTileListDelegate {
   private polymerElement_: PolymerElement;
   private tileListInterface_: DraggableTileListInterface;
@@ -68,7 +69,6 @@ export class DragDropReorderTileListDelegate {
   private tileCount_: number;
   private transitionDuration_: number;  // Unit: ms.
 
-  private initialized_ = false;
   private isDragEnabled_ = true;
 
   private isDragging_: boolean = false;
@@ -92,16 +92,36 @@ export class DragDropReorderTileListDelegate {
     this.transitionDuration_ = transitionDuration;
 
     this.eventTracker_ = new EventTracker();
+
+    this.initializeListeners_();
   }
+
+  // Clear all drag events listeners and reset tiles drag state.
+  clearListeners() {
+    for (let i = 0; i < this.tileCount_; ++i) {
+      const tile = this.getDraggableTile_(i);
+      tile.draggable = false;
+    }
+
+    this.eventTracker_.removeAll();
+  }
+
+  // Toggle the dragging properties of the tiles on or off.
+  // This could be useful to temporarily turning off the functionality (e.g.
+  // when hovering over some editable elements that are part of a draggable
+  // tile).
+  toggleDrag(toggle: boolean) {
+    this.isDragEnabled_ = toggle;
+  }
+
+  // ---------------------------------------------------------------------------
+  // private section
 
   // Initialize tiles to be able to react to drag events and shift with
   // transition effect based on the 'transform' property.
   // Expected to be called once so that a single event of each type is added to
   // the tiles.
-  initializeListeners() {
-    assert(!this.initialized_);
-    this.initialized_ = true;
-
+  private initializeListeners_() {
     for (let i = 0; i < this.tileCount_; ++i) {
       const tile = this.getDraggableTile_(i);
       tile.draggable = true;
@@ -143,32 +163,6 @@ export class DragDropReorderTileListDelegate {
           event.preventDefault();
         });
   }
-
-  // Clear all drag events listeners and reset tiles drag state.
-  clearListeners() {
-    if (!this.initialized_) {
-      return;
-    }
-
-    for (let i = 0; i < this.tileCount_; ++i) {
-      const tile = this.getDraggableTile_(i);
-      tile.draggable = false;
-    }
-
-    this.eventTracker_.removeAll();
-  }
-
-  // Toggle the dragging properties of the tiles on or off.
-  // This could be useful to temporarily turning off the functionality (e.g.
-  // when hovering over some editable elements that are part of a draggable
-  // tile).
-  toggleDrag(toggle: boolean) {
-    assert(this.initialized_);
-    this.isDragEnabled_ = toggle;
-  }
-
-  // ---------------------------------------------------------------------------
-  // private section
 
   // Event 'dragstart' is applied on the tile that will be dragged. We store the
   // tile being dragged in temporary member variables that will be used
