@@ -782,17 +782,17 @@
   {
     "name": "back-gesture-activity-tab-provider",
     "owners": ["lazzzis@google.com", "donnd", "twellington"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "back-gesture-refactor-activity-android",
     "owners": ["lazzzis@google.com", "jinsukkim", "twellington"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "back-gesture-refactor-android",
     "owners": ["lazzzis@google.com", "jinsukkim", "twellington"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "background-resource-fetch",
@@ -5637,7 +5637,7 @@
   {
     "name": "messages-for-android-infrastructure",
     "owners": [ "lazzzis", "aishwaryarj" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "messages-for-android-offer-notification",
