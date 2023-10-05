@@ -243,9 +243,10 @@ export class PowerBookmarksService {
       let topLevelBookmarks: chrome.bookmarks.BookmarkTreeNode[] = [];
       this.folders_.forEach(
           folder => topLevelBookmarks = topLevelBookmarks.concat(
-              (folder.id === loadTimeData.getString('bookmarksBarId')) ?
-                  [folder] :
-                  folder.children!));
+              (folder.id === loadTimeData.getString('otherBookmarksId') ||
+               folder.id === loadTimeData.getString('mobileBookmarksId')) ?
+                  folder.children! :
+                  [folder]));
       bookmarks = topLevelBookmarks;
     }
     if (searchQuery || labels.find((label) => label.active)) {
