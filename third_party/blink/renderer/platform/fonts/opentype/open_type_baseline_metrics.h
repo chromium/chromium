@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_BASELINE_METRICS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_BASELINE_METRICS_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 
@@ -29,7 +28,9 @@ class PLATFORM_EXPORT OpenTypeBaselineMetrics {
   absl::optional<float> OpenTypeIdeographicBaseline();
 
  private:
-  raw_ptr<hb_font_t, ExperimentalRenderer> font_;
+  // TODO(crbug.com/1489080): When this member was briefly given
+  // MiraclePtr protection, it was found to be dangling.
+  hb_font_t* font_;
   hb_direction_t hb_dir_;
 };
 

@@ -39,7 +39,6 @@
 #include <type_traits>
 
 #include "base/check_op.h"
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -159,9 +158,9 @@ struct ShapeResult::RunInfo final : public RefCounted<ShapeResult::RunInfo> {
                                       unsigned end_character_index) const;
     unsigned size() const { return static_cast<unsigned>(end - begin); }
 
-    raw_ptr<const HarfBuzzRunGlyphData, ExperimentalRenderer> begin = nullptr;
-    raw_ptr<const HarfBuzzRunGlyphData, ExperimentalRenderer> end = nullptr;
-    raw_ptr<const GlyphOffset, ExperimentalRenderer> offsets = nullptr;
+    const HarfBuzzRunGlyphData* begin = nullptr;
+    const HarfBuzzRunGlyphData* end = nullptr;
+    const GlyphOffset* offsets = nullptr;
   };
 
   // Find the range of HarfBuzzRunGlyphData for the specified character index
@@ -179,8 +178,8 @@ struct ShapeResult::RunInfo final : public RefCounted<ShapeResult::RunInfo> {
     DCHECK(end > start);
     unsigned number_of_characters = std::min(end - start, num_characters_);
     auto glyphs = FindGlyphDataRange(start, end);
-    unsigned number_of_glyphs = static_cast<unsigned>(
-        std::distance(glyphs.begin.get(), glyphs.end.get()));
+    unsigned number_of_glyphs =
+        static_cast<unsigned>(std::distance(glyphs.begin, glyphs.end));
     if (UNLIKELY(!number_of_glyphs))
       return nullptr;
 
@@ -350,8 +349,7 @@ struct ShapeResult::RunInfo final : public RefCounted<ShapeResult::RunInfo> {
         storage_.reset();
         return;
       }
-      std::copy(range.offsets.get(), (range.offsets + range.size()).get(),
-                AllocateStorage());
+      std::copy(range.offsets, range.offsets + range.size(), AllocateStorage());
     }
 
     GlyphOffset* GetStorage() const { return storage_.get(); }
@@ -472,7 +470,7 @@ struct ShapeResult::RunInfo final : public RefCounted<ShapeResult::RunInfo> {
     void CopyFromRange(const GlyphDataRange& range) {
       CHECK_EQ(static_cast<size_t>(range.end - range.begin), size());
       static_assert(std::is_trivially_copyable_v<HarfBuzzRunGlyphData>);
-      std::copy(range.begin.get(), range.end.get(), data_.get());
+      std::copy(range.begin, range.end, data_.get());
       offsets_.CopyFromRange(range);
     }
 
@@ -592,7 +590,7 @@ struct ShapeResult::RunInfo::GlyphOffsetArray::iterator<true> final {
   GlyphOffset operator*() const { return *pointer; }
   void operator++() { ++pointer; }
 
-  raw_ptr<const GlyphOffset, ExperimentalRenderer> pointer;
+  const GlyphOffset* pointer;
 };
 
 // For zero glyph offset array
@@ -618,12 +616,12 @@ ShapeResult::RunInfo::GlyphDataRange::FindGlyphDataRange(
     return glyph_data.character_index < index;
   };
   if (!is_rtl) {
-    const HarfBuzzRunGlyphData* start_glyph = std::lower_bound(
-        begin.get(), end.get(), start_character_index, comparer);
+    const HarfBuzzRunGlyphData* start_glyph =
+        std::lower_bound(begin, end, start_character_index, comparer);
     if (UNLIKELY(start_glyph == end))
       return GlyphDataRange();
     const HarfBuzzRunGlyphData* end_glyph =
-        std::lower_bound(start_glyph, end.get(), end_character_index, comparer);
+        std::lower_bound(start_glyph, end, end_character_index, comparer);
     if (offsets)
       return {start_glyph, end_glyph, offsets + (start_glyph - begin)};
     return {start_glyph, end_glyph, nullptr};
@@ -631,10 +629,8 @@ ShapeResult::RunInfo::GlyphDataRange::FindGlyphDataRange(
 
   // RTL needs to use reverse iterators because there maybe multiple glyphs
   // for a character, and we want to find the first one in the logical order.
-  const auto rbegin =
-      std::reverse_iterator<const HarfBuzzRunGlyphData*>(end.get());
-  const auto rend =
-      std::reverse_iterator<const HarfBuzzRunGlyphData*>(begin.get());
+  const auto rbegin = std::reverse_iterator<const HarfBuzzRunGlyphData*>(end);
+  const auto rend = std::reverse_iterator<const HarfBuzzRunGlyphData*>(begin);
   const auto start_glyph_it =
       std::lower_bound(rbegin, rend, start_character_index, comparer);
   if (UNLIKELY(start_glyph_it == rend))

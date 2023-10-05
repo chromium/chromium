@@ -35,7 +35,6 @@
 
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "third_party/blink/renderer/platform/fonts/canvas_rotation_in_vertical.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
@@ -316,7 +315,9 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
 
     unsigned start;
     unsigned end;
-    raw_ptr<ShapeResult, ExperimentalRenderer> target;
+    // TODO(crbug.com/1489080): When this member was given MiraclePtr
+    // protection, it was found dangling.
+    ShapeResult* target;
   };
 
   // Copy a set of sequential ranges. The ranges may not overlap and the offsets
