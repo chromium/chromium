@@ -342,6 +342,9 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeConsumersLocalPasswordsEnabled",
                      features::AreLocalPasswordsEnabledForConsumers());
 
+  source->AddBoolean("isPasswordlessGaiaEnabledForConsumers",
+                     features::IsPasswordlessGaiaEnabledForConsumers());
+
   // Configure shared resources
   AddProductLogoResources(source);
   if (ash::features::IsOobeSimonEnabled()) {
