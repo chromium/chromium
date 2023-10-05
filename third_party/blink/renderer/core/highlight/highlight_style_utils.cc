@@ -486,6 +486,11 @@ absl::optional<Color> HighlightStyleUtils::HighlightTextDecorationColor(
 bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
     const Node& node,
     DocumentMarker::MarkerType type) {
+  if ((type == DocumentMarker::kSpelling || type == DocumentMarker::kGrammar) &&
+      RuntimeEnabledFeatures::CSSPaintingForSpellingGrammarErrorsEnabled()) {
+    return true;
+  }
+
   // Custom highlights are handled separately. Here we just need to handle
   // spelling, grammar and target-text. Note that we assume
   // RuntimeEnabledFeatures::HighlightInheritanceEnabled() is true to avoid
@@ -503,17 +508,13 @@ bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
       break;
 
     case DocumentMarker::kSpelling:
-      if (RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled() ||
-          RuntimeEnabledFeatures::
-              CSSPaintingForSpellingGrammarErrorsEnabled()) {
+      if (RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
         pseudo_style = style->HighlightData().SpellingError();
       }
       break;
 
     case DocumentMarker::kGrammar:
-      if (RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled() ||
-          RuntimeEnabledFeatures::
-              CSSPaintingForSpellingGrammarErrorsEnabled()) {
+      if (RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
         pseudo_style = style->HighlightData().GrammarError();
       }
       break;
