@@ -114,15 +114,29 @@ const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[] =
 const char kSearchEngineChoiceScreenEventsHistogram[] =
     "Search.ChoiceScreenEvents";
 
+// Returns whether the choice screen flag is generally enabled for the specific
+// user flow.
+bool IsChoiceScreenFlagEnabled(ChoicePromo promo) {
+  switch (promo) {
+    case ChoicePromo::kAny:
+      return base::FeatureList::IsEnabled(switches::kSearchEngineChoice) ||
+             base::FeatureList::IsEnabled(switches::kSearchEngineChoiceFre);
+    case ChoicePromo::kDialog:
+      return base::FeatureList::IsEnabled(switches::kSearchEngineChoice);
+    case ChoicePromo::kFre:
+      return base::FeatureList::IsEnabled(switches::kSearchEngineChoiceFre);
+  }
+}
+
 bool ShouldShowUpdatedSettings(PrefService& profile_prefs) {
-  return base::FeatureList::IsEnabled(switches::kSearchEngineChoice) &&
+  return IsChoiceScreenFlagEnabled(ChoicePromo::kAny) &&
          IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(&profile_prefs));
 }
 
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
                             const ProfileProperties& profile_properties,
                             TemplateURLService* template_url_service) {
-  if (!base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+  if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
     return false;
   }
 

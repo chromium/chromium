@@ -20,10 +20,10 @@
 #include "chrome/grit/search_engine_choice_resources_map.h"
 #include "chrome/grit/signin_resources.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -142,7 +142,8 @@ std::string GetChoiceListJSON(Profile& profile) {
 SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true),
       profile_(CHECK_DEREF(Profile::FromWebUI(web_ui))) {
-  CHECK(base::FeatureList::IsEnabled(switches::kSearchEngineChoice));
+  CHECK(search_engines::IsChoiceScreenFlagEnabled(
+      search_engines::ChoicePromo::kAny));
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),

@@ -95,11 +95,11 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "components/security_interstitials/content/connection_help_ui.h"
 #include "components/security_interstitials/content/known_interception_disclosure_ui.h"
 #include "components/security_interstitials/content/urls.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/web_contents.h"
@@ -713,7 +713,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   if (url.host_piece() == chrome::kChromeUISearchEngineChoiceHost &&
-      base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+      search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
     return &NewWebUI<SearchEngineChoiceUI>;
   }
 #endif

@@ -82,11 +82,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "components/translate/content/common/translate.mojom.h"
@@ -1084,7 +1084,8 @@ void PopulateChromeWebUIFrameBinders(
 #endif
 
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+  if (search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
     RegisterWebUIControllerInterfaceBinder<
         search_engine_choice::mojom::PageHandlerFactory, SearchEngineChoiceUI>(
         map);

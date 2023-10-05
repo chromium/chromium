@@ -268,7 +268,8 @@ TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenWithForceCommandLineFlag) {
 // Ensure that the choice screen doesn't get displayed if the flag is disabled.
 TEST_F(SearchEngineChoiceUtilsTest, DoNotShowChoiceScreenIfFlagIsDisabled) {
   feature_list()->Reset();
-  feature_list()->InitAndDisableFeature(switches::kSearchEngineChoice);
+  feature_list()->InitWithFeatures(
+      {}, {switches::kSearchEngineChoice, switches::kSearchEngineChoiceFre});
   VerifyNotEligibleAndWillNotShowChoiceScreen(
       policy_service(), /*profile_properties=*/
       {.is_regular_profile = true, .pref_service = pref_service()},

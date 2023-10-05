@@ -19,12 +19,12 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
-#include "components/signin/public/base/signin_switches.h"
 
 std::u16string GetDefaultSearchEngineName(TemplateURLService* service) {
   DCHECK(service);
@@ -320,7 +320,8 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
 }
 
 const std::string& GetDefaultSearchProviderPrefValue(PrefService& prefs) {
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+  if (search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
     const auto& default_search_provider =
         prefs.GetString(prefs::kDefaultSearchProviderGUID);
 
@@ -341,7 +342,8 @@ const std::string& GetDefaultSearchProviderPrefValue(PrefService& prefs) {
 
 void SetDefaultSearchProviderPrefValue(PrefService& prefs,
                                        const std::string& value) {
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+  if (search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
     prefs.SetString(prefs::kDefaultSearchProviderGUID, value);
   } else {
     prefs.SetString(prefs::kSyncedDefaultSearchProviderGUID, value);

@@ -66,6 +66,18 @@ struct ProfileProperties {
   raw_ptr<PrefService> pref_service;
 };
 
+enum class ChoicePromo {
+  // Any path of getting the choice screen.
+  kAny = 0,
+  // Showing the screen to existing users in a dialog.
+  kDialog = 1,
+  // Showing to new users in the First Run Experience.
+  kFre = 2,
+};
+
+// Whether the choice screen flag is generally enabled for the specific flow.
+bool IsChoiceScreenFlagEnabled(ChoicePromo promo);
+
 // Returns which version of the settings screen for the default search engine
 // setting should be shown.
 bool ShouldShowUpdatedSettings(PrefService& profile_prefs);

@@ -146,7 +146,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/search/ntp_features.h"
-#include "components/signin/public/base/signin_switches.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/supervised_user/core/common/buildflags.h"
@@ -547,7 +547,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     PrivacySandboxPromptHelper::CreateForWebContents(web_contents);
 
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+  if (search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kDialog)) {
     SearchEngineChoiceTabHelper::CreateForWebContents(web_contents);
   }
 #endif

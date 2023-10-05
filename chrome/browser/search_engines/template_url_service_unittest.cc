@@ -222,8 +222,10 @@ TemplateURLServiceTest::TemplateURLServiceTest() {
 
   if (IsSearchEngineChoiceEnabled()) {
     enabled_features.push_back(switches::kSearchEngineChoice);
+    enabled_features.push_back(switches::kSearchEngineChoiceFre);
   } else {
     disabled_features.push_back(switches::kSearchEngineChoice);
+    disabled_features.push_back(switches::kSearchEngineChoiceFre);
   }
   feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
