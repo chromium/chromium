@@ -29,11 +29,6 @@ BASE_DECLARE_FEATURE(kClearOldNavigationRecordsWorkaround);
 // Feature flag enabling persistent downloads.
 BASE_DECLARE_FEATURE(kEnablePersistentDownloads);
 
-// Records snapshot size of image (IOS.Snapshots.ImageSize histogram) and PDF
-// (IOS.Snapshots.PDFSize histogram) if enabled. Enabling this flag will
-// generate PDF when Page Snapshot is taken just to record PDF size.
-BASE_DECLARE_FEATURE(kRecordSnapshotSize);
-
 // When enabled, the `attribution` property of NSMutableURLRequests passed to
 // WKWebView is set as NSURLRequestAttributionUser on iOS 15.
 BASE_DECLARE_FEATURE(kSetRequestAttribution);

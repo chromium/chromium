@@ -30,10 +30,6 @@ BASE_FEATURE(kEnablePersistentDownloads,
              "EnablePersistentDownloads",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRecordSnapshotSize,
-             "RecordSnapshotSize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSetRequestAttribution,
              "SetRequestAttribution",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -13,7 +13,6 @@
 #import "base/ios/ios_util.h"
 #import "base/json/string_escape.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -735,30 +734,6 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
                       }
                       completion(nil);
                     } else {
-                      if (@available(iOS 14, *)) {
-                        if (base::FeatureList::IsEnabled(
-                                web::features::kRecordSnapshotSize)) {
-                          size_t imageSize =
-                              CGImageGetBytesPerRow(snapshot.CGImage) *
-                              CGImageGetHeight(snapshot.CGImage);
-                          WKPDFConfiguration* config =
-                              [[WKPDFConfiguration alloc] init];
-                          config.rect = convertedRect;
-                          [self.webView
-                              createPDFWithConfiguration:config
-                                       completionHandler:^(NSData* PDF,
-                                                           NSError*) {
-                                         size_t PDFSize = PDF.length;
-                                         base::UmaHistogramMemoryKB(
-                                             "IOS.Snapshots.ImageSize",
-                                             imageSize / 1024);
-                                         base::UmaHistogramMemoryKB(
-                                             "IOS.Snapshots.PDFSize",
-                                             PDFSize / 1024);
-                                       }];
-                        }
-                      }
-
                       completion(snapshot);
                     }
                   }];
