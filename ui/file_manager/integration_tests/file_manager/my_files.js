@@ -296,7 +296,7 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
   await remoteCall.waitFor('getVolumesCount', null, (count) => count === 2, []);
 
   // Android volume should automatically appear on directory tree and file list.
-  await directoryTree.selectItemByLabel('Play files');
+  await directoryTree.waitForItemByLabel('Play files');
   await remoteCall.waitForFiles(
       appId, [downloadsRow, playFilesRow, crostiniRow],
       {ignoreFileSize: true, ignoreLastModifiedTime: true});

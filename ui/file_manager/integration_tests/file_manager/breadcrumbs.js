@@ -57,10 +57,10 @@ testcase.breadcrumbsDownloadsTranslation = async () => {
 
   // Expand Downloads folder.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  directoryTree.expandTreeItemByLabel('Transferências');
+  directoryTree.expandTreeItemByPath('/Downloads');
 
   // Navigate to Downloads/photos.
-  await directoryTree.selectItemByLabel('photos');
+  await directoryTree.selectItemByPath('/Downloads/photos');
 
   // Wait and check breadcrumb translation.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(

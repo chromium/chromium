@@ -890,6 +890,16 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Select the tree item by its path.
+   *
+   * @param {string} path Full path of the tree item.
+   * @return {!Promise<void>}
+   */
+  async selectItemByPath(path) {
+    await this.selectItem_(this.selectors_.itemByPath(path));
+  }
+
+  /**
    * Select the group root tree item (e.g. entry list) by its type.
    *
    * @param {string} type Type of the tree item.
