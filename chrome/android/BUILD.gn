@@ -110,6 +110,7 @@ if (current_toolchain == default_toolchain) {
                                "is_monochrome",
                                "is_trichrome",
                                "lint_baseline_file",
+                               "lint_gen_dir",
                                "lint_min_sdk_version",
                                "lint_suppressions_file",
                                "static_library_provider",
@@ -2656,6 +2657,18 @@ if (current_toolchain == default_toolchain) {
     resources_package = "org.chromium.chrome.base"
   }
 
+  if (android_64bit_target_cpu) {
+    _main_monochrome_public_bundle_target = "monochrome_32_64_public_bundle"
+    _main_monochrome_public_apk_target = "monochrome_32_64_public_apk"
+    _main_trichrome_chrome_bundle_target = "trichrome_chrome_32_64_bundle"
+    _main_trichrome_library_apk_target = "trichrome_library_32_64_apk"
+  } else {
+    _main_monochrome_public_bundle_target = "monochrome_public_bundle"
+    _main_monochrome_public_apk_target = "monochrome_public_apk"
+    _main_trichrome_chrome_bundle_target = "trichrome_chrome_bundle"
+    _main_trichrome_library_apk_target = "trichrome_library_apk"
+  }
+
   if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
     group("trichrome_library_apk") {
       deps = [ ":trichrome_library_64_apk" ]
@@ -2664,7 +2677,15 @@ if (current_toolchain == default_toolchain) {
       deps = [ ":monochrome_64_public_apk" ]
     }
   } else {
-    chrome_public_apk_or_module_tmpl("monochrome_public_apk") {
+    if (android_64bit_target_cpu) {
+      alias_with_wrapper_script("trichrome_library_apk") {
+        alias_target = ":trichrome_library_32_64_apk"
+      }
+      alias_with_wrapper_script("monochrome_public_apk") {
+        alias_target = ":monochrome_32_64_public_apk"
+      }
+    }
+    chrome_public_apk_or_module_tmpl(_main_monochrome_public_apk_target) {
       is_monochrome = true
       apk_name = "MonochromePublic"
       target_type = "android_apk"
@@ -2674,7 +2695,7 @@ if (current_toolchain == default_toolchain) {
       }
     }
 
-    trichrome_library_apk_tmpl("trichrome_library_apk") {
+    trichrome_library_apk_tmpl(_main_trichrome_library_apk_target) {
       apk_name = "TrichromeLibrary"
 
       if (android_64bit_target_cpu) {
@@ -2687,8 +2708,7 @@ if (current_toolchain == default_toolchain) {
             "expectations/trichrome_library_apk.AndroidManifest.expected"
       }
       if (enable_libs_and_assets_verification) {
-        expected_libs_and_assets =
-            "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+        expected_libs_and_assets = "expectations/trichrome_library_apk.$target_cpu.libs_and_assets.expected"
       }
     }
 
@@ -2959,7 +2979,7 @@ if (current_toolchain == default_toolchain) {
             "$root_build_dir/apks/MonochromePublic64.apk.mapping"
       }
     } else {
-      apk_under_test = ":monochrome_public_apk"
+      apk_under_test = ":$_main_monochrome_public_apk_target"
       if (!is_java_debug) {
         proguard_mapping_path =
             "$root_build_dir/apks/MonochromePublic.apk.mapping"
@@ -3021,7 +3041,8 @@ if (current_toolchain == default_toolchain) {
             "$root_build_dir/apks/MonochromePublic64.aab.mapping"
       }
     } else {
-      apk_under_test = "//chrome/android:monochrome_public_bundle_apks"
+      apk_under_test =
+          "//chrome/android:${_main_monochrome_public_bundle_target}_apks"
       if (!is_java_debug) {
         proguard_mapping_path =
             "$root_build_dir/apks/MonochromePublic.aab.mapping"
@@ -3078,7 +3099,8 @@ if (current_toolchain == default_toolchain) {
       }
     } else {
       apk_under_test = "//chrome/android:trichrome_chrome_bundle_apks"
-      additional_apks = [ "//chrome/android:trichrome_library_apk" ]
+      additional_apks =
+          [ "//chrome/android:$_main_trichrome_library_apk_target" ]
       if (!is_java_debug) {
         proguard_mapping_path =
             "$root_build_dir/apks/TrichromeChrome.aab.mapping"
@@ -3132,7 +3154,7 @@ if (current_toolchain == default_toolchain) {
       assert(disable_android_lint)
     }
     if (!disable_android_lint) {
-      deps = [ ":monochrome_public_bundle__lint" ]
+      deps = [ ":${_main_monochrome_public_bundle_target}__lint" ]
       if (defined(additional_chrome_lint_targets)) {
         deps += additional_chrome_lint_targets
       }
@@ -3147,9 +3169,18 @@ if (current_toolchain == default_toolchain) {
       deps = [ ":trichrome_chrome_64_bundle" ]
     }
   } else {
+    if (android_64bit_target_cpu) {
+      alias_with_wrapper_script("monochrome_public_bundle") {
+        alias_target = ":monochrome_32_64_public_bundle"
+      }
+      alias_with_wrapper_script("trichrome_chrome_bundle") {
+        alias_target = ":trichrome_chrome_32_64_bundle"
+      }
+    }
+
     # Public webview targets don't work with non-public sdks.
     # https://crbug.com/1000763
-    chrome_public_bundle("monochrome_public_bundle") {
+    chrome_public_bundle(_main_monochrome_public_bundle_target) {
       is_monochrome = true
       bundle_name = "MonochromePublic"
 
@@ -3159,6 +3190,11 @@ if (current_toolchain == default_toolchain) {
       enable_lint = true
       lint_baseline_file = "expectations/lint-baseline.xml"
       lint_suppressions_file = "expectations/lint-suppressions.xml"
+
+      # Since this target's name changes if we are 32 or 64 bit, we want to keep
+      # the gen_dir the same for the lint baseline files.
+      lint_gen_dir = "$target_gen_dir/monochrome_public_bundle__lint"
+
       add_view_trace_events = true
 
       if (android_64bit_target_cpu) {
@@ -3171,15 +3207,14 @@ if (current_toolchain == default_toolchain) {
             "expectations/monochrome_public_bundle.proguard_flags.expected"
       }
       if (enable_libs_and_assets_verification) {
-        expected_libs_and_assets =
-            "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+        expected_libs_and_assets = "expectations/monochrome_public_bundle.$target_cpu.libs_and_assets.expected"
       }
     }
 
     if (is_official_build) {
       # Used for binary size monitoring.
       create_app_bundle_minimal_apks("monochrome_public_minimal_apks") {
-        deps = [ ":monochrome_public_bundle" ]
+        deps = [ ":$_main_monochrome_public_bundle_target" ]
         bundle_path = "$root_build_dir/apks/MonochromePublic.aab"
       }
 
@@ -3207,10 +3242,10 @@ if (current_toolchain == default_toolchain) {
       }
     }
 
-    chrome_public_bundle("trichrome_chrome_bundle") {
+    chrome_public_bundle(_main_trichrome_chrome_bundle_target) {
       is_trichrome = true
       bundle_name = "TrichromeChrome"
-      static_library_provider = ":trichrome_library_apk"
+      static_library_provider = ":$_main_trichrome_library_apk_target"
       add_view_trace_events = true
       art_profile_path = "//chrome/android/baseline_profiles/profile.txt"
       if (android_64bit_target_cpu) {
@@ -3223,14 +3258,13 @@ if (current_toolchain == default_toolchain) {
         expected_android_manifest = "expectations/trichrome_chrome_bundle__base.AndroidManifest.expected"
       }
       if (enable_libs_and_assets_verification) {
-        expected_libs_and_assets =
-            "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+        expected_libs_and_assets = "expectations/trichrome_chrome_bundle.$target_cpu.libs_and_assets.expected"
       }
     }
 
     # Creates .zip of .apk splits suitable for the Android system image.
     system_image_apks("trichrome_chrome_system_zip") {
-      apk_or_bundle_target = ":trichrome_chrome_bundle"
+      apk_or_bundle_target = ":$_main_trichrome_chrome_bundle_target"
       input_apk_or_bundle = "$root_out_dir/apks/TrichromeChrome.aab"
       output = "$root_out_dir/apks/TrichromeChromeSystem.zip"
       stub_output = "$root_out_dir/apks/TrichromeChrome-Stub.apk"
@@ -3238,7 +3272,7 @@ if (current_toolchain == default_toolchain) {
 
     # Combines all splits into a single .apk for the Android system image.
     system_image_apks("trichrome_chrome_system_apk") {
-      apk_or_bundle_target = ":trichrome_chrome_bundle"
+      apk_or_bundle_target = ":$_main_trichrome_chrome_bundle_target"
       input_apk_or_bundle = "$root_out_dir/apks/TrichromeChrome.aab"
       output = "$root_out_dir/apks/TrichromeChromeSystem.apk"
       fuse_apk = true
@@ -3299,13 +3333,13 @@ if (current_toolchain == default_toolchain) {
       } else {
         # Used for binary size monitoring.
         create_app_bundle_minimal_apks("trichrome_chrome_minimal_apks") {
-          deps = [ ":trichrome_chrome_bundle" ]
+          deps = [ ":$_main_trichrome_chrome_bundle_target" ]
           bundle_path = "$root_build_dir/apks/TrichromeChrome.aab"
         }
         group("trichrome_32_minimal_apks") {
           deps = [
+            ":$_main_trichrome_library_apk_target",
             ":trichrome_chrome_minimal_apks",
-            ":trichrome_library_apk",
             "//android_webview:trichrome_webview_minimal_apks",
           ]
         }
@@ -3915,10 +3949,9 @@ if (current_toolchain == default_toolchain &&
     deps = []
     if (enable_libs_and_assets_verification) {
       deps += [
-        ":monochrome_public_bundle_validate_libs_and_assets",
-        ":trichrome_chrome_bundle_validate_libs_and_assets",
-        ":trichrome_library_apk_validate_libs_and_assets",
-        "//android_webview:trichrome_webview_bundle_validate_libs_and_assets",
+        ":${_main_monochrome_public_bundle_target}_validate_libs_and_assets",
+        ":${_main_trichrome_chrome_bundle_target}_validate_libs_and_assets",
+        ":${_main_trichrome_library_apk_target}_validate_libs_and_assets",
       ]
       if (android_64bit_target_cpu) {
         deps += [
@@ -3928,21 +3961,35 @@ if (current_toolchain == default_toolchain &&
           ":trichrome_library_32_apk_validate_libs_and_assets",
           ":trichrome_library_64_32_apk_validate_libs_and_assets",
           ":trichrome_library_64_apk_validate_libs_and_assets",
+          "//android_webview:trichrome_webview_32_64_bundle_validate_libs_and_assets",
           "//android_webview:trichrome_webview_32_bundle_validate_libs_and_assets",
           "//android_webview:trichrome_webview_64_32_bundle_validate_libs_and_assets",
           "//android_webview:trichrome_webview_64_bundle_validate_libs_and_assets",
+        ]
+      } else {
+        deps += [
+          "//android_webview:trichrome_webview_bundle_validate_libs_and_assets",
         ]
       }
     }
     if (enable_manifest_verification) {
       deps += [
-        ":monochrome_public_bundle_validate_manifests",
-        ":monochrome_public_bundle_validate_proguard_config",
-        ":trichrome_chrome_bundle__base_bundle_module_validate_android_manifest",
-        ":trichrome_library_apk_validate_android_manifest",
-        "//android_webview:system_webview_base_bundle_module_validate_android_manifest",
-        "//android_webview:trichrome_webview_base_bundle_module_validate_android_manifest",
+        ":${_main_monochrome_public_bundle_target}_validate_manifests",
+        ":${_main_monochrome_public_bundle_target}_validate_proguard_config",
+        ":${_main_trichrome_chrome_bundle_target}__base_bundle_module_validate_android_manifest",
+        ":${_main_trichrome_library_apk_target}_validate_android_manifest",
       ]
+      if (android_64bit_target_cpu) {
+        deps += [
+          "//android_webview:system_webview_32_64_base_bundle_module_validate_android_manifest",
+          "//android_webview:trichrome_webview_32_64_base_bundle_module_validate_android_manifest",
+        ]
+      } else {
+        deps += [
+          "//android_webview:system_webview_base_bundle_module_validate_android_manifest",
+          "//android_webview:trichrome_webview_base_bundle_module_validate_android_manifest",
+        ]
+      }
     }
   }
 }

@@ -3102,6 +3102,7 @@ if (enable_java_templates && is_android) {
         forward_variables_from(invoker,
                                [
                                  "lint_baseline_file",
+                                 "lint_gen_dir",
                                  "lint_suppressions_file",
                                  "min_sdk_version",
                                ])
@@ -3121,6 +3122,7 @@ if (enable_java_templates && is_android) {
       not_needed(invoker,
                  [
                    "lint_baseline_file",
+                   "lint_gen_dir",
                    "lint_jar_path",
                    "lint_min_sdk_version",
                    "lint_suppressions_dep",
@@ -3238,6 +3240,7 @@ if (enable_java_templates && is_android) {
             "keystore_password",
             "keystore_path",
             "lint_baseline_file",
+            "lint_gen_dir",
             "lint_min_sdk_version",
             "lint_suppressions_dep",
             "lint_suppressions_file",
@@ -5112,6 +5115,7 @@ if (enable_java_templates && is_android) {
         forward_variables_from(invoker,
                                [
                                  "lint_baseline_file",
+                                 "lint_gen_dir",
                                  "lint_jar_path",
                                  "lint_suppressions_file",
                                ])
@@ -5131,6 +5135,7 @@ if (enable_java_templates && is_android) {
       not_needed(invoker,
                  [
                    "lint_baseline_file",
+                   "lint_gen_dir",
                    "lint_jar_path",
                    "lint_min_sdk_version",
                    "lint_suppressions_dep",
@@ -5239,6 +5244,20 @@ if (enable_java_templates && is_android) {
         android_keystore_password,
         "--minimal",
       ]
+    }
+  }
+
+  template("alias_with_wrapper_script") {
+    copy(target_name) {
+      _aliased_wrapper_script_name =
+          get_label_info(invoker.alias_target, "name")
+      _aliased_wrapper_script =
+          "$root_build_dir/bin/$_aliased_wrapper_script_name"
+      sources = [ _aliased_wrapper_script ]
+      deps = [ invoker.alias_target ]
+
+      _output_path = "$root_build_dir/bin/$target_name"
+      outputs = [ _output_path ]
     }
   }
 }

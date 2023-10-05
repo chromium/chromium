@@ -261,7 +261,7 @@
         errorLine2="                  ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdater.java"
-            line="23"
+            line="24"
             column="19"/>
     </issue>
 
@@ -272,7 +272,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdater.java"
-            line="55"
+            line="56"
             column="13"/>
     </issue>
 
@@ -283,7 +283,7 @@
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdater.java"
-            line="73"
+            line="74"
             column="34"/>
     </issue>
 
@@ -294,7 +294,7 @@
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdater.java"
-            line="74"
+            line="75"
             column="34"/>
     </issue>
 
@@ -305,7 +305,7 @@
         errorLine2="                                 ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdater.java"
-            line="83"
+            line="84"
             column="34"/>
     </issue>
 
@@ -316,7 +316,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="315"
+            line="316"
             column="13"/>
     </issue>
 
@@ -327,7 +327,7 @@
         errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1179"
+            line="1180"
             column="56"/>
     </issue>
 
@@ -338,7 +338,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1199"
+            line="1200"
             column="21"/>
     </issue>
 
@@ -349,7 +349,7 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1214"
+            line="1215"
             column="52"/>
     </issue>
 
@@ -360,7 +360,7 @@
         errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1280"
+            line="1281"
             column="56"/>
     </issue>
 
@@ -371,7 +371,7 @@
         errorLine2="                                   ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/dependency_injection/ChromeAppModule.java"
-            line="76"
+            line="77"
             column="36"/>
     </issue>
 
@@ -1108,7 +1108,7 @@
         errorLine2="                                                     ~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/crash/MinidumpUploadServiceImpl.java"
-            line="154"
+            line="155"
             column="54"/>
     </issue>
 
@@ -1438,7 +1438,7 @@
         errorLine2="                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java"
-            line="253"
+            line="254"
             column="56"/>
     </issue>
 
@@ -1537,7 +1537,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1699"
+            line="1700"
             column="47"/>
     </issue>
 
@@ -1548,7 +1548,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1861"
+            line="1862"
             column="47"/>
     </issue>
 
@@ -1933,7 +1933,7 @@
         errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java"
-            line="630"
+            line="631"
             column="25"/>
     </issue>
 
@@ -1944,7 +1944,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java"
-            line="635"
+            line="636"
             column="36"/>
     </issue>
 
@@ -2388,7 +2388,7 @@
         errorLine1="    &lt;service android:name=&quot;org.chromium.android_webview.services.DeveloperUiService&quot; android:foregroundServiceType=&quot;specialUse&quot; android:exported=&quot;true&quot; android:process=&quot;:webview_service&quot; tools:ignore=&quot;ExportedService&quot;>"
         errorLine2="    ^">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/gen/chrome/android/monochrome_public_bundle__base_bundle_module/AndroidManifest.xml"
+            file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
             line="605"
             column="5"/>
     </issue>
@@ -2740,7 +2740,7 @@
         errorLine1="  &lt;application android:name=&quot;org.chromium.chrome.browser.base.SplitMonochromeApplication&quot; android:icon=&quot;@drawable/ic_launcher&quot; android:roundIcon=&quot;@drawable/ic_launcher_round&quot; android:label=&quot;@string/app_name&quot; android:memtagMode=&quot;async&quot; android:largeHeap=&quot;false&quot; android:manageSpaceActivity=&quot;@string/manage_space_activity&quot; android:supportsRtl=&quot;true&quot; android:zygotePreloadName=&quot;org.chromium.content_public.app.ZygotePreload&quot; android:allowBackup=&quot;false&quot; android:networkSecurityConfig=&quot;@xml/network_security_config&quot; android:allowAudioPlaybackCapture=&quot;false&quot; android:appComponentFactory=&quot;org.chromium.chrome.browser.base.SplitCompatAppComponentFactory&quot; android:enableOnBackInvokedCallback=&quot;true&quot; android:multiArch=&quot;true&quot; android:extractNativeLibs=&quot;false&quot;>"
         errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                                                                           ~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/gen/chrome/android/monochrome_public_bundle__base_bundle_module/AndroidManifest.xml"
+            file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
             line="253"
             column="444"/>
     </issue>
@@ -3093,7 +3093,7 @@
         errorLine2="                                                                   ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java"
-            line="347"
+            line="348"
             column="68"/>
     </issue>
 
