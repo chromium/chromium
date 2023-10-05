@@ -61,6 +61,8 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
 
   LocalFrame* GetLocalFrame() const;
 
+  ScriptState* GetScriptState() const;
+
   void Trace(Visitor*) const override;
 
  private:

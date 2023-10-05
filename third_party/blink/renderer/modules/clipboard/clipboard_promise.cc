@@ -613,6 +613,11 @@ LocalFrame* ClipboardPromise::GetLocalFrame() const {
   return local_frame;
 }
 
+ScriptState* ClipboardPromise::GetScriptState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return script_promise_resolver_->GetScriptState();
+}
+
 scoped_refptr<base::SingleThreadTaskRunner> ClipboardPromise::GetTaskRunner() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Get the User Interaction task runner, as Async Clipboard API calls require
