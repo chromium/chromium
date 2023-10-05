@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_launch_params.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"

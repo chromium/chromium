@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
@@ -238,7 +237,7 @@ class ExternallyManagedAppManager {
 
   void StartInstallationTask(
       std::unique_ptr<TaskAndCallback> task,
-      absl::optional<AppId> installed_placeholder_app_id);
+      absl::optional<webapps::AppId> installed_placeholder_app_id);
 
   bool RunNextRegistration();
 

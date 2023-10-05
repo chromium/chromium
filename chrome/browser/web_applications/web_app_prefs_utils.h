@@ -9,7 +9,6 @@
 
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

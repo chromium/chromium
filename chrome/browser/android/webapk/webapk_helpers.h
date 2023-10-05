@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_HELPERS_H_
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_HELPERS_H_
 
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace webapk {

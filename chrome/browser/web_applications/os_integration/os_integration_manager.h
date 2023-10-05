@@ -25,7 +25,6 @@
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/custom_handlers/protocol_handler.h"

@@ -321,7 +321,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
           ExternallyManagedAppManager::InstallResult(result.code, app_id));
     }
 
-    void Install(absl::optional<AppId> placeholder_app_id,
+    void Install(absl::optional<webapps::AppId> placeholder_app_id,
                  ResultCallback callback) override {
       externally_managed_app_manager_impl_->OnInstallCalled(install_options());
 

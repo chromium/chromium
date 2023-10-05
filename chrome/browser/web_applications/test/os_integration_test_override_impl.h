@@ -20,7 +20,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

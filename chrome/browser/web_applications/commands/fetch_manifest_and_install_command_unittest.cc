@@ -695,7 +695,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WriteDataToDiskFailed) {
 
 TEST_F(FetchManifestAndInstallCommandTest, WebContentsNavigates) {
   SetupPageState();
-  base::test::TestFuture<const AppId&, webapps::InstallResultCode>
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       install_future;
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,

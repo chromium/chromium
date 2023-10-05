@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/common/web_app_id.h"
 
 class Profile;

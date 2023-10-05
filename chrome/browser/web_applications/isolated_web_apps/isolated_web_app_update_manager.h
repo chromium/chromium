@@ -24,7 +24,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
 

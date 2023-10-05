@@ -20,7 +20,6 @@
 #include "build/buildflag.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"

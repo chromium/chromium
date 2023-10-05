@@ -11,7 +11,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace content {

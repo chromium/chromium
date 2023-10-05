@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/services/app_service/public/cpp/app_types.h"

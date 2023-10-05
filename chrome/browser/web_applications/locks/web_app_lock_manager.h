@@ -13,7 +13,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/webapps/common/web_app_id.h"
 

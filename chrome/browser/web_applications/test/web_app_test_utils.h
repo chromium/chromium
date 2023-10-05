@@ -13,7 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/prefs/pref_service.h"

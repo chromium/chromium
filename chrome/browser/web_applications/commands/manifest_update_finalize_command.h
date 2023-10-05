@@ -13,7 +13,6 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/common/web_app_id.h"

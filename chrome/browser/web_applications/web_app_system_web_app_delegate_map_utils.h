@@ -7,7 +7,6 @@
 
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

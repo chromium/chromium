@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_set.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

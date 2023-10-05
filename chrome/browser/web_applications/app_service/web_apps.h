@@ -17,7 +17,6 @@
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"

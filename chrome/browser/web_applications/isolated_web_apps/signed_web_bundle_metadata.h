@@ -42,7 +42,7 @@ class SignedWebBundleMetadata {
   SignedWebBundleMetadata(const SignedWebBundleMetadata&);
   SignedWebBundleMetadata& operator=(const SignedWebBundleMetadata&);
 
-  const AppId& app_id() const { return url_info_.app_id(); }
+  const webapps::AppId& app_id() const { return url_info_.app_id(); }
 
   const std::u16string& app_name() const { return app_name_; }
 

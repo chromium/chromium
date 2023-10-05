@@ -9,7 +9,6 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/webapps/common/web_app_id.h"
 

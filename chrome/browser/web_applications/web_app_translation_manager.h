@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/proto/web_app_translations.pb.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 

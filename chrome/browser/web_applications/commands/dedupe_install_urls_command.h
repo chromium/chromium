@@ -15,7 +15,6 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 

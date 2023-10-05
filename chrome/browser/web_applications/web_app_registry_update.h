@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {

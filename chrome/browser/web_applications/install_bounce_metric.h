@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_INSTALL_BOUNCE_METRIC_H_
 
 #include "base/time/time.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

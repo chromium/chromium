@@ -13,7 +13,6 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/web_applications/commands/generated_icon_fix_command.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -10,7 +10,6 @@
 
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/browser/installable/installable_metrics.h"

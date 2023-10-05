@@ -19,7 +19,6 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"

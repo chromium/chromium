@@ -8,7 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/webapps/common/web_app_id.h"

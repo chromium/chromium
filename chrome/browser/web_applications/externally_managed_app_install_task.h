@@ -49,8 +49,9 @@ class ExternallyManagedAppInstallTask {
 
   virtual ~ExternallyManagedAppInstallTask();
 
-  virtual void Install(absl::optional<AppId> installed_placeholder_app_id,
-                       ResultCallback result_callback);
+  virtual void Install(
+      absl::optional<webapps::AppId> installed_placeholder_app_id,
+      ResultCallback result_callback);
 
   const ExternalInstallOptions& install_options() { return install_options_; }
 

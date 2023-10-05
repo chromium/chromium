@@ -11,7 +11,6 @@
 #include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"

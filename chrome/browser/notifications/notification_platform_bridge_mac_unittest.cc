@@ -23,6 +23,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,7 +60,7 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
       const char* origin,
       const char* button1,
       const char* button2,
-      const web_app::AppId& web_app_id = "") {
+      const webapps::AppId& web_app_id = "") {
     return CreateNotification(title, subtitle, origin, button1, button2,
                               /*require_interaction=*/false,
                               /*show_settings_button=*/true, web_app_id);
@@ -71,7 +72,7 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
       const char* origin,
       const char* button1,
       const char* button2,
-      const web_app::AppId& web_app_id = "") {
+      const webapps::AppId& web_app_id = "") {
     return CreateNotification(title, subtitle, origin, button1, button2,
                               /*require_interaction=*/true,
                               /*show_settings_button=*/true, web_app_id);
@@ -85,7 +86,7 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
       const char* button2,
       bool require_interaction,
       bool show_settings_button,
-      const web_app::AppId& web_app_id = "") {
+      const webapps::AppId& web_app_id = "") {
     message_center::RichNotificationData optional_fields;
     if (button1) {
       optional_fields.buttons.push_back(
@@ -568,7 +569,7 @@ class NotificationPlatformBridgeMacTestWithNotificationAttribution
   }
 
  protected:
-  web_app::AppId installed_app_id_;
+  webapps::AppId installed_app_id_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{

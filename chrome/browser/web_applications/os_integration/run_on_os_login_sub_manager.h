@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

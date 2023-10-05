@@ -8,7 +8,6 @@
 #include "base/containers/flat_set.h"
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

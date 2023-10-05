@@ -24,7 +24,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/install_result_code.h"

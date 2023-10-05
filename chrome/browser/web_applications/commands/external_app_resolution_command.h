@@ -20,7 +20,6 @@
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
@@ -53,10 +52,11 @@ class ExternalAppResolutionCommand
   using InstalledCallback =
       base::OnceCallback<void(ExternallyManagedAppManager::InstallResult)>;
 
-  ExternalAppResolutionCommand(Profile& profile,
-                               const ExternalInstallOptions& install_options,
-                               absl::optional<AppId> placeholder_app_id,
-                               InstalledCallback installed_callback);
+  ExternalAppResolutionCommand(
+      Profile& profile,
+      const ExternalInstallOptions& install_options,
+      absl::optional<webapps::AppId> placeholder_app_id,
+      InstalledCallback installed_callback);
   ~ExternalAppResolutionCommand() override;
 
   // WebAppCommandTemplate<SharedWebContentsLock>:
@@ -98,28 +98,29 @@ class ExternalAppResolutionCommand
   void OnLockUpgradedFinalizeInstall(
       bool icon_download_failed,
       std::unique_ptr<SharedWebContentsWithAppLock> apps_lock);
-  void OnInstallFinalized(const AppId& app_id,
+  void OnInstallFinalized(const webapps::AppId& app_id,
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
   void OnUninstallAndReplaceCompletedUninstallPlaceholder(
-      AppId app_id,
+      webapps::AppId app_id,
       webapps::InstallResultCode code,
       bool uninstall_triggered);
 
   // Placeholder installation path:
   void OnPlaceHolderAppLockAcquired(
       std::unique_ptr<SharedWebContentsWithAppLock> apps_lock);
-  void OnPlaceHolderInstalled(webapps::InstallResultCode code, AppId app_id);
+  void OnPlaceHolderInstalled(webapps::InstallResultCode code,
+                              webapps::AppId app_id);
 
   // Offline installation path:
   void InstallFromInfo();
   void OnInstallFromInfoAppLockAcquired(
       std::unique_ptr<SharedWebContentsWithAppLock> apps_lock);
-  void OnInstallFromInfoCompleted(const AppId& app_id,
+  void OnInstallFromInfoCompleted(const webapps::AppId& app_id,
                                   webapps::InstallResultCode code,
                                   OsHooksErrors os_hook_errors);
   void OnUninstallAndReplaceCompleted(bool is_offline_install,
-                                      AppId app_id,
+                                      webapps::AppId app_id,
                                       webapps::InstallResultCode code,
                                       bool uninstall_triggered);
 
@@ -145,7 +146,7 @@ class ExternalAppResolutionCommand
   std::unique_ptr<SharedWebContentsWithAppLockDescription>
       apps_lock_description_;
 
-  absl::optional<AppId> app_id_;
+  absl::optional<webapps::AppId> app_id_;
 
   // `this` must be owned by `profile_`.
   raw_ref<Profile> profile_;
@@ -159,7 +160,7 @@ class ExternalAppResolutionCommand
 
   ExternalInstallOptions install_options_;
 
-  absl::optional<AppId> installed_placeholder_app_id_;
+  absl::optional<webapps::AppId> installed_placeholder_app_id_;
 
   bool bypass_service_worker_check_ = false;
   webapps::WebappInstallSource install_surface_;

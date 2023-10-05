@@ -405,7 +405,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
 
 void ExternallyManagedAppManager::StartInstallationTask(
     std::unique_ptr<TaskAndCallback> task,
-    absl::optional<AppId> installed_placeholder_app_id) {
+    absl::optional<webapps::AppId> installed_placeholder_app_id) {
   if (IsShuttingDown()) {
     return;
   }

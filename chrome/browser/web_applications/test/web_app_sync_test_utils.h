@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {

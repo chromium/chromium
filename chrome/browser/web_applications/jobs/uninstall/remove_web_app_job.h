@@ -9,7 +9,6 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

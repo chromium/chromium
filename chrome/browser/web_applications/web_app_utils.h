@@ -16,7 +16,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"

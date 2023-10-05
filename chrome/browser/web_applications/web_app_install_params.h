@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/webapps/common/web_app_id.h"
 
