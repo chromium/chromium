@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/uuid.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -100,17 +99,17 @@ void EventAckData::DecrementInflightEvent(
   // flow that doesn't include dispatch start and service worker start time.
   if (event_info.dispatch_source ==
       EventDispatchSource::kDispatchEventToProcess) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+    base::UmaHistogramCustomMicrosecondsTimes(
         "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
-        /*time=*/base::TimeTicks::Now() - event_info.dispatch_start_time,
-        /*minimum=*/base::Microseconds(1), /*maximum=*/base::Minutes(5),
-        /*bucket_count=*/100);
+        /*sample=*/base::TimeTicks::Now() - event_info.dispatch_start_time,
+        /*min=*/base::Microseconds(1), /*max=*/base::Minutes(5),
+        /*buckets=*/100);
 
-    UMA_HISTOGRAM_CUSTOM_TIMES(
+    base::UmaHistogramCustomTimes(
         "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker2",
-        /*time=*/base::TimeTicks::Now() - event_info.dispatch_start_time,
-        /*minimum=*/base::Seconds(1), /*maximum=*/base::Days(1),
-        /*bucket_count=*/100);
+        /*sample=*/base::TimeTicks::Now() - event_info.dispatch_start_time,
+        /*min=*/base::Seconds(1), /*max=*/base::Days(1),
+        /*buckets=*/100);
 
     // Emit only if we're within the expected event ack time limit. We'll take
     // care of the emit for a late ack via a delayed task.

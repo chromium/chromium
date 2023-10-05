@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
@@ -359,12 +360,12 @@ void ExtensionHost::OnEventAck(int event_id) {
   // flow that doesn't include dispatch start and service worker start time.
   if (unacked_messages_[event_id].dispatch_source ==
       EventDispatchSource::kDispatchEventToProcess) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+    base::UmaHistogramCustomMicrosecondsTimes(
         "Extensions.Events.DispatchToAckTime.ExtensionEventPage2",
-        /*time=*/base::TimeTicks::Now() -
+        /*sample=*/base::TimeTicks::Now() -
             unacked_message_data.dispatch_start_time,
-        /*minimum=*/base::Microseconds(1), /*maximum=*/base::Minutes(5),
-        /*bucket_count=*/100);
+        /*min=*/base::Microseconds(1), /*max=*/base::Minutes(5),
+        /*buckets=*/100);
   }
 
   EventRouter* router = EventRouter::Get(browser_context_);
