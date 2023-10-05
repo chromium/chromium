@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -44,11 +45,16 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 
 /**
  * Tests the EdgeToEdgeController code. Ideally this would include {@link EdgeToEdgeController},
@@ -67,14 +73,20 @@ public class EdgeToEdgeControllerTest {
 
     private ObservableSupplierImpl mObservableSupplierImpl;
 
+    private UserDataHost mTabDataHost = new UserDataHost();
+
     @Mock
     private Tab mTab;
+
+    @Mock private WebContents mWebContents;
 
     @Mock
     private EdgeToEdgeOSWrapper mOsWrapper;
 
     @Captor
     private ArgumentCaptor<OnApplyWindowInsetsListener> mWindowInsetsListenerCaptor;
+
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverArgumentCaptor;
 
     @Mock
     private View mViewMock;
@@ -94,8 +106,10 @@ public class EdgeToEdgeControllerTest {
         mObservableSupplierImpl = new ObservableSupplierImpl();
         mEdgeToEdgeControllerImpl =
                 new EdgeToEdgeControllerImpl(mActivity, mObservableSupplierImpl, mOsWrapper);
-        Assert.assertNotNull(mEdgeToEdgeControllerImpl);
+        assertNotNull(mEdgeToEdgeControllerImpl);
         doNothing().when(mTab).addObserver(any());
+        when(mTab.getUserDataHost()).thenReturn(mTabDataHost);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
 
         doNothing().when(mOsWrapper).setDecorFitsSystemWindows(any(), anyBoolean());
         doNothing().when(mOsWrapper).setPadding(any(), anyInt(), anyInt(), anyInt(), anyInt());
@@ -191,6 +205,29 @@ public class EdgeToEdgeControllerTest {
         assertToEdgeExpectations();
     }
 
+    @Test
+    public void onObservingDifferentTab_viewportFitChanged() {
+        // Start with web always-enabled.
+        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
+        when(mTab.isNativePage()).thenReturn(false);
+        mObservableSupplierImpl.set(mTab);
+        verify(mTab).isNativePage();
+        assertTrue(mEdgeToEdgeControllerImpl.isToEdge());
+        assertToEdgeExpectations();
+
+        // Now switch the viewport-fit value of that page back and forth,
+        // with web NOT always enabled
+        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(false);
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.AUTO);
+        assertFalse(mEdgeToEdgeControllerImpl.isToEdge());
+
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+        assertTrue(mEdgeToEdgeControllerImpl.isToEdge());
+
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.AUTO);
+        assertFalse(mEdgeToEdgeControllerImpl.isToEdge());
+    }
+
     /** Test the OSWrapper implementation without mocking it. Native ToEdge. */
     @Test
     public void onObservingDifferentTab_osWrapperImpl() {
@@ -198,7 +235,7 @@ public class EdgeToEdgeControllerTest {
         EdgeToEdgeControllerImpl liveController =
                 (EdgeToEdgeControllerImpl) EdgeToEdgeControllerFactory.create(
                         mActivity, mObservableSupplierImpl);
-        Assert.assertNotNull(liveController);
+        assertNotNull(liveController);
         when(mTab.isNativePage()).thenReturn(true);
         mObservableSupplierImpl.set(mTab);
         verify(mTab, times(2)).isNativePage();
@@ -214,13 +251,41 @@ public class EdgeToEdgeControllerTest {
         EdgeToEdgeControllerImpl liveController =
                 (EdgeToEdgeControllerImpl) EdgeToEdgeControllerFactory.create(
                         mActivity, mObservableSupplierImpl);
-        Assert.assertNotNull(liveController);
+        assertNotNull(liveController);
         when(mTab.isNativePage()).thenReturn(true);
         mObservableSupplierImpl.set(mTab);
         verify(mTab, times(2)).isNativePage();
         assertFalse(liveController.isToEdge());
         // Check the Navigation Bar color, as an indicator that we really changed the window.
         assertNotEquals(Color.TRANSPARENT, mActivity.getWindow().getNavigationBarColor());
+    }
+
+    /** Test that we update WebContentsObservers when a Tab changes WebContents. */
+    @Test
+    public void onTabSwitched_onWebContentsSwapped() {
+        // Standard setup of a Web Tab ToEdge
+        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
+        when(mTab.isNativePage()).thenReturn(false);
+        mObservableSupplierImpl.set(mTab);
+        verify(mTab).isNativePage();
+        assertTrue(mEdgeToEdgeControllerImpl.isToEdge());
+
+        // Grab the WebContentsObserver, and setup.
+        WebContentsObserver initialWebContentsObserver =
+                mEdgeToEdgeControllerImpl.getWebContentsObserver();
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        doNothing().when(mTab).addObserver(mTabObserverArgumentCaptor.capture());
+
+        // When onTabSwitched is called, we capture the TabObserver created for the Tab.
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+        // Simulate the tab getting new WebContents.
+        mTabObserverArgumentCaptor.getValue().onWebContentsSwapped(mTab, true, true);
+        assertNotNull(initialWebContentsObserver);
+        assertNotNull(mEdgeToEdgeControllerImpl.getWebContentsObserver());
+        assertNotEquals(
+                "onWebContentsSwapped not handling WebContentsObservers correctly",
+                initialWebContentsObserver,
+                mEdgeToEdgeControllerImpl.getWebContentsObserver());
     }
 
     void assertToEdgeExpectations() {

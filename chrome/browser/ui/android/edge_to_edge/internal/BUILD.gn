@@ -22,9 +22,13 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
+    "//components/browser_ui/display_cutout/android:java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/blink/public/mojom:mojom_core_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 
@@ -37,8 +41,11 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/blink/public/mojom:mojom_core_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",

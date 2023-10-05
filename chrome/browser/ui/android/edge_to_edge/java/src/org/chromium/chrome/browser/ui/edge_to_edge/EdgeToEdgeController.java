@@ -16,8 +16,6 @@ import org.chromium.chrome.browser.tab.Tab;
 public interface EdgeToEdgeController extends Destroyable {
     /**
      * Notifies the controller that a different tab is under observation.<br>
-     * This can be called a first time with the {@code hint} parameter set to {@code true},
-     * indicating that a new tab is going to be selected.
      * @param tab The tab that the observer is now observing. This can be {@code null}.
      */
     void onTabSwitched(@Nullable Tab tab);

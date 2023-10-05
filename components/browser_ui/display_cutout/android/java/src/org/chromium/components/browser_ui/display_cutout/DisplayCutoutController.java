@@ -10,13 +10,17 @@ import android.os.Build;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.UserData;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.blink.mojom.ViewportFit;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -26,11 +30,14 @@ import org.chromium.ui.base.WindowAndroid;
  * Controls the display safe area for a {@link WebContents} and the cutout mode for an {@link
  * Activity} window.
  *
- * The WebContents is updated with the safe area continuously, as long as {@link
+ * <p>The WebContents is updated with the safe area continuously, as long as {@link
  * Delegate#getAttachedActivity()} returns a non-null value. The cutout mode is set on the
  * Activity's window only in P+, and only when the associated WebContents is fullscreen.
  */
-public class DisplayCutoutController implements InsetObserverView.WindowInsetObserver {
+public class DisplayCutoutController implements InsetObserverView.WindowInsetObserver, UserData {
+    private static final Class<DisplayCutoutController> USER_DATA_KEY =
+            DisplayCutoutController.class;
+
     /** {@link Window} of the current {@link Activity}. */
     private Window mWindow;
 
@@ -54,15 +61,49 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
      */
     private @Nullable Callback<Integer> mBrowserCutoutModeObserver;
 
+    /** Tracks Safe Area Insets. */
+    private final SafeAreaInsetsTrackerImpl mSafeAreaInsetsTracker;
+
+    /**
+     * An interface to track general changes to Safe Area Insets. TODO(https://crbug.com/1475820)
+     * Develop beyond this minimal stub.
+     */
+    public interface SafeAreaInsetsTracker {
+
+        /**
+         * @return whether this Tracker was created for a web page set to Cover.
+         */
+        boolean isViewportFitCover();
+    }
+
+    /**
+     * Tracks general changes to Safe Area Insets. TODO(https://crbug.com/1475820) Track the Notch
+     * and bottom in a class in a separate file.
+     */
+    private static class SafeAreaInsetsTrackerImpl implements SafeAreaInsetsTracker {
+        private boolean mIsViewportFitCover;
+
+        /** Sets whether this Tracker was created for a web page set to Cover. */
+        public void setIsViewportFitCover(boolean isViewportFitCover) {
+            mIsViewportFitCover = isViewportFitCover;
+        }
+
+        @Override
+        public boolean isViewportFitCover() {
+            return mIsViewportFitCover;
+        }
+    }
+
     /** An interface for providing embedder-specific behavior to the controller. */
     public interface Delegate {
+
         /** Returns the activity this controller is associated with, if there is one. */
         @Nullable
         Activity getAttachedActivity();
 
         /**
-         * Returns the {@link WebContents} this controller should update the safe area for, if
-         * there is one.
+         * Returns the {@link WebContents} this controller should update the safe area for, if there
+         * is one.
          */
         @Nullable
         WebContents getWebContents();
@@ -75,18 +116,52 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
         boolean isInteractable();
 
         /**
-         * Returns the activity-specific (vs tab-specific) cutout mode. The activity-specific
-         * cutout mode takes precedence over the tab-specific cutout mode.
+         * Returns the activity-specific (vs tab-specific) cutout mode. The activity-specific cutout
+         * mode takes precedence over the tab-specific cutout mode.
          */
         ObservableSupplier<Integer> getBrowserDisplayCutoutModeSupplier();
 
         /** Whether the activity is in browser (not-HTML) fullscreen. */
         boolean isInBrowserFullscreen();
     }
+
     private final Delegate mDelegate;
 
+    /**
+     * Gets the DisplayCutoutController from the current {@link Tab} if there is one, otherwise
+     * {@code null} is returned.
+     */
+    private static @Nullable DisplayCutoutController from(Tab tab) {
+        UserDataHost host = tab.getUserDataHost();
+        return host.getUserData(USER_DATA_KEY);
+    }
+
+    /**
+     * Gets the DisplayCutoutController from the current {@link Tab}, creating one if needed.
+     *
+     * @param tab The Tab to get the controller from.
+     * @param delegate A delegate to embedder-specific behavior to the controller.
+     */
+    public static @NonNull DisplayCutoutController createForTab(Tab tab, Delegate delegate) {
+        UserDataHost host = tab.getUserDataHost();
+        DisplayCutoutController controller = host.getUserData(USER_DATA_KEY);
+        return controller != null
+                ? controller
+                : host.setUserData(USER_DATA_KEY, new DisplayCutoutController(delegate));
+    }
+
+    /**
+     * Constructs a controller for the Notch in the Display. Works with a {@code
+     * DisplayCutoutTabHelper} to track changes to the Viewport for the current Tab and allow
+     * drawing around the Notch and pushing Safe Area Insets back to Blink for the web page.
+     *
+     * @param delegate Provides access to the environment in which this runs, e.g. the Activity.
+     *     TODO(https://crbug.com/1475820) make this constructor package-private when refactoring.
+     */
+    @VisibleForTesting
     public DisplayCutoutController(Delegate delegate) {
         mDelegate = delegate;
+        mSafeAreaInsetsTracker = new SafeAreaInsetsTrackerImpl();
         maybeAddObservers();
     }
 
@@ -138,6 +213,7 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
         }
     }
 
+    @Override
     public void destroy() {
         removeObservers();
     }
@@ -147,6 +223,9 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
      * @param value The new viewport fit value.
      */
     public void setViewportFit(@WebContentsObserver.ViewportFitType int value) {
+        mSafeAreaInsetsTracker.setIsViewportFitCover(
+                value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT);
+
         // TODO(crbug.com/1480477): Investigate whether if() can be turned into assert.
         if (!mDelegate.getWebContents().isFullscreenForCurrentTab()
                 && !mDelegate.isInBrowserFullscreen()) {
@@ -157,6 +236,18 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
 
         mViewportFit = value;
         maybeUpdateLayout();
+    }
+
+    /**
+     * Gets the {@link SafeAreaInsetsTracker} associated with the given Tab.
+     *
+     * @param tab The {@link Tab} that may have a web page rendered already
+     * @return A {@link SafeAreaInsetsTracker} to track changes in insets for viewport-fit=cover.
+     */
+    public static @Nullable SafeAreaInsetsTracker getSafeAreaInsetsTracker(Tab tab) {
+        DisplayCutoutController displayCutoutControllerInstanceForTab = from(tab);
+        if (displayCutoutControllerInstanceForTab == null) return null;
+        return displayCutoutControllerInstanceForTab.mSafeAreaInsetsTracker;
     }
 
     /** Implements {@link WindowInsetsObserver}. */
@@ -170,6 +261,7 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
                 adjustInsetForScale(area.right, dipScale),
                 adjustInsetForScale(area.bottom, dipScale));
 
+        // Notify Blink of the new insets for css env() variables.
         webContents.setDisplayCutoutSafeArea(area);
     }
 

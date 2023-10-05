@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Build.VERSION_CODES;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -21,13 +23,16 @@ public class EdgeToEdgeControllerFactory {
     /**
      * Creates an {@link EdgeToEdgeController} instance using the given activity and {@link
      * ObservableSupplier} for a Tab.
+     *
      * @param activity The Android {@link Activity}
      * @param tabObservableSupplier Supplies an {@Link Observer} that is notified whenever the Tab
      *     changes.
-     * @return An EdgeToEdgeController to control drawing under System Bars.
+     * @return An EdgeToEdgeController to control drawing under System Bars, or {@code null} if this
+     *     version of Android does not support the APIs needed.
      */
-    public static EdgeToEdgeController create(
+    public static @Nullable EdgeToEdgeController create(
             Activity activity, @NonNull ObservableSupplier<Tab> tabObservableSupplier) {
+        if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
         return new EdgeToEdgeControllerImpl(activity, tabObservableSupplier, null);
     }
 

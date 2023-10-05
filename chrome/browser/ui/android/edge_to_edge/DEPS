@@ -5,5 +5,6 @@ include_rules = [
   "+chrome/browser/android/lifecycle",
   "+chrome/browser/flags",
   "+chrome/test/android",
+  "+components/browser_ui/display_cutout",
   ]
 

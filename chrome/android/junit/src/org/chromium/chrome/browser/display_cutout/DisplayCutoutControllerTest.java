@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -70,6 +71,8 @@ public class DisplayCutoutControllerTest {
 
     private WeakReference<Activity> mActivityRef;
 
+    private UserDataHost mTabDataHost = new UserDataHost();
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -80,6 +83,7 @@ public class DisplayCutoutControllerTest {
         when(mWindow.getAttributes()).thenReturn(new LayoutParams());
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.getUserDataHost()).thenReturn(mTabDataHost);
         when(mWebContents.isFullscreenForCurrentTab()).thenReturn(true);
         when(mWindowAndroid.getActivity()).thenReturn(mActivityRef);
 
@@ -230,5 +234,45 @@ public class DisplayCutoutControllerTest {
 
         mTabObserverCaptor.getValue().onShown(mTab, TabSelectionType.FROM_NEW);
         verify(mWindow).getAttributes();
+    }
+
+    @Test
+    @SmallTest
+    public void testGetIsViewportFitCover() {
+        // Go through the live creation of DisplayCutoutTabHelper.from(Tab) with our mock Tab.
+        UserDataHost tabDataHost = new UserDataHost();
+        when(mTab.getUserDataHost()).thenReturn(tabDataHost);
+        DisplayCutoutTabHelper tabHelper = DisplayCutoutTabHelper.from(mTab);
+
+        // TODO(https://crbug.com/1475820) Fix: We cannot access DisplayCutoutController#from(Tab)
+        // because it's in a different package from this test. Code copied here.
+        UserDataHost host = mTab.getUserDataHost();
+        DisplayCutoutController liveController = host.getUserData(DisplayCutoutController.class);
+
+        Assert.assertEquals(
+                "Something went wrong with DisplayCutoutController construction or fetching an"
+                        + " existing one via from().",
+                tabHelper.getDisplayCutoutController(),
+                liveController);
+
+        liveController.setViewportFit(ViewportFit.AUTO);
+        Assert.assertFalse(
+                "SafeAreaInsets should have reported isViewportFitCover() false after the"
+                        + " controller's setViewportFit to Auto was called.",
+                DisplayCutoutController.getSafeAreaInsetsTracker(mTab).isViewportFitCover());
+
+        liveController.setViewportFit(ViewportFit.COVER);
+        Assert.assertTrue(
+                "DisplayCutoutController.setViewportFit(cover) did not update the SafeAreaInsets"
+                        + " isViewportFitCover to true!",
+                DisplayCutoutController.getSafeAreaInsetsTracker(mTab).isViewportFitCover());
+
+        liveController.setViewportFit(ViewportFit.COVER_FORCED_BY_USER_AGENT);
+        Assert.assertTrue(
+                "DisplayCutoutController.setViewportFit(COVER_FORCED_BY_USER_AGENT) did not update"
+                        + " the SafeAreaInsets isViewportFitCover to true!",
+                DisplayCutoutController.getSafeAreaInsetsTracker(mTab).isViewportFitCover());
+
+        reset(mTab);
     }
 }
