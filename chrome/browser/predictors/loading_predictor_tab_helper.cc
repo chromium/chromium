@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -153,6 +154,16 @@ bool ShouldConsultOptimizationGuide(const GURL& current_main_frame_url,
          url::Origin::Create(previous_main_frame_url);
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LcppHintStatus {
+  kSucceedToSet = 0,
+  kNoLcppData = 1,
+  kInvalidLcppStat = 2,
+  kConversionFailure = 3,
+  kMaxValue = kConversionFailure,
+};
+
 // Attach LCP Critical Path Predictor hint to NavigationHandle, so that it
 // would be sent to the renderer process upon navigation commit.
 void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
@@ -163,6 +174,15 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
     absl::optional<LcppData> lcpp_data =
         predictor.resource_prefetch_predictor()->GetLcppData(navigation_url);
     if (!lcpp_data) {
+      base::UmaHistogramEnumeration(
+          "LoadingPredictor.SetLCPPNavigationHint.Status",
+          LcppHintStatus::kNoLcppData);
+      return;
+    }
+    if (!IsValidLcppStat(lcpp_data->lcpp_stat())) {
+      base::UmaHistogramEnumeration(
+          "LoadingPredictor.SetLCPPNavigationHint.Status",
+          LcppHintStatus::kInvalidLcppStat);
       return;
     }
     absl::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
@@ -170,6 +190,13 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
             *lcpp_data);
     if (hint) {
       navigation_handle.SetLCPPNavigationHint(*hint);
+      base::UmaHistogramEnumeration(
+          "LoadingPredictor.SetLCPPNavigationHint.Status",
+          LcppHintStatus::kSucceedToSet);
+    } else {
+      base::UmaHistogramEnumeration(
+          "LoadingPredictor.SetLCPPNavigationHint.Status",
+          LcppHintStatus::kConversionFailure);
     }
   }
 }

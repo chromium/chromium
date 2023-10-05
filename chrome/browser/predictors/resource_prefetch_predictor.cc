@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -659,7 +660,13 @@ void ResourcePrefetchPredictor::LearnLcpp(const std::string& host,
     data.set_host(host);
   }
 
+  if (!IsValidLcppStat(data.lcpp_stat())) {
+    data.clear_lcpp_stat();
+    base::UmaHistogramBoolean("LoadingPredictor.LcppStatCorruptedAtLearnTime",
+                              true);
+  }
   bool data_updated = UpdateLcppDataWithLcppDataInputs(config_, inputs, data);
+  DCHECK(IsValidLcppStat(data.lcpp_stat()));
   if (data_updated) {
     lcpp_data_->UpdateData(host, data);
     if (observer_) {

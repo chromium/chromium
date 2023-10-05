@@ -27,6 +27,24 @@ std::vector<std::pair<double, std::string>> ConvertToFrequencyStringPair(
   return frequency_and_string;
 }
 
+// Returns true if the given `url` is a valid URL to be used as a key
+// of `LcppStringFrequencyStatData`.
+bool IsValidUrlInLcppStringFrequencyStatData(const std::string& url) {
+  if (url.empty()) {
+    return false;
+  }
+
+  if (url.size() > ResourcePrefetchPredictorTables::kMaxStringLength) {
+    return false;
+  }
+
+  GURL parsed_url(url);
+  if (!parsed_url.is_valid() || !parsed_url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+  return true;
+}
+
 // Returns LCP element locators in the past loads for a given `data`.  The
 // returned LCP element locators are ordered by descending frequency (the
 // most frequent one comes first). If there is no data, it returns an empty
@@ -395,9 +413,7 @@ bool RecordLcpInfluencerScriptUrlsHistogram(
   CHECK(updater);
   for (auto& script_url : lcp_influencer_scripts) {
     const auto& lcpp_script = script_url.spec();
-    if (lcpp_script.size() >
-            ResourcePrefetchPredictorTables::kMaxStringLength ||
-        lcpp_script.empty()) {
+    if (!IsValidUrlInLcppStringFrequencyStatData(lcpp_script)) {
       continue;
     }
     updater->Update(lcpp_script);
@@ -418,8 +434,7 @@ bool RecordFetchedFontUrlsHistogram(const LoadingPredictorConfig& config,
           config, data.mutable_lcpp_stat()->fetched_font_url_stat());
   for (const auto& url : fetched_font_urls) {
     const std::string& font_spec = url.spec();
-    if (font_spec.empty() ||
-        font_spec.size() > ResourcePrefetchPredictorTables::kMaxStringLength) {
+    if (!IsValidUrlInLcppStringFrequencyStatData(font_spec)) {
       continue;
     }
     updater->Update(font_spec);
@@ -427,6 +442,37 @@ bool RecordFetchedFontUrlsHistogram(const LoadingPredictorConfig& config,
   *data.mutable_lcpp_stat()->mutable_fetched_font_url_stat() =
       updater->ToLcppStringFrequencyStatData();
   return updater->has_updated();
+}
+
+bool IsValidLcpElementLocatorHistogram(
+    const LcpElementLocatorStat& lcp_element_locator_stat) {
+  if (lcp_element_locator_stat.other_bucket_frequency() < 0.0) {
+    return false;
+  }
+  for (const auto& it :
+       lcp_element_locator_stat.lcp_element_locator_buckets()) {
+    if (!it.has_lcp_element_locator() || !it.has_frequency() ||
+        it.frequency() < 0.0) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool IsValidLcpUrlsHistogram(
+    const LcppStringFrequencyStatData& lcpp_stat_data) {
+  if (lcpp_stat_data.other_bucket_frequency() < 0.0) {
+    return false;
+  }
+  for (const auto& [entry, frequency] : lcpp_stat_data.main_buckets()) {
+    if (frequency < 0.0) {
+      return false;
+    }
+    if (!IsValidUrlInLcppStringFrequencyStatData(entry)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace
@@ -463,6 +509,23 @@ bool UpdateLcppDataWithLcppDataInputs(const LoadingPredictorConfig& config,
   data_updated |=
       RecordFetchedFontUrlsHistogram(config, inputs.font_urls, data);
   return data_updated;
+}
+
+bool IsValidLcppStat(const LcppStat& lcpp_stat) {
+  if (lcpp_stat.has_lcp_element_locator_stat() &&
+      !IsValidLcpElementLocatorHistogram(
+          lcpp_stat.lcp_element_locator_stat())) {
+    return false;
+  }
+  if (lcpp_stat.has_lcp_script_url_stat() &&
+      !IsValidLcpUrlsHistogram(lcpp_stat.lcp_script_url_stat())) {
+    return false;
+  }
+  if (lcpp_stat.has_fetched_font_url_stat() &&
+      !IsValidLcpUrlsHistogram(lcpp_stat.fetched_font_url_stat())) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace predictors

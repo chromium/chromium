@@ -45,6 +45,10 @@ bool UpdateLcppDataWithLcppDataInputs(const LoadingPredictorConfig& config,
                                       const LcppDataInputs& inputs,
                                       LcppData& data);
 
+// Returns true if the LcppData is valid. i.e. looks not corrupted.
+// Otherwise, data might be corrupted.
+bool IsValidLcppStat(const LcppStat& lcpp_stat);
+
 }  // namespace predictors
 
 #endif  // CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_UTIL_H_

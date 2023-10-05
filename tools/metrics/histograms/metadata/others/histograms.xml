@@ -8218,6 +8218,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LoadingPredictor.LcppStatCorruptedAtLearnTime" enum="Boolean"
+    expires_after="2024-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The status of SetLCPPNavigationHint. It is recorded when the
+    kLCPCriticalPathPredictor feature is enabled and MaybeSetLCPPNavigationHint
+    is called. It includes status on not only SetLCPPNavigation failure, but
+    also success for ease of understanding the failure ratio.
+  </summary>
+</histogram>
+
 <histogram name="LoadingPredictor.OptimizationHintsReceiveStatus"
     enum="LoadingPredictorOptimizationHintsReceiveStatus"
     expires_after="2024-03-03">
@@ -8328,6 +8340,18 @@ chromium-metrics-reviews@google.com.
     The percentage of hosts that were preresolved and requested by a page load
     to the total number of hosts that were preresolved for a page load. Logged
     after the preconnect manager completes all jobs attached to the page load.
+  </summary>
+</histogram>
+
+<histogram name="LoadingPredictor.SetLcppNavigationHint.Status"
+    enum="LcppHintStatus" expires_after="2024-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The status of SetLCPPNavigationHint. It is recorded when the
+    kLCPCriticalPathPredictor feature is enabled and MaybeSetLCPPNavigationHint
+    is called. It includes status on not only SetLCPPNavigation failure, but
+    also success for ease of understanding the failure ratio.
   </summary>
 </histogram>
 

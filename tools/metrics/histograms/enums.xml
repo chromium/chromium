@@ -59208,6 +59208,13 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="10" label="No text"/>
 </enum>
 
+<enum name="LcppHintStatus">
+  <int value="0" label="kSucceedToSet"/>
+  <int value="1" label="kNoLcppData"/>
+  <int value="2" label="kInvalidLcppStat"/>
+  <int value="3" label="kConversionFailure"/>
+</enum>
+
 <enum name="LegacySupervisedUserStatus">
   <int value="0" label="Displayed on login screen"/>
   <int value="1" label="Hidden on login screen"/>
