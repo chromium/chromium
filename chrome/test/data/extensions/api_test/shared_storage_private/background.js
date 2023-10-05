@@ -26,6 +26,10 @@ chrome.test.runTests([
     chrome.test.assertEq(1, Object.keys(items).length);
     chrome.test.assertEq(3, items.c);
 
+    // Clean up the keys added by the test, so that it will pollute the ash
+    // state for the Lacros browser tests.
+    await chrome.sharedStoragePrivate.remove(['c']);
+
     chrome.test.succeed();
   },
 ]);

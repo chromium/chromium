@@ -5301,9 +5301,6 @@ if (is_chromeos_lacros) {
     ]
 
     sources = [
-      # TODO(crbug/1489118): The test fails the flakiness test.
-      "../browser/extensions/api/shared_storage/shared_storage_private_apitest.cc",
-
       "../browser/lacros/file_manager_lacros_browsertest.cc",
       "../browser/lacros/multitask_menu_nudge_delegate_lacros_browsertest.cc",
       "../browser/policy/policy_extension_controlling_proxy_browsertest.cc",
@@ -5377,6 +5374,7 @@ if (is_chromeos_lacros) {
       "../browser/extensions/api/offscreen/offscreen_api_lacros_browsertest.cc",
       "../browser/extensions/api/preference/preference_api_lacros_browsertest.cc",
       "../browser/extensions/api/proxy/proxy_apitest.cc",
+      "../browser/extensions/api/shared_storage/shared_storage_private_apitest.cc",
       "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",
       "../browser/extensions/extension_keeplist_lacros_browsertest.cc",
       "../browser/feedback/show_feedback_page_lacros_browsertest.cc",
