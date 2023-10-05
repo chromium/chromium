@@ -86,16 +86,6 @@ class BASE_EXPORT ThreadGroup {
   virtual void PushTaskSourceAndWakeUpWorkers(
       RegisteredTaskSourceAndTransaction transaction_with_task_source) = 0;
 
-  // Removes all task sources from this ThreadGroup's PriorityQueue and enqueues
-  // them in another |destination_thread_group|. After this method is called,
-  // any task sources posted to this ThreadGroup will be forwarded to
-  // |destination_thread_group|.
-  //
-  // TODO(crbug.com/756547): Remove this method once the UseNativeThreadPool
-  // experiment is complete.
-  void InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
-      ThreadGroup* destination_thread_group);
-
   // Move all task sources except the ones with TaskPriority::USER_BLOCKING,
   // from this ThreadGroup's PriorityQueue to the |destination_thread_group|'s.
   void HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
@@ -175,16 +165,8 @@ class BASE_EXPORT ThreadGroup {
     raw_ptr<ThreadGroup> destination_thread_group_ = nullptr;
   };
 
-  // |predecessor_thread_group| is a ThreadGroup whose lock can be acquired
-  // before the constructed ThreadGroup's lock. This is necessary to move all
-  // task sources from |predecessor_thread_group| to the constructed ThreadGroup
-  // and support the UseNativeThreadPool experiment.
-  //
-  // TODO(crbug.com/756547): Remove |predecessor_thread_group| once the
-  // experiment is complete.
   ThreadGroup(TrackedRef<TaskTracker> task_tracker,
-              TrackedRef<Delegate> delegate,
-              ThreadGroup* predecessor_thread_group = nullptr);
+              TrackedRef<Delegate> delegate);
 
 #if BUILDFLAG(IS_WIN)
   static std::unique_ptr<win::ScopedWindowsThreadEnvironment>
@@ -239,7 +221,7 @@ class BASE_EXPORT ThreadGroup {
   // atomic, nor immutable after start. Since this lock is a bottleneck to post
   // and schedule work, only simple data structure manipulations are allowed
   // within its scope (no thread creation or wake up).
-  mutable CheckedLock lock_;
+  mutable CheckedLock lock_{};
 
   bool disable_fair_scheduling_ GUARDED_BY(lock_){false};
 

@@ -75,6 +75,8 @@ class BASE_EXPORT PriorityQueue {
   // (TaskSource -> Task -> TaskRunner -> TaskSource...) during test teardown.
   void EnableFlushTaskSourcesOnDestroyForTesting();
 
+  void swap(PriorityQueue& other);
+
  private:
   // A class combining a TaskSource and the TaskSourceSortKey that determines
   // its position in a PriorityQueue.

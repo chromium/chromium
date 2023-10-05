@@ -150,8 +150,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
                   "."),
         kUtilityPoolEnvironmentParams.name_suffix,
         kUtilityPoolEnvironmentParams.thread_type_hint,
-        task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef(),
-        foreground_thread_group_.get());
+        task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
     foreground_thread_group_
         ->HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
             utility_thread_group_.get());

@@ -340,11 +340,8 @@ ThreadGroupImpl::ThreadGroupImpl(StringPiece histogram_label,
                                  StringPiece thread_group_label,
                                  ThreadType thread_type_hint,
                                  TrackedRef<TaskTracker> task_tracker,
-                                 TrackedRef<Delegate> delegate,
-                                 ThreadGroup* predecessor_thread_group)
-    : ThreadGroup(std::move(task_tracker),
-                  std::move(delegate),
-                  predecessor_thread_group),
+                                 TrackedRef<Delegate> delegate)
+    : ThreadGroup(std::move(task_tracker), std::move(delegate)),
       histogram_label_(histogram_label),
       thread_group_label_(thread_group_label),
       thread_type_hint_(thread_type_hint),

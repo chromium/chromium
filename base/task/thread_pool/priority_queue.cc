@@ -193,6 +193,13 @@ void PriorityQueue::EnableFlushTaskSourcesOnDestroyForTesting() {
   is_flush_task_sources_on_destroy_enabled_ = true;
 }
 
+void PriorityQueue::swap(PriorityQueue& other) {
+  container_.swap(other.container_);
+  num_task_sources_per_priority_.swap(other.num_task_sources_per_priority_);
+  std::swap(is_flush_task_sources_on_destroy_enabled_,
+            other.is_flush_task_sources_on_destroy_enabled_);
+}
+
 void PriorityQueue::DecrementNumTaskSourcesForPriority(TaskPriority priority) {
   DCHECK_GT(num_task_sources_per_priority_[base::to_underlying(priority)], 0U);
   --num_task_sources_per_priority_[base::to_underlying(priority)];
