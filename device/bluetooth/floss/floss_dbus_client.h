@@ -413,9 +413,9 @@ template <typename T>
 const DBusTypeInfo& GetDBusTypeInfo(const std::vector<T>*) {
   static const base::NoDestructor<DBusTypeInfo> elem_info(
       GetDBusTypeInfo(static_cast<T*>(nullptr)));
-  static const base::NoDestructor<DBusTypeInfo> info(
+  static const base::NoDestructor<DBusTypeInfo> info{
       {base::StrCat({"a", elem_info->dbus_signature}),
-       base::StrCat({"vector<", elem_info->type_name, ">"})});
+       base::StrCat({"vector<", elem_info->type_name, ">"})}};
   return *info;
 }
 
@@ -425,11 +425,11 @@ const DBusTypeInfo& GetDBusTypeInfo(const std::map<T, U>*) {
       GetDBusTypeInfo(static_cast<T*>(nullptr)));
   static const base::NoDestructor<DBusTypeInfo> val_info(
       GetDBusTypeInfo(static_cast<U*>(nullptr)));
-  static const base::NoDestructor<DBusTypeInfo> info(
+  static const base::NoDestructor<DBusTypeInfo> info{
       {base::StrCat(
            {"a{", key_info->dbus_signature, val_info->dbus_signature, "}"}),
        base::StrCat(
-           {"map<", key_info->type_name, ", ", val_info->type_name, ">"})});
+           {"map<", key_info->type_name, ", ", val_info->type_name, ">"})}};
   return *info;
 }
 
@@ -437,8 +437,8 @@ template <typename T>
 const DBusTypeInfo& GetDBusTypeInfo(const absl::optional<T>*) {
   static const base::NoDestructor<DBusTypeInfo> elem_info(
       GetDBusTypeInfo(static_cast<T*>(nullptr)));
-  static const base::NoDestructor<DBusTypeInfo> info(
-      {"a{sv}", base::StrCat({"optional<", elem_info->type_name, ">"})});
+  static const base::NoDestructor<DBusTypeInfo> info{
+      {"a{sv}", base::StrCat({"optional<", elem_info->type_name, ">"})}};
   return *info;
 }
 
