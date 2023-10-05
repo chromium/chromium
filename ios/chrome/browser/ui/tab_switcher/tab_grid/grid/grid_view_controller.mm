@@ -16,7 +16,6 @@
 #import "base/numerics/safe_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
@@ -92,16 +91,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 }  // namespace
-
-@interface BidirectionalCollectionViewTransitionLayout
-    : UICollectionViewTransitionLayout
-@end
-
-@implementation BidirectionalCollectionViewTransitionLayout
-- (BOOL)flipsHorizontallyInOppositeLayoutDirection {
-  return UseRTLLayout() ? YES : NO;
-}
-@end
 
 // To ease the use of generics with the diffable data source, define a Snapshot
 // type.
@@ -916,15 +905,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
   return [self.menuProvider contextMenuConfigurationForTabCell:cell
                                                   menuScenario:scenario];
-}
-
-- (UICollectionViewTransitionLayout*)
-                  collectionView:(UICollectionView*)collectionView
-    transitionLayoutForOldLayout:(UICollectionViewLayout*)fromLayout
-                       newLayout:(UICollectionViewLayout*)toLayout {
-  return [[BidirectionalCollectionViewTransitionLayout alloc]
-      initWithCurrentLayout:fromLayout
-                 nextLayout:toLayout];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
