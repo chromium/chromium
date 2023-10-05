@@ -188,11 +188,10 @@ export function shareDataPageTestSuite() {
     // Privacy note is a long localized string in HTML format.
     assertTrue(page.i18nExists('privacyNote'));
     assertEquals(
-        'Go to the Legal Help page to request content changes for ' +
-            'legal reasons. Some account and system information ' +
-            'may be sent to Google. We will use the information you ' +
-            'give us to help address technical issues and to improve our ' +
-            'services, subject to our Privacy Policy and Terms of Service.',
+        'Some account and system information may be sent to Google. We use ' +
+            'this information to help address technical issues and improve ' +
+            'our services, subject to our Privacy Policy and Terms of ' +
+            'Service. To request content changes, go to Legal Help.',
         getElementContent('#privacyNote'));
   });
 
