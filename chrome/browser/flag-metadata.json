@@ -7299,7 +7299,7 @@
       "zoraiznaeem",
       "chromeos-foundations@google.com"
     ],
-    "expiry_milestone": 119
+    "expiry_milestone": 123
   },
   {
     "name": "rounded-windows",
@@ -7307,7 +7307,7 @@
       "zoraiznaeem",
       "chromeos-foundations@google.com"
     ],
-    "expiry_milestone": 119
+    "expiry_milestone": 123
   },
   {
     "name": "run-video-capture-service-in-browser",
