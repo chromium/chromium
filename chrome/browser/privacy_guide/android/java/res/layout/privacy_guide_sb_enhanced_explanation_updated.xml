@@ -32,7 +32,7 @@ found in the LICENSE file.
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_data_viz_grey"
+            app:iconImage="@drawable/ic_data_viz_grey_24"
             app:iconTint="@macro/default_icon_color"
             app:summaryText="@string/safe_browsing_enhanced_protection_bullet_one_updated" />
 
@@ -40,26 +40,27 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:iconImage="@drawable/ic_download"
+            app:iconTint="@macro/default_icon_color"
             app:summaryText="@string/safe_browsing_enhanced_protection_bullet_two_updated" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_gshield"
+            app:iconImage="@drawable/ic_gshield_24"
             app:iconTint="@macro/default_icon_color"
             app:summaryText="@string/safe_browsing_enhanced_protection_bullet_three_updated" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_language"
+            app:iconImage="@drawable/ic_language_24"
             app:iconTint="@macro/default_icon_color"
             app:summaryText="@string/safe_browsing_enhanced_protection_bullet_four_updated" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_vpn_key_grey"
+            app:iconImage="@drawable/ic_vpn_key_24"
             app:iconTint="@macro/default_icon_color"
             app:summaryText="@string/safe_browsing_enhanced_protection_bullet_five_updated" />
 
@@ -71,19 +72,22 @@ found in the LICENSE file.
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_link_24dp"
+            app:iconImage="@drawable/ic_link"
+            app:iconTint="@macro/default_icon_color"
             app:summaryText="@string/safe_browsing_enhanced_protection_bullet_six_updated" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_account_circle_24dp"
+            app:iconImage="@drawable/ic_account_circle"
+            app:iconTint="@macro/default_icon_color"
             app:summaryText="@string/safe_browsing_enhanced_protection_bullet_seven_updated" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_speed"
+            app:iconImage="@drawable/ic_speed_24"
+            app:iconTint="@macro/default_icon_color"
             app:summaryText="@string/safe_browsing_enhanced_protection_bullet_eight_updated" />
 
     </LinearLayout>
