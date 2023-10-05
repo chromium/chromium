@@ -535,12 +535,6 @@ BASE_FEATURE(kCrostiniVirtualKeyboardSupport,
 // Enables or disables support for third party VMs.
 BASE_FEATURE(kBruschetta, "Bruschetta", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Captive Portal Error Page changes, which shows a suggestion in
-// the Chrome error page on ChromeOS when behind a captive portal.
-BASE_FEATURE(kCaptivePortalErrorPage,
-             "CaptivePortalErrorPage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables always using device-activity-status data to filter
 // eligible host phones.
 BASE_FEATURE(kCryptAuthV2AlwaysUseActiveEligibleHosts,
@@ -3113,10 +3107,6 @@ bool IsCalendarJellyEnabled() {
 
 bool IsCaptureModeAudioMixingEnabled() {
   return base::FeatureList::IsEnabled(kCaptureModeAudioMixing);
-}
-
-bool IsCaptivePortalErrorPageEnabled() {
-  return base::FeatureList::IsEnabled(kCaptivePortalErrorPage);
 }
 
 bool IsCaptureModeTourEnabled() {

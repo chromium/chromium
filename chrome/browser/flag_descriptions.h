@@ -4003,9 +4003,6 @@ extern const char kSystemNudgeV2Description[];
 extern const char kSupportF11AndF12ShortcutsName[];
 extern const char kSupportF11AndF12ShortcutsDescription[];
 
-extern const char kCaptivePortalErrorPageName[];
-extern const char kCaptivePortalErrorPageDescription[];
-
 extern const char kTerminalAlternativeEmulatorName[];
 extern const char kTerminalAlternativeEmulatorDescription[];
 
