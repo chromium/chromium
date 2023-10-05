@@ -38,8 +38,7 @@ ExtensionViewHost::ExtensionViewHost(const Extension* extension,
     : ExtensionHost(extension, site_instance, url, host_type),
       browser_(browser) {
   // Not used for panels, see PanelHost.
-  DCHECK(host_type == mojom::ViewType::kExtensionDialog ||
-         host_type == mojom::ViewType::kExtensionPopup ||
+  DCHECK(host_type == mojom::ViewType::kExtensionPopup ||
          host_type == mojom::ViewType::kExtensionSidePanel);
 
   // The browser should always be associated with the same original profile as

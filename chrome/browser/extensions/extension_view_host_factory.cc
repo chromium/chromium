@@ -35,9 +35,8 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForExtension(
     Browser* browser,
     content::WebContents* web_contents) {
   DCHECK(profile);
-  // A NULL browser may only be given for dialogs or side panels.
-  DCHECK(browser || view_type == mojom::ViewType::kExtensionDialog ||
-         view_type == mojom::ViewType::kExtensionSidePanel);
+  // A NULL browser may only be given for side panels.
+  DCHECK(browser || view_type == mojom::ViewType::kExtensionSidePanel);
   scoped_refptr<content::SiteInstance> site_instance =
       ProcessManager::Get(profile)->GetSiteInstanceForURL(url);
   return view_type == mojom::ViewType::kExtensionSidePanel
@@ -95,9 +94,8 @@ std::unique_ptr<ExtensionViewHost> CreateViewHost(
     content::WebContents* web_contents,
     extensions::mojom::ViewType view_type) {
   DCHECK(profile);
-  // A NULL browser may only be given for dialogs or side panels.
-  DCHECK(browser || view_type == mojom::ViewType::kExtensionDialog ||
-         view_type == mojom::ViewType::kExtensionSidePanel);
+  // A NULL browser may only be given for side panels.
+  DCHECK(browser || view_type == mojom::ViewType::kExtensionSidePanel);
 
   const Extension* extension = GetExtensionForUrl(profile, url);
   if (!extension)
@@ -121,16 +119,6 @@ std::unique_ptr<ExtensionViewHost> ExtensionViewHostFactory::CreatePopupHost(
   return CreateViewHost(url, browser->profile(), browser,
                         /*web_contents=*/nullptr,
                         mojom::ViewType::kExtensionPopup);
-}
-
-// static
-std::unique_ptr<ExtensionViewHost> ExtensionViewHostFactory::CreateDialogHost(
-    const GURL& url,
-    Profile* profile) {
-  DCHECK(profile);
-  return CreateViewHost(url, profile, /*browser=*/nullptr,
-                        /*web_contents=*/nullptr,
-                        mojom::ViewType::kExtensionDialog);
 }
 
 // static

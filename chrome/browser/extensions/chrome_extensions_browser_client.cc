@@ -557,7 +557,6 @@ void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(
     case mojom::ViewType::kAppWindow:
     case mojom::ViewType::kComponent:
     case mojom::ViewType::kExtensionBackgroundPage:
-    case mojom::ViewType::kExtensionDialog:
     case mojom::ViewType::kExtensionPopup:
     case mojom::ViewType::kOffscreenDocument:
     case mojom::ViewType::kExtensionSidePanel:

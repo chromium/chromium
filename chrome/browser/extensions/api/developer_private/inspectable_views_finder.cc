@@ -51,10 +51,6 @@ api::developer_private::ViewType ConvertViewType(const mojom::ViewType type) {
       developer_private_type =
           api::developer_private::VIEW_TYPE_EXTENSION_BACKGROUND_PAGE;
       break;
-    case mojom::ViewType::kExtensionDialog:
-      developer_private_type =
-          api::developer_private::VIEW_TYPE_EXTENSION_DIALOG;
-      break;
     case mojom::ViewType::kExtensionGuest:
       developer_private_type =
           api::developer_private::VIEW_TYPE_EXTENSION_GUEST;
@@ -175,7 +171,6 @@ void InspectableViewsFinder::GetViewsForExtensionProcess(
     mojom::ViewType host_type = GetViewType(web_contents);
     if (host_type == mojom::ViewType::kInvalid ||
         host_type == mojom::ViewType::kExtensionPopup ||
-        host_type == mojom::ViewType::kExtensionDialog ||
         host_type == mojom::ViewType::kAppWindow) {
       continue;
     }

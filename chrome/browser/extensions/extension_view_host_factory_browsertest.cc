@@ -27,24 +27,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest, CreateExtensionHosts) {
   ASSERT_TRUE(extension.get());
 
   content::BrowserContext* browser_context = browser()->profile();
-  {
-    // Popup hosts are created with the correct type and profile.
-    std::unique_ptr<ExtensionViewHost> host =
-        ExtensionViewHostFactory::CreatePopupHost(extension->url(), browser());
-    EXPECT_EQ(extension.get(), host->extension());
-    EXPECT_EQ(browser_context, host->browser_context());
-    EXPECT_EQ(mojom::ViewType::kExtensionPopup, host->extension_host_type());
-  }
 
-  {
-    // Dialog hosts are created with the correct type and profile.
-    std::unique_ptr<ExtensionViewHost> host =
-        ExtensionViewHostFactory::CreateDialogHost(extension->url(),
-                                                   browser()->profile());
-    EXPECT_EQ(extension.get(), host->extension());
-    EXPECT_EQ(browser_context, host->browser_context());
-    EXPECT_EQ(mojom::ViewType::kExtensionDialog, host->extension_host_type());
-  }
+  // Popup hosts are created with the correct type and profile.
+  std::unique_ptr<ExtensionViewHost> host =
+      ExtensionViewHostFactory::CreatePopupHost(extension->url(), browser());
+  EXPECT_EQ(extension.get(), host->extension());
+  EXPECT_EQ(browser_context, host->browser_context());
+  EXPECT_EQ(mojom::ViewType::kExtensionPopup, host->extension_host_type());
 }
 
 class ExtensionSidePanelViewHostFactoryTest : public ExtensionBrowserTest {

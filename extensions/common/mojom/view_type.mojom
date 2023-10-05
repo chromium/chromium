@@ -23,7 +23,8 @@ enum ViewType {
   kComponent = 3,
 
   kExtensionBackgroundPage = 4,
-  kExtensionDialog = 5,
+  // Extensions dialog was removed in https://crbug.com/1488892.
+  // DEPRECATED_kExtensionDialog = 5,
   kExtensionGuest = 6,
   kExtensionPopup = 7,
 

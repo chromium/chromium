@@ -22,7 +22,6 @@ bool GetViewTypeFromString(const std::string& view_type,
   } constexpr kTypeMap[] = {
       {mojom::ViewType::kAppWindow, "APP_WINDOW"},
       {mojom::ViewType::kExtensionBackgroundPage, "BACKGROUND"},
-      {mojom::ViewType::kExtensionDialog, "EXTENSION_DIALOG"},
       {mojom::ViewType::kExtensionPopup, "POPUP"},
       {mojom::ViewType::kTabContents, "TAB"},
       {mojom::ViewType::kExtensionSidePanel, "SIDE_PANEL"},

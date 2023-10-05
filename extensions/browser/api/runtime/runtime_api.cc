@@ -875,7 +875,6 @@ RuntimeGetContextsFunction::GetFrameContexts() {
       case mojom::ViewType::kBackgroundContents:
       case mojom::ViewType::kComponent:
       case mojom::ViewType::kExtensionBackgroundPage:
-      case mojom::ViewType::kExtensionDialog:
         NOTREACHED();
         break;
 

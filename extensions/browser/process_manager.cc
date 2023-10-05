@@ -183,7 +183,6 @@ struct ProcessManager::ExtensionRenderFrameData {
       case extensions::mojom::ViewType::kAppWindow:
       case extensions::mojom::ViewType::kBackgroundContents:
       case extensions::mojom::ViewType::kComponent:
-      case extensions::mojom::ViewType::kExtensionDialog:
       case extensions::mojom::ViewType::kExtensionGuest:
       case extensions::mojom::ViewType::kExtensionPopup:
       case extensions::mojom::ViewType::kTabContents:

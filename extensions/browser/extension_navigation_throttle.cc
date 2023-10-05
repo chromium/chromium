@@ -58,11 +58,6 @@ bool ShouldBlockNavigationToPlatformAppResource(
   if (view_type == mojom::ViewType::kExtensionBackgroundPage)
     return false;
 
-  // Navigation within an extension dialog, e.g. this is used by ChromeOS file
-  // manager.
-  if (view_type == mojom::ViewType::kExtensionDialog)
-    return false;
-
   // Navigation within an app window. The app window must belong to the
   // |platform_app|.
   if (view_type == mojom::ViewType::kAppWindow) {
