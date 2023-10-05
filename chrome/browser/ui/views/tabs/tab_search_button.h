@@ -32,6 +32,7 @@ class TabSearchButton : public TabStripControlButton {
 
  protected:
   int GetCornerRadius() const override;
+  int GetFlatCornerRadius() const override;
 
  private:
 

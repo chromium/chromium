@@ -57,6 +57,7 @@ class TabStripControlButton : public views::LabelButton,
   void UpdateIcon();
 
   virtual int GetCornerRadius() const;
+  virtual int GetFlatCornerRadius() const;
   float GetScaledCornerRadius(float initial_radius, Edge edge) const;
 
   Edge flat_edge() { return flat_edge_; }

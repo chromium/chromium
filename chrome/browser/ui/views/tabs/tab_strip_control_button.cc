@@ -212,10 +212,17 @@ int TabStripControlButton::GetCornerRadius() const {
   return width() / 2;
 }
 
+int TabStripControlButton::GetFlatCornerRadius() const {
+  return 0;
+}
+
 float TabStripControlButton::GetScaledCornerRadius(float initial_radius,
                                                    Edge edge) const {
-  return flat_edge_ == edge ? initial_radius * flat_edge_factor_
-                            : initial_radius;
+  const int flat_corner_radius = GetFlatCornerRadius();
+  return flat_edge_ == edge
+             ? ((initial_radius - flat_corner_radius) * flat_edge_factor_) +
+                   flat_corner_radius
+             : initial_radius;
 }
 
 void TabStripControlButton::AddedToWidget() {

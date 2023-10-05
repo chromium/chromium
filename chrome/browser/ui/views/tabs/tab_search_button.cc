@@ -23,6 +23,7 @@
 
 namespace {
 constexpr int kCRTabSearchCornerRadius = 10;
+constexpr int kCRTabSearchFlatCornerRadius = 2;
 }
 
 TabSearchButton::TabSearchButton(TabStrip* tab_strip, Edge flat_edge)
@@ -68,6 +69,10 @@ int TabSearchButton::GetCornerRadius() const {
   return features::IsChromeRefresh2023()
              ? kCRTabSearchCornerRadius
              : TabStripControlButton::kButtonSize.width() / 2;
+}
+
+int TabSearchButton::GetFlatCornerRadius() const {
+  return kCRTabSearchFlatCornerRadius;
 }
 
 BEGIN_METADATA(TabSearchButton, TabStripControlButton)

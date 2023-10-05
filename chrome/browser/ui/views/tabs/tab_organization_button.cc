@@ -15,6 +15,8 @@
 
 namespace {
 constexpr int kTabOrganizeCornerRadius = 10;
+constexpr int kTabOrganizeFlatCornerRadius = 2;
+constexpr int kTabOrganizeInsetsWidth = 20;
 }
 
 TabOrganizationButton::TabOrganizationButton(TabStrip* tab_strip,
@@ -31,6 +33,8 @@ TabOrganizationButton::TabOrganizationButton(TabStrip* tab_strip,
 
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE));
+  SetLabelStyle(views::style::STYLE_BODY_3_EMPHASIS);
+  label()->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
 
   UpdateForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
   UpdateForegroundFrameInactiveColorId(
@@ -52,9 +56,8 @@ void TabOrganizationButton::SetWidthFactor(float factor) {
 }
 
 gfx::Size TabOrganizationButton::CalculatePreferredSize() const {
-  const int insets_width = 12;
   const int full_width =
-      LabelButton::CalculatePreferredSize().width() + insets_width;
+      LabelButton::CalculatePreferredSize().width() + kTabOrganizeInsetsWidth;
   const int width = full_width * width_factor_;
   const int height = TabStripControlButton::CalculatePreferredSize().height();
   return gfx::Size(width, height);
@@ -71,6 +74,10 @@ void TabOrganizationButton::ButtonPressed(const ui::Event& event) {
 
 int TabOrganizationButton::GetCornerRadius() const {
   return kTabOrganizeCornerRadius;
+}
+
+int TabOrganizationButton::GetFlatCornerRadius() const {
+  return kTabOrganizeFlatCornerRadius;
 }
 
 BEGIN_METADATA(TabOrganizationButton, TabStripControlButton)

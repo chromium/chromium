@@ -35,6 +35,7 @@ class TabOrganizationButton : public TabStripControlButton {
  protected:
   // TabStripControlButton:
   int GetCornerRadius() const override;
+  int GetFlatCornerRadius() const override;
 
  private:
   // Preferred width multiplier, between 0-1. Used to animate button size.
