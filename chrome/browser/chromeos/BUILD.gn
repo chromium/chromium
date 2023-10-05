@@ -361,6 +361,8 @@ source_set("chromeos") {
       "extensions/login_screen/login/shared_session_handler.h",
       "reporting/websites/website_metrics_retriever_ash.cc",
       "reporting/websites/website_metrics_retriever_ash.h",
+      "reporting/websites/website_usage_telemetry_periodic_collector_ash.cc",
+      "reporting/websites/website_usage_telemetry_periodic_collector_ash.h",
     ]
     allow_circular_includes_from += [ "//chrome/browser/ash/crosapi" ]
     public_deps += [
@@ -379,6 +381,7 @@ source_set("chromeos") {
       "//chrome/browser/ui/ash/system_web_apps:system_web_apps",
       "//chromeos/ash/components/chaps_util",
       "//chromeos/ash/components/login/auth/public:authpublic",
+      "//chromeos/ash/components/login/session",
       "//chromeos/ash/components/settings",
       "//components/session_manager:base",
       "//components/session_manager/core",
@@ -609,6 +612,7 @@ source_set("unit_tests") {
       "extensions/login_screen/login_screen_storage/login_screen_storage_api_ash_unittest.cc",
       "extensions/login_screen/login_state/session_state_changed_event_dispatcher_ash_unittest.cc",
       "reporting/websites/website_metrics_retriever_ash_unittest.cc",
+      "reporting/websites/website_usage_telemetry_periodic_collector_ash_unittest.cc",
       "tablet_mode/chrome_content_browser_client_tablet_mode_part_unittest.cc",
     ]
     deps += [
