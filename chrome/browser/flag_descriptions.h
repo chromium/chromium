@@ -1648,6 +1648,9 @@ extern const char kEnableOmniboxClientSearchPrefetchDescription[];
 extern const char kPreloadingOnPerformancePageName[];
 extern const char kPreloadingOnPerformancePageDescription[];
 
+extern const char kCbdTimeframeRequiredName[];
+extern const char kCbdTimeframeRequiredDescription[];
+
 extern const char kPrivacyGuideAndroidName[];
 extern const char kPrivacyGuideAndroidDescription[];
 

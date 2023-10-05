@@ -9404,6 +9404,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPrintPreviewSetupAssistance)},
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"cbd-timeframe-required", flag_descriptions::kCbdTimeframeRequiredName,
+     flag_descriptions::kCbdTimeframeRequiredDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kCbdTimeframeRequired)},
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
     {"privacy-guide-android", flag_descriptions::kPrivacyGuideAndroidName,
      flag_descriptions::kPrivacyGuideAndroidDescription, kOsAndroid,

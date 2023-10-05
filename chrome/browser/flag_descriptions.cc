@@ -2868,6 +2868,13 @@ const char kEnableOmniboxClientSearchPrefetchDescription[] =
     "Search Engine that the client thinks are likely to be navigated. Requires "
     "chrome://flags/#omnibox-search-prefetch";
 
+const char kCbdTimeframeRequiredName[] =
+    "Clear Browsing Data Timeframe Experiment on Desktop";
+const char kCbdTimeframeRequiredDescription[] =
+    "This experiment requires users to interact with timeframe drop down menu "
+    "in the clear browsing data dialog. It also adds a new 'Last 15 minutes' "
+    "value to the list.";
+
 const char kPrivacyGuideAndroidName[] = "Privacy Guide on Android";
 const char kPrivacyGuideAndroidDescription[] =
     "Shows a new subpage in Settings that helps the user to review various "

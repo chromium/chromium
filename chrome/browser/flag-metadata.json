@@ -1060,6 +1060,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "cbd-timeframe-required",
+    "owners": [
+      "rainhard",
+      "msramek",
+      "chrome-privacy-controls@google.com"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "cco-test1",
     "owners": [ "petewil", "sky" ],
     "expiry_milestone": 121

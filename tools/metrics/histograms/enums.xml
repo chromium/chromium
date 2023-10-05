@@ -63349,6 +63349,7 @@ from previous Chrome versions.
   <int value="-864234985" label="UseDdljsonApi:enabled"/>
   <int value="-864232986" label="StartSurfaceAndroid:disabled"/>
   <int value="-864205629" label="enable-offline-load-stale-cache"/>
+  <int value="-863738382" label="CbdTimeframeRequired:disabled"/>
   <int value="-863581676" label="BluetoothFixA2dpPacketSize:disabled"/>
   <int value="-863269581" label="WebFeedOnboarding:disabled"/>
   <int value="-861678473" label="disable-offer-upload-credit-cards"/>
@@ -64782,6 +64783,7 @@ from previous Chrome versions.
   <int value="-152349324" label="CameraAppMultiPageDocScan:disabled"/>
   <int value="-150820109" label="ProjectorAppDebug:disabled"/>
   <int value="-150077791" label="FontAccessChooser:disabled"/>
+  <int value="-149365748" label="CbdTimeframeRequired:enabled"/>
   <int value="-148356419" label="PdfViewerPresentationMode:disabled"/>
   <int value="-147560822" label="ArcInputOverlay:enabled"/>
   <int value="-147283486" label="enable-network-portal-notification"/>
