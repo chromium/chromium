@@ -5,7 +5,9 @@
 ++++[static] name='child'
 ++++[static] name='<newline>    '
 ++++[section]
-++++++[static] name='nested locked element!'
+++++++[static] name='<newline>      nested locked element!<newline>      '
+++++++[push button] name='locked button'
+++++++[static] name='<newline>    '
 ++++[static] name='<newline>    '
 ++++[section]
 ++++[static] name='<newline>  '

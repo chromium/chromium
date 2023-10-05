@@ -1,11 +1,18 @@
 <!--
 @BLINK-ALLOW:offscreen
+@BLINK-ALLOW:focus*
 -->
 <div>
   <div id=spacer style="height: 30000px"></div>
   <div id="locked" style="content-visibility: auto">
     <div>child</div>
-    <div id="nested" style="content-visibility: auto">nested locked element!</div>
-    <div id="nonActivatable" style="content-visibility: hidden">nested non activatable locked element</div>
+    <div id="nested" style="content-visibility: auto">
+      nested locked element!
+      <button>locked button</button>
+    </div>
+    <div id="nonActivatable" style="content-visibility: hidden">
+      nested non activatable locked element
+      <button>locked button</button>
+    </div>
   </div>
 </div>
