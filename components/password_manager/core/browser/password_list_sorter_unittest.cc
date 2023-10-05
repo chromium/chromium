@@ -125,13 +125,13 @@ TEST(PasswordListSorterTest, Sorting_HideDuplicates) {
 
 TEST(PasswordListSorterTest, Sorting_Subdomains) {
   const std::vector<SortEntry> test_cases = {
-      {"http://example.com", "u", "p", nullptr, nullptr, false, 0},
-      {"http://b.example.com", "u", "p", nullptr, nullptr, false, 6},
-      {"http://a.example.com", "u", "p", nullptr, nullptr, false, 1},
-      {"http://1.a.example.com", "u", "p", nullptr, nullptr, false, 2},
-      {"http://2.a.example.com", "u", "p", nullptr, nullptr, false, 3},
-      {"http://x.2.a.example.com", "u", "p", nullptr, nullptr, false, 4},
-      {"http://y.2.a.example.com", "u", "p", nullptr, nullptr, false, 5},
+      {"http://example.com", "u", "p", nullptr, nullptr, false, 4},
+      {"http://b.example.com", "u", "p", nullptr, nullptr, false, 3},
+      {"http://a.example.com", "u", "p", nullptr, nullptr, false, 2},
+      {"http://1.a.example.com", "u", "p", nullptr, nullptr, false, 0},
+      {"http://2.a.example.com", "u", "p", nullptr, nullptr, false, 1},
+      {"http://x.2.a.example.com", "u", "p", nullptr, nullptr, false, 5},
+      {"http://y.2.a.example.com", "u", "p", nullptr, nullptr, false, 6},
   };
   SortAndCheckPositions(test_cases);
 }
@@ -150,7 +150,7 @@ TEST(PasswordListSorterTest, Sorting_AndroidCredentials) {
   const std::vector<SortEntry> test_cases = {
       // Regular Web Credential.
       {"https://alpha.example.com", "user", "secret", nullptr, nullptr, false,
-       3},
+       2},
       // First Android Credential.
       {"android://hash@com.example.alpha", "user", "secret", nullptr, nullptr,
        false, 0},
@@ -160,10 +160,10 @@ TEST(PasswordListSorterTest, Sorting_AndroidCredentials) {
        nullptr, false, -1},
       // Apps with different package names are distinct.
       {"android://hash@com.example.beta", "user", "secret", nullptr, nullptr,
-       false, 1},
+       false, 3},
       // Apps with same package name but different hashes are distinct.
       {"android://hash_different@com.example.alpha", "user", "secret", nullptr,
-       nullptr, false, 2}};
+       nullptr, false, 1}};
   SortAndCheckPositions(test_cases);
 }
 
@@ -180,12 +180,12 @@ TEST(PasswordListSorterTest, Sorting_Federations) {
 TEST(PasswordListSorterTest, Sorting_SpecialCharacters) {
   // URLs with encoded special characters should not cause crash during sorting.
   const std::vector<SortEntry> test_cases = {
-      {"https://xn--bea5m6d.com/", "user_a", "pwd", nullptr, nullptr, false, 4},
-      {"https://uoy.com/", "user_a", "pwd", nullptr, nullptr, false, 1},
-      {"https://zrc.com/", "user_a", "pwd", nullptr, nullptr, false, 6},
+      {"https://xn--bea5m6d.com/", "user_a", "pwd", nullptr, nullptr, false, 6},
+      {"https://uoy.com/", "user_a", "pwd", nullptr, nullptr, false, 2},
+      {"https://zrc.com/", "user_a", "pwd", nullptr, nullptr, false, 3},
       {"https://abc.com/", "user_a", "pwd", nullptr, nullptr, false, 0},
-      {"https://xn--ab-fma.com/", "user_a", "pwd", nullptr, nullptr, false, 2},
-      {"https://xn--bc-lia.com/", "user_a", "pwd", nullptr, nullptr, false, 3},
+      {"https://xn--ab-fma.com/", "user_a", "pwd", nullptr, nullptr, false, 1},
+      {"https://xn--bc-lia.com/", "user_a", "pwd", nullptr, nullptr, false, 4},
       {"https://xn--ndalk.com/", "user_a", "pwd", nullptr, nullptr, false, 5},
   };
   SortAndCheckPositions(test_cases);

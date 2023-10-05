@@ -10,11 +10,8 @@
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_list_sorter.h"
-#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #include "components/url_formatter/elide_url.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace password_manager {
 
@@ -25,24 +22,9 @@ constexpr char kPlayStoreAppPrefix[] =
 
 constexpr char kSortKeyPartsSeparator = ' ';
 
-// The character that is added to a sort key if there is no federation.
-// Note: to separate the entries w/ federation and the entries w/o federation,
-// this character should be alphabetically smaller than real federations.
-constexpr char kSortKeyNoFederationSymbol = '-';
-
-// Symbols to differentiate between passwords and passkeys.
-constexpr char kSortKeyPasswordSymbol = 'w';
-
 std::string GetOrigin(const url::Origin& origin) {
   return base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
       origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-}
-
-std::string SplitByDotAndReverse(base::StringPiece host) {
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
-      host, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  std::reverse(parts.begin(), parts.end());
-  return base::JoinString(parts, ".");
 }
 
 }  // namespace
@@ -145,7 +127,8 @@ CredentialUIEntry::CredentialUIEntry(const PasskeyCredential& passkey)
       user_display_name(base::UTF8ToUTF16(passkey.display_name())) {
   CHECK(!passkey.credential_id().empty());
   CredentialFacet facet;
-  facet.url = RPIDToURL(passkey.rp_id());
+  facet.url = GURL(base::StrCat(
+      {url::kHttpsScheme, url::kStandardSchemeSeparator, passkey.rp_id()}));
   facet.signon_realm =
       FacetURI::FromPotentiallyInvalidSpec(facet.url.possibly_invalid_spec())
           .potentially_invalid_spec();
@@ -283,36 +266,26 @@ CredentialUIEntry::GetAffiliatedDomains() const {
 }
 
 std::string CreateSortKey(const CredentialUIEntry& credential) {
-  std::string shown_origin = GetShownOrigin(credential);
-
-  const auto facet_uri =
+  const FacetURI facet_uri =
       FacetURI::FromPotentiallyInvalidSpec(credential.GetFirstSignonRealm());
-  const bool is_android_uri = facet_uri.IsValidAndroidFacetURI();
 
-  if (is_android_uri) {
+  std::string key;
+  if (facet_uri.IsValidAndroidFacetURI()) {
     // In case of Android credentials |GetShownOriginAndLinkURl| might return
     // the app display name, e.g. the Play Store name of the given application.
     // This might or might not correspond to the eTLD+1, which is why
-    // |shown_origin| is set to the reversed android package name in this case,
+    // |key| is set to the reversed android package name in this case,
     // e.g. com.example.android => android.example.com.
-    shown_origin = facet_uri.GetAndroidPackageDisplayName();
+    key = facet_uri.GetAndroidPackageDisplayName() + kSortKeyPartsSeparator +
+          facet_uri.canonical_spec();
+  } else {
+    key = base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
+        url::Origin::Create(credential.GetURL()),
+        url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
   }
 
-  std::string site_name =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          shown_origin,
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  if (site_name.empty()) {  // e.g. localhost.
-    site_name = shown_origin;
-  }
-
-  std::string key = site_name + kSortKeyPartsSeparator;
-
-  // Since multiple distinct credentials might have the same site name, more
-  // information is added. For Android credentials this includes the full
-  // canonical spec which is guaranteed to be unique for a given App.
-  key += is_android_uri ? facet_uri.canonical_spec()
-                        : SplitByDotAndReverse(shown_origin);
+  // Add a scheme to distinguish between http and https websites.
+  key += credential.GetURL().scheme();
 
   if (!credential.blocked_by_user) {
     key += kSortKeyPartsSeparator + base::UTF16ToUTF8(credential.username) +
@@ -321,20 +294,13 @@ std::string CreateSortKey(const CredentialUIEntry& credential) {
     key += kSortKeyPartsSeparator;
     if (!credential.federation_origin.opaque()) {
       key += credential.federation_origin.host();
-    } else {
-      key += kSortKeyNoFederationSymbol;
     }
   }
 
-  // To separate HTTP/HTTPS credentials, add the scheme to the key.
-  key += kSortKeyPartsSeparator + GetShownUrl(credential).scheme();
-
   // Separate passwords from passkeys.
-  key += kSortKeyPartsSeparator;
-  if (credential.passkey_credential_id.empty()) {
-    key += kSortKeyPasswordSymbol;
-  } else {
-    key += base::UTF16ToUTF8(credential.user_display_name) +
+  if (!credential.passkey_credential_id.empty()) {
+    key += kSortKeyPartsSeparator +
+           base::UTF16ToUTF8(credential.user_display_name) +
            kSortKeyPartsSeparator +
            base::HexEncode(credential.passkey_credential_id);
   }
