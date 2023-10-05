@@ -25,7 +25,7 @@ SpiralIterator::SpiralIterator(const IndexRect& around_index_rect,
       ignore_index_rect_(ignore_index_rect),
       index_x_(-1),
       index_y_(-1),
-      direction_(RIGHT),
+      direction_(Direction::kRight),
       delta_x_(1),
       delta_y_(0),
       current_step_(0),
@@ -67,16 +67,16 @@ SpiralIterator& SpiralIterator::operator++() {
       // inside (so that the continue would take us outside).
       int steps_to_edge = 0;
       switch (direction_) {
-        case UP:
+        case Direction::kUp:
           steps_to_edge = index_y_ - ignore_index_rect_.top();
           break;
-        case LEFT:
+        case Direction::kLeft:
           steps_to_edge = index_x_ - ignore_index_rect_.left();
           break;
-        case DOWN:
+        case Direction::kDown:
           steps_to_edge = ignore_index_rect_.bottom() - index_y_;
           break;
-        case RIGHT:
+        case Direction::kRight:
           steps_to_edge = ignore_index_rect_.right() - index_x_;
           break;
       }
@@ -95,25 +95,25 @@ SpiralIterator& SpiralIterator::operator++() {
       int steps_to_take = max_steps;
       bool can_hit_consider_rect = false;
       switch (direction_) {
-        case UP:
+        case Direction::kUp:
           if (consider_index_rect_.valid_column(index_x_) &&
               consider_index_rect_.bottom() < index_y_)
             steps_to_take = index_y_ - consider_index_rect_.bottom() - 1;
           can_hit_consider_rect |= consider_index_rect_.right() >= index_x_;
           break;
-        case LEFT:
+        case Direction::kLeft:
           if (consider_index_rect_.valid_row(index_y_) &&
               consider_index_rect_.right() < index_x_)
             steps_to_take = index_x_ - consider_index_rect_.right() - 1;
           can_hit_consider_rect |= consider_index_rect_.top() <= index_y_;
           break;
-        case DOWN:
+        case Direction::kDown:
           if (consider_index_rect_.valid_column(index_x_) &&
               consider_index_rect_.top() > index_y_)
             steps_to_take = consider_index_rect_.top() - index_y_ - 1;
           can_hit_consider_rect |= consider_index_rect_.left() <= index_x_;
           break;
-        case RIGHT:
+        case Direction::kRight:
           if (consider_index_rect_.valid_row(index_y_) &&
               consider_index_rect_.left() > index_x_)
             steps_to_take = consider_index_rect_.left() - index_x_ - 1;
@@ -153,9 +153,9 @@ void SpiralIterator::switch_direction() {
   delta_x_ = new_delta_x;
 
   current_step_ = 0;
-  direction_ = static_cast<Direction>((direction_ + 1) % 4);
+  direction_ = static_cast<Direction>((static_cast<int>(direction_) + 1) % 4);
 
-  if (direction_ == RIGHT || direction_ == LEFT) {
+  if (direction_ == Direction::kRight || direction_ == Direction::kLeft) {
     ++vertical_step_count_;
     ++horizontal_step_count_;
   }
