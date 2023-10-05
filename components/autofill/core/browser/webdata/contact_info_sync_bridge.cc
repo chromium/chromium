@@ -133,6 +133,8 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
   // currently doesn't provide a way to detect such cases, we don't distinguish.
   if (!entity_changes.empty())
     web_data_backend_->NotifyOfMultipleAutofillChanges();
+
+  web_data_backend_->NotifyOnSyncUpdatesReceived(syncer::CONTACT_INFO);
   return absl::nullopt;
 }
 

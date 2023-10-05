@@ -62,11 +62,17 @@ class AutofillWebDataBackend {
   // sequence notifications are asynchronous.
   virtual void NotifyOfAddressConversionCompleted() = 0;
 
-  // Notifies listeners on the UI sequence that sync has started for
-  // |model_type|.
+  // Notifies listeners on the UI sequence when sync has first been
+  // enabled for |model_type|. (NOT called on subsequent browser startups!)
   // NOTE: This method is intended to be called from the DB sequence. The UI
   // sequence notifications are asynchronous.
   virtual void NotifyThatSyncHasStarted(syncer::ModelType model_type) = 0;
+
+  // Notifies listeners on the UI sequence that sync has been running for
+  // |model_type|.
+  // NOTE: This method is intended to be called from the DB sequence. The UI
+  // sequence notifications are asynchronous.
+  virtual void NotifyOnSyncUpdatesReceived(syncer::ModelType model_type) = 0;
 };
 
 } // namespace autofill

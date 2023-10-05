@@ -219,6 +219,7 @@ TEST_F(ContactInfoSyncBridgeTest, ApplyIncrementalSyncChanges) {
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges);
+  EXPECT_CALL(backend(), NotifyOnSyncUpdatesReceived(syncer::CONTACT_INFO));
 
   // `ApplyIncrementalSyncChanges()` returns an error if it fails.
   EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(

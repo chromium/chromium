@@ -129,7 +129,9 @@ AutofillWebDataBackendImpl::AutofillWebDataBackendImpl(
     const base::RepeatingClosure& on_changed_callback,
     const base::RepeatingClosure& on_address_conversion_completed_callback,
     const base::RepeatingCallback<void(syncer::ModelType)>&
-        on_sync_started_callback)
+        on_sync_started_callback,
+    const base::RepeatingCallback<void(syncer::ModelType)>&
+        on_sync_updates_received_callback)
     : base::RefCountedDeleteOnSequence<AutofillWebDataBackendImpl>(
           std::move(db_task_runner)),
       ui_task_runner_(ui_task_runner),
@@ -137,7 +139,8 @@ AutofillWebDataBackendImpl::AutofillWebDataBackendImpl(
       on_changed_callback_(on_changed_callback),
       on_address_conversion_completed_callback_(
           on_address_conversion_completed_callback),
-      on_sync_started_callback_(on_sync_started_callback) {}
+      on_sync_started_callback_(on_sync_started_callback),
+      on_sync_updates_received_callback_(on_sync_updates_received_callback) {}
 
 void AutofillWebDataBackendImpl::AddObserver(
     AutofillWebDataServiceObserverOnDBSequence* observer) {
@@ -234,6 +237,20 @@ void AutofillWebDataBackendImpl::NotifyThatSyncHasStarted(
   // UI sequence notification.
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(on_sync_started_callback_, model_type));
+}
+
+void AutofillWebDataBackendImpl::NotifyOnSyncUpdatesReceived(
+    syncer::ModelType model_type) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+
+  if (on_sync_updates_received_callback_.is_null()) {
+    return;
+  }
+
+  // UI sequence notification.
+  ui_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(on_sync_updates_received_callback_, model_type));
 }
 
 base::SupportsUserData* AutofillWebDataBackendImpl::GetDBUserData() {

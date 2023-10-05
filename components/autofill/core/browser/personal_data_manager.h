@@ -48,6 +48,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -150,6 +151,7 @@ class PersonalDataManager : public KeyedService,
   void AutofillMultipleChangedBySync() override;
   void AutofillAddressConversionCompleted() override;
   void SyncStarted(syncer::ModelType model_type) override;
+  void OnSyncUpdatesReceived(syncer::ModelType model_type) override;
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;

@@ -50,6 +50,10 @@ class MockAutofillWebDataBackend : public AutofillWebDataBackend {
               NotifyThatSyncHasStarted,
               (syncer::ModelType model_type),
               (override));
+  MOCK_METHOD(void,
+              NotifyOnSyncUpdatesReceived,
+              (syncer::ModelType model_type),
+              (override));
 };
 
 }  // namespace autofill

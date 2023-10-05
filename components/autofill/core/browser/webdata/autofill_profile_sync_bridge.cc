@@ -159,6 +159,7 @@ optional<ModelError> AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
   RETURN_IF_ERROR(FlushSyncTracker(std::move(metadata_change_list), &tracker));
 
   web_data_backend_->CommitChanges();
+  web_data_backend_->NotifyOnSyncUpdatesReceived(syncer::AUTOFILL_PROFILE);
   return absl::nullopt;
 }
 

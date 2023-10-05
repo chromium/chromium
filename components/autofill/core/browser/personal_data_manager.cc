@@ -660,6 +660,10 @@ void PersonalDataManager::SyncStarted(syncer::ModelType model_type) {
   personal_data_manager_cleaner_->SyncStarted(model_type);
 }
 
+void PersonalDataManager::OnSyncUpdatesReceived(syncer::ModelType model_type) {
+  // TODO(crbug.com/1477292): Need to be implemented.
+}
+
 void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
   DCHECK_EQ(sync_service_, sync_service);
 

@@ -369,6 +369,7 @@ optional<ModelError> AutocompleteSyncBridge::ApplyIncrementalSyncChanges(
                                       change_processor()));
 
   web_data_backend_->CommitChanges();
+  web_data_backend_->NotifyOnSyncUpdatesReceived(syncer::AUTOFILL);
   return {};
 }
 
