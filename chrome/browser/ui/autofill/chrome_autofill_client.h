@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "chrome/browser/autofill/autofill_gstatic_reader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller_impl.h"
@@ -175,8 +174,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void HideVirtualCardEnrollBubbleAndIconIfVisible() override;
 #endif
 #if !BUILDFLAG(IS_ANDROID)
-  std::vector<std::string> GetAllowedMerchantsForVirtualCards() override;
-  std::vector<std::string> GetAllowedBinRangesForVirtualCards() override;
   void ShowLocalCardMigrationDialog(
       base::OnceClosure show_migration_dialog_closure) override;
   void ConfirmMigrateLocalCardToCloud(

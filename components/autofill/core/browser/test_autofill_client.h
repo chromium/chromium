@@ -272,15 +272,6 @@ class TestAutofillClientTemplate : public T {
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-  std::vector<std::string> GetAllowedMerchantsForVirtualCards() override {
-    return allowed_merchants_;
-  }
-
-  std::vector<std::string> GetAllowedBinRangesForVirtualCards() override {
-    return allowed_bin_ranges_;
-  }
-
   void ShowLocalCardMigrationDialog(
       base::OnceClosure show_migration_dialog_closure) override {
     std::move(show_migration_dialog_closure).Run();
@@ -594,18 +585,6 @@ class TestAutofillClientTemplate : public T {
     variation_config_country_code_ = variation_config_country_code;
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void set_allowed_merchants(
-      const std::vector<std::string>& merchant_allowlist) {
-    allowed_merchants_ = merchant_allowlist;
-  }
-
-  void set_allowed_bin_ranges(
-      const std::vector<std::string>& bin_range_allowlist) {
-    allowed_bin_ranges_ = bin_range_allowlist;
-  }
-#endif
-
   void set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision decision) {
     save_card_offer_user_decision_ = decision;
@@ -829,11 +808,6 @@ class TestAutofillClientTemplate : public T {
   // The last URL submitted in the primary main frame by the user. Set in the
   // constructor.
   GURL last_committed_primary_main_frame_url_{"https://example.test"};
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  std::vector<std::string> allowed_merchants_;
-  std::vector<std::string> allowed_bin_ranges_;
-#endif
 
   LogRouter log_router_;
   struct LogToTerminal {

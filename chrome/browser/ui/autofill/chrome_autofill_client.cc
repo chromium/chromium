@@ -659,26 +659,6 @@ void ChromeAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-std::vector<std::string>
-ChromeAutofillClient::GetAllowedMerchantsForVirtualCards() {
-  if (!prefs::IsAutofillPaymentMethodsEnabled(GetPrefs())) {
-    return std::vector<std::string>();
-  }
-
-  return AutofillGstaticReader::GetInstance()
-      ->GetTokenizationMerchantAllowlist();
-}
-
-std::vector<std::string>
-ChromeAutofillClient::GetAllowedBinRangesForVirtualCards() {
-  if (!prefs::IsAutofillPaymentMethodsEnabled(GetPrefs())) {
-    return std::vector<std::string>();
-  }
-
-  return AutofillGstaticReader::GetInstance()
-      ->GetTokenizationBinRangesAllowlist();
-}
-
 void ChromeAutofillClient::ShowLocalCardMigrationDialog(
     base::OnceClosure show_migration_dialog_closure) {
   ManageMigrationUiController::CreateForWebContents(web_contents());

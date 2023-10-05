@@ -151,14 +151,6 @@ class MockAutofillClient : public autofill::AutofillClient {
               (PaymentsRpcResult),
               (override));
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  MOCK_METHOD(std::vector<std::string>,
-              GetAllowedMerchantsForVirtualCards,
-              (),
-              (override));
-  MOCK_METHOD(std::vector<std::string>,
-              GetAllowedBinRangesForVirtualCards,
-              (),
-              (override));
   MOCK_METHOD(void,
               ShowLocalCardMigrationDialog,
               (base::OnceClosure),

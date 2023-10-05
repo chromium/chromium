@@ -14,8 +14,6 @@ static_library("autofill") {
     "address_normalizer_factory.h",
     "autocomplete_history_manager_factory.cc",
     "autocomplete_history_manager_factory.h",
-    "autofill_gstatic_reader.cc",
-    "autofill_gstatic_reader.h",
     "autofill_image_fetcher_factory.cc",
     "autofill_image_fetcher_factory.h",
     "autofill_offer_manager_factory.cc",
