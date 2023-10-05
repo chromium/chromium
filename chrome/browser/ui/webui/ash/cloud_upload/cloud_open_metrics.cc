@@ -6,7 +6,9 @@
 
 namespace ash::cloud_upload {
 
-CloudOpenMetrics::CloudOpenMetrics() = default;
+// TODO(b/300861997): Save cloud_provider as a member.
+CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider) {}
+
 CloudOpenMetrics::~CloudOpenMetrics() = default;
 
 base::SafeRef<CloudOpenMetrics> CloudOpenMetrics::GetSafeRef() const {

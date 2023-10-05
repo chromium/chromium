@@ -678,7 +678,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackSucceedsWithQuickOffice) {
   ASSERT_TRUE(GetUserFallbackChoice(
       profile, CreateWebDriveOfficeTask(), {test_url}, nullptr,
       ash::office_fallback::FallbackReason::kOffline,
-      std::make_unique<ash::cloud_upload::CloudOpenMetrics>()));
+      std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
+          ash::cloud_upload::CloudProvider::kOneDrive)));
 }
 
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
@@ -709,7 +710,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
   ASSERT_FALSE(GetUserFallbackChoice(
       profile, CreateWebDriveOfficeTask(), {test_url}, nullptr,
       ash::office_fallback::FallbackReason::kOffline,
-      std::make_unique<ash::cloud_upload::CloudOpenMetrics>()));
+      std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
+          ash::cloud_upload::CloudProvider::kOneDrive)));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -1120,8 +1122,8 @@ class DriveTest : public TestAccountBrowserTest {
     drive_mount_point_ = temp_dir_.GetPath();
     // Path of test file relative to the DriveFs mount point.
     relative_test_file_path = base::FilePath("/").AppendASCII(test_file_name_);
-    cloud_open_metrics_ =
-        std::make_unique<ash::cloud_upload::CloudOpenMetrics>();
+    cloud_open_metrics_ = std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
+        ash::cloud_upload::CloudProvider::kGoogleDrive);
     cloud_open_metrics_weak_ptr_ = cloud_open_metrics_->GetWeakPtr();
   }
 
@@ -1465,8 +1467,8 @@ class OneDriveTest : public TestAccountBrowserTest,
     relative_test_path_ = base::FilePath(test_file_name_);
     // The path in ODFS is the relative path with "/" prefixed.
     test_path_within_odfs_ = base::FilePath("/").Append(relative_test_path_);
-    cloud_open_metrics_ =
-        std::make_unique<ash::cloud_upload::CloudOpenMetrics>();
+    cloud_open_metrics_ = std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
+        ash::cloud_upload::CloudProvider::kOneDrive);
     cloud_open_metrics_weak_ptr_ = cloud_open_metrics_->GetWeakPtr();
   }
 

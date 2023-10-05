@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_OPEN_METRICS_H_
 
 #include "base/memory/safe_ref.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 
 namespace ash::cloud_upload {
 
@@ -16,7 +17,7 @@ namespace ash::cloud_upload {
 // a SafeRef.
 class CloudOpenMetrics {
  public:
-  CloudOpenMetrics();
+  explicit CloudOpenMetrics(CloudProvider cloud_provider);
   ~CloudOpenMetrics();
 
   // Not copyable. Create a SafeRef instead.

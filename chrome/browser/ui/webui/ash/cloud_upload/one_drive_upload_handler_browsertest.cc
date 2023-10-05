@@ -241,7 +241,7 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
           DanglingUntriaged | ExperimentalAsh>
       provided_file_system_;  // Owned by Service.
   std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics_ =
-      std::make_unique<ash::cloud_upload::CloudOpenMetrics>();
+      std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive);
   base::SafeRef<CloudOpenMetrics> cloud_open_metrics_ref_ =
       cloud_open_metrics_->GetSafeRef();
   base::HistogramTester histogram_;

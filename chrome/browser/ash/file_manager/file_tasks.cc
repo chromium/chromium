@@ -800,17 +800,14 @@ bool ExecuteFileTask(Profile* profile,
 
   const std::string parsed_action_id(ParseFilesAppActionId(task.action_id));
 
-  // Object to track cloud upload/open flow metrics. It only has one owner at a
-  // given time.
-  std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics =
-      std::make_unique<ash::cloud_upload::CloudOpenMetrics>();
-
   if (IsWebDriveOfficeTask(task)) {
     for (const FileSystemURL& file_url : file_urls) {
       RecordOfficeOpenExtensionDriveMetric(file_url);
     }
     const bool started = ExecuteWebDriveOfficeTask(
-        profile, task, file_urls, modal_parent, std::move(cloud_open_metrics));
+        profile, task, file_urls, modal_parent,
+        std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
+            ash::cloud_upload::CloudProvider::kGoogleDrive));
     if (done) {
       if (started) {
         std::move(done).Run(
@@ -827,7 +824,9 @@ bool ExecuteFileTask(Profile* profile,
       RecordOfficeOpenExtensionOneDriveMetric(file_url);
     }
     const bool started = ExecuteOpenInOfficeTask(
-        profile, task, file_urls, modal_parent, std::move(cloud_open_metrics));
+        profile, task, file_urls, modal_parent,
+        std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
+            ash::cloud_upload::CloudProvider::kOneDrive));
     if (done) {
       if (started) {
         std::move(done).Run(
