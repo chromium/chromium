@@ -44005,6 +44005,25 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4643" label="ScrollSnapNestedSnapAreas"/>
   <int value="4644" label="ScrollSnapCoveringSnapArea"/>
   <int value="4645" label="V8RTCEncodedAudioFrame_SetMetadata_Method"/>
+  <int value="4646" label="V8FetchLaterResult_Activated_AttributeGetter"/>
+  <int value="4647" label="V8Window_FetchLater_Method"/>
+  <int value="4648" label="FetchLaterInvokeStateDeferred"/>
+  <int value="4649" label="FetchLaterInvokeStateScheduled"/>
+  <int value="4650" label="FetchLaterInvokeStateTerminated"/>
+  <int value="4651" label="FetchLaterInvokeStateAborted"/>
+  <int value="4652" label="FetchLaterInvokeStateActivated"/>
+  <int value="4653" label="FetchLaterErrorUnknownBodyLength"/>
+  <int value="4654" label="FetchLaterErrorQuotaExceeded"/>
+  <int value="4655" label="V8FileSystemHandle_GetCloudIdentifiers_Method"/>
+  <int value="4656" label="PrivateAggregationApiEnableDebugMode"/>
+  <int value="4657" label="LineBreakPhrase"/>
+  <int value="4658" label="AttributionReportingUnderscorePrefixedFilterKey"/>
+  <int value="4659" label="PercentOrCalcStickyUsedOffset"/>
+  <int value="4660" label="PercentOrCalcRelativeUsedOffset"/>
+  <int value="4661" label="AutoRelativeUsedOffset"/>
+  <int value="4662" label="ViewportFitContain"/>
+  <int value="4663" label="ViewportFitCover"/>
+  <int value="4664" label="ViewportFitCoverOrSafeAreaInsetBottom"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

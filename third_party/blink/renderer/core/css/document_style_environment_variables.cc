@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
@@ -93,6 +94,13 @@ void DocumentStyleEnvironmentVariables::RecordVariableUsage(unsigned id) {
     case 0x898873a2:
       UseCounter::Count(
           document_, WebFeature::kCSSEnvironmentVariable_SafeAreaInsetBottom);
+      // Record usage for viewport-fit histogram.
+      // TODO(https://crbug.com/1482559) remove after data captured (end of
+      // 2023).
+      if (document_->GetFrame()->IsOutermostMainFrame()) {
+        UseCounter::Count(document_,
+                          WebFeature::kViewportFitCoverOrSafeAreaInsetBottom);
+      }
       break;
     case 0xd99fe75b:
       UseCounter::Count(document_,
