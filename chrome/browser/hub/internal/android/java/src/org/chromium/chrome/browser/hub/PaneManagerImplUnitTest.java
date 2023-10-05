@@ -39,7 +39,7 @@ public class PaneManagerImplUnitTest {
                                           .registerPane(PaneId.TAB_SWITCHER, () -> mTabSwitcherPane)
                                           .registerPane(PaneId.INCOGNITO_TAB_SWITCHER,
                                                   () -> mIncognitoTabSwitcherPane);
-        PaneManager paneManager = PaneManagerFactory.createPaneManager(builder);
+        PaneManager paneManager = new PaneManagerImpl(builder);
 
         assertNull(paneManager.getFocusedPane());
 
@@ -59,7 +59,7 @@ public class PaneManagerImplUnitTest {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
                         .registerPane(PaneId.TAB_SWITCHER, () -> mTabSwitcherPane);
-        PaneManager paneManager = PaneManagerFactory.createPaneManager(builder);
+        PaneManager paneManager = new PaneManagerImpl(builder);
 
         assertNull(paneManager.getFocusedPane());
 
@@ -79,7 +79,7 @@ public class PaneManagerImplUnitTest {
         PaneListBuilder builder = new PaneListBuilder(new DefaultPaneOrderController())
                                           .registerPane(PaneId.TAB_SWITCHER, () -> mTabSwitcherPane)
                                           .registerPane(PaneId.BOOKMARKS, () -> null);
-        PaneManager paneManager = PaneManagerFactory.createPaneManager(builder);
+        PaneManager paneManager = new PaneManagerImpl(builder);
 
         assertNull(paneManager.getFocusedPane());
 
