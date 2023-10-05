@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/https_upgrades/https_upgrade_service_impl.h"
+#import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_impl.h"
 
 #import "base/containers/contains.h"
 #import "base/time/default_clock.h"

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/https_upgrades/https_upgrade_app_interface.h"
+#import "ios/chrome/browser/https_upgrades/model/https_upgrade_app_interface.h"
 
 #import "base/time/time.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/https_upgrades/https_only_mode_upgrade_tab_helper.h"
-#import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
-#import "ios/chrome/browser/https_upgrades/typed_navigation_upgrade_tab_helper.h"
+#import "ios/chrome/browser/https_upgrades/model/https_only_mode_upgrade_tab_helper.h"
+#import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
+#import "ios/chrome/browser/https_upgrades/model/typed_navigation_upgrade_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"

@@ -9,7 +9,7 @@ include_rules = [
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/external_files",
-  "+ios/chrome/browser/https_upgrades",
+  "+ios/chrome/browser/https_upgrades/model",
   "+ios/chrome/browser/language",
   "+ios/chrome/browser/optimization_guide",
   "+ios/chrome/browser/reading_list/model",

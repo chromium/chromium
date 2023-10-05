@@ -271,7 +271,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/flags:client_side",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/follow:javascript_feature",
-    "//ios/chrome/browser/https_upgrades",
+    "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/metrics:accessor",
     "//ios/chrome/browser/metrics:expired_histograms_array",

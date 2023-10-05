@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_UPGRADE_SERVICE_IMPL_H_
-#define IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_UPGRADE_SERVICE_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_IMPL_H_
+#define IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_IMPL_H_
 
 #include <memory>
 #include <set>
@@ -34,4 +34,4 @@ class HttpsUpgradeServiceImpl : public HttpsUpgradeService {
   security_interstitials::HttpsOnlyModeAllowlist allowlist_;
 };
 
-#endif  // IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_UPGRADE_SERVICE_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_IMPL_H_

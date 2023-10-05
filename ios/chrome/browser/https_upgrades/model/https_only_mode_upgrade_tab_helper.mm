@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/https_upgrades/https_only_mode_upgrade_tab_helper.h"
+#import "ios/chrome/browser/https_upgrades/model/https_only_mode_upgrade_tab_helper.h"
 
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
@@ -181,8 +181,9 @@ void HttpsOnlyModeUpgradeTabHelper::FallbackToHttp() {
       base::BindOnce(
           [](base::WeakPtr<web::WebState> web_state,
              const web::NavigationManager::WebLoadParams& params) {
-            if (web_state)
+            if (web_state) {
               web_state->GetNavigationManager()->LoadURLWithParams(params);
+            }
           },
           web_state()->GetWeakPtr(), std::move(params)));
 }

@@ -5,7 +5,7 @@
 #import <map>
 #import <string>
 
-#import "ios/chrome/browser/https_upgrades/https_upgrade_test_helper.h"
+#import "ios/chrome/browser/https_upgrades/model/https_upgrade_test_helper.h"
 
 #import "base/functional/bind.h"
 #import "base/strings/escape.h"
@@ -14,7 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "ios/chrome/browser/https_upgrades/https_upgrade_app_interface.h"
+#import "ios/chrome/browser/https_upgrades/model/https_upgrade_app_interface.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/embedded_test_server_handlers.h"
@@ -41,8 +41,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       new net::test_server::BasicHttpResponse);
   response->set_content_type("text/html");
   response->set_content("HTTP_RESPONSE");
-  if (counter)
+  if (counter) {
     (*counter)++;
+  }
   return std::move(response);
 }
 

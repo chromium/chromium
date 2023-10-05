@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_UPGRADE_SERVICE_FACTORY_H_
-#define IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_UPGRADE_SERVICE_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_FACTORY_H_
+#define IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_FACTORY_H_
 
 #include <memory>
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/https_upgrades/https_upgrade_service_impl.h"
+#import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_impl.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 
 // Singleton that owns all HttpsUpgradeService and associates them with
@@ -39,4 +39,4 @@ class HttpsUpgradeServiceFactory : public BrowserStateKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
 };
 
-#endif  // IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_UPGRADE_SERVICE_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_FACTORY_H_

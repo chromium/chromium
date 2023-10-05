@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"
-#import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
+#import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
 #import "ios/chrome/browser/ntp/browser_policy_new_tab_page_rewriter.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"

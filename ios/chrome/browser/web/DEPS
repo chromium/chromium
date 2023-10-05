@@ -10,7 +10,7 @@ include_rules = [
   "+ios/chrome/browser/flags/chrome_switches.h",
   "+ios/chrome/browser/flags/ios_chrome_field_trials.h",
   "+ios/chrome/browser/follow",
-  "+ios/chrome/browser/https_upgrades",
+  "+ios/chrome/browser/https_upgrades/model",
   "+ios/chrome/browser/infobars",
   "+ios/chrome/browser/lens/lens_browser_agent.h",
   "+ios/chrome/browser/link_to_text",

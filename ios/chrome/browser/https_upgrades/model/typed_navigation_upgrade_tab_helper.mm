@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/https_upgrades/typed_navigation_upgrade_tab_helper.h"
+#import "ios/chrome/browser/https_upgrades/model/typed_navigation_upgrade_tab_helper.h"
 
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
-#import "ios/chrome/browser/https_upgrades/https_upgrade_service_impl.h"
+#import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_impl.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
@@ -74,8 +74,9 @@ void TypedNavigationUpgradeTabHelper::FallbackToHttp(web::WebState* web_state,
       base::BindOnce(
           [](base::WeakPtr<web::WebState> web_state,
              const web::NavigationManager::WebLoadParams& params) {
-            if (web_state)
+            if (web_state) {
               web_state->GetNavigationManager()->LoadURLWithParams(params);
+            }
           },
           web_state->GetWeakPtr(), std::move(params)));
 }
