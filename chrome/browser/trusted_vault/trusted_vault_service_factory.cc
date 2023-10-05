@@ -22,11 +22,36 @@
 #include "content/public/browser/storage_partition.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/trusted_vault/crosapi_trusted_vault_client.h"
+#include "chromeos/crosapi/mojom/trusted_vault.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "components/trusted_vault/features.h"
+#endif
+
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
+constexpr base::FilePath::CharType kTrustedVaultFilename[] =
+    FILE_PATH_LITERAL("trusted_vault.pb");
+constexpr base::FilePath::CharType kDeprecatedTrustedVaultFilename[] =
+    FILE_PATH_LITERAL("Trusted Vault");
+
+std::unique_ptr<trusted_vault::TrustedVaultClient>
+CreateStandaloneTrustedVaultClient(Profile* profile) {
+  const base::FilePath profile_path = profile->GetPath();
+  return std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
+      profile_path.Append(kTrustedVaultFilename),
+      profile_path.Append(kDeprecatedTrustedVaultFilename),
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
+}
+#endif
+
 std::unique_ptr<trusted_vault::TrustedVaultClient> CreateTrustedVaultClient(
     Profile* profile) {
+#if BUILDFLAG(IS_ANDROID)
   return std::make_unique<
       TrustedVaultClientAndroid>(/*gaia_account_info_by_gaia_id_cb=*/
                                  base::BindRepeating(
@@ -40,24 +65,33 @@ std::unique_ptr<trusted_vault::TrustedVaultClient> CreateTrustedVaultClient(
                                      },
                                      IdentityManagerFactory::GetForProfile(
                                          profile)));
-}
-#else   // !BUILDFLAG(IS_ANDROID)
-constexpr base::FilePath::CharType kTrustedVaultFilename[] =
-    FILE_PATH_LITERAL("trusted_vault.pb");
-constexpr base::FilePath::CharType kDeprecatedTrustedVaultFilename[] =
-    FILE_PATH_LITERAL("Trusted Vault");
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!base::FeatureList::IsEnabled(
+          trusted_vault::kChromeOSTrustedVaultClientShared)) {
+    return CreateStandaloneTrustedVaultClient(profile);
+  }
+  if (!profile->IsMainProfile()) {
+    // Secondary Lacros profiles use standalone implementation.
+    return CreateStandaloneTrustedVaultClient(profile);
+  }
 
-std::unique_ptr<trusted_vault::TrustedVaultClient> CreateTrustedVaultClient(
-    Profile* profile) {
-  const base::FilePath profile_path = profile->GetPath();
-  return std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
-      profile_path.Append(kTrustedVaultFilename),
-      profile_path.Append(kDeprecatedTrustedVaultFilename),
-      IdentityManagerFactory::GetForProfile(profile),
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
+  auto* lacros_service = chromeos::LacrosService::Get();
+  CHECK(lacros_service);
+  if (!lacros_service->IsAvailable<crosapi::mojom::TrustedVaultBackend>()) {
+    // TrustedVault Crosapi is not available, fallback to standalone
+    // implementation.
+    // TODO(crbug.com/1434667): this should be replaced CHECK() once it is not
+    // possible to have Ash-side TrustedVault Crosapi disabled (two milestones
+    // after kChromeOSTrustedVaultClientShared is guaranteed to be enabled in
+    // Ash).
+    return CreateStandaloneTrustedVaultClient(profile);
+  }
+  return std::make_unique<CrosapiTrustedVaultClient>(
+      &lacros_service->GetRemote<crosapi::mojom::TrustedVaultBackend>());
+#else
+  return CreateStandaloneTrustedVaultClient(profile);
+#endif
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<KeyedService> BuildTrustedVaultService(
     content::BrowserContext* context) {

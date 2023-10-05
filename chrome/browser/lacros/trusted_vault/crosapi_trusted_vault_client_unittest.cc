@@ -38,11 +38,11 @@ class CrosapiTrustedVaultClientTest : public testing::Test {
         std::make_unique<trusted_vault::FakeCrosapiTrustedVaultBackend>(
             primary_account_info_, &trusted_vault_client_ash_);
 
-    mojo::Remote<crosapi::mojom::TrustedVaultBackend> backend_remote;
-    crosapi_backend_->BindReceiver(backend_remote.BindNewPipeAndPassReceiver());
+    crosapi_backend_->BindReceiver(
+        backend_remote_.BindNewPipeAndPassReceiver());
 
     trusted_vault_client_lacros_ =
-        std::make_unique<CrosapiTrustedVaultClient>(std::move(backend_remote));
+        std::make_unique<CrosapiTrustedVaultClient>(&backend_remote_);
 
     // Needed to complete AddObserver() mojo call.
     crosapi_backend_->FlushMojo();
@@ -72,6 +72,7 @@ class CrosapiTrustedVaultClientTest : public testing::Test {
   trusted_vault::FakeTrustedVaultClient trusted_vault_client_ash_;
   std::unique_ptr<trusted_vault::FakeCrosapiTrustedVaultBackend>
       crosapi_backend_;
+  mojo::Remote<crosapi::mojom::TrustedVaultBackend> backend_remote_;
 
   std::unique_ptr<CrosapiTrustedVaultClient> trusted_vault_client_lacros_;
 };

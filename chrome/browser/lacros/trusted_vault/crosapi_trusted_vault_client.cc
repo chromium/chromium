@@ -22,11 +22,12 @@ crosapi::mojom::AccountKeyPtr MakeMojoAccountKey(const std::string& gaia_id) {
 }  // namespace
 
 CrosapiTrustedVaultClient::CrosapiTrustedVaultClient(
-    mojo::Remote<crosapi::mojom::TrustedVaultBackend> remote)
-    : remote_(std::move(remote)) {
-  CHECK(remote_.is_bound());
+    mojo::Remote<crosapi::mojom::TrustedVaultBackend>* remote)
+    : remote_(remote) {
+  CHECK(remote_);
+  CHECK(remote_->is_bound());
 
-  remote_->AddObserver(receiver_.BindNewPipeAndPassRemote());
+  (*remote_)->AddObserver(receiver_.BindNewPipeAndPassRemote());
 }
 
 CrosapiTrustedVaultClient::~CrosapiTrustedVaultClient() = default;
@@ -42,28 +43,28 @@ void CrosapiTrustedVaultClient::RemoveObserver(Observer* observer) {
 void CrosapiTrustedVaultClient::FetchKeys(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb) {
-  remote_->FetchKeys(MakeMojoAccountKey(account_info.gaia), std::move(cb));
+  (*remote_)->FetchKeys(MakeMojoAccountKey(account_info.gaia), std::move(cb));
 }
 
 void CrosapiTrustedVaultClient::StoreKeys(
     const std::string& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {
-  remote_->StoreKeys(MakeMojoAccountKey(gaia_id), keys, last_key_version);
+  (*remote_)->StoreKeys(MakeMojoAccountKey(gaia_id), keys, last_key_version);
 }
 
 void CrosapiTrustedVaultClient::MarkLocalKeysAsStale(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
-  remote_->MarkLocalKeysAsStale(MakeMojoAccountKey(account_info.gaia),
-                                std::move(cb));
+  (*remote_)->MarkLocalKeysAsStale(MakeMojoAccountKey(account_info.gaia),
+                                   std::move(cb));
 }
 
 void CrosapiTrustedVaultClient::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
-  remote_->GetIsRecoverabilityDegraded(MakeMojoAccountKey(account_info.gaia),
-                                       std::move(cb));
+  (*remote_)->GetIsRecoverabilityDegraded(MakeMojoAccountKey(account_info.gaia),
+                                          std::move(cb));
 }
 
 void CrosapiTrustedVaultClient::AddTrustedRecoveryMethod(
@@ -71,13 +72,13 @@ void CrosapiTrustedVaultClient::AddTrustedRecoveryMethod(
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure cb) {
-  remote_->AddTrustedRecoveryMethod(MakeMojoAccountKey(gaia_id), public_key,
-                                    method_type_hint, std::move(cb));
+  (*remote_)->AddTrustedRecoveryMethod(MakeMojoAccountKey(gaia_id), public_key,
+                                       method_type_hint, std::move(cb));
 }
 
 void CrosapiTrustedVaultClient::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
-  remote_->ClearLocalDataForAccount(MakeMojoAccountKey(account_info.gaia));
+  (*remote_)->ClearLocalDataForAccount(MakeMojoAccountKey(account_info.gaia));
 }
 
 void CrosapiTrustedVaultClient::OnTrustedVaultKeysChanged() {

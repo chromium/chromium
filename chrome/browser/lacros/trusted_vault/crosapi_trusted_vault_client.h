@@ -18,9 +18,9 @@ class CrosapiTrustedVaultClient
     : public trusted_vault::TrustedVaultClient,
       public crosapi::mojom::TrustedVaultBackendObserver {
  public:
-  // `remote` must be bound.
+  // `remote` must not be null and must be bound.
   explicit CrosapiTrustedVaultClient(
-      mojo::Remote<crosapi::mojom::TrustedVaultBackend> remote);
+      mojo::Remote<crosapi::mojom::TrustedVaultBackend>* remote);
   CrosapiTrustedVaultClient(const CrosapiTrustedVaultClient& other) = delete;
   CrosapiTrustedVaultClient& operator=(const CrosapiTrustedVaultClient& other) =
       delete;
@@ -57,7 +57,7 @@ class CrosapiTrustedVaultClient
   // destroyed as soon as `this` is getting destroyed so that we don't deal with
   // message handling on a partially destroyed object.
   mojo::Receiver<crosapi::mojom::TrustedVaultBackendObserver> receiver_{this};
-  mojo::Remote<crosapi::mojom::TrustedVaultBackend> remote_;
+  raw_ptr<mojo::Remote<crosapi::mojom::TrustedVaultBackend>> remote_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_TRUSTED_VAULT_CROSAPI_TRUSTED_VAULT_CLIENT_H_

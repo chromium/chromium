@@ -101,6 +101,7 @@
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/timezone.mojom.h"
+#include "chromeos/crosapi/mojom/trusted_vault.mojom.h"
 #include "chromeos/crosapi/mojom/tts.mojom.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
@@ -536,6 +537,10 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::TimeZoneService,
                   &crosapi::mojom::Crosapi::BindTimeZoneService,
                   Crosapi::MethodMinVersions::kBindTimeZoneServiceMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::TrustedVaultBackend,
+      &crosapi::mojom::Crosapi::BindTrustedVaultBackend,
+      Crosapi::MethodMinVersions::kBindTrustedVaultBackendMinVersion>();
   ConstructRemote<crosapi::mojom::Tts, &crosapi::mojom::Crosapi::BindTts,
                   Crosapi::MethodMinVersions::kBindTtsMinVersion>();
   ConstructRemote<crosapi::mojom::UrlHandler,
