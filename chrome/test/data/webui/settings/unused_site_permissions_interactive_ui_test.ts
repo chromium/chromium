@@ -6,6 +6,7 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {SettingsUnusedSitePermissionsElement, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 
@@ -23,7 +24,7 @@ suite('CrSettingsUnusedSitePermissionsInteractiveUITest', function() {
     ContentSettingsTypes.GEOLOCATION,
     ContentSettingsTypes.MIC,
     ContentSettingsTypes.CAMERA,
-    ContentSettingsTypes.MIDI_DEVICES,
+    ContentSettingsTypes.MIDI,
   ];
 
   const mockData = [1, 2, 3, 4].map(
@@ -54,6 +55,9 @@ suite('CrSettingsUnusedSitePermissionsInteractiveUITest', function() {
   }
 
   setup(async function() {
+    loadTimeData.overrideValues({
+      blockMidiByDefault: true,
+    });
     browserProxy = new TestSafetyHubBrowserProxy();
     browserProxy.setUnusedSitePermissions(mockData);
     SafetyHubBrowserProxyImpl.setInstance(browserProxy);

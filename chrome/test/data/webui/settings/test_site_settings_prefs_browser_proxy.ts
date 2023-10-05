@@ -96,7 +96,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       ContentSettingsTypes.JAVASCRIPT,
       ContentSettingsTypes.LOCAL_FONTS,
       ContentSettingsTypes.MIC,
-      ContentSettingsTypes.MIDI_DEVICES,
+      ContentSettingsTypes.MIDI,
       ContentSettingsTypes.MIXEDSCRIPT,
       ContentSettingsTypes.NOTIFICATIONS,
       ContentSettingsTypes.PAYMENT_HANDLER,
