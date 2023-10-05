@@ -119,6 +119,8 @@ struct MockWebAuthnCredManDelegate : public WebAuthnCredManDelegate {
 
   MOCK_METHOD(WebAuthnCredManDelegate::State, HasPasskeys, (), (override));
 
+  MOCK_METHOD(void, TriggerCredManUi, (), (override));
+
   MOCK_METHOD(void,
               SetRequestCompletionCallback,
               (base::RepeatingCallback<void(bool)>),
@@ -847,6 +849,22 @@ TEST_F(TouchToFillControllerAutofillTest, ShowCredManEntryIfThereArePasskeys) {
                            TouchToFillView::kShouldShowCredManEntry));
   touch_to_fill_controller().Show(
       credentials, {},
+      MakeTouchToFillControllerDelegate(
+          autofill::mojom::SubmissionReadinessState::kNoInformation,
+          CreateMockFiller(),
+          TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
+      &cred_man_delegate, /*frame_driver=*/nullptr);
+}
+
+TEST_F(TouchToFillControllerAutofillTest,
+       ShowCredManImmediatelyIfNoGpmPasskeys) {
+  MockWebAuthnCredManDelegate cred_man_delegate;
+  ON_CALL(cred_man_delegate, HasPasskeys())
+      .WillByDefault(Return(WebAuthnCredManDelegate::kHasPasskeys));
+  EXPECT_CALL(cred_man_delegate, TriggerCredManUi());
+  EXPECT_CALL(view(), Show(_, _, _, _, _)).Times(0);
+  touch_to_fill_controller().Show(
+      {}, {},
       MakeTouchToFillControllerDelegate(
           autofill::mojom::SubmissionReadinessState::kNoInformation,
           CreateMockFiller(),

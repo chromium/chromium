@@ -582,11 +582,15 @@ public class Fido2CredentialRequest
             }
         }
 
-        if (!isConditionalRequest && discoverableCredentials.isEmpty()) {
+        if (!isConditionalRequest
+                && discoverableCredentials.isEmpty()
+                && getBarrierMode() != Barrier.Mode.BOTH) {
             mConditionalUiState = ConditionalUiState.NONE;
             // When no passkeys are present for a non-conditional request, pass the request
             // through to GMSCore. It will show an error message to the user, but can offer the
             // user alternatives to use external passkeys.
+            // If the barrier mode is BOTH, the no passkeys state is handled by Chrome. Do not pass
+            // the request to GMSCore.
             maybeDispatchGetAssertionRequest(options, callerOriginString, clientDataHash, null);
             return;
         }

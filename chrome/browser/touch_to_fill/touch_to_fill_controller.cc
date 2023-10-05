@@ -62,11 +62,21 @@ void TouchToFillController::Show(
   visibility_controller_->SetVisible(std::move(frame_driver));
 
   ttf_delegate_->OnShow(credentials, passkey_credentials);
-  // TODO(crbug.com/1474805, 1481495): Handle no passkeys here.
+  int flags = TouchToFillView::kNone;
+  if (cred_man_delegate && cred_man_delegate->HasPasskeys() ==
+                               WebAuthnCredManDelegate::kHasPasskeys) {
+    cred_man_delegate->SetRequestCompletionCallback(base::BindRepeating(
+        &TouchToFillController::OnCredManUiClosed, this->AsWeakPtr()));
+    flags |= TouchToFillView::kShouldShowCredManEntry;
+  }
   if (credentials.empty() && passkey_credentials.empty()) {
     // Ideally this should never happen. However, in case we do end up invoking
     // Show() without credentials, we should not show Touch To Fill to the user
     // and treat this case as dismissal, in order to restore the soft keyboard.
+    if (!!(flags & TouchToFillView::kShouldShowCredManEntry)) {
+      OnShowCredManSelected();
+      return;
+    }
     OnDismiss();
     return;
   }
@@ -74,7 +84,6 @@ void TouchToFillController::Show(
   if (!view_)
     view_ = TouchToFillViewFactory::Create(this);
 
-  int flags = TouchToFillView::kNone;
   if (ttf_delegate_->ShouldTriggerSubmission()) {
     flags |= TouchToFillView::kTriggerSubmission;
   }
@@ -83,12 +92,6 @@ void TouchToFillController::Show(
   }
   if (ttf_delegate_->ShouldShowHybridOption()) {
     flags |= TouchToFillView::kShouldShowHybridOption;
-  }
-  if (cred_man_delegate && cred_man_delegate->HasPasskeys() ==
-                               WebAuthnCredManDelegate::kHasPasskeys) {
-    cred_man_delegate->SetRequestCompletionCallback(base::BindRepeating(
-        &TouchToFillController::OnCredManUiClosed, this->AsWeakPtr()));
-    flags |= TouchToFillView::kShouldShowCredManEntry;
   }
 
   GURL url = ttf_delegate_->GetFrameUrl();

@@ -60,6 +60,7 @@ import org.chromium.url.Origin;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -299,7 +300,8 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_credManEnabledWithGpmNotInCredManFlag_success() {
+    public void
+            testGetAssertion_credManEnabledWithGpmNotInCredManFlag_doesNotCallGetAssertionImmediately() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
 
@@ -325,7 +327,10 @@ public class Fido2CredentialRequestRobolectricTest {
                         /*isCrossOrigin=*/eq(false), /*maybeClientDataHash=*/eq(null),
                         /*getCallback=*/any(),
                         /*errorCallback=*/any(), /*barrier=*/any(), /*ignoreGpm=*/eq(true));
-        assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
+        verify(mBrowserBridgeMock)
+                .onCredentialsDetailsListReceived(
+                        eq(mFrameHost), eq(Collections.emptyList()), eq(false), any(), any());
+        assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
 
     @Test
@@ -380,16 +385,8 @@ public class Fido2CredentialRequestRobolectricTest {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
 
-        PublicKeyCredentialDescriptor descriptor = new PublicKeyCredentialDescriptor();
-        descriptor.type = 0;
-        descriptor.id = new byte[] {1, 2, 3, 4};
-        descriptor.transports = new int[] {0};
-        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
-
-        WebAuthnCredentialDetails details = new WebAuthnCredentialDetails();
-        details.mCredentialId = descriptor.id;
         mFido2ApiCallHelper.mCredentials = new ArrayList<>();
-        mFido2ApiCallHelper.mCredentials.add(details);
+        mFido2ApiCallHelper.mCredentials.add(createWebAuthnCredential());
 
         final byte[] clientDataHash = new byte[] {1, 2, 3, 4};
         mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, /*frameHost=*/null,
@@ -505,16 +502,8 @@ public class Fido2CredentialRequestRobolectricTest {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
 
-        PublicKeyCredentialDescriptor descriptor = new PublicKeyCredentialDescriptor();
-        descriptor.type = 0;
-        descriptor.id = new byte[] {1, 2, 3, 4};
-        descriptor.transports = new int[] {0};
-        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
-
-        WebAuthnCredentialDetails details = new WebAuthnCredentialDetails();
-        details.mCredentialId = descriptor.id;
         mFido2ApiCallHelper.mCredentials = new ArrayList<>();
-        mFido2ApiCallHelper.mCredentials.add(details);
+        mFido2ApiCallHelper.mCredentials.add(createWebAuthnCredential());
 
         mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
                 /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
@@ -631,6 +620,18 @@ public class Fido2CredentialRequestRobolectricTest {
         verify(mCredManHelperMock, times(1)).cancelConditionalGetAssertion(eq(mFrameHost));
         verify(mBrowserBridgeMock, times(1)).cleanupRequest(any());
         verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
+    }
+
+    private WebAuthnCredentialDetails createWebAuthnCredential() {
+        PublicKeyCredentialDescriptor descriptor = new PublicKeyCredentialDescriptor();
+        descriptor.type = 0;
+        descriptor.id = new byte[] {1, 2, 3, 4};
+        descriptor.transports = new int[] {0};
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
+
+        WebAuthnCredentialDetails details = new WebAuthnCredentialDetails();
+        details.mCredentialId = descriptor.id;
+        return details;
     }
 
     static class FakeFido2ApiCallHelper extends Fido2ApiCallHelper {
