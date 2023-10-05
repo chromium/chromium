@@ -1548,7 +1548,7 @@
   {
     "name": "cups-ipp-printing-backend",
     "owners": [ "awscreen", "//printing/OWNERS" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "customize-chrome-color-extraction",
