@@ -15497,9 +15497,23 @@
                     ]
                 },
                 {
-                    "name": "EnabledSkipEmptyFetchHandler_20220829",
+                    "name": "EnabledSkipEmptyFetchHandlerAndStartServiceWorkerWithPostTask_20230125",
                     "params": {
-                        "SkipEmptyFetchHandler": "true"
+                        "AsyncStartServiceWorkerForEmptyFetchHandler": "true",
+                        "SkipEmptyFetchHandler": "true",
+                        "StartServiceWorkerForEmptyFetchHandler": "true"
+                    },
+                    "enable_features": [
+                        "ServiceWorkerSkipIgnorableFetchHandler"
+                    ]
+                },
+                {
+                    "name": "EnablePostTask50_20230125",
+                    "params": {
+                        "AsyncStartServiceWorkerForEmptyFetchHandler": "true",
+                        "AsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs ": "50",
+                        "SkipEmptyFetchHandler": "true",
+                        "StartServiceWorkerForEmptyFetchHandler": "true"
                     },
                     "enable_features": [
                         "ServiceWorkerSkipIgnorableFetchHandler"
