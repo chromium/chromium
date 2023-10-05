@@ -1222,7 +1222,8 @@ void Display::DidReceivePresentationFeedback(
       "viz,benchmark", "Graphics.Pipeline.DrawAndSwap",
       last_presented_trace_id_, copy_feedback.timestamp);
   TRACE_EVENT_INSTANT_WITH_TIMESTAMP0(
-      "benchmark,viz", "Display::FrameDisplayed", TRACE_EVENT_SCOPE_THREAD,
+      "benchmark,viz," TRACE_DISABLED_BY_DEFAULT("display.framedisplayed"),
+      "Display::FrameDisplayed", TRACE_EVENT_SCOPE_THREAD,
       copy_feedback.timestamp);
 
   if (renderer_->CompositeTimeTracingEnabled()) {
