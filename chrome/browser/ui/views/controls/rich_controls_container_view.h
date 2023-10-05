@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -25,6 +26,7 @@ class Label;
 // *-------------------------------------------------------------------------*
 class RichControlsContainerView : public views::FlexLayoutView {
  public:
+  METADATA_HEADER(RichControlsContainerView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIcon);
 
   RichControlsContainerView();

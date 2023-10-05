@@ -233,6 +233,7 @@ void AddPermissions(ExtensionInstallPrompt::Prompt* prompt,
 class ExtensionInstallDialogView::ExtensionJustificationView
     : public views::View {
  public:
+  METADATA_HEADER(ExtensionJustificationView);
   explicit ExtensionJustificationView(TextfieldController* controller) {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -312,6 +313,11 @@ class ExtensionInstallDialogView::ExtensionJustificationView
   raw_ptr<views::Textfield> justification_field_;
   raw_ptr<views::Label> justification_text_length_;
 };
+
+BEGIN_METADATA(ExtensionInstallDialogView,
+               ExtensionJustificationView,
+               views::View)
+END_METADATA
 
 ExtensionInstallDialogView::ExtensionInstallDialogView(
     std::unique_ptr<ExtensionInstallPromptShowParams> show_params,

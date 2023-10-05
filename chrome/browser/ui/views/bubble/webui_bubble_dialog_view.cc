@@ -25,6 +25,7 @@ constexpr gfx::Size kMinSize(25, 25);
 // within a Views hierarchy.
 class WebUIBubbleView : public views::WebView {
  public:
+  METADATA_HEADER(WebUIBubbleView);
   explicit WebUIBubbleView(content::WebContents* web_contents) {
     SetWebContents(web_contents);
     // Allow the embedder to handle accelerators not handled by the WebContents.
@@ -40,6 +41,9 @@ class WebUIBubbleView : public views::WebView {
     return true;
   }
 };
+
+BEGIN_METADATA(WebUIBubbleView, views::WebView)
+END_METADATA
 
 }  // namespace
 

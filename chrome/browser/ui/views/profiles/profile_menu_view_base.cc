@@ -349,6 +349,7 @@ END_METADATA
 
 class ProfileManagementIconView : public views::ImageView {
  public:
+  METADATA_HEADER(ProfileManagementIconView);
   explicit ProfileManagementIconView(const gfx::VectorIcon& icon)
       : icon_(icon) {}
   ~ProfileManagementIconView() override = default;
@@ -362,6 +363,9 @@ class ProfileManagementIconView : public views::ImageView {
  private:
   const raw_ref<const gfx::VectorIcon> icon_;
 };
+
+BEGIN_METADATA(ProfileManagementIconView, views::ImageView)
+END_METADATA
 
 // AvatarImageView is used to ensure avatar adornments are kept in sync with
 // current theme colors.
@@ -441,6 +445,7 @@ END_METADATA
 
 class SyncImageView : public views::ImageView {
  public:
+  METADATA_HEADER(SyncImageView);
   explicit SyncImageView(const ProfileMenuViewBase* root_view)
       : root_view_(root_view) {}
 
@@ -453,6 +458,9 @@ class SyncImageView : public views::ImageView {
  private:
   raw_ptr<const ProfileMenuViewBase> root_view_;
 };
+
+BEGIN_METADATA(SyncImageView, views::ImageView)
+END_METADATA
 
 void BuildProfileTitleAndSubtitle(views::View* parent,
                                   const std::u16string& title,

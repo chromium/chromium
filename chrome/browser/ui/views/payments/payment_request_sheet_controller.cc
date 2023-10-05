@@ -235,6 +235,7 @@ END_METADATA
 
 class PaymentRequestBackArrowButton : public views::ImageButton {
  public:
+  METADATA_HEADER(PaymentRequestBackArrowButton);
   explicit PaymentRequestBackArrowButton(
       views::Button::PressedCallback back_arrow_callback)
       : views::ImageButton(back_arrow_callback) {
@@ -255,6 +256,9 @@ class PaymentRequestBackArrowButton : public views::ImageButton {
         cp->GetColor(kColorPaymentsRequestBackArrowButtonIconDisabled));
   }
 };
+
+BEGIN_METADATA(PaymentRequestBackArrowButton, views::ImageButton)
+END_METADATA
 
 }  // namespace internal
 

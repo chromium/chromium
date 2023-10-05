@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/normalized_geometry.h"
@@ -285,3 +286,6 @@ int OverflowView::GetHeightForWidth(int width) const {
   return std::max(
       {primary_height, prefix_indicator_height, postfix_indicator_height});
 }
+
+BEGIN_METADATA(OverflowView, views::View)
+END_METADATA

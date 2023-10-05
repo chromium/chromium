@@ -112,6 +112,11 @@ SidePanelToolbarContainer::PinnedSidePanelToolbarButton::CreateMenuModel() {
       dialog_model.Build());
 }
 
+BEGIN_METADATA(SidePanelToolbarContainer,
+               PinnedSidePanelToolbarButton,
+               ToolbarButton)
+END_METADATA
+
 ///////////////////////////////////////////////////////////////////////////////
 // SidePanelToolbarContainer:
 

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 WindowControlsOverlayToggleButton::WindowControlsOverlayToggleButton(
     BrowserView* browser_view)
@@ -50,3 +51,6 @@ int WindowControlsOverlayToggleButton::GetIconSize() const {
   // sense.
   return 0;
 }
+
+BEGIN_METADATA(WindowControlsOverlayToggleButton, ToolbarButton)
+END_METADATA

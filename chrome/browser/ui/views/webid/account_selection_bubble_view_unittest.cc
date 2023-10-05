@@ -38,6 +38,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -231,7 +232,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     std::vector<std::string> expected_class_names = {"ImageButton", "Label",
                                                      "ImageButton"};
     if (expect_idp_brand_icon_in_header) {
-      expected_class_names.insert(expected_class_names.begin(), "ImageView");
+      expected_class_names.insert(expected_class_names.begin(), "IdpImageView");
     }
     EXPECT_THAT(GetChildClassNames(header),
                 testing::ElementsAreArray(expected_class_names));
@@ -245,9 +246,9 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     // Check separator.
     if (expected_title == kTitleSignIn ||
         expected_title == kTitleSignInWithoutIdp) {
-      EXPECT_STREQ("Separator", dialog()->children()[1]->GetClassName());
+      EXPECT_TRUE(IsViewClass<views::Separator>(dialog()->children()[1]));
     } else if (expected_title == kTitleSigningIn) {
-      EXPECT_STREQ("ProgressBar", dialog()->children()[1]->GetClassName());
+      EXPECT_TRUE(IsViewClass<views::ProgressBar>(dialog()->children()[1]));
     }
   }
 
@@ -500,7 +501,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
                    const std::u16string& expected_idp) {
     // Order: Brand icon, title.
     EXPECT_THAT(GetChildClassNames(idp_account),
-                testing::ElementsAre("ImageView", "Label"));
+                testing::ElementsAre("IdpImageView", "Label"));
 
     views::Label* title_view =
         static_cast<views::Label*>(idp_account->children()[1]);

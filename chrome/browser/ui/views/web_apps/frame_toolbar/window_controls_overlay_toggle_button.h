@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class BrowserView;
 
@@ -15,6 +16,7 @@ class BrowserView;
 // window controls overlay on and off.
 class WindowControlsOverlayToggleButton : public ToolbarButton {
  public:
+  METADATA_HEADER(WindowControlsOverlayToggleButton);
   explicit WindowControlsOverlayToggleButton(BrowserView* browser_view);
   WindowControlsOverlayToggleButton(const WindowControlsOverlayToggleButton&) =
       delete;

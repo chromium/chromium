@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_SHARE_AUDIO_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/toggle_button.h"
 
 class ShareAudioView : public views::View {
  public:
+  METADATA_HEADER(ShareAudioView);
   ShareAudioView(const std::u16string& label_text, bool audio_offered);
   ShareAudioView(const ShareAudioView&) = delete;
   ShareAudioView& operator=(const ShareAudioView&) = delete;

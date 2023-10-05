@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
@@ -38,6 +39,7 @@
 // the the second goes on the right, else only the right gets filled.
 class OverflowView : public views::View {
  public:
+  METADATA_HEADER(OverflowView);
   OverflowView(std::unique_ptr<views::View> primary_view,
                std::unique_ptr<views::View> prefix_indicator_view,
                std::unique_ptr<views::View> postfix_indicator_view);

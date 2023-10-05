@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/share/share_attempt.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -26,6 +27,7 @@ namespace sharing_hub {
 // The title, URL, and icon are all fixed at construction time.
 class PreviewView : public views::View {
  public:
+  METADATA_HEADER(PreviewView);
   explicit PreviewView(share::ShareAttempt attempt);
   ~PreviewView() override;
 

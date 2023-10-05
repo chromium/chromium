@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -133,3 +134,6 @@ int RichControlsContainerView::GetMinBubbleWidth() const {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
 }
+
+BEGIN_METADATA(RichControlsContainerView, views::FlexLayoutView)
+END_METADATA

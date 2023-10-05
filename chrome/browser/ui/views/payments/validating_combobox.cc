@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 
 namespace payments {
@@ -53,5 +54,8 @@ void ValidatingCombobox::Validate() {
   // ComboboxValueChanged may have side-effects, such as displaying errors.
   SetInvalid(!delegate_->ComboboxValueChanged(this));
 }
+
+BEGIN_METADATA(ValidatingCombobox, views::Combobox)
+END_METADATA
 
 }  // namespace payments

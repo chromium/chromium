@@ -126,6 +126,7 @@ class TabHoverCardBubbleView::ThumbnailView
     : public views::View,
       public views::AnimationDelegateViews {
  public:
+  METADATA_HEADER(ThumbnailView);
   explicit ThumbnailView(TabHoverCardBubbleView* bubble_view)
       : AnimationDelegateViews(this),
         bubble_view_(bubble_view),
@@ -339,6 +340,9 @@ class TabHoverCardBubbleView::ThumbnailView
   // image and fades out.
   ImageType image_type_ = ImageType::kNone;
 };
+
+BEGIN_METADATA(TabHoverCardBubbleView, ThumbnailView, views::View)
+END_METADATA
 
 // TabHoverCardBubbleView:
 // ----------------------------------------------------------

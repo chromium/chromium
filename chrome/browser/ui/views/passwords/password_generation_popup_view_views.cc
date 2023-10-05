@@ -149,6 +149,7 @@ std::unique_ptr<views::View> CreateCrossDeviceFooter(
 // (background selection and switching to editing state on clicks).
 class EditPasswordRow : public views::FlexLayoutView {
  public:
+  METADATA_HEADER(EditPasswordRow);
   explicit EditPasswordRow(
       base::WeakPtr<PasswordGenerationPopupController> controller)
       : controller_(controller) {
@@ -193,6 +194,9 @@ class EditPasswordRow : public views::FlexLayoutView {
 
   base::WeakPtr<PasswordGenerationPopupController> controller_ = nullptr;
 };
+
+BEGIN_METADATA(EditPasswordRow, views::FlexLayoutView)
+END_METADATA
 
 }  // namespace
 

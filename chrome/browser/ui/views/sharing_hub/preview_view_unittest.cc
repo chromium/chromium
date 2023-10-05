@@ -13,6 +13,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -21,7 +22,7 @@ using PreviewViewTest = ChromeViewsTestBase;
 views::Label* FindLabelWithText(views::View* root, std::u16string text) {
   return static_cast<views::Label*>(views::test::AnyViewMatchingPredicate(
       root, [=](const views::View* candidate) -> bool {
-        return !strcmp(candidate->GetClassName(), "Label") &&
+        return (IsViewClass<views::Label>(candidate)) &&
                static_cast<const views::Label*>(candidate)->GetText() == text;
       }));
 }
@@ -29,7 +30,7 @@ views::Label* FindLabelWithText(views::View* root, std::u16string text) {
 views::ImageView* FindImage(views::View* root) {
   return static_cast<views::ImageView*>(views::test::AnyViewMatchingPredicate(
       root, [](const views::View* candidate) -> bool {
-        return !strcmp(candidate->GetClassName(), "ImageView");
+        return IsViewClass<views::ImageView>(candidate);
       }));
 }
 

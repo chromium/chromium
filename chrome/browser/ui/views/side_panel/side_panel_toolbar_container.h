@@ -61,6 +61,7 @@ class SidePanelToolbarContainer : public ToolbarIconContainerView {
  private:
   class PinnedSidePanelToolbarButton : public ToolbarButton {
    public:
+    METADATA_HEADER(PinnedSidePanelToolbarButton);
     PinnedSidePanelToolbarButton(BrowserView* browser_view,
                                  SidePanelEntry::Id id,
                                  std::u16string accessible_name,

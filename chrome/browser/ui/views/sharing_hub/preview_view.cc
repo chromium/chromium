@@ -8,6 +8,7 @@
 #include "chrome/browser/share/share_features.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "components/url_formatter/elide_url.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -20,6 +21,7 @@ namespace {
 
 class UrlLabel : public views::Label {
  public:
+  METADATA_HEADER(UrlLabel);
   UrlLabel(GURL url, int context, int style)
       : views::Label(base::UTF8ToUTF16(url.spec()), context, style), url_(url) {
     // Never use the elided URL for the accessible name or tooltip - both of
@@ -47,6 +49,9 @@ class UrlLabel : public views::Label {
  private:
   GURL url_;
 };
+
+BEGIN_METADATA(UrlLabel, views::Label)
+END_METADATA
 
 }  // namespace
 
@@ -105,5 +110,8 @@ PreviewView::PreviewView(share::ShareAttempt attempt) {
 }
 
 PreviewView::~PreviewView() = default;
+
+BEGIN_METADATA(PreviewView, views::View)
+END_METADATA
 
 }  // namespace sharing_hub

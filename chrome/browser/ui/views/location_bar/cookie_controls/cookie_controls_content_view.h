@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view.h"
 
@@ -21,6 +22,7 @@ class ImageView;
 // Content view used to display the cookie Controls.
 class CookieControlsContentView : public views::View {
  public:
+  METADATA_HEADER(CookieControlsContentView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTitle);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDescription);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleButton);

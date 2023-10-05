@@ -38,6 +38,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
@@ -171,6 +173,7 @@ using PopulateSidePanelCallback = base::OnceCallback<void(
 // doesn't exist, the content is swapped immediately.
 class SidePanelContentSwappingContainer : public views::View {
  public:
+  METADATA_HEADER(SidePanelContentSwappingContainer);
   explicit SidePanelContentSwappingContainer(bool show_immediately_for_testing)
       : show_immediately_for_testing_(show_immediately_for_testing) {
     SetUseDefaultFillLayout(true);
@@ -238,6 +241,9 @@ class SidePanelContentSwappingContainer : public views::View {
   raw_ptr<SidePanelEntry> loading_entry_ = nullptr;
   PopulateSidePanelCallback loaded_callback_;
 };
+
+BEGIN_METADATA(SidePanelContentSwappingContainer, views::View)
+END_METADATA
 
 }  // namespace
 

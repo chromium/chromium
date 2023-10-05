@@ -13,6 +13,7 @@
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -274,5 +275,8 @@ bool PopupCellWithButtonView::ShouldCellButtonBeVisible() const {
       return true;
   }
 }
+
+BEGIN_METADATA(PopupCellWithButtonView, autofill::PopupCellView)
+END_METADATA
 
 }  // namespace autofill

@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_SIGN_IN_TOOLBAR_H_
 
 #include "base/functional/callback_forward.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 // Class responsible for the top toolbar shown during the GAIA sign-in within
 // profile creation flow.
 class ProfilePickerDiceSignInToolbar : public views::View {
  public:
+  METADATA_HEADER(ProfilePickerDiceSignInToolbar);
   ProfilePickerDiceSignInToolbar();
   ~ProfilePickerDiceSignInToolbar() override;
   ProfilePickerDiceSignInToolbar(const ProfilePickerDiceSignInToolbar&) =

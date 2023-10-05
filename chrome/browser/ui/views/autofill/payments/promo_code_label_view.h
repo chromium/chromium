@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_PROMO_CODE_LABEL_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -13,6 +14,7 @@
 namespace autofill {
 class PromoCodeLabelView : public views::FlexLayoutView {
  public:
+  METADATA_HEADER(PromoCodeLabelView);
   PromoCodeLabelView(
       gfx::Size& preferred_size,
       const std::u16string& promo_code_text,

@@ -51,6 +51,7 @@ class PageInfoMainView : public views::View,
   // updating the layout.
   class ContainerView : public views::View {
    public:
+    METADATA_HEADER(ContainerView);
     ContainerView();
 
     // Notifies that preferred size changed and updates the layout.

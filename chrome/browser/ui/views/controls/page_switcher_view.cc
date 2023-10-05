@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/fill_layout.h"
 
 PageSwitcherView::PageSwitcherView(std::unique_ptr<views::View> initial_page) {
@@ -31,3 +32,6 @@ views::View* PageSwitcherView::GetCurrentPage() {
 void PageSwitcherView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
+
+BEGIN_METADATA(PageSwitcherView, views::View)
+END_METADATA

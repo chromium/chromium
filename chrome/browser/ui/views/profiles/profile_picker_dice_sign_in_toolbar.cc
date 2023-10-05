@@ -13,6 +13,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/flex_layout.h"
@@ -25,6 +26,7 @@ constexpr gfx::Insets kToolbarPadding = gfx::Insets(8);
 
 class SimpleBackButton : public ToolbarButton {
  public:
+  METADATA_HEADER(SimpleBackButton);
   explicit SimpleBackButton(PressedCallback callback)
       : ToolbarButton(std::move(callback)) {
     SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
@@ -41,6 +43,9 @@ class SimpleBackButton : public ToolbarButton {
   SimpleBackButton& operator=(const SimpleBackButton&) = delete;
   ~SimpleBackButton() override = default;
 };
+
+BEGIN_METADATA(SimpleBackButton, ToolbarButton)
+END_METADATA
 
 }  // namespace
 
@@ -83,3 +88,6 @@ void ProfilePickerDiceSignInToolbar::UpdateToolbarColor() {
   // main view as well.
   parent()->SetBackground(views::CreateSolidBackground(background_color));
 }
+
+BEGIN_METADATA(ProfilePickerDiceSignInToolbar, views::View)
+END_METADATA

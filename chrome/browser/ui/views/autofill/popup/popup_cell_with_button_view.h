@@ -10,6 +10,7 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view_observer.h"
 
 namespace content {
@@ -64,6 +65,7 @@ class ButtonPlaceholder : public views::View, public views::ViewObserver {
 class PopupCellWithButtonView : public PopupCellView,
                                 public CellButtonDelegate {
  public:
+  METADATA_HEADER(PopupCellWithButtonView);
   explicit PopupCellWithButtonView(
       bool should_ignore_mouse_observed_outside_item_bounds_check = false);
   PopupCellWithButtonView(const PopupCellWithButtonView&) = delete;

@@ -83,6 +83,9 @@ void PageInfoMainView::ContainerView::Update() {
   PreferredSizeChanged();
 }
 
+BEGIN_METADATA(PageInfoMainView, ContainerView, views::View)
+END_METADATA
+
 PageInfoMainView::PageInfoMainView(
     PageInfo* presenter,
     ChromePageInfoUiDelegate* ui_delegate,

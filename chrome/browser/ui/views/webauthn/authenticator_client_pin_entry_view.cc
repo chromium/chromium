@@ -28,6 +28,7 @@ namespace {
 
 class PinTextfield : public views::Textfield {
  public:
+  METADATA_HEADER(PinTextfield);
   PinTextfield(views::TextfieldController* controller, views::View* label) {
     SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_PASSWORD);
     SetMinimumWidthInChars(6);
@@ -48,6 +49,9 @@ class PinTextfield : public views::Textfield {
         GetColorProvider()->GetColor(kColorWebAuthnPinTextfieldBottomBorder)));
   }
 };
+
+BEGIN_METADATA(PinTextfield, views::Textfield)
+END_METADATA
 
 }  // namespace
 

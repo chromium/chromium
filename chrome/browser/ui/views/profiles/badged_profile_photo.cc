@@ -60,6 +60,7 @@ void CustomImageView::OnPaint(gfx::Canvas* canvas) {
 
 class BadgeView : public ::views::ImageView {
  public:
+  METADATA_HEADER(BadgeView);
   explicit BadgeView(BadgedProfilePhoto::BadgeType badge_type)
       : badge_type_(badge_type) {
     SetPosition(gfx::Point(kBadgedProfilePhotoWidth - kBadgeIconSize,
@@ -108,6 +109,9 @@ class BadgeView : public ::views::ImageView {
  private:
   const BadgedProfilePhoto::BadgeType badge_type_;
 };
+
+BEGIN_METADATA(BadgeView, views::ImageView)
+END_METADATA
 
 }  // namespace
 

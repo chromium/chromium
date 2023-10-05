@@ -10,6 +10,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/fill_layout.h"
@@ -86,5 +87,8 @@ const std::u16string& PromoCodeLabelView::GetPromoCodeLabelTextForTesting()
     const {
   return promo_code_label_->GetText();
 }
+
+BEGIN_METADATA(PromoCodeLabelView, views::FlexLayoutView)
+END_METADATA
 
 }  // namespace autofill

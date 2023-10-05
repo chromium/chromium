@@ -55,6 +55,7 @@ constexpr char kFullBubbleVisibleHistogramName[] =
 
 class ShowAllDownloadsButton : public RichHoverButton {
  public:
+  METADATA_HEADER(ShowAllDownloadsButton);
   explicit ShowAllDownloadsButton(
       base::RepeatingClosure show_all_downloads_callback)
       : RichHoverButton(
@@ -122,6 +123,9 @@ class ShowAllDownloadsButton : public RichHoverButton {
     Layout();
   }
 };
+
+BEGIN_METADATA(ShowAllDownloadsButton, RichHoverButton)
+END_METADATA
 
 }  // namespace
 

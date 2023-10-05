@@ -38,6 +38,8 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
@@ -97,6 +99,7 @@ class ImageCarouselLayoutManager : public views::LayoutManagerBase {
 enum class ButtonType { LEADING, TRAILING };
 class ScrollButton : public views::ImageButton {
  public:
+  METADATA_HEADER(ScrollButton);
   ScrollButton(ButtonType button_type, PressedCallback callback)
       : views::ImageButton(std::move(callback)) {
     ConfigureVectorImageButton(this);
@@ -147,8 +150,12 @@ class ScrollButton : public views::ImageButton {
   raw_ptr<views::InkDropContainerView> ink_drop_container_ = nullptr;
 };
 
+BEGIN_METADATA(ScrollButton, views::ImageButton)
+END_METADATA
+
 class ImageCarouselView : public views::View {
  public:
+  METADATA_HEADER(ImageCarouselView);
   explicit ImageCarouselView(
       const std::vector<webapps::Screenshot>& screenshots)
       : screenshots_(screenshots) {
@@ -310,6 +317,9 @@ class ImageCarouselView : public views::View {
   int image_padding_ = 0;
   bool trailing_button_visibility_set_up_ = false;
 };
+
+BEGIN_METADATA(ImageCarouselView, views::View)
+END_METADATA
 
 }  // namespace
 

@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -61,3 +62,6 @@ void ShareAudioView::SetAudioSharingApprovedByUser(bool is_on) {
   CHECK(audio_toggle_button_);
   audio_toggle_button_->SetIsOn(is_on);
 }
+
+BEGIN_METADATA(ShareAudioView, views::View)
+END_METADATA

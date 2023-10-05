@@ -28,6 +28,7 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -207,3 +208,6 @@ content::WebContents* ExtensionsRequestAccessButton::GetActiveWebContents()
     const {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
+
+BEGIN_METADATA(ExtensionsRequestAccessButton, ToolbarButton)
+END_METADATA

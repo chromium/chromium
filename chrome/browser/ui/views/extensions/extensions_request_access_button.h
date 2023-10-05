@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "url/origin.h"
 
 namespace content {
@@ -23,6 +24,7 @@ class ExtensionsRequestAccessHoverCardCoordinator;
 // access, and are allowed to do so, and grants them access.
 class ExtensionsRequestAccessButton : public ToolbarButton {
  public:
+  METADATA_HEADER(ExtensionsRequestAccessButton);
   explicit ExtensionsRequestAccessButton(
       Browser* browser,
       ExtensionsContainer* extensions_container);

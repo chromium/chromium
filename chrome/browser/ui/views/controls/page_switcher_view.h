@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_CONTROLS_PAGE_SWITCHER_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 // A container view that contains one view at a time and can switch between
@@ -13,6 +14,7 @@
 // TODO(crbug.com/1188101): Implement animation when switching.
 class PageSwitcherView : public views::View {
  public:
+  METADATA_HEADER(PageSwitcherView);
   explicit PageSwitcherView(std::unique_ptr<views::View> initial_page);
   PageSwitcherView(const PageSwitcherView&) = delete;
   PageSwitcherView& operator=(const PageSwitcherView&) = delete;
