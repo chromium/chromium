@@ -652,8 +652,10 @@ WebTextInputInfo EditContext::TextInputInfo() {
   info.flags = GetInputMethodController().TextInputFlags();
   info.selection_start = selection_start_;
   info.selection_end = selection_end_;
-  info.composition_start = composition_range_start_;
-  info.composition_end = composition_range_end_;
+  if (has_composition_) {
+    info.composition_start = composition_range_start_;
+    info.composition_end = composition_range_end_;
+  }
   return info;
 }
 
