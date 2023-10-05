@@ -103,6 +103,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   metrics::OmniboxEventProto::OmniboxPosition _preferredOmniboxPosition;
   /// Pref tracking if bottom omnibox is enabled.
   PrefBackedBoolean* _bottomOmniboxEnabled;
+  /// Holds cached images keyed by their URL. The cache is purged when the popup
+  /// is closed.
+  NSCache<NSString*, UIImage*>* _cachedImages;
 }
 @synthesize consumer = _consumer;
 @synthesize hasResults = _hasResults;
@@ -132,6 +135,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     _autocompleteController = autocompleteController;
     _remoteSuggestionsService = remoteSuggestionsService;
     _tracker = tracker;
+    _cachedImages = [[NSCache alloc] init];
     // This is logged only when `IsBottomOmniboxSteadyStateEnabled` is enabled.
     _preferredOmniboxPosition = metrics::OmniboxEventProto::UNKNOWN_POSITION;
   }
@@ -159,6 +163,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 - (void)updateWithResults:(const AutocompleteResult&)result {
   [self updateMatches:result];
   self.open = !result.empty();
+  if (!self.open) {
+    [_cachedImages removeAllObjects];
+  }
   metrics::OmniboxFocusType inputFocusType =
       self.autocompleteController->input().focus_type();
   BOOL isFocusing =
@@ -368,6 +375,13 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 #pragma mark - ImageFetcher
 
 - (void)fetchImage:(GURL)imageURL completion:(void (^)(UIImage*))completion {
+  NSString* URL = base::SysUTF8ToNSString(imageURL.spec());
+  UIImage* cachedImage = [_cachedImages objectForKey:URL];
+  if (cachedImage) {
+    completion(cachedImage);
+    return;
+  }
+  __weak NSCache<NSString*, UIImage*>* weakCachedImages = _cachedImages;
   auto callback =
       base::BindOnce(^(const std::string& image_data,
                        const image_fetcher::RequestMetadata& metadata) {
@@ -376,6 +390,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         if (data) {
           UIImage* image = [UIImage imageWithData:data
                                             scale:[UIScreen mainScreen].scale];
+          [weakCachedImages setObject:image forKey:URL];
           completion(image);
         } else {
           completion(nil);
