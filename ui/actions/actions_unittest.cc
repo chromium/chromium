@@ -19,6 +19,8 @@ namespace {
 const std::u16string kActionText = u"Test Action";
 const std::u16string kChild1Text = u"Child Action 1";
 const std::u16string kChild2Text = u"Child Action 2";
+const std::u16string kActionAccessibleText = u"Accessible Action Text";
+const std::u16string kActionTooltipText = u"Tooltip text";
 
 #define TEST_ACTION_IDS                              \
   E(kActionTest1, , kActionTestStart, TestActionIds) \
@@ -428,6 +430,28 @@ TEST_F(ActionItemTest, TestActionItemPinnableKey) {
   auto* action_test2 = manager.FindAction(kActionTest2);
   ASSERT_TRUE(action_test2);
   ASSERT_TRUE(action_test2->GetProperty(kActionItemPinnableKey));
+}
+
+TEST_F(ActionItemTest, TestActionProperties) {
+  constexpr int kGroupId = 5;
+  // clang-format off
+  auto builder = ActionItem::Builder()
+      .SetText(kActionText)
+      .SetActionId(kActionTest1)
+      .SetVisible(true)
+      .SetEnabled(true)
+      .SetAccessibleName(kActionAccessibleText)
+      .SetTooltipText(kActionTooltipText)
+      .SetGroupId(kGroupId);
+  // clang-format on
+  auto action_item = std::move(builder).Build();
+  EXPECT_EQ(action_item->GetText(), kActionText);
+  EXPECT_EQ(action_item->GetActionId().value(), kActionTest1);
+  EXPECT_TRUE(action_item->GetVisible());
+  EXPECT_TRUE(action_item->GetEnabled());
+  EXPECT_EQ(action_item->GetAccessibleName(), kActionAccessibleText);
+  EXPECT_EQ(action_item->GetTooltipText(), kActionTooltipText);
+  EXPECT_EQ(action_item->GetGroupId(), kGroupId);
 }
 
 }  // namespace actions

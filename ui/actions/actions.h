@@ -140,6 +140,10 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
                                     ui::metadata::ArgType<T> value) && {
       return std::move(this->SetProperty(property, value));
     }
+    ActionItemBuilder& SetAccessibleName(
+        const std::u16string accessible_name) &;
+    ActionItemBuilder&& SetAccessibleName(
+        const std::u16string accessible_name) &&;
     ActionItemBuilder& SetActionId(absl::optional<ActionId> action_id) &;
     ActionItemBuilder&& SetActionId(absl::optional<ActionId> action_id) &&;
     ActionItemBuilder& SetAccelerator(ui::Accelerator accelerator) &;
@@ -192,6 +196,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   static ActionItemBuilder Builder();
 
   // Configure action states and attributes.
+  std::u16string GetAccessibleName() const;
+  void SetAccessibleName(const std::u16string accessible_name);
   absl::optional<ActionId> GetActionId() const;
   void SetActionId(absl::optional<ActionId> action_id);
   ui::Accelerator GetAccelerator() const;
@@ -244,6 +250,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   // `updated_` = true, the ActionChanged callbacks will trigger.
   int updating_ = 0;
   bool updated_ = false;
+  std::u16string accessible_name_;
   absl::optional<ActionId> action_id_;
   ui::Accelerator accelerator_;
   bool checked_ = false;

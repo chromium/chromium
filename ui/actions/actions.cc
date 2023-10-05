@@ -143,6 +143,18 @@ ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::AddChild(
   return std::move(this->AddChild(std::move(child_item)));
 }
 
+ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetAccessibleName(
+    const std::u16string accessible_name) & {
+  action_item_->SetAccessibleName(accessible_name);
+  return *this;
+}
+
+ActionItem::ActionItemBuilder&&
+ActionItem::ActionItemBuilder::SetAccessibleName(
+    const std::u16string accessible_name) && {
+  return std::move(this->SetAccessibleName(accessible_name));
+}
+
 ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetActionId(
     absl::optional<ActionId> action_id) & {
   action_item_->SetActionId(action_id);
@@ -277,6 +289,18 @@ ActionItem::ActionItem(InvokeActionCallback callback)
     : callback_(std::move(callback)) {}
 
 ActionItem::~ActionItem() = default;
+
+std::u16string ActionItem::GetAccessibleName() const {
+  return accessible_name_;
+}
+
+void ActionItem::SetAccessibleName(const std::u16string accessible_name) {
+  if (accessible_name_ == accessible_name) {
+    return;
+  }
+  accessible_name_ = accessible_name;
+  ActionItemChanged();
+}
 
 absl::optional<ActionId> ActionItem::GetActionId() const {
   return action_id_;
@@ -474,6 +498,7 @@ void ActionItem::EndUpdate() {
 }
 
 BEGIN_METADATA(ActionItem, BaseAction)
+ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
 ADD_PROPERTY_METADATA(absl::optional<ActionId>, ActionId)
 ADD_PROPERTY_METADATA(ui::Accelerator, Accelerator)
 ADD_PROPERTY_METADATA(bool, Checked)
