@@ -12,83 +12,84 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/types/pass_key.h"
+#include "media/base/data_source.h"
 #include "media/base/media_log.h"
 #include "media/filters/hls_data_source_provider.h"
+#include "third_party/blink/public/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
 class UrlIndex;
 class BufferedDataSourceHostImpl;
-class MultiBufferDataSource;
-class HlsDataSourceImpl;
 
 class PLATFORM_EXPORT HlsDataSourceProviderImpl
     : public media::HlsDataSourceProvider {
-  using Self = HlsDataSourceProviderImpl;
-
  public:
+  // An instance of DataSourceFactory allows separation of DataSource creation
+  // and DataSourceStream buffer management for easier testing.
+  class DataSourceFactory {
+   public:
+    virtual ~DataSourceFactory() = 0;
+    virtual std::unique_ptr<media::CrossOriginDataSource> CreateDataSource(
+        GURL uri) = 0;
+  };
+
   ~HlsDataSourceProviderImpl() override;
-  HlsDataSourceProviderImpl(
+  explicit HlsDataSourceProviderImpl(
+      std::unique_ptr<DataSourceFactory> factory);
+
+  // media::HlsDataSourceProvider implementation
+  void ReadFromUrl(GURL uri,
+                   absl::optional<media::hls::types::ByteRange> range,
+                   ReadCb callback) override;
+  void ReadFromExistingStream(
+      std::unique_ptr<media::HlsDataSourceStream> stream,
+      ReadCb callback) override;
+
+ private:
+  void OnStreamReleased(media::HlsDataSourceStream::StreamId stream_id);
+  void DataSourceInitialized(media::HlsDataSourceStream::StreamId stream_id,
+                             absl::optional<media::hls::types::ByteRange> range,
+                             ReadCb callback,
+                             bool success);
+
+  std::unique_ptr<DataSourceFactory> data_source_factory_;
+
+  media::HlsDataSourceStream::StreamId::Generator stream_id_generator_;
+
+  base::flat_map<media::HlsDataSourceStream::StreamId,
+                 std::unique_ptr<media::CrossOriginDataSource>>
+      data_source_map_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<HlsDataSourceProviderImpl> weak_factory_{this};
+};
+
+class PLATFORM_EXPORT MultiBufferDataSourceFactory
+    : public HlsDataSourceProviderImpl::DataSourceFactory {
+ public:
+  ~MultiBufferDataSourceFactory() override;
+  MultiBufferDataSourceFactory(
       media::MediaLog* media_log,
       UrlIndex* url_index,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
-      const base::TickClock* tick_clock);
+      const base::TickClock* tick_clock,
+      UrlData::CorsMode cors_mode,
+      UrlIndex::CacheMode cache_mode);
 
-  void RequestMockDataSourceForTesting(
-      std::unique_ptr<MultiBufferDataSource> mock_ds,
-      RequestCb callback) {
-    RequestDataSourceInternal(std::move(mock_ds), std::move(callback));
-  }
-
-  // `media::DataSourceProvider` implementation
-  void RequestDataSource(GURL uri,
-                         absl::optional<media::hls::types::ByteRange> range,
-                         RequestCb callback) override;
-
-  // Returns the set of currently active data sources created by this provider.
-  // This must be called on the main thread.
-  const std::deque<MultiBufferDataSource*>& GetActiveDataSources();
-
-  // Called by the destructor of `HlsDataSourceImpl`, both to notify this of its
-  // destruction and to ensure destruction of the underlying
-  // `MultiBufferDataSource` on the main thread.
-  void NotifyDataSourceDestroyed(base::PassKey<HlsDataSourceImpl>,
-                                 std::unique_ptr<MultiBufferDataSource>);
+  std::unique_ptr<media::CrossOriginDataSource> CreateDataSource(
+      GURL uri) override;
 
  private:
-  void RequestDataSourceInternal(
-      std::unique_ptr<MultiBufferDataSource> data_source,
-      RequestCb callback);
-
-  void NotifyDataSourceProgress();
-
-  void NotifyDownloading(const std::string& uri, bool is_downloading);
-
-  void DataSourceInitialized(std::unique_ptr<MultiBufferDataSource> data_source,
-                             absl::optional<media::hls::types::ByteRange> range,
-                             RequestCb callback,
-                             bool success);
-
   std::unique_ptr<media::MediaLog> media_log_;
   raw_ptr<UrlIndex, ExperimentalRenderer> url_index_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
+  UrlData::CorsMode cors_mode_;
+  UrlIndex::CacheMode cache_mode_;
+
   std::unique_ptr<BufferedDataSourceHostImpl> buffered_data_source_host_;
-
-  // Set of all active `MultiBufferDataSource`s belonging to the
-  // `HlsDataSourceImpl`s created by this provider. This uses a
-  // `MultiBufferDataSource*` (as opposed to `HlsDataSourceImpl*`) because those
-  // are both created and destroyed on the main thread, unlike
-  // `HlsDataSourceImpl` which is created on the main thread and destroyed on
-  // the media thread.
-  // Using a `std::deque` instead of a set-like data structure for this since
-  // size will be low, and primary operations are guaranteed-unique (and mostly
-  // FIFO) insertion and removal rather than existence-checking.
-  std::deque<MultiBufferDataSource*> active_data_sources_;
-
-  base::WeakPtrFactory<Self> weak_factory_{this};
 };
 
 }  // namespace blink

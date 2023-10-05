@@ -19,76 +19,41 @@
 
 namespace media {
 
-namespace {
-
-// A small-ish size that it should probably be able to get most manifests in
-// a single chunk. Chosen somewhat arbitrarily otherwise.
-constexpr size_t kDefaultReadSize = 1024 * 16;
-
-}  // namespace
-
-// Interface which can provide data, respecting byterange boundaries.
-class MEDIA_EXPORT HlsDataSource {
- public:
-  enum class ReadStatusCodes : StatusCodeType {
-    kError,
-    kAborted,
-  };
-  struct ReadStatusTraits {
-    using Codes = ReadStatusCodes;
-    static constexpr StatusGroupType Group() {
-      return "HlsDataSource::ReadStatus";
-    }
-  };
-  using ReadStatus = TypedStatus<ReadStatusTraits>;
-  using ReadCb = base::OnceCallback<void(ReadStatus::Or<size_t>)>;
-
-  explicit HlsDataSource(absl::optional<size_t> size) : size_(size) {}
-  virtual ~HlsDataSource();
-
-  // Issues a read to the underlying data source, writing the results to
-  // `buffer` and running `callback` once that's completed. `pos` is a 0-based
-  // starting byte to read from, which will be mapped to the correct byterange
-  // within the underlying data source. `size` is the maximum number of bytes
-  // that may be written into `buffer`, and must be greater than 0. If an error
-  // occurred, `callback` will be run with the error status. Otherwise, it's run
-  // with the number of bytes read into `buffer`. If the number of bytes read is
-  // 0, there is no more data left in the data source.
-  virtual void Read(uint64_t pos,
-                    size_t size,
-                    uint8_t* buffer,
-                    ReadCb callback) = 0;
-
-  // Returns the MIME type of the underlying data source.
-  virtual base::StringPiece GetMimeType() const = 0;
-
-  // Aborts and stops the underlying multibuffer data source. After aborting,
-  // All calls to `::Read` should respond with kAborted. Accessing previously
-  // fetched data is ok.
-  virtual void Stop() = 0;
-
-  // Returns the size of the underlying data source. If the size is unknown,
-  // returns `absl::nullopt`.
-  absl::optional<size_t> GetSize() const { return size_; }
-
- protected:
-  const absl::optional<size_t> size_;
-};
+class HlsDataSourceStream;
 
 // Interface which can provide data sources, given a URI and an optional
 // byterange. This interface should be used via `base::SequenceBound` to proxy
 // requests across the media thread and the main thread.
 class MEDIA_EXPORT HlsDataSourceProvider {
  public:
-  virtual ~HlsDataSourceProvider();
-  using RequestCb = base::OnceCallback<void(std::unique_ptr<HlsDataSource>)>;
-  virtual void RequestDataSource(GURL uri,
-                                 absl::optional<hls::types::ByteRange> range,
-                                 RequestCb) = 0;
-};
+  virtual ~HlsDataSourceProvider() = 0;
 
-// Forward Declare manager.
-class HlsManifestDemuxerEngine;
+  struct ReadStatusTraits {
+    enum class Codes : StatusCodeType {
+      kError,
+      kAborted,
+    };
+    static constexpr StatusGroupType Group() {
+      return "HlsDataSourceProvider::ReadStatus";
+    }
+  };
+
+  using ReadStatus = TypedStatus<ReadStatusTraits>;
+  using ReadResult = ReadStatus::Or<std::unique_ptr<HlsDataSourceStream>>;
+  using ReadCb = base::OnceCallback<void(ReadResult)>;
+
+  // Kicks off a read from the given url and the optional constrained byterange
+  // and replies with a stream reference, which can be use to continue reading
+  // and to extract already fetched data.
+  virtual void ReadFromUrl(GURL uri,
+                           absl::optional<hls::types::ByteRange> range,
+                           ReadCb callback) = 0;
+
+  // Continues to read from an existing stream.
+  virtual void ReadFromExistingStream(
+      std::unique_ptr<HlsDataSourceStream> stream,
+      ReadCb callback) = 0;
+};
 
 // A buffer-owning wrapper for an HlsDataSource which can be instructed to
 // read an entire data source, or to retrieve it in chunks.
@@ -99,58 +64,82 @@ class MEDIA_EXPORT HlsDataSourceStream {
   // read stream handle for continued downloading.
   using StreamId = base::IdType32<HlsDataSourceStream>;
 
-  HlsDataSourceStream(std::unique_ptr<HlsDataSource> data_source);
+  // Create a stream where `on_destructed_cb` is used to give notice that this
+  // class is being destroyed. This class isn't safe to access from anything
+  // except for an ownership-holding smart pointer, as the destruction cb may
+  // do work across threads.
+  HlsDataSourceStream(StreamId stream_id,
+                      base::OnceClosure on_destructed_cb,
+                      absl::optional<hls::types::ByteRange> range);
   ~HlsDataSourceStream();
 
-  // Helpers for checking the internal state of the stream.
+  // Streams use an ID associated with a MultiBufferDataSource without
+  // owning it.
+  StreamId stream_id() const { return stream_id_; }
+
+  // This is the byte position in the MultiBufferDataSource where new data
+  // will be read from. This only ever goes up, because these streams are not
+  // rewindable.
+  size_t read_position() const { return read_position_; }
+
+  size_t buffer_size() const { return buffer_.size(); }
+
+  absl::optional<size_t> max_read_position() const {
+    return max_read_position_;
+  }
+
+  const uint8_t* raw_data() const { return buffer_.data(); }
+
+  // Often the network data for HLS consists of plain-text manifest files, so
+  // this supports accessing the fetched data as a string view.
+  std::string_view AsString() const;
+
+  // Has the stream read all possible data?
   bool CanReadMore() const;
-  size_t BytesInBuffer() const;
 
-  // Helpers for accessing the buffer.
-  base::StringPiece AsStringPiece() const;
-  const uint8_t* AsRawData() const;
+  // Clears the internal buffer of data. Continual reads will refill the buffer
+  // and reading without clearing will append to the end of the buffer.
+  void Clear();
 
-  // Reset the internal buffer.
-  void Flush();
+  // Used by a HlsDataSourceProvider implementation to finish adding data to
+  // the internal buffer.
+  void UnlockStreamPostWrite(int read_size, bool end_of_stream);
 
-  void ReadChunkForTesting(HlsDataSource::ReadCb cb,
-                           size_t read_size = kDefaultReadSize);
-  void ReadChunk(base::PassKey<HlsManifestDemuxerEngine>,
-                 HlsDataSource::ReadCb cb);
-
-  void UpdateBytes(size_t original_size, size_t bytes_read);
+  // Used by a HlsDataSourceProvider implementation to start adding new data,
+  // which means ensuring that there is enough space for the expected write, as
+  // well as returning the correct buffer address to write into.
+  uint8_t* LockStreamForWriting(int ensure_minimum_space);
 
  private:
-  // Read data in chunks.
-  void ReadChunkInternal(HlsDataSource::ReadCb cb,
-                         size_t read_size = kDefaultReadSize);
+  const StreamId stream_id_;
 
-  // The data source to read from.
-  std::unique_ptr<HlsDataSource> data_source_;
-
-  // the buffer of data to read into.
+  // Active buffer data. Reading without clearing will append new data
+  // to the end of the buffer. Clearing will not reset the read-head, but will
+  // empty this buffer.
+  // TODO(crbug/1266991): Consider swapping out the vector with a more
+  // size-flexible data structure to avoid resizing.
   std::vector<uint8_t> buffer_;
 
-  // The total number of bytes read. Not affected by |Flush|.
-  size_t total_bytes_read_ = 0;
+  size_t read_position_ = 0;
 
-  base::WeakPtrFactory<HlsDataSourceStream> weak_factory_;
-};
+  // The write index into `buffer_`. This gets reset on flush.
+  size_t write_index_ = 0;
 
-// A HlsDataSourceStreamManager must own all instances of HlsDataSourceStream
-// while those streams have pending network requests, so that they can be
-// canceled as part of deletion.
-class MEDIA_EXPORT HlsDataSourceStreamManager {
- public:
-  using ReadResult =
-      HlsDataSource::ReadStatus::Or<std::unique_ptr<HlsDataSourceStream>>;
-  using ReadCb = base::OnceCallback<void(ReadResult)>;
+  // If this optional value is set, then data can't be read past this maximum
+  // value.
+  absl::optional<size_t> max_read_position_;
 
-  virtual ~HlsDataSourceStreamManager() = 0;
+  // The data source read response indicated that the stream has ended.
+  bool reached_end_of_stream_ = false;
 
-  // `ReadCb` is bound and posted on to run on the thread where `ReadStream` is
-  // called.
-  virtual void ReadStream(std::unique_ptr<HlsDataSourceStream>, ReadCb) = 0;
+  // The stream is unable to start a second write or clear until it is unlocked
+  // by UnlockStreamPostWrite.
+  bool stream_locked_ = false;
+
+  base::OnceClosure on_destructed_cb_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<HlsDataSourceStream> weak_factory_{this};
 };
 
 }  // namespace media

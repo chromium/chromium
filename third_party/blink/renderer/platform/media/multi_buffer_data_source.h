@@ -65,11 +65,9 @@ class PLATFORM_EXPORT MultiBufferDataSource
     return url_data_->mime_type();
   }
 
-  // Executes |init_cb| with the result of initialization when it has completed.
-  //
   // Method called on the render thread.
   using InitializeCB = base::OnceCallback<void(bool)>;
-  virtual void Initialize(InitializeCB init_cb);
+  void Initialize(InitializeCB init_cb) override;
 
   // Adjusts the buffering algorithm based on the given preload value.
   void SetPreload(media::DataSource::Preload preload) override;

@@ -799,6 +799,9 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   DVLOG(1) << __func__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
+  is_cache_disabled_ = is_cache_disabled;
+  cors_mode_ = cors_mode;
+
   // Start a new observation.  If there was one before, then we didn't play it.
   will_play_helper_.CompleteObservationIfNeeded(learning::TargetValue(false));
   // For now, send in an empty set of features.  We should fill some in here,
@@ -1572,9 +1575,13 @@ void WebMediaPlayerImpl::AddVideoTrack(const std::string& id,
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 base::SequenceBound<media::HlsDataSourceProvider>
 WebMediaPlayerImpl::GetHlsDataSourceProvider() {
-  return base::SequenceBound<HlsDataSourceProviderImpl>(
-      main_task_runner_, media_log_.get(), url_index_, main_task_runner_,
-      media_task_runner_, tick_clock_);
+  auto factory = std::make_unique<MultiBufferDataSourceFactory>(
+      media_log_.get(), url_index_, main_task_runner_, tick_clock_,
+      static_cast<UrlData::CorsMode>(cors_mode_),
+      (is_cache_disabled_ ? UrlIndex::kCacheDisabled : UrlIndex::kNormal));
+
+  return base::SequenceBound<HlsDataSourceProviderImpl>(main_task_runner_,
+                                                        std::move(factory));
 }
 #endif
 

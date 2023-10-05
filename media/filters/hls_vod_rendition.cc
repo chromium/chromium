@@ -260,12 +260,11 @@ void HlsVodRendition::FetchMoreDataFromPendingStream(
                      base::TimeTicks::Now()));
 }
 
-void HlsVodRendition::OnSegmentData(
-    base::OnceClosure cb,
-    base::TimeDelta required_time,
-    size_t segment_index,
-    base::TimeTicks net_req_start,
-    HlsDataSourceStreamManager::ReadResult result) {
+void HlsVodRendition::OnSegmentData(base::OnceClosure cb,
+                                    base::TimeDelta required_time,
+                                    size_t segment_index,
+                                    base::TimeTicks net_req_start,
+                                    HlsDataSourceProvider::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_stopped_for_shutdown_) {
     std::move(cb).Run();
@@ -286,18 +285,18 @@ void HlsVodRendition::OnSegmentData(
 
   if (!engine_host_->AppendAndParseData(
           role_, base::TimeDelta(), end + base::Seconds(1), &parse_offset_,
-          stream->AsRawData(), stream->BytesInBuffer())) {
+          stream->raw_data(), stream->buffer_size())) {
     return engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
   }
 
   auto fetch_duration = base::TimeTicks::Now() - net_req_start;
   // Store the time it took to download this chunk. The time should be scaled
   // for situations where we only have a few bytes left to download.
-  auto scaled = (fetch_duration * stream->BytesInBuffer()) / kChunkSize;
+  auto scaled = (fetch_duration * stream->buffer_size()) / kChunkSize;
   fetch_time_.AddSample(scaled);
 
   if (stream->CanReadMore()) {
-    stream->Flush();
+    stream->Clear();
     pending_stream_fetch_.emplace(std::move(stream), segment_index);
   }
 

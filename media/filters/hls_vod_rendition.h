@@ -72,7 +72,7 @@ class MEDIA_EXPORT HlsVodRendition : public HlsRendition {
                      base::TimeDelta fetch_required_time,
                      size_t segment_index,
                      base::TimeTicks net_req_start,
-                     HlsDataSourceStreamManager::ReadResult result);
+                     HlsDataSourceProvider::ReadResult result);
 
   // `ManifestDemuxerEngineHost` owns the `HlsRenditionHost` which in
   // turn owns |this|, so it's safe to keep these as raw ptrs. |host_| is needed

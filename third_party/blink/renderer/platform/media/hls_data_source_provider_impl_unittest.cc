@@ -37,154 +37,239 @@ using testing::StrictMock;
 
 namespace {
 
-class TestUrlIndex : public UrlIndex {
+class MockDataSource : public media::CrossOriginDataSource {
  public:
-  explicit TestUrlIndex(scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : UrlIndex(nullptr, task_runner) {}
-
-  scoped_refptr<UrlData> NewUrlData(const GURL& url,
-                                    UrlData::CorsMode cors_mode) override {
-    NOTREACHED();
-    return nullptr;
-  }
-};
-
-class TestUrlData : public UrlData {
- public:
-  TestUrlData(const GURL& url,
-              UrlIndex* url_index,
-              scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : UrlData(url, UrlData::CORS_UNSPECIFIED, url_index, task_runner) {}
-
-  ResourceMultiBuffer* multibuffer() override { return nullptr; }
-};
-
-class MockBufferedDataSourceHost : public BufferedDataSourceHost {
- public:
-  MockBufferedDataSourceHost() = default;
-  MockBufferedDataSourceHost(const MockBufferedDataSourceHost&) = delete;
-  MockBufferedDataSourceHost& operator=(const MockBufferedDataSourceHost&) =
-      delete;
-  ~MockBufferedDataSourceHost() override = default;
-
-  MOCK_METHOD1(SetTotalBytes, void(int64_t total_bytes));
-  MOCK_METHOD2(AddBufferedByteRange, void(int64_t start, int64_t end));
-};
-
-class MockMultiBufferDataSource : public MultiBufferDataSource {
- public:
-  MockMultiBufferDataSource(
-      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-      scoped_refptr<UrlData> url_data,
-      media::MediaLog* media_log,
-      BufferedDataSourceHost* host,
-      DownloadingCB downloading_cb)
-      : MultiBufferDataSource(std::move(task_runner),
-                              std::move(url_data),
-                              media_log,
-                              host,
-                              std::move(downloading_cb)) {}
-
-  void Initialize(InitializeCB init_cb) override {
-    InitializeCalled();
-    std::move(init_cb).Run(true);
-  }
-
-  MOCK_METHOD(void, InitializeCalled, (), ());
-  MOCK_METHOD(void, Abort, (), (override));
+  // Mocked methods from CrossOriginDataSource
+  MOCK_METHOD(bool, IsCorsCrossOrigin, (), (const, override));
+  MOCK_METHOD(bool, HasAccessControl, (), (const, override));
+  MOCK_METHOD(const std::string&, GetMimeType, (), (const, override));
   MOCK_METHOD(void,
-              Read,
-              (int64_t, int, uint8_t*, media::DataSource::ReadCB),
+              Initialize,
+              (base::OnceCallback<void(bool)> init_cb),
               (override));
+
+  // Mocked methods from DataSource
+  MOCK_METHOD(
+      void,
+      Read,
+      (int64_t position, int size, uint8_t* data, DataSource::ReadCB read_cb),
+      (override));
+  MOCK_METHOD(void, Stop, (), (override));
+  MOCK_METHOD(void, Abort, (), (override));
+  MOCK_METHOD(bool, GetSize, (int64_t * size_out), (override));
+  MOCK_METHOD(bool, IsStreaming, (), (override));
+  MOCK_METHOD(void, SetBitrate, (int bitrate), (override));
+  MOCK_METHOD(bool, PassedTimingAllowOriginCheck, (), (override));
+  MOCK_METHOD(bool, WouldTaintOrigin, (), (override));
+  MOCK_METHOD(bool, AssumeFullyBuffered, (), (const, override));
+  MOCK_METHOD(int64_t, GetMemoryUsage, (), (override));
+  MOCK_METHOD(void,
+              SetPreload,
+              (media::DataSource::Preload preload),
+              (override));
+  MOCK_METHOD(GURL, GetUrlAfterRedirects, (), (const, override));
+  MOCK_METHOD(void,
+              OnBufferingHaveEnough,
+              (bool must_cancel_netops),
+              (override));
+  MOCK_METHOD(void,
+              OnMediaPlaybackRateChanged,
+              (double playback_rate),
+              (override));
+  MOCK_METHOD(void, OnMediaIsPlaying, (), (override));
+  MOCK_METHOD(const CrossOriginDataSource*,
+              GetAsCrossOriginDataSource,
+              (),
+              (const, override));
+};
+
+class MockDataSourceFactory
+    : public HlsDataSourceProviderImpl::DataSourceFactory {
+ public:
+  using MockDataSource = StrictMock<MockDataSource>;
+
+  ~MockDataSourceFactory() override = default;
+  MockDataSourceFactory() = default;
+  std::unique_ptr<media::CrossOriginDataSource> CreateDataSource(
+      GURL uri) override {
+    if (!next_mock_) {
+      PregenerateNextMock();
+      EXPECT_CALL(*next_mock_, Initialize).WillOnce(RunOnceCallback<0>(true));
+      for (const auto& e : read_expectations_) {
+        EXPECT_CALL(*next_mock_, Read(std::get<0>(e), std::get<1>(e), _, _))
+            .WillOnce(RunOnceCallback<3>(std::get<2>(e)));
+      }
+      read_expectations_.clear();
+      EXPECT_CALL(*next_mock_, Abort());
+      EXPECT_CALL(*next_mock_, Stop());
+    }
+    return std::move(next_mock_);
+  }
+
+  void AddReadExpectation(size_t from, size_t to, int response) {
+    read_expectations_.emplace_back(from, to, response);
+  }
+
+  MockDataSource* PregenerateNextMock() {
+    next_mock_ = std::make_unique<MockDataSource>();
+    return next_mock_.get();
+  }
+
+ private:
+  std::unique_ptr<MockDataSource> next_mock_;
+  std::vector<std::tuple<size_t, size_t, int>> read_expectations_;
 };
 
 }  // namespace
 
 class HlsDataSourceProviderImplUnittest : public testing::Test {
  public:
-  HlsDataSourceProviderImplUnittest()
-      : media_log_(std::make_unique<NiceMock<media::MockMediaLog>>()),
-        tick_clock_(std::make_unique<base::SimpleTestTickClock>()),
-        mock_host_(std::make_unique<MockBufferedDataSourceHost>()) {
-    url_index_ = std::make_unique<TestUrlIndex>(
-        task_environment_.GetMainThreadTaskRunner());
-  }
+  ~HlsDataSourceProviderImplUnittest() override = default;
+  HlsDataSourceProviderImplUnittest() { RecreateImpl(); }
 
-  void SetUpDSP() {
-    impl_ = std::make_unique<HlsDataSourceProviderImpl>(
-        media_log_.get(), url_index_.get(),
-        task_environment_.GetMainThreadTaskRunner(),
-        task_environment_.GetMainThreadTaskRunner(), tick_clock_.get());
-  }
-
-  ~HlsDataSourceProviderImplUnittest() override {
-    data_source_.reset();
-    // URL data needs to be freed before the url index, because UrlData keeps
-    // a rawptr to UrlIndex.
-    task_environment_.RunUntilIdle();
-    url_index_.reset();
-  }
-
-  media::HlsDataSourceProvider::RequestCb StoreDSP() {
-    return base::BindOnce(&HlsDataSourceProviderImplUnittest::StoreDSPImpl,
-                          base::Unretained(this));
-  }
-
-  void StoreDSPImpl(std::unique_ptr<media::HlsDataSource> data_source) {
-    ASSERT_EQ(data_source_, nullptr);
-    data_source_ = std::move(data_source);
-  }
-
-  std::unique_ptr<MockMultiBufferDataSource> MakeMockDataSource() {
-    return std::make_unique<MockMultiBufferDataSource>(
-        task_environment_.GetMainThreadTaskRunner(),
-        NewUrlData(GURL("https://example.com")), media_log_.get(),
-        mock_host_.get(),
-        base::BindRepeating(&HlsDataSourceProviderImplUnittest::Downloading,
-                            base::Unretained(this)));
-  }
-
-  void Downloading(bool) {}
-
-  scoped_refptr<UrlData> NewUrlData(const GURL& url) {
-    return new TestUrlData(url, url_index_.get(),
-                           task_environment_.GetMainThreadTaskRunner());
+  void RecreateImpl() {
+    auto factory = std::make_unique<MockDataSourceFactory>();
+    factory_ = factory.get();
+    impl_ = std::make_unique<HlsDataSourceProviderImpl>(std::move(factory));
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<media::MediaLog> media_log_;
-  std::unique_ptr<base::TickClock> tick_clock_;
-  std::unique_ptr<MockBufferedDataSourceHost> mock_host_;
-  std::unique_ptr<TestUrlIndex> url_index_;
   std::unique_ptr<HlsDataSourceProviderImpl> impl_;
-  std::unique_ptr<media::HlsDataSource> data_source_;
+
+  raw_ptr<MockDataSourceFactory> factory_;
 };
 
-TEST_F(HlsDataSourceProviderImplUnittest, TestMultibuffersCreateReadAbort) {
-  SetUpDSP();
-  std::unique_ptr<MockMultiBufferDataSource> mock_ds = MakeMockDataSource();
-
-  EXPECT_CALL(*mock_ds, InitializeCalled());
-  EXPECT_CALL(*mock_ds, Read(0, 50, nullptr, _));
-  EXPECT_CALL(*mock_ds, Abort());
-
-  impl_->RequestMockDataSourceForTesting(std::move(mock_ds), StoreDSP());
-  task_environment_.RunUntilIdle();
-
-  ASSERT_NE(data_source_, nullptr);
-  data_source_->Read(
-      0, 50, nullptr,
-      base::BindOnce([](media::HlsDataSource::ReadStatus::Or<size_t>) {
-        // This callback should never be executed because mock_ds::Read is
-        // never replied to.
-        FAIL() << "This Read() should never complete.";
+TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlOnce) {
+  // The entire read is satisfied, so there is more to read.
+  factory_->AddReadExpectation(0, 16384, 16384);
+  impl_->ReadFromUrl(
+      GURL("example.com"), absl::nullopt,
+      base::BindOnce([](media::HlsDataSourceProvider::ReadResult result) {
+        ASSERT_TRUE(result.has_value());
+        auto stream = std::move(result).value();
+        ASSERT_EQ(stream->read_position(), 16384lu);
+        ASSERT_EQ(stream->buffer_size(), 16384lu);
+        ASSERT_EQ(stream->max_read_position(), absl::nullopt);
+        ASSERT_TRUE(stream->CanReadMore());
       }));
+  task_environment_.RunUntilIdle();
+
+  // Only got 400 bytes of requested, which means that there is no more to read.
+  factory_->AddReadExpectation(0, 16384, 400);
+  impl_->ReadFromUrl(
+      GURL("example.com"), absl::nullopt,
+      base::BindOnce([](media::HlsDataSourceProvider::ReadResult result) {
+        ASSERT_TRUE(result.has_value());
+        auto stream = std::move(result).value();
+        ASSERT_EQ(stream->read_position(), 400lu);
+        ASSERT_EQ(stream->buffer_size(), 400lu);
+        ASSERT_EQ(stream->max_read_position(), absl::nullopt);
+        ASSERT_FALSE(stream->CanReadMore());
+      }));
+  task_environment_.RunUntilIdle();
+
+  // The data source should only be limited to 4242 total bytes and should start
+  // at an offset of 99. The read should be from 99, size of 4242.
+  factory_->AddReadExpectation(99, 4242, 4242);
+  impl_->ReadFromUrl(
+      GURL("example.com"), media::hls::types::ByteRange::Validate(4242, 99),
+      base::BindOnce([](media::HlsDataSourceProvider::ReadResult result) {
+        ASSERT_TRUE(result.has_value());
+        auto stream = std::move(result).value();
+        ASSERT_EQ(stream->read_position(), 4341lu);
+        ASSERT_EQ(stream->buffer_size(), 4242lu);
+        ASSERT_EQ(stream->max_read_position().value_or(0), 4341lu);
+        ASSERT_FALSE(stream->CanReadMore());
+      }));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlThenReadAgain) {
+  factory_->AddReadExpectation(0, 16384, 16384);
+  factory_->AddReadExpectation(16384, 16384, 16384);
+  factory_->AddReadExpectation(32768, 16384, 3);
+  impl_->ReadFromUrl(
+      GURL("example.com"), absl::nullopt,
+      base::BindOnce(
+          [](HlsDataSourceProviderImpl* impl_ptr,
+             media::HlsDataSourceProvider::ReadResult result) {
+            ASSERT_TRUE(result.has_value());
+            auto stream = std::move(result).value();
+            ASSERT_EQ(stream->read_position(), 16384lu);
+            ASSERT_EQ(stream->buffer_size(), 16384lu);
+            ASSERT_TRUE(stream->CanReadMore());
+
+            impl_ptr->ReadFromExistingStream(
+                std::move(stream),
+                base::BindOnce(
+                    [](HlsDataSourceProviderImpl* impl_ptr,
+                       media::HlsDataSourceProvider::ReadResult result) {
+                      ASSERT_TRUE(result.has_value());
+                      auto stream = std::move(result).value();
+                      ASSERT_EQ(stream->read_position(), 32768lu);
+                      ASSERT_EQ(stream->buffer_size(), 32768lu);
+                      ASSERT_TRUE(stream->CanReadMore());
+
+                      impl_ptr->ReadFromExistingStream(
+                          std::move(stream),
+                          base::BindOnce(
+                              [](media::HlsDataSourceProvider::ReadResult
+                                     result) {
+                                ASSERT_TRUE(result.has_value());
+                                auto stream = std::move(result).value();
+                                ASSERT_EQ(stream->read_position(), 32771lu);
+                                ASSERT_EQ(stream->buffer_size(), 32771lu);
+                                ASSERT_FALSE(stream->CanReadMore());
+                              }));
+                    },
+                    impl_ptr));
+          },
+          impl_.get()));
 
   task_environment_.RunUntilIdle();
-  // Resetting impl triggers the abort.
-  impl_.reset();
+}
+
+TEST_F(HlsDataSourceProviderImplUnittest, TestAbortMidDownload) {
+  // Pregenerating the mock requires setting all our own expectations.
+  auto* mock_data_source = factory_->PregenerateNextMock();
+  EXPECT_CALL(*mock_data_source, Initialize).WillOnce(RunOnceCallback<0>(true));
+  EXPECT_CALL(*mock_data_source, Abort()).Times(0);
+  EXPECT_CALL(*mock_data_source, Stop()).Times(0);
+
+  media::DataSource::ReadCB read_cb;
+  EXPECT_CALL(*mock_data_source, Read(0, _, _, _))
+      .WillOnce(
+          [&read_cb](int64_t, int, uint8_t*, media::DataSource::ReadCB cb) {
+            read_cb = std::move(cb);
+          });
+
+  // The Read CB is captured, and so will not execute right away.
+  bool has_been_read = false;
+  impl_->ReadFromUrl(GURL("example.com"), absl::nullopt,
+                     base::BindOnce(
+                         [](bool* read_canary,
+                            media::HlsDataSourceProvider::ReadResult result) {
+                           *read_canary = true;
+                         },
+                         &has_been_read));
+
+  // cycle everything and check that we are blocking the read.
   task_environment_.RunUntilIdle();
+  ASSERT_FALSE(has_been_read);
+  ASSERT_TRUE(!!read_cb);
+
+  // Deleting the HlsDataSourceproviderImpl will abort all existing reads.
+  EXPECT_CALL(*mock_data_source, Abort());
+  EXPECT_CALL(*mock_data_source, Stop());
+  RecreateImpl();
+  task_environment_.RunUntilIdle();
+
+  // Run with aborted signal.
+  std::move(read_cb).Run(-2);
+
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(has_been_read);
 }
 
 }  // namespace blink

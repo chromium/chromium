@@ -106,9 +106,7 @@ hls::RenditionSelector::CodecSupportType GetSupportedTypes(
 
 }  // namespace
 
-HlsManifestDemuxerEngine::~HlsManifestDemuxerEngine() {
-  CHECK(stream_map_.empty());
-}
+HlsManifestDemuxerEngine::~HlsManifestDemuxerEngine() = default;
 
 HlsManifestDemuxerEngine::HlsManifestDemuxerEngine(
     base::SequenceBound<HlsDataSourceProvider> dsp,
@@ -243,8 +241,6 @@ void HlsManifestDemuxerEngine::StartWaitingForSeek() {
 
 void HlsManifestDemuxerEngine::AbortPendingReads() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  // Deleting a stream aborts any pending reads on the underlying data source.
-  stream_map_.clear();
 }
 
 bool HlsManifestDemuxerEngine::IsSeekable() const {
@@ -268,35 +264,6 @@ void HlsManifestDemuxerEngine::Stop() {
   }
 
   data_source_provider_.Reset();
-
-  // When `AbortPendingReads` is called, it cancels any pending network
-  // requests. If those requests are still in flight, they respond with a
-  // `kAborted` status. It's possible that those requests have just finished on
-  // the renderer main thread, and the next event in the media task runner is to
-  // call ExchangeStreamId. In that case, the response is still valid, but
-  // `data_source_provider_` has been reset and in this case all the pending
-  // callbacks should be stopped to prevent re-entrant calls to `ReadStream`.
-  // A sequence diagram of the issue:
-  // media thread                                   renderer thread
-  // ReadStream
-  //     │
-  //     v
-  // ReadChunk ────────────────────────────────────> ReadChunk
-  //                                                    │
-  // Stop ──────────────────┬───────┐                   │
-  //                        │       │                   v
-  // ExchangeStreamId <───────────────────────────── PostTask
-  //    │                   │       └──────────────> Reset
-  //    v                   │
-  // ... any method call    └────────────────────────┐
-  //    │                                            │
-  //    v                                            │
-  // ReadFromUrl (data_source_provider_ is null!)    │
-  //                                                 │
-  //                                 (post task back to media thread)
-  //                                                 │
-  //                                                 │
-  // WMPI::DestructionHelper (deletes this) <────────┘
   weak_factory_.InvalidateWeakPtrs();
 
   multivariant_root_.reset();
@@ -323,7 +290,7 @@ void HlsManifestDemuxerEngine::Abort(hls::ParseStatus status) {
                   std::move(status)});
 }
 
-void HlsManifestDemuxerEngine::Abort(HlsDataSource::ReadStatus status) {
+void HlsManifestDemuxerEngine::Abort(HlsDataSourceProvider::ReadStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!host_) {
     return;
@@ -332,59 +299,13 @@ void HlsManifestDemuxerEngine::Abort(HlsDataSource::ReadStatus status) {
       {PipelineStatus::Codes::DEMUXER_ERROR_COULD_NOT_OPEN, std::move(status)});
 }
 
-void HlsManifestDemuxerEngine::ReadStream(
-    std::unique_ptr<HlsDataSourceStream> stream,
-    HlsDataSourceStreamManager::ReadCb cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  if (!data_source_provider_) {
-    std::move(cb).Run(HlsDataSource::ReadStatus::Codes::kAborted);
-    return;
-  }
-  auto ticket = stream_ticket_generator_.GenerateNextId();
-  auto it = stream_map_.try_emplace(ticket, std::move(stream));
-  it.first->second->ReadChunk(
-      base::PassKey<HlsManifestDemuxerEngine>(),
-      base::BindOnce(&HlsManifestDemuxerEngine::ExchangeStreamId,
-                     weak_factory_.GetWeakPtr(), ticket, std::move(cb)));
-}
-
-void HlsManifestDemuxerEngine::ExchangeStreamId(
-    HlsDataSourceStream::StreamId ticket,
-    HlsDataSourceStreamManager::ReadCb cb,
-    HlsDataSource::ReadStatus::Or<size_t> result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  auto it = stream_map_.find(ticket);
-  if (it == stream_map_.end()) {
-    std::move(cb).Run(HlsDataSource::ReadStatus::Codes::kAborted);
-    return;
-  }
-  auto stream = std::move(it->second);
-  stream_map_.erase(it);
-  if (result.has_value()) {
-    std::move(cb).Run(std::move(stream));
-    return;
-  }
-  std::move(cb).Run(std::move(result).error());
-}
-
-void HlsManifestDemuxerEngine::ReadDataSource(
-    HlsDataSourceStreamManager::ReadCb cb,
-    std::unique_ptr<HlsDataSource> source) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  if (!source) {
-    Abort(HlsDemuxerStatus::Codes::kPlaylistUrlInvalid);
-    return;
-  }
-  ReadStream(std::make_unique<HlsDataSourceStream>(std::move(source)),
-             std::move(cb));
-}
-
 void HlsManifestDemuxerEngine::ReadUntilExhausted(
-    HlsDataSourceStreamManager::ReadCb cb,
-    HlsDataSourceStreamManager::ReadResult result) {
+    HlsDataSourceProvider::ReadCb cb,
+    HlsDataSourceProvider::ReadStatus::Or<std::unique_ptr<HlsDataSourceStream>>
+        result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!result.has_value()) {
-    std::move(cb).Run(std::move(result));
+    std::move(cb).Run(std::move(result).error());
     return;
   }
   auto stream = std::move(result).value();
@@ -394,38 +315,49 @@ void HlsManifestDemuxerEngine::ReadUntilExhausted(
   }
 
   ReadStream(std::move(stream),
-             base::BindPostTaskToCurrentDefault(
-                 base::BindOnce(&HlsManifestDemuxerEngine::ReadUntilExhausted,
-                                weak_factory_.GetWeakPtr(), std::move(cb))));
+             base::BindOnce(&HlsManifestDemuxerEngine::ReadUntilExhausted,
+                            weak_factory_.GetWeakPtr(), std::move(cb)));
 }
 
 void HlsManifestDemuxerEngine::ReadFromUrl(
     GURL uri,
     bool read_chunked,
     absl::optional<hls::types::ByteRange> range,
-    HlsDataSourceStreamManager::ReadCb cb) {
+    HlsDataSourceProvider::ReadCb cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!data_source_provider_) {
-    std::move(cb).Run(HlsDataSource::ReadStatus::Codes::kAborted);
+    std::move(cb).Run(HlsDataSourceProvider::ReadStatus::Codes::kAborted);
     return;
   }
-  if (!read_chunked) {
+
+  if (read_chunked) {
     cb = base::BindOnce(&HlsManifestDemuxerEngine::ReadUntilExhausted,
                         weak_factory_.GetWeakPtr(), std::move(cb));
   }
 
-  data_source_provider_.AsyncCall(&HlsDataSourceProvider::RequestDataSource)
+  data_source_provider_.AsyncCall(&HlsDataSourceProvider::ReadFromUrl)
       .WithArgs(std::move(uri), range,
-                base::BindPostTask(
-                    media_task_runner_,
-                    base::BindOnce(&HlsManifestDemuxerEngine::ReadDataSource,
-                                   weak_factory_.GetWeakPtr(), std::move(cb))));
+                base::BindPostTaskToCurrentDefault(std::move(cb)));
+}
+
+void HlsManifestDemuxerEngine::ReadStream(
+    std::unique_ptr<HlsDataSourceStream> stream,
+    HlsDataSourceProvider::ReadCb cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  if (!data_source_provider_) {
+    std::move(cb).Run(HlsDataSourceProvider::ReadStatus::Codes::kAborted);
+    return;
+  }
+  data_source_provider_
+      .AsyncCall(&HlsDataSourceProvider::ReadFromExistingStream)
+      .WithArgs(std::move(stream),
+                base::BindPostTaskToCurrentDefault(std::move(cb)));
 }
 
 void HlsManifestDemuxerEngine::ParsePlaylist(
     PipelineStatusCallback parse_complete_cb,
     PlaylistParseInfo parse_info,
-    HlsDataSourceStreamManager::ReadResult m_stream) {
+    HlsDataSourceProvider::ReadResult m_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!m_stream.has_value()) {
     return Abort(std::move(m_stream).error().AddHere());
@@ -433,12 +365,12 @@ void HlsManifestDemuxerEngine::ParsePlaylist(
   auto stream = std::move(m_stream).value();
 
   // A four hour movie manifest is ~100Kb.
-  if (stream->BytesInBuffer() > 102400) {
+  if (stream->buffer_size() > 102400) {
     MEDIA_LOG(WARNING, media_log_)
-        << "Large Manifest detected: " << stream->BytesInBuffer();
+        << "Large Manifest detected: " << stream->buffer_size();
   }
 
-  auto m_info = hls::Playlist::IdentifyPlaylist(stream->AsStringPiece());
+  auto m_info = hls::Playlist::IdentifyPlaylist(stream->AsString());
   if (!m_info.has_value()) {
     return Abort(std::move(m_info).error().AddHere());
   }
@@ -449,7 +381,7 @@ void HlsManifestDemuxerEngine::ParsePlaylist(
         return Abort(HlsDemuxerStatus::Codes::kRecursiveMultivariantPlaylists);
       }
       auto playlist = hls::MultivariantPlaylist::Parse(
-          stream->AsStringPiece(), parse_info.uri, (*m_info).version);
+          stream->AsString(), parse_info.uri, (*m_info).version);
       if (!playlist.has_value()) {
         return Abort(std::move(playlist).error().AddHere());
       }
@@ -458,7 +390,7 @@ void HlsManifestDemuxerEngine::ParsePlaylist(
     }
     case hls::Playlist::Kind::kMediaPlaylist: {
       auto playlist = ParseMediaPlaylistFromStringSource(
-          stream->AsStringPiece(), parse_info.uri, (*m_info).version);
+          stream->AsString(), parse_info.uri, (*m_info).version);
       if (!playlist.has_value()) {
         return Abort(std::move(playlist).error().AddHere());
       }
@@ -673,7 +605,7 @@ void HlsManifestDemuxerEngine::DetermineStreamContainerAndCodecs(
 
 void HlsManifestDemuxerEngine::PeekFirstSegment(
     HlsDemuxerStatusCb<HlsCodecDetector::ContainerAndCodecs> cb,
-    HlsDataSourceStreamManager::ReadResult maybe_stream) {
+    HlsDataSourceProvider::ReadResult maybe_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!maybe_stream.has_value()) {
     std::move(cb).Run(HlsDemuxerStatus::Codes::kInvalidSegmentUri);

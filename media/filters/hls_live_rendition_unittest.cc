@@ -109,10 +109,9 @@ class HlsLiveRenditionUnittest : public testing::Test {
     EXPECT_CALL(*mock_hrh_, ReadFromUrl(GURL(uri), batching, _, _))
         .WillOnce([content = std::move(content), host = mock_hrh_.get()](
                       GURL url, bool, absl::optional<hls::types::ByteRange>,
-                      HlsDataSourceStreamManager::ReadCb cb) {
-          auto ds = std::make_unique<StringHlsDataSource>(content);
-          auto stream = std::make_unique<HlsDataSourceStream>(std::move(ds));
-          host->ReadStream(std::move(stream), std::move(cb));
+                      HlsDataSourceProvider::ReadCb cb) {
+          auto stream = StringHlsDataSourceStreamFactory::CreateStream(content);
+          std::move(cb).Run(std::move(stream));
         });
   }
 

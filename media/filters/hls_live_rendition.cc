@@ -193,10 +193,9 @@ void HlsLiveRendition::FetchMoreDataFromPendingStream(base::OnceClosure cb) {
                                         std::move(cb), base::TimeTicks::Now()));
 }
 
-void HlsLiveRendition::OnSegmentData(
-    base::OnceClosure cb,
-    base::TimeTicks net_req_start,
-    HlsDataSourceStreamManager::ReadResult result) {
+void HlsLiveRendition::OnSegmentData(base::OnceClosure cb,
+                                     base::TimeTicks net_req_start,
+                                     HlsDataSourceProvider::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_stopped_for_shutdown_) {
@@ -216,19 +215,19 @@ void HlsLiveRendition::OnSegmentData(
   auto stream = std::move(result).value();
 
   if (!engine_host_->AppendAndParseData(role_, base::TimeDelta(), parse_end,
-                                        &parse_offset_, stream->AsRawData(),
-                                        stream->BytesInBuffer())) {
+                                        &parse_offset_, stream->raw_data(),
+                                        stream->buffer_size())) {
     engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
     return;
   }
 
   auto fetch_duration = base::TimeTicks::Now() - net_req_start;
   // Adjust time based on a standard 4k download chunk.
-  auto scaled = (fetch_duration * stream->BytesInBuffer()) / 4096;
+  auto scaled = (fetch_duration * stream->buffer_size()) / 4096;
   fetch_time_.AddSample(scaled);
 
   if (stream->CanReadMore()) {
-    stream->Flush();
+    stream->Clear();
     partial_stream_ = std::move(stream);
   }
 
@@ -284,7 +283,7 @@ void HlsLiveRendition::OnManifestUpdates(
     base::TimeTicks download_start_time,
     base::TimeDelta delay_time,
     ManifestDemuxer::DelayCallback cb,
-    HlsDataSourceStreamManager::ReadResult result) {
+    HlsDataSourceProvider::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_stopped_for_shutdown_) {
@@ -308,7 +307,7 @@ void HlsLiveRendition::OnManifestUpdates(
                        delay_time, std::move(cb)));
     return;
   }
-  auto info = hls::Playlist::IdentifyPlaylist(stream->AsStringPiece());
+  auto info = hls::Playlist::IdentifyPlaylist(stream->AsString());
   if (!info.has_value()) {
     engine_host_->OnError(
         {DEMUXER_ERROR_COULD_NOT_PARSE, std::move(info).error()});
@@ -316,7 +315,7 @@ void HlsLiveRendition::OnManifestUpdates(
   }
 
   auto playlist = rendition_host_->ParseMediaPlaylistFromStringSource(
-      stream->AsStringPiece(), media_playlist_uri_, (*info).version);
+      stream->AsString(), media_playlist_uri_, (*info).version);
   if (!playlist.has_value()) {
     engine_host_->OnError(
         {DEMUXER_ERROR_COULD_NOT_PARSE, std::move(playlist).error()});

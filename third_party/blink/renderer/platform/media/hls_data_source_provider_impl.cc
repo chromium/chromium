@@ -14,205 +14,170 @@
 
 namespace blink {
 
-class HlsDataSourceImpl final : public media::HlsDataSource {
- public:
-  HlsDataSourceImpl(
-      base::WeakPtr<HlsDataSourceProviderImpl> provider,
-      std::unique_ptr<MultiBufferDataSource> mb_data_source,
-      absl::optional<media::hls::types::ByteRange> range,
-      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> media_task_runner)
-      : media::HlsDataSource(DetermineSize(*mb_data_source, range)),
-        provider_(std::move(provider)),
-        mb_data_source_(std::move(mb_data_source)),
-        range_(range),
-        main_task_runner_(std::move(main_task_runner)),
-        media_task_runner_(std::move(media_task_runner)) {
-    DCHECK(mb_data_source_);
-    DCHECK(main_task_runner_);
-    DCHECK(media_task_runner_);
-    DCHECK(main_task_runner_->BelongsToCurrentThread());
-  }
-  ~HlsDataSourceImpl() override {
-    DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+namespace {
 
-    // Notify the provider that we've been destroyed so it can remove the
-    // `MultiBufferDataSource` from its active set.
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HlsDataSourceProviderImpl::NotifyDataSourceDestroyed,
-                       std::move(provider_), base::PassKey<HlsDataSourceImpl>(),
-                       std::move(mb_data_source_)));
-  }
+// A small-ish size that it should probably be able to get most manifests in
+// a single chunk. Chosen somewhat arbitrarily otherwise.
+constexpr size_t kDefaultReadSize = 1024 * 16;
 
-  void Read(uint64_t pos,
-            size_t size,
-            uint8_t* buffer,
-            ReadCb callback) override {
-    DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-
-    if (range_.has_value()) {
-      if (pos >= range_->GetLength()) {
-        std::move(callback).Run(HlsDataSource::ReadStatusCodes::kError);
-        return;
-      }
-      size = std::min(size, static_cast<size_t>(range_->GetLength() - pos));
-      pos += range_->GetOffset();
+void OnMultiBufferReadComplete(
+    std::unique_ptr<media::HlsDataSourceStream> stream,
+    HlsDataSourceProviderImpl::ReadCb callback,
+    int requested_read_size,
+    int read_size) {
+  switch (read_size) {
+    case media::DataSource::kReadError: {
+      stream->UnlockStreamPostWrite(0, true);
+      return std::move(callback).Run(
+          media::HlsDataSourceProvider::ReadStatus::Codes::kError);
     }
-
-    // Since `media::DataSource::Read` takes an int64_t for `pos`, need to
-    // ensure we're within that.
-    DCHECK(pos < static_cast<uint64_t>(std::numeric_limits<int64_t>::max()));
-
-    // data_source_->Read takes an integer size parameter, so must limit to
-    // that.
-    auto read_size = static_cast<int>(
-        std::min<size_t>(size, std::numeric_limits<int>::max()));
-
-    constexpr auto cb_adapter = [](ReadCb callback, int status) {
-      if (status == media::DataSource::kReadError) {
-        std::move(callback).Run(ReadStatusCodes::kError);
-      } else if (status == media::DataSource::kAborted) {
-        std::move(callback).Run(ReadStatusCodes::kAborted);
-      } else {
-        std::move(callback).Run(static_cast<size_t>(status));
-      }
-    };
-
-    mb_data_source_->Read(
-        pos, read_size, buffer,
-        base::BindPostTask(media_task_runner_,
-                           base::BindOnce(cb_adapter, std::move(callback))));
-  }
-
-  base::StringPiece GetMimeType() const override {
-    return mb_data_source_->GetMimeType();
-  }
-
-  void Stop() override {
-    mb_data_source_->Abort();
-    mb_data_source_->Stop();
-  }
-
- private:
-  static absl::optional<size_t> DetermineSize(
-      MultiBufferDataSource& source,
-      absl::optional<media::hls::types::ByteRange> range) {
-    // If we have a byterange from the manifest, go with that over
-    // content-length
-    if (range.has_value()) {
-      return range->GetLength();
+    case media::DataSource::kAborted: {
+      stream->UnlockStreamPostWrite(0, true);
+      return std::move(callback).Run(
+          media::HlsDataSourceProvider::ReadStatus::Codes::kAborted);
     }
-
-    int64_t size = 0;
-    if (source.GetSize(&size)) {
-      return base::checked_cast<size_t>(size);
+    default: {
+      CHECK_GT(read_size, 0);
+      stream->UnlockStreamPostWrite(read_size,
+                                    requested_read_size != read_size);
+      std::move(callback).Run(std::move(stream));
     }
-
-    return absl::nullopt;
   }
+}
 
-  base::WeakPtr<HlsDataSourceProviderImpl> provider_;
-  std::unique_ptr<MultiBufferDataSource> mb_data_source_;
-  absl::optional<media::hls::types::ByteRange> range_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
-};
+}  // namespace
 
-HlsDataSourceProviderImpl::HlsDataSourceProviderImpl(
+MultiBufferDataSourceFactory::~MultiBufferDataSourceFactory() = default;
+HlsDataSourceProviderImpl::DataSourceFactory::~DataSourceFactory() = default;
+
+MultiBufferDataSourceFactory::MultiBufferDataSourceFactory(
     media::MediaLog* media_log,
     UrlIndex* url_index,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
-    const base::TickClock* tick_clock)
+    const base::TickClock* tick_clock,
+    UrlData::CorsMode cors_mode,
+    UrlIndex::CacheMode cache_mode)
     : media_log_(media_log->Clone()),
       url_index_(url_index),
       main_task_runner_(std::move(main_task_runner)),
-      media_task_runner_(std::move(media_task_runner)) {
+      cors_mode_(cors_mode),
+      cache_mode_(cache_mode) {
   buffered_data_source_host_ = std::make_unique<BufferedDataSourceHostImpl>(
-      base::BindRepeating(&Self::NotifyDataSourceProgress,
-                          base::Unretained(this)),
-      tick_clock);
+      base::DoNothing(), tick_clock);
 }
+
+std::unique_ptr<media::CrossOriginDataSource>
+MultiBufferDataSourceFactory::CreateDataSource(GURL uri) {
+  return std::make_unique<MultiBufferDataSource>(
+      main_task_runner_, url_index_->GetByUrl(uri, cors_mode_, cache_mode_),
+      media_log_.get(), buffered_data_source_host_.get(),
+      base::BindRepeating(
+          [](const std::string& url, bool is_downloading) {
+            DVLOG(1) << __func__ << "(" << url << ", " << is_downloading << ")";
+          },
+          uri.spec()));
+}
+
+HlsDataSourceProviderImpl::HlsDataSourceProviderImpl(
+    std::unique_ptr<DataSourceFactory> factory)
+    : data_source_factory_(std::move(factory)) {}
 
 HlsDataSourceProviderImpl::~HlsDataSourceProviderImpl() {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  // MultiBufferDataSource relies on a weak pointer reference to
-  // `buffered_data_source_host_`, so any instance of MBDS _MUST_ be aborted
-  // before `buffered_data_source_host_` is deleted.
-  for (auto* const data_source : GetActiveDataSources()) {
-    data_source->Abort();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& [id, source] : data_source_map_) {
+    source->Abort();
+    source->Stop();
   }
+
+  // The map _must_ be cleared after aborting all sources and before the factory
+  // is reset.
+  data_source_map_.clear();
+  data_source_factory_.reset();
 }
 
-void HlsDataSourceProviderImpl::RequestDataSourceInternal(
-    std::unique_ptr<MultiBufferDataSource> data_source,
-    RequestCb callback) {
-  auto* mb_data_source_ptr = data_source.get();
-  mb_data_source_ptr->Initialize(base::BindOnce(
-      &Self::DataSourceInitialized, weak_factory_.GetWeakPtr(),
-      std::move(data_source), absl::nullopt, std::move(callback)));
-}
-
-void HlsDataSourceProviderImpl::RequestDataSource(
+void HlsDataSourceProviderImpl::ReadFromUrl(
     GURL uri,
     absl::optional<media::hls::types::ByteRange> range,
-    RequestCb callback) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-
-  // TODO(https://crbug.com/1379488): Find a way to force
-  // `MultiBufferDataSource` to limit its requests to within `range`.
-  auto url_data =
-      url_index_->GetByUrl(uri, UrlData::CORS_UNSPECIFIED, UrlIndex::kNormal);
-  auto mb_data_source = std::make_unique<MultiBufferDataSource>(
-      main_task_runner_, std::move(url_data), media_log_.get(),
-      buffered_data_source_host_.get(),
-      base::BindRepeating(&Self::NotifyDownloading, weak_factory_.GetWeakPtr(),
-                          uri.spec()));
-  RequestDataSourceInternal(std::move(mb_data_source), std::move(callback));
+    ReadCb callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto stream_id = stream_id_generator_.GenerateNextId();
+  auto it = data_source_map_.try_emplace(
+      stream_id, data_source_factory_->CreateDataSource(std::move(uri)));
+  it.first->second->Initialize(
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &HlsDataSourceProviderImpl::DataSourceInitialized,
+          weak_factory_.GetWeakPtr(), stream_id, range, std::move(callback))));
 }
 
-const std::deque<MultiBufferDataSource*>&
-HlsDataSourceProviderImpl::GetActiveDataSources() {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  return active_data_sources_;
-}
+void HlsDataSourceProviderImpl::ReadFromExistingStream(
+    std::unique_ptr<media::HlsDataSourceStream> stream,
+    ReadCb callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(stream);
 
-void HlsDataSourceProviderImpl::NotifyDataSourceDestroyed(
-    base::PassKey<HlsDataSourceImpl>,
-    std::unique_ptr<MultiBufferDataSource> data_source) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  auto iter = base::ranges::find(active_data_sources_, data_source.get());
-  DCHECK(iter != active_data_sources_.end());
-  active_data_sources_.erase(iter);
-}
+  auto it = data_source_map_.find(stream->stream_id());
+  if (it == data_source_map_.end()) {
+    std::move(callback).Run(
+        media::HlsDataSourceProvider::ReadStatus::Codes::kError);
+    return;
+  }
 
-void HlsDataSourceProviderImpl::NotifyDataSourceProgress() {
-  DVLOG(1) << __func__;
-}
+  if (!stream->CanReadMore()) {
+    std::move(callback).Run(std::move(stream));
+    return;
+  }
 
-void HlsDataSourceProviderImpl::NotifyDownloading(const std::string& uri,
-                                                  bool is_downloading) {
-  DVLOG(1) << __func__ << "(" << uri << ", " << is_downloading << ")";
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  size_t read_size = kDefaultReadSize;
+  auto pos = stream->read_position();
+  auto max_position = stream->max_read_position();
+  if (max_position.has_value()) {
+    // If the read head is greater than max, `CanReadMore` should have returned
+    // false.
+    CHECK_GT(max_position.value(), pos);
+    read_size = std::min(read_size, max_position.value() - pos);
+  }
+
+  auto int_read_size = base::checked_cast<int>(read_size);
+  auto* buffer_data = stream->LockStreamForWriting(int_read_size);
+  it->second->Read(base::checked_cast<int64_t>(pos), int_read_size, buffer_data,
+                   base::BindOnce(&OnMultiBufferReadComplete, std::move(stream),
+                                  std::move(callback), int_read_size));
 }
 
 void HlsDataSourceProviderImpl::DataSourceInitialized(
-    std::unique_ptr<MultiBufferDataSource> data_source,
+    media::HlsDataSourceStream::StreamId stream_id,
     absl::optional<media::hls::types::ByteRange> range,
-    RequestCb callback,
+    ReadCb callback,
     bool success) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-
-  std::unique_ptr<HlsDataSourceImpl> hls_data_source;
-  if (success) {
-    active_data_sources_.push_back(data_source.get());
-    hls_data_source = std::make_unique<HlsDataSourceImpl>(
-        weak_factory_.GetWeakPtr(), std::move(data_source), range,
-        main_task_runner_, media_task_runner_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!success) {
+    auto it = data_source_map_.find(stream_id);
+    if (it != data_source_map_.end()) {
+      data_source_map_.erase(it);
+    }
+    std::move(callback).Run(
+        media::HlsDataSourceProvider::ReadStatus::Codes::kAborted);
+    return;
   }
 
-  std::move(callback).Run(std::move(hls_data_source));
+  auto stream = std::make_unique<media::HlsDataSourceStream>(
+      stream_id,
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&HlsDataSourceProviderImpl::OnStreamReleased,
+                         weak_factory_.GetWeakPtr(), stream_id)),
+      range);
+  ReadFromExistingStream(std::move(stream), std::move(callback));
+}
+
+void HlsDataSourceProviderImpl::OnStreamReleased(
+    media::HlsDataSourceStream::StreamId stream_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = data_source_map_.find(stream_id);
+  if (it != data_source_map_.end()) {
+    it->second->Abort();
+    it->second->Stop();
+    data_source_map_.erase(it);
+  }
 }
 
 }  // namespace blink

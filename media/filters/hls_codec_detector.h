@@ -41,7 +41,7 @@ class MEDIA_EXPORT HlsCodecDetector {
 
  private:
   void OnStreamFetched(bool container_only,
-                       HlsDataSourceStreamManager::ReadResult stream);
+                       HlsDataSourceProvider::ReadResult stream);
   void DetermineContainer(bool container_only,
                           const uint8_t* data,
                           size_t size);

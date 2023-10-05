@@ -43,7 +43,7 @@ void HlsCodecDetector::DetermineContainerAndCodec(
 
 void HlsCodecDetector::OnStreamFetched(
     bool container_only,
-    HlsDataSourceStreamManager::ReadResult maybe_stream) {
+    HlsDataSourceProvider::ReadResult maybe_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(callback_);
 
@@ -55,7 +55,7 @@ void HlsCodecDetector::OnStreamFetched(
   }
 
   auto stream = std::move(maybe_stream).value();
-  auto data_size = stream->BytesInBuffer();
+  auto data_size = stream->buffer_size();
   if (!data_size) {
     // If no data came back, then the data source has been exhausted and we
     // have failed to determine a codec.
@@ -68,7 +68,7 @@ void HlsCodecDetector::OnStreamFetched(
   // the container being used, then it will call `callback_` and not set
   // `parser_`.
   if (!parser_) {
-    DetermineContainer(container_only, stream->AsRawData(), data_size);
+    DetermineContainer(container_only, stream->raw_data(), data_size);
   }
 
   if (!parser_) {
@@ -91,7 +91,7 @@ void HlsCodecDetector::OnStreamFetched(
     return;
   }
 
-  if (!parser_->AppendToParseBuffer(stream->AsRawData(), data_size)) {
+  if (!parser_->AppendToParseBuffer(stream->raw_data(), data_size)) {
     std::move(callback_).Run(HlsDemuxerStatus::Codes::kInvalidBitstream);
     return;
   }
@@ -123,7 +123,7 @@ void HlsCodecDetector::OnStreamFetched(
   // HLS chunks are usually not too large, and playback will need to read this
   // chunk initially anyway, so fetching the whole thing isn't going to be an
   // issue.
-  stream->Flush();
+  stream->Clear();
   rendition_host_->ReadStream(
       std::move(stream),
       base::BindOnce(&HlsCodecDetector::OnStreamFetched,

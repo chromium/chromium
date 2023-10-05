@@ -119,15 +119,6 @@ MATCHER_P2(CloseTo,
   return (arg - Target <= Radius) || (Target - arg <= Radius);
 }
 
-class MockHlsDataSourceProvider : public HlsDataSourceProvider {
- public:
-  MOCK_METHOD(std::unique_ptr<HlsDataSource>, GetDataSource, (std::string));
-  void RequestDataSource(GURL url,
-                         absl::optional<hls::types::ByteRange> br,
-                         RequestCb cb) override {
-    std::move(cb).Run(GetDataSource(url.spec()));
-  }
-};
 
 class FakeHlsDataSourceProvider : public HlsDataSourceProvider {
  private:
@@ -136,24 +127,17 @@ class FakeHlsDataSourceProvider : public HlsDataSourceProvider {
  public:
   FakeHlsDataSourceProvider(HlsDataSourceProvider* mock) : mock_(mock) {}
 
-  void RequestDataSource(GURL url,
-                         absl::optional<hls::types::ByteRange> range,
-                         RequestCb request) override {
-    mock_->RequestDataSource(url, range, std::move(request));
+  void ReadFromUrl(GURL url,
+                   absl::optional<hls::types::ByteRange> range,
+                   HlsDataSourceProvider::ReadCb request) override {
+    mock_->ReadFromUrl(url, range, std::move(request));
   }
-};
 
-class MockHlsDataSource : public HlsDataSource {
- public:
-  MockHlsDataSource() : HlsDataSource(0) {}
-  ~MockHlsDataSource() override = default;
-  MOCK_METHOD(
-      void,
-      Read,
-      (uint64_t pos, size_t size, uint8_t* buf, HlsDataSource::ReadCb cb),
-      (override));
-  MOCK_METHOD(base::StringPiece, GetMimeType, (), (const, override));
-  MOCK_METHOD(void, Stop, (), (override));
+  void ReadFromExistingStream(std::unique_ptr<HlsDataSourceStream> stream,
+                              HlsDataSourceProvider::ReadCb cb) override {
+    CHECK(!stream->CanReadMore());
+    std::move(cb).Run(std::move(stream));
+  }
 };
 
 class HlsManifestDemuxerEngineTest : public testing::Test {
@@ -168,9 +152,9 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
 
   template <typename T>
   void BindUrlToDataSource(std::string url, std::string value) {
-    EXPECT_CALL(*mock_dsp_, GetDataSource(url))
+    EXPECT_CALL(*mock_dsp_, ReadFromUrl(GURL(url), _, _))
         .Times(1)
-        .WillOnce(Return(ByMove(std::make_unique<T>(value))));
+        .WillOnce(RunOnceCallback<2>(T::CreateStream(value)));
   }
 
  public:
@@ -181,6 +165,8 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
     ON_CALL(*mock_mdeh_, AddRole(_, _, _)).WillByDefault(Return(true));
     ON_CALL(*mock_mdeh_, GetBufferedRanges(_))
         .WillByDefault(Return(Ranges<base::TimeDelta>()));
+
+    EXPECT_CALL(*mock_dsp_, ReadFromExistingStream(_, _)).Times(0);
 
     base::SequenceBound<FakeHlsDataSourceProvider> dsp(
         task_environment_.GetMainThreadTaskRunner(), mock_dsp_.get());
@@ -204,7 +190,7 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
 };
 
 TEST_F(HlsManifestDemuxerEngineTest, TestInitFailure) {
-  BindUrlToDataSource<StringHlsDataSource>(
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kInvalidMediaPlaylist);
   EXPECT_CALL(*mock_mdeh_,
               OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
@@ -220,10 +206,10 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSimpleConfigAddsOnePrimaryRole) {
   EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"), "video/mp2t",
                                    "avc1.420000, mp4a.40.05"));
   EXPECT_CALL(*mock_mdeh_, RemoveRole(base::StringPiece("primary")));
-  BindUrlToDataSource<StringHlsDataSource>(
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kSimpleMediaPlaylist);
-  BindUrlToDataSource<FileHlsDataSource>("http://media.example.com/first.ts",
-                                         "bear-1280x720-hls.ts");
+  BindUrlToDataSource<FileHlsDataSourceStreamFactory>(
+      "http://media.example.com/first.ts", "bear-1280x720-hls.ts");
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -235,10 +221,10 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSimpleLiveConfigAddsOnePrimaryRole) {
   EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"), "video/mp2t",
                                    "avc1.420000, mp4a.40.05"));
   EXPECT_CALL(*mock_mdeh_, RemoveRole(base::StringPiece("primary")));
-  BindUrlToDataSource<StringHlsDataSource>(
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kSimpleLiveMediaPlaylist);
-  BindUrlToDataSource<FileHlsDataSource>("http://media.example.com/first.ts",
-                                         "bear-1280x720-hls.ts");
+  BindUrlToDataSource<FileHlsDataSourceStreamFactory>(
+      "http://media.example.com/first.ts", "bear-1280x720-hls.ts");
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -250,12 +236,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistNoAlternates) {
   EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
   EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"), "video/mp2t",
                                    "avc1.420000, mp4a.40.05"));
-  BindUrlToDataSource<StringHlsDataSource>(
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist);
-  BindUrlToDataSource<StringHlsDataSource>("http://example.com/hi.m3u8",
-                                           kSimpleMediaPlaylist);
-  BindUrlToDataSource<FileHlsDataSource>("http://media.example.com/first.ts",
-                                         "bear-1280x720-hls.ts");
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
+  BindUrlToDataSource<FileHlsDataSourceStreamFactory>(
+      "http://media.example.com/first.ts", "bear-1280x720-hls.ts");
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -277,16 +263,16 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithAlternates) {
   //  - only.ts: check the container/codecs for the audio override rendition
   //  - video-only.m3u8: primary rendition
   //  - first.ts: check container/codecs for the primary rendition
-  BindUrlToDataSource<StringHlsDataSource>(
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kMultivariantPlaylistWithAlts);
-  BindUrlToDataSource<StringHlsDataSource>(
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/eng-audio.m3u8", kSingleInfoMediaPlaylist);
-  BindUrlToDataSource<FileHlsDataSource>("http://media.example.com/only.ts",
-                                         "bear-1280x720-aac_he.ts");
-  BindUrlToDataSource<StringHlsDataSource>(
+  BindUrlToDataSource<FileHlsDataSourceStreamFactory>(
+      "http://media.example.com/only.ts", "bear-1280x720-aac_he.ts");
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/hi/video-only.m3u8", kSimpleMediaPlaylist);
-  BindUrlToDataSource<FileHlsDataSource>("http://media.example.com/first.ts",
-                                         "bear-1280x720-hls.ts");
+  BindUrlToDataSource<FileHlsDataSourceStreamFactory>(
+      "http://media.example.com/first.ts", "bear-1280x720-hls.ts");
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -295,7 +281,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithAlternates) {
 TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantWithNoSupportedCodecs) {
   EXPECT_CALL(*mock_mdeh_, AddRole(_, _, _)).Times(0);
   EXPECT_CALL(*mock_mdeh_, SetSequenceMode(_, _)).Times(0);
-  BindUrlToDataSource<StringHlsDataSource>(
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kUnsupportedCodecs);
   EXPECT_CALL(*mock_mdeh_,
               OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
@@ -361,73 +347,6 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultiRenditionCheckState) {
   engine_->OnTimeUpdate(
       base::Seconds(0), 0.0, base::BindOnce([](base::TimeDelta r) {
         EXPECT_THAT(r, CloseTo(base::Seconds(7), base::Milliseconds(1)));
-      }));
-}
-
-TEST_F(HlsManifestDemuxerEngineTest, TestAbortMidDownload) {
-  auto mock_data_source = std::make_unique<StrictMock<MockHlsDataSource>>();
-  auto* mock_ds_ptr = mock_data_source.get();
-  EXPECT_CALL(*mock_dsp_,
-              GetDataSource("http://media.example.com/manifest.m3u8"))
-      .Times(1)
-      .WillOnce(Return(ByMove(std::move(mock_data_source))));
-
-  HlsDataSource::ReadCb read_cb;
-  EXPECT_CALL(*mock_ds_ptr, Read(_, _, _, _))
-      .WillRepeatedly(
-          [&read_cb](uint64_t, size_t, uint8_t*, HlsDataSource::ReadCb cb) {
-            read_cb = std::move(cb);
-          });
-
-  InitializeEngine();
-  task_environment_.RunUntilIdle();
-  CHECK(read_cb);
-
-  EXPECT_CALL(*mock_ds_ptr, Stop());
-  engine_->AbortPendingReads();
-  task_environment_.RunUntilIdle();
-
-  // Return some random size.
-  EXPECT_CALL(*mock_mdeh_,
-              OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_OPEN)));
-  std::move(read_cb).Run(55);
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(HlsManifestDemuxerEngineTest, TestStop) {
-  auto mock_data_source = std::make_unique<StrictMock<MockHlsDataSource>>();
-  auto* mock_ds_ptr = mock_data_source.get();
-  EXPECT_CALL(*mock_dsp_,
-              GetDataSource("http://media.example.com/manifest.m3u8"))
-      .Times(1)
-      .WillOnce(Return(ByMove(std::move(mock_data_source))));
-
-  HlsDataSource::ReadCb read_cb;
-  EXPECT_CALL(*mock_ds_ptr, Read(_, _, _, _))
-      .WillRepeatedly(
-          [&read_cb](uint64_t, size_t, uint8_t*, HlsDataSource::ReadCb cb) {
-            read_cb = std::move(cb);
-          });
-
-  InitializeEngine();
-  task_environment_.RunUntilIdle();
-  CHECK(read_cb);
-
-  auto rendition = std::make_unique<MockHlsRendition>();
-  EXPECT_CALL(*rendition, GetDuration()).WillOnce(Return(absl::nullopt));
-  auto* rend = rendition.get();
-  engine_->AddRenditionForTesting(std::move(rendition));
-
-  EXPECT_CALL(*mock_ds_ptr, Stop());
-  EXPECT_CALL(*rend, Stop());
-  engine_->Stop();
-  task_environment_.RunUntilIdle();
-
-  engine_->ReadFromUrl(
-      GURL("https://example.com"), true, absl::nullopt,
-      base::BindOnce([](HlsDataSourceStreamManager::ReadResult result) {
-        ASSERT_EQ(std::move(result).error(),
-                  HlsDataSource::ReadStatus::Codes::kAborted);
       }));
 }
 

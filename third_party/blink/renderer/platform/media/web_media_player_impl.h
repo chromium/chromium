@@ -807,6 +807,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   bool overlay_enabled_ = false;
 
+  // Cors and Caching flags set during `Load` and used while creating demuxers.
+  CorsMode cors_mode_ = kCorsModeUnspecified;
+  bool is_cache_disabled_ = false;
+
   // Whether the current decoder requires a restart on overlay transitions.
   bool decoder_requires_restart_for_overlay_ = false;
 

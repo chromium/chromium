@@ -22,8 +22,10 @@ class ManifestDemuxerEngineHost;
 
 // Interface for `HlsRendition` to make data requests to avoid having to own or
 // create data sources.
-class MEDIA_EXPORT HlsRenditionHost : public HlsDataSourceStreamManager {
+class MEDIA_EXPORT HlsRenditionHost {
  public:
+  virtual ~HlsRenditionHost() = 0;
+
   // Lets a rendition read URL data from `uri`. Usually this will be a chunked
   // read, but can be configured with `read_chunked`, since live video needs to
   // download full manifests. Additionally, some manifests can specify a custom
@@ -31,7 +33,11 @@ class MEDIA_EXPORT HlsRenditionHost : public HlsDataSourceStreamManager {
   virtual void ReadFromUrl(GURL uri,
                            bool read_chunked,
                            absl::optional<hls::types::ByteRange> range,
-                           HlsDataSourceStreamManager::ReadCb cb) = 0;
+                           HlsDataSourceProvider::ReadCb cb) = 0;
+
+  // Continue reading from a partially read stream.
+  virtual void ReadStream(std::unique_ptr<HlsDataSourceStream> stream,
+                          HlsDataSourceProvider::ReadCb cb) = 0;
 
   virtual hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>
   ParseMediaPlaylistFromStringSource(base::StringPiece source,

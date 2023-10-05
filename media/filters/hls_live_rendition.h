@@ -40,7 +40,7 @@ class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
   void FetchMoreDataFromPendingStream(base::OnceClosure cb);
   void OnSegmentData(base::OnceClosure cb,
                      base::TimeTicks net_req_start,
-                     HlsDataSourceStreamManager::ReadResult result);
+                     HlsDataSourceProvider::ReadResult result);
 
   // Manifest fetching.
   void AppendSegments(hls::MediaPlaylist* playlist);
@@ -51,7 +51,7 @@ class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
   void OnManifestUpdates(base::TimeTicks download_start_time,
                          base::TimeDelta delay_time,
                          ManifestDemuxer::DelayCallback cb,
-                         HlsDataSourceStreamManager::ReadResult result);
+                         HlsDataSourceProvider::ReadResult result);
   void ClearOldData(base::TimeDelta time);
   void ResetForPause();
   void ContinuePartialFetching(base::OnceClosure cb);
