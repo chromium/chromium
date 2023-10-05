@@ -538,8 +538,8 @@
   },
   {
     "name": "autofill-enable-card-art-image",
-    "owners": [ "vishwasuppoor", "siyua" ],
-    "expiry_milestone": 120
+    "owners": [ "vishwasuppoor", "siyua", "alexandertekle" ],
+    "expiry_milestone": 125
   },
   {
     "name": "autofill-enable-card-art-server-side-stretching",
@@ -548,8 +548,8 @@
   },
   {
     "name": "autofill-enable-card-product-name",
-    "owners": [ "vishwasuppoor", "siyua" ],
-    "expiry_milestone": 120
+    "owners": [ "vishwasuppoor", "siyua", "alexandertekle" ],
+    "expiry_milestone": 125
   },
   {
     "name": "autofill-enable-cvc-storage-and-filling",
@@ -594,7 +594,7 @@
   {
     "name": "autofill-enable-new-card-art-and-network-images",
     "owners": ["alexandertekle@google.com", "vishwasuppoor@google.com"],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "autofill-enable-new-save-card-bubble-ui",
