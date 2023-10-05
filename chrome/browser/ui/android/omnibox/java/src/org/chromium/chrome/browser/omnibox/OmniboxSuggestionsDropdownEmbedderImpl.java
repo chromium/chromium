@@ -215,9 +215,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
         int mKeyboardHeight = mDeferredIMEWindowInsetApplicationCallback != null
                 ? mDeferredIMEWindowInsetApplicationCallback.getCurrentKeyboardHeight()
                 : 0;
-        int windowSpace =
-                DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp) - mKeyboardHeight;
-        int height = Math.min(windowSpace, contentView.getMeasuredHeight()) - top;
+        int height = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp) - top
+                - mKeyboardHeight;
 
         // TODO(pnoland@, https://crbug.com/1416985): avoid pushing changes that are identical to
         // the previous alignment value.
