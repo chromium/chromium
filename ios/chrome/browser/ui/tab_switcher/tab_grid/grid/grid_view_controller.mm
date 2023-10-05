@@ -79,15 +79,6 @@ NSString* const kOpenTabsSectionIdentifier = @"OpenTabsSectionIdentifier";
 NSString* const kSuggestedActionsSectionIdentifier =
     @"SuggestedActionsSectionIdentifier";
 NSString* const kCellIdentifier = @"GridCellIdentifier";
-// TODO(crbug.com/1462907): Remove kSuggestedActionsCellIdentifier once the
-// diffable data source refactor is validated by testers.
-NSString* const kSuggestedActionsCellIdentifier =
-    @"SuggestedActionsCellIdentifier";
-NSString* const kGridHeaderIdentifier = @"GridHeaderIdentifier";
-NSString* const kInactiveTabsButtonHeaderIdentifier =
-    @"InactiveTabsButtonHeaderIdentifier";
-NSString* const kInactiveTabsPreambleHeaderIdentifier =
-    @"InactiveTabsPreambleHeaderIdentifier";
 
 constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
     base::Seconds(0.3);
@@ -123,10 +114,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
 @interface GridViewController () <GridCellDelegate,
                                   SuggestedActionsViewControllerDelegate,
-                                  // TODO(crbug.com/1462907): Remove once the
-                                  // diffable data source refactor is validated
-                                  // by testers.
-                                  UICollectionViewDataSource,
                                   UICollectionViewDelegate,
                                   UICollectionViewDelegateFlowLayout,
                                   UICollectionViewDragDelegate,
@@ -253,47 +240,32 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   // If this stays as the default `YES`, then cells aren't highlighted
   // immediately on touch, but after a short delay.
   collectionView.delaysContentTouches = NO;
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    [self createRegistrations];
 
-    __weak __typeof(self) weakSelf = self;
-    self.diffableDataSource = [[UICollectionViewDiffableDataSource alloc]
-        initWithCollectionView:collectionView
-                  cellProvider:^UICollectionViewCell*(
-                      UICollectionView* innerCollectionView,
-                      NSIndexPath* indexPath,
-                      GridItemIdentifier* itemIdentifier) {
-                    return [weakSelf cellForItemAtIndexPath:indexPath
-                                             itemIdentifier:itemIdentifier];
-                  }];
-    self.diffableDataSource.supplementaryViewProvider =
-        ^UICollectionReusableView*(UICollectionView* innerCollectionView,
-                                   NSString* elementKind,
-                                   NSIndexPath* indexPath) {
-      return [weakSelf headerForSectionAtIndexPath:indexPath];
-    };
-    collectionView.dataSource = self.diffableDataSource;
+  [self createRegistrations];
 
-    // UICollectionViewDropPlaceholder uses a GridCell and needs the class to be
-    // registered.
-    [collectionView registerClass:[GridCell class]
-        forCellWithReuseIdentifier:kCellIdentifier];
-  } else {
-    [collectionView registerClass:[GridCell class]
-        forCellWithReuseIdentifier:kCellIdentifier];
-    [collectionView registerClass:[SuggestedActionsGridCell class]
-        forCellWithReuseIdentifier:kSuggestedActionsCellIdentifier];
-    [collectionView registerClass:[GridHeader class]
-        forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-               withReuseIdentifier:kGridHeaderIdentifier];
-    [collectionView registerClass:[InactiveTabsButtonHeader class]
-        forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-               withReuseIdentifier:kInactiveTabsButtonHeaderIdentifier];
-    [collectionView registerClass:[InactiveTabsPreambleHeader class]
-        forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-               withReuseIdentifier:kInactiveTabsPreambleHeaderIdentifier];
-    collectionView.dataSource = self;
-  }
+  __weak __typeof(self) weakSelf = self;
+  self.diffableDataSource = [[UICollectionViewDiffableDataSource alloc]
+      initWithCollectionView:collectionView
+                cellProvider:^UICollectionViewCell*(
+                    UICollectionView* innerCollectionView,
+                    NSIndexPath* indexPath,
+                    GridItemIdentifier* itemIdentifier) {
+                  return [weakSelf cellForItemAtIndexPath:indexPath
+                                           itemIdentifier:itemIdentifier];
+                }];
+  self.diffableDataSource.supplementaryViewProvider =
+      ^UICollectionReusableView*(UICollectionView* innerCollectionView,
+                                 NSString* elementKind,
+                                 NSIndexPath* indexPath) {
+        return [weakSelf headerForSectionAtIndexPath:indexPath];
+      };
+  collectionView.dataSource = self.diffableDataSource;
+
+  // UICollectionViewDropPlaceholder uses a GridCell and needs the class to be
+  // registered.
+  [collectionView registerClass:[GridCell class]
+      forCellWithReuseIdentifier:kCellIdentifier];
+
   collectionView.delegate = self;
   collectionView.backgroundView = [[UIView alloc] init];
   collectionView.backgroundView.backgroundColor =
@@ -414,65 +386,20 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   }
   [self updateSuggestedActionsSection];
 
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    // Reconfigure all tabs.
-    Snapshot* snapshot = self.diffableDataSource.snapshot;
-    [snapshot reconfigureItemsWithIdentifiers:snapshot.itemIdentifiers];
-    [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+  // Reconfigure all tabs.
+  Snapshot* snapshot = self.diffableDataSource.snapshot;
+  [snapshot reconfigureItemsWithIdentifiers:snapshot.itemIdentifiers];
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 
-    NSUInteger selectedIndex = self.selectedIndex;
-    if (previousMode != TabGridModeSelection && mode == TabGridModeNormal &&
-        selectedIndex != NSNotFound) {
-      // Scroll to the selected item here, so the action of reloading and
-      // scrolling happens at once.
-      [self.collectionView
-          scrollToItemAtIndexPath:CreateIndexPath(selectedIndex)
-                 atScrollPosition:UICollectionViewScrollPositionTop
-                         animated:NO];
-    }
-  } else {
-    // Reloading specific sections in a `performBatchUpdates` fades the changes
-    // in rather than reloads the collection view with a harsh flash.
-    __weak GridViewController* weakSelf = self;
+  NSUInteger selectedIndex = self.selectedIndex;
+  if (previousMode != TabGridModeSelection && mode == TabGridModeNormal &&
+      selectedIndex != NSNotFound) {
+    // Scroll to the selected item here, so the action of reloading and
+    // scrolling happens at once.
     [self.collectionView
-        performBatchUpdates:^{
-          GridViewController* strongSelf = weakSelf;
-          if (!strongSelf || !strongSelf.collectionView) {
-            return;
-          }
-
-          if (mode == TabGridModeSelection &&
-              previousMode == TabGridModeNormal) {
-            // If the grid is switching from normal to selected state don't
-            // reload the whole table view to avoid having a flash, particularly
-            // visible when using context menu.
-            for (UITableViewCell* cell in strongSelf.collectionView
-                     .visibleCells) {
-              GridCell* gridCell = base::apple::ObjCCast<GridCell>(cell);
-              gridCell.state = mode == TabGridModeSelection
-                                   ? GridCellStateEditingUnselected
-                                   : GridCellStateNotEditing;
-            }
-          } else {
-            NSRange allSectionsRange = NSMakeRange(
-                /*location=*/0, strongSelf.collectionView.numberOfSections);
-            NSIndexSet* allSectionsIndexSet =
-                [NSIndexSet indexSetWithIndexesInRange:allSectionsRange];
-            [strongSelf.collectionView reloadSections:allSectionsIndexSet];
-          }
-          NSUInteger selectedIndex = strongSelf.selectedIndex;
-          if (previousMode != TabGridModeSelection &&
-              mode == TabGridModeNormal && selectedIndex != NSNotFound) {
-            // Scroll to the selected item here, so the animation of reloading
-            // and scrolling happens at once.
-            [strongSelf.collectionView
-                scrollToItemAtIndexPath:CreateIndexPath(selectedIndex)
-                       atScrollPosition:UICollectionViewScrollPositionTop
-                               animated:NO];
-          }
-        }
-
-                 completion:nil];
+        scrollToItemAtIndexPath:CreateIndexPath(selectedIndex)
+               atScrollPosition:UICollectionViewScrollPositionTop
+                       animated:NO];
   }
 
   if (mode == TabGridModeNormal) {
@@ -569,11 +496,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
   self.gridLayout.animatesItemUpdates = YES;
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    [self reloadCollectionViewData];
-  } else {
-    [self.collectionView reloadData];
-  }
+  [self reloadCollectionViewData];
   // Selection is invalid if there are no items.
   if ([self shouldShowEmptyState]) {
     [self animateEmptyStateIn];
@@ -658,137 +581,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 - (void)deselectItemWithIDForEditing:(web::WebStateID)identifier {
   _selectedEditingItemIDs.erase(identifier);
   _selectedSharableEditingItemIDs.erase(identifier);
-}
-
-// TODO(crbug.com/1462907): Remove the UICollectionViewDataSource methods once
-// the diffable data source refactor is validated by testers.
-#pragma mark - UICollectionViewDataSource
-
-- (NSInteger)numberOfSectionsInCollectionView:
-    (UICollectionView*)collectionView {
-  CHECK(!base::FeatureList::IsEnabled(kTabGridRefactoring));
-  if (self.showingSuggestedActions) {
-    return kSuggestedActionsSectionIndex + 1;
-  }
-  return 1;
-}
-
-- (NSInteger)collectionView:(UICollectionView*)collectionView
-     numberOfItemsInSection:(NSInteger)section {
-  CHECK(!base::FeatureList::IsEnabled(kTabGridRefactoring));
-  if (section == kSuggestedActionsSectionIndex) {
-    // In the search mode there there is only one item in the suggested actions
-    // section which contains the table for the suggested actions.
-    if (self.showingSuggestedActions) {
-      return 1;
-    }
-    return 0;
-  }
-  return base::checked_cast<NSInteger>(self.items.count);
-}
-
-// TODO(crbug.com/1462907): Remove the UICollectionViewDataSource methods once
-// the diffable data source refactor is validated by testers.
-- (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
-                 cellForItemAtIndexPath:(NSIndexPath*)indexPath {
-  CHECK(!base::FeatureList::IsEnabled(kTabGridRefactoring));
-
-  NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
-  UICollectionViewCell* cell;
-
-  if (indexPath.section == kSuggestedActionsSectionIndex) {
-    DCHECK(self.suggestedActionsViewController);
-    cell = [collectionView
-        dequeueReusableCellWithReuseIdentifier:kSuggestedActionsCellIdentifier
-                                  forIndexPath:indexPath];
-    SuggestedActionsGridCell* suggestedActionsCell =
-        ObjCCastStrict<SuggestedActionsGridCell>(cell);
-    suggestedActionsCell.suggestedActionsView =
-        self.suggestedActionsViewController.view;
-  } else {
-    // In some cases, this is called with an index path that doesn't match the
-    // data source -- see crbug.com/1068136. Presumably this is a race condition
-    // where an item has been deleted at the same time as the collection is
-    // doing layout (potentially during rotation?). Fudge by returning an
-    // unconfigured cell. The assumption is that there will be another – correct
-    // – layout shortly after the incorrect one. Keep `items`' bounds valid.
-    if (self.items.count == 0 || itemIndex >= self.items.count) {
-      return
-          [collectionView dequeueReusableCellWithReuseIdentifier:kCellIdentifier
-                                                    forIndexPath:indexPath];
-    }
-    TabSwitcherItem* item = self.items[itemIndex];
-    cell =
-        [collectionView dequeueReusableCellWithReuseIdentifier:kCellIdentifier
-                                                  forIndexPath:indexPath];
-    GridCell* gridCell = base::apple::ObjCCastStrict<GridCell>(cell);
-    [self configureCell:gridCell withItem:item atIndex:itemIndex];
-  }
-
-  return cell;
-}
-
-// TODO(crbug.com/1462907): Remove the UICollectionViewDataSource methods once
-// the diffable data source refactor is validated by testers.
-- (UICollectionReusableView*)collectionView:(UICollectionView*)collectionView
-          viewForSupplementaryElementOfKind:(NSString*)kind
-                                atIndexPath:(NSIndexPath*)indexPath {
-  CHECK(!base::FeatureList::IsEnabled(kTabGridRefactoring));
-  switch (_mode) {
-    case TabGridModeNormal: {
-      // The Regular Tabs grid has a button to inform about the hidden inactive
-      // tabs.
-      CHECK(IsInactiveTabsAvailable());
-      if (self.inactiveTabsCount == 0 &&
-          !self.inactiveTabsHeaderHideAnimationInProgress) {
-        base::debug::DumpWithoutCrashing();
-      }
-      InactiveTabsButtonHeader* header = [collectionView
-          dequeueReusableSupplementaryViewOfKind:kind
-                             withReuseIdentifier:
-                                 kInactiveTabsButtonHeaderIdentifier
-                                    forIndexPath:indexPath];
-      [self configureInactiveTabsButtonHeader:header];
-      return header;
-    }
-    case TabGridModeSelection:
-      NOTREACHED();
-      return nil;
-    case TabGridModeSearch: {
-      GridHeader* headerView = [collectionView
-          dequeueReusableSupplementaryViewOfKind:kind
-                             withReuseIdentifier:kGridHeaderIdentifier
-                                    forIndexPath:indexPath];
-      switch (indexPath.section) {
-        case kOpenTabsSectionIndex: {
-          headerView.title = l10n_util::GetNSString(
-              IDS_IOS_TABS_SEARCH_OPEN_TABS_SECTION_HEADER_TITLE);
-          NSString* resultsCount = [@(self.items.count) stringValue];
-          headerView.value =
-              l10n_util::GetNSStringF(IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT,
-                                      base::SysNSStringToUTF16(resultsCount));
-          break;
-        }
-        case kSuggestedActionsSectionIndex: {
-          headerView.title =
-              l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTIONS);
-          break;
-        }
-      }
-      return headerView;
-    }
-    case TabGridModeInactive:
-      // The Inactive Tabs grid has a header to inform about the feature and a
-      // link to its settings.
-      CHECK(IsInactiveTabsEnabled());
-      InactiveTabsPreambleHeader* header = [collectionView
-          dequeueReusableSupplementaryViewOfKind:kind
-                             withReuseIdentifier:
-                                 kInactiveTabsPreambleHeaderIdentifier
-                                    forIndexPath:indexPath];
-      [self configureInactiveTabsPreambleHeader:header];
-      return header;
-  }
 }
 
 #pragma mark - UICollectionView Diffable Data Source Helpers
@@ -881,7 +673,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 // Configures the grid header for the given section.
 - (void)configureGridHeader:(GridHeader*)gridHeader
        forSectionIdentifier:(NSString*)sectionIdentifier {
-  CHECK(base::FeatureList::IsEnabled(kTabGridRefactoring));
   if ([sectionIdentifier isEqualToString:kOpenTabsSectionIdentifier]) {
     gridHeader.title = l10n_util::GetNSString(
         IDS_IOS_TABS_SEARCH_OPEN_TABS_SECTION_HEADER_TITLE);
@@ -952,8 +743,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 - (UICollectionViewCell*)cellForItemAtIndexPath:(NSIndexPath*)indexPath
                                  itemIdentifier:
                                      (GridItemIdentifier*)itemIdentifier {
-  CHECK(base::FeatureList::IsEnabled(kTabGridRefactoring));
-
   switch (itemIdentifier.type) {
     case GridItemType::Tab: {
       // Handle GridCell-s.
@@ -1139,34 +928,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   return [[BidirectionalCollectionViewTransitionLayout alloc]
       initWithCurrentLayout:fromLayout
                  nextLayout:toLayout];
-}
-
-- (void)collectionView:(UICollectionView*)collectionView
-       willDisplayCell:(UICollectionViewCell*)cell
-    forItemAtIndexPath:(NSIndexPath*)indexPath {
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    return;
-  }
-
-  // Checking and updating the GridCell's `state` if needed.
-  //
-  // For the context: `setMode:` method updates the `state` property of the
-  // visible GridCells only. However, there are might be some cells that were
-  // dequeued already but haven't been displayed yet. Those will never update
-  // their `state` unless we forcely handle it here.
-  //
-  // See crbug.com//1427278
-  if ([cell isKindOfClass:[GridCell class]]) {
-    GridCell* gridCell = ObjCCastStrict<GridCell>(cell);
-
-    BOOL isTabGridInSelectionMode = _mode == TabGridModeSelection;
-    BOOL isGridCellInSelectionMode = gridCell.state != GridCellStateNotEditing;
-
-    if (isTabGridInSelectionMode != isGridCellInSelectionMode) {
-      gridCell.state = isTabGridInSelectionMode ? GridCellStateEditingUnselected
-                                                : GridCellStateNotEditing;
-    }
-  }
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
@@ -1523,11 +1284,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   _selectedEditingItemIDs.clear();
   _selectedSharableEditingItemIDs.clear();
 
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    [self reloadCollectionViewData];
-  } else {
-    [self reloadTabs];
-  }
+  [self reloadCollectionViewData];
 
   [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
 
@@ -1619,29 +1376,20 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   TabSwitcherItem* existingItem = self.items[index];
   self.items[index] = newItem;
 
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    Snapshot* snapshot = self.diffableDataSource.snapshot;
-    GridItemIdentifier* existingItemIdentifier =
-        [GridItemIdentifier tabIdentifier:existingItem];
-    if (existingItemID == newItem.identifier) {
-      [snapshot reconfigureItemsWithIdentifiers:@[ existingItemIdentifier ]];
-    } else {
-      // Add the new item before the existing item.
-      GridItemIdentifier* newItemIdentifier =
-          [GridItemIdentifier tabIdentifier:newItem];
-      [snapshot insertItemsWithIdentifiers:@[ newItemIdentifier ]
-                  beforeItemWithIdentifier:existingItemIdentifier];
-      [snapshot deleteItemsWithIdentifiers:@[ existingItemIdentifier ]];
-    }
-    [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+  Snapshot* snapshot = self.diffableDataSource.snapshot;
+  GridItemIdentifier* existingItemIdentifier =
+      [GridItemIdentifier tabIdentifier:existingItem];
+  if (existingItemID == newItem.identifier) {
+    [snapshot reconfigureItemsWithIdentifiers:@[ existingItemIdentifier ]];
   } else {
-    GridCell* cell = ObjCCastStrict<GridCell>(
-        [self.collectionView cellForItemAtIndexPath:CreateIndexPath(index)]);
-    // `cell` may be nil if it is scrolled offscreen.
-    if (cell) {
-      [self configureCell:cell withItem:newItem atIndex:index];
-    }
+    // Add the new item before the existing item.
+    GridItemIdentifier* newItemIdentifier =
+        [GridItemIdentifier tabIdentifier:newItem];
+    [snapshot insertItemsWithIdentifiers:@[ newItemIdentifier ]
+                beforeItemWithIdentifier:existingItemIdentifier];
+    [snapshot deleteItemsWithIdentifiers:@[ existingItemIdentifier ]];
   }
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
 - (void)moveItemWithID:(web::WebStateID)itemID toIndex:(NSUInteger)toIndex {
@@ -1766,48 +1514,26 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   // In search mode if there is already a search query, and the suggested
   // actions section is not yet added, add it. Otherwise remove the section if
   // it exists and the search mode is not active.
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    Snapshot* snapshot = self.diffableDataSource.snapshot;
-    if (self.mode == TabGridModeSearch && self.searchText.length) {
-      if (!self.showingSuggestedActions) {
-        [snapshot appendSectionsWithIdentifiers:@[
-          kSuggestedActionsSectionIdentifier
-        ]];
-        GridItemIdentifier* itemIdentifier =
-            [GridItemIdentifier suggestedActionsIdentifier];
-        [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]];
-        self.showingSuggestedActions = YES;
-      }
-    } else {
-      if (self.showingSuggestedActions) {
-        [snapshot deleteSectionsWithIdentifiers:@[
-          kSuggestedActionsSectionIdentifier
-        ]];
-        self.showingSuggestedActions = NO;
-      }
+  Snapshot* snapshot = self.diffableDataSource.snapshot;
+  if (self.mode == TabGridModeSearch && self.searchText.length) {
+    if (!self.showingSuggestedActions) {
+      [snapshot appendSectionsWithIdentifiers:@[
+        kSuggestedActionsSectionIdentifier
+      ]];
+      GridItemIdentifier* itemIdentifier =
+          [GridItemIdentifier suggestedActionsIdentifier];
+      [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]];
+      self.showingSuggestedActions = YES;
     }
-    [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
   } else {
-    auto updateSectionBlock = ^{
-      NSIndexSet* sections =
-          [NSIndexSet indexSetWithIndex:kSuggestedActionsSectionIndex];
-      if (self.mode == TabGridModeSearch && self.searchText.length) {
-        if (!self.showingSuggestedActions) {
-          [self.collectionView insertSections:sections];
-          self.showingSuggestedActions = YES;
-        }
-      } else {
-        if (self.showingSuggestedActions) {
-          [self.collectionView deleteSections:sections];
-          self.showingSuggestedActions = NO;
-        }
-      }
-    };
-    [UIView performWithoutAnimation:^{
-      [self.collectionView performBatchUpdates:updateSectionBlock
-                                    completion:nil];
-    }];
+    if (self.showingSuggestedActions) {
+      [snapshot deleteSectionsWithIdentifiers:@[
+        kSuggestedActionsSectionIdentifier
+      ]];
+      self.showingSuggestedActions = NO;
+    }
   }
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
 #pragma mark - Private helpers for joint model and view updates
@@ -1816,34 +1542,19 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 - (void)performModelAndViewUpdates:
             (void (^)(Snapshot* snapshot))modelAndViewUpdates
                         completion:(ProceduralBlock)completion {
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    self.updating = YES;
-    // Synchronize model and diffable snapshot updates.
-    Snapshot* snapshot = self.diffableDataSource.snapshot;
-    modelAndViewUpdates(snapshot);
-    __weak __typeof(self) weakSelf = self;
-    [self.diffableDataSource applySnapshot:snapshot
-                      animatingDifferences:YES
-                                completion:^{
-                                  if (weakSelf) {
-                                    completion();
-                                    weakSelf.updating = NO;
-                                  }
-                                }];
-  } else {
-    __weak __typeof(self) weakSelf = self;
-    [self.collectionView
-        performBatchUpdates:^{
-          weakSelf.updating = YES;
-          modelAndViewUpdates(nil);
-        }
-        completion:^(BOOL completed) {
-          if (weakSelf) {
-            completion();
-            weakSelf.updating = NO;
-          }
-        }];
-  }
+  self.updating = YES;
+  // Synchronize model and diffable snapshot updates.
+  Snapshot* snapshot = self.diffableDataSource.snapshot;
+  modelAndViewUpdates(snapshot);
+  __weak __typeof(self) weakSelf = self;
+  [self.diffableDataSource applySnapshot:snapshot
+                    animatingDifferences:YES
+                              completion:^{
+                                if (weakSelf) {
+                                  completion();
+                                  weakSelf.updating = NO;
+                                }
+                              }];
 
   [self updateVisibleCellIdentifiers];
 }
@@ -1872,33 +1583,29 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   [self.delegate gridViewController:self didChangeItemCount:self.items.count];
 
   [self removeEmptyStateAnimated:YES];
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    // TODO(crbug.com/1473625): There are crash reports that show there could be
-    // cases where the open tabs section is not present in the snapshot. If so,
-    // don't perform the update.
-    if ([snapshot indexOfSectionIdentifier:kOpenTabsSectionIdentifier] ==
-        NSNotFound) {
-      return;
-    }
-    // The snapshot API doesn't provide a way to insert at a given index (that's
-    // its purpose actually), only before/after an existing item, or by
-    // appending to an existing section.
-    // If the new item is taking the spot of an existing item, insert the new
-    // one before it. Otherwise (if the section is empty, or the new index is
-    // the new last position), append at the end of the section.
-    GridItemIdentifier* itemIdentifier =
-        [GridItemIdentifier tabIdentifier:item];
-    if (previousItemAtIndex) {
-      GridItemIdentifier* previousItemIdentifier =
-          [GridItemIdentifier tabIdentifier:previousItemAtIndex];
-      [snapshot insertItemsWithIdentifiers:@[ itemIdentifier ]
-                  beforeItemWithIdentifier:previousItemIdentifier];
-    } else {
-      [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]
-                 intoSectionWithIdentifier:kOpenTabsSectionIdentifier];
-    }
+
+  // TODO(crbug.com/1473625): There are crash reports that show there could be
+  // cases where the open tabs section is not present in the snapshot. If so,
+  // don't perform the update.
+  if ([snapshot indexOfSectionIdentifier:kOpenTabsSectionIdentifier] ==
+      NSNotFound) {
+    return;
+  }
+  // The snapshot API doesn't provide a way to insert at a given index (that's
+  // its purpose actually), only before/after an existing item, or by
+  // appending to an existing section.
+  // If the new item is taking the spot of an existing item, insert the new
+  // one before it. Otherwise (if the section is empty, or the new index is
+  // the new last position), append at the end of the section.
+  GridItemIdentifier* itemIdentifier = [GridItemIdentifier tabIdentifier:item];
+  if (previousItemAtIndex) {
+    GridItemIdentifier* previousItemIdentifier =
+        [GridItemIdentifier tabIdentifier:previousItemAtIndex];
+    [snapshot insertItemsWithIdentifiers:@[ itemIdentifier ]
+                beforeItemWithIdentifier:previousItemIdentifier];
   } else {
-    [self.collectionView insertItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
+    [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]
+               intoSectionWithIdentifier:kOpenTabsSectionIdentifier];
   }
 }
 
@@ -1934,16 +1641,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   [self deselectItemWithIDForEditing:removedItemID];
   [self.delegate gridViewController:self didChangeItemCount:self.items.count];
 
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    GridItemIdentifier* removedItemIdentifier =
-        [GridItemIdentifier tabIdentifier:removedItem];
-    [snapshot deleteItemsWithIdentifiers:@[ removedItemIdentifier ]];
-    if ([self shouldShowEmptyState]) {
-      [self animateEmptyStateIn];
-    }
-  } else {
-    [self.collectionView deleteItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
-  }
+  GridItemIdentifier* removedItemIdentifier =
+      [GridItemIdentifier tabIdentifier:removedItem];
+  [snapshot deleteItemsWithIdentifiers:@[ removedItemIdentifier ]];
   if ([self shouldShowEmptyState]) {
     [self animateEmptyStateIn];
   }
@@ -1970,21 +1670,15 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   [self.items removeObjectAtIndex:fromIndex];
   [self.items insertObject:item atIndex:toIndex];
 
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    GridItemIdentifier* itemIdentifier =
-        [GridItemIdentifier tabIdentifier:item];
-    GridItemIdentifier* toItemIdentifier =
-        [GridItemIdentifier tabIdentifier:toItem];
-    if (fromIndex < toIndex) {
-      [snapshot moveItemWithIdentifier:itemIdentifier
-               afterItemWithIdentifier:toItemIdentifier];
-    } else {
-      [snapshot moveItemWithIdentifier:itemIdentifier
-              beforeItemWithIdentifier:toItemIdentifier];
-    }
+  GridItemIdentifier* itemIdentifier = [GridItemIdentifier tabIdentifier:item];
+  GridItemIdentifier* toItemIdentifier =
+      [GridItemIdentifier tabIdentifier:toItem];
+  if (fromIndex < toIndex) {
+    [snapshot moveItemWithIdentifier:itemIdentifier
+             afterItemWithIdentifier:toItemIdentifier];
   } else {
-    [self.collectionView moveItemAtIndexPath:CreateIndexPath(fromIndex)
-                                 toIndexPath:CreateIndexPath(toIndex)];
+    [snapshot moveItemWithIdentifier:itemIdentifier
+            beforeItemWithIdentifier:toItemIdentifier];
   }
 }
 
@@ -2157,17 +1851,11 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
       self.collectionView.dragInteractionEnabled = YES;
     }
     // Reconfigure the item.
-    if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-      Snapshot* snapshot = self.diffableDataSource.snapshot;
-      GridItemIdentifier* itemIdentifier =
-          [GridItemIdentifier tabIdentifier:self.items[index]];
-      [snapshot reconfigureItemsWithIdentifiers:@[ itemIdentifier ]];
-      [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
-    } else {
-      [UIView performWithoutAnimation:^{
-        [self.collectionView reloadItemsAtIndexPaths:@[ indexPath ]];
-      }];
-    }
+    Snapshot* snapshot = self.diffableDataSource.snapshot;
+    GridItemIdentifier* itemIdentifier =
+        [GridItemIdentifier tabIdentifier:self.items[index]];
+    [snapshot reconfigureItemsWithIdentifiers:@[ itemIdentifier ]];
+    [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
   }
 
   [self.delegate gridViewController:self didSelectItemWithID:itemID];
@@ -2227,43 +1915,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
     return NO;
   }
   return self.items.count == 0;
-}
-
-// Reloads the tabs section of the grid view.
-- (void)reloadTabs {
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    Snapshot* snapshot = self.diffableDataSource.snapshot;
-    if (NSNotFound ==
-        [snapshot indexOfSectionIdentifier:kOpenTabsSectionIdentifier]) {
-      return;
-    }
-
-    // Delete old tabs if the section is present.
-    auto oldTabsIdentifiers = [snapshot
-        itemIdentifiersInSectionWithIdentifier:kOpenTabsSectionIdentifier];
-    [snapshot deleteItemsWithIdentifiers:oldTabsIdentifiers];
-    // Add new tabs.
-    for (TabSwitcherItem* item in self.items) {
-      GridItemIdentifier* itemIdentifier =
-          [GridItemIdentifier tabIdentifier:item];
-      [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]
-                 intoSectionWithIdentifier:kOpenTabsSectionIdentifier];
-    }
-    [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
-
-    [self updateVisibleCellIdentifiers];
-  } else {
-    NSIndexSet* targetSections =
-        [NSIndexSet indexSetWithIndex:kOpenTabsSectionIndex];
-    [UIView performWithoutAnimation:^{
-      // There is a collection view bug (crbug.com/1300733) that prevents
-      // CollectionView's `reloadData` from working properly if its preceded by
-      // CollectionView's `performBatchUpdates:` in the same UI cycle. To avoid
-      // this bug, `reloadSections:` method is used instead to reload the items
-      // in the tab grid.
-      [self.collectionView reloadSections:targetSections];
-    }];
-  }
 }
 
 // Updates the number of results found on the search open tabs section header.
@@ -2393,22 +2044,14 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
 // Reloads the section containing the Inactive Tabs button header.
 - (void)reloadInactiveTabsButtonHeader {
-  // Prevent the animation, as it leads to a jarrying effect when closing all
+  // Prevent the animation, as it leads to a jarring effect when closing all
   // inactive tabs: the inactive tabs view controller gets popped, and the
   // underlying regular Tab Grid moves tabs up.
-  // Note: this could be revisited when supporting iPad, as the user could
-  // have closed all inactive tabs in a different window.
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    Snapshot* snapshot = self.diffableDataSource.snapshot;
-    [snapshot reloadSectionsWithIdentifiers:@[ kOpenTabsSectionIdentifier ]];
-    [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
-  } else {
-    NSIndexSet* openTabsSection =
-        [NSIndexSet indexSetWithIndex:kOpenTabsSectionIndex];
-    [UIView performWithoutAnimation:^{
-      [self.collectionView reloadSections:openTabsSection];
-    }];
-  }
+  // Note: this could be revisited when supporting iPad, as the user could have
+  // closed all inactive tabs in a different window.
+  Snapshot* snapshot = self.diffableDataSource.snapshot;
+  [snapshot reloadSectionsWithIdentifiers:@[ kOpenTabsSectionIdentifier ]];
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 
   // Make sure to restore the selection. Reloading the section cleared it.
   // https://developer.apple.com/forums/thread/656529

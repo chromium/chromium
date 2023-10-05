@@ -272,7 +272,7 @@ BASE_FEATURE(kThemeColorInTopToolbar,
 
 BASE_FEATURE(kTabGridRefactoring,
              "TabGridRefactoring",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsSafetyCheckMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);
