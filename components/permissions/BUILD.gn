@@ -182,6 +182,7 @@ source_set("permissions") {
       "//components/prefs",
       "//components/resources:android_resources",
       "//components/security_state/core:core",
+      "//third_party/jni_zero:jni_helpers",
       "//ui/android",
     ]
   } else {

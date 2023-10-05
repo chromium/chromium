@@ -434,7 +434,7 @@ def CreateFromDict(options, registration_dict):
 #include <iterator>
 
 #include "base/android/jni_generator/jni_generator_helper.h"
-#include "base/android/jni_int_wrapper.h"
+#include "third_party/jni_zero/jni_int_wrapper.h"
 
 
 // Step 1: Forward declarations (classes).

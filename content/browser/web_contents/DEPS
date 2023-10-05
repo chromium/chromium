@@ -7,4 +7,7 @@ specific_include_rules = {
     "+ui/ozone/buildflags.h",
     "+ui/ozone/public/ozone_platform.h",
   ],
+  "view_structure_builder_android.h": [
+    "+third_party/jni_zero",
+  ]
 }

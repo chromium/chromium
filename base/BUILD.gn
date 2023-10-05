@@ -1321,7 +1321,6 @@ component("base") {
       "android/jni_array.cc",
       "android/jni_array.h",
       "android/jni_generator/jni_generator_helper.h",
-      "android/jni_int_wrapper.h",
       "android/jni_registrar.cc",
       "android/jni_registrar.h",
       "android/jni_string.cc",
@@ -1341,6 +1340,7 @@ component("base") {
     deps += [
       ":base_jni",
       ":process_launcher_jni",
+      "//third_party/jni_zero:jni_helpers",
     ]
   }  # is_android || is_robolectric
 

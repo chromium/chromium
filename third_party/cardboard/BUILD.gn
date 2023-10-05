@@ -137,6 +137,7 @@ static_library("cardboard") {
 
   deps = [
     "//base",
+    "//third_party/jni_zero:jni_helpers",
     "//ui/gl",
   ]
 

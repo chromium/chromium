@@ -32,8 +32,10 @@ class JniIntWrapper {
   JniIntWrapper() : i_(0) {}
   JniIntWrapper(int i) : i_(i) {}
   JniIntWrapper(const JniIntWrapper& ji) : i_(ji.i_) {}
-  template <class T> JniIntWrapper(const T& t) : i_(t) {}
+  template <class T>
+  JniIntWrapper(const T& t) : i_(t) {}
   jint as_jint() const { return i_; }
+
  private:
   // If you get an "is private" error at the line below it is because you used
   // an implicit conversion to convert a long to an int when calling Java.

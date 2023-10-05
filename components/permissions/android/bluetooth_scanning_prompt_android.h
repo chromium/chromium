@@ -6,12 +6,12 @@
 #define COMPONENTS_PERMISSIONS_ANDROID_BLUETOOTH_SCANNING_PROMPT_ANDROID_H_
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_int_wrapper.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_int_wrapper.h"
 
 namespace permissions {
 

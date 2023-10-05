@@ -8,9 +8,12 @@ config("jni_include_dir") {
   include_dirs = [ jni_headers_dir ]
 }
 
-if (is_android) {
-  import("//build/config/android/rules.gni")
+source_set("jni_helpers") {
+  sources = [ "jni_int_wrapper.h" ]
+}
 
+if (enable_java_templates && is_android) {
+  import("//build/config/android/rules.gni")
   java_library("test_mocker_java") {
     supports_android = true
     sources = [ "java/src/org/jni_zero/JniStaticTestMocker.java" ]

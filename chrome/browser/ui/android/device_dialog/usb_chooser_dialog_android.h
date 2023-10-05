@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_int_wrapper.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "components/permissions/chooser_controller.h"
+#include "third_party/jni_zero/jni_int_wrapper.h"
 
 namespace content {
 class RenderFrameHost;

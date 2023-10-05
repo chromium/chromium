@@ -28,7 +28,7 @@
 #include <type_traits>
 
 #include "base/android/jni_generator/jni_generator_helper.h"
-#include "base/android/jni_int_wrapper.h"
+#include "third_party/jni_zero/jni_int_wrapper.h"
 
 // Step 1: forward declarations.
 namespace {

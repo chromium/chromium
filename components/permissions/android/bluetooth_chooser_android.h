@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_int_wrapper.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_int_wrapper.h"
 
 namespace permissions {
 
