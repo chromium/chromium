@@ -6875,6 +6875,31 @@
             ]
         }
     ],
+    "FindRegistrationImprovements": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableAll_20231004",
+                    "enable_features": [
+                        "ServiceWorkerFetchResponseCallbackUseHighPriority",
+                        "ServiceWorkerMergeFindRegistrationForClientUrl",
+                        "ServiceWorkerRegistrationCache",
+                        "ServiceWorkerScopeCache",
+                        "ServiceWorkerStorageControlOnThreadPool",
+                        "ServiceWorkerStorageControlResponseUseHighPriority"
+                    ]
+                }
+            ]
+        }
+    ],
     "FixInputQueueingBug": [
         {
             "platforms": [
@@ -16074,26 +16099,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SparseObjectPaintProperties"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SpeculativeServiceWorkerStartup": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ScopeCache_20230804",
-                    "enable_features": [
-                        "ServiceWorkerScopeCache"
                     ]
                 }
             ]
