@@ -441,8 +441,6 @@ abstract class FlexWrappingOutputProperty extends OutputProperty {
     // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout/Mastering_Wrapping_of_Flex_Items#Creating_gutters_between_items
     const scrollContainer = createEl('div', this);
     this.container = createEl('div', scrollContainer, ['pair-container']);
-
-    return this;
   }
 }
 
@@ -451,8 +449,6 @@ class OutputPairProperty extends FlexWrappingOutputProperty {
     super(`${value1}.${value2}`);
     createEl('div', this.container, ['pair-item'], value1);
     createEl('div', this.container, ['pair-item'], value2);
-
-    return this;
   }
 }
 
@@ -465,8 +461,6 @@ class OutputOverlappingPairProperty extends OutputPairProperty {
         overlap ? '' :
                   `btw, these texts do not overlap; '${
                       value2}' was expected to be a suffix of '${value1}'`);
-
-    return this;
   }
 }
 
@@ -536,8 +530,6 @@ class OutputBooleanProperty extends OutputProperty {
   constructor(value: boolean, filterName: string) {
     super((value ? 'is: ' : 'not: ') + filterName);
     createEl('div', this, ['icon', value ? 'check-icon' : 'x-icon']);
-
-    return this;
   }
 }
 
@@ -557,8 +549,6 @@ class OutputDictionaryProperty extends OutputProperty {
     link.download = 'AdditionalInfo.json';
     link.href = OutputDictionaryProperty.createDownloadLink(value);
     container.insertBefore(link, container.firstChild);
-
-    return this;
   }
 
   private static createDownloadLink(value: DictionaryEntry[]): string {
@@ -588,8 +578,6 @@ class OutputUrlProperty extends FlexWrappingOutputProperty {
         destinationUrl;
     createEl('a', this.container, ['pair-item'], strippedDestinationUrl).href =
         strippedDestinationUrl;
-
-    return this;
   }
 }
 
@@ -597,8 +585,6 @@ class OutputTextProperty extends OutputProperty {
   constructor(text: string) {
     super(text);
     createEl('div', this, [], text);
-
-    return this;
   }
 }
 
