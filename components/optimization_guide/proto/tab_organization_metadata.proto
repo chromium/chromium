@@ -1,0 +1,44 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+package chrome_intelligence_modelexecution_proto;
+
+option java_multiple_files = true;
+
+message TabOrganizationRequest {
+  // The tabs that are requested to be organized.
+  repeated Tab tabs = 1;
+}
+
+message TabOrganizationResponse {
+  // The organizations that were deemed suitable for the requested tabs.
+  //
+  // These organizations will be in the order of suitability and it is expected
+  // for them to be shown in the order present in the list.
+  //
+  // Note that not all requested tabs are guaranteed to be present in at least
+  // one organization.
+  repeated TabOrganization tab_organizations = 1;
+}
+
+message TabOrganization {
+  // The label that describes this tab organization.
+  optional string label = 1;
+
+  // The tabs that belong in this organization.
+  repeated Tab tabs = 2;
+}
+
+message Tab {
+  // A unique identifier for the tab.
+  optional int64 tab_id = 1;
+
+  // The title of the tab.
+  optional string title = 2;
+
+  // The URL of the tab.
+  optional string url = 3;
+}

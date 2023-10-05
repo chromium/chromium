@@ -4,19 +4,116 @@
 
 #include "chrome/browser/ui/tabs/organization/request_factory.h"
 
+#include <codecvt>
 #include <iterator>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/tab_organization_metadata.pb.h"
+#include "content/public/browser/web_contents.h"
+
+namespace {
+
+std::string SerializeU16String(const std::u16string& string) {
+  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+  return convert.to_bytes(string);
+}
+
+std::u16string DeserializeString(const std::string& string) {
+  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+  return convert.from_bytes(string);
+}
+
+void OnTabOrganizationModelExecutionResult(
+    TabOrganizationRequest::BackendCompletionCallback on_completion,
+    TabOrganizationRequest::BackendFailureCallback on_failure,
+    optimization_guide::OptimizationGuideModelExecutionResult result) {
+  if (!result.has_value()) {
+    LOG(ERROR) << "TabOrganizationResponse model execution failed ";
+    std::move(on_failure).Run();
+    return;
+  }
+
+  auto response = optimization_guide::ParsedAnyMetadata<
+      chrome_intelligence_modelexecution_proto::TabOrganizationResponse>(
+      result.value());
+  if (!response) {
+    std::move(on_failure).Run();
+    return;
+  }
+
+  std::vector<TabOrganizationResponse::Organization> organizations;
+  for (const auto& tab_organization : response->tab_organizations()) {
+    std::vector<TabData::TabID> response_tab_ids;
+    for (const auto& tab : tab_organization.tabs()) {
+      response_tab_ids.emplace_back(tab.tab_id());
+    }
+    organizations.emplace_back(DeserializeString(tab_organization.label()),
+                               std::move(response_tab_ids));
+  }
+
+  if (organizations.size() > 0) {
+    std::unique_ptr<TabOrganizationResponse> local_response =
+        std::make_unique<TabOrganizationResponse>(std::move(organizations));
+
+    std::move(on_completion).Run(std::move(local_response));
+  } else {
+    std::move(on_failure).Run();
+  }
+}
+
+void PerformTabOrganizationExecution(
+    Profile* profile,
+    const TabOrganizationRequest* request,
+    TabOrganizationRequest::BackendCompletionCallback on_completion,
+    TabOrganizationRequest::BackendFailureCallback on_failure) {
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (!optimization_guide_keyed_service || profile->IsOffTheRecord() ||
+      !base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideModelExecution)) {
+    return;
+  }
+
+  chrome_intelligence_modelexecution_proto::TabOrganizationRequest
+      tab_organization_request;
+  for (const std::unique_ptr<TabData>& tab_data : request->tab_datas()) {
+    if (!tab_data->IsValidForOrganizing()) {
+      continue;
+    }
+
+    auto* tab = tab_organization_request.add_tabs();
+    tab->set_tab_id(tab_data->tab_id());
+    tab->set_title(SerializeU16String(tab_data->web_contents()->GetTitle()));
+    tab->set_url(tab_data->original_url().spec());
+  }
+
+  optimization_guide_keyed_service->ExecuteModel(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
+      tab_organization_request,
+      base::BindOnce(OnTabOrganizationModelExecutionResult,
+                     std::move(on_completion), std::move(on_failure)));
+}
+
+}  // anonymous namespace
 
 TabOrganizationRequestFactory::~TabOrganizationRequestFactory() = default;
 
 TwoTabsRequestFactory::~TwoTabsRequestFactory() = default;
 
-std::unique_ptr<TabOrganizationRequest> TwoTabsRequestFactory::CreateRequest() {
+std::unique_ptr<TabOrganizationRequest> TwoTabsRequestFactory::CreateRequest(
+    Profile* profile) {
   // for this request strategy only the first 2 tabs will be addedto an
   // organization.
   TabOrganizationRequest::BackendStartRequest start_request = base::BindOnce(
@@ -47,4 +144,11 @@ std::unique_ptr<TabOrganizationRequest> TwoTabsRequestFactory::CreateRequest() {
       });
 
   return std::make_unique<TabOrganizationRequest>(std::move(start_request));
+}
+
+std::unique_ptr<TabOrganizationRequest>
+OptimizationGuideTabOrganizationRequestFactory::CreateRequest(
+    Profile* profile) {
+  return std::make_unique<TabOrganizationRequest>(
+      base::BindOnce(PerformTabOrganizationExecution, profile));
 }

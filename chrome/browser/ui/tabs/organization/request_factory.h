@@ -8,17 +8,28 @@
 #include <memory>
 
 class TabOrganizationRequest;
+class Profile;
 
 class TabOrganizationRequestFactory {
  public:
   virtual ~TabOrganizationRequestFactory();
-  virtual std::unique_ptr<TabOrganizationRequest> CreateRequest() = 0;
+  virtual std::unique_ptr<TabOrganizationRequest> CreateRequest(
+      Profile* profile) = 0;
 };
 
 class TwoTabsRequestFactory : public TabOrganizationRequestFactory {
  public:
   ~TwoTabsRequestFactory() override;
-  std::unique_ptr<TabOrganizationRequest> CreateRequest() override;
+  std::unique_ptr<TabOrganizationRequest> CreateRequest(
+      Profile* profile) override;
+};
+
+class OptimizationGuideTabOrganizationRequestFactory
+    : public TabOrganizationRequestFactory {
+ public:
+  ~OptimizationGuideTabOrganizationRequestFactory() override;
+  std::unique_ptr<TabOrganizationRequest> CreateRequest(
+      Profile* profile) override;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_REQUEST_FACTORY_H_

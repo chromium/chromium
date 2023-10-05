@@ -25,7 +25,7 @@ TabOrganizationSession::~TabOrganizationSession() = default;
 std::unique_ptr<TabOrganizationSession>
 TabOrganizationSession::CreateSessionForBrowser(const Browser* browser) {
   std::unique_ptr<TabOrganizationRequest> request =
-      TwoTabsRequestFactory().CreateRequest();
+      TwoTabsRequestFactory().CreateRequest(browser->profile());
 
   // iterate through the tabstripmodel building the tab data.
   std::vector<std::unique_ptr<TabData>> tab_datas;

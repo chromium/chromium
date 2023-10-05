@@ -287,7 +287,6 @@ TEST_F(TabOrganizationTest, TabOrganizationIsValidForOrganizing) {
 }
 
 // TabOrganizationRequest tests.
-
 TEST_F(TabOrganizationTest, TabOrganizationRequestOnStartRequest) {
   bool start_called = false;
   TabOrganizationRequest request(base::BindLambdaForTesting(

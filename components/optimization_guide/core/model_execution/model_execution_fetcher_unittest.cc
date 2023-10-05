@@ -267,13 +267,14 @@ TEST_F(ModelExecutionFetcherTest, TestMultipleParallelRequests) {
       BuildTestMessage("foo request"));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
-  ExecuteModel(proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_2,
-               BuildTestMessage("foo request"));
+  ExecuteModel(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
+      BuildTestMessage("foo request"));
 
   // The second request should fail immediately.
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
-      "Unknown",
+      "TabOrganization",
       FetcherRequestStatus::kFetcherBusy, 1);
 
   VerifyHasPendingFetchRequest();
