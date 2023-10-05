@@ -23,6 +23,12 @@ extern const CGFloat kTableViewSeparatorInsetWithIcon;
 @protocol TableViewIllustratedEmptyViewDelegate;
 
 // Chrome-specific TableViewController.
+// *********************************************************
+// *********************************************************
+// Don't add new use of this class. Please use new DiffableDataSource API
+// instead.
+// *********************************************************
+// *********************************************************
 @interface ChromeTableViewController
     : UITableViewController <ChromeTableViewConsumer>
 
