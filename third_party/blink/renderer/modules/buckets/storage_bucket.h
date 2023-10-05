@@ -14,6 +14,8 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/storage_manager_file_system_access.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -47,6 +49,11 @@ class StorageBucket final : public ScriptWrappable,
   CacheStorage* caches(ExceptionState&);
   ScriptPromise getDirectory(ScriptState*, ExceptionState&);
 
+  void GetDirectoryForDevTools(
+      ExecutionContext* context,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
+                              FileSystemDirectoryHandle*)> callback);
+
   // GarbageCollected
   void Trace(Visitor*) const override;
 
@@ -69,6 +76,11 @@ class StorageBucket final : public ScriptWrappable,
                      const absl::optional<base::Time> expires,
                      bool success);
   void GetSandboxedFileSystem(ScriptPromiseResolver* resolver);
+  void GetSandboxedFileSystemForDevtools(
+      ExecutionContext* context,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
+                              FileSystemDirectoryHandle*)> callback,
+      mojom::blink::FileSystemAccessErrorPtr result);
 
   String name_;
 

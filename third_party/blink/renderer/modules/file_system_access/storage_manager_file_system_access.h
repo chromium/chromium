@@ -12,6 +12,8 @@
 
 namespace blink {
 
+class FileSystemDirectoryHandle;
+class ExecutionContext;
 class ExceptionState;
 class ScriptPromise;
 class ScriptPromiseResolver;
@@ -33,10 +35,22 @@ class StorageManagerFileSystemAccess {
       ScriptState* script_state,
       ExceptionState& exception_state,
       base::OnceCallback<void(ScriptPromiseResolver*)> on_allowed);
+  static void CheckGetDirectoryIsAllowed(
+      ExecutionContext* context,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>
+          callback);
 
   // Handles resolving the `getDirectory` promise represented by `resolver`.
   static void DidGetSandboxedFileSystem(
       ScriptPromiseResolver* resolver,
+      mojom::blink::FileSystemAccessErrorPtr result,
+      mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>
+          handle);
+
+  static void DidGetSandboxedFileSystemForDevtools(
+      ExecutionContext* context,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
+                              FileSystemDirectoryHandle*)> callback,
       mojom::blink::FileSystemAccessErrorPtr result,
       mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>
           handle);

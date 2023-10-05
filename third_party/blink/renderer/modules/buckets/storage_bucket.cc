@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/storage_manager_file_system_access.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_factory.h"
 #include "third_party/blink/renderer/modules/locks/lock_manager.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
@@ -190,6 +191,16 @@ ScriptPromise StorageBucket::getDirectory(ScriptState* script_state,
                     WrapWeakPersistent(this)));
 }
 
+void StorageBucket::GetDirectoryForDevTools(
+    ExecutionContext* context,
+    base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
+                            FileSystemDirectoryHandle*)> callback) {
+  StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
+      context, WTF::BindOnce(&StorageBucket::GetSandboxedFileSystemForDevtools,
+                             WrapWeakPersistent(this),
+                             WrapWeakPersistent(context), std::move(callback)));
+}
+
 void StorageBucket::Trace(Visitor* visitor) const {
   visitor->Trace(remote_);
   visitor->Trace(idb_factory_);
@@ -329,5 +340,28 @@ void StorageBucket::GetSandboxedFileSystem(ScriptPromiseResolver* resolver) {
   remote_->GetDirectory(
       WTF::BindOnce(&StorageManagerFileSystemAccess::DidGetSandboxedFileSystem,
                     WrapPersistent(resolver)));
+}
+
+void StorageBucket::GetSandboxedFileSystemForDevtools(
+    ExecutionContext* context,
+    base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
+                            FileSystemDirectoryHandle*)> callback,
+    mojom::blink::FileSystemAccessErrorPtr result) {
+  if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
+    std::move(callback).Run(std::move(result), nullptr);
+    return;
+  }
+
+  if (!remote_.is_bound()) {
+    std::move(callback).Run(
+        mojom::blink::FileSystemAccessError::New(
+            mojom::blink::FileSystemAccessStatus::kInvalidState,
+            base::File::Error::FILE_ERROR_FAILED, "Invalid state Error."), nullptr);
+    return;
+  }
+
+  remote_->GetDirectory(WTF::BindOnce(
+      &StorageManagerFileSystemAccess::DidGetSandboxedFileSystemForDevtools,
+      WrapWeakPersistent(context), std::move(callback)));
 }
 }  // namespace blink
