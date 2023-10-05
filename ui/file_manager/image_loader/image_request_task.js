@@ -582,15 +582,11 @@ ImageRequestTask.prototype.sendImage_ = function(imageChanged) {
     height = this.canvas_.height;
 
     switch (this.contentType_) {
-      case 'image/gif':
-      case 'image/png':
-      case 'image/svg':
-      case 'image/bmp':
-        data = this.canvas_.toDataURL('image/png');
-        break;
       case 'image/jpeg':
-      default:
         data = this.canvas_.toDataURL('image/jpeg', 0.9);
+        break;
+      default:
+        data = this.canvas_.toDataURL('image/png');
         break;
     }
   }
