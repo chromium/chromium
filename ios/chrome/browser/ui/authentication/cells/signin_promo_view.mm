@@ -599,6 +599,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       // Lays out content vertically for standard view.
       self.buttonVerticalStackView.spacing =
           kStandardPromoStyle.kButtonStackViewSubViewSpacing;
+      self.buttonVerticalStackView.alignment = UIStackViewAlignmentFill;
       self.mainPromoStackView.spacing =
           kStandardPromoStyle.kMainPromoSubViewSpacing;
       self.contentStackView.axis = UILayoutConstraintAxisVertical;
@@ -703,6 +704,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       break;
     }
     case SigninPromoViewStyleCompactVertical: {
+      self.buttonVerticalStackView.alignment = UIStackViewAlignmentFill;
       self.contentStackView.axis = UILayoutConstraintAxisVertical;
       self.contentStackView.spacing =
           kCompactVerticalStyle.kContentStackViewSubViewSpacing;
@@ -762,6 +764,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       break;
     }
     case SigninPromoViewStyleOnlyButton: {
+      self.buttonVerticalStackView.alignment = UIStackViewAlignmentCenter;
       self.textVerticalStackView.hidden = YES;
       self.secondaryButton.hidden = YES;
       self.imageView.hidden = YES;
@@ -775,23 +778,25 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       self.primaryButton.clipsToBounds = YES;
 
       if (IsUIButtonConfigurationEnabled()) {
-        self.primaryButton.configuration.baseForegroundColor =
+        UIButtonConfiguration* buttonConfiguration =
+            self.primaryButton.configuration;
+        buttonConfiguration.baseForegroundColor =
             [UIColor colorNamed:kSolidButtonTextColor];
-        self.primaryButton.configuration.contentInsets =
-            NSDirectionalEdgeInsetsMake(
-                kStandardPromoStyle.kButtonTitleVerticalContentInset,
-                kStandardPromoStyle.kButtonTitleHorizontalContentInset,
-                kStandardPromoStyle.kButtonTitleVerticalContentInset,
-                kStandardPromoStyle.kButtonTitleHorizontalContentInset);
+        buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+            kStandardPromoStyle.kButtonTitleVerticalContentInset,
+            kHorizontalPadding,
+            kStandardPromoStyle.kButtonTitleVerticalContentInset,
+            kHorizontalPadding);
+        self.primaryButton.configuration = buttonConfiguration;
       } else {
         [self.primaryButton
             setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
                  forState:UIControlStateNormal];
         UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(
             kStandardPromoStyle.kButtonTitleVerticalContentInset,
-            kStandardPromoStyle.kButtonTitleHorizontalContentInset,
+            kHorizontalPadding,
             kStandardPromoStyle.kButtonTitleVerticalContentInset,
-            kStandardPromoStyle.kButtonTitleHorizontalContentInset);
+            kHorizontalPadding);
         SetContentEdgeInsets(self.primaryButton, contentEdgeInsets);
       }
 
