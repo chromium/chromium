@@ -48,7 +48,9 @@ def _call_profdata_tool(profile_input_file_paths,
   input_file = os.path.join(output_dir,
                             'input-profdata-files.txt').replace('\\', '/')
   with open(input_file, 'w') as fd:
+    logging.info("List of .profdata files...")
     for file_path in profile_input_file_paths:
+      logging.info(file_path)
       fd.write('%s\n' % file_path)
   try:
     subprocess_cmd = [
