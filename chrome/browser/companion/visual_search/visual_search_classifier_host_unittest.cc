@@ -18,8 +18,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
-#include "chrome/browser/companion/visual_search/features.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/companion/visual_search.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
@@ -133,29 +131,6 @@ class VisualSearchClassifierHostTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(VisualSearchClassifierHostTest, StartClassification) {
   SetModelPath();
-  VisualSearchClassifierHost::ResultCallback callback =
-      base::BindOnce([](const VisualSuggestionsResults results,
-                        const VisualSuggestionsMetrics stats) {});
-  visual_search_host_->StartClassification(
-      web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
-  base::RunLoop().RunUntilIdle();
-  histogram_tester_.ExpectBucketCount(
-      "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
-  histogram_tester_.ExpectBucketCount(
-      "Companion.VisualQuery.ClassificationInitStatus",
-      companion::visual_search::InitStatus::kSuccess, 1);
-  histogram_tester_.ExpectTotalCount(
-      "Companion.VisualQuery.ClassifierInitializationLatency", 1);
-  // ClassificationLatency is not recorded until HandleClassification().
-  histogram_tester_.ExpectTotalCount(
-      "Companion.VisualQuery.ClassificationLatency", 0);
-}
-
-TEST_F(VisualSearchClassifierHostTest, StartClassification_WithOverride) {
-  SetModelPath();
-  const std::string config_string = "config_string";
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kVisualSearchConfigForCompanion, config_string);
   VisualSearchClassifierHost::ResultCallback callback =
       base::BindOnce([](const VisualSuggestionsResults results,
                         const VisualSuggestionsMetrics stats) {});

@@ -14,7 +14,6 @@
 #include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/companion/text_finder/text_finder_manager.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
-#include "chrome/browser/companion/visual_search/features.h"
 #include "chrome/browser/companion/visual_search/visual_search_suggestions_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/companion/signin_delegate_impl.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
+#include "chrome/common/companion/visual_search/features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -71,8 +71,7 @@ CompanionPageHandler::CompanionPageHandler(
       IdentityManagerFactory::GetForProfile(GetProfile()));
   // TODO(crbug.com/1476887): Observe PCO similarly.
   consent_helper_observation_.Observe(consent_helper_.get());
-  if (base::FeatureList::IsEnabled(
-          visual_search::features::kVisualSearchSuggestions)) {
+  if (visual_search::features::IsVisualSearchSuggestionsEnabled()) {
     visual_search_host_ =
         std::make_unique<visual_search::VisualSearchClassifierHost>(
             visual_search::VisualSearchSuggestionsServiceFactory::GetForProfile(

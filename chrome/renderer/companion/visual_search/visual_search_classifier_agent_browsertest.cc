@@ -11,13 +11,18 @@
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
+#include "base/test/test_timeouts.h"
 #include "chrome/common/companion/visual_search.mojom.h"
+#include "chrome/common/companion/visual_search/features.h"
 #include "chrome/renderer/companion/visual_search/visual_search_classifier_agent.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
 using testing::_;
 using testing::AtLeast;
@@ -75,6 +80,27 @@ class TestVisualResultHandler : mojom::VisualSuggestionsResultHandler {
   mojo::Receiver<mojom::VisualSuggestionsResultHandler> receiver_{this};
 };
 
+class FakeModelProvider : mojom::VisualSuggestionsModelProvider {
+ public:
+  FakeModelProvider() = default;
+  ~FakeModelProvider() override = default;
+
+  // mojom::VisualSuggestionsModelProvider implementation:
+  void GetModelWithMetadata(GetModelWithMetadataCallback callback) override {
+    base::File model_file = LoadModelFile(model_file_path());
+    std::move(callback).Run(model_file.Duplicate(), "");
+  }
+
+  void BindHandle(mojo::ScopedMessagePipeHandle handle) {
+    receivers_.Add(this,
+                   mojo::PendingReceiver<mojom::VisualSuggestionsModelProvider>(
+                       std::move(handle)));
+  }
+
+ private:
+  mojo::ReceiverSet<mojom::VisualSuggestionsModelProvider> receivers_;
+};
+
 class VisualSearchClassifierAgentTest : public ChromeRenderViewTest {
  public:
   VisualSearchClassifierAgentTest() = default;
@@ -87,6 +113,10 @@ class VisualSearchClassifierAgentTest : public ChromeRenderViewTest {
     agent_ = VisualSearchClassifierAgent::Create(render_frame);
     model_file_ = LoadModelFile(model_file_path());
     base::DiscardableMemoryAllocator::SetInstance(&test_allocator_);
+    render_frame->GetBrowserInterfaceBroker()->SetBinderForTesting(
+        mojom::VisualSuggestionsModelProvider::Name_,
+        base::BindRepeating(&FakeModelProvider::BindHandle,
+                            base::Unretained(&fake_provider_)));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -94,6 +124,8 @@ class VisualSearchClassifierAgentTest : public ChromeRenderViewTest {
     base::DiscardableMemoryAllocator::SetInstance(nullptr);
     // Simulate RenderFrame OnDestruct() call.
     agent_->OnDestruct();
+    GetMainRenderFrame()->GetBrowserInterfaceBroker()->SetBinderForTesting(
+        mojom::VisualSuggestionsModelProvider::Name_, {});
     ChromeRenderViewTest::TearDown();
   }
 
@@ -107,12 +139,35 @@ class VisualSearchClassifierAgentTest : public ChromeRenderViewTest {
     LoadHTML(html.c_str());
   }
 
+  void SetUpFeatureList() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    base::FieldTrialParams params;
+    params["max_visual_suggestions"] = "2";
+    enabled_features.emplace_back(base::test::FeatureRefAndParams(
+        companion::visual_search::features::kVisualSearchSuggestions, params));
+    enabled_features.emplace_back(base::test::FeatureRefAndParams(
+        companion::visual_search::features::kVisualSearchSuggestionsAgent,
+        /* params */ {}));
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  void WaitForAgentClassification() {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
+    run_loop.Run();
+  }
+
  protected:
   VisualSearchClassifierAgent* agent_;  // Owned by RenderFrame
   base::HistogramTester histogram_tester_;
   TestVisualResultHandler test_handler_;
   base::File model_file_;
   base::TestDiscardableMemoryAllocator test_allocator_;
+  base::test::ScopedFeatureList feature_list_;
+  FakeModelProvider fake_provider_;
 };
 
 TEST_F(VisualSearchClassifierAgentTest,
@@ -127,6 +182,24 @@ TEST_F(VisualSearchClassifierAgentTest,
   if (model_file_.IsValid()) {
     histogram_tester_.ExpectBucketCount(
         "Companion.VisualQuery.Agent.DomImageCount", 1, 1);
+  }
+}
+
+TEST_F(VisualSearchClassifierAgentTest,
+       StartClassification_SingleImageNonShoppy_AgentEnabled) {
+  SetUpFeatureList();
+  LoadHtmlWithSingleImage();
+  WaitForAgentClassification();
+  // TODO(b/287637476) - Remove the file valid check.
+  // This validity check is needed because file path does not seem to work on
+  // on certain platforms (i.e. linux-lacros-rel, linux-wayland).
+  if (model_file_.IsValid()) {
+    histogram_tester_.ExpectBucketCount(
+        "Companion.VisualQuery.Agent.ModelRequestSentSuccess", true, 2);
+    histogram_tester_.ExpectBucketCount(
+        "Companion.VisualQuery.Agent.DomImageCount", 1, 2);
+    histogram_tester_.ExpectBucketCount(
+        "Companion.VisualQuery.Agent.ClassificationDone", 0, 2);
   }
 }
 

@@ -19,7 +19,7 @@
 // Need to BUILDFLAG these lines because kSidePanelCompanionEntryPinnedToToolbar
 // does not exist on Android and will break try-bots
 #if (!BUILDFLAG(IS_ANDROID))
-#include "chrome/browser/companion/visual_search/features.h"
+#include "chrome/common/companion/visual_search/features.h"
 #endif
 
 namespace companion {

@@ -2080,6 +2080,8 @@ static_library("browser") {
     "//chrome/common:channel_info",
     "//chrome/common:version_header",
     "//chrome/common/cart:mojo_bindings",
+    "//chrome/common/companion:mojo_bindings",
+    "//chrome/common/companion/visual_search:flags",
     "//chrome/common/net",
     "//chrome/common/notifications",
     "//chrome/installer/util:with_no_strings",
@@ -2526,7 +2528,6 @@ static_library("browser") {
 
   if (!is_android) {
     deps += [
-      "//chrome/browser/companion/visual_search:flags",
       "//components/user_education/common",
     ]
   }
