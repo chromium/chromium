@@ -31,8 +31,8 @@ namespace {
 
 constexpr char kUpdateNotificationId[] = "chrome://update_notification";
 
-// TODO(b/284978852): Update the link.
-constexpr char kUpdateURL[] = "https://www.google.com/chromebook/";
+constexpr char kUpdateURL[] =
+    "https://www.google.com/chromebook/discover/chromebookplus/";
 
 }  // namespace
 
@@ -52,12 +52,11 @@ void UpdateNotification::ShowNotification() {
   message_center::RichNotificationData data;
   data.buttons.emplace_back(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
 
-  // Product name does not need to be translated.
-  auto product_name =
-      l10n_util::GetStringUTF16(ui::GetChromeOSDeviceTypeResourceId());
   message_center::Notification notification = CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_IMAGE, kUpdateNotificationId,
-      l10n_util::GetStringFUTF16(IDS_UPDATE_NOTIFICATION_HEADER, product_name),
+      // Product name does not need to be translated.
+      l10n_util::GetStringFUTF16(IDS_UPDATE_NOTIFICATION_HEADER,
+                                 u"Chromebook Plus"),
       l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_MESSAGE),
       std::u16string(), GURL(kUpdateNotificationId),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
@@ -69,13 +68,12 @@ void UpdateNotification::ShowNotification() {
                               weak_factory_.GetWeakPtr())),
       gfx::kNoneIcon, message_center::SystemNotificationWarningLevel::NORMAL);
 
-  // TODO(b/284978852): Use the images after it's finalized from the UX.
   // DarkLightModeController might be nullptr in tests.
   auto* dark_light_mode_controller = DarkLightModeController::Get();
   const bool use_dark_image = dark_light_mode_controller &&
                               dark_light_mode_controller->IsDarkModeEnabled();
-  int image_resource_id = use_dark_image ? IDR_TRAY_CAST_ZERO_STATE_DARK
-                                         : IDR_TRAY_CAST_ZERO_STATE_LIGHT;
+  int image_resource_id =
+      use_dark_image ? IDR_UPDATE_CHROME_DARK : IDR_UPDATE_CHROME_LIGHT;
 
   notification.set_image(
       ui::ImageModel::FromResourceId(image_resource_id).GetImage());

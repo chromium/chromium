@@ -1090,7 +1090,7 @@ BASE_FEATURE(kFeatureManagementUpdateNotification,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUpdateNotification,
              "UpdateNotification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows borealis on certain boards whose features are determined by
 // FeatureManagement. This feature does not apply to all boards, and does not
