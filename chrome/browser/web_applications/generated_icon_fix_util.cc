@@ -23,6 +23,16 @@ namespace generated_icon_fix_util {
 namespace {
 
 constexpr base::TimeDelta kFixWindowDuration = base::Days(7);
+constexpr base::TimeDelta kFixAttemptThrottleDuration = base::Days(1);
+
+// Capping the number of attempts should be redundant with the throttle + window
+// but, because retries on failure are self propagating, have an explicit
+// attempt count to be extra safe. Ordinarily a constraint like this would be
+// CHECK'd but because these attempts run at start up it wouldn't be good for
+// stability.
+constexpr uint32_t kMaxAttemptCount =
+    kFixWindowDuration.IntDiv(kFixAttemptThrottleDuration);
+static_assert(kMaxAttemptCount == 7u);
 
 absl::optional<base::Time> g_now_override_for_testing_;
 
@@ -63,6 +73,15 @@ void SetNowForTesting(base::Time now) {
   g_now_override_for_testing_ = now;
 }
 
+bool HasRemainingAttempts(const WebApp& app) {
+  const absl::optional<GeneratedIconFix>& generated_icon_fix =
+      app.generated_icon_fix();
+  if (!generated_icon_fix.has_value()) {
+    return true;
+  }
+  return generated_icon_fix->attempt_count() < kMaxAttemptCount;
+}
+
 bool IsWithinFixTimeWindow(const WebApp& app) {
   const absl::optional<GeneratedIconFix>& generated_icon_fix =
       app.generated_icon_fix();
@@ -96,6 +115,23 @@ GeneratedIconFix CreateInitialTimeWindow(GeneratedIconFixSource source) {
   generated_icon_fix.set_window_start_time(syncer::TimeToProtoTime(Now()));
   generated_icon_fix.set_attempt_count(0);
   return generated_icon_fix;
+}
+
+base::TimeDelta GetThrottleDuration(const WebApp& app) {
+  const absl::optional<GeneratedIconFix> generated_icon_fix =
+      app.generated_icon_fix();
+  if (!generated_icon_fix.has_value() ||
+      !generated_icon_fix->has_last_attempt_time()) {
+    return base::TimeDelta();
+  }
+
+  base::TimeDelta throttle_duration =
+      syncer::ProtoTimeToTime(generated_icon_fix->last_attempt_time()) +
+      kFixAttemptThrottleDuration - Now();
+  // Negative durations could cause us to skip ahead of other tasks already in
+  // the task queue when used in PostDelayedTask() so clamp to 0.
+  return throttle_duration.is_negative() ? base::TimeDelta()
+                                         : throttle_duration;
 }
 
 void RecordFixAttempt(WithAppResources& resources,

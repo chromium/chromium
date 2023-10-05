@@ -27,6 +27,8 @@ base::Value ToDebugValue(const GeneratedIconFix* generated_icon_fix);
 
 void SetNowForTesting(base::Time now);
 
+bool HasRemainingAttempts(const WebApp& app);
+
 // Checks if the current time is within the GeneratedIconFix time window for
 // `app`. If retroactive fixes are enabled then the absence of a time window
 // implies it can retroactively start now.
@@ -38,6 +40,8 @@ void EnsureFixTimeWindowStarted(WithAppResources& resources,
                                 GeneratedIconFixSource source);
 
 GeneratedIconFix CreateInitialTimeWindow(GeneratedIconFixSource source);
+
+base::TimeDelta GetThrottleDuration(const WebApp& app);
 
 void RecordFixAttempt(WithAppResources& resources,
                       ScopedRegistryUpdate& update,

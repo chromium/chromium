@@ -20,11 +20,13 @@
 namespace web_app {
 
 class WebAppProvider;
+class WebApp;
 
 enum class GeneratedIconFixScheduleDecision {
   kNoApp,
   kTimeWindowExpired,
   kNotRequired,
+  kAttemptLimitReached,
   kAlreadyScheduled,
   kSchedule,
 };
@@ -40,7 +42,9 @@ class GeneratedIconFixManager {
   // TODO(crbug.com/1216965): Schedule fixes ten minutes after sync install.
   // TODO(crbug.com/1216965): Schedule fixes on network reconnection.
 
-  const base::flat_set<webapps::AppId>& scheduled_fixes_for_testing() const {
+  void InvalidateWeakPtrsForTesting();
+
+  base::flat_set<webapps::AppId>& scheduled_fixes_for_testing() {
     return scheduled_fixes_;
   }
 
@@ -59,9 +63,8 @@ class GeneratedIconFixManager {
   GeneratedIconFixScheduleDecision MaybeScheduleFix(
       WithAppResources& resources,
       const webapps::AppId& app_id);
-  GeneratedIconFixScheduleDecision MakeScheduleDecision(
-      const WebAppRegistrar& registrar,
-      const webapps::AppId& app_id);
+  GeneratedIconFixScheduleDecision MakeScheduleDecision(const WebApp* app);
+  void StartFix(const webapps::AppId& app_id);
   void FixCompleted(const webapps::AppId& app_id,
                     GeneratedIconFixResult result);
 
