@@ -595,7 +595,7 @@
       <entry name="normal" value="1" summary="caption with shadow"/>
       <entry name="shadow" value="2" summary="shadow only"/>
       <entry name="autohide" value="3" summary="autohide frame with shadow"/>
-      <entry name="overlay" value="4" summary="overlay frame with shadow"/>
+      <entry name="overlay" value="4" summary="[Deprecated] overlay frame with shadow"/>
       <entry name="overlap" value="5" summary="overlap frame with the window" since="6"/>
     </enum>
 
