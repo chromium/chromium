@@ -26673,6 +26673,7 @@ Called by update_debug_scenarios.py.-->
   <int value="17" label="Composited Candidate Not Shared Image"/>
   <int value="18" label="Composited Candidate Bad Mask Filter"/>
   <int value="19" label="Composited Candidate Has Transform Can't Clip"/>
+  <int value="20" label="Composited Candidate Is Renderpass With Transform"/>
 </enum>
 
 <enum name="DeleteBrowsingDataAction">

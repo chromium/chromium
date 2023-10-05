@@ -382,6 +382,14 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     return status;
   }
 
+  // TODO(b/1471182): Render passes with transforms are complicated because
+  // clipping combined with filters that expand their bounds mean we don't know
+  // their exact size yet. Disabling them temporarily until we fix all the bugs.
+  bool is_rpdq = !!quad->DynamicCast<AggregatedRenderPassDrawQuad>();
+  if (absl::holds_alternative<gfx::Transform>(candidate.transform) && is_rpdq) {
+    return CandidateStatus::kFailRpdqWithTransform;
+  }
+
   candidate.is_opaque =
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
 

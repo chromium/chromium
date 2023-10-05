@@ -3762,11 +3762,26 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 #else   // BUILDFLAG(IS_OZONE)
   // TODO(fangzhoug): Merge Ozone and Apple code paths of delegated compositing.
 
-  // |display_rect| already accounts for expanded filter bounds.
-
-  // Set |uv_rect| to reflect rounding from |display_rect| to |buffer_size|.
-  overlay->uv_rect = gfx::RectF(overlay->display_rect.size());
+  // Set |uv_rect| to reflect rounding up from |filter_bounds| to |buffer_size|.
+  overlay->uv_rect = gfx::RectF(filter_bounds.size());
   overlay->uv_rect.InvScale(buffer_size.width(), buffer_size.height());
+
+  if (absl::holds_alternative<gfx::OverlayTransform>(overlay->transform)) {
+    // When using an OverlayTransform, the transform should be baked into the
+    // display_rect.
+    overlay->display_rect =
+        quad->shared_quad_state->quad_to_target_transform.MapRect(
+            gfx::RectF(filter_bounds));
+    // Apply all clipping because we can't always delegate quads that extend
+    // beyond window bounds in Lacros.
+    gfx::Rect apply_clip = gfx::Rect(current_frame()->device_viewport_size);
+    if (overlay->clip_rect.has_value()) {
+      apply_clip.Intersect(overlay->clip_rect.value());
+    }
+    OverlayCandidate::ApplyClip(*overlay, gfx::RectF(apply_clip));
+    overlay->clip_rect = absl::nullopt;
+  }
+
   // Fill in |format| and |color_space| information based on selected backing.
   overlay->color_space = color_space;
   overlay->format = SinglePlaneSharedImageFormatToBufferFormat(buffer_format);

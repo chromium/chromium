@@ -271,6 +271,10 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
           delegated_status_ =
               DelegationStatus::kCompositedCandidateTransformCantClip;
           break;
+        case OverlayCandidate::CandidateStatus::kFailRpdqWithTransform:
+          delegated_status_ =
+              DelegationStatus::kCompositedCandidateRpdqWithTransform;
+          break;
         default:
           delegated_status_ = DelegationStatus::kCompositedCandidateFailed;
           break;

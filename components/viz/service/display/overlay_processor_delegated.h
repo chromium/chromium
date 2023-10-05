@@ -93,7 +93,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
     kCompositedCandidateNotSharedImage = 17,
     kCompositedCandidateMaskFilter = 18,
     kCompositedCandidateTransformCantClip = 19,
-    kMaxValue = kCompositedCandidateTransformCantClip
+    kCompositedCandidateRpdqWithTransform = 20,
+    kMaxValue = kCompositedCandidateRpdqWithTransform
   };
 
   gfx::RectF GetPrimaryPlaneDisplayRect(
