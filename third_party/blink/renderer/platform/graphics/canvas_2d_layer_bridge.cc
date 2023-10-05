@@ -350,7 +350,8 @@ void Canvas2DLayerBridge::SkipQueuedDrawCommands() {
 
 void Canvas2DLayerBridge::FlushRecording(FlushReason reason) {
   CHECK(resource_host_);
-  if (!GetOrCreateResourceProvider()) {
+  CanvasResourceProvider* provider = GetOrCreateResourceProvider();
+  if (!provider || !provider->HasRecordedDrawOps()) {
     return;
   }
 
