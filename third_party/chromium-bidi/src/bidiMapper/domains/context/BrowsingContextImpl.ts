@@ -733,6 +733,8 @@ export class BrowsingContextImpl {
       );
     }
 
+    const formatParameters = getImageFormatParameters(params);
+
     // XXX: Focus the original tab after the screenshot is taken.
     // This is needed because the screenshot gets blocked until the active tab gets focus.
     await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
@@ -759,7 +761,7 @@ export class BrowsingContextImpl {
 
     const result = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.captureScreenshot',
-      {clip: {...rect, scale: 1.0}}
+      {clip: {...rect, scale: 1.0}, ...formatParameters}
     );
     return {
       data: result.data,
@@ -928,6 +930,31 @@ export class BrowsingContextImpl {
   async close(): Promise<void> {
     await this.#cdpTarget.cdpClient.sendCommand('Page.close');
   }
+}
+
+function getImageFormatParameters(
+  params: Readonly<BrowsingContext.CaptureScreenshotParameters>
+) {
+  const {quality, type} = params.format ?? {
+    type: 'image/png',
+  };
+  switch (type) {
+    case 'image/png': {
+      return {format: 'png'} as const;
+    }
+    case 'image/jpeg': {
+      return {
+        format: 'jpeg',
+        ...(quality === undefined ? {} : {quality: Math.round(quality * 100)}),
+      } as const;
+    }
+    case 'image/webp': {
+      return {format: 'webp'} as const;
+    }
+  }
+  throw new UnsupportedOperationException(
+    `Image format '${type}' is not a supported format`
+  );
 }
 
 function deserializeDOMRect(
