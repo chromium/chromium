@@ -225,7 +225,7 @@ class DlpScopedFileAccessDelegateBrowserTest : public InProcessBrowserTest {
     chromeos::DlpClient::Shutdown();
     chromeos::DlpClient::InitializeFake();
     delegate_ = std::make_unique<DlpScopedFileAccessDelegate>(
-        chromeos::DlpClient::Get());
+        base::BindRepeating(chromeos::DlpClient::Get));
     EXPECT_TRUE(tmp_.CreateUniqueTempDir());
 
     content::WebContents* const web_contents =
@@ -454,7 +454,8 @@ IN_PROC_BROWSER_TEST_F(DlpFileSystemAccessMoveTest,
                        FileSystemAccessMoveProtectedAllow) {
   PrepareDirPicker(/*createFile=*/true);
 
-  DlpScopedFileAccessDelegate::Initialize(fake_dlp_client_);
+  DlpScopedFileAccessDelegate::Initialize(base::BindLambdaForTesting(
+      [this]() -> chromeos::DlpClient* { return fake_dlp_client_.get(); }));
 
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
       browser()->profile(),

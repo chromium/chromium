@@ -50,10 +50,11 @@ void RequestFileAccessForSystem(
 }  // namespace
 
 // static
-void DlpScopedFileAccessDelegate::Initialize(chromeos::DlpClient* client) {
+void DlpScopedFileAccessDelegate::Initialize(
+    DlpScopedFileAccessDelegate::DlpClientProvider client_provider) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!HasInstance()) {
-    new DlpScopedFileAccessDelegate(client);
+    new DlpScopedFileAccessDelegate(std::move(client_provider));
   }
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce([]() {
@@ -68,8 +69,9 @@ void DlpScopedFileAccessDelegate::Initialize(chromeos::DlpClient* client) {
 }
 
 DlpScopedFileAccessDelegate::DlpScopedFileAccessDelegate(
-    chromeos::DlpClient* client)
-    : client_(client), weak_ptr_factory_(this) {
+    DlpScopedFileAccessDelegate::DlpClientProvider client_provider)
+    : client_provider_(std::move(client_provider)), weak_ptr_factory_(this) {
+  CHECK(!client_provider_.is_null());
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DlpFileAccessCopyOrMoveDelegateFactory::Initialize();
 }
@@ -92,7 +94,8 @@ void DlpScopedFileAccessDelegate::RequestFilesAccess(
     base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
   CHECK(destination_url.is_valid());
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!client_->IsAlive()) {
+  auto* client = client_provider_.Run();
+  if (!client || !client->IsAlive()) {
     std::move(callback).Run(file_access::ScopedFileAccess::Allowed());
     return;
   }
@@ -101,14 +104,15 @@ void DlpScopedFileAccessDelegate::RequestFilesAccess(
       PrepareBaseRequestFileAccessRequest(files);
   request.set_destination_url(destination_url.spec());
 
-  PostRequestFileAccessToDaemon(request, std::move(callback));
+  PostRequestFileAccessToDaemon(client, request, std::move(callback));
 }
 
 void DlpScopedFileAccessDelegate::RequestFilesAccessForSystem(
     const std::vector<base::FilePath>& files,
     base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!client_->IsAlive()) {
+  auto* client = client_provider_.Run();
+  if (!client || !client->IsAlive()) {
     std::move(callback).Run(file_access::ScopedFileAccess::Allowed());
     return;
   }
@@ -117,7 +121,7 @@ void DlpScopedFileAccessDelegate::RequestFilesAccessForSystem(
       PrepareBaseRequestFileAccessRequest(files);
   request.set_destination_component(dlp::DlpComponent::SYSTEM);
 
-  PostRequestFileAccessToDaemon(request, std::move(callback));
+  PostRequestFileAccessToDaemon(client, request, std::move(callback));
 }
 
 DlpScopedFileAccessDelegate::RequestFilesAccessIOCallback
@@ -144,10 +148,11 @@ DlpScopedFileAccessDelegate::CreateFileAccessCallback(
 }
 
 void DlpScopedFileAccessDelegate::PostRequestFileAccessToDaemon(
+    chromeos::DlpClient* client,
     const ::dlp::RequestFileAccessRequest request,
     base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  client_->RequestFileAccess(
+  client->RequestFileAccess(
       request,
       base::BindOnce(&DlpScopedFileAccessDelegate::OnResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

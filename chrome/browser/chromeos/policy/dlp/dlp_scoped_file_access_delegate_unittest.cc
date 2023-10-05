@@ -34,10 +34,16 @@ class DlpScopedFileAccessDelegateTest : public testing::Test {
       const DlpScopedFileAccessDelegateTest&) = delete;
 
  protected:
+  void InitializeWithFakeClient() {
+    DlpScopedFileAccessDelegate::Initialize(base::BindLambdaForTesting(
+        [this]() -> chromeos::DlpClient* { return &fake_dlp_client_; }));
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   chromeos::FakeDlpClient fake_dlp_client_;
   std::unique_ptr<DlpScopedFileAccessDelegate> delegate_{
-      new DlpScopedFileAccessDelegate(&fake_dlp_client_)};
+      new DlpScopedFileAccessDelegate(base::BindLambdaForTesting(
+          [this]() -> chromeos::DlpClient* { return &fake_dlp_client_; }))};
 };
 
 TEST_F(DlpScopedFileAccessDelegateTest, TestNoSingleton) {
@@ -60,7 +66,7 @@ TEST_F(DlpScopedFileAccessDelegateTest, TestFileAccessSingletonForUrl) {
   base::FilePath file_path;
   base::CreateTemporaryFile(&file_path);
 
-  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  InitializeWithFakeClient();
 
   base::test::TestFuture<file_access::ScopedFileAccess> future1;
   auto* delegate = file_access::ScopedFileAccessDelegate::Get();
@@ -80,7 +86,7 @@ TEST_F(DlpScopedFileAccessDelegateTest,
   base::FilePath file_path;
   base::CreateTemporaryFile(&file_path);
 
-  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  InitializeWithFakeClient();
 
   base::test::TestFuture<file_access::ScopedFileAccess> future1;
   auto* delegate = file_access::ScopedFileAccessDelegate::Get();
@@ -92,7 +98,7 @@ TEST_F(DlpScopedFileAccessDelegateTest, CreateFileAccessCallbackAllowTest) {
   base::FilePath file_path;
   base::CreateTemporaryFile(&file_path);
 
-  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  InitializeWithFakeClient();
   fake_dlp_client_.SetFileAccessAllowed(true);
 
   base::test::TestFuture<file_access::ScopedFileAccess> future;
@@ -106,7 +112,7 @@ TEST_F(DlpScopedFileAccessDelegateTest, CreateFileAccessCallbackDenyTest) {
   base::FilePath file_path;
   base::CreateTemporaryFile(&file_path);
 
-  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  InitializeWithFakeClient();
   fake_dlp_client_.SetFileAccessAllowed(false);
 
   base::test::TestFuture<file_access::ScopedFileAccess> future;
@@ -121,7 +127,7 @@ TEST_F(DlpScopedFileAccessDelegateTest,
   base::FilePath file_path;
   base::CreateTemporaryFile(&file_path);
 
-  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  InitializeWithFakeClient();
   fake_dlp_client_.SetFileAccessAllowed(false);
 
   base::test::TestFuture<file_access::ScopedFileAccess> future;
@@ -136,7 +142,7 @@ TEST_F(DlpScopedFileAccessDelegateTest, GetCallbackSystemTest) {
   base::FilePath file_path;
   base::CreateTemporaryFile(&file_path);
 
-  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  InitializeWithFakeClient();
 
   // Post a task on IO thread to sync with to be sure the IO task setting
   // `request_files_access_for_system_io_callback_` has run.
@@ -154,7 +160,7 @@ TEST_F(DlpScopedFileAccessDelegateTest, GetCallbackSystemTest) {
   EXPECT_TRUE(future.Get<0>().is_allowed());
 }
 
-TEST_F(DlpScopedFileAccessDelegateTest, GetCallbackSystemNoSingeltonTest) {
+TEST_F(DlpScopedFileAccessDelegateTest, GetCallbackSystemNoSingletonTest) {
   base::FilePath file_path;
   base::CreateTemporaryFile(&file_path);
 
@@ -166,9 +172,53 @@ TEST_F(DlpScopedFileAccessDelegateTest, GetCallbackSystemNoSingeltonTest) {
   EXPECT_TRUE(future.Get<0>().is_allowed());
 }
 
+TEST_F(DlpScopedFileAccessDelegateTest, NoDlpClientAvailable) {
+  // Creating a new instance will automatically delete the old one. Reset the
+  // pointer so that we don't attempt to deallocate.
+  delegate_.reset();
+  auto delegate =
+      std::make_unique<DlpScopedFileAccessDelegate>(base::BindLambdaForTesting(
+          []() -> chromeos::DlpClient* { return nullptr; }));
+
+  // Defaults to allowed.
+  base::test::TestFuture<file_access::ScopedFileAccess> future1;
+  delegate->RequestFilesAccess({base::FilePath()},
+                               GURL("https://no_dlp_client.com"),
+                               future1.GetCallback());
+  EXPECT_TRUE(future1.Get<0>().is_allowed());
+
+  // Defaults to allowed.
+  base::test::TestFuture<file_access::ScopedFileAccess> future2;
+  delegate->RequestFilesAccessForSystem({base::FilePath()},
+                                        future2.GetCallback());
+  EXPECT_TRUE(future2.Get<0>().is_allowed());
+}
+
+TEST_F(DlpScopedFileAccessDelegateTest, DlpClientNotAlive) {
+  InitializeWithFakeClient();
+
+  fake_dlp_client_.SetIsAlive(false);
+
+  // Defaults to allowed.
+  base::test::TestFuture<file_access::ScopedFileAccess> future1;
+  delegate_->RequestFilesAccess({base::FilePath()},
+                                GURL("https://no_dlp_client.com"),
+                                future1.GetCallback());
+  EXPECT_TRUE(future1.Get<0>().is_allowed());
+
+  // Defaults to allowed.
+  base::test::TestFuture<file_access::ScopedFileAccess> future2;
+  delegate_->RequestFilesAccessForSystem({base::FilePath()},
+                                         future2.GetCallback());
+  EXPECT_TRUE(future2.Get<0>().is_allowed());
+}
+
 TEST_F(DlpScopedFileAccessDelegateTest, TestMultipleInstances) {
-  DlpScopedFileAccessDelegate::Initialize(nullptr);
-  EXPECT_NO_FATAL_FAILURE(DlpScopedFileAccessDelegate::Initialize(nullptr));
+  auto null_client_provider = []() -> chromeos::DlpClient* { return nullptr; };
+  DlpScopedFileAccessDelegate::Initialize(
+      base::BindLambdaForTesting(null_client_provider));
+  EXPECT_NO_FATAL_FAILURE(DlpScopedFileAccessDelegate::Initialize(
+      base::BindLambdaForTesting(null_client_provider)));
 }
 
 class DlpScopedFileAccessDelegateTaskTest : public testing::Test {
@@ -196,7 +246,7 @@ class DlpScopedFileAccessDelegateTaskTest : public testing::Test {
   }
 
   void Init() {
-    DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+    InitializeWithFakeClient();
     io_thread_->PostTask(
         FROM_HERE,
         base::BindOnce(&DlpScopedFileAccessDelegateTaskTest::TestPostInit,
@@ -223,6 +273,12 @@ class DlpScopedFileAccessDelegateTaskTest : public testing::Test {
     EXPECT_FALSE(
         file_access::FileAccessCopyOrMoveDelegateFactory::HasInstance());
     run_loop_.Quit();
+  }
+
+ protected:
+  void InitializeWithFakeClient() {
+    DlpScopedFileAccessDelegate::Initialize(base::BindLambdaForTesting(
+        [this]() -> chromeos::DlpClient* { return &fake_dlp_client_; }));
   }
 };
 
@@ -258,7 +314,7 @@ TEST_F(DlpScopedFileAccessDelegateTaskTest,
        TestGetFilesAccessForSystemIODestroyedInstance) {
   base::FilePath file_path;
   base::CreateTemporaryFile(&file_path);
-  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  InitializeWithFakeClient();
   // Dlp would disallow but missing ScopedFileAccessDelegate should fall back to
   // allow.
   fake_dlp_client_.SetFileAccessAllowed(false);
@@ -305,7 +361,7 @@ TEST_F(DlpScopedFileAccessDelegateTaskTest,
 
 TEST_F(DlpScopedFileAccessDelegateTaskTest,
        TestGetFilesAccessForSystemIOAllow) {
-  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  InitializeWithFakeClient();
   base::FilePath file_path;
   base::CreateTemporaryFile(&file_path);
   fake_dlp_client_.SetFileAccessAllowed(true);
@@ -324,7 +380,7 @@ TEST_F(DlpScopedFileAccessDelegateTaskTest,
 
 TEST_F(DlpScopedFileAccessDelegateTaskTest,
        TestGetFilesAccessForSystemIODisallow) {
-  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  InitializeWithFakeClient();
   base::FilePath file_path;
   base::CreateTemporaryFile(&file_path);
   fake_dlp_client_.SetFileAccessAllowed(false);

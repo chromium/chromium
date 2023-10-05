@@ -206,7 +206,8 @@ void OnSetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyResponse response) {
     return;
   }
   DCHECK(chromeos::DlpClient::Get()->IsAlive());
-  DlpScopedFileAccessDelegate::Initialize(chromeos::DlpClient::Get());
+  DlpScopedFileAccessDelegate::Initialize(
+      base::BindRepeating(chromeos::DlpClient::Get));
 }
 
 ::dlp::DlpRuleLevel GetLevelProtoEnum(const DlpRulesManager::Level level) {

@@ -85,7 +85,8 @@ class DlpScopedFileAccessDelegateInteractiveUITest
     chromeos::DlpClient::InitializeFake();
 
     delegate_ = std::unique_ptr<DlpScopedFileAccessDelegate>(
-        new DlpScopedFileAccessDelegate(chromeos::DlpClient::Get()));
+        new DlpScopedFileAccessDelegate(
+            base::BindRepeating(chromeos::DlpClient::Get)));
 
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
     ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
