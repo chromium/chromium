@@ -69,12 +69,12 @@ vars = {
 
   # By default, don't check out android. Will be overridden by gclient
   # variables.
-  # TODO(ehmaldonado): Remove this once the bug in gclient is fixed.
+  # TODO(crbug.com/875037): Remove this once the problem in gclient is fixed.
   'checkout_android': False,
 
   # By default, don't check out Fuchsia. Will be overridden by gclient
   # variables.
-  # TODO(ehmaldonado): Remove this once the bug in gclient is fixed.
+  # TODO(crbug.com/875037): Remove this once the problem in gclient is fixed.
   'checkout_fuchsia': False,
 
   # For code related to internal Fuchsia images.
