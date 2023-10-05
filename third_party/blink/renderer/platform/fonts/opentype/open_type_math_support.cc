@@ -129,8 +129,9 @@ absl::optional<float> OpenTypeMathSupport::MathConstant(
 absl::optional<float> OpenTypeMathSupport::MathItalicCorrection(
     const HarfBuzzFace* harfbuzz_face,
     Glyph glyph) {
-  if (!harfbuzz_face)
+  if (!HasMathData(harfbuzz_face)) {
     return absl::nullopt;
+  }
 
   hb_font_t* const font = harfbuzz_face->GetScaledFont();
 

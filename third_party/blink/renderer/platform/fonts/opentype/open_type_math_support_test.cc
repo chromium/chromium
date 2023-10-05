@@ -440,4 +440,13 @@ TEST_F(OpenTypeMathSupportTest, MathItalicCorrection) {
   }
 }
 
+TEST_F(OpenTypeMathSupportTest, MathItalicCorrectionNullOpt) {
+  // Font without a MATH table.
+  Font math_text = CreateMathFont("math-text.woff");
+  Glyph glyph = math_text.PrimaryFont()->GlyphForCharacter('A');
+  EXPECT_TRUE(glyph);
+  EXPECT_FALSE(OpenTypeMathSupport::MathItalicCorrection(
+      math_text.PrimaryFont()->PlatformData().GetHarfBuzzFace(), glyph));
+}
+
 }  // namespace blink
