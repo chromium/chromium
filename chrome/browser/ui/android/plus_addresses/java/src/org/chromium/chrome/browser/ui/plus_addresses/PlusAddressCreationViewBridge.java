@@ -33,10 +33,27 @@ public class PlusAddressCreationViewBridge implements PlusAddressCreationDelegat
     }
 
     @CalledByNative
-    private void show(WindowAndroid windowAndroid, String primaryEmailAddress, String modalTitle) {
+    private void show(
+            WindowAndroid windowAndroid,
+            String primaryEmailAddress,
+            String modalTitle,
+            String plusAddressLabel,
+            String proposedPlusAddressPlaceholder,
+            String plusAddressDescription,
+            String plusAddressModalOkText,
+            String plusAddressModalCancelText) {
         Activity activity = windowAndroid.getActivity().get();
         mPlusAddressCreationPrompt =
-                new PlusAddressCreationPrompt(this, activity, primaryEmailAddress, modalTitle);
+                new PlusAddressCreationPrompt(
+                        this,
+                        activity,
+                        primaryEmailAddress,
+                        modalTitle,
+                        plusAddressLabel,
+                        proposedPlusAddressPlaceholder,
+                        plusAddressDescription,
+                        plusAddressModalOkText,
+                        plusAddressModalCancelText);
         mPlusAddressCreationPrompt.show(windowAndroid.getModalDialogManager());
     }
 

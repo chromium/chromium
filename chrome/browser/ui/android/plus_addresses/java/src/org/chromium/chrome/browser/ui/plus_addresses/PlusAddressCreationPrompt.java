@@ -5,14 +5,12 @@
 package org.chromium.chrome.browser.ui.plus_addresses;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -28,31 +26,46 @@ public class PlusAddressCreationPrompt implements ModalDialogProperties.Controll
     private ModalDialogManager mModalDialogManager;
     private final View mDialogView;
 
-    public PlusAddressCreationPrompt(PlusAddressCreationDelegate delegate, Activity activity,
-            String primaryEmailAddressHolder, String modalTitle) {
+    public PlusAddressCreationPrompt(
+            PlusAddressCreationDelegate delegate,
+            Activity activity,
+            String primaryEmailAddressHolder,
+            String modalTitle,
+            String plusAddressLabel,
+            String proposedPlusAddressPlaceholder,
+            String plusAddressDescription,
+            String plusAddressModalOkText,
+            String plusAddressModalCancelText) {
         mPlusAddressDelegate = delegate;
         LayoutInflater inflater = LayoutInflater.from(activity);
         mDialogView = inflater.inflate(R.layout.plus_address_creation_prompt, null);
 
-        // TODO(crbug.com/1467623): Switch to more-standard strings, without any notion of
-        // inheriting the larger `generated_resources.grd`. This is a temporary state to work around
-        // some project exigencies.
-        Context context = ContextUtils.getApplicationContext();
+        // TODO(crbug.com/1467623): Switch to normal strings in the view XML. This is a temporary
+        // state to work around some project exigencies.
         TextView modalTitleView = mDialogView.findViewById(R.id.plus_address_notice_title);
         modalTitleView.setText(modalTitle);
         TextView primaryEmailView = mDialogView.findViewById(R.id.plus_address_modal_primary_email);
         primaryEmailView.setText(primaryEmailAddressHolder);
+        TextView plusAddressLabelView =
+                mDialogView.findViewById(R.id.plus_address_modal_plus_address_label);
+        plusAddressLabelView.setText(plusAddressLabel);
+        TextView proposedPlusAddressView = mDialogView.findViewById(R.id.proposed_plus_address);
+        proposedPlusAddressView.setText(proposedPlusAddressPlaceholder);
+        TextView plusAddressDescriptionView =
+                mDialogView.findViewById(R.id.plus_address_modal_explanation);
+        plusAddressDescriptionView.setText(plusAddressDescription);
 
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
-                        .with(ModalDialogProperties.BUTTON_STYLES,
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                context.getString(R.string.plus_address_modal_ok_text))
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                context.getString(R.string.plus_address_modal_cancel_text));
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, plusAddressModalOkText)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                plusAddressModalCancelText);
         mDialogModel = builder.build();
     }
 

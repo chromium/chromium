@@ -36,6 +36,11 @@ public class PlusAddressCreationPromptTest {
     private static final long NATIVE_PLUS_ADDRESS_CREATION_VIEW = 100L;
     private static final String EMAIL_PLACEHOLDER = "plus+plus@plus.plus";
     private static final String MODAL_TITLE = "mattwashere";
+    private static final String MODAL_LABEL = "mattwashere2";
+    private static final String MODAL_PLUS_ADDRESS_PLACEHOLDER = "plus+1@plus.plus";
+    private static final String MODAL_PLUS_ADDRESS_DESCRIPTION = "lorem ipsum asdf";
+    private static final String MODAL_OK = "ok";
+    private static final String MODAL_CANCEL = "cancel";
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -60,8 +65,17 @@ public class PlusAddressCreationPromptTest {
 
     private void createAndShowPrompt() {
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
-        mPrompt = new PlusAddressCreationPrompt(
-                mPromptDelegate, mActivity, EMAIL_PLACEHOLDER, MODAL_TITLE);
+        mPrompt =
+                new PlusAddressCreationPrompt(
+                        mPromptDelegate,
+                        mActivity,
+                        EMAIL_PLACEHOLDER,
+                        MODAL_TITLE,
+                        MODAL_LABEL,
+                        MODAL_PLUS_ADDRESS_PLACEHOLDER,
+                        MODAL_PLUS_ADDRESS_DESCRIPTION,
+                        MODAL_OK,
+                        MODAL_CANCEL);
         mPrompt.show(mModalDialogManager);
     }
 
@@ -73,10 +87,19 @@ public class PlusAddressCreationPromptTest {
                 R.id.plus_address_modal_primary_email);
         TextView modalTitleView =
                 mPrompt.getDialogViewForTesting().findViewById(R.id.plus_address_notice_title);
+        TextView modalExplanationView =
+                mPrompt.getDialogViewForTesting().findViewById(R.id.plus_address_modal_explanation);
+        TextView modalPlusAddressPlaceholderView =
+                mPrompt.getDialogViewForTesting().findViewById(R.id.proposed_plus_address);
         // Ensure that the email placeholder passed into the prompt is shown in the
         // appropriate spot.
         Assert.assertEquals(primaryEmailView.getText().toString(), EMAIL_PLACEHOLDER);
         Assert.assertEquals(modalTitleView.getText().toString(), MODAL_TITLE);
+        Assert.assertEquals(
+                modalExplanationView.getText().toString(), MODAL_PLUS_ADDRESS_DESCRIPTION);
+        Assert.assertEquals(
+                modalPlusAddressPlaceholderView.getText().toString(),
+                MODAL_PLUS_ADDRESS_PLACEHOLDER);
         Assert.assertNotNull(mModalDialogManager.getShownDialogModel());
     }
 
