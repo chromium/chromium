@@ -485,24 +485,6 @@ public class BaseSuggestionViewTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void testRevamp_smallBottomMargins() {
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(true);
-        View contentView = new View(mActivity);
-        contentView.setMinimumHeight(CONTENT_VIEW_REPORTED_HEIGHT_PX);
-        BaseSuggestionViewForTest suggestionViewForTest =
-                new BaseSuggestionViewForTest(contentView);
-
-        Assert.assertEquals(mActivity.getResources().getDimensionPixelSize(
-                                    R.dimen.omnibox_suggestion_icon_area_size_modern),
-                suggestionViewForTest.mDecorationIconWidthPx);
-        Assert.assertEquals(
-                mSemicompactSuggestionViewHeight, suggestionViewForTest.mContentHeightPx);
-        Assert.assertEquals(
-                mCompactSuggestionViewHeight, suggestionViewForTest.mCompactContentHeightPx);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void testRevamp_smallestMargins() {
         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
         View contentView = new View(mActivity);

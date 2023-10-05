@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
 
 /** Provides resources specific to Omnibox. */
@@ -535,11 +536,14 @@ public class OmniboxResourceProvider {
 
     /** Return the width of the Omnibox Suggestion decoration icon. */
     public static @Px int getSuggestionDecorationIconSizeWidth(Context context) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
+            return context.getResources().getDimensionPixelSize(
+                    R.dimen.omnibox_suggestion_icon_area_size_modern);
+        }
+
         return context.getResources().getDimensionPixelSize(
-                (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                        && OmniboxFeatures.shouldShowSmallBottomMargin())
-                        ? R.dimen.omnibox_suggestion_icon_area_size_modern
-                        : R.dimen.omnibox_suggestion_icon_area_size);
+                R.dimen.omnibox_suggestion_icon_area_size);
     }
 
     /** */
