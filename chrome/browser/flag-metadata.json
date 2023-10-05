@@ -3018,7 +3018,7 @@
   {
     "name": "enable-immersive-fullscreen-toolbar",
     "owners": [ "bur", "chrome-mac-dev@google.com" ],
-    "expiry_milestone": 119
+    "expiry_milestone": 129
   },
   {
     "name": "enable-inactive-tabs-limit",
