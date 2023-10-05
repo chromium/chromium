@@ -1789,9 +1789,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/task-tracking"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-blink-features=UnexposedTaskIds",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "args": ["--enable-blink-features=UnexposedTaskIds"],
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "fenced-frame-mparch",
