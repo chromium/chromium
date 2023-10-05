@@ -68,7 +68,9 @@ arguments passed to `ninja`).
 Some additional options you may wish to set by passing in `--args` to `gn gen`
 or running `gn args out/Default`:
 
-    use_goma = true            # Googlers: Use build farm, compiles faster.
+    # Googlers: Reclient is a distributed compiler service. Goma successor.
+    use_remoteexec = true
+
     is_component_build = true  # Links faster.
     is_debug = false           # Release build, runs faster.
     dcheck_always_on = true    # Enables DCHECK despite release build.
