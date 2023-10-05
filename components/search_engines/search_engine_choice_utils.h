@@ -39,7 +39,9 @@ enum class SearchEngineChoiceScreenConditions {
   kEligible = 6,
   // The choice has already been completed.
   kAlreadyCompleted = 7,
-  kMaxValue = kAlreadyCompleted,
+  // The browser type is unsupported.
+  kUnsupportedBrowserType = 8,
+  kMaxValue = kUnsupportedBrowserType,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

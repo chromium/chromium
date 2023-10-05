@@ -53,6 +53,22 @@ void RecordChoiceScreenNavigationCondition(
       condition);
 }
 
+bool IsBrowserTypeSupported(const Browser& browser) {
+  switch (browser.type()) {
+    case Browser::TYPE_NORMAL:
+    case Browser::TYPE_POPUP:
+      return true;
+    case Browser::TYPE_APP_POPUP:
+    case Browser::TYPE_PICTURE_IN_PICTURE:
+    case Browser::TYPE_APP:
+    case Browser::TYPE_DEVTOOLS:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case Browser::TYPE_CUSTOM_TAB:
+#endif
+      return false;
+  }
+}
+
 }  // namespace
 
 SearchEngineChoiceService::BrowserObserver::BrowserObserver(
@@ -180,6 +196,15 @@ bool SearchEngineChoiceService::CanShowDialog(Browser& browser) {
     // Showing a Chrome-specific search engine dialog on top of a window
     // dedicated to a specific web app is a horrible UX, we suppress it for this
     // window. When the user proceeds to a non-web app window they will get it.
+    return false;
+  }
+
+  // Only show the dialog over normal and popup browsers. This is to avoid
+  // showing it in picture-in-picture for example.
+  if (!IsBrowserTypeSupported(browser)) {
+    RecordChoiceScreenNavigationCondition(
+        search_engines::SearchEngineChoiceScreenConditions::
+            kUnsupportedBrowserType);
     return false;
   }
 
