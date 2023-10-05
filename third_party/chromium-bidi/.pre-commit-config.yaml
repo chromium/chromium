@@ -9,15 +9,17 @@
 # Update all pre-commit hooks to latest version:
 #   $ pre-commit autoupdate
 #
-# Install all pre-commit hooks locally:
+# Install all default pre-commit hooks locally:
 #   $ pre-commit install
+#
+# Install commit-msg hooks locally (e.g. for conventional commits):
+#   $ pre-commit install --hook-types commit-msg
 #
 # Apply a given pre-commit hook to all files:
 #   $ pre-commit run --all-files <id>
 #
 # Apply all pre-commit hooks to all files:
 #   $ pre-commit run --all-files
-default_install_hook_types: [pre-commit, commit-msg]
 default_stages: [pre-commit]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
