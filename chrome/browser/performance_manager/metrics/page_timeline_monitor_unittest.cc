@@ -718,6 +718,43 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
       "PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundCPU."
       "Immediate",
       0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundTabCount."
+      "Immediate",
+      1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceManager.PerformanceInterventions.CPU.AverageBackgroundCPU."
+      "Immediate",
+      0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceManager.PerformanceInterventions.CPU.TotalForegroundCPU."
+      "Immediate",
+      0.25 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceManager.PerformanceInterventions.CPU.TotalForegroundTabCount."
+      "Immediate",
+      1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceManager.PerformanceInterventions.CPU.AverageForegroundCPU."
+      "Immediate",
+      0.25 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceManager.PerformanceInterventions.CPU."
+      "BackgroundTabsToGetUnderCPUThreshold."
+      "Immediate",
+      1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceManager.PerformanceInterventions.CPU."
+      "TopNBackgroundCPU.1."
+      "Immediate",
+      0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceManager.PerformanceInterventions.CPU."
+      "TopNBackgroundCPU.2."
+      "Immediate",
+      0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
 
   // Fast forward for Delayed UMA to be logged.
   task_env().FastForwardBy(base::Minutes(1));
@@ -725,6 +762,45 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
   if (GetParam()) {
     histogram_tester_.ExpectUniqueSample(
         "PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundCPU."
+        "Delayed",
+        0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+    histogram_tester_.ExpectUniqueSample(
+        "PerformanceManager.PerformanceInterventions.CPU."
+        "TotalBackgroundTabCount."
+        "Delayed",
+        1, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "PerformanceManager.PerformanceInterventions.CPU.AverageBackgroundCPU."
+        "Delayed",
+        0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+
+    histogram_tester_.ExpectUniqueSample(
+        "PerformanceManager.PerformanceInterventions.CPU.TotalForegroundCPU."
+        "Delayed",
+        0.25 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+    histogram_tester_.ExpectUniqueSample(
+        "PerformanceManager.PerformanceInterventions.CPU."
+        "TotalForegroundTabCount."
+        "Delayed",
+        1, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "PerformanceManager.PerformanceInterventions.CPU.AverageForegroundCPU."
+        "Delayed",
+        0.25 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+
+    histogram_tester_.ExpectUniqueSample(
+        "PerformanceManager.PerformanceInterventions.CPU."
+        "BackgroundTabsToGetUnderCPUThreshold."
+        "Delayed",
+        1, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "PerformanceManager.PerformanceInterventions.CPU."
+        "TopNBackgroundCPU.1."
+        "Delayed",
+        0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+    histogram_tester_.ExpectUniqueSample(
+        "PerformanceManager.PerformanceInterventions.CPU."
+        "TopNBackgroundCPU.2."
         "Delayed",
         0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
   }

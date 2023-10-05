@@ -5,8 +5,10 @@
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 
 #include <stdint.h>
+#include <array>
 #include <map>
 #include <memory>
+#include <numeric>
 #include <utility>
 #include <vector>
 
@@ -17,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -50,6 +53,9 @@ using PageCPUUsageVector = std::vector<std::pair<const PageNode*, double>>;
 // PerformanceMonitor.AverageCPU8 histograms recorded in
 // chrome/browser/metrics/power/process_metrics_recorder_util.cc.
 constexpr int kCPUUsageFactor = 100 * 100;
+
+// The values for n when calculating the total CPU usage of the top n tabs.
+constexpr std::array<size_t, 5> kTabCountSlices = {1, 2, 4, 8, 16};
 
 PageMeasurementBackgroundState GetBackgroundStateForMeasurementPeriod(
     const PageNode* page_node,
@@ -297,21 +303,107 @@ void PageTimelineMonitor::LogCPUInterventionMetrics(
     const PageCPUUsageVector page_cpu_usage,
     const base::TimeTicks now,
     const std::string& suffix) {
-  double total_background_cpu_usage = 0;
+  std::vector<double> background_cpu_usage;
+  double total_foreground_cpu_usage = 0;
+
+  int foreground_tab_count = 0;
+  int background_tab_count = 0;
 
   for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
     if (GetBackgroundStateForMeasurementPeriod(
             page_node, now - time_of_last_resource_usage_) !=
         PageMeasurementBackgroundState::kForeground) {
-      total_background_cpu_usage += cpu_usage;
+      background_cpu_usage.emplace_back(cpu_usage);
+      background_tab_count++;
+    } else {
+      total_foreground_cpu_usage += cpu_usage;
+      foreground_tab_count++;
     }
   }
 
+  double total_background_cpu_usage = std::accumulate(
+      background_cpu_usage.begin(), background_cpu_usage.end(), 0.0);
+
+  // Log basic background UMA metrics.
   base::UmaHistogramPercentage(
-      "PerformanceManager.PerformanceInterventions.CPU."
-      "TotalBackgroundCPU." +
-          suffix,
+      base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                    "TotalBackgroundCPU.",
+                    suffix}),
       total_background_cpu_usage * 100 / base::SysInfo::NumberOfProcessors());
+  base::UmaHistogramCounts1000(
+      base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                    "TotalBackgroundTabCount.",
+                    suffix}),
+      background_tab_count);
+  base::UmaHistogramPercentage(
+      base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                    "AverageBackgroundCPU.",
+                    suffix}),
+      total_background_cpu_usage * 100 / base::SysInfo::NumberOfProcessors() /
+          background_tab_count);
+
+  // Log basic foreground UMA metrics.
+  base::UmaHistogramPercentage(
+      base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                    "TotalForegroundCPU.",
+                    suffix}),
+      total_foreground_cpu_usage * 100 / base::SysInfo::NumberOfProcessors());
+  base::UmaHistogramCounts1000(
+      base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                    "TotalForegroundTabCount.",
+                    suffix}),
+      foreground_tab_count);
+  base::UmaHistogramPercentage(
+      base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                    "AverageForegroundCPU.",
+                    suffix}),
+      total_foreground_cpu_usage * 100 / base::SysInfo::NumberOfProcessors() /
+          foreground_tab_count);
+
+  // Log derived background UMA metrics.
+  std::sort(background_cpu_usage.begin(), background_cpu_usage.end(),
+            std::greater<double>());
+
+  int tabs_to_get_under_threshold = 0;
+  const double kThreshold =
+      performance_manager::features::kThresholdChromeCPUPercent.Get() *
+      (base::SysInfo::NumberOfProcessors() / 100.0);
+
+  double cpu_to_get_under_threshold =
+      total_foreground_cpu_usage + total_background_cpu_usage - kThreshold;
+  if (total_background_cpu_usage < cpu_to_get_under_threshold) {
+    // Use -1 to represent when closing all background tabs won't be enough
+    tabs_to_get_under_threshold = -1;
+  } else {
+    for (double cpu_usage : background_cpu_usage) {
+      cpu_to_get_under_threshold -= cpu_usage;
+      tabs_to_get_under_threshold++;
+      if (cpu_to_get_under_threshold <= 0) {
+        break;
+      }
+    }
+  }
+
+  base::UmaHistogramCounts1000(
+      base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                    "BackgroundTabsToGetUnderCPUThreshold.",
+                    suffix}),
+      tabs_to_get_under_threshold);
+
+  for (auto& n : kTabCountSlices) {
+    // Accumulate memory from the top CPU usage tab through the nth or the last
+    // tab, whichever is first.
+    const auto nth_iter = std::next(background_cpu_usage.begin(),
+                                    std::min(n, background_cpu_usage.size()));
+    double top_n_cpu =
+        std::accumulate(background_cpu_usage.begin(), nth_iter, 0.0);
+
+    base::UmaHistogramPercentage(
+        base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                      "TopNBackgroundCPU.",
+                      base::NumberToString(n), ".", suffix}),
+        top_n_cpu * 100 / base::SysInfo::NumberOfProcessors());
+  }
 }
 
 PageCPUUsageVector PageTimelineMonitor::CalculatePageCPUUsage() {
