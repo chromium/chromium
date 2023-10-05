@@ -62,6 +62,7 @@ class FakeDownloadItem : public download::DownloadItem {
   bool IsTransient() const override;
   bool IsParallelDownload() const override;
   DownloadCreationType GetDownloadCreationType() const override;
+  bool IsDlpManaged() const override;
   ::network::mojom::CredentialsMode GetCredentialsMode() const override;
   const absl::optional<net::IsolationInfo>& GetIsolationInfo() const override;
   bool IsDone() const override;
@@ -120,6 +121,7 @@ class FakeDownloadItem : public download::DownloadItem {
   void SetOpened(bool opened) override;
   void SetLastAccessTime(base::Time time) override;
   void SetDisplayName(const base::FilePath& name) override;
+  void SetIsDlpManaged(bool is_managed) override;
   std::string DebugString(bool verbose) const override;
   void SimulateErrorForTesting(
       download::DownloadInterruptReason reason) override;

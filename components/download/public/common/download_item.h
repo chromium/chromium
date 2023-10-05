@@ -524,6 +524,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // Gets the DownloadCreationType of this item.
   virtual DownloadCreationType GetDownloadCreationType() const = 0;
 
+  // Returns whether the download item is covered by any Data Leak Prevention
+  // (DLP) policy, and thus might be restricted from certain user actions.
+  virtual bool IsDlpManaged() const = 0;
+
   // External state transitions/setters ----------------------------------------
 
   // TODO(rdsmith): These should all be removed; the download item should
@@ -555,6 +559,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // filename. If |name| is not empty, then GetFileNameToReportUser() will
   // return |name|. Has no effect on the final target filename.
   virtual void SetDisplayName(const base::FilePath& name) = 0;
+
+  // Mark the download as managed by Data Leak Protection (DLP) policy.
+  virtual void SetIsDlpManaged(bool is_managed) = 0;
 
   // Debug/testing -------------------------------------------------------------
   virtual std::string DebugString(bool verbose) const = 0;

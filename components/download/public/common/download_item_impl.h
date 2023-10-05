@@ -324,6 +324,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   bool RequireSafetyChecks() const override;
   bool IsParallelDownload() const override;
   DownloadCreationType GetDownloadCreationType() const override;
+  bool IsDlpManaged() const override;
   ::network::mojom::CredentialsMode GetCredentialsMode() const override;
   const absl::optional<net::IsolationInfo>& GetIsolationInfo() const override;
   void OnContentCheckCompleted(DownloadDangerType danger_type,
@@ -333,6 +334,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   void SetOpened(bool opened) override;
   void SetLastAccessTime(base::Time last_access_time) override;
   void SetDisplayName(const base::FilePath& name) override;
+  void SetIsDlpManaged(bool is_managed) override;
   std::string DebugString(bool verbose) const override;
   void SimulateErrorForTesting(DownloadInterruptReason reason) override;
 
@@ -876,6 +878,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // The InsecureDownloadStatus if determined.
   InsecureDownloadStatus insecure_download_status_ =
       InsecureDownloadStatus::UNKNOWN;
+
+  // Whether this download is covered by any Data Leak Prevention (DLP) policy.
+  bool is_dlp_managed_ = false;
 
   THREAD_CHECKER(thread_checker_);
 
