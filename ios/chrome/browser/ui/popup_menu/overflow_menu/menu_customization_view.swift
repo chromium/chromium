@@ -61,6 +61,7 @@ struct MenuCustomizationView: View {
         )
         .fontWeight(.semibold)
         .padding([.leading], Self.leadingPadding)
+        .accessibilityAddTraits(.isHeader)
         OverflowMenuDestinationList(
           destinations: $destinationCustomizationModel.hiddenDestinations, metricsHandler: nil,
           uiConfiguration: uiConfiguration, namespace: namespace
@@ -122,6 +123,7 @@ struct MenuCustomizationView: View {
         )
         .fontWeight(.semibold)
         .lineLimit(1)
+        .accessibilityAddTraits(.isHeader)
       }
       .layoutPriority(1000)
 
