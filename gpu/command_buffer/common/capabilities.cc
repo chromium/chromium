@@ -14,4 +14,10 @@ Capabilities::Capabilities(const Capabilities& other) = default;
 
 Capabilities::~Capabilities() = default;
 
+GLCapabilities::GLCapabilities() = default;
+
+GLCapabilities::GLCapabilities(const GLCapabilities& other) = default;
+
+GLCapabilities::~GLCapabilities() = default;
+
 }  // namespace gpu

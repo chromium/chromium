@@ -214,28 +214,29 @@ class GLES2ImplementationTest : public testing::Test {
       gl_capabilities_.max_combined_texture_image_units =
           kMaxCombinedTextureImageUnits;
       capabilities_.max_cube_map_texture_size = kMaxCubeMapTextureSize;
-      capabilities_.max_fragment_uniform_vectors = kMaxFragmentUniformVectors;
-      capabilities_.max_renderbuffer_size = kMaxRenderbufferSize;
-      capabilities_.max_texture_image_units = kMaxTextureImageUnits;
+      gl_capabilities_.max_fragment_uniform_vectors =
+          kMaxFragmentUniformVectors;
+      gl_capabilities_.max_renderbuffer_size = kMaxRenderbufferSize;
+      gl_capabilities_.max_texture_image_units = kMaxTextureImageUnits;
       capabilities_.max_texture_size = kMaxTextureSize;
-      capabilities_.max_varying_vectors = kMaxVaryingVectors;
-      capabilities_.max_vertex_attribs = kMaxVertexAttribs;
-      capabilities_.max_vertex_texture_image_units =
+      gl_capabilities_.max_varying_vectors = kMaxVaryingVectors;
+      gl_capabilities_.max_vertex_attribs = kMaxVertexAttribs;
+      gl_capabilities_.max_vertex_texture_image_units =
           kMaxVertexTextureImageUnits;
-      capabilities_.max_vertex_uniform_vectors = kMaxVertexUniformVectors;
-      capabilities_.max_viewport_width = kMaxViewportWidth;
-      capabilities_.max_viewport_height = kMaxViewportHeight;
-      capabilities_.num_compressed_texture_formats =
+      gl_capabilities_.max_vertex_uniform_vectors = kMaxVertexUniformVectors;
+      gl_capabilities_.max_viewport_width = kMaxViewportWidth;
+      gl_capabilities_.max_viewport_height = kMaxViewportHeight;
+      gl_capabilities_.num_compressed_texture_formats =
           kNumCompressedTextureFormats;
-      capabilities_.num_shader_binary_formats = kNumShaderBinaryFormats;
-      capabilities_.max_transform_feedback_separate_attribs =
+      gl_capabilities_.num_shader_binary_formats = kNumShaderBinaryFormats;
+      gl_capabilities_.max_transform_feedback_separate_attribs =
           kMaxTransformFeedbackSeparateAttribs;
-      capabilities_.max_uniform_buffer_bindings = kMaxUniformBufferBindings;
-      capabilities_.bind_generates_resource_chromium =
+      gl_capabilities_.max_uniform_buffer_bindings = kMaxUniformBufferBindings;
+      gl_capabilities_.bind_generates_resource_chromium =
           bind_generates_resource_service ? 1 : 0;
       capabilities_.sync_query = sync_query;
-      capabilities_.occlusion_query_boolean = occlusion_query_boolean;
-      capabilities_.timer_queries = timer_queries;
+      gl_capabilities_.occlusion_query_boolean = occlusion_query_boolean;
+      gl_capabilities_.timer_queries = timer_queries;
       capabilities_.major_version = major_version;
       capabilities_.minor_version = minor_version;
       EXPECT_CALL(*gpu_control_, GetCapabilities())

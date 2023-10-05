@@ -963,7 +963,7 @@ bool ProgramInfoManager::GetActiveUniformBlockiv(
 void ProgramInfoManager::UniformBlockBinding(
     GLES2Implementation* gl, GLuint program, GLuint index, GLuint binding) {
   GLuint max_bindings =
-      static_cast<GLuint>(gl->capabilities().max_uniform_buffer_bindings);
+      static_cast<GLuint>(gl->gl_capabilities().max_uniform_buffer_bindings);
   if (binding < max_bindings) {
     base::AutoLock auto_lock(lock_);
     // If UniformBlock info haven't been cached yet, skip updating the binding.

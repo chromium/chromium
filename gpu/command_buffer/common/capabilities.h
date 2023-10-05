@@ -75,56 +75,12 @@ struct GPU_EXPORT Capabilities {
   PerStagePrecisions vertex_shader_precisions;
   PerStagePrecisions fragment_shader_precisions;
   int max_cube_map_texture_size = 0;
-  int max_fragment_uniform_vectors = 0;
-  int max_renderbuffer_size = 0;
-  int max_texture_image_units = 0;
   // Note this may be smaller than GL_MAX_TEXTURE_SIZE for a GLES context.
   int max_texture_size = 0;
-  int max_varying_vectors = 0;
-  int max_vertex_attribs = 0;
-  int max_vertex_texture_image_units = 0;
-  int max_vertex_uniform_vectors = 0;
-  // MAX_VIEWPORT_DIMS[2]
-  int max_viewport_width = 0;
-  int max_viewport_height = 0;
-  int num_compressed_texture_formats = 0;
-  int num_shader_binary_formats = 0;
-  int bind_generates_resource_chromium = 0;
 
-  int max_3d_texture_size = 0;
-  int max_array_texture_layers = 0;
-  int max_color_attachments = 0;
-  int64_t max_combined_fragment_uniform_components = 0;
-  int max_combined_uniform_blocks = 0;
-  int64_t max_combined_vertex_uniform_components = 0;
   int max_copy_texture_chromium_size = 0;
-  int max_draw_buffers = 0;
-  int64_t max_element_index = 0;
-  int max_elements_indices = 0;
-  int max_elements_vertices = 0;
-  int max_fragment_input_components = 0;
-  int max_fragment_uniform_blocks = 0;
-  int max_fragment_uniform_components = 0;
-  int max_program_texel_offset = 0;
   int max_samples = 0;
-  int64_t max_server_wait_timeout = 0;
-  float max_texture_lod_bias = 0.f;
-  int max_transform_feedback_interleaved_components = 0;
-  int max_transform_feedback_separate_attribs = 0;
-  int max_transform_feedback_separate_components = 0;
-  int64_t max_uniform_block_size = 0;
-  int max_uniform_buffer_bindings = 0;
-  int max_atomic_counter_buffer_bindings = 0;
-  int max_shader_storage_buffer_bindings = 0;
-  int shader_storage_buffer_offset_alignment = 1;
-  int max_varying_components = 0;
-  int max_vertex_output_components = 0;
-  int max_vertex_uniform_blocks = 0;
-  int max_vertex_uniform_components = 0;
-  int min_program_texel_offset = 0;
   int num_extensions = 0;
-  int num_program_binary_formats = 0;
-  int uniform_buffer_offset_alignment = 1;
   bool egl_image_external = false;
   bool egl_image_external_essl3 = false;
   bool texture_format_bgra8888 = false;
@@ -140,9 +96,6 @@ struct GPU_EXPORT Capabilities {
   bool image_ab30 = false;
   bool image_ycbcr_p010 = false;
   bool render_buffer_format_bgra8888 = false;
-  bool occlusion_query = false;
-  bool occlusion_query_boolean = false;
-  bool timer_queries = false;
   gfx::SurfaceOrigin surface_origin = gfx::SurfaceOrigin::kBottomLeft;
   bool msaa_is_slow = false;
   bool disable_one_component_textures = false;
@@ -191,7 +144,60 @@ struct GPU_EXPORT Capabilities {
 };
 
 struct GPU_EXPORT GLCapabilities {
+  GLCapabilities();
+  GLCapabilities(const GLCapabilities& other);
+  ~GLCapabilities();
+
   int max_combined_texture_image_units = 0;
+  int max_fragment_uniform_vectors = 0;
+  int max_renderbuffer_size = 0;
+  int max_texture_image_units = 0;
+  int max_varying_vectors = 0;
+  int max_vertex_attribs = 0;
+  int max_vertex_texture_image_units = 0;
+  int max_vertex_uniform_vectors = 0;
+  // MAX_VIEWPORT_DIMS[2]
+  int max_viewport_width = 0;
+  int max_viewport_height = 0;
+  int num_compressed_texture_formats = 0;
+  int num_shader_binary_formats = 0;
+  int bind_generates_resource_chromium = 0;
+
+  int max_3d_texture_size = 0;
+  int max_array_texture_layers = 0;
+  int max_color_attachments = 0;
+  int64_t max_combined_fragment_uniform_components = 0;
+  int max_combined_uniform_blocks = 0;
+  int64_t max_combined_vertex_uniform_components = 0;
+  int max_draw_buffers = 0;
+  int64_t max_element_index = 0;
+  int max_elements_indices = 0;
+  int max_elements_vertices = 0;
+  int max_fragment_input_components = 0;
+  int max_fragment_uniform_blocks = 0;
+  int max_fragment_uniform_components = 0;
+  int max_program_texel_offset = 0;
+  int64_t max_server_wait_timeout = 0;
+  float max_texture_lod_bias = 0.f;
+  int max_transform_feedback_interleaved_components = 0;
+  int max_transform_feedback_separate_attribs = 0;
+  int max_transform_feedback_separate_components = 0;
+  int64_t max_uniform_block_size = 0;
+  int max_uniform_buffer_bindings = 0;
+  int max_atomic_counter_buffer_bindings = 0;
+  int max_shader_storage_buffer_bindings = 0;
+  int shader_storage_buffer_offset_alignment = 1;
+  int max_varying_components = 0;
+  int max_vertex_output_components = 0;
+  int max_vertex_uniform_blocks = 0;
+  int max_vertex_uniform_components = 0;
+  int min_program_texel_offset = 0;
+  int num_program_binary_formats = 0;
+  int uniform_buffer_offset_alignment = 1;
+
+  bool occlusion_query = false;
+  bool occlusion_query_boolean = false;
+  bool timer_queries = false;
 };
 
 }  // namespace gpu

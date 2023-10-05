@@ -3504,90 +3504,14 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   });
   DoGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &caps.max_cube_map_texture_size,
                 1);
-  DoGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS,
-                &caps.max_fragment_uniform_vectors, 1);
-  DoGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &caps.max_renderbuffer_size, 1);
-  DoGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &caps.max_texture_image_units, 1);
   DoGetIntegerv(GL_MAX_TEXTURE_SIZE, &caps.max_texture_size, 1);
   if (workarounds().webgl_or_caps_max_texture_size) {
     caps.max_texture_size =
         std::min(caps.max_texture_size,
                  feature_info_->workarounds().webgl_or_caps_max_texture_size);
   }
-  DoGetIntegerv(GL_MAX_VARYING_VECTORS, &caps.max_varying_vectors, 1);
-  DoGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &caps.max_vertex_attribs, 1);
-  DoGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS,
-                &caps.max_vertex_texture_image_units, 1);
-  DoGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &caps.max_vertex_uniform_vectors,
-                1);
-  {
-    GLint dims[2] = {0, 0};
-    DoGetIntegerv(GL_MAX_VIEWPORT_DIMS, dims, 2);
-    caps.max_viewport_width = dims[0];
-    caps.max_viewport_height = dims[1];
-  }
-  DoGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS,
-                &caps.num_compressed_texture_formats, 1);
-  DoGetIntegerv(GL_NUM_SHADER_BINARY_FORMATS, &caps.num_shader_binary_formats,
-                1);
-  DoGetIntegerv(GL_BIND_GENERATES_RESOURCE_CHROMIUM,
-                &caps.bind_generates_resource_chromium, 1);
   if (feature_info_->IsWebGL2OrES3Context()) {
-    // TODO(zmo): Note that some parameter values could be more than 32-bit,
-    // but for now we clamp them to 32-bit max.
-    DoGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &caps.max_3d_texture_size, 1);
-    DoGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &caps.max_array_texture_layers,
-                  1);
-    DoGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &caps.max_color_attachments, 1);
-    DoGetInteger64v(GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS,
-                    &caps.max_combined_fragment_uniform_components, 1);
-    DoGetIntegerv(GL_MAX_COMBINED_UNIFORM_BLOCKS,
-                  &caps.max_combined_uniform_blocks, 1);
-    DoGetInteger64v(GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS,
-                    &caps.max_combined_vertex_uniform_components, 1);
-    DoGetIntegerv(GL_MAX_DRAW_BUFFERS, &caps.max_draw_buffers, 1);
-    DoGetInteger64v(GL_MAX_ELEMENT_INDEX, &caps.max_element_index, 1);
-    DoGetIntegerv(GL_MAX_ELEMENTS_INDICES, &caps.max_elements_indices, 1);
-    DoGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &caps.max_elements_vertices, 1);
-    DoGetIntegerv(GL_MAX_FRAGMENT_INPUT_COMPONENTS,
-                  &caps.max_fragment_input_components, 1);
-    DoGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS,
-                  &caps.max_fragment_uniform_blocks, 1);
-    DoGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS,
-                  &caps.max_fragment_uniform_components, 1);
-    DoGetIntegerv(GL_MAX_PROGRAM_TEXEL_OFFSET, &caps.max_program_texel_offset,
-                  1);
-    DoGetInteger64v(GL_MAX_SERVER_WAIT_TIMEOUT, &caps.max_server_wait_timeout,
-                    1);
-    // Work around Linux NVIDIA driver bug where GL_TIMEOUT_IGNORED is
-    // returned.
-    if (caps.max_server_wait_timeout < 0)
-      caps.max_server_wait_timeout = 0;
-    DoGetFloatv(GL_MAX_TEXTURE_LOD_BIAS, &caps.max_texture_lod_bias, 1);
-    DoGetIntegerv(GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS,
-                  &caps.max_transform_feedback_interleaved_components, 1);
-    DoGetIntegerv(GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS,
-                  &caps.max_transform_feedback_separate_attribs, 1);
-    DoGetIntegerv(GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS,
-                  &caps.max_transform_feedback_separate_components, 1);
-    DoGetInteger64v(GL_MAX_UNIFORM_BLOCK_SIZE, &caps.max_uniform_block_size, 1);
-    DoGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS,
-                  &caps.max_uniform_buffer_bindings, 1);
-    DoGetIntegerv(GL_MAX_VARYING_COMPONENTS, &caps.max_varying_components, 1);
-    DoGetIntegerv(GL_MAX_VERTEX_OUTPUT_COMPONENTS,
-                  &caps.max_vertex_output_components, 1);
-    DoGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &caps.max_vertex_uniform_blocks,
-                  1);
-    DoGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS,
-                  &caps.max_vertex_uniform_components, 1);
-    DoGetIntegerv(GL_MIN_PROGRAM_TEXEL_OFFSET, &caps.min_program_texel_offset,
-                  1);
     DoGetIntegerv(GL_NUM_EXTENSIONS, &caps.num_extensions, 1);
-    // TODO(vmiura): Remove GL_NUM_PROGRAM_BINARY_FORMATS.
-    DoGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS,
-                  &caps.num_program_binary_formats, 1);
-    DoGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,
-                  &caps.uniform_buffer_offset_alignment, 1);
     // TODO(zmo): once we switch to MANGLE, we should query version numbers.
     caps.major_version = 3;
     caps.minor_version = 0;
@@ -3649,10 +3573,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
       workarounds().max_copy_texture_chromium_size;
   caps.render_buffer_format_bgra8888 =
       feature_info_->feature_flags().ext_render_buffer_format_bgra8888;
-  caps.occlusion_query = feature_info_->feature_flags().occlusion_query;
-  caps.occlusion_query_boolean =
-      feature_info_->feature_flags().occlusion_query_boolean;
-  caps.timer_queries = query_manager_->GPUTimingAvailable();
   caps.gpu_rasterization =
       group_->gpu_feature_info()
           .status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
@@ -3693,9 +3613,96 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
 
 GLCapabilities GLES2DecoderImpl::GetGLCapabilities() {
   CHECK(initialized());
-  GLCapabilities gl_caps;
-  PopulateGLCapabilities(&gl_caps, feature_info_.get());
-  return gl_caps;
+  GLCapabilities caps;
+
+  DoGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
+                &caps.max_combined_texture_image_units, 1);
+  DoGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS,
+                &caps.max_fragment_uniform_vectors, 1);
+  DoGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &caps.max_renderbuffer_size, 1);
+  DoGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &caps.max_texture_image_units, 1);
+
+  DoGetIntegerv(GL_MAX_VARYING_VECTORS, &caps.max_varying_vectors, 1);
+  DoGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &caps.max_vertex_attribs, 1);
+  DoGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS,
+                &caps.max_vertex_texture_image_units, 1);
+  DoGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &caps.max_vertex_uniform_vectors,
+                1);
+  {
+    GLint dims[2] = {0, 0};
+    DoGetIntegerv(GL_MAX_VIEWPORT_DIMS, dims, 2);
+    caps.max_viewport_width = dims[0];
+    caps.max_viewport_height = dims[1];
+  }
+  DoGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS,
+                &caps.num_compressed_texture_formats, 1);
+  DoGetIntegerv(GL_NUM_SHADER_BINARY_FORMATS, &caps.num_shader_binary_formats,
+                1);
+  DoGetIntegerv(GL_BIND_GENERATES_RESOURCE_CHROMIUM,
+                &caps.bind_generates_resource_chromium, 1);
+  if (feature_info_->IsWebGL2OrES3Context()) {
+    // TODO(zmo): Note that some parameter values could be more than 32-bit,
+    // but for now we clamp them to 32-bit max.
+    DoGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &caps.max_3d_texture_size, 1);
+    DoGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &caps.max_array_texture_layers,
+                  1);
+    DoGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &caps.max_color_attachments, 1);
+    DoGetInteger64v(GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS,
+                    &caps.max_combined_fragment_uniform_components, 1);
+    DoGetIntegerv(GL_MAX_COMBINED_UNIFORM_BLOCKS,
+                  &caps.max_combined_uniform_blocks, 1);
+    DoGetInteger64v(GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS,
+                    &caps.max_combined_vertex_uniform_components, 1);
+    DoGetIntegerv(GL_MAX_DRAW_BUFFERS, &caps.max_draw_buffers, 1);
+    DoGetInteger64v(GL_MAX_ELEMENT_INDEX, &caps.max_element_index, 1);
+    DoGetIntegerv(GL_MAX_ELEMENTS_INDICES, &caps.max_elements_indices, 1);
+    DoGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &caps.max_elements_vertices, 1);
+    DoGetIntegerv(GL_MAX_FRAGMENT_INPUT_COMPONENTS,
+                  &caps.max_fragment_input_components, 1);
+    DoGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS,
+                  &caps.max_fragment_uniform_blocks, 1);
+    DoGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS,
+                  &caps.max_fragment_uniform_components, 1);
+    DoGetIntegerv(GL_MAX_PROGRAM_TEXEL_OFFSET, &caps.max_program_texel_offset,
+                  1);
+    DoGetInteger64v(GL_MAX_SERVER_WAIT_TIMEOUT, &caps.max_server_wait_timeout,
+                    1);
+    // Work around Linux NVIDIA driver bug where GL_TIMEOUT_IGNORED is
+    // returned.
+    if (caps.max_server_wait_timeout < 0) {
+      caps.max_server_wait_timeout = 0;
+    }
+    DoGetFloatv(GL_MAX_TEXTURE_LOD_BIAS, &caps.max_texture_lod_bias, 1);
+    DoGetIntegerv(GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS,
+                  &caps.max_transform_feedback_interleaved_components, 1);
+    DoGetIntegerv(GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS,
+                  &caps.max_transform_feedback_separate_attribs, 1);
+    DoGetIntegerv(GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS,
+                  &caps.max_transform_feedback_separate_components, 1);
+    DoGetInteger64v(GL_MAX_UNIFORM_BLOCK_SIZE, &caps.max_uniform_block_size, 1);
+    DoGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS,
+                  &caps.max_uniform_buffer_bindings, 1);
+    DoGetIntegerv(GL_MAX_VARYING_COMPONENTS, &caps.max_varying_components, 1);
+    DoGetIntegerv(GL_MAX_VERTEX_OUTPUT_COMPONENTS,
+                  &caps.max_vertex_output_components, 1);
+    DoGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &caps.max_vertex_uniform_blocks,
+                  1);
+    DoGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS,
+                  &caps.max_vertex_uniform_components, 1);
+    DoGetIntegerv(GL_MIN_PROGRAM_TEXEL_OFFSET, &caps.min_program_texel_offset,
+                  1);
+    // TODO(vmiura): Remove GL_NUM_PROGRAM_BINARY_FORMATS.
+    DoGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS,
+                  &caps.num_program_binary_formats, 1);
+    DoGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,
+                  &caps.uniform_buffer_offset_alignment, 1);
+  }
+  caps.occlusion_query = feature_info_->feature_flags().occlusion_query;
+  caps.occlusion_query_boolean =
+      feature_info_->feature_flags().occlusion_query_boolean;
+  caps.timer_queries = query_manager_->GPUTimingAvailable();
+
+  return caps;
 }
 
 GLint GLES2DecoderImpl::ComputeMaxSamples() {

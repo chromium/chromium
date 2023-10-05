@@ -1362,11 +1362,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
 
   PopulateNumericCapabilities(&caps, feature_info_.get());
 
-  api()->glGetIntegervFn(GL_BIND_GENERATES_RESOURCE_CHROMIUM,
-                         &caps.bind_generates_resource_chromium);
-  DCHECK_EQ(caps.bind_generates_resource_chromium != GL_FALSE,
-            group_->bind_generates_resource());
-
   caps.egl_image_external =
       feature_info_->feature_flags().oes_egl_image_external;
   caps.egl_image_external_essl3 =
@@ -1408,9 +1403,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       feature_info_->workarounds().max_copy_texture_chromium_size;
   caps.render_buffer_format_bgra8888 =
       feature_info_->feature_flags().ext_render_buffer_format_bgra8888;
-  caps.occlusion_query_boolean =
-      feature_info_->feature_flags().occlusion_query_boolean;
-  caps.timer_queries = feature_info_->feature_flags().ext_disjoint_timer_query;
   caps.gpu_rasterization =
       group_->gpu_feature_info()
           .status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
@@ -1457,9 +1449,16 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
 
 gpu::GLCapabilities GLES2DecoderPassthroughImpl::GetGLCapabilities() {
   CHECK(initialized());
-  GLCapabilities gl_caps;
-  PopulateGLCapabilities(&gl_caps, feature_info_.get());
-  return gl_caps;
+  GLCapabilities caps;
+
+  PopulateGLCapabilities(&caps, feature_info_.get());
+  CHECK_EQ(caps.bind_generates_resource_chromium != GL_FALSE,
+           group_->bind_generates_resource());
+  caps.occlusion_query_boolean =
+      feature_info_->feature_flags().occlusion_query_boolean;
+  caps.timer_queries = feature_info_->feature_flags().ext_disjoint_timer_query;
+
+  return caps;
 }
 
 void GLES2DecoderPassthroughImpl::RestoreState(const ContextState* prev_state) {
