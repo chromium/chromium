@@ -44,4 +44,13 @@ void ResourceManagerAsh::AddMemoryPressureObserver(
   observers_.Add(std::move(remote));
 }
 
+void ResourceManagerAsh::ReportBackgroundProcesses(
+    const std::vector<int32_t>& pids) {
+  ash::ResourcedClient* client = ash::ResourcedClient::Get();
+  if (client) {
+    client->ReportBackgroundProcesses(ash::ResourcedClient::Component::kLacros,
+                                      pids);
+  }
+}
+
 }  // namespace crosapi

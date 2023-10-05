@@ -35,4 +35,7 @@ interface MemoryPressureObserver {
 interface ResourceManager {
   // Adds an observer for memory pressure status.
   AddMemoryPressureObserver@0(pending_remote<MemoryPressureObserver> observer);
+
+  // Reports Lacros background renderer process list.
+  [MinVersion=1] ReportBackgroundProcesses@1(array<int32> pids);
 };

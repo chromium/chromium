@@ -17,6 +17,11 @@
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/resource_manager.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace performance_manager {
 namespace policies {
 
@@ -43,16 +48,39 @@ constexpr base::TimeDelta kOomScoresAssignmentMinimalInterval =
 constexpr base::TimeDelta kBackgroundPidsReportMinimalInterval =
     base::Seconds(3);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ReportBackgroundProcessesOnUIThread(
     const std::vector<base::ProcessId>& pids) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ResourcedClient* client = ash::ResourcedClient::Get();
   if (client) {
     client->ReportBackgroundProcesses(ash::ResourcedClient::Component::kAsh,
                                       pids);
   }
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  // Check LacrosService availability to avoid crashing
+  // lacros_chrome_browsertests.
+  if (!service || !service->IsAvailable<crosapi::mojom::ResourceManager>()) {
+    LOG(ERROR) << "ResourceManager is not available";
+    return;
+  }
+
+  int resource_manager_version =
+      service->GetInterfaceVersion<crosapi::mojom::ResourceManager>();
+  if (resource_manager_version <
+      int{crosapi::mojom::ResourceManager::MethodMinVersions::
+              kReportBackgroundProcessesMinVersion}) {
+    LOG(WARNING) << "Resource Manager version " << resource_manager_version
+                 << " does not support reporting background processes.";
+    return;
+  }
+
+  service->GetRemote<crosapi::mojom::ResourceManager>()
+      ->ReportBackgroundProcesses(pids);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
 
 }  // namespace
 
@@ -234,12 +262,9 @@ int OomScorePolicyChromeOS::GetCachedOomScore(base::ProcessHandle pid) {
 
 void OomScorePolicyChromeOS::ReportBackgroundProcesses(
     std::vector<base::ProcessId> pids) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ReportBackgroundProcessesOnUIThread, std::move(pids)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(vovoy): report background processes in Lacros Chrome.
 }
 
 }  // namespace policies
