@@ -143,7 +143,6 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   void set_support_texture_npot(bool support);
   void set_supports_oop_raster(bool support);
   void set_max_texture_size(int size);
-  void set_supports_shared_image_swap_chain(bool support);
   void set_supports_gpu_memory_buffer_format(gfx::BufferFormat format,
                                              bool support);
   void set_supports_texture_rg(bool support);

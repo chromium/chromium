@@ -17,6 +17,7 @@
 #include "base/token.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "media/capture/mojom/video_capture.mojom-blink.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-blink.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
@@ -266,6 +267,12 @@ class VideoCaptureImplTest : public ::testing::Test {
         &VideoCaptureImplTest::OnDeviceFormatsInUse, base::Unretained(this)));
   }
 
+  void SetSharedImageCapabilities(bool shared_image_d3d) {
+    gpu::SharedImageCapabilities shared_image_caps;
+    shared_image_caps.shared_image_d3d = shared_image_d3d;
+    platform_->SetSharedImageCapabilities(shared_image_caps);
+  }
+
   const base::UnguessableToken session_id_ = base::UnguessableToken::Create();
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -433,7 +440,7 @@ TEST_F(VideoCaptureImplTest, BufferReceived_GpuMemoryBufferHandle) {
   base::WaitableEvent frame_ready_event;
   scoped_refptr<media::VideoFrame> frame;
 
-  fake_capabilities_.shared_image_d3d = true;
+  SetSharedImageCapabilities(/* shared_image_d3d = */ true);
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
   EXPECT_CALL(*this, OnFrameReady(_, _, _))
@@ -567,7 +574,7 @@ TEST_F(VideoCaptureImplTest, ScaledBufferReceived_SoftwareAndHardware) {
   scoped_refptr<media::VideoFrame> ready_frame;
   std::vector<scoped_refptr<media::VideoFrame>> ready_scaled_frames;
 
-  fake_capabilities_.shared_image_d3d = true;
+  SetSharedImageCapabilities(/* shared_image_d3d = */ true);
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
   EXPECT_CALL(*this, OnFrameReady(_, _, _))
@@ -702,7 +709,7 @@ TEST_F(VideoCaptureImplTest, BufferReceivedAfterStop_GpuMemoryBufferHandle) {
   gmb_handle.type = gfx::NATIVE_PIXMAP;
   gmb_handle.id = gfx::GpuMemoryBufferId(kArbitraryBufferId);
 
-  fake_capabilities_.shared_image_d3d = true;
+  SetSharedImageCapabilities(/* shared_image_d3d = */ true);
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
   EXPECT_CALL(*this, OnFrameReady(_, _, _)).Times(0);
@@ -1014,7 +1021,7 @@ TEST_F(VideoCaptureImplTest, FallbacksToPremappedGmbsWhenNotSupported) {
   base::WaitableEvent frame_ready_event;
   media::VideoCaptureFeedback feedback;
 
-  fake_capabilities_.shared_image_d3d = false;
+  SetSharedImageCapabilities(/* shared_image_d3d = */ false);
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
   EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));

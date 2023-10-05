@@ -13,6 +13,9 @@ struct GPU_EXPORT SharedImageCapabilities {
   bool supports_scanout_shared_images = false;
   bool supports_luminance_shared_images = false;
   bool disable_r8_shared_images = false;
+
+  bool shared_image_d3d = false;
+  bool shared_image_swap_chain = false;
 };
 
 }  // namespace gpu

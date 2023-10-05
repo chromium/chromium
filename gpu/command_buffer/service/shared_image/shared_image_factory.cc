@@ -199,6 +199,7 @@ SharedImageFactory::SharedImageFactory(
       is_for_display_compositor_(is_for_display_compositor),
       gr_context_type_(context_state ? context_state->gr_context_type()
                                      : GrContextType::kGL),
+      gpu_preferences_(gpu_preferences),
       workarounds_(workarounds) {
 #if defined(USE_OZONE)
   if (!set_format_supported_metric) {
@@ -868,6 +869,15 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
   shared_image_caps.supports_luminance_shared_images = !is_angle_metal;
   shared_image_caps.disable_r8_shared_images =
       workarounds_.r8_egl_images_broken;
+
+#if BUILDFLAG(IS_WIN)
+  shared_image_caps.shared_image_d3d =
+      D3DImageBackingFactory::IsD3DSharedImageSupported(gpu_preferences_);
+  shared_image_caps.shared_image_swap_chain =
+      shared_image_caps.shared_image_d3d &&
+      D3DImageBackingFactory::IsSwapChainSupported();
+#endif  // BUILDFLAG(IS_WIN)
+
   return shared_image_caps;
 }
 

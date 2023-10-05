@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "media/base/simple_sync_token_client.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/video_frame_yuv_converter.h"
@@ -145,7 +146,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
 
 #if BUILDFLAG(IS_WIN)
   // CopyToGpuMemoryBuffer is only supported for D3D shared images on Windows.
-  if (!provider->ContextCapabilities().shared_image_d3d) {
+  if (!provider->SharedImageInterface()->GetCapabilities().shared_image_d3d) {
     DVLOG(1) << "CopyToGpuMemoryBuffer not supported.";
     return false;
   }

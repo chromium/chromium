@@ -86,4 +86,9 @@ void TestingPlatformSupportForGpuMemoryBuffer::SetGpuCapabilities(
   capabilities_ = capabilities;
 }
 
+void TestingPlatformSupportForGpuMemoryBuffer::SetSharedImageCapabilities(
+    const gpu::SharedImageCapabilities& shared_image_capabilities) {
+  sii_->SetCapabilities(shared_image_capabilities);
+}
+
 }  // namespace blink

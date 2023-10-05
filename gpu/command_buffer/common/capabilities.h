@@ -102,8 +102,6 @@ struct GPU_EXPORT Capabilities {
   bool gpu_rasterization = false;
   bool avoid_stencil_buffers = false;
   bool multisample_compatibility = false;
-  bool shared_image_d3d = false;
-  bool shared_image_swap_chain = false;
   bool angle_rgbx_internal_format = false;
 
   bool disable_2d_canvas_copy_on_write = false;

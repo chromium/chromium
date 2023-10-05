@@ -21,7 +21,8 @@ class TestSharedImageInterface;
 
 namespace gpu {
 struct Capabilities;
-}
+struct SharedImageCapabilities;
+}  // namespace gpu
 
 namespace blink {
 
@@ -46,6 +47,8 @@ class TestingPlatformSupportForGpuMemoryBuffer
   media::GpuVideoAcceleratorFactories* GetGpuFactories() override;
 
   void SetGpuCapabilities(gpu::Capabilities* capabilities);
+  void SetSharedImageCapabilities(
+      const gpu::SharedImageCapabilities& capabilities);
 
  private:
   std::unique_ptr<viz::TestSharedImageInterface> sii_;

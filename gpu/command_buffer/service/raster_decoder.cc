@@ -1268,11 +1268,6 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
     caps.texture_half_float_linear =
         feature_info()->feature_flags().enable_texture_half_float_linear;
   }
-#if BUILDFLAG(IS_WIN)
-  caps.shared_image_d3d =
-      D3DImageBackingFactory::IsD3DSharedImageSupported(gpu_preferences_);
-  caps.shared_image_swap_chain = D3DImageBackingFactory::IsSwapChainSupported();
-#endif  // BUILDFLAG(IS_WIN)
   caps.disable_legacy_mailbox = disable_legacy_mailbox_;
   // TODO(crbug.com/1450879): Support YUV rendering and readback for Graphite.
   caps.supports_yuv_rgb_conversion = !graphite_context();

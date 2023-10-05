@@ -1412,12 +1412,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       feature_info_->workarounds().avoid_stencil_buffers;
   caps.multisample_compatibility =
       feature_info_->feature_flags().ext_multisample_compatibility;
-#if BUILDFLAG(IS_WIN)
-  caps.shared_image_d3d = D3DImageBackingFactory::IsD3DSharedImageSupported(
-      group_->gpu_preferences());
-  caps.shared_image_swap_chain =
-      caps.shared_image_d3d && D3DImageBackingFactory::IsSwapChainSupported();
-#endif  // BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kPassthroughYuvRgbConversion)) {
     caps.supports_yuv_rgb_conversion = true;
   }

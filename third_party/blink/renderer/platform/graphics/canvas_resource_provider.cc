@@ -1084,11 +1084,16 @@ CanvasResourceProvider::CreatePassThroughProvider(
     return nullptr;
   }
 
+  const auto& shared_image_capabilities =
+      context_provider_wrapper->ContextProvider()
+          ->SharedImageInterface()
+          ->GetCapabilities();
   // Either swap_chain or gpu memory buffer should be enabled for this be used
-  if (!capabilities.shared_image_swap_chain &&
+  if (!shared_image_capabilities.shared_image_swap_chain &&
       (!IsGMBAllowed(info, capabilities) ||
-       !Platform::Current()->GetGpuMemoryBufferManager()))
+       !Platform::Current()->GetGpuMemoryBufferManager())) {
     return nullptr;
+  }
 
   auto provider = std::make_unique<CanvasResourceProviderPassThrough>(
       info, filter_quality, context_provider_wrapper, resource_dispatcher,
@@ -1120,9 +1125,14 @@ CanvasResourceProvider::CreateSwapChainProvider(
 
   const auto& capabilities =
       context_provider_wrapper->ContextProvider()->GetCapabilities();
+  const auto& shared_image_capabilities =
+      context_provider_wrapper->ContextProvider()
+          ->SharedImageInterface()
+          ->GetCapabilities();
+
   if (info.width() > capabilities.max_texture_size ||
       info.height() > capabilities.max_texture_size ||
-      !capabilities.shared_image_swap_chain) {
+      !shared_image_capabilities.shared_image_swap_chain) {
     return nullptr;
   }
 

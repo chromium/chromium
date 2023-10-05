@@ -49,6 +49,10 @@
 #include "media/base/mac/video_frame_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_WIN)
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace blink {
 
 constexpr int kMaxFirstFrameLogs = 5;
@@ -505,9 +509,10 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   // workarounds, DXGI D3D11 textures won't be supported.
   // Can't check this from the ::Initialize() since media context provider can
   // be accessed only on the Media thread.
-  const gpu::Capabilities* context_capabilites =
-      gpu_factories->ContextCapabilities();
-  if (!context_capabilites || !context_capabilites->shared_image_d3d) {
+  gpu::SharedImageInterface* shared_image_interface =
+      gpu_factories->SharedImageInterface();
+  if (!shared_image_interface ||
+      !shared_image_interface->GetCapabilities().shared_image_d3d) {
     video_capture_impl_->RequirePremappedFrames();
     video_capture_impl_->gmb_not_supported_ = true;
     return false;

@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -153,8 +154,11 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
 #if BUILDFLAG(IS_WIN)
   // CopyRGBATextureToVideoFrame below needs D3D shared images on Windows so
   // early out before creating the GMB since it's going to fail anyway.
-  if (!context_provider->GetCapabilities().shared_image_d3d)
+  if (!context_provider->SharedImageInterface()
+           ->GetCapabilities()
+           .shared_image_d3d) {
     return false;
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   auto dst_frame = pool_->MaybeCreateVideoFrame(src_size, dst_color_space);

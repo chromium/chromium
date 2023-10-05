@@ -1729,7 +1729,12 @@ class CanvasRenderingContext2DTestSwapChain
     auto context_provider = viz::TestContextProvider::Create();
     auto* test_gl = context_provider->UnboundTestContextGL();
     test_gl->set_max_texture_size(1024);
-    test_gl->set_supports_shared_image_swap_chain(true);
+
+    gpu::SharedImageCapabilities shared_image_caps;
+    shared_image_caps.shared_image_swap_chain = true;
+    context_provider->SharedImageInterface()->SetCapabilities(
+        shared_image_caps);
+
     return context_provider;
   }
 

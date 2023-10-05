@@ -203,6 +203,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   gfx::GpuExtraInfo gpu_extra_info_;
   gpu::GpuMemoryBufferConfigurationSet supported_gmb_configurations_;
   bool supported_gmb_configurations_inited_ = false;
+  gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds workarounds_;
 
   raw_ptr<SharedImageBackingFactory> backing_factory_for_testing_ = nullptr;
