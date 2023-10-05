@@ -376,8 +376,16 @@ static void JNI_UmaSessionStats_RecordPageLoaded(
   }
 }
 
+static void JNI_UmaSessionStats_RecordPageLoadedWithAccessory(JNIEnv*) {
+  base::RecordAction(UserMetricsAction("MobilePageLoadedWithAccessory"));
+}
+
 static void JNI_UmaSessionStats_RecordPageLoadedWithKeyboard(JNIEnv*) {
   base::RecordAction(UserMetricsAction("MobilePageLoadedWithKeyboard"));
+}
+
+static void JNI_UmaSessionStats_RecordPageLoadedWithMouse(JNIEnv*) {
+  base::RecordAction(UserMetricsAction("MobilePageLoadedWithMouse"));
 }
 
 static jlong JNI_UmaSessionStats_Init(JNIEnv* env) {

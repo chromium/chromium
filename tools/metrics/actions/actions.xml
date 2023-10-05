@@ -21445,9 +21445,28 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobilePageLoadedWithAccessory" not_user_triggered="true">
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    Reported when a web page is loaded with a connected hardware accessory
+    including one or more of keyboard, mouse, touchpad, trackball, and stylus
+    devices. Android only.
+  </description>
+</action>
+
 <action name="MobilePageLoadedWithKeyboard" not_user_triggered="true">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    Reported when a web page is loaded with a connected hardware keyboard.
+    Android only.
+  </description>
+</action>
+
+<action name="MobilePageLoadedWithMouse" not_user_triggered="true">
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    Reported when a web page is loaded with a connected mouse. Android only.
+  </description>
 </action>
 
 <action name="MobilePasswordBreachOpenPasswordManager">
