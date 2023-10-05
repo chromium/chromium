@@ -1605,8 +1605,10 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
 
   if (gesture_event.GetType() ==
       blink::WebInputEvent::Type::kGestureScrollBegin) {
-    DCHECK(
-        !is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())]);
+    // DCHECK(!is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())]);
+    if (is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())]) {
+      LOG(ERROR) << "RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo kGestureScrollBegin has scroll!";
+    }
     is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())] =
         true;
     scroll_peak_gpu_mem_tracker_ =

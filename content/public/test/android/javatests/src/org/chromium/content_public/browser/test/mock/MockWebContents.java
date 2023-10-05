@@ -68,6 +68,16 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
+    public void setViewAndroidDelegate(ViewAndroidDelegate viewDelegate) {
+
+    }
+
+    @Override
+    public void setAccessDelegate(ViewEventSink.InternalAccessDelegate accessDelegate) {
+
+    }
+
+    @Override
     public void setTopLevelNativeWindow(WindowAndroid windowAndroid) {}
 
     @Override
@@ -187,6 +197,11 @@ public class MockWebContents implements WebContents {
             boolean shouldShowContextMenu) {}
 
     @Override
+    public void selectAroundPoint(float x, float y) {
+
+    }
+
+    @Override
     public void adjustSelectionByCharacterOffset(
             int startAdjust, int endAdjust, boolean showSelectionMenu) {}
 
@@ -206,6 +221,11 @@ public class MockWebContents implements WebContents {
 
     @Override
     public void resumeLoadingCreatedWebContents() {}
+
+    @Override
+    public void setUserAgentOverride(String userAgent) {
+
+    }
 
     @Override
     public void evaluateJavaScript(String script, JavaScriptCallback callback) {}

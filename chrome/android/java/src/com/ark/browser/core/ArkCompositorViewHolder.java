@@ -1666,7 +1666,6 @@ public class ArkCompositorViewHolder extends FrameLayout
                 if (mCallback != null) {
                     mCallback.onPageDetached(mTabVisible);
                 }
-                ((ArkTabImpl) mTabVisible).updateWindowAndroid(null);
             }
 
             mTabVisible = tab;
@@ -1699,10 +1698,6 @@ public class ArkCompositorViewHolder extends FrameLayout
             }
 
             mTabVisible.show(TabSelectionType.FROM_USER);
-            WebContents webContents = mTabVisible.getWebContents();
-            if (webContents != null) {
-                webContents.onShow();
-            }
             if (mCallback != null) {
                 mCallback.onPageAttached(mTabVisible);
             }

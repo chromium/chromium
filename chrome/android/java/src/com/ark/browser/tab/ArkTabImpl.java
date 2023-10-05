@@ -295,7 +295,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         boolean createWeb = cacheWeb == null || cacheWeb.isDestroyed();
         ArkLogger.e(TAG, "selectPage createWeb=" + createWeb);
         ArkWebContents arkWeb = new ArkWebContents.Builder(page)
-                .setInitiallyHidden(isHidden())
+                .setInitiallyHidden(false)
                 .build();
         swapWebContents(arkWeb, arkWeb.isStartLoad(), arkWeb.isFinishLoad());
 
@@ -423,6 +423,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         // Non-null delegate factory while being detached is not valid.
         assert !(window == null && tabDelegateFactory != null);
 
+        if (mWindowAndroid == window) {
+            return;
+        }
+
         WindowAndroid old = mWindowAndroid;
         mWindowAndroid = (ArkWindowAndroid) window;
 
@@ -434,6 +438,9 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         if (mArkWeb != null) {
             if (mWindowAndroid == null) {
                 mArkWeb.detach(this);
+                TabJni.get().releaseWebContents(mNativeTabAndroid);
+                mArkWeb.reset();
+                mArkWeb = null;
             } else {
                 mArkWeb.attach(this);
             }
@@ -803,7 +810,9 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
             loadIfNeeded();
 
-            if (getWebContents() != null) getWebContents().onShow();
+            if (mArkWeb != null) {
+                mArkWeb.show();
+            }
 
             TabImportanceManager.tabShown(this);
 
@@ -833,7 +842,9 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             mIsHidden = true;
             updateInteractableState();
 
-            if (getWebContents() != null) getWebContents().onHide();
+            if (mArkWeb != null) {
+                mArkWeb.hide();
+            }
 
             for (TabObserver observer : mObservers) observer.onHidden(this, type);
         } finally {
@@ -1225,7 +1236,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             ArkLogger.e(TAG, "swapWebContents same web!");
             return;
         }
-        boolean hasWebContents = mArkWeb != null && !mArkWeb.getWebContents().isDestroyed();
+        boolean hasWebContents = mArkWeb != null && !mArkWeb.isDestroyed();
         View contentView = getContentView();
         Rect original;
         if (contentView == null) {
@@ -1237,8 +1248,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             observer.webContentsWillSwap(this);
         }
         if (hasWebContents) {
-            mArkWeb.getWebContents().onHide();
-            mArkWeb.getWebContents().setFocus(false);
+            mArkWeb.hide();
         }
         Context appContext = ContextUtils.getApplicationContext();
         Rect bounds = original.isEmpty() ? TabUtils.estimateContentSize(appContext) : null;
@@ -1257,7 +1267,12 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             TabJni.get().onPhysicalBackingSizeChanged(
                     mNativeTabAndroid, arkWeb.getWebContents(), bounds.right, bounds.bottom);
         }
+        ArkLogger.e(TAG, "swapWebContents original=" + original + " bounds=" + bounds);
         initWebContents(arkWeb, mWindowAndroid);
+
+        if (!isHidden()) {
+            arkWeb.show();
+        }
 
         if (didStartLoad) {
             // Simulate the PAGE_LOAD_STARTED notification that we did not get.
@@ -1283,8 +1298,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
                 observer.webContentsWillSwap(this);
             }
             if (hasWebContents) {
-                mArkWeb.getWebContents().onHide();
-                mArkWeb.getWebContents().setFocus(false);
+                mArkWeb.hide();
             }
             destroyWebContents(false /* do not delete native web contents */);
             for (TabObserver observer : mObservers) {
@@ -1350,6 +1364,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             updateInteractableState();
 
             assert mNativeTabAndroid != 0;
+            ArkLogger.e(TAG, "initWebContents webContents=" + webContents + " isDetached=" + isDetached(this));
             TabJni.get().initWebContents(mNativeTabAndroid, mTabInfo.isIncognito(), isDetached(this),
                     mArkWeb.getWebContents(), mSourceTabId, mWebContentsDelegate,
                     new ArkTabContextMenuPopulatorFactory(this));

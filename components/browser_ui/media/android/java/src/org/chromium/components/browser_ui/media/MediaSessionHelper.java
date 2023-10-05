@@ -456,8 +456,7 @@ public class MediaSessionHelper implements MediaImageCallback {
     }
 
     private Activity getActivity() {
-        assert mWebContents != null;
-        if (mWebContents.isDestroyed()) {
+        if (mWebContents == null || mWebContents.isDestroyed()) {
             return null;
         }
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();

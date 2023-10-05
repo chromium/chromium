@@ -500,6 +500,17 @@ public class ArkWebContents {
 //        mInjector.removeInterface("ark_bridge");
     }
 
+    public void show() {
+        mWebContents.onShow();
+        mWebContents.setFocus(true);
+        updateThemeColor();
+    }
+
+    public void hide() {
+        mWebContents.onHide();
+        mWebContents.setFocus(false);
+    }
+
     public long getLastVisitTime() {
         return mLastVisitTime;
     }
@@ -569,55 +580,40 @@ public class ArkWebContents {
         return AppConfig.isNightMode() ? Color.BLACK : Color.WHITE;
     }
 
-    private ThumbnailProvider mThumbnailProvider;
-
     public void updateThemeColor() {
-        if (mTab == null) {
-            return;
-        }
-        if (isDestroyed()) {
-            return;
-        }
-        if (mThumbnailProvider == null) {
-            mThumbnailProvider = new MultiThumbnailCardProvider(mTab.getContext(),
-                    TabGroupManager.global().getTabContentManager());
-        }
-        mThumbnailProvider.getPageThumbnailWithCallback(mPageInfo, null, new Callback<Bitmap>() {
-            @Override
-            public void onResult(Bitmap bitmap) {
-                if (isDestroyed()) {
-                    return;
-                }
-                int themeColor = bitmap == null
-                        ? (mPageInfo.getThemeColor() == 0
-                        ? getDefaultThemeColor() : mPageInfo.getThemeColor())
-                        : bitmap.getPixel(1, 1);
-                mPageInfo.setThemeColor(themeColor);
-                mWebContents.notifyChangeThemeColor();
-            }
-        }, false, false, false);
+        cacheThumbnail(false);
     }
 
     public void cacheThumbnail() {
+        cacheThumbnail(true);
+    }
+
+    private void cacheThumbnail(boolean forceUpdate) {
         if (isDestroyed()) {
             return;
         }
         PageSnapshotManager.getInstance().cachePage(mPageInfo);
-        if (mTab != null) {
-            ArkWindowAndroid windowAndroid = mTab.getWindowAndroid();
-            if (windowAndroid != null) {
-                windowAndroid.getCompositorViewHolder()
-                        .getTabContentManager()
-                        .cacheThumbnail(mWebContents, getId());
-            }
-        }
+        TabGroupManager.GlobalSelector.getInstance()
+                .getTabContentManager()
+                .getTabThumbnailWithCallback(
+                        mWebContents, getId(),
+                        new Callback<Bitmap>() {
+                            @Override
+                            public void onResult(Bitmap bitmap) {
+                                if (isDestroyed()) {
+                                    return;
+                                }
+                                int themeColor = bitmap == null
+                                        ? (mPageInfo.getThemeColor() == 0
+                                        ? getDefaultThemeColor() : mPageInfo.getThemeColor())
+                                        : bitmap.getPixel(1, 1);
+                                mPageInfo.setThemeColor(themeColor);
+                                mWebContents.notifyChangeThemeColor();
+                            }
+                        },
+                        forceUpdate, forceUpdate
+                );
     }
-
-//    public void addOnAttachStateChangeListener(View.OnAttachStateChangeListener listener) {
-//        if (mContentView != null) {
-//            mContentView.addOnAttachStateChangeListener(listener);
-//        }
-//    }
 
     /**
      * Notify that web preferences needs update for various properties.
