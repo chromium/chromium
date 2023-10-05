@@ -373,6 +373,7 @@ export namespace BrowsingContext {
   export const CaptureScreenshotParametersSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
+      format: BrowsingContext.ImageFormatSchema.optional(),
       clip: BrowsingContext.ClipRectangleSchema.optional(),
     })
   );
@@ -382,6 +383,14 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.captureScreenshot'),
       params: BrowsingContext.CaptureScreenshotParametersSchema,
+    })
+  );
+}
+export namespace BrowsingContext {
+  export const ImageFormatSchema = z.lazy(() =>
+    z.object({
+      type: z.string(),
+      quality: z.number().gte(0).lte(1).optional(),
     })
   );
 }
@@ -2302,37 +2311,31 @@ export namespace Input {
 }
 export namespace Input {
   export const PointerCommonPropertiesSchema = z.lazy(() =>
-    z
-      .object({
-        width: JsUintSchema.default(1).optional(),
-        height: JsUintSchema.default(1).optional(),
-        pressure: z.number().default(0).optional(),
-        tangentialPressure: z.number().default(0).optional(),
-        twist: z
-          .number()
-          .int()
-          .nonnegative()
-          .gte(0)
-          .lte(359)
-          .default(0)
-          .optional(),
-      })
-      .and(z.union([Input.TiltPropertiesSchema, Input.AnglePropertiesSchema]))
-  );
-}
-export namespace Input {
-  export const AnglePropertiesSchema = z.lazy(() =>
     z.object({
-      altitudeAngle: z.number().default(0).optional(),
-      azimuthAngle: z.number().default(0).optional(),
-    })
-  );
-}
-export namespace Input {
-  export const TiltPropertiesSchema = z.lazy(() =>
-    z.object({
-      tiltX: JsIntSchema.default(0).optional(),
-      tiltY: JsIntSchema.default(0).optional(),
+      width: JsUintSchema.default(1).optional(),
+      height: JsUintSchema.default(1).optional(),
+      pressure: z.number().default(0).optional(),
+      tangentialPressure: z.number().default(0).optional(),
+      twist: z
+        .number()
+        .int()
+        .nonnegative()
+        .gte(0)
+        .lte(359)
+        .default(0)
+        .optional(),
+      altitudeAngle: z
+        .number()
+        .gte(0)
+        .lte(1.5707963267948966)
+        .default(0)
+        .optional(),
+      azimuthAngle: z
+        .number()
+        .gte(0)
+        .lte(6.283185307179586)
+        .default(0)
+        .optional(),
     })
   );
 }

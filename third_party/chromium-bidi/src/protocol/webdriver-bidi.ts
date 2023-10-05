@@ -280,6 +280,7 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export type CaptureScreenshotParameters = {
     context: BrowsingContext.BrowsingContext;
+    format?: BrowsingContext.ImageFormat;
     clip?: BrowsingContext.ClipRectangle;
   };
 }
@@ -287,6 +288,15 @@ export namespace BrowsingContext {
   export type CaptureScreenshot = {
     method: 'browsingContext.captureScreenshot';
     params: BrowsingContext.CaptureScreenshotParameters;
+  };
+}
+export namespace BrowsingContext {
+  export type ImageFormat = {
+    type: string;
+    /**
+     * Must be between `0` and `1`, inclusive.
+     */
+    quality?: number;
   };
 }
 export namespace BrowsingContext {
@@ -1818,30 +1828,18 @@ export namespace Input {
      * @defaultValue `0`
      */
     twist?: number;
-  } & (Input.TiltProperties | Input.AngleProperties);
-}
-export namespace Input {
-  export type AngleProperties = {
     /**
+     * Must be between `0` and `1.5707963267948966`, inclusive.
+     *
      * @defaultValue `0`
      */
     altitudeAngle?: number;
     /**
+     * Must be between `0` and `6.283185307179586`, inclusive.
+     *
      * @defaultValue `0`
      */
     azimuthAngle?: number;
-  };
-}
-export namespace Input {
-  export type TiltProperties = {
-    /**
-     * @defaultValue `0`
-     */
-    tiltX?: JsInt;
-    /**
-     * @defaultValue `0`
-     */
-    tiltY?: JsInt;
   };
 }
 export namespace Input {
