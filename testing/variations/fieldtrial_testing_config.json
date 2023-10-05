@@ -731,21 +731,6 @@
             ]
         }
     ],
-    "ArcSwitchToKeyMintOnT": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ArcSwitchToKeyMintOnT"
-                    ]
-                }
-            ]
-        }
-    ],
     "ArcVmBlockSize": [
         {
             "platforms": [
