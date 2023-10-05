@@ -249,16 +249,13 @@ std::set<std::string> HashRealTimeService::GetHashPrefixesSet(
 
 void HashRealTimeService::SearchCache(
     std::set<std::string> hash_prefixes,
-    bool skip_logging,
     std::vector<std::string>* out_missing_hash_prefixes,
     std::vector<V5::FullHash>* out_cached_full_hashes) const {
-  if (!skip_logging) {
-    SCOPED_UMA_HISTOGRAM_TIMER("SafeBrowsing.HPRT.GetCache.Time");
-  }
+  SCOPED_UMA_HISTOGRAM_TIMER("SafeBrowsing.HPRT.GetCache.Time");
   auto cached_results =
       cache_manager_
           ? cache_manager_->GetCachedHashPrefixRealTimeLookupResults(
-                hash_prefixes, skip_logging)
+                hash_prefixes)
           : std::unordered_map<std::string, std::vector<V5::FullHash>>();
   for (const auto& hash_prefix : hash_prefixes) {
     auto cached_result_it = cached_results.find(hash_prefix);
@@ -273,22 +270,6 @@ void HashRealTimeService::SearchCache(
       out_missing_hash_prefixes->push_back(hash_prefix);
     }
   }
-}
-
-void HashRealTimeService::LogSearchCacheWithNoQueryParamsMetric(
-    const GURL& url) const {
-  GURL::Replacements replacements;
-  replacements.ClearQuery();
-  GURL url_without_query_params = url.ReplaceComponents(replacements);
-  std::vector<std::string> hash_prefixes_that_would_be_requested;
-  std::vector<V5::FullHash>
-      full_hashes_that_would_be_cached;  // this out parameter is not used
-  SearchCache(GetHashPrefixesSet(url_without_query_params),
-              /*skip_logging=*/true, &hash_prefixes_that_would_be_requested,
-              &full_hashes_that_would_be_cached);
-  base::UmaHistogramBoolean(
-      "SafeBrowsing.HPRT.CacheHitAllPrefixesIfNoQueryParams",
-      hash_prefixes_that_would_be_requested.empty());
 }
 
 void HashRealTimeService::StartLookup(
@@ -307,11 +288,10 @@ void HashRealTimeService::StartLookup(
   // Search local cache.
   std::vector<std::string> hash_prefixes_to_request;
   std::vector<V5::FullHash> cached_full_hashes;
-  SearchCache(GetHashPrefixesSet(url), /*skip_logging=*/false,
-              &hash_prefixes_to_request, &cached_full_hashes);
+  SearchCache(GetHashPrefixesSet(url), &hash_prefixes_to_request,
+              &cached_full_hashes);
   base::UmaHistogramBoolean("SafeBrowsing.HPRT.CacheHitAllPrefixes",
                             hash_prefixes_to_request.empty());
-  LogSearchCacheWithNoQueryParamsMetric(url);
   // If all the prefixes are in the cache, no need to send a request. Return
   // early with the cached results.
   if (hash_prefixes_to_request.empty()) {

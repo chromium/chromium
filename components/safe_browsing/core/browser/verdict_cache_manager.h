@@ -109,14 +109,10 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
       const V5::Duration& cache_duration);
 
   // Searches the hash-prefix real-time cache object for the requested
-  // |hash_prefixes|. |skip_logging| specifies whether metric logging should be
-  // skipped when this function is called.
-  // TODO(crbug.com/1432308): [Also TODO(thefrog)] Remove |skip_logging|
-  // parameter after investigation is complete.
+  // |hash_prefixes|.
   std::unordered_map<std::string, std::vector<V5::FullHash>>
   GetCachedHashPrefixRealTimeLookupResults(
-      const std::set<std::string>& hash_prefixes,
-      bool skip_logging);
+      const std::set<std::string>& hash_prefixes);
 
   // Overridden from history::HistoryServiceObserver.
   void OnURLsDeleted(history::HistoryService* history_service,

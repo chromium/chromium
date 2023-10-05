@@ -147,8 +147,6 @@ class HashRealTimeService : public KeyedService {
                            TestBackoffModeRespected_FullyCached);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestBackoffModeRespected_NotCached);
-  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
-                           TestLogSearchCacheWithNoQueryParamsMetric);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceDirectFetchTest,
                            TestLookupFailure_RetriableNetError);
 
@@ -346,24 +344,13 @@ class HashRealTimeService : public KeyedService {
   std::set<std::string> GetHashPrefixesSet(const GURL& url) const;
 
   // Searches the local cache for the input |hash_prefixes|.
-  //  - |skip_logging| specifies whether metric logging should be skipped when
-  //    this function is called.
   //  - |out_missing_hash_prefixes| is an output parameter with a list of which
   //    hash prefixes were not found in the cache and need to be requested.
   //  - |out_cached_full_hashes| is an output parameter with a list of unsafe
   //    full hashes that were found in the cache for any of the |hash_prefixes|.
-  // TODO(crbug.com/1432308): [Also TODO(thefrog)] Remove |skip_logging|
-  // parameter after investigation is complete.
   void SearchCache(std::set<std::string> hash_prefixes,
-                   bool skip_logging,
                    std::vector<std::string>* out_missing_hash_prefixes,
                    std::vector<V5::FullHash>* out_cached_full_hashes) const;
-
-  // Used for logging only. Records whether there would be a cache hit for all
-  // requested prefixes if the URL's query parameters were excluded.
-  // TODO(crbug.com/1432308): [Also TODO(thefrog)] Remove function after
-  // investigation is complete.
-  void LogSearchCacheWithNoQueryParamsMetric(const GURL& url) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

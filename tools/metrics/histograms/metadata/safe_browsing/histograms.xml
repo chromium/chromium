@@ -1157,19 +1157,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.HPRT.CacheHitAllPrefixesIfNoQueryParams"
-    enum="BooleanCacheHit" expires_after="2024-02-25">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether all hash prefixes would be found in the hash-prefix
-    real-time lookups local cache if the URL were to have its query parameters
-    removed. It indicates that as a result of the cache, there would be no need
-    to send a request to Safe Browsing servers. This is logged each time a
-    lookup occurs, after the cache is searched.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.HPRT.CanGetReputationOfUrl"
     enum="BooleanCanCheckUrl" expires_after="2024-03-01">
   <owner>xinghuilu@chromium.org</owner>

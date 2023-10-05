@@ -318,10 +318,6 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*name=*/"SafeBrowsing.HPRT.CacheHitAllPrefixes",
         /*sample=*/expect_cache_hit_all_prefixes,
         /*expected_bucket_count=*/1);
-    histogram_tester_->ExpectUniqueSample(
-        /*name=*/"SafeBrowsing.HPRT.CacheHitAllPrefixesIfNoQueryParams",
-        /*sample=*/expect_cache_hit_all_prefixes,
-        /*expected_bucket_count=*/1);
     if (expect_cache_hit_all_prefixes) {
       histogram_tester_->ExpectTotalCount(
           /*name=*/"SafeBrowsing.HPRT.BackoffState", /*expected_count=*/0);
@@ -1676,36 +1672,6 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeRespected_NotCached) {
   // service is in backoff mode. This is checked within |RunBackoffRequestTest|.
   ResetMetrics();
   RunBackoffRequestTest(url);
-}
-
-TEST_F(HashRealTimeServiceTest, TestLogSearchCacheWithNoQueryParamsMetric) {
-  auto check_metrics = [this](bool expect_cache_hit_if_no_query_params_log,
-                              bool expect_cache_hit_log) {
-    histogram_tester_->ExpectUniqueSample(
-        /*name=*/"SafeBrowsing.HPRT.CacheHitAllPrefixesIfNoQueryParams",
-        /*sample=*/expect_cache_hit_if_no_query_params_log,
-        /*expected_bucket_count=*/1);
-    histogram_tester_->ExpectTotalCount("SafeBrowsing.HPRT.CacheHit",
-                                        expect_cache_hit_log ? 1 : 0);
-    histogram_tester_->ExpectTotalCount("SafeBrowsing.HPRT.GetCache.Time",
-                                        expect_cache_hit_log ? 1 : 0);
-    ResetMetrics();
-  };
-  GURL url = GURL("https://example.test");
-  RunSimpleRequest(
-      /*url=*/url, /*response_full_hashes=*/{});
-  check_metrics(/*expect_cache_hit_if_no_query_params_log=*/false,
-                /*expect_cache_hit_log=*/true);
-
-  GURL url2 = GURL("https://example.test?run=true");
-  service_->LogSearchCacheWithNoQueryParamsMetric(url2);
-  check_metrics(/*expect_cache_hit_if_no_query_params_log=*/true,
-                /*expect_cache_hit_log=*/false);
-
-  GURL url3 = GURL("https://foo.example.test?run=true");
-  service_->LogSearchCacheWithNoQueryParamsMetric(url3);
-  check_metrics(/*expect_cache_hit_if_no_query_params_log=*/false,
-                /*expect_cache_hit_log=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, IsHashDetailMoreSevere) {

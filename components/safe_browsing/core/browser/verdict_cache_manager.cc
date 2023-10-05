@@ -768,9 +768,8 @@ void VerdictCacheManager::CacheHashPrefixRealTimeLookupResults(
 
 std::unordered_map<std::string, std::vector<V5::FullHash>>
 VerdictCacheManager::GetCachedHashPrefixRealTimeLookupResults(
-    const std::set<std::string>& hash_prefixes,
-    bool skip_logging) {
-  return hash_realtime_cache_->SearchCache(hash_prefixes, skip_logging);
+    const std::set<std::string>& hash_prefixes) {
+  return hash_realtime_cache_->SearchCache(hash_prefixes);
 }
 
 void VerdictCacheManager::ScheduleNextCleanUpAfterInterval(

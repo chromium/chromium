@@ -28,21 +28,17 @@ HashRealTimeCache::FullHashesAndDetails::FullHashesAndDetails() = default;
 HashRealTimeCache::FullHashesAndDetails::~FullHashesAndDetails() = default;
 
 std::unordered_map<std::string, std::vector<V5::FullHash>>
-HashRealTimeCache::SearchCache(const std::set<std::string>& hash_prefixes,
-                               bool skip_logging) const {
+HashRealTimeCache::SearchCache(
+    const std::set<std::string>& hash_prefixes) const {
   std::unordered_map<std::string, std::vector<V5::FullHash>> results;
   for (const auto& hash_prefix : hash_prefixes) {
     auto cached_result_it = cache_.find(hash_prefix);
     if (cached_result_it != cache_.end() &&
         cached_result_it->second.expiration_time > base::Time::Now()) {
       results[hash_prefix] = cached_result_it->second.full_hash_and_details;
-      if (!skip_logging) {
-        LogCacheHitOrMiss(/*is_hit=*/true);
-      }
+      LogCacheHitOrMiss(/*is_hit=*/true);
     } else {
-      if (!skip_logging) {
-        LogCacheHitOrMiss(/*is_hit=*/false);
-      }
+      LogCacheHitOrMiss(/*is_hit=*/false);
     }
   }
   return results;
