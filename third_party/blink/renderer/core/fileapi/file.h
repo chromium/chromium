@@ -108,10 +108,11 @@ class CORE_EXPORT File final : public Blob {
   //
   // Otherwise calling size(), lastModifiedTime() and slice() will synchronously
   // query the file metadata.
-  static File* CreateForFileSystemFile(const String& name,
+  static File* CreateForFileSystemFile(ExecutionContext* context,
+                                       const String& name,
                                        const FileMetadata& metadata,
                                        UserVisibility user_visibility) {
-    return MakeGarbageCollected<File>(name, metadata, user_visibility);
+    return MakeGarbageCollected<File>(context, name, metadata, user_visibility);
   }
 
   // KURL has a String() operator, so if this signature is called and not
@@ -157,7 +158,10 @@ class CORE_EXPORT File final : public Blob {
   File(const String& name,
        const absl::optional<base::Time>& modification_time,
        scoped_refptr<BlobDataHandle>);
-  File(const String& name, const FileMetadata&, UserVisibility);
+  File(ExecutionContext* context,
+       const String& name,
+       const FileMetadata& metadata,
+       UserVisibility user_visibility);
   File(const KURL& file_system_url,
        const FileMetadata& metadata,
        UserVisibility user_visibility,

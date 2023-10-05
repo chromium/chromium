@@ -256,33 +256,36 @@ TEST(FileTest, BlobBackingFileWithApocalypseTimestamp) {
 }
 
 TEST(FileTest, fileSystemFileWithNativeSnapshot) {
+  ScopedNullExecutionContext context;
   FileMetadata metadata;
   metadata.platform_path = "/native/snapshot";
-  File* const file =
-      File::CreateForFileSystemFile("name", metadata, File::kIsUserVisible);
+  File* const file = File::CreateForFileSystemFile(
+      &context.GetExecutionContext(), "name", metadata, File::kIsUserVisible);
   EXPECT_TRUE(file->HasBackingFile());
   EXPECT_EQ("/native/snapshot", file->GetPath());
   EXPECT_TRUE(file->FileSystemURL().IsEmpty());
 }
 
 TEST(FileTest, fileSystemFileWithNativeSnapshotAndSize) {
+  ScopedNullExecutionContext context;
   FileMetadata metadata;
   metadata.length = 1024ll;
   metadata.platform_path = "/native/snapshot";
-  File* const file =
-      File::CreateForFileSystemFile("name", metadata, File::kIsUserVisible);
+  File* const file = File::CreateForFileSystemFile(
+      &context.GetExecutionContext(), "name", metadata, File::kIsUserVisible);
   EXPECT_TRUE(file->HasBackingFile());
   EXPECT_EQ("/native/snapshot", file->GetPath());
   EXPECT_TRUE(file->FileSystemURL().IsEmpty());
 }
 
 TEST(FileTest, FileSystemFileWithWindowsEpochTimestamp) {
+  ScopedNullExecutionContext context;
   FileMetadata metadata;
   metadata.length = INT64_C(1025);
   metadata.modification_time = base::Time();
   metadata.platform_path = "/native/snapshot";
-  File* const file =
-      File::CreateForFileSystemFile("name", metadata, File::kIsUserVisible);
+  File* const file = File::CreateForFileSystemFile(
+      &context.GetExecutionContext(), "name", metadata, File::kIsUserVisible);
   EXPECT_TRUE(file->HasBackingFile());
   EXPECT_EQ("/native/snapshot", file->GetPath());
   EXPECT_TRUE(file->FileSystemURL().IsEmpty());
@@ -293,12 +296,13 @@ TEST(FileTest, FileSystemFileWithWindowsEpochTimestamp) {
 }
 
 TEST(FileTest, FileSystemFileWithUnixEpochTimestamp) {
+  ScopedNullExecutionContext context;
   FileMetadata metadata;
   metadata.length = INT64_C(1025);
   metadata.modification_time = base::Time::UnixEpoch();
   metadata.platform_path = "/native/snapshot";
-  File* const file =
-      File::CreateForFileSystemFile("name", metadata, File::kIsUserVisible);
+  File* const file = File::CreateForFileSystemFile(
+      &context.GetExecutionContext(), "name", metadata, File::kIsUserVisible);
   EXPECT_TRUE(file->HasBackingFile());
   EXPECT_EQ("/native/snapshot", file->GetPath());
   EXPECT_TRUE(file->FileSystemURL().IsEmpty());
@@ -308,13 +312,14 @@ TEST(FileTest, FileSystemFileWithUnixEpochTimestamp) {
 }
 
 TEST(FileTest, FileSystemFileWithApocalypseTimestamp) {
+  ScopedNullExecutionContext context;
   constexpr base::Time kMaxTime = base::Time::Max();
   FileMetadata metadata;
   metadata.length = INT64_C(1025);
   metadata.modification_time = kMaxTime;
   metadata.platform_path = "/native/snapshot";
-  File* const file =
-      File::CreateForFileSystemFile("name", metadata, File::kIsUserVisible);
+  File* const file = File::CreateForFileSystemFile(
+      &context.GetExecutionContext(), "name", metadata, File::kIsUserVisible);
   EXPECT_TRUE(file->HasBackingFile());
   EXPECT_EQ("/native/snapshot", file->GetPath());
   EXPECT_TRUE(file->FileSystemURL().IsEmpty());

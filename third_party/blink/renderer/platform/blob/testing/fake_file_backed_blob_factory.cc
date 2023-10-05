@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/blob/testing/fake_file_backed_blob_factory.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom-blink.h"
@@ -23,6 +24,16 @@ void FakeFileBackedBlobFactory::RegisterBlob(
     const String& uuid,
     const String& content_type,
     mojom::blink::DataElementFilePtr file) {
+  RegisterBlobSync(std::move(blob), uuid, content_type, std::move(file),
+                   base::NullCallback());
+}
+
+void FakeFileBackedBlobFactory::RegisterBlobSync(
+    mojo::PendingReceiver<mojom::blink::Blob> blob,
+    const String& uuid,
+    const String& content_type,
+    mojom::blink::DataElementFilePtr file,
+    RegisterBlobSyncCallback callback) {
   registrations.push_back(Registration{uuid, content_type, std::move(file)});
 
   PostCrossThreadTask(
@@ -34,6 +45,9 @@ void FakeFileBackedBlobFactory::RegisterBlob(
                                         std::move(receiver));
           },
           uuid, std::move(blob)));
+  if (callback) {
+    std::move(callback).Run();
+  }
 }
 
 }  // namespace blink

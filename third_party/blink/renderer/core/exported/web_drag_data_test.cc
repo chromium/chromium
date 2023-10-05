@@ -31,15 +31,17 @@ TEST(WebDragDataTest, items) {
     FileMetadata metadata;
     metadata.platform_path = "/native/visible/snapshot";
     data_object->Add(
-        File::CreateForFileSystemFile("name", metadata, File::kIsUserVisible));
+        File::CreateForFileSystemFile(&context.GetExecutionContext(), "name",
+                                      metadata, File::kIsUserVisible));
   }
 
   // Not user visible snapshot file.
   {
     FileMetadata metadata;
     metadata.platform_path = "/native/not-visible/snapshot";
-    data_object->Add(File::CreateForFileSystemFile("name", metadata,
-                                                   File::kIsNotUserVisible));
+    data_object->Add(
+        File::CreateForFileSystemFile(&context.GetExecutionContext(), "name",
+                                      metadata, File::kIsNotUserVisible));
   }
 
   // User visible file system URL file.

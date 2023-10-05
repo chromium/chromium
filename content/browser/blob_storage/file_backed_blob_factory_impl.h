@@ -40,10 +40,16 @@ class CONTENT_EXPORT FileBackedBlobFactoryImpl
   FileBackedBlobFactoryImpl& operator=(const FileBackedBlobFactoryImpl&) =
       delete;
 
+  // FileBackedBlobFactory:
   void RegisterBlob(mojo::PendingReceiver<blink::mojom::Blob> blob,
                     const std::string& uuid,
                     const std::string& content_type,
                     blink::mojom::DataElementFilePtr file) override;
+  void RegisterBlobSync(mojo::PendingReceiver<blink::mojom::Blob> blob,
+                        const std::string& uuid,
+                        const std::string& content_type,
+                        blink::mojom::DataElementFilePtr file,
+                        RegisterBlobSyncCallback finish_callback) override;
 
  private:
   friend class DocumentUserData<FileBackedBlobFactoryImpl>;

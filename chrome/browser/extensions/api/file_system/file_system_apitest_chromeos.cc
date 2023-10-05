@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -12,7 +13,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
@@ -23,7 +27,10 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
@@ -553,6 +560,82 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
 
   ASSERT_TRUE(RunExtensionTest("api_test/file_system/on_volume_list_changed",
                                {.launch_as_platform_app = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
+                       DlpOpenFileAllow) {
+  file_access::MockScopedFileAccessDelegate file_access;
+  base::MockRepeatingCallback<void(
+      const std::vector<base::FilePath>&,
+      base::OnceCallback<void(file_access::ScopedFileAccess)>)>
+      create;
+  EXPECT_CALL(
+      file_access,
+      CreateFileAccessCallback(testing::Property(
+          &GURL::spec,
+          testing::MatchesRegex(
+              "chrome-extension://.*/_generated_background_page\\.html"))))
+      .WillOnce(testing::Return(create.Get()));
+  EXPECT_CALL(create, Run)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          file_access::ScopedFileAccess::Allowed()));
+
+  base::FilePath test_file;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    FileSystemChooseEntryFunction::RegisterTempExternalFileSystemForTest(
+        "test_temp", temp_dir_.GetPath());
+
+    test_file = temp_dir_.GetPath().AppendASCII("open_existing.txt");
+    base::WriteFile(test_file, "Can you see me?");
+  }
+
+  ASSERT_FALSE(test_file.empty());
+  const FileSystemChooseEntryFunction::TestOptions test_options{
+      .path_to_be_picked = &test_file};
+  auto reset_options =
+      FileSystemChooseEntryFunction::SetOptionsForTesting(test_options);
+  ASSERT_TRUE(RunExtensionTest("api_test/file_system/open_existing",
+                               {.launch_as_platform_app = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem, DlpOpenFileDeny) {
+  file_access::MockScopedFileAccessDelegate file_access;
+  base::MockRepeatingCallback<void(
+      const std::vector<base::FilePath>&,
+      base::OnceCallback<void(file_access::ScopedFileAccess)>)>
+      create;
+  EXPECT_CALL(
+      file_access,
+      CreateFileAccessCallback(testing::Property(
+          &GURL::spec,
+          testing::MatchesRegex(
+              "chrome-extension://.*/_generated_background_page\\.html"))))
+      .WillOnce(testing::Return(base::BindPostTask(
+          content::GetIOThreadTaskRunner({}), create.Get())));
+  EXPECT_CALL(create, Run)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          file_access::ScopedFileAccess(false, base::ScopedFD())));
+
+  base::FilePath test_file;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    FileSystemChooseEntryFunction::RegisterTempExternalFileSystemForTest(
+        "test_temp", temp_dir_.GetPath());
+
+    test_file = temp_dir_.GetPath().AppendASCII("open_existing.txt");
+    base::WriteFile(test_file, "Can you see me?");
+  }
+
+  ASSERT_FALSE(test_file.empty());
+  const FileSystemChooseEntryFunction::TestOptions test_options{
+      .path_to_be_picked = &test_file};
+  auto reset_options =
+      FileSystemChooseEntryFunction::SetOptionsForTesting(test_options);
+  ASSERT_FALSE(RunExtensionTest("api_test/file_system/open_existing",
+                                {.launch_as_platform_app = true}))
       << message_;
 }
 

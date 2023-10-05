@@ -260,6 +260,23 @@ scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFile(
 }
 
 // static
+scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFileSync(
+    mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
+    const String& path,
+    int64_t offset,
+    int64_t length,
+    const absl::optional<base::Time>& expected_modification_time,
+    const String& content_type) {
+  mojom::blink::DataElementFilePtr element = mojom::blink::DataElementFile::New(
+      WebStringToFilePath(path), offset, length, expected_modification_time);
+  uint64_t size = length == BlobData::kToEndOfFile
+                      ? std::numeric_limits<uint64_t>::max()
+                      : length;
+  return base::AdoptRef(new BlobDataHandle(
+      file_backed_blob_factory, std::move(element), content_type, size, true));
+}
+
+// static
 scoped_refptr<BlobDataHandle> BlobDataHandle::Create(
     const String& uuid,
     const String& type,
@@ -296,16 +313,23 @@ BlobDataHandle::BlobDataHandle(
     mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
     mojom::blink::DataElementFilePtr file_element,
     const String& content_type,
-    uint64_t size)
+    uint64_t size,
+    bool synchronous_register)
     : uuid_(WTF::CreateCanonicalUUIDString()),
       type_(content_type),
       size_(size),
       is_single_unknown_size_file_(size ==
                                    std::numeric_limits<uint64_t>::max()) {
   if (file_backed_blob_factory) {
-    file_backed_blob_factory->RegisterBlob(
-        blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
-        type_.IsNull() ? "" : type_, std::move(file_element));
+    if (synchronous_register) {
+      file_backed_blob_factory->RegisterBlobSync(
+          blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
+          type_.IsNull() ? "" : type_, std::move(file_element));
+    } else {
+      file_backed_blob_factory->RegisterBlob(
+          blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
+          type_.IsNull() ? "" : type_, std::move(file_element));
+    }
   } else {
     // TODO(b/287417238): Temporarily fallback to the previous BlobRegistry
     // registration when new interface is disabled by its feature flag or the

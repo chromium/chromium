@@ -176,6 +176,13 @@ class PLATFORM_EXPORT BlobDataHandle
       int64_t length,
       const absl::optional<base::Time>& expected_modification_time,
       const String& content_type);
+  static scoped_refptr<BlobDataHandle> CreateForFileSync(
+      mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
+      const String& path,
+      int64_t offset,
+      int64_t length,
+      const absl::optional<base::Time>& expected_modification_time,
+      const String& content_type);
 
   // For initial creation.
   static scoped_refptr<BlobDataHandle> Create(std::unique_ptr<BlobData> data,
@@ -234,7 +241,8 @@ class PLATFORM_EXPORT BlobDataHandle
   BlobDataHandle(mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
                  mojom::blink::DataElementFilePtr file_element,
                  const String& content_type,
-                 uint64_t size);
+                 uint64_t size,
+                 bool synchronous_register = false);
   BlobDataHandle(const String& uuid, const String& type, uint64_t size);
   BlobDataHandle(const String& uuid,
                  const String& type,

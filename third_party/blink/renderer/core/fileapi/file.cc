@@ -101,10 +101,18 @@ static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithName(
 }
 
 static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithMetadata(
+    ExecutionContext* context,
     const String& file_system_name,
     const FileMetadata& metadata) {
-  return BlobDataHandle::CreateForFile(
-      /*file_backed_blob_factory=*/nullptr, metadata.platform_path,
+  // We are creating a handle for a snapshot file. The FileSystemManager may
+  // have to create a read permission needed on the browser side for this
+  // operation. As the manager might revoke this permission directly after the
+  // call, we have to ensure the permission is available while we create the
+  // handle. So we need create a handle using the synchronous version of the
+  // IPC.
+  return BlobDataHandle::CreateForFileSync(
+      FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory(context),
+      metadata.platform_path,
       /*offset=*/0, metadata.length, metadata.modification_time,
       GetContentTypeFromFileName(file_system_name,
                                  File::kWellKnownContentTypes));
@@ -250,17 +258,19 @@ File::File(const String& name,
     snapshot_size_ = size;
 }
 
-File::File(const String& name,
+File::File(ExecutionContext* context,
+           const String& name,
            const FileMetadata& metadata,
            UserVisibility user_visibility)
-    : Blob(CreateBlobDataHandleForFileWithMetadata(name, metadata)),
+    : Blob(CreateBlobDataHandleForFileWithMetadata(context, name, metadata)),
       has_backing_file_(true),
       user_visibility_(user_visibility),
       path_(metadata.platform_path),
       name_(name),
       snapshot_modification_time_(metadata.modification_time) {
-  if (metadata.length >= 0)
+  if (metadata.length >= 0) {
     snapshot_size_ = metadata.length;
+  }
 }
 
 File::File(const KURL& file_system_url,

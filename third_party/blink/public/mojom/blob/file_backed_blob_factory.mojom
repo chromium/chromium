@@ -15,4 +15,8 @@ interface FileBackedBlobFactory {
     RegisterBlob(pending_receiver<blink.mojom.Blob> blob, string uuid,
         string content_type,
         blink.mojom.DataElementFile file);
+    // Synchronous method for registering a file backed blob.
+    [Sync] RegisterBlobSync(pending_receiver<blink.mojom.Blob> blob,
+        string uuid, string content_type,
+        blink.mojom.DataElementFile file) => ();
 };

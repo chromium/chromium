@@ -1678,8 +1678,10 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileNativeSnapshot) {
   V8TestingScope scope;
   FileMetadata metadata;
   metadata.platform_path = "/native/snapshot";
-  File* file =
-      File::CreateForFileSystemFile("name", metadata, File::kIsUserVisible);
+  auto* context = scope.GetExecutionContext();
+  FileBackedBlobFactoryTestHelper helper(context);
+  File* file = File::CreateForFileSystemFile(context, "name", metadata,
+                                             File::kIsUserVisible);
   v8::Local<v8::Value> wrapper = ToV8(file, scope.GetScriptState());
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   File* new_file = V8File::ToWrappable(scope.GetIsolate(), result);
