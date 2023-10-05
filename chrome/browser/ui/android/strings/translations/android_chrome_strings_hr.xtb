@@ -1318,14 +1318,14 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7733878270780732638">Nema dovoljno prostora na uređaju.</translation>
 <translation id="7757787379047923882">Tekst dijeljen s uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">SD kartica <ph name="SD_CARD_NUMBER" /></translation>
-<translation id="7764225426217299476">Dodaj adresu</translation>
+<translation id="7764225426217299476">Dodajte adresu</translation>
 <translation id="7772032839648071052">Potvrdi zaporku</translation>
 <translation id="7772375229873196092">Zatvori aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Kad ste prijavljeni, štiti vas na svim Googleovim uslugama.</translation>
 <translation id="7778840695157240389">Nove priče potražite kasnije</translation>
 <translation id="7780645209293383778">Privremeno povezuje te podatke s vašim Google računom kad ste prijavljeni kako biste bili zaštićeni u raznim Googleovim aplikacijama</translation>
-<translation id="7791543448312431591">Dodavanje</translation>
+<translation id="7791543448312431591">Dodajte</translation>
 <translation id="7798392620021911922">Kartice su vraćene (njih <ph name="TAB_COUNT" />)</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7808889146555843082">Brisanjem zaporke neće se izbrisati vaš račun na <ph name="SITE" />. Izmijenite zaporku ili izbrišite račun na <ph name="SITE" /> da biste ga zaštitili od drugih.</translation>

@@ -1404,7 +1404,7 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="8868471676553493380">{count,plural, =1{{count} pestanya}other{{count} pestanyes}}</translation>
 <translation id="8870413625673593573">Tancades recentment</translation>
 <translation id="8876882697946675716">Mantén els dispositius sincronitzats</translation>
-<translation id="8877287418679067891">Estableix com a predeterminat a Configuració...</translation>
+<translation id="8877287418679067891">Defineix com a predeterminat a Configuració...</translation>
 <translation id="8881801611828450202">Cerca aquesta imatge a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8891935667620843985">Pots obrir enllaços automàticament a l'aplicació Chrome convertint-la en la predeterminada com a navegador.</translation>
 <translation id="8898822736010347272">Envia a Google els URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines per ajudar a detectar amenaces noves i protegir tothom al web.</translation>

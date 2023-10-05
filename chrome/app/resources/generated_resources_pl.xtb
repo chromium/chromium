@@ -6676,7 +6676,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6418160186546245112">Przywracam poprzednio zainstalowaną wersję <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="641817663353603351">Page Up</translation>
 <translation id="6418481728190846787">Na stałe wyłącz dostęp wszystkich aplikacji</translation>
-<translation id="6418511932144861495">Zainstaluj krytyczną aktualizację</translation>
+<translation id="6418511932144861495">Zainstaluj niezbędną aktualizację</translation>
 <translation id="641867537956679916">Administrator zalogował się, aby zbadać problem. Korzystanie z urządzenia będzie możliwe, gdy administrator odda Ci nad nim kontrolę.</translation>
 <translation id="641899100123938294">Skanuj w poszukiwaniu nowych urządzeń</translation>
 <translation id="6419239627403237650">Z przeglądanej strony</translation>
@@ -6957,7 +6957,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6646696210740573446">Wysyła zaciemnioną część adresu URL do Google przez serwer prywatności, który ukrywa Twój adres IP. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać adresy URL wraz z fragmentami zawartości strony do Google.</translation>
 <translation id="6647228709620733774">Adres URL odwołania urzędu certyfikacji firmy Netscape</translation>
 <translation id="6647690760956378579">Próbka naturalnego głosu</translation>
-<translation id="6648911618876616409">Masz gotową do zainstalowania aktualizację krytyczną. Zaloguj się, by zacząć.</translation>
+<translation id="6648911618876616409">Masz gotową do zainstalowania niezbędną aktualizację. Zaloguj się, by zacząć.</translation>
 <translation id="6649018507441623493">Chwileczkę…</translation>
 <translation id="6650206238642452078">Subskrybuj zdarzenia systemowe w ChromeOS</translation>
 <translation id="665061930738760572">Otwórz w &amp;nowym oknie</translation>

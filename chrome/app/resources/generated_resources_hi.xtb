@@ -572,7 +572,7 @@
 <translation id="1455119378540982311">विंडो के प्रीसेट साइज़</translation>
 <translation id="1457907785077086338">ऐप्लिकेशन के बैज का रंग</translation>
 <translation id="146000042969587795">यह फ़्रेम ब्लॉक किया गया था क्योंकि इसमें कुछ असुरक्षित सामग्री मौजूद है.</translation>
-<translation id="1461041542809785877">प्रदर्शन</translation>
+<translation id="1461041542809785877">परफ़ॉर्मेंस</translation>
 <translation id="1461177659295855031">बुकमार्क बार वाले फ़ोल्डर में ले जाएं</translation>
 <translation id="1461288887896722288">आपने अभी-अभी मैनेज किए जा रहे खाते से साइन इन किया है. मैनेज की जा रही नई प्रोफ़ाइल बनाने पर, आपको उस खाते से जुड़े कुछ संसाधनों का ऐक्सेस मिल जाएगा.</translation>
 <translation id="146219525117638703">ONC स्‍थिति</translation>
@@ -6542,7 +6542,7 @@
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> पर अपना प्रमाणन करने के लिए किसी प्रमाणपत्र को चुनें</translation>
 <translation id="6268252012308737255"><ph name="APP" /> में खोलें</translation>
 <translation id="6270309713620950855">सूचना म्यूट करें</translation>
-<translation id="6270391203985052864">साइटें आपको सूचनाएं भेजने के लिए पूछ सकती हैं</translation>
+<translation id="6270391203985052864">साइटें, सूचनाएं भेजने के लिए आपकी अनुमति मांग सकती हैं</translation>
 <translation id="6270486800167535228">एक्सटेंशन को पिन किया गया है. ज़्यादा विकल्प देखने के लिए चुनें</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />सिस्टम और ऐप्लिकेशन की जानकारी<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />मेट्रिक<ph name="END_LINK2" /> भेजें</translation>
 <translation id="6270896861225278704">गतिविधि के इतिहास का कार्ड</translation>

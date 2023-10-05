@@ -2905,7 +2905,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Al momento questa carta non può essere salvata}other{Al momento queste carte non possono essere salvate}}</translation>
 <translation id="7053983685419859001">Blocca</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ha verificato che <ph name="ISSUER" />ha rilasciato il certificato di questo sito web.</translation>
-<translation id="7058774143982824355">Servizio analizzatore sintattico delle password CSV</translation>
+<translation id="7058774143982824355">Servizio parser delle password CSV</translation>
 <translation id="7061777300866737982">Sicurezza e protezione della casa</translation>
 <translation id="7062635574500127092">Verde petrolio</translation>
 <translation id="706295145388601875">Aggiungi e gestisci indirizzi nelle impostazioni di Chrome</translation>

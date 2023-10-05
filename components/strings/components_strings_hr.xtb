@@ -572,7 +572,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2137891579555018930">Čekanje na dopuštenje...</translation>
 <translation id="213826338245044447">Mobilne oznake</translation>
 <translation id="214556005048008348">Otkaži plaćanje</translation>
-<translation id="2148613324460538318">Dodaj karticu</translation>
+<translation id="2148613324460538318">Dodajte karticu</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2149968176347646218">Veza nije sigurna</translation>
 <translation id="2152495481414285304">Aplikacije</translation>
@@ -746,7 +746,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="253493526287553278">Pogledajte pojedinosti o promotivnom kodu</translation>
 <translation id="2535585790302968248">Otvorite novu anonimnu karticu da biste pregledavali privatno</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i još jedan sudionik}one{i još #}few{i još #}other{i još #}}</translation>
-<translation id="2536110899380797252">Dodaj adresu</translation>
+<translation id="2536110899380797252">Dodajte adresu</translation>
 <translation id="2539524384386349900">Otkrij</translation>
 <translation id="2541219929084442027">Stranice koje pregledavate na anonimnim karticama ne zadržavaju se u povijesti preglednika, pohrani kolačića ni povijesti pretraživanja nakon što zatvorite sve anonimne kartice, ali će se zadržati sve datoteke koje preuzmete ili oznake koje izradite.</translation>
 <translation id="2542106216580219892">Surfanje</translation>
@@ -1972,7 +1972,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5078060223219502807">Zaporka koju ste upravo upotrijebili otkrivena je u povredi podataka. Radi zaštite vaših računa Upravitelj zaporki preporučuje da je odmah promijenite, a zatim provjerite svoje spremljene zaporke.</translation>
 <translation id="5086225927071063542">Distribuirano računalstvo i računalstvo u oblaku</translation>
 <translation id="5087286274860437796">Certifikat poslužitelja trenutačno nije važeći.</translation>
-<translation id="5087580092889165836">Dodaj karticu</translation>
+<translation id="5087580092889165836">Dodajte karticu</translation>
 <translation id="5088142053160410913">Poruka operateru</translation>
 <translation id="5093232627742069661">Cik-cak presavijanje</translation>
 <translation id="5094747076828555589">Poslužitelj nije mogao dokazati da je <ph name="DOMAIN" />; Chromium smatra da njegov sigurnosni certifikat nije pouzdan. To može biti uzrokovano pogrešnom konfiguracijom ili napadom na vašu vezu.</translation>
@@ -3288,7 +3288,7 @@ Dodatne pojedinosti:
 <translation id="776110834126722255">Zastarjelo</translation>
 <translation id="7761159795823346334">Želite li dopustiti fotoaparat?</translation>
 <translation id="7761701407923456692">Certifikat poslužitelja ne podudara se s URL-om.</translation>
-<translation id="7764225426217299476">Dodaj adresu</translation>
+<translation id="7764225426217299476">Dodajte adresu</translation>
 <translation id="7766518757692125295">Ivica</translation>
 <translation id="7767278989746220252">Terase, travnjaci i vrtovi</translation>
 <translation id="776749070095465053">Tkanina</translation>
@@ -3301,7 +3301,7 @@ Dodatne pojedinosti:
 <translation id="7790488044432570133">Web-lokacije koje posjećujete mogu od Chromea zatražiti informacije kako bi lakše izmjerile izvedbu svojih oglasa. Chrome omogućuje web-lokacijama prikupljanje ograničenih vrsta podataka kao što je doba dana kada vam je oglas prikazan.</translation>
 <translation id="7791011319128895129">Neobjavljeno</translation>
 <translation id="7791196057686275387">Napusti</translation>
-<translation id="7791543448312431591">Dodavanje</translation>
+<translation id="7791543448312431591">Dodajte</translation>
 <translation id="7798389633136518089">Zanemareno jer pravilo nije postavio izvor u oblaku.</translation>
 <translation id="7800304661137206267">Veza je šifrirana pomoću <ph name="CIPHER" />, za autentifikaciju poruke koristi se <ph name="MAC" />, a <ph name="KX" /> služi za mehanizam razmjene ključeva.</translation>
 <translation id="7800977246388195491">Chrome bilježi teme koje vas zanimaju na temelju vaše nedavne povijesti pregledavanja. Također, web-lokacije koje posjećujete mogu izvući određene zaključke o tome što vam se sviđa. Druge web-lokacije poslije mogu zatražiti te informacije kako bi vam prikazivale personalizirane oglase. Možete odabrati koje će se teme i web-lokacije koristiti za prikazivanje oglasa.</translation>
