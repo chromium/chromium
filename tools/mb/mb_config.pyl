@@ -225,10 +225,10 @@
     },
 
     'chromium.cft': {
-      'linux-arm64-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient_arm64',
-      'linux-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient',
-      'mac-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient',
-      'win-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient',
+      'linux-arm64-rel-cft': 'release_bot_minimal_symbols_chrome_for_testing_reclient_arm64',
+      'linux-rel-cft': 'release_bot_minimal_symbols_chrome_for_testing_reclient',
+      'mac-rel-cft': 'release_bot_minimal_symbols_chrome_for_testing_reclient',
+      'win-rel-cft': 'release_bot_minimal_symbols_chrome_for_testing_reclient',
     },
 
     'chromium.chromiumos': {
@@ -1146,10 +1146,10 @@
     },
 
     'tryserver.chromium.cft': {
-      'linux-arm64-rel-cft': 'gpu_tests_release_trybot_no_symbols_chrome_for_testing_reclient_arm64',
-      'linux-rel-cft': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient',
-      'mac-rel-cft': 'gpu_tests_release_trybot_no_symbols_mac_chrome_for_testing_reclient',
-      'win-rel-cft': 'gpu_tests_release_trybot_resource_allowlisting_chrome_for_testing_reclient',
+      'linux-arm64-rel-cft': 'release_trybot_no_symbols_chrome_for_testing_reclient_arm64',
+      'linux-rel-cft': 'release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient',
+      'mac-rel-cft': 'release_trybot_no_symbols_mac_chrome_for_testing_reclient',
+      'win-rel-cft': 'release_trybot_resource_allowlisting_chrome_for_testing_reclient',
     },
 
     'tryserver.chromium.chromiumos': {
@@ -2939,16 +2939,6 @@
       'gpu_tests', 'release_bot_reclient', 'devtools_do_typecheck',
     ],
 
-    'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient': [
-      'gpu_tests', 'release_bot_reclient', 'minimal_symbols',
-      'chrome_for_testing',
-    ],
-
-    'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient_arm64': [
-      'gpu_tests', 'release_bot_reclient', 'minimal_symbols',
-      'chrome_for_testing', 'arm64',
-    ],
-
     'gpu_tests_release_bot_minimal_symbols_code_coverage': [
       'gpu_tests', 'release_bot', 'minimal_symbols', 'use_clang_coverage',
       'partial_code_coverage_instrumentation',
@@ -2998,16 +2988,6 @@
       'gpu_tests', 'release_trybot_minimal_symbols_reclient',
     ],
 
-    'gpu_tests_release_trybot_no_symbols_chrome_for_testing_reclient_arm64': [
-      'gpu_tests', 'release_trybot_reclient', 'no_symbols',
-      'chrome_for_testing', 'arm64',
-    ],
-
-    'gpu_tests_release_trybot_no_symbols_mac_chrome_for_testing_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'no_symbols',
-      'chrome_for_testing',
-    ],
-
     'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
@@ -3045,11 +3025,6 @@
       "no_goma", "no_reclient", "siso",
     ],
 
-    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
-      'devtools_do_typecheck', 'chrome_for_testing',
-    ],
-
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
       'invert_fieldtrials',
@@ -3061,14 +3036,6 @@
 
     'gpu_tests_release_trybot_reclient': [
       'gpu_tests', 'release_trybot_reclient',
-    ],
-
-    # TODO(crbug.com/1004523) Delete this once coverage mode is enabled on the
-    # standard Windows trybot and the dedicated coverage trybot is no longer
-    # needed.
-    'gpu_tests_release_trybot_resource_allowlisting_chrome_for_testing_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'no_resource_allowlisting',
-      'chrome_for_testing',
     ],
 
     'gpu_tests_release_trybot_resource_allowlisting_code_coverage': [
@@ -3736,6 +3703,14 @@
       'release_bot', 'minimal_symbols',
     ],
 
+    'release_bot_minimal_symbols_chrome_for_testing_reclient': [
+      'release_bot_reclient', 'minimal_symbols', 'chrome_for_testing',
+    ],
+
+    'release_bot_minimal_symbols_chrome_for_testing_reclient_arm64': [
+      'release_bot_reclient', 'minimal_symbols', 'chrome_for_testing', 'arm64',
+    ],
+
     'release_bot_minimal_symbols_no_clang': [
       'release_bot', 'minimal_symbols', 'no_clang', 'no_goma',
     ],
@@ -3849,12 +3824,32 @@
       'release_trybot_reclient', 'disable_nacl',
     ],
 
+    'release_trybot_no_symbols_chrome_for_testing_reclient_arm64': [
+      'release_trybot_reclient', 'no_symbols', 'chrome_for_testing', 'arm64',
+    ],
+
+    'release_trybot_no_symbols_mac_chrome_for_testing_reclient': [
+      'release_trybot_reclient', 'no_symbols', 'chrome_for_testing',
+    ],
+
+    'release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient': [
+      'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
+      'devtools_do_typecheck', 'chrome_for_testing',
+    ],
+
     'release_trybot_reclient': [
       'release_trybot_reclient',
     ],
 
     'release_trybot_reclient_x64': [
        'release_trybot_reclient', 'x64',
+    ],
+
+    # TODO(crbug.com/1004523) Delete this once coverage mode is enabled on the
+    # standard Windows trybot and the dedicated coverage trybot is no longer
+    # needed.
+    'release_trybot_resource_allowlisting_chrome_for_testing_reclient': [
+      'release_trybot_reclient', 'no_resource_allowlisting', 'chrome_for_testing',
     ],
 
     'release_trybot_tsan': [
