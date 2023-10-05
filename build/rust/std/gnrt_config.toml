@@ -46,7 +46,6 @@ extra_src_roots = ['../libm']
 # Dependencies of profiler_builtins must have instrumentation disabled
 extra_kv = { include_coverage = false, immediate_abort = true }
 extra_src_roots = ['../../portable-simd/crates/core_simd', '../../stdarch/crates/core_arch']
-extra_input_roots = ['../primitive_docs']
 
 [crate.hashbrown]
 # Workaround for Cargo issue: hashbrown's Cargo.toml uses an unstable Cargo
@@ -80,8 +79,8 @@ extra_kv = { include_coverage = false }
 extra_kv = { include_coverage = false }
 
 [crate.std]
-extra_src_roots = ['../../backtrace/src', '../../portable-simd/crates/std_float/src']
-extra_input_roots = ['../primitive_docs', '../../core/src', '../../portable-simd/crates/core_simd/src', '../../stdarch/crates/core_arch/src']
+extra_src_roots = ['../../backtrace/src', '../../portable-simd/crates/std_float/src', '../../core/src']
+extra_input_roots = [ '../../portable-simd/crates/core_simd/src', '../../stdarch/crates/core_arch/src']
 
 # Remove this from std. It will be depended on directly when needed.
 exclude_deps_in_gn = ['profiler_builtins']

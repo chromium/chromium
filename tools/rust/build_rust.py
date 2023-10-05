@@ -748,10 +748,6 @@ def main():
     if not args.skip_checkout:
         CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
 
-        # Cherry-picks: for LLVM API changes:
-        # llvm-wrapper: adapt for LLVM API change
-        GitCherryPick(RUST_SRC_DIR, 'af401b0ca366edd7d0df061b7a635c06e6481f18')
-
         path = FetchBetaPackage('cargo', checkout_revision)
         if sys.platform == 'win32':
             cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo.exe')
