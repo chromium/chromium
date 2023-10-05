@@ -54,6 +54,7 @@ class SetUpListTest : public PlatformTest {
 
   // Builds a new instance of SetUpList.
   void BuildSetUpList() {
+    [set_up_list_ disconnect];
     set_up_list_ =
         [SetUpList buildFromPrefs:prefs_
                        localState:local_state_.Get()
