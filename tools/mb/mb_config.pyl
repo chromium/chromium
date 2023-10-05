@@ -284,7 +284,7 @@
       'ToTLinuxOfficial': 'clang_tot_official',
       'ToTLinuxPGO': 'clang_tot_official_pgo',
       'ToTLinuxTSan': 'clang_tot_tsan_release',
-      'ToTLinuxUBSanVptr': 'clang_tot_ubsan_no_recover_hack_static_release',
+      'ToTLinuxUBSanVptr': 'clang_tot_ubsan_vptr_no_recover_hack_static_release',
       'ToTMac': 'clang_tot_minimal_symbols_shared_release',
       'ToTMac (dbg)': 'clang_tot_shared_debug',
       'ToTMacASan': 'asan_disable_nacl_clang_tot_minimal_symbols_static_release',
@@ -688,7 +688,7 @@
       'linux-exp-asan-lsan-fyi-rel': 'asan_lsan_failsan_release_trybot_reclient',
       'linux-exp-msan-fyi-rel': 'msan_failsan_release_bot_reclient',
       'linux-exp-tsan-fyi-rel': 'tsan_disable_nacl_failsan_release_bot_reclient',
-      'linux-ubsan-fyi-rel': 'ubsan_release_bot_reclient',
+      'linux-ubsan-fyi-rel': 'ubsan_no_recover_release_bot_reclient',
       'mac-lsan-fyi-rel': 'asan_lsan_dcheck_disable_nacl_release_bot_reclient',
     },
 
@@ -1312,7 +1312,7 @@
       'linux-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
       'linux-rel-warmed': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-siso-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
-      'linux-ubsan-fyi-rel': 'ubsan_release_bot_reclient',
+      'linux-ubsan-fyi-rel': 'ubsan_no_recover_release_bot_reclient',
       # This is intentionally a release_bot and not a release_trybot to match
       # the CI configuration, where no debug builder exists.
       'linux-ubsan-vptr': 'ubsan_vptr_release_bot_reclient',
@@ -2612,8 +2612,8 @@
       'clang_tot', 'tsan', 'release',
     ],
 
-    'clang_tot_ubsan_no_recover_hack_static_release': [
-      'clang_tot', 'ubsan_no_recover_hack', 'static', 'release',
+    'clang_tot_ubsan_vptr_no_recover_hack_static_release': [
+      'clang_tot', 'ubsan_vptr_no_recover_hack', 'static', 'release',
     ],
 
     'clang_tot_win_official_full_symbols_static': [
@@ -3881,12 +3881,16 @@
       'tsan', 'disable_nacl', 'release_trybot_minimal_symbols_reclient',
     ],
 
+    'ubsan_no_recover_release_bot_reclient': [
+      'ubsan_no_recover', 'release_bot_reclient',
+    ],
+
     'ubsan_release_bot_reclient': [
       'ubsan', 'release_bot_reclient',
     ],
 
     'ubsan_vptr_release_bot_reclient': [
-      'ubsan_vptr', 'ubsan_no_recover_hack', 'release_bot_reclient',
+      'ubsan_vptr', 'ubsan_vptr_no_recover_hack', 'release_bot_reclient',
     ],
 
     'updater_debug_bot_arm64_reclient': [
@@ -4934,13 +4938,10 @@
       'gn_args': 'is_ubsan=true',
     },
 
-    'ubsan_no_recover_hack': {
-      # TODO(krasin): Remove when https://llvm.org/bugs/show_bug.cgi?id=25569
-      # is fixed and just use ubsan_vptr instead.
-      'mixins': ['ubsan_vptr'],
+    'ubsan_no_recover': {
+      'mixins': ['ubsan'],
       'gn_args': 'is_ubsan_no_recover=true',
     },
-
     'ubsan_security_non_vptr': {
       'gn_args': 'is_ubsan_security=true is_ubsan_vptr=false'
     },
@@ -4948,6 +4949,14 @@
     'ubsan_vptr': {
       'gn_args': 'is_ubsan_vptr=true',
     },
+
+    'ubsan_vptr_no_recover_hack': {
+      # TODO(krasin): Remove when https://llvm.org/bugs/show_bug.cgi?id=25569
+      # is fixed and just use ubsan_vptr instead.
+      'mixins': ['ubsan_vptr'],
+      'gn_args': 'is_ubsan_no_recover=true',
+    },
+
 
     'updater': {
       'gn_args': 'enable_updater=true',
