@@ -130,8 +130,16 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   }
 }
 
+// Disabled on LInux MSAN due to flakes (crbug.com/1487954).
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_RequestPermissionDispatchDismissedEvent \
+  DISABLED_RequestPermissionDispatchDismissedEvent
+#else
+#define MAYBE_RequestPermissionDispatchDismissedEvent \
+  RequestPermissionDispatchDismissedEvent
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
-                       RequestPermissionDispatchDismissedEvent) {
+                       MAYBE_RequestPermissionDispatchDismissedEvent) {
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
