@@ -93,6 +93,7 @@ import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.download.DownloadNotificationService;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
@@ -227,6 +228,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.dragdrop.DragAndDropDelegate;
+import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
@@ -274,6 +277,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public static final Set<String> TABBED_MODE_COMPONENT_NAMES = Set.of(
             ChromeTabbedActivity.class.getName(), MultiInstanceChromeTabbedActivity.class.getName(),
             ChromeTabbedActivity2.class.getName(), MAIN_LAUNCHER_ACTIVITY_NAME);
+
     private static final String TAG_MULTI_INSTANCE = "MultiInstance";
 
     /**
@@ -401,6 +405,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     // Time at which an intent was received and handled.
     private long mIntentHandlingTimeMs;
+
+    // Delegate to handle drag and drop features for tablets.
+    private DragAndDropDelegate mDragDropDelegate;
 
     private final IncognitoTabHost mIncognitoTabHost = new IncognitoTabHost() {
         @Override
@@ -691,13 +698,28 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             ViewGroup tabSwitcherViewHolder = findViewById(R.id.tab_switcher_view_holder);
             ViewStub tabHoverCardViewStub = (ViewStub) findViewById(R.id.tab_hover_card_holder_stub);
             View toolbarContainerView = findViewById(R.id.toolbar_container);
-            mLayoutManager = new LayoutManagerChromeTablet(compositorViewHolder, mContentContainer,
-                mStartSurfaceSupplier, mTabSwitcherSupplier, getBrowserControlsManager(),
-                getTabContentManagerSupplier(), mRootUiCoordinator::getTopUiThemeColorProvider,
-                mTabModelStartupInfoSupplier, tabSwitcherViewHolder,
-                mRootUiCoordinator.getScrimCoordinator(), getLifecycleDispatcher(),
-                () -> createAndSetStartSurfaceForTablet(), mMultiInstanceManager,
-                toolbarContainerView, tabHoverCardViewStub);
+            mDragDropDelegate = new DragAndDropDelegateImpl();
+            mDragDropDelegate.setDragAndDropBrowserDelegate(
+                    new ChromeDragAndDropBrowserDelegate(this));
+
+            mLayoutManager =
+                    new LayoutManagerChromeTablet(
+                            compositorViewHolder,
+                            mContentContainer,
+                            mStartSurfaceSupplier,
+                            mTabSwitcherSupplier,
+                            getBrowserControlsManager(),
+                            getTabContentManagerSupplier(),
+                            mRootUiCoordinator::getTopUiThemeColorProvider,
+                            mTabModelStartupInfoSupplier,
+                            tabSwitcherViewHolder,
+                            mRootUiCoordinator.getScrimCoordinator(),
+                            getLifecycleDispatcher(),
+                            () -> createAndSetStartSurfaceForTablet(),
+                            mMultiInstanceManager,
+                            mDragDropDelegate,
+                            toolbarContainerView,
+                            tabHoverCardViewStub);
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
         }
@@ -2886,6 +2908,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (mAuxiliarySearchController != null) {
             mAuxiliarySearchController.destroy();
+        }
+
+        if (mDragDropDelegate != null) {
+            mDragDropDelegate.destroy();
         }
 
         super.onDestroyInternal();

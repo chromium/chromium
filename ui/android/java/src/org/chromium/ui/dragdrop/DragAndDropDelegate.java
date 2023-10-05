@@ -7,6 +7,7 @@ package org.chromium.ui.dragdrop;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.view.View;
+import android.view.View.DragShadowBuilder;
 
 /**
  * Delegate to facilitate Drag and Drop operations, for example re-routing the call to {@link
@@ -27,9 +28,18 @@ public interface DragAndDropDelegate {
             int cursorOffsetX, int cursorOffsetY, int dragObjRectWidth, int dragObjRectHeight);
 
     /**
+     * @see View#startDragAndDrop
+     */
+    boolean startDragAndDrop(
+            View containerView, DragShadowBuilder dragShadowBuilder, DropDataAndroid dropData);
+
+    /**
      * Set the {@link DragAndDropBrowserDelegate} that will be used to facilitate browser related
      * tasks required for Drag and Drop.
      * @param delegate The {@link DragAndDropBrowserDelegate} that will be used by this class.
      */
     default void setDragAndDropBrowserDelegate(DragAndDropBrowserDelegate delegate) {}
+
+    /** Cleanup {@link DragAndDropBrowserDelegate}. */
+    default void destroy() {}
 }

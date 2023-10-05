@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
@@ -20,8 +21,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -77,5 +80,26 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
                 ContextUtils.getApplicationContext()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    public void testIsTabDragAsWindowEnabled() {
+        assertTrue(TabUiFeatureUtilities.isTabDragAsWindowEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
+    public void testIsTabDragDropEnabled() {
+        assertTrue(TabUiFeatureUtilities.isTabDragEnabled());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
+        ChromeFeatureList.TAB_DRAG_DROP_ANDROID
+    })
+    public void testIsTabDragDropEnabled_bothFlagsEnabled() {
+        assertThrows(AssertionError.class, () -> TabUiFeatureUtilities.isTabDragEnabled());
     }
 }

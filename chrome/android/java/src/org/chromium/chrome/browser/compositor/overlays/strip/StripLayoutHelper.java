@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 
@@ -184,6 +185,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private final LayoutUpdateHost mUpdateHost;
     private final LayoutRenderHost mRenderHost;
     private final LayoutManagerHost mManagerHost;
+    private final DragAndDropDelegate mDragAndDropDelegate;
     private TabModel mModel;
     private TabGroupModelFilter mTabGroupModelFilter;
     private TabCreator mTabCreator;
@@ -288,21 +290,30 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
-     * @param context         The current Android {@link Context}.
-     * @param managerHost      The parent {@link LayoutManagerHost}.
-     * @param updateHost      The parent {@link LayoutUpdateHost}.
-     * @param renderHost      The {@link LayoutRenderHost}.
-     * @param incognito       Whether or not this tab strip is incognito.
+     *
+     * @param context The current Android {@link Context}.
+     * @param managerHost The parent {@link LayoutManagerHost}.
+     * @param updateHost The parent {@link LayoutUpdateHost}.
+     * @param renderHost The {@link LayoutRenderHost}.
+     * @param incognito Whether or not this tab strip is incognito.
      * @param modelSelectorButton The {@link CompositorButton} used to toggle between regular and
-     *         incognito models.
+     *     incognito models.
      * @param multiInstanceManager The @{link MultiInstanceManager} passed to @{link TabDragSource}
-     *         for drag and drop.
+     *     for drag and drop.
+     * @param dragDropDelegate The @{@link DragAndDropDelegate} passed to @{@link TabDragSource} to
+     *     initiate drag and drop.
      * @param toolbarContainerView The @{link View} passed to @{link TabDragSource} for drag and
-     *         drop.
+     *     drop.
      */
-    public StripLayoutHelper(Context context, LayoutManagerHost managerHost,
-            LayoutUpdateHost updateHost, LayoutRenderHost renderHost, boolean incognito,
-            CompositorButton modelSelectorButton, MultiInstanceManager multiInstanceManager,
+    public StripLayoutHelper(
+            Context context,
+            LayoutManagerHost managerHost,
+            LayoutUpdateHost updateHost,
+            LayoutRenderHost renderHost,
+            boolean incognito,
+            CompositorButton modelSelectorButton,
+            MultiInstanceManager multiInstanceManager,
+            DragAndDropDelegate dragDropDelegate,
             View toolbarContainerView) {
         mTabOverlapWidth = ChromeFeatureList.sTabStripRedesign.isEnabled()
                 ? TAB_OVERLAP_WIDTH_LARGE_DP
@@ -315,6 +326,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mModelSelectorButton = modelSelectorButton;
         mMultiInstanceManager = multiInstanceManager;
         mToolbarContainerView = toolbarContainerView;
+        mDragAndDropDelegate = dragDropDelegate;
 
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
             // Use toolbar menu button padding to align NTB with menu button.
@@ -3290,15 +3302,18 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
 
         mTabDropTarget = new TabDropTarget(this);
-        TabDragSource.getInstance().prepareForDragDrop(
-                mToolbarContainerView, mMultiInstanceManager, mTabDropTarget);
+        TabDragSource.getInstance()
+                .prepareForDragDrop(
+                        mToolbarContainerView,
+                        mMultiInstanceManager,
+                        mDragAndDropDelegate,
+                        mTabDropTarget);
     }
 
     @VisibleForTesting
     void allowMovingTabOutOfStripLayout(StripLayoutTab clickedTab, PointF dragStartPointF) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
         if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
-
         // In addition to reordering, one can drag and drop the tab beyond the strip layout view.
         // Also start the tab drag only if there are more than one tabs and a tab has been selected
         // with the long press.

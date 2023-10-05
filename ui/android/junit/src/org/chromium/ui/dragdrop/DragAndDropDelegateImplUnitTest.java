@@ -5,6 +5,7 @@
 package org.chromium.ui.dragdrop;
 
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -266,10 +267,26 @@ public class DragAndDropDelegateImplUnitTest {
     public void testStartDragAndDrop_InvalidDropData() {
         final DropDataAndroid dropData = DropDataAndroid.create(null, null, null, null, null);
 
-        Assert.assertFalse("Drag and drop should not start.",
-                mDragAndDropDelegateImpl.startDragAndDrop(mContainerView, null, dropData,
-                        /*cursorOffsetX*/ 0, /*cursorOffsetY*/ 0, /*dragObjRectWidth*/ 100,
+        Assert.assertFalse(
+                "Drag and drop should not start.",
+                mDragAndDropDelegateImpl.startDragAndDrop(
+                        mContainerView,
+                        Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888),
+                        dropData,
+                        /*cursorOffsetX*/ 0, /*cursorOffsetY*/
+                        0, /*dragObjRectWidth*/
+                        100,
                         /*dragObjRectHeight*/ 200));
+    }
+
+    @Test
+    public void testStartDragAndDrop_WithDragShadowBuilder() {
+        final DropDataAndroid dropData = DropDataAndroid.create("text", null, null, null, null);
+        DragShadowBuilder mockBuilder = mock(DragShadowBuilder.class);
+        Assert.assertFalse(
+                "Drag and drop should not start.",
+                mDragAndDropDelegateImpl.startDragAndDrop(mContainerView, mockBuilder, dropData));
+        Assert.assertTrue("Drag should be started.", mDragAndDropDelegateImpl.isDragStarted());
     }
 
     @Test
@@ -438,6 +455,19 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     @Test
+    public void testClipData_browserContent() {
+        DragAndDropBrowserDelegate mockDelegate = mock(DragAndDropBrowserDelegate.class);
+        ClipData mockClipData = mock(ClipData.class);
+        DropDataAndroid mockDropData = mock(DropDataAndroid.class);
+        when(mockDropData.hasBrowserContent()).thenReturn(true);
+        when(mockDelegate.buildClipData(mockDropData)).thenReturn(mockClipData);
+        mDragAndDropDelegateImpl.setDragAndDropBrowserDelegate(mockDelegate);
+        ClipData actualClipData = mDragAndDropDelegateImpl.buildClipData(mockDropData);
+        Assert.assertEquals("ClipData is not as expected.", mockClipData, actualClipData);
+        verify(mockDelegate).buildClipData(mockDropData);
+    }
+
+    @Test
     public void testDropInChromeFromOutside() {
         mDragAndDropDelegateImpl.setDragAndDropBrowserDelegate(
                 createDragAndDropBrowserDelegate(true, false, mDragAndDropPermissions, null));
@@ -520,6 +550,11 @@ public class DragAndDropDelegateImplUnitTest {
             @Override
             public Intent createLinkIntent(String urlString) {
                 return intent;
+            }
+
+            @Override
+            public ClipData buildClipData(DropDataAndroid dropData) {
+                return null;
             }
         };
     }

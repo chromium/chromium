@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.view.DragEvent;
 import android.view.View;
+import android.view.View.DragShadowBuilder;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -204,6 +205,12 @@ public class ContextMenuDragTest {
         public boolean startDragAndDrop(View containerView, Bitmap shadowImage,
                 DropDataAndroid dropData, int cursorOffsetX, int cursorOffsetY,
                 int dragObjRectWidth, int dragObjRectHeight) {
+            return startDragAndDrop(containerView, null, dropData);
+        }
+
+        @Override
+        public boolean startDragAndDrop(
+                View containerView, DragShadowBuilder dragShadowBuilder, DropDataAndroid dropData) {
             lastDropData = dropData;
             startDragAndDropCallCount += 1;
 

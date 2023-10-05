@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -30,6 +31,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.PointF;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.ContextThemeWrapper;
@@ -82,6 +84,7 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 import java.lang.reflect.Field;
@@ -91,10 +94,11 @@ import java.util.List;
 /** Tests for {@link StripLayoutHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 // clang-format off
-@EnableFeatures({
-        ChromeFeatureList.TAB_STRIP_REDESIGN,
-        ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
-@Config(manifest = Config.NONE, qualifiers = "sw600dp", shadows = {ShadowAppCompatResources.class})
+@EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
+@Config(
+        manifest = Config.NONE,
+        qualifiers = "sw600dp",
+        shadows = {ShadowAppCompatResources.class})
 @LooperMode(Mode.LEGACY)
 public class StripLayoutHelperTest {
     // clang-format on
@@ -116,8 +120,8 @@ public class StripLayoutHelperTest {
     private MultiInstanceManager mMultiInstanceManager;
     @Mock
     private View mToolbarContainerView;
-    @Mock
-    private ActivityInfo mActivityInfo;
+    @Mock private DragAndDropDelegate mDragDropDelegate;
+    @Mock private ActivityInfo mActivityInfo;
     @Mock
     private PackageManager mPackageManager;
     @Mock
@@ -1167,11 +1171,14 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.R)
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testOnLongPress_WithDragDrop_OnTab() {
         // Extra setup for DragDrop
         setTabDragSourceMock();
         onLongPress_OnTab();
+        // Verify drag invoked
+        verify(mTabDragSource).startTabDragAction(any(), any(), any(), any());
         // Cleanup for DragDrop
         clearTabDragSourceMock();
     }
@@ -1225,11 +1232,17 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.R)
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testOnLongPress_WithDragDrop_OffTab() {
         // Extra setup for DragDrop
         setTabDragSourceMock();
+        Activity activity = Mockito.spy(mActivity);
+        when(mToolbarContainerView.getContext()).thenReturn(activity);
+
         onLongPress_OffTab();
+        // verify tab drag not invoked.
+        verifyNoInteractions(mTabDragSource);
         // Cleanup for DragDrop
         clearTabDragSourceMock();
     }
@@ -2275,8 +2288,16 @@ public class StripLayoutHelperTest {
     private StripLayoutHelper createStripLayoutHelper(boolean rtl, boolean incognito) {
         LocalizationUtils.setRtlForTesting(rtl);
         final StripLayoutHelper stripLayoutHelper =
-                new StripLayoutHelper(mActivity, mManagerHost, mUpdateHost, mRenderHost, incognito,
-                        mModelSelectorBtn, mMultiInstanceManager, mToolbarContainerView);
+                new StripLayoutHelper(
+                        mActivity,
+                        mManagerHost,
+                        mUpdateHost,
+                        mRenderHost,
+                        incognito,
+                        mModelSelectorBtn,
+                        mMultiInstanceManager,
+                        mDragDropDelegate,
+                        mToolbarContainerView);
         // Initialize StackScroller
         stripLayoutHelper.onContextChanged(mActivity);
         return stripLayoutHelper;
@@ -2402,8 +2423,8 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @Config(sdk = 31)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_AllowMovingTabOutOfStripLayout_SetActiveTab() {
         // Setup with 10 tabs and select tab 5.
         setTabDragSourceMock();
@@ -2437,8 +2458,8 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @Config(sdk = 31)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_PrepareForDragDrop_verify() {
         // Setup with 5 tabs and select tab 3.
         setTabDragSourceMock();
@@ -2446,15 +2467,20 @@ public class StripLayoutHelperTest {
 
         // Act and verify.
         mStripLayoutHelper.prepareForDragDrop();
-        verify(mTabDragSource, atLeastOnce()).prepareForDragDrop(any(), any(), any());
+        verify(mTabDragSource, atLeastOnce())
+                .prepareForDragDrop(
+                        eq(mToolbarContainerView),
+                        eq(mMultiInstanceManager),
+                        eq(mDragDropDelegate),
+                        any(TabDropTarget.class));
 
         // Windup
         clearTabDragSourceMock();
     }
 
     @Test
-    @Feature(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @Config(sdk = 31)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_TabDropTargetCleared_success() {
         // Setup with 5 tabs and select tab 3.
         setTabDragSourceMock();
@@ -2474,8 +2500,8 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @Config(sdk = 31)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_selectTabAtIndex_success() {
         // Setup with 10 tabs and select first tab.
         int selectedTabIndex = 0;
@@ -2494,8 +2520,8 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @Config(sdk = 31)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_sendMoveWindowBroadcast_success() {
         // Setup with tabs and select first tab.
         setTabDragSourceMock();

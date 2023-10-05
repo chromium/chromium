@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -145,5 +146,13 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     public void testDragAndDropBrowserDelegate_createLinkIntent_PreR() {
         Intent intent = mDelegate.createLinkIntent(JUnitTestGURLs.EXAMPLE_URL.getSpec());
         assertNull("The intent should be null on R- versions.", intent);
+    }
+
+    @Test
+    public void testBuildClipData() {
+        ClipData data =
+                mDelegate.buildClipData(new ChromeDropDataAndroid.Builder().withTabId(1).build());
+        assertEquals(
+                "The browser clip data is not as expected", "TabId=1", data.getItemAt(0).getText());
     }
 }

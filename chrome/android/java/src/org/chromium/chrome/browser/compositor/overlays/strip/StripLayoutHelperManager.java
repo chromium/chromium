@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.url.GURL;
 
@@ -288,6 +289,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
     /**
      * Creates an instance of the {@link StripLayoutHelperManager}.
+     *
      * @param context The current Android {@link Context}.
      * @param managerHost The parent {@link LayoutManagerHost}.
      * @param updateHost The parent {@link LayoutUpdateHost}.
@@ -295,19 +297,26 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
      * @param layerTitleCacheSupplier A supplier of the cache that holds the title textures.
      * @param tabModelStartupInfoSupplier A supplier for the {@link TabModelStartupInfo}.
      * @param lifecycleDispatcher The {@link ActivityLifecycleDispatcher} for registering this class
-     *         to lifecycle events.
+     *     to lifecycle events.
      * @param multiInstanceManager @{link MultiInstanceManager} passed to @{link TabDragSource} for
-     *         drag and drop.
+     *     drag and drop.
+     * @param dragDropDelegate @{@link DragAndDropDelegate} passed to @{@link TabDragSource} to
+     *     initiate tab drag and drop.
      * @param toolbarContainerView @{link View} passed to @{link TabDragSource} for drag and drop.
      * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      */
-    public StripLayoutHelperManager(Context context, LayoutManagerHost managerHost,
-            LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
+    public StripLayoutHelperManager(
+            Context context,
+            LayoutManagerHost managerHost,
+            LayoutUpdateHost updateHost,
+            LayoutRenderHost renderHost,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
             ObservableSupplier<TabModelStartupInfo> tabModelStartupInfoSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            MultiInstanceManager multiInstanceManager, View toolbarContainerView,
+            MultiInstanceManager multiInstanceManager,
+            DragAndDropDelegate dragDropDelegate,
+            View toolbarContainerView,
             @NonNull ViewStub tabHoverCardViewStub,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
         mUpdateHost = updateHost;
@@ -405,10 +414,28 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mBrowserScrimShowing = false;
 
         mTabHoverCardViewStub = tabHoverCardViewStub;
-        mNormalHelper = new StripLayoutHelper(context, managerHost, updateHost, renderHost, false,
-                mModelSelectorButton, multiInstanceManager, toolbarContainerView);
-        mIncognitoHelper = new StripLayoutHelper(context, managerHost, updateHost, renderHost, true,
-                mModelSelectorButton, multiInstanceManager, toolbarContainerView);
+        mNormalHelper =
+                new StripLayoutHelper(
+                        context,
+                        managerHost,
+                        updateHost,
+                        renderHost,
+                        false,
+                        mModelSelectorButton,
+                        multiInstanceManager,
+                        dragDropDelegate,
+                        toolbarContainerView);
+        mIncognitoHelper =
+                new StripLayoutHelper(
+                        context,
+                        managerHost,
+                        updateHost,
+                        renderHost,
+                        true,
+                        mModelSelectorButton,
+                        multiInstanceManager,
+                        dragDropDelegate,
+                        toolbarContainerView);
 
         tabHoverCardViewStub.setOnInflateListener((viewStub, view) -> {
             var hoverCardView = (StripTabHoverCardView) view;

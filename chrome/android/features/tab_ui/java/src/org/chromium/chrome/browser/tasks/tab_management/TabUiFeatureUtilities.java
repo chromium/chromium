@@ -139,8 +139,14 @@ public class TabUiFeatureUtilities {
     public static boolean isTabDragEnabled() {
         // Both flags should not be enabled together.
         assert !(ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()
-                && ChromeFeatureList.sTabDragDropAsWindowAndroid.isEnabled());
-        return ChromeFeatureList.sTabDragDropAsWindowAndroid.isEnabled()
-                || ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled();
+                && isTabDragAsWindowEnabled());
+        return isTabDragAsWindowEnabled() || ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled();
+    }
+
+    /**
+     * @return whether tab drag as window is enabled.
+     */
+    public static boolean isTabDragAsWindowEnabled() {
+        return ChromeFeatureList.sTabDragDropAsWindowAndroid.isEnabled();
     }
 }

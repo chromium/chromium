@@ -15,17 +15,25 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.DragEvent;
 import android.view.View;
+import android.view.View.DragShadowBuilder;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
+import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
+import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.ui.dragdrop.DragAndDropDelegate;
+import org.chromium.ui.dragdrop.DropDataAndroid;
 
 /**
  * A singleton class manages initiating tab drag and drop and handles the events that are received
@@ -34,22 +42,20 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
  */
 public class TabDragSource {
     private static final String TAG = "TabDragSource";
-
-    // TODO(b/285585036): Expand the ClipData definition to support dropping of the Tab info to be
-    // used by SysUI that can parse this format.
-    public static final String MIMETYPE_CHROME_TAB = "cr_tab/*";
-    public static final String[] SUPPORTED_MIMETYPES = new String[] {MIMETYPE_CHROME_TAB};
+    public static final String[] SUPPORTED_MIMETYPES =
+            new String[] {ChromeDragAndDropBrowserDelegate.CHROME_MIMETYPE_TAB};
 
     private static TabDragSource sTabDragSource;
 
     private MultiInstanceManager mMultiInstanceManager;
+
+    private DragAndDropDelegate mDragAndDropDelegate;
     private StripLayoutHelper mSourceStripLayoutHelper;
     private int mDragSourceTabsToolbarHashCode;
     private Tab mTabBeingDragged;
     private boolean mAcceptNextDrop;
     private OnDragListenerImpl mOnDragListenerImpl;
-    private View.DragShadowBuilder mTabDragShadowBuilder;
-    private PointF mStartPointOnScreen;
+    private PointF mDragShadowOffset = new PointF(0, 0);
     private PointF mDropLocation;
     private float mTabsToolbarHeightInDp;
 
@@ -110,11 +116,6 @@ public class TabDragSource {
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     void setMultiInstanceManager(MultiInstanceManager multiInstanceManager) {
         mMultiInstanceManager = multiInstanceManager;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    View.DragShadowBuilder getTabDragShadowBuilder() {
-        return mTabDragShadowBuilder;
     }
 
     PointF getTabDropPosition() {
@@ -194,7 +195,6 @@ public class TabDragSource {
                     // Clear the source view handle as DragNDrop is completed.
                     clearDragSourceTabsToolbarHashCode();
                     mSourceStripLayoutHelper.clearActiveClickedTab();
-                    mTabDragShadowBuilder = null;
                     break;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     mSourceStripLayoutHelper.onDownInternal(
@@ -245,11 +245,9 @@ public class TabDragSource {
 
         private void showDragShadow(boolean show) {
             View dragSourceView = mSourceStripLayoutHelper.getToolbarContainerView();
-            mTabDragShadowBuilder =
-                    new TabDragShadowBuilder(show ? getDragShadowView(dragSourceView)
-                                                  : getEmptyDragShadowView(dragSourceView),
-                            mStartPointOnScreen);
-            dragSourceView.updateDragShadow(mTabDragShadowBuilder);
+            Context context = dragSourceView.getContext();
+            DragShadowBuilder builder = createTabDragShadowBuilder(context, show);
+            dragSourceView.updateDragShadow(builder);
             mDragShadowVisible = show;
         }
 
@@ -294,27 +292,13 @@ public class TabDragSource {
         }
     }
 
-    private void initiateTabDragAndDrop(View view, ClipData dragData, PointF startPointInView) {
-        mStartPointOnScreen = getPositionOnScreen(view, startPointInView);
-        // Instantiate the drag shadow builder.
-        mTabDragShadowBuilder =
-                new TabDragShadowBuilder(getEmptyDragShadowView(view), mStartPointOnScreen);
-
-        // Start the drag.
-        int flags = View.DRAG_FLAG_GLOBAL;
-        view.startDragAndDrop(dragData, // The data to be dragged.
-                mTabDragShadowBuilder, // The drag shadow builder.
-                null, // No need to use local data.
-                flags);
-    }
-
     private static class TabDragShadowBuilder extends View.DragShadowBuilder {
-        private PointF mStartPositionOnScreen;
+        private PointF mDragShadowOffset;
 
-        public TabDragShadowBuilder(View view, PointF startPositionOnScreen) {
+        public TabDragShadowBuilder(View view, PointF dragShadowOffset) {
             // Store the View parameter.
             super(view);
-            mStartPositionOnScreen = startPositionOnScreen;
+            mDragShadowOffset = dragShadowOffset;
         }
 
         // Defines a callback that sends the drag shadow dimensions and touch point
@@ -335,57 +319,9 @@ public class TabDragSource {
 
             // Set the touch point of the drag shadow to be user's hold/touch point within Chrome
             // Window.
-            touch.set(Math.round(mStartPositionOnScreen.x), Math.round(mStartPositionOnScreen.y));
-            Log.d(TAG, "DnD onProvideShadowMetrics: " + mStartPositionOnScreen);
+            touch.set(Math.round(mDragShadowOffset.x), Math.round(mDragShadowOffset.y));
+            Log.d(TAG, "DnD onProvideShadowMetrics: " + mDragShadowOffset);
         }
-    }
-
-    private View getDragShadowView(View view) {
-        Context context = view.getContext();
-        ImageView imageView = new ImageView(context);
-        try {
-            Drawable icon =
-                    context.getPackageManager().getApplicationIcon(context.getApplicationInfo());
-            imageView.setImageDrawable(icon);
-            imageView.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
-
-            // Get Chrome window dimensions.
-            int shadowWidth = ((Activity) context).getWindow().getDecorView().getWidth();
-            int shadowHeight = ((Activity) context).getWindow().getDecorView().getHeight();
-
-            // Add app icon in the center of the drag shadow.
-            int iconWidth = icon.getIntrinsicWidth();
-            int iconHeight = icon.getIntrinsicHeight();
-            int paddingHorizontal = (shadowWidth - iconWidth) / 2;
-            int paddingVertical = (shadowHeight - iconHeight) / 2;
-            imageView.setPadding(
-                    paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
-            imageView.layout(0, 0, shadowWidth, shadowHeight);
-        } catch (Exception e) {
-            Log.e(TAG, "DnD Failed to create drag shadow image view: " + e.getMessage());
-        }
-        return imageView;
-    }
-
-    private View getEmptyDragShadowView(View view) {
-        Context context = view.getContext();
-        ImageView imageView = new ImageView(context);
-        // View is empty and nothing is shown for now.
-        // Get Chrome window dimensions and set the view to that size.
-        int shadowWidth = ((Activity) context).getWindow().getDecorView().getWidth();
-        int shadowHeight = ((Activity) context).getWindow().getDecorView().getHeight();
-        imageView.layout(0, 0, shadowWidth, shadowHeight);
-        return imageView;
-    }
-
-    @VisibleForTesting
-    String getClipDataInfo(Tab clickedTab) {
-        String tabData = "";
-        if (clickedTab != null) {
-            tabData = "TabId=" + clickedTab.getId();
-        }
-
-        return tabData;
     }
 
     /* Starts the tab drag action by initiating the process by calling @{link
@@ -400,37 +336,93 @@ public class TabDragSource {
     public boolean startTabDragAction(View tabsToolbarView,
             StripLayoutHelper sourceStripLayoutHelper, Tab tabBeingDragged, PointF startPoint) {
         if (!TabUiFeatureUtilities.isTabDragEnabled()) return false;
-        if (getDragSourceTabsToolbarHashCode() != 0) return false;
+        if (getDragSourceTabsToolbarHashCode() != 0 || tabBeingDragged == null) return false;
 
         assert (tabsToolbarView != null);
         assert (sourceStripLayoutHelper != null);
 
         mSourceStripLayoutHelper = sourceStripLayoutHelper;
+        mTabBeingDragged = tabBeingDragged;
 
-        // Build the ClipData before initiating the drag action.
-        ClipData tabClipData = createClipDataFromTab(tabBeingDragged, tabsToolbarView);
-        if (tabClipData != null) {
-            mTabBeingDragged = tabBeingDragged;
-            initiateTabDragAndDrop(tabsToolbarView, tabClipData, startPoint);
-
-            // Save this View handle to identify the source view.
-            mDragSourceTabsToolbarHashCode = System.identityHashCode(tabsToolbarView);
-            return true;
+        if (TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
+            mDragShadowOffset = getPositionOnScreen(tabsToolbarView, startPoint);
         }
-        return false;
+        mDragSourceTabsToolbarHashCode = System.identityHashCode(tabsToolbarView);
+
+        DropDataAndroid dropData =
+                new ChromeDropDataAndroid.Builder().withTabId(tabBeingDragged.getId()).build();
+        // Instantiate the drag shadow builder.
+        DragShadowBuilder builder = createTabDragShadowBuilder(tabsToolbarView.getContext(), false);
+        return mDragAndDropDelegate.startDragAndDrop(tabsToolbarView, builder, dropData);
     }
 
-    /* Prepares the toolbar view to listen to the drag events and data drop after the drag is
+    @NonNull
+    @VisibleForTesting
+    DragShadowBuilder createTabDragShadowBuilder(Context context, boolean show) {
+        int shadowWidthPx;
+        int shadowHeightPx;
+        ImageView imageView = new ImageView(context);
+        if (TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
+            // View is empty and nothing is shown for now.
+            // Get Chrome window dimensions and set the view to that size.
+            shadowWidthPx = ((Activity) context).getWindow().getDecorView().getWidth();
+            shadowHeightPx = ((Activity) context).getWindow().getDecorView().getHeight();
+            if (show) {
+                addAppIconToShadow(imageView, context, shadowWidthPx, shadowHeightPx);
+            }
+        } else {
+            shadowWidthPx =
+                    context.getResources().getDimensionPixelSize(R.dimen.tab_hover_card_width);
+            shadowHeightPx =
+                    TabUtils.deriveGridCardHeight(
+                            shadowWidthPx,
+                            context,
+                            BrowserControlsManagerSupplier.getValueOrNullFrom(
+                                    mTabBeingDragged.getWindowAndroid()));
+        }
+        if (show) {
+            imageView.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
+        }
+        imageView.layout(0, 0, shadowWidthPx, shadowHeightPx);
+        return new TabDragShadowBuilder(imageView, mDragShadowOffset);
+    }
+
+    private void addAppIconToShadow(
+            ImageView imageView, Context context, int shadowWidth, int shadowHeight) {
+        try {
+            Drawable icon =
+                    context.getPackageManager().getApplicationIcon(context.getApplicationInfo());
+            imageView.setImageDrawable(icon);
+
+            // Add app icon in the center of the drag shadow.
+            int iconWidth = icon.getIntrinsicWidth();
+            int iconHeight = icon.getIntrinsicHeight();
+            int paddingHorizontal = (shadowWidth - iconWidth) / 2;
+            int paddingVertical = (shadowHeight - iconHeight) / 2;
+            imageView.setPadding(
+                    paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
+            imageView.layout(0, 0, shadowWidth, shadowHeight);
+        } catch (Exception e) {
+            Log.e(TAG, "DnD Failed to create drag shadow image view: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Prepares the toolbar view to listen to the drag events and data drop after the drag is
      * initiated.
      *
      * @param tabsToolbarView @{link View} used to setup the drag and drop @{link
-     *         View.OnDragListener}.
+     *     View.OnDragListener}.
      * @param multiInstanceManager @{link MultiInstanceManager} to perform move action when drop
-     *         completes.
+     *     completes.
+     * @param dragAndDropDelegate @{@link DragAndDropDelegate} to initiate tab drag and drop.
      * @param tabDropTarget @{link TabDropTarget} used to receive the tab data drop from other
-     *         Chrome windows via @{link ClipData}.
+     *     Chrome windows via @{link ClipData}.
      */
-    public void prepareForDragDrop(View tabsToolbarView, MultiInstanceManager multiInstanceManager,
+    public void prepareForDragDrop(
+            View tabsToolbarView,
+            MultiInstanceManager multiInstanceManager,
+            DragAndDropDelegate dragAndDropDelegate,
             TabDropTarget tabDropTarget) {
         if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
 
@@ -440,6 +432,7 @@ public class TabDragSource {
         // Setup the environment.
         mPxToDp = 1.f / tabsToolbarView.getContext().getResources().getDisplayMetrics().density;
         mMultiInstanceManager = multiInstanceManager;
+        mDragAndDropDelegate = dragAndDropDelegate;
 
         // Setup a drop target and register the callback where the drag events
         // will be received.
@@ -474,21 +467,9 @@ public class TabDragSource {
         mPxToDp = 0.0f;
     }
 
-    private ClipData createClipDataFromTab(Tab tabBeingDragged, View view) {
-        String clipData = getClipDataInfo(tabBeingDragged);
-        if (clipData != null && clipData.length() > 0) {
-            // Create a new ClipData.Item from the ImageView object's tag.
-            ClipData.Item item = new ClipData.Item((CharSequence) clipData);
-
-            // Create a new ClipData using the tag as a label, the plain text MIME type,
-            // and the already-created item. This creates a new ClipDescription object
-            // within the ClipData and sets its MIME type to "cr_tab/plain".
-            return new ClipData((CharSequence) view.getTag(), SUPPORTED_MIMETYPES, item);
-        }
-        return null;
-    }
-
     int getTabIdFromClipData(ClipData.Item item) {
+        // TODO(b/285585036): Expand the ClipData definition to support dropping of the Tab info to
+        // be used by SysUI that can parse this format.
         String[] itemTexts = item.getText().toString().split(";");
         String numberText = itemTexts[0].replaceAll("[^0-9]", "");
         return numberText.isEmpty() ? Tab.INVALID_TAB_ID : Integer.parseInt(numberText);

@@ -23,9 +23,12 @@ public class DropDataAndroid {
     public final String imageContentExtension;
     public final String imageFilename;
 
-    /** Not generated from java */
-    private DropDataAndroid(String text, GURL gurl, byte[] imageContent,
-            String imageContentExtension, String imageFilename) {
+    protected DropDataAndroid(
+            String text,
+            GURL gurl,
+            byte[] imageContent,
+            String imageContentExtension,
+            String imageFilename) {
         this.text = text;
         this.gurl = gurl;
         this.imageContent = imageContent;
@@ -54,5 +57,10 @@ public class DropDataAndroid {
     public boolean hasImage() {
         return imageContent != null && !TextUtils.isEmpty(imageContentExtension)
                 && !TextUtils.isEmpty(imageFilename);
+    }
+
+    /** Return whether this data presents browser content. */
+    public boolean hasBrowserContent() {
+        return false;
     }
 }
