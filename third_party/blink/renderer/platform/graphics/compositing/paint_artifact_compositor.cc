@@ -174,22 +174,19 @@ bool PaintArtifactCompositor::NeedsCompositedScrolling(
   if (scroll_translation.HasDirectCompositingReasons()) {
     return true;
   }
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    auto it = painted_scroll_translations_.find(&scroll_translation);
-    if (it == painted_scroll_translations_.end()) {
-      // Negative z-index scrolling contents in a non-stacking-context scroller
-      // appear earlier than the ScrollHitTest of the scroller, and this
-      // method can be called before ComputeNeedsCompositedScrolling() for the
-      // ScrollHitTest. If LCD-text is strongly preferred, here we assume the
-      // scroller is not composited. Even if later the scroller is found to
-      // have an opaque background and composited, not compositing the negative
-      // z-index contents won't cause any problem because they (with possible
-      // wrong rendering) are obscured by the opaque background.
-      return lcd_text_preference_ != LCDTextPreference::kStronglyPreferred;
-    }
-    return it->value;
+  auto it = painted_scroll_translations_.find(&scroll_translation);
+  if (it == painted_scroll_translations_.end()) {
+    // Negative z-index scrolling contents in a non-stacking-context scroller
+    // appear earlier than the ScrollHitTest of the scroller, and this
+    // method can be called before ComputeNeedsCompositedScrolling() for the
+    // ScrollHitTest. If LCD-text is strongly preferred, here we assume the
+    // scroller is not composited. Even if later the scroller is found to
+    // have an opaque background and composited, not compositing the negative
+    // z-index contents won't cause any problem because they (with possible
+    // wrong rendering) are obscured by the opaque background.
+    return lcd_text_preference_ != LCDTextPreference::kStronglyPreferred;
   }
-  return false;
+  return it->value;
 }
 
 bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
@@ -205,10 +202,6 @@ bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
   // This function should be called before scroll_translation is inserted into
   // painted_scroll_translations_.
   DCHECK(!painted_scroll_translations_.Contains(&scroll_translation));
-
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    return scroll_translation.HasDirectCompositingReasons();
-  }
 
   if (scroll_translation.HasDirectCompositingReasons()) {
     return true;
@@ -1027,10 +1020,6 @@ bool PaintArtifactCompositor::DirectlyUpdateCompositedOpacityValue(
 
 bool PaintArtifactCompositor::DirectlyUpdateScrollOffsetTransform(
     const TransformPaintPropertyNode& transform) {
-  // We can only directly-update compositor values if all content associated
-  // with the node is known to be composited.
-  DCHECK(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() ||
-         transform.HasDirectCompositingReasons());
   if (CanDirectlyUpdateProperties()) {
     return PropertyTreeManager::DirectlyUpdateScrollOffsetTransform(
         *root_layer_->layer_tree_host(), transform);
@@ -1082,9 +1071,6 @@ bool PaintArtifactCompositor::DirectlySetScrollOffset(
 
 uint32_t PaintArtifactCompositor::GetMainThreadScrollingReasons(
     const ScrollPaintPropertyNode& scroll) const {
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    return scroll.GetMainThreadScrollingReasons();
-  }
   CHECK(root_layer_);
   if (!root_layer_->layer_tree_host()) {
     return 0;
@@ -1212,12 +1198,10 @@ CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
   auto composited_ancestor = [this](const TransformPaintPropertyNode& transform)
       -> const TransformPaintPropertyNode* {
     const auto* ancestor = transform.NearestDirectlyCompositedAncestor();
-    if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-      const auto& scroll_translation = transform.NearestScrollTranslationNode();
-      if (NeedsCompositedScrolling(scroll_translation) &&
-          (!ancestor || ancestor->IsAncestorOf(scroll_translation))) {
-        return &scroll_translation;
-      }
+    const auto& scroll_translation = transform.NearestScrollTranslationNode();
+    if (NeedsCompositedScrolling(scroll_translation) &&
+        (!ancestor || ancestor->IsAncestorOf(scroll_translation))) {
+      return &scroll_translation;
     }
     return ancestor;
   };

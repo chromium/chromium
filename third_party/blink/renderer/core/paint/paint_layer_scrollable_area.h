@@ -431,23 +431,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // Returns true if the scroll node is currently composited in cc.
   bool UsesCompositedScrolling() const override;
 
-  // In CompositeScrollAfterPaint, NeedsCompositedScrolling() is false if
-  // composited scrolling will be determined after paint.
-  // TODO(crbug.com/1414885): Remove these functions.
-  void UpdateNeedsCompositedScrolling(
-      bool force_prefer_compositing_to_lcd_text);
-  bool NeedsCompositedScrolling() const { return needs_composited_scrolling_; }
-#if DCHECK_IS_ON()
-  void CheckNeedsCompositedScrollingIsUpToDate(
-      bool force_prefer_compositing_to_lcd_text) {
-    DCHECK_EQ(
-        needs_composited_scrolling_,
-        ComputeNeedsCompositedScrolling(force_prefer_compositing_to_lcd_text));
-  }
-#endif
-
-  // TODO(crbug.com/1414885): Move this function into
-  // paint_property_tree_builder.cc as a local function.
   bool PrefersNonCompositedScrolling() const;
 
   gfx::Rect ResizerCornerRect(ResizerHitTestType) const;
@@ -511,11 +494,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void UpdateAllStickyConstraints();
   void InvalidateAllStickyConstraints();
   void InvalidatePaintForStickyDescendants();
-
-  uint32_t GetNonCompositedMainThreadScrollingReasons() const {
-    DCHECK(!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
-    return non_composited_main_thread_scrolling_reasons_;
-  }
 
   // This function doesn't check background-attachment:fixed backgrounds
   // because it's not enough to invalidate all affected fixed backgrounds.
@@ -616,10 +594,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool IsApplyingScrollStart() const final;
 
  private:
-  // This also updates main thread scrolling reasons and the LayoutBox's
-  // background paint location.
-  bool ComputeNeedsCompositedScrolling(
-      bool force_prefer_compositing_to_lcd_text);
   bool NeedsHypotheticalScrollbarThickness(ScrollbarOrientation) const;
   int ComputeHypotheticalScrollbarThickness(
       ScrollbarOrientation,
@@ -694,11 +668,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   gfx::Size PixelSnappedBorderBoxSize() const;
 
-  using BackgroundPaintLocation = uint8_t;
-  bool ComputeNeedsCompositedScrollingInternal(
-      BackgroundPaintLocation background_paint_location_if_composited,
-      bool force_prefer_compositing_to_lcd_text);
-
   void InvalidatePaintOfScrollbarIfNeeded(
       const PaintInvalidatorContext&,
       bool needs_paint_invalidation,
@@ -723,10 +692,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   unsigned in_resize_mode_ : 1;
   unsigned scrolls_overflow_ : 1;
 
-  // FIXME: once cc can handle composited scrolling with clip paths, we will
-  // no longer need this bit.
-  unsigned needs_composited_scrolling_ : 1;
-
   unsigned needs_scroll_offset_clamp_ : 1;
   unsigned needs_relayout_ : 1;
   unsigned had_horizontal_scrollbar_before_relayout_ : 1;
@@ -738,8 +703,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   unsigned is_horizontal_scrollbar_frozen_ : 1;
   unsigned is_vertical_scrollbar_frozen_ : 1;
 
-  // In CompositeScrollAfterPaint, this is updated after
-  // PaintArtifactCompositor::Update(). Otherwise it's updated during PrePaint.
+  // This is updated after PaintArtifactCompositor::Update().
   unsigned should_scroll_on_main_thread_ : 1;
 
   // There are 6 possible combinations of writing mode and direction. Scroll
@@ -780,9 +744,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   ScrollAnchor scroll_anchor_;
 
   Member<PaintLayerScrollableAreaRareData> rare_data_;
-
-  // MainThreadScrollingReason due to the properties of the LayoutObject
-  uint32_t non_composited_main_thread_scrolling_reasons_;
 
   // These are cached after layout to avoid computation of custom scrollbar
   // dimensions (requiring layout) outside of a lifecycle update.

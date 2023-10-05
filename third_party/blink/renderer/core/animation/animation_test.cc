@@ -1919,9 +1919,7 @@ TEST_P(AnimationAnimationTestCompositing,
   )HTML");
 
   auto* scroller = GetLayoutBoxByElementId("scroller");
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    ASSERT_TRUE(scroller->UsesCompositedScrolling());
-  }
+  ASSERT_TRUE(scroller->UsesCompositedScrolling());
 
   // Create ScrollTimeline
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();

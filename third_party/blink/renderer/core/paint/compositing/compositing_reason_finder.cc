@@ -36,10 +36,8 @@ bool ShouldPreferCompositingForLayoutView(const LayoutView& layout_view) {
   }
 
   auto has_direct_compositing_reasons = [](const LayoutObject* object) -> bool {
-    return object &&
-           CompositingReasonFinder::
-                   DirectReasonsForPaintPropertiesExceptScrolling(*object) !=
-               CompositingReason::kNone;
+    return object && CompositingReasonFinder::DirectReasonsForPaintProperties(
+                         *object) != CompositingReason::kNone;
   };
   if (has_direct_compositing_reasons(
           layout_view.GetFrame()->OwnerLayoutObject()))
@@ -290,8 +288,7 @@ bool ObjectTypeSupportsCompositedTransformAnimation(
 
 }  // anonymous namespace
 
-CompositingReasons
-CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
+CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
     const LayoutObject& object,
     const LayoutObject* container_for_fixed_position) {
   if (object.GetDocument().Printing())
@@ -302,7 +299,6 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
   if (object.CanHaveAdditionalCompositingReasons())
     reasons |= object.AdditionalCompositingReasons();
 
-  // TODO(wangxianzhu): Don't depend on PaintLayer.
   if (!object.HasLayer()) {
     if (object.IsSVGChild())
       reasons |= DirectReasonsForSVGChildPaintProperties(object);
@@ -374,12 +370,11 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
 
 bool CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
     const LayoutObject& object,
-    CompositingReasons reasons_except_scrolling) {
-  DCHECK_EQ(reasons_except_scrolling,
-            DirectReasonsForPaintPropertiesExceptScrolling(object));
-
-  if (reasons_except_scrolling != CompositingReason::kNone)
+    CompositingReasons reasons) {
+  DCHECK_EQ(reasons, DirectReasonsForPaintProperties(object));
+  if (reasons != CompositingReason::kNone) {
     return true;
+  }
 
   if (object.StyleRef().WillChangeScrollPosition())
     return true;
@@ -394,25 +389,6 @@ bool CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
     return ShouldPreferCompositingForLayoutView(*layout_view);
 
   return false;
-}
-
-CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
-    const LayoutObject& object,
-    CompositingReasons reasons_except_scrolling) {
-  DCHECK_EQ(reasons_except_scrolling,
-            DirectReasonsForPaintPropertiesExceptScrolling(object));
-  if (auto* box = DynamicTo<LayoutBox>(object)) {
-    if (auto* scrollable_area = box->GetScrollableArea()) {
-#if DCHECK_IS_ON()
-      scrollable_area->CheckNeedsCompositedScrollingIsUpToDate(
-          ShouldForcePreferCompositingToLCDText(object,
-                                                reasons_except_scrolling));
-#endif
-      if (scrollable_area->NeedsCompositedScrolling())
-        return reasons_except_scrolling | CompositingReason::kOverflowScrolling;
-    }
-  }
-  return reasons_except_scrolling;
 }
 
 CompositingReasons

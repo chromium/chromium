@@ -141,24 +141,6 @@
     "args": ["--enable-threaded-compositing"],
     "expires": "Jul 1, 2023"
   },
-
-  {
-    "prefix": "disable-composite-scroll-after-paint",
-    "platforms": ["Linux"],
-    "bases": ["compositing/overflow",
-              "fast/scrolling",
-              "paint/invalidation/overflow",
-              "paint/invalidation/scroll",
-              "scrollbars",
-              "external/wpt/css/css-scroll-snap",
-              "external/wpt/scroll-animations",
-              "external/wpt/css/css-overflow",
-              "scrollingcoordinator",
-              "http/tests/devtools/layers"],
-    "args": ["--disable-features=CompositeScrollAfterPaint",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Sep 1, 2023"
-  },
   {
     "prefix": "disable-intersection-optimization",
     "platforms": ["Linux", "Mac"],

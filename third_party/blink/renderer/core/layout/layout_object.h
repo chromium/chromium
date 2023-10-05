@@ -3314,19 +3314,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetShouldSkipLayoutCache(b);
   }
 
-  BackgroundPaintLocation GetBackgroundPaintLocation() const {
-    NOT_DESTROYED();
-    return static_cast<BackgroundPaintLocation>(background_paint_location_);
-  }
-  void SetBackgroundPaintLocation(BackgroundPaintLocation location) {
-    NOT_DESTROYED();
-    if (GetBackgroundPaintLocation() != location) {
-      SetBackgroundNeedsFullPaintInvalidation();
-      background_paint_location_ = static_cast<unsigned>(location);
-      DCHECK_EQ(location, GetBackgroundPaintLocation());
-    }
-  }
-
   bool IsBackgroundAttachmentFixedObject() const {
     NOT_DESTROYED();
     return bitfields_.IsBackgroundAttachmentFixedObject();
@@ -3720,6 +3707,22 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool HasValidCachedGeometry() const {
     NOT_DESTROYED();
     return bitfields_.HasValidCachedGeometry();
+  }
+
+  // For LayoutBox. They are here to use the bit fields.
+  BackgroundPaintLocation GetBackgroundPaintLocation() const {
+    NOT_DESTROYED();
+    DCHECK(IsBox());
+    return static_cast<BackgroundPaintLocation>(background_paint_location_);
+  }
+  void SetBackgroundPaintLocation(BackgroundPaintLocation location) {
+    NOT_DESTROYED();
+    DCHECK(IsBox());
+    if (GetBackgroundPaintLocation() != location) {
+      SetBackgroundNeedsFullPaintInvalidation();
+      background_paint_location_ = static_cast<unsigned>(location);
+      DCHECK_EQ(location, GetBackgroundPaintLocation());
+    }
   }
 
  private:

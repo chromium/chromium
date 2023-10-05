@@ -891,8 +891,6 @@ void PaintLayer::UpdateScrollableArea() {
   } else {
     scrollable_area_->Dispose();
     scrollable_area_.Clear();
-    GetLayoutObject().SetBackgroundPaintLocation(
-        kBackgroundPaintInBorderBoxSpace);
   }
 
   GetLayoutObject().SetNeedsPaintPropertyUpdate();

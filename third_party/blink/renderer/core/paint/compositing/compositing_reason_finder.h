@@ -18,10 +18,7 @@ class CORE_EXPORT CompositingReasonFinder {
   STATIC_ONLY(CompositingReasonFinder);
 
  public:
-  // Composited scrolling reason is not included because
-  // PaintLayerScrollableArea needs the result of this function to determine
-  // composited scrolling status.
-  static CompositingReasons DirectReasonsForPaintPropertiesExceptScrolling(
+  static CompositingReasons DirectReasonsForPaintProperties(
       const LayoutObject&,
       const LayoutObject* container_for_fixed_position = nullptr);
 

@@ -222,10 +222,9 @@ void PropertyTreeManager::DirectlySetScrollOffset(
 
 static uint32_t NonCompositedMainThreadScrollingReasons(
     const ScrollPaintPropertyNode& scroll) {
-  DCHECK(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
   // TODO(crbug.com/1414885): We can't distinguish kNotOpaqueForTextAndLCDText
   // and kCantPaintScrollingBackgroundAndLCDText here. We should probably
-  // merge the two reasons for CompositeScrollAfterPaint.
+  // merge the two reasons.
   return scroll.GetCompositedScrollingPreference() ==
                  CompositedScrollingPreference::kNotPreferred
              ? cc::MainThreadScrollingReason::kPreferNonCompositedScrolling
@@ -235,7 +234,6 @@ static uint32_t NonCompositedMainThreadScrollingReasons(
 uint32_t PropertyTreeManager::GetMainThreadScrollingReasons(
     const cc::LayerTreeHost& host,
     const ScrollPaintPropertyNode& scroll) {
-  DCHECK(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
   const auto* property_trees = host.property_trees();
   const auto* cc_scroll = property_trees->scroll_tree().Node(
       scroll.CcNodeId(property_trees->sequence_number()));
@@ -504,8 +502,7 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
     scroll_node->transform_id = id;
     scroll_node->is_composited =
         client_->NeedsCompositedScrolling(transform_node);
-    if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() &&
-        !scroll_node->is_composited) {
+    if (!scroll_node->is_composited) {
       scroll_node->main_thread_scrolling_reasons |=
           NonCompositedMainThreadScrollingReasons(*transform_node.ScrollNode());
     }

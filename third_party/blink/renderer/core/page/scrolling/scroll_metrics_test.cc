@@ -218,11 +218,6 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
                     AtomicString("composited transform box"));
   Compositor().BeginFrame();
   Scroll(box, WebGestureDevice::kTouchpad);
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    EXPECT_FALSE(To<LayoutBox>(box->GetLayoutObject())
-                     ->GetScrollableArea()
-                     ->GetNonCompositedMainThreadScrollingReasons());
-  }
 
   // Now that #box is composited, cc reports that we do not scroll on main.
   EXPECT_WHEEL_BUCKET(cc::MainThreadScrollingReason::kNotScrollingOnMain, 1);

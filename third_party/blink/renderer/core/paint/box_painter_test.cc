@@ -191,8 +191,6 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
   // The scroll hit test should be after the container background but before the
   // scrolled contents.
   EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
-            container.ComputeBackgroundPaintLocationIfComposited());
-  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
             container.GetBackgroundPaintLocation());
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,

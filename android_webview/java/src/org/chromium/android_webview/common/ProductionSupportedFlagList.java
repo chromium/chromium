@@ -372,7 +372,6 @@ public final class ProductionSupportedFlagList {
                     "If enabled, reads and decodes navigation body data off the main thread."),
             Flag.baseFeature(BlinkFeatures.SPARSE_OBJECT_PAINT_PROPERTIES),
             Flag.baseFeature(BlinkFeatures.SVG_RASTER_OPTIMIZATIONS),
-            Flag.baseFeature(BlinkFeatures.COMPOSITE_SCROLL_AFTER_PAINT),
             Flag.baseFeature(BlinkFeatures.HIT_TEST_OPAQUENESS),
             Flag.baseFeature(BlinkFeatures.INTERSECTION_OPTIMIZATION),
             Flag.baseFeature(BlinkFeatures.SOLID_COLOR_LAYERS),

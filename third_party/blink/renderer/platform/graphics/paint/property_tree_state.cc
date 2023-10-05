@@ -36,12 +36,9 @@ bool InSameTransformCompositingBoundary(
   if (composited_ancestor1 != composited_ancestor2) {
     return false;
   }
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    return true;
-  }
-  // In CompositeScrollAfterPaint, there may be indirectly composited scroll
-  // translations below the common nearest directly composited ancestor.
-  // Check if t1 and t2 have the same nearest composited scroll translation.
+  // There may be indirectly composited scroll translations below the common
+  // nearest directly composited ancestor. Check if t1 and t2 have the same
+  // nearest composited scroll translation.
   const auto& scroll_translation1 = t1.NearestScrollTranslationNode();
   const auto& scroll_translation2 = t2.NearestScrollTranslationNode();
   if (&scroll_translation1 == &scroll_translation2) {

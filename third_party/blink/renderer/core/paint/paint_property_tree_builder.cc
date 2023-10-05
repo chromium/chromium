@@ -2458,9 +2458,6 @@ FragmentPaintPropertyTreeBuilder::GetMainThreadScrollingReasons() const {
   DCHECK(scrollable_area);
   MainThreadScrollingReasons reasons =
       full_context_.global_main_thread_scrolling_reasons;
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    reasons |= scrollable_area->GetNonCompositedMainThreadScrollingReasons();
-  }
   if (scrollable_area->BackgroundNeedsRepaintOnScroll()) {
     reasons |= cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll;
   }
@@ -2658,8 +2655,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       // was also updated in LayerTreeHost::ApplyCompositorChanges.
       if (effective_change_type <=
               PaintPropertyChangeType::kChangedOnlySimpleValues &&
-          (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() ||
-           properties_->ScrollTranslation()->HasDirectCompositingReasons()) &&
           // In platform code, only scroll translations with scroll nodes are
           // treated as scroll translations with overlap testing treatment.
           // A scroll translation for overflow:hidden doesn't have a scroll node
@@ -3289,24 +3284,19 @@ void PaintPropertyTreeBuilder::UpdatePaintingLayer() {
 void PaintPropertyTreeBuilder::UpdateForSelf() {
   // These are not inherited from the parent context but calculated here.
   context_.direct_compositing_reasons =
-      CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
-          object_);
+      CompositingReasonFinder::DirectReasonsForPaintProperties(
+          object_, context_.container_for_fixed_position);
   if (const auto* box = DynamicTo<LayoutBox>(object_)) {
+    box->GetMutableForPainting().UpdateBackgroundPaintLocation();
     if (auto* scrollable_area = box->GetScrollableArea()) {
       bool force_prefer_compositing =
           CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
               object_, context_.direct_compositing_reasons);
-      if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-        context_.composited_scrolling_preference = static_cast<unsigned>(
-            force_prefer_compositing ? CompositedScrollingPreference::kPreferred
-            : scrollable_area->PrefersNonCompositedScrolling()
-                ? CompositedScrollingPreference::kNotPreferred
-                : CompositedScrollingPreference::kDefault);
-      }
-      scrollable_area->UpdateNeedsCompositedScrolling(force_prefer_compositing);
-      context_.direct_compositing_reasons =
-          CompositingReasonFinder::DirectReasonsForPaintProperties(
-              object_, context_.direct_compositing_reasons);
+      context_.composited_scrolling_preference = static_cast<unsigned>(
+          force_prefer_compositing ? CompositedScrollingPreference::kPreferred
+          : scrollable_area->PrefersNonCompositedScrolling()
+              ? CompositedScrollingPreference::kNotPreferred
+              : CompositedScrollingPreference::kDefault);
     }
   }
 
@@ -3541,18 +3531,6 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
 
   if (max_change > PaintPropertyChangeType::kChangedOnlyCompositedValues) {
     object_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
-  }
-
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    if (auto* box = DynamicTo<LayoutBox>(object_)) {
-      if (auto* scrollable_area = box->GetScrollableArea()) {
-        const auto* properties = object_.FirstFragment().PaintProperties();
-        scrollable_area->SetShouldScrollOnMainThread(
-            !properties || !properties->Scroll() ||
-            properties->Scroll()->GetMainThreadScrollingReasons() ||
-            !properties->ScrollTranslation()->HasDirectCompositingReasons());
-      }
-    }
   }
 
   CullRectUpdater::PaintPropertiesChanged(object_, properties_changed_);

@@ -2156,22 +2156,6 @@ bool LayoutBox::BackgroundIsKnownToBeOpaqueInRect(
       .Contains(local_rect);
 }
 
-// TODO(wangxianzhu): The current rules are very basic. May use more complex
-// rules if they can improve LCD text.
-bool LayoutBox::TextIsKnownToBeOnOpaqueBackground() const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
-  // Text may overflow the background area.
-  if (!ShouldClipOverflowAlongEitherAxis())
-    return false;
-  // Same as BackgroundIsKnownToBeOpaqueInRect() about appearance.
-  if (StyleRef().HasEffectiveAppearance())
-    return false;
-
-  PhysicalRect rect = OverflowClipRect(PhysicalOffset());
-  return PhysicalBackgroundRect(kBackgroundKnownOpaqueRect).Contains(rect);
-}
-
 // Note that callers are responsible for checking
 // ChildPaintBlockedByDisplayLock(), since that is a property of the parent
 // rather than of the child.
@@ -4106,6 +4090,11 @@ void LayoutBox::MutableForPainting::SetPreviousGeometryForLayoutShiftTracking(
   // invalidation and we always do full paint invalidation on reattachment.
 }
 
+void LayoutBox::MutableForPainting::UpdateBackgroundPaintLocation() {
+  GetLayoutBox().SetBackgroundPaintLocation(
+      GetLayoutBox().ComputeBackgroundPaintLocation());
+}
+
 RasterEffectOutset LayoutBox::VisualRectOutsetForRasterEffects() const {
   NOT_DESTROYED();
   // If the box has subpixel visual effect outsets, as the visual effect may be
@@ -4222,8 +4211,7 @@ bool LayoutBox::BackgroundClipBorderBoxIsEquivalentToPaddingBox() const {
   return true;
 }
 
-BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
-    const {
+BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocation() const {
   NOT_DESTROYED();
   bool may_have_scrolling_layers_without_scrolling = IsA<LayoutView>(this);
   const auto* scrollable_area = GetScrollableArea();

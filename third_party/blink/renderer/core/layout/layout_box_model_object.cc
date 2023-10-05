@@ -332,7 +332,6 @@ void LayoutBoxModelObject::DestroyLayer() {
   // Removing a layer may affect existence of the LocalBorderBoxProperties, so
   // we need to ensure that we update paint properties.
   SetNeedsPaintPropertyUpdate();
-  SetBackgroundPaintLocation(kBackgroundPaintInBorderBoxSpace);
 }
 
 bool LayoutBoxModelObject::HasSelfPaintingLayer() const {

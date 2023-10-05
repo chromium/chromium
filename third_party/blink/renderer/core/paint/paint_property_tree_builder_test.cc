@@ -7099,8 +7099,8 @@ TEST_P(PaintPropertyTreeBuilderTest, PromoteTrivial3DWithHighEndDevice) {
 
   const auto* scroll_properties = PaintPropertiesForElement("scroll");
   EXPECT_TRUE(scroll_properties->Transform()->HasDirectCompositingReasons());
-  EXPECT_TRUE(
-      scroll_properties->ScrollTranslation()->HasDirectCompositingReasons());
+  EXPECT_EQ(CompositedScrollingPreference::kPreferred,
+            scroll_properties->Scroll()->GetCompositedScrollingPreference());
   EXPECT_FALSE(scroll_properties->Effect());
 
   // Trivial 3d transform also triggers composited effect if effect exist.
@@ -7131,9 +7131,9 @@ TEST_P(PaintPropertyTreeBuilderTest, DontPromoteTrivial3DWithLowEndDevice) {
 
   const auto* scroll_properties = PaintPropertiesForElement("scroll");
   EXPECT_FALSE(scroll_properties->Transform()->HasDirectCompositingReasons());
-  // Trivial 3d transform still triggers composited scrolling.
-  EXPECT_TRUE(
-      scroll_properties->ScrollTranslation()->HasDirectCompositingReasons());
+  // We still prefer composited scrolling with Trivial 3d transform.
+  EXPECT_EQ(CompositedScrollingPreference::kPreferred,
+            scroll_properties->Scroll()->GetCompositedScrollingPreference());
   EXPECT_FALSE(scroll_properties->Effect());
 
   const auto* effect_properties = PaintPropertiesForElement("effect");

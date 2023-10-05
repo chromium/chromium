@@ -209,7 +209,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool BackgroundIsKnownToBeOpaqueInRect(
       const PhysicalRect& local_rect) const override;
-  bool TextIsKnownToBeOnOpaqueBackground() const override;
 
   virtual bool BackgroundShouldAlwaysBeClipped() const {
     NOT_DESTROYED();
@@ -1234,6 +1233,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
         const PhysicalSize& size,
         const PhysicalRect& visual_overflow_rect);
 
+    void UpdateBackgroundPaintLocation();
+
    protected:
     friend class LayoutBox;
     MutableForPainting(const LayoutBox& box)
@@ -1330,12 +1331,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // (which is responsible for painting the tickmarks).
   void InvalidatePaintForTickmarks();
 
-  // Returns which of the border box space and contents space (maybe both)
-  // the backgrounds should be painted into, if the LayoutBox is composited.
-  // The caller may adjust the value by considering LCD-text etc. if needed and
-  // call SetBackgroundPaintLocation() with the value to be used for painting.
-  BackgroundPaintLocation ComputeBackgroundPaintLocationIfComposited() const;
-
   bool MayHaveFragmentItems() const {
     NOT_DESTROYED();
     // When the tree is not clean, `ChildrenInline()` is not reliable.
@@ -1388,6 +1383,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   PositionFallbackNonOverflowingRanges() const;
 
   const NGBoxStrut& OutOfFlowInsetsForGetComputedStyle() const;
+
+  using LayoutObject::GetBackgroundPaintLocation;
 
  protected:
   ~LayoutBox() override;
@@ -1559,6 +1556,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   bool BackgroundClipBorderBoxIsEquivalentToPaddingBox() const;
+  BackgroundPaintLocation ComputeBackgroundPaintLocation() const;
 
   // Compute the border-box size from physical fragments.
   PhysicalSize ComputeSize() const;

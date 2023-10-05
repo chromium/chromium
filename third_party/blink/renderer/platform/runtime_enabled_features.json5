@@ -672,10 +672,6 @@
       base_feature: "none",
     },
     {
-      name: "CompositeScrollAfterPaint",
-      status: "stable",
-    },
-    {
       name: "CompositionForegroundMarkers",
       status: {
         "Android": "stable",

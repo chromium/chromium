@@ -67,8 +67,8 @@ class MAYBE_PaintLayerScrollableAreaTest : public PaintControllerPaintTest {
   }
 
   bool UsesCompositedScrolling(const LayoutBox* scroller) {
-    // TODO(crbug.com/1414885): In CompositeScrollAfterPaint, the tests no
-    // longer test PaintLayerScrollableArea. We should probably move them into
+    // TODO(crbug.com/1414885): The tests no longer test
+    // PaintLayerScrollableArea. We should probably move them into
     // scrolling_test.cc.
     if (auto* scrollable_area = scroller->GetScrollableArea()) {
       const auto* property_trees =
@@ -811,8 +811,6 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
   auto* scroller = GetLayoutBoxByElementId("scroller");
   auto* scrollable_area = scroller->GetScrollableArea();
   EXPECT_EQ(kBackgroundPaintInContentsSpace,
-            scroller->ComputeBackgroundPaintLocationIfComposited());
-  EXPECT_EQ(kBackgroundPaintInContentsSpace,
             scroller->GetBackgroundPaintLocation());
   EXPECT_FALSE(scrollable_area->BackgroundNeedsRepaintOnScroll());
   EXPECT_TRUE(UsesCompositedScrolling(scroller));
@@ -853,7 +851,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, ScrollWith3DPreserveParent) {
 
   auto* scroller = GetLayoutBoxByElementId("scroller");
   EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
-            scroller->ComputeBackgroundPaintLocationIfComposited());
+            scroller->GetBackgroundPaintLocation());
 }
 
 TEST_P(MAYBE_PaintLayerScrollableAreaTest,
@@ -875,8 +873,6 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
 
   auto* scroller = GetLayoutBoxByElementId("scroller");
   auto* scrollable_area = scroller->GetScrollableArea();
-  EXPECT_EQ(kBackgroundPaintInBothSpaces,
-            scroller->ComputeBackgroundPaintLocationIfComposited());
   EXPECT_EQ(kBackgroundPaintInBothSpaces,
             scroller->GetBackgroundPaintLocation());
   EXPECT_TRUE(scrollable_area->BackgroundNeedsRepaintOnScroll());
@@ -969,8 +965,6 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
   EXPECT_EQ(kBackgroundPaintInContentsSpace,
             GetLayoutView().GetBackgroundPaintLocation());
   auto* fixed_background_div = GetLayoutBoxByElementId("fixed-background");
-  EXPECT_EQ(kBackgroundPaintInContentsSpace,
-            fixed_background_div->ComputeBackgroundPaintLocationIfComposited());
   EXPECT_EQ(kBackgroundPaintInContentsSpace,
             fixed_background_div->GetBackgroundPaintLocation());
   auto* div_scrollable_area = fixed_background_div->GetScrollableArea();

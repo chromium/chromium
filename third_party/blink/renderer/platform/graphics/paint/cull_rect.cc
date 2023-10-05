@@ -92,18 +92,12 @@ bool CullRect::ApplyScrollTranslation(
   if (disable_expansion) {
     return false;
   }
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // kNotPreferred is used for selects/inputs which don't benefit from
-    // composited scrolling.
-    if (scroll->GetCompositedScrollingPreference() ==
-        CompositedScrollingPreference::kNotPreferred) {
-      return false;
-    }
-  } else if (!scroll_translation.HasDirectCompositingReasons()) {
-    // Don't expand for non-composited scrolling.
+  // kNotPreferred is used for selects/inputs which don't benefit from
+  // composited scrolling.
+  if (scroll->GetCompositedScrollingPreference() ==
+      CompositedScrollingPreference::kNotPreferred) {
     return false;
   }
-
   // We create scroll node for the root scroller even it's not scrollable.
   // Don't expand in the case.
   gfx::Rect contents_rect = scroll->ContentsRect();
@@ -368,9 +362,7 @@ bool CullRect::ChangedEnough(
 bool CullRect::HasScrolledEnough(
     const gfx::Vector2dF& delta,
     const TransformPaintPropertyNode& scroll_translation) {
-  if (!scroll_translation.ScrollNode() ||
-      (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() &&
-       !scroll_translation.HasDirectCompositingReasons())) {
+  if (!scroll_translation.ScrollNode()) {
     return !delta.IsZero();
   }
   if (std::abs(delta.x()) < kChangedEnoughMinimumDistance &&

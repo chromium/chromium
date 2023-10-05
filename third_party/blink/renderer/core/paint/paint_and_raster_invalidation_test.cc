@@ -442,10 +442,6 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewResize) {
   LayoutView* iframe_layout_view = ChildDocument().View()->GetLayoutView();
   Element* content = ChildDocument().getElementById(AtomicString("content"));
   EXPECT_EQ(kBackgroundPaintInContentsSpace,
-            iframe_layout_view->ComputeBackgroundPaintLocationIfComposited());
-  EXPECT_EQ(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
-                ? kBackgroundPaintInContentsSpace
-                : kBackgroundPaintInBorderBoxSpace,
             iframe_layout_view->GetBackgroundPaintLocation());
 
   // Resize the content.
@@ -462,16 +458,12 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewResize) {
   UpdateAllLifecyclePhasesForTest();
   // The iframe doesn't have anything visible by itself, so we only issue
   // raster invalidation for the frame contents.
-  const auto* client =
-      RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
-          ? &iframe_layout_view->GetScrollableArea()
-                 ->GetScrollingBackgroundDisplayItemClient()
-          : iframe_layout_view;
-  EXPECT_THAT(
-      GetRasterInvalidationTracking()->Invalidations(),
-      UnorderedElementsAre(RasterInvalidationInfo{
-          client->Id(), client->DebugName(), gfx::Rect(0, 100, 100, 100),
-          PaintInvalidationReason::kIncremental}));
+  const auto& client = iframe_layout_view->GetScrollableArea()
+                           ->GetScrollingBackgroundDisplayItemClient();
+  EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
+              UnorderedElementsAre(RasterInvalidationInfo{
+                  client.Id(), client.DebugName(), gfx::Rect(0, 100, 100, 100),
+                  PaintInvalidationReason::kIncremental}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
@@ -526,30 +518,19 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewGradientResize) {
   GetDocument().View()->SetTracksRasterInvalidations(true);
   content->setAttribute(html_names::kStyleAttr, AtomicString("height: 500px"));
   UpdateAllLifecyclePhasesForTest();
-  const auto* client =
-      RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
-          ? &iframe_layout_view->GetScrollableArea()
-                 ->GetScrollingBackgroundDisplayItemClient()
-          : iframe_layout_view;
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // The two invalidations are for the old background and the new background.
-    // The rects are the same because they are clipped by the layer bounds.
-    EXPECT_THAT(
-        GetRasterInvalidationTracking()->Invalidations(),
-        UnorderedElementsAre(
-            RasterInvalidationInfo{client->Id(), client->DebugName(),
-                                   gfx::Rect(0, 0, 100, 100),
-                                   PaintInvalidationReason::kBackground},
-            RasterInvalidationInfo{client->Id(), client->DebugName(),
-                                   gfx::Rect(0, 0, 100, 100),
-                                   PaintInvalidationReason::kBackground}));
-  } else {
-    EXPECT_THAT(
-        GetRasterInvalidationTracking()->Invalidations(),
-        UnorderedElementsAre(RasterInvalidationInfo{
-            client->Id(), client->DebugName(), gfx::Rect(0, 0, 100, 100),
-            PaintInvalidationReason::kBackground}));
-  }
+  const auto* client = &iframe_layout_view->GetScrollableArea()
+                            ->GetScrollingBackgroundDisplayItemClient();
+  // The two invalidations are for the old background and the new background.
+  // The rects are the same because they are clipped by the layer bounds.
+  EXPECT_THAT(
+      GetRasterInvalidationTracking()->Invalidations(),
+      UnorderedElementsAre(
+          RasterInvalidationInfo{client->Id(), client->DebugName(),
+                                 gfx::Rect(0, 0, 100, 100),
+                                 PaintInvalidationReason::kBackground},
+          RasterInvalidationInfo{client->Id(), client->DebugName(),
+                                 gfx::Rect(0, 0, 100, 100),
+                                 PaintInvalidationReason::kBackground}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
   // Resize the iframe.
@@ -558,23 +539,15 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewGradientResize) {
   UpdateAllLifecyclePhasesForTest();
   // The iframe doesn't have anything visible by itself, so we only issue
   // raster invalidation for the frame contents.
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    EXPECT_THAT(
-        GetRasterInvalidationTracking()->Invalidations(),
-        UnorderedElementsAre(
-            RasterInvalidationInfo{client->Id(), client->DebugName(),
-                                   gfx::Rect(0, 100, 100, 100),
-                                   PaintInvalidationReason::kIncremental},
-            RasterInvalidationInfo{client->Id(), client->DebugName(),
-                                   gfx::Rect(0, 0, 100, 200),
-                                   PaintInvalidationReason::kBackground}));
-  } else {
-    EXPECT_THAT(
-        GetRasterInvalidationTracking()->Invalidations(),
-        UnorderedElementsAre(RasterInvalidationInfo{
-            client->Id(), client->DebugName(), gfx::Rect(0, 0, 100, 200),
-            PaintInvalidationReason::kBackground}));
-  }
+  EXPECT_THAT(
+      GetRasterInvalidationTracking()->Invalidations(),
+      UnorderedElementsAre(
+          RasterInvalidationInfo{client->Id(), client->DebugName(),
+                                 gfx::Rect(0, 100, 100, 100),
+                                 PaintInvalidationReason::kIncremental},
+          RasterInvalidationInfo{client->Id(), client->DebugName(),
+                                 gfx::Rect(0, 0, 100, 200),
+                                 PaintInvalidationReason::kBackground}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
@@ -592,7 +565,7 @@ TEST_P(PaintAndRasterInvalidationTest,
   Element* child = GetDocument().getElementById(AtomicString("child"));
   UpdateAllLifecyclePhasesForTest();
 
-  auto* target_obj = To<LayoutBoxModelObject>(target->GetLayoutObject());
+  auto* target_obj = target->GetLayoutBox();
   EXPECT_EQ(kBackgroundPaintInContentsSpace,
             target_obj->GetBackgroundPaintLocation());
 
@@ -650,7 +623,7 @@ TEST_P(PaintAndRasterInvalidationTest,
   Element* child = GetDocument().getElementById(AtomicString("child"));
   UpdateAllLifecyclePhasesForTest();
 
-  auto* target_obj = To<LayoutBoxModelObject>(target->GetLayoutObject());
+  auto* target_obj = target->GetLayoutBox();
   auto container_raster_invalidation_tracking =
       [&]() -> const RasterInvalidationTracking* {
     return GetRasterInvalidationTracking(
@@ -709,10 +682,6 @@ TEST_P(PaintAndRasterInvalidationTest,
   Element* child = GetDocument().getElementById(AtomicString("child"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(kBackgroundPaintInContentsSpace,
-            object->ComputeBackgroundPaintLocationIfComposited());
-  EXPECT_EQ(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
-                ? kBackgroundPaintInContentsSpace
-                : kBackgroundPaintInBorderBoxSpace,
             object->GetBackgroundPaintLocation());
 
   // Resize the content.
@@ -753,7 +722,7 @@ TEST_P(PaintAndRasterInvalidationTest, CompositedSolidBackgroundResize) {
   target->setAttribute(html_names::kStyleAttr, AtomicString("width: 100px"));
   UpdateAllLifecyclePhasesForTest();
 
-  auto* target_object = To<LayoutBoxModelObject>(target->GetLayoutObject());
+  auto* target_object = target->GetLayoutBox();
   EXPECT_EQ(kBackgroundPaintInBothSpaces,
             target_object->GetBackgroundPaintLocation());
 

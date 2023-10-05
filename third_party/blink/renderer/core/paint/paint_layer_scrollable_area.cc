@@ -133,7 +133,6 @@ PaintLayerScrollableArea::PaintLayerScrollableArea(PaintLayer& layer)
       layer_(&layer),
       in_resize_mode_(false),
       scrolls_overflow_(false),
-      needs_composited_scrolling_(false),
       needs_scroll_offset_clamp_(false),
       needs_relayout_(false),
       had_horizontal_scrollbar_before_relayout_(false),
@@ -148,8 +147,7 @@ PaintLayerScrollableArea::PaintLayerScrollableArea(PaintLayer& layer)
       has_last_committed_scroll_offset_(false),
       scroll_corner_(nullptr),
       resizer_(nullptr),
-      scroll_anchor_(this),
-      non_composited_main_thread_scrolling_reasons_(0) {
+      scroll_anchor_(this) {
   if (auto* element = DynamicTo<Element>(GetLayoutBox()->GetNode())) {
     // We save and restore only the scrollOffset as the other scroll values are
     // recalculated.
@@ -204,8 +202,6 @@ void PaintLayerScrollableArea::DisposeImpl() {
       }
     }
   }
-
-  non_composited_main_thread_scrolling_reasons_ = 0;
 
   if (!GetLayoutBox()->DocumentBeingDestroyed()) {
     if (auto* element = DynamicTo<Element>(GetLayoutBox()->GetNode()))
@@ -2532,18 +2528,14 @@ ScrollingCoordinator* PaintLayerScrollableArea::GetScrollingCoordinator()
 
 bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
   DCHECK_GE(GetDocument()->Lifecycle().GetState(),
-            RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
-                ? DocumentLifecycle::kPaintClean
-                : DocumentLifecycle::kInPrePaint);
+            DocumentLifecycle::kPaintClean);
   return HasBeenDisposed() || should_scroll_on_main_thread_;
 }
 
 void PaintLayerScrollableArea::SetShouldScrollOnMainThread(
     bool scroll_on_main_thread) {
   DCHECK_EQ(GetDocument()->Lifecycle().GetState(),
-            RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
-                ? DocumentLifecycle::kPaintClean
-                : DocumentLifecycle::kInPrePaint);
+            DocumentLifecycle::kPaintClean);
   if (scroll_on_main_thread != should_scroll_on_main_thread_) {
     should_scroll_on_main_thread_ = scroll_on_main_thread;
     MainThreadScrollingDidChange();
@@ -2567,88 +2559,8 @@ bool PaintLayerScrollableArea::PrefersNonCompositedScrolling() const {
   return false;
 }
 
-bool PaintLayerScrollableArea::ComputeNeedsCompositedScrolling(
-    bool force_prefer_compositing_to_lcd_text) {
-  const auto* box = GetLayoutBox();
-  auto new_background_paint_location =
-      box->ComputeBackgroundPaintLocationIfComposited();
-  bool needs_composited_scrolling = false;
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    needs_composited_scrolling = ComputeNeedsCompositedScrollingInternal(
-        new_background_paint_location, force_prefer_compositing_to_lcd_text);
-    if (!needs_composited_scrolling) {
-      new_background_paint_location = kBackgroundPaintInBorderBoxSpace;
-    }
-    DCHECK(!(non_composited_main_thread_scrolling_reasons_ &
-             ~cc::MainThreadScrollingReason::kNonCompositedReasons));
-  }
-  box->GetMutableForPainting().SetBackgroundPaintLocation(
-      new_background_paint_location);
-
-  return needs_composited_scrolling;
-}
-
-bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
-    BackgroundPaintLocation background_paint_location_if_composited,
-    bool force_prefer_compositing_to_lcd_text) {
-  DCHECK(!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
-  DCHECK_EQ(background_paint_location_if_composited,
-            GetLayoutBox()->ComputeBackgroundPaintLocationIfComposited());
-
-  non_composited_main_thread_scrolling_reasons_ = 0;
-
-  const auto* box = GetLayoutBox();
-  if (CompositingReasonFinder::RequiresCompositingForRootScroller(*box)) {
-    return true;
-  }
-  if (!ScrollsOverflow()) {
-    return false;
-  }
-  if (force_prefer_compositing_to_lcd_text) {
-    return true;
-  }
-  if (PrefersNonCompositedScrolling()) {
-    non_composited_main_thread_scrolling_reasons_ =
-        cc::MainThreadScrollingReason::kPreferNonCompositedScrolling;
-    return false;
-  }
-
-  bool needs_composited_scrolling = true;
-  if (box->GetDocument().GetSettings()->GetLCDTextPreference() ==
-      LCDTextPreference::kStronglyPreferred) {
-    if (!box->TextIsKnownToBeOnOpaqueBackground()) {
-      non_composited_main_thread_scrolling_reasons_ |=
-          cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
-      needs_composited_scrolling = false;
-    }
-    if (!(background_paint_location_if_composited &
-          kBackgroundPaintInContentsSpace) &&
-        box->StyleRef().HasBackground()) {
-      non_composited_main_thread_scrolling_reasons_ |= cc::
-          MainThreadScrollingReason::kCantPaintScrollingBackgroundAndLCDText;
-      needs_composited_scrolling = false;
-    }
-  }
-
-  return needs_composited_scrolling;
-}
-
 bool PaintLayerScrollableArea::UsesCompositedScrolling() const {
   return GetLayoutBox()->UsesCompositedScrolling();
-}
-
-void PaintLayerScrollableArea::UpdateNeedsCompositedScrolling(
-    bool force_prefer_compositing_to_lcd_text) {
-  DCHECK_EQ(DocumentLifecycle::kInPrePaint,
-            GetDocument()->Lifecycle().GetState());
-
-  bool new_needs_composited_scrolling =
-      ComputeNeedsCompositedScrolling(force_prefer_compositing_to_lcd_text);
-  if (new_needs_composited_scrolling == needs_composited_scrolling_)
-    return;
-
-  needs_composited_scrolling_ = new_needs_composited_scrolling;
-  SetShouldCheckForPaintInvalidation();
 }
 
 bool PaintLayerScrollableArea::VisualViewportSuppliesScrollbars() const {
@@ -2927,14 +2839,10 @@ bool PaintLayerScrollableArea::ShouldDirectlyCompositeScrollbar(
   if (scrollbar.IsCustomScrollbar()) {
     return false;
   }
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // In CompositeScrollAfterPaint, compositing of scrollbar is decided
-    // in PaintArtifactCompositor. We assume compositing here so that paint
-    // invalidation will be skipped here. We'll invalidate raster if needed
-    // after paint, without paint invalidation.
-    return true;
-  }
-  return NeedsCompositedScrolling();
+  // Compositing of scrollbar is decided in PaintArtifactCompositor. We assume
+  // compositing here so that paint invalidation will be skipped here. We'll
+  // invalidate raster if needed after paint, without paint invalidation.
+  return true;
 }
 
 void PaintLayerScrollableArea::EstablishScrollbarRoot(bool freeze_horizontal,

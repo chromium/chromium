@@ -474,10 +474,7 @@ TEST_P(NonCompositedMainThreadScrollingReasonsTest,
   TestNonCompositedReasons(
       "cant-paint-scrolling-background",
       cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll |
-          (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
-               ? cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText
-               : cc::MainThreadScrollingReason::
-                     kCantPaintScrollingBackgroundAndLCDText));
+          cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
 }
 
 TEST_P(NonCompositedMainThreadScrollingReasonsTest,
@@ -505,10 +502,7 @@ TEST_P(NonCompositedMainThreadScrollingReasonsTest, BoxShadowTest) {
 TEST_P(NonCompositedMainThreadScrollingReasonsTest, InsetBoxShadowTest) {
   TestNonCompositedReasons(
       "inset-box-shadow",
-      RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
-          ? cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText
-          : cc::MainThreadScrollingReason::
-                kCantPaintScrollingBackgroundAndLCDText);
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
 }
 
 TEST_P(NonCompositedMainThreadScrollingReasonsTest, StackingContextTest) {
@@ -546,11 +540,7 @@ TEST_P(NonCompositedMainThreadScrollingReasonsTest,
   ForceFullCompositingUpdate();
   PaintLayerScrollableArea* scrollable_area2 = GetScrollableArea(*container2);
   ASSERT_TRUE(scrollable_area2);
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    EXPECT_TRUE(GetScrollNode(*scrollable_area2)->is_composited);
-  } else {
-    ASSERT_TRUE(scrollable_area2->UsesCompositedScrolling());
-  }
+  EXPECT_TRUE(GetScrollNode(*scrollable_area2)->is_composited);
 }
 
 }  // namespace blink

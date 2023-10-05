@@ -2043,11 +2043,7 @@ class LayoutBoxBackgroundPaintLocationTest : public RenderingTest,
   }
 
   BackgroundPaintLocation ScrollerBackgroundPaintLocation() {
-    auto* scroller = To<LayoutBox>(GetLayoutObjectByElementId("scroller"));
-    // The scroller is forced to be composited, so the values equal.
-    EXPECT_EQ(scroller->ComputeBackgroundPaintLocationIfComposited(),
-              scroller->GetBackgroundPaintLocation());
-    return scroller->GetBackgroundPaintLocation();
+    return GetLayoutBoxByElementId("scroller")->GetBackgroundPaintLocation();
   }
 
   const String kCommonStyle = R"HTML(

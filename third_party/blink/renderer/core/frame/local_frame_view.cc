@@ -1182,9 +1182,11 @@ static bool BackgroundAttachmentFixedNeedsRepaintOnScroll(
   DCHECK(!To<LayoutBoxModelObject>(object).BackgroundTransfersToView());
   // The background doesn't need repaint if it's the viewport background and it
   // paints onto the border box space only.
-  if (IsA<LayoutView>(object) &&
-      object.GetBackgroundPaintLocation() == kBackgroundPaintInBorderBoxSpace) {
-    return false;
+  if (const auto* view = DynamicTo<LayoutView>(object)) {
+    if (view->GetBackgroundPaintLocation() ==
+        kBackgroundPaintInBorderBoxSpace) {
+      return false;
+    }
   }
   return !object.CanCompositeBackgroundAttachmentFixed();
 }
@@ -2660,8 +2662,7 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   ForAllNonThrottledLocalFrameViews(
       [this, needed_update,
        &total_animations_count](LocalFrameView& frame_view) {
-        if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() &&
-            needed_update && paint_artifact_compositor_ &&
+        if (needed_update && paint_artifact_compositor_ &&
             frame_view.UserScrollableAreas()) {
           for (auto& scrollable_area : *frame_view.UserScrollableAreas()) {
             const auto* properties = scrollable_area->GetLayoutBox()
