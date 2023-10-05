@@ -145,23 +145,6 @@ display::Display PopupTestBase::GetDisplayNearestBrowser(
 }
 
 // static
-void PopupTestBase::WaitForHTMLFullscreen(content::WebContents* web_contents) {
-  content::WaitForLoadStop(web_contents);
-  ASSERT_TRUE(EvalJs(web_contents, R"JS(
-        (new Promise((resolve, reject) => {
-          if (!!document.fullscreenElement) {
-            resolve();
-          } else {
-            document.addEventListener(`fullscreenchange`,
-              () => { if (!!document.fullscreenElement) resolve(); }
-            );
-            document.addEventListener(`fullscreenerror`, e => { reject(e); });
-          }
-        })))JS")
-                  .error.empty());
-}
-
-// static
 void PopupTestBase::WaitForUserActivationExpiry(Browser* browser) {
   const std::string await_activation_expiry_script = R"(
     (async () => {

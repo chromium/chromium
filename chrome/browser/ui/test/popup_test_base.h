@@ -54,10 +54,6 @@ class PopupTestBase : public InProcessBrowserTest {
   // Returns the display nearest `browser`'s window; see display::Screen.
   static display::Display GetDisplayNearestBrowser(const Browser* browser);
 
-  // Waits for HTML fullscreen of `contents`; returns immediately if already so.
-  // https://fullscreen.spec.whatwg.org/
-  static void WaitForHTMLFullscreen(content::WebContents* contents);
-
   // Waits for any active user activation to expire.
   // TODO(crbug.com/1467695): Improve and consolidate this to a common function.
   static void WaitForUserActivationExpiry(Browser* browser);

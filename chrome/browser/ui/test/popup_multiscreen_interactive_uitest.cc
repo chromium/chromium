@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/test/fullscreen_test_util.h"
 #include "chrome/browser/ui/test/popup_test_base.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -352,7 +353,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, FullscreenDifferentScreen) {
   content::WebContents* popup_contents =
       popup->tab_strip_model()->GetActiveWebContents();
   if (ShouldTestWindowManagement()) {
-    WaitForHTMLFullscreen(popup_contents);
+    content::WaitForHTMLFullscreen(popup_contents);
   }
   EXPECT_EQ(EvalJs(popup_contents,
                    "!!document.fullscreenElement && "
