@@ -47,7 +47,7 @@ constexpr const char* usage_msg =
            [--disable_validator] [--psnr_threshold=<number>]
            [--output_bitstream] [--output_images=(all|corrupt)]
            [--output_format=(png|yuv)] [--output_folder=<filepath>]
-           [--output_limit=<number>] [--disable_vaapi_lock]
+           [--output_limit=<number>]
            [-v=<level>] [--vmodule=<config>]
            [--gtest_help] [--help]
            [<video path>] [<video metadata path>]
@@ -103,12 +103,6 @@ The following arguments are supported:
   --output_limit        limit the number of images saved to disk.
   --output_folder       set the basic folder used to store test
                         artifacts. The default is the current directory.
-  --disable_vaapi_lock  disable the global VA-API lock if applicable,
-                        i.e., only on devices that use the VA-API with a libva
-                        backend that's known to be thread-safe and only in
-                        portions of the Chrome stack that should be able to
-                        deal with the absence of the lock
-                        (not the VaapiVideoDecodeAccelerator).
 
   --gtest_help          display the gtest help and exit.
   --help                display this help and exit.
@@ -910,14 +904,14 @@ int main(int argc, char** argv) {
       }
     } else if (it->first == "output_folder") {
       output_folder = base::FilePath(it->second);
-    } else if (it->first == "disable_vaapi_lock") {
-      disabled_features.push_back(media::kGlobalVaapiLock);
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::test::usage_msg;
       return EXIT_FAILURE;
     }
   }
+
+  disabled_features.push_back(media::kGlobalVaapiLock);
 
   testing::InitGoogleTest(&argc, argv);
 

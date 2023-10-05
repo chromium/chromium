@@ -107,12 +107,6 @@ Multiple command line arguments can be given to the command:
     --ozone-platform      specify which Ozone platform to use, possible values
                           depend on build configuration but normally include
                           x11, drm, wayland, and headless
-    --disable_vaapi_lock  disable the global VA-API lock if applicable,
-                          i.e., only on devices that use the VA-API with a libva
-                          backend that's known to be thread-safe and only in
-                          portions of the Chrome stack that should be able to
-                          deal with the absence of the lock
-                          (not the VaapiVideoDecodeAccelerator).
 
     --gtest_help          display the gtest help and exit.
     --help                display this help and exit.

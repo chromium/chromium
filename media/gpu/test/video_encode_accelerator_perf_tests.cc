@@ -48,7 +48,6 @@ constexpr const char* usage_msg =
            [--bitrate_mode=(cbr|vbr)] [--reverse] [--bitrate=<bitrate>]
            [-v=<level>] [--vmodule=<config>] [--output_folder]
            [--output_bitstream]
-           [--disable_vaapi_lock]
            [--gtest_help] [--help]
            [<video path>] [<video metadata path>]
 )";
@@ -95,12 +94,6 @@ The following arguments are supported:
   --output_bitstream    save the output bitstream in either H264 AnnexB
                         format (for H264) or IVF format (for vp8 and
                         vp9) to <output_folder>/<testname>.
-  --disable_vaapi_lock  disable the global VA-API lock if applicable,
-                        i.e., only on devices that use the VA-API with a libva
-                        backend that's known to be thread-safe and only in
-                        portions of the Chrome stack that should be able to
-                        deal with the absence of the lock
-                        (not the VaapiVideoDecodeAccelerator).
 
   --gtest_help          display the gtest help and exit.
   --help                display this help and exit.
@@ -1027,8 +1020,6 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
       }
       encode_bitrate = base::checked_cast<uint32_t>(value);
-    } else if (it->first == "disable_vaapi_lock") {
-      disabled_features.push_back(media::kGlobalVaapiLock);
     } else if (it->first == "speed") {
       test_type =
           media::test::VideoEncoderTestEnvironment::TestType::kSpeedPerformance;
@@ -1041,6 +1032,8 @@ int main(int argc, char** argv) {
       return EXIT_FAILURE;
     }
   }
+
+  disabled_features.push_back(media::kGlobalVaapiLock);
 
   if (test_type ==
       media::test::VideoEncoderTestEnvironment::TestType::kValidation) {

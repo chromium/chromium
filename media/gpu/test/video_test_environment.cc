@@ -65,7 +65,8 @@ VideoTestEnvironment::VideoTestEnvironment(
 #endif
 
 #if BUILDFLAG(USE_VAAPI)
-  media::VaapiWrapper::PreSandboxInitialization();
+  media::VaapiWrapper::PreSandboxInitialization(
+      /*allow_disabling_global_lock=*/true);
 #endif
 }
 

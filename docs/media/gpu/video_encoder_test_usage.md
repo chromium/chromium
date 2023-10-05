@@ -93,12 +93,6 @@ Non-performance tests only:
                           supported formats are \"png\" (default) and
                           \"yuv\".
     --output_limit        limit the number of images saved to disk.
-    --disable_vaapi_lock  disable the global VA-API lock if applicable,
-                          i.e., only on devices that use the VA-API with a libva
-                          backend that's known to be thread-safe and only in
-                          portions of the Chrome stack that should be able to
-                          deal with the absence of the lock
-                          (not the VaapiVideoDecodeAccelerator).
 
 ## Source code
 See the video encoder tests [source code](https://cs.chromium.org/chromium/src/media/gpu/video_encode_accelerator_tests.cc).
