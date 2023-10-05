@@ -432,8 +432,26 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // TODO(crbug.com/1474951): Filter by localService. Doing this now prevents
     // voices from loading on Linux, which slows down development.
-    return this.synth.getVoices().find(
-        ({default: isDefaultVoice}) => isDefaultVoice);
+    const languageCode = chrome.readingMode.speechSynthesisLanguageCode;
+    // TODO(crbug.com/1474951): Ensure various locales are handled such as
+    // "en-US" vs. "en-UK." This should be fixed by using page language instead
+    // of browser language.
+    const voices = this.synth.getVoices().filter(
+        voice => voice.lang.startsWith(languageCode));
+    if (!voices || (voices.length === 0)) {
+      // If no voices in the given language are found, use the default voice.
+      return this.synth.getVoices().find(
+          ({default: isDefaultVoice}) => isDefaultVoice);
+    }
+
+    // The default voice doesn't always match with the actual default voice
+    // of the device, therefore use the language code to find a voice first.
+    const voice = voices.find(({default: isDefaultVoice}) => isDefaultVoice);
+    if (!voice) {
+      return voices[0];
+    }
+
+    return voice;
   }
 
   getVoices(): VoicesByLanguage {
