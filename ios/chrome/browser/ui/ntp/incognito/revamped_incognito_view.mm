@@ -7,7 +7,7 @@
 #import "base/ios/ns_range.h"
 #import "components/content_settings/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
+#import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"

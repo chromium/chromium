@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_DRAG_AND_DROP_DRAG_ITEM_UTIL_H_
-#define IOS_CHROME_BROWSER_DRAG_AND_DROP_DRAG_ITEM_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_DRAG_AND_DROP_MODEL_DRAG_ITEM_UTIL_H_
+#define IOS_CHROME_BROWSER_DRAG_AND_DROP_MODEL_DRAG_ITEM_UTIL_H_
 
 #import <UIKit/UIKit.h>
 
@@ -14,7 +14,7 @@ class GURL;
 namespace web {
 class WebState;
 class WebStateID;
-}
+}  // namespace web
 
 // Information that allows the receiver to locate a tab and also to decide
 // whether to allow a drop.
@@ -47,4 +47,4 @@ UIDragItem* CreateTabDragItem(web::WebState* web_state);
 // URL in a new Chrome window.
 UIDragItem* CreateURLDragItem(URLInfo* url_info, WindowActivityOrigin origin);
 
-#endif  // IOS_CHROME_BROWSER_DRAG_AND_DROP_DRAG_ITEM_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_DRAG_AND_DROP_MODEL_DRAG_ITEM_UTIL_H_

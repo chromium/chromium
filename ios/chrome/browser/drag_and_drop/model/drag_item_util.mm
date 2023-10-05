@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
+#import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 
 #import "base/check_op.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"

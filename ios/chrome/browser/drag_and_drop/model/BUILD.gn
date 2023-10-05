@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("drag_and_drop") {
+source_set("model") {
   sources = [
     "drag_item_util.h",
     "drag_item_util.mm",
