@@ -43,6 +43,9 @@ class FakeBoundSessionCookieRefreshService
       RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater)
       override {}
 
+  void SetBoundSessionParamsUpdatedCallbackForTesting(
+      base::RepeatingClosure updated_callback) override {}
+
   void OnRequestBlockedOnCookie(
       OnRequestBlockedOnCookieCallback resume_blocked_request) override {
     resume_blocked_request_ = std::move(resume_blocked_request);

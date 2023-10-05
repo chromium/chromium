@@ -93,7 +93,13 @@ BoundSessionCookieRefreshServiceImpl::GetBoundSessionThrottlerParams() const {
 void BoundSessionCookieRefreshServiceImpl::
     SetRendererBoundSessionThrottlerParamsUpdaterDelegate(
         RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater) {
-  renderer_updater_ = renderer_updater;
+  renderer_updater_ = std::move(renderer_updater);
+}
+
+void BoundSessionCookieRefreshServiceImpl::
+    SetBoundSessionParamsUpdatedCallbackForTesting(
+        base::RepeatingClosure updated_callback) {
+  session_updated_callback_for_testing_ = std::move(updated_callback);
 }
 
 void BoundSessionCookieRefreshServiceImpl::
@@ -222,5 +228,8 @@ void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession(
 void BoundSessionCookieRefreshServiceImpl::UpdateAllRenderers() {
   if (renderer_updater_) {
     renderer_updater_.Run();
+  }
+  if (session_updated_callback_for_testing_) {
+    session_updated_callback_for_testing_.Run();
   }
 }

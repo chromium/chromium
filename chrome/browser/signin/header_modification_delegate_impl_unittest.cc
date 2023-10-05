@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/test/base/testing_profile.h"
@@ -56,6 +57,10 @@ class MockBoundSessionCookieRefreshService
       SetRendererBoundSessionThrottlerParamsUpdaterDelegate,
       (RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater),
       (override));
+  MOCK_METHOD(void,
+              SetBoundSessionParamsUpdatedCallbackForTesting,
+              (base::RepeatingClosure updated_callback),
+              (override));
   MOCK_METHOD(void,
               OnRequestBlockedOnCookie,
               (OnRequestBlockedOnCookieCallback resume_blocked_request),

@@ -57,12 +57,19 @@ class BoundSessionCookieRefreshService
 
  private:
   friend class RendererUpdater;
+  friend class BoundSessionCookieRefreshServiceImplBrowserTest;
 
   // `RendererUpdater` class that is responsible for pushing updates to all
   // renderers calls this setter to subscribe for bound session throttler params
   // updates.
   virtual void SetRendererBoundSessionThrottlerParamsUpdaterDelegate(
       RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater) = 0;
+
+  // Registers a callback for testing to be notified about session parameters
+  // updates.
+  // TODO(http://b/303375108): consider exposing an observer interface instead.
+  virtual void SetBoundSessionParamsUpdatedCallbackForTesting(
+      base::RepeatingClosure updated_callback) = 0;
 
   // Adds a Receiver to `BoundSessionCookieRefreshService` to receive
   // notification when a request is throttled and requires a fresh cookie.

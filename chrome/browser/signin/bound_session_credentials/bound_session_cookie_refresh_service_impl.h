@@ -83,6 +83,8 @@ class BoundSessionCookieRefreshServiceImpl
   void SetRendererBoundSessionThrottlerParamsUpdaterDelegate(
       RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater)
       override;
+  void SetBoundSessionParamsUpdatedCallbackForTesting(
+      base::RepeatingClosure updated_callback) override;
 
   void set_controller_factory_for_testing(
       const BoundSessionCookieControllerFactoryForTesting&
@@ -122,6 +124,7 @@ class BoundSessionCookieRefreshServiceImpl
   const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
   BoundSessionCookieControllerFactoryForTesting controller_factory_for_testing_;
   RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater_;
+  base::RepeatingClosure session_updated_callback_for_testing_;
 
   base::ScopedObservation<content::StoragePartition,
                           content::StoragePartition::DataRemovalObserver>
