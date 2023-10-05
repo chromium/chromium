@@ -220,8 +220,14 @@ public class TabGridDialogTest {
 
     @After
     public void tearDown() throws Exception {
+        try {
+            Intents.release();
+        } catch (NullPointerException e) {
+            // This will fail if the ChromeTabbedActivity is already finished.
+            // IntentsTestRule was created to avoid this, but it is deprecated and hard to integrate
+            // with batched tests.
+        }
         ActivityTestUtils.clearActivityOrientation(sActivityTestRule.getActivity());
-        Intents.release();
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         if (cta == null) return;
 
@@ -237,11 +243,16 @@ public class TabGridDialogTest {
             waitForDialogHidingAnimation(cta);
         }
 
-        if (cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+        if (cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER)
+                && !cta.getLayoutManager().isLayoutStartingToHide(LayoutType.TAB_SWITCHER)) {
             if (cta.getTabModelSelectorSupplier().get().getTotalTabCount() == 0) {
                 addBlankTabs(cta, false, 1);
+                LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+            } else {
+                leaveTabSwitcher(cta);
             }
-            leaveTabSwitcher(cta);
+        } else {
+            LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         }
     }
 
@@ -1383,6 +1394,7 @@ public class TabGridDialogTest {
                 .clickToolbarMenuItem("Close tabs");
 
         // Rather than destroying the activity the GTS should be showing.
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         verifyTabSwitcherCardCount(cta, 0);
     }
 

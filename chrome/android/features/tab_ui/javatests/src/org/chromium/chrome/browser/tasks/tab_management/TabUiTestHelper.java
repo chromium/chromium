@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import static org.chromium.base.test.util.CallbackHelper.WAIT_TIMEOUT_SECONDS;
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
@@ -55,6 +56,7 @@ import org.hamcrest.Matcher;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -62,6 +64,7 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -85,6 +88,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -140,9 +144,35 @@ public class TabUiTestHelper {
      * @param cta  The current running activity.
      */
     public static void leaveTabSwitcher(ChromeTabbedActivity cta) {
-        assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
-        TestThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());
+        LayoutManagerChrome layoutManager = cta.getLayoutManager();
+        LayoutTestUtils.waitForLayout(layoutManager, LayoutType.TAB_SWITCHER);
+        // Back press may resolve differently during the show/hide animations. Don't call this until
+        // we are certain the layout is visible.
+        CallbackHelper finishedHidingCallbackHelper = new CallbackHelper();
+        LayoutStateObserver observer =
+                new LayoutStateObserver() {
+                    @Override
+                    public void onFinishedHiding(int layoutType) {
+                        if (layoutType != LayoutType.TAB_SWITCHER) return;
+
+                        finishedHidingCallbackHelper.notifyCalled();
+                    }
+                };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    layoutManager.addObserver(observer);
+                    cta.onBackPressed();
+                });
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+        try {
+            finishedHidingCallbackHelper.waitForFirst();
+        } catch (TimeoutException e) {
+            fail("LayoutType.TAB_SWITCHER never finished hiding.");
+        }
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    layoutManager.removeObserver(observer);
+                });
     }
 
     /**

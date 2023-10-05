@@ -33,13 +33,17 @@ public class LayoutTestUtils {
                 finishedShowingCallbackHelper.notifyCalled();
             }
         };
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (layoutManager.isLayoutVisible(type)) {
-                finishedShowingCallbackHelper.notifyCalled();
-            } else {
-                layoutManager.addObserver(observer);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Only trigger immediately if the layout visible and not mid-transition.
+                    if (layoutManager.isLayoutVisible(type)
+                            && !layoutManager.isLayoutStartingToShow(type)
+                            && !layoutManager.isLayoutStartingToHide(type)) {
+                        finishedShowingCallbackHelper.notifyCalled();
+                    } else {
+                        layoutManager.addObserver(observer);
+                    }
+                });
 
         try {
             finishedShowingCallbackHelper.waitForFirst();
