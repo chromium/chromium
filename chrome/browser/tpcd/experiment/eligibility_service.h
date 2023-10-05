@@ -18,6 +18,17 @@ namespace tpcd::experiment {
 
 class ExperimentManager;
 
+enum class ProfileEligibilityMismatch {
+  kEligibleProfileInExperiment = 0,
+  kIneligibleProfileNotInExperiment = 1,
+  kIneligibleProfileInExperiment = 2,
+  kEligibleProfileNotInExperiment = 3,
+  kMaxValue = kEligibleProfileNotInExperiment,
+};
+
+const char ProfileEligibilityMismatchHistogramName[] =
+    "Privacy.3pcd.ProfileEligibilityMismatch";
+
 class EligibilityService : public KeyedService {
  public:
   EligibilityService(Profile* profile, ExperimentManager* experiment_manager);
@@ -37,7 +48,7 @@ class EligibilityService : public KeyedService {
 
   // MarkProfileEligibility should be called for all profiles to set their
   // eligibility, whether currently loaded or created later.
-  void MarkProfileEligibility(bool is_eligible);
+  void MarkProfileEligibility(bool is_client_eligible);
   void BroadcastProfileEligibility();
   bool IsProfileEligible();
 
@@ -46,6 +57,7 @@ class EligibilityService : public KeyedService {
   raw_ptr<privacy_sandbox::TrackingProtectionOnboarding> onboarding_service_;
   // `ExperimentManager` is a singleton and lives forever.
   raw_ptr<ExperimentManager> experiment_manager_;
+  bool is_profile_eligible_ = false;
 
   base::WeakPtrFactory<EligibilityService> weak_factory_{this};
 };
