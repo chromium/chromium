@@ -53,9 +53,40 @@ polymorphic.launcher(
     os = os.LINUX_DEFAULT,
     runner = "reviver/runner",
     target_builders = [
-        "ci/android-nougat-x86-rel",
         "ci/android-pie-x86-rel",
         "ci/android-12-x64-rel",
+    ],
+)
+
+# Due to Nougat deprecation, we need to replace it with Oreo builder.
+# First, reduce the frequency of running Nougat builder.
+# Second, start to run Oreo reviver builder with 3 times.
+# Increase its frequency if we still have capacity.
+polymorphic.launcher(
+    name = "android-nougat-launcher",
+    # To avoid peak hours, we run it at 2 AM, 8 AM, 2 PM UTC.
+    schedule = "0 2,8,14 * * *",
+    pool = ci.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    contact_team_email = "clank-engprod@google.com",
+    runner = "reviver/runner",
+    target_builders = [
+        "ci/android-nougat-x86-rel",
+    ],
+)
+
+polymorphic.launcher(
+    name = "android-oreo-launcher",
+    # To avoid peak hours, we run it at 5 AM, 9 AM, 1 PM UTC.
+    schedule = "0 5,9,13 * * *",
+    pool = ci.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    contact_team_email = "clank-engprod@google.com",
+    runner = "reviver/runner",
+    target_builders = [
+        "ci/android-oreo-x86-rel",
     ],
 )
 
