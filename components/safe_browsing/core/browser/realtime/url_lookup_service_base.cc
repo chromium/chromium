@@ -260,12 +260,10 @@ RealTimeUrlLookupServiceBase::GetCachedRealTimeUrlVerdict(const GURL& url) {
 
   base::TimeTicks get_cache_start_time = base::TimeTicks::Now();
 
-  absl::optional<bool> is_verdict_from_past_session;
   RTLookupResponse::ThreatInfo::VerdictType verdict_type =
-      cache_manager_
-          ? cache_manager_->GetCachedRealTimeUrlVerdict(
-                url, cached_threat_info.get(), &is_verdict_from_past_session)
-          : RTLookupResponse::ThreatInfo::VERDICT_TYPE_UNSPECIFIED;
+      cache_manager_ ? cache_manager_->GetCachedRealTimeUrlVerdict(
+                           url, cached_threat_info.get())
+                     : RTLookupResponse::ThreatInfo::VERDICT_TYPE_UNSPECIFIED;
 
   RecordSparseWithAndWithoutSuffix("SafeBrowsing.RT.GetCacheResult",
                                    GetMetricSuffix(), verdict_type);
@@ -275,12 +273,6 @@ RealTimeUrlLookupServiceBase::GetCachedRealTimeUrlVerdict(const GURL& url) {
 
   if (verdict_type == RTLookupResponse::ThreatInfo::SAFE ||
       verdict_type == RTLookupResponse::ThreatInfo::DANGEROUS) {
-    if (is_verdict_from_past_session.has_value()) {
-      base::UmaHistogramBoolean(
-          "SafeBrowsing.RT.GetCacheResultIsFromPastSession",
-          is_verdict_from_past_session.value());
-    }
-
     auto cache_response = std::make_unique<RTLookupResponse>();
     RTLookupResponse::ThreatInfo* new_threat_info =
         cache_response->add_threat_info();

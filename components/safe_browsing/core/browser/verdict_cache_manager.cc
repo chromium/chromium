@@ -292,9 +292,7 @@ absl::optional<base::Value> GetMostMatchingCachedVerdictEntryWithPathMatching(
     scoped_refptr<HostContentSettingsMap> content_settings,
     const ContentSettingsType contents_setting_type,
     const char* proto_name,
-    MatchParams match_params,
-    base::Time& time_initialized,
-    absl::optional<bool>* out_is_verdict_from_past_initialization) {
+    MatchParams match_params) {
   DCHECK(proto_name == kVerdictProto || proto_name == kRealTimeThreatInfoProto);
 
   absl::optional<base::Value> result;
@@ -345,13 +343,6 @@ absl::optional<base::Value> GetMostMatchingCachedVerdictEntryWithPathMatching(
         PathVariantsMatchCacheExpression(paths, cache_expression_path) &&
         match_params.ShouldMatch() &&
         !IsCacheExpired(verdict_received_time, verdict.cache_duration_sec())) {
-      // We cast to an int because that is initially done for
-      // verdict_received_time. If we don't, then the comparison could
-      // incorrectly claim that the verdict was received before initialization
-      // simply because of the int casting.
-      *out_is_verdict_from_past_initialization =
-          verdict_received_time <
-          static_cast<int>(time_initialized.ToDoubleT());
       max_path_depth = path_depth;
       result = std::move(value);
     }
@@ -367,9 +358,7 @@ GetMostMatchingCachedVerdictEntryWithHostAndPathMatching(
     const std::string& type_key,
     scoped_refptr<HostContentSettingsMap> content_settings,
     const ContentSettingsType contents_setting_type,
-    const char* proto_name,
-    base::Time& time_initialized,
-    absl::optional<bool>* out_is_verdict_from_past_initialization) {
+    const char* proto_name) {
   DCHECK(proto_name == kVerdictProto || proto_name == kRealTimeThreatInfoProto);
   absl::optional<base::Value> most_matching_verdict;
   MatchParams match_params;
@@ -384,17 +373,13 @@ GetMostMatchingCachedVerdictEntryWithHostAndPathMatching(
     int depth = static_cast<int>(GetHostDepth(host));
     GURL url_to_check = GetUrlWithHostAndPath(host, root_path);
     match_params.is_exact_host = (root_host == host);
-    absl::optional<bool> is_verdict_from_past_initialization;
     absl::optional<base::Value> verdict =
         GetMostMatchingCachedVerdictEntryWithPathMatching<T>(
             url_to_check, type_key, content_settings, contents_setting_type,
-            proto_name, match_params, time_initialized,
-            &is_verdict_from_past_initialization);
+            proto_name, match_params);
     if (depth > max_path_depth && verdict && verdict->is_dict()) {
       max_path_depth = depth;
       most_matching_verdict = std::move(verdict);
-      *out_is_verdict_from_past_initialization =
-          is_verdict_from_past_initialization;
     }
   }
 
@@ -445,7 +430,6 @@ VerdictCacheManager::VerdictCacheManager(
       stored_verdict_count_real_time_url_check_(absl::nullopt),
       content_settings_(content_settings),
       sync_observer_(std::move(sync_observer)) {
-  time_initialized_ = base::Time::Now();
   if (history_service) {
     history_service_observation_.Observe(history_service);
   }
@@ -559,13 +543,11 @@ VerdictCacheManager::GetCachedPhishGuardVerdict(
 
   std::string type_key =
       GetKeyOfTypeFromTriggerType(trigger_type, password_type);
-  absl::optional<bool> is_verdict_from_past_initialization;
   absl::optional<base::Value> most_matching_verdict =
       GetMostMatchingCachedVerdictEntryWithHostAndPathMatching<
           LoginReputationClientResponse>(
           url, type_key, content_settings_,
-          ContentSettingsType::PASSWORD_PROTECTION, kVerdictProto,
-          time_initialized_, &is_verdict_from_past_initialization);
+          ContentSettingsType::PASSWORD_PROTECTION, kVerdictProto);
 
   return GetVerdictTypeFromMostMatchedCachedVerdict<
       LoginReputationClientResponse>(
@@ -697,8 +679,7 @@ void VerdictCacheManager::CacheRealTimeUrlVerdict(
 RTLookupResponse::ThreatInfo::VerdictType
 VerdictCacheManager::GetCachedRealTimeUrlVerdict(
     const GURL& url,
-    RTLookupResponse::ThreatInfo* out_threat_info,
-    absl::optional<bool>* out_is_verdict_from_past_initialization) {
+    RTLookupResponse::ThreatInfo* out_threat_info) {
   if (is_shut_down_) {
     return RTLookupResponse::ThreatInfo::VERDICT_TYPE_UNSPECIFIED;
   }
@@ -708,8 +689,7 @@ VerdictCacheManager::GetCachedRealTimeUrlVerdict(
           RTLookupResponse::ThreatInfo>(
           url, kRealTimeUrlCacheKey, content_settings_,
           ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
-          kRealTimeThreatInfoProto, time_initialized_,
-          out_is_verdict_from_past_initialization);
+          kRealTimeThreatInfoProto);
 
   return GetVerdictTypeFromMostMatchedCachedVerdict<
       RTLookupResponse::ThreatInfo>(kRealTimeThreatInfoProto,
@@ -724,14 +704,12 @@ VerdictCacheManager::GetCachedRealTimeUrlClientSideDetectionType(
     return safe_browsing::ClientSideDetectionType::
         CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
   }
-  absl::optional<bool> is_verdict_from_past_initialization;
   absl::optional<base::Value> most_matching_verdict =
       GetMostMatchingCachedVerdictEntryWithHostAndPathMatching<
           RTLookupResponse::ThreatInfo>(
           url, kRealTimeUrlCacheKey, content_settings_,
           ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
-          kRealTimeThreatInfoProto, time_initialized_,
-          &is_verdict_from_past_initialization);
+          kRealTimeThreatInfoProto);
 
   if (!most_matching_verdict || !most_matching_verdict->is_dict()) {
     return safe_browsing::ClientSideDetectionType::
