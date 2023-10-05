@@ -6,16 +6,16 @@
   }
 
   #helpIcon {
-    --iron-icon-fill-color: var(--cros-icon-color-disabled);
+    --iron-icon-fill-color: var(--cr-secondary-text-color);
     height: 16px;
     margin-inline-end: 8px;
     padding: 2px;
     width: 16px;
   }
 
-  #helpText {
+  .help-text {
     flex-direction: column;
-    color: var(--cros-text-color-disabled);
+    color: var(--cr-secondary-text-color);
     font-size: 13px;
     line-height: 20px;
   }
@@ -223,8 +223,8 @@
     if="[[prefs.nearby_sharing.enabled.value]]" restamp>
   <div id="help" class="settings-box">
     <iron-icon id="helpIcon" icon="nearby20:info"></iron-icon>
-    <div id="helpText">
-      <div id="helpTopRow">
+    <div>
+      <div class="help-text" id="helpTopRow">
         $i18n{nearbyShareSettingsHelpCaptionTop}
       </div>
       <localized-link class="help-text"
