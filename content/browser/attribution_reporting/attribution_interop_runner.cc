@@ -243,6 +243,13 @@ class FakeCookieChecker : public AttributionCookieChecker {
   bool debug_cookie_set_ = false;
 };
 
+base::Value::Dict MakeOutput(base::Value::List reports,
+                             base::Value::List unparsable) {
+  return base::Value::Dict()
+      .Set(kReportsKey, std::move(reports))
+      .Set(kUnparsableRegistrationsKey, std::move(unparsable));
+}
+
 // Registers sources and triggers in the `AttributionManagerImpl` and records
 // sent reports.
 class AttributionEventHandler : public AttributionObserver {
@@ -304,38 +311,8 @@ class AttributionEventHandler : public AttributionObserver {
   }
 
   base::Value::Dict TakeOutput() {
-    base::Value::Dict output;
-
-    if (!event_level_reports_.empty()) {
-      output.Set(kEventLevelResultsKey,
-                 std::exchange(event_level_reports_, {}));
-    }
-
-    if (!debug_event_level_reports_.empty()) {
-      output.Set(kDebugEventLevelResultsKey,
-                 std::exchange(debug_event_level_reports_, {}));
-    }
-
-    if (!aggregatable_reports_.empty()) {
-      output.Set(kAggregatableResultsKey,
-                 std::exchange(aggregatable_reports_, {}));
-    }
-
-    if (!debug_aggregatable_reports_.empty()) {
-      output.Set(kDebugAggregatableResultsKey,
-                 std::exchange(debug_aggregatable_reports_, {}));
-    }
-
-    if (!verbose_debug_reports_.empty()) {
-      output.Set(kVerboseDebugReportsKey,
-                 std::exchange(verbose_debug_reports_, {}));
-    }
-
-    if (!unparsable_.empty()) {
-      output.Set(kUnparsableRegistrationsKey, std::exchange(unparsable_, {}));
-    }
-
-    return output;
+    return MakeOutput(std::exchange(reports_, {}),
+                      std::exchange(unparsable_, {}));
   }
 
   base::Time max_report_time() const { return max_report_time_; }
@@ -347,30 +324,14 @@ class AttributionEventHandler : public AttributionObserver {
                     bool is_debug_report,
                     const SendResult& info) override {
     DCHECK_EQ(info.status, SendResult::Status::kSent);
-
-    base::Value::List* reports;
-    switch (report.GetReportType()) {
-      case AttributionReport::Type::kEventLevel:
-        reports = is_debug_report ? &debug_event_level_reports_
-                                  : &event_level_reports_;
-        break;
-      case AttributionReport::Type::kAggregatableAttribution:
-        reports = is_debug_report ? &debug_aggregatable_reports_
-                                  : &aggregatable_reports_;
-        break;
-      case AttributionReport::Type::kNullAggregatable:
-        // TODO(linnan): Consider supporting null reports in interop tests.
-        return;
-    }
-
-    reports->Append(json_converter_.ToJson(report, is_debug_report));
+    reports_.Append(json_converter_.ToJson(report, is_debug_report));
   }
 
   void OnDebugReportSent(const AttributionDebugReport& report,
                          int status,
                          base::Time time) override {
     DCHECK_EQ(status, 200);
-    verbose_debug_reports_.Append(json_converter_.ToJson(report, time));
+    reports_.Append(json_converter_.ToJson(report, time));
   }
 
   void OnTriggerHandled(const AttributionTrigger&,
@@ -399,11 +360,7 @@ class AttributionEventHandler : public AttributionObserver {
 
   base::Time max_report_time_;
 
-  base::Value::List event_level_reports_;
-  base::Value::List debug_event_level_reports_;
-  base::Value::List aggregatable_reports_;
-  base::Value::List debug_aggregatable_reports_;
-  base::Value::List verbose_debug_reports_;
+  base::Value::List reports_;
   base::Value::List unparsable_;
 };
 
@@ -422,7 +379,8 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
                    ParseAttributionInteropInput(std::move(input), time_origin));
 
   if (events.empty()) {
-    return base::Value::Dict();
+    return MakeOutput(/*reports=*/base::Value::List(),
+                      /*unparsable=*/base::Value::List());
   }
 
   DCHECK(base::ranges::is_sorted(events));

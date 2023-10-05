@@ -62,7 +62,8 @@
     ]
   },
   "output": {
-    "event_level_results": [
+    "unparsable_registrations": [],
+    "reports": [
       {
         "payload": {
           "attribution_destination": "https://destination.test",

@@ -214,7 +214,8 @@
     ]
   },
   "output": {
-    "aggregatable_results": [
+    "unparsable_registrations": [],
+    "reports": [
       {
         "payload": {
           "attribution_destination": "https://destination.test",
@@ -254,9 +255,7 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "1643239184000"
-      }
-    ],
-    "verbose_debug_reports": [
+      },
       {
         "payload": [ {
           "body": {

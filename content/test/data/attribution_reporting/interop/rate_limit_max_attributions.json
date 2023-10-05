@@ -395,7 +395,8 @@
     ]
   },
   "output": {
-    "event_level_results": [
+    "unparsable_registrations": [],
+    "reports": [
       {
         "payload": {
           "attribution_destination": "https://destination.test",
@@ -467,9 +468,7 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "1645827583000"
-      }
-    ],
-    "aggregatable_results": [
+      },
       {
         "payload": {
           "attribution_destination": "https://destination.test",
@@ -491,9 +490,7 @@
        },
        "report_time": "1643239176002",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
-      }
-    ],
-    "verbose_debug_reports": [
+      },
       {
         "payload": [ {
           "body": {

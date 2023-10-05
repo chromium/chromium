@@ -121,8 +121,7 @@ and triggers.
 
   // Expected output.
   "output": {
-    // Optional list of event-level results. Omitted if empty.
-    "event_level_results": [
+    "reports": [
       {
         // URL to which the report would have been sent.
         "report_url": "https://reporting.example/.well-known/attribution-reporting/report-event-attribution",
@@ -131,82 +130,10 @@ and triggers.
         // the UNIX epoch.
         "report_time": "123",
 
-        "payload": {
-          // The attribution destination on which the trigger was registered.
-          "attribution_destination": "https://destination.example",
-
-          // uint64 event id formatted as a base-10 string set on the source.
-          "source_event_id": "123456789",
-
-          // Coarse uint64 data formatted as a base-10 string set on the
-          // trigger.
-          "trigger_data": "7",
-
-          // Whether this source was associated with a navigation.
-          "source_type": "navigation",
-
-          // Decimal number between 0 and 1 indicating how often noise is
-          // applied.
-          "randomized_trigger_rate": 0.0024263,
-
-          // Debug key set on the source. Omitted if not set.
-          "source_debug_key": "123",
-
-          // Debug key set on the trigger. Omitted if not set.
-          "trigger_debug_key": "789"
-        }
+        "payload": ...
       }
     ],
 
-    // Optional list of aggregatable results. Omitted if empty.
-    "aggregatable_results": [
-      {
-        // Upper bound time at which the report would have been sent in
-        // milliseconds since the UNIX epoch.
-        "report_time": "123",
-
-        // URL to which the report would have been sent.
-        "report_url": "https://reporting.example/.well-known/attribution-reporting/report-aggregate-attribution",
-
-        "payload": {
-          // The attribution destination on which the trigger was registered.
-          "attribution_destination": "https://destination.example",
-
-          // List of aggregatable histograms.
-          "histograms": [
-            {
-              // uint128 formatted as a base-16 string.
-              "key": "0x1",
-
-              // uint32 value.
-              "value": 123
-            }
-          ],
-
-          // Debug key set on the source. Omitted if not set.
-          "source_debug_key": "123",
-
-          // Debug key set on the trigger. Omitted if not set.
-          "trigger_debug_key": "789"
-        }
-      }
-    ],
-
-    "verbose_debug_reports": [
-      {
-        // Upper bound time at which the report would have been sent in
-        // milliseconds since the UNIX epoch.
-        "report_time": "123",
-
-        // URL to which the report would have been sent.
-        "report_url": "https://reporting.example/.well-known/attribution-reporting/debug/verbose"
-
-        // The body of the report.
-        "payload": [...]
-      }
-    ],
-
-    // Optional list of unparsable sources/triggers. Omitted if empty.
     "unparsable_registrations": [
       {
         // Time of the input that failed to register.

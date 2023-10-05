@@ -58,34 +58,28 @@ std::vector<base::FilePath> GetInputs() {
   return input_paths;
 }
 
-void ProcessReports(base::Value::Dict& dict, base::StringPiece key) {
-  base::Value::List* list = dict.FindList(key);
+void ProcessReports(base::Value::Dict& dict) {
+  base::Value::List* list = dict.FindList(kReportsKey);
   if (!list) {
-    return;
-  }
-  if (list->empty()) {
-    dict.Remove(key);
     return;
   }
   base::ranges::sort(*list);
 
   // Ensure that integral values for this field are replaced with the equivalent
   // double, since they are equivalent at the JSON level.
-  if (key == kEventLevelResultsKey || key == kDebugEventLevelResultsKey) {
-    for (base::Value& v : *list) {
-      if (!v.is_dict()) {
-        continue;
-      }
-
-      base::Value* rate =
-          v.GetDict().FindByDottedPath("payload.randomized_trigger_rate");
-      if (!rate || !rate->is_int()) {
-        continue;
-      }
-
-      // This coerces the integer to a double.
-      *rate = base::Value(rate->GetDouble());
+  for (base::Value& v : *list) {
+    if (!v.is_dict()) {
+      continue;
     }
+
+    base::Value* rate =
+        v.GetDict().FindByDottedPath("payload.randomized_trigger_rate");
+    if (!rate || !rate->is_int()) {
+      continue;
+    }
+
+    // This coerces the integer to a double.
+    *rate = base::Value(rate->GetDouble());
   }
 }
 
@@ -138,17 +132,10 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   absl::optional<base::Value> expected_output = dict.Extract("output");
   ASSERT_TRUE(expected_output.has_value());
 
-  base::Value::Dict& expected_output_dict = expected_output->GetDict();
+  ProcessReports(actual_output);
+  ProcessReports(expected_output->GetDict());
 
-  for (const char* key :
-       {kEventLevelResultsKey, kDebugEventLevelResultsKey,
-        kAggregatableResultsKey, kDebugAggregatableResultsKey,
-        kVerboseDebugReportsKey, kUnparsableRegistrationsKey}) {
-    ProcessReports(actual_output, key);
-    ProcessReports(expected_output_dict, key);
-  }
-
-  EXPECT_THAT(actual_output, base::test::IsJson(expected_output_dict));
+  EXPECT_THAT(actual_output, base::test::IsJson(*expected_output));
 }
 
 INSTANTIATE_TEST_SUITE_P(

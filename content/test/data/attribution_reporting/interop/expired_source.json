@@ -197,7 +197,8 @@
     ]
   },
   "output": {
-    "event_level_results": [
+    "unparsable_registrations": [],
+    "reports": [
       {
         "payload": {
           "attribution_destination": "https://destination.test",
@@ -233,9 +234,7 @@
        },
        "report_time": "1643494774001",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
-      }
-    ],
-    "verbose_debug_reports": [
+      },
       {
         "payload": [ {
           "body": {

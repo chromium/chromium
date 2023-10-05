@@ -269,7 +269,8 @@
     ]
   },
   "output": {
-    "event_level_results": [
+    "unparsable_registrations": [],
+    "reports": [
       // No debug reports are generated for exceeding channel capacity.
       {
         "payload": {

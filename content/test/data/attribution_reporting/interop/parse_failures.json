@@ -41,6 +41,7 @@
     "unparsable_registrations": [
       {"time": "0", "type": "source"},
       {"time": "1", "type": "trigger"}
-    ]
+    ],
+    "reports": []
   }
 }
