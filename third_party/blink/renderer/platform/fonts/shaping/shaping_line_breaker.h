@@ -64,35 +64,24 @@ class PLATFORM_EXPORT ShapingLineBreaker {
     bool is_hyphenated;
   };
 
-  // Shapes a line of text by finding a valid and appropriate break opportunity
-  // based on the shaping results for the entire paragraph.
-  enum Options {
-    kDefaultOptions = 0,
-    // Set when the start is at the start of a wrapped line.
-    kStartOfLine = 1 << 0,
-    // Disable reshaping the end edge if it is at a breakable space, even if it
-    // is not safe-to-break. Good for performance if accurate width is not
-    // critical.
-    kDontReshapeEndIfAtSpace = 1 << 1,
-    // Returns nullptr if this line overflows. When the word is very long, such
-    // as URL or data, creating ShapeResult is expensive. Set this option to
-    // suppress if ShapeResult is not needed when this line overflows.
-    kNoResultIfOverflow = 1 << 2,
-  };
+  // Set the start of the current line.
+  void SetLineStart(unsigned offset) { line_start_ = offset; }
+  // Disable reshaping the end edge if it is at a breakable space, even if it
+  // is not safe-to-break. Good for performance if accurate width is not
+  // critical.
+  void SetDontReshapeEndIfAtSpace() { dont_reshape_end_if_at_space_ = true; }
+  // Returns nullptr if this line overflows. When the word is very long, such
+  // as URL or data, creating ShapeResult is expensive. Set this option to
+  // suppress if ShapeResult is not needed when this line overflows.
+  bool NoResultIfOverflow() const { return no_result_if_overflow_; }
+  void SetNoResultIfOverflow() { no_result_if_overflow_ = true; }
+
   scoped_refptr<const ShapeResultView> ShapeLine(unsigned start_offset,
                                                  LayoutUnit available_space,
-                                                 unsigned options,
                                                  Result* result_out);
-  scoped_refptr<const ShapeResultView> ShapeLine(unsigned start_offset,
-                                                 LayoutUnit available_space,
-                                                 Result* result_out) {
-    return ShapeLine(start_offset, available_space, kDefaultOptions,
-                     result_out);
-  }
 
   scoped_refptr<const ShapeResultView> ShapeLineAt(unsigned start,
-                                                   unsigned end,
-                                                   unsigned options);
+                                                   unsigned end);
 
  protected:
   const ShapeResult& GetShapeResult() const { return *result_; }
@@ -101,6 +90,11 @@ class PLATFORM_EXPORT ShapingLineBreaker {
 
  private:
   const String& GetText() const;
+
+  // True if the `offset` is start of a line, except the first line.
+  bool IsStartOfWrappedLine(unsigned offset) {
+    return offset && offset == line_start_;
+  }
 
   // Represents a break opportunity offset and its properties.
   struct BreakOpportunity {
@@ -151,6 +145,9 @@ class PLATFORM_EXPORT ShapingLineBreaker {
   scoped_refptr<const ShapeResult> result_;
   const LazyLineBreakIterator* break_iterator_;
   const Hyphenation* hyphenation_;
+  unsigned line_start_ = 0;
+  bool dont_reshape_end_if_at_space_ = false;
+  bool no_result_if_overflow_ = false;
 
   friend class ShapingLineBreakerTest;
 };

@@ -173,7 +173,6 @@ class CORE_EXPORT NGLineBreaker {
   bool BreakTextAt(NGInlineItemResult*,
                    const NGInlineItem&,
                    ShapingLineBreaker& breaker,
-                   unsigned options,
                    NGLineInfo*);
   bool BreakTextAtPreviousBreakOpportunity(NGInlineItemResult* item_result);
   bool HandleTextForFastMinContent(NGInlineItemResult*,

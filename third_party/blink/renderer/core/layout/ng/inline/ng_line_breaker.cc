@@ -1382,19 +1382,16 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
 
   } breaker(this, &item, &item_shape_result);
 
-  unsigned options = ShapingLineBreaker::kDefaultOptions;
-  if (item_result->StartOffset() == line_info->StartOffset()) {
-    options |= ShapingLineBreaker::kStartOfLine;
-  }
+  breaker.SetLineStart(line_info->StartOffset());
 
   // Reshaping between the last character and trailing spaces is needed only
   // when we need accurate end position, because kerning between trailing spaces
   // is not visible.
   if (!NeedsAccurateEndPosition(*line_info, item))
-    options |= ShapingLineBreaker::kDontReshapeEndIfAtSpace;
+    breaker.SetDontReshapeEndIfAtSpace();
 
   if (UNLIKELY(break_at_)) {
-    if (BreakTextAt(item_result, item, breaker, options, line_info)) {
+    if (BreakTextAt(item_result, item, breaker, line_info)) {
       return kBreakAt;
     }
     return kSuccess;
@@ -1404,7 +1401,7 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
   // because if this item overflows, we will rewind and break line again. The
   // overflowing ShapeResult is not needed.
   if (break_anywhere_if_overflow_ && !override_break_anywhere_)
-    options |= ShapingLineBreaker::kNoResultIfOverflow;
+    breaker.SetNoResultIfOverflow();
 
 #if DCHECK_IS_ON()
   unsigned try_count = 0;
@@ -1416,14 +1413,14 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
     ++try_count;
     DCHECK_LE(try_count, 2u);
 #endif
-    scoped_refptr<const ShapeResultView> shape_result = breaker.ShapeLine(
-        item_result->StartOffset(), available_width.ClampNegativeToZero(),
-        options, &result);
+    scoped_refptr<const ShapeResultView> shape_result =
+        breaker.ShapeLine(item_result->StartOffset(),
+                          available_width.ClampNegativeToZero(), &result);
 
     // If this item overflows and 'break-word' is set, this line will be
     // rewinded. Making this item long enough to overflow is enough.
     if (!shape_result) {
-      DCHECK(options & ShapingLineBreaker::kNoResultIfOverflow);
+      DCHECK(breaker.NoResultIfOverflow());
       item_result->inline_size = available_width_with_hyphens + 1;
       item_result->text_offset.end = item.EndOffset();
       item_result->text_offset.AssertNotEmpty();
@@ -1495,7 +1492,6 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
 bool NGLineBreaker::BreakTextAt(NGInlineItemResult* item_result,
                                 const NGInlineItem& item,
                                 ShapingLineBreaker& breaker,
-                                unsigned options,
                                 NGLineInfo* line_info) {
   DCHECK(break_at_);
   DCHECK_LE(current_.text_offset, break_at_.end.text_offset);
@@ -1510,7 +1506,7 @@ bool NGLineBreaker::BreakTextAt(NGInlineItemResult* item_result,
   }
   if (item_result->Length()) {
     scoped_refptr<const ShapeResultView> shape_result = breaker.ShapeLineAt(
-        item_result->StartOffset(), item_result->EndOffset(), options);
+        item_result->StartOffset(), item_result->EndOffset());
     item_result->inline_size =
         shape_result->SnappedWidth().ClampNegativeToZero();
     item_result->shape_result = std::move(shape_result);

@@ -237,11 +237,10 @@ inline void ShapingLineBreaker::SetBreakOffset(
 scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
     unsigned start,
     LayoutUnit available_space,
-    unsigned options,
     ShapingLineBreaker::Result* result_out) {
   DCHECK_GE(available_space, LayoutUnit(0));
-  unsigned range_start = result_->StartIndex();
-  unsigned range_end = result_->EndIndex();
+  const unsigned range_start = result_->StartIndex();
+  const unsigned range_end = result_->EndIndex();
   DCHECK_GE(start, range_start);
   DCHECK_LT(start, range_end);
   result_out->is_overflow = false;
@@ -266,7 +265,7 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
       result_->CachedOffsetForPosition(end_position) + range_start;
 
   // When it's not at the start of a wrapped line, disable reshaping.
-  unsigned first_safe = (options & kStartOfLine)
+  unsigned first_safe = IsStartOfWrappedLine(start)
                             ? result_->CachedNextSafeToBreakOffset(start)
                             : start;
   DCHECK_GE(first_safe, start);
@@ -299,8 +298,9 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
     result_out->is_overflow = break_opportunity.offset <= start;
     if (result_out->is_overflow) {
       DCHECK(use_previous_break_opportunity);
-      if (options & kNoResultIfOverflow)
+      if (no_result_if_overflow_) {
         return nullptr;
+      }
       // No need to scan past range_end for a break opportunity.
       break_opportunity = NextBreakOpportunity(
           std::max(candidate_break, start + 1), start, range_end);
@@ -325,8 +325,9 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
         break_opportunity = previous_opportunity;
       } else {
         result_out->is_overflow = true;
-        if (options & kNoResultIfOverflow)
+        if (no_result_if_overflow_) {
           return nullptr;
+        }
       }
     }
 
@@ -378,7 +379,7 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   // We may have options that imply avoiding re-shape.
   // Note: we must evaluate the need of re-shaping the end of the line, before
   // we consider the non-hangable-run-end.
-  if (options & kDontReshapeEndIfAtSpace) {
+  if (dont_reshape_end_if_at_space_) {
     // If the actual offset is in a breakable-space sequence, we may need to run
     // the re-shape logic and consider the non-hangable-run-end.
     reshape_line_end &= !IsBreakableSpace(text[break_opportunity.offset - 1]);
@@ -579,13 +580,12 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeToEnd(
 
 scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLineAt(
     unsigned start,
-    unsigned end,
-    unsigned options) {
+    unsigned end) {
   DCHECK_GT(end, start);
 
   unsigned first_safe;
   scoped_refptr<const ShapeResult> line_start_result;
-  if (options & kStartOfLine) {
+  if (IsStartOfWrappedLine(start)) {
     first_safe = result_->CachedNextSafeToBreakOffset(start);
     DCHECK_GE(first_safe, start);
     if (first_safe != start) {
@@ -602,8 +602,7 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLineAt(
 
   unsigned last_safe;
   scoped_refptr<const ShapeResult> line_end_result;
-  if ((options & kDontReshapeEndIfAtSpace) &&
-      IsBreakableSpace(GetText()[end - 1])) {
+  if (dont_reshape_end_if_at_space_ && IsBreakableSpace(GetText()[end - 1])) {
     last_safe = end;
   } else {
     last_safe = result_->CachedPreviousSafeToBreakOffset(end);
