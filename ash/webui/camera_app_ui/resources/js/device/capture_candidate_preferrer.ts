@@ -733,6 +733,26 @@ export class CaptureCandidatePreferrer {
     }
   }
 
+  /**
+   * Returns the photo resolution level preference of the given device.
+   *
+   * Fallback to the first resolution level if the preferred resolution level
+   * doesn't exist in the option set.
+   */
+  private getPreferredPhotoResolutionLevel(
+      deviceId: string,
+      photoResoltionOptions: PhotoResolutionOption[]): PhotoResolutionLevel {
+    assert(photoResoltionOptions.length > 0);
+    const prefResolutionLevel =
+        this.prefPhotoResolutionLevelMap[deviceId] ?? PhotoResolutionLevel.FULL;
+    if (photoResoltionOptions.find(
+            (option) => option.resolutionLevel === prefResolutionLevel) !==
+        undefined) {
+      return prefResolutionLevel;
+    }
+    return photoResoltionOptions[0].resolutionLevel;
+  }
+
   private getPhotoOptionsGroup(deviceId: string): PhotoResolutionOptionGroup {
     const aspectRatioOptionsMap = this.photoOptions.get(deviceId);
     assert(aspectRatioOptionsMap !== undefined);
@@ -744,7 +764,7 @@ export class CaptureCandidatePreferrer {
     const options = aspectRatioOptionsMap.get(chosenAspectRatioSet);
     assert(options !== undefined);
     const prefResolutionLevel =
-        this.prefPhotoResolutionLevelMap[deviceId] ?? PhotoResolutionLevel.FULL;
+        this.getPreferredPhotoResolutionLevel(deviceId, options);
     const prefResolution =
         this.getPreferPhotoResolution(deviceId, chosenAspectRatioSet);
     for (const option of options) {
@@ -777,7 +797,7 @@ export class CaptureCandidatePreferrer {
     assert(options !== undefined);
 
     const prefResolutionLevel =
-        this.prefPhotoResolutionLevelMap[deviceId] ?? PhotoResolutionLevel.FULL;
+        this.getPreferredPhotoResolutionLevel(deviceId, options);
     const prefResolution =
         this.getPreferPhotoResolution(deviceId, AspectRatioSet.RATIO_SQUARE);
     for (const option of options) {
