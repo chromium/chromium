@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [ "browser_state_policy_connector.h" ]
+  public_deps = [ "//ios/chrome/browser/policy:policy" ]
+}
+
+source_set("policy_util") {
+  sources = [ "policy_util.h" ]
+  public_deps = [ "//ios/chrome/browser/policy:policy_util" ]
+}
+
+source_set("policy_earl_grey_matchers") {
+  testonly = true
+  sources = [ "policy_earl_grey_matchers.h" ]
+  public_deps = [ "//ios/chrome/browser/policy:policy_earl_grey_matchers" ]
+}
