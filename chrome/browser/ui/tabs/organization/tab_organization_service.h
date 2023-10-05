@@ -19,7 +19,8 @@ class TabOrganizationSession;
 class TabOrganizationService : public KeyedService {
  public:
   using BrowserSessionMap =
-      std::unordered_map<Browser*, std::unique_ptr<TabOrganizationSession>>;
+      std::unordered_map<const Browser*,
+                         std::unique_ptr<TabOrganizationSession>>;
   TabOrganizationService();
   TabOrganizationService(const TabOrganizationService&) = delete;
   TabOrganizationService& operator=(const TabOrganizationService& other) =
@@ -28,13 +29,13 @@ class TabOrganizationService : public KeyedService {
 
   // Called when an organization triggering moment occurs. Creates a session for
   // the browser, if a session does not already exist.
-  void OnTriggerOccured(Browser* browser);
+  void OnTriggerOccured(const Browser* browser);
 
   const BrowserSessionMap& browser_session_map() const {
     return browser_session_map_;
   }
 
-  const TabOrganizationSession* GetSessionForBrowser(Browser* browser);
+  const TabOrganizationSession* GetSessionForBrowser(const Browser* browser);
 
   void AddObserver(TabOrganizationObserver* observer) {
     observers_.AddObserver(observer);
@@ -45,6 +46,8 @@ class TabOrganizationService : public KeyedService {
   }
 
  private:
+  TabOrganizationSession* CreateSessionForBrowser(const Browser* browser);
+
   // mapping of browser to session.
   BrowserSessionMap browser_session_map_;
 

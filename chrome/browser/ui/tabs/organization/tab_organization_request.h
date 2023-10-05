@@ -38,8 +38,13 @@ class TabOrganizationRequest {
   using OnResponseCallback =
       base::OnceCallback<void(const TabOrganizationResponse* response)>;
 
+  using BackendCompletionCallback = base::OnceCallback<void(
+      std::unique_ptr<TabOrganizationResponse> response)>;
+  using BackendFailureCallback = base::OnceCallback<void()>;
   using BackendStartRequest =
-      base::OnceCallback<void(const TabOrganizationRequest* request)>;
+      base::OnceCallback<void(const TabOrganizationRequest* request,
+                              BackendCompletionCallback on_completion,
+                              BackendFailureCallback on_failure)>;
   using BackendCancelRequest =
       base::OnceCallback<void(const TabOrganizationRequest* request)>;
 
@@ -55,7 +60,9 @@ class TabOrganizationRequest {
   const absl::optional<TabData::TabID> base_tab_id() const {
     return base_tab_id_;
   }
-  const TabOrganizationResponse* response() const { return response_.get(); }
+  const TabOrganizationResponse* response() const {
+    return response_ ? response_.get() : nullptr;
+  }
 
   void SetResponseCallback(OnResponseCallback callback);
   TabData* AddTabData(std::unique_ptr<TabData> tab_data);

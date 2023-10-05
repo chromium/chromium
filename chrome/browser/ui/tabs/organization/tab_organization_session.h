@@ -14,6 +14,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+class Browser;
+
 class TabOrganizationSession {
  public:
   TabOrganizationSession();
@@ -26,6 +28,9 @@ class TabOrganizationSession {
     return tab_organizations_;
   }
 
+  static std::unique_ptr<TabOrganizationSession> CreateSessionForBrowser(
+      const Browser* browser);
+
   TabOrganization* GetNextTabOrganization();
 
   void StartRequest();
@@ -35,6 +40,11 @@ class TabOrganizationSession {
   }
 
  private:
+  // TODO: Remove once the full UI flow is implemented.
+  void PopulateAndCreate(const TabOrganizationResponse* response);
+
+  // Fills in the organizations from the request. Called when the request
+  // completes.
   void PopulateOrganizations(const TabOrganizationResponse* response);
 
   std::unique_ptr<TabOrganizationRequest> request_;

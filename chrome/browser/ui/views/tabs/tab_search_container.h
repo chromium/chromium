@@ -52,7 +52,7 @@ class TabSearchContainer : public views::View,
   void AnimationProgressed(const gfx::Animation* animation) override;
 
   // TabOrganizationObserver
-  void OnToggleActionUIState(Browser* browser, bool should_show) override;
+  void OnToggleActionUIState(const Browser* browser, bool should_show) override;
 
  private:
   void ApplyAnimationValue(float value);

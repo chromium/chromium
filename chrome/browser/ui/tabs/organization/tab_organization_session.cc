@@ -6,9 +6,11 @@
 
 #include <vector>
 
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/organization/request_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
-#include "tab_organization_session.h"
 
 TabOrganizationSession::TabOrganizationSession()
     : TabOrganizationSession(std::make_unique<TabOrganizationRequest>()) {}
@@ -18,6 +20,23 @@ TabOrganizationSession::TabOrganizationSession(
     : request_(std::move(request)) {}
 
 TabOrganizationSession::~TabOrganizationSession() = default;
+
+// static
+std::unique_ptr<TabOrganizationSession>
+TabOrganizationSession::CreateSessionForBrowser(const Browser* browser) {
+  std::unique_ptr<TabOrganizationRequest> request =
+      TwoTabsRequestFactory().CreateRequest();
+
+  // iterate through the tabstripmodel building the tab data.
+  std::vector<std::unique_ptr<TabData>> tab_datas;
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  for (int index = 0; index < tab_strip_model->count(); index++) {
+    request->AddTabData(std::make_unique<TabData>(
+        tab_strip_model, tab_strip_model->GetWebContentsAt(index)));
+  }
+
+  return std::make_unique<TabOrganizationSession>(std::move(request));
+}
 
 TabOrganization* TabOrganizationSession::GetNextTabOrganization() {
   for (TabOrganization& tab_organization : tab_organizations_) {
@@ -31,8 +50,14 @@ TabOrganization* TabOrganizationSession::GetNextTabOrganization() {
 void TabOrganizationSession::StartRequest() {
   CHECK(request_);
   request_->SetResponseCallback(base::BindOnce(
-      &TabOrganizationSession::PopulateOrganizations, base::Unretained(this)));
+      &TabOrganizationSession::PopulateAndCreate, base::Unretained(this)));
   request_->StartRequest();
+}
+
+void TabOrganizationSession::PopulateAndCreate(
+    const TabOrganizationResponse* response) {
+  PopulateOrganizations(response);
+  GetNextTabOrganization()->Accept();
 }
 
 void TabOrganizationSession::PopulateOrganizations(

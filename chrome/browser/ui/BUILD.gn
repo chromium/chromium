@@ -1442,6 +1442,8 @@ static_library("ui") {
       "tabs/hover_tab_selector.h",
       "tabs/organization/metrics.cc",
       "tabs/organization/metrics.h",
+      "tabs/organization/request_factory.cc",
+      "tabs/organization/request_factory.h",
       "tabs/organization/tab_data.cc",
       "tabs/organization/tab_data.h",
       "tabs/organization/tab_organization.cc",

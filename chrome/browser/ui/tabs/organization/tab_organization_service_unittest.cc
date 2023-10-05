@@ -7,6 +7,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -70,7 +73,7 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
 
 class MockTabOrganizationObserver : public TabOrganizationObserver {
  public:
-  MOCK_METHOD(void, OnToggleActionUIState, (Browser*, bool), (override));
+  MOCK_METHOD(void, OnToggleActionUIState, (const Browser*, bool), (override));
 };
 
 // Service Factory tests.
@@ -141,4 +144,21 @@ TEST_F(TabOrganizationServiceTest, ObserverShowTriggerUICalled) {
   service()->AddObserver(&mock_observer);
   service()->OnTriggerOccured(browser);
   service()->RemoveObserver(&mock_observer);
+}
+
+TEST_F(TabOrganizationServiceTest, SessionFromBrowserPopulatesRequest) {
+  Browser* browser1 = AddBrowser();
+  service()->OnTriggerOccured(browser1);
+  for (int i = 0; i < 4; i++) {
+    AddTabToBrowser(browser1, 0);
+  }
+  std::unique_ptr<TabOrganizationSession> session =
+      TabOrganizationSession::CreateSessionForBrowser(browser1);
+  EXPECT_EQ(session->request()->tab_datas().size(), 4u);
+
+  session->StartRequest();
+  EXPECT_NE(session->request()->response(), nullptr);
+  EXPECT_EQ(session->tab_organizations().size(), 1u);
+  EXPECT_EQ(browser1->tab_strip_model()->group_model()->ListTabGroups().size(),
+            1u);
 }

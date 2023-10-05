@@ -52,7 +52,12 @@ void TabOrganizationRequest::StartRequest() {
   CHECK(state_ == State::NOT_STARTED);
   state_ = State::STARTED;
 
-  std::move(backend_start_request_lambda_).Run(this);
+  std::move(backend_start_request_lambda_)
+      .Run(this,
+           base::BindOnce(&TabOrganizationRequest::CompleteRequest,
+                          base::Unretained(this)),
+           base::BindOnce(&TabOrganizationRequest::FailRequest,
+                          base::Unretained(this)));
 }
 
 void TabOrganizationRequest::CompleteRequest(

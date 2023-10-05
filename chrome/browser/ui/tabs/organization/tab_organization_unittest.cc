@@ -290,10 +290,12 @@ TEST_F(TabOrganizationTest, TabOrganizationIsValidForOrganizing) {
 
 TEST_F(TabOrganizationTest, TabOrganizationRequestOnStartRequest) {
   bool start_called = false;
-  TabOrganizationRequest request(
-      base::BindLambdaForTesting(
-          [&](const TabOrganizationRequest* request) { start_called = true; }),
-      base::DoNothing());
+  TabOrganizationRequest request(base::BindLambdaForTesting(
+      [&](const TabOrganizationRequest* request,
+          TabOrganizationRequest::BackendCompletionCallback on_completion,
+          TabOrganizationRequest::BackendFailureCallback on_failure) {
+        start_called = true;
+      }));
   EXPECT_EQ(request.state(), TabOrganizationRequest::State::NOT_STARTED);
 
   request.StartRequest();
@@ -439,11 +441,19 @@ TEST_F(TabOrganizationTest,
       std::make_unique<TabOrganizationRequest>();
 
   // Create a valid tab for the organization.
-  content::WebContents* valid_web_contents = AddTab(tab_strip_model());
-  std::unique_ptr<TabData> tab_data_valid =
-      std::make_unique<TabData>(tab_strip_model(), valid_web_contents);
-  TabData::TabID valid_tab_data_id = tab_data_valid->tab_id();
-  request->AddTabData(std::move(tab_data_valid));
+  content::WebContents* valid_web_contents_1 = AddTab(tab_strip_model());
+  std::unique_ptr<TabData> tab_data_valid_1 =
+      std::make_unique<TabData>(tab_strip_model(), valid_web_contents_1);
+  TabData::TabID valid_tab_data_id_1 = tab_data_valid_1->tab_id();
+  request->AddTabData(std::move(tab_data_valid_1));
+
+  // Create another valid tab for the organization. (2 are needed to be a valid
+  // organization)
+  content::WebContents* valid_web_contents_2 = AddTab(tab_strip_model());
+  std::unique_ptr<TabData> tab_data_valid_2 =
+      std::make_unique<TabData>(tab_strip_model(), valid_web_contents_2);
+  TabData::TabID valid_tab_data_id_2 = tab_data_valid_2->tab_id();
+  request->AddTabData(std::move(tab_data_valid_2));
 
   // Create an invalid tab for the organization.
   std::unique_ptr<TabData> tab_data_invalid =
@@ -458,7 +468,8 @@ TEST_F(TabOrganizationTest,
       std::make_unique<TabOrganizationSession>(std::move(request));
 
   // Create the a response that uses the invalid tab.
-  std::vector<TabData::TabID> tab_ids{valid_tab_data_id, invalid_tab_data_id};
+  std::vector<TabData::TabID> tab_ids{valid_tab_data_id_1, valid_tab_data_id_2,
+                                      invalid_tab_data_id};
 
   std::vector<TabOrganizationResponse::Organization> organizations;
   organizations.emplace_back(u"org_with_invalid_ids", tab_ids);
@@ -473,9 +484,11 @@ TEST_F(TabOrganizationTest,
   EXPECT_EQ(request_ptr->response()->organizations.size(), 1u);
 
   EXPECT_EQ(session->tab_organizations().size(), 1u);
-  EXPECT_EQ(session->tab_organizations()[0].tab_datas().size(), 1u);
+  EXPECT_EQ(session->tab_organizations()[0].tab_datas().size(), 2u);
   EXPECT_EQ(session->tab_organizations()[0].tab_datas()[0]->web_contents(),
-            valid_web_contents);
+            valid_web_contents_1);
+  EXPECT_EQ(session->tab_organizations()[0].tab_datas()[1]->web_contents(),
+            valid_web_contents_2);
 }
 
 TEST_F(TabOrganizationTest,
@@ -485,11 +498,19 @@ TEST_F(TabOrganizationTest,
       std::make_unique<TabOrganizationRequest>();
 
   // Create a valid tab for the organization.
-  content::WebContents* valid_web_contents = AddTab(tab_strip_model());
-  std::unique_ptr<TabData> tab_data_valid =
-      std::make_unique<TabData>(tab_strip_model(), valid_web_contents);
-  TabData::TabID valid_tab_data_id = tab_data_valid->tab_id();
-  request->AddTabData(std::move(tab_data_valid));
+  content::WebContents* valid_web_contents_1 = AddTab(tab_strip_model());
+  std::unique_ptr<TabData> tab_data_valid_1 =
+      std::make_unique<TabData>(tab_strip_model(), valid_web_contents_1);
+  TabData::TabID valid_tab_data_id_1 = tab_data_valid_1->tab_id();
+  request->AddTabData(std::move(tab_data_valid_1));
+
+  // Create another valid tab for the organization. (2 are needed to be a valid
+  // organization)
+  content::WebContents* valid_web_contents_2 = AddTab(tab_strip_model());
+  std::unique_ptr<TabData> tab_data_valid_2 =
+      std::make_unique<TabData>(tab_strip_model(), valid_web_contents_2);
+  TabData::TabID valid_tab_data_id_2 = tab_data_valid_2->tab_id();
+  request->AddTabData(std::move(tab_data_valid_2));
 
   // Create an invalid tab for the organization.
   content::WebContents* missing_web_contents = AddTab(tab_strip_model());
@@ -509,7 +530,8 @@ TEST_F(TabOrganizationTest,
       std::make_unique<TabOrganizationSession>(std::move(request));
 
   // Create the a response that uses the missing tab.
-  std::vector<TabData::TabID> tab_ids{valid_tab_data_id, missing_tab_data_id};
+  std::vector<TabData::TabID> tab_ids{valid_tab_data_id_1, valid_tab_data_id_2,
+                                      missing_tab_data_id};
 
   std::vector<TabOrganizationResponse::Organization> organizations;
   organizations.emplace_back(u"org_with_missing_ids", tab_ids);
@@ -524,9 +546,11 @@ TEST_F(TabOrganizationTest,
   EXPECT_EQ(request_ptr->response()->organizations.size(), 1u);
 
   EXPECT_EQ(session->tab_organizations().size(), 1u);
-  EXPECT_EQ(session->tab_organizations()[0].tab_datas().size(), 1u);
+  EXPECT_EQ(session->tab_organizations()[0].tab_datas().size(), 2u);
   EXPECT_EQ(session->tab_organizations()[0].tab_datas()[0]->web_contents(),
-            valid_web_contents);
+            valid_web_contents_1);
+  EXPECT_EQ(session->tab_organizations()[0].tab_datas()[1]->web_contents(),
+            valid_web_contents_2);
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationSessionCreation) {
@@ -571,9 +595,14 @@ TEST_F(TabOrganizationTest, TabOrganizationSessionCreation) {
       session->tab_organizations();
   EXPECT_EQ(organizations.size(), 1u);
 
-  TabOrganization* next_organization = session->GetNextTabOrganization();
-  EXPECT_NE(next_organization, nullptr);
-  next_organization->Accept();
+  /*
+    TODO, once completion does not call PopulateAndCreate, the organization must
+    be accepted for the group to be created.
+
+    TabOrganization* next_organization = session->GetNextTabOrganization();
+    EXPECT_NE(next_organization, nullptr);
+    next_organization->Accept();
+  */
   EXPECT_EQ(tab_strip_model()->group_model()->ListTabGroups().size(), 1u);
   const tab_groups::TabGroupId group_id =
       tab_strip_model()->group_model()->ListTabGroups().at(0);

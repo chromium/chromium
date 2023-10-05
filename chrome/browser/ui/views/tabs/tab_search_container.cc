@@ -110,7 +110,7 @@ void TabSearchContainer::ApplyAnimationValue(float value) {
   tab_organization_button_->SetWidthFactor(value);
 }
 
-void TabSearchContainer::OnToggleActionUIState(Browser* browser,
+void TabSearchContainer::OnToggleActionUIState(const Browser* browser,
                                                bool should_show) {
   CHECK(tab_organization_service_);
   if (should_show) {

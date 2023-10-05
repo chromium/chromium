@@ -101,19 +101,3 @@ TEST_F(TabSearchContainerTest, AnimatesToExpanded) {
   ASSERT_EQ(0, container_before_tab_strip_->tab_search_button()
                    ->flat_edge_factor_for_testing());
 }
-
-TEST_F(TabSearchContainerTest, TogglesActionUIState) {
-  ASSERT_FALSE(container_before_tab_strip_->expansion_animation_for_testing()
-                   ->IsShowing());
-  ASSERT_EQ(nullptr, container_before_tab_strip_->tab_organization_button()
-                         ->session_for_testing());
-
-  TabOrganizationService* service =
-      container_before_tab_strip_->tab_organization_service_for_testing();
-  service->OnTriggerOccured(nullptr);
-
-  ASSERT_TRUE(container_before_tab_strip_->expansion_animation_for_testing()
-                  ->IsShowing());
-  ASSERT_NE(nullptr, container_before_tab_strip_->tab_organization_button()
-                         ->session_for_testing());
-}
