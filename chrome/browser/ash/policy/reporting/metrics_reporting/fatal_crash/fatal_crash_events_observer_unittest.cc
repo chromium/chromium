@@ -686,6 +686,33 @@ TEST_F(FatalCrashEventsObserverReportedLocalIdsCorruptSaveFileTest,
       /*capture_time=*/kCaptureTimeZero, *fatal_crash_events_observer);
 }
 
+TEST_F(FatalCrashEventsObserverReportedLocalIdsCorruptSaveFileTest,
+       UnreadableSaveFileIgnored) {
+  base::test::TestFuture<MetricData> result_metric_data;
+  auto fatal_crash_events_observer =
+      CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
+  CreateFatalCrashEvent(kLocalId, kCaptureTime, *fatal_crash_events_observer,
+                        &result_metric_data);
+
+  // The save file is now available. Make it unreadable.
+  ASSERT_TRUE(base::PathExists(GetSaveFilePath()));
+  ASSERT_TRUE(base::MakeFileUnreadable(GetSaveFilePath()));
+
+  // Reload to force loading from the save file.
+  fatal_crash_events_observer =
+      CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
+
+  // Verify that no crash is loaded by receiving an unuploaded crash with the
+  // same local ID.
+  auto crash_event_info = NewCrashEventInfo(/*is_uploaded=*/false);
+  crash_event_info->local_id = kLocalId;
+  const auto fatal_crash_telemetry = WaitForFatalCrashTelemetry(
+      std::move(crash_event_info), fatal_crash_events_observer.get(),
+      &result_metric_data);
+  ASSERT_TRUE(fatal_crash_telemetry.has_local_id());
+  EXPECT_EQ(fatal_crash_telemetry.local_id(), kLocalId);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     FatalCrashEventsObserverReportedLocalIdsCorruptSaveFileTests,
     FatalCrashEventsObserverReportedLocalIdsCorruptSaveFileTest,
@@ -1086,6 +1113,38 @@ TEST_P(FatalCrashEventsObserverUploadedCrashCorruptSaveFileTest,
   auto crash_event_info = NewCrashEventInfo(/*is_uploaded=*/true);
   crash_event_info->upload_info->creation_time = base::Time::FromTimeT(0u);
   crash_event_info->upload_info->offset = 0u;
+  crash_event_info->upload_info->crash_report_id = kCrashReportId;
+  const auto fatal_crash_telemetry = WaitForFatalCrashTelemetry(
+      std::move(crash_event_info), fatal_crash_events_observer.get(),
+      &result_metric_data);
+  ASSERT_TRUE(fatal_crash_telemetry.has_crash_report_id());
+  EXPECT_EQ(fatal_crash_telemetry.crash_report_id(), kCrashReportId);
+}
+
+TEST_F(FatalCrashEventsObserverUploadedCrashCorruptSaveFileTest,
+       UnreadableSaveFileIgnored) {
+  static constexpr base::Time kZeroCreationTime = base::Time::FromTimeT(0u);
+  static constexpr uint64_t kZeroOffset = 0u;
+
+  base::test::TestFuture<MetricData> result_metric_data;
+  auto fatal_crash_events_observer =
+      CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
+  CreateFatalCrashEvent(kCrashReportId, kZeroCreationTime, kZeroOffset,
+                        *fatal_crash_events_observer, &result_metric_data);
+
+  // The save file is now available. Make it unreadable.
+  ASSERT_TRUE(base::PathExists(GetSaveFilePath()));
+  ASSERT_TRUE(base::MakeFileUnreadable(GetSaveFilePath()));
+
+  // Reload to force loading from the save file.
+  fatal_crash_events_observer =
+      CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
+
+  // Verify that no crash is loaded by receiving an uploaded crash with zero
+  // uploads.log creation time and offset.
+  auto crash_event_info = NewCrashEventInfo(/*is_uploaded=*/true);
+  crash_event_info->upload_info->creation_time = kZeroCreationTime;
+  crash_event_info->upload_info->offset = kZeroOffset;
   crash_event_info->upload_info->crash_report_id = kCrashReportId;
   const auto fatal_crash_telemetry = WaitForFatalCrashTelemetry(
       std::move(crash_event_info), fatal_crash_events_observer.get(),
