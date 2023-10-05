@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(pihsun): Fix these after CL:4355362 is relanded and CL:4371823 is
-// landed.
 import {
   css,
   LitElement,
