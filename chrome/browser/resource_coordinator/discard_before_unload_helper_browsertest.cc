@@ -80,16 +80,13 @@ class HasBeforeUnloadHandlerTest : public InProcessBrowserTest {
 
 }  // namespace
 
-// TODO(https://crbug.com/889304): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(HasBeforeUnloadHandlerTest,
-                       DISABLED_NonEmptyBeforeUnloadDetected) {
+                       NonEmptyBeforeUnloadDetected) {
   TestDiscardBeforeUnloadHelper("/beforeunload.html",
                                 true /* has_beforeunload_helper */);
 }
 
-// TODO(https://crbug.com/902355): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(HasBeforeUnloadHandlerTest,
-                       DISABLED_EmptyBeforeUnloadDetected) {
+IN_PROC_BROWSER_TEST_F(HasBeforeUnloadHandlerTest, EmptyBeforeUnloadDetected) {
   TestDiscardBeforeUnloadHelper("/emptybeforeunload.html",
                                 false /* has_beforeunload_helper */);
 }
