@@ -5,6 +5,7 @@
 #       If it requires updating, you should get a presubmit error with
 #       instructions on how to regenerate. Otherwise, do not edit.
 //components/test/data/webapps/cors_same_origin.png
+//components/test/data/webapps/favicon_1.ico
 //components/test/data/webapps/google.png
 //components/test/data/webapps/icon.svg
 //components/test/data/webapps/nostore.html
