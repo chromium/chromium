@@ -23,6 +23,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/numerics/checked_math.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/strings/string_split.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -77,6 +78,15 @@ constexpr wgpu::TextureUsage kAllowedReadableMailboxTextureUsages =
 
 constexpr wgpu::TextureUsage kAllowedMailboxTextureUsages =
     kAllowedWritableMailboxTextureUsages | kAllowedReadableMailboxTextureUsages;
+
+// List of feature names, delimited by ,
+// The FeatureParam may be overridden via Finch config, or via the command line
+// For example:
+//   --enable-field-trial-config \
+//   --force-fieldtrial-params=WebGPU.Enabled:UnsafeFeatures/timestamp-query%2Cshader-f16
+// Note that the comma should be URL-encoded.
+const base::FeatureParam<std::string> kRuntimeUnsafeFeatures{
+    &features::kWebGPUService, "UnsafeFeatures", ""};
 
 template <typename T1, typename T2>
 void ChainStruct(T1& head, T2* struct_to_chain) {
@@ -427,6 +437,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   bool force_webgpu_compat_ = false;
   std::vector<std::string> require_enabled_toggles_;
   std::vector<std::string> require_disabled_toggles_;
+  base::flat_set<std::string> runtime_unsafe_features_;
   bool allow_unsafe_apis_;
   bool tiered_adapter_limits_;
 
@@ -1065,6 +1076,11 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   force_webgpu_compat_ = gpu_preferences.force_webgpu_compat;
   require_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
   require_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
+  for (std::string f :
+       base::SplitString(kRuntimeUnsafeFeatures.Get(), ",",
+                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+    runtime_unsafe_features_.insert(std::move(f));
+  }
 
   // Only allow unsafe APIs if the allow_unsafe_apis toggle is explicitly
   // enabled.
@@ -1175,8 +1191,19 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::TextureCompressionASTC:
     case wgpu::FeatureName::IndirectFirstInstance:
     case wgpu::FeatureName::RG11B10UfloatRenderable:
-    case wgpu::FeatureName::BGRA8UnormStorage:
+    case wgpu::FeatureName::BGRA8UnormStorage: {
+      if (runtime_unsafe_features_.empty()) {
+        // Likely case when no features are blocked.
+        return true;
+      }
+
+      auto* info =
+          dawn_instance_->GetFeatureInfo(static_cast<WGPUFeatureName>(feature));
+      if (info == nullptr || runtime_unsafe_features_.contains(info->name)) {
+        return allow_unsafe_apis_;
+      }
       return true;
+    }
     default:
       return false;
   }

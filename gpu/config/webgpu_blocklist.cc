@@ -28,7 +28,7 @@ namespace {
 // leading `0x`.
 // The FeatureParam may be overriden via Finch config, or via the command line
 // with
-// --force-fieldtrial-params=WebGPUOriginTrial.Enabled:AdapterBlockList/params
+// --force-fieldtrial-params=WebGPU.Enabled:AdapterBlockList/params
 // where `params` is URL-encoded.
 const base::FeatureParam<std::string> kAdapterBlockList{
     &features::kWebGPUService, "AdapterBlockList", ""};
