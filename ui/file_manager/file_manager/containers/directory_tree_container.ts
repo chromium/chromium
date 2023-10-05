@@ -12,7 +12,7 @@ import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf, util} from '../common/js/util.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
-import {FileData, FileKey, NavigationKey, NavigationRoot, NavigationType, PropStatus, State} from '../externs/ts/state.js';
+import {AndroidApp, FileData, FileKey, NavigationKey, NavigationRoot, NavigationType, PropStatus, State} from '../externs/ts/state.js';
 import {VolumeManager} from '../externs/volume_manager.js';
 import {constants} from '../foreground/js/constants.js';
 import {DirectoryModel} from '../foreground/js/directory_model.js';
@@ -65,7 +65,7 @@ interface NavigationItemData {
  * android app.
  */
 interface NavigationRootItemData extends NavigationItemData {
-  androidAppData: chrome.fileManagerPrivate.AndroidApp|null;
+  androidAppData: AndroidApp|null;
 }
 
 export class DirectoryTreeContainer {
@@ -247,8 +247,7 @@ export class DirectoryTreeContainer {
   }
 
   private renderItem_(
-      navigationKey: NavigationKey,
-      newData: FileData|chrome.fileManagerPrivate.AndroidApp|null,
+      navigationKey: NavigationKey, newData: FileData|AndroidApp|null,
       navigationRoot?: NavigationRoot) {
     if (!newData) {
       // The corresponding data is deleted from the store, do nothing here.
@@ -271,10 +270,14 @@ export class DirectoryTreeContainer {
         // Nothing changes, this render might be triggered by its parent.
         return;
       }
-      const androidAppData = newData as chrome.fileManagerPrivate.AndroidApp;
+      const androidAppData = newData as AndroidApp;
 
       element.label = androidAppData.name;
-      element.iconSet = androidAppData.iconSet || null;
+      if (typeof androidAppData.icon === 'object') {
+        element.iconSet = androidAppData.icon;
+      } else {
+        element.icon = androidAppData.icon;
+      }
       element.separator = navigationRoot.separator;
       // Setup external link for android app item.
       this.setupAndroidAppLink_(element);
@@ -818,7 +821,7 @@ export class DirectoryTreeContainer {
   /** Activate the directory behind the item. */
   private activateDirectory_(
       element: XfTreeItem, isRoot: boolean, fileData: FileData|null,
-      androidAppData: chrome.fileManagerPrivate.AndroidApp|null) {
+      androidAppData: AndroidApp|null) {
     if (androidAppData) {
       chrome.fileManagerPrivate.selectAndroidPickerApp(androidAppData, () => {
         if (chrome.runtime.lastError) {

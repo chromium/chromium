@@ -6,7 +6,7 @@ import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {NavigationKey, NavigationRoot, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
+import {AndroidApp, NavigationKey, NavigationRoot, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
 import {Slice} from '../../lib/base_store.js';
 import {getMyFiles} from '../ducks/all_entries.js';
 import {driveRootEntryListKey, recentRootKey, trashRootKey} from '../ducks/volumes.js';
@@ -215,9 +215,7 @@ function refreshNavigationRootsReducer(currentState: State): State {
   }
 
   // 9. Android Apps.
-  Object
-      .values(
-          androidApps as Record<string, chrome.fileManagerPrivate.AndroidApp>)
+  Object.values(androidApps as Record<string, AndroidApp>)
       .forEach((app, index) => {
         roots.push({
           key: app.packageName,

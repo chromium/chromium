@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {State} from '../../externs/ts/state.js';
+import {constants} from '../../foreground/js/constants.js';
 import {setupStore, waitDeepEquals} from '../for_tests.js';
 
 import {addAndroidApps} from './android_apps.js';
@@ -20,7 +21,7 @@ export async function testAddAndroidApps(done: () => void) {
       name: 'App 2',
       packageName: 'com.test.app2',
       activityName: 'Activity2',
-      iconSet: {icon16x16Url: 'url3', icon32x32Url: 'url4'},
+      iconSet: {icon16x16Url: '', icon32x32Url: ''},
     },
   ];
 
@@ -30,8 +31,14 @@ export async function testAddAndroidApps(done: () => void) {
 
   // Expect both android apps are existed in the store.
   const want: State['androidApps'] = {
-    'com.test.app1': androidApps[0],
-    'com.test.app2': androidApps[1],
+    'com.test.app1': {
+      ...androidApps[0],
+      icon: androidApps[0]!.iconSet,
+    },
+    'com.test.app2': {
+      ...androidApps[1],
+      icon: constants.ICON_TYPES.GENERIC,
+    },
   };
   await waitDeepEquals(store, want, (state) => state.androidApps);
 

@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {State} from '../../externs/ts/state.js';
+import {util} from '../../common/js/util.js';
+import {AndroidApp, State} from '../../externs/ts/state.js';
+import {constants} from '../../foreground/js/constants.js';
 import {Slice} from '../../lib/base_store.js';
 
 /**
@@ -18,15 +20,28 @@ const slice = new Slice<State, State['androidApps']>('androidApps');
 export {slice as androidAppsSlice};
 
 /** Action factory to add all android app config to the store. */
-export const addAndroidApps =
-    slice.addReducer('add', addAndroidAppsReducer);
+export const addAndroidApps = slice.addReducer('add', addAndroidAppsReducer);
 
 function addAndroidAppsReducer(currentState: State, payload: {
   apps: chrome.fileManagerPrivate.AndroidApp[],
 }): State {
-  const androidApps: Record<string, chrome.fileManagerPrivate.AndroidApp> = {};
+  const androidApps: Record<string, AndroidApp> = {};
   for (const app of payload.apps) {
-    androidApps[app.packageName] = app;
+    // For android app item, if no icon is derived from IconSet, set the icon to
+    // the generic one.
+    let icon: string|chrome.fileManagerPrivate.IconSet =
+        constants.ICON_TYPES.GENERIC;
+    if (app.iconSet) {
+      const backgroundImage =
+          util.iconSetToCSSBackgroundImageValue(app.iconSet);
+      if (backgroundImage !== 'none') {
+        icon = app.iconSet;
+      }
+    }
+    androidApps[app.packageName] = {
+      ...app,
+      icon,
+    };
   }
   return {
     ...currentState,

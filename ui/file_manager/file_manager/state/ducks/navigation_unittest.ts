@@ -7,7 +7,7 @@ import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_e
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {FileData, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
+import {AndroidApp, FileData, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
 import {constants} from '../../foreground/js/constants.js';
 import {convertEntryToFileData} from '../ducks/all_entries.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
@@ -66,21 +66,21 @@ function createTrashEntryFileData(): FileData {
 }
 
 /** Create android apps. */
-function createAndroidApps(): [
-  chrome.fileManagerPrivate.AndroidApp, chrome.fileManagerPrivate.AndroidApp
-] {
+function createAndroidApps(): [AndroidApp, AndroidApp] {
   return [
     {
       name: 'App 1',
       packageName: 'com.test.app1',
       activityName: 'Activity1',
       iconSet: {icon16x16Url: 'url1', icon32x32Url: 'url2'},
+      icon: {icon16x16Url: 'url1', icon32x32Url: 'url2'},
     },
     {
       name: 'App 2',
       packageName: 'com.test.app2',
       activityName: 'Activity2',
-      iconSet: {icon16x16Url: 'url3', icon32x32Url: 'url4'},
+      iconSet: {icon16x16Url: '', icon32x32Url: ''},
+      icon: constants.ICON_TYPES.GENERIC,
     },
   ];
 }

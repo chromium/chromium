@@ -396,6 +396,26 @@ export let Device;
 export let Drive;
 
 /**
+ * An extension of `chrome.fileManagerPrivate.AndroidApp`. The only difference
+ * from the private API AndroidApp is this one adds an union type `icon`. This
+ * is because `iconSet` can generate a "none" background sometimes, in this case
+ * we need a backup icon instead.
+ *
+ * Note: we keep `iconSet` here to be compatible with the original AndroidApp
+ * type because private API `selectAndroidPickerApp` still requires the original
+ * type. For other use cases, we can ignore `iconSet` and just use `icon`.
+ *
+ * @typedef {{
+ *   name: string,
+ *   packageName: string,
+ *   activityName: string,
+ *   iconSet: (!chrome.fileManagerPrivate.IconSet|undefined),
+ *   icon: (!string|!chrome.fileManagerPrivate.IconSet),
+ * }}
+ */
+export let AndroidApp;
+
+/**
  * Files app's state.
  * @typedef {{
  *   allEntries: !Object<!FileKey, !FileData>,
@@ -407,7 +427,7 @@ export let Drive;
  *   volumes: !Object<!VolumeId, !Volume>,
  *   uiEntries: !Array<!FileKey>,
  *   folderShortcuts: !Array<!FileKey>,
- *   androidApps: !Object<!string, !chrome.fileManagerPrivate.AndroidApp>,
+ *   androidApps: !Object<!string, !AndroidApp>,
  *   bulkPinning: (chrome.fileManagerPrivate.BulkPinProgress|undefined),
  *   preferences: (chrome.fileManagerPrivate.Preferences|undefined),
  * }}

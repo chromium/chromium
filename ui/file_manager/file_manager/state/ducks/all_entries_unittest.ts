@@ -373,6 +373,41 @@ export async function testConvertVolumeEntryToFileData(done: () => void) {
   done();
 }
 
+/**
+ * Tests the icon for DocumentsProvider FileData should be a generic icon with
+ * an empty IconSet provided.
+ */
+export async function testGenericIconInDocumentsProviderFileData(
+    done: () => void) {
+  // By default an empty IconSet is used in this mock function.
+  const documentsProviderVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'documentProviderId',
+      'Google Photos');
+  const {volumeManager} = window.fileManager;
+  volumeManager.volumeInfoList.add(documentsProviderVolumeInfo);
+  const documentsProviderEntry = new VolumeEntry(documentsProviderVolumeInfo);
+  const got = convertEntryToFileData(documentsProviderEntry);
+  const want: FileData = {
+    entry: documentsProviderEntry,
+    icon: constants.ICON_TYPES.GENERIC,
+    type: EntryType.VOLUME_ROOT,
+    isDirectory: true,
+    label: 'Google Photos',
+    volumeId: 'documentProviderId',
+    rootType: VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,
+    metadata: {} as MetadataItem,
+    expanded: false,
+    disabled: false,
+    isRootEntry: true,
+    isEjectable: false,
+    shouldDelayLoadingChildren: false,
+    children: [],
+  };
+  assertDeepEquals(want, got);
+
+  done();
+}
+
 /** Tests converting EntryList into FileData. */
 export async function testConvertEntryListToFileData(done: () => void) {
   const myFilesEntryList =
