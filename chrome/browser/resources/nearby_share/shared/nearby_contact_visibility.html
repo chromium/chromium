@@ -241,7 +241,7 @@
       selected="{{selectedVisibility}}">
     <template is="dom-if" if="[[showSelfShareUi_(isSelfShareEnabled_)]]">
     <cr-card-radio-button id="contacts" class="flex" name="contacts"
-        aria-labelledby="contactsLabel" aria-describedby="explanation">
+        aria-labelledby="contactsLabel" >
       <div class="card-contents">
         <iron-icon icon="nearby20:contact-all" class="card-icon">
         </iron-icon>
@@ -251,7 +251,7 @@
       </div>
     </cr-card-radio-button>
     <cr-card-radio-button id="yourDevices" class="flex" name="yourDevices"
-        aria-labelledby="yourDevicesLabel" aria-describedby="explanation">
+        aria-labelledby="yourDevicesLabel" >
       <div class="card-contents">
         <iron-icon icon="nearby20:your-devices" class="card-icon">
         </iron-icon>
@@ -263,7 +263,7 @@
   </template>
   <template is="dom-if" if="[[!showSelfShareUi_(isSelfShareEnabled_)]]">
     <cr-card-radio-button id="allContacts" class="flex" name="all"
-        aria-labelledby="allContactsLabel" aria-describedby="explanation">
+        aria-labelledby="allContactsLabel" >
       <div class="card-contents">
         <iron-icon icon="nearby20:contact-all" class="card-icon">
         </iron-icon>
@@ -273,7 +273,7 @@
       </div>
     </cr-card-radio-button>
     <cr-card-radio-button id="someContacts" class="flex" name="some"
-        aria-labelledby="someContactsLabel" aria-describedby="explanation">
+        aria-labelledby="someContactsLabel" >
       <div class="card-contents">
         <iron-icon icon="nearby20:contact-group" class="card-icon">
         </iron-icon>
@@ -284,7 +284,7 @@
     </cr-card-radio-button>
   </template>
     <cr-card-radio-button id="noContacts" class="flex" name="none"
-        aria-labelledby="noContactsLabel" aria-describedby="explanation">
+        aria-labelledby="noContactsLabel" >
       <div class="card-contents">
         <iron-icon icon="nearby20:visibility-off" class="card-icon">
         </iron-icon>
