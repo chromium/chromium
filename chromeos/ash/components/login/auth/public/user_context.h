@@ -85,6 +85,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
     base::Time GetSessionLifetime() const;
     void SetSessionLifetime(const base::Time& valid_until);
 
+    void ClearAuthorizedIntents();
     void AddAuthorizedIntent(AuthSessionIntent auth_intent);
     AuthSessionIntents GetAuthorizedIntents() const;
 
@@ -249,6 +250,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   base::Time GetSessionLifetime() const;
   void SetSessionLifetime(const base::Time& valid_until);
 
+  void ClearAuthorizedIntents();
   void AddAuthorizedIntent(AuthSessionIntent auth_intent);
 
   void ClearSecrets();

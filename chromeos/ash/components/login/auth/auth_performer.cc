@@ -87,6 +87,23 @@ base::WeakPtr<AuthPerformer> AuthPerformer::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+// static
+void AuthPerformer::FillAuthenticationData(
+    const user_data_auth::AuthSessionProperties& session_properties,
+    UserContext& out_context) {
+  DCHECK(session_properties.authorized_for_size() > 0);
+  out_context.ClearAuthorizedIntents();
+  for (const auto& authorized_for : session_properties.authorized_for()) {
+    auto intent = DeserializeIntent(
+        static_cast<user_data_auth::AuthIntent>(authorized_for));
+    if (intent.has_value()) {
+      out_context.AddAuthorizedIntent(intent.value());
+    }
+  }
+  out_context.SetSessionLifetime(
+      base::Time::Now() + base::Seconds(session_properties.seconds_left()));
+}
+
 void AuthPerformer::StartAuthSession(std::unique_ptr<UserContext> context,
                                      bool ephemeral,
                                      AuthSessionIntent intent,
@@ -571,16 +588,9 @@ void AuthPerformer::OnAuthenticateAuthFactor(
     return;
   }
   CHECK(reply.has_value());
-  DCHECK(reply->authorized_for_size() > 0);
-  for (auto& authorized_for : reply->authorized_for()) {
-    auto intent = DeserializeIntent(
-        static_cast<user_data_auth::AuthIntent>(authorized_for));
-    if (intent.has_value()) {
-      context->AddAuthorizedIntent(intent.value());
-    }
-  }
-  context->SetSessionLifetime(base::Time::Now() +
-                              base::Seconds(reply->seconds_left()));
+  CHECK(reply->has_auth_properties());
+  FillAuthenticationData(reply->auth_properties(), *context);
+
   LOGIN_LOG(EVENT) << "Authenticated successfully";
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
@@ -606,6 +616,9 @@ void AuthPerformer::OnGetAuthSessionStatus(
     return;
   }
   CHECK(reply.has_value());
+  CHECK(reply->has_auth_properties());
+  // TODO(b/301078137): As lifetime is now stored in UserContext,
+  // there is no need to pass it separately.
   base::TimeDelta lifetime;
   AuthSessionStatus status;
   switch (reply->status()) {
@@ -621,11 +634,12 @@ void AuthPerformer::OnGetAuthSessionStatus(
     case ::user_data_auth::AUTH_SESSION_STATUS_AUTHENTICATED:
       status.Put(AuthSessionLevel::kSessionIsValid);
       status.Put(AuthSessionLevel::kCryptohomeStrong);
-      lifetime = base::Seconds(reply->time_left());
+      lifetime = base::Seconds(reply->auth_properties().seconds_left());
       break;
     default:
       NOTREACHED();
   }
+  FillAuthenticationData(reply->auth_properties(), *context);
   std::move(callback).Run(status, lifetime, std::move(context),
                           /*cryptohome_error=*/absl::nullopt);
 }

@@ -177,7 +177,9 @@ StartAuthSessionReply BuildStartReply(const std::string& auth_session_id,
 
 AuthenticateAuthFactorReply BuildAuthenticateFactorSuccessReply() {
   AuthenticateAuthFactorReply reply;
-  reply.add_authorized_for(user_data_auth::AUTH_INTENT_DECRYPT);
+  reply.mutable_auth_properties()->add_authorized_for(
+      user_data_auth::AUTH_INTENT_DECRYPT);
+  reply.mutable_auth_properties()->set_seconds_left(5 * 60);
   return reply;
 }
 
@@ -186,6 +188,22 @@ AuthenticateAuthFactorReply BuildAuthenticateFactorFailureReply() {
   reply.set_error(user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
   reply.mutable_error_info()->set_primary_action(
       user_data_auth::PRIMARY_INCORRECT_AUTH);
+  return reply;
+}
+
+CreatePersistentUserReply BuildCreatePersistentUserReply() {
+  CreatePersistentUserReply reply;
+  reply.mutable_auth_properties()->add_authorized_for(
+      user_data_auth::AUTH_INTENT_DECRYPT);
+  reply.mutable_auth_properties()->set_seconds_left(5 * 60);
+  return reply;
+}
+
+PrepareEphemeralVaultReply BuildPrepareEphemeralVaultReply() {
+  PrepareEphemeralVaultReply reply;
+  reply.mutable_auth_properties()->add_authorized_for(
+      user_data_auth::AUTH_INTENT_DECRYPT);
+  reply.mutable_auth_properties()->set_seconds_left(5 * 60);
   return reply;
 }
 
@@ -321,7 +339,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginRegularNew) {
                                           /*user_exists=*/false,
                                           /*factors=*/{})));
   EXPECT_CALL(userdataauth(), CreatePersistentUser(WithFirstAuthSessionId(), _))
-      .WillOnce(ReplyWith(CreatePersistentUserReply()));
+      .WillOnce(ReplyWith(BuildCreatePersistentUserReply()));
   EXPECT_CALL(userdataauth(),
               PreparePersistentVault(WithFirstAuthSessionId(), _))
       .WillOnce(ReplyWith(PreparePersistentVaultReply()));
@@ -466,7 +484,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeral) {
                                           /*factors=*/{})));
   EXPECT_CALL(userdataauth(),
               PrepareEphemeralVault(WithFirstAuthSessionId(), _))
-      .WillOnce(ReplyWith(PrepareEphemeralVaultReply()));
+      .WillOnce(ReplyWith(BuildPrepareEphemeralVaultReply()));
   EXPECT_CALL(
       userdataauth(),
       AddAuthFactor(AllOf(WithFirstAuthSessionId(),
@@ -516,7 +534,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeralStaleData) {
                                             /*factors=*/{})));
     EXPECT_CALL(userdataauth(),
                 PrepareEphemeralVault(WithSecondAuthSessionId(), _))
-        .WillOnce(ReplyWith(PrepareEphemeralVaultReply()));
+        .WillOnce(ReplyWith(BuildPrepareEphemeralVaultReply()));
     EXPECT_CALL(
         userdataauth(),
         AddAuthFactor(AllOf(WithSecondAuthSessionId(),
@@ -629,7 +647,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsPublicSession) {
                                           /*factors=*/{})));
   EXPECT_CALL(userdataauth(),
               PrepareEphemeralVault(WithFirstAuthSessionId(), _))
-      .WillOnce(ReplyWith(PrepareEphemeralVaultReply()));
+      .WillOnce(ReplyWith(BuildPrepareEphemeralVaultReply()));
 
   // Act.
   authenticator().LoginAsPublicSession(user_context);
@@ -653,7 +671,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountNew) {
           ReplyWith(BuildStartReply(kFirstAuthSessionId, /*user_exists=*/false,
                                     /*factors=*/{})));
   EXPECT_CALL(userdataauth(), CreatePersistentUser(WithFirstAuthSessionId(), _))
-      .WillOnce(ReplyWith(CreatePersistentUserReply()));
+      .WillOnce(ReplyWith(BuildCreatePersistentUserReply()));
   EXPECT_CALL(userdataauth(),
               PreparePersistentVault(WithFirstAuthSessionId(), _))
       .WillOnce(ReplyWith(PreparePersistentVaultReply()));
@@ -718,7 +736,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeral) {
                                           /*factors=*/{})));
   EXPECT_CALL(userdataauth(),
               PrepareEphemeralVault(WithFirstAuthSessionId(), _))
-      .WillOnce(ReplyWith(PrepareEphemeralVaultReply()));
+      .WillOnce(ReplyWith(BuildPrepareEphemeralVaultReply()));
 
   // Act.
   authenticator().LoginAsKioskAccount(kAccountId, /*ephemeral=*/true);
@@ -757,7 +775,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeralStaleData) {
                                             /*factors=*/{})));
     EXPECT_CALL(userdataauth(),
                 PrepareEphemeralVault(WithSecondAuthSessionId(), _))
-        .WillOnce(ReplyWith(PrepareEphemeralVaultReply()));
+        .WillOnce(ReplyWith(BuildPrepareEphemeralVaultReply()));
   }
 
   // Act.

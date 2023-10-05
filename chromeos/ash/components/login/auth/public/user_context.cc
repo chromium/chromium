@@ -159,6 +159,10 @@ AuthSessionIntents UserContext::CryptohomeContext::GetAuthorizedIntents()
   return authorized_for_;
 }
 
+void UserContext::CryptohomeContext::ClearAuthorizedIntents() {
+  authorized_for_.Clear();
+}
+
 void UserContext::CryptohomeContext::AddAuthorizedIntent(
     const AuthSessionIntent auth_intent) {
   authorized_for_.Put(auth_intent);
@@ -509,6 +513,10 @@ const std::string& UserContext::GetBroadcastId() const {
 
 AuthSessionIntents UserContext::GetAuthorizedIntents() const {
   return cryptohome_.GetAuthorizedIntents();
+}
+
+void UserContext::ClearAuthorizedIntents() {
+  cryptohome_.ClearAuthorizedIntents();
 }
 
 void UserContext::AddAuthorizedIntent(const AuthSessionIntent auth_intent) {

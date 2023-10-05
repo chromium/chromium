@@ -59,6 +59,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
 
   base::WeakPtr<AuthPerformer> AsWeakPtr();
 
+  // Utility method, copies data relevant for authentidated session
+  // into UserContext: authenticated intents, remaining lifetime.
+  static void FillAuthenticationData(
+      const user_data_auth::AuthSessionProperties& session_properties,
+      UserContext& out_context);
+
   // Starts new AuthSession using identity passed in `context`,
   // fills information about supported (and configured if user exists) keys.
   // `Context` should not have associated auth session.

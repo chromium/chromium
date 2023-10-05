@@ -11,6 +11,7 @@
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/device_event_log/device_event_log.h"
 
@@ -184,6 +185,8 @@ void MountPerformer::OnCreatePersistentUser(
     return;
   }
   CHECK(reply.has_value());
+  CHECK(reply->has_auth_properties());
+  AuthPerformer::FillAuthenticationData(reply->auth_properties(), *context);
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
 
@@ -219,6 +222,8 @@ void MountPerformer::OnPrepareEphemeralVault(
     return;
   }
   CHECK(reply.has_value());
+  CHECK(reply->has_auth_properties());
+  AuthPerformer::FillAuthenticationData(reply->auth_properties(), *context);
   context->SetUserIDHash(reply->sanitized_username());
   std::move(callback).Run(std::move(context), absl::nullopt);
 }

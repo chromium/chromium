@@ -50,7 +50,8 @@ void ReplyAsSuccess(
     UserDataAuthClient::AuthenticateAuthFactorCallback callback) {
   ::user_data_auth::AuthenticateAuthFactorReply reply;
   reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
-  reply.add_authorized_for(user_data_auth::AUTH_INTENT_DECRYPT);
+  reply.mutable_auth_properties()->add_authorized_for(
+      user_data_auth::AUTH_INTENT_DECRYPT);
   std::move(callback).Run(reply);
 }
 
