@@ -1606,9 +1606,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 
   InitializePrivateNetworkRequestPolicy();
 
-  unload_event_monitor_timeout_ =
-      std::make_unique<TimeoutMonitor>(base::BindRepeating(
-          &RenderFrameHostImpl::OnUnloaded, weak_ptr_factory_.GetWeakPtr()));
+  unload_event_monitor_timeout_ = std::make_unique<TimeoutMonitor>(
+      base::BindRepeating(&RenderFrameHostImpl::OnMainFrameUnloadTimeout,
+                          weak_ptr_factory_.GetWeakPtr()));
   beforeunload_timeout_ = std::make_unique<TimeoutMonitor>(
       base::BindRepeating(&RenderFrameHostImpl::BeforeUnloadTimeout,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -3485,8 +3485,9 @@ void RenderFrameHostImpl::DeleteRenderFrame(
       }
       // If the subframe takes too long to unload, force its removal from the
       // tree. See https://crbug.com/950625.
-      subframe_unload_timer_.Start(FROM_HERE, subframe_unload_timeout_, this,
-                                   &RenderFrameHostImpl::OnUnloadTimeout);
+      subframe_unload_timer_.Start(
+          FROM_HERE, subframe_unload_timeout_, this,
+          &RenderFrameHostImpl::OnSubframeUnloadTimeout);
     }
   }
 
@@ -5452,6 +5453,19 @@ void RenderFrameHostImpl::OnUnloadACK() {
   SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
   PendingDeletionCheckCompleted();  // Can delete |this|.
   // |this| is potentially deleted. Do not add code after this.
+}
+
+void RenderFrameHostImpl::MaybeLogMissingUnloadAck(const char* frame_type) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLogMissingUnloadACK)) {
+    LOG(ERROR) << "Missing unload ACK for " << frame_type << ": "
+               << GetLastCommittedURL();
+  }
+}
+
+void RenderFrameHostImpl::OnMainFrameUnloadTimeout() {
+  MaybeLogMissingUnloadAck("main frame");
+  OnUnloaded();
 }
 
 void RenderFrameHostImpl::OnUnloaded() {
@@ -9879,8 +9893,9 @@ void RenderFrameHostImpl::ResetNavigationsUsingSwappedOutRFH() {
   }
 }
 
-void RenderFrameHostImpl::OnUnloadTimeout() {
+void RenderFrameHostImpl::OnSubframeUnloadTimeout() {
   DCHECK(IsPendingDeletion());
+  MaybeLogMissingUnloadAck("subframe");
   parent_->RemoveChild(GetFrameTreeNodeForUnload());
 }
 

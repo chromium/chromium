@@ -340,6 +340,9 @@ void BrowserTestBase::SetUp() {
       switches::kIPCConnectionTimeout,
       base::NumberToString(TestTimeouts::action_max_timeout().InSeconds()));
 
+  // Useful when debugging test failures.
+  command_line->AppendSwitch(switches::kLogMissingUnloadACK);
+
   command_line->AppendSwitch(switches::kDomAutomationController);
 
   // It is sometimes useful when looking at browser test failures to know which

@@ -531,6 +531,9 @@ const char kLoggingLevel[]                  = "log-level";
 // affect which events are logged).
 const char kLogFile[] = "log-file";
 
+// Log an error whenever the unload timeout for a render frame is exceeded.
+const char kLogMissingUnloadACK[] = "log-missing-unload-ack";
+
 // Allows user to override maximum number of active WebGL contexts per
 // renderer process.
 const char kMaxActiveWebGLContexts[] = "max-active-webgl-contexts";
