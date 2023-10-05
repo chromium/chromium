@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
+#import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
 
 #import <UIKit/UIKit.h>
 
@@ -88,8 +88,8 @@ TEST_F(OverscrollActionsTabHelperTest, TestDelegateTrigger) {
   SimulatePullForRefreshAction();
 
   // Wait for the layout calls and the delegate call.
-  using base::test::ios::WaitUntilConditionOrTimeout;
   using base::test::ios::kWaitForUIElementTimeout;
+  using base::test::ios::WaitUntilConditionOrTimeout;
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
     return overscroll_delegate_.selectedAction == OverscrollAction::REFRESH;
   }));

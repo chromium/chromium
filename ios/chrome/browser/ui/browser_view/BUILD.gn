@@ -82,7 +82,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ntp:util",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",
-    "//ios/chrome/browser/overscroll_actions",
+    "//ios/chrome/browser/overscroll_actions/model",
     "//ios/chrome/browser/parcel_tracking:infobar_delegate",
     "//ios/chrome/browser/parcel_tracking:parcel_tracking_step",
     "//ios/chrome/browser/parcel_tracking:util",
