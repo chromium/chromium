@@ -26,6 +26,7 @@
 #include "cc/base/histograms.h"
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/mipmap_util.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 using base::trace_event::MemoryAllocatorDump;
@@ -42,10 +43,10 @@ BASE_FEATURE(kNormalMaxItemsInCacheForSoftwareFeature,
 // if more items are locked. That is, locked items ignore this limit.
 // Depending on the memory state of the system, we limit the amount of items
 // differently.
-constexpr base::FeatureParam<int> kNormalMaxItemsInCacheForSoftware(
-    &kNormalMaxItemsInCacheForSoftwareFeature,
-    "NormalMaxItemsInCacheForSoftware",
-    1000);
+MIRACLE_PARAMETER_FOR_INT(GetNormalMaxItemsInCacheForSoftware,
+                          kNormalMaxItemsInCacheForSoftwareFeature,
+                          "NormalMaxItemsInCacheForSoftware",
+                          1000)
 
 class AutoRemoveKeyFromTaskMap {
  public:
@@ -166,7 +167,7 @@ SoftwareImageDecodeCache::SoftwareImageDecodeCache(
       locked_images_budget_(locked_memory_limit_bytes),
       color_type_(color_type),
       generator_client_id_(PaintImage::GetNextGeneratorClientId()),
-      max_items_in_cache_(kNormalMaxItemsInCacheForSoftware.Get()) {
+      max_items_in_cache_(GetNormalMaxItemsInCacheForSoftware()) {
   DCHECK_NE(generator_client_id_, PaintImage::kDefaultGeneratorClientId);
   // In certain cases, SingleThreadTaskRunner::CurrentDefaultHandle isn't set
   // (Android Webview).  Don't register a dump provider in these cases.
@@ -734,7 +735,7 @@ size_t SoftwareImageDecodeCache::GetNumCacheEntriesForTesting() {
   return decoded_images_.size();
 }
 size_t SoftwareImageDecodeCache::GetMaxNumCacheEntriesForTesting() {
-  return kNormalMaxItemsInCacheForSoftware.Get();
+  return GetNormalMaxItemsInCacheForSoftware();
 }
 
 SkColorType SoftwareImageDecodeCache::GetColorTypeForPaintImage(
