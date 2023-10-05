@@ -393,6 +393,8 @@ class CONTENT_EXPORT AggregatableReportRequest {
   int failed_send_attempts_ = 0;
 };
 
+CONTENT_EXPORT GURL GetAggregationServiceProcessingUrl(const url::Origin&);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATABLE_REPORT_H_
