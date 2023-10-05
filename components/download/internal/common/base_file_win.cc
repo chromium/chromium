@@ -130,7 +130,6 @@ DownloadInterruptReason HRESULTToDownloadInterruptReason(HRESULT hr) {
   }
 
   if (reason != DOWNLOAD_INTERRUPT_REASON_NONE) {
-    RecordWinFileMoveError(HRESULT_CODE(hr));
     return reason;
   }
 

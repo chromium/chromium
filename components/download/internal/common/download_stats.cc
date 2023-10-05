@@ -649,9 +649,4 @@ void RecordInputStreamReadError(MojoResult mojo_result) {
   base::UmaHistogramEnumeration("Download.InputStreamReadError", error);
 }
 
-#if BUILDFLAG(IS_WIN)
-void RecordWinFileMoveError(int os_error) {
-  base::UmaHistogramSparse("Download.WinFileMoveError", os_error);
-}
-#endif  // BUILDFLAG(IS_WIN)
 }  // namespace download
