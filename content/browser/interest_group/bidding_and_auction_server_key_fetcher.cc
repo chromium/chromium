@@ -69,19 +69,13 @@ BiddingAndAuctionServerKeyFetcher::PerCoordinatorFetcherState::operator=(
     PerCoordinatorFetcherState&& state) = default;
 
 BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher() {
-  fetcher_state_map_.insert_or_assign(blink::mojom::AdAuctionCoordinator::kGCP,
-                                      PerCoordinatorFetcherState());
-  fetcher_state_map_.insert_or_assign(blink::mojom::AdAuctionCoordinator::kAWS,
-                                      PerCoordinatorFetcherState());
-  CHECK_EQ(
-      fetcher_state_map_.size(),
-      static_cast<size_t>(blink::mojom::AdAuctionCoordinator::kMaxValue) -
-          static_cast<size_t>(blink::mojom::AdAuctionCoordinator::kMinValue) +
-          1);
   if (base::FeatureList::IsEnabled(
           blink::features::kFledgeBiddingAndAuctionServer)) {
-    fetcher_state_map_.at(blink::mojom::AdAuctionCoordinator::kGCP).key_url =
-        GURL(blink::features::kFledgeBiddingAndAuctionKeyURL.Get());
+    PerCoordinatorFetcherState state;
+    url::Origin gcp_coordinator = url::Origin::Create(
+        GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin));
+    state.key_url = GURL(blink::features::kFledgeBiddingAndAuctionKeyURL.Get());
+    fetcher_state_map_.insert_or_assign(gcp_coordinator, std::move(state));
   }
 }
 
@@ -90,11 +84,20 @@ BiddingAndAuctionServerKeyFetcher::~BiddingAndAuctionServerKeyFetcher() =
 
 void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
     network::mojom::URLLoaderFactory* loader_factory,
-    blink::mojom::AdAuctionCoordinator coordinator,
+    absl::optional<url::Origin> maybe_coordinator,
     BiddingAndAuctionServerKeyFetcherCallback callback) {
-  PerCoordinatorFetcherState& state = fetcher_state_map_.at(coordinator);
+  url::Origin coordinator = maybe_coordinator.value_or(
+      url::Origin::Create(GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin)));
+  auto it = fetcher_state_map_.find(coordinator);
+  if (it == fetcher_state_map_.end()) {
+    std::move(callback).Run(
+        base::unexpected<std::string>("Invalid Coordinator"));
+    return;
+  }
+  PerCoordinatorFetcherState& state = it->second;
   if (!state.key_url.is_valid()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(
+        base::unexpected<std::string>("Invalid Coordinator"));
     return;
   }
 
@@ -132,7 +135,7 @@ void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
 }
 
 void BiddingAndAuctionServerKeyFetcher::OnFetchKeyComplete(
-    blink::mojom::AdAuctionCoordinator coordinator,
+    url::Origin coordinator,
     std::unique_ptr<std::string> response) {
   fetcher_state_map_.at(coordinator).loader.reset();
   if (!response) {
@@ -146,7 +149,7 @@ void BiddingAndAuctionServerKeyFetcher::OnFetchKeyComplete(
 }
 
 void BiddingAndAuctionServerKeyFetcher::OnParsedKeys(
-    blink::mojom::AdAuctionCoordinator coordinator,
+    url::Origin coordinator,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
     FailAllCallbacks(coordinator);
@@ -214,7 +217,7 @@ void BiddingAndAuctionServerKeyFetcher::OnParsedKeys(
 }
 
 void BiddingAndAuctionServerKeyFetcher::FailAllCallbacks(
-    blink::mojom::AdAuctionCoordinator coordinator) {
+    url::Origin coordinator) {
   PerCoordinatorFetcherState& state = fetcher_state_map_.at(coordinator);
   while (!state.queue.empty()) {
     // We call the callback *before* removing the current request from the list.
@@ -222,7 +225,8 @@ void BiddingAndAuctionServerKeyFetcher::FailAllCallbacks(
     // request. If we removed the current request first then enqueued the
     // request, that would start another thread of execution since there was an
     // empty queue.
-    std::move(state.queue.front()).Run(absl::nullopt);
+    std::move(state.queue.front())
+        .Run(base::unexpected<std::string>("Key fetch failed"));
     state.queue.pop_front();
   }
 }

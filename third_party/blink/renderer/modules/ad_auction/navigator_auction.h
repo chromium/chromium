@@ -264,7 +264,8 @@ class MODULES_EXPORT NavigatorAuction final
   void GetInterestGroupAdAuctionDataComplete(
       ScriptPromiseResolver* resolver,
       mojo_base::BigBuffer request,
-      const absl::optional<base::Uuid>& request_id);
+      const absl::optional<base::Uuid>& request_id,
+      const WTF::String& error_message);
 
   // Manage queues of cross-site join and leave operations that have yet to be
   // sent to the browser process.

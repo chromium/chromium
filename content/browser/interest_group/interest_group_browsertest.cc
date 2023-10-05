@@ -16393,7 +16393,7 @@ class InterestGroupBiddingAndAuctionServerBrowserTest
                   JsReplace(R"(
     let config = {seller: $1}
     if ($2) {
-      config.coordinator = $2;
+      config.coordinatorOrigin = $2;
     }
     (async function() {
       try {
@@ -16419,7 +16419,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
-  EXPECT_EQ("|", GetInterestGroupAdAuctionData(test_origin, "gcp"));
+  EXPECT_EQ("|", GetInterestGroupAdAuctionData(test_origin, absl::nullopt));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
@@ -16433,7 +16433,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
       "'Navigator': seller 'null' for AdAuctionDataConfig must be a valid "
       "https origin.",
-      GetInterestGroupAdAuctionData(url::Origin(), "gcp"));
+      GetInterestGroupAdAuctionData(
+          url::Origin(), kDefaultBiddingAndAuctionGCPCoordinatorOrigin));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
@@ -16445,9 +16446,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
-      "'Navigator': Failed to read the 'coordinator' property from "
-      "'AdAuctionDataConfig': The provided value 'foo' is not a valid enum "
-      "value of type AdAuctionCoordinator.",
+      "'Navigator': coordinatorOrigin 'foo' for AdAuctionDataConfig must be "
+      "a valid https origin.",
       GetInterestGroupAdAuctionData(test_origin, "foo"));
 }
 
@@ -16493,8 +16493,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
     WebContentsConsoleObserver console_observer(shell()->web_contents());
     console_observer.SetPattern(WarningPermissionsPolicy("*", "*"));
 
-    EXPECT_EQ("|", GetInterestGroupAdAuctionData(test_origin, "gcp",
-                                                 execution_target));
+    EXPECT_EQ("|",
+              GetInterestGroupAdAuctionData(
+                  test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin,
+                  execution_target));
 #if BUILDFLAG(IS_ANDROID)
     RenderFrameHost* execution_targets_with_message[] = {cross_origin_iframe};
 #else
@@ -16846,10 +16848,14 @@ IN_PROC_BROWSER_TEST_F(
           "NotAllowedError: Failed to execute 'getInterestGroupAdAuctionData' "
           "on 'Navigator': "
           "Feature run-ad-auction is not enabled by Permissions Policy",
-          GetInterestGroupAdAuctionData(test_origin, "gcp", execution_target));
+          GetInterestGroupAdAuctionData(
+              test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin,
+              execution_target));
     } else {
-      EXPECT_EQ("|", GetInterestGroupAdAuctionData(test_origin, "gcp",
-                                                   execution_target));
+      EXPECT_EQ("|",
+                GetInterestGroupAdAuctionData(
+                    test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin,
+                    execution_target));
     }
   }
 }

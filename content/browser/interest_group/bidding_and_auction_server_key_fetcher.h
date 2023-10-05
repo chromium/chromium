@@ -10,11 +10,12 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-shared.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -26,6 +27,9 @@ class URLLoaderFactory;
 
 namespace content {
 
+constexpr char kDefaultBiddingAndAuctionGCPCoordinatorOrigin[] =
+    "https://publickeyservice.gcp.privacysandboxservices.com";
+
 struct BiddingAndAuctionServerKey {
   std::string key;  // bytes containing the key.
   uint8_t id;       // key id corresponding to this key.
@@ -36,8 +40,8 @@ struct BiddingAndAuctionServerKey {
 // Coordinators.
 class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
  public:
-  using BiddingAndAuctionServerKeyFetcherCallback =
-      base::OnceCallback<void(absl::optional<BiddingAndAuctionServerKey>)>;
+  using BiddingAndAuctionServerKeyFetcherCallback = base::OnceCallback<void(
+      base::expected<BiddingAndAuctionServerKey, std::string>)>;
 
   BiddingAndAuctionServerKeyFetcher();
   ~BiddingAndAuctionServerKeyFetcher();
@@ -51,21 +55,21 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
   // network with the provided loader_factory if necessary. If the key is
   // immediately available then the callback may be called synchronously.
   void GetOrFetchKey(network::mojom::URLLoaderFactory* loader_factory,
-                     blink::mojom::AdAuctionCoordinator coordinator,
+                     absl::optional<url::Origin> maybe_coordinator,
                      BiddingAndAuctionServerKeyFetcherCallback callback);
 
  private:
   // Called when the JSON blob containing the keys have been successfully
   // fetched over the network.
-  void OnFetchKeyComplete(blink::mojom::AdAuctionCoordinator coordinator,
+  void OnFetchKeyComplete(url::Origin coordinator,
                           std::unique_ptr<std::string> response);
 
   // Called when the JSON blob containing the keys has be parsed into
   // base::Values. Uses the parsed result to add keys to the cache and calls
   // queued callbacks.
-  void OnParsedKeys(blink::mojom::AdAuctionCoordinator coordinator,
+  void OnParsedKeys(url::Origin coordinator,
                     data_decoder::DataDecoder::ValueOrError result);
-  void FailAllCallbacks(blink::mojom::AdAuctionCoordinator coordinator);
+  void FailAllCallbacks(url::Origin coordinator);
 
   struct PerCoordinatorFetcherState {
     PerCoordinatorFetcherState();
@@ -91,8 +95,7 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
     std::unique_ptr<network::SimpleURLLoader> loader;
   };
 
-  base::flat_map<blink::mojom::AdAuctionCoordinator, PerCoordinatorFetcherState>
-      fetcher_state_map_;
+  base::flat_map<url::Origin, PerCoordinatorFetcherState> fetcher_state_map_;
 
   base::WeakPtrFactory<BiddingAndAuctionServerKeyFetcher> weak_ptr_factory_{
       this};

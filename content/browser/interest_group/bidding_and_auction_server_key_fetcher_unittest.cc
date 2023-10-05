@@ -29,12 +29,36 @@ class BiddingAndAuctionServerKeyFetcherTest : public testing::Test {
         /*disabled_features=*/{});
   }
 
+  url::Origin CoordinatorOrigin() {
+    return url::Origin::Create(
+        GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin));
+  }
+
  protected:
   network::TestURLLoaderFactory url_loader_factory_;
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   data_decoder::test::InProcessDataDecoder decoder_;
 };
+
+TEST_F(BiddingAndAuctionServerKeyFetcherTest, UnknownCoordinator) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{blink::features::kFledgeBiddingAndAuctionServer,
+                             {{"kFledgeBiddingAndAuctionKeyURL", ""}}}},
+      /*disabled_features=*/{});
+  content::BiddingAndAuctionServerKeyFetcher fetcher;
+
+  base::RunLoop run_loop;
+  fetcher.GetOrFetchKey(
+      &url_loader_factory_, url::Origin(),
+      base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
+                                                    std::string> maybe_key) {
+        EXPECT_FALSE(maybe_key.has_value());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoURL) {
   base::test::ScopedFeatureList feature_list;
@@ -46,12 +70,12 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoURL) {
 
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-      base::BindLambdaForTesting(
-          [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-            EXPECT_FALSE(maybe_key.has_value());
-            run_loop.Quit();
-          }));
+      &url_loader_factory_, CoordinatorOrigin(),
+      base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
+                                                    std::string> maybe_key) {
+        EXPECT_FALSE(maybe_key.has_value());
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -83,13 +107,13 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, BadResponses) {
   for (const auto& response : bad_responses) {
     SCOPED_TRACE(response);
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(
-        &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-        base::BindLambdaForTesting(
-            [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-              EXPECT_FALSE(maybe_key.has_value());
-              run_loop.Quit();
-            }));
+    fetcher.GetOrFetchKey(&url_loader_factory_, CoordinatorOrigin(),
+                          base::BindLambdaForTesting(
+                              [&](base::expected<BiddingAndAuctionServerKey,
+                                                 std::string> maybe_key) {
+                                EXPECT_FALSE(maybe_key.has_value());
+                                run_loop.Quit();
+                              }));
     EXPECT_TRUE(url_loader_factory_.SimulateResponseForPendingRequest(
         kKeyURL, response));
     run_loop.Run();
@@ -102,20 +126,20 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, FailsAll) {
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-      base::BindLambdaForTesting(
-          [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-            EXPECT_FALSE(maybe_key.has_value());
-            completed++;
-          }));
+      &url_loader_factory_, CoordinatorOrigin(),
+      base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
+                                                    std::string> maybe_key) {
+        EXPECT_FALSE(maybe_key.has_value());
+        completed++;
+      }));
   fetcher.GetOrFetchKey(
-      &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-      base::BindLambdaForTesting(
-          [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-            EXPECT_FALSE(maybe_key.has_value());
-            completed++;
-            run_loop.Quit();
-          }));
+      &url_loader_factory_, CoordinatorOrigin(),
+      base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
+                                                    std::string> maybe_key) {
+        EXPECT_FALSE(maybe_key.has_value());
+        completed++;
+        run_loop.Quit();
+      }));
   EXPECT_TRUE(url_loader_factory_.SimulateResponseForPendingRequest(
       kKeyURL, "", net::HTTP_NOT_FOUND));
   run_loop.Run();
@@ -128,20 +152,20 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringFailure) {
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-      base::BindLambdaForTesting(
-          [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-            EXPECT_FALSE(maybe_key.has_value());
-            completed++;
-            fetcher.GetOrFetchKey(
-                &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-                base::BindLambdaForTesting(
-                    [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-                      EXPECT_FALSE(maybe_key.has_value());
-                      completed++;
-                      run_loop.Quit();
-                    }));
-          }));
+      &url_loader_factory_, CoordinatorOrigin(),
+      base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
+                                                    std::string> maybe_key) {
+        EXPECT_FALSE(maybe_key.has_value());
+        completed++;
+        fetcher.GetOrFetchKey(&url_loader_factory_, CoordinatorOrigin(),
+                              base::BindLambdaForTesting(
+                                  [&](base::expected<BiddingAndAuctionServerKey,
+                                                     std::string> maybe_key) {
+                                    EXPECT_FALSE(maybe_key.has_value());
+                                    completed++;
+                                    run_loop.Quit();
+                                  }));
+      }));
   EXPECT_TRUE(url_loader_factory_.SimulateResponseForPendingRequest(
       kKeyURL, "", net::HTTP_NOT_FOUND));
   run_loop.Run();
@@ -154,13 +178,13 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, GoodResponse) {
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-      base::BindLambdaForTesting(
-          [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-            EXPECT_TRUE(maybe_key.has_value());
-            key = *maybe_key;
-            run_loop.Quit();
-          }));
+      &url_loader_factory_, CoordinatorOrigin(),
+      base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
+                                                    std::string> maybe_key) {
+        EXPECT_TRUE(maybe_key.has_value());
+        key = *maybe_key;
+        run_loop.Quit();
+      }));
   EXPECT_TRUE(
       url_loader_factory_.SimulateResponseForPendingRequest(kKeyURL,
                                                             R"({ "keys": [{
@@ -177,20 +201,20 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringSuccess) {
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-      base::BindLambdaForTesting(
-          [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-            EXPECT_TRUE(maybe_key.has_value());
-            completed++;
-            fetcher.GetOrFetchKey(
-                &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-                base::BindLambdaForTesting(
-                    [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-                      EXPECT_TRUE(maybe_key.has_value());
-                      completed++;
-                      run_loop.Quit();
-                    }));
-          }));
+      &url_loader_factory_, CoordinatorOrigin(),
+      base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
+                                                    std::string> maybe_key) {
+        EXPECT_TRUE(maybe_key.has_value());
+        completed++;
+        fetcher.GetOrFetchKey(&url_loader_factory_, CoordinatorOrigin(),
+                              base::BindLambdaForTesting(
+                                  [&](base::expected<BiddingAndAuctionServerKey,
+                                                     std::string> maybe_key) {
+                                    EXPECT_TRUE(maybe_key.has_value());
+                                    completed++;
+                                    run_loop.Quit();
+                                  }));
+      }));
   EXPECT_TRUE(
       url_loader_factory_.SimulateResponseForPendingRequest(kKeyURL,
                                                             R"({ "keys": [{
@@ -207,14 +231,14 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CachesValue) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(
-        &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-        base::BindLambdaForTesting(
-            [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-              EXPECT_TRUE(maybe_key.has_value());
-              key = *maybe_key;
-              run_loop.Quit();
-            }));
+    fetcher.GetOrFetchKey(&url_loader_factory_, CoordinatorOrigin(),
+                          base::BindLambdaForTesting(
+                              [&](base::expected<BiddingAndAuctionServerKey,
+                                                 std::string> maybe_key) {
+                                EXPECT_TRUE(maybe_key.has_value());
+                                key = *maybe_key;
+                                run_loop.Quit();
+                              }));
     EXPECT_TRUE(
         url_loader_factory_.SimulateResponseForPendingRequest(kKeyURL,
                                                               R"({ "keys": [{
@@ -229,14 +253,14 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CachesValue) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(
-        &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-        base::BindLambdaForTesting(
-            [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-              EXPECT_TRUE(maybe_key.has_value());
-              key = *maybe_key;
-              run_loop.Quit();
-            }));
+    fetcher.GetOrFetchKey(&url_loader_factory_, CoordinatorOrigin(),
+                          base::BindLambdaForTesting(
+                              [&](base::expected<BiddingAndAuctionServerKey,
+                                                 std::string> maybe_key) {
+                                EXPECT_TRUE(maybe_key.has_value());
+                                key = *maybe_key;
+                                run_loop.Quit();
+                              }));
     // Shouldn't use this response (it should still be cached).
     EXPECT_FALSE(
         url_loader_factory_.SimulateResponseForPendingRequest(kKeyURL,
@@ -256,21 +280,21 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CoalescesRequests) {
   {
     content::BiddingAndAuctionServerKey key1, key2;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(
-        &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-        base::BindLambdaForTesting(
-            [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-              EXPECT_TRUE(maybe_key.has_value());
-              key1 = *maybe_key;
-            }));
-    fetcher.GetOrFetchKey(
-        &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-        base::BindLambdaForTesting(
-            [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-              key2 = *maybe_key;
-              EXPECT_TRUE(maybe_key.has_value());
-              run_loop.Quit();
-            }));
+    fetcher.GetOrFetchKey(&url_loader_factory_, CoordinatorOrigin(),
+                          base::BindLambdaForTesting(
+                              [&](base::expected<BiddingAndAuctionServerKey,
+                                                 std::string> maybe_key) {
+                                EXPECT_TRUE(maybe_key.has_value());
+                                key1 = *maybe_key;
+                              }));
+    fetcher.GetOrFetchKey(&url_loader_factory_, CoordinatorOrigin(),
+                          base::BindLambdaForTesting(
+                              [&](base::expected<BiddingAndAuctionServerKey,
+                                                 std::string> maybe_key) {
+                                key2 = *maybe_key;
+                                EXPECT_TRUE(maybe_key.has_value());
+                                run_loop.Quit();
+                              }));
     EXPECT_TRUE(
         url_loader_factory_.SimulateResponseForPendingRequest(kKeyURL,
                                                               R"({ "keys": [{
@@ -292,14 +316,14 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ChoosesRandomKey) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(
-        &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-        base::BindLambdaForTesting(
-            [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-              EXPECT_TRUE(maybe_key.has_value());
-              key = *maybe_key;
-              run_loop.Quit();
-            }));
+    fetcher.GetOrFetchKey(&url_loader_factory_, CoordinatorOrigin(),
+                          base::BindLambdaForTesting(
+                              [&](base::expected<BiddingAndAuctionServerKey,
+                                                 std::string> maybe_key) {
+                                EXPECT_TRUE(maybe_key.has_value());
+                                key = *maybe_key;
+                                run_loop.Quit();
+                              }));
     EXPECT_TRUE(
         url_loader_factory_.SimulateResponseForPendingRequest(kKeyURL,
                                                               R"({ "keys": [{
@@ -316,14 +340,14 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ChoosesRandomKey) {
   while (ids.size() < 2) {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(
-        &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
-        base::BindLambdaForTesting(
-            [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-              EXPECT_TRUE(maybe_key.has_value());
-              key = *maybe_key;
-              run_loop.Quit();
-            }));
+    fetcher.GetOrFetchKey(&url_loader_factory_, CoordinatorOrigin(),
+                          base::BindLambdaForTesting(
+                              [&](base::expected<BiddingAndAuctionServerKey,
+                                                 std::string> maybe_key) {
+                                EXPECT_TRUE(maybe_key.has_value());
+                                key = *maybe_key;
+                                run_loop.Quit();
+                              }));
     run_loop.Run();
     ids.insert(key.id);
   }

@@ -18,6 +18,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
@@ -369,9 +370,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   void GetBiddingAndAuctionServerKey(
       network::mojom::URLLoaderFactory* loader,
-      blink::mojom::AdAuctionCoordinator coordinator,
-      base::OnceCallback<void(absl::optional<BiddingAndAuctionServerKey>)>
-          callback);
+      absl::optional<url::Origin> coordinator,
+      base::OnceCallback<void(
+          base::expected<BiddingAndAuctionServerKey, std::string>)> callback);
 
   InterestGroupPermissionsChecker& permissions_checker_for_testing() {
     return permissions_checker_;

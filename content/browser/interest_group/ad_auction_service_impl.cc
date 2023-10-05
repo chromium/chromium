@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -467,12 +468,17 @@ void AdAuctionServiceImpl::DeprecatedReplaceInURN(
 
 void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     const url::Origin& seller,
-    blink::mojom::AdAuctionCoordinator coordinator,
+    const absl::optional<url::Origin>& coordinator,
     GetInterestGroupAdAuctionDataCallback callback) {
+  if (coordinator && coordinator->scheme() != url::kHttpsScheme) {
+    ReportBadMessageAndDeleteThis("Invalid Bidding and Auction Coordinator");
+    return;
+  }
+
   // If the interest group API is not allowed for this origin do nothing.
   if (!IsInterestGroupAPIAllowed(
           ContentBrowserClient::InterestGroupApiOperation::kSell, origin())) {
-    std::move(callback).Run({}, {});
+    std::move(callback).Run({}, {}, "Invalid Operation");
     return;
   }
 
@@ -859,23 +865,23 @@ void AdAuctionServiceImpl::OnGotAuctionData(
     BiddingAndAuctionDataConstructionState state,
     BiddingAndAuctionData data) {
   if (data.request.empty()) {
-    std::move(state.callback).Run({}, {});
+    std::move(state.callback).Run({}, {}, "");
     return;
   }
 
   state.data = std::move(data);
-  blink::mojom::AdAuctionCoordinator coordinator = state.coordinator;
+  absl::optional<url::Origin> coordinator = state.coordinator;
   GetInterestGroupManager().GetBiddingAndAuctionServerKey(
-      GetRefCountedTrustedURLLoaderFactory().get(), coordinator,
+      GetRefCountedTrustedURLLoaderFactory().get(), std::move(coordinator),
       base::BindOnce(&AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey,
                      weak_ptr_factory_.GetWeakPtr(), std::move(state)));
 }
 
 void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
     BiddingAndAuctionDataConstructionState state,
-    absl::optional<BiddingAndAuctionServerKey> maybe_key) {
-  if (!maybe_key) {
-    std::move(state.callback).Run({}, {});
+    base::expected<BiddingAndAuctionServerKey, std::string> maybe_key) {
+  if (!maybe_key.has_value()) {
+    std::move(state.callback).Run({}, {}, maybe_key.error());
     return;
   }
 
@@ -890,7 +896,7 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
           maybe_key->key, maybe_key_config.value(),
           kBiddingAndAuctionEncryptionRequestMediaType.Get());
   if (!maybe_request.ok()) {
-    std::move(state.callback).Run({}, {});
+    std::move(state.callback).Run({}, {}, "Could not create request");
     return;
   }
 
@@ -922,7 +928,7 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
   CHECK_EQ(data.size() + start_offset, buf.size());
   std::memcpy(&buf.data()[start_offset], data.data(), data.size());
 
-  std::move(state.callback).Run(std::move(buf), state.request_id);
+  std::move(state.callback).Run(std::move(buf), state.request_id, "");
   // Request sizes only increase by factors of two so we only need to sample
   // the powers of two. The maximum of 1 GB size is much larger than it should
   // ever be.

@@ -23,6 +23,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/writer.h"
 #include "content/browser/interest_group/interest_group_storage.h"
@@ -499,10 +500,11 @@ void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
 
 void InterestGroupManagerImpl::GetBiddingAndAuctionServerKey(
     network::mojom::URLLoaderFactory* loader,
-    blink::mojom::AdAuctionCoordinator coordinator,
-    base::OnceCallback<void(absl::optional<BiddingAndAuctionServerKey>)>
-        callback) {
-  ba_key_fetcher_.GetOrFetchKey(loader, coordinator, std::move(callback));
+    absl::optional<url::Origin> coordinator,
+    base::OnceCallback<void(
+        base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
+  ba_key_fetcher_.GetOrFetchKey(loader, std::move(coordinator),
+                                std::move(callback));
 }
 
 void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(

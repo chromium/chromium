@@ -311,7 +311,6 @@ const int kMaxActiveCrossSiteLeaves = 20;
 const int kMaxActiveCrossSiteClears = 20;
 
 // Error string builders.
-
 String ErrorInvalidInterestGroup(const AuctionAdInterestGroup& group,
                                  const String& field_name,
                                  const String& field_value,
@@ -3922,18 +3921,15 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
     return ScriptPromise();
   }
 
-  mojom::blink::AdAuctionCoordinator coordinator =
-      mojom::blink::AdAuctionCoordinator::kGCP;
-  if (config->hasCoordinator()) {
-    if (config->coordinator() == blink::V8AdAuctionCoordinator::Enum::kGcp) {
-      coordinator = mojom::blink::AdAuctionCoordinator::kGCP;
-    } else if (config->coordinator() ==
-               blink::V8AdAuctionCoordinator::Enum::kAws) {
-      coordinator = mojom::blink::AdAuctionCoordinator::kAWS;
-    } else {
-      // This should never happen because the error will be thrown by the IDL
-      // parser.
-      NOTREACHED_NORETURN();
+  scoped_refptr<const SecurityOrigin> coordinator;
+  if (config->hasCoordinatorOrigin()) {
+    coordinator = ParseOrigin(config->coordinatorOrigin());
+    if (!coordinator) {
+      exception_state.ThrowTypeError(String::Format(
+          "coordinatorOrigin '%s' for AdAuctionDataConfig must be "
+          "a valid https origin.",
+          config->coordinatorOrigin().Utf8().c_str()));
+      return ScriptPromise();
     }
   }
 
@@ -3953,7 +3949,14 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
 void NavigatorAuction::GetInterestGroupAdAuctionDataComplete(
     ScriptPromiseResolver* resolver,
     mojo_base::BigBuffer data,
-    const absl::optional<base::Uuid>& request_id) {
+    const absl::optional<base::Uuid>& request_id,
+    const WTF::String& error_message) {
+  if (!error_message.empty()) {
+    CHECK(!request_id);
+    resolver->RejectWithTypeError(error_message);
+    return;
+  }
+
   AdAuctionData* result = AdAuctionData::Create();
   auto not_shared =
       NotShared<DOMUint8Array>(DOMUint8Array::Create(data.data(), data.size()));

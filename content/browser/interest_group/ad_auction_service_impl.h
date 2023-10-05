@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
@@ -85,7 +86,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       DeprecatedReplaceInURNCallback callback) override;
   void GetInterestGroupAdAuctionData(
       const url::Origin& seller,
-      blink::mojom::AdAuctionCoordinator coordinator,
+      const absl::optional<url::Origin>& coordinator,
       GetInterestGroupAdAuctionDataCallback callback) override;
   void CreateAdRequest(blink::mojom::AdRequestConfigPtr config,
                        CreateAdRequestCallback callback) override;
@@ -123,7 +124,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
     BiddingAndAuctionData data;
     base::Uuid request_id;
     url::Origin seller;
-    blink::mojom::AdAuctionCoordinator coordinator;
+    absl::optional<url::Origin> coordinator;
     GetInterestGroupAdAuctionDataCallback callback;
   };
 
@@ -176,7 +177,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                         BiddingAndAuctionData data);
   void OnGotBiddingAndAuctionServerKey(
       BiddingAndAuctionDataConstructionState state,
-      absl::optional<BiddingAndAuctionServerKey> key);
+      base::expected<BiddingAndAuctionServerKey, std::string> maybe_key);
 
   InterestGroupManagerImpl& GetInterestGroupManager() const;
 

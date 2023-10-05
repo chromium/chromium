@@ -8353,6 +8353,7 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
   struct AdAuctionDataAndId {
     std::string request;
     absl::optional<base::Uuid> request_id;
+    std::string error_message;
   };
 
   // Gets auction data in the frame `rfh`. If `rfh` is nullptr, uses the main
@@ -8367,13 +8368,17 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
     base::RunLoop run_loop;
     absl::optional<AdAuctionDataAndId> output;
     interest_service->GetInterestGroupAdAuctionData(
-        seller, blink::mojom::AdAuctionCoordinator::kGCP,
+        seller,
+        url::Origin::Create(
+            GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin)),
         base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
-                                       const absl::optional<base::Uuid>& id) {
+                                       const absl::optional<base::Uuid>& id,
+                                       const std::string& error_message) {
           AdAuctionDataAndId data;
           data.request = std::string(reinterpret_cast<char*>(result.data()),
                                      result.size());
           data.request_id = id;
+          data.error_message = error_message;
           output = data;
           run_loop.Quit();
         }));
@@ -8426,6 +8431,30 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
   const GURL kKeyUrl = kUrlA.Resolve(kBAndAKeyPath);
   base::test::ScopedFeatureList feature_list_;
 };
+
+// Expect bad mojo message if we use an invalid coordinator origin. The
+// coordinator origin must be secure.
+TEST_F(AdAuctionServiceImplTest, HandlesInvalidCoordinatorOrigin) {
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  url::Origin bad_coordinator =
+      url::Origin::Create(GURL("http://insecure.coordinator.test/"));
+
+  mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+  AdAuctionServiceImpl::CreateMojoService(
+      main_rfh(), interest_service.BindNewPipeAndPassReceiver());
+  base::RunLoop run_loop;
+  interest_service.set_disconnect_handler(run_loop.QuitClosure());
+  interest_service->GetInterestGroupAdAuctionData(
+      /*seller=*/test_origin,
+      /*coordinator=*/bad_coordinator,
+      /*callback=*/
+      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
+                                     const absl::optional<base::Uuid>& id,
+                                     const std::string& error_message) {
+        ADD_FAILURE() << "This callback should not be invoked.";
+      }));
+  run_loop.Run();
+}
 
 // Test that interest_group_manager serialize the blob correctly.
 TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlob) {
@@ -8899,7 +8928,8 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
 
   absl::optional<AdAuctionDataAndId> result =
       GetAdAuctionDataAndFlushForFrame(test_origin);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
+  ASSERT_LT(0u, result.value().request.size());
 
   auto key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
                         0x12, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
@@ -8913,7 +8943,7 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
           .value();
   auto request =
       ohttp_gateway.DecryptObliviousHttpRequest(result.value().request);
-  EXPECT_TRUE(request.ok()) << request.status();
+  ASSERT_TRUE(request.ok()) << request.status();
   auto plaintext_data = request->GetPlaintextData();
 
   // The message should be a power of 2 in length
@@ -8988,6 +9018,7 @@ TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
       GetAdAuctionDataAndFlushForFrame(test_origin);
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ("", result.value().request);
+  EXPECT_EQ("Invalid Operation", result.value().error_message);
 
   hist.ExpectTotalCount("Ads.InterestGroup.BaDataSize", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 0);
