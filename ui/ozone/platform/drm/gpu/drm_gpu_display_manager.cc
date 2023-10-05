@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -167,13 +168,9 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
     display_infos.erase(
         std::remove_if(display_infos.begin(), display_infos.end(),
                        [&valid_connector_ids](const auto& display_info) {
-                         return std::find(
-                                    valid_connector_ids.begin(),
-                                    valid_connector_ids.end(),
-                                    display_info->connector()->connector_id) ==
-                                valid_connector_ids.end();
-                       }),
-        display_infos.end());
+                         return !base::Contains(
+                                 valid_connector_ids, display_info->connector()->connector_id);}),
+                                 display_infos.end());
 
     for (auto& display_info : display_infos) {
       display_snapshots.emplace_back(CreateDisplaySnapshot(
