@@ -8054,22 +8054,6 @@
             ]
         }
     ],
-    "Hotspot": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "Hotspot"
-                    ]
-                }
-            ]
-        }
-    ],
     "HoverCardImagePreviewSetting": [
         {
             "platforms": [
