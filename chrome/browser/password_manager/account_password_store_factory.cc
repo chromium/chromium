@@ -28,7 +28,6 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store_built_in_backend.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
@@ -196,7 +195,7 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
         return profile->GetDefaultStoragePartition()->GetNetworkContext();
       },
       profile);
-  password_manager_util::RemoveUselessCredentials(
+  password_manager::RemoveUselessCredentials(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
       profile->GetPrefs(), base::Seconds(60), network_context_getter);
 

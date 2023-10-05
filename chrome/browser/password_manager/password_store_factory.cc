@@ -20,9 +20,9 @@
 #include "chrome/common/chrome_paths_internal.h"
 #include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -128,7 +128,7 @@ PasswordStoreFactory::BuildServiceInstanceFor(
         return profile->GetDefaultStoragePartition()->GetNetworkContext();
       },
       profile);
-  password_manager_util::RemoveUselessCredentials(
+  password_manager::RemoveUselessCredentials(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
       profile->GetPrefs(), base::Seconds(60), network_context_getter);
 

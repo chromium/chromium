@@ -14,7 +14,6 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #import "components/password_manager/core/browser/login_database.h"
-#import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store_built_in_backend.h"
 #import "components/password_manager/core/browser/password_store_factory_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -117,7 +116,7 @@ IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
   store->Init(ChromeBrowserState::FromBrowserState(context)->GetPrefs(),
               std::move(affiliated_match_helper));
 
-  password_manager_util::RemoveUselessCredentials(
+  password_manager::RemoveUselessCredentials(
       CredentialsCleanerRunnerFactory::GetForBrowserState(context), store,
       ChromeBrowserState::FromBrowserState(context)->GetPrefs(),
       base::Seconds(60), base::NullCallback());
