@@ -1097,6 +1097,11 @@ const char kCameraEffectsSupportedByHardware[] =
 const char kPreventKioskAutolaunchForTesting[] =
     "prevent-kiosk-autolaunch-for-testing";
 
+// Allows the Ash shelf to apply the default pin layout without waiting for Sync
+// to download data from the server (which many tests can't achieve).
+const char kAllowDefaultShelfPinLayoutIgnoringSync[] =
+    "ash-allow-default-shelf-pin-layout-ignoring-sync";
+
 bool IsAuthSessionCryptohomeEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kCryptohomeUseAuthSession);
@@ -1259,6 +1264,11 @@ bool IsCameraEffectsSupportedByHardware() {
 bool UseFakeCrasAudioClientForDBus() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kUseFakeCrasAudioClientForDBus);
+}
+
+bool ShouldAllowDefaultShelfPinLayoutIgnoringSync() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kAllowDefaultShelfPinLayoutIgnoringSync);
 }
 
 }  // namespace switches

@@ -474,6 +474,9 @@ bool IsCameraEffectsSupportedByHardware();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool UseFakeCrasAudioClientForDBus();
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool ShouldAllowDefaultShelfPinLayoutIgnoringSync();
+
 }  // namespace ash::switches
 
 #endif  // ASH_CONSTANTS_ASH_SWITCHES_H_
