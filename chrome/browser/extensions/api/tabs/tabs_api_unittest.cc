@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -21,8 +22,11 @@
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -170,7 +174,7 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
         sessions::SessionTabHelper::IdForTab(contents.get()).id());
     web_contentses.push_back(contents.get());
     browser()->tab_strip_model()->AppendWebContents(std::move(contents),
-                                                    /* foreground */ true);
+                                                    /*foreground=*/true);
   }
   ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
 
@@ -504,6 +508,66 @@ TEST_F(TabsApiUnitTest, TabsUpdate) {
   browser()->tab_strip_model()->CloseAllTabs();
 }
 
+// Tests that calling chrome.tabs.update does not update a saved tab.
+TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTabNotAllowed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("UpdateTest").Build();
+  const GURL kExampleCom("http://example.com");
+  const GURL kChromiumOrg("https://chromium.org");
+
+  // Add a web contents to the browser.
+  std::unique_ptr<content::WebContents> contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  content::WebContents* raw_contents = contents.get();
+  browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), raw_contents);
+  CreateSessionServiceTabHelper(raw_contents);
+  int tab_id = sessions::SessionTabHelper::IdForTab(raw_contents).id();
+
+  // Navigate the browser to example.com
+  content::WebContentsTester* web_contents_tester =
+      content::WebContentsTester::For(raw_contents);
+  web_contents_tester->NavigateAndCommit(kExampleCom);
+  EXPECT_EQ(kExampleCom, raw_contents->GetLastCommittedURL());
+
+  // Group the tab and save it.
+  tab_groups::TabGroupId group = browser()->tab_strip_model()->AddToNewGroup(
+      {browser()->tab_strip_model()->GetIndexOfWebContents(raw_contents)});
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group)
+      ->SetVisualData(visual_data);
+
+  SavedTabGroupKeyedService* saved_service =
+      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+          browser()->profile());
+  ASSERT_NE(saved_service, nullptr);
+  saved_service->SaveGroup(group);
+  EXPECT_TRUE(ExtensionTabUtil::TabIsInSavedTabGroup(
+      raw_contents, browser()->tab_strip_model()));
+
+  // Try to use the TabsUpdateFunction to navigate to chromium.org
+  auto function = base::MakeRefCounted<TabsUpdateFunction>();
+  function->set_extension(extension);
+  static constexpr char kFormatArgs[] = R"([%d, {"url": "%s"}])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_id, kChromiumOrg.spec().c_str());
+
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
+  EXPECT_EQ(tabs_constants::kSavedTabGroupNotEditableError, error);
+  EXPECT_EQ(kExampleCom, raw_contents->GetLastCommittedURL());
+
+  // Clean up.
+  saved_service->UnsaveGroup(group);
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+
 // Tests that calling chrome.tabs.update with a JavaScript URL results
 // in an error.
 TEST_F(TabsApiUnitTest, TabsUpdateJavaScriptUrlNotAllowed) {
@@ -564,7 +628,7 @@ TEST_F(TabsApiUnitTest, TabsMoveWithinWindow) {
     web_contentses.push_back(contents.get());
 
     browser()->tab_strip_model()->AppendWebContents(std::move(contents),
-                                                    /* foreground */ true);
+                                                    /*foreground=*/true);
   }
   ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
 
@@ -608,7 +672,7 @@ TEST_F(TabsApiUnitTest, TabsMoveAcrossWindows) {
     web_contentses.push_back(contents.get());
 
     browser()->tab_strip_model()->AppendWebContents(std::move(contents),
-                                                    /* foreground */ true);
+                                                    /*foreground=*/true);
   }
   ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
 
@@ -630,7 +694,7 @@ TEST_F(TabsApiUnitTest, TabsMoveAcrossWindows) {
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
     CreateSessionServiceTabHelper(contents.get());
     browser2->tab_strip_model()->AppendWebContents(std::move(contents),
-                                                   /* foreground */ true);
+                                                   /*foreground=*/true);
   }
   ASSERT_EQ(kNumTabs2, browser2->tab_strip_model()->count());
 
@@ -660,6 +724,71 @@ TEST_F(TabsApiUnitTest, TabsMoveAcrossWindows) {
   // Clean up.
   browser()->tab_strip_model()->CloseAllTabs();
   browser2->tab_strip_model()->CloseAllTabs();
+}
+
+// Tests that calling chrome.tabs.move doesn't move a saved tab.
+TEST_F(TabsApiUnitTest, TabsMoveSavedTabGroupTabNotAllowed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("MoveWithinWindowTest").Build();
+
+  // Add several web contents to the browser and get their tab IDs.
+  constexpr int kNumTabs = 5;
+  std::vector<int> tab_ids;
+  std::vector<content::WebContents*> web_contentses;
+  for (int i = 0; i < kNumTabs; ++i) {
+    std::unique_ptr<content::WebContents> contents(
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+    CreateSessionServiceTabHelper(contents.get());
+    tab_ids.push_back(
+        sessions::SessionTabHelper::IdForTab(contents.get()).id());
+    web_contentses.push_back(contents.get());
+
+    browser()->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                    /*foreground=*/true);
+  }
+  ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
+
+  // Group the tab and save it.
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1, 2});
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group)
+      ->SetVisualData(visual_data);
+
+  SavedTabGroupKeyedService* saved_service =
+      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+          browser()->profile());
+  ASSERT_NE(saved_service, nullptr);
+  saved_service->SaveGroup(group);
+
+  // Use the TabsUpdateFunction to navigate to chromium.org
+  int tab_extension_id = sessions::SessionTabHelper::IdForTab(
+                             browser()->tab_strip_model()->GetWebContentsAt(0))
+                             .id();
+  auto function = base::MakeRefCounted<TabsMoveFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([[%d], {"index": 1}])";
+  const std::string args = base::StringPrintf(kFormatArgs, tab_extension_id);
+
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
+  EXPECT_EQ(tabs_constants::kSavedTabGroupNotEditableError, error);
+
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0),
+            web_contentses[0]);
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1),
+            web_contentses[1]);
+
+  // Clean up.
+  saved_service->UnsaveGroup(group);
+  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 // Test that the tabs.group() function correctly rearranges sets of tabs within
@@ -738,7 +867,7 @@ TEST_F(TabsApiUnitTest, TabsGroupMixedTabIds) {
     web_contentses.push_back(contents.get());
 
     browser()->tab_strip_model()->AppendWebContents(std::move(contents),
-                                                    /* foreground */ true);
+                                                    /*foreground=*/true);
   }
   ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
 
@@ -793,7 +922,7 @@ TEST_F(TabsApiUnitTest, TabsGroupParamsError) {
     web_contentses.push_back(contents.get());
 
     browser()->tab_strip_model()->AppendWebContents(std::move(contents),
-                                                    /* foreground */ true);
+                                                    /*foreground=*/true);
   }
   ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
 
@@ -840,7 +969,7 @@ TEST_F(TabsApiUnitTest, TabsGroupAcrossWindows) {
     web_contentses.push_back(contents.get());
 
     browser()->tab_strip_model()->AppendWebContents(std::move(contents),
-                                                    /* foreground */ true);
+                                                    /*foreground=*/true);
   }
   ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
 
@@ -860,7 +989,7 @@ TEST_F(TabsApiUnitTest, TabsGroupAcrossWindows) {
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
     CreateSessionServiceTabHelper(contents.get());
     browser2->tab_strip_model()->AppendWebContents(std::move(contents),
-                                                   /* foreground */ true);
+                                                   /*foreground=*/true);
   }
   ASSERT_EQ(kNumTabs2, browser2->tab_strip_model()->count());
 
@@ -895,6 +1024,80 @@ TEST_F(TabsApiUnitTest, TabsGroupAcrossWindows) {
   browser2->tab_strip_model()->CloseAllTabs();
 }
 
+// Test that grouping tabs that are in a saved group should fail.
+TEST_F(TabsApiUnitTest, TabsGroupForSavedTabGroupTabNotAllowed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("GroupWithinWindowTest").Build();
+
+  // Add several web contents to the browser and get their tab IDs.
+  constexpr int kNumTabs = 5;
+  std::vector<int> tab_ids;
+  std::vector<content::WebContents*> web_contentses;
+  for (int i = 0; i < kNumTabs; ++i) {
+    std::unique_ptr<content::WebContents> contents(
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+    CreateSessionServiceTabHelper(contents.get());
+    tab_ids.push_back(
+        sessions::SessionTabHelper::IdForTab(contents.get()).id());
+    web_contentses.push_back(contents.get());
+
+    browser()->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                    /*foreground=*/true);
+  }
+  ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
+
+  // Group the first 3 tabs and save it.
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1, 2});
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group)
+      ->SetVisualData(visual_data);
+
+  SavedTabGroupKeyedService* saved_service =
+      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+          browser()->profile());
+  ASSERT_NE(saved_service, nullptr);
+  saved_service->SaveGroup(group);
+
+  // Use the TabsGroupFunction to group tabs 0, 2, and 4.
+  auto function = base::MakeRefCounted<TabsGroupFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([{"tabIds": [%d, %d, %d]}])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_ids[0], tab_ids[2], tab_ids[4]);
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
+  EXPECT_EQ(tabs_constants::kSavedTabGroupNotEditableError, error);
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(0), web_contentses[0]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(1), web_contentses[1]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(2), web_contentses[2]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(3), web_contentses[3]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(4), web_contentses[4]);
+
+  absl::optional<tab_groups::TabGroupId> new_group =
+      tab_strip_model->GetTabGroupForTab(0);
+  EXPECT_TRUE(new_group.has_value());
+  EXPECT_EQ(new_group, tab_strip_model->GetTabGroupForTab(1));
+  EXPECT_EQ(new_group, tab_strip_model->GetTabGroupForTab(2));
+  EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(3));
+  EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(4));
+
+  // Clean up.
+  saved_service->UnsaveGroup(group);
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+
 // Test that the tabs.ungroup() function correctly ungroups tabs from a single
 // group and deletes it.
 TEST_F(TabsApiUnitTest, TabsUngroupSingleGroup) {
@@ -917,7 +1120,7 @@ TEST_F(TabsApiUnitTest, TabsUngroupSingleGroup) {
     web_contentses.push_back(contents.get());
 
     browser()->tab_strip_model()->AppendWebContents(std::move(contents),
-                                                    /* foreground */ true);
+                                                    /*foreground=*/true);
   }
   ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
 
@@ -945,6 +1148,72 @@ TEST_F(TabsApiUnitTest, TabsUngroupSingleGroup) {
   browser()->tab_strip_model()->CloseAllTabs();
 }
 
+// Test that the tabs.ungroup does not ungroup a SavedTabGroup.
+TEST_F(TabsApiUnitTest, TabsUngroupSingleGroupForSavedTabGroupNotAllowed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("UngroupSingleGroupTest").Build();
+
+  // Add several web contents to the browser and get their tab IDs.
+  constexpr int kNumTabs = 5;
+  std::vector<int> tab_ids;
+  std::vector<content::WebContents*> web_contentses;
+  for (int i = 0; i < kNumTabs; ++i) {
+    std::unique_ptr<content::WebContents> contents(
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+    CreateSessionServiceTabHelper(contents.get());
+    tab_ids.push_back(
+        sessions::SessionTabHelper::IdForTab(contents.get()).id());
+    web_contentses.push_back(contents.get());
+
+    browser()->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                    /*foreground=*/true);
+  }
+  ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
+
+  // Group the tab and save it.
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2, 3});
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group)
+      ->SetVisualData(visual_data);
+
+  SavedTabGroupKeyedService* saved_service =
+      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+          browser()->profile());
+  ASSERT_NE(saved_service, nullptr);
+  saved_service->SaveGroup(group);
+
+  // Use the TabsUngroupFunction to ungroup tabs 1, 2, and 3.
+  auto function = base::MakeRefCounted<TabsUngroupFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([[%d, %d, %d]])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_ids[1], tab_ids[2], tab_ids[3]);
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
+  EXPECT_EQ(tabs_constants::kSavedTabGroupNotEditableError, error);
+
+  // Check that the tab should be in the original saved group.
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(tab_strip_model->GetTabGroupForTab(1), group);
+  EXPECT_EQ(tab_strip_model->GetTabGroupForTab(2), group);
+  EXPECT_EQ(tab_strip_model->GetTabGroupForTab(3), group);
+  EXPECT_TRUE(tab_strip_model->group_model()->ContainsTabGroup(group));
+
+  // Clean up.
+  saved_service->UnsaveGroup(group);
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+
 // Test that the tabs.ungroup() function correctly ungroups tabs from several
 // different groups and deletes any empty ones.
 TEST_F(TabsApiUnitTest, TabsUngroupFromMultipleGroups) {
@@ -968,7 +1237,7 @@ TEST_F(TabsApiUnitTest, TabsUngroupFromMultipleGroups) {
     web_contentses.push_back(contents.get());
 
     tab_strip_model->AppendWebContents(std::move(contents),
-                                       /* foreground */ true);
+                                       /*foreground=*/true);
   }
   ASSERT_EQ(kNumTabs, tab_strip_model->count());
 
@@ -1066,6 +1335,80 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBack) {
   while (!browser()->tab_strip_model()->empty())
     browser()->tab_strip_model()->CloseWebContentsAt(0, 0);
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(TabsApiUnitTest, TabsGoForwardAndBackSavedTabGroupTabNotAllowed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
+  scoped_refptr<const Extension> extension_with_tabs_permission =
+      CreateTabsExtension();
+
+  const std::vector<GURL> urls = {GURL("http://www.foo.com"),
+                                  GURL("http://www.bar.com"),
+                                  GURL("http://www.baz.com")};
+  content::WebContents* web_contents = CreateAndAppendWebContentsWithHistory(
+      profile(), GetTabStripModel(), urls);
+  ASSERT_TRUE(web_contents);
+
+  CreateSessionServiceTabHelper(web_contents);
+  const int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+
+  {
+    // Go back with chrome.tabs.goBack.
+    auto goback_function = base::MakeRefCounted<TabsGoBackFunction>();
+    goback_function->set_extension(extension_with_tabs_permission.get());
+    api_test_utils::RunFunction(goback_function.get(),
+                                base::StringPrintf("[%d]", tab_id), profile(),
+                                api_test_utils::FunctionMode::kIncognito);
+    content::NavigationController& controller = web_contents->GetController();
+    content::RenderFrameHostTester::CommitPendingLoad(&controller);
+  }
+
+  EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
+  EXPECT_EQ(urls[1], web_contents->GetVisibleURL());
+
+  // Save the tab and expect that it can not be navigated forwards or backwards.
+  tab_groups::TabGroupId group = browser()->tab_strip_model()->AddToNewGroup(
+      {browser()->tab_strip_model()->GetIndexOfWebContents(web_contents)});
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group)
+      ->SetVisualData(visual_data);
+
+  SavedTabGroupKeyedService* saved_service =
+      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+          browser()->profile());
+  ASSERT_NE(saved_service, nullptr);
+  saved_service->SaveGroup(group);
+
+  {
+    auto goback_function = base::MakeRefCounted<TabsGoBackFunction>();
+    goback_function->set_extension(extension_with_tabs_permission.get());
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        goback_function.get(), base::StringPrintf("[%d]", tab_id), profile(),
+        api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ(tabs_constants::kSavedTabGroupNotEditableError, error);
+  }
+  EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
+  EXPECT_EQ(urls[1], web_contents->GetVisibleURL());
+
+  {
+    auto goforward_function = base::MakeRefCounted<TabsGoForwardFunction>();
+    goforward_function->set_extension(extension_with_tabs_permission.get());
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        goforward_function.get(), base::StringPrintf("[%d]", tab_id), profile(),
+        api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ(tabs_constants::kSavedTabGroupNotEditableError, error);
+  }
+  EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
+  EXPECT_EQ(urls[1], web_contents->GetVisibleURL());
+
+  // Clean up.
+  saved_service->UnsaveGroup(group);
+  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 TEST_F(TabsApiUnitTest, TabsGoForwardAndBackWithoutTabId) {
@@ -1281,6 +1624,102 @@ TEST_F(TabsApiUnitTest, CannotDuplicatePictureInPictureWindows) {
   pip_browser->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
   pip_browser.reset();
   pip_window.reset();
+}
+
+// Tests that calling chrome.tabs.discard discards the tab.
+TEST_F(TabsApiUnitTest, TabsDiscard) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("DiscardTest").Build();
+  const GURL kExampleCom("http://example.com");
+
+  // Add a web contents to the browser.
+  std::unique_ptr<content::WebContents> contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  content::WebContents* web_contents = contents.get();
+  browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), web_contents);
+  CreateSessionServiceTabHelper(web_contents);
+  int index = browser()->tab_strip_model()->GetIndexOfWebContents(web_contents);
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+
+  // Navigate the browser to example.com
+  content::WebContentsTester* web_contents_tester =
+      content::WebContentsTester::For(web_contents);
+  web_contents_tester->NavigateAndCommit(kExampleCom);
+  EXPECT_EQ(kExampleCom, web_contents->GetLastCommittedURL());
+
+  // Use the TabsDiscardFunction to discard the tab.
+  auto function = base::MakeRefCounted<TabsDiscardFunction>();
+  function->set_extension(extension);
+  static constexpr char kFormatArgs[] = R"([%d])";
+  const std::string args = base::StringPrintf(kFormatArgs, tab_id);
+  ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
+                                          api_test_utils::FunctionMode::kNone));
+  // check that the tab has discarded
+  content::WebContents* new_contents_at_index =
+      browser()->tab_strip_model()->GetWebContentsAt(index);
+  EXPECT_TRUE(new_contents_at_index->WasDiscarded());
+
+  // Clean up.
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+
+// Tests that calling chrome.tabs.discard on a saved tab does not discard.
+TEST_F(TabsApiUnitTest, TabsDiscardSavedTabGroupTabNotAllowed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("DiscardTest").Build();
+  const GURL kExampleCom("http://example.com");
+
+  // Add a web contents to the browser.
+  std::unique_ptr<content::WebContents> contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  content::WebContents* web_contents = contents.get();
+  browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), web_contents);
+  CreateSessionServiceTabHelper(web_contents);
+  int index = browser()->tab_strip_model()->GetIndexOfWebContents(web_contents);
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+
+  // Navigate the browser to example.com
+  content::WebContentsTester* web_contents_tester =
+      content::WebContentsTester::For(web_contents);
+  web_contents_tester->NavigateAndCommit(kExampleCom);
+  EXPECT_EQ(kExampleCom, web_contents->GetLastCommittedURL());
+
+  // Group the tab and save it.
+  tab_groups::TabGroupId group = browser()->tab_strip_model()->AddToNewGroup(
+      {browser()->tab_strip_model()->GetIndexOfWebContents(web_contents)});
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group)
+      ->SetVisualData(visual_data);
+
+  SavedTabGroupKeyedService* saved_service =
+      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+          browser()->profile());
+  ASSERT_NE(saved_service, nullptr);
+  saved_service->SaveGroup(group);
+
+  // The tab discard function should fail.
+  auto function = base::MakeRefCounted<TabsDiscardFunction>();
+  function->set_extension(extension);
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), base::StringPrintf("[%d]", tab_id), profile(),
+      api_test_utils::FunctionMode::kNone);
+  EXPECT_EQ(tabs_constants::kSavedTabGroupNotEditableError, error);
+  // Check that the tab was not discarded.
+  content::WebContents* new_contents_at_index =
+      browser()->tab_strip_model()->GetWebContentsAt(index);
+  EXPECT_FALSE(new_contents_at_index->WasDiscarded());
+
+  // Clean up.
+  saved_service->UnsaveGroup(group);
+  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 }  // namespace extensions

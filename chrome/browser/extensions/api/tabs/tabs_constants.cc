@@ -91,6 +91,7 @@ const char kTabNotFoundError[] = "No tab with id: *.";
 const char kCannotDiscardTab[] = "Cannot discard tab with id: *.";
 const char kCannotDuplicateTab[] = "Cannot duplicate tab with id: *.";
 const char kCannotFindTabToDiscard[] = "Cannot find a tab to discard.";
+const char kSavedTabGroupNotEditableError[] = "Saved groups are not editable.";
 const char kTabStripNotEditableError[] =
     "Tabs cannot be edited right now (user may be dragging a tab).";
 const char kTabStripNotEditableQueryError[] =
