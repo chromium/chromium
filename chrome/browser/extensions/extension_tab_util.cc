@@ -881,8 +881,11 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
   }
 
   // Don't let the extension navigate directly to file scheme pages, unless
-  // they have file access.
-  if (url.SchemeIsFile() &&
+  // they have file access. `extension` can be null if the call is made from
+  // non-extension contexts (e.g. WebUI pages). In that case, we allow the
+  // navigation as such contexts are trusted and do not have a concept of file
+  // access.
+  if (extension && url.SchemeIsFile() &&
       !util::AllowFileAccess(extension->id(), browser_context) &&
       base::FeatureList::IsEnabled(
           extensions_features::kRestrictFileURLNavigation) &&
