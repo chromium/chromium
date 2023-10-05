@@ -308,8 +308,8 @@ void AnnotateFieldsWithSignatures(
   for (blink::WebFormControlElement& control_element : fields) {
     FieldSignature field_signature = CalculateFieldSignatureByNameAndType(
         control_element.NameForAutofill().Utf16(),
-        FormControlTypeToString(form_util::ToAutofillFormControlType(
-            control_element.FormControlTypeForAutofill())));
+        form_util::ToAutofillFormControlType(
+            control_element.FormControlTypeForAutofill()));
     SetAttributeAsync(control_element, kDebugAttributeForFieldSignature,
                       base::NumberToString(field_signature.value()));
     SetAttributeAsync(control_element, kDebugAttributeForFormSignature,

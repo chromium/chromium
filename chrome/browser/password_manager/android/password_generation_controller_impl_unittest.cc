@@ -273,7 +273,8 @@ TEST_F(PasswordGenerationControllerTest,
       autofill::CalculateFormSignature(new_ui_data.form_data);
   autofill::FieldSignature field_signature =
       autofill::CalculateFieldSignatureByNameAndType(
-          new_ui_data.generation_element, "password");
+          new_ui_data.generation_element,
+          autofill::FormControlType::kInputPassword);
   EXPECT_EQ(controller()->get_form_signature_for_testing(), form_signature);
   EXPECT_EQ(controller()->get_field_signature_for_testing(), field_signature);
 

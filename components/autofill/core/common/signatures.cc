@@ -150,9 +150,9 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
 
 FieldSignature CalculateFieldSignatureByNameAndType(
     base::StringPiece16 field_name,
-    base::StringPiece field_type) {
-  return FieldSignature(
-      StrToHash32Bit(base::StrCat({UTF16ToUTF8(field_name), "&", field_type})));
+    FormControlType field_type) {
+  return FieldSignature(StrToHash32Bit(base::StrCat(
+      {UTF16ToUTF8(field_name), "&", FormControlTypeToString(field_type)})));
 }
 
 FieldSignature CalculateFieldSignatureForField(
@@ -161,8 +161,7 @@ FieldSignature CalculateFieldSignatureForField(
   if (type == FormControlType::kEmpty) {
     type = FormControlType::kInputText;
   }
-  return CalculateFieldSignatureByNameAndType(field_data.name,
-                                              FormControlTypeToString(type));
+  return CalculateFieldSignatureByNameAndType(field_data.name, type);
 }
 
 uint64_t StrToHash64Bit(base::StringPiece str) {

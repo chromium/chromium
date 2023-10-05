@@ -131,7 +131,7 @@ PasswordGenerationPopupControllerImpl::PasswordGenerationPopupControllerImpl(
       form_signature_(autofill::CalculateFormSignature(form_data_)),
       field_signature_(autofill::CalculateFieldSignatureByNameAndType(
           ui_data.generation_element,
-          "password")),
+          autofill::FormControlType::kInputPassword)),
       generation_element_id_(ui_data.generation_element_id),
       max_length_(ui_data.max_length),
       controller_common_(bounds,

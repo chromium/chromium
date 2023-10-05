@@ -10,6 +10,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/types/id_type.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
 namespace autofill {
 
@@ -44,7 +45,7 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data);
 // Calculates field signature based on |field_name| and |field_type|.
 FieldSignature CalculateFieldSignatureByNameAndType(
     base::StringPiece16 field_name,
-    base::StringPiece field_type);
+    mojom::FormControlType field_type);
 
 // Calculates field signature based on |field_data|. This function is a proxy to
 // |CalculateFieldSignatureByNameAndType|.
