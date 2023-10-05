@@ -460,4 +460,72 @@ void DismissSignOutSnackbar() {
       assertWithMatcher:grey_notVisible()];
 }
 
+// Tests the "History and Tabs" toggle manages both types. When both types
+// are disabled by policy their toggle should be off.
+- (void)
+    testAccountSettingsWithHistoryAndTabsDisabledByPolicy_SyncToSigninEnabled {
+  base::Value::List list;
+  list.Append("typedUrls");
+  list.Append("tabs");
+  policy_test_utils::SetPolicy(base::Value(std::move(list)),
+                               policy::key::kSyncTypesListDisabled);
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/NO);
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify that for "History and Tabs" an "Off" button is shown instead of a
+  // toggle.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(
+                                   l10n_util::GetNSString(IDS_IOS_SETTING_OFF))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests the "History and Tabs" toggle manages both types. When History
+// is only disabled by policy their toggle should be active.
+- (void)testAccountSettingsWithHistoryDisabledByPolicy_SyncToSigninEnabled {
+  base::Value::List list;
+  list.Append("typedUrls");
+  policy_test_utils::SetPolicy(base::Value(std::move(list)),
+                               policy::key::kSyncTypesListDisabled);
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/NO);
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify that for "History and Tabs" a toggle shows.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncHistoryAndTabsIdentifier,
+                                          /*is_toggled_on=*/NO,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests the "History and Tabs" toggle manages both types. When Tabs
+// is only disabled by policy their toggle should be active.
+- (void)testAccountSettingsWithTabsDisabledByPolicy_SyncToSigninEnabled {
+  base::Value::List list;
+  list.Append("tabs");
+  policy_test_utils::SetPolicy(base::Value(std::move(list)),
+                               policy::key::kSyncTypesListDisabled);
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/NO);
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify that for "History and Tabs" a toggle shows.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncHistoryAndTabsIdentifier,
+                                          /*is_toggled_on=*/NO,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 @end
