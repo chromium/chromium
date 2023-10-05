@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Ολοκληρώστε τη ρύθμιση με το τηλέφωνό σας</translation>
 <translation id="1054153489933238809">Άνοιγμα αρχικής εικόνας σε νέα καρτέλα</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Ενημέρωση συσκευής (<ph name="DEVICE_TYPE" />) εντός 1 εβδομάδας}other{Ενημέρωση συσκευής (<ph name="DEVICE_TYPE" />) εντός {NUM_WEEKS} εβδομάδων}}</translation>
-<translation id="1056398434290692818">Πλοήγηση προς τα πίσω και προς τα εμπρός με κίνηση ολίσθησης</translation>
 <translation id="1056898198331236512">Προειδοποίηση</translation>
 <translation id="1056980582064308040">Με την αλλαγή των ρυθμίσεων θα γίνει επανεκκίνηση του σημείου πρόσβασης Wi-Fi. Οι συσκευές που χρησιμοποιούν το σημείο πρόσβασης Wi-Fi θα αποσυνδεθούν.</translation>
 <translation id="1058262162121953039">Κωδικός PUK</translation>
@@ -1410,7 +1409,6 @@
 <translation id="2088092308059522196">Η εγγραφή υποστηρίζεται μόνο μετά την εγκατάσταση του <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Ενσωματωμένη συσκευή κατάδειξης</translation>
 <translation id="208928984520943006">Για να μεταβείτε στην αρχική οθόνη ανά πάσα στιγμή, σύρετε προς τα επάνω από το κάτω μέρος.</translation>
-<translation id="2089566709556890888">Περιηγηθείτε με ασφάλεια με το Google Chrome</translation>
 <translation id="2089925163047119068">Ή</translation>
 <translation id="2090165459409185032">Για να ανακτήσετε τα στοιχεία του λογαριασμού σας, μεταβείτε στη διεύθυνση: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Συνδέεται αυτόματα κατά τη σύνδεση</translation>
@@ -3534,6 +3532,7 @@
 <translation id="3771294271822695279">Αρχεία βίντεο </translation>
 <translation id="3771851622616482156">Θα αποσυνδεθείτε από αυτόν τον ιστότοπο, ακόμη και στις ανοικτές καρτέλες</translation>
 <translation id="3772046291955677288">Έχω διαβάσει και αποδεχτεί τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Chrome και του ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="3774059845329307709">Σειριακός αριθμός</translation>
 <translation id="3774166835015494435">Πρόσφατες φωτογραφίες και ειδοποιήσεις</translation>
 <translation id="3775432569830822555">Πιστοποιητικό διακομιστή SSL</translation>
 <translation id="3775705724665058594">Αποστολή στις συσκευές σας</translation>
@@ -4490,7 +4489,6 @@
 <translation id="4544174279960331769">Προεπιλεγμένο μπλε avatar</translation>
 <translation id="4545028762441890696">Για να την ενεργοποιήσετε ξανά, αποδεχτείτε τις νέες άδειες:</translation>
 <translation id="4545759655004063573">Δεν είναι δυνατή η αποθήκευση λόγω ανεπαρκών αδειών. Κάντε αποθήκευση σε άλλη τοποθεσία.</translation>
-<translation id="4546308221697447294">Περιηγηθείτε γρήγορα με το Google Chrome</translation>
 <translation id="4546345569117159016">Δεξί κουμπί</translation>
 <translation id="4546509872654834602">Ο χρήστης <ph name="SUPERVISED_USER_NAME" /> θέλει να χρησιμοποιήσει αυτή την επέκταση:</translation>
 <translation id="4546692474302123343">Φωνητική εντολή Βοηθού Google</translation>
@@ -4944,7 +4942,6 @@
 <translation id="4912643508233590958">Έξοδος από την κατάσταση αδράνειας</translation>
 <translation id="4915961947098019832">Επιτρέπεται να εμφανίζουν εικόνες</translation>
 <translation id="4916542008280060967">Να επιτρέπεται στον ιστότοπο η επεξεργασία του αρχείου <ph name="FILE_NAME" />;</translation>
-<translation id="491691592645955587">Κάντε εναλλαγή σε ένα ασφαλές πρόγραμμα περιήγησης</translation>
 <translation id="4917385247580444890">Ισχυρό</translation>
 <translation id="491779113051926205">Μετρητές επισκεψιμότητας ChromeOS</translation>
 <translation id="4918021164741308375">Το <ph name="ORIGIN" /> θέλει να επικοινωνήσει με την επέκταση "<ph name="EXTENSION_NAME" />"</translation>
@@ -5409,7 +5406,6 @@
 <translation id="5313967007315987356">Προσθήκη ιστότοπου</translation>
 <translation id="5315738755890845852">Επιπλέον άγκιστρο: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
-<translation id="5319359161174645648">Η Google συνιστά το Chrome</translation>
 <translation id="5319712128756744240">Σύζευξη νέας συσκευής</translation>
 <translation id="5320135788267874712">Νέο όνομα συσκευής</translation>
 <translation id="5320261549977878764">Κατάργηση αποθήκευσης ομάδας</translation>
@@ -5789,7 +5785,6 @@
 <translation id="5625225435499354052">Επεξεργασία στο Google Pay</translation>
 <translation id="5626134646977739690">Όνομα:</translation>
 <translation id="5627086634964711283">Επίσης, ελέγχει τη σελίδα που εμφανίζεται όταν κάνετε κλικ στο κουμπί αρχικής σελίδας.</translation>
-<translation id="5627676517703583263">Περιηγηθείτε έξυπνα στο Chrome</translation>
 <translation id="5627832140542566187">Προσανατολισμός οθόνης</translation>
 <translation id="5628434207686266338">Ορισμός κωδικού πρόσβασης συσκευής</translation>
 <translation id="562935524653278697">Ο διαχειριστής σας έχει απενεργοποιήσει τον συγχρονισμό των σελιδοδεικτών, του ιστορικού, των κωδικών πρόσβασης και άλλων ρυθμίσεων.</translation>
@@ -5951,7 +5946,6 @@
 <translation id="5775863968701268310">Προτιμήσεις διαχείρισης του Google Play</translation>
 <translation id="5776450228446082914">Η λίστα με τους ιστοτόπους που μπορούν να ανοίξουν σε οποιοδήποτε πρόγραμμα περιήγησης.</translation>
 <translation id="5776571780337000608">Μπορείτε να ανοίξετε και να επεξεργαστείτε υποστηριζόμενα αρχεία με αυτή την εφαρμογή από το πρόγραμμα περιήγησης αρχείων ή από άλλες εφαρμογές. Για να ελέγξετε ποια αρχεία ανοίγουν αυτή την εφαρμογή από προεπιλογή, <ph name="BEGIN_LINK" />μάθετε πώς να ορίσετε προεπιλεγμένες εφαρμογές στη συσκευή σας<ph name="END_LINK" />.</translation>
-<translation id="5777468213129569553">Άνοιγμα του Chrome</translation>
 <translation id="5778491106820461378">Μπορείτε να διαχειριστείτε τους συνδεδεμένους Λογαριασμούς Google από τις <ph name="LINK_BEGIN" />Ρυθμίσεις<ph name="LINK_END" />. Οι άδειες που έχετε εκχωρήσει σε ιστοτόπους και εφαρμογές ενδέχεται να ισχύουν για όλους τους λογαριασμούς. Εάν δεν θέλετε οι ιστότοποι ή οι εφαρμογές να έχουν πρόσβαση στις πληροφορίες του λογαριασμού σας, μπορείτε να συνδεθείτε στη συσκευή <ph name="DEVICE_TYPE" /> ως επισκέπτης.</translation>
 <translation id="5780011244986845107">Ο φάκελος που επιλέξατε περιέχει ευαίσθητα αρχεία. Είστε βέβαιοι ότι θέλετε να παραχωρήσετε στο "<ph name="APP_NAME" />" μόνιμη πρόσβαση ανάγνωσης σε αυτόν τον φάκελο;</translation>
 <translation id="5780973441651030252">Προτεραιότητα διεργασίας</translation>
@@ -7262,7 +7256,6 @@
 <translation id="6831043979455480757">Μετάφραση</translation>
 <translation id="6832218595502288407">Στοίχιση στα αριστερά</translation>
 <translation id="6833479554815567477">Η καρτέλα καταργήθηκε από την ομάδα <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="683373380308365518">Κάντε εναλλαγή σε ένα έξυπνο και ασφαλές πρόγραμμα περιήγησης</translation>
 <translation id="6833996806551876956">Δοκιμή Privacy Sandbox</translation>
 <translation id="6835762382653651563">Συνδεθείτε στο Διαδίκτυο για να ενημερώσετε τη συσκευή σας <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Σφάλμα διαγραφής πιστοποιητικού</translation>
@@ -9262,7 +9255,6 @@
 <translation id="8433186206711564395">Ρυθμίσεις δικτύου</translation>
 <translation id="8434480141477525001">NaCl Εντοπισμός σφαλμάτων θύρας</translation>
 <translation id="8437209419043462667">ΗΠΑ</translation>
-<translation id="8438328416656800239">Εναλλαγή σε ένα έξυπνο πρόγραμμα περιήγησης</translation>
 <translation id="8438566539970814960">Βελτιώστε τις αναζητήσεις και την περιήγηση</translation>
 <translation id="8439506636278576865">Ερώτηση για τη μετάφραση σελίδων σε αυτήν τη γλώσσα</translation>
 <translation id="8440630305826533614">Εφαρμογές Linux</translation>
@@ -9789,7 +9781,6 @@
 <translation id="8859662783913000679">Λογαριασμός γονέα</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} λογαριασμός}other{{COUNT} λογαριασμοί}}</translation>
 <translation id="8861568709166518036">Χρησιμοποιήστε τα κουμπιά στην οθόνη για πλοήγηση στην αρχική σελίδα, μετάβαση πίσω ή εναλλαγή εφαρμογών. Ενεργοποιείται αυτόματα εάν είναι ενεργοποιημένο το ChromeVox ή τα αυτόματα κλικ.</translation>
-<translation id="8862003515646449717">Εναλλαγή σε ένα γρήγορο πρόγραμμα περιήγησης</translation>
 <translation id="8863753581171631212">Άνοιγμα συνδέσμου σε νέο παράθυρο <ph name="APP" /></translation>
 <translation id="8864055848767439877">Κοινοποίηση <ph name="TAB_NAME" /> στην εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Ο κωδικός πρόσβασης έχει αποθηκευτεί</translation>

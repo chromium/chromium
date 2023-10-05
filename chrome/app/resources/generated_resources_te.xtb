@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">మీ ఫోన్‌లో సెటప్‌ను పూర్తి చేయండి</translation>
 <translation id="1054153489933238809">అసలు &amp;చిత్రాన్ని కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 వారంలోపు <ph name="DEVICE_TYPE" />ని అప్‌డేట్ చేయండి}other{{NUM_WEEKS} వారాలలోపు <ph name="DEVICE_TYPE" />ని అప్‌డేట్ చేయండి}}</translation>
-<translation id="1056398434290692818">స్వైప్ సంజ్ఞతో వెనుకకు, ముందుకు నావిగేట్ చేయండి</translation>
 <translation id="1056898198331236512">హెచ్చరిక</translation>
 <translation id="1056980582064308040">సెట్టింగ్‌లను మార్చడం వలన హాట్‌స్పాట్ రీస్టార్ట్ అవుతుంది. హాట్‌స్పాట్‌ను ఉపయోగించే పరికరాలు డిస్‌కనెక్ట్ అవుతాయి.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -1408,7 +1407,6 @@
 <translation id="2088092308059522196">మీరు <ph name="DEVICE_OS" />‌ను ఇన్‌స్టాల్ చేసిన తర్వాత మాత్రమే ఎన్‌రోల్‌మెంట్ సపోర్ట్ చేస్తుంది.</translation>
 <translation id="2088564884469682888">బిల్ట్-ఇన్ TrackPoint</translation>
 <translation id="208928984520943006">ఎప్పుడైనా హోమ్ స్క్రీన్‌కు వెళ్ళడానికి, కింది నుండి పైకి స్వైప్ చేయండి.</translation>
-<translation id="2089566709556890888">Google Chromeతో సురక్షితంగా బ్రౌజ్ చేయండి</translation>
 <translation id="2089925163047119068">OR</translation>
 <translation id="2090165459409185032">మీ ఖాతా సమాచారాన్ని పునరుద్ధరించడానికి, దీనికి వెళ్లండి: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">మీరు లాగిన్ చేసినప్పుడు ఆటోమేటిక్‌గా కనెక్ట్ చేస్తుంది</translation>
@@ -3532,6 +3530,7 @@
 <translation id="3771294271822695279">వీడియో ఫైళ్లు</translation>
 <translation id="3771851622616482156">మీరు తెరిచిన ట్యాబ్‌లతో సహా, ఈ సైట్ నుండి మీరు సైన్ అవుట్ చేయబడతారు</translation>
 <translation id="3772046291955677288">నేను <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome, అలాగే ChromeOS అదనపు సర్వీస్ నియమాలను<ph name="END_LINK2" /> చదివి అంగీకరిస్తున్నాను.</translation>
+<translation id="3774059845329307709">సీరియల్ నంబర్</translation>
 <translation id="3774166835015494435">తాజా ఫోటోలు, నోటిఫికేషన్‌లు</translation>
 <translation id="3775432569830822555">SSL సర్వర్ సర్టిఫికెట్</translation>
 <translation id="3775705724665058594">మీ పరికరాలకు పంపండి</translation>
@@ -4488,7 +4487,6 @@
 <translation id="4544174279960331769">డిఫాల్ట్ నీలం రంగు అవతార్</translation>
 <translation id="4545028762441890696">దీనిని తిరిగి ప్రారంభించ‌డానికి, కొత్త అనుమతులను ఆమోదించండి:</translation>
 <translation id="4545759655004063573">సరిపోని అనుమతుల కారణంగా సేవ్ చేయలేరు. దయచేసి మరొక స్థానానికి సేవ్ చేయండి.</translation>
-<translation id="4546308221697447294">Google Chromeతో వేగంగా బ్రౌజ్ చేయండి</translation>
 <translation id="4546345569117159016">కుడివైపు బటన్</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> ఈ ఎక్స్‌టెన్షన్‌ను ఉపయోగించాలనుకుంటున్నారు:</translation>
 <translation id="4546692474302123343">Google Assistant వాయిస్ ఇన్‌పుట్</translation>
@@ -4942,7 +4940,6 @@
 <translation id="4912643508233590958">ఇన్‌యాక్టివ్‌ మేల్కొలుపులు</translation>
 <translation id="4915961947098019832">ఇమేజ్‌లను చూపించడానికి అనుమతించబడింది</translation>
 <translation id="4916542008280060967"><ph name="FILE_NAME" />ను ఎడిట్ చేయడానికి సైట్‌ను అనుమతించాలనుకుంటున్నారా?</translation>
-<translation id="491691592645955587">సురక్షితమైన బ్రౌజర్‌కు మారండి</translation>
 <translation id="4917385247580444890">బలమైన</translation>
 <translation id="491779113051926205">ChromeOS ట్రాఫిక్ కౌంటర్‌లు</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" ఎక్స్‌టెన్షన్‌తో కమ్యూనికేట్ చేయాలనుకుంటోంది</translation>
@@ -5407,7 +5404,6 @@
 <translation id="5313967007315987356">సైట్‌ను జోడించండి</translation>
 <translation id="5315738755890845852">అదనపు వంకర కలుపు: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
-<translation id="5319359161174645648">Chromeను Google సిఫార్సు చేస్తోంది</translation>
 <translation id="5319712128756744240">కొత్త పరికరాన్ని పెయిర్ చేయండి</translation>
 <translation id="5320135788267874712">కొత్త పరికరం పేరు</translation>
 <translation id="5320261549977878764">గ్రూప్‌ను సేవ్ చేసిన దానిని తీసివేయండి</translation>
@@ -5786,7 +5782,6 @@
 <translation id="5625225435499354052">Google Payలో ఎడిట్ చేయండి</translation>
 <translation id="5626134646977739690">పేరు:</translation>
 <translation id="5627086634964711283">ఇది, హోమ్ బటన్‌ను క్లిక్ చేసేటప్పుడు చూపబడే పేజీని కూడా నియంత్రిస్తుంది.</translation>
-<translation id="5627676517703583263">Chromeతో స్మార్ట్‌గా బ్రౌజ్ చేయండి</translation>
 <translation id="5627832140542566187">డిస్‌ప్లే ఓరియంటేషన్</translation>
 <translation id="5628434207686266338">పరికర పాస్‌వర్డ్‌ను సెట్ చేయండి</translation>
 <translation id="562935524653278697">మీ నిర్వాహకుడు మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌ల సింక్‌ను నిలిపివేశారు.</translation>
@@ -5948,7 +5943,6 @@
 <translation id="5775863968701268310">Google Play ప్రాధాన్యతలను మేనేజ్ చేయండి</translation>
 <translation id="5776450228446082914">ఈ వెబ్‌సైట్‌ల లిస్ట్‌ను ఏదొక బ్రౌజర్‌లో తెరవవచ్చు.</translation>
 <translation id="5776571780337000608">మీ ఫైల్ బ్రౌజర్ లేదా ఇతర యాప్‌ల నుండి ఈ యాప్‌తో, సపోర్ట్ ఉన్న ఫైల్స్‌ను మీరు తెరవవచ్చు, ఎడిట్ చేయవచ్చు. ఈ యాప్‌తో ఆటోమేటిక్‌గా ఏ ఫైల్స్ తెరుచుకోవాలి అనే దానిని కంట్రోల్ చేయడానికి, <ph name="BEGIN_LINK" />మీ పరికరంలో ఆటోమేటిక్ యాప్‌లను సెట్ చేయడం ఎలాగో తెలుసుకోండి<ph name="END_LINK" />.</translation>
-<translation id="5777468213129569553">Chromeని తెరవండి</translation>
 <translation id="5778491106820461378">మీరు <ph name="LINK_BEGIN" />సెట్టింగ్‌ల<ph name="LINK_END" /> నుండి సైన్ ఇన్ చేసి ఉన్న Google ఖాతాలను మేనేజ్ చేయవచ్చు. మీరు వెబ్‌సైట్‌లు, యాప్‌లకు ఇచ్చిన అనుమతులు మిగతా అన్ని ఖాతాలకు కూడా వర్తించవచ్చు. మీ ఖాతా సమాచారాన్ని సైట్‌లు లేదా యాప్‌లు యాక్సెస్ చేయకూడదనుకుంటే, మీరు గెస్ట్‌గా మీ <ph name="DEVICE_TYPE" />లో సైన్ ఇన్ చేయవచ్చు.</translation>
 <translation id="5780011244986845107">మీరు ఎంచుకున్న ఫోల్డర్‌లో గోప్యమైన పైల్‌లు ఉన్నాయి. మీరు ఖచ్చితంగా ఈ ఫోల్డర్ కోసం "<ph name="APP_NAME" />"కు శాశ్వతంగా చదవగల యాక్సెస్‌ను మంజూరు చేయాలనుకుంటున్నారా?</translation>
 <translation id="5780973441651030252">ప్రాసెస్ ప్రాధాన్యత</translation>
@@ -7259,7 +7253,6 @@
 <translation id="6831043979455480757">అనువదించు</translation>
 <translation id="6832218595502288407">ఎడమ వైపునకు అమర్చండి</translation>
 <translation id="6833479554815567477">గ్రూప్ నుండి ట్యాబ్ తొలగించబడింది <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="683373380308365518">స్మార్ట్ మరియు సురక్షిత బ్రౌజర్‌కు మారండి</translation>
 <translation id="6833996806551876956">గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్ ట్రయల్</translation>
 <translation id="6835762382653651563">దయచేసి మీ <ph name="DEVICE_TYPE" />ని అప్‌డేట్ చేయడానికి ఇంటర్నెట్‌కి కనెక్ట్ చేయండి.</translation>
 <translation id="6839225236531462745">ప్రమాణపత్రం తొలగింపు ఎర్రర్</translation>
@@ -9255,7 +9248,6 @@
 <translation id="8433186206711564395">నెట్‌వర్క్ సెట్టింగ్‌లు</translation>
 <translation id="8434480141477525001">NaCl డీబగ్ పోర్ట్</translation>
 <translation id="8437209419043462667">యుఎస్</translation>
-<translation id="8438328416656800239">స్మార్ట్ బ్రౌజర్‌కు మారండి</translation>
 <translation id="8438566539970814960">సెర్చ్‌లను, బ్రౌజింగ్‌ను మెరుగుపరచండి</translation>
 <translation id="8439506636278576865">ఈ భాషలో పేజీలకు అనువాదం అందించు</translation>
 <translation id="8440630305826533614">Linux యాప్‌లు</translation>
@@ -9784,7 +9776,6 @@
 <translation id="8859662783913000679">తల్లి/తండ్రి ఖాతా</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} ఖాతా}other{{COUNT} ఖాతాలు}}</translation>
 <translation id="8861568709166518036">స్క్రీన్‌పై ఉన్న బటన్‌లను ఉపయోగించి హోమ్‌కు, వెనుకకు నావిగేట్ చేయవచ్చు, యాప్‌ల మధ్య మారవచ్చు. ChromeVox లేదా ఆటోమెటిక్ క్లిక్‌లను ఆన్ చేస్తే, ఆటోమేటిక్‌గా అన్ అవుతుంది.</translation>
-<translation id="8862003515646449717">వేగవంతమైన బ్రౌజర్‌కు మారండి</translation>
 <translation id="8863753581171631212">కొత్త <ph name="APP" />లో లింక్‌ను తెరువు</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" />ను <ph name="APP_NAME" />కు షేర్ చేస్తోంది</translation>
 <translation id="8864104359314908853">మీ పాస్‌వర్డ్ సేవ్ చేయబడింది</translation>

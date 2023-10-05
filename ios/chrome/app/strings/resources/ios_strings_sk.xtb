@@ -799,6 +799,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5360976571138293719">Ďalšie nastavenia týkajúce sa ochrany súkromia, zabezpečenia a zhromažďovania údajov nájdete v sekcii <ph name="BEGIN_LINK" />Služby Googlu<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Tu nájdete svoje sledované weby</translation>
 <translation id="5388358297987318779">Otvoriť obrázok</translation>
+<translation id="5396950905475481456">Pozvite členov rodiny</translation>
 <translation id="5407969256130905701">Zahodiť zmeny</translation>
 <translation id="5414763847370083940">Ak cena na niektorom webe klesne, dostanete upozornenie.</translation>
 <translation id="5416022985862681400">Posledných 7 dní</translation>
@@ -1550,4 +1551,5 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="988141524645182168">Iné zariadenia</translation>
 <translation id="989988560359834682">Úprava adresy</translation>
 <translation id="994757059139821576">Návrhy článkov</translation>
+<translation id="999768147936949692">Heslá môžete momentálne zdieľať iba s členmi rodiny. <ph name="BEGIN_LINK" />Pozvite členov rodiny<ph name="END_LINK" /> do svojej skupiny a využívajte svoje služby aj odbery na Googli efektívnejšie.</translation>
 </translationbundle>

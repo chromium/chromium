@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">إكمال الإعداد على هاتفك</translation>
 <translation id="1054153489933238809">فتح الصورة الأصلية في علامة تبويب جديدة</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال أسبوع واحد}zero{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوع}two{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال أسبوعَين ({NUM_WEEKS})}few{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسابيع}many{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوعًا}other{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوع}}</translation>
-<translation id="1056398434290692818">الانتقال للأمام وللخلف باستخدام إيماءة التمرير السريع</translation>
 <translation id="1056898198331236512">تحذير</translation>
 <translation id="1056980582064308040">سيؤدي تغيير الإعدادات إلى إعادة تشغيل نقطة الاتصال. سينقطع اتصال الأجهزة التي تستخدم نقطة الاتصال بالإنترنت.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -1397,7 +1396,6 @@
 <translation id="2088092308059522196">لن يُتاح التسجيل إلا بعد تثبيت نظام التشغيل <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">‏زر TrackPoint مُدمَج</translation>
 <translation id="208928984520943006">للوصول إلى الشاشة الرئيسية في أي وقت، مرّر سريعًا بإصبعك من أسفل الشاشة إلى أعلاها.</translation>
-<translation id="2089566709556890888">‏التصفح بأمان باستخدام Google Chrome</translation>
 <translation id="2089925163047119068">أو</translation>
 <translation id="2090165459409185032">‏لاسترداد معلومات حسابك، انتقل إلى: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">الاتصال تلقائيًا عند تسجيل الدخول</translation>
@@ -3518,6 +3516,7 @@
 <translation id="3771294271822695279">ملفات فيديو</translation>
 <translation id="3771851622616482156">سيتم تسجيل خروجك من هذا الموقع الإلكتروني، بما في ذلك المواقع الإلكترونية في علامات التبويب المفتوحة.</translation>
 <translation id="3772046291955677288">‏لقد قرأت <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكلٍّ من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_LINK2" /> وأوافق عليها.</translation>
+<translation id="3774059845329307709">رقم تسلسلي</translation>
 <translation id="3774166835015494435">الصور والإشعارات الحديثة</translation>
 <translation id="3775432569830822555">‏شهادة خادم بروتوكول SSL (طبقة المقابس الآمنة)</translation>
 <translation id="3775705724665058594">إرسال إلى أجهزتك</translation>
@@ -4468,7 +4467,6 @@
 <translation id="4544174279960331769">الصورة الرمزية التلقائية الزرقاء</translation>
 <translation id="4545028762441890696">لإعادة تفعليها ، اقبل الأذونات الجديدة:</translation>
 <translation id="4545759655004063573">لا يمكن الحفظ نظرًا لأن الأذونات غير كافية. يُرجى الحفظ في مكان آخر.</translation>
-<translation id="4546308221697447294">‏استمتع بالتصفح السريع باستخدام Google Chrome</translation>
 <translation id="4546345569117159016">زر الماوس الأيمن</translation>
 <translation id="4546509872654834602">‫"<ph name="SUPERVISED_USER_NAME" />" بحاجة إلى استخدام هذه الإضافة</translation>
 <translation id="4546692474302123343">‏الإدخال الصوتي في "مساعد Google"</translation>
@@ -4920,7 +4918,6 @@
 <translation id="4912643508233590958">عمليات التنشيط من الوضع بعيد</translation>
 <translation id="4915961947098019832">المواقع الإلكترونية التي يُسمح لها بعرض الصور</translation>
 <translation id="4916542008280060967">هل تريد السماح للموقع الإلكتروني بتعديل <ph name="FILE_NAME" />؟</translation>
-<translation id="491691592645955587">التبديل إلى متصفح آمن</translation>
 <translation id="4917385247580444890">قوية</translation>
 <translation id="491779113051926205">‏عدّادات زيارات نظام ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> يريد الاتصال مع الإضافة "<ph name="EXTENSION_NAME" />"</translation>
@@ -5384,7 +5381,6 @@
 <translation id="5313967007315987356">إضافة موقع إلكتروني</translation>
 <translation id="5315738755890845852">قوس متعرج إضافي: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">حفظ</translation>
-<translation id="5319359161174645648">‏توصي Google باستخدام Chrome</translation>
 <translation id="5319712128756744240">إقران جهاز جديد</translation>
 <translation id="5320135788267874712">الاسم الجديد للجهاز</translation>
 <translation id="5320261549977878764">إلغاء حفظ المجموعة</translation>
@@ -5763,7 +5759,6 @@
 <translation id="5625225435499354052">‏تعديل المعلومات في Google Pay</translation>
 <translation id="5626134646977739690">الاسم:</translation>
 <translation id="5627086634964711283">كما أنها تتحكم في الصفحة التي تظهر عند  النقر على زر الصفحة الرئيسية.</translation>
-<translation id="5627676517703583263">‏استمتع بالتصفح الذكي باستخدام Chrome</translation>
 <translation id="5627832140542566187">اتجاه العرض</translation>
 <translation id="5628434207686266338">ضبط كلمة مرور الجهاز</translation>
 <translation id="562935524653278697">لقد أوقف مشرفك مزامنة الإشارات المرجعية والسجل وكلمات المرور والإعدادات الأخرى.</translation>
@@ -5924,7 +5919,6 @@
 <translation id="5775863968701268310">‏إدارة إعدادات Google Play المفضّلة</translation>
 <translation id="5776450228446082914">قائمة المواقع الإلكترونية التي يمكن فتحها في أي متصفِّح</translation>
 <translation id="5776571780337000608">يمكنك فتح الملفات المتوافقة وتعديلها باستخدام هذا التطبيق من متصفِّح الملفات الذي تستخدمه أو من تطبيقات أخرى. للتحكّم في الملفات التي تفتح هذا التطبيق تلقائيًا، <ph name="BEGIN_LINK" />تعرَّف على كيفية تحديد التطبيقات التلقائية على جهازك<ph name="END_LINK" />.</translation>
-<translation id="5777468213129569553">‏افتح Chrome</translation>
 <translation id="5778491106820461378">‏يمكنك إدارة حسابات Google التي تم تسجيل الدخول إليها، وذلك من خلال الانتقال إلى <ph name="LINK_BEGIN" />الإعدادات<ph name="LINK_END" />. ويمكن أن تنطبق الأذونات التي منحتها إلى المواقع الإلكترونية والتطبيقات على جميع الحسابات. إذا كنت لا تريد السماح للمواقع الإلكترونية أو التطبيقات بالوصول إلى معلومات حسابك، يمكنك تسجيل الدخول إلى <ph name="DEVICE_TYPE" /> بصفتك ضيفًا.</translation>
 <translation id="5780011244986845107">يتضمَّن المجلَّد الذي اخترته ملفات حساسة. هل تريد بالتأكيد منح "<ph name="APP_NAME" />" الوصول الدائم للقراءة في هذا المجلَّد؟</translation>
 <translation id="5780973441651030252">أولوية المعالجة</translation>
@@ -7241,7 +7235,6 @@
 <translation id="6831043979455480757">ترجمة</translation>
 <translation id="6832218595502288407">محاذاة إلى اليسار</translation>
 <translation id="6833479554815567477">تمت إزالة علامة التبويب من المجموعة <ph name="GROUP_NAME" /> والتي تحتوي على <ph name="GROUP_CONTENTS" />.</translation>
-<translation id="683373380308365518">التبديل إلى متصفح ذكي وآمن</translation>
 <translation id="6833996806551876956">‏الفترة التجريبية لاستخدام ميزة Privacy Sandbox</translation>
 <translation id="6835762382653651563">يُرجى الاتصال بالإنترنت لتحديث <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">خطأ حذف الشهادة</translation>
@@ -9103,6 +9096,7 @@
 <translation id="8324784016256120271">يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفُّح الخاص بك على المواقع الإلكترونية المختلفة، وذلك لتقديم إعلانات مخصَّصة لك مثلاً.</translation>
 <translation id="8325413836429495820">المواقع الإلكترونية التي لا يُسمح لها بالاطّلاع على الحافظة</translation>
 <translation id="8326478304147373412">‏PKCS #7، سلسلة شهادات</translation>
+<translation id="832684045355488000">تمت ترقيتك إلى <ph name="NAME" /></translation>
 <translation id="8327386430364625757">الخط الرياضي</translation>
 <translation id="8327538105740918488">يمكنك تغيير كلمة المرور هذه في أي وقت لاحق. سيتم حفظ كلمة المرور في "<ph name="GOOGLE_PASSWORD_MANAGER" />" للحساب <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">إعدادات المحتوى والأذونات</translation>
@@ -9237,7 +9231,6 @@
 <translation id="8433186206711564395">إعدادات الشبكة</translation>
 <translation id="8434480141477525001">‏منفذ تصحيح أخطاء NaCl</translation>
 <translation id="8437209419043462667">الأمريكية</translation>
-<translation id="8438328416656800239">التبديل إلى متصفح ذكي</translation>
 <translation id="8438566539970814960">تحسين عمليات البحث والتصفُّح</translation>
 <translation id="8439506636278576865">عرض ترجمة الصفحات المكتوبة بهذه اللغة</translation>
 <translation id="8440630305826533614">‏تطبيقات Linux</translation>
@@ -9769,7 +9762,6 @@
 <translation id="8859662783913000679">حساب أحد الوالدَين</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{حساب واحد ({COUNT})}zero{{COUNT} حساب}two{حسابان ({COUNT})}few{{COUNT} حسابات}many{{COUNT} حسابًا}other{{COUNT} حساب}}</translation>
 <translation id="8861568709166518036">‏يمكنك استخدام الأزرار الظاهرة على الشاشة للانتقال إلى الشاشة الرئيسية والرجوع إلى الشاشة السابقة والتبديل بين التطبيقات. ويتم تلقائيًا تفعيل هذا الإعداد في حال تفعيل قارئ الشاشة ChromeVox أو ميزة "النقرات التلقائية".</translation>
-<translation id="8862003515646449717">التبديل إلى متصفح سريع</translation>
 <translation id="8863753581171631212">فتح الرابط في نافذة جديدة في <ph name="APP" /></translation>
 <translation id="8864055848767439877">جارٍ مشاركة <ph name="TAB_NAME" /> مع <ph name="APP_NAME" />.</translation>
 <translation id="8864104359314908853">تم حفظ كلمة المرور</translation>

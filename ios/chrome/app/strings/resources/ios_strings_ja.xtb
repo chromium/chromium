@@ -799,6 +799,7 @@
 <translation id="5360976571138293719">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="5386314158584363703">フォローしたサイトがここに表示されます</translation>
 <translation id="5388358297987318779">画像を開く</translation>
+<translation id="5396950905475481456">ファミリー メンバーの招待</translation>
 <translation id="5407969256130905701">変更を破棄</translation>
 <translation id="5414763847370083940">値下げしたサイトがある場合は、アラートが表示されます。</translation>
 <translation id="5416022985862681400">過去 7 日間</translation>
@@ -1550,4 +1551,5 @@
 <translation id="988141524645182168">他のデバイス</translation>
 <translation id="989988560359834682">住所の編集</translation>
 <translation id="994757059139821576">記事の候補表示</translation>
+<translation id="999768147936949692">現在のところ、パスワードはファミリー メンバーとのみ共有できます。グループに<ph name="BEGIN_LINK" />ファミリー メンバーを招待<ph name="END_LINK" />すると、Google の各種サービスや定期購入をお得に利用できます。</translation>
 </translationbundle>

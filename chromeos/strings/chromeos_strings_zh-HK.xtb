@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">每日變更桌布圖片</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="1651925268237749928">您已選取共享相簿。其他人可以加入或變更相片。桌布可能會使用目前不在此相簿中的相片。</translation>
+<translation id="1661865805917886535">部分帳戶及系統資料可能會傳送予 Google。我們會根據《私隱權政策》(<ph name="PRIVACYPOLICYURL" />) 和《服務條款》 (<ph name="TERMSOFSERVICEURL" />) 使用這些資料，解決技術問題及改善服務品質。如要提出內容變更要求，請前往法律說明中心 (<ph name="LEGALHELPPAGEURL" />)。</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1664796644829245314">預覽「<ph name="PREVIEW_OBJECT" />」</translation>
 <translation id="1668469839109562275">內置 VPN</translation>
@@ -131,7 +132,6 @@
 <translation id="1871569928317311284">關閉深色主題背景</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">關閉暗光模式</translation>
-<translation id="1881188606372070653">如因法律理由而需要變更內容，請於<ph name="BEGIN_LINK1" />「法律說明」頁面<ph name="END_LINK1" />提出要求。部分帳戶及系統資料可能會傳送予 Google。我們會根據《<ph name="BEGIN_LINK2" />私隱權政策<ph name="END_LINK2" />》及《<ph name="BEGIN_LINK3" />服務條款<ph name="END_LINK3" />》，利用您提供的資料以解決技術問題和改善服務。</translation>
 <translation id="1885577615937958993">向前快播媒體</translation>
 <translation id="1887850431809612466">硬件版本</translation>
 <translation id="1897672602657312171">使用快速鍵時如未按下搜尋鍵，可能會與部分應用程式的快速鍵發生衝突。再按下此快速鍵即可繼續使用，或按下搜尋鍵重新輸入快速鍵。</translation>

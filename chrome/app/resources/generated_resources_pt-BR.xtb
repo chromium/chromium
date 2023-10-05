@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Concluir a configuração no smartphone</translation>
 <translation id="1054153489933238809">Abrir &amp;imagem original em uma nova guia</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Atualize o <ph name="DEVICE_TYPE" /> em até 1 semana}one{Atualize o <ph name="DEVICE_TYPE" /> em até {NUM_WEEKS} semana}other{Atualize o <ph name="DEVICE_TYPE" /> em até {NUM_WEEKS} semanas}}</translation>
-<translation id="1056398434290692818">Volte e avance usando o gesto de deslizar</translation>
 <translation id="1056898198331236512">Aviso</translation>
 <translation id="1056980582064308040">A mudança das configurações vai reiniciar o ponto de acesso. Os dispositivos que usam o ponto de acesso serão desconectados.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -1407,7 +1406,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2088092308059522196">Só é possível fazer o registro após a instalação do <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">TrackPoint integrado</translation>
 <translation id="208928984520943006">Para acessar a tela inicial a qualquer momento, deslize de baixo para cima.</translation>
-<translation id="2089566709556890888">Navegue com segurança com o Google Chrome</translation>
 <translation id="2089925163047119068">OU</translation>
 <translation id="2090165459409185032">Para recuperar informações da sua conta, acesse: google.com.br/accounts/recovery</translation>
 <translation id="2090507354966565596">Conexão automática ao fazer login</translation>
@@ -3529,6 +3527,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3771294271822695279">Arquivos de vídeo</translation>
 <translation id="3771851622616482156">Sua conta será desconectada deste site, inclusive nas guias abertas</translation>
 <translation id="3772046291955677288">Li e concordo com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço Adicionais do Chrome e do ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="3774059845329307709">Número de série</translation>
 <translation id="3774166835015494435">Fotos e notificações recentes</translation>
 <translation id="3775432569830822555">Certificado de servidor SSL</translation>
 <translation id="3775705724665058594">Enviar para seus dispositivos</translation>
@@ -4483,7 +4482,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4544174279960331769">Avatar azul padrão</translation>
 <translation id="4545028762441890696">Para reativar, aceite as novas permissões:</translation>
 <translation id="4545759655004063573">Não é possível salvar devido a permissões insuficientes. Salve em outro local.</translation>
-<translation id="4546308221697447294">Navegue rapidamente com o Google Chrome</translation>
 <translation id="4546345569117159016">Botão direito</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> quer usar esta extensão:</translation>
 <translation id="4546692474302123343">Entrada de texto por voz do Google Assistente</translation>
@@ -4935,7 +4933,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4912643508233590958">Ativações do estado ocioso</translation>
 <translation id="4915961947098019832">Permitir a exibição de imagens</translation>
 <translation id="4916542008280060967">Permitir que o site edite <ph name="FILE_NAME" />?</translation>
-<translation id="491691592645955587">Mudar para um navegador seguro</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="491779113051926205">Contadores de tráfego do ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> deseja se comunicar com a extensão "<ph name="EXTENSION_NAME" />"</translation>
@@ -5399,7 +5396,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5313967007315987356">Adicionar site</translation>
 <translation id="5315738755890845852">Chave extra: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Salvar</translation>
-<translation id="5319359161174645648">O Google recomenda o Chrome</translation>
 <translation id="5319712128756744240">Parear novo dispositivo</translation>
 <translation id="5320135788267874712">Novo nome do dispositivo</translation>
 <translation id="5320261549977878764">Remover grupo</translation>
@@ -5779,7 +5775,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5625225435499354052">Editar no Google Pay</translation>
 <translation id="5626134646977739690">Nome:</translation>
 <translation id="5627086634964711283">Controla também qual página deve ser exibida quando você clica no botão "Página inicial".</translation>
-<translation id="5627676517703583263">Navegue com inteligência com o Chrome</translation>
 <translation id="5627832140542566187">Orientação da tela</translation>
 <translation id="5628434207686266338">Defina a senha do dispositivo</translation>
 <translation id="562935524653278697">Seu administrador desativou a sincronização dos seus favoritos, histórico, senhas e outras configurações.</translation>
@@ -5940,7 +5935,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5775863968701268310">Gerenciar as preferências do Google Play</translation>
 <translation id="5776450228446082914">A lista de sites que podem ser abertos em qualquer navegador.</translation>
 <translation id="5776571780337000608">Com este app, é possível abrir e editar arquivos com suporte usando o navegador de arquivos ou outros apps. Para controlar quais arquivos são abertos nesse app por padrão, <ph name="BEGIN_LINK" />aprenda a definir os apps padrão no seu dispositivo<ph name="END_LINK" />.</translation>
-<translation id="5777468213129569553">Abra o Chrome</translation>
 <translation id="5778491106820461378">Acesse <ph name="LINK_BEGIN" />Configurações<ph name="LINK_END" /> para gerenciar as Contas do Google conectadas. As permissões concedidas a sites e apps podem ser aplicadas a todas as contas. Se você não quer que sites ou apps tenham acesso às informações da sua conta, faça login no <ph name="DEVICE_TYPE" /> como visitante.</translation>
 <translation id="5780011244986845107">A pasta selecionada contém arquivos confidenciais. Tem certeza de que quer conceder acesso permanente de leitura nessa pasta ao "<ph name="APP_NAME" />"?</translation>
 <translation id="5780973441651030252">Prioridade do processo</translation>
@@ -7251,7 +7245,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6832218595502288407">Alinhar à esquerda</translation>
 <translation id="6833479554815567477">A guia foi removida do grupo <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
-<translation id="683373380308365518">Mudar para um navegador inteligente e seguro</translation>
 <translation id="6833996806551876956">Teste da Privacy Sandbox</translation>
 <translation id="6835762382653651563">Conecte-se à Internet para atualizar seu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Erro de exclusão do certificado</translation>
@@ -9247,7 +9240,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8433186206711564395">Configurações de rede</translation>
 <translation id="8434480141477525001">Porta de depuração de Cliente nativo</translation>
 <translation id="8437209419043462667">EUA</translation>
-<translation id="8438328416656800239">Mudar para um navegador inteligente</translation>
 <translation id="8438566539970814960">Melhorar as pesquisas e a navegação</translation>
 <translation id="8439506636278576865">Oferecer a tradução de páginas neste idioma</translation>
 <translation id="8440630305826533614">Aplicativos Linux</translation>
@@ -9776,7 +9768,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8859662783913000679">Conta de familiar responsável</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} conta}one{{COUNT} conta}other{{COUNT} contas}}</translation>
 <translation id="8861568709166518036">Use os botões na tela para navegar até a tela inicial, voltar e alternar entre apps. Essa opção vai ser ativada automaticamente se o ChromeVox ou os cliques automáticos estiverem ativados.</translation>
-<translation id="8862003515646449717">Mudar para um navegador rápido</translation>
 <translation id="8863753581171631212">Abrir link em nova janela do <ph name="APP" /></translation>
 <translation id="8864055848767439877">Compartilhando <ph name="TAB_NAME" /> com <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Sua senha foi salva</translation>

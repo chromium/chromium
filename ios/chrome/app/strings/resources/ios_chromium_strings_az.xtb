@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Chromium tab toru açılır.</translation>
 <translation id="1617663976202781617">Chromium sinxronizasiyası datası</translation>
 <translation id="1647558790457890304">Chromium ayarları</translation>
+<translation id="164952285225495380">Bu bağlama Chromium-da izlənib.</translation>
 <translation id="1722370509450468186">Parolunuz Hesabınızda (<ph name="EMAIL" />) saxlanacaq.</translation>
 <translation id="1736662517232558588">Təmizlənmiş Chromium datası</translation>
 <translation id="1791845338122684020">Chromium tarixçəsi səhifəsini açır.</translation>
@@ -140,6 +141,7 @@ Nəzərə alın ki:
 1. Ayarları açın
 2. Defolt Brauzer Tətbiqinə toxunun
 3. Chromium seçin.</translation>
+<translation id="6197255575340902638">"<ph name="MODULE_NAME" />" gizlədilsə, Chromium gələcək bağlamaları avtomatik izləməyəcək və keçmiş bağlama izləmə datasını siləcək.</translation>
 <translation id="6247557882553405851">Google Parol Meneceri</translation>
 <translation id="6268381023930128611">Chromium'dan çıxılsın?</translation>
 <translation id="6324041800010509197">Chromium-da tab toruna daxil olun</translation>

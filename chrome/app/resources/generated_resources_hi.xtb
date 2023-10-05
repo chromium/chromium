@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">अपने फ़ोन पर सेट अप पूरा करें</translation>
 <translation id="1054153489933238809">मूल &amp;चित्र को नए टैब में खोलें</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> को 1 हफ़्ते में अपडेट करें}one{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्ते में अपडेट करें}other{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्तों में अपडेट करें}}</translation>
-<translation id="1056398434290692818">हाथ के जेस्चर की मदद से आगे और पीछे जाएं</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1056980582064308040">सेटिंग बदलने से हॉटस्पॉट रीस्टार्ट हो जाएगा. साथ ही, हॉटस्पॉट का इस्तेमाल करने वाले डिवाइस अपने-आप डिसकनेक्ट हो जाएंगे.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -572,7 +571,7 @@
 <translation id="1455119378540982311">विंडो के प्रीसेट साइज़</translation>
 <translation id="1457907785077086338">ऐप्लिकेशन के बैज का रंग</translation>
 <translation id="146000042969587795">यह फ़्रेम ब्लॉक किया गया था क्योंकि इसमें कुछ असुरक्षित सामग्री मौजूद है.</translation>
-<translation id="1461041542809785877">प्रदर्शन</translation>
+<translation id="1461041542809785877">परफ़ॉर्मेंस</translation>
 <translation id="1461177659295855031">बुकमार्क बार वाले फ़ोल्डर में ले जाएं</translation>
 <translation id="1461288887896722288">आपने अभी-अभी मैनेज किए जा रहे खाते से साइन इन किया है. मैनेज की जा रही नई प्रोफ़ाइल बनाने पर, आपको उस खाते से जुड़े कुछ संसाधनों का ऐक्सेस मिल जाएगा.</translation>
 <translation id="146219525117638703">ONC स्‍थिति</translation>
@@ -1407,7 +1406,6 @@
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> इंस्टॉल करने के बाद ही डिवाइस का नाम दर्ज किया जा सकता है.</translation>
 <translation id="2088564884469682888">पहले से मौजूद TrackPoint</translation>
 <translation id="208928984520943006">किसी भी समय होम स्क्रीन पर जाने के लिए, स्क्रीन के सबसे निचले हिस्से से ऊपर की ओर स्वाइप करें.</translation>
-<translation id="2089566709556890888">Google Chrome के ज़रिए सुरक्षित रूप से ब्राउज़ करें</translation>
 <translation id="2089925163047119068">या</translation>
 <translation id="2090165459409185032">अपनी खाता जानकारी पुनर्प्राप्‍त करने के लिए, यहां जाएं: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">आपके लॉग इन करने पर अपने-आप कनेक्ट हो जाता है</translation>
@@ -2174,6 +2172,7 @@
 <translation id="2671451824761031126">आपके बुकमार्क और सेटिंग तैयार हैं</translation>
 <translation id="2672142220933875349">खराब crx फ़ाइल, अनपैक करना विफल.</translation>
 <translation id="2673135533890720193">अपना ब्राउज़िंग इतिहास पढ़ें</translation>
+<translation id="2673848446870717676">पक्का करें कि आपका ब्लूटूथ डिवाइस, दूसरे डिवाइस से जोड़ने वाले मोड में है और आस-पास है. सिर्फ़ भरोसेमंद डिवाइसों के साथ ही जोड़ें. जोड़े गए डिवाइस, इस Chromebook पर मौजूद सभी खातों पर दिखते हैं.</translation>
 <translation id="2673873887296220733">क्या एक फ़ाइल को खोलने के लिए, उसे <ph name="CLOUD_PROVIDER" /> पर कॉपी करना है?</translation>
 <translation id="2674764818721168631">बंद है</translation>
 <translation id="2676084251379299915">एंटरप्राइज़ नीति के तहत इस एक्सटेंशन को बंद कर दिया गया है, क्योंकि यह अब Chrome Web Store पर उपलब्ध नहीं है.</translation>
@@ -3528,6 +3527,7 @@
 <translation id="3771294271822695279">वीडियो फ़ाइलें</translation>
 <translation id="3771851622616482156">आपको इस साइट और खुले हुए टैब से साइन आउट कर दिया जाएगा</translation>
 <translation id="3772046291955677288">मैंने <ph name="BEGIN_LINK1" />Google की सेवा की शर्तें<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome और ChromeOS की सेवा की अन्य शर्तें<ph name="END_LINK2" /> पढ़ ली हैं और मैं उनसे सहमत हूं.</translation>
+<translation id="3774059845329307709">सीरियल नंबर</translation>
 <translation id="3774166835015494435">हाल ही की फ़ोटो और सूचनाएं</translation>
 <translation id="3775432569830822555">SSL सर्वर प्रमाणपत्र</translation>
 <translation id="3775705724665058594">अपने डिवाइस पर भेजें</translation>
@@ -3849,6 +3849,7 @@
 <translation id="4010917659463429001">अपने मोबाइल डिवाइस पर अपने बुकमार्क पाने के लिए, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" को ठीक करें?</translation>
 <translation id="4015163439792426608">एक्सटेंशन मिल गए? एक ही जगह पर आसानी से अपने <ph name="BEGIN_LINK" />एक्सटेंशन प्रबंधित करें<ph name="END_LINK" />.</translation>
+<translation id="4016762287427926315">आपने <ph name="APP_NAME" /> को जो अनुमतियां दी हैं वे इस ऐप्लिकेशन के लिए भी लागू होंगी. <ph name="BEGIN_LINK" />मैनेज करें<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">इस लिंक के लिए क्यूआर कोड बनाएं</translation>
 <translation id="4019983356493507433">बुकमार्क की सूची में बदलाव करें</translation>
 <translation id="4020327272915390518">विकल्प मेन्यू</translation>
@@ -4480,7 +4481,6 @@
 <translation id="4544174279960331769">डिफ़ॉल्ट नीला अवतार</translation>
 <translation id="4545028762441890696">उसे फिर से चालू करने के लिए, नई अनुमतियां स्वीकार करें:</translation>
 <translation id="4545759655004063573">कम अनुमतियां होने की वजह से सेव नहीं कर सकते. कृपया किसी दूसरी जगह पर सेव करें.</translation>
-<translation id="4546308221697447294">Google Chrome के ज़रिए तेज़ी से ब्राउज़़ करें</translation>
 <translation id="4546345569117159016">दायां बटन</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> को इस एक्सटेंशन का इस्तेमाल करना है:</translation>
 <translation id="4546692474302123343">Google Assistant में बोलकर लिखने की सुविधा</translation>
@@ -4932,7 +4932,6 @@
 <translation id="4912643508233590958">इस्तेमाल नहीं किए जा रहे प्रोसेसर को जगाना</translation>
 <translation id="4915961947098019832">इमेज दिखाने की अनुमति है</translation>
 <translation id="4916542008280060967">क्या आप साइट को <ph name="FILE_NAME" /> में बदलाव करने देना चाहते हैं?</translation>
-<translation id="491691592645955587">किसी सुरक्षित ब्राउज़र पर जाएं</translation>
 <translation id="4917385247580444890">मज़बूत</translation>
 <translation id="491779113051926205">ChromeOS के ट्रैफ़िक काउंटर</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" एक्‍सटेंशन से संचार करना चाहता है</translation>
@@ -5396,7 +5395,6 @@
 <translation id="5313967007315987356">साइट जोड़ें</translation>
 <translation id="5315738755890845852">ज़्यादा कर्ली ब्रेस: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">सेव करें</translation>
-<translation id="5319359161174645648">Google, Chrome का सुझाव देता है</translation>
 <translation id="5319712128756744240">नया डिवाइस जोड़ें</translation>
 <translation id="5320135788267874712">नए डिवाइस का नाम</translation>
 <translation id="5320261549977878764">ग्रुप को हटाएं</translation>
@@ -5775,7 +5773,6 @@
 <translation id="5625225435499354052">Google Pay पर इससे जुड़ी जानकारी में बदलाव करें</translation>
 <translation id="5626134646977739690">नाम:</translation>
 <translation id="5627086634964711283">इससे यह भी नियंत्रित होता है कि जब आप होम बटन पर क्लिक करते हैं तब कौन सा पेज दिखाया जाए.</translation>
-<translation id="5627676517703583263">Chrome के ज़रिए स्मार्ट तरीके से ब्राउज़ करें</translation>
 <translation id="5627832140542566187">डिसप्ले की दिशा</translation>
 <translation id="5628434207686266338">डिवाइस का पासवर्ड सेट करें</translation>
 <translation id="562935524653278697">आपके व्यवस्थापक ने आपके बुकमार्क, इतिहास, पासवर्ड और अन्य सेटिंग को सिंक करना अक्षम कर दिया है.</translation>
@@ -5936,7 +5933,6 @@
 <translation id="5775863968701268310">Google Play की प्राथमिकताएं मैनेज करें</translation>
 <translation id="5776450228446082914">उन वेबसाइटों की सूची जो दोनों में से किसी भी ब्राउज़र में खुल सकती हैं.</translation>
 <translation id="5776571780337000608">इस ऐप्लिकेशन में इस्तेमाल की जा सकने वाली फ़ाइलों को खोला जा सकता है और उनमें बदलाव किया जा सकता है. ऐसा, फ़ाइल ब्राउज़र या दूसरे ऐप्लिकेशन में किया जा सकता है. यह कंट्रोल करने के लिए कि कौनसी फ़ाइलें, डिफ़ॉल्ट तौर पर इस ऐप्लिकेशन में खुलेंगी, <ph name="BEGIN_LINK" />अपने डिवाइस पर डिफ़ॉल्ट ऐप्लिकेशन सेट करने का तरीका जानें<ph name="END_LINK" />.</translation>
-<translation id="5777468213129569553">Chrome खोलें</translation>
 <translation id="5778491106820461378">आप <ph name="LINK_BEGIN" />सेटिंग<ph name="LINK_END" /> में जाकर, साइन-इन किए गए Google खाते मैनेज कर सकते हैं. आपने वेबसाइटों और ऐप्लिकेशन को जो अनुमतियां दी हैं वे सभी खातों पर लागू हो सकती हैं. अगर आप नहीं चाहते कि साइटें या ऐप्लिकेशन आपके खाते की जानकारी ऐक्सेस करें, तो आप <ph name="DEVICE_TYPE" /> में मेहमान के तौर पर साइन इन कर सकते हैं.</translation>
 <translation id="5780011244986845107">आपके चुने हुए फ़ोल्डर में संवेदनशील फ़ाइलें हैं. क्या आप "<ph name="APP_NAME" />" को इस फ़ोल्डर को पढ़ने का ऐक्सेस हमेशा के लिए देना चाहते हैं?</translation>
 <translation id="5780973441651030252">प्राथमिकता संसाधित करें</translation>
@@ -6424,6 +6420,7 @@
 <translation id="6156863943908443225">स्क्रिप्ट कैश</translation>
 <translation id="6156944117133588106">टैबलेट मोड में नेविगेशन बटन दिखाएं</translation>
 <translation id="615930144153753547">साइटें इमेज दिखा सकती हैं</translation>
+<translation id="6160290816917599257">कोड अमान्य है. आपकी एंट्री <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ पता<ph name="LPA_2" />$<ph name="LPA_3" />मेल खाने वाला वैकल्पिक आईडी<ph name="LPA_4" /> के फ़ॉर्मैट में होनी चाहिए</translation>
 <translation id="6160625263637492097">प्रमाणीकरण के लिए प्रमाणपत्र दें</translation>
 <translation id="6163363155248589649">&amp;सामान्य</translation>
 <translation id="6163376401832887457">Kerberos खाते की सेटिंग</translation>
@@ -6559,7 +6556,7 @@
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> पर अपना प्रमाणन करने के लिए किसी प्रमाणपत्र को चुनें</translation>
 <translation id="6268252012308737255"><ph name="APP" /> में खोलें</translation>
 <translation id="6270309713620950855">सूचना म्यूट करें</translation>
-<translation id="6270391203985052864">साइटें आपको सूचनाएं भेजने के लिए पूछ सकती हैं</translation>
+<translation id="6270391203985052864">साइटें, सूचनाएं भेजने के लिए आपकी अनुमति मांग सकती हैं</translation>
 <translation id="6270486800167535228">एक्सटेंशन को पिन किया गया है. ज़्यादा विकल्प देखने के लिए चुनें</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />सिस्टम और ऐप्लिकेशन की जानकारी<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />मेट्रिक<ph name="END_LINK2" /> भेजें</translation>
 <translation id="6271348838875430303">शब्द में किए गए सुधार को पहले जैसा कर दिया गया है</translation>
@@ -7246,7 +7243,6 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6832218595502288407">बाईं ओर अलाइन करें</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> ग्रुप में मौजूद टैब हटाया गया - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="683373380308365518">किसी स्मार्ट और सुरक्षित ब्राउज़र पर जाएं</translation>
 <translation id="6833996806551876956">निजता सैंडबॉक्स ट्रायल</translation>
 <translation id="6835762382653651563">अपने <ph name="DEVICE_TYPE" /> को अपडेट करने के लिए कृपया इंटरनेट से कनेक्ट करें.</translation>
 <translation id="6839225236531462745">प्रमाणपत्र हटाने की गड़बड़ी</translation>
@@ -8456,6 +8452,7 @@
 <translation id="7807117920154132308">ऐसा लगता है कि <ph name="SUPERVISED_USER_NAME" /> ने पहले से ही किसी दूसरे डिवाइस पर Google Assistant को सेट अप कर लिया है. इस डिवाइस पर 'स्क्रीन पर दिखने वाला कॉन्टेंट इस्तेमाल करें' चालू करके, <ph name="SUPERVISED_USER_NAME" /> Assistant से ज़्यादा फ़ायदे पा सकते हैं.</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> को हमेशा अपने कैमरे को एक्सेस करने की अनुमति दें</translation>
 <translation id="7810202088502699111">इस पेज पर पॉप-अप अवरोधित किए गए थे.</translation>
+<translation id="7810367892333449285">आपकी एंट्री <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ पता<ph name="LPA_2" />$<ph name="LPA_3" />मेल खाने वाला वैकल्पिक आईडी<ph name="LPA_4" /> के फ़ॉर्मैट में होनी चाहिए</translation>
 <translation id="7814458197256864873">&amp;प्रतिलिपि बनाएं</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> के लिए, <ph name="SHORTCUT" /> शॉर्टकट में बदलाव करें</translation>
@@ -9104,6 +9101,7 @@
 <translation id="8324784016256120271">अलग-अलग साइटों पर आपकी ब्राउज़िंग गतिविधि देखने के लिए, साइटें कुकी का इस्तेमाल कर सकती हैं. जैसे, दर्शकों की पसंद को ध्यान में रखकर विज्ञापन दिखाने के लिए</translation>
 <translation id="8325413836429495820">क्लिपबोर्ड देखने की अनुमति नहीं है</translation>
 <translation id="8326478304147373412">PKCS #7, प्रमाणपत्र चेन</translation>
+<translation id="832684045355488000">आपको <ph name="NAME" /> पर अपडेट कर दिया गया है</translation>
 <translation id="8327386430364625757">मैथमैटिकल फ़ॉन्ट</translation>
 <translation id="8327538105740918488">इस पासवर्ड को बाद में कभी भी बदला जा सकता है. <ph name="EMAIL" /> के लिए, इस पासवर्ड को <ph name="GOOGLE_PASSWORD_MANAGER" /> में सेव किया जाएगा.</translation>
 <translation id="8327676037044516220">अनुमतियां और सामग्री सेटिंग</translation>
@@ -9238,7 +9236,6 @@
 <translation id="8433186206711564395">नेटवर्क सेटिंग</translation>
 <translation id="8434480141477525001">NaCl डीबग पोर्ट</translation>
 <translation id="8437209419043462667">यूएस</translation>
-<translation id="8438328416656800239">किसी स्मार्ट ब्राउज़र पर जाएं</translation>
 <translation id="8438566539970814960">खोजों और ब्राउज़िंग को बेहतर बनाएं</translation>
 <translation id="8439506636278576865">इस भाषा में पृष्ठों का अनुवाद करने का ऑफ़र दें</translation>
 <translation id="8440630305826533614">Linux ऐप्लिकेशन</translation>
@@ -9434,6 +9431,7 @@
 <translation id="8605428685123651449">SQLite मेमोरी</translation>
 <translation id="8607171490667464784">डिवाइस इनऐक्टिव है, लेकिन बैटरी का इस्तेमाल हो रहा है</translation>
 <translation id="8607326572516521315">स्पैम और धोखाधड़ी में कमी प्राइवेट स्टेट टोकन पर निर्भर करती है. इससे, लोगों और बॉट में अंतर करने के साथ-साथ, धोखाधड़ी से निपटने में साइटों को मदद मिलती है.</translation>
+<translation id="8607828412110648570">पक्का करें कि आपका ब्लूटूथ डिवाइस, दूसरे डिवाइस से जोड़ने वाले मोड में है और आस-पास है. सिर्फ़ भरोसेमंद डिवाइसों के साथ ही जोड़ें. जोड़े गए डिवाइस, इस Chromebook पर मौजूद सभी खातों पर दिखते हैं. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos टिकट जोड़ें</translation>
 <translation id="8609465669617005112">ऊपर जाएं</translation>
 <translation id="8610103157987623234">फ़ॉर्मैट गलत है, कृपया फिर से कोशिश करें</translation>
@@ -9766,7 +9764,6 @@
 <translation id="8859662783913000679">अभिभावक का खाता</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} खाता}one{{COUNT} खाता}other{{COUNT} खाते}}</translation>
 <translation id="8861568709166518036">होम स्क्रीन पर जाने, वापस जाने, और एक ऐप्लिकेशन से दूसरे पर जाने के लिए, स्क्रीन पर दिए गए बटन का इस्तेमाल करें. ChromeVox या अपने-आप क्लिक होने की सुविधा के चालू होने पर, ये बटन अपने-आप ऐक्टिव हो जाते हैं.</translation>
-<translation id="8862003515646449717">किसी तेज़ ब्राउज़र पर जाएं</translation>
 <translation id="8863753581171631212">नए <ph name="APP" /> में लिंक खोलें</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> को <ph name="APP_NAME" /> के साथ शेयर किया जा रहा है</translation>
 <translation id="8864104359314908853">आपका पासवर्ड सेव कर लिया गया है</translation>

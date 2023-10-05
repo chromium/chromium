@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Завършване на настройването на телефона ви</translation>
 <translation id="1054153489933238809">Отваряне на оригиналното изображение в нов раздел</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Актуализирайте <ph name="DEVICE_TYPE" /> в рамките на 1 седмица}other{Актуализирайте <ph name="DEVICE_TYPE" /> в рамките на {NUM_WEEKS} седмици}}</translation>
-<translation id="1056398434290692818">Навигиране назад и напред с прекарване на пръст</translation>
 <translation id="1056898198331236512">Предупреждение</translation>
 <translation id="1056980582064308040">Промяната на настройките ще доведе до рестартиране на точката за достъп. Връзката на устройствата, които я използват, ще бъде прекратена.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -1402,7 +1401,6 @@
 <translation id="2088092308059522196">Регистрирането се поддържа само след като инсталирате <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Вграден TrackPoint</translation>
 <translation id="208928984520943006">Можете по всяко време да преминете към началния екран, като прекарате пръст нагоре от долната част на екрана.</translation>
-<translation id="2089566709556890888">Сърфирайте безопасно с Google Chrome</translation>
 <translation id="2089925163047119068">ИЛИ</translation>
 <translation id="2090165459409185032">За да възстановите информацията за профила си, отворете google.bg/accounts/recovery</translation>
 <translation id="2090507354966565596">Автоматично се свързва, когато влезете в профила си</translation>
@@ -3523,6 +3521,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3771294271822695279">Видеофайлове</translation>
 <translation id="3771851622616482156">Ще излезете от профила си в този сайт, включително в отворените раздели</translation>
 <translation id="3772046291955677288">Прочетох и приемам <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="3774059845329307709">Сериен номер</translation>
 <translation id="3774166835015494435">Скорошни снимки и известия</translation>
 <translation id="3775432569830822555">Сертификат на SSL сървър</translation>
 <translation id="3775705724665058594">Изпращане до устройствата ви</translation>
@@ -4477,7 +4476,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4544174279960331769">Стандартен син аватар</translation>
 <translation id="4545028762441890696">За да го активирате, приемете новите разрешения:</translation>
 <translation id="4545759655004063573">Не може да се запази поради недостатъчни разрешения. Моля, запазете на друго място.</translation>
-<translation id="4546308221697447294">Сърфирайте бързо с Google Chrome</translation>
 <translation id="4546345569117159016">Десен бутон</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> иска да използва това разширение:</translation>
 <translation id="4546692474302123343">Гласово въвеждане с Google Асистент</translation>
@@ -4929,7 +4927,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4912643508233590958">Събуждания при неактивност</translation>
 <translation id="4915961947098019832">Сайтове с разрешение за показване на изображения</translation>
 <translation id="4916542008280060967">Да се разреши ли на сайта да редактира <ph name="FILE_NAME" />?</translation>
-<translation id="491691592645955587">Преминете към сигурен браузър</translation>
 <translation id="4917385247580444890">Силен</translation>
 <translation id="491779113051926205">Броячи за трафика в ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> иска да комуникира с разширението „<ph name="EXTENSION_NAME" />“</translation>
@@ -5393,7 +5390,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5313967007315987356">Добавяне на сайт</translation>
 <translation id="5315738755890845852">Излишна фигурна скоба: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Запазване</translation>
-<translation id="5319359161174645648">Google препоръчва Chrome</translation>
 <translation id="5319712128756744240">Сдвояване на ново устройство</translation>
 <translation id="5320135788267874712">Ново име на устройството</translation>
 <translation id="5320261549977878764">Отмяна на запазването на групата</translation>
@@ -5773,7 +5769,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5625225435499354052">Редактиране в Google Pay</translation>
 <translation id="5626134646977739690">Име:</translation>
 <translation id="5627086634964711283">То също контролира коя страница се показва при кликване върху бутона „Начална страница“.</translation>
-<translation id="5627676517703583263">Сърфирайте интелигентно с Chrome</translation>
 <translation id="5627832140542566187">Ориентация на дисплея</translation>
 <translation id="5628434207686266338">Задаване на парола за устройството</translation>
 <translation id="562935524653278697">Администраторът ви е деактивирал синхронизирането на вашите отметки, история, пароли и други настройки.</translation>
@@ -5934,7 +5929,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5775863968701268310">Управление на предпочитанията за Google Play</translation>
 <translation id="5776450228446082914">Списъкът с уебсайтове, които могат да се отварят във всеки от двата браузъра.</translation>
 <translation id="5776571780337000608">От файловия мениджър или други приложения можете да отваряте и редактирате поддържани файлове с това приложение. За да контролирате кои файлове да се отварят с него по подразбиране, <ph name="BEGIN_LINK" />научете как да зададете стандартни приложения на устройството си<ph name="END_LINK" />.</translation>
-<translation id="5777468213129569553">Отваряне на Chrome</translation>
 <translation id="5778491106820461378">Можете да управлявате профилите в Google, в които сте влезли, от <ph name="LINK_BEGIN" />настройките<ph name="LINK_END" />. Разрешенията, които сте предоставили на уебсайтове и приложения, може да важат за всички профили. Ако не искате сайтове или приложения да имат достъп до информацията в профила ви, можете да влезете в <ph name="DEVICE_TYPE" /> като гост.</translation>
 <translation id="5780011244986845107">Избраната от вас папка съдържа поверителни файлове. Наистина ли искате да предоставите на <ph name="APP_NAME" /> постоянен достъп за четене от тази папка?</translation>
 <translation id="5780973441651030252">Приоритет на процесите</translation>
@@ -7242,7 +7236,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6831043979455480757">Превод</translation>
 <translation id="6832218595502288407">Подравняване вляво</translation>
 <translation id="6833479554815567477">Разделът бе премахнат от групата „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="683373380308365518">Преминете към интелигентен и сигурен браузър</translation>
 <translation id="6833996806551876956">Пробен период за Privacy Sandbox</translation>
 <translation id="6835762382653651563">Моля, свържете се с интернет, за да актуализирате устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Грешка при изтриване на сертификат</translation>
@@ -9102,6 +9095,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8324784016256120271">Сайтовете могат да използват „бисквитки“, за да следят активността ви при сърфиране в различни сайтове, например за да персонализират реклами</translation>
 <translation id="8325413836429495820">Сайтове без разрешение за преглед на буферната памет</translation>
 <translation id="8326478304147373412">PKCS 7, верига сертификати</translation>
+<translation id="832684045355488000">Извършена бе надстройка до <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Математически символи</translation>
 <translation id="8327538105740918488">Винаги можете да промените тази парола по-късно. Тя ще бъде запазена в <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Разрешения и настройки за съдържанието</translation>
@@ -9236,7 +9230,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8433186206711564395">Настройки на мрежата</translation>
 <translation id="8434480141477525001">Порт за отстраняване на грешки в клиента с директно изпълнение</translation>
 <translation id="8437209419043462667">Американска клавиатура</translation>
-<translation id="8438328416656800239">Преминете към интелигентен браузър</translation>
 <translation id="8438566539970814960">Подобряване на търсенията и сърфирането</translation>
 <translation id="8439506636278576865">Предлагане страниците на този език да се превеждат</translation>
 <translation id="8440630305826533614">Приложения за Linux</translation>
@@ -9763,7 +9756,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8859662783913000679">Профил на родител</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} профил}other{{COUNT} профила}}</translation>
 <translation id="8861568709166518036">Използвайте софтуерните бутони, за да навигирате към началния екран, да се връщате назад и да превключвате между приложенията. Те се включват автоматично, ако ChromeVox или функцията за автоматични кликвания са включени.</translation>
-<translation id="8862003515646449717">Преминете към бърз браузър</translation>
 <translation id="8863753581171631212">Отваряне на връзката в нов прозорец на <ph name="APP" /></translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> се споделя с(ъс) <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Паролата ви е запазена</translation>

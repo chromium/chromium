@@ -117,6 +117,7 @@ Things to consider:
 <translation id="5389212809648216794">Google Chrome can't use your camera because it's in use by another application</translation>
 <translation id="5395376160638294582">Make sure that you can always use the Chrome data in your Google Account</translation>
 <translation id="5439191312780166229">Warns you about dangerous sites, even ones that Google didn't know about before, by analysing more data from sites than standard protection. You can choose to skip Chrome warnings.</translation>
+<translation id="5442013002200339429">If you hide '<ph name="MODULE_NAME" />, Chrome will no longer auto-track your future packages and will delete all your past package tracking data.</translation>
 <translation id="5460571915754665838">4. Select Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome will help track this parcel on the New tab page.}other{Chrome will help track these parcels on the New tab page.}}</translation>
 <translation id="5492504007368565877">Google Password Manager can’t check your passwords.</translation>
@@ -188,6 +189,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7933491483529363150">Open my latest tab in Chrome.</translation>
 <translation id="8022947259858476807">Use Chrome by default to open links, search from widgets and auto-fill passwords in other apps</translation>
 <translation id="804638182476029347">Allow Chrome notifications to get price drop alerts</translation>
+<translation id="8069507567842347179">This package has already been tracked on Chrome.</translation>
 <translation id="81358522153858150">Chrome now supports user policies for your managed account</translation>
 <translation id="8160472928944011082">Chrome can't update</translation>
 <translation id="8174679664544842874">Opens a New Tab in Chrome.</translation>

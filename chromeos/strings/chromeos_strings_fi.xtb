@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Vaihda taustakuva päivittäin</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1651925268237749928">Olet valinnut jaetun albumin. Muut voivat lisätä tai muuttaa kuvia. Taustakuvaan saatetaan käyttää kuvia, jotka eivät tällä hetkellä sisälly tähän albumiin.</translation>
+<translation id="1661865805917886535">Joitakin tili- ja järjestelmätietoja voidaan lähettää Googlelle. Tietojen avulla ratkomme teknisiä ongelmia ja kehitämme palveluitamme tietosuojakäytännön (<ph name="PRIVACYPOLICYURL" />) ja käyttöehtojen (<ph name="TERMSOFSERVICEURL" />) mukaisesti. Jos haluat pyytää sisältöön muutoksia, siirry lakiasioiden ohjesivulle (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Pysähtynyt – Muste loppu</translation>
 <translation id="1664796644829245314">Esikatsele: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Sisäänrakennettu VPN</translation>
@@ -131,7 +132,6 @@
 <translation id="1871569928317311284">Laita tumma teema pois päältä</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Laita tumma tila pois päältä</translation>
-<translation id="1881188606372070653">Voit pyytää juridisiin syihin perustuvia sisältömuutoksia <ph name="BEGIN_LINK1" />Oikeudellinen apu ‑sivulla<ph name="END_LINK1" />. Joitakin tili- ja järjestelmätietoja voidaan lähettää Googlelle. Käytämme ilmoittamiasi tietoja teknisten ongelmien ratkaisemiseen ja palvelujemme kehittämiseen <ph name="BEGIN_LINK2" />tietosuojakäytäntömme<ph name="END_LINK2" /> ja <ph name="BEGIN_LINK3" />käyttöehtojemme<ph name="END_LINK3" /> mukaisesti.</translation>
 <translation id="1885577615937958993">kelaa mediaa eteenpäin</translation>
 <translation id="1887850431809612466">Laitteistoversio</translation>
 <translation id="1897672602657312171">Pikakomento ilman hakuanäppäintä voi olla ristiriidassa toisen sovelluksen pikakomennon kanssa. Jatka pikakomennon käyttöä painamalla sitä uudelleen tai paina uutta pikakomentoa hakuavaimella.</translation>

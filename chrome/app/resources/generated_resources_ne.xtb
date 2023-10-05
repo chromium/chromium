@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">आफ्नो फोनमा सेटअप प्रक्रिया पूरा गर्नुहोस्</translation>
 <translation id="1054153489933238809">नयाँ ट्याबमा मूल छविलाई खोल्नुहोस्</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{एक हप्ताभित्र <ph name="DEVICE_TYPE" /> अपडेट गर्नुहोस्}other{{NUM_WEEKS} हप्ताभित्र <ph name="DEVICE_TYPE" /> अपडेट गर्नुहोस्}}</translation>
-<translation id="1056398434290692818">स्वाइप जेस्चर प्रयोग गरेर पछाडि र अगाडि जानुहोस्</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1056980582064308040">तपाईंले सेटिङ बदल्नुभयो भने यो हटस्पट रिस्टार्ट हुने छ। यो हटस्पट प्रयोग गरिरहेका डिभाइसहरू डिस्कनेक्ट हुने छन्।</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -1391,7 +1390,6 @@
 <translation id="2088092308059522196">तपाईंले <ph name="DEVICE_OS" /> इन्स्टल गरेपछि मात्र दर्ता गर्न मिल्छ।</translation>
 <translation id="2088564884469682888">अन्तर्निर्मित TrackPoint</translation>
 <translation id="208928984520943006">जुनसुकै बेला गृह स्क्रिनमा जान तलबाट माथितिर स्वाइप गर्नुहोस्।</translation>
-<translation id="2089566709556890888">Google Chrome मार्फत सुरक्षित ब्राउज गर्नुहोस्</translation>
 <translation id="2089925163047119068">वा</translation>
 <translation id="2090165459409185032">तपाईँको खाता जानकारी पुनःप्राप्ति गर्न google.com/accounts/recovery मा जानुहोस्</translation>
 <translation id="2090507354966565596">तपाईंले लग इन गरेपछि स्वतः कनेक्ट हुन्छ</translation>
@@ -3511,6 +3509,7 @@
 <translation id="3771294271822695279">भिडियो फाइलहरू</translation>
 <translation id="3771851622616482156">तपाईंलाई यो साइटबाट साइन आउट गरिने छ। साथै, हाल कुनै ट्याबमा यो साइट खोलिएको छ भने सो ट्याबबाट पनि साइन आउट गरिने छ</translation>
 <translation id="3772046291955677288">मैले <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Chrome र ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" /> पढेको छु र म ती सर्तहरूमा सहमत छु।</translation>
+<translation id="3774059845329307709">क्रम सङ्ख्या</translation>
 <translation id="3774166835015494435">हालसालैका फोटो तथा सूचनाहरू</translation>
 <translation id="3775432569830822555">SSL सर्भर सर्टिफिकेट</translation>
 <translation id="3775705724665058594">आफ्ना यन्त्रहरूमा पठाउनुहोस्</translation>
@@ -4463,7 +4462,6 @@
 <translation id="4544174279960331769">डिफल्ट निलो अवतार</translation>
 <translation id="4545028762441890696">यसलाई पुनः सक्षम पार्न नयाँ अनुमतिहरू स्वीकार गर्नुहोस्:</translation>
 <translation id="4545759655004063573">अपुग्दो अनुमतिहरूको कारणले गर्दा बचत गर्न सक्दैन। कृपया अर्को स्थानमा बचत गर्नुहोस्।</translation>
-<translation id="4546308221697447294">Google Chrome मार्फत छिटो ब्राउज गर्नुहोस्</translation>
 <translation id="4546345569117159016">दायाँतिरको बटन</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> यो एक्स्टेन्सन प्रयोग गर्न चाहनुहुन्छ:</translation>
 <translation id="4546692474302123343">Google सहायकमा बोलेर टाइप गर्ने सुविधा</translation>
@@ -4915,7 +4913,6 @@
 <translation id="4912643508233590958">आइडल उठ्नेहरू</translation>
 <translation id="4915961947098019832">फोटोहरू देखाउन अनुमति दिइएका साइटहरू</translation>
 <translation id="4916542008280060967">साइटलाई <ph name="FILE_NAME" /> सम्पादन गर्न दिने हो?</translation>
-<translation id="491691592645955587">कुनै सुरक्षित ब्राउजरमा स्विच गर्नुहोस्</translation>
 <translation id="4917385247580444890">बलियो</translation>
 <translation id="491779113051926205">ChromeOS का ट्राफिक काउन्टरहरू</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ले एक्सटेन्सन "<ph name="EXTENSION_NAME" />" सँग कुराकानी गर्न चाहन्छ</translation>
@@ -5379,7 +5376,6 @@
 <translation id="5313967007315987356">साइट थप्नुहोस्</translation>
 <translation id="5315738755890845852">अतिरिक्त मझौला कोष्ठक: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
-<translation id="5319359161174645648">Google ले Chrome प्रयोग गर्ने सुझाव दिन्छ</translation>
 <translation id="5319712128756744240">नयाँ डिभाइस कनेक्ट गर्नुहोस्</translation>
 <translation id="5320135788267874712">यन्त्रको नयाँ नाम</translation>
 <translation id="5320261549977878764">समूह अनसेभ गर्नुहोस्</translation>
@@ -5758,7 +5754,6 @@
 <translation id="5625225435499354052">Google Pay मा गई जानकारी परिवर्तन गर्नुहोस्</translation>
 <translation id="5626134646977739690">नाम:</translation>
 <translation id="5627086634964711283">यसले तपाईंले होम बटनमा क्लिक गर्दा कुन पाना देखाउने भनी नियन्त्रण गर्छ ।</translation>
-<translation id="5627676517703583263">Chrome मार्फत स्मार्ट तरिकाले ब्राउज गर्नुहोस्</translation>
 <translation id="5627832140542566187">डिस्प्लेको झुकाव</translation>
 <translation id="5628434207686266338">डिभाइसको पासवर्ड सेट गर्नुहोस्</translation>
 <translation id="562935524653278697">तपाईंको प्रशासकले तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरूको सिंक गर्ने सेवालाई असक्षम पार्नुभएको छ।</translation>
@@ -5919,7 +5914,6 @@
 <translation id="5775863968701268310">Google Play का प्राथमिकताहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5776450228446082914">दुईमध्ये जुनसुकै ब्राउजरबाट खोल्न सकिने वेबसाइटहरूको सूची।</translation>
 <translation id="5776571780337000608">तपाईं यो एप प्रयोग गरी खोल्न तथा सम्पादन गर्न मिल्ने फाइलहरू फाइल ब्राउजर वा अन्य एपमार्फत खोल्न तथा सम्पादन गर्न सक्नुहुन्छ। तपाईं कुन कुन फाइल यो एपमार्फत स्वतः खुल्छ भन्ने कुरा नियन्त्रण गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />डिभाइसमा डिफल्ट एप कसरी तय गर्ने भन्ने कुरा जान्नुहोस्<ph name="END_LINK" />।</translation>
-<translation id="5777468213129569553">Chrome खोल्नुहोस्</translation>
 <translation id="5778491106820461378">तपाईं <ph name="LINK_BEGIN" />सेटिङ<ph name="LINK_END" />मा गई साइन इन गरिएका Google खाताहरू व्यवस्थापन गर्न सक्नुहुन्छ। तपाईंले वेबसाइट तथा एपहरूलाई दिनुभएका अनुमति सबै खाताहरूमा लागू हुन सक्छन्। तपाईं साइट वा एपहरूलाई तपाईंको खातासम्बन्धी जानकारी हेर्न तथा प्रयोग गर्न दिन चाहनुहुन्न भने तपाईं आफ्नो <ph name="DEVICE_TYPE" /> मा अतिथिका रूपमा साइन इन गर्न सक्नुहुन्छ।</translation>
 <translation id="5780011244986845107">तपाईंले चयन गर्नुभएको फोल्डरमा संवेदनशील फाइलहरू समावेश छन्। तपाईं "<ph name="APP_NAME" />" लाई स्थायी रूपमा यो फोल्डर पढ्न सक्ने पहुँच प्रदान गर्ने कुरामा निश्चित हुनुहुन्छ?</translation>
 <translation id="5780973441651030252">प्रक्रिया प्राथमिकता</translation>
@@ -7227,7 +7221,6 @@
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
 <translation id="6832218595502288407">बायाँतिर एलाइन गर्नुहोस्</translation>
 <translation id="6833479554815567477">यो ट्याब <ph name="GROUP_NAME" /> समूहबाट हटाइयो - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="683373380308365518">कुनै स्मार्ट तथा सुरक्षित ब्राउजरमा बदल्नुहोस्</translation>
 <translation id="6833996806551876956">गोपनीयता स्यान्डबक्सको ट्रायल अवधि</translation>
 <translation id="6835762382653651563">कृपया तपाईँको <ph name="DEVICE_TYPE" /> अद्यावधिक गर्न इन्टरनेटमा कनेक्ट गर्नुहोस्।</translation>
 <translation id="6839225236531462745">प्रमाणपत्र मेटाइमा त्रुटी</translation>
@@ -9086,6 +9079,7 @@
 <translation id="8324784016256120271">साइटहरूले तपाईंका गतिविधिअनुसार विज्ञापन देखाउने जस्ता प्रयोजनहरूका लागि विभिन्न साइटहरूमा तपाईंको ब्राउजिङसम्बन्धी गतिविधि हेर्न कुकीहरूको प्रयोग गर्न सक्छन्</translation>
 <translation id="8325413836429495820">तपाईंको क्लिपबोर्ड हेर्न अनुमति नदिइएका साइटहरू</translation>
 <translation id="8326478304147373412">PKCS # 7, प्रमाणपत्र चेन</translation>
+<translation id="832684045355488000">तपाईंको सिस्टम अपग्रेड गरी <ph name="NAME" /> बनाइएको छ</translation>
 <translation id="8327386430364625757">गणितीय फन्ट</translation>
 <translation id="8327538105740918488">तपाईं पछि जुनसुकै बेला यो पासवर्ड बदल्न सक्नुहुन्छ। यो पासवर्ड <ph name="EMAIL" /> को <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिने छ।</translation>
 <translation id="8327676037044516220">अनुमति र सामग्रीसम्बन्धी सेटिङहरू</translation>
@@ -9220,7 +9214,6 @@
 <translation id="8433186206711564395">नेटवर्क सम्बन्धी सेटिङहरू</translation>
 <translation id="8434480141477525001">NaCl डिबग पोर्ट</translation>
 <translation id="8437209419043462667">US</translation>
-<translation id="8438328416656800239">कुनै स्मार्ट ब्राउजरमा स्विच गर्नुहोस्</translation>
 <translation id="8438566539970814960">खोज तथा ब्राउजिङलाई अझ राम्रो बनाउनुहोस्</translation>
 <translation id="8439506636278576865">यस भाषामा पृष्ठहरू अनुवाद प्रस्ताव गर्नुहोस्</translation>
 <translation id="8440630305826533614">Linux का एपहरू</translation>
@@ -9748,7 +9741,6 @@
 <translation id="8859662783913000679">अभिभावकको खाता</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} वटा खाता}other{{COUNT} वटा खाता}}</translation>
 <translation id="8861568709166518036">होमपेजमा जान, पछाडि फर्कन र एउटा एपबाट अर्को एपमा जान स्क्रिनमा भएका बटनहरू प्रयोग गर्नुहोस्। ChromeVox वा स्वचालित क्लिक अन गरेका खण्डमा यो सुविधा स्वतः अन हुन्छ।</translation>
-<translation id="8862003515646449717">कुनै द्रुत ब्राउजरमा स्विच गर्नुहोस्</translation>
 <translation id="8863753581171631212">लिंकलाई नयाँ <ph name="APP" /> मा खोल्नुहोस्</translation>
 <translation id="8864055848767439877"><ph name="APP_NAME" /> सँग <ph name="TAB_NAME" /> आदान प्रदान गर्दै</translation>
 <translation id="8864104359314908853">तपाईंको पासवर्ड सेभ गरिएको छ</translation>

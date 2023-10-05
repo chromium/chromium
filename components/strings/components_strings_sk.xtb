@@ -1730,6 +1730,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Pri vypĺňaní hesiel používate zámku obrazovky</translation>
 <translation id="4558551763791394412">Skúste deaktivovať rozšírenia.</translation>
+<translation id="456043042661026303">Zabezpečeným spôsobom sa kontrolujú vaše platobné údaje</translation>
 <translation id="4566017918361049074">Outdoorové aktivity</translation>
 <translation id="4567686777917670400">Nastavenia prehliadača môže na diaľku zmeniť správca. Aktivita v tomto zariadení môže byť spravovaná aj mimo prehliadača Chromium. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Skontrolovať zoznam súborov cookie a dát webu v novom okne</translation>
@@ -3357,6 +3358,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7865448901209910068">Najlepšia rýchlosť</translation>
 <translation id="7870281855125116701">Bola nájdená zľava</translation>
 <translation id="7871445724586827387">Zmeniť heslo účtu Google</translation>
+<translation id="7876615279559620350">Zrýchlite si platby uložením overovacieho kódu tejto karty v účte Google</translation>
 <translation id="7877007680666472091">identifikátory chráneného obsahu</translation>
 <translation id="7878562273885520351">Vaše heslo mohlo byť napadnuté</translation>
 <translation id="7880146494886811634">Uloženie adresy</translation>
@@ -3845,6 +3847,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8870494189203302833">V rovnakom poradí lícom nadol</translation>
 <translation id="8870700989640064057">Chcete vytlačiť dôverný súbor?</translation>
 <translation id="8871553383647848643">Prispôsobiť vzhľad prehliadača</translation>
+<translation id="8874790741333031443">Vyskúšajte dočasne povoliť súbory cookie tretích strán, čo znamená nižšiu ochranu pri prehliadaní, ale funkcie webu budú s väčšou pravdepodobnosťou fungovať podľa očakávaní.</translation>
 <translation id="8874824191258364635">Zadajte platné číslo karty</translation>
 <translation id="8876033571432926051">Jednoduché hry</translation>
 <translation id="8877780815363510165">Rybolov</translation>

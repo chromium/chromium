@@ -731,6 +731,7 @@ Se questo criterio non viene configurato, gli utenti potranno aggiungere eccezio
 <translation id="165769015320654523">Concedi automaticamente a questi siti l'autorizzazione di connessione a dispositivi HID con gli ID fornitore e prodotto forniti.</translation>
 <translation id="1659406551862245683">Il comportamento predefinito di ridimensionamento della tastiera virtuale viene modificato per ridimensionare l'area visibile del layout</translation>
 <translation id="166427968280387991">Server proxy</translation>
+<translation id="1670638264428789878">Attiva insiemi di siti web correlati</translation>
 <translation id="1673097259557436886">Comunica sempre ai siti web che non è stato salvato alcun metodo di pagamento</translation>
 <translation id="1674287836076801014">SAML</translation>
 <translation id="1675002386741412210">Supportato su:</translation>
@@ -1820,6 +1821,13 @@ Nota: l'omissione di un campo implica la corrispondenza di tutti i valori per il
 
       Gli utenti non possono modificare le cartelle in cui vengono inseriti i preferiti (ma possono nasconderle dalla barra dei preferiti). Il nome predefinito della cartella per i preferiti gestiti è "Preferiti gestiti", ma può essere modificato aggiungendo un nuovo dizionario secondario al criterio con una chiave unica chiamata "<ph name="TOPLEVEL_NAME" />" e il nome della cartella che preferiscono gli utenti come valore. I preferiti gestiti non vengono sincronizzati con l'account utente e le estensioni non possono modificarli.</translation>
 <translation id="2552966063069741410">Fuso orario</translation>
+<translation id="2554010621206996293">Questo criterio consente di controllare l'abilitazione della funzionalità di insiemi di siti web correlati.
+
+Questo criterio esegue l'override di<ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
+
+Se questo criterio non viene configurato o se viene impostato su True, la funzionalità di insiemi di siti web correlati viene attivata.
+
+Se questo criterio viene impostato su False, la funzionalità di insiemi di siti web correlati viene disattivata.</translation>
 <translation id="2555244983262829274">Nascondi il pulsante Pagina iniziale dalla barra degli strumenti</translation>
 <translation id="2562213287271514629">Consenti l'utilizzo del plug-in <ph name="FLASH_PLUGIN_NAME" /> obsoleto come il normale plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="2562339630163277285">Consente di specificare l'URL del motore di ricerca utilizzato per fornire risultati immediati. L'URL deve contenere la stringa <ph name="SEARCH_TERM_MARKER" />, che verrà sostituita in fase di query dal testo inserito dall'utente fino a quel momento.
@@ -1837,6 +1845,7 @@ Nota: l'omissione di un campo implica la corrispondenza di tutti i valori per il
 <translation id="2576324725151524912">Consenti la modalità sviluppatore per app isolate</translation>
 <translation id="257717978573041245">Attiva l'accelerazione hardware</translation>
 <translation id="257788512393330403">Richiedi inserimento della password ogni sei ore</translation>
+<translation id="2580606791930800692">Consente di impostare un elenco di regole di controllo dei dati.</translation>
 <translation id="2580757713966614760">La configurazione del criterio consente di determinare quale criterio di accesso applicare per la configurazione collettiva delle stampanti, al fine di stabilire quali stampanti del criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" /> mettere a disposizione degli utenti.
 
       * Con <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_BLOCKLISTRESTRICTIONS" /> (valore 0), <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> consente di limitare l'accesso alle stampanti specificate.
@@ -3679,6 +3688,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="4157594634940419685">Consenti l'accesso a stampanti CUPS native</translation>
 <translation id="4158531549614162499">Attiva la sincronizzazione Google Drive tramite reti cellulari</translation>
 <translation id="4160962198980004898">Origine dell'indirizzo MAC del dispositivo quando inserito nel dock</translation>
+<translation id="4161019158509414446">Consente di controllare i criteri per la funzionalità di insiemi di siti web correlati.</translation>
 <translation id="4164511138197196839">Se questo criterio viene attivato, le estensioni non pubblicate sul Chrome Web
 Store verranno disattivate su <ph name="PRODUCT_NAME" />.
 Questo criterio viene applicato solo alle estensioni installate e aggiornate dal
@@ -6146,6 +6156,7 @@ verrà usata soltanto la risoluzione della posizione basata sull'<ph name="IP" /
       Se il criterio viene impostato su False, i contenuti pubblicati con la tecnologia Signed HTTP Exchange non vengono caricati.</translation>
 <translation id="6368011194414932347">Configura l'URL della pagina iniziale</translation>
 <translation id="6368403635025849609">Consenti JavaScript su questi siti</translation>
+<translation id="6371005337713685988">Impostazioni di insiemi di siti web correlati</translation>
 <translation id="6371561334154580937">Mostra finestra di dialogo di disconnessione nell'ultima finestra chiusa.</translation>
 <translation id="6372105930898423193">Consente di riattivare la funzionalità AppCache anche se è disattivata per impostazione predefinita.</translation>
 <translation id="6373299801585455337">Attiva i report sulle informazioni relative alla CPU del dispositivo</translation>
@@ -7823,6 +7834,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7758378441185523981">Attiva l'autenticazione ambientale in base ai tipi di profilo.</translation>
 <translation id="776110834126722255">Deprecata</translation>
 <translation id="7763614521440615342">Mostra suggerimenti di contenuti nella pagina Nuova scheda</translation>
+<translation id="776465643636059256">Disattiva insiemi di siti web correlati</translation>
 <translation id="7765879851993224640">Consenti l'uso dell'accesso tramite Smart Lock.</translation>
 <translation id="7767066506143083523">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che possono usare la funzionalità di acquisizione schede.
 

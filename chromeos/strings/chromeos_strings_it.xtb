@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Cambia l'immagine di sfondo ogni giorno</translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1651925268237749928">Hai selezionato un album condiviso. Altre persone possono aggiungere o modificare foto. È possibile che per lo sfondo vengano usate foto che non sono attualmente incluse in questo album.</translation>
+<translation id="1661865805917886535">Alcune informazioni sull'account e sul sistema potrebbero essere inviate a Google. Utilizziamo queste informazioni per risolvere problemi tecnici e migliorare i nostri servizi, nel rispetto delle nostre Norme sulla privacy (<ph name="PRIVACYPOLICYURL" />) e dei nostri Termini di servizio (<ph name="TERMSOFSERVICEURL" />). Per richiedere modifiche ai contenuti, visita la Guida di approfondimento legale (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Operazione interrotta - Inchiostro esaurito</translation>
 <translation id="1664796644829245314">Visualizza <ph name="PREVIEW_OBJECT" /> in anteprima</translation>
 <translation id="1668469839109562275">VPN integrata</translation>
@@ -131,7 +132,6 @@
 <translation id="1871569928317311284">Disattiva il tema scuro</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Disattiva la modalità Buio</translation>
-<translation id="1881188606372070653">Vai alla <ph name="BEGIN_LINK1" />Guida di approfondimento legale<ph name="END_LINK1" /> per richiedere modifiche ai contenuti per motivi legali. Alcuni dati dell'account e del sistema potrebbero essere inviati a Google. Utilizzeremo le informazioni fornite per risolvere problemi tecnici e migliorare i nostri servizi, in conformità con le nostre <ph name="BEGIN_LINK2" />Norme sulla privacy<ph name="END_LINK2" /> e i nostri <ph name="BEGIN_LINK3" />Termini di servizio<ph name="END_LINK3" />.</translation>
 <translation id="1885577615937958993">manda avanti velocemente i contenuti multimediali</translation>
 <translation id="1887850431809612466">Revisione hardware</translation>
 <translation id="1897672602657312171">La scorciatoia senza tasto Ricerca potrebbe essere in conflitto con la scorciatoia di alcune app. Premi di nuovo questa scorciatoia per continuare a utilizzarla oppure premine una nuova usando il tasto Ricerca.</translation>

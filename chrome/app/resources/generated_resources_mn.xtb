@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Тохируулгыг утсан дээрээ дуусгана уу</translation>
 <translation id="1054153489933238809">Эх зургийг шинэ цонхонд нээх</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" />-г 1 долоо хоногийн дотор шинэчлэх}other{<ph name="DEVICE_TYPE" />-г {NUM_WEEKS} долоо хоногийн дотор шинэчлэх}}</translation>
-<translation id="1056398434290692818">Шудрах зангаагаар арагш болон урагш шилжээрэй</translation>
 <translation id="1056898198331236512">Анхааруулга</translation>
 <translation id="1056980582064308040">Тохиргоог өөрчлөх нь сүлжээний цэгийг дахин эхлүүлэх болно. Сүлжээний цэгийг ашиглаж байгаа төхөөрөмжүүдийг салгана.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -1402,7 +1401,6 @@
 <translation id="2088092308059522196">Бүртгэлийг зөвхөн таныг <ph name="DEVICE_OS" />-г суулгасны дараа дэмждэг.</translation>
 <translation id="2088564884469682888">Суурилуулсан TrackPoint</translation>
 <translation id="208928984520943006">Үндсэн нүүр лүү хүссэн үедээ очихын тулд доороос дээш шударна.</translation>
-<translation id="2089566709556890888">Google Chrome-р аюулгүй хайгаарай</translation>
 <translation id="2089925163047119068">ЭСВЭЛ</translation>
 <translation id="2090165459409185032">бүртгэлныхаа мэдээллийг сэргээхийн тулд: google.com/accounts/recovery руу орно уу</translation>
 <translation id="2090507354966565596">Таныг нэвтрэх үед автоматаар холбогдоно</translation>
@@ -3523,6 +3521,7 @@
 <translation id="3771294271822695279">Видео файлууд</translation>
 <translation id="3771851622616482156">Таныг энэ сайтаас гаргах бөгөөд үүнд нээлттэй табын сайтууд мөн багтана</translation>
 <translation id="3772046291955677288">Би <ph name="BEGIN_LINK1" />Google-н үйлчилгээний нөхцөл<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome болон ChromeOS-н үйлчилгээний нэмэлт нөхцөлийг<ph name="END_LINK2" /> уншсан бөгөөд зөвшөөрч байна.</translation>
+<translation id="3774059845329307709">Серийн дугаар</translation>
 <translation id="3774166835015494435">Саяхны зургууд болон мэдэгдлүүд</translation>
 <translation id="3775432569830822555">SSL серверийн сертификат</translation>
 <translation id="3775705724665058594">Төхөөрөмжүүддээ илгээх</translation>
@@ -4475,7 +4474,6 @@
 <translation id="4544174279960331769">Өгөгдмөл цэнхэр аватар</translation>
 <translation id="4545028762441890696">Дахин идэвхжүүлэхийн тулд шинэ зөвшөөрлийг зөвшөөрнө үү:</translation>
 <translation id="4545759655004063573">Холбогдох зөвшөөрөл дутуу байаа тул хадгалах боломжгүй байна. Та өөр хэсэгт хадгална уу.</translation>
-<translation id="4546308221697447294">Google Chrome-р хурдан хайгаарай</translation>
 <translation id="4546345569117159016">Баруун товч</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> энэ өргөтгөлийг ашиглахыг хүсэж байна:</translation>
 <translation id="4546692474302123343">Google Туслахын дуу хоолойгоор оруулах</translation>
@@ -4927,7 +4925,6 @@
 <translation id="4912643508233590958">Идэвхгүй байдлыг сэргээх</translation>
 <translation id="4915961947098019832">Зураг харуулахыг зөвшөөрсөн</translation>
 <translation id="4916542008280060967">Сайтад <ph name="FILE_NAME" /> файлыг засахыг зөвшөөрөх үү?</translation>
-<translation id="491691592645955587">Аюулгүй хөтөч рүү сэлгэх</translation>
 <translation id="4917385247580444890">Хүчтэй</translation>
 <translation id="491779113051926205">ChromeOS ачаалал тоологч</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" өргөтгөлтэй холбогдох хүсэлтэй байна</translation>
@@ -5391,7 +5388,6 @@
 <translation id="5313967007315987356">Сайт нэмэх</translation>
 <translation id="5315738755890845852">Илүү хээтэй хаалт: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Хадгалах</translation>
-<translation id="5319359161174645648">Google нь Chrome-г санал болгож байна</translation>
 <translation id="5319712128756744240">Шинэ төхөөрөмж хослуулах</translation>
 <translation id="5320135788267874712">Шинэ төхөөрөмжийн нэр</translation>
 <translation id="5320261549977878764">Бүлгийг хадгалахаа болих</translation>
@@ -5771,7 +5767,6 @@
 <translation id="5625225435499354052">Google Pay-д засах</translation>
 <translation id="5626134646977739690">Нэр:</translation>
 <translation id="5627086634964711283">Энэ нь мөн таныг Home товчин дээр дарах үед гарч ирдэг хуудсыг хянаж байдаг.</translation>
-<translation id="5627676517703583263">Chrome-р ухаалаг хайгаарай</translation>
 <translation id="5627832140542566187">Дэлгэцийн чиглэл</translation>
 <translation id="5628434207686266338">Төхөөрөмжийн нууц үг тохируулах</translation>
 <translation id="562935524653278697">Таны админ хавчуурга, түүх, нууц үг болон бусад тохиргоог синк хийхийг цуцалсан.</translation>
@@ -5932,7 +5927,6 @@
 <translation id="5775863968701268310">Google Play-н сонголтуудыг удирдах</translation>
 <translation id="5776450228446082914">Аль ч хөтчид нээгдэх боломжтой вебсайтын жагсаалт.</translation>
 <translation id="5776571780337000608">Та дэмжигдсэн файлуудыг файлын хөтчөөсөө энэ аппаар эсвэл бусад аппаар нээх болон засах боломжтой. Энэ аппад өгөгдмөлөөр аль файлуудыг нээхийг хянахын тулд <ph name="BEGIN_LINK" />төхөөрөмж дээрээ өгөгдмөл аппуудыг хэрхэн тохируулах талаар мэдэж авна уу<ph name="END_LINK" />.</translation>
-<translation id="5777468213129569553">Chrome-г нээх</translation>
 <translation id="5778491106820461378">Та нэвтэрсэн Google Бүртгэлүүдийг <ph name="LINK_BEGIN" />Тохиргоо<ph name="LINK_END" /> хэсэгт удирдах боломжтой. Таны вебсайтууд болон аппуудад өгсөн зөвшөөрөл нь бүх бүртгэлд хэрэгжиж болзошгүй. Хэрэв та сайтууд болон аппуудыг таны бүртгэлийн мэдээлэлд хандахыг хүсэхгүй байвал <ph name="DEVICE_TYPE" />-д зочноор нэвтрэх боломжтой.</translation>
 <translation id="5780011244986845107">Таны сонгосон фолдерт эмзэг файл агуулсан байна. Та "<ph name="APP_NAME" />"-д энэ фолдерыг унших хандалтыг бүрмөсөн өгөхдөө итгэлтэй байна уу?</translation>
 <translation id="5780973441651030252">Боловсруулалтын тэргүүлэх чиглэл</translation>
@@ -7239,7 +7233,6 @@
 <translation id="6831043979455480757">Хөрвүүлэх</translation>
 <translation id="6832218595502288407">Зүүн талд эгнүүлэх</translation>
 <translation id="6833479554815567477">Табыг <ph name="GROUP_NAME" /> бүлгээс хассан - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="683373380308365518">Ухаалаг, аюулгүй хөтөч рүү сэлгэх</translation>
 <translation id="6833996806551876956">Нууцлалын sandbox-н туршилт</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />-ээ шинэчлэхийн тулд интернэтэд холбогдоно уу.</translation>
 <translation id="6839225236531462745">Гэрчилгээг арчих алдаа</translation>
@@ -9095,6 +9088,7 @@
 <translation id="8324784016256120271">Сайтууд нь, жишээлбэл зарыг хувийн болгохын тулд өөр өөр сайт дээрх таны хөтчийн үйл ажиллагааг харахын тулд күүки ашиглах боломжтой</translation>
 <translation id="8325413836429495820">Таны түр санах ойг харахыг зөвшөөрөөгүй</translation>
 <translation id="8326478304147373412">PKCS # 7, сертификат хэлхээ</translation>
+<translation id="832684045355488000">Таныг <ph name="NAME" /> руу сайжрууллаа</translation>
 <translation id="8327386430364625757">Математикийн фонт</translation>
 <translation id="8327538105740918488">Та үүнийг дараа нь хүссэн үедээ өөрчлөх боломжтой. Үүнийг <ph name="EMAIL" />-д зориулж <ph name="GOOGLE_PASSWORD_MANAGER" />-д хадгална.</translation>
 <translation id="8327676037044516220">Зөвшөөрөл болон контентын тохиргоо</translation>
@@ -9229,7 +9223,6 @@
 <translation id="8433186206711564395">Сүлжээний тохиргоо</translation>
 <translation id="8434480141477525001">NaCl гүйцэтгэл сайжруулах порт</translation>
 <translation id="8437209419043462667">АНУ</translation>
-<translation id="8438328416656800239">Ухаалаг хөтөч рүү сэлгэх</translation>
 <translation id="8438566539970814960">Хайлт болон хөтлөх явцыг сайжруулаарай</translation>
 <translation id="8439506636278576865">Хуудаснуудыг энэ хэл рүү орчуулахыг санал болгох</translation>
 <translation id="8440630305826533614">Linux аппууд</translation>
@@ -9754,7 +9747,6 @@
 <translation id="8859662783913000679">Эцэг эхийн бүртгэл</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} бүртгэл}other{{COUNT} бүртгэл}}</translation>
 <translation id="8861568709166518036">Нүүр лүү шилжих, буцах болон апп хооронд сэлгэхийн тулд дэлгэц дээрх товчлуурыг ашиглана уу. ChromeVox эсвэл автомат товшилтыг асаасан тохиолдолд автоматаар асна.</translation>
-<translation id="8862003515646449717">Хурдан хөтөч рүү сэлгэх</translation>
 <translation id="8863753581171631212">Холбоосыг шинэ <ph name="APP" />-д нээх</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" />-г <ph name="APP_NAME" />-тай хуваалцаж байна</translation>
 <translation id="8864104359314908853">Таны нууц үгийг хадгалсан</translation>

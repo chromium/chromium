@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Телефоныңыздағы реттеуді аяқтаңыз</translation>
 <translation id="1054153489933238809">Жаңа қойындыда түпнұсқалық &amp;кескінді ашу</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> құрылғысын 1 апта ішінде жаңарту}other{<ph name="DEVICE_TYPE" /> құрылғысын {NUM_WEEKS} апта ішінде жаңарту}}</translation>
-<translation id="1056398434290692818">Сырғыту қимылымен артқа және алға жылжу</translation>
 <translation id="1056898198331236512">Ескерту</translation>
 <translation id="1056980582064308040">Параметрлерді өзгерту хотспотты қайта іске қосады. Хотспотты пайдаланатын құрылғылар ажыратылады.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -1391,7 +1390,6 @@
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> орнатылған соң ғана тіркелуге болады.</translation>
 <translation id="2088564884469682888">Ендірілген TrackPoint</translation>
 <translation id="208928984520943006">Негізгі экранға кез келген уақытта өту үшін саусақпен экранның төменгі жағынан жоғары қарай сырғытыңыз.</translation>
-<translation id="2089566709556890888">Google Chrome арқылы қауіпсіз күйде шолыңыз</translation>
 <translation id="2089925163047119068">НЕМЕСЕ</translation>
 <translation id="2090165459409185032">Аккаунт ақпаратын қалпына келтіру үшін мына сілтемеге өтіңіз: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Кірген кезде автоматты түрде қосылады.</translation>
@@ -3509,6 +3507,7 @@
 <translation id="3771294271822695279">Бейне файлдары</translation>
 <translation id="3771851622616482156">Осы сайттан, оның ішінде ашық қойындылардан шығып кетесіз.</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google Қызмет көрсету шарттарын<ph name="END_LINK1" /> және <ph name="BEGIN_LINK2" />Chrome мен ChromeOS Қосымша қызмет көрсету шарттарын<ph name="END_LINK2" /> оқып шықтым және оларға келісемін.</translation>
+<translation id="3774059845329307709">Сериялық нөмірі</translation>
 <translation id="3774166835015494435">Соңғы фотосуреттер мен хабарландырулар</translation>
 <translation id="3775432569830822555">SSL сервер сертификаты</translation>
 <translation id="3775705724665058594">Құрылғыларға жіберу</translation>
@@ -4461,7 +4460,6 @@
 <translation id="4544174279960331769">Әдепкі көк түсті аватар</translation>
 <translation id="4545028762441890696">Оны қосу үшін жаңа рұқсаттарды қабылдаңыз:</translation>
 <translation id="4545759655004063573">Рұқсат жеткіліксіз болғандықтан, сақтау мүмкін емес. Басқа орынға сақтаңыз.</translation>
-<translation id="4546308221697447294">Google Chrome арқылы жылдам шолу</translation>
 <translation id="4546345569117159016">Оң жақ түйме</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> осы кеңейтімді пайдалануды қалайды:</translation>
 <translation id="4546692474302123343">Google Assistant қолданбасында дауыспен енгізу</translation>
@@ -4913,7 +4911,6 @@
 <translation id="4912643508233590958">Әрекетсіз режимінен іске қосу</translation>
 <translation id="4915961947098019832">Суреттерді көрсетуге рұқсаты барлар</translation>
 <translation id="4916542008280060967">Сайтқа <ph name="FILE_NAME" /> файлын өзгертуге рұқсат етілсін бе?</translation>
-<translation id="491691592645955587">Қауіпсіз браузерге ауысыңыз</translation>
 <translation id="4917385247580444890">Күшті</translation>
 <translation id="491779113051926205">ChromeOS трафик есептеуіштері</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" кеңейтімімен байланысуға рұқсат сұрауда</translation>
@@ -5377,7 +5374,6 @@
 <translation id="5313967007315987356">Сайт қосу</translation>
 <translation id="5315738755890845852">Ирек жақша артық қойылған: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Сақтау</translation>
-<translation id="5319359161174645648">Google қызметі Chrome браузерін ұсынады</translation>
 <translation id="5319712128756744240">Жаңа құрылғымен жұптау</translation>
 <translation id="5320135788267874712">Жаңа құрылғы атауы</translation>
 <translation id="5320261549977878764">Топты сақтамау</translation>
@@ -5754,7 +5750,6 @@
 <translation id="5625225435499354052">Google Pay-де өзгерту</translation>
 <translation id="5626134646977739690">Аты:</translation>
 <translation id="5627086634964711283">Сонымен қатар ол "Негізгі бет" түймесі басылғанда қайсы бет көрсетілетінін бақылайды.</translation>
-<translation id="5627676517703583263">Chrome браузерімен зерделі шолу</translation>
 <translation id="5627832140542566187">Дисплей бағдары</translation>
 <translation id="5628434207686266338">Құрылғы құпия сөзін орнату</translation>
 <translation id="562935524653278697">Әкімшіңіз бетбелгілерді, тарихты, құпия сөздерді және басқа параметрлерді синхрондау мүмкіндігін бөгеген.</translation>
@@ -5915,7 +5910,6 @@
 <translation id="5775863968701268310">Google Play параметрлерін реттеу</translation>
 <translation id="5776450228446082914">Кез келген браузерде ашуға болатын веб-сайттар тізімі.</translation>
 <translation id="5776571780337000608">Қолдау көрсетілетін файлдарды осы қолданба арқылы файл браузерінен не басқа қолданбалар арқылы ашып, өңдей аласыз. Осы қолданбада қандай файлдардың әдепкісінше ашылатынын басқару үшін <ph name="BEGIN_LINK" />құрылғыңызда әдепкі қолданбалар орнату туралы толығырақ біліңіз<ph name="END_LINK" />.</translation>
-<translation id="5777468213129569553">Chrome браузерін ашу</translation>
 <translation id="5778491106820461378">Кірген Google аккаунттарыңызды <ph name="LINK_BEGIN" />Параметрлерден<ph name="LINK_END" /> басқара аласыз. Веб-сайттар мен қолданбаларға берген рұқсаттар барлық аккаунтқа қолданылуы мүмкін. Егер сайттар мен қолданбалардың аккаунтыңыз туралы ақпаратты пайдаланғанын қаламасаңыз, <ph name="DEVICE_TYPE" /> құрылғысына қонақ ретінде кіре аласыз.</translation>
 <translation id="5780011244986845107">Сіз таңдаған қалтада құпия файлдар бар. "<ph name="APP_NAME" />" қолданбасына қалтадағы деректерді тұрақты оқу мүмкіндігін бергіңіз келе ме?</translation>
 <translation id="5780973441651030252">Өңдеу басымдығы</translation>
@@ -7222,7 +7216,6 @@
 <translation id="6831043979455480757">Аудару</translation>
 <translation id="6832218595502288407">Сол жаққа туралау</translation>
 <translation id="6833479554815567477">Қойынды "<ph name="GROUP_NAME" />" тобынан (<ph name="GROUP_CONTENTS" />) өшірілді.</translation>
-<translation id="683373380308365518">Зерделі және қауіпсіз браузерге ауысыңыз</translation>
 <translation id="6833996806551876956">Privacy Sandbox сынақ мерзімі</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> жаңарту үшін, интернетке қосылыңыз.</translation>
 <translation id="6839225236531462745">Сертификат жою қатесі</translation>
@@ -9079,6 +9072,7 @@
 <translation id="8324784016256120271">Сайттар, мысалы, жарнамаларды жекелендіру үшін түрлі сайттарда браузерді пайдалану мәліметіңізді көру үшін cookie файлдарын пайдалана алады.</translation>
 <translation id="8325413836429495820">Буфердегі контентті көруге рұқсаты жоқтар</translation>
 <translation id="8326478304147373412">PKCS #7, сертификаттар тізбегі</translation>
+<translation id="832684045355488000"><ph name="NAME" /> нұсқасына жаңартылды</translation>
 <translation id="8327386430364625757">Математикалық қаріп</translation>
 <translation id="8327538105740918488">Бұл құпия сөзді кез келген уақытта өзгерте аласыз. <ph name="EMAIL" /> аккаунты үшін ол мына жерде сақталады: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="8327676037044516220">Рұқсаттар және контент параметрлері</translation>
@@ -9213,7 +9207,6 @@
 <translation id="8433186206711564395">Желі параметрлері</translation>
 <translation id="8434480141477525001">NaCl түзету ұяшығы</translation>
 <translation id="8437209419043462667">АҚШ</translation>
-<translation id="8438328416656800239">Зерделі браузерге ауысу</translation>
 <translation id="8438566539970814960">Іздеу және сайттарды шолу жұмысын жақсарту</translation>
 <translation id="8439506636278576865">Беттерді осы тілге аудару ұсынысы</translation>
 <translation id="8440630305826533614">Linux қолданбалары</translation>
@@ -9740,7 +9733,6 @@
 <translation id="8859662783913000679">Ата-ананың аккаунты</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} аккаунт}other{{COUNT} аккаунт}}</translation>
 <translation id="8861568709166518036">Экрандағы пернелердің көмегімен басты бетке, артқа өтіңіз және қолданбаларды ауыстырыңыз. ChromeVox не автоматты басу мүмкіндіктері қосулы болса, параметр автоматты түрде белсендіріледі.</translation>
-<translation id="8862003515646449717">Жылдам браузерге ауысыңыз</translation>
 <translation id="8863753581171631212">Сілтемені жаңа <ph name="APP" /> қолданбасында ашу</translation>
 <translation id="8864055848767439877">"<ph name="TAB_NAME" />" қойындысы <ph name="APP_NAME" /> қолданбасына жіберілуде.</translation>
 <translation id="8864104359314908853">Құпия сөзіңіз сақталды</translation>

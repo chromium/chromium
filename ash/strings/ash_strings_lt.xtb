@@ -704,6 +704,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="385300504083504382">Pradžia</translation>
 <translation id="3859364108019690">Nepavyko perduoti programų srautu</translation>
 <translation id="3861651314799684201">Paspauskite „Enter“, kad įrašytumėte visą ekraną</translation>
+<translation id="3865912916886104060">Nėra jokių prijungtų įrenginių. „Wi-Fi“ bus išjungtas, kad būtų galima pradėti naudoti viešosios interneto prieigos tašką.</translation>
 <translation id="3886872229787704059">Atidaryta šiandien</translation>
 <translation id="3891340733213178823">Jei norite atsijungti, du kartus paspauskite „Ctrl“ + „Shift“ + Q.</translation>
 <translation id="3893630138897523026">„ChromeVox“ (ekrano skaitymas balsu)</translation>
@@ -788,6 +789,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4197790712631116042">Išjungta</translation>
 <translation id="4201033867194214117">Funkcija „<ph name="FEATURE_NAME" />“ nepasiekiama</translation>
 <translation id="4201051445878709314">Rodyti ankstesnį mėnesį</translation>
+<translation id="4202362334312791952">Prijungtas vienas įrenginys. „Wi-Fi“ bus išjungtas, kad būtų galima pradėti naudoti viešosios interneto prieigos tašką.</translation>
 <translation id="4209973997261364186">„Wi-Fi“ įjungtas</translation>
 <translation id="4212472694152630271">Perjungti į PIN kodą</translation>
 <translation id="4215497585250573029">VPN nustatymai</translation>
@@ -1051,6 +1053,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5258528442992323769">Nėra jokių išsaugotų darbalaukių</translation>
 <translation id="5260676007519551770">4 pultas</translation>
 <translation id="5268819379131021772">„Google“ užduočių sąrašas</translation>
+<translation id="5275923704957843041">Darbalaukio peržiūra</translation>
 <translation id="5278086053818066789">Įjungti ir (arba) išjungti „ChromeVox“ (ekrano skaitymą balsu)</translation>
 <translation id="5283099933536931082">Reikia atkreipti dėmesį į „<ph name="APP_ITEM_TITLE" />“.</translation>
 <translation id="5283198616748585639">Pridėti 1 min.</translation>
@@ -1167,6 +1170,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5707775774148071965">Įrenginys palaiko didesnį duomenų dažnį nei laidas. Įrenginio našumas gali būti apribotas.</translation>
 <translation id="5710450975648804523">Netrukdymo režimas įjungtas</translation>
 <translation id="571295407079589142">Mobiliojo ryšio duomenys išjungti</translation>
+<translation id="5716891621595980681">Prijungtų įrenginių: <ph name="DEVICECOUNT" />. „Wi-Fi“ bus išjungtas, kad būtų galima pradėti naudoti viešosios interneto prieigos tašką.</translation>
 <translation id="5727460725221669831">Jei pamiršote slaptažodį arba neseniai pakeitėte „Google“ paskyros slaptažodį, pabandykite atkurti šį naudotoją.</translation>
 <translation id="573413375004481890">Šis įrenginys negali palaikyti visų ekranų, todėl vienas iš jų buvo atjungtas</translation>
 <translation id="5740328398383587084">Bendrinimas netoliese</translation>

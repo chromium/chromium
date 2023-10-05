@@ -1734,6 +1734,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Estás usando el bloqueo de pantalla para rellenar contraseñas</translation>
 <translation id="4558551763791394412">Inhabilita las extensiones.</translation>
+<translation id="456043042661026303">Comprobando los detalles del pago de forma segura</translation>
 <translation id="4566017918361049074">Exterior</translation>
 <translation id="4567686777917670400">El administrador puede cambiar la configuración del navegador de forma remota. Es posible que la actividad de este dispositivo también se gestione fuera de Chromium. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Ver una lista con las cookies y los datos de sitios en una ventana nueva</translation>
@@ -3362,6 +3363,7 @@ Más información:
 <translation id="7865448901209910068">Mejor velocidad</translation>
 <translation id="7870281855125116701">Descuento encontrado</translation>
 <translation id="7871445724586827387">Cambia la contraseña de tu cuenta de Google</translation>
+<translation id="7876615279559620350">Para tramitar las compras más rápido, guarda el CVC de esta tarjeta en tu cuenta de Google</translation>
 <translation id="7877007680666472091">IDs de contenido protegido</translation>
 <translation id="7878562273885520351">Es posible que tu contraseña se haya vulnerado</translation>
 <translation id="7880146494886811634">Guardar dirección</translation>
@@ -3849,6 +3851,7 @@ Más información:
 <translation id="8870494189203302833">Mismo orden boca abajo</translation>
 <translation id="8870700989640064057">¿Imprimir archivo confidencial?</translation>
 <translation id="8871553383647848643">Personaliza el aspecto de tu navegador</translation>
+<translation id="8874790741333031443">Prueba a permitir temporalmente las cookies de terceros, lo que disminuirá la protección al navegar, pero aumentará la probabilidad de que las opciones de los sitios funcionen como se espera.</translation>
 <translation id="8874824191258364635">Introduce un número de tarjeta válido</translation>
 <translation id="8876033571432926051">Juegos casuales</translation>
 <translation id="8877780815363510165">Pesca</translation>

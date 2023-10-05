@@ -117,6 +117,7 @@ Nəzərə alın ki:
 <translation id="5389212809648216794">Digər tətbiq tərəfindən istifadə olunduğu üçün Google Chrome kameranı istifadə edə bilməz</translation>
 <translation id="5395376160638294582">Google Hesabında hər zaman Chrome datasından istifadə edə biləcəyinizdən əmin olun</translation>
 <translation id="5439191312780166229">Standart qoruma ilə müqayisədə saytlardan daha çox data təhlil edərək təhlükəli, hətta Google-un bilmədiyi saytlar haqqında xəbərdar edir. Chrome xəbərdarlıqlarını ötürə bilərsiniz.</translation>
+<translation id="5442013002200339429">"<ph name="MODULE_NAME" />" gizlədilsə, Chrome gələcək bağlamaları avtomatik izləməyəcək və keçmiş bağlama izləmə datasını siləcək.</translation>
 <translation id="5460571915754665838">4. Chrome seçin</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome yeni tab səhifəsində bu paketi izləməyə kömək edəcək.}other{Chrome yeni tab səhifəsində bu paketləri izləməyə kömək edəcək.}}</translation>
 <translation id="5492504007368565877">Google Parol Meneceri parolları yoxlaya bilmir.</translation>
@@ -188,6 +189,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="7933491483529363150">Chrome-da son tabı açın.</translation>
 <translation id="8022947259858476807">Defolt olaraq keçidləri açmaq, vidcetlərdən axtarış etmək və digər tətbiqlərdə parolları avtomatik doldurmaq üçün Chrome istifadə edin</translation>
 <translation id="804638182476029347">Chrome bildirişlərinə qiymətin düşməsi ilə bağlı xəbərdarlıq almaq icazəsi verin</translation>
+<translation id="8069507567842347179">Bu bağlama Chrome-da izlənib.</translation>
 <translation id="81358522153858150">Chrome indi idarə olunan hesabınız üçün istifadəçi siyasətlərini dəstəkləyir</translation>
 <translation id="8160472928944011082">Chrome güncəllənə bilmir</translation>
 <translation id="8174679664544842874">Chrome-da yeni tab açılır.</translation>

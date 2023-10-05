@@ -91,7 +91,7 @@
 <translation id="1643449475550628585">Dnevna promjena pozadinske slike</translation>
 <translation id="1644574205037202324">Historija</translation>
 <translation id="1651925268237749928">Odabrali ste dijeljen album. Druge osobe mogu dodavati ili mijenjati fotografije. Pozadinska slika može koristiti fotografije koje trenutno nisu u ovom albumu.</translation>
-<translation id="1661865805917886535">Neki podaci o računu i sustavu možda će se poslati Googleu. Te podatke upotrebljavamo za rješavanje tehničkih problema i poboljšavanje svojih usluga, u skladu s našim pravilima o privatnosti (<ph name="PRIVACYPOLICYURL" />) i uvjetima pružanja usluge (<ph name="TERMSOFSERVICEURL" />). Da biste zatražili izmjene sadržaja, posjetite pravnu pomoć (<ph name="LEGALHELPPAGEURL" />).</translation>
+<translation id="1661865805917886535">Neke informacije o računu i sistemu mogu se slati Googleu. Koristimo te informacije za rješavanje tehničkih problema i poboljšanje usluga podložno našim Pravilima privatnosti (<ph name="PRIVACYPOLICYURL" />) i Uslovima korištenja usluge (<ph name="TERMSOFSERVICEURL" />). Da zatražite promjene sadržaja, posjetite Pravnu pomoć (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Zaustavljeno – nema tinte</translation>
 <translation id="1664796644829245314">Pregledanje sljedećeg: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
@@ -132,7 +132,6 @@
 <translation id="1871569928317311284">Isključi tamnu temu</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Isključi tamni način rada</translation>
-<translation id="1881188606372070653">Idite na <ph name="BEGIN_LINK1" />stranicu Pravna pomoć<ph name="END_LINK1" /> da zatražite izmjenu sadržaja zbog zakona. Možda će se neke informacije o računu i sistemu poslati Googleu. Informacije koje navedete će nam pomoći da riješimo tehničke probleme i poboljšamo usluge, u skladu s našim <ph name="BEGIN_LINK2" />Pravilima privatnosti<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />Uslovima korištenja usluge<ph name="END_LINK3" />.</translation>
 <translation id="1885577615937958993">premotavanje medija naprijed</translation>
 <translation id="1887850431809612466">Revizija hardvera</translation>
 <translation id="1897672602657312171">Prečica bez tipke za pretraživanje možda se ne slaže s prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da je nastavite koristiti ili pritisnite novu prečicu pomoću tipke za pretraživanje.</translation>

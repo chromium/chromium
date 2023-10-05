@@ -1734,6 +1734,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Folosești blocarea ecranului pentru a completa parolele</translation>
 <translation id="4558551763791394412">Dezactivează extensiile.</translation>
+<translation id="456043042661026303">Verificarea în siguranță a detaliilor de plată</translation>
 <translation id="4566017918361049074">În aer liber</translation>
 <translation id="4567686777917670400">Administratorul poate schimba configurația browserului de la distanță. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chromium. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Examinează o listă de cookie-uri și date privind site-urile într-o fereastră nouă</translation>
@@ -3362,6 +3363,7 @@ Detalii suplimentare:
 <translation id="7865448901209910068">Viteza optimă</translation>
 <translation id="7870281855125116701">A fost găsită o reducere</translation>
 <translation id="7871445724586827387">Schimbă parola Contului Google</translation>
+<translation id="7876615279559620350">Pentru finalizarea mai rapidă a achiziției, salvează codul CVC pentru acest card în Contul Google</translation>
 <translation id="7877007680666472091">ID-uri de conținut protejat</translation>
 <translation id="7878562273885520351">Este posibil ca parola să fie compromisă</translation>
 <translation id="7880146494886811634">Salvează adresa</translation>
@@ -3850,6 +3852,7 @@ Detalii suplimentare:
 <translation id="8870494189203302833">În aceeași ordine, cu fața în jos</translation>
 <translation id="8870700989640064057">Imprimi fișierul confidențial?</translation>
 <translation id="8871553383647848643">Personalizează aspectul browserului</translation>
+<translation id="8874790741333031443">Încearcă să permiți temporar cookie-urile terță parte, ceea ce înseamnă mai puțină protecție pentru navigare, dar există șanse mai mari ca funcțiile site-urilor să funcționeze conform așteptărilor.</translation>
 <translation id="8874824191258364635">Introdu un număr de card valid</translation>
 <translation id="8876033571432926051">Jocuri ocazionale</translation>
 <translation id="8877780815363510165">Pescuit</translation>

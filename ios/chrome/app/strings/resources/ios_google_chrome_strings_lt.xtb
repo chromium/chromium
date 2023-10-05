@@ -117,6 +117,7 @@
 <translation id="5389212809648216794">„Google Chrome“ negali naudoti fotoaparato, nes jį naudoja kita programa</translation>
 <translation id="5395376160638294582">Užtikrinkite, kad visada galėtumėte naudoti „Chrome“ duomenis „Google“ paskyroje</translation>
 <translation id="5439191312780166229">Įspėjama apie pavojingas svetaines, net ir apie tas, apie kurias anksčiau „Google“ nežinojo, analizuojant daugiau duomenų iš svetainių, nei taikant įprastą apsaugą. Galite pasirinkti praleisti „Chrome“ įspėjimus.</translation>
+<translation id="5442013002200339429">Jei paslėpsite „<ph name="MODULE_NAME" />“, „Chrome“ automatiškai nebestebės būsimų siuntinių ir ištrins visus ankstesnius siuntinių stebėjimo duomenis.</translation>
 <translation id="5460571915754665838">4. Pasirinkite „Chrome“</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{„Chrome“ padės stebėti šį paketą „Naujo skirtuko“ puslapyje.}one{„Chrome“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}few{„Chrome“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}many{„Chrome“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}other{„Chrome“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}}</translation>
 <translation id="5492504007368565877">„Google“ slaptažodžių tvarkyklė negali patikrinti jūsų slaptažodžių.</translation>
@@ -188,6 +189,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="7933491483529363150">Atidarykite savo naujausią skirtuką naršyklėje „Chrome“.</translation>
 <translation id="8022947259858476807">Naudokite „Chrome“ pagal numatytuosius nustatymus, kad atidarytumėte nuorodas, ieškotumėte iš valdiklių ir automatiškai pildytumėte slaptažodžius kitose programose</translation>
 <translation id="804638182476029347">Leiskite „Chrome“ pranešimams gauti įspėjimus apie sumažintas kainas</translation>
+<translation id="8069507567842347179">Šis siuntinys jau buvo stebimas naršyklėje „Chrome“.</translation>
 <translation id="81358522153858150">Dabar „Chrome“ palaiko valdomos paskyros naudotojo politiką</translation>
 <translation id="8160472928944011082">Nepavyko atnaujinti „Chrome“</translation>
 <translation id="8174679664544842874">Atidaromas naujas „Chrome“ skirtukas.</translation>

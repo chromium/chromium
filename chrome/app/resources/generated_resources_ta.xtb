@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">அமைவை மொபைலில் நிறைவுசெய்தல்</translation>
 <translation id="1054153489933238809">அசல் &amp;படத்தைப் புதிய தாவலில் திற</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 வாரத்திற்குள் <ph name="DEVICE_TYPE" /> சாதனத்தைப் புதுப்பிக்கவும்}other{{NUM_WEEKS} வாரங்களுக்குள் <ph name="DEVICE_TYPE" /> சாதனத்தைப் புதுப்பிக்கவும்}}</translation>
-<translation id="1056398434290692818">ஸ்வைப் சைகை மூலம் முன்னோக்கியும் பின்னோக்கியும் செல்லலாம்</translation>
 <translation id="1056898198331236512">எச்சரிக்கை</translation>
 <translation id="1056980582064308040">அமைப்புகளை மாற்றுவது ஹாட்ஸ்பாட்டை மீண்டும் தொடங்கும். ஹாட்ஸ்பாட்டைப் பயன்படுத்தும் சாதனங்களின் இணைப்பு துண்டிக்கப்படும்.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -1406,7 +1405,6 @@
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> ஐ நிறுவிய பிறகுதான் பதிவுசெய்ய முடியும்.</translation>
 <translation id="2088564884469682888">உள்ளமைந்த டிராக்பாயிண்ட்</translation>
 <translation id="208928984520943006">கீழிருந்து மேல் நோக்கி ஸ்வைப் செய்வதன் மூலம் எந்த நேரத்திலும் முகப்புத் திரைக்குச் செல்லலாம்.</translation>
-<translation id="2089566709556890888">Google Chromeஐப் பயன்படுத்தி, பாதுகாப்பாக உலாவவும்</translation>
 <translation id="2089925163047119068">அல்லது</translation>
 <translation id="2090165459409185032">கணக்கு விவரங்களை மீட்டெடுக்க, இங்குச் செல்லவும்: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">நீங்கள் உள்நுழையும்போது தானாக இணைக்கப்படும்</translation>
@@ -3528,6 +3526,7 @@
 <translation id="3771294271822695279">வீடியோ ஃபைல்கள் </translation>
 <translation id="3771851622616482156">திறந்துள்ள பக்கங்களில் உள்ளவை உட்பட இந்தத் தளத்தில் இருந்தும் வெளியேற்றப்படுவீர்கள்</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகளையும்<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Chrome, ChromeOS ஆகியவை தொடர்பான கூடுதல் சேவை விதிமுறைகளையும்<ph name="END_LINK2" /> படித்துவிட்டேன், அவற்றை ஏற்கிறேன்.</translation>
+<translation id="3774059845329307709">வரிசை எண்</translation>
 <translation id="3774166835015494435">சமீபத்திய படங்களும் அறிவிப்புகளும்</translation>
 <translation id="3775432569830822555">SSL சேவையக சான்றிதழ்</translation>
 <translation id="3775705724665058594">என் சாதனங்களுக்கு அனுப்பு</translation>
@@ -4482,7 +4481,6 @@
 <translation id="4544174279960331769">இயல்பு நீலநிறத் தோற்றப்படம்</translation>
 <translation id="4545028762441890696">மீண்டும் இயக்க, புதிய அனுமதிகளை ஏற்கவும்:</translation>
 <translation id="4545759655004063573">போதிய அனுமதிகள் இல்லாத காரணத்தால் சேமிக்க முடியவில்லை. மற்றொரு இடத்தில் சேமிக்கவும்.</translation>
-<translation id="4546308221697447294">Google Chromeஐப் பயன்படுத்தி, விரைவாக உலாவவும்</translation>
 <translation id="4546345569117159016">வலது பட்டன்</translation>
 <translation id="4546509872654834602">இந்த நீடிப்பை <ph name="SUPERVISED_USER_NAME" /> பயன்படுத்த விரும்புகிறார்:</translation>
 <translation id="4546692474302123343">Google Assistant குரல் உள்ளீடு</translation>
@@ -4934,7 +4932,6 @@
 <translation id="4912643508233590958">செயல்படாமல் இருக்கும் நினைவூட்டல்கள்</translation>
 <translation id="4915961947098019832">படங்களைக் காட்ட அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="4916542008280060967"><ph name="FILE_NAME" /> ஐத் திருத்த வலைதளத்தை அனுமதிக்கவா?</translation>
-<translation id="491691592645955587">பாதுகாப்பான உலாவிக்கு மாறவும்</translation>
 <translation id="4917385247580444890">வலிமையானது</translation>
 <translation id="491779113051926205">ChromeOS டிராஃபிக் கவுண்ட்டர்கள்</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" />, "<ph name="EXTENSION_NAME" />" நீட்டிப்புடன் தொடர்புகொள்ள விழைகிறது</translation>
@@ -5398,7 +5395,6 @@
 <translation id="5313967007315987356">தளத்தைச் சேர்</translation>
 <translation id="5315738755890845852">கூடுதல் நெளி அடைப்புக்குறி: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">சேமி</translation>
-<translation id="5319359161174645648">Google ஆனது Chromeஐப் பரிந்துரைக்கிறது</translation>
 <translation id="5319712128756744240">புதிய சாதனத்துடன் இணை</translation>
 <translation id="5320135788267874712">புதிய சாதனத்தின் பெயர்</translation>
 <translation id="5320261549977878764">சேமித்த குழுவை அகற்று</translation>
@@ -5778,7 +5774,6 @@
 <translation id="5625225435499354052">Google Payயில் திருத்துக</translation>
 <translation id="5626134646977739690">பெயர்:</translation>
 <translation id="5627086634964711283">முகப்புப் பட்டனைக் கிளிக் செய்யும்போது காண்பிக்கப்படும் பக்கத்தையும் இது கட்டுப்படுத்துகிறது.</translation>
-<translation id="5627676517703583263">Chromeஐப் பயன்படுத்தி, ஸ்மார்ட்டாக உலாவவும்</translation>
 <translation id="5627832140542566187">டிஸ்ப்ளே திசையமைப்பு</translation>
 <translation id="5628434207686266338">சாதனக் கடவுச்சொல்லை அமைத்தல்</translation>
 <translation id="562935524653278697">புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பிற அமைப்புகளை ஒத்திசைப்பதை உங்கள் நிர்வாகி முடக்கியுள்ளார்.</translation>
@@ -5939,7 +5934,6 @@
 <translation id="5775863968701268310">Google Play விருப்பங்களை நிர்வகியுங்கள்</translation>
 <translation id="5776450228446082914">ஏதேனும் ஓர் உலாவியில் திறக்கக்கூடிய இணையதளங்களின் பட்டியல்.</translation>
 <translation id="5776571780337000608">இந்த ஆப்ஸ் மூலம் உங்கள் ஃபைல் உலாவியில் இருந்தோ பிற ஆப்ஸில் இருந்தோ, ஆதரிக்கப்படும் ஃபைல்களைத் திறந்து அவற்றில் மாற்றம் செய்யலாம். எந்தெந்த ஃபைல்கள் இந்த ஆப்ஸில் இயல்பாகத் திறக்கப்பட வேண்டும் என்பதைக் கட்டுப்படுத்த, <ph name="BEGIN_LINK" />உங்கள் சாதனத்தில் இயல்பு ஆப்ஸை எப்படி அமைப்பது என அறிக<ph name="END_LINK" />.</translation>
-<translation id="5777468213129569553">Chromeஐத் திற</translation>
 <translation id="5778491106820461378">உள்நுழைந்துள்ள Google கணக்குகளை <ph name="LINK_BEGIN" />அமைப்புகளில்<ph name="LINK_END" /> நிர்வகிக்கலாம். இணையதளங்களுக்கும் ஆப்ஸுக்கும் நீங்கள் வழங்கிய அனுமதிகள் அனைத்துக் கணக்குகளுக்கும் பொருந்தக்கூடும். உங்கள் கணக்குத் தகவலைத் தளங்களோ ஆப்ஸோ அணுக வேண்டாம் என நீங்கள் விரும்பினால் <ph name="DEVICE_TYPE" /> சாதனத்தில் கெஸ்டாக உள்நுழையலாம்.</translation>
 <translation id="5780011244986845107">நீங்கள் தேர்ந்தெடுத்த ஃபோல்டரில் முக்கியமான ஃபைல்கள்  உள்ளன. "<ph name="APP_NAME" />"க்கு இந்த ஃபோல்டருக்கான நிரந்தர படிக்கும் அணுகலை நிச்சயமாக வழங்க விரும்புகிறீர்களா?</translation>
 <translation id="5780973441651030252">செயல்படுத்தல் முன்னுரிமை</translation>
@@ -7248,7 +7242,6 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6832218595502288407">இடதுபுறம் சீரமை</translation>
 <translation id="6833479554815567477">இந்தக் குழுவிலிருந்து தாவல் நகர்த்தப்பட்டது <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="683373380308365518">ஸ்மார்ட்டான, பாதுகாப்பான உலாவிக்கு மாறவும்</translation>
 <translation id="6833996806551876956">தனியுரிமை சாண்ட்பாக்ஸ் இலவச உபயோகக் காலம்</translation>
 <translation id="6835762382653651563">உங்கள் <ph name="DEVICE_TYPE" />ஐப் புதுப்பிக்க இணையத்துடன் இணையவும்.</translation>
 <translation id="6839225236531462745">சான்றிதழ் நீக்குதல் பிழை</translation>
@@ -9243,7 +9236,6 @@
 <translation id="8433186206711564395">நெட்வொர்க் அமைப்புகள்</translation>
 <translation id="8434480141477525001">NaCl பிழைத்திருத்தப் போர்ட்</translation>
 <translation id="8437209419043462667">யு.எஸ்.</translation>
-<translation id="8438328416656800239">ஸ்மார்ட்டான உலாவலுக்கு மாறவும்</translation>
 <translation id="8438566539970814960">தேடல்களையும் உலாவலையும் மேலும் சிறப்பாக்குக</translation>
 <translation id="8439506636278576865">பக்கங்களை இந்த மொழியில் மொழிபெயர்ப்பதற்கான அனுமதி</translation>
 <translation id="8440630305826533614">Linux ஆப்ஸ்</translation>
@@ -9771,7 +9763,6 @@
 <translation id="8859662783913000679">பெற்றோர் கணக்கு</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} கணக்கு}other{{COUNT} கணக்குகள்}}</translation>
 <translation id="8861568709166518036">முகப்புப் பக்கத்திற்குச் செல்லுதல், பின்செல்லுதல், ஆப்ஸை மாற்றுதல் ஆகியவற்றுக்கு திரையில் காட்டப்படும் பட்டன்களைப் பயன்படுத்தலாம். ChromeVox அல்லது தானியங்கு கிளிக்குகள் இயக்கப்பட்டிருக்கும்போது அவை தானாகவே இயக்கப்படும்.</translation>
-<translation id="8862003515646449717">விரைவான உலாவிக்கு மாறவும்</translation>
 <translation id="8863753581171631212">புதிய <ph name="APP" /> இல் இணைப்பைத் திற</translation>
 <translation id="8864055848767439877"><ph name="APP_NAME" /> ஆப்ஸுடன் <ph name="TAB_NAME" /> தாவலைப் பகிர்கிறது</translation>
 <translation id="8864104359314908853">கடவுச்சொல் சேமிக்கப்பட்டது</translation>

@@ -1734,6 +1734,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">パスワード入力で画面ロックを使用しています</translation>
 <translation id="4558551763791394412">拡張機能を無効にしてみてください。</translation>
+<translation id="456043042661026303">お支払い情報を安全な方法で確認しています</translation>
 <translation id="4566017918361049074">アウトドア</translation>
 <translation id="4567686777917670400">管理者はブラウザの設定をリモートで変更できます。このデバイス上のアクティビティは、Chromium の外部でも管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">新しいウィンドウに Cookie とサイトデータのリストが表示されます</translation>
@@ -3363,6 +3364,7 @@
 <translation id="7865448901209910068">最高速度</translation>
 <translation id="7870281855125116701">割引が見つかりました</translation>
 <translation id="7871445724586827387">Google アカウントのパスワードを変更します</translation>
+<translation id="7876615279559620350">購入手続きをすばやく行うには、このカードの CVC を Google アカウントに保存してください</translation>
 <translation id="7877007680666472091">保護されたコンテンツ ID</translation>
 <translation id="7878562273885520351">パスワードが不正使用される可能性があります</translation>
 <translation id="7880146494886811634">住所を保存</translation>
@@ -3851,6 +3853,7 @@
 <translation id="8870494189203302833">同じ順序（下向き）</translation>
 <translation id="8870700989640064057">機密ファイルを印刷しますか？</translation>
 <translation id="8871553383647848643">ブラウザのデザインをカスタマイズします</translation>
+<translation id="8874790741333031443">サードパーティ Cookie を一時的に許可してみてください。ブラウジング保護の強度は低下しますが、サイトの機能が想定どおりに動作する可能性が高くなります。</translation>
 <translation id="8874824191258364635">有効なクレジット カード番号を入力してください</translation>
 <translation id="8876033571432926051">カジュアル ゲーム</translation>
 <translation id="8877780815363510165">釣り</translation>

@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Завяршыце наладжванне на тэлефоне</translation>
 <translation id="1054153489933238809">Адкрыць зыходны &amp;відарыс у новай укладцы</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Абнавіць прыладу "<ph name="DEVICE_TYPE" />" на працягу 1 тыдня}one{Абнавіць прыладу "<ph name="DEVICE_TYPE" />" на працягу {NUM_WEEKS} тыдня}few{Абнавіць прыладу "<ph name="DEVICE_TYPE" />" на працягу {NUM_WEEKS} тыдняў}many{Абнавіць прыладу "<ph name="DEVICE_TYPE" />" на працягу {NUM_WEEKS} тыдняў}other{Абнавіць прыладу "<ph name="DEVICE_TYPE" />" на працягу {NUM_WEEKS} тыдня}}</translation>
-<translation id="1056398434290692818">Правядзіце пальцам, каб перайсці назад ці ўперад</translation>
 <translation id="1056898198331236512">Папярэджанне</translation>
 <translation id="1056980582064308040">Пасля змянення налад адбудзецца перазапуск хот-спота. Прылады, якія выкарыстоўваюць хот-спот, будуць адключаны.</translation>
 <translation id="1058262162121953039">PUK-код</translation>
@@ -1395,7 +1394,6 @@
 <translation id="2088092308059522196">Зарэгістравацца можна толькі пасля ўсталявання аперацыйнай сістэмы <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Убудаваны джойсцік TrackPoint</translation>
 <translation id="208928984520943006">Каб у любы момант перайсці на галоўны экран, правядзіце знізу ўверх.</translation>
-<translation id="2089566709556890888">Бяспечны прагляд старонак у браўзеры Google Chrome</translation>
 <translation id="2089925163047119068">АБО</translation>
 <translation id="2090165459409185032">Каб аднавіць даныя ўліковага запісу, перайдзіце па спасылцы: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Аўтаматычна падключацца пры ўваходзе</translation>
@@ -3511,6 +3509,7 @@
 <translation id="3771294271822695279">Відэафайлы</translation>
 <translation id="3771851622616482156">Будзе выкананы выхад з гэтага сайта, у тым ліку на адкрытых укладках</translation>
 <translation id="3772046291955677288">Мною былі прачытаны <ph name="BEGIN_LINK1" />Умовы выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковыя ўмовы выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />, і я згаджаюся з імі.</translation>
+<translation id="3774059845329307709">Серыйны нумар</translation>
 <translation id="3774166835015494435">Нядаўнія фота і апавяшчэнні</translation>
 <translation id="3775432569830822555">Сертыфікат сервера SSL</translation>
 <translation id="3775705724665058594">Адпраўка на вашы прылады</translation>
@@ -4463,7 +4462,6 @@
 <translation id="4544174279960331769">Стандартны сіні аватар</translation>
 <translation id="4545028762441890696">Каб уключыць пашырэнне зноў, прыміце новыя дазволы:</translation>
 <translation id="4545759655004063573">Захаваць не ўдалося: недастаткова дазволаў. Выберыце іншае месцазнаходжанне.</translation>
-<translation id="4546308221697447294">Хуткі прагляд з Google Chrome</translation>
 <translation id="4546345569117159016">Правая кнопка</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> хоча выкарыстоўваць пашырэнне:</translation>
 <translation id="4546692474302123343">Галасавы ўвод з дапамогай Памочніка Google</translation>
@@ -4915,7 +4913,6 @@
 <translation id="4912643508233590958">Абуджэнні ад бяздзейнасці</translation>
 <translation id="4915961947098019832">Дазволена паказваць відарысы</translation>
 <translation id="4916542008280060967">Дазволіць сайту змяніць файл <ph name="FILE_NAME" />?</translation>
-<translation id="491691592645955587">Перайсці на бяспечны браўзер</translation>
 <translation id="4917385247580444890">Моцны</translation>
 <translation id="491779113051926205">Лічыльнікі трафіку ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> запытвае абмен данымі з пашырэннем "<ph name="EXTENSION_NAME" />"</translation>
@@ -5379,7 +5376,6 @@
 <translation id="5313967007315987356">Дадаванне сайта</translation>
 <translation id="5315738755890845852">Лішняя фігурная дужка: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Захаваць</translation>
-<translation id="5319359161174645648">Google рэкамендуе браўзер Chrome</translation>
 <translation id="5319712128756744240">Спалучыць новую прыладу</translation>
 <translation id="5320135788267874712">Новая назва прылады</translation>
 <translation id="5320261549977878764">Скасаваць захаванне групы</translation>
@@ -5758,7 +5754,6 @@
 <translation id="5625225435499354052">Змяніць даныя ў Google Pay</translation>
 <translation id="5626134646977739690">Назва:</translation>
 <translation id="5627086634964711283">Таксама вызначае, якая старонка паказваецца пры націсканні кнопкі галоўнай старонкі.</translation>
-<translation id="5627676517703583263">Інтэлектуальны прагляд вэб-старонак – у браўзеры Chrome</translation>
 <translation id="5627832140542566187">Арыентацыя дысплэя</translation>
 <translation id="5628434207686266338">Задайце пароль прылады</translation>
 <translation id="562935524653278697">Адміністратар выключыў сінхранізацыю закладак, гісторыі, пароляў і іншых налад.</translation>
@@ -5919,7 +5914,6 @@
 <translation id="5775863968701268310">Кіраваць параметрамі Google Play</translation>
 <translation id="5776450228446082914">Спіс вэб-сайтаў, якія могуць адкрывацца ў любым браўзеры</translation>
 <translation id="5776571780337000608">З дапамогай гэтай праграмы можна адкрываць і змяняць сумяшчальныя файлы ў файлавым браўзеры і іншых праграмах. Каб указаць, якія файлы павінны адкрывацца ў гэтай праграме стандартна, <ph name="BEGIN_LINK" />паглядзіце, як задаць стандартныя праграмы для прылады<ph name="END_LINK" />.</translation>
-<translation id="5777468213129569553">Адкрыць Chrome</translation>
 <translation id="5778491106820461378">У раздзеле <ph name="LINK_BEGIN" />Налады<ph name="LINK_END" /> можна кіраваць Уліковымі запісамі Google, у якія вы ўвайшлі. Дазволы для вэб-сайтаў і праграм могуць дзейнічаць для ўсіх гэтых уліковых запісаў. Калі вы не хочаце даваць сайтам або праграмам доступ да інфармацыі пра ўліковы запіс, вы можаце ўвайсці на сваю прыладу <ph name="DEVICE_TYPE" /> як госць.</translation>
 <translation id="5780011244986845107">Выбраная папка змяшчае канфідэнцыяльныя файлы. Даць праграме "<ph name="APP_NAME" />" пастаянны доступ на чытанне гэтай папкі?</translation>
 <translation id="5780973441651030252">Прыярытэт працэсу</translation>
@@ -7233,7 +7227,6 @@
 <translation id="6831043979455480757">Перакласці</translation>
 <translation id="6832218595502288407">Выраўнаваць па левым краі</translation>
 <translation id="6833479554815567477">Укладка выдалена з групы "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="683373380308365518">Пераходзьце на разумны і бяспечны браўзер</translation>
 <translation id="6833996806551876956">Пробны перыяд Privacy Sandbox</translation>
 <translation id="6835762382653651563">Каб абнавіць <ph name="DEVICE_TYPE" />, падключыцеся да інтэрнэту.</translation>
 <translation id="6839225236531462745">Памылка пры выдаленні сертыфіката</translation>
@@ -9091,6 +9084,7 @@
 <translation id="8324784016256120271">Сайты могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах, напрыклад, каб персаналізаваць рэкламу</translation>
 <translation id="8325413836429495820">Не дазволена праглядаць буфер абмену</translation>
 <translation id="8326478304147373412">PKCS #7, ланцужок сертыфікатаў</translation>
+<translation id="832684045355488000">Вы перайшлі на <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Матэматычны шрыфт</translation>
 <translation id="8327538105740918488">Пазней вы можаце змяніць гэты пароль. <ph name="GOOGLE_PASSWORD_MANAGER" /> захавае яго для ўліковага запісу <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Дазволы і налады змесціва</translation>
@@ -9225,7 +9219,6 @@
 <translation id="8433186206711564395">Налады сеткі</translation>
 <translation id="8434480141477525001">Порт адладкі NaCl</translation>
 <translation id="8437209419043462667">ЗША</translation>
-<translation id="8438328416656800239">Пераключыцца на разумны браўзер</translation>
 <translation id="8438566539970814960">Паскорыць пошук і прагляд</translation>
 <translation id="8439506636278576865">Прапаноўваць перакладаць старонкі на гэтай мове</translation>
 <translation id="8440630305826533614">Linux-праграмы</translation>
@@ -9755,7 +9748,6 @@
 <translation id="8859662783913000679">Бацькоўскі ўліковы запіс</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} уліковы запіс}one{{COUNT} уліковы запіс}few{{COUNT} уліковыя запісы}many{{COUNT} уліковых запісаў}other{{COUNT} уліковага запісу}}</translation>
 <translation id="8861568709166518036">Кнопкі на экране можна выкарыстоўваць для пераходу на галоўны экран, вяртання назад і пераключэння паміж праграмамі. Гэта налада ўключаецца аўтаматычна, калі ўключаны ChromeVox або аўтаматычныя націсканні.</translation>
-<translation id="8862003515646449717">Пераключыцца на хуткі браўзер</translation>
 <translation id="8863753581171631212">Адкрыць спасылку ў новым акне праграмы <ph name="APP" /></translation>
 <translation id="8864055848767439877">Укладка "<ph name="TAB_NAME" />" абагульваецца з <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Пароль захаваны</translation>

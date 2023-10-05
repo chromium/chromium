@@ -58,6 +58,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1264156759663453185">The selected text is too large for partial translation.</translation>
 <translation id="1265739287306757398">Learn How</translation>
 <translation id="1272079795634619415">Stop</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} password}other{{count} passwords}}</translation>
 <translation id="1275718070701477396">Selected</translation>
 <translation id="1279024913354609713">Don't allow</translation>
 <translation id="1281818060020671000">Manage data</translation>
@@ -68,6 +69,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1295289763199166823">Customise Menu</translation>
 <translation id="1305822519689023679">To make sure that you can always use the passwords in your Google Account, verify that it's you.</translation>
 <translation id="1312721752506309252">Enhanced protection is on</translation>
+<translation id="1320164290882380380">{COUNT,plural, =1{Track this package}other{Track all packages}}</translation>
 <translation id="1321993286294231467">Error saving image.</translation>
 <translation id="1322735045095424339">Your organisation requires Incognito mode</translation>
 <translation id="1323735185997015385">Delete</translation>
@@ -143,6 +145,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1687475363370981210">Mark All Read</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selected</translation>
+<translation id="1713777106376424209">Delivered by</translation>
 <translation id="1715515772563243997">If you trust <ph name="SITE" />, you can use a saved password to sign in.</translation>
 <translation id="1740468249224277719">Double tap to install.</translation>
 <translation id="1750238553597293878">Keep using the passwords in your Google Account</translation>
@@ -191,6 +194,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1987779152850321833">Complete these suggested actions below to get the most out of Chrome.</translation>
 <translation id="1989112275319619282">Browse</translation>
 <translation id="1990820278544963435">Find</translation>
+<translation id="1991153180045413119">Password shared</translation>
 <translation id="1992055602764528852">Sign in to see your tabs from your other devices.</translation>
 <translation id="199425419756152024">View password</translation>
 <translation id="2008357574463816229">If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your account<ph name="END_LINK" />.</translation>
@@ -235,6 +239,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="2268044343513325586">Refine</translation>
 <translation id="2269277877025820298">See More</translation>
 <translation id="2273327106802955778">More menu</translation>
+<translation id="2274800392139890332">Untrack this package</translation>
 <translation id="2275480389219976105">Address found.</translation>
 <translation id="2286505070150039482">Highlighted text</translation>
 <translation id="2287614783861766820">{count,plural, =1{This address will be deleted from this device.}other{These addresses will be deleted from this device.}}</translation>
@@ -243,8 +248,10 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="2299218006564889602">Your passwords are encrypted on your device before they’re saved to Google Password Manager.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Change password on website</translation>
+<translation id="2310154074101836012">Edit carousel</translation>
 <translation id="2316709634732130529">Use suggested password</translation>
 <translation id="2320166752086256636">Hide keyboard</translation>
+<translation id="2348630484974447747">Package</translation>
 <translation id="2351097562818989364">Your translate settings have been reset.</translation>
 <translation id="235789365079050412">Google Privacy Policy</translation>
 <translation id="2359043044084662842">Translate</translation>
@@ -526,6 +533,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="380329542618494757">Name</translation>
 <translation id="3803696231112616155">Offer to translate this site</translation>
 <translation id="3810973564298564668">Manage</translation>
+<translation id="3818045793209708987">Stopped tracking this package</translation>
 <translation id="3818293389945649617">Find Next</translation>
 <translation id="3819183753496523827">You're offline. Check your Internet connection and try again.</translation>
 <translation id="3832419617903252251">Password saved only on this device</translation>
@@ -564,6 +572,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4018310736049373830">Manage activity</translation>
 <translation id="4038354071007134711">No application on this device can open the file.</translation>
 <translation id="4042870976416480368">Find in Page</translation>
+<translation id="4043294777772912240"><ph name="USERNAME" /> can now use your username and password when they use Google Password Manager to sign in to <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Create and share a direct link to part of a page that you've highlighted.</translation>
 <translation id="4045648459118332842">Get your saved passwords in any app with one tap</translation>
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
@@ -607,6 +616,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4286718549648564014">Address moved to your account <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Search</translation>
 <translation id="4302248187517737842">No username ••••••••</translation>
+<translation id="4302415908542657649">Sharing password</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="430793432425771671">Sync Everything</translation>
 <translation id="4309403553630140242">Double-tap for more information</translation>
@@ -642,6 +652,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4508750114462689118">Close sign-in promo</translation>
 <translation id="4514889972748124117">Suggest strong password…</translation>
 <translation id="4520798012560649652">Learn more about Incognito mode</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} bookmark}other{{count} bookmarks}}</translation>
 <translation id="452750746583162491">Review your synced data</translation>
 <translation id="4527660062930312477">Your account is managed</translation>
 <translation id="4536418791685807335">Try signing in again.</translation>
@@ -661,6 +672,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4619615317237390068">Tabs from other devices</translation>
 <translation id="4620246317052452550">Pages That You've Read</translation>
 <translation id="4620888520263267479">Show link previews</translation>
+<translation id="4622477750832577849">Enable tracking</translation>
 <translation id="4630540211544979320">Translate pages</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> reused passwords</translation>
 <translation id="4634124774493850572">Use password</translation>
@@ -776,6 +788,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="519530786644929958">Download failed and cannot be retried.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Allow ‘<ph name="SITE_NAME" />’ to use your <ph name="PERMISSION" />?</translation>
+<translation id="5215990399368742238">Auto-track all detected packages</translation>
 <translation id="5219295696240154694">Help improve security on the web for everyone</translation>
 <translation id="5220945116117011963">Create calendar events from dates</translation>
 <translation id="5221339005270097309">Checking passwords…</translation>
@@ -786,6 +799,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5235389474593199952">Hide History</translation>
 <translation id="5238301240406177137">Save in Account</translation>
 <translation id="5245322853195994030">Cancel sync</translation>
+<translation id="5256908199795498284">Chrome will detect package tracking numbers on sites you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone.</translation>
 <translation id="5271265092610673171">{count,plural, =1{A required field is empty. Fill it before saving.}other{Some required fields are empty. Fill them before saving.}}</translation>
 <translation id="5271549068863921519">Save password</translation>
 <translation id="5283494734135414249">Tap the shortcut that appears under the address bar.</translation>
@@ -794,6 +808,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5317780077021120954">Save</translation>
 <translation id="5318298563956633672">You're already tracking this product.</translation>
 <translation id="5339316356165661760">Turn on sync</translation>
+<translation id="5345598430982201510">Never auto-detect packages</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Track this parcel?}other{Track {COUNT} parcels?}}</translation>
 <translation id="536067926684072644">Show bookmarks</translation>
 <translation id="5360976571138293719">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Google Services<ph name="END_LINK" />.</translation>
@@ -810,6 +825,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="54401264925851789">Page Security Info</translation>
 <translation id="5443952882982198570">Credit cards</translation>
 <translation id="5444892875087332195">Bookmarks</translation>
+<translation id="5454211924362324495">To stop others from using your password, <ph name="BEGIN_LINK" />change it on <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Open offline version</translation>
 <translation id="5475069061743940393">Package tracking</translation>
 <translation id="5478327362747197944">Create calendar events directly by clicking on a date in a web page.</translation>
@@ -1029,6 +1045,7 @@ Your data is encrypted with your passphrase. Enter it to use and save Chrome dat
 
 Try to use a unique password for every site.</translation>
 <translation id="6497850081273517953">Chrome is out of date, update to the latest version to stay secure.</translation>
+<translation id="6502142762807385617">{COUNT,plural, =1{Untrack this package}other{Untrack all packages}}</translation>
 <translation id="650279896687777322">Learn more…</translation>
 <translation id="6507973708545996744">Sign in to get your reading list on all your devices.</translation>
 <translation id="6510072653668207258">Remind me later</translation>
@@ -1109,6 +1126,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6869389390665537774">You can see the pages that you've visited or clear them from your history</translation>
 <translation id="687135068089457384">Show settings</translation>
 <translation id="6873263987691478642">Split view</translation>
+<translation id="687586529977635009">Chrome will detect tracking numbers on sites you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone. You can change this in <ph name="BEGIN_LINK" />Package Tracking Settings<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standard protection against websites, downloads and extensions that are known to be dangerous.</translation>
 <translation id="6888009575607455378">Are you sure that you want to discard your changes?</translation>
 <translation id="6896758677409633944">Copy</translation>
@@ -1156,6 +1174,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7154343200458623869">Complete your task</translation>
 <translation id="7161230316646448869">Sync your bookmarks, history and more on all devices</translation>
 <translation id="7162168282402939716">Unlock incognito tabs with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7168959436351276050">Hiding this Card will Remove All Your Package Tracking Data</translation>
 <translation id="7172852049901402487">Keep your passwords safe from security issues</translation>
 <translation id="7173114856073700355">Open settings</translation>
 <translation id="7189598951263744875">Share...</translation>
@@ -1212,6 +1231,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7508728395076009983">To lock your incognito tabs, set up touch ID, face ID or a passcode.</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7524055474074101597">Access your passwords and more across apps.</translation>
+<translation id="7527917367892640435">Package Already Tracked</translation>
 <translation id="7531345132340165516">Current site</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
 <translation id="754655535278952384">Checked <ph name="TIME" /></translation>
@@ -1415,6 +1435,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8605219856220328675">Close tab.</translation>
 <translation id="8613883225817609844">Hide Recent Tabs</translation>
 <translation id="8620640915598389714">Edit</translation>
+<translation id="8624447588354561276">Package number</translation>
 <translation id="8626393685701737946">You can change the default site view to desktop in Settings &gt; Content Settings</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="8637431369725868556">Get protection from dangerous sites.</translation>

@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಸೆಟಪ್ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="1054153489933238809">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಮೂಲ &amp;ಚಿತ್ರವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 ವಾರದ ಒಳಗಾಗಿ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}one{{NUM_WEEKS} ವಾರಗಳ ಒಳಗಾಗಿ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}other{{NUM_WEEKS} ವಾರಗಳ ಒಳಗಾಗಿ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}}</translation>
-<translation id="1056398434290692818">ಸ್ವೈಪ್ ಗೆಸ್ಚರ್ ಮೂಲಕ ಹಿಂದಕ್ಕೆ ಮತ್ತು ಮುಂದಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="1056898198331236512">ಎಚ್ಚರಿಕೆ</translation>
 <translation id="1056980582064308040">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸುವುದರಿಂದ ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸುತ್ತದೆ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಬಳಸುವ ಸಾಧನಗಳು ಡಿಸ್‌ಕನೆಕ್ಟ್ ಆಗುತ್ತವೆ.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -1399,7 +1398,6 @@
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ನಂತರ ನೋಂದಣಿಯನ್ನು ಮಾತ್ರ ಬೆಂಬಲಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="2088564884469682888">ಬಿಲ್ಟ್-ಇನ್ TrackPoint</translation>
 <translation id="208928984520943006">ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ಗೆ ಹೋಗಲು, ಕೆಳಗಿನಿಂದ ಮೇಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ.</translation>
-<translation id="2089566709556890888">Google Chrome ಮೂಲಕ ಸುರಕ್ಷಿತವಾಗಿ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="2089925163047119068">ಅಥವಾ</translation>
 <translation id="2090165459409185032">ನಿಮ್ಮ ಖಾತೆಯ ಮಾಹಿತಿಯನ್ನು ಮರುಪಡೆಯಲು, ಇಲ್ಲಿಗೆ ಹೋಗಿ: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">ನೀವು ಲಾಗ್ ಇನ್ ಮಾಡಿದ ನಂತರ, ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕನೆಕ್ಟ್ ಆಗುತ್ತದೆ</translation>
@@ -3522,6 +3520,7 @@
 <translation id="3771294271822695279">ವೀಡಿಯೊ ಫೈಲ್‌ಗಳು</translation>
 <translation id="3771851622616482156">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಲ್ಲೂ ಸೇರಿದಂತೆ, ಈ ಸೈಟ್‌ನಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" /> ಮತ್ತು <ph name="BEGIN_LINK2" />Chrome ಹಾಗೂ Chrome OS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳನ್ನು<ph name="END_LINK2" /> ನಾನು ಓದಿದ್ದೇನೆ ಮತ್ತು ಅವುಗಳಿಗೆ ಸಮ್ಮತಿಸುತ್ತೇನೆ.</translation>
+<translation id="3774059845329307709">ಕ್ರಮ ಸಂಖ್ಯೆ</translation>
 <translation id="3774166835015494435">ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು ಮತ್ತು ಅಧಿಸೂಚನೆಗಳು</translation>
 <translation id="3775432569830822555">SSL ಸರ್ವರ್ ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="3775705724665058594">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಕಳುಹಿಸಿ</translation>
@@ -4475,7 +4474,6 @@
 <translation id="4544174279960331769">ಡಿಫಾಲ್ಟ್ ನೀಲಿ ಅವತಾರ್</translation>
 <translation id="4545028762441890696">ಇದನ್ನು ಮರು-ಸಕ್ರಿಯಗೊಳಿಸಲು, ಹೊಸ ಅನುಮತಿಗಳನ್ನು ಸ್ವೀಕರಿಸಿ:</translation>
 <translation id="4545759655004063573">ಸಾಕಷ್ಟು ಅನುಮತಿಗಳು ಇಲ್ಲದ ಕಾರಣ ಉಳಿಸಲಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೊಂದು ಸ್ಥಾನದಲ್ಲಿ ಉಳಿಸಿ.</translation>
-<translation id="4546308221697447294">Google Chrome ಮೂಲಕ ವೇಗವಾಗಿ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="4546345569117159016">ಬಲ ಬಟನ್</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> ಅವರು ಈ ವಿಸ್ತರಣೆಯನ್ನು ಬಳಸಲು ಬಯಸುತ್ತಾರೆ:</translation>
 <translation id="4546692474302123343">Google Assistant ಧ್ವನಿ ಇನ್‌ಪುಟ್‌</translation>
@@ -4928,7 +4926,6 @@
 <translation id="4912643508233590958">ತಟಸ್ಥದ ಎಚ್ಚರಿಸುವಿಕೆಗಳು</translation>
 <translation id="4915961947098019832">ಚಿತ್ರಗಳನ್ನು ತೋರಿಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4916542008280060967"><ph name="FILE_NAME" /> ಅನ್ನು ಸೈಟ್ ಎಡಿಟ್ ಮಾಡಲು ಅನುಮತಿಸುವುದೇ?</translation>
-<translation id="491691592645955587">ಸುರಕ್ಷಿತ ಬ್ರೌಸರ್‌ಗೆ ಬದಲಾಯಿಸಿ</translation>
 <translation id="4917385247580444890">ಪ್ರಬಲ</translation>
 <translation id="491779113051926205">ChromeOS ಟ್ರಾಫಿಕ್ ಕೌಂಟರ್‌ಗಳು</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ಅವರು "<ph name="EXTENSION_NAME" />" ವಿಸ್ತರಣೆಯ ಜೊತೆಗೆ ಸಂವಹಿಸಲು ಬಯಸುತ್ತಾರೆ</translation>
@@ -5392,7 +5389,6 @@
 <translation id="5313967007315987356">ಸೈಟ್ ಸೇರಿಸಿ</translation>
 <translation id="5315738755890845852">ಹೆಚ್ಚುವರಿ ಕರ್ಲಿ ಬ್ರಾಕೆಟ್: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">ಉಳಿಸು</translation>
-<translation id="5319359161174645648">Chrome ಅನ್ನು Google ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ</translation>
 <translation id="5319712128756744240">ಹೊಸ ಸಾಧನವನ್ನು ಜೋಡಿಸಿ</translation>
 <translation id="5320135788267874712">ಹೊಸ ಸಾಧನದ ಹೆಸರು</translation>
 <translation id="5320261549977878764">ಗುಂಪನ್ನು ಅನ್‌ಸೇವ್ ಮಾಡಿ</translation>
@@ -5772,7 +5768,6 @@
 <translation id="5625225435499354052">Google Pay ನಲ್ಲಿ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5626134646977739690">ಹೆಸರು:</translation>
 <translation id="5627086634964711283">ನೀವು ಹೋಮ್ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ ಕಾಣಿಸಿಕೊಳ್ಳುವ ಪುಟವನ್ನು ಕೂಡಾ ಇದು ನಿಯಂತ್ರಿಸುತ್ತದೆ.</translation>
-<translation id="5627676517703583263">Chrome ಮೂಲಕ ಸ್ಮಾರ್ಟ್‌ ಆಗಿ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="5627832140542566187">ಡಿಸ್‌ಪ್ಲೇ ಓರಿಯಂಟೇಶನ್</translation>
 <translation id="5628434207686266338">ಸಾಧನದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="562935524653278697">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಸಿಂಕ್ ಮಾಡುವಿಕೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
@@ -5933,7 +5928,6 @@
 <translation id="5775863968701268310">Google Play ಆದ್ಯತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5776450228446082914">ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಬಹುದಾದ ವೆಬ್‌ಸೈಟ್‌ಗಳ ಪಟ್ಟಿ.</translation>
 <translation id="5776571780337000608">ನಿಮ್ಮ ಫೈಲ್ ಬ್ರೌಸರ್ ಅಥವಾ ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿರುವ ಈ ಆ್ಯಪ್ ಬಳಸಿಕೊಂಡು ನೀವು ಬೆಂಬಲಿತ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಬಹುದು ಮತ್ತು ಎಡಿಟ್ ಮಾಡಬಹುದು. ಈ ಆ್ಯಪ್ ಡೀಫಾಲ್ಟ್ ಆಗಿ ಯಾವ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಬೇಕು ಎಂಬುದನ್ನು ನಿಯಂತ್ರಿಸಲು, <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಡೀಫಾಲ್ಟ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಸೆಟ್ ಮಾಡುವುದು ಹೇಗೆ ಎಂಬುದರ ಕುರಿತು ತಿಳಿಯಿರಿ<ph name="END_LINK" />.</translation>
-<translation id="5777468213129569553">Chrome ತೆರೆಯಿರಿ</translation>
 <translation id="5778491106820461378">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ ಎಲ್ಲಾ Google ಖಾತೆಗಳನ್ನು <ph name="LINK_BEGIN" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಂದ<ph name="LINK_END" /> ನಿರ್ವಹಿಸಬಹುದು. ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ನೀವು ನೀಡಿದ ಅನುಮತಿಗಳು ಎಲ್ಲಾ ಖಾತೆಗಳಿಗೆ ಅನ್ವಯಿಸಬಹುದು. ಸೈಟ್‌ಗಳು ಅಥವಾ ಆ್ಯಪ್‌ಗಳು ನಿಮ್ಮ ಖಾತೆಯ ಮಾಹಿತಿಯನ್ನು ಪ್ರವೇಶಿಸಲು ನೀವು ಬಯಸದಿದ್ದಲ್ಲಿ, ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನೀವು ಅತಿಥಿಯಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು.</translation>
 <translation id="5780011244986845107">ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಸೂಕ್ಷ್ಮವಾದ ಫೈಲ್‌ಗಳಿವೆ. ಈ ಫೋಲ್ಡರ್ ಅನ್ನು ಓದಲು "<ph name="APP_NAME" />" ಗೆ ಶಾಶ್ವತ ಆ್ಯಕ್ಸೆಸ್ ಒದಗಿಸಲು ನೀವು ಖಂಡಿತವಾಗಿಯೂ ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="5780973441651030252">ಪ್ರಕ್ರಿಯೆಯ ಆದ್ಯತೆ</translation>
@@ -7244,7 +7238,6 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6832218595502288407">ಎಡಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ಗುಂಪಿನಿಂದ ಟ್ಯಾಬ್ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
-<translation id="683373380308365518">ಸ್ಮಾರ್ಟ್ ಮತ್ತು ಸುರಕ್ಷಿತ ಬ್ರೌಸರ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="6833996806551876956">ಗೌಪ್ಯತೆ ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್ ಪ್ರಯೋಗ</translation>
 <translation id="6835762382653651563">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ದಯವಿಟ್ಟು ಇಂಟರ್ನೆಟ್‌ಗೆ ಸಂಪರ್ಕಗೊಳಿಸಿ.</translation>
 <translation id="6839225236531462745">ಪ್ರಮಾಣಪತ್ರ ಅಳಿಸುವಿಕೆಯ ದೋಷ</translation>
@@ -9101,6 +9094,7 @@
 <translation id="8324784016256120271">ವಿವಿಧ ಸೈಟ್‌ಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು, ಉದಾಹರಣೆಗೆ, ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ಸೈಟ್‌ಗಳು ಕುಕೀಗಳನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="8325413836429495820">ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ನೋಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="8326478304147373412">PKCS #7, ಪ್ರಮಾಣಪತ್ರ ಸರಣಿ</translation>
+<translation id="832684045355488000">ನಿಮ್ಮನ್ನು <ph name="NAME" /> ಗೆ ಅಪ್‍ಗ್ರೇಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8327386430364625757">ಗಣಿತದ ಫಾಂಟ್</translation>
 <translation id="8327538105740918488">ನೀವು ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಂತರ ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಾಯಿಸಬಹುದು. ಇದನ್ನು <ph name="EMAIL" /> ಗಾಗಿ <ph name="GOOGLE_PASSWORD_MANAGER" /> ನಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="8327676037044516220">ಅನುಮತಿಗಳು ಮತ್ತು ಕಂಟೆಂಟ್‍ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -9235,7 +9229,6 @@
 <translation id="8433186206711564395">ನೆಟ್‌ವರ್ಕ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8434480141477525001">NaCl ಡೀಬಗ್‌ ಪೋರ್ಟ್‌</translation>
 <translation id="8437209419043462667">US</translation>
-<translation id="8438328416656800239">ಸ್ಮಾರ್ಟ್ ಬ್ರೌಸರ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="8438566539970814960">ಹುಡುಕಾಟಗಳನ್ನು ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಉತ್ತಮಗೊಳಿಸುವಂತೆ ಮಾಡಿ</translation>
 <translation id="8439506636278576865">ಪುಟಗಳನ್ನು ಈ ಭಾಷೆಯಲ್ಲಿ ಅನುವಾದ ಮಾಡಲು ಅವಕಾಶ</translation>
 <translation id="8440630305826533614">Linux ಆ್ಯಪ್‌ಗಳು</translation>
@@ -9764,7 +9757,6 @@
 <translation id="8859662783913000679">ಪೋಷಕರ ಖಾತೆ</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} ಖಾತೆ}one{{COUNT} ಖಾತೆಗಳು}other{{COUNT} ಖಾತೆಗಳು}}</translation>
 <translation id="8861568709166518036">ಮನೆಗೆ, ಹಿಂತಿರುಗಲು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಲು ಆನ್-ಸ್ಕ್ರೀನ್ ಬಟನ್‌ಗಳನ್ನು ಬಳಸಿ. ChromeVox ಅಥವಾ ಸ್ವಯಂಚಾಲಿತ ಕ್ಲಿಕ್‌ಗಳು ಆನ್ ಆಗಿದ್ದರೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆನ್ ಆಗುತ್ತದೆ.</translation>
-<translation id="8862003515646449717">ವೇಗವಾದ ಬ್ರೌಸರ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="8863753581171631212">ಹೊಸ <ph name="APP" /> ನಲ್ಲಿ ಲಿಂಕ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> ಅನ್ನು <ph name="APP_NAME" /> ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8864104359314908853">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>

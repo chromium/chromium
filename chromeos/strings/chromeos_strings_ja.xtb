@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">壁紙画像を毎日変更する</translation>
 <translation id="1644574205037202324">履歴</translation>
 <translation id="1651925268237749928">共有アルバムを選択しました。他のユーザーも写真を追加、変更できます。現在このアルバムに含まれていない写真が壁紙に使用される可能性があります。</translation>
+<translation id="1661865805917886535">アカウント情報とシステム情報の一部が Google に送信されます。この情報は、技術的な問題への対処やサービス改善のために、Google のプライバシー ポリシー（<ph name="PRIVACYPOLICYURL" />）と利用規約（<ph name="TERMSOFSERVICEURL" />）に沿って使用されます。コンテンツの変更をリクエストするには、法的事項に関するヘルプ（<ph name="LEGALHELPPAGEURL" />）に移動してください。</translation>
 <translation id="1662989795263954667">停止 - インク切れ</translation>
 <translation id="1664796644829245314">「<ph name="PREVIEW_OBJECT" />」をプレビュー</translation>
 <translation id="1668469839109562275">組み込みの VPN</translation>
@@ -131,7 +132,6 @@
 <translation id="1871569928317311284">ダークモードをオフにする</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">ダークモードをオフにする</translation>
-<translation id="1881188606372070653">法的理由によりコンテンツの変更をリクエストするには、<ph name="BEGIN_LINK1" />法的な問題に関するヘルプページ<ph name="END_LINK1" />をご覧ください。アカウント情報とシステム情報の一部が Google に送信されます。ご提供いただいた情報は、Google で技術的な問題の解決やサービスの改善を図るため、<ph name="BEGIN_LINK2" />プライバシー ポリシー<ph name="END_LINK2" />と<ph name="BEGIN_LINK3" />利用規約<ph name="END_LINK3" />に沿って使用されます。</translation>
 <translation id="1885577615937958993">メディアを早送りする</translation>
 <translation id="1887850431809612466">ハードウェア リビジョン</translation>
 <translation id="1897672602657312171">検索キーを使わないショートカットは、一部のアプリのショートカットと競合する可能性があります。そのまま使用する場合は、このショートカットをもう一度押します。または、検索キーを使用した新しいショートカットを押します。</translation>

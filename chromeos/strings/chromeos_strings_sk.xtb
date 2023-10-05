@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Denne meniť obrázok tapety</translation>
 <translation id="1644574205037202324">História</translation>
 <translation id="1651925268237749928">Vybrali ste zdieľaný album. Ostatní ľudia môžu pridávať alebo meniť fotky. Fotky, ktoré momentálne nie sú v tomto albume, sa môžu používať ako tapeta.</translation>
+<translation id="1661865805917886535">Niektoré informácie o účte a systéme môžu byť odoslané Googlu. Tieto informácie nám pomáhajú riešiť technické problémy a zlepšovať služby v súlade s našimi pravidlami ochrany súkromia (<ph name="PRIVACYPOLICYURL" />) a zmluvnými podmienkami (<ph name="TERMSOFSERVICEURL" />). O zmeny obsahu môžete požiadať v pomocníkovi pre právne otázky (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Zastavené – minul sa atrament</translation>
 <translation id="1664796644829245314">Zobraziť ukážku položky <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Vstavaná sieť VPN</translation>
@@ -131,7 +132,6 @@
 <translation id="1871569928317311284">Vypnúť tmavý motív</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Vypnúť tmavý režim</translation>
-<translation id="1881188606372070653">Ak chcete požiadať o zmenu obsahu z právnych dôvodov, prejdite na stránku <ph name="BEGIN_LINK1" />právnej pomoci<ph name="END_LINK1" />. Niektoré informácie o účte a systéme môžu byť odoslané Googlu. Pomocou informácií, ktoré nám poskytnete, odstránime technické problémy a zlepšíme svoje služby v súlade s <ph name="BEGIN_LINK2" />pravidlami ochrany súkromia<ph name="END_LINK2" /> a <ph name="BEGIN_LINK3" />zmluvnými podmienkami<ph name="END_LINK3" />.</translation>
 <translation id="1885577615937958993">pretočenie médií dopredu</translation>
 <translation id="1887850431809612466">Revízia hardvéru</translation>
 <translation id="1897672602657312171">Skratka bez klávesa vyhľadávania môže byť v konflikte so skratkou niektorej aplikácie. Ak chcete túto skratku naďalej používať, znova ju stlačte, prípadne stlačte novú skratku a využite pritom kláves vyhľadávania.</translation>

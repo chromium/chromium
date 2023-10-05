@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Modifier le fond d'écran tous les jours</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1651925268237749928">Vous avez sélectionné un album partagé. D'autres personnes peuvent ajouter ou modifier des photos. Votre fond d'écran pourrait utiliser des photos qui ne sont pas dans cet album actuellement.</translation>
+<translation id="1661865805917886535">Certaines informations concernant votre compte et votre système pourront être envoyées à Google. Nous utilisons ces informations pour résoudre des problèmes techniques et améliorer nos services, conformément à nos règles de confidentialité (<ph name="PRIVACYPOLICYURL" />) et à nos conditions d'utilisation (<ph name="TERMSOFSERVICEURL" />). Pour demander des modifications de contenu, accédez à l'aide juridique (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Tâche suspendue - À court d'encre</translation>
 <translation id="1664796644829245314">Prévisualiser : <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN intégré</translation>
@@ -131,7 +132,6 @@
 <translation id="1871569928317311284">Annuler le thème sombre</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Annuler le mode sombre</translation>
-<translation id="1881188606372070653">Accédez à la <ph name="BEGIN_LINK1" />page d'aide des demandes légales<ph name="END_LINK1" /> pour demander des modifications de contenu pour des raisons juridiques. Certaines informations concernant votre compte et votre système pourront être envoyées à Google. Nous utiliserons les données fournies pour résoudre des problèmes techniques et pour améliorer nos services, conformément à nos <ph name="BEGIN_LINK2" />Règles de confidentialité<ph name="END_LINK2" /> et à nos <ph name="BEGIN_LINK3" />Conditions d'utilisation<ph name="END_LINK3" />.</translation>
 <translation id="1885577615937958993">faire une avance rapide sur le contenu multimédia</translation>
 <translation id="1887850431809612466">Version du matériel</translation>
 <translation id="1897672602657312171">Un raccourci sans touche de recherche peut entrer en conflit avec le raccourci de certaines applis. Appuyez de nouveau sur ce raccourci pour continuer à l'utiliser ou appuyez sur un nouveau raccourci avec la touche de recherche.</translation>

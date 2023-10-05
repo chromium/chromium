@@ -91,6 +91,7 @@
 <translation id="1643449475550628585">Menjajte sliku pozadine svakog dana</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1651925268237749928">Izabrali ste deljeni album. Drugi ljudi mogu da dodaju ili menjaju slike. Pozadina može da koristi slike koje trenutno nisu u ovom albumu.</translation>
+<translation id="1661865805917886535">Neke informacije o nalogu i sistemu mogu da se šalju Google-u. Te informacije koristimo za rešavanje tehničkih problema i poboljšavanje usluga, u skladu sa politikom privatnosti (<ph name="PRIVACYPOLICYURL" />) i uslovima korišćenja usluge (<ph name="TERMSOFSERVICEURL" />). Da biste zatražili promene sadržaja, posetite pravnu pomoć (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Zaustavljeno – nema više mastila</translation>
 <translation id="1664796644829245314">Pregled za <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
@@ -131,7 +132,6 @@
 <translation id="1871569928317311284">Isključite tamnu temu</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Isključite tamni režim</translation>
-<translation id="1881188606372070653">Idite na <ph name="BEGIN_LINK1" />stranicu pravne pomoći<ph name="END_LINK1" /> da biste zatražili promene sadržaja iz pravnih razloga. Neke informacije o nalogu i sistemu mogu da se šalju Google-u. Koristićemo informacije koje nam date kao pomoć u rešavanju tehničkih problema i u cilju poboljšanja usluga, a shodno <ph name="BEGIN_LINK2" />politici privatnosti<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />uslovima korišćenja usluge<ph name="END_LINK3" />.</translation>
 <translation id="1885577615937958993">premotajte medijski sadržaj unapred</translation>
 <translation id="1887850431809612466">Revizija hardvera</translation>
 <translation id="1897672602657312171">Prečica bez tastera za pretragu može da bude u suprotnosti sa prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da biste nastavili da je koristite ili pritisnite novu prečicu pomoću tastera za pretragu.</translation>
