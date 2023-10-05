@@ -58634,11 +58634,14 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="-1667118147" label="bg"/>
   <int value="-1660178764" label="bn"/>
   <int value="-1391374456" label="ur"/>
+  <int value="-1340196252" label="en-gb"/>
   <int value="-1339452358" label="hu"/>
   <int value="-1319436779" label="lt"/>
+  <int value="-1142714117" label="nb"/>
   <int value="-1060081087" label="te"/>
   <int value="-1001508648" label="nl"/>
   <int value="-854196551" label="ko"/>
+  <int value="-795149789" label="en-au"/>
   <int value="-763755563" label="ru"/>
   <int value="-703387832" label="ml"/>
   <int value="-651240163" label="am"/>
@@ -58646,6 +58649,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="-554160101" label="es"/>
   <int value="-468417265" label="ca"/>
   <int value="-414170858" label="ne"/>
+  <int value="-344966328" label="en-us"/>
   <int value="-232429543" label="fi"/>
   <int value="-155273274" label="ka"/>
   <int value="-132861449" label="or"/>
@@ -58658,16 +58662,19 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="76742708" label="mn"/>
   <int value="126997093" label="sk"/>
   <int value="202713180" label="ms"/>
+  <int value="218790103" label="es-us"/>
   <int value="385084822" label="pt"/>
   <int value="411897228" label="fr"/>
   <int value="579959091" label="iw"/>
   <int value="592207805" label="pl"/>
   <int value="656523220" label="zh"/>
+  <int value="771718923" label="yue"/>
   <int value="771844654" label="uk"/>
   <int value="916296240" label="id"/>
   <int value="934072607" label="ta"/>
   <int value="942489058" label="gu"/>
   <int value="943542304" label="sl"/>
+  <int value="1005034866" label="es-es"/>
   <int value="1136549914" label="it"/>
   <int value="1176966558" label="de"/>
   <int value="1229318713" label="vi"/>

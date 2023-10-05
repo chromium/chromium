@@ -16,12 +16,14 @@ namespace ash::language_packs {
 
 TEST(LanguagePackMetricsTest, CheckLanguageCodes) {
   const std::vector<std::string> language_codes = {
-      "am", "ar", "be", "bg", "bn", "ca", "cs", "da", "de", "el", "es",
-      "et", "fa", "fi", "fr", "ga", "gu", "hi", "hr", "hu", "hy", "id",
-      "is", "it", "iw", "ja", "ka", "kk", "km", "kn", "ko", "lo", "lt",
-      "lv", "ml", "mn", "mr", "ms", "mt", "my", "ne", "nl", "no", "or",
-      "pa", "pl", "pt", "ro", "ru", "si", "sk", "sl", "sr", "sv", "ta",
-      "te", "th", "ti", "tl", "tr", "uk", "ur", "vi", "zh"};
+      "am", "ar",    "be",    "bg",    "bn",    "ca",    "cs",  "da", "de",
+      "el", "en-au", "en-gb", "en-us", "es-es", "es-us", "es",  "et", "fa",
+      "fi", "fr",    "ga",    "gu",    "hi",    "hr",    "hu",  "hy", "id",
+      "is", "it",    "iw",    "ja",    "ka",    "kk",    "km",  "kn", "ko",
+      "lo", "lt",    "lv",    "ml",    "mn",    "mr",    "ms",  "mt", "my",
+      "nb", "ne",    "nl",    "no",    "or",    "pa",    "pl",  "pt", "ro",
+      "ru", "si",    "sk",    "sl",    "sr",    "sv",    "ta",  "te", "th",
+      "ti", "tl",    "tr",    "uk",    "ur",    "vi",    "yue", "zh"};
 
   absl::optional<base::HistogramEnumEntryMap> language_codes_map =
       base::ReadEnumFromEnumsXml("LanguagePackLanguageCodes");
