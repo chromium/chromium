@@ -777,6 +777,7 @@ absl_cc_library(
   DEPS
     absl::config
     absl::core_headers
+    absl::debugging_internal
     absl::meta
     absl::strings
     absl::span

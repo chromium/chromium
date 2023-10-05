@@ -864,6 +864,19 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_INTERNAL_HAS_RTTI 1
 #endif
 
+// `ABSL_INTERNAL_HAS_CXA_DEMANGLE` determines whether `abi::__cxa_demangle` is
+// available.
+#ifdef ABSL_INTERNAL_HAS_CXA_DEMANGLE
+#error ABSL_INTERNAL_HAS_CXA_DEMANGLE cannot be directly set
+#elif defined(OS_ANDROID) && (defined(__i386__) || defined(__x86_64__))
+#define ABSL_INTERNAL_HAS_CXA_DEMANGLE 0
+#elif (__GNUC__ >= 4 || (__GNUC__ >= 3 && __GNUC_MINOR__ >= 4)) && \
+    !defined(__mips__)
+#define ABSL_INTERNAL_HAS_CXA_DEMANGLE 1
+#elif defined(__clang__) && !defined(_MSC_VER)
+#define ABSL_INTERNAL_HAS_CXA_DEMANGLE 1
+#endif
+
 // ABSL_INTERNAL_HAVE_SSE is used for compile-time detection of SSE support.
 // See https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html for an overview of
 // which architectures support the various x86 instruction sets.

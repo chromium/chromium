@@ -187,7 +187,6 @@
 #include <iterator>
 #include <limits>
 #include <memory>
-#include <string>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -201,7 +200,7 @@
 #include "absl/base/options.h"
 #include "absl/base/port.h"
 #include "absl/base/prefetch.h"
-#include "absl/container/internal/common.h"
+#include "absl/container/internal/common.h"  // IWYU pragma: export (for node_handle)
 #include "absl/container/internal/compressed_tuple.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_policy_traits.h"
@@ -270,8 +269,21 @@ void SwapAlloc(AllocType& lhs, AllocType& rhs,
   swap(lhs, rhs);
 }
 template <typename AllocType>
-void SwapAlloc(AllocType& /*lhs*/, AllocType& /*rhs*/,
-               std::false_type /* propagate_on_container_swap */) {}
+void SwapAlloc(AllocType& lhs, AllocType& rhs,
+               std::false_type /* propagate_on_container_swap */) {
+  (void)lhs;
+  (void)rhs;
+  assert(lhs == rhs &&
+         "It's UB to call swap with unequal non-propagating allocators.");
+}
+
+template <typename AllocType>
+void CopyAlloc(AllocType& lhs, AllocType& rhs,
+               std::true_type /* propagate_alloc */) {
+  lhs = rhs;
+}
+template <typename AllocType>
+void CopyAlloc(AllocType&, AllocType&, std::false_type /* propagate_alloc */) {}
 
 // The state for a probe sequence.
 //
@@ -980,20 +992,7 @@ class CommonFields : public CommonFieldsGenerationInfo {
   CommonFields& operator=(const CommonFields&) = delete;
 
   // Movable
-  CommonFields(CommonFields&& that)
-      : CommonFieldsGenerationInfo(
-            std::move(static_cast<CommonFieldsGenerationInfo&&>(that))),
-        // Explicitly copying fields into "this" and then resetting "that"
-        // fields generates less code then calling absl::exchange per field.
-        control_(that.control()),
-        slots_(that.slot_array()),
-        capacity_(that.capacity()),
-        size_(that.size_) {
-    that.set_control(EmptyGroup());
-    that.set_slots(nullptr);
-    that.set_capacity(0);
-    that.size_ = 0;
-  }
+  CommonFields(CommonFields&& that) = default;
   CommonFields& operator=(CommonFields&&) = default;
 
   ctrl_t* control() const { return control_; }
@@ -1213,17 +1212,17 @@ inline void AssertIsFull(const ctrl_t* ctrl, GenerationType generation,
                  operation);
   }
   if (SwisstableGenerationsEnabled()) {
-    if (generation != *generation_ptr) {
-      ABSL_INTERNAL_LOG(FATAL,
-                        std::string(operation) +
-                            " called on invalid iterator. The table could have "
-                            "rehashed since this iterator was initialized.");
+    if (ABSL_PREDICT_FALSE(generation != *generation_ptr)) {
+      ABSL_RAW_LOG(FATAL,
+                   "%s called on invalid iterator. The table could have "
+                   "rehashed since this iterator was initialized.",
+                   operation);
     }
-    if (!IsFull(*ctrl)) {
-      ABSL_INTERNAL_LOG(
+    if (ABSL_PREDICT_FALSE(!IsFull(*ctrl))) {
+      ABSL_RAW_LOG(
           FATAL,
-          std::string(operation) +
-              " called on invalid iterator. The element was likely erased.");
+          "%s called on invalid iterator. The element was likely erased.",
+          operation);
     }
   } else {
     if (ABSL_PREDICT_FALSE(!IsFull(*ctrl))) {
@@ -1245,13 +1244,13 @@ inline void AssertIsValidForComparison(const ctrl_t* ctrl,
   const bool ctrl_is_valid_for_comparison =
       ctrl == nullptr || ctrl == EmptyGroup() || IsFull(*ctrl);
   if (SwisstableGenerationsEnabled()) {
-    if (generation != *generation_ptr) {
-      ABSL_INTERNAL_LOG(FATAL,
+    if (ABSL_PREDICT_FALSE(generation != *generation_ptr)) {
+      ABSL_RAW_LOG(FATAL,
                         "Invalid iterator comparison. The table could have "
                         "rehashed since this iterator was initialized.");
     }
-    if (!ctrl_is_valid_for_comparison) {
-      ABSL_INTERNAL_LOG(
+    if (ABSL_PREDICT_FALSE(!ctrl_is_valid_for_comparison)) {
+      ABSL_RAW_LOG(
           FATAL, "Invalid iterator comparison. The element was likely erased.");
     }
   } else {
@@ -1307,30 +1306,30 @@ inline void AssertSameContainer(const ctrl_t* ctrl_a, const ctrl_t* ctrl_b,
   if (a_is_default && b_is_default) return;
 
   if (SwisstableGenerationsEnabled()) {
-    if (generation_ptr_a == generation_ptr_b) return;
+    if (ABSL_PREDICT_TRUE(generation_ptr_a == generation_ptr_b)) return;
     const bool a_is_empty = IsEmptyGeneration(generation_ptr_a);
     const bool b_is_empty = IsEmptyGeneration(generation_ptr_b);
     if (a_is_empty != b_is_empty) {
-      ABSL_INTERNAL_LOG(FATAL,
-                        "Invalid iterator comparison. Comparing iterator from "
-                        "a non-empty hashtable with an iterator from an empty "
-                        "hashtable.");
+      ABSL_RAW_LOG(FATAL,
+                   "Invalid iterator comparison. Comparing iterator from a "
+                   "non-empty hashtable with an iterator from an empty "
+                   "hashtable.");
     }
     if (a_is_empty && b_is_empty) {
-      ABSL_INTERNAL_LOG(FATAL,
-                        "Invalid iterator comparison. Comparing iterators from "
-                        "different empty hashtables.");
+      ABSL_RAW_LOG(FATAL,
+                   "Invalid iterator comparison. Comparing iterators from "
+                   "different empty hashtables.");
     }
     const bool a_is_end = ctrl_a == nullptr;
     const bool b_is_end = ctrl_b == nullptr;
     if (a_is_end || b_is_end) {
-      ABSL_INTERNAL_LOG(FATAL,
-                        "Invalid iterator comparison. Comparing iterator with "
-                        "an end() iterator from a different hashtable.");
+      ABSL_RAW_LOG(FATAL,
+                   "Invalid iterator comparison. Comparing iterator with an "
+                   "end() iterator from a different hashtable.");
     }
-    ABSL_INTERNAL_LOG(FATAL,
-                      "Invalid iterator comparison. Comparing non-end() "
-                      "iterators from different hashtables.");
+    ABSL_RAW_LOG(FATAL,
+                 "Invalid iterator comparison. Comparing non-end() iterators "
+                 "from different hashtables.");
   } else {
     ABSL_HARDENING_ASSERT(
         AreItersFromSameContainer(ctrl_a, ctrl_b, slot_a, slot_b) &&
@@ -1918,28 +1917,33 @@ class raw_hash_set {
       :  // Hash, equality and allocator are copied instead of moved because
          // `that` must be left valid. If Hash is std::function<Key>, moving it
          // would create a nullptr functor that cannot be called.
-        settings_(absl::exchange(that.common(), CommonFields{}),
-                  that.hash_ref(), that.eq_ref(), that.alloc_ref()) {}
+         // TODO(b/296061262): move instead of copying hash/eq/alloc.
+         // Note: we avoid using exchange for better generated code.
+        settings_(std::move(that.common()), that.hash_ref(), that.eq_ref(),
+                  that.alloc_ref()) {
+    that.common() = CommonFields{};
+  }
 
   raw_hash_set(raw_hash_set&& that, const allocator_type& a)
       : settings_(CommonFields{}, that.hash_ref(), that.eq_ref(), a) {
     if (a == that.alloc_ref()) {
       std::swap(common(), that.common());
     } else {
-      reserve(that.size());
-      // Note: this will copy keys instead of moving them. This can be fixed if
-      // it ever becomes an issue.
-      for (auto& elem : that) insert(std::move(elem));
+      move_elements_allocs_unequal(std::move(that));
     }
   }
 
   raw_hash_set& operator=(const raw_hash_set& that) {
-    raw_hash_set tmp(that,
-                     AllocTraits::propagate_on_container_copy_assignment::value
-                         ? that.alloc_ref()
-                         : alloc_ref());
-    swap(tmp);
-    return *this;
+    if (ABSL_PREDICT_FALSE(this == &that)) return *this;
+    constexpr bool propagate_alloc =
+        AllocTraits::propagate_on_container_copy_assignment::value;
+    // TODO(ezb): maybe avoid allocating a new backing array if this->capacity()
+    // is an exact match for that.size(). If this->capacity() is too big, then
+    // it would make iteration very slow to reuse the allocation. Maybe we can
+    // do the same heuristic as clear() and reuse if it's small enough.
+    raw_hash_set tmp(that, propagate_alloc ? that.alloc_ref() : alloc_ref());
+    // NOLINTNEXTLINE: not returning *this for performance.
+    return assign_impl<propagate_alloc>(std::move(tmp));
   }
 
   raw_hash_set& operator=(raw_hash_set&& that) noexcept(
@@ -1954,18 +1958,7 @@ class raw_hash_set {
         typename AllocTraits::propagate_on_container_move_assignment());
   }
 
-  ~raw_hash_set() {
-    const size_t cap = capacity();
-    if (!cap) return;
-    destroy_slots();
-
-    // Unpoison before returning the memory to the allocator.
-    SanitizerUnpoisonMemoryRegion(slot_array(), sizeof(slot_type) * cap);
-    infoz().Unregister();
-    Deallocate<BackingArrayAlignment(alignof(slot_type))>(
-        &alloc_ref(), common().backing_array_start(),
-        common().alloc_size(sizeof(slot_type), alignof(slot_type)));
-  }
+  ~raw_hash_set() { destructor_impl(); }
 
   iterator begin() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     auto it = iterator_at(0);
@@ -2559,6 +2552,22 @@ class raw_hash_set {
     }
   }
 
+  inline void dealloc() {
+    assert(capacity() != 0);
+    // Unpoison before returning the memory to the allocator.
+    SanitizerUnpoisonMemoryRegion(slot_array(), sizeof(slot_type) * capacity());
+    infoz().Unregister();
+    Deallocate<BackingArrayAlignment(alignof(slot_type))>(
+        &alloc_ref(), common().backing_array_start(),
+        common().alloc_size(sizeof(slot_type), alignof(slot_type)));
+  }
+
+  inline void destructor_impl() {
+    if (capacity() == 0) return;
+    destroy_slots();
+    dealloc();
+  }
+
   // Erases, but does not destroy, the value pointed to by `it`.
   //
   // This merely updates the pertinent control byte. This can be used in
@@ -2682,16 +2691,53 @@ class raw_hash_set {
     }
   }
 
-  // TODO(alkis): Optimize this assuming *this and that don't overlap.
-  raw_hash_set& move_assign(raw_hash_set&& that, std::true_type) {
-    raw_hash_set tmp(std::move(that));
-    swap(tmp);
+  template<bool propagate_alloc>
+  raw_hash_set& assign_impl(raw_hash_set&& that) {
+    // We don't bother checking for this/that aliasing. We just need to avoid
+    // breaking the invariants in that case.
+    destructor_impl();
+    common() = std::move(that.common());
+    // TODO(b/296061262): move instead of copying hash/eq/alloc.
+    hash_ref() = that.hash_ref();
+    eq_ref() = that.eq_ref();
+    CopyAlloc(alloc_ref(), that.alloc_ref(),
+              std::integral_constant<bool, propagate_alloc>());
+    that.common() = CommonFields{};
     return *this;
   }
-  raw_hash_set& move_assign(raw_hash_set&& that, std::false_type) {
-    raw_hash_set tmp(std::move(that), alloc_ref());
-    swap(tmp);
+
+  raw_hash_set& move_elements_allocs_unequal(raw_hash_set&& that) {
+    const size_t size = that.size();
+    if (size == 0) return *this;
+    reserve(size);
+    for (iterator it = that.begin(); it != that.end(); ++it) {
+      insert(std::move(PolicyTraits::element(it.slot_)));
+      PolicyTraits::destroy(&that.alloc_ref(), it.slot_);
+    }
+    that.dealloc();
+    that.common() = CommonFields{};
     return *this;
+  }
+
+  raw_hash_set& move_assign(raw_hash_set&& that,
+                            std::true_type /*propagate_alloc*/) {
+    return assign_impl<true>(std::move(that));
+  }
+  raw_hash_set& move_assign(raw_hash_set&& that,
+                            std::false_type /*propagate_alloc*/) {
+    if (alloc_ref() == that.alloc_ref()) {
+      return assign_impl<false>(std::move(that));
+    }
+    // Aliasing can't happen here because allocs would compare equal above.
+    assert(this != &that);
+    destructor_impl();
+    // We can't take over that's memory so we need to move each element.
+    // While moving elements, this should have that's hash/eq so copy hash/eq
+    // before moving elements.
+    // TODO(b/296061262): move instead of copying hash/eq.
+    hash_ref() = that.hash_ref();
+    eq_ref() = that.eq_ref();
+    return move_elements_allocs_unequal(std::move(that));
   }
 
  protected:

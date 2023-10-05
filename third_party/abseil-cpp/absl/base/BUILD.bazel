@@ -376,7 +376,9 @@ cc_library(
     name = "pretty_function",
     hdrs = ["internal/pretty_function.h"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    visibility = ["//absl:__subpackages__"],
+    visibility = [
+        "//absl:__subpackages__",
+    ],
 )
 
 cc_library(

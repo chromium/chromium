@@ -217,7 +217,10 @@ cc_library(
     hdrs = ["internal/demangle.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    visibility = ["//visibility:private"],
+    visibility = [
+        "//absl/container:__pkg__",
+        "//absl/debugging:__pkg__",
+    ],
     deps = [
         "//absl/base",
         "//absl/base:config",

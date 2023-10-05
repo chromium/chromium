@@ -121,7 +121,10 @@ absl_source_set("debugging_internal") {
 absl_source_set("demangle_internal") {
   sources = [ "internal/demangle.cc" ]
   public = [ "internal/demangle.h" ]
-  visibility = [ ":*" ]
+  visibility = [
+    "//third_party/abseil-cpp/absl/container:*",
+    "//third_party/abseil-cpp/absl/debugging:*",
+  ]
   deps = [
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",

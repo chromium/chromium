@@ -443,9 +443,6 @@ class PAlloc {
   // types
   using value_type = T;
 
-  // traits
-  using propagate_on_container_swap = std::false_type;
-
   PAlloc() noexcept = default;
   explicit PAlloc(size_t id) noexcept : id_(id) {}
   PAlloc(const PAlloc&) noexcept = default;
@@ -474,21 +471,7 @@ class PAlloc {
   size_t id_ = std::numeric_limits<size_t>::max();
 };
 
-// This doesn't compile with GCC 5.4 and 5.5 due to a bug in noexcept handing.
-#if !defined(__GNUC__) || __GNUC__ != 5 || (__GNUC_MINOR__ != 4 && \
-    __GNUC_MINOR__ != 5)
-TEST(NoPropagateOn, Swap) {
-  using PA = PAlloc<char>;
-  using Table = raw_hash_set<Policy, Identity, std::equal_to<int32_t>, PA>;
-
-  Table t1(PA{1}), t2(PA{2});
-  swap(t1, t2);
-  EXPECT_EQ(t1.get_allocator(), PA(1));
-  EXPECT_EQ(t2.get_allocator(), PA(2));
-}
-#endif
-
-TEST(NoPropagateOn, CopyConstruct) {
+TEST(NoPropagateDeletedAssignment, CopyConstruct) {
   using PA = PAlloc<char>;
   using Table = raw_hash_set<Policy, Identity, std::equal_to<int32_t>, PA>;
 
@@ -497,7 +480,7 @@ TEST(NoPropagateOn, CopyConstruct) {
   EXPECT_EQ(t2.get_allocator(), PA());
 }
 
-TEST(NoPropagateOn, Assignment) {
+TEST(NoPropagateDeletedAssignment, CopyAssignment) {
   using PA = PAlloc<char>;
   using Table = raw_hash_set<Policy, Identity, std::equal_to<int32_t>, PA>;
 
@@ -505,6 +488,15 @@ TEST(NoPropagateOn, Assignment) {
   t1 = t2;
   EXPECT_EQ(t1.get_allocator(), PA(1));
   EXPECT_EQ(t2.get_allocator(), PA(2));
+}
+
+TEST(NoPropagateDeletedAssignment, MoveAssignment) {
+  using PA = PAlloc<char>;
+  using Table = raw_hash_set<Policy, Identity, std::equal_to<int32_t>, PA>;
+
+  Table t1(PA{1}), t2(PA{2});
+  t1 = std::move(t2);
+  EXPECT_EQ(t1.get_allocator(), PA(1));
 }
 
 }  // namespace

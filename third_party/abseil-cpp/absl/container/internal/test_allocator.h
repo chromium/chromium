@@ -364,7 +364,7 @@ void TestSwapAllocPropagation() {
 
     EXPECT_NE(c1.get_allocator(), c2.get_allocator());
     if (IsAssertEnabled()) {
-      EXPECT_DEATH(c2.swap(c1), "");
+      EXPECT_DEATH_IF_SUPPORTED(c2.swap(c1), "");
     }
   }
   EXPECT_EQ(bytes1, 0);
