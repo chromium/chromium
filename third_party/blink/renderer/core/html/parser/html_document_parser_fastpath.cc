@@ -31,13 +31,16 @@
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/html/html_paragraph_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/html_ulist_element.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/core/html/parser/html_entity_parser.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
@@ -1191,10 +1194,18 @@ bool CanUseFastPath(Document& document,
   // See HTMLConstructionSite::InitFragmentParsing() and
   // HTMLConstructionSite::CreateElement() for the corresponding code on the
   // slow-path.
-  if (!context_element.GetDocument().IsTemplateDocument() &&
-      Traversal<HTMLFormElement>::FirstAncestorOrSelf(context_element) !=
-          nullptr) {
+  auto* template_element = DynamicTo<HTMLTemplateElement>(context_element);
+  if (!template_element && Traversal<HTMLFormElement>::FirstAncestorOrSelf(
+                               context_element) != nullptr) {
     LogFastPathResult(HtmlFastPathResult::kFailedInForm);
+    return false;
+  }
+
+  // TODO(crbug.com/1453291) For now, declarative DOM Parts are not supported by
+  // the fast path parser.
+  if (RuntimeEnabledFeatures::DOMPartsAPIEnabled() && template_element &&
+      template_element->hasAttribute(html_names::kParsepartsAttr)) {
+    LogFastPathResult(HtmlFastPathResult::kFailedUnsupportedContextTag);
     return false;
   }
   return true;

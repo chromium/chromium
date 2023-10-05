@@ -205,6 +205,10 @@ class HTMLConstructionSite final {
     return open_elements_.TopNode() == open_elements_.RootNode();
   }
   bool InParsePartsScope() { return open_elements_.InParsePartsScope(); }
+  void SetDOMPartsAllowedState(DOMPartsAllowed state) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    open_elements_.SetDOMPartsAllowedState(state);
+  }
 
   Element* Head() const { return head_->GetElement(); }
   HTMLStackItem* HeadStackItem() const { return head_.Get(); }

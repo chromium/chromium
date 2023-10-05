@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
+#include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element_data_cache.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
@@ -168,6 +169,7 @@
 #include "third_party/blink/renderer/core/html/html_table_rows_collection.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
+#include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
@@ -6331,14 +6333,24 @@ void Element::SetInnerHTMLInternal(const String& html,
             html, this, kAllowScriptingContent, "innerHTML",
             include_shadow_roots, exception_state)) {
       ContainerNode* container = this;
+      bool swap_dom_parts{false};
       if (auto* template_element = DynamicTo<HTMLTemplateElement>(*this)) {
         // Allow replacing innerHTML on declarative shadow templates, prior to
         // their closing tag being parsed.
         container = template_element->IsDeclarativeShadowRoot()
                         ? template_element->DeclarativeShadowContent()
                         : template_element->content();
+        swap_dom_parts =
+            template_element->hasAttribute(html_names::kParsepartsAttr);
       }
       ReplaceChildrenWithFragment(container, fragment, exception_state);
+      if (swap_dom_parts) {
+        // Move the parts list over to the template's content document's
+        // DocumentPartRoot.
+        To<DocumentFragment>(*container)
+            .getPartRoot()
+            .SwapPartsList(fragment->getPartRoot());
+      }
     }
   }
 }

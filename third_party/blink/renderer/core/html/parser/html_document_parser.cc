@@ -48,9 +48,11 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
 #include "third_party/blink/renderer/core/html/parser/background_html_scanner.h"
+#include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_metrics.h"
 #include "third_party/blink/renderer/core/html/parser/html_preload_scanner.h"
 #include "third_party/blink/renderer/core/html/parser/html_resource_preloader.h"
@@ -1238,6 +1240,20 @@ void HTMLDocumentParser::ParseDocumentFragment(
     ParserContentPolicy parser_content_policy) {
   auto* parser = MakeGarbageCollected<HTMLDocumentParser>(
       fragment, context_element, parser_content_policy);
+
+  if (RuntimeEnabledFeatures::DOMPartsAPIEnabled()) {
+    // Within templates containing the `parseparts` attribute, allow parsing
+    // DOM Parts. Otherwise do not parse any DOM Part content.
+    DOMPartsAllowed parts_allowed{DOMPartsAllowed::kNever};
+    if (auto* template_element =
+            DynamicTo<HTMLTemplateElement>(context_element);
+        template_element &&
+        template_element->hasAttribute(html_names::kParsepartsAttr)) {
+      parts_allowed = DOMPartsAllowed::kAlways;
+    }
+    parser->tree_builder_->SetDOMPartsAllowedState(parts_allowed);
+  }
+
   parser->Append(source);
   parser->Finish();
   // Allows ~DocumentParser to assert it was detached before destruction.

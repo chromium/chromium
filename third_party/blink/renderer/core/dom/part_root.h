@@ -37,6 +37,7 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
                          Node& destination_node,
                          NodeCloningData& data);
   void MarkPartsDirty() { cached_parts_list_dirty_ = true; }
+  void SwapPartsList(PartRoot& other);
 
   virtual Document& GetDocument() const = 0;
   virtual bool IsDocumentPartRoot() const = 0;

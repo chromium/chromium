@@ -1090,6 +1090,7 @@ html element td
     property width
 html element template
     property content
+    property parseparts
     property shadowRootMode
 html element textarea
     property autocomplete

@@ -523,7 +523,8 @@ ContainerNode* HTMLElementStack::RootNode() const {
 void HTMLElementStack::PushCommon(HTMLStackItem* item) {
   DCHECK(root_node_);
 
-  if (item->HasParsePartsAttribute() && body_element_) {
+  if (dom_parts_allowed_state_ == DOMPartsAllowed::kInsideParseParts &&
+      item->HasParsePartsAttribute() && body_element_) {
     DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
     ++parse_parts_count_;
   }
@@ -540,8 +541,10 @@ void HTMLElementStack::PopCommon() {
   Top()->FinishParsingChildren();
 
   DCHECK(!TopStackItem()->HasParsePartsAttribute() || parse_parts_count_ ||
-         !body_element_);
-  if (parse_parts_count_ && TopStackItem()->HasParsePartsAttribute()) {
+         !body_element_ ||
+         dom_parts_allowed_state_ != DOMPartsAllowed::kInsideParseParts);
+  if (parse_parts_count_ && TopStackItem()->HasParsePartsAttribute() &&
+      dom_parts_allowed_state_ == DOMPartsAllowed::kInsideParseParts) {
     --parse_parts_count_;
   }
 
@@ -562,7 +565,8 @@ void HTMLElementStack::RemoveNonTopCommon(Element* element) {
 
       DCHECK(!TopStackItem()->HasParsePartsAttribute() || parse_parts_count_);
       if (parse_parts_count_ &&
-          item->NextItemInStack()->HasParsePartsAttribute()) {
+          item->NextItemInStack()->HasParsePartsAttribute() &&
+          dom_parts_allowed_state_ == DOMPartsAllowed::kInsideParseParts) {
         --parse_parts_count_;
       }
 

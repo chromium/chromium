@@ -104,6 +104,11 @@ void PartRoot::CloneParts(const Node& source_node,
   }
 }
 
+void PartRoot::SwapPartsList(PartRoot& other) {
+  cached_ordered_parts_.swap(other.cached_ordered_parts_);
+  std::swap(cached_parts_list_dirty_, other.cached_parts_list_dirty_);
+}
+
 // |getParts| must always return the contained parts list subject to these
 // rules:
 //  1. parts are returned in DOM tree order. If more than one part refers to the

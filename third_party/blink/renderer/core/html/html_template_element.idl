@@ -53,4 +53,7 @@
     // This is the declarative Shadow DOM IDL attribute, which reflects the
     // 'shadowrootmode' content attribute.
     [Reflect,ReflectOnly=("open","closed")] attribute DOMString? shadowRootMode;
+
+    // Used by the DOM Parts API
+    [Reflect, RuntimeEnabled=DOMPartsAPI] attribute boolean parseparts;
 };

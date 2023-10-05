@@ -89,6 +89,11 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
     return IsParsingFragment() || IsParsingTemplateContents();
   }
 
+  void SetDOMPartsAllowedState(DOMPartsAllowed state) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    tree_.SetDOMPartsAllowedState(state);
+  }
+
   void Detach();
 
   void ConstructTree(AtomicHTMLToken*);
