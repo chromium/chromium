@@ -140,6 +140,7 @@ class ContentWebState : public WebState,
   id<CRWFindInteraction> GetFindInteraction() final API_AVAILABLE(ios(16));
   id GetActivityItem() API_AVAILABLE(ios(16.4)) final;
   UIColor* GetThemeColor() final;
+  UIColor* GetUnderPageBackgroundColor() final;
   void AddPolicyDecider(WebStatePolicyDecider* decider) override;
   void RemovePolicyDecider(WebStatePolicyDecider* decider) override;
   void DidChangeVisibleSecurityState() override;

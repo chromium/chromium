@@ -474,6 +474,14 @@ UIColor* ContentWebState::GetThemeColor() {
   return nil;
 }
 
+UIColor* ContentWebState::GetUnderPageBackgroundColor() {
+  auto color = web_contents_->GetBackgroundColor();
+  if (color) {
+    return skia::UIColorFromSkColor(*color);
+  }
+  return nil;
+}
+
 void ContentWebState::AddPolicyDecider(WebStatePolicyDecider* decider) {
   policy_deciders_.AddObserver(decider);
 }
