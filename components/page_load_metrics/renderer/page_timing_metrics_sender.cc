@@ -121,6 +121,8 @@ void PageTimingMetricsSender::DidObserveSoftNavigation(
   // than the one that came before it. Each soft navigation should also have a
   // larger count and a different navigation id.
   CHECK(new_metrics.count > soft_navigation_metrics_->count);
+  CHECK(!new_metrics.start_time.is_zero());
+  CHECK(new_metrics.start_time != soft_navigation_metrics_->start_time);
   CHECK(new_metrics.start_time > soft_navigation_metrics_->start_time);
   CHECK(new_metrics.navigation_id != soft_navigation_metrics_->navigation_id);
 
