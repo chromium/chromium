@@ -86,6 +86,8 @@ void TouchToFillController::Show(
   }
   if (cred_man_delegate && cred_man_delegate->HasPasskeys() ==
                                WebAuthnCredManDelegate::kHasPasskeys) {
+    cred_man_delegate->SetRequestCompletionCallback(base::BindRepeating(
+        &TouchToFillController::OnCredManUiClosed, this->AsWeakPtr()));
     flags |= TouchToFillView::kShouldShowCredManEntry;
   }
 
@@ -127,6 +129,15 @@ void TouchToFillController::OnHybridSignInSelected() {
   view_.reset();
   ttf_delegate_->OnHybridSignInSelected(base::BindOnce(
       &TouchToFillController::ActionCompleted, base::Unretained(this)));
+}
+
+void TouchToFillController::OnShowCredManSelected() {
+  view_.reset();
+  cred_man_delegate_->TriggerCredManUi();
+}
+
+void TouchToFillController::OnCredManUiClosed(bool success) {
+  OnDismiss();
 }
 
 void TouchToFillController::OnDismiss() {

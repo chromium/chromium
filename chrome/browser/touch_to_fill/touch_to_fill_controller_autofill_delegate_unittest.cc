@@ -118,6 +118,11 @@ struct MockWebAuthnCredManDelegate : public WebAuthnCredManDelegate {
       : WebAuthnCredManDelegate(/*web_contents=*/nullptr) {}
 
   MOCK_METHOD(WebAuthnCredManDelegate::State, HasPasskeys, (), (override));
+
+  MOCK_METHOD(void,
+              SetRequestCompletionCallback,
+              (base::RepeatingCallback<void(bool)>),
+              (override));
 };
 
 struct MakeUiCredentialParams {
@@ -835,6 +840,7 @@ TEST_F(TouchToFillControllerAutofillTest, ShowCredManEntryIfThereArePasskeys) {
   MockWebAuthnCredManDelegate cred_man_delegate;
   ON_CALL(cred_man_delegate, HasPasskeys())
       .WillByDefault(Return(WebAuthnCredManDelegate::kHasPasskeys));
+  EXPECT_CALL(cred_man_delegate, SetRequestCompletionCallback(_));
   EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            ElementsAreArray(std::vector<PasskeyCredential>()),
@@ -853,6 +859,7 @@ TEST_F(TouchToFillControllerAutofillTest, NoCredManEntryIfNoPasskeys) {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
   MockWebAuthnCredManDelegate cred_man_delegate;
   EXPECT_CALL(cred_man_delegate, HasPasskeys());
+  EXPECT_CALL(cred_man_delegate, SetRequestCompletionCallback(_)).Times(0);
   EXPECT_CALL(view(),
               Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                    ElementsAreArray(credentials),

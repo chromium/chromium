@@ -27,7 +27,8 @@ class WebAuthnCredManDelegate;
 
 class TouchToFillControllerDelegate;
 
-class TouchToFillController {
+class TouchToFillController
+    : public base::SupportsWeakPtr<TouchToFillController> {
  public:
   explicit TouchToFillController(
       base::WeakPtr<
@@ -65,6 +66,14 @@ class TouchToFillController {
   // Informs the controller that the user has tapped the "Use Passkey on a
   // Different Device" option, which initiates hybrid passkey sign-in.
   void OnHybridSignInSelected();
+
+  // Informs the controller that the user selected "More passkeys". This will
+  // trigger Android Credential Manager UI. Android U+ only.
+  void OnShowCredManSelected();
+
+  // Informs the controller that the Android Credential Manager UI is closed.
+  // Android U+ only.
+  void OnCredManUiClosed(bool success);
 
   // Informs the controller that the user has dismissed the sheet. No-op if
   // invoked repeatedly.

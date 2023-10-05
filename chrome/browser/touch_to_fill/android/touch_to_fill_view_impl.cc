@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/touch_to_fill/android/touch_to_fill_view_impl.h"
+#include <jni.h>
 
 #include <memory>
 #include <vector>
@@ -171,6 +172,10 @@ void TouchToFillViewImpl::OnManagePasswordsSelected(JNIEnv* env,
 
 void TouchToFillViewImpl::OnHybridSignInSelected(JNIEnv* env) {
   controller_->OnHybridSignInSelected();
+}
+
+void TouchToFillViewImpl::OnShowCredManSelected(JNIEnv* env) {
+  controller_->OnShowCredManSelected();
 }
 
 void TouchToFillViewImpl::OnDismiss(JNIEnv* env) {

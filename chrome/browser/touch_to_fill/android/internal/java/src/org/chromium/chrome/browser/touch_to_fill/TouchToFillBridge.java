@@ -129,7 +129,8 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
 
     @Override
     public void onShowMorePasskeysSelected() {
-        // TODO(crbug.com/1474805): wire the button to the native side.
+        if (mNativeView == 0) return;
+        TouchToFillBridgeJni.get().onShowCredManSelected(mNativeView);
     }
 
     @NativeMethods
@@ -139,6 +140,9 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
                 long nativeTouchToFillViewImpl, WebAuthnCredential credential);
         void onManagePasswordsSelected(long nativeTouchToFillViewImpl, boolean passkeysShown);
         void onHybridSignInSelected(long nativeTouchToFillViewImpl);
+
+        void onShowCredManSelected(long nativeTouchToFillViewImpl);
+
         void onDismiss(long nativeTouchToFillViewImpl);
     }
 }
