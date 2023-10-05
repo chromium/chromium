@@ -218,11 +218,12 @@ public class SyncPromoController {
         }
         final Promise<AccountInfo> visibleAccountPromise =
                 AccountInfoServiceProvider.get().getAccountInfoByEmail(visibleAccount.getEmail());
-        return visibleAccountPromise.isFulfilled()
-                && visibleAccountPromise.getResult()
-                           .getAccountCapabilities()
-                           .canOfferExtendedSyncPromos()
-                == Tribool.TRUE;
+
+        AccountInfo accountInfo =
+                visibleAccountPromise.isFulfilled() ? visibleAccountPromise.getResult() : null;
+        if (accountInfo == null) return false;
+
+        return accountInfo.getAccountCapabilities().canOfferExtendedSyncPromos() == Tribool.TRUE;
     }
 
     private static boolean canShowSettingsPromo() {
