@@ -31,9 +31,9 @@ import org.chromium.chrome.browser.ui.appmenu.TestAppMenuObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
@@ -90,7 +90,7 @@ public class UpdateMenuItemHelperTest {
         }
     }
 
-    /** Reports a dummy market URL back to OmahaClient. */
+    /** Reports a test market URL back to OmahaClient. */
     private static class MockMarketURLGetter extends MarketURLGetter {
         private final String mURL;
 
@@ -126,7 +126,7 @@ public class UpdateMenuItemHelperTest {
         mMockVersionNumberGetter = new MockVersionNumberGetter(currentVersion, latestVersion);
         VersionNumberGetter.setInstanceForTests(mMockVersionNumberGetter);
 
-        // Report a dummy URL to Omaha.
+        // Report a test URL to Omaha.
         mMockMarketURLGetter = new MockMarketURLGetter(TEST_MARKET_URL);
         MarketURLGetter.setInstanceForTests(mMockMarketURLGetter);
 
@@ -174,8 +174,7 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
-    // TODO(https://crbug.com/965106): Fix tests when InlineUpdateFlow is enabled.
-    @DisableFeatures("InlineUpdateFlow")
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testCurrentVersionIsOlder() throws Exception {
         checkUpdateMenuItemIsShowing("0.0.0.0", "1.2.3.4");
     }
@@ -183,6 +182,15 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
+    public void testCurrentVersionIsOlderAutomotive() throws Exception {
+        checkUpdateMenuItemIsNotShowing("0.0.0.0", "1.2.3.4");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Omaha"})
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testCurrentVersionIsSame() throws Exception {
         checkUpdateMenuItemIsNotShowing("1.2.3.4", "1.2.3.4");
     }
@@ -190,6 +198,7 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testCurrentVersionIsNewer() throws Exception {
         checkUpdateMenuItemIsNotShowing("27.0.1453.42", "26.0.1410.49");
     }
@@ -197,6 +206,7 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testNoVersionKnown() throws Exception {
         checkUpdateMenuItemIsNotShowing("1.2.3.4", "0");
     }
@@ -204,9 +214,10 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    // TODO(https://crbug.com/965106): Fix tests when InlineUpdateFlow is enabled.
-    @DisableFeatures("InlineUpdateFlow")
+    @Restriction({
+        UiRestriction.RESTRICTION_TYPE_PHONE,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
+    })
     public void testMenuItemNotShownInOverview() throws Exception {
         checkUpdateMenuItemIsShowing("0.0.0.0", "1.2.3.4");
 
@@ -227,7 +238,7 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
-    @DisableFeatures("InlineUpdateFlow")
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testClickUpdateMenuItem() throws Exception {
         checkUpdateMenuItemIsShowing("0.0.0.0", "1.2.3.4");
 
@@ -251,7 +262,7 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
-    @DisableFeatures("InlineUpdateFlow")
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testHideMenuWithoutClicking() throws Exception {
         checkUpdateMenuItemIsShowing("0.0.0.0", "1.2.3.4");
 
