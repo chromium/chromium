@@ -9,6 +9,7 @@ import mock
 import re
 import unittest
 
+import constants
 import run
 from test_runner import HostIsDownError, MIGServerDiedError, SimulatorNotFoundError
 import test_runner_test
@@ -516,8 +517,10 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
       'xcode_util.is_runtime_builtin', autospec=True, return_value=False)
   @mock.patch('mac_util.is_macos_13_or_higher', autospec=True)
   @mock.patch('iossim_util.delete_simulator_runtime_and_wait', autospec=True)
+  @mock.patch('iossim_util.delete_simulator_runtime_after_days', autospec=True)
   def test_legacy_xcode_macos13_runtime_not_builtin(
-      self, mock_delete_simulator_runtime_and_wait, mock_macos_13_or_higher,
+      self, mock_delete_simulator_runtime_after_days,
+      mock_delete_simulator_runtime_and_wait, mock_macos_13_or_higher,
       mock_is_runtime_builtin, mock_move_runtime, mock_install_runtime_dmg,
       mock_install, mock_construct_runtime_cache_folder, mock_tr, _1, _2, _3,
       _4):
@@ -543,6 +546,8 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
                                                 'testXcodeVersion')
     self.assertFalse(mock_move_runtime.called)
     mock_delete_simulator_runtime_and_wait.assert_called_with('14.4')
+    mock_delete_simulator_runtime_after_days.assert_called_with(
+        constants.MAX_RUNTIME_KEPT_DAYS)
 
   @mock.patch('test_runner.defaults_delete')
   @mock.patch('json.dump')

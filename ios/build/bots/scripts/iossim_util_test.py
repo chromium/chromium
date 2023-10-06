@@ -187,9 +187,9 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     """Ensures that SimulatorNotFoundError raises if no runtime."""
     with self.assertRaises(test_runner.SimulatorNotFoundError) as context:
       iossim_util.get_simulator_runtime_by_version(
-          iossim_util.get_simulator_list(), '13.2')
+          iossim_util.get_simulator_list(), '13.3')
     expected_message = ('Simulator does not exist: Not found '
-                        '"13.2" SDK in runtimes')
+                        '"13.3" SDK in runtimes')
     self.assertTrue(expected_message in str(context.exception))
 
   def test_get_simulator_device_type_by_platform(self, _, _2):

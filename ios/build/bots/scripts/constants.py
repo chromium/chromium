@@ -5,3 +5,6 @@
 
 # Default Timeout (seconds) to kill a test process when it doesn't have output.
 READLINE_TIMEOUT = 180
+
+# Maximum number of days that we should keep stale iOS simulator runtimes
+MAX_RUNTIME_KEPT_DAYS = '3'

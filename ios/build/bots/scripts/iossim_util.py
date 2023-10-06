@@ -90,7 +90,10 @@ def get_simulator_runtime_by_version(simulators, version):
     test_runner.SimulatorNotFoundError when the version can't be found.
   """
   for runtime in simulators['runtimes']:
-    if runtime['version'] == version and 'iOS' in runtime['name']:
+    # The output might use version with a patch number (e.g. 17.0.1)
+    # but the passed in version does not have a patch number (e.g. 17.0)
+    # Therefore, we should use startswith for substring match.
+    if runtime['version'].startswith(version) and 'iOS' in runtime['name']:
       return runtime['identifier']
   raise test_runner.SimulatorNotFoundError('Not found "%s" SDK in runtimes %s' %
                                            (version, simulators['runtimes']))
@@ -331,7 +334,10 @@ def get_simulator_runtime_info(ios_version):
   """
   runtimes = get_simulator_runtime_list()
   for runtime in runtimes.values():
-    if runtime['version'] == ios_version:
+    # The output might use version with a patch number (e.g. 17.0.1)
+    # but the passed in version does not have a patch number (e.g. 17.0)
+    # Therefore, we should use startswith for substring match.
+    if runtime['version'].startswith(ios_version):
       return runtime
   return None
 
@@ -390,6 +396,12 @@ def delete_simulator_runtime(runtime_id):
   cmd = ['xcrun', 'simctl', 'runtime', 'delete', runtime_id]
   LOGGER.debug('Deleting runtime with command %s' % cmd)
   subprocess.check_output(cmd)
+
+
+def delete_simulator_runtime_after_days(days):
+  cmd = ['xcrun', 'simctl', 'runtime', 'delete', '--notUsedSinceDays', days]
+  LOGGER.debug('Deleting unused runtime with command %s' % cmd)
+  subprocess.run(cmd, check=False)
 
 
 def delete_simulator_runtime_and_wait(ios_version):
