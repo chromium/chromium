@@ -7,26 +7,20 @@
 #include <initializer_list>
 #include <vector>
 
-#include "ash/webui/file_manager/url_constants.h"
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/virtual_tasks/install_isolated_web_app_virtual_task.h"
-#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "content/public/browser/network_service_instance.h"
 
 namespace file_manager::file_tasks {
 
-std::vector<VirtualTask*>& GetTestVirtualTasks() {
-  static base::NoDestructor<std::vector<VirtualTask*>> virtual_tasks;
-  return *virtual_tasks;
-}
+namespace {
 
 // The set of virtual tasks is statically determined. Tasks can turn themselves
 // on or off dynamically by implementing |IsEnabled()|.
-const std::vector<VirtualTask*> GetVirtualTasks() {
+const std::vector<VirtualTask*>& GetVirtualTasks() {
   static const base::NoDestructor<std::vector<VirtualTask*>> virtual_tasks(
       std::initializer_list<VirtualTask*>(
           {new InstallIsolatedWebAppVirtualTask()}));
@@ -35,6 +29,57 @@ const std::vector<VirtualTask*> GetVirtualTasks() {
   }
   return *virtual_tasks;
 }
+
+bool LooksLikeVirtualTask(const TaskDescriptor& task) {
+  return task.app_id == kFileManagerSwaAppId &&
+         task.task_type == TASK_TYPE_WEB_APP;
+}
+
+VirtualTask* FindVirtualTask(const TaskDescriptor& task) {
+  if (!LooksLikeVirtualTask(task)) {
+    return nullptr;
+  }
+  const auto& tasks = GetVirtualTasks();
+  auto itr = base::ranges::find(tasks, task.action_id, &VirtualTask::id);
+  if (itr == tasks.end()) {
+    return nullptr;
+  }
+  return *itr;
+}
+
+// Validates that each entry from `entries` matches any mime type from
+// `mime_types`.
+bool AllEntriesMatchAtLeastOneMimeType(
+    const std::vector<extensions::EntryInfo>& entries,
+    const std::vector<std::string>& mime_types) {
+  return base::ranges::all_of(
+      entries,
+      [&](const std::string& entry_mime_type) {
+        return base::ranges::any_of(
+            mime_types, [&](const std::string& mime_type) {
+              return apps_util::MimeTypeMatched(entry_mime_type, mime_type);
+            });
+      },
+      &extensions::EntryInfo::mime_type);
+}
+
+// Validates that each file url from `file_urls` matches any file extension from
+// `file_extensions`
+bool AllUrlsMatchAtLeastOneFileExtension(
+    const std::vector<GURL>& file_urls,
+    const std::vector<std::string>& file_extensions) {
+  return base::ranges::all_of(
+      file_urls,
+      [&](const std::string& file_name) {
+        return base::ranges::any_of(
+            file_extensions, [&](const std::string& file_extension) {
+              return apps_util::ExtensionMatched(file_name, file_extension);
+            });
+      },
+      &GURL::ExtractFileName);
+}
+
+}  // namespace
 
 void FindVirtualTasks(Profile* profile,
                       const std::vector<extensions::EntryInfo>& entries,
@@ -65,31 +110,21 @@ bool ExecuteVirtualTask(Profile* profile,
                         const TaskDescriptor& task,
                         const std::vector<FileSystemURL>& file_urls,
                         gfx::NativeWindow modal_parent) {
-  if (!IsVirtualTask(task)) {
+  auto* virtual_task = FindVirtualTask(task);
+  if (!virtual_task || !virtual_task->IsEnabled(profile)) {
     return false;
   }
-
-  for (const VirtualTask* virtual_task : GetVirtualTasks()) {
-    if (virtual_task->id() == task.action_id &&
-        virtual_task->IsEnabled(profile)) {
-      return virtual_task->Execute(profile, task, file_urls, modal_parent);
-    }
-  }
-  return false;
+  return virtual_task->Execute(profile, task, file_urls, modal_parent);
 }
 
 bool IsVirtualTask(const TaskDescriptor& task) {
-  if (task.app_id != kFileManagerSwaAppId ||
-      task.task_type != TASK_TYPE_WEB_APP) {
-    return false;
-  }
+  return LooksLikeVirtualTask(task) &&
+         base::Contains(GetVirtualTasks(), task.action_id, &VirtualTask::id);
+}
 
-  for (const VirtualTask* virtual_task : GetVirtualTasks()) {
-    if (virtual_task->id() == task.action_id) {
-      return true;
-    }
-  }
-  return false;
+std::vector<VirtualTask*>& GetTestVirtualTasks() {
+  static base::NoDestructor<std::vector<VirtualTask*>> virtual_tasks;
+  return *virtual_tasks;
 }
 
 VirtualTask::VirtualTask() = default;
@@ -100,28 +135,12 @@ bool VirtualTask::Matches(
     const std::vector<GURL>& file_urls,
     const std::vector<std::string>& dlp_source_urls) const {
   // Try to match mime types
-  bool mime_types_matched = std::all_of(
-      entries.begin(), entries.end(),
-      [this](const extensions::EntryInfo& entry) {
-        for (const std::string& matched_mime_type : matcher_mime_types_) {
-          if (apps_util::MimeTypeMatched(entry.mime_type, matched_mime_type)) {
-            return true;
-          }
-        }
-        return false;
-      });
+  bool mime_types_matched =
+      AllEntriesMatchAtLeastOneMimeType(entries, matcher_mime_types_);
 
   // Try to match extensions
   bool extensions_matched =
-      std::all_of(file_urls.begin(), file_urls.end(), [this](const GURL& url) {
-        for (const std::string& matched_extension : matcher_file_extensions_) {
-          if (apps_util::ExtensionMatched(url.ExtractFileName(),
-                                          matched_extension)) {
-            return true;
-          }
-        }
-        return false;
-      });
+      AllUrlsMatchAtLeastOneFileExtension(file_urls, matcher_file_extensions_);
 
   // TODO(b/284800493): Handle dlp_source_urls.
 
