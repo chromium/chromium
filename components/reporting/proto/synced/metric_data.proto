@@ -654,7 +654,7 @@ message FatalCrashTelemetry {
   // a crash report ID and (b) a crash is reported for the first time without a
   // crash report ID and only has a crash report ID when it is reported for the
   // second time.
-  optional bool was_reported_without_id = 7;
+  optional bool been_reported_without_crash_report_id = 7;
 }
 
 // Runtime counters retrieved from CPU. Currently the runtime counters telemetry
