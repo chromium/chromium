@@ -127,10 +127,10 @@ bool ChromeCommandLinePrefStore::ValidateProxySwitches() {
 
 void ChromeCommandLinePrefStore::ApplySimpleSwitches() {
   // Look for each switch we know about and set its preference accordingly.
-  ApplyStringSwitches(string_switch_map_, std::size(string_switch_map_));
-  ApplyPathSwitches(path_switch_map_, std::size(path_switch_map_));
-  ApplyIntegerSwitches(integer_switch_map_, std::size(integer_switch_map_));
-  ApplyBooleanSwitches(boolean_switch_map_, std::size(boolean_switch_map_));
+  ApplyStringSwitches(string_switch_map_);
+  ApplyPathSwitches(path_switch_map_);
+  ApplyIntegerSwitches(integer_switch_map_);
+  ApplyBooleanSwitches(boolean_switch_map_);
 }
 
 void ChromeCommandLinePrefStore::ApplyProxyMode() {
