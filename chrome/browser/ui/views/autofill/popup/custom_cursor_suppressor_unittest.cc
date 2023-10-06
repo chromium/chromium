@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_types.h"
@@ -57,15 +58,43 @@ TEST_F(CustomCursorSuppressorTest, SingleBrowserSingleTab) {
   AddTab(browser(), GURL(kUrl1));
 
   CustomCursorSuppressor suppressor;
-  EXPECT_FALSE(suppressor.IsSuppressing());
+  EXPECT_FALSE(suppressor.IsSuppressing(
+      *browser()->tab_strip_model()->GetActiveWebContents()));
 
   suppressor.Start();
-  EXPECT_TRUE(suppressor.IsSuppressing());
+  EXPECT_TRUE(suppressor.IsSuppressing(
+      *browser()->tab_strip_model()->GetActiveWebContents()));
   EXPECT_THAT(suppressor.SuppressedRenderFrameHostIdsForTesting(),
               UnorderedElementsAre(GetRfhIdOfActiveWebContents(*browser())));
 
   suppressor.Stop();
-  EXPECT_FALSE(suppressor.IsSuppressing());
+  EXPECT_FALSE(suppressor.IsSuppressing(
+      *browser()->tab_strip_model()->GetActiveWebContents()));
+}
+
+// Tests that a navigation that results in a different `RenderFrameHost` for the
+// still maintains a suppressed custom cursor.
+TEST_F(CustomCursorSuppressorTest,
+       SingleBrowserSingleTabWithNavigationToDifferentOrigin) {
+  AddTab(browser(), GURL(kUrl1));
+
+  CustomCursorSuppressor suppressor;
+  suppressor.Start();
+
+  EXPECT_TRUE(suppressor.IsSuppressing(
+      *browser()->tab_strip_model()->GetActiveWebContents()));
+  std::vector<GlobalRenderFrameHostId> expected_suppressed_ids = {
+      GetRfhIdOfActiveWebContents(*browser())};
+
+  // Simulate a navigation to a different origin.
+  NavigateAndCommitActiveTab(GURL(kUrl2));
+  EXPECT_NE(GetRfhIdOfActiveWebContents(*browser()),
+            expected_suppressed_ids.front());
+  expected_suppressed_ids.push_back(GetRfhIdOfActiveWebContents(*browser()));
+  EXPECT_TRUE(suppressor.IsSuppressing(
+      *browser()->tab_strip_model()->GetActiveWebContents()));
+  EXPECT_THAT(suppressor.SuppressedRenderFrameHostIdsForTesting(),
+              UnorderedElementsAreArray(expected_suppressed_ids));
 }
 
 // Tests that custom cursor suppression reacts to active tab changes in a single
@@ -170,7 +199,6 @@ TEST_F(CustomCursorSuppressorTest, MultipleBrowsers) {
 
   CustomCursorSuppressor suppressor;
   suppressor.Start();
-  EXPECT_TRUE(suppressor.IsSuppressing());
   EXPECT_THAT(suppressor.SuppressedRenderFrameHostIdsForTesting(),
               UnorderedElementsAre(GetRfhIdOfActiveWebContents(*browser()),
                                    GetRfhIdOfActiveWebContents(*browser2)));
@@ -188,7 +216,6 @@ TEST_F(CustomCursorSuppressorTest, BrowserAddition) {
 
   CustomCursorSuppressor suppressor;
   suppressor.Start();
-  EXPECT_TRUE(suppressor.IsSuppressing());
   EXPECT_THAT(suppressor.SuppressedRenderFrameHostIdsForTesting(),
               UnorderedElementsAre(GetRfhIdOfActiveWebContents(*browser())));
 
@@ -204,7 +231,6 @@ TEST_F(CustomCursorSuppressorTest, BrowserAddition) {
                                    GetRfhIdOfActiveWebContents(*browser2)));
 
   suppressor.Stop();
-  EXPECT_FALSE(suppressor.IsSuppressing());
 
   // All tabs must be closed prior to browser destruction.
   browser2->tab_strip_model()->CloseAllTabs();

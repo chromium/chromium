@@ -4,14 +4,37 @@
 
 #include "chrome/browser/ui/views/autofill/popup/custom_cursor_suppressor.h"
 
+#include <map>
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
+
+CustomCursorSuppressor::NavigationObserver::NavigationObserver(
+    content::WebContents* web_contents,
+    Callback callback)
+    : content::WebContentsObserver(web_contents),
+      callback_(std::move(callback)) {
+  CHECK(callback_);
+}
+
+CustomCursorSuppressor::NavigationObserver::~NavigationObserver() = default;
+
+void CustomCursorSuppressor::NavigationObserver::RenderFrameHostChanged(
+    content::RenderFrameHost* old_host,
+    content::RenderFrameHost* new_host) {
+  if (new_host && new_host->IsInPrimaryMainFrame()) {
+    callback_.Run(*web_contents());
+  }
+}
 
 CustomCursorSuppressor::CustomCursorSuppressor() = default;
 
@@ -28,6 +51,7 @@ void CustomCursorSuppressor::Start(int max_dimension_dips) {
     browser->tab_strip_model()->AddObserver(this);
     if (content::WebContents* active_contents =
             browser->tab_strip_model()->GetActiveWebContents()) {
+      MaybeObserveNavigationsInWebContents(*active_contents);
       SuppressForWebContents(*active_contents);
     }
   }
@@ -39,8 +63,10 @@ void CustomCursorSuppressor::Stop() {
   browser_list_observation_.Reset();
 }
 
-bool CustomCursorSuppressor::IsSuppressing() const {
-  return browser_list_observation_.IsObserving();
+bool CustomCursorSuppressor::IsSuppressing(
+    content::WebContents& web_contents) const {
+  return disallow_custom_cursor_scopes_.contains(
+      web_contents.GetPrimaryMainFrame()->GetGlobalId());
 }
 
 std::vector<content::GlobalRenderFrameHostId>
@@ -54,17 +80,23 @@ CustomCursorSuppressor::SuppressedRenderFrameHostIdsForTesting() const {
 
 void CustomCursorSuppressor::SuppressForWebContents(
     content::WebContents& web_contents) {
-  content::GlobalRenderFrameHostId main_frame_id =
-      web_contents.GetPrimaryMainFrame()->GetGlobalId();
-  if (disallow_custom_cursor_scopes_.contains(main_frame_id)) {
+  if (IsSuppressing(web_contents)) {
     return;
   }
   disallow_custom_cursor_scopes_.insert(
-      {main_frame_id,
+      {web_contents.GetPrimaryMainFrame()->GetGlobalId(),
        web_contents.CreateDisallowCustomCursorScope(max_dimension_dips_)});
-  // TODO(crbug.com/1478613): Start observing the WebContents at this point to
-  // guard against navigations in it that cause a change in the RFH of the
-  // primary main frame.
+}
+
+void CustomCursorSuppressor::MaybeObserveNavigationsInWebContents(
+    content::WebContents& web_contents) {
+  if (IsSuppressing(web_contents)) {
+    return;
+  }
+  navigation_observers_.push_back(std::make_unique<NavigationObserver>(
+      &web_contents,
+      base::BindRepeating(&CustomCursorSuppressor::SuppressForWebContents,
+                          base::Unretained(this))));
 }
 
 void CustomCursorSuppressor::OnBrowserAdded(Browser* browser) {
@@ -76,6 +108,7 @@ void CustomCursorSuppressor::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   if (selection.active_tab_changed() && selection.new_contents) {
+    MaybeObserveNavigationsInWebContents(*selection.new_contents);
     SuppressForWebContents(*selection.new_contents);
   }
 }
