@@ -27,9 +27,17 @@ ContentAnalysisDownloadsDelegate::ContentAnalysisDownloadsDelegate(
       bypass_justification_required_(bypass_justification_required),
       open_file_callback_(std::move(open_file_callback)),
       discard_file_callback_(std::move(discard_file_callback)),
-      download_item_(download_item) {}
+      download_item_(download_item) {
+  if (download_item_) {
+    download_item_->AddObserver(this);
+  }
+}
 
-ContentAnalysisDownloadsDelegate::~ContentAnalysisDownloadsDelegate() = default;
+ContentAnalysisDownloadsDelegate::~ContentAnalysisDownloadsDelegate() {
+  if (download_item_) {
+    download_item_->RemoveObserver(this);
+  }
+}
 
 void ContentAnalysisDownloadsDelegate::BypassWarnings(
     absl::optional<std::u16string> user_justification) {
@@ -95,6 +103,13 @@ absl::optional<std::u16string>
 ContentAnalysisDownloadsDelegate::OverrideCancelButtonText() const {
   return l10n_util::GetStringUTF16(
       IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_DISCARD_FILE_BUTTON);
+}
+
+void ContentAnalysisDownloadsDelegate::OnDownloadDestroyed(
+    download::DownloadItem* download) {
+  DCHECK_EQ(download, download_item_);
+  download->RemoveObserver(this);
+  download_item_ = nullptr;
 }
 
 }  // namespace enterprise_connectors
