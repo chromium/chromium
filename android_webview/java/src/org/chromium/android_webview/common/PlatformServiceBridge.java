@@ -69,6 +69,12 @@ public abstract class PlatformServiceBridge {
         return false;
     }
 
+    // Returns the versionCode of GMS that the user is currently running.
+    // Will always return 0 if GMS is not installed.
+    public int getGmsVersionCode() {
+        return 0;
+    }
+
     // Overriding implementations may call "callback" asynchronously, on any thread.
     public void querySafeBrowsingUserConsent(@NonNull final Callback<Boolean> callback) {
         // User opt-in preference depends on a SafetyNet API. In purely upstream builds (which don't

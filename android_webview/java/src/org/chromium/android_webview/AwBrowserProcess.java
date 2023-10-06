@@ -202,6 +202,14 @@ public final class AwBrowserProcess {
                 }
             });
         }
+
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT,
+                () -> {
+                    RecordHistogram.recordSparseHistogram(
+                            "Android.PlayServices.Version",
+                            PlatformServiceBridge.getInstance().getGmsVersionCode());
+                });
     }
 
     public static void setWebViewPackageName(String webViewPackageName) {
