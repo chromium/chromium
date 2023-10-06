@@ -274,11 +274,8 @@ IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ManagedAndroidAccount) {
   EXPECT_FALSE(IsArcPlayStoreEnabledForProfile(profile()));
 }
 
-// TODO(crbug.com/1489184): This test fails due to accessing a context that was
-// ShutDown().
 // Make sure that ARC is disabled upon entering locked fullscreen mode.
-IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest,
-                       DISABLED_ArcDisabledInLockedFullscreen) {
+IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ArcDisabledInLockedFullscreen) {
   EnableArc();
   ASSERT_EQ(ArcSessionManager::State::ACTIVE,
             ArcSessionManager::Get()->state());

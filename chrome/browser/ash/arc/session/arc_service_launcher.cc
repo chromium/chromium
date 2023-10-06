@@ -360,10 +360,15 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
 }
 
 void ArcServiceLauncher::Shutdown() {
+  // Reset browser context registered to ArcServiceManager before profile
+  // destruction. This is required to avoid keeping the dangling pointer after
+  // profile destruction.
+  arc_service_manager_->set_browser_context(nullptr);
+
   arc_play_store_enabled_preference_handler_.reset();
   arc_session_manager_->Shutdown();
-  arc_icon_cache_delegate_provider_.reset();
   arc_net_url_opener_.reset();
+  arc_icon_cache_delegate_provider_.reset();
 }
 
 void ArcServiceLauncher::ResetForTesting() {
