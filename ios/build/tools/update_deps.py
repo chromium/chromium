@@ -34,6 +34,10 @@ TRANSITIVE_DEPENDENT_LINE_NUMBER = 4
 # The line containing the dependence in the error message.
 TRANSITIVE_DEPENDEE_LINE_NUMBER = 6
 
+# An error message that can be displayed at the beginning of the error.
+# This is supposed to be temporary and will be removed in 2024.
+TEMPORARY_ERROR = "The gn arg use_goma=true will be deprecated"
+
 MISSING_PATTERNS = [
     (3, "It is not in any dependency of"),
     (5, "The include file is in the target(s):"),
@@ -124,7 +128,10 @@ def cleanup_redundant_deps(deps):
 def extract_missing_dependency(error, prefix, patterns, dependant_line,
                              dependee_line):
     """Parse gn error message for missing direct dependency."""
-    lines = error.splitlines()
+    lines = [
+        line for line in error.splitlines()
+        if not line.startswith(TEMPORARY_ERROR)
+    ]
     if len(lines) <= patterns[-1][0]:
         return False, None
     for line_number, pattern in patterns:
