@@ -7,7 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
-#include "content/browser/generic_sensor/sensor_provider_proxy_impl.h"
+#include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
@@ -40,14 +40,16 @@ class TestPermissionManager : public MockPermissionManager {
   }
 };
 
-class SensorProviderProxyImplTest : public RenderViewHostImplTestHarness {
+class WebContentsSensorProviderProxyTest
+    : public RenderViewHostImplTestHarness {
  public:
-  SensorProviderProxyImplTest() = default;
-  ~SensorProviderProxyImplTest() override = default;
+  WebContentsSensorProviderProxyTest() = default;
+  ~WebContentsSensorProviderProxyTest() override = default;
 
-  SensorProviderProxyImplTest(const SensorProviderProxyImplTest&) = delete;
-  SensorProviderProxyImplTest& operator=(const SensorProviderProxyImplTest&) =
-      delete;
+  WebContentsSensorProviderProxyTest(
+      const WebContentsSensorProviderProxyTest&) = delete;
+  WebContentsSensorProviderProxyTest& operator=(
+      const WebContentsSensorProviderProxyTest&) = delete;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
@@ -58,16 +60,16 @@ class SensorProviderProxyImplTest : public RenderViewHostImplTestHarness {
         ->SetPermissionControllerDelegate(std::move(mock_permission_manager));
 
     fake_sensor_provider_ = std::make_unique<device::FakeSensorProvider>();
-    SensorProviderProxyImpl::OverrideSensorProviderBinderForTesting(
+    WebContentsSensorProviderProxy::OverrideSensorProviderBinderForTesting(
         base::BindRepeating(
-            &SensorProviderProxyImplTest::BindSensorProviderReceiver,
+            &WebContentsSensorProviderProxyTest::BindSensorProviderReceiver,
             base::Unretained(this)));
   }
 
   void TearDown() override {
     RenderViewHostImplTestHarness::TearDown();
 
-    SensorProviderProxyImpl::OverrideSensorProviderBinderForTesting(
+    WebContentsSensorProviderProxy::OverrideSensorProviderBinderForTesting(
         base::NullCallback());
     fake_sensor_provider_.reset();
   }
@@ -108,15 +110,17 @@ class InterceptingFakeSensorProvider : public device::FakeSensorProvider {
   base::OnceClosure interception_callback_;
 };
 
-// Test for https://crbug.com/1240814: destroying SensorProviderProxyImplTest
-// between calling device::mojom::SensorProvider::GetSensor() and it running the
-// callback does not crash.
-TEST_F(SensorProviderProxyImplTest, DestructionOrderWithOngoingCallback) {
+// Test for https://crbug.com/1240814: destroying
+// WebContentsSensorProviderProxyTest between calling
+// device::mojom::SensorProvider::GetSensor() and it running the callback does
+// not crash.
+TEST_F(WebContentsSensorProviderProxyTest,
+       DestructionOrderWithOngoingCallback) {
   auto intercepting_fake_sensor_provider =
       std::make_unique<InterceptingFakeSensorProvider>(
           base::BindLambdaForTesting([&]() {
             // Delete the current WebContents and consequently trigger
-            // SensorProviderProxyImpl's destruction before
+            // WebContentsSensorProviderProxy's destruction before
             // FakeSensorProvider::GetSensor() is invoked and handles the
             // GetSensorCallback it receives.
             DeleteContents();

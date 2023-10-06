@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/generic_sensor/sensor_provider_proxy_impl.h"
+#include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
 #include "content/browser/presentation/presentation_test_utils.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -3960,14 +3960,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VideoSuspendAndResume) {
 class SensorBackForwardCacheBrowserTest : public BackForwardCacheBrowserTest {
  protected:
   SensorBackForwardCacheBrowserTest() {
-    SensorProviderProxyImpl::OverrideSensorProviderBinderForTesting(
+    WebContentsSensorProviderProxy::OverrideSensorProviderBinderForTesting(
         base::BindRepeating(
             &SensorBackForwardCacheBrowserTest::BindSensorProvider,
             base::Unretained(this)));
   }
 
   ~SensorBackForwardCacheBrowserTest() override {
-    SensorProviderProxyImpl::OverrideSensorProviderBinderForTesting(
+    WebContentsSensorProviderProxy::OverrideSensorProviderBinderForTesting(
         base::NullCallback());
   }
 

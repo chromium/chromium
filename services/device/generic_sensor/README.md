@@ -362,7 +362,7 @@ API](https://w3c.github.io/permissions/) are performed before a sensor is
 started.
 
 In Chromium, the permission checks are done in the `//content/browser` side:
-`SensorProviderProxyImpl::GetSensor()` invokes
+`WebContentsSensorProviderProxy::GetSensor()` invokes
 `PermissionController::RequestPermissionFromCurrentDocument()` and only
 connects to the `//services` side if permission has been granted.
 
@@ -394,7 +394,7 @@ Blink performs checks in
 [`Sensor::Sensor()`](/third_party/blink/renderer/modules/sensor/sensor.cc) by
 calling `AreFeaturesEnabled()`, while the `content/` side also performs checks
 in
-[`SensorProviderProxyImpl::CheckFeaturePolicies()`](/content/browser/generic_sensor/sensor_provider_proxy_impl.cc).
+[`FrameSensorProviderProxy`](/content/browser/generic_sensor/frame_sensor_provider_proxy.cc).
 
 #### Reporting values to consumer
 

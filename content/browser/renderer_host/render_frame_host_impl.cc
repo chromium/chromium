@@ -73,7 +73,7 @@
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/font_access/font_access_manager.h"
-#include "content/browser/generic_sensor/sensor_provider_proxy_impl.h"
+#include "content/browser/generic_sensor/frame_sensor_provider_proxy.h"
 #include "content/browser/geolocation/geolocation_service_impl.h"
 #include "content/browser/idle/idle_manager_impl.h"
 #include "content/browser/installedapp/installed_app_provider_impl.h"
@@ -11933,7 +11933,7 @@ void RenderFrameHostImpl::GetSpeechSynthesis(
 
 void RenderFrameHostImpl::GetSensorProvider(
     mojo::PendingReceiver<device::mojom::SensorProvider> receiver) {
-  SensorProviderProxyImpl::GetOrCreateForCurrentDocument(this)->Bind(
+  FrameSensorProviderProxy::GetOrCreateForCurrentDocument(this)->Bind(
       std::move(receiver));
 }
 

@@ -2383,7 +2383,7 @@ test("content_unittests") {
     "../browser/first_party_sets/local_set_declaration_unittest.cc",
     "../browser/font_access/font_access_manager_unittest.cc",
     "../browser/font_access/font_enumeration_data_source_unittest.cc",
-    "../browser/generic_sensor/sensor_provider_proxy_impl_unittest.cc",
+    "../browser/generic_sensor/web_contents_sensor_provider_proxy_unittest.cc",
     "../browser/geolocation/geolocation_service_impl_unittest.cc",
     "../browser/gpu/gpu_data_manager_impl_private_unittest.cc",
     "../browser/gpu/gpu_data_manager_testing_arrays_and_structs_autogen.h",
