@@ -15,6 +15,7 @@ This is a list of the security policies Chromium has published.
   features](permissions-for-powerful-web-platform-features.md)
 * [Security considerations for browser UI](security-considerations-for-browser-ui.md)
 * [Guidelines for URL display](url_display_guidelines/url_display_guidelines.md)
+* [Avoid adding cross-origin full-page overlays](overlay-policy.md)
 
 You can also find our position on various matters in the [security FAQ](faq.md):
 for example, on local attackers or on the privilege accorded to enterprise
