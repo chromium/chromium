@@ -25,9 +25,7 @@ class DictationTestSupport {
    * Waits for focus to land on the editable field used in Dictation C++ tests.
    */
   async waitForEditableFocus() {
-    const desktop = await new Promise(resolve => {
-      chrome.automation.getDesktop(d => resolve(d));
-    });
+    const desktop = await this.getDesktop_();
     const focus = await new Promise(resolve => {
       chrome.automation.getFocus(f => resolve(f));
     });
@@ -185,6 +183,7 @@ class DictationTestSupport {
    * @param {number} selEnd
    */
   async waitForSelection(selStart, selEnd) {
+    const desktop = await this.getDesktop_();
     const inputController = this.dictation_.inputController_;
     const goalTest = () => {
       const data = inputController.getEditableNodeData();
@@ -200,11 +199,17 @@ class DictationTestSupport {
       const onSelectionChanged = () => {
         if (goalTest()) {
           inputController.onSelectionChangedForTesting_ = null;
+          desktop.removeEventListener(
+              chrome.automation.EventType.DOCUMENT_SELECTION_CHANGED,
+              onSelectionChanged);
           resolve();
         }
       };
 
       inputController.onSelectionChangedForTesting_ = onSelectionChanged;
+      desktop.addEventListener(
+          chrome.automation.EventType.DOCUMENT_SELECTION_CHANGED,
+          onSelectionChanged);
     });
 
     this.notifyCcTests_();
@@ -238,6 +243,12 @@ class DictationTestSupport {
     this.speechRecognitionPrivateStartCalls_ = 0;
     chrome.speechRecognitionPrivate.start = this.speechRecognitionPrivateStart_;
     this.notifyCcTests_();
+  }
+
+  async getDesktop_() {
+    return new Promise(resolve => {
+      chrome.automation.getDesktop(d => resolve(d));
+    });
   }
 }
 

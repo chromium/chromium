@@ -23,7 +23,6 @@ enum class SpeechRecognitionType;
 }  // namespace speech
 
 namespace ui {
-class InputMethod;
 namespace test {
 class EventGenerator;
 }  // namespace test
@@ -61,11 +60,9 @@ class DictationTestUtils {
   void SendFinalResultAndWaitForEditableValue(
       const std::string& result,
       const std::string& value);
-  void SendFinalResultAndWaitForSelectionChanged(
-      const std::string& result);
-  void SendFinalResultAndWaitForCaretBoundsChanged(
-      ui::InputMethod* input_method,
-      const std::string& result);
+  void SendFinalResultAndWaitForSelection(const std::string& result,
+                                          int start,
+                                          int end);
   void SendFinalResultAndWaitForClipboardChanged(const std::string& result);
 
   // Routers to SpeechRecognitionTestHelper methods.

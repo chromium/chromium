@@ -176,6 +176,7 @@ void DictationTestUtils::EnableDictation(Browser* browser) {
       url = kContentEditableUrl;
       break;
   }
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GURL(url)));
 
   // Dictation test support references the main Dictation object, so wait for
@@ -212,27 +213,18 @@ void DictationTestUtils::ToggleDictationWithKeystroke() {
 void DictationTestUtils::SendFinalResultAndWaitForEditableValue(
     const std::string& result,
     const std::string& value) {
-  // Ensure that the accessibility tree and the text area value are updated.
   SendFinalResultAndWait(result);
   automation_test_utils_->WaitForValueChangedEvent();
   WaitForEditableValue(value);
 }
 
-void DictationTestUtils::SendFinalResultAndWaitForSelectionChanged(
-    const std::string& result) {
+void DictationTestUtils::SendFinalResultAndWaitForSelection(
+    const std::string& result,
+    int start,
+    int end) {
   SendFinalResultAndWait(result);
   automation_test_utils_->WaitForTextSelectionChangedEvent();
-}
-
-// TODO(b:259353252): Update this method to use testSupport JS, similar to
-// what's done in DictationFormattedContentEditableTest::WaitForSelection.
-void DictationTestUtils::SendFinalResultAndWaitForCaretBoundsChanged(
-    ui::InputMethod* input_method,
-    const std::string& result) {
-  CaretBoundsChangedWaiter caret_waiter(input_method);
-  SendFinalResultAndWait(result);
-  automation_test_utils_->WaitForTextSelectionChangedEvent();
-  caret_waiter.Wait();
+  WaitForSelection(start, end);
 }
 
 void DictationTestUtils::SendFinalResultAndWaitForClipboardChanged(
