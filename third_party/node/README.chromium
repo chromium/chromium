@@ -14,8 +14,45 @@ Node binaries and NPM modules necessary for buliding Chrome's WebUI.
 Use update_node_binaries to update Node binaries and update_npm_deps to
 update NPM dependencies.
 
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Mocha
+Short Name: mocha
+URL: https://github.com/mochajs/mocha
+Version: 10.0.0
+License: MIT
+License File: LICENSE
+Security Critical: no
+Shipped: no
+
+Description:
+Mocha is a simple, flexible JavaScript test framework which can be run in the
+browser. Small or standalone projects, such as individual web components, can
+use Mocha to run several lightweight test suites within one browser_test.
+
 Local Modifications:
-See chromium_polymer_bundler.patch
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Chai Assertion Library
+Short Name: chai
+URL: https://github.com/chaijs/chai
+Version: 4.2.0
+Revision: 26c8a794ec6da695f004bdbd6362a466dc3d098f
+Date: 2018-09-25
+License: MIT
+License File: LICENSE
+Security Critical: no
+Shipped: no
+
+Description:
+BDD / TDD assertion framework for node.js and the browser that can be
+paired with any testing framework.
+
+Local Modifications:
+ - Applied chai.patch so that chai.js can run within a d8 shell, which is
+   used in unit_tests
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
