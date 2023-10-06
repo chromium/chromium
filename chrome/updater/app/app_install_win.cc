@@ -322,6 +322,28 @@ void SetUsageStats(UpdaterScope scope,
   }
 }
 
+// TODO(crbug.com/1422075): localize the text for these errors.
+std::string GetTextForUpdateCheckError(int error) {
+#define SWITCH_ENTRY(error_code)     \
+  case static_cast<int>(error_code): \
+    return #error_code
+  switch (error) {
+    SWITCH_ENTRY(update_client::ProtocolError::NONE);
+    SWITCH_ENTRY(update_client::ProtocolError::RESPONSE_NOT_TRUSTED);
+    SWITCH_ENTRY(update_client::ProtocolError::MISSING_PUBLIC_KEY);
+    SWITCH_ENTRY(update_client::ProtocolError::MISSING_URLS);
+    SWITCH_ENTRY(update_client::ProtocolError::PARSE_FAILED);
+    SWITCH_ENTRY(update_client::ProtocolError::UPDATE_RESPONSE_NOT_FOUND);
+    SWITCH_ENTRY(update_client::ProtocolError::URL_FETCHER_FAILED);
+    SWITCH_ENTRY(update_client::ProtocolError::UNKNOWN_APPLICATION);
+    SWITCH_ENTRY(update_client::ProtocolError::RESTRICTED_APPLICATION);
+    SWITCH_ENTRY(update_client::ProtocolError::INVALID_APPID);
+    default:
+      return "";
+  }
+#undef SWITCH_ENTRY
+}
+
 // Implements installing a single application by invoking the code in
 // |UpdateService|, listening to |UpdateService| and UI events, and
 // driving the UI code by calling the functions exposed by
@@ -789,10 +811,24 @@ ObserverCompletionInfo AppInstallControllerImpl::HandleInstallResult(
   if (update_state.state != UpdateService::UpdateState::State::kNoUpdate) {
     app_info.app_id = base::ASCIIToUTF16(update_state.app_id);
     app_info.error_code = update_state.error_code;
-    app_info.completion_message = base::ASCIIToUTF16(
-        !update_state.installer_text.empty() ? update_state.installer_text
-        : app_info.error_code ? GetTextForSystemError(app_info.error_code)
-                              : "");
+    app_info.completion_message = base::ASCIIToUTF16([&]() {
+      if (!update_state.installer_text.empty()) {
+        return update_state.installer_text;
+      }
+      if (!app_info.error_code) {
+        return std::string();
+      }
+      switch (update_state.error_category) {
+        case UpdateService::ErrorCategory::kInstall:
+          return GetTextForSystemError(app_info.error_code);
+        case UpdateService::ErrorCategory::kUpdateCheck:
+          return GetTextForUpdateCheckError(app_info.error_code);
+        default:
+          LOG(ERROR) << "Unknown error category: "
+                     << update_state.error_category;
+          return std::string();
+      }
+    }());
     app_info.extra_code1 = update_state.extra_code1;
     app_info.post_install_launch_command_line =
         base::SysUTF8ToWide(update_state.installer_cmd_line);

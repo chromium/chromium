@@ -57,7 +57,8 @@ struct AppUpdateExpectation {
                            UpdateService::ErrorCategory::kService,
                        const int error_code = static_cast<int>(
                            UpdateService::Result::kUpdateCanceled),
-                       const int event_type = /*EVENT_UPDATE_COMPLETE=*/3);
+                       const int event_type = /*EVENT_UPDATE_COMPLETE=*/3,
+                       const std::string& custom_app_response = {});
   AppUpdateExpectation(const AppUpdateExpectation&);
   ~AppUpdateExpectation();
 
@@ -75,6 +76,7 @@ struct AppUpdateExpectation {
   const UpdateService::ErrorCategory error_category;
   const int error_code;
   const int event_type;
+  const std::string custom_app_response;
 };
 
 // Returns the path to the updater installer program (in the build output

@@ -335,7 +335,8 @@ AppUpdateExpectation::AppUpdateExpectation(
     bool always_serve_crx,
     const UpdateService::ErrorCategory error_category,
     const int error_code,
-    const int event_type)
+    const int event_type,
+    const std::string& custom_app_response)
     : args(args),
       app_id(app_id),
       from_version(from_version),
@@ -349,7 +350,8 @@ AppUpdateExpectation::AppUpdateExpectation(
       always_serve_crx(always_serve_crx),
       error_category(error_category),
       error_code(error_code),
-      event_type(event_type) {}
+      event_type(event_type),
+      custom_app_response(custom_app_response) {}
 AppUpdateExpectation::AppUpdateExpectation(const AppUpdateExpectation&) =
     default;
 AppUpdateExpectation::~AppUpdateExpectation() = default;
@@ -552,6 +554,10 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
       app_requests.push_back(base::StringPrintf(R"("release_channel":"%s",)",
                                                 app.target_channel.c_str()));
     }
+    if (!app.custom_app_response.empty()) {
+      app_responses.push_back(app.custom_app_response);
+      continue;
+    }
     const base::FilePath crx_path = exe_path.Append(app.crx_relative_path);
     const base::FilePath base_name = crx_path.BaseName().RemoveExtension();
     const base::FilePath run_action =
@@ -595,7 +601,7 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
                app.from_version.GetString().c_str(),
                app.to_version.GetString().c_str())})},
           ")]}'\n");
-    } else {
+    } else if (app.custom_app_response.empty()) {
       // Event ping for apps that doesn't update.
       test_server->ExpectOnce(
           {request::GetPathMatcher(test_server->update_path()),

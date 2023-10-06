@@ -2235,6 +2235,8 @@ class IntegrationTestMsi : public IntegrationTest {
   IntegrationTestMsi() = default;
   ~IntegrationTestMsi() override = default;
 
+  static constexpr char kMsiAppId[] = "{c28fcf72-bcf2-45c5-8def-31a74ac02012}";
+
  protected:
   void SetUp() override {
     if (!IsSystemInstall(GetTestScope())) {
@@ -2292,7 +2294,6 @@ class IntegrationTestMsi : public IntegrationTest {
   }
 
   std::unique_ptr<ScopedServer> test_server_;
-  static constexpr char kMsiAppId[] = "{c28fcf72-bcf2-45c5-8def-31a74ac02012}";
   static constexpr char kMsiCrx[] = "TestSystemMsiInstaller.msi.crx3";
   static constexpr wchar_t kMsiProductIdInitialVersion[] =
       L"40C670A26D240095081B31C3EDEF2BD2";
@@ -2373,6 +2374,7 @@ struct IntegrationInstallerResultsTestCase {
   const int error_code;
   const std::string installer_text;
   const std::string installer_cmd_line;
+  const std::string custom_app_response;
 };
 
 class IntegrationInstallerResultsTest
@@ -2384,66 +2386,107 @@ INSTANTIATE_TEST_SUITE_P(
     IntegrationInstallerResultsTest,
     ::testing::ValuesIn(std::vector<IntegrationInstallerResultsTestCase>{
         // InstallerResult::kMsiError, explicit error code.
-        {false,
-         "INSTALLER_RESULT=2 INSTALLER_ERROR=1603",
-         1603,
-         "Fatal error during installation. ",
-         {}},
+        {
+            false,
+            "INSTALLER_RESULT=2 INSTALLER_ERROR=1603",
+            1603,
+            "Fatal error during installation. ",
+            {},
+            {},
+        },
 
         // `InstallerResult::kCustomError`, implicit error code
         // `kErrorApplicationInstallerFailed`.
-        {false,
-         "INSTALLER_RESULT=1 INSTALLER_RESULT_UI_STRING=TestUIString",
-         kErrorApplicationInstallerFailed,
-         "TestUIString",
-         {}},
+        {
+            false,
+            "INSTALLER_RESULT=1 INSTALLER_RESULT_UI_STRING=TestUIString",
+            kErrorApplicationInstallerFailed,
+            "TestUIString",
+            {},
+            {},
+        },
 
         // InstallerResult::kSystemError, explicit error code.
-        {false,
-         "INSTALLER_RESULT=3 INSTALLER_ERROR=99",
-         99,
-         "Unknown error 0x63",
-         {}},
+        {
+            false,
+            "INSTALLER_RESULT=3 INSTALLER_ERROR=99",
+            99,
+            "Unknown error 0x63",
+            {},
+            {},
+        },
 
         // InstallerResult::kSuccess.
-        {false, "INSTALLER_RESULT=0", 0, {}, {}},
+        {
+            false,
+            "INSTALLER_RESULT=0",
+            0,
+            {},
+            {},
+            {},
+        },
 
         // Silent install with a launch command, InstallerResult::kSuccess, will
         // not run `more.com` since silent install.
-        {false,
-         "INSTALLER_RESULT=0 "
-         "REGISTER_LAUNCH_COMMAND=more.com",
-         0,
-         {},
-         "more.com"},
+        {
+            false,
+            "INSTALLER_RESULT=0 "
+            "REGISTER_LAUNCH_COMMAND=more.com",
+            0,
+            {},
+            "more.com",
+            {},
+        },
 
         // InstallerResult::kMsiError, `ERROR_SUCCESS_REBOOT_REQUIRED`.
-        {false,
-         base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
-                       base::NumberToString(ERROR_SUCCESS_REBOOT_REQUIRED)}),
-         ERROR_SUCCESS_REBOOT_REQUIRED,
-         "The requested operation is successful. Changes will not be effective "
-         "until the system is rebooted. ",
-         {}},
+        {
+            false,
+            base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
+                          base::NumberToString(ERROR_SUCCESS_REBOOT_REQUIRED)}),
+            ERROR_SUCCESS_REBOOT_REQUIRED,
+            "The requested operation is successful. Changes will not be "
+            "effective "
+            "until the system is rebooted. ",
+            {},
+            {},
+        },
 
         // Interactive install via the command line with a launch command,
         // InstallerResult::kSuccess, will run `more.com` since interactive
         // install.
-        {true,
-         "INSTALLER_RESULT=0 "
-         "REGISTER_LAUNCH_COMMAND=more.com",
-         0,
-         {},
-         "more.com"},
+        {
+            true,
+            "INSTALLER_RESULT=0 "
+            "REGISTER_LAUNCH_COMMAND=more.com",
+            0,
+            {},
+            "more.com",
+            {},
+        },
 
         // InstallerResult::kMsiError, `ERROR_SUCCESS_REBOOT_REQUIRED`.
-        {true,
-         base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
-                       base::NumberToString(ERROR_SUCCESS_REBOOT_REQUIRED)}),
-         ERROR_SUCCESS_REBOOT_REQUIRED,
-         base::WideToASCII(GetLocalizedStringF(IDS_TEXT_RESTART_COMPUTER_BASE,
-                                               L"")),
-         {}},
+        {
+            true,
+            base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
+                          base::NumberToString(ERROR_SUCCESS_REBOOT_REQUIRED)}),
+            ERROR_SUCCESS_REBOOT_REQUIRED,
+            base::WideToASCII(
+                GetLocalizedStringF(IDS_TEXT_RESTART_COMPUTER_BASE, L"")),
+            {},
+            {},
+        },
+
+        // Interactive install via the command line,
+        // `update_client::ProtocolError::UNKNOWN_APPLICATION` error.
+        {
+            true,
+            "INSTALLER_RESULT=0",
+            static_cast<int>(update_client::ProtocolError::UNKNOWN_APPLICATION),
+            "update_client::ProtocolError::UNKNOWN_APPLICATION",
+            {},
+            base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
+                          "\",\"status\":\"error-unknownApplication\"}"}),
+        },
     }));
 
 TEST_P(IntegrationInstallerResultsTest, TestCases) {
@@ -2466,8 +2509,9 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
               base::Version({0, 0, 0, 0}), kMsiUpdatedVersion,
               /*is_install=*/true, should_install_successfully, false, "", "",
               crx_relative_path,
-              /*always_serve_crx=*/true, UpdateService::ErrorCategory::kInstall,
-              GetParam().error_code, /*EVENT_INSTALL_COMPLETE=*/2),
+              /*always_serve_crx=*/GetParam().custom_app_response.empty(),
+              UpdateService::ErrorCategory::kInstall, GetParam().error_code,
+              /*EVENT_INSTALL_COMPLETE=*/2, GetParam().custom_app_response),
       });
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
 
