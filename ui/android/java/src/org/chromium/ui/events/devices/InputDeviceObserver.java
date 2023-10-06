@@ -7,12 +7,15 @@ package org.chromium.ui.events.devices;
 import android.content.Context;
 import android.hardware.input.InputManager;
 import android.hardware.input.InputManager.InputDeviceListener;
+import android.util.ArrayMap;
+import android.view.InputDevice;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 
 /**
  * A singleton that helps detecting changes in input devices through the interface
@@ -21,6 +24,13 @@ import org.chromium.base.annotations.NativeMethods;
 @JNINamespace("ui")
 public class InputDeviceObserver implements InputDeviceListener {
     private static final InputDeviceObserver INSTANCE = new InputDeviceObserver();
+    private static final String KEYBOARD_CONNECTION_HISTOGRAM_NAME =
+            "Android.InputDevice.Keyboard.Active";
+    private static final String MOUSE_CONNECTION_HISTOGRAM_NAME =
+            "Android.InputDevice.Mouse.Active";
+
+    // Map to store the <deviceId, InputDevice.SOURCE*> information for an active/connected device.
+    private final ArrayMap<Integer, Integer> mActiveDeviceMap = new ArrayMap<>();
 
     /**
      * Notifies the InputDeviceObserver that an observer is attached and it
@@ -42,7 +52,6 @@ public class InputDeviceObserver implements InputDeviceListener {
     }
 
     private InputManager mInputManager;
-    private InputDeviceListener mInputDeviceListener;
     private int mObserversCounter;
 
     // Override InputDeviceListener methods
@@ -54,11 +63,29 @@ public class InputDeviceObserver implements InputDeviceListener {
     @Override
     public void onInputDeviceRemoved(int deviceId) {
         InputDeviceObserverJni.get().inputConfigurationChanged(InputDeviceObserver.this);
+        // InputDevice#getDevice() returns null for a removed device, and therefore we will use the
+        // |mActiveDeviceMap| to determine the source type of the removed device.
+        if (!mActiveDeviceMap.containsKey(deviceId)) return;
+        if (mActiveDeviceMap.get(deviceId) == InputDevice.SOURCE_KEYBOARD) {
+            RecordHistogram.recordBooleanHistogram(KEYBOARD_CONNECTION_HISTOGRAM_NAME, false);
+        } else if (mActiveDeviceMap.get(deviceId) == InputDevice.SOURCE_MOUSE) {
+            RecordHistogram.recordBooleanHistogram(MOUSE_CONNECTION_HISTOGRAM_NAME, false);
+        }
+        mActiveDeviceMap.remove(deviceId);
     }
 
     @Override
     public void onInputDeviceAdded(int deviceId) {
         InputDeviceObserverJni.get().inputConfigurationChanged(InputDeviceObserver.this);
+        var device = InputDevice.getDevice(deviceId);
+        if (device == null) return;
+        if ((device.getSources() & InputDevice.SOURCE_KEYBOARD) == InputDevice.SOURCE_KEYBOARD) {
+            mActiveDeviceMap.put(deviceId, InputDevice.SOURCE_KEYBOARD);
+            RecordHistogram.recordBooleanHistogram(KEYBOARD_CONNECTION_HISTOGRAM_NAME, true);
+        } else if ((device.getSources() & InputDevice.SOURCE_MOUSE) == InputDevice.SOURCE_MOUSE) {
+            mActiveDeviceMap.put(deviceId, InputDevice.SOURCE_MOUSE);
+            RecordHistogram.recordBooleanHistogram(MOUSE_CONNECTION_HISTOGRAM_NAME, true);
+        }
     }
 
     private void attachObserver() {
