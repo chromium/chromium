@@ -1980,11 +1980,18 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
       clip_path_bounding_box_ =
           ClipPathClipper::LocalClipPathBoundingBox(object_);
       if (clip_path_bounding_box_) {
-        clip_path_bounding_box_->Offset(
-            gfx::Vector2dF(context_.current.paint_offset));
+        // SVG "children" does not have a paint offset, but for <foreignObject>
+        // the paint offset can still be non-zero since it contains the 'x' and
+        // 'y' portion of the geometry. (See also comment in
+        // `NeedsPaintOffsetTranslation()`.)
+        const gfx::Vector2dF paint_offset =
+            !object_.IsSVGChild()
+                ? gfx::Vector2dF(context_.current.paint_offset)
+                : gfx::Vector2dF();
+        clip_path_bounding_box_->Offset(paint_offset);
         if (absl::optional<Path> path = ClipPathClipper::PathBasedClip(
                 object_, context_.current.is_in_block_fragmentation)) {
-          path->Translate(gfx::Vector2dF(context_.current.paint_offset));
+          path->Translate(paint_offset);
           ClipPaintPropertyNode::State state(
               context_.current.transform, *clip_path_bounding_box_,
               FloatRoundedRect(gfx::ToEnclosingRect(*clip_path_bounding_box_)));

@@ -139,11 +139,15 @@ FloatRoundedRect RoundedReferenceBox(GeometryBox geometry_box,
   return rounded_border_box_rect;
 }
 
-}  // namespace
+// Should the paint offset be applied to clip-path geometry for
+// `clip_path_owner`?
+bool UsesPaintOffset(const LayoutObject& clip_path_owner) {
+  return !clip_path_owner.IsSVGChild();
+}
 
 // Is the reference box (as returned by LocalReferenceBox) for |clip_path_owner|
 // zoomed with EffectiveZoom()?
-static bool UsesZoomedReferenceBox(const LayoutObject& clip_path_owner) {
+bool UsesZoomedReferenceBox(const LayoutObject& clip_path_owner) {
   return !clip_path_owner.IsSVGChild() || clip_path_owner.IsSVGForeignObject();
 }
 
@@ -171,7 +175,7 @@ void SetCompositeClipPathStatus(Node* node, bool is_compositable) {
   }
 }
 
-static bool HasCompositeClipPathAnimation(const LayoutObject& layout_object) {
+bool HasCompositeClipPathAnimation(const LayoutObject& layout_object) {
   if (!RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() ||
       !layout_object.StyleRef().HasCurrentClipPathAnimation())
     return false;
@@ -205,10 +209,10 @@ static bool HasCompositeClipPathAnimation(const LayoutObject& layout_object) {
   return has_compositable_clip_path_animation;
 }
 
-static void PaintWorkletBasedClip(GraphicsContext& context,
-                                  const LayoutObject& clip_path_owner,
-                                  const gfx::RectF& reference_box,
-                                  const LayoutObject& reference_box_object) {
+void PaintWorkletBasedClip(GraphicsContext& context,
+                           const LayoutObject& clip_path_owner,
+                           const gfx::RectF& reference_box,
+                           const LayoutObject& reference_box_object) {
   DCHECK(HasCompositeClipPathAnimation(clip_path_owner));
   DCHECK_EQ(clip_path_owner.StyleRef().ClipPath()->GetType(),
             ClipPathOperation::kShape);
@@ -252,6 +256,8 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
                     kRespectImageOrientation);
 }
 
+}  // namespace
+
 gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
   ClipPathOperation& clip_path = *object.StyleRef().ClipPath();
   GeometryBox geometry_box = GeometryBox::kBorderBox;
@@ -270,7 +276,8 @@ gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
     } else if (clip_path.GetType() == ClipPathOperation::kReference) {
       geometry_box = GeometryBox::kFillBox;
     }
-    return SVGResources::ReferenceBoxForEffects(object, geometry_box);
+    return SVGResources::ReferenceBoxForEffects(
+        object, geometry_box, SVGResources::ForeignObjectQuirk::kDisabled);
   }
 
   const auto& box = To<LayoutBoxModelObject>(object);
@@ -332,8 +339,11 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
     // the current transform space, and the reference box is unused.
     // While SVG object has no concept of paint offset, HTML object's
     // local space is shifted by paint offset.
-    bounding_box.Offset(reference_box.OffsetFromOrigin());
+    if (UsesPaintOffset(object)) {
+      bounding_box.Offset(reference_box.OffsetFromOrigin());
+    }
   }
+
   bounding_box.Intersect(gfx::RectF(InfiniteIntRect()));
   return bounding_box;
 }
@@ -419,7 +429,9 @@ static AffineTransform MaskToContentTransform(
   if (resource_clipper.ClipPathUnits() ==
       SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
     if (UsesZoomedReferenceBox(reference_box_object)) {
-      mask_to_content.Translate(reference_box.x(), reference_box.y());
+      if (UsesPaintOffset(reference_box_object)) {
+        mask_to_content.Translate(reference_box.x(), reference_box.y());
+      }
       mask_to_content.Scale(reference_box_object.StyleRef().EffectiveZoom());
     }
   }
@@ -485,8 +497,10 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
       context, display_item_client, DisplayItem::kSVGClip,
       gfx::ToEnclosingRect(properties->MaskClip()->PaintClipRect().Rect()));
   context.Save();
-  PhysicalOffset paint_offset = layout_object.FirstFragment().PaintOffset();
-  context.Translate(paint_offset.left, paint_offset.top);
+  if (UsesPaintOffset(layout_object)) {
+    PhysicalOffset paint_offset = layout_object.FirstFragment().PaintOffset();
+    context.Translate(paint_offset.left, paint_offset.top);
+  }
 
   gfx::RectF reference_box = LocalReferenceBox(layout_object);
 

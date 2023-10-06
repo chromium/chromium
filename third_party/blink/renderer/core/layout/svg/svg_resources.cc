@@ -50,7 +50,8 @@ SVGElementResourceClient& SVGResources::EnsureClient(
 
 gfx::RectF SVGResources::ReferenceBoxForEffects(
     const LayoutObject& layout_object,
-    GeometryBox geometry_box) {
+    GeometryBox geometry_box,
+    ForeignObjectQuirk foreign_object_quirk) {
   // Text "sub-elements" (<tspan>, <textpath>, <a>) should use the entire
   // <text>s object bounding box rather then their own.
   // https://svgwg.org/svg2-draft/text.html#ObjectBoundingBoxUnitsTextObjects
@@ -82,7 +83,8 @@ gfx::RectF SVGResources::ReferenceBoxForEffects(
       NOTREACHED();
   }
 
-  if (obb_layout_object->IsSVGForeignObject()) {
+  if (foreign_object_quirk == ForeignObjectQuirk::kEnabled &&
+      obb_layout_object->IsSVGForeignObject()) {
     // For SVG foreign objects, remove the position part of the bounding box.
     // The position is already baked into the transform, and we don't want to
     // re-apply the offset when, e.g., using "objectBoundingBox" for
