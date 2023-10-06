@@ -423,9 +423,13 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
       initWithType:ItemTypeBulkMovePasswordsToAccountDescription];
   _bulkMovePasswordsToAccountDescriptionItem.title = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SECTION_TITLE);
-  _bulkMovePasswordsToAccountDescriptionItem.enabled = NO;
+  // TODO(crbug.com/1488868): Without setting the table view image item to
+  // enabled, the accessibility voiceover reads out dimmed.
+  _bulkMovePasswordsToAccountDescriptionItem.enabled = YES;
   _bulkMovePasswordsToAccountDescriptionItem.accessibilityIdentifier =
       kPasswordSettingsBulkMovePasswordsToAccountDescriptionTableViewId;
+  _bulkMovePasswordsToAccountDescriptionItem.accessibilityTraits =
+      UIAccessibilityTraitHeader;
 
   std::u16string pattern = l10n_util::GetStringUTF16(
       IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SECTION_DESCRIPTION);
