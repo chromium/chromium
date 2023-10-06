@@ -79010,11 +79010,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="15" label="Failed to generate destination folder URL"/>
   <int value="16" label="Invalid uploaded file URL"/>
   <int value="17" label="Cloud re-authentication required"/>
-  <int value="18" label="Invalid alternate URL"/>
-  <int value="19" label="Unexpected alternate URL host"/>
-  <int value="20" label="Sync failed"/>
-  <int value="21" label="Sync error cancelled and deleted"/>
-  <int value="22" label="Sync error cancelled and trashed"/>
 </enum>
 
 <enum name="OfficeFilesUseOutsideDriveHook">
