@@ -268,26 +268,27 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
     return false;
   }
 
+  const wgpu::FeatureName kOptionalFeatures[] = {
+      wgpu::FeatureName::DualSourceBlending,
+      wgpu::FeatureName::MultiPlanarFormatExtendedUsages,
+      wgpu::FeatureName::MultiPlanarFormatP010,
+      wgpu::FeatureName::Norm16TextureFormats,
+      wgpu::FeatureName::TransientAttachments,
+  };
+
   wgpu::Adapter adapter(adapters[0].Get());
-  if (adapter.HasFeature(wgpu::FeatureName::TransientAttachments)) {
-    features.push_back(wgpu::FeatureName::TransientAttachments);
+  for (auto feature : kOptionalFeatures) {
+    if (!adapter.HasFeature(feature)) {
+      continue;
+    }
+    features.push_back(feature);
+
     // Enabling MSAARenderToSingleSampled causes performance regression without
     // TransientAttachments support.
-    if (adapter.HasFeature(wgpu::FeatureName::MSAARenderToSingleSampled)) {
+    if (feature == wgpu::FeatureName::TransientAttachments &&
+        adapter.HasFeature(wgpu::FeatureName::MSAARenderToSingleSampled)) {
       features.push_back(wgpu::FeatureName::MSAARenderToSingleSampled);
     }
-  }
-
-  if (adapter.HasFeature(wgpu::FeatureName::Norm16TextureFormats)) {
-    features.push_back(wgpu::FeatureName::Norm16TextureFormats);
-  }
-
-  if (adapter.HasFeature(wgpu::FeatureName::MultiPlanarFormatP010)) {
-    features.push_back(wgpu::FeatureName::MultiPlanarFormatP010);
-  }
-
-  if (adapter.HasFeature(wgpu::FeatureName::MultiPlanarFormatExtendedUsages)) {
-    features.push_back(wgpu::FeatureName::MultiPlanarFormatExtendedUsages);
   }
 
   descriptor.requiredFeatures = features.data();
