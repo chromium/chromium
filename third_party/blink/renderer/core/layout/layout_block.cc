@@ -671,7 +671,7 @@ inline bool LayoutBlock::IsInlineBoxWrapperActuallyChild() const {
          EditingIgnoresContent(*GetNode());
 }
 
-LayoutRect LayoutBlock::LocalCaretRect(
+PhysicalRect LayoutBlock::LocalCaretRect(
     int caret_offset,
     LayoutUnit* extra_width_to_end_of_line) const {
   NOT_DESTROYED();
@@ -691,7 +691,7 @@ LayoutRect LayoutBlock::LocalCaretRect(
     if (extra_width_to_end_of_line) {
       *extra_width_to_end_of_line = inline_size - caret_rect.InlineEndOffset();
     }
-    return CreateWritingModeConverter().ToPhysical(caret_rect).ToLayoutRect();
+    return CreateWritingModeConverter().ToPhysical(caret_rect);
   }
   LayoutRect caret_rect;
   if (is_horizontal) {
@@ -710,7 +710,7 @@ LayoutRect LayoutBlock::LocalCaretRect(
     }
   }
 
-  return caret_rect;
+  return PhysicalRect(caret_rect);
 }
 
 void LayoutBlock::AddOutlineRects(OutlineRectCollector& collector,

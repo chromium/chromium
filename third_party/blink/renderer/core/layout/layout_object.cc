@@ -3649,14 +3649,14 @@ PhysicalOffset LayoutObject::OffsetFromAncestor(
   return offset;
 }
 
-LayoutRect LayoutObject::LocalCaretRect(
+PhysicalRect LayoutObject::LocalCaretRect(
     int,
     LayoutUnit* extra_width_to_end_of_line) const {
   NOT_DESTROYED();
   if (extra_width_to_end_of_line)
     *extra_width_to_end_of_line = LayoutUnit();
 
-  return LayoutRect();
+  return PhysicalRect();
 }
 
 bool LayoutObject::IsRooted() const {

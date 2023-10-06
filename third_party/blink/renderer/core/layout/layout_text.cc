@@ -725,11 +725,11 @@ PositionWithAffinity LayoutText::PositionForPoint(
   return CreatePositionWithAffinity(0);
 }
 
-LayoutRect LayoutText::LocalCaretRect(
+PhysicalRect LayoutText::LocalCaretRect(
     int caret_offset,
     LayoutUnit* extra_width_to_end_of_line) const {
   NOT_DESTROYED();
-  return LayoutRect();
+  return PhysicalRect();
 }
 
 bool LayoutText::IsAllCollapsibleWhitespace() const {

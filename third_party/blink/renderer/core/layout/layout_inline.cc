@@ -252,7 +252,7 @@ void LayoutInline::UpdateShouldCreateBoxFragment() {
   }
 }
 
-LayoutRect LayoutInline::LocalCaretRect(
+PhysicalRect LayoutInline::LocalCaretRect(
     int,
     LayoutUnit* extra_width_to_end_of_line) const {
   NOT_DESTROYED();
@@ -263,7 +263,7 @@ LayoutRect LayoutInline::LocalCaretRect(
     //   </LayoutText></LayoutInline>
     // FIXME: need to figure out how to make this return a valid rect, note that
     // there are no line boxes created in the above case.
-    return LayoutRect();
+    return PhysicalRect();
   }
 
   if (extra_width_to_end_of_line)
@@ -291,7 +291,7 @@ LayoutRect LayoutInline::LocalCaretRect(
     }
   }
 
-  return caret_rect;
+  return PhysicalRect(caret_rect);
 }
 
 void LayoutInline::AddChild(LayoutObject* new_child,

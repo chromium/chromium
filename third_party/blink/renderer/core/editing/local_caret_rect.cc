@@ -121,7 +121,7 @@ LocalCaretRect LocalCaretRectOfPositionTemplate(
   }
 
   return LocalCaretRect(layout_object,
-                        layout_object->PhysicalLocalCaretRect(
+                        layout_object->LocalCaretRect(
                             position.GetPosition().ComputeEditingOffset(),
                             extra_width_to_end_of_line),
                         root_box_fragment);

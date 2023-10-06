@@ -3164,7 +3164,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
   return height_result;
 }
 
-LayoutRect LayoutBox::LocalCaretRect(
+PhysicalRect LayoutBox::LocalCaretRect(
     int caret_offset,
     LayoutUnit* extra_width_to_end_of_line) const {
   NOT_DESTROYED();
@@ -3228,7 +3228,7 @@ LayoutRect LayoutBox::LocalCaretRect(
     rect.SetY(rect.Y() + PaddingTop() + BorderTop());
   }
 
-  return rect.ToLayoutRect();
+  return rect;
 }
 
 PositionWithAffinity LayoutBox::PositionForPointInFragments(

@@ -189,8 +189,8 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   }
   void UpdateShouldCreateBoxFragment();
 
-  LayoutRect LocalCaretRect(int,
-                            LayoutUnit* extra_width_to_end_of_line) const final;
+  PhysicalRect LocalCaretRect(int, LayoutUnit* extra_width_to_end_of_line)
+      const final;
 
   // When this LayoutInline doesn't generate line boxes of its own, regenerate
   // the rects of the line boxes and hit test the rects.

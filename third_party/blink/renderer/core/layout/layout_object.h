@@ -2729,24 +2729,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   /**
    * Returns the local coordinates of the caret within this layout object.
-   * @param caretOffset zero-based offset determining position within the
+   * @param caret_offset zero-based offset determining position within the
    * layout object.
-   * @param extraWidthToEndOfLine optional out arg to give extra width to end
-   * of line -
-   * useful for character range rect computations
+   * @param extra_width_to_end_of_line optional out arg to give extra width to
+   * end of line - useful for character range rect computations
    */
-  // TODO(crbug.com/1353190): Change the return type to PhysicalRect, and
-  // merge LocalCaretRect() and PhysicalLocalCaretRect().
-  virtual LayoutRect LocalCaretRect(
+  virtual PhysicalRect LocalCaretRect(
       int caret_offset,
       LayoutUnit* extra_width_to_end_of_line = nullptr) const;
-  PhysicalRect PhysicalLocalCaretRect(
-      int caret_offset,
-      LayoutUnit* extra_width_to_end_of_line = nullptr) const {
-    NOT_DESTROYED();
-    return PhysicalRect(
-        LocalCaretRect(caret_offset, extra_width_to_end_of_line));
-  }
 
   // When performing a global document tear-down, the layoutObject of the
   // document is cleared. We use this as a hook to detect the case of document
