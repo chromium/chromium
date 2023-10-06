@@ -42,7 +42,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="AndroidFrameTimelineJankScenario">
   <variant name=".FeedScrolling" summary=""/>
-  <variant name=".NewTabePage" summary=""/>
+  <variant name=".NewTabPage" summary=""/>
   <variant name=".OmniboxFocus" summary=""/>
   <variant name=".OpenLinkInNewTab" summary=""/>
   <variant name=".StartSurfaceHomepage" summary=""/>
