@@ -2,19 +2,35 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-component("on_device_model_service") {
-  sources = [
-    "on_device_model.cc",
-    "on_device_model.h",
-    "on_device_model_service.cc",
-    "on_device_model_service.h",
-  ]
-  deps = [
-    "//base",
-    "//mojo/public/cpp/bindings",
-    "//services/on_device_model/public/mojom",
-  ]
-  defines = [ "IS_ON_DEVICE_MODEL_IMPL" ]
+import("//services/on_device_model/on_device_model.gni")
+
+template("model_service") {
+  component(target_name) {
+    sources = [
+      "on_device_model_service.cc",
+      "on_device_model_service.h",
+    ]
+    deps = [
+      "//base",
+      "//mojo/public/cpp/bindings",
+      "//services/on_device_model/public/mojom",
+    ]
+    if (invoker.enable_internal) {
+      sources += [ "on_device_model_internal.cc" ]
+      deps += [ "//third_party/ml/public" ]
+    } else {
+      sources += [ "on_device_model.cc" ]
+    }
+    defines = [ "IS_ON_DEVICE_MODEL_IMPL" ]
+  }
+}
+
+model_service("on_device_model_service") {
+  enable_internal = enable_ml_internal
+}
+
+model_service("on_device_model_service_for_test") {
+  enable_internal = false
 }
 
 source_set("tests") {
@@ -22,7 +38,7 @@ source_set("tests") {
 
   sources = [ "on_device_model_service_unittest.cc" ]
   deps = [
-    ":on_device_model_service",
+    ":on_device_model_service_for_test",
     "//base/test:test_support",
     "//services/on_device_model/public/mojom",
     "//testing/gmock",

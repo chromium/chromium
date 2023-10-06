@@ -73,8 +73,8 @@ TEST_F(OnDeviceModelServiceTest, Responds) {
     response.WaitForCompletion();
     const auto& responses = response.responses();
     EXPECT_EQ(responses.size(), 2u);
-    EXPECT_EQ(responses[0], "Model: foo");
-    EXPECT_EQ(responses[1], "Input: bar");
+    EXPECT_EQ(responses[0], "Model: foo\n");
+    EXPECT_EQ(responses[1], "Input: bar\n");
   }
   // Try another input on  the same model.
   {
@@ -83,8 +83,8 @@ TEST_F(OnDeviceModelServiceTest, Responds) {
     response.WaitForCompletion();
     const auto& responses = response.responses();
     EXPECT_EQ(responses.size(), 2u);
-    EXPECT_EQ(responses[0], "Model: foo");
-    EXPECT_EQ(responses[1], "Input: cat");
+    EXPECT_EQ(responses[0], "Model: foo\n");
+    EXPECT_EQ(responses[1], "Input: cat\n");
   }
 }
 

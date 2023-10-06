@@ -15,6 +15,9 @@ namespace on_device_model {
 class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
     : public mojom::OnDeviceModelService {
  public:
+  static std::unique_ptr<mojom::OnDeviceModel> CreateModel(
+      mojom::LoadModelParamsPtr params);
+
   explicit OnDeviceModelService(
       mojo::PendingReceiver<mojom::OnDeviceModelService> receiver);
   ~OnDeviceModelService() override;
