@@ -6876,6 +6876,11 @@ const char kShimlessRMAComplianceCheckName[] =
 const char kShimlessRMAComplianceCheckDescription[] =
     "Enable device compliance check in the Shimless RMA flow";
 
+const char kShimlessRMASkuDescriptionName[] =
+    "Enable SKU description in Shimless RMA";
+const char kShimlessRMASkuDescriptionDescription[] =
+    "Enable device SKU description in the Shimless RMA flow";
+
 const char kShortcutCustomizationJellyName[] =
     "Enable jelly colors for the Shortcut Customization App";
 const char kShortcutCustomizationJellyDescription[] =

@@ -63738,6 +63738,7 @@ from previous Chrome versions.
   <int value="-678184617" label="TranslateSubFrames:disabled"/>
   <int value="-677978627" label="ZeroCopyTabCapture:enabled"/>
   <int value="-677938988" label="AssistantConsentSimplifiedText:disabled"/>
+  <int value="-676252846" label="ShimlessRMASkuDescription:disabled"/>
   <int value="-674804217" label="SoleIntegration:enabled"/>
   <int value="-674265959" label="AppPreloadService:enabled"/>
   <int value="-673804828" label="EnablePlayStoreAppSearch:disabled"/>
@@ -64540,6 +64541,7 @@ from previous Chrome versions.
   <int value="-276946251" label="AppServiceShelf:disabled"/>
   <int value="-276907217" label="EventPath:enabled"/>
   <int value="-276260362" label="GamepadVibration:enabled"/>
+  <int value="-276196379" label="ShimlessRMASkuDescription:enabled"/>
   <int value="-275870837"
       label="OmniboxUIExperimentHideSuggestionUrlPath:enabled"/>
   <int value="-275619817"

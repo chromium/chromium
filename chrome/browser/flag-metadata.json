@@ -7523,6 +7523,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "shimless-rma-sku-description",
+    "owners": [ "zentaro", "gavinwill", "chenghan", "cros-peripherals@google.com", "cros-shimless-tpe-eng@google.com" ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "shopping-collection",
     "owners": [ "mdjones", "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 120
