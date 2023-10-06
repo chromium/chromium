@@ -11,7 +11,7 @@ include_rules = [
   "+ios/chrome/browser/voice",
   "+ios/chrome/browser/gcm",
   "+ios/chrome/browser/power_bookmarks",
-  "+ios/chrome/browser/passwords",
+  "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/invalidation/model",
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/consent_auditor/model",

@@ -1,0 +1,27 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test") {
+  testonly = true
+
+  sources = [
+    "mock_ios_chrome_save_passwords_infobar_delegate.h",
+    "mock_ios_chrome_save_passwords_infobar_delegate.mm",
+    "test_password_manager_client.h",
+    "test_password_manager_client.mm",
+  ]
+
+  deps = [
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//ios/chrome/browser/passwords/model:infobar_delegates",
+    "//ios/chrome/browser/shared/public/commands",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

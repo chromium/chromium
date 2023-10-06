@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_TEST_TEST_INFOBAR_PASSWORD_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_TEST_TEST_INFOBAR_PASSWORD_DELEGATE_H_
 
-#import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
 
 // An infobar that displays `infobar_message` and one button.
 class TestInfobarPasswordDelegate

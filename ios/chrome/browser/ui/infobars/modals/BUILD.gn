@@ -36,7 +36,7 @@ source_set("modals") {
     "//ios/chrome/browser/autofill/message",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/net:crurl",
-    "//ios/chrome/browser/passwords:public",
+    "//ios/chrome/browser/passwords/model:public",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:styler",

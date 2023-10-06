@@ -22,7 +22,7 @@ source_set("infobar_modal") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
-    "//ios/chrome/browser/passwords:infobar_delegates",
+    "//ios/chrome/browser/passwords/model:infobar_delegates",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ui/gfx",
   ]

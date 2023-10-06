@@ -72,8 +72,8 @@ source_set("model") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/invalidation/model",
     "//ios/chrome/browser/metrics:google_groups_updater",
-    "//ios/chrome/browser/passwords:sharing_factory",
-    "//ios/chrome/browser/passwords:store_factory",
+    "//ios/chrome/browser/passwords/model:sharing_factory",
+    "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/power_bookmarks",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/search_engines",
@@ -101,7 +101,7 @@ source_set("model") {
   ]
   allow_circular_includes_from = [
     "//ios/chrome/browser/history",
-    "//ios/chrome/browser/passwords:store_factory",
+    "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync/model/glue",

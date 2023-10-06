@@ -11,8 +11,8 @@
 #import "components/password_manager/core/browser/password_list_sorter.h"
 #import "components/password_manager/core/browser/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
-#import "ios/chrome/browser/passwords/password_store_observer_bridge.h"
-#import "ios/chrome/browser/passwords/save_passwords_consumer.h"
+#import "ios/chrome/browser/passwords/model/password_store_observer_bridge.h"
+#import "ios/chrome/browser/passwords/model/save_passwords_consumer.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 @interface PasswordFetcher () <SavePasswordsConsumerDelegate,

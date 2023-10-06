@@ -14,8 +14,8 @@ source_set("test") {
     "//components/infobars/core",
     "//components/password_manager/core/browser:test_support",
     "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/passwords:infobar_delegates",
-    "//ios/chrome/browser/passwords:public",
+    "//ios/chrome/browser/passwords/model:infobar_delegates",
+    "//ios/chrome/browser/passwords/model:public",
     "//testing/gmock",
     "//testing/gtest",
   ]

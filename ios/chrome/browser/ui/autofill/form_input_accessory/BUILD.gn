@@ -40,7 +40,7 @@ source_set("form_input_accessory") {
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/main",
-    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",

@@ -242,7 +242,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/overlays/public/web_content_area:unit_tests",
     "//ios/chrome/browser/overscroll_actions/model:unit_tests",
     "//ios/chrome/browser/parcel_tracking:unit_tests",
-    "//ios/chrome/browser/passwords:unit_tests",
+    "//ios/chrome/browser/passwords/model:unit_tests",
     "//ios/chrome/browser/permissions/model:unit_tests",
     "//ios/chrome/browser/photos:unit_tests",
     "//ios/chrome/browser/policy:unit_tests",
