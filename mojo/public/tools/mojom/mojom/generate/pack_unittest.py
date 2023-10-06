@@ -205,6 +205,34 @@ class PackTest(unittest.TestCase):
     self.assertEqual(4, versions[2].num_fields)
     self.assertEqual(32, versions[2].num_bytes)
 
+  def testGetVersionInfoPackedStruct(self):
+    """Tests that pack.GetVersionInfo() correctly sets version, num_fields,
+    and num_packed_fields for a packed struct.
+    """
+    struct = mojom.Struct('test')
+    struct.AddField('field_0', mojom.BOOL, ordinal=0)
+    struct.AddField('field_1',
+                    mojom.NULLABLE_BOOL,
+                    ordinal=1,
+                    attributes={'MinVersion': 1})
+    struct.AddField('field_2',
+                    mojom.NULLABLE_BOOL,
+                    ordinal=2,
+                    attributes={'MinVersion': 2})
+    ps = pack.PackedStruct(struct)
+    versions = pack.GetVersionInfo(ps)
+
+    self.assertEqual(3, len(versions))
+    self.assertEqual(0, versions[0].version)
+    self.assertEqual(1, versions[1].version)
+    self.assertEqual(2, versions[2].version)
+    self.assertEqual(1, versions[0].num_fields)
+    self.assertEqual(2, versions[1].num_fields)
+    self.assertEqual(3, versions[2].num_fields)
+    self.assertEqual(1, versions[0].num_packed_fields)
+    self.assertEqual(3, versions[1].num_packed_fields)
+    self.assertEqual(5, versions[2].num_packed_fields)
+
   def testInterfaceAlignment(self):
     """Tests that interfaces are aligned on 4-byte boundaries, although the size
     of an interface is 8 bytes.
