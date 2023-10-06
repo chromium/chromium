@@ -66,9 +66,31 @@ enum class MediaIoctlRequests {
   kMaxValue = kMediaRequestIocReinit,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "VidiocIoctlRequests" in src/tools/metrics/histograms/enums.xml.
+enum class VidiocIoctlRequests {
+  kVidiocGFmt = 0,
+  kVidiocSFmt = 1,
+  kVidiocGSelection = 2,
+  kVidiocExpbuf = 3,
+  kVidiocReqbufs = 4,
+  kVidiocQuerybuf = 5,
+  kVidiocQbuf = 6,
+  kVidiocDqbuf = 7,
+  kVidiocStreamon = 8,
+  kVidiocStreamoff = 9,
+  kVidiocSExtCtrls = 10,
+  kMaxValue = kVidiocSExtCtrls,
+};
+
 // Records Media.V4L2VideoDecoder.MediaIoctlError UMA when errors happen with
 // media controller API ioctl requests.
 void RecordMediaIoctlUMA(MediaIoctlRequests function);
+
+// Records Vidioc.V4L2VideoDecoder.VidiocIoctlError UMA when errors happen with
+// V4L2 API ioctl requests.
+void RecordVidiocIoctlErrorUMA(VidiocIoctlRequests function);
 
 // Returns a human readable description of |memory|.
 const char* V4L2MemoryToString(v4l2_memory memory);

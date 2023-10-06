@@ -44,6 +44,11 @@ void RecordMediaIoctlUMA(MediaIoctlRequests function) {
                                 function);
 }
 
+void RecordVidiocIoctlErrorUMA(VidiocIoctlRequests function) {
+  base::UmaHistogramEnumeration("Media.V4l2VideoDecoder.VidiocIoctlError",
+                                function);
+}
+
 const char* V4L2MemoryToString(const v4l2_memory memory) {
   switch (memory) {
     case V4L2_MEMORY_MMAP:

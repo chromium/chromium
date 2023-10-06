@@ -795,6 +795,7 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
   const auto* v4l2_pic = static_cast<const V4L2AV1Picture*>(&pic);
   v4l2_pic->dec_surface()->PrepareSetCtrls(&ext_ctrls);
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
+    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
     return DecodeStatus::kFail;
   }

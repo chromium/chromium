@@ -837,6 +837,7 @@ bool V4L2Device::SetExtCtrls(uint32_t ctrl_class,
 
   const int result = Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls);
   if (result < 0) {
+    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     if (ext_ctrls.error_idx == ext_ctrls.count)
       VPLOGF(1) << "VIDIOC_S_EXT_CTRLS: validation failed while trying to set "
                    "controls";

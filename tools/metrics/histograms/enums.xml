@@ -111814,6 +111814,20 @@ Full version information for the fingerprint enum values:
   <int value="4" label="Watched"/>
 </enum>
 
+<enum name="VidiocIoctlRequests">
+  <int value="0" label="VIDIOC_G_FMT"/>
+  <int value="1" label="VIDIOC_S_FMT"/>
+  <int value="2" label="VIDIOC_G_SELECTION"/>
+  <int value="3" label="VIDIOC_EXPBUF"/>
+  <int value="4" label="VIDIOC_REQBUFS"/>
+  <int value="5" label="VIDIOC_QUERYBUF"/>
+  <int value="6" label="VIDIOC_QBUF"/>
+  <int value="7" label="VIDIOC_DQBUF"/>
+  <int value="8" label="VIDIOC_STREAMON"/>
+  <int value="9" label="VIDIOC_STREAMOFF"/>
+  <int value="10" label="VIDIOC_S_EXT_CTRLS"/>
+</enum>
+
 <enum name="VietnameseActions">
   <summary>Actions that are available on the Vietnamese Telex/VNI IME.</summary>
   <int value="0" label="Basic Escape"/>

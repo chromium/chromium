@@ -296,6 +296,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
       VP9PictureToV4L2DecodeSurface(pic.get());
   dec_surface->PrepareSetCtrls(&ctrls);
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ctrls) != 0) {
+    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
     return DecodeStatus::kFail;
   }
