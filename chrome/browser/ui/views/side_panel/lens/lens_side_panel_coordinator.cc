@@ -14,6 +14,8 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_unified_side_panel_view.h"
@@ -30,6 +32,7 @@
 #include "components/search_engines/util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/vector_icons.h"
 
@@ -69,8 +72,27 @@ LensSidePanelCoordinator::~LensSidePanelCoordinator() {
 
 void LensSidePanelCoordinator::DeregisterLensFromSidePanel() {
   lens_side_panel_view_ = nullptr;
-  SidePanelCoordinator::GetGlobalSidePanelRegistry(&GetBrowser())
-      ->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kLens));
+  auto* active_web_contents = GetBrowserView()->GetActiveWebContents();
+  const bool is_companion_enabled =
+      companion::IsSearchInCompanionSidePanelSupported(&GetBrowser());
+
+  // Delete contextual lens view if applicable.
+  if (is_companion_enabled && active_web_contents) {
+    auto* companion_helper =
+        companion::CompanionTabHelper::FromWebContents(active_web_contents);
+    if (companion_helper) {
+      companion_helper->RemoveContextualLensView();
+    }
+  }
+
+  // Remove entry from side panel entry if it exists.
+  auto* registry =
+      is_companion_enabled
+          ? SidePanelRegistry::Get(active_web_contents)
+          : SidePanelCoordinator::GetGlobalSidePanelRegistry(&GetBrowser());
+  if (registry) {
+    registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kLens));
+  }
 }
 
 void LensSidePanelCoordinator::OnSidePanelDidClose() {
@@ -80,13 +102,16 @@ void LensSidePanelCoordinator::OnSidePanelDidClose() {
 }
 
 void LensSidePanelCoordinator::OnFaviconFetched(const gfx::Image& favicon) {
-  auto* global_registry =
-      SidePanelCoordinator::GetGlobalSidePanelRegistry(&GetBrowser());
-  if (global_registry == nullptr)
+  auto* registry =
+      companion::IsSearchInCompanionSidePanelSupported(&GetBrowser())
+          ? SidePanelRegistry::Get(GetBrowserView()->GetActiveWebContents())
+          : SidePanelCoordinator::GetGlobalSidePanelRegistry(&GetBrowser());
+  if (registry == nullptr) {
     return;
+  }
 
-  auto* lens_side_panel_entry = global_registry->GetEntryForKey(
-      SidePanelEntry::Key(SidePanelEntry::Id::kLens));
+  auto* lens_side_panel_entry =
+      registry->GetEntryForKey(SidePanelEntry::Key(SidePanelEntry::Id::kLens));
   if (lens_side_panel_entry == nullptr)
     return;
 
@@ -121,6 +146,12 @@ void LensSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
 }
 
 bool LensSidePanelCoordinator::IsLaunchButtonEnabledForTesting() {
+  if (companion::IsSearchInCompanionSidePanelSupported(&GetBrowser())) {
+    auto* companion_helper = companion::CompanionTabHelper::FromWebContents(
+        GetBrowserView()->GetActiveWebContents());
+    return companion_helper->IsLensLaunchButtonEnabledForTesting();  // IN-TEST
+  }
+
   DCHECK(lens_side_panel_view_);
   return lens_side_panel_view_->IsLaunchButtonEnabledForTesting();
 }
@@ -130,6 +161,13 @@ bool LensSidePanelCoordinator::IsDefaultSearchProviderGoogle() {
 }
 
 std::u16string LensSidePanelCoordinator::GetComboboxLabel() {
+  // If this panel was opened while the companion feature is enabled, then we
+  // want this panel to be labelled like the companion panel.
+  if (companion::IsSearchInCompanionSidePanelSupportedForProfile(
+          GetBrowser().profile())) {
+    return l10n_util::GetStringUTF16(IDS_SIDE_PANEL_COMPANION_TITLE);
+  }
+
   if (IsDefaultSearchProviderGoogle()) {
     return l10n_util::GetStringUTF16(IDS_GOOGLE_LENS_TITLE);
   }
@@ -140,6 +178,17 @@ std::u16string LensSidePanelCoordinator::GetComboboxLabel() {
 }
 
 const ui::ImageModel LensSidePanelCoordinator::GetFaviconImage() {
+  // If this panel was opened while the companion feature is enabled, then we
+  // want this panel to use the companion panel favicon.
+  if (companion::IsSearchInCompanionSidePanelSupportedForProfile(
+          GetBrowser().profile())) {
+    return ui::ImageModel::FromVectorIcon(
+        features::IsChromeRefresh2023()
+            ? vector_icons::
+                  kGoogleSearchCompanionMonochromeLogoChromeRefreshIcon
+            : vector_icons::kGoogleSearchCompanionMonochromeLogoIcon);
+  }
+
   // If google is search engine, return checked-in lens icon.
   if (IsDefaultSearchProviderGoogle())
     return ui::ImageModel::FromVectorIcon(vector_icons::kGoogleLensLogoIcon);
@@ -172,28 +221,46 @@ const ui::ImageModel LensSidePanelCoordinator::GetFaviconImage() {
 void LensSidePanelCoordinator::RegisterEntryAndShow(
     const content::OpenURLParams& params) {
   base::RecordAction(base::UserMetricsAction("LensUnifiedSidePanel.LensQuery"));
-  auto* global_registry =
-      SidePanelCoordinator::GetGlobalSidePanelRegistry(&GetBrowser());
+  const bool is_companion_enabled =
+      companion::IsSearchInCompanionSidePanelSupported(&GetBrowser());
+  auto* companion_helper = companion::CompanionTabHelper::FromWebContents(
+      GetBrowserView()->GetActiveWebContents());
+  auto* registry =
+      is_companion_enabled
+          ? SidePanelRegistry::Get(GetBrowserView()->GetActiveWebContents())
+          : SidePanelCoordinator::GetGlobalSidePanelRegistry(&GetBrowser());
 
   // check if the view is already registered
-  if (global_registry->GetEntryForKey(
+  if (registry->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntry::Id::kLens)) != nullptr &&
-      lens_side_panel_view_ != nullptr) {
+      (lens_side_panel_view_ != nullptr || is_companion_enabled)) {
     // The user issued a follow-up Lens query.
     base::RecordAction(
         base::UserMetricsAction("LensUnifiedSidePanel.LensQuery_Followup"));
-    lens_side_panel_view_->OpenUrl(params);
+    if (is_companion_enabled) {
+      companion_helper->OpenContextualLensView(params);
+    } else {
+      lens_side_panel_view_->OpenUrl(params);
+    }
   } else {
     base::RecordAction(
         base::UserMetricsAction("LensUnifiedSidePanel.LensQuery_New"));
-    auto entry = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kLens, GetComboboxLabel(), GetFaviconImage(),
-        base::BindRepeating(&LensSidePanelCoordinator::CreateLensWebView,
-                            base::Unretained(this), params),
-        base::BindRepeating(&LensSidePanelCoordinator::GetOpenInNewTabURL,
-                            base::Unretained(this)));
-    entry->AddObserver(this);
-    global_registry->Register(std::move(entry));
+    if (is_companion_enabled) {
+      // Side panel entry needs to be created and registered
+      // in the companion side panel controller that exists per web contents in
+      // order to prevent a dependency on views on CompanionTabHelper.
+      companion_helper->CreateAndRegisterLensEntry(params, GetComboboxLabel(),
+                                                   GetFaviconImage());
+    } else {
+      auto entry = std::make_unique<SidePanelEntry>(
+          SidePanelEntry::Id::kLens, GetComboboxLabel(), GetFaviconImage(),
+          base::BindRepeating(&LensSidePanelCoordinator::CreateLensWebView,
+                              base::Unretained(this), params),
+          base::BindRepeating(&LensSidePanelCoordinator::GetOpenInNewTabURL,
+                              base::Unretained(this)));
+      entry->AddObserver(this);
+      registry->Register(std::move(entry));
+    }
   }
 
   auto* side_panel_coordinator = GetSidePanelCoordinator();
@@ -206,7 +273,6 @@ void LensSidePanelCoordinator::RegisterEntryAndShow(
       base::RecordAction(base::UserMetricsAction(
           "LensUnifiedSidePanel.LensQuery_SidePanelOpenNonLens"));
     }
-
     side_panel_coordinator->Show(SidePanelEntry::Id::kLens,
                                  SidePanelOpenTrigger::kLensContextMenu);
   } else {
@@ -216,11 +282,22 @@ void LensSidePanelCoordinator::RegisterEntryAndShow(
 }
 
 content::WebContents* LensSidePanelCoordinator::GetViewWebContentsForTesting() {
+  if (companion::IsSearchInCompanionSidePanelSupported(&GetBrowser())) {
+    auto* companion_helper = companion::CompanionTabHelper::FromWebContents(
+        GetBrowserView()->GetActiveWebContents());
+    return companion_helper->GetLensViewWebContentsForTesting();  // IN-TEST
+  }
   return lens_side_panel_view_ ? lens_side_panel_view_->GetWebContents()
                                : nullptr;
 }
 
 bool LensSidePanelCoordinator::OpenResultsInNewTabForTesting() {
+  if (companion::IsSearchInCompanionSidePanelSupported(&GetBrowser())) {
+    auto* companion_helper = companion::CompanionTabHelper::FromWebContents(
+        GetBrowserView()->GetActiveWebContents());
+    return companion_helper->OpenLensResultsInNewTabForTesting();  // IN-TEST
+  }
+
   if (lens_side_panel_view_ == nullptr)
     return false;
 

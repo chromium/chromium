@@ -15,7 +15,12 @@
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "components/lens/buildflags.h"
 #include "content/public/browser/web_contents_observer.h"
+
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+#include "chrome/browser/ui/views/side_panel/lens/lens_unified_side_panel_view.h"
+#endif
 
 namespace content {
 class WebContents;
@@ -52,6 +57,15 @@ class CompanionSidePanelController : public CompanionTabHelper::Delegate,
   void OnCompanionSidePanelClosed() override;
   bool IsCompanionShowing() override;
   void SetCompanionAsActiveEntry(content::WebContents* contents) override;
+  void CreateAndRegisterLensEntry(const content::OpenURLParams& params,
+                                  std::u16string combobox_label,
+                                  const ui::ImageModel favicon) override;
+  void RemoveContextualLensView() override;
+  void OpenContextualLensView(const content::OpenURLParams& params) override;
+  content::WebContents* GetLensViewWebContentsForTesting() override;
+  bool OpenLensResultsInNewTabForTesting() override;
+  bool IsLensLaunchButtonEnabledForTesting() override;
+
   content::WebContents* GetCompanionWebContentsForTesting() override;
 
   // SidePanelEntryObserver:
@@ -60,7 +74,10 @@ class CompanionSidePanelController : public CompanionTabHelper::Delegate,
 
  private:
   std::unique_ptr<views::View> CreateCompanionWebView();
+  std::unique_ptr<views::View> CreateContextualLensView(
+      const content::OpenURLParams& params);
   GURL GetOpenInNewTabUrl();
+  GURL GetLensOpenInNewTabButtonURL();
 
   // Method used as a callback to notify the Search Companion server of a link
   // click once communication with the page has been initialized.
@@ -87,9 +104,14 @@ class CompanionSidePanelController : public CompanionTabHelper::Delegate,
   void AddObserver();
   void RemoveObserver();
 
+  void UpdateNewTabButtonState();
+
   GURL open_in_new_tab_url_;
   std::vector<CompanionTabHelper::CompanionLoadedCallback>
       companion_loaded_callbacks_;
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+  base::WeakPtr<lens::LensUnifiedSidePanelView> lens_side_panel_view_;
+#endif
   const raw_ptr<content::WebContents> web_contents_;
   bool has_companion_loaded = false;
 

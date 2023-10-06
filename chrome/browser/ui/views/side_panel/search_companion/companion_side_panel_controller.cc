@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/side_panel/search_companion/companion_side_panel_controller.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,10 +25,15 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
+#include "components/lens/buildflags.h"
 #include "components/lens/lens_url_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "ui/webui/webui_allowlist.h"
+
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+#include "chrome/browser/ui/views/side_panel/lens/lens_unified_side_panel_view.h"
+#endif
 
 namespace companion {
 
@@ -103,8 +110,7 @@ void CompanionSidePanelController::UpdateNewTabButton(GURL url_to_open) {
   if (!browser) {
     return;
   }
-  SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser)
-      ->UpdateNewTabButtonState();
+  UpdateNewTabButtonState();
 }
 
 void CompanionSidePanelController::OnCompanionSidePanelClosed() {
@@ -147,6 +153,13 @@ CompanionSidePanelController::GetCompanionWebContentsForTesting() {
 }
 
 void CompanionSidePanelController::OnEntryShown(SidePanelEntry* entry) {
+  // Lens entry is possible if image search is disabled on CSC.
+  if (entry->key().id() == SidePanelEntry::Id::kLens) {
+    base::RecordAction(
+        base::UserMetricsAction("LensUnifiedSidePanel.LensEntryShown"));
+    return;
+  }
+
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   if (!browser) {
     return;
@@ -157,6 +170,13 @@ void CompanionSidePanelController::OnEntryShown(SidePanelEntry* entry) {
 }
 
 void CompanionSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
+  // Lens entry is possible if image search is disabled on CSC.
+  if (entry->key().id() == SidePanelEntry::Id::kLens) {
+    base::RecordAction(
+        base::UserMetricsAction("LensUnifiedSidePanel.LensEntryHidden"));
+    return;
+  }
+
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   if (!browser) {
     return;
@@ -376,6 +396,118 @@ void CompanionSidePanelController::DidFinishLoad(
     std::move(callback).Run();
   }
   companion_loaded_callbacks_.clear();
+}
+void CompanionSidePanelController::CreateAndRegisterLensEntry(
+    const content::OpenURLParams& params,
+    std::u16string combobox_label,
+    const ui::ImageModel favicon) {
+  CHECK(web_contents_);
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  auto* registry = SidePanelRegistry::Get(web_contents_);
+  if (!browser || !registry) {
+    return;
+  }
+  auto entry = std::make_unique<SidePanelEntry>(
+      SidePanelEntry::Id::kLens, combobox_label, favicon,
+      base::BindRepeating(
+          &companion::CompanionSidePanelController::CreateContextualLensView,
+          base::Unretained(this), params),
+      base::BindRepeating(&companion::CompanionSidePanelController::
+                              GetLensOpenInNewTabButtonURL,
+                          base::Unretained(this)));
+  entry->AddObserver(this);
+  registry->Register(std::move(entry));
+}
+
+std::unique_ptr<views::View>
+CompanionSidePanelController::CreateContextualLensView(
+    const content::OpenURLParams& params) {
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  if (!browser) {
+    return nullptr;
+  }
+  auto side_panel_view = std::make_unique<lens::LensUnifiedSidePanelView>(
+      BrowserView::GetBrowserViewForBrowser(browser),
+      base::BindRepeating(
+          &CompanionSidePanelController::UpdateNewTabButtonState,
+          base::Unretained(this)));
+  side_panel_view->OpenUrl(params);
+  lens_side_panel_view_ = side_panel_view->GetWeakPtr();
+  return side_panel_view;
+#else
+  return nullptr;
+#endif
+}
+
+void CompanionSidePanelController::RemoveContextualLensView() {
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+  lens_side_panel_view_.reset();
+#endif
+}
+
+void CompanionSidePanelController::OpenContextualLensView(
+    const content::OpenURLParams& params) {
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+  if (!lens_side_panel_view_) {
+    return;
+  }
+  lens_side_panel_view_->OpenUrl(params);
+#endif
+}
+
+GURL CompanionSidePanelController::GetLensOpenInNewTabButtonURL() {
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+  return lens_side_panel_view_ ? lens_side_panel_view_->GetOpenInNewTabURL()
+                               : GURL();
+#else
+  return GURL();
+#endif
+}
+
+void CompanionSidePanelController::UpdateNewTabButtonState() {
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  if (!browser) {
+    return;
+  }
+  auto* coordinator = SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser);
+  if (!coordinator) {
+    return;
+  }
+  coordinator->UpdateNewTabButtonState();
+#endif
+}
+
+content::WebContents*
+CompanionSidePanelController::GetLensViewWebContentsForTesting() {
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+  return lens_side_panel_view_ ? lens_side_panel_view_->GetWebContents()
+                               : nullptr;
+#else
+  return nullptr;
+#endif
+}
+
+bool CompanionSidePanelController::IsLensLaunchButtonEnabledForTesting() {
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+  CHECK(lens_side_panel_view_);
+  return lens_side_panel_view_->IsLaunchButtonEnabledForTesting();  // IN-TEST
+#else
+  return false;
+#endif
+}
+
+bool CompanionSidePanelController::OpenLensResultsInNewTabForTesting() {
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+  if (!lens_side_panel_view_) {
+    return false;
+  }
+  lens_side_panel_view_->LoadResultsInNewTab();
+  return true;
+#else
+  return false;
+#endif
 }
 
 }  // namespace companion
