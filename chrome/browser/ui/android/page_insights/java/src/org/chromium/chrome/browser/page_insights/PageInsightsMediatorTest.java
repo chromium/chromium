@@ -171,6 +171,7 @@ public class PageInsightsMediatorTest {
         when(mSurfaceScope.provideSurfaceRenderer()).thenReturn(mSurfaceRenderer);
         when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
         when(mMockTabProvider.get()).thenReturn(mTab);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
     }
 
@@ -193,7 +194,6 @@ public class PageInsightsMediatorTest {
                 mBottomSheetController, mBottomUiController, mExpandedSheetHelper,
                 mControlsStateProvider, mBrowserControlsSizer, () -> true, firstLoadTimeMs);
         verify(mControlsStateProvider).addObserver(mBrowserControlsStateProviderObserver.capture());
-        mMediator.onUpdateUrl(mTab, JUnitTestGURLs.EXAMPLE_URL);
         mockOptimizationGuideResponse(getPageInsightsMetadata());
         setBackgroundDrawable();
     }

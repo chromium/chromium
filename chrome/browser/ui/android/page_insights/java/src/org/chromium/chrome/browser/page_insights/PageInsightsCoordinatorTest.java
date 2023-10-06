@@ -40,7 +40,7 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsights
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceRenderer;
 import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceScope;
@@ -105,11 +104,9 @@ public class PageInsightsCoordinatorTest {
     @Mock
     private OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
     @Mock
-    private ObservableSupplier<Tab> mTabProvider;
+    private ObservableSupplierImpl<Tab> mTabProvider;
     @Captor
     private ArgumentCaptor<Callback<Tab>> mTabCallbackCaptor;
-    @Captor
-    private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor
     private ArgumentCaptor<BottomSheetObserver> mBottomUiObserverCaptor;
 
@@ -216,10 +213,10 @@ public class PageInsightsCoordinatorTest {
                 mShareDelegateSupplier, mPageInsightsController, mBottomUiController,
                 mExpandedSheetHelper, mBrowserControlsStateProvider, mBrowserControlsSizer,
                 mIsPageInsightsHubEnabled, 0);
+        doReturn(mTab).when(mTabProvider).get();
+        doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
         verify(mTabProvider).addObserver(mTabCallbackCaptor.capture());
         mTabCallbackCaptor.getValue().onResult(mTab);
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
-        mTabObserverCaptor.getValue().onUpdateUrl(mTab, JUnitTestGURLs.EXAMPLE_URL);
         mockOptimizationGuideResponse(pageInsights());
         mTestSupport = new BottomSheetTestSupport(mPageInsightsController);
         waitForAnimationToFinish();
