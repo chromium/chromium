@@ -53,7 +53,8 @@ const CGFloat kImagesSlidingInDistance = 51;
 @interface SharingStatusViewController ()
 
 // Profile image of the sender.
-@property(nonatomic, strong) UIImageView* senderImage;
+@property(nonatomic, strong) UIImageView* senderImageView;
+@property(nonatomic, strong) UIImage* senderImage;
 
 // Profile image of the recipients.
 @property(nonatomic, strong) UIImageView* recipientImage;
@@ -107,12 +108,12 @@ const CGFloat kImagesSlidingInDistance = 51;
   [view addSubview:animationView];
 
   // Add sender profile image.
-  UIImageView* senderImage = [self createSenderImage];
-  [animationView addSubview:senderImage];
+  UIImageView* senderImageView = [self createSenderImageView];
+  [animationView addSubview:senderImageView];
 
   // Add recipient profile image.
   UIImageView* recipientImage = [self createRecipientImage];
-  [animationView insertSubview:recipientImage belowSubview:senderImage];
+  [animationView insertSubview:recipientImage belowSubview:senderImageView];
 
   // Add progress bar view.
   UIView* progressBarView = [self createProgressBarView];
@@ -144,32 +145,33 @@ const CGFloat kImagesSlidingInDistance = 51;
     [animationView.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
 
     // Sender image constraints.
-    [senderImage.topAnchor constraintEqualToAnchor:animationView.topAnchor
-                                          constant:kVerticalSpacing],
-    [senderImage.bottomAnchor constraintEqualToAnchor:animationView.bottomAnchor
-                                             constant:-kVerticalSpacing],
-    [senderImage.centerXAnchor
+    [senderImageView.topAnchor constraintEqualToAnchor:animationView.topAnchor
+                                              constant:kVerticalSpacing],
+    [senderImageView.bottomAnchor
+        constraintEqualToAnchor:animationView.bottomAnchor
+                       constant:-kVerticalSpacing],
+    [senderImageView.centerXAnchor
         constraintEqualToAnchor:animationView.centerXAnchor],
 
     // Recipient image constraints.
     [recipientImage.centerYAnchor
-        constraintEqualToAnchor:senderImage.centerYAnchor],
+        constraintEqualToAnchor:senderImageView.centerYAnchor],
     [recipientImage.centerXAnchor
-        constraintEqualToAnchor:senderImage.centerXAnchor],
+        constraintEqualToAnchor:senderImageView.centerXAnchor],
 
     // Progress bar constraints.
     [progressBarView.centerXAnchor
-        constraintEqualToAnchor:senderImage.centerXAnchor],
+        constraintEqualToAnchor:senderImageView.centerXAnchor],
     [progressBarView.centerYAnchor
-        constraintEqualToAnchor:senderImage.centerYAnchor],
+        constraintEqualToAnchor:senderImageView.centerYAnchor],
     [progressBarView.widthAnchor constraintEqualToConstant:kProgressBarWidth],
     [progressBarView.heightAnchor constraintEqualToConstant:kProgressBarHeight],
 
     // Shield lock image constraints.
     [shieldLockImage.centerYAnchor
-        constraintEqualToAnchor:senderImage.centerYAnchor],
+        constraintEqualToAnchor:senderImageView.centerYAnchor],
     [shieldLockImage.centerXAnchor
-        constraintEqualToAnchor:senderImage.centerXAnchor],
+        constraintEqualToAnchor:senderImageView.centerXAnchor],
 
     // Title constraints.
     [titleLabel.topAnchor constraintEqualToAnchor:animationView.bottomAnchor
@@ -194,18 +196,22 @@ const CGFloat kImagesSlidingInDistance = 51;
   [self.imagesSlidingOutAnimation startAnimation];
 }
 
+#pragma mark - SharingStatusConsumer
+
+- (void)setSenderImage:(UIImage*)senderImage {
+  _senderImage = senderImage;
+}
+
 #pragma mark - Private
 
 // Helper for creating sender image view.
-- (UIImageView*)createSenderImage {
-  // TODO(crbug.com/1463882): Add actual sender icon.
-  UIImageView* senderImage = [[UIImageView alloc]
-      initWithImage:DefaultSymbolTemplateWithPointSize(kPersonCropCircleSymbol,
-                                                       kProfileImageSize)];
-  senderImage.translatesAutoresizingMaskIntoConstraints = NO;
-  senderImage.hidden = YES;
-  self.senderImage = senderImage;
-  return senderImage;
+- (UIImageView*)createSenderImageView {
+  UIImageView* senderImageView =
+      [[UIImageView alloc] initWithImage:self.senderImage];
+  senderImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  senderImageView.hidden = YES;
+  self.senderImageView = senderImageView;
+  return senderImageView;
 }
 
 // Helper for creating recipient image view.
@@ -290,7 +296,7 @@ const CGFloat kImagesSlidingInDistance = 51;
 
 // Creates sharing status animations that are started one by one.
 - (void)createAnimations {
-  UIImageView* senderImage = self.senderImage;
+  UIImageView* senderImageView = self.senderImageView;
   UIImageView* recipientImage = self.recipientImage;
   UIImageView* shieldLockImage = self.shieldLockImage;
   UIView* progressBarView = self.progressBarView;
@@ -299,10 +305,10 @@ const CGFloat kImagesSlidingInDistance = 51;
       initWithDuration:kImagesSlidingOutDuration
                  curve:UIViewAnimationCurveEaseInOut
             animations:^{
-              senderImage.hidden = NO;
-              senderImage.center =
-                  CGPointMake(senderImage.center.x - kImagesSlidingOutDistance,
-                              senderImage.center.y);
+              senderImageView.hidden = NO;
+              senderImageView.center = CGPointMake(
+                  senderImageView.center.x - kImagesSlidingOutDistance,
+                  senderImageView.center.y);
               recipientImage.center = CGPointMake(
                   recipientImage.center.x + kImagesSlidingOutDistance,
                   recipientImage.center.y);
@@ -343,9 +349,9 @@ const CGFloat kImagesSlidingInDistance = 51;
             animations:^{
               shieldLockImage.hidden = YES;
               progressBarView.hidden = YES;
-              senderImage.center =
-                  CGPointMake(senderImage.center.x + kImagesSlidingInDistance,
-                              senderImage.center.y);
+              senderImageView.center = CGPointMake(
+                  senderImageView.center.x + kImagesSlidingInDistance,
+                  senderImageView.center.y);
               recipientImage.center = CGPointMake(
                   recipientImage.center.x - kImagesSlidingInDistance,
                   recipientImage.center.y);
@@ -363,8 +369,8 @@ const CGFloat kImagesSlidingInDistance = 51;
             animations:^{
               shieldLockImage.hidden = YES;
               progressBarView.hidden = YES;
-              senderImage.center =
-                  CGPointMake(progressBarView.center.x, senderImage.center.y);
+              senderImageView.center = CGPointMake(progressBarView.center.x,
+                                                   senderImageView.center.y);
               recipientImage.center = CGPointMake(progressBarView.center.x,
                                                   recipientImage.center.y);
             }];

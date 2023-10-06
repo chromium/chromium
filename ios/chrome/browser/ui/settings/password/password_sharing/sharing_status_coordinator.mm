@@ -4,9 +4,15 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_coordinator.h"
 
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_view_controller_presentation_delegate.h"
 
@@ -20,6 +26,9 @@
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong) SharingStatusViewController* viewController;
+
+// Main mediator for this coordinator.
+@property(nonatomic, strong) SharingStatusMediator* mediator;
 
 @end
 
@@ -37,6 +46,14 @@
   self.viewController = [[SharingStatusViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   self.viewController.delegate = self;
+
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  self.mediator = [[SharingStatusMediator alloc]
+        initWithAuthService:AuthenticationServiceFactory::GetForBrowserState(
+                                browserState)
+      accountManagerService:ChromeAccountManagerServiceFactory::
+                                GetForBrowserState(browserState)];
+  self.mediator.consumer = self.viewController;
 
   self.navigationController =
       [[TableViewNavigationController alloc] initWithTable:self.viewController];

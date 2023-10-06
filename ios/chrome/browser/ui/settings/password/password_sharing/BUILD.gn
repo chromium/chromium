@@ -31,6 +31,8 @@ source_set("password_sharing") {
     "sharing_status_coordinator.h",
     "sharing_status_coordinator.mm",
     "sharing_status_coordinator_delegate.h",
+    "sharing_status_mediator.h",
+    "sharing_status_mediator.mm",
   ]
   deps = [
     ":password_sharing_constants",
@@ -51,6 +53,7 @@ source_set("password_sharing") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/util",
@@ -85,6 +88,7 @@ source_set("password_sharing_ui") {
     "password_sharing_view_controller.mm",
     "recipient_info.h",
     "recipient_info.mm",
+    "sharing_status_consumer.h",
     "sharing_status_view_controller.h",
     "sharing_status_view_controller.mm",
     "sharing_status_view_controller_presentation_delegate.h",
@@ -150,19 +154,30 @@ source_set("unit_tests") {
   sources = [
     "family_picker_view_controller_unittest.mm",
     "password_picker_view_controller_unittest.mm",
+    "sharing_status_mediator_unittest.mm",
   ]
   deps = [
+    ":password_sharing",
     ":password_sharing_ui",
     "//base/test:test_support",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/sharing",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells:cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/signin:fake_system_identity_manager",
+    "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
     "//ui/base",
   ]
 }

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_consumer.h"
 
 @protocol SharingStatusViewControllerPresentationDelegate;
 
@@ -18,7 +19,8 @@
 // If the user clicks "cancel" button at any point, the animation stops and
 // cancelled status is presented. Otherwise, success status is displayed when
 // the animation finishes.
-@interface SharingStatusViewController : ChromeTableViewController
+@interface SharingStatusViewController
+    : ChromeTableViewController <SharingStatusConsumer>
 
 // Delegate for handling dismissal of the view.
 @property(nonatomic, weak) id<SharingStatusViewControllerPresentationDelegate>
