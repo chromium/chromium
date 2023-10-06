@@ -171,6 +171,7 @@ selectlist::-internal-selectlist-preview {
 
 /* this is a copy of the [popover] styles from html.css. When this gets
  * merged with html.css, the rules can be combined. */
+selectlist::-internal-selectlist-listbox,
 selectlist > listbox {
   position: fixed;
   inset: auto;
@@ -183,12 +184,15 @@ selectlist > listbox {
   color: CanvasText;
   background-color: Canvas;
 }
+selectlist::-internal-selectlist-listbox:not(:popover-open),
 selectlist > listbox:not(:popover-open) {
   display: none;
 }
+selectlist::-internal-selectlist-listbox,
 selectlist > listbox:popover-open {
   overlay: auto !important;
 }
+selectlist::-internal-selectlist-listbox:-internal-popover-in-top-layer::backdrop,
 selectlist > listbox:-internal-popover-in-top-layer::backdrop {
   /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
   position: fixed;

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/select_list_part_traversal.h"
@@ -332,6 +333,10 @@ void HTMLSelectListElement::ManuallyAssignSlots() {
   options_slot_->Assign(options);
 }
 
+// TODO(http://crbug.com/1121840): Consider removing this method for the new
+// architecture. Each "part" is a distinct element type and has its own way of
+// being selectlist associated, which can be implemented in that element's
+// class. Grouping them all into this one method is not ideal.
 // static
 HTMLSelectListElement* HTMLSelectListElement::OwnerSelectList(Node* node) {
   // Do some quick checks in order to avoid, in most cases, walking up the
@@ -389,8 +394,8 @@ void HTMLSelectListElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   button_slot_->setAttribute(html_names::kNameAttr, button_part);
 
   button_part_ = MakeGarbageCollected<HTMLButtonElement>(document);
+  button_part_->setAttribute(html_names::kTypeAttr, AtomicString("selectlist"));
   button_part_->setAttribute(html_names::kPartAttr, button_part);
-  button_part_->setAttribute(html_names::kBehaviorAttr, button_part);
   button_part_->SetShadowPseudoId(AtomicString("-internal-selectlist-button"));
   button_part_listener_ =
       MakeGarbageCollected<HTMLSelectListElement::ButtonPartEventListener>(
@@ -402,10 +407,9 @@ void HTMLSelectListElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   selected_value_slot_->setAttribute(html_names::kNameAttr,
                                      selected_value_part);
 
-  selected_value_part_ = MakeGarbageCollected<HTMLDivElement>(document);
+  selected_value_part_ = MakeGarbageCollected<HTMLElement>(
+      html_names::kSelectedoptionTag, document);
   selected_value_part_->setAttribute(html_names::kPartAttr,
-                                     selected_value_part);
-  selected_value_part_->setAttribute(html_names::kBehaviorAttr,
                                      selected_value_part);
   selected_value_part_->SetShadowPseudoId(
       AtomicString("-internal-selectlist-selected-value"));
@@ -423,13 +427,10 @@ void HTMLSelectListElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   listbox_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
   listbox_slot_->setAttribute(html_names::kNameAttr, listbox_part);
 
-  HTMLElement* new_popover;
-  new_popover = MakeGarbageCollected<HTMLDivElement>(document);
-  new_popover->setAttribute(html_names::kPopoverAttr, keywords::kAuto);
-  new_popover->setAttribute(html_names::kPartAttr, listbox_part);
-  new_popover->setAttribute(html_names::kBehaviorAttr, listbox_part);
-  new_popover->SetShadowPseudoId(AtomicString("-internal-selectlist-listbox"));
-  SetListboxPart(new_popover);
+  default_listbox_ = MakeGarbageCollected<HTMLListboxElement>(document);
+  default_listbox_->setAttribute(html_names::kPartAttr, listbox_part);
+  default_listbox_->SetShadowPseudoId(
+      AtomicString("-internal-selectlist-listbox"));
 
   options_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
 
@@ -442,11 +443,13 @@ void HTMLSelectListElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   button_slot_->AppendChild(button_part_);
 
-  listbox_part_->appendChild(options_slot_);
-  listbox_slot_->appendChild(listbox_part_);
+  default_listbox_->appendChild(options_slot_);
+  listbox_slot_->appendChild(default_listbox_);
 
   root.AppendChild(button_slot_);
   root.AppendChild(listbox_slot_);
+
+  SetListboxPart(default_listbox_);
 
   option_part_listener_ =
       MakeGarbageCollected<HTMLSelectListElement::OptionPartEventListener>(
@@ -645,7 +648,15 @@ bool HTMLSelectListElement::SetListboxPart(HTMLElement* new_listbox_part) {
 bool HTMLSelectListElement::IsValidButtonPart(const Node* node,
                                               bool show_warning) const {
   auto* element = DynamicTo<Element>(node);
-  if (!element ||
+  if (!element) {
+    return false;
+  }
+  auto* button = DynamicTo<HTMLButtonElement>(node);
+
+  // TODO(http://crbug.com/1121840): When the old architecture is fully removed,
+  // this behavior attribute check can be removed and we can just have the
+  // <button type=selectlist> check instead.
+  if (!(button && button->type() == "selectlist") &&
       element->getAttribute(html_names::kBehaviorAttr) != kButtonPartName) {
     return false;
   }
@@ -670,6 +681,10 @@ bool HTMLSelectListElement::IsValidListboxPart(const Node* node,
   auto* element = DynamicTo<HTMLElement>(node);
   if (!element) {
     return false;
+  }
+
+  if (node == default_listbox_) {
+    return true;
   }
 
   if (IsA<HTMLListboxElement>(element) && element->parentNode() == this) {
@@ -1173,6 +1188,8 @@ void HTMLSelectListElement::UpdateSelectedValuePartContents() {
     // TODO(crbug.com/1121840): when we remove the old architecture, this
     // should be a CHECK that selected_value_part_ is a <selectedoption>.
     if (selected_value_part_->HasTagName(html_names::kSelectedoptionTag) &&
+        selected_value_part_->ShadowPseudoId() !=
+            AtomicString("-internal-selectlist-selected-value") &&
         selected_option_) {
       // TODO(crbug.com/1121840): should the label attribute be used instead if
       // it is specified?
@@ -1523,6 +1540,7 @@ void HTMLSelectListElement::Trace(Visitor* visitor) const {
   visitor->Trace(marker_slot_);
   visitor->Trace(selected_value_slot_);
   visitor->Trace(options_slot_);
+  visitor->Trace(default_listbox_);
   visitor->Trace(selected_option_);
   visitor->Trace(selected_option_when_listbox_opened_);
   visitor->Trace(suggested_option_);

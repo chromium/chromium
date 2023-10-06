@@ -29,6 +29,8 @@
 
 namespace blink {
 
+class HTMLSelectListElement;
+
 class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -44,6 +46,10 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   void DispatchBlurEvent(Element*,
                          mojom::blink::FocusType,
                          InputDeviceCapabilities*) override;
+
+  // This return a <selectlist> if this button has type=selectlist and is a
+  // descendant of a <selectlist>.
+  HTMLSelectListElement* OwnerSelectList() const;
 
  private:
   enum Type { kSubmit, kReset, kButton, kSelectlist };

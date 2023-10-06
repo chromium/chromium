@@ -138,11 +138,8 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
 
   if (type_ == kSelectlist) {
     CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
-    for (auto& ancestor : FlatTreeTraversal::AncestorsOf(*this)) {
-      if (auto* selectlist = DynamicTo<HTMLSelectListElement>(ancestor)) {
-        selectlist->HandleButtonEvent(event);
-        break;
-      }
+    if (auto* selectlist = OwnerSelectList()) {
+      selectlist->HandleButtonEvent(event);
     }
   }
 
@@ -231,6 +228,18 @@ void HTMLButtonElement::DispatchBlurEvent(
   SetActive(false);
   HTMLFormControlElement::DispatchBlurEvent(new_focused_element, type,
                                             source_capabilities);
+}
+
+HTMLSelectListElement* HTMLButtonElement::OwnerSelectList() const {
+  if (type_ != kSelectlist) {
+    return nullptr;
+  }
+  for (auto& ancestor : FlatTreeTraversal::AncestorsOf(*this)) {
+    if (auto* selectlist = DynamicTo<HTMLSelectListElement>(ancestor)) {
+      return selectlist;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace blink

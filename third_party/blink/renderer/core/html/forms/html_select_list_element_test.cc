@@ -180,26 +180,6 @@ TEST_F(HTMLSelectListElementTest, NotifyClientListItemRemove) {
 }
 
 // Test behavior of HTMLSelectListElement::OwnerSelectList() if selectlist uses
-// default parts.
-TEST_F(HTMLSelectListElementTest, OwnerSelectList_Parts) {
-  SetHtmlInnerHTML(R"HTML(
-    <selectlist id='selectlist'>
-    <b>
-      <option>First</option>
-      <option>Second</option>
-    </b>
-    </selectlist>
-  )HTML");
-
-  HTMLSelectListElement* select_list_element =
-      To<HTMLSelectListElement>(GetElementById("selectlist"));
-  EXPECT_EQ(select_list_element, HTMLSelectListElement::OwnerSelectList(
-                                     select_list_element->selectedOption()));
-  EXPECT_EQ(select_list_element, HTMLSelectListElement::OwnerSelectList(
-                                     select_list_element->ButtonPart()));
-}
-
-// Test behavior of HTMLSelectListElement::OwnerSelectList() if selectlist uses
 // custom parts.
 TEST_F(HTMLSelectListElementTest, OwnerSelectList_PartsCustomSlots) {
   SetHtmlInnerHTML(R"HTML(

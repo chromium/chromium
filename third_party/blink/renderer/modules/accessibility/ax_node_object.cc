@@ -1267,13 +1267,19 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (owner_select_list) {
     HTMLSelectListElement::PartType part_type =
         owner_select_list->AssignedPartType(GetNode());
-    if (part_type == HTMLSelectListElement::PartType::kButton) {
-      return ax::mojom::blink::Role::kComboBoxMenuButton;
-    } else if (part_type == HTMLSelectListElement::PartType::kListBox) {
-      return ax::mojom::blink::Role::kListBox;
-    } else if (part_type == HTMLSelectListElement::PartType::kOption) {
+    if (part_type == HTMLSelectListElement::PartType::kOption) {
       return ax::mojom::blink::Role::kListBoxOption;
     }
+  }
+
+  if (auto* button = DynamicTo<HTMLButtonElement>(GetNode())) {
+    if (button->OwnerSelectList()) {
+      return ax::mojom::blink::Role::kComboBoxMenuButton;
+    }
+  }
+
+  if (IsA<HTMLListboxElement>(GetNode())) {
+    return ax::mojom::blink::Role::kListBox;
   }
 
   if (IsA<HTMLImageElement>(GetNode()))
@@ -2235,9 +2241,8 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
   if (!element)
     return kExpandedUndefined;
 
-  if (HTMLSelectListElement* select_list =
-          HTMLSelectListElement::OwnerSelectList(element)) {
-    if (select_list->ButtonPart() == element) {
+  if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
+    if (auto* select_list = button->OwnerSelectList()) {
       return select_list->open() ? kExpandedExpanded : kExpandedCollapsed;
     }
   }
@@ -3493,24 +3498,26 @@ String AXNodeObject::GetValueForControl() const {
   }
 
   if (RoleValue() == ax::mojom::blink::Role::kComboBoxMenuButton) {
-    // An HTML <selectlist> gets its value from the selected option.
-    if (auto* select_list = HTMLSelectListElement::OwnerSelectList(node)) {
-      DCHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
-      if (HTMLOptionElement* selected = select_list->selectedOption()) {
-        // TODO(accessibility) Because these <option> elements can contain
-        // anything, we need to create an AXObject for the selected option, and
-        // use ax_selected_option->ComputedName(). However, for now, the
-        // AXObject is not created because AXObject::IsRelevantSlotElement()
-        // returns false for the invisible slot parent. Also, strangely,
-        // selected->innerText()/GetInnerTextWithoutUpdate() are returning "".
-        // See the following content_browsertest:
-        // All/DumpAccessibilityTreeTest.AccessibilitySelectList/blink.
-        // TODO(crbug.com/1401767): DCHECK fails with synchronous serialization.
-        DCHECK(selected->firstChild())
-            << "There is a selected option but it has no DOM children.";
-        return selected->textContent();
+    // An HTML <selectlist>'s button gets its value from the selected option.
+    if (auto* button = DynamicTo<HTMLButtonElement>(node)) {
+      if (auto* select_list = button->OwnerSelectList()) {
+        if (HTMLOptionElement* selected = select_list->selectedOption()) {
+          // TODO(accessibility) Because these <option> elements can contain
+          // anything, we need to create an AXObject for the selected option,
+          // and use ax_selected_option->ComputedName(). However, for now, the
+          // AXObject is not created because AXObject::IsRelevantSlotElement()
+          // returns false for the invisible slot parent. Also, strangely,
+          // selected->innerText()/GetInnerTextWithoutUpdate() are returning "".
+          // See the following content_browsertest:
+          // All/DumpAccessibilityTreeTest.AccessibilitySelectList/blink.
+          // TODO(crbug.com/1401767): DCHECK fails with synchronous
+          // serialization.
+          DCHECK(selected->firstChild())
+              << "There is a selected option but it has no DOM children.";
+          return selected->textContent();
+        }
+        return String();
       }
-      return String();
     }
 
     // An ARIA combobox can get value from inner contents.

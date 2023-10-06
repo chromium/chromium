@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -2019,30 +2020,27 @@ static bool MatchesUAShadowElement(Element& element, const AtomicString& id) {
 
 bool SelectorChecker::CheckPseudoAutofill(CSSSelector::PseudoType pseudo_type,
                                           Element& element) const {
-  HTMLFormControlElement* html_form_element = nullptr;
-  HTMLSelectListElement* owner_html_select_list_element =
-      HTMLSelectListElement::OwnerSelectList(&element);
-  if (owner_html_select_list_element &&
-      owner_html_select_list_element->AssignedPartType(&element) ==
-          HTMLSelectListElement::PartType::kButton) {
-    html_form_element = owner_html_select_list_element;
-  } else {
-    html_form_element = DynamicTo<HTMLFormControlElement>(&element);
+  HTMLFormControlElement* form_control_element =
+      DynamicTo<HTMLFormControlElement>(&element);
+  if (auto* button = DynamicTo<HTMLButtonElement>(&element)) {
+    if (auto* selectlist = button->OwnerSelectList()) {
+      form_control_element = selectlist;
+    }
   }
 
-  if (!html_form_element) {
+  if (!form_control_element) {
     return false;
   }
   switch (pseudo_type) {
     case CSSSelector::kPseudoAutofill:
     case CSSSelector::kPseudoWebKitAutofill:
-      return html_form_element->IsAutofilled() ||
-             html_form_element->IsPreviewed();
+      return form_control_element->IsAutofilled() ||
+             form_control_element->IsPreviewed();
     case CSSSelector::kPseudoAutofillPreviewed:
-      return html_form_element->GetAutofillState() ==
+      return form_control_element->GetAutofillState() ==
              WebAutofillState::kPreviewed;
     case CSSSelector::kPseudoAutofillSelected:
-      return html_form_element->HighlightAutofilled();
+      return form_control_element->HighlightAutofilled();
     default:
       NOTREACHED();
   }
