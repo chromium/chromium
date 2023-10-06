@@ -196,11 +196,6 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
     return CreateAutocompleteWithDeleteButtonCell();
   }
 
-  if (GetController()->GetSuggestionAt(GetLineNumber()).popup_item_id ==
-      PopupItemId::kCompose) {
-    return CreateComposeCell();
-  }
-
   auto view = std::make_unique<PopupCellView>(
       GetController()->ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
   AddContentLabelsAndCallbacks(*view);
@@ -277,51 +272,6 @@ PopupSuggestionStrategy::CreateAutocompleteWithDeleteButtonCell() {
       popup_cell_utils::GetVoiceOverStringFromSuggestion(
           GetController()->GetSuggestionAt(GetLineNumber()))));
   button->SetVisible(false);
-  view->SetCellButton(std::move(button));
-  static_cast<views::BoxLayout*>(view->GetLayoutManager())
-      ->SetFlexForView(view->GetButtonContainer(), 0);
-  return view;
-}
-
-// TODO(crbug.com/1487965): Adjust the layout once mocks are ready.
-std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateComposeCell() {
-  auto view = std::make_unique<PopupCellWithButtonView>(
-      GetController()->ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
-  AddContentLabelsAndCallbacks(*view);
-
-  // Add a close button.
-  views::BoxLayout* layout =
-      static_cast<views::BoxLayout*>(view->GetLayoutManager());
-  for (views::View* child : view->children()) {
-    layout->SetFlexForView(child, 1);
-  }
-
-  // The closure that actually attempts to delete an entry and record metrics
-  // for it.
-  base::RepeatingClosure close_action = base::BindRepeating(
-      &AutofillPopupController::PerformButtonActionForSuggestion,
-      GetController(), GetLineNumber());
-  std::unique_ptr<views::ImageButton> button =
-      views::CreateVectorImageButtonWithNativeTheme(
-          CreateExecuteSoonWrapper(std::move(close_action)),
-          views::kIcCloseIcon, kCloseIconSize);
-
-  // We are making sure that the vertical distance from the  button edges
-  // to the cell border is the same as the horizontal distance.
-  // 1. Take the current horizontal distance.
-  int horizontal_margin = layout->inside_border_insets().right();
-  // 2. Take the height of the cell.
-  int cell_height = layout->minimum_cross_axis_size();
-  // 3. The diameter needs to be the height - 2 * the desired margin.
-  int radius = (cell_height - horizontal_margin * 2) / 2;
-  InstallFixedSizeCircleHighlightPathGenerator(button.get(), radius);
-  button->SetPreferredSize(gfx::Size(radius * 2, radius * 2));
-  // TODO(crbug.com/1487965): Use proper strings.
-  button->SetTooltipText(u"Close");
-  button->SetAccessibleRole(ax::mojom::Role::kMenuItem);
-  button->SetAccessibleName(u"Close");
-  view->SetCellButtonBehavior(
-      PopupCellWithButtonView::CellButtonBehavior::kShowAlways);
   view->SetCellButton(std::move(button));
   static_cast<views::BoxLayout*>(view->GetLayoutManager())
       ->SetFlexForView(view->GetButtonContainer(), 0);
