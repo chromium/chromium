@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -56,12 +57,16 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
 
 }  // namespace
 
-BrowserActions::BrowserActions(Browser& browser)
-    : action_initialization_subscription_(
-          actions::ActionManager::Get().AppendActionItemInitializer(
-              base::BindRepeating(&BrowserActions::InitializeBrowserActions,
-                                  base::Unretained(this)))),
-      browser_(browser) {}
+const int BrowserActions::kUserDataKey;
+
+BrowserActions::BrowserActions(Browser& browser) : browser_(browser) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    action_initialization_subscription_ =
+        actions::ActionManager::Get().AppendActionItemInitializer(
+            base::BindRepeating(&BrowserActions::InitializeBrowserActions,
+                                base::Unretained(this)));
+  }
+}
 
 BrowserActions::~BrowserActions() = default;
 
@@ -69,7 +74,7 @@ void BrowserActions::InitializeBrowserActions(actions::ActionManager* manager) {
   const bool rename_journeys =
       base::FeatureList::IsEnabled(history_clusters::kRenameJourneys);
 
-  manager->AddActions(
+  manager->AddAction(
       actions::ActionItem::Builder()
           .CopyAddressTo(&root_action_item_)
           .AddChildren(

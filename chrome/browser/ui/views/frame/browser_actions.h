@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_ACTIONS_H_
 
 #include "base/callback_list.h"
+#include "base/supports_user_data.h"
 
 class Browser;
 
@@ -14,16 +15,19 @@ class ActionItem;
 class ActionManager;
 }  // namespace actions
 
-class BrowserActions {
+class BrowserActions : public base::SupportsUserData::Data {
  public:
+  static const void* UserDataKey() { return &kUserDataKey; }
+
   explicit BrowserActions(Browser& browser);
   BrowserActions(const BrowserActions&) = delete;
   BrowserActions& operator=(const BrowserActions&) = delete;
-  ~BrowserActions();
+  ~BrowserActions() override;
 
   actions::ActionItem* root_action_item() const { return root_action_item_; }
 
  private:
+  static const int kUserDataKey = 0;
   void InitializeBrowserActions(actions::ActionManager* manager);
 
   base::CallbackListSubscription action_initialization_subscription_;

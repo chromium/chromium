@@ -848,8 +848,11 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     : views::ClientView(nullptr, nullptr),
       browser_(std::move(browser)),
       accessibility_mode_observer_(
-          std::make_unique<AccessibilityModeObserver>(this)),
-      browser_actions_(*browser_) {
+          std::make_unique<AccessibilityModeObserver>(this)) {
+  // Store the actions so that the access is available for other classes.
+  browser_->SetUserData(BrowserActions::UserDataKey(),
+                        std::make_unique<BrowserActions>(*browser_));
+
   SetShowIcon(
       ::ShouldShowWindowIcon(browser_.get(), AppUsesWindowControlsOverlay()));
 

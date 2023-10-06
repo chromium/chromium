@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
+#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -84,7 +85,20 @@ std::u16string SubBrowserName(const char* fmt) {
 
 }  // namespace
 
-using BrowserViewTest = TestWithBrowserView;
+class BrowserViewTest : public TestWithBrowserView {
+ public:
+  BrowserViewTest() {
+    feature_list_.InitAndEnableFeature(features::kSidePanelPinning);
+  }
+
+  BrowserViewTest(const BrowserViewTest&) = delete;
+  BrowserViewTest& operator=(const BrowserViewTest&) = delete;
+
+  ~BrowserViewTest() override {}
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // Test basic construction and initialization.
 TEST_F(BrowserViewTest, BrowserView) {
@@ -103,11 +117,16 @@ TEST_F(BrowserViewTest, BrowserView) {
   EXPECT_FALSE(browser_view()->IsBookmarkBarAnimating());
 
   // Test ActionItem creation
+  BrowserActions* browser_actions = static_cast<BrowserActions*>(
+      browser()->GetUserData(BrowserActions::UserDataKey()));
+
+  ASSERT_FALSE(browser_actions->root_action_item());
   auto& manager = actions::ActionManager::GetForTesting();
   manager.IndexActions();
-  ASSERT_NE(browser_view()->root_action_item(), nullptr);
-  EXPECT_GE(browser_view()->root_action_item()->GetChildren().children().size(),
-            1UL);
+  ASSERT_NE(browser_actions->root_action_item(), nullptr);
+  EXPECT_GE(
+      browser_actions->root_action_item()->GetChildren().children().size(),
+      1UL);
 }
 
 // Test layout of the top-of-window UI.
