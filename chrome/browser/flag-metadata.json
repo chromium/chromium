@@ -6782,11 +6782,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "popover-attribute",
-    "owners": [ "masonf" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "post-restore-default-browser-promo",
     "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
     "expiry_milestone": 120
