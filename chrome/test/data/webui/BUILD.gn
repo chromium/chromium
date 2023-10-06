@@ -8,6 +8,7 @@ import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//chrome/test/include_js_tests.gni")
+import("//components/compose/features.gni")
 import("//components/signin/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -32,7 +33,6 @@ source_set("browser_tests") {
     "chrome_timeticks_browsertest.cc",
     "commander/commander_browsertest.cc",
     "commerce_internals/commerce_internals_browsertest.cc",
-    "compose/compose_browsertest.cc",
     "cr_components/cr_components_browsertest.cc",
     "cr_elements/cr_elements_browsertest.cc",
     "css/css_browsertest.cc",
@@ -176,6 +176,10 @@ source_set("browser_tests") {
       "//chrome/browser/ash:ash",
       "//chrome/browser/ash:test_support",
     ]
+  }
+  if (enable_compose) {
+    sources += [ "compose/compose_browsertest.cc" ]
+    deps += [ "//components/compose/core/browser:features" ]
   }
 }
 
@@ -492,7 +496,6 @@ generate_grd("build_grd") {
     "bookmarks:build_grdp",
     "commander:build_grdp",
     "commerce_internals:build_grdp",
-    "compose:build_grdp",
     "cr_components:build_grdp",
     "cr_elements:build_grdp",
     "css:build_grdp",
@@ -534,7 +537,6 @@ generate_grd("build_grd") {
     "$target_gen_dir/cr_components/resources.grdp",
     "$target_gen_dir/cr_elements/resources.grdp",
     "$target_gen_dir/css/resources.grdp",
-    "$target_gen_dir/compose/resources.grdp",
     "$target_gen_dir/discards/resources.grdp",
     "$target_gen_dir/downloads/resources.grdp",
     "$target_gen_dir/engagement/resources.grdp",
@@ -677,6 +679,10 @@ generate_grd("build_grd") {
   if (!is_chromeos_lacros) {
     deps += [ "webview:build_grdp" ]
     grdp_files += [ "$target_gen_dir/webview/resources.grdp" ]
+  }
+  if (enable_compose) {
+    deps += [ "compose:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/compose/resources.grdp" ]
   }
 
   manifest_files =

@@ -77,7 +77,7 @@
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "components/commerce/content/browser/commerce_internals_ui.h"
 #include "components/commerce/core/commerce_constants.h"
-#include "components/compose/core/browser/compose_features.h"
+#include "components/compose/buildflags.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_util.h"
 #include "components/favicon_base/select_favicon_frames.h"
@@ -147,7 +147,6 @@
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/commander/commander_ui.h"
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
-#include "chrome/browser/ui/webui/compose/compose_ui.h"
 #include "chrome/browser/ui/webui/devtools_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
@@ -305,6 +304,11 @@
 
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
+#endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/ui/webui/compose/compose_ui.h"
+#include "components/compose/core/browser/compose_features.h"
 #endif
 
 using content::WebUI;
@@ -779,10 +783,12 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIWebuiGalleryHost) {
     return &NewWebUI<WebuiGalleryUI>;
   }
+#if BUILDFLAG(ENABLE_COMPOSE)
   if (url.host_piece() == chrome::kChromeUIComposeHost &&
       base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
     return &NewWebUI<ComposeUI>;
   }
+#endif
   if (url.host_piece() == chrome::kChromeUIWhatsNewHost &&
       base::FeatureList::IsEnabled(features::kChromeWhatsNewUI)) {
     return &NewWebUI<WhatsNewUI>;

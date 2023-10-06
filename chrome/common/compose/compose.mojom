@@ -1,0 +1,52 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module compose.mojom;
+
+// Interface for setting up connection to allow calls between the compose dialog
+// web page and native code.
+interface ComposeDialogPageHandlerFactory {
+  // Called from dialog compose JS to set up native handler.
+  CreateComposeDialogPageHandler(
+      pending_receiver<ComposeDialogPageHandler> handler,
+      pending_remote<ComposeDialog> dialog);
+};
+
+enum Tone {
+  kUnset,
+  kFormal,
+  kCasual,
+};
+
+enum Length {
+  kUnset,
+  kShorter,
+  kLonger,
+};
+
+enum ComposeStatus {
+  kOk,
+  kError,
+};
+
+struct StyleModifiers {
+  Tone tone;
+  Length length;
+};
+
+struct ComposeResponse {
+  ComposeStatus status;
+  string result;
+};
+
+// Interface for calls from Compose dialog JS into the native handler.
+interface ComposeDialogPageHandler {
+  // Asks the Browser to compose `input` with `stye` applied. Response contains
+  // the modified output.
+  Compose(StyleModifiers style, string input) => (ComposeResponse response);
+};
+
+// Interface for calls from native code into Compose dialog JS.
+interface ComposeDialog {
+};

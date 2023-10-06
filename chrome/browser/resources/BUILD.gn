@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
+import("//components/compose/features.gni")
 import("//components/signin/features.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -29,7 +30,6 @@ group("resources") {
       "app_service_internals:resources",
       "bookmarks:resources",
       "commander:resources",
-      "compose:resources",
       "downloads:resources",
       "feed:resources",
       "feedback:resources",
@@ -148,6 +148,10 @@ group("resources") {
 
   if (enable_webui_certificate_viewer) {
     public_deps += [ "certificate_viewer:resources" ]
+  }
+
+  if (enable_compose) {
+    public_deps += [ "compose:resources" ]
   }
 }
 

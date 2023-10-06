@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("compose") {
+  sources = []
+
+  deps = [ ":mojo_bindings" ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "compose.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/"
+  use_typescript_sources = true
+}

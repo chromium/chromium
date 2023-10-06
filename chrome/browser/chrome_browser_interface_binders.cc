@@ -61,6 +61,7 @@
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/commerce/content/browser/commerce_internals_ui.h"
 #include "components/commerce/core/internals/mojom/commerce_internals.mojom.h"
+#include "components/compose/buildflags.h"
 #include "components/dom_distiller/content/browser/distillability_driver.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_service_impl.h"
 #include "components/dom_distiller/content/common/mojom/distillability_service.mojom.h"
@@ -181,7 +182,6 @@
 #endif
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
-#include "chrome/browser/ui/webui/compose/compose_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
@@ -442,6 +442,12 @@
 
 #if BUILDFLAG(PLATFORM_CFM)
 #include "chrome/browser/ui/webui/ash/chromebox_for_meetings/network_settings_dialog.h"
+#endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/ui/webui/compose/compose_ui.h"
+#include "chrome/common/compose/compose.mojom.h"
+#include "components/compose/core/browser/compose_features.h"  // nogncheck crbug.com/1125897
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1125,9 +1131,12 @@ void PopulateChromeWebUIFrameBinders(
       ash::multidevice_setup::MultiDeviceSetupDialogUI, ash::ParentAccessUI,
       ash::EmojiUI,
 #endif
+#if BUILDFLAG(ENABLE_COMPOSE)
+      ComposeUI,
+#endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI,
       InternalsUI, ReadingListUI, TabSearchUI, WebuiGalleryUI,
-      HistoryClustersSidePanelUI, ComposeUI>(map);
+      HistoryClustersSidePanelUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
@@ -1680,6 +1689,13 @@ void PopulateChromeWebUIFrameBinders(
         on_device_model::mojom::OnDeviceModelService, OnDeviceInternalsUI>(map);
   }
 #endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+  if (base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
+    RegisterWebUIControllerInterfaceBinder<
+        compose::mojom::ComposeDialogPageHandlerFactory, ComposeUI>(map);
+  }
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
 }
 
 void PopulateChromeWebUIFrameInterfaceBrokers(

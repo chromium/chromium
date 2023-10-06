@@ -83,6 +83,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/compose/buildflags.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -161,7 +162,7 @@
 #include "components/zoom/zoom_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/compose/chrome_compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"  // nogncheck
 #endif
@@ -265,7 +266,7 @@ IbanManager* ChromeAutofillClient::GetIbanManager() {
 }
 
 AutofillComposeDelegate* ChromeAutofillClient::GetComposeDelegate() {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_COMPOSE)
   auto* client = ChromeComposeClient::FromWebContents(web_contents());
   return client ? &client->manager() : nullptr;
 #else

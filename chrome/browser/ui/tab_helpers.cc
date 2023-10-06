@@ -285,6 +285,12 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_notice_service.h"
 #endif
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/compose/chrome_compose_client.h"
+#include "components/compose/buildflags.h"
+#include "components/compose/core/browser/compose_features.h"
+#endif
+
 using content::WebContents;
 
 namespace {
@@ -608,6 +614,13 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
               kCompanionEnabledByObservingExpsNavigations)) {
     companion::ExpsRegistrationSuccessObserver::CreateForWebContents(
         web_contents);
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+  if (base::FeatureList::IsEnabled(compose::features::kEnableCompose) &&
+      !profile->IsOffTheRecord()) {
+    ChromeComposeClient::CreateForWebContents(web_contents);
   }
 #endif
 

@@ -14,6 +14,7 @@ import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import {ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeTextareaElement} from './textarea.js';
 
 // Mock code.
@@ -76,6 +77,8 @@ export class ComposeAppElement extends PolymerElement {
   constructor() {
     super();
     ColorChangeUpdater.forDocument().start();
+    // Not used yet.
+    const _ = ComposeApiProxyImpl.getInstance();
   }
 
   private computeIsSubmitEnabled_(): boolean {
