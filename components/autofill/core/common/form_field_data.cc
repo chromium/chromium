@@ -444,7 +444,7 @@ std::string_view FormControlTypeToString(FormControlType type) {
     case FormControlType::kEmpty:
       return "";
   }
-  return "invalid";
+  NOTREACHED_NORETURN();
 }
 
 FormControlType StringToFormControlTypeDiscouraged(
