@@ -1413,6 +1413,10 @@ void DevToolsUIBindings::RecordUserMetricsAction(const std::string& name) {
   base::RecordComputedAction(name);
 }
 
+void DevToolsUIBindings::RecordImpression(const ImpressionEvent& event) {}
+void DevToolsUIBindings::RecordClick(const ClickEvent& event) {}
+void DevToolsUIBindings::RecordChange(const ChangeEvent& event) {}
+void DevToolsUIBindings::RecordKeyDown(const KeyDownEvent& event) {}
 void DevToolsUIBindings::SendJsonRequest(DispatchCallback callback,
                                          const std::string& browser_id,
                                          const std::string& url) {

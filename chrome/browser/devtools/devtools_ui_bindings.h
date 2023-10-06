@@ -20,6 +20,7 @@
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
 #include "chrome/browser/devtools/devtools_settings.h"
 #include "chrome/browser/devtools/devtools_targets_ui.h"
+#include "chrome/browser/devtools/visual_logging.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_frontend_host.h"
@@ -181,6 +182,10 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RecordPerformanceHistogram(const std::string& name,
                                   double duration) override;
   void RecordUserMetricsAction(const std::string& name) override;
+  void RecordImpression(const ImpressionEvent& event) override;
+  void RecordClick(const ClickEvent& event) override;
+  void RecordChange(const ChangeEvent& event) override;
+  void RecordKeyDown(const KeyDownEvent& event) override;
   void SendJsonRequest(DispatchCallback callback,
                        const std::string& browser_id,
                        const std::string& url) override;

@@ -237,6 +237,8 @@ static_library("devtools") {
       "serialize_host_descriptions.h",
       "url_constants.cc",
       "url_constants.h",
+      "visual_logging.cc",
+      "visual_logging.h",
     ]
     if (enable_service_discovery) {
       sources += [

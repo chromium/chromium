@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/devtools_settings.h"
+#include "chrome/browser/devtools/visual_logging.h"
 
 namespace {
 
@@ -70,6 +71,97 @@ bool GetValue(const base::Value& value, RegisterOptions* options) {
   const bool synced = value.GetDict().FindBool("synced").value_or(false);
   options->sync_mode = synced ? RegisterOptions::SyncMode::kSync
                               : RegisterOptions::SyncMode::kDontSync;
+  return true;
+}
+
+bool GetValue(const base::Value& value, ImpressionEvent* event) {
+  if (!value.is_dict()) {
+    return false;
+  }
+
+  const base::Value::List* impressions =
+      value.GetDict().FindList("impressions");
+  if (!impressions) {
+    return false;
+  }
+  for (const auto& impression : *impressions) {
+    if (!impression.is_dict()) {
+      return false;
+    }
+    absl::optional<int> id = impression.GetDict().FindInt("id");
+    absl::optional<int> type = impression.GetDict().FindInt("type");
+    if (!id || !type) {
+      return false;
+    }
+    event->impressions.emplace_back(VisualElementImpression{*id, *type});
+
+    absl::optional<int> parent = impression.GetDict().FindInt("parent");
+    if (parent) {
+      event->impressions.back().parent = *parent;
+    }
+    absl::optional<int> context = impression.GetDict().FindInt("context");
+    if (context) {
+      event->impressions.back().context = *context;
+    }
+  }
+  return true;
+}
+
+bool GetValue(const base::Value& value, ClickEvent* event) {
+  if (!value.is_dict()) {
+    return false;
+  }
+
+  absl::optional<int> veid = value.GetDict().FindInt("veid");
+  if (!veid) {
+    return false;
+  }
+  event->veid = *veid;
+
+  absl::optional<int> mouse_button = value.GetDict().FindInt("mouseButton");
+  if (mouse_button) {
+    event->mouse_button = *mouse_button;
+  }
+  absl::optional<int> context = value.GetDict().FindInt("context");
+  if (context) {
+    event->context = *context;
+  }
+  return true;
+}
+
+bool GetValue(const base::Value& value, ChangeEvent* event) {
+  if (!value.is_dict()) {
+    return false;
+  }
+
+  absl::optional<int> veid = value.GetDict().FindInt("veid");
+  if (!veid) {
+    return false;
+  }
+  event->veid = *veid;
+
+  absl::optional<int> context = value.GetDict().FindInt("context");
+  if (context) {
+    event->context = *context;
+  }
+  return true;
+}
+
+bool GetValue(const base::Value& value, KeyDownEvent* event) {
+  if (!value.is_dict()) {
+    return false;
+  }
+
+  absl::optional<int> veid = value.GetDict().FindInt("veid");
+  if (!veid) {
+    return false;
+  }
+  event->veid = *veid;
+
+  absl::optional<int> context = value.GetDict().FindInt("context");
+  if (context) {
+    event->context = *context;
+  }
   return true;
 }
 

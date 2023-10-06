@@ -16,6 +16,10 @@
 #include "ui/gfx/geometry/size.h"
 
 struct RegisterOptions;
+struct ImpressionEvent;
+struct ClickEvent;
+struct ChangeEvent;
+struct KeyDownEvent;
 
 /**
  * Dispatcher for messages sent from the DevTools frontend running in an
@@ -102,6 +106,10 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void RecordPerformanceHistogram(const std::string& name,
                                             double duration) = 0;
     virtual void RecordUserMetricsAction(const std::string& name) = 0;
+    virtual void RecordImpression(const ImpressionEvent& event) = 0;
+    virtual void RecordClick(const ClickEvent& event) = 0;
+    virtual void RecordChange(const ChangeEvent& event) = 0;
+    virtual void RecordKeyDown(const KeyDownEvent& event) = 0;
     virtual void SendJsonRequest(DispatchCallback callback,
                                  const std::string& browser_id,
                                  const std::string& url) = 0;
