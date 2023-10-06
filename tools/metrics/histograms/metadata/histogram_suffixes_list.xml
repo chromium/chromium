@@ -2344,32 +2344,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Memory.PressureWindowDuration"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="MemoryFDsAllProcesses" separator="."
-    ordering="prefix">
-  <suffix name="Browser" label="Browser process"/>
-  <suffix name="Chrome" label="chrome:// renderer process"/>
-  <suffix name="Extension" label="Extension process"/>
-  <suffix name="Gpu" label="GPU process"/>
-  <suffix name="NativeClient" label="Native client process"/>
-  <suffix name="NativeClientBroker" label="Native client broker process"/>
-  <suffix name="PeperPlugin" label="Pepper plugin process"/>
-  <suffix name="PepperPluginBroker" label="Pepper plugin broker process"/>
-  <suffix name="Renderer" label="Renderer process"/>
-  <suffix name="RendererAll" label="Renderer process"/>
-  <suffix name="SandboxHelper" label="Sandbox helper process"/>
-  <suffix name="Utility" label="Utility process"/>
-  <suffix name="Zygote" label="Zygot process"/>
-  <affected-histogram name="Memory.OpenFDs"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="MemoryFDsBroswerGpuAndRendererProcess" separator="."
-    ordering="prefix">
-  <suffix name="Browser" label="Browser process"/>
-  <suffix name="Gpu" label="GPU process"/>
-  <suffix name="RendererAll" label="Renderer process"/>
-  <affected-histogram name="Memory.OpenFDsSoftLimit"/>
-</histogram_suffixes>
-
 <histogram_suffixes
     name="MemoryRendererHighestPrivateMemoryFootprintAfterFirstNavigationStart"
     separator=".">

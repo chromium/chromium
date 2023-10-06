@@ -78,6 +78,15 @@ void MetricsMemoryDetails::UpdateHistograms() {
       }
     }
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Chrome OS exposes system-wide graphics driver memory which has historically
+  // been a source of leak/bloat.
+  base::GraphicsMemoryInfoKB meminfo;
+  if (base::GetGraphicsMemoryInfo(&meminfo)) {
+    UMA_HISTOGRAM_MEMORY_MB("Memory.Graphics",
+                            meminfo.gpu_memory_size / 1024 / 1024);
+  }
+#endif
 
   size_t initialized_and_not_dead_rphs;
   size_t all_rphs;

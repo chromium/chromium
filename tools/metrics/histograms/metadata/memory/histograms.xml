@@ -1591,29 +1591,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Memory.OpenFDs" units="files" expires_after="M85">
-<!-- Name completed by histogram_suffixes name="MemoryFDsBroswerGpuAndRendererProcess" and name="MemoryFDsAllProcesses" -->
-
-  <owner>dcastagna@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    The total number of open file descriptors opened per process. Recorded once
-    per UMA ping.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Memory.OpenFDsSoftLimit" units="files"
-    expires_after="M85">
-<!-- Name completed by histogram_suffixes name="MemoryFDsBroswerGpuAndRendererProcess" -->
-
-  <owner>dcastagna@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    The limit of open file descriptors that can be opened per process. Recorded
-    once per UMA ping.
-  </summary>
-</histogram>
-
 <histogram name="Memory.ParkableImage.DiskIsUsable.5min" enum="BooleanYesNo"
     expires_after="2023-12-25">
   <owner>thiabaud@google.com</owner>
