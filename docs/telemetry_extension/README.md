@@ -43,7 +43,7 @@ extension type was declared, the ChromeOS System extension. In a ChromeOS
 System extension, the service worker has direct access to normal
 [web APIs](https://developer.mozilla.org/en-US/docs/Web/API). Most of the
 [common Chrome Extension APIs](https://developer.chrome.com/docs/extensions/reference/)
-are disabled (besides `chrome.runtime` to communicate with the PWA) and access
+are disabled (except `chrome.runtime` to communicate with the PWA) and access
 to the Telemetry API is granted either directly through `os.` or via DPSL.js
 the recommended way of using the API). Please note that each extension ID needs
 to be allowlisted by Google in the Chrome codebase to have access to APIs.
