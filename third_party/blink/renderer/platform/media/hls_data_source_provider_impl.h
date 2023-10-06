@@ -46,6 +46,7 @@ class PLATFORM_EXPORT HlsDataSourceProviderImpl
   void ReadFromExistingStream(
       std::unique_ptr<media::HlsDataSourceStream> stream,
       ReadCb callback) override;
+  void AbortPendingReads(base::OnceClosure cb) override;
 
  private:
   void OnStreamReleased(media::HlsDataSourceStream::StreamId stream_id);

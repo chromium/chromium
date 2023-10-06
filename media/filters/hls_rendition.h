@@ -47,7 +47,7 @@ class MEDIA_EXPORT HlsRenditionHost {
 
 class MEDIA_EXPORT HlsRendition {
  public:
-  virtual ~HlsRendition() {}
+  virtual ~HlsRendition() = default;
 
   // Checks the current playback time and starts any required network requests
   // for more data, or clears out old data.
@@ -57,10 +57,11 @@ class MEDIA_EXPORT HlsRendition {
 
   // Does any necessary seeking work, and returns true iff more data is needed
   // as the seek was outside of a loaded range.
-  virtual bool Seek(base::TimeDelta seek_time) = 0;
+  virtual ManifestDemuxer::SeekResponse Seek(base::TimeDelta seek_time) = 0;
 
-  // Cancels any outstanding pending network requests.
-  virtual void CancelPendingNetworkRequests() = 0;
+  // Lets the rendition know that any network requests which respond with an
+  // aborted status are not to be treated as errors until the seek is finished.
+  virtual void StartWaitingForSeek() = 0;
 
   // Live renditions should return a nullopt for duration.
   virtual absl::optional<base::TimeDelta> GetDuration() = 0;

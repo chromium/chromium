@@ -210,25 +210,8 @@ void ManifestDemuxer::SeekInternal() {
   // Cancel any outstanding events, we don't want them interrupting us.
   cancelable_next_event_.Cancel();
 
-  // Seek the engine first, since it might clear out data from the chunk demuxer
-  // and reset it into a state where it can accept the correct timestamps. If
-  // ManifestDemuxer::Engine::Seek returns true, then it means that a new fetch
-  // event is required to repopulate the chunk demuxer's buffers.
-  seek_waiting_on_engine_ = impl_->Seek(media_time_);
-
-  // Seek the demuxer and signal that we are waiting on it to complete. The seek
-  // won't be finished until the ChunkDemuxer has finished seeking and the
-  // engine is ready.
-  seek_waiting_on_demuxer_ = true;
-  chunk_demuxer_->Seek(media_time_,
-                       base::BindOnce(&ManifestDemuxer::OnChunkDemuxerSeeked,
-                                      weak_factory_.GetWeakPtr()));
-
-  if (seek_waiting_on_engine_) {
-    TriggerEventWithTime(base::BindOnce(&ManifestDemuxer::OnEngineSeekComplete,
-                                        weak_factory_.GetWeakPtr()),
-                         media_time_);
-  }
+  impl_->Seek(media_time_, base::BindOnce(&ManifestDemuxer::OnEngineSeeked,
+                                          weak_factory_.GetWeakPtr()));
 }
 
 bool ManifestDemuxer::IsSeekable() const {
@@ -520,54 +503,66 @@ void ManifestDemuxer::OnChunkDemuxerInitialized(PipelineStatus init_status) {
   std::move(pending_init_).Run(std::move(init_status));
 }
 
-void ManifestDemuxer::OnChunkDemuxerSeeked(PipelineStatus seek_status) {
+void ManifestDemuxer::OnEngineSeeked(SeekResponse seek_status) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  seek_waiting_on_demuxer_ = false;
-
-  if (!pending_seek_) {
-    seek_waiting_on_engine_ = false;
+  CHECK(pending_seek_);
+  if (!seek_status.has_value()) {
+    std::move(pending_seek_).Run(std::move(seek_status).error().AddHere());
     return;
   }
 
+  chunk_demuxer_->Seek(media_time_,
+                       base::BindOnce(&ManifestDemuxer::OnChunkDemuxerSeeked,
+                                      weak_factory_.GetWeakPtr()));
+
+  if (std::move(seek_status).value() == SeekState::kNeedsData) {
+    // Buffers need to be refilled, or ChunkDemuxer::Seek will never complete.
+    can_complete_seek_ = false;
+    TriggerEventWithTime(base::BindOnce(&ManifestDemuxer::OnSeekBuffered,
+                                        weak_factory_.GetWeakPtr()),
+                         media_time_);
+  }
+}
+
+void ManifestDemuxer::OnSeekBuffered(base::TimeDelta delay_time) {
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!pending_seek_) {
+    // ChunkDemuxer::Seek replied with an error, and has already reset the flag.
+    CHECK(can_complete_seek_);
+    return;
+  }
+
+  if (!can_complete_seek_) {
+    // ChunkDemuxer::Seek has not yet replied. Set the flag to true and exit.
+    can_complete_seek_ = true;
+    return;
+  }
+
+  // Finish seeking and schedule a new event ASAP to continue.
+  std::move(pending_seek_).Run(OkStatus());
+  OnEngineEventFinished(base::Seconds(0));
+}
+
+void ManifestDemuxer::OnChunkDemuxerSeeked(PipelineStatus seek_status) {
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(pending_seek_);
   if (!seek_status.is_ok()) {
-    // If the seek is an error, then don't bother waiting for the
-    // OnEngineSeekComplete call, just unset the flag and exit now.
-    seek_waiting_on_engine_ = false;
+    can_complete_seek_ = true;
     std::move(pending_seek_).Run(std::move(seek_status));
     return;
   }
 
-  // Complete the seek with an ok-status. This function already handles non-ok
-  // status results above.
-  TryCompletePendingSeek();
-}
-
-void ManifestDemuxer::OnEngineSeekComplete(base::TimeDelta delay_time) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  seek_waiting_on_engine_ = false;
-
-  if (!pending_seek_) {
-    seek_waiting_on_demuxer_ = false;
+  if (!can_complete_seek_) {
+    // The engine should reply shortly after finishing the event which
+    // repopulated ChunkDemuxer's buffers. Reset the flag to allow that reply
+    // to finish the seek process.
+    can_complete_seek_ = true;
     return;
   }
 
-  // Complete the seek with an ok-status. If the chunk demuxer had failed to
-  // seek, it would have already posted the `pending_seek_` call with its
-  // failure status.
-  TryCompletePendingSeek();
-}
-
-void ManifestDemuxer::TryCompletePendingSeek() {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-
-  if (seek_waiting_on_engine_ || seek_waiting_on_demuxer_) {
-    return;
-  }
-
-  CHECK(pending_seek_);
-  std::move(pending_seek_).Run(OkStatus());
-
-  // Schedule a new event ASAP to populate data.
+  // Finish seeking and schedule a new event ASAP to continue.
+  std::move(pending_seek_).Run(std::move(seek_status));
   OnEngineEventFinished(base::Seconds(0));
 }
 

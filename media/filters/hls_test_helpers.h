@@ -27,6 +27,10 @@ class MockHlsDataSourceProvider : public HlsDataSourceProvider {
               (std::unique_ptr<HlsDataSourceStream>,
                HlsDataSourceProvider::ReadCb),
               (override));
+  MOCK_METHOD(void,
+              AbortPendingReads,
+              (base::OnceClosure callback),
+              (override));
 };
 
 class StringHlsDataSourceStreamFactory {
@@ -125,8 +129,11 @@ class MockHlsRendition : public HlsRendition {
                double rate,
                ManifestDemuxer::DelayCallback cb),
               (override));
-  MOCK_METHOD(bool, Seek, (base::TimeDelta time), (override));
-  MOCK_METHOD(void, CancelPendingNetworkRequests, (), (override));
+  MOCK_METHOD(ManifestDemuxer::SeekResponse,
+              Seek,
+              (base::TimeDelta time),
+              (override));
+  MOCK_METHOD(void, StartWaitingForSeek, (), (override));
   MOCK_METHOD(absl::optional<base::TimeDelta>, GetDuration, (), (override));
   MOCK_METHOD(void, Stop, (), (override));
 };

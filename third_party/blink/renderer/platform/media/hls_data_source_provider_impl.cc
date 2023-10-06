@@ -144,6 +144,15 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
                                   std::move(callback), int_read_size));
 }
 
+void HlsDataSourceProviderImpl::AbortPendingReads(base::OnceClosure cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& [id, source] : data_source_map_) {
+    source->Abort();
+    source->Stop();
+  }
+  std::move(cb).Run();
+}
+
 void HlsDataSourceProviderImpl::DataSourceInitialized(
     media::HlsDataSourceStream::StreamId stream_id,
     absl::optional<media::hls::types::ByteRange> range,

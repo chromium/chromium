@@ -28,8 +28,8 @@ class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
   void CheckState(base::TimeDelta media_time,
                   double playback_rate,
                   ManifestDemuxer::DelayCallback time_remaining_cb) override;
-  bool Seek(base::TimeDelta seek_time) override;
-  void CancelPendingNetworkRequests() override;
+  ManifestDemuxer::SeekResponse Seek(base::TimeDelta seek_time) override;
+  void StartWaitingForSeek() override;
   void Stop() override;
 
  private:

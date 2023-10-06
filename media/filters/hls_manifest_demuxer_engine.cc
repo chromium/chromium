@@ -222,20 +222,38 @@ void HlsManifestDemuxerEngine::OnStateChecked(
                                                       : adjusted_prior_delay);
 }
 
-bool HlsManifestDemuxerEngine::Seek(base::TimeDelta time) {
+void HlsManifestDemuxerEngine::Seek(base::TimeDelta time,
+                                    ManifestDemuxer::SeekCallback cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  bool needs_more_data = false;
+  CHECK(data_source_provider_);
+  data_source_provider_.AsyncCall(&HlsDataSourceProvider::AbortPendingReads)
+      .WithArgs(base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&HlsManifestDemuxerEngine::ContinueSeekInternal,
+                         weak_factory_.GetWeakPtr(), time, std::move(cb))));
+}
+
+void HlsManifestDemuxerEngine::ContinueSeekInternal(
+    base::TimeDelta time,
+    ManifestDemuxer::SeekCallback cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  bool buffers_needed = false;
   for (auto& rendition : renditions_) {
-    needs_more_data |= rendition->Seek(time);
+    auto response = rendition->Seek(time);
+    if (!response.has_value()) {
+      std::move(cb).Run(std::move(response).error().AddHere());
+      return;
+    }
+    buffers_needed |=
+        (ManifestDemuxer::SeekState::kNeedsData == std::move(response).value());
   }
-  return needs_more_data;
+  std::move(cb).Run(buffers_needed ? ManifestDemuxer::SeekState::kNeedsData
+                                   : ManifestDemuxer::SeekState::kIsReady);
 }
 
 void HlsManifestDemuxerEngine::StartWaitingForSeek() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  AbortPendingReads();
   for (auto& rendition : renditions_) {
-    rendition->CancelPendingNetworkRequests();
+    rendition->StartWaitingForSeek();
   }
 }
 

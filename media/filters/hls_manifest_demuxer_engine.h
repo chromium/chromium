@@ -46,7 +46,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   void OnTimeUpdate(base::TimeDelta time,
                     double playback_rate,
                     ManifestDemuxer::DelayCallback cb) override;
-  bool Seek(base::TimeDelta time) override;
+  void Seek(base::TimeDelta time, ManifestDemuxer::SeekCallback cb) override;
   void StartWaitingForSeek() override;
   void AbortPendingReads() override;
   bool IsSeekable() const override;
@@ -162,6 +162,8 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                                   SourceBufferParseWarning warning);
   void OnChunkDemuxerTracksChanged(std::string role,
                                    std::unique_ptr<MediaTracks> tracks);
+  void ContinueSeekInternal(base::TimeDelta time,
+                            ManifestDemuxer::SeekCallback cb);
 
   base::SequenceBound<HlsDataSourceProvider> data_source_provider_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;

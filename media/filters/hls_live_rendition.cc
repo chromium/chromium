@@ -145,17 +145,17 @@ void HlsLiveRendition::ContinuePartialFetching(base::OnceClosure cb) {
   }
 }
 
-bool HlsLiveRendition::Seek(base::TimeDelta time) {
-  return false;
+ManifestDemuxer::SeekResponse HlsLiveRendition::Seek(base::TimeDelta time) {
+  return ManifestDemuxer::SeekState::kIsReady;
 }
 
-void HlsLiveRendition::CancelPendingNetworkRequests() {
-  partial_stream_ = nullptr;
+void HlsLiveRendition::StartWaitingForSeek() {
+  // Do nothing, seeking a live stream is not valid.
 }
 
 void HlsLiveRendition::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CancelPendingNetworkRequests();
+  partial_stream_ = nullptr;
   is_stopped_for_shutdown_ = true;
 }
 

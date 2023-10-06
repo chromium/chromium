@@ -96,6 +96,7 @@ const std::string kMultivariantPlaylistWithAlts =
     "main/english-audio.m3u8\n";
 
 using ::base::test::RunOnceCallback;
+using ::base::test::RunOnceClosure;
 using testing::_;
 using testing::AtLeast;
 using testing::ByMove;
@@ -138,6 +139,10 @@ class FakeHlsDataSourceProvider : public HlsDataSourceProvider {
     CHECK(!stream->CanReadMore());
     std::move(cb).Run(std::move(stream));
   }
+
+  void AbortPendingReads(base::OnceClosure callback) override {
+    mock_->AbortPendingReads(std::move(callback));
+  }
 };
 
 class HlsManifestDemuxerEngineTest : public testing::Test {
@@ -161,7 +166,7 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
   HlsManifestDemuxerEngineTest()
       : media_log_(std::make_unique<NiceMock<media::MockMediaLog>>()),
         mock_mdeh_(std::make_unique<MockManifestDemuxerEngineHost>()),
-        mock_dsp_(std::make_unique<MockHlsDataSourceProvider>()) {
+        mock_dsp_(std::make_unique<StrictMock<MockHlsDataSourceProvider>>()) {
     ON_CALL(*mock_mdeh_, AddRole(_, _, _)).WillByDefault(Return(true));
     ON_CALL(*mock_mdeh_, GetBufferedRanges(_))
         .WillByDefault(Return(Ranges<base::TimeDelta>()));
@@ -286,6 +291,35 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantWithNoSupportedCodecs) {
   EXPECT_CALL(*mock_mdeh_,
               OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
   InitializeEngine();
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestAsyncSeek) {
+  auto rendition = std::make_unique<StrictMock<MockHlsRendition>>();
+  EXPECT_CALL(*rendition, GetDuration()).WillOnce(Return(base::Seconds(30)));
+  auto* rendition_ptr = rendition.get();
+  engine_->AddRenditionForTesting(std::move(rendition));
+  // Set up rendition state and run, expecting no other callbacks.
+  task_environment_.RunUntilIdle();
+
+  // When seeking, indicate that we do not need to load more buffers.
+  EXPECT_CALL(*rendition_ptr, StartWaitingForSeek());
+  engine_->StartWaitingForSeek();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(*rendition_ptr, Seek(_))
+      .WillOnce(Return(ManifestDemuxer::SeekState::kIsReady));
+  EXPECT_CALL(*mock_dsp_, AbortPendingReads(_)).WillOnce(RunOnceClosure<0>());
+  engine_->Seek(base::Seconds(10),
+                base::BindOnce([](ManifestDemuxer::SeekResponse resp) {
+                  ASSERT_TRUE(resp.has_value());
+                  ASSERT_EQ(std::move(resp).value(),
+                            ManifestDemuxer::SeekState::kIsReady);
+                }));
+  task_environment_.RunUntilIdle();
+
+  // Destruction should call stop.
+  EXPECT_CALL(*rendition_ptr, Stop());
   task_environment_.RunUntilIdle();
 }
 

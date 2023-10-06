@@ -53,6 +53,9 @@ class MEDIA_EXPORT HlsDataSourceProvider {
   virtual void ReadFromExistingStream(
       std::unique_ptr<HlsDataSourceStream> stream,
       ReadCb callback) = 0;
+
+  // Aborts all pending reads and calls `callback` when finished.
+  virtual void AbortPendingReads(base::OnceClosure callback) = 0;
 };
 
 // A buffer-owning wrapper for an HlsDataSource which can be instructed to

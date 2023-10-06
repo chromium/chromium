@@ -144,22 +144,27 @@ void HlsVodRendition::CheckState(
             media_time);
 }
 
-bool HlsVodRendition::Seek(base::TimeDelta seek_time) {
+ManifestDemuxer::SeekResponse HlsVodRendition::Seek(base::TimeDelta seek_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_stopped_for_shutdown_) {
-    return false;
+    return PIPELINE_ERROR_ABORT;
   }
 
   auto ranges = engine_host_->GetBufferedRanges(role_);
-  if (!ranges.empty()) {
-    if (ranges.contains(ranges.size() - 1, seek_time)) {
-      // Only if we're in the last loaded range is it ok to keep the same
-      // fetch queue and ranges.
-      return false;
-    }
+  if (!ranges.empty() && ranges.contains(ranges.size() - 1, seek_time)) {
+    // If the seek time is in the last loaded range, then there is no need to
+    // update the pending fetch state or clear/flush any buffers.
+    return ManifestDemuxer::SeekState::kIsReady;
   }
 
+  // If we seek anywhere else, we should evict everything in order to avoid
+  // fragmented loaded sections and large memory consumption.
+  engine_host_->EvictCodedFrames(role_, base::Seconds(0), 0);
+  engine_host_->RemoveAndReset(role_, base::TimeDelta(), duration_,
+                               &parse_offset_);
+
+  // reset the queue of segments to the current seek time.
   pending_stream_fetch_ = absl::nullopt;
   fetch_queue_ =
       std::lower_bound(segments_.begin(), segments_.end(), seek_time,
@@ -167,28 +172,23 @@ bool HlsVodRendition::Seek(base::TimeDelta seek_time) {
                          return segment.absolute_end < time;
                        });
 
+  // If we havent seeked to the end, we can then reset the sequence modes.
   if (fetch_queue_ != segments_.end()) {
-    engine_host_->EvictCodedFrames(role_, base::Seconds(0), 0);
-
-    engine_host_->RemoveAndReset(role_, base::TimeDelta(), duration_,
-                                 &parse_offset_);
-
     engine_host_->SetGroupStartIfParsingAndSequenceMode(
         role_, (*fetch_queue_).absolute_start);
-    return true;
   }
 
-  return false;
+  return ManifestDemuxer::SeekState::kNeedsData;
 }
 
-void HlsVodRendition::CancelPendingNetworkRequests() {
+void HlsVodRendition::StartWaitingForSeek() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pending_stream_fetch_ = absl::nullopt;
 }
 
 void HlsVodRendition::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CancelPendingNetworkRequests();
+  pending_stream_fetch_ = absl::nullopt;
   is_stopped_for_shutdown_ = true;
 }
 
