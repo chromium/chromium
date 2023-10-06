@@ -132,10 +132,12 @@ bool ShouldShowErrorMessage(
 
 // Returns true if `form`s username value equals `username_value` (case
 // insensitive).
-bool FormMatchesUsername(const PasswordForm* form,
-                         const std::u16string& username_value) {
-  return form &&
-         base::EqualsCaseInsensitiveASCII(username_value, form->username_value);
+PasswordFormHadMatchingUsername FormMatchesUsername(
+    const PasswordForm* form,
+    const std::u16string& username_value) {
+  return PasswordFormHadMatchingUsername(
+      form &&
+      base::EqualsCaseInsensitiveASCII(username_value, form->username_value));
 }
 
 bool IsPasswordFormWithoutUsername(const PasswordForm* form) {
@@ -845,8 +847,9 @@ bool PasswordFormManager::ProvisionallySave(
 
     // TODO: crbug.com/1470586 - Search for matching username through all
     // candidates in `FindBestPossibleUsernameCandidate`.
-    bool password_form_had_matching_username = FormMatchesUsername(
-        parsed_submitted_form_.get(), possible_username.value);
+    PasswordFormHadMatchingUsername password_form_had_matching_username =
+        FormMatchesUsername(parsed_submitted_form_.get(),
+                            possible_username.value);
 
     // `possible_username` is considered for single username vote in three
     // cases:
@@ -1258,7 +1261,7 @@ void PasswordFormManager::UpdateFormManagerWithFormChanges(
 
 void PasswordFormManager::HandleUsernameFirstFlow(
     const PossibleUsernameData& possible_username,
-    bool password_form_had_matching_username) {
+    PasswordFormHadMatchingUsername password_form_had_matching_username) {
   if (IsPossibleSingleUsernameAvailable(possible_username)) {
     // Suggest the possible username value in a prompt in two cases:
     // (1) If the server confirmed it is a single username field.
@@ -1337,7 +1340,7 @@ void PasswordFormManager::HandleForgotPasswordFormData() {
       continue;
     }
 
-    bool password_form_had_matching_username =
+    PasswordFormHadMatchingUsername password_form_had_matching_username =
         FormMatchesUsername(parsed_submitted_form_.get(), field.value);
     // Consider possible username field for voting if either:
     // 1) A password form without a username was submitted after the single

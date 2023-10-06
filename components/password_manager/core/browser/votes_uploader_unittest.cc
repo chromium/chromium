@@ -685,11 +685,10 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
   form_predictions.fields.back().signature = kSingleUsernameFieldSignature;
 
   std::u16string single_username_candidate_value = u"username_candidate_value";
-  votes_uploader.set_single_username_vote_data(
-      SingleUsernameVoteData(kSingleUsernameRendererId,
-                             single_username_candidate_value, form_predictions,
-                             /*stored_credentials=*/{},
-                             /*password_form_had_matching_username=*/false));
+  votes_uploader.set_single_username_vote_data(SingleUsernameVoteData(
+      kSingleUsernameRendererId, single_username_candidate_value,
+      form_predictions,
+      /*stored_credentials=*/{}, PasswordFormHadMatchingUsername(false)));
   votes_uploader.set_suggested_username(single_username_candidate_value);
   votes_uploader.CalculateUsernamePromptEditState(
       /*saved_username=*/single_username_candidate_value);
@@ -726,12 +725,11 @@ TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
       features::kUsernameFirstFlowFallbackCrowdsourcing);
 
   VotesUploader votes_uploader(&client_, false);
-  votes_uploader.set_single_username_vote_data(
-      SingleUsernameVoteData(kSingleUsernameRendererId,
-                             /*username_value=*/u"some search query",
-                             MakeSimpleSingleUsernamePredictions(),
-                             /*stored_credentials=*/{},
-                             /*password_form_had_matching_username=*/false));
+  votes_uploader.set_single_username_vote_data(SingleUsernameVoteData(
+      kSingleUsernameRendererId,
+      /*username_value=*/u"some search query",
+      MakeSimpleSingleUsernamePredictions(),
+      /*stored_credentials=*/{}, PasswordFormHadMatchingUsername(false)));
   votes_uploader.CalculateUsernamePromptEditState(
       /*saved_username=*/u"saved_value");
 
@@ -781,7 +779,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSuggestedAndAccepted) {
   votes_uploader.set_single_username_vote_data(SingleUsernameVoteData(
       kSingleUsernameRendererId, single_username_candidate_value,
       MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
-      /*password_form_had_matching_username=*/false));
+      PasswordFormHadMatchingUsername(false)));
   votes_uploader.set_suggested_username(single_username_candidate_value);
   votes_uploader.CalculateUsernamePromptEditState(
       /*saved_username=*/single_username_candidate_value);
@@ -834,7 +832,7 @@ TEST_F(VotesUploaderTest, SingleUsernameOtherValueSuggestedAndAccepted) {
   votes_uploader.set_single_username_vote_data(SingleUsernameVoteData(
       kSingleUsernameRendererId, single_username_candidate_value,
       MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
-      /*password_form_had_matching_username=*/false));
+      PasswordFormHadMatchingUsername(false)));
   std::u16string suggested_value = u"other_value";
   votes_uploader.set_suggested_username(suggested_value);
   votes_uploader.CalculateUsernamePromptEditState(
@@ -887,7 +885,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSetInPrompt) {
   votes_uploader.set_single_username_vote_data(SingleUsernameVoteData(
       kSingleUsernameRendererId, single_username_candidate_value,
       MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
-      /*password_form_had_matching_username=*/false));
+      PasswordFormHadMatchingUsername(false)));
   std::u16string suggested_value = u"other_value";
   votes_uploader.set_suggested_username(suggested_value);
   votes_uploader.CalculateUsernamePromptEditState(
@@ -939,7 +937,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueDeletedInPrompt) {
   votes_uploader.set_single_username_vote_data(SingleUsernameVoteData(
       kSingleUsernameRendererId, single_username_candidate_value,
       MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
-      /*password_form_had_matching_username=*/false));
+      PasswordFormHadMatchingUsername(false)));
   votes_uploader.set_suggested_username(single_username_candidate_value);
   votes_uploader.CalculateUsernamePromptEditState(/*saved_username=*/u"");
 
@@ -990,7 +988,7 @@ TEST_F(VotesUploaderTest, NotSingleUsernameValueDeletedInPrompt) {
   votes_uploader.set_single_username_vote_data(SingleUsernameVoteData(
       kSingleUsernameRendererId, single_username_candidate_value,
       MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
-      /*password_form_had_matching_username=*/false));
+      PasswordFormHadMatchingUsername(false)));
   std::u16string other_value = u"other_value";
   votes_uploader.set_suggested_username(other_value);
   votes_uploader.CalculateUsernamePromptEditState(/*saved_username=*/u"");
@@ -1112,7 +1110,7 @@ TEST_F(VotesUploaderTest, ForgotPasswordFormVote) {
   votes_uploader.AddForgotPasswordVoteData(SingleUsernameVoteData(
       kSingleUsernameRendererId, single_username_candidate_value,
       MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
-      /*password_form_had_matching_username=*/false));
+      PasswordFormHadMatchingUsername(false)));
   votes_uploader.set_suggested_username(single_username_candidate_value);
   votes_uploader.CalculateUsernamePromptEditState(
       /*saved_username=*/single_username_candidate_value);
@@ -1150,7 +1148,7 @@ TEST_F(VotesUploaderTest, SingleUsernameVoteDataUffOverlapsWithFpf) {
   SingleUsernameVoteData data(kSingleUsernameRendererId, u"possible_username",
                               MakeSimpleSingleUsernamePredictions(),
                               /*stored_credentials=*/{},
-                              /*password_form_had_matching_username=*/false);
+                              PasswordFormHadMatchingUsername(false));
 
   votes_uploader.set_single_username_vote_data(data);
   votes_uploader.AddForgotPasswordVoteData(data);
@@ -1173,13 +1171,13 @@ TEST_F(VotesUploaderTest, SingleUsernameVoteDataUffNoOverlapWithFpf) {
   SingleUsernameVoteData data1(FieldRendererId(100), u"maybe_username",
                                MakeSimpleSingleUsernamePredictions(),
                                /*stored_credentials=*/{},
-                               /*password_form_had_matching_username=*/false);
+                               PasswordFormHadMatchingUsername(false));
   votes_uploader.set_single_username_vote_data(data1);
 
   SingleUsernameVoteData data2(FieldRendererId(200), u"also_maybe_username",
                                MakeSimpleSingleUsernamePredictions(),
                                /*stored_credentials=*/{},
-                               /*password_form_had_matching_username=*/false);
+                               PasswordFormHadMatchingUsername(false));
   votes_uploader.AddForgotPasswordVoteData(data2);
 
   base::HistogramTester histogram_tester;

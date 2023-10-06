@@ -36,6 +36,9 @@ using FieldTypeMap =
 using VoteTypeMap = std::map<autofill::FieldRendererId,
                              autofill::AutofillUploadContents::Field::VoteType>;
 
+using PasswordFormHadMatchingUsername =
+    base::StrongAlias<class PasswordFormHadMatchingUsernameTag, bool>;
+
 // Contains information for sending a SINGLE_USERNAME vote.
 struct SingleUsernameVoteData {
   SingleUsernameVoteData();
@@ -44,7 +47,7 @@ struct SingleUsernameVoteData {
       const std::u16string& username_value,
       const FormPredictions& form_predictions,
       const std::vector<const PasswordForm*>& stored_credentials,
-      bool password_form_had_matching_username);
+      PasswordFormHadMatchingUsername password_form_had_matching_username);
   SingleUsernameVoteData(const SingleUsernameVoteData&);
   SingleUsernameVoteData& operator=(const SingleUsernameVoteData&);
   SingleUsernameVoteData(SingleUsernameVoteData&& other);
@@ -73,7 +76,7 @@ struct SingleUsernameVoteData {
   // TODO: crbug.com/1468297 - `password_form_had_matching_username` in
   // `VotesUploader` is used for UMA metrics. The variable can be removed once
   // the metrics are not needed anymore.
-  bool password_form_had_matching_username;
+  PasswordFormHadMatchingUsername password_form_had_matching_username;
 };
 
 // This class manages vote uploads for password forms.
