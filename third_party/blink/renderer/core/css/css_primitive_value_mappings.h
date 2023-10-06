@@ -1217,6 +1217,9 @@ inline CSSIdentifierValue::CSSIdentifierValue(ItemPosition item_position)
     case ItemPosition::kLastBaseline:
       value_id_ = CSSValueID::kLastBaseline;
       break;
+    case ItemPosition::kAnchorCenter:
+      value_id_ = CSSValueID::kAnchorCenter;
+      break;
     case ItemPosition::kCenter:
       value_id_ = CSSValueID::kCenter;
       break;
@@ -1264,6 +1267,8 @@ inline ItemPosition CSSIdentifierValue::ConvertTo() const {
       return ItemPosition::kBaseline;
     case CSSValueID::kLastBaseline:
       return ItemPosition::kLastBaseline;
+    case CSSValueID::kAnchorCenter:
+      return ItemPosition::kAnchorCenter;
     case CSSValueID::kCenter:
       return ItemPosition::kCenter;
     case CSSValueID::kStart:

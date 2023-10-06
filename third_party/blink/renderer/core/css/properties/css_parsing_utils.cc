@@ -3588,9 +3588,13 @@ bool IsBaselineKeyword(CSSValueID id) {
 }
 
 bool IsSelfPositionKeyword(CSSValueID id) {
-  return IdentMatches<CSSValueID::kStart, CSSValueID::kEnd, CSSValueID::kCenter,
-                      CSSValueID::kSelfStart, CSSValueID::kSelfEnd,
-                      CSSValueID::kFlexStart, CSSValueID::kFlexEnd>(id);
+  if (IdentMatches<CSSValueID::kStart, CSSValueID::kEnd, CSSValueID::kCenter,
+                   CSSValueID::kSelfStart, CSSValueID::kSelfEnd,
+                   CSSValueID::kFlexStart, CSSValueID::kFlexEnd>(id)) {
+    return true;
+  }
+  return RuntimeEnabledFeatures::CSSAnchorPositioningEnabled() &&
+         id == CSSValueID::kAnchorCenter;
 }
 
 bool IsSelfPositionOrLeftOrRightKeyword(CSSValueID id) {

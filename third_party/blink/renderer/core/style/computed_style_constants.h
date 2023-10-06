@@ -290,6 +290,7 @@ enum class ItemPosition : unsigned {
   kStretch,
   kBaseline,
   kLastBaseline,
+  kAnchorCenter,
   kCenter,
   kStart,
   kEnd,

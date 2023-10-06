@@ -311,6 +311,7 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
     case ItemPosition::kLegacy:
     case ItemPosition::kAuto:
     case ItemPosition::kNormal:
+    case ItemPosition::kAnchorCenter:
       NOTREACHED();
       break;
     case ItemPosition::kSelfStart:

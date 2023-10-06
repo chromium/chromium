@@ -114,6 +114,9 @@ AxisEdge AxisEdgeFromItemPosition(bool is_inline_axis,
     case ItemPosition::kAuto:
       NOTREACHED();
       return AxisEdge::kStart;
+    case ItemPosition::kAnchorCenter:
+      NOTREACHED();
+      return AxisEdge::kCenter;
   }
 }
 
