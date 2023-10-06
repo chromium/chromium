@@ -4,12 +4,11 @@
 
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "components/performance_manager/public/graph/graph.h"
-#include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 
@@ -52,30 +51,6 @@ void PerformanceManagerTestHarness::TearDownNow() {
   helper_->OnBrowserContextRemoved(GetBrowserContext());
   helper_->TearDown();
   helper_.reset();
-}
-
-void PerformanceManagerTestHarness::RunInGraph(
-    base::FunctionRef<void(Graph*)> on_graph_callback) {
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([quit_loop = run_loop.QuitClosure(),
-                                             &on_graph_callback](Graph* graph) {
-        on_graph_callback(graph);
-        quit_loop.Run();
-      }));
-  run_loop.Run();
-}
-
-void PerformanceManagerTestHarness::RunInGraph(
-    base::FunctionRef<void()> on_graph_callback) {
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting(
-                     [quit_loop = run_loop.QuitClosure(), &on_graph_callback] {
-                       on_graph_callback();
-                       quit_loop.Run();
-                     }));
-  run_loop.Run();
 }
 
 }  // namespace performance_manager

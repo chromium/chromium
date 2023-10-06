@@ -168,30 +168,6 @@ void PerformanceManagerBrowserTestHarness::WaitForLoad(
   observer.Wait();
 }
 
-void PerformanceManagerBrowserTestHarness::RunInGraph(
-    base::FunctionRef<void(Graph*)> on_graph_callback) {
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([quit_loop = run_loop.QuitClosure(),
-                                             &on_graph_callback](Graph* graph) {
-        on_graph_callback(graph);
-        quit_loop.Run();
-      }));
-  run_loop.Run();
-}
-
-void PerformanceManagerBrowserTestHarness::RunInGraph(
-    base::FunctionRef<void()> on_graph_callback) {
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting(
-                     [quit_loop = run_loop.QuitClosure(), &on_graph_callback] {
-                       on_graph_callback();
-                       quit_loop.Run();
-                     }));
-  run_loop.Run();
-}
-
 void PerformanceManagerBrowserTestHarness::OnGraphCreatedImpl(Graph* graph) {
   graph_features_.ConfigureGraph(graph);
   OnGraphCreated(graph);

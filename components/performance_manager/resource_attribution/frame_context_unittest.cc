@@ -10,10 +10,12 @@
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
+#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -24,6 +26,7 @@ namespace performance_manager::resource_attribution {
 namespace {
 
 using FrameContextTest = PerformanceManagerTestHarness;
+using FrameContextNoPMTest = content::RenderViewHostTestHarness;
 
 TEST_F(FrameContextTest, FrameContexts) {
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
@@ -82,13 +85,12 @@ TEST_F(FrameContextTest, FrameContexts) {
   });
 }
 
-TEST_F(FrameContextTest, FrameContextWithoutPM) {
+TEST_F(FrameContextNoPMTest, FrameContextWithoutPM) {
   // There can be a delay between creating a RenderFrameHost and
   // PerformanceManager being notified of the new host. Simulate looking up a
   // FrameContext during that time by bypassing the PM test harness to create a
   // WebContents without the PM helpers attached.
-  std::unique_ptr<content::WebContents> web_contents =
-      Super::CreateTestWebContents();
+  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
 
   // Navigate to an initial page.
   content::RenderFrameHost* rfh =

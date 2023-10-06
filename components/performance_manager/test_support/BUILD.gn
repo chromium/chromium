@@ -11,6 +11,8 @@ source_set("test_support_common") {
   sources = [
     "decorators_utils.h",
     "graph_impl.h",
+    "run_in_graph.cc",
+    "run_in_graph.h",
     "test_harness_helper.cc",
     "test_harness_helper.h",
     "voting.h",

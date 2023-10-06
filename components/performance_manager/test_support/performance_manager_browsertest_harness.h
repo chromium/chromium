@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/performance_manager/embedder/graph_features.h"
@@ -81,11 +80,6 @@ class PerformanceManagerBrowserTestHarness
 
   // Waits for an ongoing navigation to terminate on the given |contents|.
   void WaitForLoad(content::WebContents* contents);
-
-  // Helper functions for running a task on the graph, and waiting for it to
-  // complete.
-  void RunInGraph(base::FunctionRef<void(Graph*)> on_graph_callback);
-  void RunInGraph(base::FunctionRef<void()> on_graph_callback);
 
   // Allows configuring which Graph features are initialized during "SetUp".
   // This defaults to initializing no features. Features will be initialized

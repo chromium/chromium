@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/function_ref.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
 #include "content/public/test/test_renderer_host.h"
@@ -19,7 +18,6 @@ class WebContents;
 
 namespace performance_manager {
 
-class Graph;
 class GraphImpl;
 
 // A test harness that initializes PerformanceManagerImpl, plus the entire
@@ -92,11 +90,6 @@ class PerformanceManagerTestHarness
   // Allows configuring which Graph features are initialized during "SetUp".
   // This defaults to initializing no features.
   GraphFeatures& GetGraphFeatures() { return helper_->GetGraphFeatures(); }
-
-  // Helper functions for running a task on the graph, and waiting for it to
-  // complete.
-  void RunInGraph(base::FunctionRef<void(Graph*)> on_graph_callback);
-  void RunInGraph(base::FunctionRef<void()> on_graph_callback);
 
  private:
   std::unique_ptr<PerformanceManagerTestHarnessHelper> helper_;

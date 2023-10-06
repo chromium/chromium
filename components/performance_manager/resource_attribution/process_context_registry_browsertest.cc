@@ -21,6 +21,7 @@
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/resource_attribution/registry_browsertest_harness.h"
+#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
 #include "content/public/browser/child_process_data.h"

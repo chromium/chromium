@@ -18,6 +18,7 @@
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/resource_attribution/registry_browsertest_harness.h"
+#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
