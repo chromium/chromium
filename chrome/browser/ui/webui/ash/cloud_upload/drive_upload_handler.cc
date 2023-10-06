@@ -464,14 +464,19 @@ void DriveUploadHandler::OnSyncingStatusUpdate(
         CheckAlternateUrl(/*timed_out=*/false);
         return;
       case drivefs::mojom::ItemEvent::State::kFailed:
-        LOG(ERROR) << "Drive sync error";
+        LOG(ERROR) << "Drive sync error: failed";
         OnEndCopy(base::unexpected(GetGenericErrorMessage()),
-                  OfficeFilesUploadResult::kCloudError);
+                  OfficeFilesUploadResult::kSyncError);
         return;
-      default:
-        LOG(ERROR) << "Drive sync error + invalid sync state";
+      case drivefs::mojom::ItemEvent::State::kCancelledAndDeleted:
+        LOG(ERROR) << "Drive sync error: cancelled and deleted";
         OnEndCopy(base::unexpected(GetGenericErrorMessage()),
-                  OfficeFilesUploadResult::kCloudError);
+                  OfficeFilesUploadResult::kSyncCancelledAndDeleted);
+        return;
+      case drivefs::mojom::ItemEvent::State::kCancelledAndTrashed:
+        LOG(ERROR) << "Drive sync error: cancelled and trashed";
+        OnEndCopy(base::unexpected(GetGenericErrorMessage()),
+                  OfficeFilesUploadResult::kSyncCancelledAndTrashed);
         return;
     }
   }
@@ -504,10 +509,6 @@ void DriveUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
       OnEndCopy(base::unexpected(GetGenericErrorMessage()),
                 OfficeFilesUploadResult::kPinningFailedDiskFull);
       break;
-    default:
-      LOG(ERROR) << "Cloud error";
-      OnEndCopy(base::unexpected(GetGenericErrorMessage()),
-                OfficeFilesUploadResult::kCloudError);
   }
 }
 
@@ -542,7 +543,7 @@ void DriveUploadHandler::OnGetDriveMetadata(
     if (timed_out) {
       LOG(ERROR) << "Invalid alternate URL - Drive editing unavailable";
       OnEndCopy(base::unexpected(GetGenericErrorMessage()),
-                OfficeFilesUploadResult::kCloudMetadataError);
+                OfficeFilesUploadResult::kInvalidAlternateUrl);
     } else {
       alternate_url_poll_timer_.Start(
           FROM_HERE, base::Milliseconds(kAlternateUrlPollInterval),
@@ -558,7 +559,7 @@ void DriveUploadHandler::OnGetDriveMetadata(
     if (timed_out) {
       LOG(ERROR) << "Unexpected alternate URL - Drive editing unavailable";
       OnEndCopy(base::unexpected(GetGenericErrorMessage()),
-                OfficeFilesUploadResult::kCloudMetadataError);
+                OfficeFilesUploadResult::kUnexpectedAlternateUrlHost);
     } else {
       alternate_url_poll_timer_.Start(
           FROM_HERE, base::Milliseconds(kAlternateUrlPollInterval),
