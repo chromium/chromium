@@ -354,18 +354,20 @@ void LaunchCrostiniApp(Profile* profile,
 
 std::vector<vm_tools::cicerone::ContainerFeature> GetContainerFeatures() {
   std::vector<vm_tools::cicerone::ContainerFeature> result;
-  if (base::FeatureList::IsEnabled(ash::features::kCrostiniImeSupport)) {
+
+  // TODO: b/303743348 - Update garcon to set this env var by default and
+  // deprecate this feature.
+  result.push_back(
+      vm_tools::cicerone::ContainerFeature::ENABLE_GTK3_IME_SUPPORT);
+
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniQtImeSupport)) {
     result.push_back(
-        vm_tools::cicerone::ContainerFeature::ENABLE_GTK3_IME_SUPPORT);
-    if (base::FeatureList::IsEnabled(ash::features::kCrostiniQtImeSupport)) {
-      result.push_back(
-          vm_tools::cicerone::ContainerFeature::ENABLE_QT_IME_SUPPORT);
-    }
-    if (base::FeatureList::IsEnabled(
-            ash::features::kCrostiniVirtualKeyboardSupport)) {
-      result.push_back(vm_tools::cicerone::ContainerFeature::
-                           ENABLE_VIRTUAL_KEYBOARD_SUPPORT);
-    }
+        vm_tools::cicerone::ContainerFeature::ENABLE_QT_IME_SUPPORT);
+  }
+  if (base::FeatureList::IsEnabled(
+          ash::features::kCrostiniVirtualKeyboardSupport)) {
+    result.push_back(
+        vm_tools::cicerone::ContainerFeature::ENABLE_VIRTUAL_KEYBOARD_SUPPORT);
   }
   return result;
 }

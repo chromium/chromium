@@ -16,7 +16,6 @@
 
 namespace crostini {
 
-using ::ash::input_method::InputMethodDescriptor;
 using ::testing::_;
 using ::testing::Bool;
 using ::testing::Combine;
@@ -30,14 +29,6 @@ class MockDelegate : public CrostiniUnsupportedActionNotifier::Delegate {
   MOCK_METHOD(bool, IsFocusedWindowCrostini, (), (override));
   MOCK_METHOD(bool, IsVirtualKeyboardVisible, (), (override));
   MOCK_METHOD(void, ShowToast, (ash::ToastData toast_data), (override));
-  MOCK_METHOD(std::string,
-              GetLocalizedDisplayName,
-              (const InputMethodDescriptor& descriptor),
-              (override));
-  MOCK_METHOD(absl::optional<ash::input_method::InputMethodDescriptor>,
-              GetCurrentInputMethod,
-              (),
-              (override));
   MOCK_METHOD(base::TimeDelta, ToastTimeout, (), (override));
   MOCK_METHOD(void,
               AddFocusObserver,
@@ -56,14 +47,6 @@ class MockDelegate : public CrostiniUnsupportedActionNotifier::Delegate {
               (ash::TabletModeObserver * observer),
               (override));
   MOCK_METHOD(void,
-              AddInputMethodObserver,
-              (ash::input_method::InputMethodManager::Observer * observer),
-              (override));
-  MOCK_METHOD(void,
-              RemoveInputMethodObserver,
-              (ash::input_method::InputMethodManager::Observer * observer),
-              (override));
-  MOCK_METHOD(void,
               AddKeyboardControllerObserver,
               (ash::KeyboardControllerObserver * observer),
               (override));
@@ -72,31 +55,6 @@ class MockDelegate : public CrostiniUnsupportedActionNotifier::Delegate {
               (ash::KeyboardControllerObserver * observer),
               (override));
 };
-
-namespace {
-constexpr char supported_ime_id[] =
-    "_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:am:phonetic:arm";
-constexpr char unsupported_ime_id[] =
-    "_comp_ime_jkghodnilhceideoidjikpgommlajknkvkd_ethi";
-const InputMethodDescriptor supported(supported_ime_id,
-                                      {},
-                                      {},
-                                      {},
-                                      {},
-                                      {},
-                                      {},
-                                      {},
-                                      /* handwriting_language=*/absl::nullopt);
-const InputMethodDescriptor unsupported(unsupported_ime_id,
-                                        {},
-                                        {},
-                                        {},
-                                        {},
-                                        {},
-                                        {},
-                                        {},
-                                        /*handwriting_language=*/absl::nullopt);
-}  // namespace
 
 class CrostiniUnsupportedActionNotifierTest
     : public testing::TestWithParam<std::tuple<bool, bool, bool, bool>> {
@@ -117,26 +75,15 @@ class CrostiniUnsupportedActionNotifierTest
   bool is_tablet_mode() const { return std::get<0>(GetParam()); }
   bool is_crostini_focused() const { return std::get<1>(GetParam()); }
   bool is_vk_visible() const { return std::get<2>(GetParam()); }
-  bool is_ime_unsupported() const { return std::get<3>(GetParam()); }
-  InputMethodDescriptor ime_descriptor() const {
-    return is_ime_unsupported() ? unsupported : supported;
-  }
-
-  static bool IsIMEToast(const ash::ToastData& data) {
-    return data.id.compare(0, 3, "IME") == 0;
-  }
 
   static bool IsVKToast(const ash::ToastData& data) {
     return data.id.compare(0, 2, "VK") == 0;
   }
 
-  void SetExpectations(bool show_tablet_toast,
-                       bool show_vk_toast,
-                       bool show_ime_toast) {
+  void SetExpectations(bool show_tablet_toast, bool show_vk_toast) {
     // We show the same toast for tablet mode and manually triggered virtual
     // keyboard, so showing either counts as showing both.
     int num_tablet_toasts = (show_tablet_toast || show_vk_toast) ? 1 : 0;
-    int num_ime_toasts = show_ime_toast ? 1 : 0;
 
     EXPECT_CALL(get_delegate(), IsInTabletMode)
         .WillRepeatedly(Return(is_tablet_mode()));
@@ -144,14 +91,9 @@ class CrostiniUnsupportedActionNotifierTest
         .WillRepeatedly(Return(is_vk_visible()));
     EXPECT_CALL(get_delegate(), IsFocusedWindowCrostini)
         .WillRepeatedly(Return(is_crostini_focused()));
-    EXPECT_CALL(get_delegate(), GetCurrentInputMethod)
-        .WillRepeatedly(Return(ime_descriptor()));
-    ON_CALL(get_delegate(), GetLocalizedDisplayName).WillByDefault(Return(""));
 
     EXPECT_CALL(get_delegate(), ShowToast(Truly(IsVKToast)))
         .Times(num_tablet_toasts);
-    EXPECT_CALL(get_delegate(), ShowToast(Truly(IsIMEToast)))
-        .Times(num_ime_toasts);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -160,16 +102,12 @@ class CrostiniUnsupportedActionNotifierTest
 
 TEST_P(CrostiniUnsupportedActionNotifierTest,
        ToastShownOnceOnlyWhenEnteringTabletMode) {
-  scoped_feature_list_.InitAndDisableFeature(
-      ash::features::kCrostiniImeSupport);
-
   bool show_tablet_toast = is_tablet_mode() && is_crostini_focused();
   // Since tablet and vk toasts are the same we can trigger the toast
   // OnTabletModeStarted even if not in tablet mode.
   bool show_vk_toast = is_vk_visible() && is_crostini_focused();
-  bool show_ime_toast = false;
 
-  SetExpectations(show_tablet_toast, show_vk_toast, show_ime_toast);
+  SetExpectations(show_tablet_toast, show_vk_toast);
 
   notifier.OnTabletModeStarted();
   notifier.OnTabletModeStarted();
@@ -177,16 +115,12 @@ TEST_P(CrostiniUnsupportedActionNotifierTest,
 
 TEST_P(CrostiniUnsupportedActionNotifierTest,
        ToastShownOnceOnlyWhenShowingVirtualKeyboard) {
-  scoped_feature_list_.InitAndDisableFeature(
-      ash::features::kCrostiniImeSupport);
-
   // Since tablet and vk toasts are the same we can trigger the toast
   // OnKeyboardVisibilityChanged even if the virtual keyboard isn't visible.
   bool show_tablet_toast = is_tablet_mode() && is_crostini_focused();
   bool show_vk_toast = is_vk_visible() && is_crostini_focused();
-  bool show_ime_toast = false;
 
-  SetExpectations(show_tablet_toast, show_vk_toast, show_ime_toast);
+  SetExpectations(show_tablet_toast, show_vk_toast);
 
   notifier.OnKeyboardVisibilityChanged(true);
   notifier.OnKeyboardVisibilityChanged(false);
@@ -194,44 +128,11 @@ TEST_P(CrostiniUnsupportedActionNotifierTest,
 }
 
 TEST_P(CrostiniUnsupportedActionNotifierTest,
-       ToastShownOnceOnlyWhenChangingIME) {
-  scoped_feature_list_.InitAndDisableFeature(
-      ash::features::kCrostiniImeSupport);
-
-  bool show_tablet_toast = false;
-  bool show_vk_toast = false;
-  bool show_ime_toast = is_ime_unsupported() && is_crostini_focused();
-
-  SetExpectations(show_tablet_toast, show_vk_toast, show_ime_toast);
-
-  notifier.InputMethodChanged({}, {}, {});
-  notifier.InputMethodChanged({}, {}, {});
-}
-
-TEST_P(CrostiniUnsupportedActionNotifierTest,
        ToastsShownOnceOnlyWhenFocusingCrostiniApp) {
-  scoped_feature_list_.InitAndDisableFeature(
-      ash::features::kCrostiniImeSupport);
-
   bool show_tablet_toast = is_tablet_mode() && is_crostini_focused();
   bool show_vk_toast = is_vk_visible() && is_crostini_focused();
-  bool show_ime_toast = is_ime_unsupported() && is_crostini_focused();
 
-  SetExpectations(show_tablet_toast, show_vk_toast, show_ime_toast);
-
-  notifier.OnWindowFocused({}, {});
-  notifier.OnWindowFocused({}, {});
-}
-
-TEST_P(CrostiniUnsupportedActionNotifierTest,
-       NoImeNotificationWhenFeatureEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kCrostiniImeSupport);
-
-  bool show_tablet_toast = is_tablet_mode() && is_crostini_focused();
-  bool show_vk_toast = is_vk_visible() && is_crostini_focused();
-  bool show_ime_toast = false;
-
-  SetExpectations(show_tablet_toast, show_vk_toast, show_ime_toast);
+  SetExpectations(show_tablet_toast, show_vk_toast);
 
   notifier.OnWindowFocused({}, {});
   notifier.OnWindowFocused({}, {});

@@ -3371,9 +3371,6 @@ extern const char kCrostiniResetLxdDbDescription[];
 extern const char kCrostiniMultiContainerName[];
 extern const char kCrostiniMultiContainerDescription[];
 
-extern const char kCrostiniImeSupportName[];
-extern const char kCrostiniImeSupportDescription[];
-
 extern const char kCrostiniQtImeSupportName[];
 extern const char kCrostiniQtImeSupportDescription[];
 

@@ -23658,7 +23658,7 @@ metrics consent we also won't be able to send UMA metrics. -->
 <enum name="CrostiniUnsupportedNotificationReason">
   <int value="0" label="TabletMode"/>
   <int value="1" label="VirtualKeyboard"/>
-  <int value="2" label="UnsupportedIME"/>
+  <int value="2" label="UnsupportedIME (removed since M120)"/>
 </enum>
 
 <enum name="CrostiniUpgradeAvailableNotificationClosed">
