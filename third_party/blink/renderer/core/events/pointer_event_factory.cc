@@ -63,10 +63,12 @@ const AtomicString& PointerEventNameForEventType(WebInputEvent::Type type) {
 }
 
 float GetPointerEventPressure(float force, uint16_t buttons) {
-  if (!buttons)
+  if (!buttons) {
     return 0;
-  if (std::isnan(force))
+  }
+  if (std::isnan(force)) {
     return 0.5;
+  }
   return force;
 }
 
@@ -112,8 +114,9 @@ void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
       web_pointer_event_in_root_frame.HasHeight() &&
       web_pointer_event.GetType() != WebInputEvent::Type::kPointerUp) {
     float scale_factor = 1.0f;
-    if (dom_window && dom_window->GetFrame())
+    if (dom_window && dom_window->GetFrame()) {
       scale_factor = 1.0f / dom_window->GetFrame()->PageZoomFactor();
+    }
 
     gfx::SizeF point_shape =
         gfx::ScaleSize(gfx::SizeF(web_pointer_event_in_root_frame.width,
@@ -174,18 +177,24 @@ HeapVector<Member<PointerEvent>> PointerEventFactory::CreateEventSequence(
       DCHECK_EQ(web_pointer_event.pointer_type, event.pointer_type);
 
       PointerEventInit* new_event_init = PointerEventInit::Create();
-      if (pointer_event_init->hasButton())
+      if (pointer_event_init->hasButton()) {
         new_event_init->setButton(pointer_event_init->button());
-      if (pointer_event_init->hasButtons())
+      }
+      if (pointer_event_init->hasButtons()) {
         new_event_init->setButtons(pointer_event_init->buttons());
-      if (pointer_event_init->hasIsPrimary())
+      }
+      if (pointer_event_init->hasIsPrimary()) {
         new_event_init->setIsPrimary(pointer_event_init->isPrimary());
-      if (pointer_event_init->hasPointerId())
+      }
+      if (pointer_event_init->hasPointerId()) {
         new_event_init->setPointerId(pointer_event_init->pointerId());
-      if (pointer_event_init->hasPointerType())
+      }
+      if (pointer_event_init->hasPointerType()) {
         new_event_init->setPointerType(pointer_event_init->pointerType());
-      if (pointer_event_init->hasView())
+      }
+      if (pointer_event_init->hasView()) {
         new_event_init->setView(pointer_event_init->view());
+      }
 
       new_event_init->setCancelable(false);
       new_event_init->setBubbles(false);
@@ -305,8 +314,9 @@ PointerEvent* PointerEventFactory::Create(
 
   PointerEventInit* pointer_event_init =
       ConvertIdTypeButtonsEvent(web_pointer_event);
-  if (!pointer_event_init)
+  if (!pointer_event_init) {
     return nullptr;
+  }
 
   AtomicString type = PointerEventNameForEventType(event_type);
   if (event_type == WebInputEvent::Type::kPointerDown ||
@@ -473,8 +483,9 @@ PointerEvent* PointerEventFactory::CreatePointerEventFrom(
         pointer_event_init, key_state_event->GetModifiers());
   }
 
-  if (related_target)
+  if (related_target) {
     pointer_event_init->setRelatedTarget(related_target);
+  }
 
   return PointerEvent::Create(type, pointer_event_init,
                               pointer_event->PlatformTimeStamp());
@@ -577,13 +588,15 @@ PointerId PointerEventFactory::AddOrUpdateIdAndActiveButtons(
 
   // TODO(crbug.com/1141595): We should filter out bad pointercancel events
   // further upstream.
-  if (event_type == WebInputEvent::Type::kPointerCancel)
+  if (event_type == WebInputEvent::Type::kPointerCancel) {
     return kInvalidId;
+  }
 
   int type_int = p.PointerTypeInt();
   PointerId mapped_id = GetNextAvailablePointerid();
-  if (!id_count_[type_int])
+  if (!id_count_[type_int]) {
     primary_id_[type_int] = mapped_id;
+  }
   id_count_[type_int]++;
   pointer_incoming_id_mapping_.insert(p, mapped_id);
   pointer_id_to_attributes_.insert(
@@ -604,8 +617,9 @@ bool PointerEventFactory::Remove(const PointerId mapped_id) {
   int type_int = p.PointerTypeInt();
   PointerAttributes attributes = pointer_id_to_attributes_.Take(mapped_id);
   pointer_incoming_id_mapping_.erase(p);
-  if (primary_id_[type_int] == mapped_id)
+  if (primary_id_[type_int] == mapped_id) {
     primary_id_[type_int] = kInvalidId;
+  }
   id_count_[type_int]--;
 
   SaveRecentlyRemovedPointer(mapped_id, attributes);
@@ -643,13 +657,15 @@ bool PointerEventFactory::IsActive(const PointerId pointer_id) const {
 bool PointerEventFactory::IsPrimary(
     const WebPointerProperties& properties) const {
   // Mouse event is always primary.
-  if (properties.pointer_type == WebPointerProperties::PointerType::kMouse)
+  if (properties.pointer_type == WebPointerProperties::PointerType::kMouse) {
     return true;
+  }
 
   // If !id_count, no pointer active, current WebPointerEvent will
   // be primary pointer when added to map.
-  if (!id_count_[static_cast<int>(properties.pointer_type)])
+  if (!id_count_[static_cast<int>(properties.pointer_type)]) {
     return true;
+  }
 
   PointerId pointer_id = GetPointerEventId(properties);
   return (pointer_id != kInvalidId && IsPrimary(pointer_id));
@@ -663,8 +679,9 @@ bool PointerEventFactory::IsActiveButtonsState(
 
 WebPointerProperties::PointerType PointerEventFactory::GetPointerType(
     PointerId pointer_id) const {
-  if (!IsActive(pointer_id))
+  if (!IsActive(pointer_id)) {
     return WebPointerProperties::PointerType::kUnknown;
+  }
   return pointer_id_to_attributes_.at(pointer_id).incoming_id.GetPointerType();
 }
 
