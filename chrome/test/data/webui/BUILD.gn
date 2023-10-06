@@ -378,7 +378,8 @@ generate_grd("build_mocha_grdp") {
   testonly = true
   grd_prefix = "webui_test"
   out_grd = "$target_gen_dir/mocha_resources.grdp"
-  input_files_base_dir = rebase_path("//third_party/mocha", "//")
+  input_files_base_dir =
+      rebase_path("//third_party/node/node_modules/mocha", "//")
   input_files = [ "mocha.js" ]
 }
 

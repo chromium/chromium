@@ -30,7 +30,7 @@ var PolymerSecurityTokenPinTest = class extends PolymerTest {
 
   get extraLibraries() {
     return [
-      '//third_party/mocha/mocha.js',
+      '//third_party/node/node_modules/mocha/mocha.js',
       '//chrome/test/data/webui/mocha_adapter.js',
       'components/oobe_types.js',
     ];

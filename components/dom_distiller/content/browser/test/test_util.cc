@@ -45,7 +45,8 @@ void SetUpTestServerWithoutStarting(EmbeddedTestServer* server) {
   server->ServeFilesFromDirectory(
       root_dir.AppendASCII("components/test/data/dom_distiller"));
   server->ServeFilesFromDirectory(root_dir.AppendASCII("third_party/chaijs"));
-  server->ServeFilesFromDirectory(root_dir.AppendASCII("third_party/mocha"));
+  server->ServeFilesFromDirectory(
+      root_dir.AppendASCII("third_party/node/node_modules/mocha"));
 }
 
 }  // namespace

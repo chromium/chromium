@@ -40,7 +40,7 @@ TestDataSource::TestDataSource(std::string root) {
 
   custom_paths_ = {
       {"/chai.js", "third_party/chaijs/chai.js"},
-      {"/mocha.js", "third_party/mocha/mocha.js"},
+      {"/mocha.js", "third_party/node/node_modules/mocha/mocha.js"},
   };
 }
 
