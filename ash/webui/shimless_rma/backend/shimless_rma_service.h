@@ -87,6 +87,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void GetRegionList(GetRegionListCallback callback) override;
   void GetSkuList(GetSkuListCallback callback) override;
   void GetCustomLabelList(GetCustomLabelListCallback callback) override;
+  void GetSkuDescriptionList(GetSkuDescriptionListCallback callback) override;
   void GetOriginalSerialNumber(
       GetOriginalSerialNumberCallback callback) override;
   void GetOriginalRegion(GetOriginalRegionCallback callback) override;

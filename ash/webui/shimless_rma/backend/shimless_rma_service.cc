@@ -684,7 +684,7 @@ void ShimlessRmaService::GetCustomLabelList(
     GetCustomLabelListCallback callback) {
   std::vector<std::string> custom_labels;
   if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
-    LOG(ERROR) << "GetSkuList called from incorrect state "
+    LOG(ERROR) << "GetCustomLabelList called from incorrect state "
                << state_proto_.state_case();
   } else {
     custom_labels.reserve(
@@ -694,6 +694,22 @@ void ShimlessRmaService::GetCustomLabelList(
         state_proto_.update_device_info().custom_label_list().end());
   }
   std::move(callback).Run(std::move(custom_labels));
+}
+
+void ShimlessRmaService::GetSkuDescriptionList(
+    GetSkuDescriptionListCallback callback) {
+  std::vector<std::string> sku_descriptions;
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
+    LOG(ERROR) << "GetSkuDescriptionList called from incorrect state "
+               << state_proto_.state_case();
+  } else {
+    sku_descriptions.reserve(
+        state_proto_.update_device_info().sku_description_list_size());
+    sku_descriptions.assign(
+        state_proto_.update_device_info().sku_description_list().begin(),
+        state_proto_.update_device_info().sku_description_list().end());
+  }
+  std::move(callback).Run(std::move(sku_descriptions));
 }
 
 void ShimlessRmaService::GetOriginalSerialNumber(

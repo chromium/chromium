@@ -698,6 +698,8 @@ interface ShimlessRmaService {
   GetSkuList() => (array<uint64> skus);
   // Get the list of valid custom-labels for this device.
   GetCustomLabelList() => (array<string> custom_labels);
+  // Get the list of OEM SKU descriptions for this device.
+  GetSkuDescriptionList() => (array<string> sku_descriptions);
   // Get the device serial number at RMA start.
   GetOriginalSerialNumber() => (string serial_number);
   // Get the device region index at RMA start.

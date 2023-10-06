@@ -522,6 +522,21 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * @return {!Promise<!{skuDescriptions: !Array<string>}>}
+   */
+  getSkuDescriptionList() {
+    return this.methods_.resolveMethod('getSkuDescriptionList');
+  }
+
+  /**
+   * @param {!Array<string>} skuDescriptions
+   */
+  setGetSkuDescriptionListResult(skuDescriptions) {
+    this.methods_.setResult(
+        'getSkuDescriptionList', {skuDescriptions: skuDescriptions});
+  }
+
+  /**
    * @return {!Promise<!{serialNumber: string}>}
    */
   getOriginalSerialNumber() {
@@ -1402,6 +1417,7 @@ export class FakeShimlessRmaService {
     this.methods_.register('getRegionList');
     this.methods_.register('getSkuList');
     this.methods_.register('getCustomLabelList');
+    this.methods_.register('getSkuDescriptionList');
     this.methods_.register('getOriginalSerialNumber');
     this.methods_.register('getOriginalRegion');
     this.methods_.register('getOriginalSku');
