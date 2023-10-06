@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/documents_provider_root_manager.h"
@@ -191,7 +190,6 @@ class VolumeManager : public KeyedService,
       const std::string& file_system_type = "");
 
   // DriveIntegrationService::Observer implementation.
-  void OnDriveIntegrationServiceDestroyed() override;
   void OnFileSystemMounted() override;
   void OnFileSystemBeingUnmounted() override;
 
@@ -361,10 +359,6 @@ class VolumeManager : public KeyedService,
   io_task::IOTaskController io_task_controller_;
   bool arc_volumes_mounted_ = false;
   bool ignore_clipboard_changed_ = false;
-
-  base::ScopedObservation<drive::DriveIntegrationService,
-                          drive::DriveIntegrationService::Observer>
-      drive_observer_{this};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

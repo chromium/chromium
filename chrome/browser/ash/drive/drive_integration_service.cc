@@ -649,7 +649,9 @@ void DriveIntegrationService::Shutdown() {
   RemoveDriveMountPoint();
 
   for (Observer& observer : observers_) {
+    DCHECK_EQ(observer.GetService(), this);
     observer.OnDriveIntegrationServiceDestroyed();
+    observer.Reset();
   }
 }
 
@@ -747,21 +749,6 @@ bool DriveIntegrationService::IsSharedDrive(
   return GetMountPointPath()
       .Append(util::kDriveTeamDrivesDirName)
       .IsParent(local_path);
-}
-
-void DriveIntegrationService::AddObserver(Observer* const observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  observers_.AddObserver(observer);
-}
-
-void DriveIntegrationService::RemoveObserver(Observer* const observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  observers_.RemoveObserver(observer);
-}
-
-bool DriveIntegrationService::HasObserver(Observer* const observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return observers_.HasObserver(observer);
 }
 
 void DriveIntegrationService::ClearCacheAndRemountFileSystem(
@@ -933,6 +920,7 @@ bool DriveIntegrationService::AddDriveMountPointAfterMounted() {
   if (success) {
     logger_.Log(logging::LOGGING_INFO, "Drive mount point is added");
     for (Observer& observer : observers_) {
+      DCHECK_EQ(observer.GetService(), this);
       observer.OnFileSystemMounted();
     }
   }
@@ -956,6 +944,7 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
     if (storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
             mount_point_name_)) {
       for (Observer& observer : observers_) {
+        DCHECK_EQ(observer.GetService(), this);
         observer.OnFileSystemBeingUnmounted();
       }
       logger_.Log(logging::LOGGING_INFO, "Drive mount point is removed");
@@ -994,6 +983,7 @@ void DriveIntegrationService::MaybeRemountFileSystem(
       RecordBulkPinningMountFailureReason(
           profile_, BulkPinningMountFailureReason::kMoreThanTenTotalFailures);
       for (Observer& observer : observers_) {
+        DCHECK_EQ(observer.GetService(), this);
         observer.OnFileSystemMountFailed();
       }
       return;
@@ -1005,6 +995,7 @@ void DriveIntegrationService::MaybeRemountFileSystem(
       RecordBulkPinningMountFailureReason(
           profile_, BulkPinningMountFailureReason::kThreeConsecutiveFailures);
       for (Observer& observer : observers_) {
+        DCHECK_EQ(observer.GetService(), this);
         observer.OnFileSystemMountFailed();
       }
       return;
@@ -1079,6 +1070,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
         profile_, BulkPinningMountFailureReason::kSuccess);
 
     for (Observer& observer : observers_) {
+      DCHECK_EQ(observer.GetService(), this);
       observer.OnBulkPinInitialized();
     }
   }
@@ -1124,6 +1116,7 @@ void DriveIntegrationService::OnMountFailed(
 
 void DriveIntegrationService::OnProgress(const Progress& progress) {
   for (Observer& observer : observers_) {
+    DCHECK_EQ(observer.GetService(), this);
     observer.OnBulkPinProgress(progress);
   }
 
@@ -1362,6 +1355,7 @@ void DriveIntegrationService::OnEnableMirroringStatusUpdate(
   mirroring_enabled_ = (status == drivefs::mojom::MirrorSyncStatus::kSuccess);
   if (mirroring_enabled_) {
     for (Observer& observer : observers_) {
+      DCHECK_EQ(observer.GetService(), this);
       observer.OnMirroringEnabled();
     }
   }
@@ -1372,6 +1366,7 @@ void DriveIntegrationService::OnDisableMirroringStatusUpdate(
   if (status == drivefs::mojom::MirrorSyncStatus::kSuccess) {
     mirroring_enabled_ = false;
     for (Observer& observer : observers_) {
+      DCHECK_EQ(observer.GetService(), this);
       observer.OnMirroringDisabled();
     }
   }
@@ -1670,6 +1665,7 @@ void DriveIntegrationService::OnNetworkChanged() {
   }
 
   for (Observer& observer : observers_) {
+    DCHECK_EQ(observer.GetService(), this);
     observer.OnDriveConnectionStatusChanged(status);
   }
 
@@ -1820,8 +1816,31 @@ KeyedService* DriveIntegrationServiceFactory::BuildServiceInstanceFor(
   return service;
 }
 
-DriveIntegrationServiceObserver::~DriveIntegrationServiceObserver() {
-  CHECK(!IsInObserverList());
+DriveIntegrationService::Observer::~Observer() {
+  Reset();
+}
+
+void DriveIntegrationService::Observer::Observe(
+    DriveIntegrationService* const service) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (service != service_) {
+    Reset();
+
+    if (service) {
+      service->observers_.AddObserver(this);
+      service_ = service;
+    }
+  }
+}
+
+void DriveIntegrationService::Observer::Reset() {
+  if (service_) {
+    service_->observers_.RemoveObserver(this);
+    service_ = nullptr;
+  }
+
+  DCHECK(!IsInObserverList());
 }
 
 }  // namespace drive

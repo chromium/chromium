@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
-#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -110,7 +109,6 @@ class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
   void OnError(const drivefs::mojom::DriveError& error) override;
 
   // DriveIntegrationService::Observer implementation.
-  void OnDriveIntegrationServiceDestroyed() override;
   void OnDriveConnectionStatusChanged(
       drive::util::ConnectionStatus status) override;
 
@@ -150,11 +148,6 @@ class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
   base::ScopedObservation<::file_manager::io_task::IOTaskController,
                           ::file_manager::io_task::IOTaskController::Observer>
       io_task_controller_observer_{this};
-  base::ScopedObservation<drive::DriveIntegrationService,
-                          drive::DriveIntegrationService::Observer>
-      drive_observer1_{this};
-  base::ScopedObservation<drivefs::DriveFsHost, drivefs::DriveFsHost::Observer>
-      drive_observer2_{this};
   base::SafeRef<CloudOpenMetrics> cloud_open_metrics_;
   base::WeakPtrFactory<DriveUploadHandler> weak_ptr_factory_{this};
 };

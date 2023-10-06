@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using storage::FileSystemURL;
@@ -154,8 +155,9 @@ void DriveUploadHandler::Run(UploadCallback callback) {
   io_task_controller_observer_.Observe(io_task_controller_);
 
   // Observe Drive updates.
-  drive_observer1_.Observe(drive_integration_service_);
-  drive_observer2_.Observe(drive_integration_service_->GetDriveFsHost());
+  drive::DriveIntegrationService::Observer::Observe(drive_integration_service_);
+  drivefs::DriveFsHost::Observer::Observe(
+      drive_integration_service_->GetDriveFsHost());
 
   if (!drive_integration_service_->IsMounted()) {
     LOG(ERROR) << "Google Drive is not mounted";
@@ -507,11 +509,6 @@ void DriveUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
       OnEndCopy(base::unexpected(GetGenericErrorMessage()),
                 OfficeFilesUploadResult::kCloudError);
   }
-}
-
-void DriveUploadHandler::OnDriveIntegrationServiceDestroyed() {
-  drive_observer2_.Reset();
-  drive_observer1_.Reset();
 }
 
 void DriveUploadHandler::OnDriveConnectionStatusChanged(

@@ -11,14 +11,12 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/check.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
-#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
@@ -46,7 +44,7 @@ using IndividualFileTransferStatus =
     extensions::api::file_manager_private::SyncState;
 
 // Files app's event router handling DriveFS-related events.
-class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
+class DriveFsEventRouter : public drivefs::DriveFsHost::Observer,
                            drive::DriveIntegrationService::Observer {
  public:
   DriveFsEventRouter(Profile* profile,
@@ -75,6 +73,17 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
 
   drivefs::SyncState GetDriveSyncStateForPath(const base::FilePath& drive_path);
 
+  // DriveFsHost::Observer implementation.
+  void OnUnmounted() override;
+  void OnSyncingStatusUpdate(
+      const drivefs::mojom::SyncingStatus& status) override;
+  void OnIndividualSyncingStatusesDelta(
+      const std::vector<const drivefs::SyncState>& sync_states) override;
+  void OnFilesChanged(
+      const std::vector<drivefs::mojom::FileChange>& changes) override;
+  void OnError(const drivefs::mojom::DriveError& error) override;
+  void OnItemProgress(const drivefs::mojom::ProgressEvent& event) override;
+
  protected:
   SystemNotificationManager* system_notification_manager() {
     return notification_manager_;
@@ -95,17 +104,6 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
     std::unordered_map<int64_t, int64_t> group_id_to_queued_bytes;
     int64_t queued_bytes = 0;
   };
-
-  // DriveFsHostObserver:
-  void OnUnmounted() override;
-  void OnSyncingStatusUpdate(
-      const drivefs::mojom::SyncingStatus& status) override;
-  void OnIndividualSyncingStatusesDelta(
-      const std::vector<const drivefs::SyncState>& sync_states) override;
-  void OnFilesChanged(
-      const std::vector<drivefs::mojom::FileChange>& changes) override;
-  void OnError(const drivefs::mojom::DriveError& error) override;
-  void OnItemProgress(const drivefs::mojom::ProgressEvent& event) override;
 
   // DriveIntegrationService::Observer implementation.
   void OnDriveIntegrationServiceDestroyed() override;
@@ -171,13 +169,6 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
   base::OnceCallback<void(drivefs::mojom::DialogResult)> dialog_callback_;
 
   std::map<std::string, drivefs::SyncState> path_to_sync_state_;
-
-  base::ScopedObservation<drive::DriveIntegrationService,
-                          drive::DriveIntegrationService::Observer>
-      drive_observer_{this};
-
-  base::ScopedObservation<drivefs::DriveFsHost, drivefs::DriveFsHost::Observer>
-      drivefs_host_observer_{this};
 
   base::WeakPtrFactory<DriveFsEventRouter> weak_ptr_factory_{this};
 };

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -19,7 +18,6 @@
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
-#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -51,7 +49,6 @@ class ZeroStateDriveProvider : public SearchProvider,
   ZeroStateDriveProvider& operator=(const ZeroStateDriveProvider&) = delete;
 
   // DriveIntegrationService::Observer implementation.
-  void OnDriveIntegrationServiceDestroyed() override;
   void OnFileSystemMounted() override;
 
   // session_manager::SessionManagerObserver:
@@ -104,9 +101,6 @@ class ZeroStateDriveProvider : public SearchProvider,
   // Whether or not the screen is off due to idling.
   bool screen_off_ = true;
 
-  base::ScopedObservation<drive::DriveIntegrationService,
-                          drive::DriveIntegrationService::Observer>
-      drive_observation_{this};
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};

@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -398,20 +399,20 @@ void DriveFsEventRouter::OnError(const drivefs::mojom::DriveError& error) {
 void DriveFsEventRouter::Observe(
     drive::DriveIntegrationService* const service) {
   DCHECK(service);
-  drive_observer_.Observe(service);
+  drive::DriveIntegrationService::Observer::Observe(service);
   drivefs::DriveFsHost* const host = service->GetDriveFsHost();
-  drivefs_host_observer_.Observe(host);
+  drivefs::DriveFsHost::Observer::Observe(host);
   host->set_dialog_handler(
       base::BindRepeating(&DriveFsEventRouter::DisplayConfirmDialog,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DriveFsEventRouter::Reset() {
-  if (drivefs::DriveFsHost* const host = drivefs_host_observer_.GetSource()) {
+  if (drivefs::DriveFsHost* const host = GetHost()) {
     host->set_dialog_handler({});
   }
-  drivefs_host_observer_.Reset();
-  drive_observer_.Reset();
+  drivefs::DriveFsHost::Observer::Reset();
+  drive::DriveIntegrationService::Observer::Reset();
 }
 
 void DriveFsEventRouter::OnDriveIntegrationServiceDestroyed() {

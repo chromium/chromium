@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
@@ -17,7 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
-#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_http_client.h"
 #include "chromeos/ash/components/drivefs/drivefs_search.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -28,7 +29,6 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace drivefs {
-
 namespace {
 
 // Time to accumulate individual sync status events after a SyncingStatusUpdate
@@ -87,7 +87,8 @@ class DriveFsHost::MountState : public DriveFsSession {
       sync_throttle_timer_->Stop();
     }
     if (is_mounted()) {
-      for (auto& observer : host_->observers_) {
+      for (Observer& observer : host_->observers_) {
+        DCHECK_EQ(observer.GetHost(), host_);
         observer.OnUnmounted();
       }
     }
@@ -159,7 +160,8 @@ class DriveFsHost::MountState : public DriveFsSession {
       }
     }
 
-    for (auto& observer : host_->observers_) {
+    for (Observer& observer : host_->observers_) {
+      DCHECK_EQ(observer.GetHost(), host_);
       observer.OnIndividualSyncingStatusesDelta(filtered_states);
     }
 
@@ -171,7 +173,8 @@ class DriveFsHost::MountState : public DriveFsSession {
   }
 
   void OnItemProgress(const mojom::ProgressEventPtr progress_event) override {
-    for (auto& observer : host_->observers_) {
+    for (Observer& observer : host_->observers_) {
+      DCHECK_EQ(observer.GetHost(), host_);
       observer.OnItemProgress(*progress_event);
     }
   }
@@ -229,7 +232,8 @@ class DriveFsHost::MountState : public DriveFsSession {
              "data.";
     }
 
-    for (auto& observer : host_->observers_) {
+    for (Observer& observer : host_->observers_) {
+      DCHECK_EQ(observer.GetHost(), host_);
       observer.OnSyncingStatusUpdate(*status);
     }
   }
@@ -244,7 +248,8 @@ class DriveFsHost::MountState : public DriveFsSession {
   }
 
   void OnMirrorSyncingStatusUpdate(mojom::SyncingStatusPtr status) override {
-    for (auto& observer : host_->observers_) {
+    for (Observer& observer : host_->observers_) {
+      DCHECK_EQ(observer.GetHost(), host_);
       observer.OnMirrorSyncingStatusUpdate(*status);
     }
   }
@@ -252,10 +257,11 @@ class DriveFsHost::MountState : public DriveFsSession {
   void OnFilesChanged(std::vector<mojom::FileChangePtr> changes) override {
     std::vector<mojom::FileChange> changes_values;
     changes_values.reserve(changes.size());
-    for (auto& change : changes) {
+    for (mojom::FileChangePtr& change : changes) {
       changes_values.emplace_back(std::move(*change));
     }
-    for (auto& observer : host_->observers_) {
+    for (Observer& observer : host_->observers_) {
+      DCHECK_EQ(observer.GetHost(), host_);
       observer.OnFilesChanged(changes_values);
     }
   }
@@ -279,7 +285,8 @@ class DriveFsHost::MountState : public DriveFsSession {
     if (!IsKnownEnumValue(error->type)) {
       return;
     }
-    for (auto& observer : host_->observers_) {
+    for (Observer& observer : host_->observers_) {
+      DCHECK_EQ(observer.GetHost(), host_);
       observer.OnError(*error);
     }
   }
@@ -379,6 +386,12 @@ DriveFsHost::DriveFsHost(
 
 DriveFsHost::~DriveFsHost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (Observer& observer : observers_) {
+    DCHECK_EQ(observer.GetHost(), this);
+    observer.OnHostDestroyed();
+    observer.Reset();
+  }
 }
 
 bool DriveFsHost::Mount() {
@@ -441,8 +454,28 @@ std::string DriveFsHost::GetDefaultMountDirName() const {
   return base::StrCat({"drivefs-", delegate_->GetObfuscatedAccountId()});
 }
 
-DriveFsHostObserver::~DriveFsHostObserver() {
-  CHECK(!IsInObserverList());
+DriveFsHost::Observer::~Observer() {
+  Reset();
+}
+
+void DriveFsHost::Observer::Observe(DriveFsHost* const host) {
+  if (host != host_) {
+    Reset();
+
+    if (host) {
+      host->observers_.AddObserver(this);
+      host_ = host;
+    }
+  }
+}
+
+void DriveFsHost::Observer::Reset() {
+  if (host_) {
+    host_->observers_.RemoveObserver(this);
+    host_ = nullptr;
+  }
+
+  DCHECK(!IsInObserverList());
 }
 
 }  // namespace drivefs

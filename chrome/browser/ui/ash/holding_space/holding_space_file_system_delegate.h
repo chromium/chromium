@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/fileapi/file_change_service_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
-#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
 
 namespace base {
 class FilePath;
@@ -39,7 +39,7 @@ class HoldingSpaceFileSystemDelegate
     : public HoldingSpaceKeyedServiceDelegate,
       public FileChangeServiceObserver,
       public arc::ConnectionObserver<arc::mojom::FileSystemInstance>,
-      public drivefs::DriveFsHostObserver,
+      public drivefs::DriveFsHost::Observer,
       public file_manager::VolumeManagerObserver {
  public:
   HoldingSpaceFileSystemDelegate(HoldingSpaceKeyedService* service,
@@ -77,7 +77,7 @@ class HoldingSpaceFileSystemDelegate
   // arc::ConnectionObserver<arc::mojom::FileSystemInstance>:
   void OnConnectionReady() override;
 
-  // drivefs::DriveFsHostObserver:
+  // drivefs::DriveFsHost::Observer:
   void OnFilesChanged(
       const std::vector<drivefs::mojom::FileChange>& changes) override;
 
@@ -150,9 +150,6 @@ class HoldingSpaceFileSystemDelegate
                             arc::mojom::FileSystemHost>,
       arc::ConnectionObserver<arc::mojom::FileSystemInstance>>
       arc_file_system_observer_{this};
-
-  base::ScopedObservation<drivefs::DriveFsHost, drivefs::DriveFsHostObserver>
-      drivefs_host_observer_{this};
 
   base::ScopedObservation<FileChangeService, FileChangeServiceObserver>
       file_change_service_observer_{this};

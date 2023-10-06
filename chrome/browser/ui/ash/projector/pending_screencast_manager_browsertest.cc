@@ -41,7 +41,6 @@
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace ash {
-
 namespace {
 
 constexpr char kTestScreencastPath[] = "/root/test_screencast";
@@ -967,8 +966,8 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerMultiProfileTest,
   Profile* profile1 = ProfileHelper::Get()->GetProfileByAccountId(account_id1_);
   drive::DriveIntegrationService* service_for_account1 =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile1);
-  EXPECT_TRUE(pending_screencast_manager_->IsDriveFsObservationObservingSource(
-      service_for_account1->GetDriveFsHost()));
+  EXPECT_EQ(pending_screencast_manager_->GetHost(),
+            service_for_account1->GetDriveFsHost());
 
   // Add user 2.
   ash::UserAddingScreen::Get()->Start();
@@ -977,14 +976,14 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerMultiProfileTest,
   Profile* profile2 = ProfileHelper::Get()->GetProfileByAccountId(account_id2_);
   drive::DriveIntegrationService* service_for_account2 =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile2);
-  EXPECT_TRUE(pending_screencast_manager_->IsDriveFsObservationObservingSource(
-      service_for_account2->GetDriveFsHost()));
+  EXPECT_EQ(pending_screencast_manager_->GetHost(),
+            service_for_account2->GetDriveFsHost());
 
   // Switch back to user1.
   user_manager::UserManager::Get()->SwitchActiveUser(account_id1_);
   // Verify DriveFsHost observation is observing user 1's DriveFsHost.
-  EXPECT_TRUE(pending_screencast_manager_->IsDriveFsObservationObservingSource(
-      service_for_account1->GetDriveFsHost()));
+  EXPECT_EQ(pending_screencast_manager_->GetHost(),
+            service_for_account1->GetDriveFsHost());
 }
 
 }  // namespace ash

@@ -654,7 +654,7 @@ void EventRouter::Shutdown() {
   extensions::ExtensionRegistry::Get(profile_)->RemoveObserver(this);
 
   drivefs_event_router_->Reset();
-  drive_observer_.Reset();
+  DriveIntegrationService::Observer::Reset();
 
   VolumeManager* const volume_manager = VolumeManager::Get(profile_);
   if (volume_manager) {
@@ -726,7 +726,7 @@ void EventRouter::ObserveEvents() {
 
   if (DriveIntegrationService* const service =
           DriveIntegrationServiceFactory::FindForProfile(profile_)) {
-    drive_observer_.Observe(service);
+    DriveIntegrationService::Observer::Observe(service);
     drivefs_event_router_->Observe(service);
   }
 
@@ -1077,10 +1077,6 @@ void EventRouter::OnRenameCompleted(const std::string& device_path,
 void EventRouter::SetDispatchDirectoryChangeEventImplForTesting(
     const DispatchDirectoryChangeEventImplCallback& callback) {
   dispatch_directory_change_event_impl_ = callback;
-}
-
-void EventRouter::OnDriveIntegrationServiceDestroyed() {
-  drive_observer_.Reset();
 }
 
 void EventRouter::OnFileSystemMountFailed() {

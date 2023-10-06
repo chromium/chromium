@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace guest_os {
@@ -44,9 +44,9 @@ struct SharedPathInfo {
 // Handles sharing and unsharing paths from the Chrome OS host to guest VMs via
 // seneschal.
 class GuestOsSharePath : public KeyedService,
-                         public ash::ConciergeClient::VmObserver,
-                         public file_manager::VolumeManagerObserver,
-                         public drivefs::DriveFsHostObserver {
+                         ash::ConciergeClient::VmObserver,
+                         file_manager::VolumeManagerObserver,
+                         drivefs::DriveFsHost::Observer {
  public:
   using SharePathCallback =
       base::OnceCallback<void(const base::FilePath&, bool, const std::string&)>;
@@ -156,7 +156,7 @@ class GuestOsSharePath : public KeyedService,
   void OnVolumeUnmounted(ash::MountError error_code,
                          const file_manager::Volume& volume) override;
 
-  // drivefs::DriveFsHostObserver
+  // DriveFsHost::Observer implementation.
   void OnFilesChanged(
       const std::vector<drivefs::mojom::FileChange>& changes) override;
 

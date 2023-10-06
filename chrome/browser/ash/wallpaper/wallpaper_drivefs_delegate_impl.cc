@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
-#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/file_errors.h"
@@ -76,9 +75,8 @@ constexpr char kDriveFsTempWallpaperFileName[] = "wallpaper-tmp.jpg";
 // disconnect, or unmount itself and this function will start returning
 // `nullptr`.
 // If the pointer to `DriveIntegrationService` is held for a long duration, the
-// owner must implement
-// `DriveIntegrationService::Observer` and listen for
-// `OnDriveIntegrationServiceDestroyed` to avoid use-after-free.
+// owner must implement `DriveIntegrationService::Observer` to avoid
+// use-after-free.
 drive::DriveIntegrationService* GetDriveIntegrationService(
     const AccountId& account_id) {
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
@@ -167,9 +165,8 @@ WallpaperChangeWaiter::WallpaperChangeWaiter(
     std::move(callback_).Run(/*success=*/false);
     return;
   }
-  auto* drivefs_host = drive_integration_service->GetDriveFsHost();
-  DCHECK(drivefs_host);
-  drivefs_host_observation_.Observe(drivefs_host);
+
+  Observe(drive_integration_service->GetDriveFsHost());
 }
 
 WallpaperChangeWaiter::~WallpaperChangeWaiter() {

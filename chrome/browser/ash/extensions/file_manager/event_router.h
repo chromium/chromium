@@ -16,7 +16,6 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/device_event_router.h"
@@ -32,7 +31,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
@@ -167,7 +165,6 @@ class EventRouter
       const DispatchDirectoryChangeEventImplCallback& callback);
 
   // DriveIntegrationService::Observer implementation.
-  void OnDriveIntegrationServiceDestroyed() override;
   void OnFileSystemMountFailed() override;
   void OnDriveConnectionStatusChanged(
       drive::util::ConnectionStatus status) override;
@@ -346,10 +343,6 @@ class EventRouter
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
-
-  base::ScopedObservation<drive::DriveIntegrationService,
-                          drive::DriveIntegrationService::Observer>
-      drive_observer_{this};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.

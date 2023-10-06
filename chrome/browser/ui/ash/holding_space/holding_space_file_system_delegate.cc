@@ -262,10 +262,10 @@ void HoldingSpaceFileSystemDelegate::Init() {
     arc_file_system_observer_.Observe(arc_file_system);
 
   // Drive file system.
-  auto* const drive_integration_service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(profile());
-  if (drive_integration_service)
-    drivefs_host_observer_.Observe(drive_integration_service->GetDriveFsHost());
+  if (drive::DriveIntegrationService* const service =
+          drive::DriveIntegrationServiceFactory::FindForProfile(profile())) {
+    Observe(service->GetDriveFsHost());
+  }
 
   // Local file system.
   file_change_service_observer_.Observe(

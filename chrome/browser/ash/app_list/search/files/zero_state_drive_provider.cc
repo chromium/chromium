@@ -4,14 +4,13 @@
 
 #include "chrome/browser/ash/app_list/search/files/zero_state_drive_provider.h"
 
-#include <algorithm>
 #include <memory>
-#include <utility>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -67,7 +66,7 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
     } else {
       // Wait for DriveFS to be mounted, then fetch results. This happens in
       // OnFileSystemMounted.
-      drive_observation_.Observe(drive_service_.get());
+      Observe(drive_service_.get());
     }
   }
 
@@ -82,10 +81,6 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
 }
 
 ZeroStateDriveProvider::~ZeroStateDriveProvider() = default;
-
-void ZeroStateDriveProvider::OnDriveIntegrationServiceDestroyed() {
-  drive_observation_.Reset();
-}
 
 void ZeroStateDriveProvider::OnFileSystemMounted() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

@@ -48,7 +48,7 @@ GoogleDrivePageHandler::GoogleDrivePageHandler(
       page_(std::move(page)),
       receiver_(this, std::move(receiver)) {
   if (DriveIntegrationService* const service = GetDriveService()) {
-    drive_observer_.Observe(service);
+    Observe(service);
   }
 }
 
@@ -81,10 +81,6 @@ DriveIntegrationService* GoogleDrivePageHandler::GetDriveService() {
 PinManager* GoogleDrivePageHandler::GetPinManager() {
   DriveIntegrationService* const service = GetDriveService();
   return service ? service->GetPinManager() : nullptr;
-}
-
-void GoogleDrivePageHandler::OnDriveIntegrationServiceDestroyed() {
-  drive_observer_.Reset();
 }
 
 void GoogleDrivePageHandler::OnBulkPinProgress(const Progress& progress) {

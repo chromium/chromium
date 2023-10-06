@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -346,12 +343,8 @@ class DriveIntegrationBrowserTestWithMirrorSyncEnabled
 
   void ToggleMirrorSync(bool status) {
     DriveMirrorSyncStatusObserver observer(status);
-    base::ScopedObservation<DriveIntegrationService,
-                            DriveIntegrationService::Observer>
-        scoped_observer(&observer);
     Profile* const profile = browser()->profile();
-    scoped_observer.Observe(
-        DriveIntegrationServiceFactory::FindForProfile(profile));
+    observer.Observe(DriveIntegrationServiceFactory::FindForProfile(profile));
     PrefService* const prefs = profile->GetPrefs();
     prefs->SetBoolean(prefs::kDriveFsEnableMirrorSync, status);
     observer.WaitForStatusChange();

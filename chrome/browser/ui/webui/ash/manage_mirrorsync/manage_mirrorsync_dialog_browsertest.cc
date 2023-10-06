@@ -185,14 +185,16 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
         my_files_dir_);
 
     // Toggle the MirrorSync preference to enable / disable the feature.
-    DriveMirrorSyncStatusObserver observer(enabled);
-    auto* drive_service = drive::DriveIntegrationServiceFactory::FindForProfile(
-        browser()->profile());
-    drive_service->AddObserver(&observer);
-    browser()->profile()->GetPrefs()->SetBoolean(
-        drive::prefs::kDriveFsEnableMirrorSync, enabled);
-    observer.WaitForStatusChange();
-    drive_service->RemoveObserver(&observer);
+    {
+      DriveMirrorSyncStatusObserver observer(enabled);
+      drive::DriveIntegrationService* const service =
+          drive::DriveIntegrationServiceFactory::FindForProfile(
+              browser()->profile());
+      observer.Observe(service);
+      browser()->profile()->GetPrefs()->SetBoolean(
+          drive::prefs::kDriveFsEnableMirrorSync, enabled);
+      observer.WaitForStatusChange();
+    }
 
     ShowDialog();
 

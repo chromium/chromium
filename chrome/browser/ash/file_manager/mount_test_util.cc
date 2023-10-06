@@ -19,10 +19,8 @@ class DriveMountPointWaiter : public drive::DriveIntegrationService::Observer {
  public:
   explicit DriveMountPointWaiter(drive::DriveIntegrationService* service)
       : service_(service) {
-    service_->AddObserver(this);
+    Observe(service_);
   }
-
-  ~DriveMountPointWaiter() override { service_->RemoveObserver(this); }
 
   // DriveIntegrationService::Observer implementation.
   void OnFileSystemMounted() override {
@@ -60,9 +58,9 @@ void WaitUntilDriveMountPointIsAdded(Profile* profile) {
     return;
   }
 
-  DriveMountPointWaiter mount_point_waiter(integration_service);
+  DriveMountPointWaiter waiter(integration_service);
   VLOG(1) << "Waiting for drive mount point to get mounted.";
-  mount_point_waiter.Wait();
+  waiter.Wait();
   VLOG(1) << "Drive mount point found.";
 }
 

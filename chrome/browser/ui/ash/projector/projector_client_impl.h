@@ -33,8 +33,8 @@ class SpeechRecognitionRecognizerClientImpl;
 class ProjectorClientImpl : public ash::ProjectorClient,
                             public SpeechRecognizerDelegate,
                             public ash::ProjectorAnnotatorController,
-                            public drive::DriveIntegrationService::Observer,
-                            public session_manager::SessionManagerObserver {
+                            drive::DriveIntegrationService::Observer,
+                            session_manager::SessionManagerObserver {
  public:
   // RecordingOverlayViewImpl calls this function to initialize the annotator
   // tool.
@@ -83,7 +83,6 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   void Clear() override;
 
   // DriveIntegrationService::Observer implementation.
-  void OnDriveIntegrationServiceDestroyed() override;
   void OnFileSystemMounted() override;
   void OnFileSystemBeingUnmounted() override;
   void OnFileSystemMountFailed() override;
@@ -91,8 +90,8 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   // session_manager::SessionManagerObserver:
   void OnUserSessionStarted(bool is_primary_user) override;
 
-  // Maybe reset |drive_observation_| and observe the Drive integration service
-  // of active profile when ActiveUserChanged and OnUserProfileLoaded.
+  // Maybe observe the Drive integration service of active profile when
+  // ActiveUserChanged and OnUserProfileLoaded.
   void MaybeSwitchDriveIntegrationServiceObservation();
 
  private:
@@ -115,10 +114,6 @@ class ProjectorClientImpl : public ash::ProjectorClient,
       session_observation_{this};
 
   PrefChangeRegistrar pref_change_registrar_;
-
-  base::ScopedObservation<drive::DriveIntegrationService,
-                          drive::DriveIntegrationService::Observer>
-      drive_observation_{this};
 
   ProjectorDriveFsProvider drive_helper_;
 

@@ -236,9 +236,9 @@ class DrivePinningIntegrationServiceTest : public DrivePinningBaseScreenTest {
     if (pin_manager && pin_manager->GetProgress().stage == Stage::kSuccess) {
       return;
     }
-    if (!drive_service->HasObserver(&observer_)) {
-      drive_service->AddObserver(&observer_);
-    }
+
+    observer_.Observe(drive_service);
+
     base::RunLoop run_loop;
     EXPECT_CALL(observer_, OnBulkPinProgress(_)).Times(AnyNumber());
     EXPECT_CALL(observer_,

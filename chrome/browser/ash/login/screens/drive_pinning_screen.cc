@@ -156,10 +156,7 @@ void DrivePinningScreen::CalculateRequiredSpace() {
     return;
   }
 
-  if (!service_observer_.IsObservingSource(service)) {
-    service_observer_.Reset();
-    service_observer_.Observe(service);
-  }
+  Observe(service);
 
   PinManager* const pin_manager = GetPinManager();
   if (!pin_manager) {
@@ -180,10 +177,6 @@ void DrivePinningScreen::OnProgressForTest(
     const drivefs::pinning::Progress& progress) {
   CHECK_IS_TEST();
   OnBulkPinProgress(progress);
-}
-
-void DrivePinningScreen::OnDriveIntegrationServiceDestroyed() {
-  service_observer_.Reset();
 }
 
 void DrivePinningScreen::OnBulkPinProgress(

@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/google_drive_handler.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -41,7 +40,6 @@ class GoogleDrivePageHandler : public google_drive::mojom::PageHandler,
   void RecordBulkPinningEnabledMetric() override;
 
   // DriveIntegrationService::Observer implementation.
-  void OnDriveIntegrationServiceDestroyed() override;
   void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override;
 
   void NotifyServiceUnavailable();
@@ -58,10 +56,6 @@ class GoogleDrivePageHandler : public google_drive::mojom::PageHandler,
 
   mojo::Remote<google_drive::mojom::Page> page_;
   mojo::Receiver<google_drive::mojom::PageHandler> receiver_{this};
-
-  base::ScopedObservation<drive::DriveIntegrationService,
-                          drive::DriveIntegrationService::Observer>
-      drive_observer_{this};
 
   base::WeakPtrFactory<GoogleDrivePageHandler> weak_ptr_factory_{this};
 };

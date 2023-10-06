@@ -253,16 +253,7 @@ void ZipLogs(Profile* profile,
 class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
                                    DriveIntegrationService::Observer {
  public:
-  ~DriveInternalsWebUIHandler() override {
-    if (DriveIntegrationService* const service = GetIntegrationService()) {
-      service->RemoveObserver(this);
-    }
-  }
-
   DriveInternalsWebUIHandler() = default;
-  DriveInternalsWebUIHandler(const DriveInternalsWebUIHandler&) = delete;
-  DriveInternalsWebUIHandler& operator=(const DriveInternalsWebUIHandler&) =
-      delete;
 
   void DownloadLogsZip(const FilePath& path) {
     web_ui()->GetWebContents()->GetController().LoadURL(
@@ -596,8 +587,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       return;
     }
 
-    service->RemoveObserver(this);
-    service->AddObserver(this);
+    Observe(service);
 
     MaybeCallJavascript(
         "updateBulkPinning",

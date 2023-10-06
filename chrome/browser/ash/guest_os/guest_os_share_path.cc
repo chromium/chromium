@@ -89,8 +89,9 @@ class ErrorCapture {
       : num_callbacks_left_(num_callbacks_left),
         callback_(std::move(callback)) {
     DCHECK_GE(num_callbacks_left, 0);
-    if (num_callbacks_left == 0)
+    if (num_callbacks_left == 0) {
       std::move(callback_).Run(true, "");
+    }
   }
 
   void Run(const base::FilePath& cros_path,
@@ -106,8 +107,9 @@ class ErrorCapture {
       }
     }
 
-    if (!--num_callbacks_left_)
+    if (!--num_callbacks_left_) {
       std::move(callback_).Run(success_, first_failure_reason_);
+    }
   }
 
  private:
@@ -185,11 +187,9 @@ GuestOsSharePath::GuestOsSharePath(Profile* profile)
 
   // We receive notifications from DriveFS about any deleted paths so
   // that we can remove any that are shared paths.
-  if (auto* integration_service =
+  if (drive::DriveIntegrationService* const service =
           drive::DriveIntegrationServiceFactory::FindForProfile(profile_)) {
-    if (integration_service->GetDriveFsHost()) {
-      integration_service->GetDriveFsHost()->AddObserver(this);
-    }
+    Observe(service->GetDriveFsHost());
   }
 }
 

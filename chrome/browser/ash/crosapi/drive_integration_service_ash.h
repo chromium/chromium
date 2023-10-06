@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_DRIVE_INTEGRATION_SERVICE_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_DRIVE_INTEGRATION_SERVICE_ASH_H_
 
-#include "base/scoped_observation.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -47,13 +46,8 @@ class DriveIntegrationServiceAsh : public mojom::DriveIntegrationService,
   void OnFileSystemMounted() override;
   void OnFileSystemBeingUnmounted() override;
   void OnFileSystemMountFailed() override;
-  void OnDriveIntegrationServiceDestroyed() override;
 
  private:
-  base::ScopedObservation<drive::DriveIntegrationService,
-                          drive::DriveIntegrationService::Observer>
-      drive_observer_{this};
-
   // This class supports any number of connections. This allows the client to
   // have multiple, potentially thread-affine, remotes.
   mojo::ReceiverSet<mojom::DriveIntegrationService> receivers_;

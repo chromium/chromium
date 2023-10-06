@@ -28,7 +28,6 @@
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
-#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/mojom/pin_manager_types.mojom.h"
 #include "chromeos/ash/components/file_manager/speedometer.h"
@@ -191,7 +190,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   void SetDriveFsHost(DriveFsHost* const host) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    drivefs_host_.Observe(host);
+    Observe(host);
   }
 
   // Starts up the manager, which will first search for any unpinned items and
@@ -520,10 +519,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Tracks the last time a LOG was output indicating the listing files stage is
   // taking a long time. Used to avoid emitting the WARNING log too frequently.
   base::Time last_long_listing_files_warning_time_;
-
-  GUARDED_BY_CONTEXT(sequence_checker_)
-  base::ScopedObservation<DriveFsHost, DriveFsHost::Observer> drivefs_host_{
-      this};
 
   GUARDED_BY_CONTEXT(sequence_checker_)
   base::ScopedObservation<chromeos::PowerManagerClient,

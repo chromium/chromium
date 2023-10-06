@@ -15,7 +15,6 @@ component("drivefs") {
     "drivefs_bootstrap.h",
     "drivefs_host.cc",
     "drivefs_host.h",
-    "drivefs_host_observer.h",
     "drivefs_http_client.cc",
     "drivefs_http_client.h",
     "drivefs_pin_manager.cc",
