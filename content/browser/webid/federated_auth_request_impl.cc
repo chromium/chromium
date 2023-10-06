@@ -826,12 +826,30 @@ void FederatedAuthRequestImpl::RequestToken(
       if (has_failing_idp_signin_status &&
           webid::GetIdpSigninStatusMode(render_frame_host(), idp_origin) ==
               FedCmIdpSigninStatusMode::ENABLED) {
-        CompleteRequestWithError(
-            FederatedAuthRequestResult::kErrorNotSignedInWithIdp,
-            TokenStatus::kNotSignedInWithIdp,
-            /*token_error=*/absl::nullopt,
-            /*should_delay_callback=*/true);
-        return;
+        if (idp_get_params_ptr->mode == blink::mojom::RpMode::kWidget) {
+          // If the user is known to be signed-out and the RP is request
+          // a widget, we fail the request early before fetching anything.
+          CompleteRequestWithError(
+              FederatedAuthRequestResult::kErrorNotSignedInWithIdp,
+              TokenStatus::kNotSignedInWithIdp,
+              /*token_error=*/absl::nullopt,
+              /*should_delay_callback=*/true);
+          return;
+        } else if (idp_get_params_ptr->mode == blink::mojom::RpMode::kButton) {
+          // Only a compromised renderer can set mode = button without the
+          // AuthZ flag enabled (which controls the JS WebIDL), so we crash
+          // here if we ever get to this situation.
+          CHECK(IsFedCmAuthzEnabled());
+          if (!render_frame_host().HasTransientUserActivation()) {
+            // The button flow requires user activation and a valid login_url.
+            // TODO(crbug.com/1487270): use a more specific error.
+            CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                                     TokenStatus::kUnhandledRequest,
+                                     /*token_error=*/absl::nullopt,
+                                     /*should_delay_callback=*/true);
+            return;
+          }
+        }
       }
       // TODO(crbug.com/1383384): Handle auto_reauthn_ for multi IDP.
       if (ShouldFailBeforeFetchingAccounts(
@@ -1130,6 +1148,24 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
             render_frame_host(),
             url::Origin::Create(identity_provider_config_url)) ==
             FedCmIdpSigninStatusMode::ENABLED) {
+      // If the user is logged out and we are in a button-mode, allow the user
+      // to sign-in to the IdP and return early.
+      // TODO(https://crbug.com/1490611): handle the "unknown" status and button
+      // flows.
+      if (IsFedCmAuthzEnabled() &&
+          idp_info->rp_mode == blink::mojom::RpMode::kButton &&
+          idp_info->metadata.idp_login_url.is_valid()) {
+        // We fail sooner before, but just to double check, we assert that
+        // we are inside a user gesture here again.
+        CHECK(render_frame_host().HasTransientUserActivation());
+        // TODO(crbug.com/1487270): we should probably make idp_signin_url
+        // optional instead of empty.
+        SignInToIdP(idp_info->metadata.idp_login_url);
+        // TODO(https://crbug.com/1487268): handle the button flow and the
+        // Multi IdP API (what should happen if you are logged in to some
+        // IdPs but not to others).
+        return;
+      }
       // Do not send metrics for IDP where the user is not signed-in in order
       // to prevent IDP from using the user IP to make a probabilistic model
       // of which websites a user visits.
@@ -1485,7 +1521,6 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   // TODO(crbug.com/1382495): Handle failure UI in the multi IDP case.
 
   fetch_data_ = FetchData();
-  permission_delegate_->AddIdpSigninStatusObserver(this);
 
   absl::optional<std::string> iframe_for_display = GetIframeOriginForDisplay(
       GetEmbeddingOrigin(), origin(),
@@ -1503,7 +1538,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
       idp_info->metadata,
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
+      base::BindOnce(&FederatedAuthRequestImpl::SignInToIdP,
                      weak_ptr_factory_.GetWeakPtr(), login_url_));
   fedcm_metrics_->RecordMismatchDialogShown();
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
@@ -2433,7 +2468,7 @@ void FederatedAuthRequestImpl::DismissAccountsDialogForDevtools(
 
 void FederatedAuthRequestImpl::AcceptConfirmIdpLoginDialogForDevtools() {
   DCHECK(login_url_.is_valid());
-  ShowModalDialog(login_url_);
+  SignInToIdP(login_url_);
 }
 
 void FederatedAuthRequestImpl::DismissConfirmIdpLoginDialogForDevtools() {
@@ -2552,6 +2587,11 @@ void FederatedAuthRequestImpl::SetRequiresUserMediation(
                                          /*for_display=*/false);
   auto_reauthn_permission_delegate_->SetRequiresUserMediation(
       GURL(site), requires_user_mediation);
+}
+
+void FederatedAuthRequestImpl::SignInToIdP(GURL signin_url) {
+  permission_delegate_->AddIdpSigninStatusObserver(this);
+  ShowModalDialog(signin_url);
 }
 
 void FederatedAuthRequestImpl::PreventSilentAccess(

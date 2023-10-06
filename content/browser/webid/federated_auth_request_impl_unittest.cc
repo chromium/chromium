@@ -4666,6 +4666,81 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(parameters, error, config);
 }
 
+// Test successfully signing-in users when they are signed-out on
+// button flows.
+TEST_F(FederatedAuthRequestImplTest,
+       SignInWhenSignedOutOnButtonModeWithUserActivation) {
+  base::test::ScopedFeatureList list;
+  list.InitWithFeatures(
+      {features::kFedCmAuthz, features::kFedCmIdpSigninStatusEnabled}, {});
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
+
+  auto dialog_controller =
+      std::make_unique<WeakTestDialogController>(kConfigurationValid);
+  base::WeakPtr<WeakTestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  // Expect a modal dialog to be opened to sign-in to the IdP.
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+
+  base::RunLoop loop;
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog(_, _))
+      .WillOnce(::testing::WithArg<0>([&modal, &loop](const GURL& url) {
+        loop.Quit();
+        return modal.get();
+      }));
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kButton;
+
+  request_remote_.set_disconnect_handler(auth_helper_.quit_closure());
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RunAuthDontWaitForCallback(parameters, kConfigurationValid);
+
+  loop.Run();
+
+  // When the modal dialog is opened, emulate the user signing-in by
+  // updating the internal sign-in status state and notifying the
+  // observers.
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
+  federated_auth_request_impl_->OnIdpSigninStatusChanged(
+      OriginFromString(kProviderUrlFull), true);
+
+  WaitForCurrentAuthRequest();
+  CheckAuthExpectations(kConfigurationValid, kExpectationSuccess);
+}
+
+// Test button flow failure outside of user activation.
+TEST_F(FederatedAuthRequestImplTest, ButtonFlowRequiresUserActivation) {
+  base::test::ScopedFeatureList list;
+  list.InitWithFeatures(
+      {features::kFedCmAuthz, features::kFedCmIdpSigninStatusEnabled}, {});
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kButton;
+
+  request_remote_.set_disconnect_handler(auth_helper_.quit_closure());
+
+  RequestExpectations error = {RequestTokenStatus::kError,
+                               FederatedAuthRequestResult::kError,
+                               /*standalone_console_message=*/absl::nullopt,
+                               /*selected_idp_config_url=*/absl::nullopt};
+
+  RunAuthTest(parameters, error, kConfigurationValid);
+
+  EXPECT_FALSE(DidFetchAnyEndpoint());
+}
+
 TEST_F(FederatedAuthRequestImplTest, CloseModalDialogView) {
 #if BUILDFLAG(IS_ANDROID)
   auto dialog_controller =

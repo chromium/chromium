@@ -340,6 +340,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   bool RequiresUserMediation();
   void SetRequiresUserMediation(bool requires_user_mediation);
 
+  void SignInToIdP(GURL signin_url);
+
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;
 

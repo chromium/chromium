@@ -134,6 +134,10 @@ content::WebContents* IdentityDialogController::ShowModalDialog(
     DismissCallback dismiss_callback) {
   // TODO(crbug.com/1429083): connect the dimiss_callback to the
   // modal dialog close button.
+  if (!account_view_) {
+    account_view_ = AccountSelectionView::Create(this);
+  }
+
   return account_view_->ShowModalDialog(url);
 }
 

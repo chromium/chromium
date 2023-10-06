@@ -493,9 +493,10 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
     popup_window_ = std::make_unique<FedCmModalDialogView>(
         delegate_->GetWebContents(), this);
   }
-
   input_protector_->VisibilityChanged(false);
-  bubble_widget_->Hide();
+  if (bubble_widget_) {
+    bubble_widget_->Hide();
+  }
   return popup_window_->ShowPopupWindow(url);
 }
 
