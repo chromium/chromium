@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
+#include "components/drive/file_errors.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
@@ -151,6 +153,10 @@ class CloudOpenTask : public BrowserListObserver,
   bool ExecuteInternal();
   void OpenOrMoveFiles();
   void OpenAlreadyHostedDriveUrls();
+  void OnGoogleDriveGetMetadata(drive::FileError error,
+                                drivefs::mojom::FileMetadataPtr metadata);
+  void OpenUploadedDriveUrl(const GURL& url,
+                            const OfficeTaskResult task_result);
   void OpenODFSUrls(const OfficeTaskResult task_result_uma);
   void OpenAndroidOneDriveUrlsIfAccountMatchedODFS(
       base::OnceCallback<void(OfficeOneDriveOpenErrors)> callback);
@@ -171,6 +177,11 @@ class CloudOpenTask : public BrowserListObserver,
   void FinishedOneDriveUpload(base::WeakPtr<Profile> profile_weak_ptr,
                               absl::optional<storage::FileSystemURL> url,
                               int64_t size);
+
+  void LogGoogleDriveOpenResultUMA(OfficeTaskResult success_task_result,
+                                   OfficeDriveOpenErrors open_result);
+  void LogOneDriveOpenResultUMA(OfficeTaskResult success_task_result,
+                                OfficeOneDriveOpenErrors open_result);
 
   bool InitAndShowDialog(mojom::DialogPage dialog_page);
   mojom::DialogArgsPtr CreateDialogArgs(mojom::DialogPage dialog_page);

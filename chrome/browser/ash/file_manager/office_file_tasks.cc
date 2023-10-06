@@ -75,7 +75,8 @@ OfficeOpenExtensions GetOfficeOpenExtension(const storage::FileSystemURL& url) {
 
 void LogOneDriveOpenErrorUmaAfterFallback(
     ash::office_fallback::FallbackReason fallback_reason,
-    ash::cloud_upload::OfficeTaskResult task_result) {
+    ash::cloud_upload::OfficeTaskResult task_result,
+    std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics) {
   switch (fallback_reason) {
     case ash::office_fallback::FallbackReason::kOffline:
       UMA_HISTOGRAM_ENUMERATION(
@@ -92,7 +93,8 @@ void LogOneDriveOpenErrorUmaAfterFallback(
 
 void LogGoogleDriveOpenErrorUmaAfterFallback(
     ash::office_fallback::FallbackReason fallback_reason,
-    ash::cloud_upload::OfficeTaskResult task_result) {
+    ash::cloud_upload::OfficeTaskResult task_result,
+    std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics) {
   switch (fallback_reason) {
     case ash::office_fallback::FallbackReason::kOffline:
       UMA_HISTOGRAM_ENUMERATION(
@@ -223,11 +225,13 @@ void OnDialogChoiceReceived(
     if (IsWebDriveOfficeTask(task)) {
       LogGoogleDriveOpenErrorUmaAfterFallback(
           fallback_reason,
-          ash::cloud_upload::OfficeTaskResult::kFallbackQuickOffice);
+          ash::cloud_upload::OfficeTaskResult::kFallbackQuickOffice,
+          std::move(cloud_open_metrics));
     } else if (IsOpenInOfficeTask(task)) {
       LogOneDriveOpenErrorUmaAfterFallback(
           fallback_reason,
-          ash::cloud_upload::OfficeTaskResult::kFallbackQuickOffice);
+          ash::cloud_upload::OfficeTaskResult::kFallbackQuickOffice,
+          std::move(cloud_open_metrics));
     }
     LaunchQuickOffice(profile, file_urls);
   } else if (choice == ash::office_fallback::kDialogChoiceTryAgain) {
@@ -246,11 +250,13 @@ void OnDialogChoiceReceived(
     if (IsWebDriveOfficeTask(task)) {
       LogGoogleDriveOpenErrorUmaAfterFallback(
           fallback_reason,
-          ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback);
+          ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback,
+          std::move(cloud_open_metrics));
     } else if (IsOpenInOfficeTask(task)) {
       LogOneDriveOpenErrorUmaAfterFallback(
           fallback_reason,
-          ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback);
+          ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback,
+          std::move(cloud_open_metrics));
     }
   }
 }

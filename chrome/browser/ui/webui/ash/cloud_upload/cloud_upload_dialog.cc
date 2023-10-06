@@ -130,51 +130,6 @@ OfficeDriveOpenErrors OpenDriveUrl(const GURL& url) {
   return OfficeDriveOpenErrors::kSuccess;
 }
 
-// Logs UMA when the Drive task ends with an attempt to open a file.
-void LogGoogleDriveOpenResultUMA(OfficeTaskResult success_task_result,
-                                 OfficeDriveOpenErrors open_result) {
-  UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName, open_result);
-  UMA_HISTOGRAM_ENUMERATION(kGoogleDriveTaskResultMetricName,
-                            open_result == OfficeDriveOpenErrors::kSuccess
-                                ? success_task_result
-                                : OfficeTaskResult::kFailedToOpen);
-}
-
-// Open a hosted MS Office file e.g. .docx, from a url hosted in
-// DriveFS. Check the file was successfully uploaded to DriveFS.
-void OpenUploadedDriveUrl(const GURL& url, const OfficeTaskResult task_result) {
-  // TODO(b/296950967): This function logs both open result and task result (but
-  // only if open fails) metrics internally, pull them up to a higher level so
-  // all the metrics are logged in one place.
-  OfficeDriveOpenErrors open_result = OpenDriveUrl(url);
-  LogGoogleDriveOpenResultUMA(task_result, open_result);
-}
-
-// Open an already hosted MS Office file e.g. .docx, from a url hosted in
-// DriveFS. Check there was no error retrieving the file's metadata.
-void OnGoogleDriveGetMetadata(drive::FileError error,
-                              drivefs::mojom::FileMetadataPtr metadata) {
-  OfficeDriveOpenErrors open_result = OfficeDriveOpenErrors::kSuccess;
-  if (error == drive::FILE_ERROR_OK) {
-    GURL hosted_url(metadata->alternate_url);
-    open_result = OpenDriveUrl(hosted_url);
-  } else {
-    LOG(ERROR) << "Drive metadata error: " << error;
-    open_result = OfficeDriveOpenErrors::kNoMetadata;
-  }
-  LogGoogleDriveOpenResultUMA(OfficeTaskResult::kOpened, open_result);
-}
-
-// Logs UMA when the OneDrive task ends with an attempt to open a file.
-void LogOneDriveOpenResultUMA(OfficeTaskResult success_task_result,
-                              OfficeOneDriveOpenErrors open_result) {
-  UMA_HISTOGRAM_ENUMERATION(kOneDriveErrorMetricName, open_result);
-  UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
-                            open_result == OfficeOneDriveOpenErrors::kSuccess
-                                ? success_task_result
-                                : OfficeTaskResult::kFailedToOpen);
-}
-
 // Handle system error notification "Sign in" click.
 void HandleSignInClick(Profile* profile, absl::optional<int> button_index) {
   // If the "Sign in" button was pressed, rather than a click to somewhere
@@ -527,7 +482,8 @@ void CloudOpenTask::OpenOrMoveFiles() {
     cloud_open_metrics_->LogTransferRequired(
         OfficeFilesTransferRequired::kNotRequired);
     OpenAndroidOneDriveUrlsIfAccountMatchedODFS(
-        base::BindOnce(&LogOneDriveOpenResultUMA, OfficeTaskResult::kOpened));
+        base::BindOnce(&CloudOpenTask::LogOneDriveOpenResultUMA, this,
+                       OfficeTaskResult::kOpened));
   } else {
     // The files need to be moved.
     auto operation =
@@ -548,17 +504,46 @@ void CloudOpenTask::OpenAlreadyHostedDriveUrls() {
     if (integration_service->GetRelativeDrivePath(file_url.path(),
                                                   &relative_path)) {
       integration_service->GetDriveFsInterface()->GetMetadata(
-          relative_path, base::BindOnce(&OnGoogleDriveGetMetadata));
+          relative_path,
+          base::BindOnce(&CloudOpenTask::OnGoogleDriveGetMetadata, this));
     } else {
       LOG(ERROR) << "Unexpected error obtaining the relative path ";
     }
   }
 }
 
+// Open an already hosted MS Office file e.g. .docx, from a url hosted in
+// DriveFS. Check there was no error retrieving the file's metadata.
+void CloudOpenTask::OnGoogleDriveGetMetadata(
+    drive::FileError error,
+    drivefs::mojom::FileMetadataPtr metadata) {
+  OfficeDriveOpenErrors open_result = OfficeDriveOpenErrors::kSuccess;
+  if (error == drive::FILE_ERROR_OK) {
+    GURL hosted_url(metadata->alternate_url);
+    open_result = OpenDriveUrl(hosted_url);
+  } else {
+    LOG(ERROR) << "Drive metadata error: " << error;
+    open_result = OfficeDriveOpenErrors::kNoMetadata;
+  }
+  LogGoogleDriveOpenResultUMA(OfficeTaskResult::kOpened, open_result);
+}
+
+// Open a hosted MS Office file e.g. .docx, from a url hosted in
+// DriveFS. Check the file was successfully uploaded to DriveFS.
+void CloudOpenTask::OpenUploadedDriveUrl(const GURL& url,
+                                         const OfficeTaskResult task_result) {
+  // TODO(b/296950967): This function logs both open result and task result (but
+  // only if open fails) metrics internally, pull them up to a higher level so
+  // all the metrics are logged in one place.
+  OfficeDriveOpenErrors open_result = OpenDriveUrl(url);
+  LogGoogleDriveOpenResultUMA(task_result, open_result);
+}
+
 void CloudOpenTask::OpenODFSUrls(const OfficeTaskResult task_result_uma) {
   for (const auto& file_url : file_urls_) {
     OpenODFSUrl(profile_, file_url,
-                base::BindOnce(&LogOneDriveOpenResultUMA, task_result_uma));
+                base::BindOnce(&CloudOpenTask::LogOneDriveOpenResultUMA, this,
+                               task_result_uma));
   }
 }
 
@@ -862,7 +847,8 @@ void CloudOpenTask::FinishedOneDriveUpload(
             ? OfficeTaskResult::kCopied
             : OfficeTaskResult::kMoved;
     OpenODFSUrl(profile, url.value(),
-                base::BindOnce(&LogOneDriveOpenResultUMA, task_result_uma));
+                base::BindOnce(&CloudOpenTask::LogOneDriveOpenResultUMA, this,
+                               task_result_uma));
   } else {
     has_upload_errors_ = true;
     UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
@@ -874,6 +860,28 @@ void CloudOpenTask::FinishedOneDriveUpload(
   if (!has_upload_errors_) {
     RecordUploadLatencyUMA();
   }
+}
+
+// Logs UMA when the Drive task ends with an attempt to open a file.
+void CloudOpenTask::LogGoogleDriveOpenResultUMA(
+    OfficeTaskResult success_task_result,
+    OfficeDriveOpenErrors open_result) {
+  UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName, open_result);
+  UMA_HISTOGRAM_ENUMERATION(kGoogleDriveTaskResultMetricName,
+                            open_result == OfficeDriveOpenErrors::kSuccess
+                                ? success_task_result
+                                : OfficeTaskResult::kFailedToOpen);
+}
+
+// Logs UMA when the OneDrive task ends with an attempt to open a file.
+void CloudOpenTask::LogOneDriveOpenResultUMA(
+    OfficeTaskResult success_task_result,
+    OfficeOneDriveOpenErrors open_result) {
+  UMA_HISTOGRAM_ENUMERATION(kOneDriveErrorMetricName, open_result);
+  UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
+                            open_result == OfficeOneDriveOpenErrors::kSuccess
+                                ? success_task_result
+                                : OfficeTaskResult::kFailedToOpen);
 }
 
 void CloudOpenTask::RecordUploadLatencyUMA() {
