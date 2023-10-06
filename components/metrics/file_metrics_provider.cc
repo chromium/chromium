@@ -723,13 +723,9 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
       uma_proto->set_client_id(MetricsLog::Hash(client_uuid));
     }
 
-    // If |kMetricsServiceAsyncIndependentLogs| is enabled, serialize the log
-    // while we are still in the background, instead of on the callback that
-    // runs on the main thread.
-    if (base::FeatureList::IsEnabled(
-            metrics::features::kMetricsServiceAsyncIndependentLogs)) {
-      std::move(serialize_log_callback).Run();
-    }
+    // Serialize the log while we are still in the background, instead of on the
+    // callback that runs on the main thread.
+    std::move(serialize_log_callback).Run();
 
     return true;
   }
@@ -923,21 +919,7 @@ void FileMetricsProvider::ProvideIndependentMetricsCleanup(
   sources_to_check_.push_back(std::move(source));
   ScheduleSourcesCheck();
 
-  // Execute the chained callback.
-  // TODO(crbug/1428679): Remove the UMA timer code, which is currently used to
-  // determine if it is worth to finalize independent logs in the background
-  // by measuring the time it takes to execute the callback
-  // MetricsService::PrepareProviderMetricsLogDone().
-  base::TimeTicks start_time = base::TimeTicks::Now();
   std::move(done_callback).Run(success);
-  if (success) {
-    // We don't use the SCOPED_UMA_HISTOGRAM_TIMER macro because we want to
-    // measure the time it takes to finalize an independent log, and that only
-    // happens when |success| is true.
-    base::UmaHistogramTimes(
-        "UMA.IndependentLog.FileMetricsProvider.FinalizeTime",
-        base::TimeTicks::Now() - start_time);
-  }
 }
 
 bool FileMetricsProvider::HasPreviousSessionData() {

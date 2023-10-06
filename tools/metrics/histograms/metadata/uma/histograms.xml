@@ -321,22 +321,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="UMA.IndependentLog.{Provider}.FinalizeTime" units="ms"
-    expires_after="2024-02-20">
-  <owner>lucnguyen@google.com</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    The amount of time the main thread spent on finalizing and storing an
-    independent log provided by {Provider}. This is only emitted for logs that
-    are successfully closed.
-  </summary>
-  <token key="Provider">
-    <variant name="BackgroundTracingMetricsProvider"/>
-    <variant name="FileMetricsProvider"/>
-    <variant name="StructuredMetricsProvider"/>
-  </token>
-</histogram>
-
 <histogram name="UMA.InitialStabilityRecordBeacon" enum="Boolean"
     expires_after="2024-08-22">
   <owner>mpearson@chromium.org</owner>

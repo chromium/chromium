@@ -19,20 +19,6 @@
 
 namespace tracing {
 
-namespace {
-
-void OnProvideEmbedderMetrics(base::OnceCallback<void(bool)> done_callback) {
-  // TODO(crbug/1428679): Remove the UMA timer code, which is currently used to
-  // determine if it is worth to finalize independent logs in the background
-  // by measuring the time it takes to execute the callback
-  // MetricsService::PrepareProviderMetricsLogDone().
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "UMA.IndependentLog.BackgroundTracingMetricsProvider.FinalizeTime");
-  std::move(done_callback).Run(true);
-}
-
-}  // namespace
-
 BackgroundTracingMetricsProvider::BackgroundTracingMetricsProvider() = default;
 BackgroundTracingMetricsProvider::~BackgroundTracingMetricsProvider() = default;
 
@@ -107,25 +93,16 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
               system_profile.ParsePartialFromString(*serialized_system_profile);
               uma_proto->mutable_system_profile()->MergeFrom(system_profile);
             }
-            // If |kMetricsServiceAsyncIndependentLogs| is enabled,
-            // serialize the log on the background instead of on the
-            // main thread.
-            if (base::FeatureList::IsEnabled(
-                    metrics::features::kMetricsServiceAsyncIndependentLogs)) {
-              base::ThreadPool::PostTask(
-                  FROM_HERE,
-                  {base::TaskPriority::BEST_EFFORT,
-                   base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-                  std::move(serialize_log_callback)
-                      .Then(base::BindPostTask(
-                          task_runner,
-                          base::BindOnce(&OnProvideEmbedderMetrics,
-                                         std::move(done_callback)))));
-            } else {
-              task_runner->PostTask(FROM_HERE,
-                                    base::BindOnce(&OnProvideEmbedderMetrics,
-                                                   std::move(done_callback)));
-            }
+            // Serialize the log on the background instead of on the main
+            // thread.
+            base::ThreadPool::PostTask(
+                FROM_HERE,
+                {base::TaskPriority::BEST_EFFORT,
+                 base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+                std::move(serialize_log_callback)
+                    .Then(base::BindPostTask(
+                        task_runner,
+                        base::BindOnce(std::move(done_callback), true))));
           },
           std::move(provide_embedder_metrics),
           std::move(serialize_log_callback), std::move(done_callback),
