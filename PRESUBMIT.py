@@ -488,6 +488,16 @@ _BANNED_IOS_EGTEST_FUNCTIONS : Sequence[BanRule] = (
 
 _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
     BanRule(
+      '%#0',
+      (
+       'Zero-padded values that use "#" to add prefixes don\'t exhibit ',
+       'consistent behavior, since the prefix is not prepended for zero ',
+       'values. Use "0x%0..." instead.',
+      ),
+      False,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+    ),
+    BanRule(
       r'/\busing namespace ',
       (
        'Using directives ("using namespace x") are banned by the Google Style',

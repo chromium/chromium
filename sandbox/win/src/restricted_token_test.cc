@@ -48,7 +48,7 @@ int RunOpenProcessTest(bool unsandboxed,
   runner2.SetUnsandboxed(unsandboxed);
   return runner2.RunTest(
       base::ASCIIToWide(
-          base::StringPrintf("RestrictedTokenTest_openprocess %lu %#08lX",
+          base::StringPrintf("RestrictedTokenTest_openprocess %lu 0X%08lX",
                              runner.process_id(), access_mask))
           .c_str());
 }
@@ -82,7 +82,7 @@ int RunRestrictedOpenProcessTest(bool unsandboxed,
   runner2.SetUnsandboxed(unsandboxed);
   return runner2.RunTest(
       base::ASCIIToWide(
-          base::StringPrintf("RestrictedTokenTest_openprocess %lu %#08lX",
+          base::StringPrintf("RestrictedTokenTest_openprocess %lu 0X%08lX",
                              runner.process_id(), access_mask))
           .c_str());
 }
@@ -103,7 +103,7 @@ int RunRestrictedSelfOpenProcessTest(bool add_random_sid, DWORD access_mask) {
 
   return runner.RunTest(
       base::ASCIIToWide(
-          base::StringPrintf("RestrictedTokenTest_currentprocess_dup %#08lX",
+          base::StringPrintf("RestrictedTokenTest_currentprocess_dup 0X%08lX",
                              access_mask))
           .c_str());
 }

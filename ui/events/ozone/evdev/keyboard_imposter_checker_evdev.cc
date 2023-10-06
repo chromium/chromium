@@ -64,10 +64,10 @@ bool KeyboardImposterCheckerEvdev::FlagIfImposter(
   converter->SetSuspectedImposter(true);
   LOG(WARNING) << "Device Name: " << converter->input_device().name
                << " Vendor ID: "
-               << base::StringPrintf("%#06x",
+               << base::StringPrintf("0x%04x",
                                      converter->input_device().vendor_id)
                << " Product ID: "
-               << base::StringPrintf("%#06x",
+               << base::StringPrintf("0x%04x",
                                      converter->input_device().product_id)
                << " has been flagged as a suspected imposter keyboard";
 #if BUILDFLAG(IS_CHROMEOS_ASH)

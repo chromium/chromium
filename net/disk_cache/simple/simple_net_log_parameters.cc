@@ -22,7 +22,7 @@ base::Value::Dict NetLogSimpleEntryConstructionParams(
     const disk_cache::SimpleEntryImpl* entry) {
   base::Value::Dict dict;
   dict.Set("entry_hash",
-           base::StringPrintf("%#016" PRIx64, entry->entry_hash()));
+           base::StringPrintf("0x%016" PRIx64, entry->entry_hash()));
   return dict;
 }
 
