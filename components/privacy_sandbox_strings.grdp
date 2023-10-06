@@ -2169,13 +2169,13 @@
   <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
     Chrome limits the amount of information sites can use to track you as you browse. You can change your settings to choose your own level of protection.
   </message>
-  <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_TITLE" desc="Title of the tracking protection onboarding notice" translateable="false">
+  <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_TITLE" desc="Title of the tracking protection onboarding notice">
     Browse with more privacy
   </message>
-  <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_BODY" desc="Content of the tracking protection notice, informing the user that they now have their third party cookies disabled by default" translateable="false">
+  <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_BODY" desc="Content of the tracking protection notice, informing the user that they now have their third party cookies disabled by default">
     You’re one of the first to experience Tracking Protection, which limits sites from using third-party cookies to track you as you browse.
   </message>
-  <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_SETTINGS_BUTTON_LABEL" desc="The user can choose to click “Settings“ to visit chrome://settings/cookies. If they do, they will find the cookie controls reflecting the new tracking protections." translateable="false">
+  <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_SETTINGS_BUTTON_LABEL" desc="The user can choose to click “Settings“ to visit chrome://settings/cookies. If they do, they will find the cookie controls reflecting the new tracking protections.">
     Settings
   </message>
   <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_BULLET_ONE_TITLE" desc="" translateable="false" formatter_data="android_java">
