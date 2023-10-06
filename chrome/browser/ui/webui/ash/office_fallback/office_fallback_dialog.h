@@ -15,7 +15,11 @@ namespace ash::office_fallback {
 // The reason why the user's file can't open.
 enum class FallbackReason {
   kOffline,
-  kDriveUnavailable,
+  kDriveDisabled,
+  kNoDriveService,
+  kDriveAuthenticationNotReady,
+  kDriveFsInterfaceError,
+  kMeteredConnection,
 };
 
 using DialogChoiceCallback =

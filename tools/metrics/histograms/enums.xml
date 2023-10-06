@@ -78955,6 +78955,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Alternate URL does not allow editing"/>
   <int value="6" label="Unexpected alternate URL"/>
   <int value="7" label="Success"/>
+  <int value="8" label="Drive disabled"/>
+  <int value="9" label="No Drive service"/>
+  <int value="10" label="Drive authentication not ready"/>
+  <int value="11" label="Metered connection"/>
 </enum>
 
 <enum name="OfficeFileHandler">
