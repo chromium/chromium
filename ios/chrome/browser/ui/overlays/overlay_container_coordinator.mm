@@ -76,7 +76,6 @@
 - (void)stop {
   if (!self.started)
     return;
-  self.started = NO;
   self.presentationContext->SetDelegate(nil);
   // Clean up the presentation context coordinator.
   [self.presentationContextCoordinator stop];
@@ -86,6 +85,7 @@
   [_viewController.view removeFromSuperview];
   [_viewController removeFromParentViewController];
   _viewController = nil;
+  self.started = NO;
 }
 
 #pragma mark - OverlayContainerViewControllerDelegate
