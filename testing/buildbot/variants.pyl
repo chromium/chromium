@@ -712,7 +712,7 @@
     'identifier': 'OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R119-15629.0.0',
+      'use_lkgm': True,
       'autotest_name': 'tast.chrome-from-gcs',
     },
   },

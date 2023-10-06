@@ -350,9 +350,8 @@
   "CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_ASH_LKGM": {
     "skylab": {
       "cros_board": "octopus",
-      "cros_chrome_version": "119.0.6034.0",
-      "cros_img": "octopus-release/R119-15629.0.0",
-      "autotest_name": "tast.chrome-from-gcs"
+      "autotest_name": "tast.chrome-from-gcs",
+      "use_lkgm": true
     },
     "identifier": "OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM"
   },

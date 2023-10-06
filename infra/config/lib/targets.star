@@ -340,7 +340,8 @@ def _swarming(
 def _skylab(
         *,
         cros_board,
-        cros_img,
+        cros_img = "",
+        use_lkgm = False,
         cros_model = None,
         autotest_name = None,
         bucket = None,
@@ -351,6 +352,7 @@ def _skylab(
     return struct(
         cros_board = cros_board,
         cros_img = cros_img,
+        use_lkgm = use_lkgm,
         cros_model = cros_model,
         autotest_name = autotest_name,
         bucket = bucket,
@@ -927,7 +929,10 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
         formatter.add_line("'cros_board': '{}',".format(skylab.cros_board))
         if skylab.cros_model:
             formatter.add_line("'cros_model': '{}',".format(skylab.cros_model))
-        formatter.add_line("'cros_img': '{}',".format(skylab.cros_img))
+        if skylab.cros_img:
+            formatter.add_line("'cros_img': '{}',".format(skylab.cros_img))
+        if skylab.use_lkgm:
+            formatter.add_line("'use_lkgm': True,")
         if skylab.autotest_name:
             formatter.add_line("'autotest_name': '{}',".format(skylab.autotest_name))
         if skylab.bucket:
