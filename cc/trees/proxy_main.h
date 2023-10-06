@@ -103,6 +103,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   bool RequestedAnimatePending() override;
   void SetDeferMainFrameUpdate(bool defer_main_frame_update) override;
   void SetPauseRendering(bool pause_rendering) override;
+  void SetInputResponsePending() override;
   bool StartDeferringCommits(base::TimeDelta timeout,
                              PaintHoldingReason reason) override;
   void StopDeferringCommits(PaintHoldingCommitTrigger) override;
@@ -173,6 +174,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   absl::optional<PaintHoldingReason> paint_holding_reason_;
 
   bool pause_rendering_;
+  bool block_on_next_commit_ = false;
 
   // Only used when defer_commits_ is active and must be set in such cases.
   base::TimeTicks commits_restart_time_;

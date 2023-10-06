@@ -66,6 +66,10 @@ class CC_EXPORT Proxy {
   // Pauses all main and impl-side rendering.
   virtual void SetPauseRendering(bool pause_rendering) = 0;
 
+  // Indicates that the next main frame will contain the result of running an
+  // event handler for an input event.
+  virtual void SetInputResponsePending() = 0;
+
   // Defers commits until at most the given |timeout| period has passed,
   // but continues to update the document lifecycle in
   // LayerTreeHost::BeginMainFrameUpdate. If multiple calls are made when

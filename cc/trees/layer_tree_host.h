@@ -899,6 +899,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return base::AutoReset<bool>(&syncing_deltas_for_test_, true);
   }
 
+  bool WaitedForCommitForTesting() const {
+    return waited_for_protected_sequence_;
+  }
+
  protected:
   LayerTreeHost(InitParams params, CompositorMode mode);
 

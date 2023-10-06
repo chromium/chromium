@@ -11082,6 +11082,32 @@ class LayerTreeHostTestDamagePropagatesFromViewTransitionSurface
 };
 MULTI_THREAD_TEST_F(LayerTreeHostTestDamagePropagatesFromViewTransitionSurface);
 
+class LayerTreeHostTestBlockOnCommitAfterInputEvent : public LayerTreeHostTest {
+ protected:
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+  void WillBeginMainFrame() override { ++main_frame_num_; }
+  void DidBeginMainFrame() override {
+    EXPECT_EQ(main_frame_num_ % 2 == 0,
+              layer_tree_host()->WaitedForCommitForTesting());
+  }
+  void DidCommit() override {
+    if (main_frame_num_ < 5) {
+      layer_tree_host()->SetNeedsCommit();
+      if (main_frame_num_ % 2) {
+        layer_tree_host()->proxy()->SetInputResponsePending();
+      }
+    } else {
+      EndTest();
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kNonBlockingCommit};
+  uint32_t main_frame_num_ = 0u;
+};
+MULTI_THREAD_TEST_F(LayerTreeHostTestBlockOnCommitAfterInputEvent);
+
 class LayerTreeHostTestDetachInputDelegateAndRenderFrameObserver
     : public LayerTreeTest,
       StubInputHandlerClient {

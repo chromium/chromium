@@ -373,6 +373,8 @@ void SingleThreadProxy::SetPauseRendering(bool pause_rendering) {
   scheduler_on_impl_thread_->SetPauseRendering(pause_rendering_);
 }
 
+void SingleThreadProxy::SetInputResponsePending() {}
+
 bool SingleThreadProxy::StartDeferringCommits(base::TimeDelta timeout,
                                               PaintHoldingReason reason) {
   DCHECK(task_runner_provider_->IsMainThread());

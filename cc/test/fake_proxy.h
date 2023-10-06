@@ -62,6 +62,7 @@ class FakeProxy : public Proxy {
                                    base::OnceClosure callback) override {}
   double GetPercentDroppedFrames() const override;
   void SetPauseRendering(bool pause_rendering) override {}
+  void SetInputResponsePending() override {}
 
  private:
   raw_ptr<LayerTreeHost> layer_tree_host_;

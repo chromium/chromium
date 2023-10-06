@@ -244,6 +244,10 @@ void ProxyMain::BeginMainFrame(
     commit_timeout = true;
   }
 
+  bool blocking = !base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
+                  block_on_next_commit_;
+  block_on_next_commit_ = false;
+
   bool scroll_and_viewport_changes_synced = false;
   if (!IsDeferringCommits()) {
     // Synchronizes scroll offsets and page scale deltas (for pinch zoom) from
@@ -433,7 +437,6 @@ void ProxyMain::BeginMainFrame(
   // point of view, but asynchronously performed on the impl thread,
   // coordinated by the Scheduler.
   CommitTimestamps commit_timestamps;
-  bool blocking = !base::FeatureList::IsEnabled(features::kNonBlockingCommit);
   {
     TRACE_EVENT_WITH_FLOW0("viz,benchmark",
                            "MainFrame.NotifyReadyToCommitOnMain",
@@ -647,6 +650,14 @@ void ProxyMain::SetPauseRendering(bool pause_rendering) {
       FROM_HERE,
       base::BindOnce(&ProxyImpl::SetPauseRendering,
                      base::Unretained(proxy_impl_.get()), pause_rendering_));
+}
+
+void ProxyMain::SetInputResponsePending() {
+  // If the next main frame will contain the visual response to an input event,
+  // we pause execution on the main thread until the compositor thread finishes
+  // processing the commit. This is done to minimize thread contention while
+  // the compositor is doing critical-path work.
+  block_on_next_commit_ = true;
 }
 
 bool ProxyMain::StartDeferringCommits(base::TimeDelta timeout,

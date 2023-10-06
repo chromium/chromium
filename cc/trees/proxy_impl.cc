@@ -56,17 +56,21 @@ class ScopedCommitCompletionEvent {
       CompletionEvent* event,
       base::TimeTicks start_time,
       base::SingleThreadTaskRunner* main_thread_task_runner,
+      bool notify_main,
       base::WeakPtr<ProxyMain> proxy_main_weak_ptr)
       : event_(event),
         commit_timestamps_({start_time, base::TimeTicks()}),
         main_thread_task_runner_(main_thread_task_runner),
+        notify_main_(notify_main),
         proxy_main_weak_ptr_(proxy_main_weak_ptr) {}
   ScopedCommitCompletionEvent(const ScopedCommitCompletionEvent&) = delete;
   ~ScopedCommitCompletionEvent() {
     event_.ExtractAsDangling()->Signal();
-    main_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ProxyMain::DidCompleteCommit,
-                                  proxy_main_weak_ptr_, commit_timestamps_));
+    if (notify_main_) {
+      main_thread_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&ProxyMain::DidCompleteCommit,
+                                    proxy_main_weak_ptr_, commit_timestamps_));
+    }
   }
   ScopedCommitCompletionEvent& operator=(const ScopedCommitCompletionEvent&) =
       delete;
@@ -79,6 +83,7 @@ class ScopedCommitCompletionEvent {
   raw_ptr<CompletionEvent> event_;
   CommitTimestamps commit_timestamps_;
   raw_ptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
+  bool notify_main_;
   base::WeakPtr<ProxyMain> proxy_main_weak_ptr_;
 };
 
@@ -341,12 +346,12 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
   // Inform the layer tree host that the commit has started, so that metrics
   // can determine how long we waited for thread synchronization.
   //
-  // If NonBlockingCommit is disabled, then commit_timestamps points to a
-  // variable on the call stack of the main thread. If NonBlockingCommit is
-  // enabled, then the commit timestamps are transmitted back to the main thread
-  // by ScopedCommitCompletionEvent.
-  DCHECK_NE((bool)commit_timestamps,
-            base::FeatureList::IsEnabled(features::kNonBlockingCommit));
+  // If the main thread is blocked waiting for commit, then commit_timestamps
+  // points to a variable on the call stack of the main thread. If the main
+  // thread is not blocked, then the commit timestamps are transmitted back to
+  // the main thread by ScopedCommitCompletionEvent.
+  DCHECK_EQ((bool)commit_timestamps,
+            task_runner_provider_->IsMainThreadBlocked());
   base::TimeTicks start_time = base::TimeTicks::Now();
   if (commit_timestamps)
     commit_timestamps->start = start_time;
@@ -370,7 +375,7 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
   data_for_commit_ = std::make_unique<DataForCommit>(
       std::make_unique<ScopedCommitCompletionEvent>(
           completion_event, start_time, MainThreadTaskRunner(),
-          proxy_main_weak_ptr_),
+          /*notify_main*/ !commit_timestamps, proxy_main_weak_ptr_),
       std::move(commit_state), unsafe_state, commit_timestamps);
 
   // Extract metrics data from the layer tree host and send them to the
