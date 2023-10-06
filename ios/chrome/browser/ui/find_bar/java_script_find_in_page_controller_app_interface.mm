@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/find_bar/java_script_find_in_page_controller_app_interface.h"
 
-#import "ios/chrome/browser/find_in_page/java_script_find_in_page_controller.h"
+#import "ios/chrome/browser/find_in_page/model/java_script_find_in_page_controller.h"
 
 @implementation JavaScriptFindInPageControllerAppInterface
 

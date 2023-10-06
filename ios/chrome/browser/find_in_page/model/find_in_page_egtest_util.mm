@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/find_in_page/find_in_page_egtest_util.h"
+#import "ios/chrome/browser/find_in_page/model/find_in_page_egtest_util.h"
 
 #import <sstream>
 

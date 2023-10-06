@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h"
 
-#import "ios/chrome/browser/find_in_page/find_tab_helper.h"
-#import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
-#import "ios/chrome/browser/find_in_page/util.h"
+#import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/model/util.h"
 
 AbstractFindTabHelper* GetConcreteFindTabHelperFromWebState(
     web::WebState* web_state) {

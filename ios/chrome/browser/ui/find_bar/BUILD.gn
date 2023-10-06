@@ -24,7 +24,7 @@ source_set("find_bar") {
     "//base:i18n",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/find_in_page",
+    "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -64,7 +64,7 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//components/strings",
-    "//ios/chrome/browser/find_in_page:util",
+    "//ios/chrome/browser/find_in_page/model:util",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/toolbar/accessory:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
@@ -83,7 +83,7 @@ source_set("eg_app_support+eg2") {
     "java_script_find_in_page_controller_app_interface.h",
     "java_script_find_in_page_controller_app_interface.mm",
   ]
-  deps = [ "//ios/chrome/browser/find_in_page" ]
+  deps = [ "//ios/chrome/browser/find_in_page/model" ]
 }
 
 source_set("eg_test_support+eg2") {

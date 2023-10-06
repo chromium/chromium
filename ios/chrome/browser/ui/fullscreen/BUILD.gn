@@ -74,7 +74,7 @@ source_set("internal") {
     ":ui",
     "//base",
     "//components/keyed_service/ios",
-    "//ios/chrome/browser/find_in_page:util",
+    "//ios/chrome/browser/find_in_page/model:util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",

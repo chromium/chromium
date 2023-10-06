@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/find_in_page/java_script_find_in_page_controller.h"
+#import "ios/chrome/browser/find_in_page/model/java_script_find_in_page_controller.h"
 
 #import <UIKit/UIKit.h>
 
@@ -13,9 +13,9 @@
 #import "base/check_op.h"
 #import "base/notreached.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/find_in_page/constants.h"
-#import "ios/chrome/browser/find_in_page/find_in_page_model.h"
-#import "ios/chrome/browser/find_in_page/find_in_page_response_delegate.h"
+#import "ios/chrome/browser/find_in_page/model/constants.h"
+#import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
+#import "ios/chrome/browser/find_in_page/model/find_in_page_response_delegate.h"
 #import "ios/web/public/find_in_page/find_in_page_manager_delegate_bridge.h"
 #import "ios/web/public/find_in_page/java_script_find_in_page_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"

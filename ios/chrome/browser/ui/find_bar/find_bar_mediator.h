@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/find_in_page/find_in_page_response_delegate.h"
+#import "ios/chrome/browser/find_in_page/model/find_in_page_response_delegate.h"
 
 @protocol FindBarConsumer;
 @protocol FindInPageCommands;

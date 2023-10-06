@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
 
 #import "base/memory/ptr_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/find_in_page/find_in_page_model.h"
-#import "ios/chrome/browser/find_in_page/java_script_find_in_page_controller.h"
+#import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
+#import "ios/chrome/browser/find_in_page/model/java_script_find_in_page_controller.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
 JavaScriptFindTabHelper::JavaScriptFindTabHelper(web::WebState* web_state) {

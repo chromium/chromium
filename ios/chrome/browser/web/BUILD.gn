@@ -362,7 +362,7 @@ source_set("unit_tests_internal") {
     "//components/strings",
     "//components/version_info",
     "//ios/chrome/browser/content_settings/model:model",
-    "//ios/chrome/browser/find_in_page",
+    "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/passwords",

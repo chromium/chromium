@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/find_in_page/find_in_page_model.h"
+#import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
 
 @interface FindInPageModel ()
 // Redefined as readwrite.
@@ -17,8 +17,9 @@
 @synthesize text = _text;
 
 - (void)updateQuery:(NSString*)query matches:(NSUInteger)matches {
-  if (query)
+  if (query) {
     self.text = query;
+  }
   _matches = matches;
   _currentIndex = 0;
 }

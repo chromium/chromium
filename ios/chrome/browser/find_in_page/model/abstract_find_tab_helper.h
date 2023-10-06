@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FIND_IN_PAGE_ABSTRACT_FIND_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_FIND_IN_PAGE_ABSTRACT_FIND_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_FIND_IN_PAGE_MODEL_ABSTRACT_FIND_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_FIND_IN_PAGE_MODEL_ABSTRACT_FIND_TAB_HELPER_H_
 
 @class FindInPageModel;
 @protocol FindInPageResponseDelegate;
@@ -71,4 +71,4 @@ class AbstractFindTabHelper {
 AbstractFindTabHelper* GetConcreteFindTabHelperFromWebState(
     web::WebState* web_state);
 
-#endif  // IOS_CHROME_BROWSER_FIND_IN_PAGE_ABSTRACT_FIND_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_FIND_IN_PAGE_MODEL_ABSTRACT_FIND_TAB_HELPER_H_

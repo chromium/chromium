@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FIND_IN_PAGE_FIND_IN_PAGE_MODEL_H_
-#define IOS_CHROME_BROWSER_FIND_IN_PAGE_FIND_IN_PAGE_MODEL_H_
+#ifndef IOS_CHROME_BROWSER_FIND_IN_PAGE_MODEL_FIND_IN_PAGE_MODEL_H_
+#define IOS_CHROME_BROWSER_FIND_IN_PAGE_MODEL_FIND_IN_PAGE_MODEL_H_
 
 #include <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
@@ -36,4 +36,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_FIND_IN_PAGE_FIND_IN_PAGE_MODEL_H_
+#endif  // IOS_CHROME_BROWSER_FIND_IN_PAGE_MODEL_FIND_IN_PAGE_MODEL_H_

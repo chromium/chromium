@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/find_in_page/find_in_page_egtest_util.h"
+#import "ios/chrome/browser/find_in_page/model/find_in_page_egtest_util.h"
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/find_in_page/find_in_page_app_interface.h"
+#import "ios/chrome/browser/find_in_page/model/find_in_page_app_interface.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -22,7 +22,7 @@ constexpr char kFindInPageSearchFieldID[] = "find.searchField";
 constexpr char kFindInPageResultLabelID[] = "find.resultLabel";
 constexpr char kFindInPageNextButtonID[] = "find.nextButton";
 constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
-}
+}  // namespace
 
 // Tests for Native Find in Page. This tests the variant of Native Find in Page
 // with a Find interaction i.e. with the system UI or Find navigator. Many tests

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FIND_IN_PAGE_JAVA_SCRIPT_FIND_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_FIND_IN_PAGE_JAVA_SCRIPT_FIND_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_FIND_IN_PAGE_MODEL_JAVA_SCRIPT_FIND_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_FIND_IN_PAGE_MODEL_JAVA_SCRIPT_FIND_TAB_HELPER_H_
 
 #include <Foundation/Foundation.h>
 
 #include "base/scoped_observation.h"
-#import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -70,4 +70,4 @@ class JavaScriptFindTabHelper final
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_FIND_IN_PAGE_JAVA_SCRIPT_FIND_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_FIND_IN_PAGE_MODEL_JAVA_SCRIPT_FIND_TAB_HELPER_H_
