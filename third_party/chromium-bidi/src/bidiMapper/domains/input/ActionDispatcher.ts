@@ -263,8 +263,7 @@ export class ActionDispatcher {
               {
                 x,
                 y,
-                radiusX: width && width / 2,
-                radiusY: height && height / 2,
+                ...getRadii(width ?? 1, height ?? 1),
                 tangentialPressure,
                 tiltX,
                 tiltY,
@@ -439,8 +438,7 @@ export class ActionDispatcher {
                     {
                       x,
                       y,
-                      radiusX: width ? width / 2 : 0.5,
-                      radiusY: height ? height / 2 : 0.5,
+                      ...getRadii(width ?? 1, height ?? 1),
                       tangentialPressure,
                       tiltX,
                       tiltY,
@@ -877,5 +875,15 @@ function getTilt(action: {azimuthAngle?: number; altitudeAngle?: number}): {
   return {
     tiltX: Math.round(tiltXRadians * factor),
     tiltY: Math.round(tiltYRadians * factor),
+  };
+}
+
+function getRadii(
+  width: number,
+  height: number
+): {radiusX: number; radiusY: number} {
+  return {
+    radiusX: width ? width / 2 : 0.5,
+    radiusY: height ? height / 2 : 0.5,
   };
 }
