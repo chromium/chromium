@@ -23,6 +23,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
+#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
@@ -485,7 +487,20 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     }
     case PopupItemId::kCompose:
-      // TODO(crbug.com/1484810): Implement compose response.
+      if (AutofillComposeDelegate* delegate =
+              manager_->client().GetComposeDelegate()) {
+        AutofillComposeDelegate::ComposeCallback callback = base::BindOnce(
+            [](base::WeakPtr<AutofillManager> manager, FieldGlobalId field,
+               const std::u16string& text) {
+              if (manager) {
+                manager->driver().RendererShouldFillFieldWithValue(field, text);
+              }
+            },
+            manager_->GetWeakPtr(), query_field_.global_id());
+        delegate->OpenCompose(
+            AutofillComposeDelegate::UiEntryPoint::kAutofillPopup, query_field_,
+            manager_->client().GetPopupScreenLocation(), std::move(callback));
+      }
       break;
     default:
       if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||

@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -11,12 +12,14 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
@@ -25,6 +28,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -32,6 +36,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
@@ -49,15 +54,22 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "url/origin.h"
 
-using testing::_;
-using testing::Field;
-using testing::Matcher;
-using testing::NiceMock;
-using testing::Return;
-
 namespace autofill {
 
 namespace {
+
+using ::testing::_;
+using ::testing::Field;
+using ::testing::Matcher;
+using ::testing::Mock;
+using ::testing::NiceMock;
+using ::testing::Return;
+
+constexpr auto kDefaultTriggerSource =
+    AutofillSuggestionTriggerSource::kFormControlElementClicked;
+
+constexpr std::string_view kPlusAddressSuggestionMetric =
+    "Autofill.PlusAddresses.Suggestion.Events";
 
 Matcher<const AutofillTriggerDetails&> EqualsAutofilltriggerDetails(
     AutofillTriggerDetails details) {
@@ -67,11 +79,14 @@ Matcher<const AutofillTriggerDetails&> EqualsAutofilltriggerDetails(
             details.field_types_to_fill));
 }
 
-constexpr auto kDefaultTriggerSource =
-    AutofillSuggestionTriggerSource::kFormControlElementClicked;
-
-const std::string_view kPlusAddressSuggestionMetric =
-    "Autofill.PlusAddresses.Suggestion.Events";
+template <typename SuggestionsMatcher>
+auto PopupOpenArgsAre(
+    SuggestionsMatcher suggestions_matcher,
+    AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource) {
+  using PopupOpenArgs = AutofillClient::PopupOpenArgs;
+  return AllOf(Field(&PopupOpenArgs::suggestions, suggestions_matcher),
+               Field(&PopupOpenArgs::trigger_source, trigger_source));
+}
 
 class MockPersonalDataManager : public TestPersonalDataManager {
  public:
@@ -146,6 +161,7 @@ class MockAutofillClient : public TestAutofillClient {
               OfferPlusAddressCreation,
               (const url::Origin&, plus_addresses::PlusAddressCallback),
               (override));
+  MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
   MOCK_METHOD(TestPersonalDataManager*, GetPersonalDataManager, (), (override));
   MOCK_METHOD(void,
               ShowEditAddressProfileDialog,
@@ -1394,6 +1410,42 @@ TEST_F(AutofillExternalDelegateUnitTest,
           plus_addresses::PlusAddressMetrics::
               PlusAddressAutofillSuggestionEvent::kCreateNewPlusAddressChosen,
           1)));
+}
+
+// Tests that accepting a Compose suggestion returns a callback that, when run,
+// fills the trigger field.
+TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateOpensComposeAndFills) {
+  MockAutofillComposeDelegate compose_delegate;
+  ON_CALL(autofill_client_, GetComposeDelegate)
+      .WillByDefault(Return(&compose_delegate));
+
+  IssueOnQuery();
+
+  // Simulate receiving a Compose suggestion.
+  EXPECT_CALL(
+      autofill_client_,
+      ShowAutofillPopup(
+          PopupOpenArgsAre(SuggestionVectorIdsAre(PopupItemId::kCompose)), _));
+  std::vector<Suggestion> suggestions = {
+      Suggestion(/*main_text=*/u"", PopupItemId::kCompose)};
+  external_delegate_->OnSuggestionsReturned(queried_form_triggering_field_id_,
+                                            suggestions, kDefaultTriggerSource);
+
+  // Simulate accepting a Compose suggestion.
+  AutofillComposeDelegate::ComposeCallback callback;
+  EXPECT_CALL(compose_delegate, OpenCompose).WillOnce(MoveArg<3>(&callback));
+  EXPECT_CALL(autofill_client_,
+              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+  external_delegate_->DidAcceptSuggestion(suggestions[0], /*position=*/0,
+                                          kDefaultTriggerSource);
+  Mock::VerifyAndClearExpectations(&compose_delegate);
+  ASSERT_TRUE(callback);
+
+  const std::u16string kComposeResponse = u"Cucumbers are tasty.";
+  EXPECT_CALL(*autofill_driver_,
+              RendererShouldFillFieldWithValue(
+                  queried_form_triggering_field_id_, kComposeResponse));
+  std::move(callback).Run(kComposeResponse);
 }
 
 class AutofillExternalDelegateUnitTest_UndoAutofill
