@@ -622,10 +622,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Create an AXObject, and do not check if a previous one exists.
   // Also, initialize the object and add it to maps for later retrieval.
-  AXObject* CreateAndInit(Node*,
-                          LayoutObject*,
-                          AXObject* parent_if_known,
-                          AXID use_axid = 0);
+  AXObject* CreateAndInit(Node*, LayoutObject*, AXObject* parent_if_known);
   // Helpers for CreateAndInit().
   AXObject* CreateFromRenderer(LayoutObject*);
   AXObject* CreateFromNode(Node*);

@@ -1341,8 +1341,7 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
 // Caller must provide a node, a layout object, or both (where they match).
 AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
                                            LayoutObject* layout_object,
-                                           AXObject* parent_if_known,
-                                           AXID use_axid) {
+                                           AXObject* parent_if_known) {
   // New AXObjects cannot be created when the tree is frozen.
   // In this state, the tree should already be complete because
   // of UpdateTreeIfNeeded().
