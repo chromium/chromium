@@ -272,6 +272,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
     always_enable_raster_timers_for_testing_ = value;
   }
 
+  const absl::optional<cc::PaintRecord>& LastRecording() {
+    return last_recording_;
+  }
+
  protected:
   class CanvasImageProvider;
 
@@ -397,6 +401,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   bool clear_frame_ = true;
   FlushReason last_flush_reason_ = FlushReason::kNone;
   FlushReason printing_fallback_reason_ = FlushReason::kNone;
+  absl::optional<cc::PaintRecord> last_recording_;
 
   base::WeakPtrFactory<CanvasResourceProvider> weak_ptr_factory_{this};
 };

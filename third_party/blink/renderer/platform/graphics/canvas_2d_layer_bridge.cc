@@ -336,12 +336,7 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
       return false;
   }
 
-  bool wrote_pixels =
-      ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x, y);
-  if (wrote_pixels)
-    last_record_tainted_by_write_pixels_ = true;
-
-  return wrote_pixels;
+  return ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x, y);
 }
 
 void Canvas2DLayerBridge::SkipQueuedDrawCommands() {
@@ -357,9 +352,7 @@ void Canvas2DLayerBridge::FlushRecording(FlushReason reason) {
 
   TRACE_EVENT0("cc", "Canvas2DLayerBridge::flushRecording");
 
-  last_recording_ = ResourceProvider()->FlushCanvas(reason);
-
-  last_record_tainted_by_write_pixels_ = false;
+  ResourceProvider()->FlushCanvas(reason);
 
   // Rastering the recording would have locked images, since we've flushed
   // all recorded ops, we should release all locked images as well.

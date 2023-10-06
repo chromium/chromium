@@ -1505,31 +1505,29 @@ absl::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
   ScopedRasterTimer timer(IsAccelerated() ? RasterInterface() : nullptr, *this,
                           always_enable_raster_timers_for_testing_);
   DCHECK(reason != FlushReason::kNone);
-  bool want_to_preserve_recording =
-      (IsPrinting() && reason != FlushReason::kClear) ||
-      reason == FlushReason::kPrinting ||
-      reason == FlushReason::kCanvasPushFrameWhilePrinting;
+  bool want_to_print = (IsPrinting() && reason != FlushReason::kClear) ||
+                       reason == FlushReason::kPrinting ||
+                       reason == FlushReason::kCanvasPushFrameWhilePrinting;
+  bool preserve_recording = want_to_print && clear_frame_;
 
-  bool preserve_recording = want_to_preserve_recording && clear_frame_;
-
-  if (want_to_preserve_recording != preserve_recording) {
+  // If a previous flush rasterized some paint ops, we lost part of the
+  // recording and must fallback to raster printing instead of vectorial
+  // printing. Record the reason why this happened.
+  if (want_to_print && !clear_frame_) {
     printing_fallback_reason_ = last_flush_reason_;
   }
   last_flush_reason_ = reason;
-  // Preserve recording only works correctly with cleared frames.
-  DCHECK(clear_frame_ || !preserve_recording);
   clear_frame_ = false;
   if (reason == FlushReason::kClear) {
     clear_frame_ = true;
     printing_fallback_reason_ = FlushReason::kNone;
   }
-  cc::PaintRecord last_recording = recorder_.finishRecordingAsPicture();
-  RasterRecord(preserve_recording ? last_recording : std::move(last_recording));
+  cc::PaintRecord recording = recorder_.finishRecordingAsPicture();
+  RasterRecord(recording);
   total_pinned_image_bytes_ = 0;
-  if (!preserve_recording) {
-    return absl::nullopt;
-  }
-  return last_recording;
+  last_recording_ =
+      preserve_recording ? absl::optional(recording) : absl::nullopt;
+  return recording;
 }
 
 void CanvasResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
@@ -1596,8 +1594,16 @@ bool CanvasResourceProvider::WritePixels(const SkImageInfo& orig_info,
 
   EnsureSkiaCanvas();
 
-  return GetSkSurface()->getCanvas()->writePixels(orig_info, pixels, row_bytes,
-                                                  x, y);
+  bool wrote_pixels = GetSkSurface()->getCanvas()->writePixels(
+      orig_info, pixels, row_bytes, x, y);
+
+  if (wrote_pixels) {
+    // WritePixels content is not saved in recording. Calling WritePixels
+    // therefore invalidates `last_recording_` because it's now missing that
+    // information.
+    last_recording_ = absl::nullopt;
+  }
+  return wrote_pixels;
 }
 
 void CanvasResourceProvider::Clear() {

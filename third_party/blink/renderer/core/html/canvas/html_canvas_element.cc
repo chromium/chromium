@@ -1004,23 +1004,30 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     // That test should be run manually against CLs that touch this code.
     if (IsPrinting() && IsRenderingContext2D() && canvas2d_bridge_) {
       canvas2d_bridge_->FlushRecording(FlushReason::kPrinting);
-      if (canvas2d_bridge_->getLastRecord() &&
+      CanvasResourceProvider* provider = ResourceProvider();
+      // The provider must be checked after calling `FlushRecording` in case
+      // the playback crashed the context.
+      if (provider == nullptr) {
+        return;
+      }
+      // `FlushRecording` might be a no-op if a flush already happened before.
+      // Fortunately, the last flush recording was kept by the provider.
+      const absl::optional<cc::PaintRecord>& last_recording =
+          provider->LastRecording();
+      if (last_recording.has_value() &&
           FilterQuality() != cc::PaintFlags::FilterQuality::kNone) {
         context.Canvas()->save();
         context.Canvas()->translate(r.X(), r.Y());
         context.Canvas()->scale(r.Width() / Size().width(),
                                 r.Height() / Size().height());
-        context.Canvas()->drawPicture(*canvas2d_bridge_->getLastRecord());
+        context.Canvas()->drawPicture(*last_recording);
         context.Canvas()->restore();
         UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", true);
         return;
       }
-      if (ResourceProvider()) {
-        UMA_HISTOGRAM_ENUMERATION(
-            "Blink.Canvas.VectorPrintFallbackReason",
-            ResourceProvider()->printing_fallback_reason());
-        UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", false);
-      }
+      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.VectorPrintFallbackReason",
+                                provider->printing_fallback_reason());
+      UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", false);
     }
     // or image snapshot rendering: grab a snapshot and raster it.
     SkBlendMode composite_operator =
