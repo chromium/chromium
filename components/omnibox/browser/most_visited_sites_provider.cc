@@ -149,7 +149,7 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
       }
       --relevance;
     }
-  } else if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
+  } else {
     AutocompleteMatch match =
         BuildMatch(provider, client, std::u16string(), GURL::EmptyGURL(),
                    kMostVisitedTilesAggregateRelevance,
@@ -176,14 +176,6 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
     }
 
     matches.push_back(std::move(match));
-  } else {
-    int relevance = 600;
-    for (const auto& tile : container) {
-      matches.emplace_back(BuildMatch(provider, client, tile.title, tile.url,
-                                      relevance,
-                                      AutocompleteMatchType::NAVSUGGEST));
-      --relevance;
-    }
   }
 
   base::UmaHistogramExactLinear(kHistogramTileTypeCountSearch, num_search_tiles,

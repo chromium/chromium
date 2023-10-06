@@ -83,7 +83,6 @@ constexpr const auto* SRP_URL = u"https://www.google.com/?q=flowers";
 constexpr const auto* FTP_URL = u"ftp://just.for.filtering.com";
 
 enum class ExpectedUiType {
-  kIndividualMatches,
   kAggregateMatch,
   kIndividualTiles
 };
@@ -199,19 +198,6 @@ void MostVisitedSitesProviderTest::CheckMatchesEquivalentTo(
       }
       break;
     }
-  } else if (ui_type == ExpectedUiType::kIndividualMatches) {
-    ASSERT_EQ(urls.size(), NumMostVisitedMatches())
-        << "Unexpected number of NAVSUGGEST matches";
-    for (const auto& match : result) {
-      if (match.type != AutocompleteMatchType::NAVSUGGEST)
-        continue;
-
-      EXPECT_EQ(urls[match_index].url, match.destination_url)
-          << "Invalid Match URL at position " << match_index;
-      EXPECT_EQ(urls[match_index].title, match.description)
-          << "Invalid Match Title at position " << match_index;
-      ++match_index;
-    }
   } else if (ui_type == ExpectedUiType::kIndividualTiles) {
     ASSERT_EQ(urls.size(), NumMostVisitedMatches())
         << "Unexpected number of TILE matches";
@@ -266,17 +252,11 @@ void MostVisitedSitesProviderTest::OnProviderUpdate(
 
 TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
   base::test::ScopedFeatureList features;
-  // Note: Grouping framework for ZPS suppresses URL suggestions on affected
-  // platforms.
-  features.InitWithFeatures(
-      {}, {omnibox::kMostVisitedTiles, omnibox::kGroupingFrameworkForZPS});
-
   auto input = BuildAutocompleteInputForWebOnFocus();
   provider_->Start(input, true);
   EXPECT_EQ(0u, NumMostVisitedMatches());
   EXPECT_TRUE(top_sites_->EmitURLs());
-  CheckMatchesEquivalentTo(top_sites_->urls(),
-                           ExpectedUiType::kIndividualMatches);
+  CheckMatchesEquivalentTo(top_sites_->urls(), ExpectedUiType::kAggregateMatch);
   EXPECT_EQ(1, provider_update_count_);
   provider_->Stop(false, false);
 
@@ -285,7 +265,7 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
   provider_->Stop(false, false);
   // Since this provider's async logic is still in-flight (`EmitURLs()` has not
   // been called yet), we should not be reporting anything from past runs.
-  CheckMatchesEquivalentTo({}, ExpectedUiType::kIndividualMatches);
+  EXPECT_EQ(0ul, NumMostVisitedMatches());
   EXPECT_EQ(1, provider_update_count_);
 
   history::MostVisitedURLList old_urls = top_sites_->urls();
@@ -297,7 +277,7 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
   }};
   top_sites_->urls().assign(new_urls.begin(), new_urls.end());
   EXPECT_TRUE(top_sites_->EmitURLs());
-  CheckMatchesEquivalentTo({}, ExpectedUiType::kIndividualMatches);
+  EXPECT_EQ(0ul, NumMostVisitedMatches());
   EXPECT_EQ(1, provider_update_count_);
 
   provider_->Start(input, true);
@@ -307,13 +287,12 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
   // Stale results (reported for the first of the two Start() requests) should
   // be rejected.
   EXPECT_TRUE(top_sites_->EmitURLs());
-  CheckMatchesEquivalentTo({}, ExpectedUiType::kIndividualMatches);
+  EXPECT_EQ(0ul, NumMostVisitedMatches());
   EXPECT_EQ(1, provider_update_count_);
 
   // Results for the second Start() action should be recorded.
   EXPECT_TRUE(top_sites_->EmitURLs());
-  CheckMatchesEquivalentTo(top_sites_->urls(),
-                           ExpectedUiType::kIndividualMatches);
+  CheckMatchesEquivalentTo(top_sites_->urls(), ExpectedUiType::kAggregateMatch);
   EXPECT_EQ(2, provider_update_count_);
   provider_->Stop(false, false);
 }

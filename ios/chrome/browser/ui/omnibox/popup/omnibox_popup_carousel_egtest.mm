@@ -112,9 +112,7 @@ id<GREYMatcher> CarouselMatcher() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  auto bundledConfig = std::string(omnibox::kMostVisitedTiles.name);
-  config.additional_args.push_back("--enable-features=" + bundledConfig + "<" +
-                                   bundledConfig);
+  auto bundledConfig = std::string("MostVisitedTiles");
   config.additional_args.push_back("--force-fieldtrials=" + bundledConfig +
                                    "/Test");
 

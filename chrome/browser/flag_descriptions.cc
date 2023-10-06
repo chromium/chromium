@@ -2407,11 +2407,6 @@ const char kOmniboxModernizeVisualUpdateDescription[] =
     "When enabled, Omnibox will show a new UI which is visually "
     "updated. This flag is for the step 1 in the Clank Omnibox revamp plan.";
 
-const char kOmniboxMostVisitedTilesName[] = "Omnibox Most Visited Tiles";
-const char kOmniboxMostVisitedTilesDescription[] =
-    "Display a list of frequently visited pages from history as a single row "
-    "with a carousel instead of one URL per line.";
-
 const char kOmniboxMostVisitedTilesHorizontalRenderGroupName[] =
     "Omnibox MV Tiles Horizontal Render Group";
 const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[] =

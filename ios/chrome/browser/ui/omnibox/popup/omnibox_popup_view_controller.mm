@@ -229,7 +229,6 @@ BOOL ShouldDismissKeyboardOnScroll() {
 }
 
 - (OmniboxPopupCarouselCell*)carouselCell {
-  DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
   if (!_carouselCell) {
     _carouselCell = [[OmniboxPopupCarouselCell alloc] init];
     _carouselCell.delegate = self;
@@ -350,12 +349,11 @@ BOOL ShouldDismissKeyboardOnScroll() {
                                   omniboxFrame.size.width
                             : 0;
 
-  if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
-    // Adjust the carousel to be aligned with the omnibox textfield.
-    UIEdgeInsets margins = self.carouselCell.layoutMargins;
-    self.carouselCell.layoutMargins =
-        UIEdgeInsetsMake(margins.top, leftMargin, margins.bottom, rightMargin);
-  }
+  // Adjust the carousel to be aligned with the omnibox textfield.
+  UIEdgeInsets margins = self.carouselCell.layoutMargins;
+  self.carouselCell.layoutMargins =
+      UIEdgeInsetsMake(margins.top, leftMargin, margins.bottom, rightMargin);
+
   // Update the headers padding.
   for (NSInteger i = 0; i < self.tableView.numberOfSections; ++i) {
     UITableViewHeaderFooterView* headerView =
@@ -439,8 +437,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
       return YES;
     case OmniboxKeyboardActionLeftArrow:
     case OmniboxKeyboardActionRightArrow:
-      if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles) &&
-          self.carouselCell.isHighlighted) {
+      if (self.carouselCell.isHighlighted) {
         return [self.carouselCell canPerformKeyboardAction:keyboardAction];
       }
       return NO;
@@ -684,7 +681,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
 
   // When most visited tiles are enabled, only allow section separator under the
   // verbatim suggestion.
-  if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles) && section > 0) {
+  if (section > 0) {
     return FLT_MIN;
   }
 
@@ -699,7 +696,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
   }
   // When most visited tiles are enabled, only allow section separator under the
   // verbatim suggestion.
-  if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles) && section > 0) {
+  if (section > 0) {
     return nil;
   }
 
@@ -730,7 +727,6 @@ BOOL ShouldDismissKeyboardOnScroll() {
     case SuggestionGroupDisplayStyleDefault:
       return self.currentResult[section].suggestions.count;
     case SuggestionGroupDisplayStyleCarousel:
-      DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
       if (self.shouldHideCarousel) {
         return 0;
       }
@@ -852,7 +848,6 @@ BOOL ShouldDismissKeyboardOnScroll() {
       return cell;
     }
     case SuggestionGroupDisplayStyleCarousel: {
-      DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
       NSArray<CarouselItem*>* carouselItems = [self
           carouselItemsFromSuggestionGroup:self.currentResult[indexPath.section]
                             groupIndexPath:indexPath];

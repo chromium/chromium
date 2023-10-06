@@ -594,11 +594,6 @@ extern const char kMixedContentAutoupgradeDescription[];
 extern const char kModernTabStripName[];
 extern const char kModernTabStripDescription[];
 
-// Title and description of the flag to enable the most visited tiles in the
-// omnibox.
-extern const char kMostVisitedTilesName[];
-extern const char kMostVisitedTilesDescription[];
-
 // Title and description of the flag to enable multiline gradient support in
 // FadeTruncatingLabel.
 extern const char kMultilineFadeTruncatingLabelName[];

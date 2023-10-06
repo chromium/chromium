@@ -1392,9 +1392,6 @@ extern const char kOmniboxModernizeVisualUpdateDescription[];
 extern const char kOmniboxMatchToolbarAndStatusBarColorName[];
 extern const char kOmniboxMatchToolbarAndStatusBarColorDescription[];
 
-extern const char kOmniboxMostVisitedTilesName[];
-extern const char kOmniboxMostVisitedTilesDescription[];
-
 extern const char kOmniboxMostVisitedTilesHorizontalRenderGroupName[];
 extern const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[];
 

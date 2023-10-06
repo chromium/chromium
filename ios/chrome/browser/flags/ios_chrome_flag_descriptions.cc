@@ -687,12 +687,6 @@ const char kModernTabStripName[] = "Modern TabStrip";
 const char kModernTabStripDescription[] =
     "When enabled, the newly implemented tabstrip can be tested.";
 
-const char kMostVisitedTilesName[] = "Most Visited Tiles";
-const char kMostVisitedTilesDescription[] =
-    "Enables the most visited tiles in the omnibox. Shows most visited "
-    "websites in a tile format when the user focuses the omnibox on a search "
-    "result page (SRP) or on web.";
-
 const char kMultilineFadeTruncatingLabelName[] =
     "Multiline Fade Truncating Label";
 const char kMultilineFadeTruncatingLabelDescription[] =

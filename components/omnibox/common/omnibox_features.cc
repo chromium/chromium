@@ -309,12 +309,6 @@ BASE_FEATURE(kSuggestionAnswersColorReverse,
              "SuggestionAnswersColorReverse",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, frequently visited sites are presented in form of a single row
-// with a carousel of tiles, instead of one URL per row.
-BASE_FEATURE(kMostVisitedTiles,
-             "OmniboxMostVisitedTiles",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, makes Most Visited Tiles a Horizontal render group.
 // Horizontal render group decomposes aggregate suggestions (such as old Most
 // Visited Tiles), expecting individual AutocompleteMatch entry for every

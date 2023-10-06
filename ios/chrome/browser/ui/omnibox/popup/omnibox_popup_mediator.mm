@@ -478,7 +478,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         self.autocompleteResult.match_at((NSUInteger)i);
     if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
       DCHECK(match.type == AutocompleteMatchType::TILE_NAVSUGGEST);
-      DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
       for (const AutocompleteMatch::SuggestTile& tile : match.suggest_tiles) {
         AutocompleteMatch tileMatch = AutocompleteMatch(match);
         // TODO(crbug.com/1363546): replace with a new wrapper.
@@ -531,13 +530,13 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
             : nil;
     SuggestionGroupDisplayStyle displayStyle =
         SuggestionGroupDisplayStyleDefault;
-    if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
-      if (currentSectionId &&
-          static_cast<omnibox::GroupSection>(currentSectionId.intValue) ==
-              omnibox::SECTION_MOBILE_MOST_VISITED) {
-        displayStyle = SuggestionGroupDisplayStyleCarousel;
-      }
+
+    if (currentSectionId &&
+        static_cast<omnibox::GroupSection>(currentSectionId.intValue) ==
+            omnibox::SECTION_MOBILE_MOST_VISITED) {
+      displayStyle = SuggestionGroupDisplayStyleCarousel;
     }
+
     [groups addObject:[AutocompleteSuggestionGroupImpl
                           groupWithTitle:groupTitle
                              suggestions:currentGroup
