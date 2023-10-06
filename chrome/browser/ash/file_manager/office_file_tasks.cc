@@ -87,8 +87,7 @@ void LogOneDriveOpenErrorUmaAfterFallback(
       NOTREACHED();
       break;
   }
-  UMA_HISTOGRAM_ENUMERATION(ash::cloud_upload::kOneDriveTaskResultMetricName,
-                            task_result);
+  cloud_open_metrics->LogTaskResult(task_result);
 }
 
 void LogGoogleDriveOpenErrorUmaAfterFallback(
@@ -107,8 +106,7 @@ void LogGoogleDriveOpenErrorUmaAfterFallback(
           ash::cloud_upload::OfficeDriveOpenErrors::kDriveFsInterface);
       break;
   }
-  UMA_HISTOGRAM_ENUMERATION(ash::cloud_upload::kGoogleDriveTaskResultMetricName,
-                            task_result);
+  cloud_open_metrics->LogTaskResult(task_result);
 }
 
 }  // namespace

@@ -28,6 +28,9 @@ class CloudOpenMetrics {
   CloudOpenMetrics(const CloudOpenMetrics&&) = delete;
   CloudOpenMetrics& operator=(CloudOpenMetrics&&) = delete;
 
+  // Log the `value` for the TaskResult metric.
+  void LogTaskResult(OfficeTaskResult value);
+
   // Log the `value` for the TransferRequired metric.
   void LogTransferRequired(OfficeFilesTransferRequired value);
 
@@ -75,6 +78,7 @@ class CloudOpenMetrics {
   };
 
   CloudProvider cloud_provider_;
+  Metric<OfficeTaskResult> task_result_;
   Metric<OfficeFilesTransferRequired> transfer_required_;
   base::WeakPtrFactory<CloudOpenMetrics> weak_ptr_factory_{this};
 };

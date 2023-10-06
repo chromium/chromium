@@ -11,12 +11,18 @@ namespace ash::cloud_upload {
 
 CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider)
     : cloud_provider_(cloud_provider),
-      transfer_required_(Metric<OfficeFilesTransferRequired>(
-          cloud_provider_ == CloudProvider::kGoogleDrive
-              ? kDriveTransferRequiredMetric
-              : kOneDriveTransferRequiredMetric)) {}
+      task_result_(cloud_provider_ == CloudProvider::kGoogleDrive
+                       ? kGoogleDriveTaskResultMetricName
+                       : kOneDriveTaskResultMetricName),
+      transfer_required_(cloud_provider_ == CloudProvider::kGoogleDrive
+                             ? kDriveTransferRequiredMetric
+                             : kOneDriveTransferRequiredMetric) {}
 
 CloudOpenMetrics::~CloudOpenMetrics() = default;
+
+void CloudOpenMetrics::LogTaskResult(OfficeTaskResult value) {
+  task_result_.Log(value);
+}
 
 void CloudOpenMetrics::LogTransferRequired(OfficeFilesTransferRequired value) {
   transfer_required_.Log(value);

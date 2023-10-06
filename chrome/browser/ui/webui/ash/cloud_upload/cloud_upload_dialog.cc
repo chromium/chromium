@@ -818,8 +818,7 @@ void CloudOpenTask::FinishedDriveUpload(absl::optional<GURL> url,
     OpenUploadedDriveUrl(url.value(), task_result_uma);
   } else {
     has_upload_errors_ = true;
-    UMA_HISTOGRAM_ENUMERATION(kGoogleDriveTaskResultMetricName,
-                              OfficeTaskResult::kFailedToUpload);
+    cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kFailedToUpload);
   }
   if (--pending_uploads_) {
     return;
@@ -851,8 +850,7 @@ void CloudOpenTask::FinishedOneDriveUpload(
                                task_result_uma));
   } else {
     has_upload_errors_ = true;
-    UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
-                              OfficeTaskResult::kFailedToUpload);
+    cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kFailedToUpload);
   }
   if (--pending_uploads_) {
     return;
@@ -867,10 +865,10 @@ void CloudOpenTask::LogGoogleDriveOpenResultUMA(
     OfficeTaskResult success_task_result,
     OfficeDriveOpenErrors open_result) {
   UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName, open_result);
-  UMA_HISTOGRAM_ENUMERATION(kGoogleDriveTaskResultMetricName,
-                            open_result == OfficeDriveOpenErrors::kSuccess
-                                ? success_task_result
-                                : OfficeTaskResult::kFailedToOpen);
+  cloud_open_metrics_->LogTaskResult(open_result ==
+                                             OfficeDriveOpenErrors::kSuccess
+                                         ? success_task_result
+                                         : OfficeTaskResult::kFailedToOpen);
 }
 
 // Logs UMA when the OneDrive task ends with an attempt to open a file.
@@ -878,10 +876,10 @@ void CloudOpenTask::LogOneDriveOpenResultUMA(
     OfficeTaskResult success_task_result,
     OfficeOneDriveOpenErrors open_result) {
   UMA_HISTOGRAM_ENUMERATION(kOneDriveErrorMetricName, open_result);
-  UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
-                            open_result == OfficeOneDriveOpenErrors::kSuccess
-                                ? success_task_result
-                                : OfficeTaskResult::kFailedToOpen);
+  cloud_open_metrics_->LogTaskResult(open_result ==
+                                             OfficeOneDriveOpenErrors::kSuccess
+                                         ? success_task_result
+                                         : OfficeTaskResult::kFailedToOpen);
 }
 
 void CloudOpenTask::RecordUploadLatencyUMA() {
@@ -1117,11 +1115,11 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
   } else if (user_response == kUserActionCancel) {
     // Do nothing.
   } else if (user_response == kUserActionCancelGoogleDrive) {
-    UMA_HISTOGRAM_ENUMERATION(kGoogleDriveTaskResultMetricName,
-                              OfficeTaskResult::kCancelledAtConfirmation);
+    cloud_open_metrics_->LogTaskResult(
+        OfficeTaskResult::kCancelledAtConfirmation);
   } else if (user_response == kUserActionCancelOneDrive) {
-    UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
-                              OfficeTaskResult::kCancelledAtConfirmation);
+    cloud_open_metrics_->LogTaskResult(
+        OfficeTaskResult::kCancelledAtConfirmation);
   } else {
     LaunchLocalFileTask(user_response);
   }
