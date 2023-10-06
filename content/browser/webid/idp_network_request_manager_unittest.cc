@@ -1193,6 +1193,9 @@ TEST_F(IdpNetworkRequestManagerTest, TokenWrongMimeType) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAuthz);
+
   net::HttpStatusCode http_status = net::HTTP_OK;
   const std::string& mime_type = "application/json";
 
@@ -1219,6 +1222,9 @@ TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ContinueOnCanBeRelativeUrl) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAuthz);
+
   net::HttpStatusCode http_status = net::HTTP_OK;
   const std::string& mime_type = "application/json";
 

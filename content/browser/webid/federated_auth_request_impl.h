@@ -226,10 +226,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   void MaybeShowAccountsDialog();
   void ShowModalDialog(const GURL& url);
-  void ShowErrorDialog(
-      const GURL& idp_config_url,
-      absl::optional<IdpNetworkRequestManager::IdentityCredentialTokenError>
-          error);
+  void ShowErrorDialog(const GURL& idp_config_url,
+                       absl::optional<TokenError> error);
 
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
   // failure UI if applicable.

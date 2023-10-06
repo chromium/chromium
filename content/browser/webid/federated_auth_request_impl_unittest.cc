@@ -61,8 +61,7 @@ using DismissReason = content::IdentityRequestDialogController::DismissReason;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
-using TokenError =
-    content::IdpNetworkRequestManager::IdentityCredentialTokenError;
+using TokenError = content::IdentityCredentialTokenError;
 using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using TokenStatus = content::FedCmRequestIdTokenStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
@@ -299,6 +298,7 @@ struct MockConfiguration {
   IdpSigninStatusMismatchDialogAction idp_signin_status_mismatch_dialog_action;
   absl::optional<GURL> continue_on;
   MediationRequirement mediation_requirement = MediationRequirement::kOptional;
+  absl::optional<TokenError> token_error;
 };
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
@@ -494,6 +494,21 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                         ContinueOnCallback on_continue) override {
     ++num_fetched_[FetchedEndpoint::TOKEN];
 
+    if (config_.token_error) {
+      TokenResult result;
+      result.error = config_.token_error;
+
+      base::OnceCallback bound_callback =
+          base::BindOnce(std::move(callback), config_.token_response, result);
+      if (config_.delay_token_response) {
+        delayed_callbacks_.push_back(std::move(bound_callback));
+      } else {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(bound_callback));
+      }
+      return;
+    }
+
     if (config_.continue_on) {
       base::OnceCallback bound_callback =
           base::BindOnce(std::move(on_continue), config_.token_response,
@@ -594,6 +609,7 @@ class TestDialogController
     bool did_show_idp_signin_failure_dialog{false};
     // State related to ShowErrorDialog().
     bool did_show_error_dialog{false};
+    absl::optional<TokenError> token_error;
   };
 
   explicit TestDialogController(MockConfiguration config)
@@ -697,6 +713,7 @@ class TestDialogController
     }
 
     state_->did_show_error_dialog = true;
+    state_->token_error = error;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(dismiss_callback),
                                   DismissReason::kCloseButton));
@@ -5025,6 +5042,67 @@ TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogDisabled) {
 
   EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
   EXPECT_FALSE(dialog_controller_state_.did_show_error_dialog);
+}
+
+// Test that an error dialog is shown when the token response is missing.
+TEST_F(FederatedAuthRequestImplTest, NoResponseErrorDialogShown) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.token_response.parse_status = ParseStatus::kNoResponseError;
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      /*standalone_console_message=*/absl::nullopt,
+      /*selected_idp_config_url=*/absl::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
+  EXPECT_TRUE(dialog_controller_state_.did_show_error_dialog);
+}
+
+// Test that an error url is sent to the UI if it's same-site with the IdP.
+TEST_F(FederatedAuthRequestImplTest, ErrorUrlIsSameSiteWithIdP) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.token_error =
+      TokenError(/*token=*/"", GURL("https://foo.idp.example/error"));
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      /*standalone_console_message=*/absl::nullopt,
+      /*selected_idp_config_url=*/absl::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
+  EXPECT_TRUE(dialog_controller_state_.did_show_error_dialog);
+  EXPECT_EQ(dialog_controller_state_.token_error->url,
+            GURL("https://foo.idp.example/error"));
+}
+
+// Test that an error url is not sent to the UI if it's cross-site with the IdP.
+TEST_F(FederatedAuthRequestImplTest, ErrorUrlIsCrossSiteWithIdP) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.token_error =
+      TokenError(/*token=*/"", GURL("https://not-idp.example/error"));
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      /*standalone_console_message=*/absl::nullopt,
+      /*selected_idp_config_url=*/absl::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
+  EXPECT_TRUE(dialog_controller_state_.did_show_error_dialog);
+  EXPECT_EQ(dialog_controller_state_.token_error->url, GURL());
 }
 
 // Test that permission is embargoed upon closing a mismatch dialog.

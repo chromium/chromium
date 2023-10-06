@@ -45,8 +45,7 @@ using ClientMetadata = IdpNetworkRequestManager::ClientMetadata;
 using Endpoints = IdpNetworkRequestManager::Endpoints;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using TokenResult = content::IdpNetworkRequestManager::TokenResult;
-using TokenError =
-    content::IdpNetworkRequestManager::IdentityCredentialTokenError;
+using TokenError = content::IdentityCredentialTokenError;
 using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using AccountsResponseInvalidReason =
     content::IdpNetworkRequestManager::AccountsResponseInvalidReason;
@@ -619,6 +618,19 @@ void OnTokenRequestParsed(
   const std::string* token = response.FindString(kTokenKey);
   const std::string* continue_on = response.FindString(kContinueOnKey);
 
+  if (IsFedCmErrorEnabled()) {
+    const base::Value::Dict* response_error = response.FindDict(kErrorKey);
+    if (response_error) {
+      std::string error_code = ExtractString(*response_error, kErrorCodeKey);
+      GURL error_url = ExtractUrl(*response_error, kErrorUrlKey);
+      token_result.error = TokenError{error_code, error_url};
+
+      std::move(callback).Run(
+          {ParseStatus::kSuccess, fetch_status.response_code}, token_result);
+      return;
+    }
+  }
+
   if (token) {
     token_result.token = *token;
     std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
@@ -626,22 +638,13 @@ void OnTokenRequestParsed(
     return;
   }
 
-  if (continue_on) {
+  if (IsFedCmAuthzEnabled() && continue_on) {
     GURL url = token_url.Resolve(*continue_on);
     if (url.is_valid()) {
       std::move(continue_on_callback)
           .Run({ParseStatus::kSuccess, fetch_status.response_code},
                std::move(url));
       return;
-    }
-  }
-
-  if (IsFedCmErrorEnabled()) {
-    const base::Value::Dict* response_error = response.FindDict(kErrorKey);
-    if (response_error) {
-      std::string error_code = ExtractString(*response_error, kErrorCodeKey);
-      GURL error_url = ExtractUrl(*response_error, kErrorUrlKey);
-      token_result.error = TokenError{error_code, error_url};
     }
   }
 

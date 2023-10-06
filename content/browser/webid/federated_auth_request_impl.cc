@@ -1870,17 +1870,13 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
 
 void FederatedAuthRequestImpl::ShowErrorDialog(
     const GURL& idp_config_url,
-    absl::optional<IdpNetworkRequestManager::IdentityCredentialTokenError>
-        error) {
+    absl::optional<TokenError> token_error) {
   CHECK(idp_infos_.find(idp_config_url) != idp_infos_.end());
 
   absl::optional<std::string> iframe_for_display = GetIframeOriginForDisplay(
       GetEmbeddingOrigin(), origin(),
       base::BindOnce(&FederatedAuthRequestImpl::CompleteRequestWithError,
                      weak_ptr_factory_.GetWeakPtr()));
-  absl::optional<TokenError> token_error =
-      error ? absl::make_optional<TokenError>(error->code, error->url)
-            : absl::nullopt;
 
   // TODO(crbug.com/1485710): Refactor IdentityCredentialTokenError
   request_dialog_controller_->ShowErrorDialog(
@@ -1890,9 +1886,9 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
       idp_infos_[idp_config_url]->metadata, token_error,
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissErrorDialog,
                      weak_ptr_factory_.GetWeakPtr(), token_error),
-      error && !error->url.is_empty()
+      token_error && !token_error->url.is_empty()
           ? base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
-                           weak_ptr_factory_.GetWeakPtr(), error->url)
+                           weak_ptr_factory_.GetWeakPtr(), token_error->url)
           : base::NullCallback());
 }
 
@@ -1902,10 +1898,22 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
     IdpNetworkRequestManager::TokenResult result) {
   CHECK(result.token.empty() || !result.error);
 
-  auto complete_request_callback =
+  bool should_show_error_ui =
       IsFedCmErrorEnabled() &&
-              status.parse_status !=
-                  IdpNetworkRequestManager::ParseStatus::kSuccess
+      (result.error ||
+       status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess);
+  if (should_show_error_ui && result.error) {
+    std::string error_url_etld_plus_one =
+        FormatUrlWithDomain(result.error->url, /*for_display=*/false);
+    std::string idp_etld_plus_one =
+        FormatUrlWithDomain(idp->config_url, /*for_display=*/false);
+    if (error_url_etld_plus_one != idp_etld_plus_one) {
+      result.error->url = GURL();
+    }
+  }
+
+  auto complete_request_callback =
+      should_show_error_ui
           ? base::BindOnce(&FederatedAuthRequestImpl::ShowErrorDialog,
                            weak_ptr_factory_.GetWeakPtr(), idp->config_url,
                            result.error)

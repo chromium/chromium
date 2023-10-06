@@ -126,11 +126,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     GURL terms_of_service_url;
   };
 
-  struct IdentityCredentialTokenError {
-    std::string code;
-    GURL url;
-  };
-
   struct CONTENT_EXPORT TokenResult {
     TokenResult();
     ~TokenResult();
