@@ -68,7 +68,7 @@ dictionary AuctionAdInterestGroup {
 
   sequence<DOMString> auctionServerRequestFlags;
 
-  DOMString? additionalBidKey;
+  DOMString additionalBidKey;
 
   USVString aggregationCoordinatorOrigin;
 };
