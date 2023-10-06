@@ -2798,6 +2798,8 @@ chromium-metrics-reviews@google.com.
     <variant name=".GetAllLoginsAsync" summary="for GetAllLoginsAsync"/>
     <variant name=".GetAutofillableLoginsAsync"
         summary="for GetAutofillableLoginsAsync"/>
+    <variant name=".GetGroupedMatchingLoginsAsync"
+        summary="for GetGroupedMatchingLoginsAsync"/>
     <variant name=".GetLoginsAsync" summary="for GetLoginsAsync"/>
     <variant name=".RemoveLoginAsync" summary="for RemoveLoginAsync"/>
     <variant name=".UpdateLoginAsync" summary="for UpdateLoginAsync"/>
@@ -2821,6 +2823,8 @@ chromium-metrics-reviews@google.com.
     <variant name=".GetAllLoginsAsync" summary="for GetAllLoginsAsync"/>
     <variant name=".GetAutofillableLoginsAsync"
         summary="for GetAutofillableLoginsAsync"/>
+    <variant name=".GetGroupedMatchingLoginsAsync"
+        summary="for GetGroupedMatchingLoginsAsync"/>
     <variant name=".GetLoginsAsync" summary="for GetLoginsAsync"/>
     <variant name=".RemoveLoginAsync" summary="for RemoveLoginAsync"/>
     <variant name=".UpdateLoginAsync" summary="for UpdateLoginAsync"/>
@@ -2845,6 +2849,8 @@ chromium-metrics-reviews@google.com.
     <variant name=".GetAllLoginsAsync" summary="retrieving all logins from"/>
     <variant name=".GetAutofillableLoginsAsync"
         summary="retrieving autofillable logins from"/>
+    <variant name=".GetGroupedMatchingLoginsAsync"
+        summary="for GetGroupedMatchingLoginsAsync"/>
     <variant name=".GetLoginsAsync"
         summary="retrieving logins filtered by signon realm from"/>
     <variant name=".RemoveLoginAsync" summary="removing a login from"/>
