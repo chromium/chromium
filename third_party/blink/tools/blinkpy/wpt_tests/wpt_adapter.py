@@ -224,7 +224,10 @@ class WPTAdapter:
         # Set up logging as early as possible.
         self._set_up_runner_output_options(runner_options)
         self._set_up_runner_config_options(runner_options)
-        self._set_up_runner_ssl_options(runner_options)
+        # TODO(crbug.com/1351820): Find the difference of the host cert ssl set up and make iOS
+        # use the same.
+        if self.product.name != 'chrome_ios':
+            self._set_up_runner_ssl_options(runner_options)
         self._set_up_runner_debugging_options(runner_options)
         self._set_up_runner_tests(runner_options, tmp_dir)
 
