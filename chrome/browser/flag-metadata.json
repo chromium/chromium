@@ -6167,13 +6167,13 @@
   },
   {
     "name": "omnibox-grouping-framework-non-zps",
-    "owners": ["manukh", "mahmadi", "ender", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 120
+    "owners": ["stkhapugin", "manukh", "mahmadi", "ender", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "omnibox-grouping-framework-zps",
-    "owners": ["manukh", "mahmadi", "ender", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 120
+    "owners": ["stkhapugin", "manukh", "mahmadi", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "omnibox-https-upgrades",
@@ -6202,8 +6202,8 @@
   },
   {
     "name": "omnibox-match-toolbar-and-status-bar-color",
-    "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 120
+    "owners": [ "ender", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 130
   },
   {
     "name": "omnibox-max-url-matches",
@@ -6381,8 +6381,8 @@
   },
   {
     "name": "omnibox-trending-zero-prefix-suggestions-on-ntp",
-    "owners": [ "ender", "stkhapugin", "mahmadi", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
+    "owners": [ "stkhapugin", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "omnibox-ui-max-autocomplete-matches",
@@ -6486,8 +6486,8 @@
   },
   {
     "name": "organic-repeatable-queries",
-    "owners": [ "mahmadi", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
+    "owners": [ "stkhapugin", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "origin-agent-cluster-default",
