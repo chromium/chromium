@@ -1573,6 +1573,11 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // Wrapper for glBindRenderbuffer since we need to track the current targets.
   void DoBindRenderbuffer(GLenum target, GLuint renderbuffer);
 
+  // Updates any targets to which `client_id` is bound to be bound to `texture`.
+  void UpdateTextureBinding(GLenum target,
+                            GLuint client_id,
+                            TextureRef* texture_ref);
+
   // Wrapper for glBindTexture since we need to track the current targets.
   void DoBindTexture(GLenum target, GLuint texture);
 
@@ -5683,6 +5688,47 @@ void GLES2DecoderImpl::DoBindRenderbuffer(GLenum target, GLuint client_id) {
   state_.bound_renderbuffer = renderbuffer;
   state_.bound_renderbuffer_valid = true;
   api()->glBindRenderbufferEXTFn(GL_RENDERBUFFER, service_id);
+}
+
+void GLES2DecoderImpl::UpdateTextureBinding(GLenum target,
+                                            GLuint client_id,
+                                            TextureRef* texture) {
+  CHECK(texture);
+  size_t last_active_unit_index = state_.active_texture_unit;
+
+  for (size_t curr_unit_index = 0;
+       curr_unit_index < state_.texture_units.size(); curr_unit_index++) {
+    auto curr_unit = state_.texture_units[curr_unit_index];
+    auto* curr_texture = curr_unit.GetInfoForTarget(target);
+
+    if (!curr_texture) {
+      continue;
+    }
+
+    if (curr_texture->client_id() != client_id) {
+      continue;
+    }
+
+    // `target` is bound to `client_id` in this unit, so we need to update the
+    // service-side binding.
+
+    // First update the active texture unit if needed.
+    if (last_active_unit_index != curr_unit_index) {
+      api()->glActiveTextureFn(
+          static_cast<GLenum>(GL_TEXTURE0 + curr_unit_index));
+      last_active_unit_index = curr_unit_index;
+    }
+
+    // Now update the texture binding.
+    api()->glBindTextureFn(target, texture->service_id());
+    curr_unit.SetInfoForTarget(target, texture);
+  }
+
+  // Reset the active texture unit if it was changed.
+  if (last_active_unit_index != state_.active_texture_unit) {
+    api()->glActiveTextureFn(
+        static_cast<GLenum>(GL_TEXTURE0 + state_.active_texture_unit));
+  }
 }
 
 void GLES2DecoderImpl::DoBindTexture(GLenum target, GLuint client_id) {
@@ -17131,8 +17177,50 @@ void GLES2DecoderImpl::DoCreateAndConsumeTextureINTERNAL(
 void GLES2DecoderImpl::DoTexImage2DSharedImageCHROMIUM(
     GLuint client_id,
     const volatile GLbyte* mailbox_data) {
-  // TODO(crbug.com/1410164): Implement.
-  NOTREACHED();
+  TRACE_EVENT2("gpu", "GLES2DecoderImpl::DoTexImage2DSharedImageCHROMIUM",
+               "context", logger_.GetLogPrefix(), "mailbox[0]",
+               static_cast<unsigned char>(mailbox_data[0]));
+  Mailbox mailbox = Mailbox::FromVolatile(
+      *reinterpret_cast<const volatile Mailbox*>(mailbox_data));
+  DLOG_IF(ERROR, !mailbox.Verify())
+      << "DoTexImage2DSharedImageCHROMIUM was passed an invalid "
+         "mailbox.";
+  if (!client_id) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "DoTexImage2DSharedImageCHROMIUM",
+                       "invalid client id");
+    return;
+  }
+
+  std::unique_ptr<GLTextureImageRepresentation> shared_image =
+      group_->shared_image_representation_factory()->ProduceGLTexture(mailbox);
+
+  if (!shared_image) {
+    // Mailbox missing, generate a texture.
+    bool result = GenTexturesHelper(1, &client_id);
+    DCHECK(result);
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "DoTexImage2DSharedImageCHROMIUM",
+                       "invalid mailbox name");
+    return;
+  }
+
+  Texture* texture = shared_image->GetTexture();
+  if (texture->target() != GL_TEXTURE_2D) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "DoTexImage2DSharedImageCHROMIUM",
+                       "invalid texture target.");
+    return;
+  }
+
+  // Ensure that `client_id` is mapped to `shared_image`.
+  texture_manager()->RemoveTexture(client_id);
+  auto* texture_ref =
+      texture_manager()->ConsumeSharedImage(client_id, std::move(shared_image));
+
+  // If `client_id` is currently bound to `target` in any texture units, the
+  // binding was done when `client_id` did not necessarily map to
+  // `texture->service_id()`. Update any such binding so that
+  // `texture->service_id()` (which `client_id` now maps to) is now bound in the
+  // relevant texture unit(s).
+  UpdateTextureBinding(texture->target(), client_id, texture_ref);
 }
 
 void GLES2DecoderImpl::DoCreateAndTexStorage2DSharedImageINTERNAL(
