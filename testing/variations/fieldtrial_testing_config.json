@@ -8072,6 +8072,22 @@
             ]
         }
     ],
+    "Hotspot": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "Hotspot"
+                    ]
+                }
+            ]
+        }
+    ],
     "HoverCardImagePreviewSetting": [
         {
             "platforms": [
