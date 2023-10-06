@@ -729,7 +729,7 @@ AtomicString LayoutView::NamedPageAtIndex(wtf_size_t page_index) const {
 
 PhysicalRect LayoutView::DocumentRect() const {
   NOT_DESTROYED();
-  return FlipForWritingMode(LayoutOverflowRect());
+  return PhysicalLayoutOverflowRect();
 }
 
 gfx::Size LayoutView::GetLayoutSize(

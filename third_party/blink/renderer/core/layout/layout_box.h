@@ -419,7 +419,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Unlike most of the other box geometries, layout overflow is in the
   // "physical coordinates in flipped block-flow direction" of the box.
   LayoutRect NoOverflowRect() const;
-  LayoutRect LayoutOverflowRect() const {
+  LayoutRect DeprecatedLayoutOverflowRect() const {
     NOT_DESTROYED();
     DCHECK(!IsLayoutMultiColumnSet());
     return LayoutOverflowIsSet()
@@ -428,7 +428,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   PhysicalRect PhysicalLayoutOverflowRect() const {
     NOT_DESTROYED();
-    return FlipForWritingMode(LayoutOverflowRect());
+    return FlipForWritingMode(DeprecatedLayoutOverflowRect());
   }
 
   PhysicalRect VisualOverflowRect() const final;

@@ -1112,12 +1112,13 @@ LayoutUnit LayoutBox::ScrollWidth() const {
     else
       return PhysicalLayoutOverflowRect().Width();
   }
-  // For objects with visible overflow, this matches IE.
-  // FIXME: Need to work right with writing modes.
-  if (StyleRef().IsLeftToRightDirection())
-    return std::max(ClientWidth(), LayoutOverflowRect().MaxX() - BorderLeft());
+  // For objects with scrollable overflow, this matches IE.
+  PhysicalRect overflow_rect = PhysicalLayoutOverflowRect();
+  if (!StyleRef().GetWritingDirection().IsFlippedX()) {
+    return std::max(ClientWidth(), overflow_rect.Right() - BorderLeft());
+  }
   return ClientWidth() -
-         std::min(LayoutUnit(), LayoutOverflowRect().X() - BorderLeft());
+         std::min(LayoutUnit(), overflow_rect.X() - BorderLeft());
 }
 
 LayoutUnit LayoutBox::ScrollHeight() const {
@@ -1133,7 +1134,8 @@ LayoutUnit LayoutBox::ScrollHeight() const {
   }
   // For objects with visible overflow, this matches IE.
   // FIXME: Need to work right with writing modes.
-  return std::max(ClientHeight(), LayoutOverflowRect().MaxY() - BorderTop());
+  return std::max(ClientHeight(),
+                  PhysicalLayoutOverflowRect().Bottom() - BorderTop());
 }
 
 int LayoutBox::PixelSnappedScrollWidth() const {

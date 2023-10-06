@@ -72,7 +72,7 @@ TEST_F(LayoutBlockTest, OverflowWithTransformAndPerspective) {
     </div>
   )HTML");
   auto* scroller = GetLayoutBoxByElementId("target");
-  EXPECT_EQ(187.625, scroller->LayoutOverflowRect().Width().ToFloat());
+  EXPECT_EQ(187.625, scroller->PhysicalLayoutOverflowRect().Width().ToFloat());
 }
 
 TEST_F(LayoutBlockTest, NestedInlineVisualOverflow) {

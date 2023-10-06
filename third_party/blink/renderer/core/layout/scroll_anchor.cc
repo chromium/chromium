@@ -107,8 +107,8 @@ static PhysicalRect RelativeBounds(const LayoutObject* layout_object,
     // as our bounds. If not, we expand the bounds by the layout overflow.
     if (!layout_object->ShouldClipOverflowAlongEitherAxis()) {
       // BorderBoxRect doesn't include overflow content and floats.
-      LayoutUnit max_y =
-          std::max(local_bounds.Bottom(), box->LayoutOverflowRect().MaxY());
+      LayoutUnit max_y = std::max(local_bounds.Bottom(),
+                                  box->PhysicalLayoutOverflowRect().Bottom());
       local_bounds.ShiftBottomEdgeTo(max_y);
     }
   } else if (layout_object->IsText()) {
