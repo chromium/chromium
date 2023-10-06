@@ -10,17 +10,15 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Class for issuing request to the Identity Credentials Manager in GMS core.
- */
+/** Class for issuing request to the Identity Credentials Manager in GMS core. */
 @JNINamespace("content")
-public class MDocProvider {
-    private static final String TAG = "WebIdentityMDoc";
-    private final long mMDocProvider;
+public class DigitalCredentialProvider {
+    private static final String TAG = "DigitalCredentialProvider";
+    private final long mDigitalCredentialProvider;
     private static IdentityCredentialsDelegate sCredentials = new IdentityCredentialsDelegateImpl();
 
-    private MDocProvider(long mDocProvider) {
-        mMDocProvider = mDocProvider;
+    private DigitalCredentialProvider(long dcProvider) {
+        mDigitalCredentialProvider = dcProvider;
     }
 
     public static void setDelegateForTesting(IdentityCredentialsDelegate mock) {
@@ -31,8 +29,8 @@ public class MDocProvider {
 
     // Methods that are called by native implementation
     @CalledByNative
-    private static MDocProvider create(long mDocProvider) {
-        return new MDocProvider(mDocProvider);
+    private static DigitalCredentialProvider create(long dcProvider) {
+        return new DigitalCredentialProvider(dcProvider);
     }
 
     @CalledByNative
@@ -40,21 +38,29 @@ public class MDocProvider {
 
     /**
      * Triggers a request to the Identity Credentials Manager in GMS.
+     *
      * @param window The window associated with the request.
      * @param origin The origin of the requester.
      * @param request The request.
      */
     @CalledByNative
-    void requestMDoc(WindowAndroid window, String origin, String request) {
-        sCredentials.get(window.getActivity().get(), origin, request)
-                .then(data
-                        -> { MDocProviderJni.get().onReceive(mMDocProvider, new String(data)); },
-                        e -> { MDocProviderJni.get().onError(mMDocProvider); });
+    void requestDigitalCredential(WindowAndroid window, String origin, String request) {
+        sCredentials
+                .get(window.getActivity().get(), origin, request)
+                .then(
+                        data -> {
+                            DigitalCredentialProviderJni.get()
+                                    .onReceive(mDigitalCredentialProvider, new String(data));
+                        },
+                        e -> {
+                            DigitalCredentialProviderJni.get().onError(mDigitalCredentialProvider);
+                        });
     }
 
     @NativeMethods
     interface Natives {
-        void onReceive(long nativeMDocProviderAndroid, String mdoc);
-        void onError(long nativeMDocProviderAndroid);
+        void onReceive(long nativeDigitalCredentialProviderAndroid, String dc);
+
+        void onError(long nativeDigitalCredentialProviderAndroid);
     }
 }

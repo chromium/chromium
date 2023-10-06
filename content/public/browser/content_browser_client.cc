@@ -19,7 +19,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/webid/mdocs/mdoc_provider.h"
+#include "content/browser/webid/digital_credentials/digital_credential_provider.h"
 #include "content/public/browser/anchor_element_preconnect_delegate.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_accessibility_state.h"
@@ -1463,7 +1463,8 @@ ContentBrowserClient::CreateIdentityRequestDialogController(
   return std::make_unique<IdentityRequestDialogController>();
 }
 
-std::unique_ptr<MDocProvider> ContentBrowserClient::CreateMDocProvider() {
+std::unique_ptr<DigitalCredentialProvider>
+ContentBrowserClient::CreateDigitalCredentialProvider() {
   return nullptr;
 }
 

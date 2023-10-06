@@ -4,7 +4,7 @@
 
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
 
-#include "content/browser/webid/mdocs/mdoc_provider.h"
+#include "content/browser/webid/digital_credentials/digital_credential_provider.h"
 #include "content/browser/webid/test/mock_modal_dialog_view_delegate.h"
 
 namespace content {
@@ -24,15 +24,15 @@ void WebIdTestContentBrowserClient::SetIdentityRequestDialogController(
   test_dialog_controller_ = std::move(controller);
 }
 
-std::unique_ptr<MDocProvider>
-WebIdTestContentBrowserClient::CreateMDocProvider() {
-  DCHECK(test_mdoc_provider_);
-  return std::move(test_mdoc_provider_);
+std::unique_ptr<DigitalCredentialProvider>
+WebIdTestContentBrowserClient::CreateDigitalCredentialProvider() {
+  DCHECK(test_digital_credential_provider_);
+  return std::move(test_digital_credential_provider_);
 }
 
-void WebIdTestContentBrowserClient::SetMDocProvider(
-    std::unique_ptr<MDocProvider> provider) {
-  test_mdoc_provider_ = std::move(provider);
+void WebIdTestContentBrowserClient::SetDigitalCredentialProvider(
+    std::unique_ptr<DigitalCredentialProvider> provider) {
+  test_digital_credential_provider_ = std::move(provider);
 }
 
 void WebIdTestContentBrowserClient::SetIdentityRegistry(

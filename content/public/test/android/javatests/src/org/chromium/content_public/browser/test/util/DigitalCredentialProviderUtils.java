@@ -5,14 +5,12 @@
 package org.chromium.content_public.browser.test.util;
 
 import org.chromium.base.Promise;
+import org.chromium.content.browser.webid.DigitalCredentialProvider;
 import org.chromium.content.browser.webid.IdentityCredentialsDelegate;
-import org.chromium.content.browser.webid.MDocProvider;
 
-/**
- * Used to mock IdentityCredentialsDelegate in tests.
- */
-public class MDocProviderUtils {
-    // Allows tests to @Mock the IdentityCredentialsDelegate.
+/** Used to mock IdentityCredentialsDelegate in tests. */
+public class DigitalCredentialProviderUtils {
+    // Allows tests to mock the IdentityCredentialsDelegate.
     public static class MockIdentityCredentialsDelegate implements IdentityCredentialsDelegate {
         @Override
         public Promise<String> get(String origin, String request) {
@@ -21,6 +19,6 @@ public class MDocProviderUtils {
     }
 
     public static void setDelegateForTesting(MockIdentityCredentialsDelegate delegate) {
-        MDocProvider.setDelegateForTesting(delegate);
+        DigitalCredentialProvider.setDelegateForTesting(delegate);
     }
 }

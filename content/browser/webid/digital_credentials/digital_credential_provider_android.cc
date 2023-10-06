@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/mdocs/mdoc_provider_android.h"
+#include "content/browser/webid/digital_credentials/digital_credential_provider_android.h"
 
 #include <jni.h>
 
@@ -10,7 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "content/public/android/content_jni_headers/MDocProvider_jni.h"
+#include "content/public/android/content_jni_headers/DigitalCredentialProvider_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
@@ -21,21 +21,24 @@ using base::android::ScopedJavaLocalRef;
 
 namespace content {
 
-MDocProviderAndroid::MDocProviderAndroid() {
+DigitalCredentialProviderAndroid::DigitalCredentialProviderAndroid() {
   JNIEnv* env = AttachCurrentThread();
-  j_mdoc_provider_android_.Reset(
-      Java_MDocProvider_create(env, reinterpret_cast<intptr_t>(this)));
+  j_digital_credential_provider_android_.Reset(
+      Java_DigitalCredentialProvider_create(env,
+                                            reinterpret_cast<intptr_t>(this)));
 }
 
-MDocProviderAndroid::~MDocProviderAndroid() {
+DigitalCredentialProviderAndroid::~DigitalCredentialProviderAndroid() {
   JNIEnv* env = AttachCurrentThread();
-  Java_MDocProvider_destroy(env, j_mdoc_provider_android_);
+  Java_DigitalCredentialProvider_destroy(
+      env, j_digital_credential_provider_android_);
 }
 
-void MDocProviderAndroid::RequestMDoc(WebContents* web_contents,
-                                      const url::Origin& origin,
-                                      const base::Value::Dict& request,
-                                      MDocCallback callback) {
+void DigitalCredentialProviderAndroid::RequestDigitalCredential(
+    WebContents* web_contents,
+    const url::Origin& origin,
+    const base::Value::Dict& request,
+    DigitalCredentialCallback callback) {
   callback_ = std::move(callback);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_origin =
@@ -51,18 +54,19 @@ void MDocProviderAndroid::RequestMDoc(WebContents* web_contents,
     j_window = web_contents->GetTopLevelNativeWindow()->GetJavaObject();
   }
 
-  Java_MDocProvider_requestMDoc(env, j_mdoc_provider_android_, j_window,
-                                j_origin, j_request);
+  Java_DigitalCredentialProvider_requestDigitalCredential(
+      env, j_digital_credential_provider_android_, j_window, j_origin,
+      j_request);
 }
 
-void MDocProviderAndroid::OnReceive(JNIEnv* env, jstring j_mdoc) {
-  std::string mdoc = ConvertJavaStringToUTF8(env, j_mdoc);
+void DigitalCredentialProviderAndroid::OnReceive(JNIEnv* env, jstring j_dc) {
+  std::string vc = ConvertJavaStringToUTF8(env, j_dc);
   if (callback_) {
-    std::move(callback_).Run(mdoc);
+    std::move(callback_).Run(vc);
   }
 }
 
-void MDocProviderAndroid::OnError(JNIEnv* env) {
+void DigitalCredentialProviderAndroid::OnError(JNIEnv* env) {
   if (callback_) {
     std::move(callback_).Run("");
   }

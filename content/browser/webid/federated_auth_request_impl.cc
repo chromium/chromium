@@ -23,12 +23,12 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/webid/digital_credentials/digital_credential_provider.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/browser/webid/federated_auth_user_info_request.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_registry.h"
-#include "content/browser/webid/mdocs/mdoc_provider.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -548,27 +548,29 @@ FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
       permission_context, identity_registry, std::move(receiver));
 }
 
-void FederatedAuthRequestImpl::CompleteWalletRequest(std::string response) {
-  if (!wallet_provider_) {
-    std::move(wallet_request_callback_)
+void FederatedAuthRequestImpl::CompleteDigitalCredentialRequest(
+    std::string response) {
+  if (!digital_credential_provider_) {
+    std::move(digital_credential_request_callback_)
         .Run(RequestTokenStatus::kError, absl::nullopt, "", /*error=*/nullptr,
              /*is_account_auto_selected=*/false);
     return;
   }
 
   if (!response.empty()) {
-    std::move(wallet_request_callback_)
+    std::move(digital_credential_request_callback_)
         .Run(RequestTokenStatus::kSuccess, absl::nullopt, response,
              /*error=*/nullptr,
              /*is_account_auto_selected=*/false);
   } else {
-    std::move(wallet_request_callback_)
+    std::move(digital_credential_request_callback_)
         .Run(RequestTokenStatus::kError, absl::nullopt, "", /*error=*/nullptr,
              /*is_account_auto_selected=*/false);
   }
 }
 
-base::Value::Dict BuildWalletRequest(blink::mojom::WalletProviderPtr provider) {
+base::Value::Dict BuildDigitalCredentialRequest(
+    blink::mojom::WalletProviderPtr provider) {
   auto formats = Value::List();
   for (auto& format : provider->selector->format) {
     formats.Append(format);
@@ -654,7 +656,7 @@ void FederatedAuthRequestImpl::RequestToken(
       return;
     }
 
-    if (wallet_request_callback_) {
+    if (digital_credential_request_callback_) {
       // Similar to the token request, only allow one in-flight wallet request.
       // TODO(https://crbug.com/1416939): Reconcile with federated identity
       // requests.
@@ -664,28 +666,30 @@ void FederatedAuthRequestImpl::RequestToken(
       return;
     }
 
-    wallet_request_callback_ = std::move(callback);
-    // wallet_provider_ is not destroyed after a successful wallet request so we
-    // need to have the nullcheck to avoid duplicated creation.
-    if (!wallet_provider_) {
-      wallet_provider_ = CreateWalletProvider();
+    digital_credential_request_callback_ = std::move(callback);
+    // digital_credential_provider_ is not destroyed after a successful wallet
+    // request so we need to have the nullcheck to avoid duplicated creation.
+    if (!digital_credential_provider_) {
+      digital_credential_provider_ = CreateDigitalCredentialProvider();
     }
-    if (!wallet_provider_) {
-      std::move(wallet_request_callback_)
+    if (!digital_credential_provider_) {
+      std::move(digital_credential_request_callback_)
           .Run(RequestTokenStatus::kError, absl::nullopt, "", /*error=*/nullptr,
                /*is_account_auto_selected=*/false);
       return;
     }
 
-    auto wallet = std::move(idp_get_params_ptrs[0]->providers[0]->get_holder());
+    auto digital_credential =
+        std::move(idp_get_params_ptrs[0]->providers[0]->get_holder());
 
-    auto request = BuildWalletRequest(std::move(wallet));
+    auto request = BuildDigitalCredentialRequest(std::move(digital_credential));
 
-    wallet_provider_->RequestMDoc(
+    digital_credential_provider_->RequestDigitalCredential(
         WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
         request,
-        base::BindOnce(&FederatedAuthRequestImpl::CompleteWalletRequest,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(
+            &FederatedAuthRequestImpl::CompleteDigitalCredentialRequest,
+            weak_ptr_factory_.GetWeakPtr()));
 
     // TODO(https://crbug.com/1416939): rather than returning early,
     // we would ultimately like to make the wallet response reconcile with the
@@ -2327,13 +2331,14 @@ FederatedAuthRequestImpl::CreateDialogController() {
       web_contents);
 }
 
-std::unique_ptr<MDocProvider> FederatedAuthRequestImpl::CreateWalletProvider() {
+std::unique_ptr<DigitalCredentialProvider>
+FederatedAuthRequestImpl::CreateDigitalCredentialProvider() {
   // A provider may only be created in browser tests by this moment.
-  std::unique_ptr<MDocProvider> provider =
-      GetContentClient()->browser()->CreateMDocProvider();
+  std::unique_ptr<DigitalCredentialProvider> provider =
+      GetContentClient()->browser()->CreateDigitalCredentialProvider();
 
   if (!provider) {
-    return MDocProvider::Create();
+    return DigitalCredentialProvider::Create();
   }
   return provider;
 }

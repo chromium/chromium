@@ -32,20 +32,18 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.test.util.DigitalCredentialProviderUtils;
+import org.chromium.content_public.browser.test.util.DigitalCredentialProviderUtils.MockIdentityCredentialsDelegate;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.MDocProviderUtils;
-import org.chromium.content_public.browser.test.util.MDocProviderUtils.MockIdentityCredentialsDelegate;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Test suite for verifying the behavior of request mdocs via FedCM API.
- */
+/** Test suite for verifying the behavior of request digital credentials via the Web API. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-public class MDocProviderTest {
+public class DigitalCredentialProviderTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/fedcm_mdocs.html";
     private static final String EXPECTED_MDOC = "test-mdoc";
 
@@ -55,8 +53,7 @@ public class MDocProviderTest {
     private ActivityMonitor mActivityMonitor;
     private EmbeddedTestServer mTestServer;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock
     public MockIdentityCredentialsDelegate mDelegate;
@@ -66,7 +63,7 @@ public class MDocProviderTest {
         mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
         mActivityTestRule.startMainActivityOnBlankPage();
         mTestServer = mActivityTestRule.getTestServer();
-        MDocProviderUtils.setDelegateForTesting(mDelegate);
+        DigitalCredentialProviderUtils.setDelegateForTesting(mDelegate);
     }
 
     @Test
@@ -79,16 +76,18 @@ public class MDocProviderTest {
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 mActivityTestRule.getWebContents(), "request()");
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                String mdoc = JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        mActivityTestRule.getWebContents(),
-                        "document.getElementById('log').textContent");
-                String expected = "\"" + EXPECTED_MDOC + "\"";
-                Criteria.checkThat("mdoc string is not as expected.", mdoc, is(expected));
-            } catch (Exception e) {
-                throw new CriteriaNotSatisfiedException(e);
-            }
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        String mdoc =
+                                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                        mActivityTestRule.getWebContents(),
+                                        "document.getElementById('log').textContent");
+                        String expected = "\"" + EXPECTED_MDOC + "\"";
+                        Criteria.checkThat("mdoc string is not as expected.", mdoc, is(expected));
+                    } catch (Exception e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                });
     }
 }
