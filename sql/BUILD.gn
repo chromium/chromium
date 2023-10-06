@@ -161,5 +161,7 @@ if (!is_fuchsia) {
       "//base",
       "//base/test:test_support",
     ]
+
+    libfuzzer_options = [ "rss_limit_mb=4096" ]
   }
 }
