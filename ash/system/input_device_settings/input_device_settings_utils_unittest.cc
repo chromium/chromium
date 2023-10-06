@@ -515,4 +515,23 @@ TEST(ConvertListToButtonRemappingArray, ConvertListToButtonRemappingArray) {
       remapping2->remapping_action->get_key_event()->vkey);
 }
 
+TEST(IsMouseCustomizable, IsMouseCustomizable) {
+  const ui::InputDevice kSampleUncustomizableMouse(
+      5, ui::INPUT_DEVICE_USB, "kSampleUncustomizableMouse",
+      /*phys=*/"",
+      /*sys_path=*/base::FilePath(),
+      /*vendor=*/0xffff,
+      /*product=*/0xffff,
+      /*version=*/0x0009);
+  const ui::InputDevice kSampleCustomizableMouse(4, ui::INPUT_DEVICE_USB,
+                                                 "kSampleCustomizableMouse",
+                                                 /*phys=*/"",
+                                                 /*sys_path=*/base::FilePath(),
+                                                 /*vendor=*/0x0007,
+                                                 /*product=*/0x0008,
+                                                 /*version=*/0x0009);
+  EXPECT_FALSE(IsMouseCustomizable(kSampleUncustomizableMouse));
+  EXPECT_TRUE(IsMouseCustomizable(kSampleCustomizableMouse));
+}
+
 }  // namespace ash
