@@ -19,7 +19,7 @@ ChromeVoxUserActionMonitorTest = class extends ChromeVoxE2ETest {
           'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
       importModule(
           'BackgroundKeyboardHandler',
-          '/chromevox/background/keyboard_handler.js'),
+          '/chromevox/background/input/keyboard_handler.js'),
       importModule(
           'UserActionMonitor', '/chromevox/background/user_action_monitor.js'),
       importModule(

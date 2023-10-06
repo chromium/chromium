@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
+GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 
 /**
  * Test fixture for SmartStickyMode.
@@ -19,9 +19,10 @@ ChromeVoxSmartStickyModeTest = class extends ChromeVoxE2ETest {
           'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
       importModule(
           'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
-      importModule('ChromeVoxPrefs', '/chromevox/background/prefs.js'),
       importModule(
-          'SmartStickyMode', '/chromevox/background/smart_sticky_mode.js'),
+          'SmartStickyMode',
+          '/chromevox/background/input/smart_sticky_mode.js'),
+      importModule('ChromeVoxPrefs', '/chromevox/background/prefs.js'),
       importModule('EarconId', '/chromevox/common/earcon_id.js'),
       importModule('CursorRange', '/common/cursors/range.js'),
     ]);

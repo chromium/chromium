@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
+GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 
 /**
  * Test fixture for ChromeVox KeyboardHandler.
@@ -22,7 +22,7 @@ ChromeVoxBackgroundKeyboardHandlerTest = class extends ChromeVoxE2ETest {
           'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
       importModule(
           'BackgroundKeyboardHandler',
-          '/chromevox/background/keyboard_handler.js'),
+          '/chromevox/background/input/keyboard_handler.js'),
       importModule('KeyCode', '/common/key_code.js'),
     ]);
 

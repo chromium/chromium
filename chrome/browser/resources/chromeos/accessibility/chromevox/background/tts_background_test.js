@@ -18,7 +18,7 @@ ChromeVoxBackgroundTtsTest = class extends ChromeVoxE2ETest {
       importModule('ChromeVox', '/chromevox/background/chromevox.js'),
       importModule(
           'CommandHandlerInterface',
-          '/chromevox/background/command_handler_interface.js'),
+          '/chromevox/background/input/command_handler_interface.js'),
       importModule('PrimaryTts', '/chromevox/background/primary_tts.js'),
       importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
       importModule(

@@ -25,7 +25,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
           'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
       importModule(
           'CommandHandlerInterface',
-          '/chromevox/background/command_handler_interface.js'),
+          '/chromevox/background/input/command_handler_interface.js'),
       importModule('EventSource', '/chromevox/background/event_source.js'),
       importModule('EventSourceType', '/chromevox/common/event_source_type.js'),
       importModule(

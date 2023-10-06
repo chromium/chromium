@@ -15,7 +15,7 @@ import {Command} from '../common/command.js';
 import {TtsSpeechProperties} from '../common/tts_types.js';
 
 import {ChromeVoxRange} from './chromevox_range.js';
-import {CommandHandlerInterface} from './command_handler_interface.js';
+import {CommandHandlerInterface} from './input/command_handler_interface.js';
 
 // setTimeout and its clean-up are referencing each other. So, we need to set
 // "ignoreReadBeforeAssign" in this file. ESLint doesn't support per-line rule

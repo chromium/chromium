@@ -5,22 +5,22 @@
 /**
  * @fileoverview Handles gesture-based commands.
  */
-import {AutomationPredicate} from '../../common/automation_predicate.js';
-import {EventGenerator} from '../../common/event_generator.js';
-import {BridgeConstants} from '../common/bridge_constants.js';
-import {BridgeHelper} from '../common/bridge_helper.js';
-import {EventSourceType} from '../common/event_source_type.js';
-import {GestureCommandData, GestureGranularity} from '../common/gesture_command_data.js';
-import {QueueMode} from '../common/tts_types.js';
+import {AutomationPredicate} from '../../../common/automation_predicate.js';
+import {EventGenerator} from '../../../common/event_generator.js';
+import {BridgeConstants} from '../../common/bridge_constants.js';
+import {BridgeHelper} from '../../common/bridge_helper.js';
+import {EventSourceType} from '../../common/event_source_type.js';
+import {GestureCommandData, GestureGranularity} from '../../common/gesture_command_data.js';
+import {QueueMode} from '../../common/tts_types.js';
+import {ChromeVoxRange} from '../chromevox_range.js';
+import {ChromeVoxState} from '../chromevox_state.js';
+import {PointerHandler} from '../event/pointer_handler.js';
+import {EventSource} from '../event_source.js';
+import {Output} from '../output/output.js';
+import {UserActionMonitor} from '../user_action_monitor.js';
 
-import {ChromeVoxRange} from './chromevox_range.js';
-import {ChromeVoxState} from './chromevox_state.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
-import {PointerHandler} from './event/pointer_handler.js';
-import {EventSource} from './event_source.js';
 import {GestureInterface} from './gesture_interface.js';
-import {Output} from './output/output.js';
-import {UserActionMonitor} from './user_action_monitor.js';
 
 const Gesture = chrome.accessibilityPrivate.Gesture;
 

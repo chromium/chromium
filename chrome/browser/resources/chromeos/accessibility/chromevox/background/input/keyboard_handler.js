@@ -5,21 +5,20 @@
 /**
  * @fileoverview ChromeVox keyboard handler.
  */
-import {KeyCode} from '../../common/key_code.js';
-import {EarconId} from '../common/earcon_id.js';
-import {EventSourceType} from '../common/event_source_type.js';
-import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
-import {Msgs} from '../common/msgs.js';
-import {QueueMode} from '../common/tts_types.js';
-
-import {ChromeVox} from './chromevox.js';
-import {ChromeVoxRange} from './chromevox_range.js';
-import {ChromeVoxState} from './chromevox_state.js';
-import {EventSource} from './event_source.js';
-import {MathHandler} from './math_handler.js';
-import {Output} from './output/output.js';
-import {ChromeVoxPrefs} from './prefs.js';
-import {UserActionMonitor} from './user_action_monitor.js';
+import {KeyCode} from '../../../common/key_code.js';
+import {EarconId} from '../../common/earcon_id.js';
+import {EventSourceType} from '../../common/event_source_type.js';
+import {ChromeVoxKbHandler} from '../../common/keyboard_handler.js';
+import {Msgs} from '../../common/msgs.js';
+import {QueueMode} from '../../common/tts_types.js';
+import {ChromeVox} from '../chromevox.js';
+import {ChromeVoxRange} from '../chromevox_range.js';
+import {ChromeVoxState} from '../chromevox_state.js';
+import {EventSource} from '../event_source.js';
+import {MathHandler} from '../math_handler.js';
+import {Output} from '../output/output.js';
+import {ChromeVoxPrefs} from '../prefs.js';
+import {UserActionMonitor} from '../user_action_monitor.js';
 
 /**
  * @enum {string}

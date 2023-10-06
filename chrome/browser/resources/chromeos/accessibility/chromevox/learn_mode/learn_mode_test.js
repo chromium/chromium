@@ -33,10 +33,10 @@ ChromeVoxLearnModeTest = class extends ChromeVoxE2ETest {
           '/chromevox/background/braille/braille_command_handler.js'),
       importModule(
           'CommandHandlerInterface',
-          '/chromevox/background/command_handler_interface.js'),
+          '/chromevox/background/input/command_handler_interface.js'),
       importModule(
           'GestureCommandHandler',
-          '/chromevox/background/gesture_command_handler.js'),
+          '/chromevox/background/input/gesture_command_handler.js'),
       importModule(
           ['BrailleKeyEvent', 'BrailleKeyCommand'],
           '/chromevox/common/braille/braille_key_types.js'),

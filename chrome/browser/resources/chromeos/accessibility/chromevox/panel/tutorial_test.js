@@ -17,13 +17,13 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
     await Promise.all([
       // Alphabetical based on file path.
       importModule(
-          'BackgroundKeyboardHandler',
-          '/chromevox/background/keyboard_handler.js'),
-      importModule(
           'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
       importModule(
+          'BackgroundKeyboardHandler',
+          '/chromevox/background/input/keyboard_handler.js'),
+      importModule(
           'CommandHandlerInterface',
-          '/chromevox/background/command_handler_interface.js'),
+          '/chromevox/background/input/command_handler_interface.js'),
       importModule(
           'UserActionMonitor', '/chromevox/background/user_action_monitor.js'),
       importModule('EarconId', '/chromevox/common/earcon_id.js'),

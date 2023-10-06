@@ -26,7 +26,7 @@ ChromeVoxOptionsTest = class extends ChromeVoxE2ETest {
       // Alphabetical based on file path.
       importModule(
           'CommandHandlerInterface',
-          '/chromevox/background/command_handler_interface.js'),
+          '/chromevox/background/input/command_handler_interface.js'),
       importModule('TtsSettings', '/chromevox/common/tts_types.js'),
       importModule('AsyncUtil', '/common/async_util.js'),
       importModule('EventGenerator', '/common/event_generator.js'),

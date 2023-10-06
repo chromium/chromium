@@ -29,9 +29,6 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
       importModule(
           'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
       importModule(
-          'CommandHandlerInterface',
-          '/chromevox/background/command_handler_interface.js'),
-      importModule(
           'BaseAutomationHandler',
           '/chromevox/background/event/base_automation_handler.js'),
       importModule(
@@ -44,11 +41,14 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
           'PointerHandler', '/chromevox/background/event/pointer_handler.js'),
       importModule('FocusBounds', '/chromevox/background/focus_bounds.js'),
       importModule(
+          'CommandHandlerInterface',
+          '/chromevox/background/input/command_handler_interface.js'),
+      importModule(
           'GestureCommandHandler',
-          '/chromevox/background/gesture_command_handler.js'),
+          '/chromevox/background/input/gesture_command_handler.js'),
       importModule(
           'BackgroundKeyboardHandler',
-          '/chromevox/background/keyboard_handler.js'),
+          '/chromevox/background/input/keyboard_handler.js'),
       importModule('Output', '/chromevox/background/output/output.js'),
       importModule(
           'OutputAction', '/chromevox/background/output/output_types.js'),

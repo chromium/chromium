@@ -26,7 +26,6 @@ import {ChromeVox} from './chromevox.js';
 import {ChromeVoxRange} from './chromevox_range.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {ClipboardHandler} from './clipboard_handler.js';
-import {CommandHandler} from './command_handler.js';
 import {DownloadHandler} from './download_handler.js';
 import {Earcons} from './earcons.js';
 import {DesktopAutomationHandler} from './event/desktop_automation_handler.js';
@@ -36,16 +35,17 @@ import {PageLoadSoundHandler} from './event/page_load_sound_handler.js';
 import {RangeAutomationHandler} from './event/range_automation_handler.js';
 import {EventSource} from './event_source.js';
 import {FindHandler} from './find_handler.js';
-import {GestureCommandHandler} from './gesture_command_handler.js';
 import {InjectedScriptLoader} from './injected_script_loader.js';
-import {BackgroundKeyboardHandler} from './keyboard_handler.js';
+import {CommandHandler} from './input/command_handler.js';
+import {GestureCommandHandler} from './input/gesture_command_handler.js';
+import {BackgroundKeyboardHandler} from './input/keyboard_handler.js';
+import {SmartStickyMode} from './input/smart_sticky_mode.js';
 import {LiveRegions} from './live_regions.js';
 import {EventStreamLogger} from './logging/event_stream_logger.js';
 import {LogStore} from './logging/log_store.js';
 import {LogUrlWatcher} from './logging/log_url_watcher.js';
 import {PanelBackground} from './panel/panel_background.js';
 import {ChromeVoxPrefs} from './prefs.js';
-import {SmartStickyMode} from './smart_sticky_mode.js';
 import {TtsBackground} from './tts_background.js';
 
 /**

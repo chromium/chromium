@@ -143,10 +143,10 @@ ChromeVoxE2ETest = class extends E2ETestBase {
           'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
       importModule(
           'CommandHandlerInterface',
-          '/chromevox/background/command_handler_interface.js'),
+          '/chromevox/background/input/command_handler_interface.js'),
       importModule(
           'GestureCommandHandler',
-          '/chromevox/background/gesture_command_handler.js'),
+          '/chromevox/background/input/gesture_command_handler.js'),
       importModule(
           'OutputRoleInfo', '/chromevox/background/output/output_role_info.js'),
       importModule(

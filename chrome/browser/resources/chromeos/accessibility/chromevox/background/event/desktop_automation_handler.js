@@ -22,9 +22,9 @@ import {AutomationObjectConstructorInstaller} from '../automation_object_constru
 import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
 import {ChromeVoxState} from '../chromevox_state.js';
-import {CommandHandlerInterface} from '../command_handler_interface.js';
 import {TextEditHandler} from '../editing/text_edit_handler.js';
 import {EventSource} from '../event_source.js';
+import {CommandHandlerInterface} from '../input/command_handler_interface.js';
 import {LiveRegions} from '../live_regions.js';
 import {Output} from '../output/output.js';
 import {OutputCustomEvent} from '../output/output_types.js';

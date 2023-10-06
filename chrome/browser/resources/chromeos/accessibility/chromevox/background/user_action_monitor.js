@@ -14,7 +14,7 @@ import {KeyUtil} from '../common/key_util.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {QueueMode} from '../common/tts_types.js';
 
-import {CommandHandlerInterface} from './command_handler_interface.js';
+import {CommandHandlerInterface} from './input/command_handler_interface.js';
 import {Output} from './output/output.js';
 
 const Action = BridgeConstants.UserActionMonitor.Action;

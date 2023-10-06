@@ -273,7 +273,7 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
   void ReadWindowTitle() {
     extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
         browser()->profile(), extension_misc::kChromeVoxExtensionId,
-        "import('/chromevox/background/"
+        "import('/chromevox/background/input/"
         "command_handler_interface.js').then(module => "
         "module.CommandHandlerInterface.instance.onCommand('readCurrentTitle'))"
         ";");
