@@ -4,7 +4,6 @@
 
 #include "components/variations/client_filterable_state.h"
 
-#include "base/build_time.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -88,22 +87,6 @@ base::Version ClientFilterableState::GetOSVersion() {
 #endif
 
   return ret;
-}
-
-base::Time ClientFilterableState::GetTimeForStudyDateChecks(
-    bool is_safe_seed,
-    PrefService* local_state) {
-  const base::Time seed_date =
-      is_safe_seed ? local_state->GetTime(prefs::kVariationsSafeSeedDate)
-                   : local_state->GetTime(prefs::kVariationsSeedDate);
-  const base::Time build_time = base::GetBuildTime();
-
-  // Use the build time for date checks if either the seed date is unknown or
-  // the build time is newer than the seed date.
-  if (seed_date.is_null() || seed_date < build_time) {
-    return build_time;
-  }
-  return seed_date;
 }
 
 }  // namespace variations

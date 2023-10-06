@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/build_time.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -22,6 +23,7 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -60,17 +62,21 @@ class TestVariationsSeedStore : public VariationsSeedStore {
       PrefService* local_state,
       std::unique_ptr<SeedResponse> initial_seed = nullptr,
       bool use_first_run_prefs = true)
-      : VariationsSeedStore(local_state,
-                            std::move(initial_seed),
-                            /*signature_verification_enabled=*/false,
-                            use_first_run_prefs) {}
+      : VariationsSeedStore(
+            local_state,
+            std::move(initial_seed),
+            /*signature_verification_enabled=*/false,
+            std::make_unique<VariationsSafeSeedStoreLocalState>(local_state),
+            use_first_run_prefs) {}
   ~TestVariationsSeedStore() override = default;
 };
 
 class SignatureVerifyingVariationsSeedStore : public VariationsSeedStore {
  public:
   explicit SignatureVerifyingVariationsSeedStore(PrefService* local_state)
-      : VariationsSeedStore(local_state) {}
+      : VariationsSeedStore(
+            local_state,
+            std::make_unique<VariationsSafeSeedStoreLocalState>(local_state)) {}
 
   SignatureVerifyingVariationsSeedStore(
       const SignatureVerifyingVariationsSeedStore&) = delete;
@@ -1378,6 +1384,76 @@ TEST(VariationsSeedStoreTest, GetLatestSerialNumber_ClearsPrefsOnFailure) {
   TestVariationsSeedStore seed_store(&prefs);
   EXPECT_EQ(std::string(), seed_store.GetLatestSerialNumber());
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
+}
+
+// Verifies that GetTimeForStudyDateChecks() returns the server timestamp for
+// when the regular seed was fetched,|kVariationsSeedDate|, when the time is
+// more recent than the build time.
+TEST(VariationsSeedStoreTest, RegularSeedTimeReturned) {
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  const base::Time seed_fetch_time = base::GetBuildTime() + base::Days(4);
+  prefs.SetTime(prefs::kVariationsSeedDate, seed_fetch_time);
+
+  TestVariationsSeedStore seed_store(&prefs);
+  EXPECT_EQ(seed_store.GetTimeForStudyDateChecks(/*is_safe_seed=*/false),
+            seed_fetch_time);
+}
+
+// Verifies that GetTimeForStudyDateChecks() returns the server timestamp for
+// when the safe seed was fetched, |kVariationsSafeSeedDate|, when the time is
+// more recent than the build time.
+TEST(VariationsSeedStoreTest, SafeSeedTimeReturned) {
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  const base::Time safe_seed_fetch_time = base::GetBuildTime() + base::Days(7);
+  prefs.SetTime(prefs::kVariationsSafeSeedDate, safe_seed_fetch_time);
+
+  TestVariationsSeedStore seed_store(&prefs);
+  EXPECT_EQ(seed_store.GetTimeForStudyDateChecks(/*is_safe_seed=*/true),
+            safe_seed_fetch_time);
+}
+
+// Verifies that GetTimeForStudyDateChecks() returns the build time when it is
+// more recent than |kVariationsSeedDate|.
+TEST(VariationsSeedStoreTest, BuildTimeReturnedForRegularSeed) {
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  const base::Time seed_fetch_time = base::GetBuildTime() - base::Days(2);
+  prefs.SetTime(prefs::kVariationsSeedDate, seed_fetch_time);
+
+  TestVariationsSeedStore seed_store(&prefs);
+  EXPECT_EQ(seed_store.GetTimeForStudyDateChecks(/*is_safe_seed=*/false),
+            base::GetBuildTime());
+}
+
+// Verifies that GetTimeForStudyDateChecks() returns the build time when it is
+// more recent than |kVariationsSafeSeedDate|.
+TEST(VariationsSeedStoreTest, BuildTimeReturnedForSafeSeed) {
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  const base::Time safe_seed_fetch_time = base::GetBuildTime() - base::Days(3);
+  prefs.SetTime(prefs::kVariationsSeedDate, safe_seed_fetch_time);
+
+  TestVariationsSeedStore seed_store(&prefs);
+  EXPECT_EQ(seed_store.GetTimeForStudyDateChecks(/*is_safe_seed=*/true),
+            base::GetBuildTime());
+}
+
+// Verifies that GetTimeForStudyDateChecks() returns the build time when the
+// seed time is null.
+TEST(VariationsSeedStoreTest, BuildTimeReturnedForNullSeedTimes) {
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  ASSERT_TRUE(prefs.GetTime(prefs::kVariationsSeedDate).is_null());
+
+  TestVariationsSeedStore seed_store(&prefs);
+  EXPECT_EQ(seed_store.GetTimeForStudyDateChecks(/*is_safe_seed=*/false),
+            base::GetBuildTime());
+
+  ASSERT_TRUE(prefs.GetTime(prefs::kVariationsSafeSeedDate).is_null());
+  EXPECT_EQ(seed_store.GetTimeForStudyDateChecks(/*is_safe_seed=*/true),
+            base::GetBuildTime());
 }
 
 #if BUILDFLAG(IS_ANDROID)

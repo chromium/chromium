@@ -50,6 +50,7 @@
 #include "components/variations/service/variations_field_trial_creator.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
+#include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/login_delegate.h"
@@ -814,7 +815,9 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
       &variations_service_client,
       std::make_unique<variations::VariationsSeedStore>(
           GetSharedState().local_state.get(), std::move(initial_seed),
-          /*signature_verification_enabled=*/true),
+          /*signature_verification_enabled=*/true,
+          std::make_unique<variations::VariationsSafeSeedStoreLocalState>(
+              GetSharedState().local_state.get())),
       variations::UIStringOverrider());
 
   variations::SafeSeedManager safe_seed_manager(

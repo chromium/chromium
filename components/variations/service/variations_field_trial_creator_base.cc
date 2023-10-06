@@ -338,8 +338,8 @@ VariationsFieldTrialCreatorBase::GetClientFilterableStateForVersion(
       std::make_unique<ClientFilterableState>(IsEnterpriseCallback,
                                               GoogleGroupsCallback);
   state->locale = application_locale_;
-  state->reference_date = ClientFilterableState::GetTimeForStudyDateChecks(
-      /*is_safe_seed=*/false, local_state());
+  state->reference_date = GetSeedStore()->GetTimeForStudyDateChecks(
+      /*is_safe_seed=*/false);
   state->version = version;
   state->os_version = ClientFilterableState::GetOSVersion();
   state->channel =
@@ -534,13 +534,11 @@ bool VariationsFieldTrialCreatorBase::HasSeedExpired(bool is_safe_seed) {
 
 bool VariationsFieldTrialCreatorBase::IsSeedForFutureMilestone(
     bool is_safe_seed) {
-  const std::string milestone_pref = is_safe_seed
-                                         ? prefs::kVariationsSafeSeedMilestone
-                                         : prefs::kVariationsSeedMilestone;
+  int seed_milestone = is_safe_seed ? GetSeedStore()->GetSafeSeedMilestone()
+                                    : GetSeedStore()->GetLatestMilestone();
 
   // The regular and safe seed milestone prefs were added in M97, so the prefs
   // are not populated for seeds stored before then.
-  int seed_milestone = local_state()->GetInteger(milestone_pref);
   if (!seed_milestone) {
     return false;
   }

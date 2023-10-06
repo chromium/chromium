@@ -16,6 +16,7 @@
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/safe_seed_manager_interface.h"
+#include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
@@ -40,7 +41,9 @@ base::Time GetTestFetchTime() {
 class FakeSeedStore : public VariationsSeedStore {
  public:
   explicit FakeSeedStore(TestingPrefServiceSimple* local_state)
-      : VariationsSeedStore(local_state) {
+      : VariationsSeedStore(
+            local_state,
+            std::make_unique<VariationsSafeSeedStoreLocalState>(local_state)) {
     VariationsSeedStore::RegisterPrefs(local_state->registry());
   }
 

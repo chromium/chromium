@@ -47,6 +47,7 @@
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
+#include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
@@ -85,6 +86,12 @@ struct FetchAndLaunchTimeTestParams {
   const base::TimeDelta fetch_time;
   const base::TimeDelta launch_time;
 };
+
+std::unique_ptr<VariationsSeedStore> CreateSeedStore(PrefService* local_state) {
+  return std::make_unique<VariationsSeedStore>(
+      local_state,
+      std::make_unique<VariationsSafeSeedStoreLocalState>(local_state));
+}
 
 // Returns a seed with simple test data. The seed has a single study,
 // "UMA-Uniformity-Trial-10-Percent", which has a single experiment, "abc", with
@@ -225,7 +232,9 @@ class MockVariationsServiceClient : public TestVariationsServiceClient {
 class TestVariationsSeedStore : public VariationsSeedStore {
  public:
   explicit TestVariationsSeedStore(PrefService* local_state)
-      : VariationsSeedStore(local_state) {}
+      : VariationsSeedStore(
+            local_state,
+            std::make_unique<VariationsSafeSeedStoreLocalState>(local_state)) {}
 
   TestVariationsSeedStore(const TestVariationsSeedStore&) = delete;
   TestVariationsSeedStore& operator=(const TestVariationsSeedStore&) = delete;
@@ -269,11 +278,12 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
       const base::FilePath user_data_dir = base::FilePath(),
       metrics::StartupVisibility startup_visibility =
           metrics::StartupVisibility::kUnknown)
-      : VariationsFieldTrialCreator(
-            client,
-            std::make_unique<VariationsSeedStore>(local_state),
-            UIStringOverrider()),
+      : VariationsFieldTrialCreator(client,
+                                    // Pass a VariationsSeedStore to base class.
+                                    CreateSeedStore(local_state),
+                                    UIStringOverrider()),
         enabled_state_provider_(/*consent=*/true, /*enabled=*/true),
+        // Instead, use a TestVariationsSeedStore as the member variable.
         seed_store_(local_state),
         safe_seed_manager_(safe_seed_manager) {
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
@@ -788,7 +798,7 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
   // Use a real VariationsFieldTrialCreator and VariationsSeedStore to exercise
   // the VariationsSeedStore::LoadSeed() logic.
   TestVariationsServiceClient variations_service_client;
-  auto seed_store = std::make_unique<VariationsSeedStore>(local_state());
+  auto seed_store = CreateSeedStore(local_state());
   VariationsFieldTrialCreator field_trial_creator(
       &variations_service_client, std::move(seed_store), UIStringOverrider());
   metrics::TestEnabledStateProvider enabled_state_provider(
@@ -837,7 +847,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   // the interaction between these two classes is what's being tested.
   auto seed_store = std::make_unique<VariationsSeedStore>(
       local_state(), std::move(initial_seed),
-      /*signature_verification_enabled=*/false);
+      /*signature_verification_enabled=*/false,
+      std::make_unique<VariationsSafeSeedStoreLocalState>(local_state()));
   VariationsFieldTrialCreator field_trial_creator(
       &variations_service_client, std::move(seed_store), UIStringOverrider());
 
@@ -1440,8 +1451,7 @@ TEST_P(FieldTrialCreatorFormFactorTest, FilterByFormFactor) {
 
   // Set up the field trials.
   VariationsFieldTrialCreator field_trial_creator{
-      &variations_service_client,
-      std::make_unique<VariationsSeedStore>(local_state()),
+      &variations_service_client, CreateSeedStore(local_state()),
       UIStringOverrider()};
   EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*variation_ids=*/{},

@@ -21,8 +21,8 @@ source_set("evaluate_seed_lib") {
     "cros_variations_field_trial_creator.h",
     "early_boot_enabled_state_provider.cc",
     "early_boot_enabled_state_provider.h",
-    "early_boot_seed_store.cc",
-    "early_boot_seed_store.h",
+    "early_boot_safe_seed.cc",
+    "early_boot_safe_seed.h",
     "evaluate_seed.cc",
     "evaluate_seed.h",
   ]
@@ -46,7 +46,7 @@ source_set("unit_tests") {
   sources = [
     "cros_safe_seed_manager_unittest.cc",
     "early_boot_enabled_state_provider_unittest.cc",
-    "early_boot_seed_store_unittest.cc",
+    "early_boot_safe_seed_unittest.cc",
     "evaluate_seed_unittest.cc",
   ]
   deps = [
@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "//components/variations/service:service",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/zlib/google:compression_utils",
   ]
 }
 

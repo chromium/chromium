@@ -15,8 +15,6 @@
 #include "components/variations/proto/study.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class PrefService;
-
 namespace variations {
 
 // The values of the ChromeVariations policy. Those should be kept in sync
@@ -100,23 +98,6 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
 
   // base::Version used in {min,max}_os_version filtering.
   static base::Version GetOSVersion();
-
-  // Returns the time to use when determining whether a client should
-  // participate in a study. The returned time is one of the following:
-  // (A) The server-provided timestamp of when the seed to be used was fetched.
-  // (B) The Chrome binary's build time.
-  // (C) A client-provided timestamp stored in prefs during the FRE on some
-  //     platforms (in ChromeFeatureListCreator::SetupInitialPrefs()).
-  //
-  // These are prioritized as follows:
-  // (1) The server-provided timestamp (A) is returned when it is available and
-  //     fresher than the binary build time.
-  // (2) The client-provided timestamp (C) is returned if it was written to
-  //     prefs, has not yet been overwritten by a server-provided timestamp,
-  //     and it is fresher than the binary build time.
-  // (3) Otherwise, the binary build time (B) is returned.
-  static base::Time GetTimeForStudyDateChecks(bool is_safe_seed,
-                                              PrefService* local_state);
 
  private:
   // Evaluating enterprise status negatively affects performance, so we only
