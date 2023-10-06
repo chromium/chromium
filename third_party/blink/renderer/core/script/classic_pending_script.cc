@@ -431,6 +431,11 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
 
 void ClassicPendingScript::NotifyCacheConsumeFinished() {
   CHECK_EQ(ready_state_, kWaitingForCacheConsumer);
+  if (IsDisposed()) {
+    // Silently ignore if `this` is already Dispose()d, because `this` is no
+    // longer used.
+    return;
+  }
   AdvanceReadyState(kReady);
 }
 

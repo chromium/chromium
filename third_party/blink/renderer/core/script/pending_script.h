@@ -160,6 +160,8 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
     return original_execution_context_;
   }
 
+  bool IsDisposed() const { return !element_; }
+
  private:
   static void ExecuteScriptBlockInternal(
       Script*,
