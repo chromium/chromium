@@ -808,43 +808,31 @@ bool ServiceImageTransferCacheEntry::Deserialize(
         target_color_params->sdr_max_luminance_nits;
   }
 
-  // Perform color conversion and tone mapping.
-  if (target_color_params) {
-    if (has_gainmap_ || use_tone_curve_) {
-      // TODO(https://crbug.com/1483235): Move this tonemap application to be
-      // done dynamically.
-      image_ = GetImageWithToneMapApplied(
-          target_color_params->hdr_max_luminance_relative, needs_mips);
-      if (!image_) {
-        DLOG(ERROR) << "Failed image tone mapping.";
-        return false;
-      }
+  // Perform color conversion (if no tone mapping is needed).
+  if (target_color_params && !NeedsToneMapApplied()) {
+    auto target_color_space = target_color_params->color_space.ToSkColorSpace();
+    if (!target_color_space) {
+      DLOG(ERROR) << "Invalid target color space.";
+      return false;
+    }
+    if (graphite_recorder_) {
+      SkImage::RequiredProperties props{.fMipmapped = needs_mips};
+      image_ =
+          image_->makeColorSpace(graphite_recorder_, target_color_space, props);
     } else {
-      auto target_color_space =
-          target_color_params->color_space.ToSkColorSpace();
-      if (!target_color_space) {
-        DLOG(ERROR) << "Invalid target color space.";
-        return false;
+      // TODO(crbug.com/1443068): It's possible for both `gr_context` and
+      // `graphite_recorder` to be nullptr if `image_` is not texture backed.
+      // Need to handle this case (currently just goes through gr_context path
+      // with nullptr context).
+      image_ = image_->makeColorSpace(gr_context_, target_color_space);
+      if (needs_mips && gr_context_ && image_ && image_->isTextureBacked()) {
+        image_ = SkImages::TextureFromImage(
+            gr_context, image_, skgpu::Mipmapped::kYes, skgpu::Budgeted::kNo);
       }
-      if (graphite_recorder_) {
-        SkImage::RequiredProperties props{.fMipmapped = needs_mips};
-        image_ = image_->makeColorSpace(graphite_recorder_, target_color_space,
-                                        props);
-      } else {
-        // TODO(crbug.com/1443068): It's possible for both `gr_context` and
-        // `graphite_recorder` to be nullptr if `image_` is not texture backed.
-        // Need to handle this case (currently just goes through gr_context path
-        // with nullptr context).
-        image_ = image_->makeColorSpace(gr_context_, target_color_space);
-        if (needs_mips && gr_context_ && image_ && image_->isTextureBacked()) {
-          image_ = SkImages::TextureFromImage(
-              gr_context, image_, skgpu::Mipmapped::kYes, skgpu::Budgeted::kNo);
-        }
-      }
-      if (!image_) {
-        DLOG(ERROR) << "Failed image color conversion.";
-        return false;
-      }
+    }
+    if (!image_) {
+      DLOG(ERROR) << "Failed image color conversion.";
+      return false;
     }
 
     // Color conversion converts to RGBA. Remove all YUV state.
@@ -906,6 +894,10 @@ void ServiceImageTransferCacheEntry::EnsureMips() {
   if (!image_ || !image_->isTextureBacked()) {
     return;
   }
+  // Don't generate mipmaps for images that will not be used directly.
+  if (NeedsToneMapApplied()) {
+    return;
+  }
   if (image_->hasMipmaps()) {
     return;
   }
@@ -937,6 +929,7 @@ void ServiceImageTransferCacheEntry::EnsureMips() {
             graphite_recorder_, plane_images_.at(plane), props);
       }
       if (!mipped_plane) {
+        DLOG(ERROR) << "Failed to mipmap plane.";
         return;
       }
       mipped_planes.push_back(std::move(mipped_plane));
@@ -946,7 +939,7 @@ void ServiceImageTransferCacheEntry::EnsureMips() {
         gr_context_, graphite_recorder_, mipped_planes, yuva_info_.value(),
         image_->refColorSpace() /* image_color_space */);
     if (!mipped_image) {
-      DLOG(ERROR) << "Failed to create YUV image from mipmapped planes";
+      DLOG(ERROR) << "Failed to create YUV image from mipmapped planes.";
       return;
     }
     // Note that we cannot update |size_| because the transfer cache keeps track

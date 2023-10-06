@@ -555,7 +555,11 @@ GpuImageDecodeCache::InUseCacheKey::InUseCacheKey(const DrawImage& draw_image,
     : frame_key(draw_image.frame_key()),
       upload_scale_mip_level(mip_level),
       filter_quality(CalculateDesiredFilterQuality(draw_image)),
-      target_color_params(draw_image.target_color_params()) {}
+      target_color_params(draw_image.target_color_params()) {
+  // TODO(https://crbug.com/1483235): Remove HDR headroom from the cache key,
+  // since it is not used.
+  target_color_params.hdr_max_luminance_relative = 1.f;
+}
 
 bool GpuImageDecodeCache::InUseCacheKey::operator==(
     const InUseCacheKey& other) const {
@@ -3354,8 +3358,8 @@ bool GpuImageDecodeCache::IsCompatible(const ImageData* image_data,
     color_is_compatible = image_data->target_color_params.color_space ==
                           draw_image.target_color_space();
   } else {
-    color_is_compatible =
-        image_data->target_color_params == draw_image.target_color_params();
+    color_is_compatible = TargetColorParams::EqualIgnoringHdrHeadroom(
+        image_data->target_color_params, draw_image.target_color_params());
   }
   if (!color_is_compatible)
     return false;

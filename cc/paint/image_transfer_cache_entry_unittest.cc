@@ -522,7 +522,6 @@ TEST(ImageTransferCacheEntryTestHDR, Gainmap) {
   SkBitmap result;
   {
     TargetColorParams target_color_params;
-    target_color_params.hdr_max_luminance_relative = 2.f;
 
     ClientImageTransferCacheEntry client_entry(
         ClientImageTransferCacheEntry::Image(&sdr_bitmap.pixmap()),
@@ -537,7 +536,8 @@ TEST(ImageTransferCacheEntryTestHDR, Gainmap) {
                               /*graphite_recorder=*/nullptr,
                               base::make_span(storage.data(), storage.size()));
     ASSERT_TRUE(service_entry.image());
-    auto image = service_entry.image();
+    ASSERT_TRUE(service_entry.NeedsToneMapApplied());
+    auto image = service_entry.GetImageWithToneMapApplied(2.f, false);
 
     SkImageInfo info =
         SkImageInfo::Make(kSdrWidth, kSdrHeight, kRGBA_F32_SkColorType,

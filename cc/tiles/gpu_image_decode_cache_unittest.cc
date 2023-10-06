@@ -680,6 +680,11 @@ class GpuImageDecodeCacheTest
       auto plane_with_mips = SkImages::TextureFromImage(
           context_provider()->GrContext(), original_uploaded_plane,
           skgpu::Mipmapped::kYes);
+      // In test frameworks, Skia is unable to generate mipmaps for A16 formats.
+      if (original_uploaded_plane->colorType() == kA16_unorm_SkColorType ||
+          original_uploaded_plane->colorType() == kA16_float_SkColorType) {
+        break;
+      }
       ASSERT_TRUE(plane_with_mips);
       EXPECT_EQ(should_have_mips, original_uploaded_plane == plane_with_mips);
     }
@@ -3652,13 +3657,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     EXPECT_TRUE(decoded_draw_image.image());
     EXPECT_TRUE(decoded_draw_image.image()->isTextureBacked());
 
-    // If `draw_image` is tone mapped, then it will be converted to RGBA
-    // during tone mapping.
-    bool color_converted_to_rgba = use_transfer_cache_ &&
-                                   decoded_cs.IsToneMappedByDefault() &&
-                                   cache->SupportsColorSpaceConversion();
-
-    if (decodes_to_yuv && !color_converted_to_rgba) {
+    if (decodes_to_yuv) {
       // Skia will flatten a YUV SkImage upon calling TextureFromImage. Thus, we
       // must separately request mips for each plane and compare to the original
       // uploaded planes.

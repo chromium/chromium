@@ -957,6 +957,7 @@ class RasterDecoderImpl final : public RasterDecoder,
       scoped_shared_image_raster_write_;
 
   raw_ptr<SkSurface> sk_surface_ = nullptr;
+  float sk_surface_hdr_headroom_ = 1.f;
   std::unique_ptr<SharedImageProviderImpl> paint_op_shared_image_provider_;
 
   sk_sp<SkSurface> sk_surface_for_testing_;
@@ -3010,7 +3011,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
   }
 
   sk_surface_ = scoped_shared_image_write_->surface();
-  // TODO(https://crbug.com/1483235): Save `hdr_headroom`.
+  sk_surface_hdr_headroom_ = hdr_headroom;
 
   if (!begin_semaphores.empty()) {
     bool result =
@@ -3114,6 +3115,7 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
       paint_op_shared_image_provider_.get());
   options.crash_dump_on_failure =
       !gpu_preferences_.disable_oopr_debug_crash_dump;
+  options.hdr_headroom = sk_surface_hdr_headroom_;
 
   if (scoped_shared_image_raster_write_) {
     auto* paint_op_buffer =

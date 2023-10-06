@@ -467,13 +467,25 @@ void PaintOpReader::Read(PaintImage* image) {
   if (auto* entry =
           options_->transfer_cache->GetEntryAs<ServiceImageTransferCacheEntry>(
               transfer_cache_entry_id)) {
-    if (needs_mips)
-      entry->EnsureMips();
-    *image =
-        PaintImageBuilder::WithDefault()
-            .set_id(PaintImage::GetNextId())
-            .set_texture_image(entry->image(), PaintImage::kNonLazyStableId)
-            .TakePaintImage();
+    // Bake the HDR headroom into the image now.
+    // TODO(https://crbug.com/1483235): Move the application of tone mapping
+    // from here to playback time.
+    sk_sp<SkImage> sk_image;
+    if (entry->NeedsToneMapApplied()) {
+      sk_image =
+          entry->GetImageWithToneMapApplied(options_->hdr_headroom, needs_mips);
+    } else {
+      if (needs_mips) {
+        entry->EnsureMips();
+      }
+      sk_image = entry->image();
+    }
+
+    *image = PaintImageBuilder::WithDefault()
+                 .set_id(PaintImage::GetNextId())
+                 .set_texture_image(std::move(sk_image),
+                                    PaintImage::kNonLazyStableId)
+                 .TakePaintImage();
   }
 }
 

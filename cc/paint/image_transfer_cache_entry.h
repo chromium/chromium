@@ -158,6 +158,14 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
 
   const sk_sp<SkImage>& image() const { return image_; }
 
+  // Return true if GetImageWithToneMapApplied() should be used instead of
+  // image().
+  bool NeedsToneMapApplied() const { return has_gainmap_ || use_tone_curve_; }
+
+  // Return this image, tone mapped to match the specified HDR headroom.
+  sk_sp<SkImage> GetImageWithToneMapApplied(float hdr_headroom,
+                                            bool needs_mips) const;
+
   // Ensures the cached image has mips.
   void EnsureMips();
 
@@ -175,10 +183,6 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   bool fits_on_gpu() const;
 
  private:
-  // Return this image, tone mapped to match the specified HDR headroom.
-  sk_sp<SkImage> GetImageWithToneMapApplied(float hdr_headroom,
-                                            bool needs_mips) const;
-
   raw_ptr<GrDirectContext, DanglingUntriaged> gr_context_ = nullptr;
   raw_ptr<skgpu::graphite::Recorder> graphite_recorder_ = nullptr;
   sk_sp<SkImage> image_;

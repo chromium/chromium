@@ -152,6 +152,10 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     // True if the deserialization is happening on a privileged gpu channel.
     // e.g. in the case of UI.
     bool is_privileged = false;
+    // The HDR headroom to apply when deserializing.
+    // TODO(https://crbug.com/1483235): Move this to playback instead of
+    // deserialization.
+    float hdr_headroom = 1.f;
     raw_ptr<SharedImageProvider> shared_image_provider = nullptr;
   };
 

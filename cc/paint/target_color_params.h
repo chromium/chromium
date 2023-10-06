@@ -41,6 +41,13 @@ struct CC_PAINT_EXPORT TargetColorParams {
   // The HDR metadata to use in tone mapping.
   absl::optional<gfx::HDRMetadata> hdr_metadata;
 
+  static bool EqualIgnoringHdrHeadroom(const TargetColorParams& a,
+                                       const TargetColorParams& b) {
+    return a.color_space == b.color_space &&
+           a.sdr_max_luminance_nits == b.sdr_max_luminance_nits &&
+           a.enable_tone_mapping == b.enable_tone_mapping &&
+           a.hdr_metadata == b.hdr_metadata;
+  }
   bool operator==(const TargetColorParams& other) const {
     return color_space == other.color_space &&
            sdr_max_luminance_nits == other.sdr_max_luminance_nits &&
