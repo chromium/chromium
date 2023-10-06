@@ -10,15 +10,16 @@
 namespace ash::cloud_upload {
 
 CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider)
-    : cloud_provider_(cloud_provider) {}
+    : cloud_provider_(cloud_provider),
+      transfer_required_(Metric<OfficeFilesTransferRequired>(
+          cloud_provider_ == CloudProvider::kGoogleDrive
+              ? kDriveTransferRequiredMetric
+              : kOneDriveTransferRequiredMetric)) {}
 
 CloudOpenMetrics::~CloudOpenMetrics() = default;
 
 void CloudOpenMetrics::LogTransferRequired(OfficeFilesTransferRequired value) {
-  std::string metric_name = cloud_provider_ == CloudProvider::kGoogleDrive
-                                ? kDriveTransferRequiredMetric
-                                : kOneDriveTransferRequiredMetric;
-  base::UmaHistogramEnumeration(metric_name, value);
+  transfer_required_.Log(value);
 }
 
 base::SafeRef<CloudOpenMetrics> CloudOpenMetrics::GetSafeRef() const {
@@ -28,6 +29,16 @@ base::SafeRef<CloudOpenMetrics> CloudOpenMetrics::GetSafeRef() const {
 // For testing.
 base::WeakPtr<CloudOpenMetrics> CloudOpenMetrics::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+template <class MetricType>
+CloudOpenMetrics::Metric<MetricType>::Metric(std::string metric_name)
+    : metric_name_(metric_name) {}
+
+template <class MetricType>
+void CloudOpenMetrics::Metric<MetricType>::Log(MetricType value) {
+  base::UmaHistogramEnumeration(metric_name_, value);
+  value_ = value;
 }
 
 }  // namespace ash::cloud_upload

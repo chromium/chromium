@@ -37,7 +37,26 @@ class CloudOpenMetrics {
   base::WeakPtr<CloudOpenMetrics> GetWeakPtr();
 
  private:
+  // Represents a metric identified by `metric_name_` that logs value of type
+  // `MetricType`. Log the metric through this class and get metric metadata
+  // from this class.
+  template <typename MetricType>
+  class Metric {
+   public:
+    explicit Metric(std::string metric_name);
+    ~Metric() = default;
+
+    // Logs a metric with `metric_name_`. Saves the `value_` logged.
+    void Log(MetricType value);
+
+    MetricType value_;
+
+   private:
+    const std::string metric_name_;
+  };
+
   CloudProvider cloud_provider_;
+  Metric<OfficeFilesTransferRequired> transfer_required_;
   base::WeakPtrFactory<CloudOpenMetrics> weak_ptr_factory_{this};
 };
 
