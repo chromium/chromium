@@ -165,8 +165,8 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     return state_.composited_scrolling_preference;
   }
 
-  // Note that this doesn't include non-composited main-thread scrolling
-  // reasons.
+  // Note that this doesn't include main-thread scrolling reasons computed
+  // after paint.
   MainThreadScrollingReasons GetMainThreadScrollingReasons() const {
     return state_.main_thread_scrolling_reasons;
   }

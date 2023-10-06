@@ -70205,7 +70205,7 @@ from previous Chrome versions.
   <int value="2" label="Background attachment fixed"/>
   <int value="4" label="Popup scrolling (no threaded input handler)"/>
   <int value="5" label="Not opaque for text"/>
-  <int value="6" label="Can't paint scrolling background"/>
+  <int value="6" label="Can't paint scrolling background (obsolete)"/>
   <int value="7" label="Scrollbar scrolling"/>
   <int value="8" label="Non-fast scrollable region"/>
   <int value="9" label="Failed hit test"/>

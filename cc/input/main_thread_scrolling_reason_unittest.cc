@@ -16,7 +16,6 @@ TEST_F(MainThreadScrollingReasonTest, AsText) {
       "Has background-attachment:fixed, "
       "Scrollbar scrolling, "
       "Not opaque for text and LCD text, "
-      "Can't paint scrolling background and LCD text, "
       "Non fast scrollable region, "
       "Failed hit test, "
       "No scrolling layer, "

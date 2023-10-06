@@ -4992,8 +4992,6 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
 TEST_P(PaintArtifactCompositorTest, AddUnpaintedNonCompositedScrollNodes) {
   const uint32_t main_thread_scrolling_reason =
       cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
-  ASSERT_TRUE(cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(
-      main_thread_scrolling_reason));
   auto scroll_state =
       ScrollState1(PropertyTreeState::Root(), CompositingReason::kNone,
                    main_thread_scrolling_reason);

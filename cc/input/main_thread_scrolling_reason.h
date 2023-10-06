@@ -39,16 +39,11 @@ struct CC_EXPORT MainThreadScrollingReason {
     // Non-transient scrolling reasons. These are set on the ScrollNode.
     kHasBackgroundAttachmentFixedObjects = 1 << 2,
     kPopupNoThreadedInput = 1 << 4,
+    // Subpixel (LCD) text rendering requires blending glyphs with an opaque
+    // background.
+    kNotOpaqueForTextAndLCDText = 1 << 5,
     kPreferNonCompositedScrolling = 1 << 15,
     kBackgroundNeedsRepaintOnScroll = 1 << 16,
-
-    // Style-related scrolling on main reasons. Subpixel (LCD) text rendering
-    // requires blending glyphs with the background at a specific screen
-    // position; transparency and transforms break this. In ScrollUnification,
-    // these are also non-transient scrolling reasons, and are set on the
-    // ScrollNode.
-    kNotOpaqueForTextAndLCDText = 1 << 5,
-    kCantPaintScrollingBackgroundAndLCDText = 1 << 6,
 
     // Transient scrolling reasons. These are computed for each scroll gesture.
     // When computed inside ScrollBegin, these prevent the InputHandler from
@@ -71,16 +66,6 @@ struct CC_EXPORT MainThreadScrollingReason {
     // For blink::RecordScrollReasonsMetric() to know the number of used bits.
     kMainThreadScrollingReasonLast = 16,
   };
-
-  static const uint32_t kNonCompositedReasons =
-      kPreferNonCompositedScrolling | kNotOpaqueForTextAndLCDText |
-      kCantPaintScrollingBackgroundAndLCDText;
-
-  // Returns true if there are any reasons that prevented the scroller
-  // from being composited.
-  static bool HasNonCompositedScrollReasons(uint32_t reasons) {
-    return (reasons & kNonCompositedReasons) != 0;
-  }
 
   static int BucketIndexForTesting(uint32_t reason);
 
