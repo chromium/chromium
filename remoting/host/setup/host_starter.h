@@ -49,6 +49,11 @@ class HostStarter {
     // |host_owner| account.  If this value is not provided, we register the
     // host for the account which generated |auth_code|.
     std::string owner_email;
+
+    // Optional parameter used to indicate whether or not to enable crash
+    // reporting. The default is true and can be opted-out via a command line
+    // parameter.
+    bool enable_crash_reporting = true;
   };
 
   typedef base::OnceCallback<void(Result)> CompletionCallback;

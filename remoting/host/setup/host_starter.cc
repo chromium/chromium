@@ -39,7 +39,6 @@ HostStarter::Params::~Params() = default;
 namespace {
 
 constexpr int kMaxGetTokensRetries = 3;
-constexpr bool kConsentToDataCollection = true;
 
 // A helper class that registers and starts a host.
 class HostStarterImpl : public HostStarter,
@@ -279,7 +278,7 @@ void HostStarterImpl::StartHostProcess() {
   config.Set("host_secret_hash", host_secret_hash);
 
   daemon_controller_->SetConfigAndStart(
-      std::move(config), kConsentToDataCollection,
+      std::move(config), start_host_params_.enable_crash_reporting,
       base::BindOnce(&HostStarterImpl::OnHostStarted, base::Unretained(this)));
 }
 

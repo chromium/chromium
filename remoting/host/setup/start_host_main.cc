@@ -150,6 +150,8 @@ bool InitializeHostStarterParams(HostStarter::Params& params,
   params.auth_code = command_line->GetSwitchValueASCII("code");
   params.redirect_url = command_line->GetSwitchValueASCII("redirect-url");
   params.owner_email = command_line->GetSwitchValueASCII("host-owner");
+  params.enable_crash_reporting =
+      !command_line->HasSwitch("disable-crash-reporting");
 
   if (params.auth_code.empty() || params.redirect_url.empty()) {
     return false;
