@@ -20,7 +20,7 @@ declare_args() {
   ios_enable_share_extension = true
 
   # Enable open in extension.
-  ios_enable_open_extension = false
+  ios_enable_open_extension = true
 
   # Enable credential provider extension.
   ios_enable_credential_provider_extension = true
