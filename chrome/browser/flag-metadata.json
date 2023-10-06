@@ -8095,7 +8095,7 @@
   {
     "name": "traffic-counters",
     "owners": ["khorimoto", "cros-connectivity@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 132
   },
   {
     "name": "translate-force-trigger-on-english",
