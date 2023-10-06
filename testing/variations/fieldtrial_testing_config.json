@@ -6198,7 +6198,7 @@
             ]
         }
     ],
-    "ExtensionTelemetryDisableOffstoreExtensionStudy": [
+    "ExtensionTelemetryDisableOffstoreExtensionsStudy": [
         {
             "platforms": [
                 "chromeos",
@@ -6211,7 +6211,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SafeBrowsingExtensionTelemetryDisableOffstoreExtension"
+                        "SafeBrowsingExtensionTelemetryDisableOffstoreExtensions"
                     ]
                 }
             ]
