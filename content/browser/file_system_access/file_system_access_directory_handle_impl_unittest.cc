@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -135,14 +136,18 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
 };
 
 TEST_F(FileSystemAccessDirectoryHandleImplTest, IsSafePathComponent) {
+  // Path components which are allowed everywhere.
   constexpr const char* kSafePathComponents[] = {
       "a", "a.txt", "a b.txt", "My Computer", ".a", "lnk.zip", "lnk", "a.local",
   };
 
-  constexpr const char* kUnsafePathComponents[] = {
-      "",
-      ".",
-      "..",
+  // Path components which are disallowed everywhere.
+  constexpr const char* kAlwaysUnsafePathComponents[] = {
+      "", ".", "..", "a/", "a\\", "a\\a", "a/a", "C:\\", "C:/",
+  };
+
+  // Path components which are allowed only in sandboxed file systems.
+  constexpr const char* kUnsafeLocalPathComponents[] = {
       "...",
       "con",
       "con.zip",
@@ -153,30 +158,47 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, IsSafePathComponent) {
       "a<a",
       "a>a",
       "a?a",
-      "a/",
-      "a\\",
       "a ",
       "a . .",
       " Computer",
       "My Computer.{a}",
       "My Computer.{20D04FE0-3AEA-1069-A2D8-08002B30309D}",
-      "a\\a",
       "a.lnk",
       "a.url",
-      "a/a",
-      "C:\\",
-      "C:/",
       "C:",
   };
 
   for (const char* component : kSafePathComponents) {
-    EXPECT_TRUE(
-        FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(component))
+    EXPECT_TRUE(FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
+        storage::kFileSystemTypeTemporary, component))
+        << component;
+    EXPECT_TRUE(FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
+        storage::kFileSystemTypeLocal, component))
+        << component;
+    EXPECT_TRUE(FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
+        storage::kFileSystemTypeExternal, component))
         << component;
   }
-  for (const char* component : kUnsafePathComponents) {
-    EXPECT_FALSE(
-        FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(component))
+  for (const char* component : kAlwaysUnsafePathComponents) {
+    EXPECT_FALSE(FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
+        storage::kFileSystemTypeTemporary, component))
+        << component;
+    EXPECT_FALSE(FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
+        storage::kFileSystemTypeLocal, component))
+        << component;
+    EXPECT_FALSE(FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
+        storage::kFileSystemTypeExternal, component))
+        << component;
+  }
+  for (const char* component : kUnsafeLocalPathComponents) {
+    EXPECT_TRUE(FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
+        storage::kFileSystemTypeTemporary, component))
+        << component;
+    EXPECT_FALSE(FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
+        storage::kFileSystemTypeLocal, component))
+        << component;
+    EXPECT_FALSE(FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
+        storage::kFileSystemTypeExternal, component))
         << component;
   }
 }

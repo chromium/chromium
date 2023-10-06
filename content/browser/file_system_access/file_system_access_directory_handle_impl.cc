@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
@@ -21,6 +22,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
@@ -712,10 +714,13 @@ void FileSystemAccessDirectoryHandleImpl::AllEntriesReady(
 
 // static
 bool FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
+    storage::FileSystemType type,
     const std::string& name) {
   // This method is similar to net::IsSafePortablePathComponent, with a few
   // notable differences where the net version does not consider names safe
   // while here we do want to allow them. These cases are:
+  //  - Files in sandboxed file systems are subject to far fewer restrictions,
+  //    i.e. base::i18n::IsFilenameLegal is not called.
   //  - Names starting with a '.'. These would be hidden files in most file
   //    managers, but are something we explicitly want to support for the
   //    File System Access API, for names like .git.
@@ -732,7 +737,8 @@ bool FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
 
   const base::FilePath component = storage::StringToFilePath(name);
   // Empty names, or names that contain path separators are invalid.
-  if (component.empty() || component != component.BaseName() ||
+  if (component.empty() ||
+      component != storage::VirtualPath::BaseName(component) ||
       component != component.StripTrailingSeparators()) {
     return false;
   }
@@ -746,6 +752,20 @@ bool FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
     return false;
   }
 #endif
+
+  // The names of files in sandboxed file systems are obfuscated before they end
+  // up on disk (if they ever end up on disk). We don't need to worry about
+  // platform-specific restrictions. More restrictions would need to be added if
+  // we ever revisit allowing file moves across the local/sandboxed file system
+  // boundary. See https://crbug.com/1408211.
+  if (type == storage::kFileSystemTypeTemporary) {
+    // Check for both '/' and '\' as path separators, regardless of what OS
+    // we're running on.
+    return component16 != u"." && component16 != u".." &&
+           !base::Contains(component16, '/') &&
+           !base::Contains(component16, '\\');
+  }
+
   // base::i18n::IsFilenameLegal blocks names that start with '.', so strip out
   // a leading '.' before passing it to that method.
   // TODO(mek): Consider making IsFilenameLegal more flexible to support this
@@ -783,12 +803,12 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
     storage::FileSystemURL* result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsSafePathComponent(basename)) {
+  const storage::FileSystemURL& parent = url();
+  if (!IsSafePathComponent(parent.type(), basename)) {
     return file_system_access_error::FromStatus(
         FileSystemAccessStatus::kInvalidArgument, "Name is not allowed.");
   }
 
-  const storage::FileSystemURL parent = url();
   *result = file_system_context()->CreateCrackedFileSystemURL(
       parent.storage_key(), parent.mount_type(),
       parent.virtual_path().Append(base::FilePath::FromUTF8Unsafe(basename)));
