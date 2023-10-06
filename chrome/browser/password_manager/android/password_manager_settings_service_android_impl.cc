@@ -331,6 +331,12 @@ void PasswordManagerSettingsServiceAndroidImpl::UpdateSettingFetchState(
 void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
   CHECK(bridge_helper_);
   for (PasswordManagerSetting setting : kAllPasswordSettings) {
+    // Note: This method also handles the case where the previously-syncing
+    // account has just signed out. So the account can't be queried via
+    // `sync_service_->GetAccountInfo().email` but instead needs to be retrieved
+    // via kGoogleServices*Last*SyncingUsername.
+    // TODO(crbug.com/1490523): Revisit this logic - does anything need to be
+    // done for signed-in non-syncing users too?
     bridge_helper_->GetPasswordSettingValue(
         SyncingAccount(pref_service_->GetString(
             ::prefs::kGoogleServicesLastSyncingUsername)),
