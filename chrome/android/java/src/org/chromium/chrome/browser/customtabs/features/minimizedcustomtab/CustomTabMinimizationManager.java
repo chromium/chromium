@@ -26,11 +26,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Class that manages minimizing a Custom Tab into picture-in-picture.
- */
+/** Class that manages minimizing a Custom Tab into picture-in-picture. */
 @RequiresApi(VERSION_CODES.O)
-public class CustomTabMinimizationManager implements Consumer<PictureInPictureModeChangedInfo> {
+public class CustomTabMinimizationManager
+        implements CustomTabMinimizeDelegate, Consumer<PictureInPictureModeChangedInfo> {
     @VisibleForTesting
     static final Rational ASPECT_RATIO = new Rational(16, 9);
     private final AppCompatActivity mActivity;
@@ -49,9 +48,8 @@ public class CustomTabMinimizationManager implements Consumer<PictureInPictureMo
         mTabProvider = tabProvider;
     }
 
-    /**
-     * Minimize the Custom Tab into picture-in-picture.
-     */
+    /** Minimize the Custom Tab into picture-in-picture. */
+    @Override
     public void minimize() {
         if (!mTabProvider.hasValue()) return;
         var builder = new PictureInPictureParams.Builder().setAspectRatio(ASPECT_RATIO);

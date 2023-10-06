@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingDelegate;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -342,6 +343,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         // cases where the location bar layout gets already completed. Trigger the visibility
         // update manually here.
         setMaximizeButtonVisibility();
+    }
+
+    /**
+     * Sets the {@link CustomTabMinimizeDelegate} to allow the toolbar to minimize the tab.
+     *
+     * @param delegate The {@link CustomTabMinimizeDelegate}.
+     */
+    public void setMinimizeDelegate(@NonNull CustomTabMinimizeDelegate delegate) {
+        mMinimizeButton.setOnClickListener(view -> delegate.minimize());
     }
 
     private void setButtonsVisibility() {

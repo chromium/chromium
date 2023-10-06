@@ -242,6 +242,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             mBrandingController.onToolbarInitialized(toolbar.getBrandingDelegate());
         }
         toolbar.setCloseButtonPosition(mIntentDataProvider.get().getCloseButtonPosition());
+        if (mMinimizationManager != null) {
+            toolbar.setMinimizeDelegate(mMinimizationManager);
+        }
         if (mIntentDataProvider.get().isPartialCustomTab()) {
             Callback<Runnable> softInputCallback;
             if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
@@ -294,14 +297,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                 mActivity, tracker, ReengagementActivity.class);
                 controller.tryToReengageTheUser();
             }));
-        }
-
-        if (MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mActivity)) {
-            // The method above already checks for the minimum API level.
-            //
-            // noinspection NewApi
-            mMinimizationManager =
-                    new CustomTabMinimizationManager(mActivity, mActivityTabProvider);
         }
     }
 
@@ -421,6 +416,14 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 intentDataProvider.getSideSheetPosition(),
                 intentDataProvider.getSideSheetSlideInBehavior(),
                 intentDataProvider.getActivitySideSheetRoundedCornersPosition());
+
+        if (MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mActivity)) {
+            // The method above already checks for the minimum API level.
+            //
+            // noinspection NewApi
+            mMinimizationManager =
+                    new CustomTabMinimizationManager(mActivity, mActivityTabProvider);
+        }
     }
 
     @Override
