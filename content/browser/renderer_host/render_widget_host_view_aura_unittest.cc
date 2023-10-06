@@ -5934,6 +5934,7 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
 
     MockRenderWidgetHostImpl* widget_host_for_process_1 =
         CreateRenderWidgetHostForSiteInstanceGroup(tab_site_instance_group());
+    widget_hosts_to_cleanup_.push_back(widget_host_for_process_1);
 
     view_for_first_process_ = CreateViewForProcess(widget_host_for_process_1);
 
@@ -5944,6 +5945,7 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     MockRenderWidgetHostImpl* widget_host_for_process_2 =
         CreateRenderWidgetHostForSiteInstanceGroup(
             second_site_instance_group_.get());
+    widget_hosts_to_cleanup_.push_back(widget_host_for_process_2);
     view_for_second_process_ = CreateViewForProcess(widget_host_for_process_2);
 
     third_process_host_ = CreateNewProcessHost();
@@ -5953,6 +5955,7 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     MockRenderWidgetHostImpl* widget_host_for_process_3 =
         CreateRenderWidgetHostForSiteInstanceGroup(
             third_site_instance_group_.get());
+    widget_hosts_to_cleanup_.push_back(widget_host_for_process_3);
     view_for_third_process_ = CreateViewForProcess(widget_host_for_process_3);
 
     views_.insert(views_.begin(), {
@@ -5975,6 +5978,10 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     view_for_first_process_.ExtractAsDangling()->Destroy();
     view_for_second_process_.ExtractAsDangling()->Destroy();
     view_for_third_process_.ExtractAsDangling()->Destroy();
+
+    for (auto* host : widget_hosts_to_cleanup_) {
+      host->ShutdownAndDestroyWidget(true);
+    }
 
     second_process_host_->Cleanup();
     third_process_host_->Cleanup();
@@ -6034,6 +6041,7 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
 
   std::vector<RenderWidgetHostViewBase*> views_;
   std::vector<MockRenderWidgetHostImpl*> widget_hosts_;
+  std::vector<MockRenderWidgetHostImpl*> widget_hosts_to_cleanup_;
   // A sequence of indices in [0, 3] which determines the index of a RWHV in
   // |views_|. This sequence is used in the tests to sequentially make a RWHV
   // active for a subsequent IME result method call.
