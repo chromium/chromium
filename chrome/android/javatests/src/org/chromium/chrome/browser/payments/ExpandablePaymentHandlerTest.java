@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -30,6 +31,7 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -38,6 +40,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.payments.handler.PaymentHandlerContentFrameLayout;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -48,6 +51,8 @@ import org.chromium.components.payments.InputProtector;
 import org.chromium.components.payments.test_support.FakeClock;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -364,6 +369,50 @@ public class ExpandablePaymentHandlerTest {
                 .check(matches(withText(getOrigin(mServer))));
 
         mRule.runOnUiThread(() -> paymentHandler.hide());
+
+        waitForUiClosed();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Payments"})
+    public void testWebContentsInputProtection() throws Throwable {
+        startDefaultServer();
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow(mDefaultIsIncognito);
+        waitForUiShown();
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        WebContentsObserver observer = new WebContentsObserver() {
+            @Override
+            public void frameReceivedUserActivation() {
+                callbackHelper.notifyCalled();
+            }
+        };
+        mRule.runOnUiThread(
+                () -> { paymentHandler.getWebContentsForTest().addObserver(observer); });
+
+        DOMUtils.waitForNonZeroNodeBounds(paymentHandler.getWebContentsForTest(), "confirmButton");
+        // Before advancing the clock, input is intercepted from interacting with the page.
+        PaymentHandlerContentFrameLayout contentLayout =
+                (PaymentHandlerContentFrameLayout) mRule.getActivity().findViewById(
+                        R.id.payment_handler_content);
+        Assert.assertTrue(
+                contentLayout.onInterceptTouchEvent(MotionEvent.obtain(0, 0, 0, 0, 0, 0)));
+        Assert.assertTrue(
+                DOMUtils.clickNode(paymentHandler.getWebContentsForTest(), "confirmButton"));
+        Assert.assertEquals(0, callbackHelper.getCallCount());
+
+        mClock.advanceCurrentTimeMillis(SAFE_INPUT_DELAY);
+        Assert.assertFalse(
+                contentLayout.onInterceptTouchEvent(MotionEvent.obtain(0, 0, 0, 0, 0, 0)));
+        Assert.assertTrue(
+                DOMUtils.clickNode(paymentHandler.getWebContentsForTest(), "confirmButton"));
+        callbackHelper.waitForFirst();
+
+        mRule.runOnUiThread(() -> {
+            paymentHandler.getWebContentsForTest().removeObserver(observer);
+            paymentHandler.hide();
+        });
         waitForUiClosed();
     }
 

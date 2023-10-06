@@ -116,7 +116,7 @@ public class PaymentHandlerCoordinator {
         assert webContentView.getParent() == null;
         thinWebView.attachWebContents(mPaymentHandlerWebContents, webContentView, null);
         PaymentHandlerView view = new PaymentHandlerView(activity, mPaymentHandlerWebContents,
-                mToolbarCoordinator.getView(), thinWebView.getView());
+                mToolbarCoordinator.getView(), thinWebView.getView(), mInputProtector);
         assert mToolbarCoordinator.getToolbarHeightPx() == view.getToolbarHeightPx();
         PropertyModelChangeProcessor changeProcessor =
                 PropertyModelChangeProcessor.create(model, view, PaymentHandlerViewBinder::bind);
