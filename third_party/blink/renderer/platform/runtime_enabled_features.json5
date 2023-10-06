@@ -638,6 +638,10 @@
       status: "stable",
     },
     {
+      name: "ClipPathRejectEmptyPaths",
+      status: "stable",
+    },
+    {
       // https://www.w3.org/TR/css-shapes/#supported-basic-shapes
       name: "ClipPathXYWHAndRect",
       status: "stable",
