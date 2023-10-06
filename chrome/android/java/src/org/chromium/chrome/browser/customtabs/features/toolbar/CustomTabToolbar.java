@@ -334,10 +334,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             maximizeButtonStub.inflate();
             maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
         }
-        // The visibility will set after the location bar completes its layout.
         mMaximizeButtonEnabled = true;
         setMaximizeButtonDrawable(maximizedOnInit);
         maximizeButton.setOnClickListener((v) -> setMaximizeButtonDrawable(callback.onClick()));
+
+        // The visibility will set after the location bar completes its layout. But there are
+        // cases where the location bar layout gets already completed. Trigger the visibility
+        // update manually here.
+        setMaximizeButtonVisibility();
     }
 
     private void setButtonsVisibility() {
