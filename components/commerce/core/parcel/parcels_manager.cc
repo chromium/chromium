@@ -65,8 +65,9 @@ std::vector<ParcelIdentifier> GetParcelIdentifiersToRefresh(
         now - base::Time::FromDeltaSinceWindowsEpoch(
                   base::Microseconds(tracking.last_update_time_usec()));
     base::TimeDelta time_to_deliver =
-        now - base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
-                  tracking.parcel_status().estimated_delivery_time_usec()));
+        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+            tracking.parcel_status().estimated_delivery_time_usec())) -
+        now;
     if (time_to_deliver < kAboutToDeliverThreshold) {
       if (since_last_update >= kRefreshIntervalForAboutToDeliver) {
         has_parcel_to_update = true;

@@ -39,7 +39,8 @@ const std::string kExpectedGetParcelStatusPostData =
     "{\"parcelIds\":[{\"carrier\":2,\"trackingId\":\"xyz\"}]}";
 const std::string kResponseSucceeded =
     "{ \"parcelStatus\": [{\"parcelIdentifier\": {\"trackingId\": \"xyz\","
-    "\"carrier\": 1}, \"parcelState\": 2, \"trackingUrl\": \"www.foo.com\","
+    "\"carrier\": \"FEDEX\"}, \"parcelState\": \"PICKED_UP\", \"trackingUrl\": "
+    "\"www.foo.com\","
     "\"estimatedDeliveryDate\": \"2023-10-11\"}]}";
 const std::string kExpectedStartTrackingPostData =
     "{\"parcelIds\":[{\"carrier\":2,\"trackingId\":\"xyz\"}],"

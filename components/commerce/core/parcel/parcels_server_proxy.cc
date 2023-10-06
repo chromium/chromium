@@ -237,9 +237,16 @@ absl::optional<ParcelStatus> Deserialize(const base::Value& value) {
   }
 
   auto* tracking_id = parcel_identifier->FindString(kTrackingIdKey);
-  auto carrier = parcel_identifier->FindInt(kCarrierKey);
-  auto parcel_state = value_dict.FindInt(kParcelStateKey);
-  if (!tracking_id || !carrier || !parcel_state) {
+  auto* carrier_str = parcel_identifier->FindString(kCarrierKey);
+  auto* parcel_state_str = value_dict.FindString(kParcelStateKey);
+  if (!tracking_id || !carrier_str || !parcel_state_str) {
+    return absl::nullopt;
+  }
+
+  ParcelIdentifier::Carrier carrier;
+  ParcelStatus::ParcelState parcel_state;
+  if (!ParcelIdentifier::Carrier_Parse(*carrier_str, &carrier) ||
+      !ParcelStatus::ParcelState_Parse(*parcel_state_str, &parcel_state)) {
     return absl::nullopt;
   }
 
@@ -249,10 +256,8 @@ absl::optional<ParcelStatus> Deserialize(const base::Value& value) {
   ParcelStatus status;
   auto* identifier = status.mutable_parcel_identifier();
   identifier->set_tracking_id(*tracking_id);
-  identifier->set_carrier(
-      static_cast<ParcelIdentifier::Carrier>(carrier.value()));
-  status.set_parcel_state(
-      static_cast<ParcelStatus::ParcelState>(parcel_state.value()));
+  identifier->set_carrier(carrier);
+  status.set_parcel_state(parcel_state);
   if (tracking_url) {
     status.set_tracking_url(*tracking_url);
   }
@@ -381,7 +386,6 @@ void ParcelsServerProxy::ProcessGetParcelStatusResponse(
                             std::make_unique<std::vector<ParcelStatus>>());
     return;
   }
-
   data_decoder::DataDecoder::ParseJsonIsolated(
       response->response,
       base::BindOnce(&ParcelsServerProxy::OnGetParcelStatusJsonParsed,
@@ -399,6 +403,7 @@ void ParcelsServerProxy::OnGetParcelStatusJsonParsed(
           parcel_status->push_back(*status);
         }
       }
+
       std::move(callback).Run(true, std::move(parcel_status));
       return;
     }

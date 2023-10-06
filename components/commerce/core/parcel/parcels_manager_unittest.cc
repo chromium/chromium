@@ -373,25 +373,31 @@ TEST_F(ParcelsManagerTest,
                                                 ParcelStatus::PICKED_UP);
   mock_storage_->MockInitCallback(true);
 
-  // Advance clock by 1 day.
-  clock_.Advance(base::Days(1));
+  std::vector<ParcelTrackingStatus> expected;
+  ParcelTrackingStatus expected_status;
+  expected_status.carrier = commerce::ParcelIdentifier::UPS;
+  expected_status.state = ParcelStatus::NEW;
+  expected_status.tracking_id = kTestTrackingId;
+  expected.emplace_back(expected_status);
+
+  // Advance the clock by 10 hours, shouldn't trigger server request.
+  clock_.Advance(base::Hours(10));
+  EXPECT_CALL(*mock_server_proxy_, GetParcelStatus(_, _)).Times(0);
+  EXPECT_CALL(*mock_storage_, GetAllParcelTrackingContents()).Times(1);
+  EXPECT_CALL(*mock_storage_, UpdateParcelStatus(_, _)).Times(0);
+  parcels_manager_->GetAllParcelStatuses(
+      base::BindOnce(&ExpectGetParcelsCallback, true, expected));
+  task_environment_.RunUntilIdle();
+
+  // Advance clock by another 10 hours, the local state is now stale.
+  expected[0].state = ParcelStatus::PICKED_UP;
+  clock_.Advance(base::Hours(10));
   EXPECT_CALL(*mock_server_proxy_, GetParcelStatus(_, _)).Times(1);
   EXPECT_CALL(*mock_storage_, GetAllParcelTrackingContents()).Times(1);
   EXPECT_CALL(*mock_storage_, UpdateParcelStatus(_, _)).Times(1);
-  base::RunLoop run_loop;
-  parcels_manager_->GetAllParcelStatuses(base::BindOnce(
-      [](base::RunLoop* run_loop, bool success,
-         std::unique_ptr<std::vector<ParcelTrackingStatus>> parcel_status) {
-        ASSERT_TRUE(success);
-        ASSERT_EQ(1, static_cast<int>(parcel_status->size()));
-        auto status = (*parcel_status)[0];
-        ASSERT_EQ(kTestTrackingId, status.tracking_id);
-        ASSERT_EQ(commerce::ParcelIdentifier::UPS, status.carrier);
-        ASSERT_EQ(ParcelStatus::PICKED_UP, status.state);
-        run_loop->Quit();
-      },
-      &run_loop));
-  run_loop.Run();
+  parcels_manager_->GetAllParcelStatuses(
+      base::BindOnce(&ExpectGetParcelsCallback, true, expected));
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(ParcelsManagerTest, TestGetAllParcelStatuses_LocalStorageHasDoneStatus) {
