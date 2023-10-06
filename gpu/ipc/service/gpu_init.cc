@@ -617,13 +617,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     ResumeGpuWatchdog(watchdog_thread_.get());
   }
 #endif  // BUILDFLAG(IS_WIN)
-  uint64_t vulkan_system_device_id = 0;
-  if (gl_display) {
-    vulkan_system_device_id = gl_display->system_device_id();
-  }
+
   if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] !=
           kGpuFeatureStatusEnabled ||
-      !InitializeVulkan(vulkan_system_device_id)) {
+      !InitializeVulkan(gl_display->system_device_id())) {
     gpu_preferences_.use_vulkan = VulkanImplementationName::kNone;
     gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] =
         kGpuFeatureStatusDisabled;
@@ -823,11 +820,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 
   if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan) &&
       base::FeatureList::IsEnabled(features::kWebViewVulkan)) {
-    uint64_t vulkan_system_device_id = 0;
-    if (gl_display) {
-      vulkan_system_device_id = gl_display->system_device_id();
-    }
-    bool result = InitializeVulkan(vulkan_system_device_id);
+    bool result = InitializeVulkan(gl_display->system_device_id());
     // There is no fallback for webview.
     CHECK(result);
   } else {
