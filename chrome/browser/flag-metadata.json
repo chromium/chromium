@@ -3385,7 +3385,7 @@
   {
     "name": "enable-preferences-account-storage",
     "owners": [ "ankushkush@google.com", "treib" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 126
   },
   {
     "name": "enable-prevent-close",
@@ -7847,12 +7847,12 @@
   },
   {
     "name": "sync-poll-immediately-on-every-startup",
-    "owners": [ "treib", "//components/search/OWNERS" ],
-    "expiry_milestone": 120
+    "owners": [ "treib", "rushans@google.com", "//components/search/OWNERS" ],
+    "expiry_milestone": 126
   },
   {
     "name": "sync-segments-data",
-    "owners": [ "bwwilliams", "sky", "treib" ],
+    "owners": [ "bwwilliams@google.com", "sky", "treib" ],
     "expiry_milestone": 130
   },
   {
