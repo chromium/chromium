@@ -6,7 +6,7 @@
   "input": {
     "registrations": [
       {
-        "timestamp": "1643235573000",
+        "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -26,7 +26,7 @@
         }]
       },
       {
-        "timestamp": "1643235574000",
+        "timestamp": "1000",
         "registration_request": {
           "context_origin": "https://source.test",
           "attribution_src_url": "https://another-reporter.test/register-source",
@@ -46,7 +46,7 @@
         }]
       },
       {
-        "timestamp": "1643235575000",
+        "timestamp": "2000",
         "registration_request": {
           "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -66,7 +66,7 @@
         }]
       },
       {
-        "timestamp": "1643235576000",
+        "timestamp": "3000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -96,7 +96,7 @@
       // Should not result in an event-level report due to storage limit
       // regardless of reporting origin.
       {
-        "timestamp": "1643235577000",
+        "timestamp": "4000",
         "registration_request": {
           "attribution_src_url": "https://another-reporter.test/register-trigger",
           "context_origin": "https://example.destination.test"
@@ -128,7 +128,7 @@
       // Should result in an event-level report as the destination site is
       // different.
       {
-        "timestamp": "1643235578000",
+        "timestamp": "5000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://another-destination.test"
@@ -164,24 +164,24 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643408373",
+          "scheduled_report_time": "172800",
           "source_event_id": "111",
           "source_type": "navigation",
           "trigger_data": "1"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643408373000"
+        "report_time": "172800000"
       },
       {
         "payload": {
           "attribution_destination": "https://another-destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643408375",
+          "scheduled_report_time": "172802",
           "source_event_id": "333",
           "source_type": "navigation",
           "trigger_data": "3"
        },
-       "report_time": "1643408375000",
+       "report_time": "172802000",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
       },
       {
@@ -192,7 +192,7 @@
              "value": 111
           } ]
        },
-       "report_time": "1643239176000",
+       "report_time": "3603000",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
@@ -203,7 +203,7 @@
              "value": 222
           } ]
        },
-       "report_time": "1643239177000",
+       "report_time": "3604000",
        "report_url": "https://another-reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
@@ -214,7 +214,7 @@
              "value": 333
           } ]
        },
-       "report_time": "1643239178000",
+       "report_time": "3605000",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
@@ -227,7 +227,7 @@
           },
           "type": "trigger-event-storage-limit"
        } ],
-       "report_time": "1643235577000",
+       "report_time": "4000",
        "report_url": "https://another-reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
