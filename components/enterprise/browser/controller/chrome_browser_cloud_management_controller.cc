@@ -85,8 +85,6 @@ std::unique_ptr<MachineLevelUserCloudPolicyManager>
 ChromeBrowserCloudManagementController::CreatePolicyManager(
     ConfigurationPolicyProvider* platform_provider) {
   if (!IsEnabled()) {
-    LOG_POLICY(WARNING, CBCM_ENROLLMENT)
-        << "Could not create policy manager as CBCM is not enabled.";
     return nullptr;
   }
 
@@ -162,7 +160,9 @@ void ChromeBrowserCloudManagementController::Init(
   if (!IsEnabled()) {
     LOG_POLICY(ERROR, CBCM_ENROLLMENT)
         << "Cloud management controller initialization aborted as CBCM is not "
-           "enabled.";
+           "enabled. Please use the `--enable-chrome-browser-cloud-management` "
+           "command line flag to enable it if you are not using the official "
+           "Google Chrome build.";
     return;
   }
   LOG_POLICY(INFO, CBCM_ENROLLMENT)
