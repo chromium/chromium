@@ -48,12 +48,8 @@ void MockVideoFrameHandler::OnFrameAccessHandlerReady(
 }
 
 void MockVideoFrameHandler::OnFrameReadyInBuffer(
-    mojom::ReadyFrameInBufferPtr buffer,
-    std::vector<mojom::ReadyFrameInBufferPtr> scaled_buffers) {
+    mojom::ReadyFrameInBufferPtr buffer) {
   accessed_frame_ids_.push_back(buffer->buffer_id);
-  for (auto& scaled_buffer : scaled_buffers) {
-    accessed_frame_ids_.push_back(scaled_buffer->buffer_id);
-  }
   DoOnFrameReadyInBuffer(buffer->buffer_id, buffer->frame_feedback_id,
                          &buffer->frame_info);
   if (!should_store_access_permissions_) {

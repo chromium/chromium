@@ -111,9 +111,7 @@ class CONTENT_EXPORT VideoCaptureController
   void OnCaptureConfigurationChanged() override;
   void OnNewBuffer(int32_t buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override;
-  void OnFrameReadyInBuffer(
-      media::ReadyFrameInBuffer frame,
-      std::vector<media::ReadyFrameInBuffer> scaled_frames) override;
+  void OnFrameReadyInBuffer(media::ReadyFrameInBuffer frame) override;
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;

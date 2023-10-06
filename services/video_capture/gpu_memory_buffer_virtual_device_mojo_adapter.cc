@@ -70,10 +70,8 @@ void GpuMemoryBufferVirtualDeviceMojoAdapter::OnFrameReadyInBuffer(
             video_frame_handler_, frame_access_handler_remote_);
     video_frame_handler_has_forwarder_ = true;
   }
-  video_frame_handler_->OnFrameReadyInBuffer(
-      mojom::ReadyFrameInBuffer::New(buffer_id, 0 /* frame_feedback_id */,
-                                     std::move(frame_info)),
-      {});
+  video_frame_handler_->OnFrameReadyInBuffer(mojom::ReadyFrameInBuffer::New(
+      buffer_id, 0 /* frame_feedback_id */, std::move(frame_info)));
 }
 
 void GpuMemoryBufferVirtualDeviceMojoAdapter::OnBufferRetired(int buffer_id) {

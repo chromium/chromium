@@ -34,12 +34,10 @@ void VideoFrameReceiverOnTaskRunner::OnNewBuffer(
 }
 
 void VideoFrameReceiverOnTaskRunner::OnFrameReadyInBuffer(
-    ReadyFrameInBuffer frame,
-    std::vector<ReadyFrameInBuffer> scaled_frames) {
+    ReadyFrameInBuffer frame) {
   task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoFrameReceiver::OnFrameReadyInBuffer, receiver_,
-                     std::move(frame), std::move(scaled_frames)));
+      FROM_HERE, base::BindOnce(&VideoFrameReceiver::OnFrameReadyInBuffer,
+                                receiver_, std::move(frame)));
 }
 
 void VideoFrameReceiverOnTaskRunner::OnBufferRetired(int buffer_id) {

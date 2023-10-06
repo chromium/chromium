@@ -215,8 +215,7 @@ void SingleClientVideoCaptureHost::OnNewBuffer(
 }
 
 void SingleClientVideoCaptureHost::OnFrameReadyInBuffer(
-    media::ReadyFrameInBuffer frame,
-    std::vector<media::ReadyFrameInBuffer> scaled_frames) {
+    media::ReadyFrameInBuffer frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(3) << __func__ << ": buffer_id=" << frame.buffer_id;
   DCHECK(observer_);

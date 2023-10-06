@@ -496,7 +496,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
                 "trakcer failed.";
     return;
   }
-  receiver_->OnFrameReadyInBuffer(std::move(ready_frame), {});
+  receiver_->OnFrameReadyInBuffer(std::move(ready_frame));
 }
 
 VideoCaptureDevice::Client::ReserveResult
@@ -675,13 +675,11 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
   info->is_premapped = buffer.is_premapped;
 
   buffer_pool_->HoldForConsumers(buffer.id, 1);
-  receiver_->OnFrameReadyInBuffer(
-      ReadyFrameInBuffer(
-          buffer.id, buffer.frame_feedback_id,
-          std::make_unique<ScopedBufferPoolReservation<ConsumerReleaseTraits>>(
-              buffer_pool_, buffer.id),
-          std::move(info)),
-      {});
+  receiver_->OnFrameReadyInBuffer(ReadyFrameInBuffer(
+      buffer.id, buffer.frame_feedback_id,
+      std::make_unique<ScopedBufferPoolReservation<ConsumerReleaseTraits>>(
+          buffer_pool_, buffer.id),
+      std::move(info)));
 }
 
 void VideoCaptureDeviceClient::OnError(VideoCaptureError error,

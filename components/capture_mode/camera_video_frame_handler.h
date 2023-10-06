@@ -121,9 +121,7 @@ class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
       mojo::PendingRemote<video_capture::mojom::VideoFrameAccessHandler>
           pending_frame_access_handler) override;
   void OnFrameReadyInBuffer(
-      video_capture::mojom::ReadyFrameInBufferPtr buffer,
-      std::vector<video_capture::mojom::ReadyFrameInBufferPtr> scaled_buffers)
-      override;
+      video_capture::mojom::ReadyFrameInBufferPtr buffer) override;
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;

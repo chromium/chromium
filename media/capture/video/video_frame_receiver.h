@@ -5,6 +5,8 @@
 #ifndef MEDIA_CAPTURE_VIDEO_VIDEO_FRAME_RECEIVER_H_
 #define MEDIA_CAPTURE_VIDEO_VIDEO_FRAME_RECEIVER_H_
 
+#include <memory>
+
 #include "base/functional/callback_helpers.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
@@ -77,9 +79,7 @@ class CAPTURE_EXPORT VideoFrameReceiver {
   // the buffer. The producer guarantees that the buffer and its contents stay
   // alive and unchanged until VideoFrameReceiver releases the given
   // |buffer_read_permission|.
-  virtual void OnFrameReadyInBuffer(
-      ReadyFrameInBuffer frame,
-      std::vector<ReadyFrameInBuffer> scaled_frames) = 0;
+  virtual void OnFrameReadyInBuffer(ReadyFrameInBuffer frame) = 0;
 
   // Tells the VideoFrameReceiver that the producer is no longer going to use
   // the buffer with id |buffer_id| for frame delivery. This may be called even

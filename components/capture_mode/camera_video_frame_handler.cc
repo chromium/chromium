@@ -604,16 +604,8 @@ void CameraVideoFrameHandler::OnFrameAccessHandlerReady(
 }
 
 void CameraVideoFrameHandler::OnFrameReadyInBuffer(
-    video_capture::mojom::ReadyFrameInBufferPtr buffer,
-    std::vector<video_capture::mojom::ReadyFrameInBufferPtr> scaled_buffers) {
+    video_capture::mojom::ReadyFrameInBufferPtr buffer) {
   CHECK(video_frame_access_handler_remote_);
-
-  // Ignore scaled buffers for now.
-  for (auto& scaled_buffer : scaled_buffers) {
-    video_frame_access_handler_remote_->OnFinishedConsumingBuffer(
-        scaled_buffer->buffer_id);
-  }
-  scaled_buffers.clear();
 
   const int buffer_id = buffer->buffer_id;
 

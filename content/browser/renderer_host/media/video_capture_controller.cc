@@ -422,8 +422,7 @@ void VideoCaptureController::OnNewBuffer(
 }
 
 void VideoCaptureController::OnFrameReadyInBuffer(
-    media::ReadyFrameInBuffer frame,
-    std::vector<media::ReadyFrameInBuffer> scaled_frames) {
+    media::ReadyFrameInBuffer frame) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_NE(frame.buffer_id, media::VideoCaptureBufferPool::kInvalidId);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -436,41 +435,19 @@ void VideoCaptureController::OnFrameReadyInBuffer(
       frame.buffer_id, frame.frame_feedback_id, std::move(frame.frame_info),
       &frame_context);
 
-  std::vector<BufferContext*> scaled_frame_contexts;
-  scaled_frame_contexts.reserve(scaled_frames.size());
-  std::vector<ReadyBuffer> scaled_frame_ready_buffers;
-  scaled_frame_ready_buffers.reserve(scaled_frames.size());
-  for (auto& scaled_frame : scaled_frames) {
-    BufferContext* scaled_frame_context;
-    scaled_frame_ready_buffers.push_back(MakeReadyBufferAndSetContextFeedbackId(
-        scaled_frame.buffer_id, scaled_frame.frame_feedback_id,
-        std::move(scaled_frame.frame_info), &scaled_frame_context));
-    scaled_frame_contexts.push_back(scaled_frame_context);
-  }
-
   if (state_ != blink::VIDEO_CAPTURE_STATE_ERROR) {
     // Inform all active clients of the frames.
     for (const auto& client : controller_clients_) {
       if (client->session_closed || client->paused)
         continue;
       MakeClientUseBufferContext(frame_context, client.get());
-      for (auto* scaled_frame_context : scaled_frame_contexts) {
-        MakeClientUseBufferContext(scaled_frame_context, client.get());
-      }
       client->event_handler->OnBufferReady(client->controller_id,
-                                           frame_ready_buffer,
-                                           scaled_frame_ready_buffers);
+                                           frame_ready_buffer, {});
     }
     // Transfer buffer read permissions to any contexts that now have consumers.
     if (frame_context->HasConsumers()) {
       frame_context->set_read_permission(
           std::move(frame.buffer_read_permission));
-    }
-    for (size_t i = 0; i < scaled_frames.size(); ++i) {
-      if (!scaled_frame_contexts[i]->HasConsumers())
-        continue;
-      scaled_frame_contexts[i]->set_read_permission(
-          std::move(scaled_frames[i].buffer_read_permission));
     }
   }
 

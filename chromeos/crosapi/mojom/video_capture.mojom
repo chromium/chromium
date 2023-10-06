@@ -140,6 +140,10 @@ interface VideoFrameHandler {
 
   OnNewBuffer@0(int32 buffer_id, VideoBufferHandle buffer_handle);
 
+  // `scaled_buffers` is always an empty list, it is only present for backwards
+  // compat reasons.
+  // TODO(https://crbug.com/1440075): Migrate away from this method and delete
+  // it in favor of a version that does not take `scaled_buffers`.
   OnFrameReadyInBuffer@1(ReadyFrameInBuffer buffer,
                          array<ReadyFrameInBuffer> scaled_buffers);
 

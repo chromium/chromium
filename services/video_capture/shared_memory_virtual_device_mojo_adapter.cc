@@ -136,10 +136,8 @@ void SharedMemoryVirtualDeviceMojoAdapter::OnFrameReadyInBuffer(
         buffer_pool_, buffer_id);
     scoped_access_permission_map_->InsertAccessPermission(
         buffer_id, std::move(access_permission));
-    video_frame_handler_->OnFrameReadyInBuffer(
-        mojom::ReadyFrameInBuffer::New(buffer_id, 0 /* frame_feedback_id */,
-                                       std::move(frame_info)),
-        {});
+    video_frame_handler_->OnFrameReadyInBuffer(mojom::ReadyFrameInBuffer::New(
+        buffer_id, 0 /* frame_feedback_id */, std::move(frame_info)));
   } else if (video_frame_handler_in_process_) {
     buffer_pool_->HoldForConsumers(buffer_id, 1 /* num_clients */);
     video_frame_handler_in_process_->OnFrameReadyInBuffer(
@@ -147,8 +145,7 @@ void SharedMemoryVirtualDeviceMojoAdapter::OnFrameReadyInBuffer(
             buffer_id, 0 /* frame_feedback_id */,
             std::make_unique<media::ScopedBufferPoolReservation<
                 media::ConsumerReleaseTraits>>(buffer_pool_, buffer_id),
-            std::move(frame_info)),
-        {});
+            std::move(frame_info)));
   }
   buffer_pool_->RelinquishProducerReservation(buffer_id);
 }

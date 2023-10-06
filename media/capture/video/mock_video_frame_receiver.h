@@ -39,9 +39,7 @@ class MockVideoFrameReceiver : public VideoFrameReceiver {
     MockOnNewBufferHandle(buffer_id);
   }
 
-  void OnFrameReadyInBuffer(
-      ReadyFrameInBuffer frame,
-      std::vector<ReadyFrameInBuffer> scaled_frames) override {
+  void OnFrameReadyInBuffer(ReadyFrameInBuffer frame) override {
     MockOnFrameReadyInBuffer(frame.buffer_id, &frame.buffer_read_permission,
                              frame.frame_info->coded_size);
   }

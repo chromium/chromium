@@ -94,18 +94,15 @@ void TextureVirtualDeviceMojoAdapter::OnFrameReadyInBuffer(
       video_frame_handler_has_forwarder_ = true;
     }
 
-    video_frame_handler_->OnFrameReadyInBuffer(
-        mojom::ReadyFrameInBuffer::New(buffer_id, 0 /* frame_feedback_id */,
-                                       std::move(frame_info)),
-        {});
+    video_frame_handler_->OnFrameReadyInBuffer(mojom::ReadyFrameInBuffer::New(
+        buffer_id, 0 /* frame_feedback_id */, std::move(frame_info)));
   } else if (video_frame_handler_in_process_) {
     video_frame_handler_has_forwarder_ = true;
     video_frame_handler_in_process_->OnFrameReadyInBuffer(
         media::ReadyFrameInBuffer(buffer_id, 0 /* frame_feedback_id */,
                                   std::make_unique<ScopedBufferPoolReservation>(
                                       frame_access_handler_remote_, buffer_id),
-                                  std::move(frame_info)),
-        {});
+                                  std::move(frame_info)));
   }
 }
 

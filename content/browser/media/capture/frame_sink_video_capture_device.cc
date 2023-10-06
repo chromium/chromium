@@ -499,14 +499,12 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
   // passing the shared memory buffer handle and then notifying it that a new
   // frame is ready to be read from the buffer.
   receiver_->OnNewBuffer(buffer_id, std::move(data));
-  receiver_->OnFrameReadyInBuffer(
-      media::ReadyFrameInBuffer(
-          buffer_id, buffer_id,
-          std::make_unique<media::ScopedFrameDoneHelper>(base::BindOnce(
-              &FrameSinkVideoCaptureDevice::OnFramePropagationComplete,
-              weak_factory_.GetWeakPtr(), buffer_id)),
-          std::move(info)),
-      {});
+  receiver_->OnFrameReadyInBuffer(media::ReadyFrameInBuffer(
+      buffer_id, buffer_id,
+      std::make_unique<media::ScopedFrameDoneHelper>(base::BindOnce(
+          &FrameSinkVideoCaptureDevice::OnFramePropagationComplete,
+          weak_factory_.GetWeakPtr(), buffer_id)),
+      std::move(info)));
 }
 
 void FrameSinkVideoCaptureDevice::OnNewCropVersion(uint32_t crop_version) {

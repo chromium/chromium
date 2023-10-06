@@ -295,7 +295,7 @@ class FakeCameraDevice::Subscription
   void OnFrameReadyInBuffer(
       video_capture::mojom::ReadyFrameInBufferPtr buffer) {
     DCHECK(is_active_ && !is_suspended_);
-    subscriber_->OnFrameReadyInBuffer(std::move(buffer), {});
+    subscriber_->OnFrameReadyInBuffer(std::move(buffer));
   }
 
   void OnFrameDropped() {

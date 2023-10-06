@@ -51,13 +51,11 @@ interface VideoFrameHandler {
   OnFrameAccessHandlerReady(
       pending_remote<VideoFrameAccessHandler> frame_access_handler);
 
-  // Indicates that a new frame is ready for consumption and optionally a set of
-  // scaled down versions of that frame. The producer guarantees that the
-  // buffer(s) and their contents stay alive and unchanged until
-  // VideoFrameHandler releases the buffers using |frame_access_handler|'s
+  // Indicates that a new frame is ready for consumption. The producer
+  // guarantees that the buffer and its contents stay alive and unchanged until
+  // VideoFrameHandler releases the buffer using |frame_access_handler|'s
   // OnFinishedConsumingBuffer().
-  OnFrameReadyInBuffer(ReadyFrameInBuffer buffer,
-                       array<ReadyFrameInBuffer> scaled_buffers);
+  OnFrameReadyInBuffer(ReadyFrameInBuffer buffer);
 
   // Indicates that the producer is no longer going to use the buffer with id
   // |buffer_id| for frame delivery. This may be called even while the handler

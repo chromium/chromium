@@ -195,9 +195,7 @@ class MockVideoFrameReceiver : public media::VideoFrameReceiver {
   MOCK_METHOD2(MockOnNewBuffer,
                void(int buffer_id,
                     media::mojom::VideoBufferHandle* buffer_handle));
-  void OnFrameReadyInBuffer(
-      media::ReadyFrameInBuffer frame,
-      std::vector<media::ReadyFrameInBuffer> scaled_frames) final {
+  void OnFrameReadyInBuffer(media::ReadyFrameInBuffer frame) final {
     DCHECK_ON_DEVICE_THREAD();
     feedback_ids_[frame.buffer_id] = frame.frame_feedback_id;
     auto* const raw_pointer_to_permission = frame.buffer_read_permission.get();
