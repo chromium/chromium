@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_TRACING_TRACING_SCENARIO_H_
 #define CONTENT_BROWSER_TRACING_TRACING_SCENARIO_H_
 
+#include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -18,13 +19,106 @@
 
 namespace content {
 
+class CONTENT_EXPORT TracingScenarioBase {
+ public:
+  virtual ~TracingScenarioBase();
+
+  // Disables a scenario.
+  virtual void Disable();
+  // Enables a disabled scenario.
+  virtual void Enable();
+
+  const std::string& scenario_name() const { return scenario_name_; }
+
+ protected:
+  explicit TracingScenarioBase(const std::string scenario_name);
+
+  virtual bool OnStartTrigger(const BackgroundTracingRule* rule) = 0;
+  virtual bool OnStopTrigger(const BackgroundTracingRule* rule) = 0;
+  virtual bool OnUploadTrigger(const BackgroundTracingRule* rule) = 0;
+
+  std::vector<std::unique_ptr<BackgroundTracingRule>> start_rules_;
+  std::vector<std::unique_ptr<BackgroundTracingRule>> stop_rules_;
+  std::vector<std::unique_ptr<BackgroundTracingRule>> upload_rules_;
+
+  std::string scenario_name_;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+// NestedTracingScenario manages triggers for a single nested tracing
+// scenario. Unlike TracingScenario below, it doesn't manage a tracing
+// session, but inherits from the parent's session instead.
+class CONTENT_EXPORT NestedTracingScenario : public TracingScenarioBase {
+ public:
+  enum class State {
+    // The scenario is disabled and no rule is installed.
+    kDisabled,
+    // The scenario is enabled, start rules are installed and
+    // OnNestedScenarioStart() is called.
+    kEnabled,
+    // The tracing session is active and stop/upload rules are installed.
+    kActive,
+    // A stop rule was triggered and only upload rules are installed.
+    // After stopping, the nested scenario becomes kDisabled and
+    // OnNestedScenarioStop() is called.
+    kStopping,
+  };
+
+  // The delegate gets notified of state transitions and receives traces.
+  class Delegate {
+   public:
+    // Called when a start rule is triggered and |scenario| becomes kActive.
+    virtual void OnNestedScenarioStart(
+        NestedTracingScenario* active_scenario) = 0;
+    // Called when a stop rule is triggered and |scenario| becomes kStopping.
+    // Disable() is expected to be called shortly after.
+    virtual void OnNestedScenarioStop(NestedTracingScenario* idle_scenario) = 0;
+    // Called when an upload rule is triggered and |scenario| becomes kDisabled.
+    virtual void OnNestedScenarioUpload(
+        NestedTracingScenario* scenario,
+        const BackgroundTracingRule* triggered_rule) = 0;
+
+   protected:
+    ~Delegate() = default;
+  };
+
+  NestedTracingScenario(
+      const perfetto::protos::gen::NestedScenarioConfig& config,
+      Delegate* scenario_delegate);
+  ~NestedTracingScenario() override;
+
+  // Disables a scenario.
+  void Disable() override;
+  // Enables a disabled scenario. Cannot be called after the scenario is
+  // enabled.
+  void Enable() override;
+  // Request to stop an active scenario. Upload rules are still active until
+  // Disable() is called.
+  void Stop();
+
+  State current_state() const { return current_state_; }
+
+ private:
+  bool OnStartTrigger(const BackgroundTracingRule* rule) override;
+  bool OnStopTrigger(const BackgroundTracingRule* rule) override;
+  bool OnUploadTrigger(const BackgroundTracingRule* rule) override;
+
+  void SetState(State new_state);
+
+  State current_state_ = State::kDisabled;
+  raw_ptr<Delegate> scenario_delegate_;
+};
+
 // TracingScenario manages triggers and tracing session for a single field
 // tracing scenario. TracingScenario allows for multiple scenarios to be enabled
 // and watch for rules at once, and is meant to replace
 // BackgroundTracingActiveScenario.
 // TODO(crbug.com/1418116): Update the comment above once
 // BackgroundTracingActiveScenario is deleted.
-class CONTENT_EXPORT TracingScenario {
+class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
+                                       public NestedTracingScenario::Delegate {
  public:
   enum class State {
     // The scenario is disabled and no rule is installed.
@@ -67,21 +161,20 @@ class CONTENT_EXPORT TracingScenario {
       bool enable_package_name_filter,
       Delegate* scenario_delegate);
 
-  virtual ~TracingScenario();
+  ~TracingScenario() override;
 
   // Disables an enabled but non-active scenario. Cannot be called after the
   // scenario activates.
-  void Disable();
+  void Disable() override;
   // Enables a disabled scenario. Cannot be called after the scenario is
   // enabled.
-  void Enable();
+  void Enable() override;
   // Aborts an active scenario.
   void Abort();
 
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata);
 
-  const std::string& scenario_name() const { return scenario_name_; }
   State current_state() const { return current_state_; }
 
   base::Token GetSessionID() const { return session_id_; }
@@ -116,30 +209,41 @@ class CONTENT_EXPORT TracingScenario {
   void OnFinalizingDone(std::string&& serialized_trace,
                         TracingSession tracing_session,
                         const BackgroundTracingRule* triggered_rule);
+  void DisableNestedScenarios();
+
+  // NestedTracingScenario::Delegate:
+  // When called, the base scenario stop rules are uninstalled and other
+  // nested scenarios are disabled.
+  void OnNestedScenarioStart(NestedTracingScenario* scenario) override;
+  // When called, the base scenario remains active and becomes the leaf; stop
+  // rules are installed again and all nested scenarios are enabled.
+  void OnNestedScenarioStop(NestedTracingScenario* scenario) override;
+  // When called, all rules are uinstalled and the tracing session is
+  // stopped and finalized.
+  void OnNestedScenarioUpload(
+      NestedTracingScenario* scenario,
+      const BackgroundTracingRule* triggered_rule) override;
 
   bool OnSetupTrigger(const BackgroundTracingRule* rule);
-  bool OnStartTrigger(const BackgroundTracingRule* rule);
-  bool OnStopTrigger(const BackgroundTracingRule* rule);
-  bool OnUploadTrigger(const BackgroundTracingRule* rule);
+  bool OnStartTrigger(const BackgroundTracingRule* rule) override;
+  bool OnStopTrigger(const BackgroundTracingRule* rule) override;
+  bool OnUploadTrigger(const BackgroundTracingRule* rule) override;
 
   base::WeakPtr<TracingScenario> GetWeakPtr();
   void SetState(State new_state);
 
   State current_state_ = State::kDisabled;
   std::vector<std::unique_ptr<BackgroundTracingRule>> setup_rules_;
-  std::vector<std::unique_ptr<BackgroundTracingRule>> start_rules_;
-  std::vector<std::unique_ptr<BackgroundTracingRule>> stop_rules_;
-  std::vector<std::unique_ptr<BackgroundTracingRule>> upload_rules_;
 
-  std::string scenario_name_;
+  std::vector<std::unique_ptr<NestedTracingScenario>> nested_scenarios_;
+  raw_ptr<NestedTracingScenario> active_scenario_{nullptr};
+  base::CancelableOnceClosure on_nested_stopped_;
+
   perfetto::TraceConfig trace_config_;
   raw_ptr<Delegate> scenario_delegate_;
   TracingSession tracing_session_;
   base::Token session_id_;
   raw_ptr<const BackgroundTracingRule> triggered_rule_;
-
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  SEQUENCE_CHECKER(sequence_checker_);
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<TracingScenario> weak_ptr_factory_{this};

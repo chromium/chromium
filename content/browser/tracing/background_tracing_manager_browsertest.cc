@@ -596,6 +596,51 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       BackgroundTracingManager::EmitNamedTrigger("other_start_trigger"));
 }
 
+IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
+                       StartNestedScenario) {
+  TestBackgroundTracingHelper observer;
+  constexpr const char kScenarioConfig[] = R"pb(
+    scenarios: {
+      scenario_name: "test_scenario"
+      start_rules: {
+        name: "start_trigger"
+        manual_trigger_name: "start_trigger"
+      }
+      trace_config: {
+        data_sources: { config: { name: "org.chromium.trace_metadata" } }
+      }
+      nested_scenarios: {
+        scenario_name: "nested_scenario"
+        start_rules: {
+          name: "nested_start_trigger"
+          manual_trigger_name: "nested_start_trigger"
+        }
+        upload_rules: {
+          name: "nested_upload_trigger"
+          manual_trigger_name: "nested_upload_trigger"
+        }
+      }
+    }
+  )pb";
+  BackgroundTracingManager::GetInstance().InitializeScenarios(
+      ParseFieldTracingConfigFromText(kScenarioConfig),
+      BackgroundTracingManager::NO_DATA_FILTERING);
+
+  observer.ExpectOnScenarioActive("test_scenario");
+  EXPECT_TRUE(BackgroundTracingManager::EmitNamedTrigger("start_trigger"));
+
+  EXPECT_TRUE(
+      BackgroundTracingManager::EmitNamedTrigger("nested_start_trigger"));
+
+  observer.ExpectOnScenarioIdle("test_scenario");
+  EXPECT_TRUE(
+      BackgroundTracingManager::EmitNamedTrigger("nested_upload_trigger"));
+  observer.WaitForScenarioIdle();
+
+  observer.WaitForTraceReceived();
+  EXPECT_TRUE(observer.trace_received());
+}
+
 // This tests that the endpoint receives the final trace data.
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
                        ReceiveTraceFinalContentsOnTrigger) {

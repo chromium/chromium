@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/tracing/tracing_scenario.h"
+#include <memory>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
@@ -41,6 +42,126 @@ class TracingScenario::TraceReader
 
 using Metrics = BackgroundTracingManagerImpl::Metrics;
 
+TracingScenarioBase::~TracingScenarioBase() = default;
+
+void TracingScenarioBase::Disable() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& rule : start_rules_) {
+    rule->Uninstall();
+  }
+  for (auto& rule : stop_rules_) {
+    rule->Uninstall();
+  }
+  for (auto& rule : upload_rules_) {
+    rule->Uninstall();
+  }
+}
+
+void TracingScenarioBase::Enable() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& rule : start_rules_) {
+    rule->Install(base::BindRepeating(&TracingScenarioBase::OnStartTrigger,
+                                      base::Unretained(this)));
+  }
+}
+
+TracingScenarioBase::TracingScenarioBase(const std::string scenario_name)
+    : scenario_name_(scenario_name),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
+
+NestedTracingScenario::NestedTracingScenario(
+    const perfetto::protos::gen::NestedScenarioConfig& config,
+    Delegate* scenario_delegate)
+    : TracingScenarioBase(config.scenario_name()),
+      scenario_delegate_(scenario_delegate) {
+  for (const auto& rule : config.start_rules()) {
+    start_rules_.push_back(BackgroundTracingRule::Create(rule));
+  }
+  for (const auto& rule : config.stop_rules()) {
+    stop_rules_.push_back(BackgroundTracingRule::Create(rule));
+  }
+  for (const auto& rule : config.upload_rules()) {
+    upload_rules_.push_back(BackgroundTracingRule::Create(rule));
+  }
+}
+
+NestedTracingScenario::~NestedTracingScenario() = default;
+
+void NestedTracingScenario::Disable() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetState(State::kDisabled);
+  TracingScenarioBase::Disable();
+}
+
+void NestedTracingScenario::Enable() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(current_state_, State::kDisabled);
+  SetState(State::kEnabled);
+  TracingScenarioBase::Enable();
+}
+
+void NestedTracingScenario::Stop() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(current_state_ == State::kActive || current_state_ == State::kStopping)
+      << static_cast<int>(current_state_);
+  for (auto& rule : stop_rules_) {
+    rule->Uninstall();
+  }
+  SetState(State::kStopping);
+}
+
+bool NestedTracingScenario::OnStartTrigger(
+    const BackgroundTracingRule* triggered_rule) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (current_state() != State::kEnabled) {
+    return false;
+  }
+  for (auto& rule : start_rules_) {
+    rule->Uninstall();
+  }
+  for (auto& rule : stop_rules_) {
+    rule->Install(base::BindRepeating(&NestedTracingScenario::OnStopTrigger,
+                                      base::Unretained(this)));
+  }
+  for (auto& rule : upload_rules_) {
+    rule->Install(base::BindRepeating(&NestedTracingScenario::OnUploadTrigger,
+                                      base::Unretained(this)));
+  }
+  scenario_delegate_->OnNestedScenarioStart(this);
+  SetState(State::kActive);
+  return true;
+}
+
+bool NestedTracingScenario::OnStopTrigger(
+    const BackgroundTracingRule* triggered_rule) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& rule : stop_rules_) {
+    rule->Uninstall();
+  }
+  SetState(State::kStopping);
+  scenario_delegate_->OnNestedScenarioStop(this);
+  return true;
+}
+
+bool NestedTracingScenario::OnUploadTrigger(
+    const BackgroundTracingRule* triggered_rule) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (auto& rule : stop_rules_) {
+    rule->Uninstall();
+  }
+  for (auto& rule : upload_rules_) {
+    rule->Uninstall();
+  }
+  SetState(State::kDisabled);
+  scenario_delegate_->OnNestedScenarioUpload(this, triggered_rule);
+  return true;
+}
+
+void NestedTracingScenario::SetState(State new_state) {
+  current_state_ = new_state;
+}
+
 // static
 std::unique_ptr<TracingScenario> TracingScenario::Create(
     const perfetto::protos::gen::ScenarioConfig& config,
@@ -59,10 +180,13 @@ std::unique_ptr<TracingScenario> TracingScenario::Create(
 TracingScenario::TracingScenario(
     const perfetto::protos::gen::ScenarioConfig& config,
     Delegate* scenario_delegate)
-    : scenario_name_(config.scenario_name()),
+    : TracingScenarioBase(config.scenario_name()),
       trace_config_(config.trace_config()),
-      scenario_delegate_(scenario_delegate),
-      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
+      scenario_delegate_(scenario_delegate) {
+  for (const auto& scenario_config : config.nested_scenarios()) {
+    nested_scenarios_.push_back(
+        std::make_unique<NestedTracingScenario>(scenario_config, this));
+  }
   for (const auto& rule : config.start_rules()) {
     start_rules_.push_back(BackgroundTracingRule::Create(rule));
   }
@@ -90,46 +214,28 @@ void TracingScenario::Disable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(current_state_, State::kEnabled);
   SetState(State::kDisabled);
-  for (auto& rule : start_rules_) {
-    rule->Uninstall();
-  }
-  for (auto& rule : stop_rules_) {
-    rule->Uninstall();
-  }
-  for (auto& rule : upload_rules_) {
-    rule->Uninstall();
-  }
   for (auto& rule : setup_rules_) {
     rule->Uninstall();
   }
+  TracingScenarioBase::Disable();
 }
 
 void TracingScenario::Enable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(current_state_, State::kDisabled);
   SetState(State::kEnabled);
-  for (auto& rule : start_rules_) {
-    rule->Install(base::BindRepeating(&TracingScenario::OnStartTrigger,
-                                      base::Unretained(this)));
-  }
   for (auto& rule : setup_rules_) {
     rule->Install(base::BindRepeating(&TracingScenario::OnSetupTrigger,
                                       base::Unretained(this)));
   }
+  TracingScenarioBase::Enable();
 }
 
 void TracingScenario::Abort() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (auto& rule : start_rules_) {
-    rule->Uninstall();
-  }
-  for (auto& rule : stop_rules_) {
-    rule->Uninstall();
-  }
-  for (auto& rule : upload_rules_) {
-    rule->Uninstall();
-  }
+  TracingScenarioBase::Disable();
+  DisableNestedScenarios();
   SetState(State::kStopping);
   tracing_session_->Stop();
 }
@@ -174,6 +280,60 @@ void TracingScenario::SetupTracingSession() {
       });
 }
 
+void TracingScenario::OnNestedScenarioStart(
+    NestedTracingScenario* active_scenario) {
+  CHECK_EQ(active_scenario_, nullptr);
+  active_scenario_ = active_scenario;
+  // Other nested scenarios are disabled and stop rules are uninstalled.
+  for (auto& scenario : nested_scenarios_) {
+    if (scenario.get() == active_scenario_) {
+      continue;
+    }
+    scenario->Disable();
+  }
+  for (auto& rule : stop_rules_) {
+    rule->Uninstall();
+  }
+  // If in `kSetup`, the tracing session is started.
+  if (current_state() == State::kSetup) {
+    OnStartTrigger(nullptr);
+  }
+}
+
+void TracingScenario::OnNestedScenarioStop(
+    NestedTracingScenario* nested_scenario) {
+  CHECK_EQ(active_scenario_, nested_scenario);
+  for (auto& rule : stop_rules_) {
+    rule->Install(base::BindRepeating(&TracingScenario::OnStopTrigger,
+                                      base::Unretained(this)));
+  }
+  // Stop the scenario asynchronously in case an upload trigger is triggered in
+  // the same task.
+  on_nested_stopped_.Reset(base::BindOnce(
+      [](TracingScenario* self, NestedTracingScenario* nested_scenario) {
+        CHECK_EQ(nested_scenario->current_state(),
+                 NestedTracingScenario::State::kStopping);
+        CHECK_EQ(self->current_state_, State::kRecording);
+        CHECK_EQ(self->active_scenario_, nested_scenario);
+        nested_scenario->Disable();
+        self->active_scenario_ = nullptr;
+        // All nested scenarios are re-enabled.
+        for (auto& scenario : self->nested_scenarios_) {
+          scenario->Enable();
+        }
+      },
+      base::Unretained(this), nested_scenario));
+  task_runner_->PostTask(FROM_HERE, on_nested_stopped_.callback());
+}
+
+void TracingScenario::OnNestedScenarioUpload(
+    NestedTracingScenario* scenario,
+    const BackgroundTracingRule* triggered_rule) {
+  DCHECK_EQ(active_scenario_, scenario);
+  active_scenario_ = nullptr;
+  OnUploadTrigger(triggered_rule);
+}
+
 bool TracingScenario::OnSetupTrigger(
     const BackgroundTracingRule* triggered_rule) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -192,6 +352,9 @@ bool TracingScenario::OnSetupTrigger(
   for (auto& rule : upload_rules_) {
     rule->Install(base::BindRepeating(&TracingScenario::OnUploadTrigger,
                                       base::Unretained(this)));
+  }
+  for (auto& scenario : nested_scenarios_) {
+    scenario->Enable();
   }
   SetState(State::kSetup);
   SetupTracingSession();
@@ -232,7 +395,16 @@ bool TracingScenario::OnStopTrigger(
   for (auto& rule : stop_rules_) {
     rule->Uninstall();
   }
+  if (active_scenario_) {
+    on_nested_stopped_.Cancel();
+    active_scenario_->Stop();
+  } else {
+    for (auto& nested_scenario : nested_scenarios_) {
+      nested_scenario->Disable();
+    }
+  }
   if (current_state_ == State::kSetup) {
+    CHECK_EQ(nullptr, active_scenario_);
     // Tear down the session since we haven't been tracing yet.
     for (auto& rule : upload_rules_) {
       rule->Uninstall();
@@ -260,6 +432,7 @@ bool TracingScenario::OnUploadTrigger(
   for (auto& rule : upload_rules_) {
     rule->Uninstall();
   }
+  DisableNestedScenarios();
   // Setup is ignored.
   if (current_state_ == State::kSetup) {
     for (auto& rule : start_rules_) {
@@ -298,6 +471,7 @@ void TracingScenario::OnTracingError(perfetto::TracingError error) {
   for (auto& rule : upload_rules_) {
     rule->Uninstall();
   }
+  DisableNestedScenarios();
   SetState(State::kStopping);
   tracing_session_->Stop();
   // TODO(crbug.com/1418116): Consider reporting |error|.
@@ -327,6 +501,7 @@ void TracingScenario::OnTracingStop() {
   for (auto& rule : upload_rules_) {
     rule->Uninstall();
   }
+  DisableNestedScenarios();
   bool should_upload = (current_state_ == State::kFinalizing);
   auto tracing_session = std::move(tracing_session_);
   SetState(State::kDisabled);
@@ -368,9 +543,30 @@ void TracingScenario::OnFinalizingDone(
                                 std::move(serialized_trace));
 }
 
+void TracingScenario::DisableNestedScenarios() {
+  if (active_scenario_) {
+    CHECK(current_state_ == State::kRecording ||
+          current_state_ == State::kStopping)
+        << static_cast<int>(current_state_);
+    on_nested_stopped_.Cancel();
+    active_scenario_->Disable();
+    active_scenario_ = nullptr;
+  } else if (current_state_ == State::kRecording ||
+             current_state_ == State::kSetup) {
+    for (auto& nested_scenario : nested_scenarios_) {
+      nested_scenario->Disable();
+    }
+  }
+}
+
 void TracingScenario::SetState(State new_state) {
   if (new_state == State::kEnabled || new_state == State::kDisabled) {
     CHECK_EQ(nullptr, tracing_session_);
+    CHECK_EQ(nullptr, active_scenario_);
+    for (auto& scenario : nested_scenarios_) {
+      CHECK_EQ(NestedTracingScenario::State::kDisabled,
+               scenario->current_state());
+    }
   }
   current_state_ = new_state;
 }
