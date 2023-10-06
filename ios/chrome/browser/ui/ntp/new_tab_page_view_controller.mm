@@ -814,7 +814,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
   // If the fake omnibox is already at the final position, just focus it and
   // return early.
-  if (self.scrolledToMinimumHeight || IsIOSLargeFakeboxEnabled()) {
+  if ([self shouldSkipScrollToFocusOmnibox]) {
     self.shouldAnimateHeader = NO;
     self.disableScrollAnimation = NO;
     [self.NTPContentDelegate focusOmnibox];
@@ -901,6 +901,13 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 }
 
 #pragma mark - Private
+
+// Returns YES if scroll should be skipped when focusing the omnibox.
+- (BOOL)shouldSkipScrollToFocusOmnibox {
+  return self.scrolledToMinimumHeight ||
+         (IsIOSLargeFakeboxEnabled() &&
+          (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE));
+}
 
 // Returns the collection view containing all NTP content.
 - (UICollectionView*)collectionView {

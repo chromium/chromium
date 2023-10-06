@@ -174,6 +174,8 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
     // -shiftTilesDownForOmniboxDefocus before the animation here completes.
     if (IsSplitToolbarMode(self)) {
       [self.dispatcher onFakeboxAnimationComplete];
+    } else {
+      [self.toolbarDelegate setScrollProgressForTabletOmnibox:1];
     }
   }
 }
