@@ -10582,11 +10582,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kStylusRichGestures)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"passthrough-yuv-rgb-conversion",
-     flag_descriptions::kPassthroughYuvRgbConversionName,
-     flag_descriptions::kPassthroughYuvRgbConversionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kPassthroughYuvRgbConversion)},
-
     {"use-multi-plane-format-for-hardware-video",
      flag_descriptions::kUseMultiPlaneFormatForHardwareVideoName,
      flag_descriptions::kUseMultiPlaneFormatForHardwareVideoDescription, kOsAll,

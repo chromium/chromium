@@ -1696,7 +1696,6 @@ bool IsMultiPlaneFormatForHardwareVideoEnabled() {
       gl::UsePassthroughCommandDecoder(
           base::CommandLine::ForCurrentProcess()) &&
 #endif
-      base::FeatureList::IsEnabled(features::kPassthroughYuvRgbConversion) &&
       base::FeatureList::IsEnabled(kUseMultiPlaneFormatForHardwareVideo);
 }
 

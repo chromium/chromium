@@ -427,12 +427,6 @@ BASE_FEATURE(kUseClientGmbInterface,
              "UseClientGmbInterface",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable YUV<->RGB conversion for video clients through passthrough command
-// decoder.
-BASE_FEATURE(kPassthroughYuvRgbConversion,
-             "PassthroughYuvRgbConversion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When the application is in background, whether to perform immediate GPU
 // cleanup when executing deferred requests.
 BASE_FEATURE(kGpuCleanupInBackground,

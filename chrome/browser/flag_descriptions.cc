@@ -3710,12 +3710,6 @@ const char kUsePassthroughCommandDecoderDescription[] =
     "Use chrome passthrough command decoder instead of validating command "
     "decoder.";
 
-const char kPassthroughYuvRgbConversionName[] =
-    "Enable video YUV <-> RGB conversion through passthrough command decoder";
-const char kPassthroughYuvRgbConversionDescription[] =
-    "Enable YUV to RGB and RGB to YUV conversion for media clients through "
-    "passthrough command decoder";
-
 const char kUseMultiPlaneFormatForHardwareVideoName[] =
     "Enable multi-plane formats for hardware video decoder";
 const char kUseMultiPlaneFormatForHardwareVideoDescription[] =

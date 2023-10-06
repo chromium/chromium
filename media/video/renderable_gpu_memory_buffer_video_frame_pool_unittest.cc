@@ -95,13 +95,10 @@ class RenderableGpuMemoryBufferVideoFramePoolTest
   RenderableGpuMemoryBufferVideoFramePoolTest() {
     if (GetParam()) {
       scoped_feature_list_.InitWithFeatures(
-          {features::kPassthroughYuvRgbConversion,
-           kUseMultiPlaneFormatForHardwareVideo},
-          {});
+          {kUseMultiPlaneFormatForHardwareVideo}, {});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {}, {features::kPassthroughYuvRgbConversion,
-               kUseMultiPlaneFormatForHardwareVideo});
+          {}, {kUseMultiPlaneFormatForHardwareVideo});
     }
   }
 
