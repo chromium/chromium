@@ -25,11 +25,9 @@ import com.ark.browser.event.BundleEvent;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.model.SearchHistory;
 import com.ark.browser.settings.AppConfig;
-import com.ark.browser.tab.MultiThumbnailCardProvider;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.TabGroupManager;
-import com.ark.browser.tab.ThumbnailProvider;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.collection.CollectionFragment;
@@ -303,8 +301,6 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
 
     private class TabListMultiData extends SingleTypeMultiData<ITab> {
 
-        private ThumbnailProvider mThumbnailProvider;
-
         public TabListMultiData() {
             super(new HorizontalLayouter());
         }
@@ -345,21 +341,17 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
                 cardView.setCardBackgroundColor(getDefaultThemeColor());
             }
 
-
-            if (mThumbnailProvider == null) {
-                mThumbnailProvider = new MultiThumbnailCardProvider(holder.getContext(),
-                        TabGroupManager.global().getTabContentManager());
-            }
-            mThumbnailProvider.getTabThumbnailWithCallback(tab, null, new Callback<Bitmap>() {
-                @Override
-                public void onResult(Bitmap result) {
-                    if (result == null && pageInfo != null) {
-                        PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
-                    } else {
-                        ivThumbnail.setImageBitmap(result);
-                    }
-                }
-            }, false, false, false);
+            TabGroupManager.global().getTabContentManager()
+                    .getTabThumbnailWithCallback(tab, null, new Callback<Bitmap>() {
+                        @Override
+                        public void onResult(Bitmap result) {
+                            if (result == null && pageInfo != null) {
+                                PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
+                            } else {
+                                ivThumbnail.setImageBitmap(result);
+                            }
+                        }
+                    }, false, false, false);
 
             holder.setOnItemClickListener(v -> {
                 // TODO

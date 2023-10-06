@@ -364,6 +364,7 @@ void ThumbnailCache::DecompressThumbnailFromFile(
     TabId tab_id,
     double jpeg_aspect_ratio,
     base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback) {
+  LOG(ERROR) << "ThumbnailCache::DecompressThumbnailFromFile tab_id=" << tab_id;
   base::OnceCallback<void(bool, const SkBitmap&)> transcoding_callback;
   if (save_jpeg_thumbnails_) {
     transcoding_callback = base::BindOnce(
@@ -887,12 +888,15 @@ void ThumbnailCache::ReadTask(
   float scale = 0.f;
   sk_sp<SkPixelRef> compressed_data;
   base::FilePath file_path = GetFilePath(tab_id);
+  LOG(ERROR) << "ThumbnailCache::ReadTask tab_id=" << tab_id << " decompress=" << decompress
+    << " file_path=" << file_path.AsUTF8Unsafe();
 
   if (base::PathExists(file_path)) {
     base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 
     bool valid_contents =
         ReadFromFile(file, &content_size, &scale, &compressed_data);
+    LOG(ERROR) << "ThumbnailCache::ReadTask tab_id=" << tab_id << " valid_contents=" << valid_contents;
     file.Close();
 
     if (!valid_contents) {
@@ -901,6 +905,8 @@ void ThumbnailCache::ReadTask(
       compressed_data.reset();
       base::DeleteFile(file_path);
     }
+  } else {
+    LOG(ERROR) << "ThumbnailCache::ReadTask tab_id=" << tab_id << " path not exists";
   }
 
   if (decompress) {

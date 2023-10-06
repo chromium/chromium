@@ -165,6 +165,7 @@ class TabContentManager : public ThumbnailCacheObserver {
 
   void SendThumbnailToJava(
       base::android::ScopedJavaGlobalRef<jobject> j_callback,
+      int id,
       bool need_downsampling,
       double aspect_ratio,
       bool result,

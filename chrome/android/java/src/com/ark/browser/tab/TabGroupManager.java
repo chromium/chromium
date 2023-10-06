@@ -18,7 +18,6 @@ import com.ark.browser.utils.ThreadPool;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
@@ -295,9 +294,9 @@ public class TabGroupManager {
         private ITabGroup mCurrentGroup;
 
         // TODO optimise
-        protected final TabContentManager mTabContentManager = new TabContentManager();
+        protected final ArkTabContentManager mTabContentManager = new ArkTabContentManager();
 
-        public TabContentManager getTabContentManager() {
+        public ArkTabContentManager getTabContentManager() {
             return mTabContentManager;
         }
 

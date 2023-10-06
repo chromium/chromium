@@ -35,6 +35,10 @@ public class ThreadPool {
         );
     }
 
+    public static boolean isInMainThread() {
+        return Looper.myLooper() == Looper.getMainLooper();
+    }
+
     public static void execute(Runnable runnable) {
         EXECUTOR.execute(runnable);
     }

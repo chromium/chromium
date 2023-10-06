@@ -1,6 +1,5 @@
 package com.ark.browser.ui.widget.homepage;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -13,10 +12,9 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 
 import com.ark.browser.settings.AppConfig;
-import com.ark.browser.tab.MultiThumbnailCardProvider;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
-import com.ark.browser.tab.ThumbnailProvider;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.dialog.TabActionDialog;
@@ -25,15 +23,8 @@ import com.ark.browser.utils.FaviconUtil;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 
 public class ArkTabAdapter implements Adapter {
-
-    private final ThumbnailProvider mThumbnailProvider;
-
-    public ArkTabAdapter(Context context, TabContentManager tabContentManager) {
-        mThumbnailProvider = new MultiThumbnailCardProvider(context, tabContentManager);
-    }
 
     @Override
     public View onCreateViewHolder(ViewGroup parent, ITab tab, int position) {
@@ -87,19 +78,23 @@ public class ArkTabAdapter implements Adapter {
             cardView.setCardBackgroundColor(getDefaultThemeColor());
         }
 
-        mThumbnailProvider.getTabThumbnailWithCallback(tab, null, new Callback<Bitmap>() {
-            @Override
-            public void onResult(Bitmap result) {
-                if (result == null && pageInfo != null) {
-                    PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
-                } else {
-                    ivThumbnail.setImageBitmap(result);
-                }
-            }
-        }, false, false, false);
-
         view.setTag(R.id.key_tab_id, tab.getId());
         view.setTag(R.id.key_tab_position, position);
+
+        TabGroupManager.global().getTabContentManager()
+                .getTabThumbnailWithCallback(tab, null, new Callback<Bitmap>() {
+                    @Override
+                    public void onResult(Bitmap result) {
+                        if ((int) view.getTag(R.id.key_tab_position) != position) {
+                            return;
+                        }
+                        if (result == null && pageInfo != null) {
+                            PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
+                        } else {
+                            ivThumbnail.setImageBitmap(result);
+                        }
+                    }
+                }, false, false, false);
     }
 
     public int getDefaultThemeColor() {

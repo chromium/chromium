@@ -21,18 +21,17 @@ import android.util.Size;
 import androidx.annotation.ColorInt;
 
 import com.ark.browser.core.ArkWebManager;
-import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
 import com.zpj.utils.ScreenUtils;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -84,7 +83,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
 
         /**
          * Fetcher that get the thumbnail drawable depending on if the tab is selected.
-         * @see TabContentManager#getTabThumbnailWithCallback
+         * @see TabContentManager#getPageThumbnailWithCallback
          * @param initialTab Thumbnail is generated for tabs related to initialTab.
          * @param thumbnailSize Desired size of multi-thumbnail.
          * @param finalCallback Callback which receives generated bitmap.
@@ -217,7 +216,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                     // Fetching the favicon after getting the live thumbnail would lead to
                     // visible flicker.
                     final AtomicReference<Drawable> lastFavicon = new AtomicReference<>();
-                    mTabContentManager.getTabThumbnailWithCallback(
+                    mTabContentManager.getPageThumbnailWithCallback(
                             ArkWebManager.getWebContents(pageInfo.getId()), pageInfo.getId(),
                             thumbnail -> {
                                 drawThumbnailBitmapOnCanvasWithFrame(thumbnail, index);
@@ -308,25 +307,25 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         }
     }
 
-    public MultiThumbnailCardProvider(Context context, TabContentManager tabContentManager) {
-        mContext = context;
-        Resources resources = context.getResources();
+    public MultiThumbnailCardProvider(Context context1, TabContentManager tabContentManager) {
+        mContext = ContextUtils.getApplicationContext();
+        Resources resources = mContext.getResources();
 
         mTabContentManager = tabContentManager;
         mRadius = resources.getDimension(R.dimen.tab_list_mini_card_radius);
         mFaviconFrameCornerRadius =
                 resources.getDimension(R.dimen.tab_grid_thumbnail_favicon_frame_corner_radius);
 
-        mTabListFaviconProvider = new TabListFaviconProvider(context, false);
+        mTabListFaviconProvider = new TabListFaviconProvider(mContext, false);
 
         // Initialize Paints to use.
         mEmptyThumbnailPaint = new Paint();
         mEmptyThumbnailPaint.setStyle(Paint.Style.FILL);
         mEmptyThumbnailPaint.setAntiAlias(true);
-        mEmptyThumbnailPaint.setColor(getMiniThumbnailPlaceholderColor(context, false, false));
+        mEmptyThumbnailPaint.setColor(getMiniThumbnailPlaceholderColor(mContext, false, false));
 
         mSelectedEmptyThumbnailPaint = new Paint(mEmptyThumbnailPaint);
-        mSelectedEmptyThumbnailPaint.setColor(getMiniThumbnailPlaceholderColor(context, false, true));
+        mSelectedEmptyThumbnailPaint.setColor(getMiniThumbnailPlaceholderColor(mContext, false, true));
 
         // Paint used to set base for thumbnails, in case mEmptyThumbnailPaint has transparency.
         mThumbnailBasePaint = new Paint();
@@ -338,7 +337,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         mThumbnailFramePaint.setStyle(Paint.Style.STROKE);
         mThumbnailFramePaint.setStrokeWidth(
                 resources.getDimension(R.dimen.tab_list_mini_card_frame_size));
-        mThumbnailFramePaint.setColor(context.getResources().getColor(R.color.divider_line_bg_color_baseline));
+        mThumbnailFramePaint.setColor(mContext.getResources().getColor(R.color.divider_line_bg_color_baseline));
         mThumbnailFramePaint.setAntiAlias(true);
 
         // TODO(996048): Use pre-defined styles to avoid style out of sync if any text/color styles
@@ -348,10 +347,10 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         mTextPaint.setFakeBoldText(true);
         mTextPaint.setAntiAlias(true);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
-        mTextPaint.setColor(getTabGroupNumberTextColor(context, false, false));
+        mTextPaint.setColor(getTabGroupNumberTextColor(mContext, false, false));
 
         mSelectedTextPaint = new Paint(mTextPaint);
-        mSelectedTextPaint.setColor(getTabGroupNumberTextColor(context, false, true));
+        mSelectedTextPaint.setColor(getTabGroupNumberTextColor(mContext, false, true));
 
         mFaviconBackgroundPaintColor = Color.WHITE;
         mFaviconBackgroundPaint = new Paint();
@@ -414,12 +413,9 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 return;
             }
             int pageId = tab.getCurrentPageInfo().getId();
-            WebContents webContents = null;
-            if (forceUpdate) {
-                webContents = ArkWebManager.getWebContents(pageId);
-            }
-            mTabContentManager.getTabThumbnailWithCallback(webContents, pageId, finalCallback,
-                    forceUpdate, writeToCache);
+            TabGroupManager.GlobalSelector.getInstance()
+                    .getTabContentManager()
+                    .loadSnapshot(pageId, forceUpdate, finalCallback);
         }
 
 
@@ -435,11 +431,6 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
     }
 
     @Override
-    public void getPageThumbnailWithCallback(IPage page, Size thumbnailSize, Callback<Bitmap> callback, boolean forceUpdate, boolean writeToCache, boolean isSelected) {
-        getPageThumbnailWithCallback(page.getPageInfo(), thumbnailSize, callback, forceUpdate, writeToCache, isSelected);
-    }
-
-    @Override
     public void getPageThumbnailWithCallback(PageInfo pageInfo, Size thumbnailSize, Callback<Bitmap> callback, boolean forceUpdate, boolean writeToCache, boolean isSelected) {
         if (!mTabListFaviconProvider.isInitialized()) {
             initWithNative();
@@ -449,12 +440,9 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             return;
         }
         int pageId = pageInfo.getId();
-        WebContents webContents = null;
-        if (forceUpdate) {
-            webContents = ArkWebManager.getWebContents(pageId);
-        }
-        mTabContentManager.getTabThumbnailWithCallback(webContents, pageId, callback,
-                forceUpdate, writeToCache);
+        TabGroupManager.GlobalSelector.getInstance()
+                .getTabContentManager()
+                .loadSnapshot(pageId, forceUpdate, callback);
     }
 
     public static @ColorInt int getMiniThumbnailPlaceholderColor(

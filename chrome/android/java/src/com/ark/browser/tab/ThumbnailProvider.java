@@ -7,25 +7,19 @@ package com.ark.browser.tab;
 import android.graphics.Bitmap;
 import android.util.Size;
 
-import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.content_public.browser.WebContents;
 
 /**
  * An interface to get the thumbnails to be shown inside the tab grid cards.
  */
 public interface ThumbnailProvider {
     /**
-     * @see TabContentManager#getTabThumbnailWithCallback
+     * @see TabContentManager#getPageThumbnailWithCallback
      */
     void getTabThumbnailWithCallback(ITab tab, Size thumbnailSize,
-                                     Callback<Bitmap> callback,
-                                     boolean forceUpdate, boolean writeToCache, boolean isSelected);
-
-    void getPageThumbnailWithCallback(IPage page, Size thumbnailSize,
                                      Callback<Bitmap> callback,
                                      boolean forceUpdate, boolean writeToCache, boolean isSelected);
 

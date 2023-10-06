@@ -12,12 +12,10 @@ import com.ark.browser.adblock.AdblockPlusHelper;
 import com.ark.browser.core.utils.ContentUtils;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.ArkTabImpl;
-import com.ark.browser.tab.MultiThumbnailCardProvider;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabGroupManager;
-import com.ark.browser.tab.ThumbnailProvider;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.utils.ArkLogger;
 import com.zpj.bus.EventLiveData;
@@ -140,7 +138,7 @@ public class ArkWebContents {
                                     + " frameLifecycleState=" + frameLifecycleState);
                             mIsLoading = false;
                             super.didFailLoad(isInPrimaryMainFrame, errorCode, failingUrl, frameLifecycleState);
-                            updateThemeColor();
+                            cacheThumbnail();
                         }
 
                         @Override
@@ -159,7 +157,6 @@ public class ArkWebContents {
                             AdblockPlusHelper.markAds(ArkWebContents.this);
                             super.didFinishLoad(rfhId, url, isKnownValid, isInPrimaryMainFrame, rfhLifecycleState);
                             cacheThumbnail();
-                            updateThemeColor();
                         }
 
                         @Override
@@ -195,21 +192,20 @@ public class ArkWebContents {
                         @Override
                         public void didFirstVisuallyNonEmptyPaint() {
                             ArkLogger.e(this, "didFirstVisuallyNonEmptyPaint");
-                            cacheThumbnail();
                             mStartLoad = true;
                             mFinishLoad = true;
                             mIsLoading = false;
                             AdblockPlusHelper.markAds(ArkWebContents.this);
                             super.didFirstVisuallyNonEmptyPaint();
-                            updateThemeColor();
+                            cacheThumbnail();
                         }
 
                         @Override
                         public void primaryMainDocumentElementAvailable() {
                             ArkLogger.e(this, "primaryMainDocumentElementAvailable");
-                            cacheThumbnail();
                             AdblockPlusHelper.markAds(ArkWebContents.this);
                             super.primaryMainDocumentElementAvailable();
+                            cacheThumbnail();
                         }
 
                         @Override
@@ -595,24 +591,20 @@ public class ArkWebContents {
         PageSnapshotManager.getInstance().cachePage(mPageInfo);
         TabGroupManager.GlobalSelector.getInstance()
                 .getTabContentManager()
-                .getTabThumbnailWithCallback(
-                        mWebContents, getId(),
-                        new Callback<Bitmap>() {
-                            @Override
-                            public void onResult(Bitmap bitmap) {
-                                if (isDestroyed()) {
-                                    return;
-                                }
-                                int themeColor = bitmap == null
-                                        ? (mPageInfo.getThemeColor() == 0
-                                        ? getDefaultThemeColor() : mPageInfo.getThemeColor())
-                                        : bitmap.getPixel(1, 1);
-                                mPageInfo.setThemeColor(themeColor);
-                                mWebContents.notifyChangeThemeColor();
-                            }
-                        },
-                        forceUpdate, forceUpdate
-                );
+                .loadSnapshot(getId(), forceUpdate, new Callback<Bitmap>() {
+                    @Override
+                    public void onResult(Bitmap bitmap) {
+                        if (isDestroyed()) {
+                            return;
+                        }
+                        int themeColor = bitmap == null
+                                ? (mPageInfo.getThemeColor() == 0
+                                ? getDefaultThemeColor() : mPageInfo.getThemeColor())
+                                : bitmap.getPixel(1, 1);
+                        mPageInfo.setThemeColor(themeColor);
+                        mWebContents.notifyChangeThemeColor();
+                    }
+                });
     }
 
     /**

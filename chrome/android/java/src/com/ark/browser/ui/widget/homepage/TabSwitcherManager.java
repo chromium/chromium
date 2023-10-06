@@ -99,7 +99,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         mTabSwitcherLayout = rootView.findViewById(R.id.tab_switcher_layout);
         mSwitcher = mTabSwitcherLayout.getSwitcher();
         mSwitcher.addCallback(this);
-        mSwitcher.setAdapter(new ArkTabAdapter(mContext, mViewHolder.getTabContentManager()));
+        mSwitcher.setAdapter(new ArkTabAdapter());
 
         mBottomControlBar = rootView.findViewById(R.id.bottom_control_bar);
         mBottomControlBar.setSwitcherManager(this);

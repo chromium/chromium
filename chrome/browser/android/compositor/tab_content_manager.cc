@@ -314,10 +314,12 @@ void TabContentManager::CaptureThumbnailForWeb(
     jboolean write_to_cache,
     jdouble aspect_ratio,
     const base::android::JavaParamRef<jobject>& j_callback) {
+  LOG(ERROR) << "TabContentManager::CaptureThumbnailForWeb page_id=" << page_id;
   content::WebContents* web_contents = content::WebContents::FromJavaWebContents(web);
   DCHECK(web_contents);
 
   content::RenderWidgetHostView* rwhv = GetRwhvForWeb(env, obj, web, page_id);
+  LOG(ERROR) << "TabContentManager::CaptureThumbnailForWeb rwhv=" << rwhv;
   if (!rwhv) {
     if (j_callback)
       RunObjectCallbackAndroid(j_callback, nullptr);
@@ -325,12 +327,16 @@ void TabContentManager::CaptureThumbnailForWeb(
   }
   if (write_to_cache && !thumbnail_cache_->CheckAndUpdateThumbnailMetaData(
                             page_id, web_contents->GetURL())) {
+    LOG(ERROR) << "TabContentManager::CaptureThumbnailForWeb CheckAndUpdateThumbnailMetaData false";
+    if (j_callback)
+      RunObjectCallbackAndroid(j_callback, nullptr);
     return;
   }
   TabReadbackCallback readback_done_callback = base::BindOnce(
       &TabContentManager::OnTabReadback, weak_factory_.GetWeakPtr(), page_id,
       base::android::ScopedJavaGlobalRef<jobject>(j_callback), write_to_cache,
       aspect_ratio);
+  LOG(ERROR) << "TabContentManager::CaptureThumbnailForWeb pending_tab_readbacks_";
   pending_tab_readbacks_[page_id] = std::make_unique<TabReadbackRequest>(
       rwhv, thumbnail_scale, aspect_ratio, !write_to_cache,
       std::move(readback_done_callback));
@@ -399,12 +405,13 @@ void TabContentManager::GetEtc1TabThumbnail(
     jint tab_id,
     jdouble aspect_ratio,
     const base::android::JavaParamRef<jobject>& j_callback) {
+  LOG(ERROR) << "TabContentManager::GetEtc1TabThumbnail tab_id=" << tab_id;
   thumbnail_cache_->DecompressThumbnailFromFile(
       tab_id, aspect_ratio,
       base::BindOnce(&TabContentManager::SendThumbnailToJava,
                      weak_factory_.GetWeakPtr(),
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback),
-                     /* need_downsampling */ true, aspect_ratio));
+                     tab_id, /* need_downsampling */ true, aspect_ratio));
 }
 
 void TabContentManager::OnUIResourcesWereEvicted() {
@@ -431,7 +438,7 @@ void TabContentManager::OnTabReadback(
     pending_tab_readbacks_.erase(tab_id);
 
   if (j_callback) {
-    SendThumbnailToJava(j_callback, write_to_cache, aspect_ratio, true, bitmap);
+    SendThumbnailToJava(j_callback, tab_id, write_to_cache, aspect_ratio, true, bitmap);
   }
 
   if (write_to_cache && thumbnail_scale > 0 && !bitmap.empty())
@@ -440,10 +447,14 @@ void TabContentManager::OnTabReadback(
 
 void TabContentManager::SendThumbnailToJava(
     base::android::ScopedJavaGlobalRef<jobject> j_callback,
+    int id,
     bool need_downsampling,
     double aspect_ratio,
     bool result,
     const SkBitmap& bitmap) {
+  LOG(ERROR) << "TabContentManager::SendThumbnailToJava id=" << id << " result=" << result
+    << " isNull=" << bitmap.isNull()
+    << " aspect_ratio=" << aspect_ratio << " need_downsampling=" << need_downsampling;
   ScopedJavaLocalRef<jobject> j_bitmap;
   if (!bitmap.isNull() && result) {
     // We want to show thumbnails in a specific aspect ratio. Therefore, the

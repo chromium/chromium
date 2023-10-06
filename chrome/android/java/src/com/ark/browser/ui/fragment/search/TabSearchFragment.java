@@ -14,12 +14,10 @@ import androidx.cardview.widget.CardView;
 import androidx.collection.ArraySet;
 
 import com.ark.browser.settings.AppConfig;
-import com.ark.browser.tab.MultiThumbnailCardProvider;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.TabInfo;
-import com.ark.browser.tab.ThumbnailProvider;
 import com.ark.browser.tab.core.GroupTab;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
@@ -27,7 +25,6 @@ import com.ark.browser.ui.fragment.base.BaseSwipeBackFragment;
 import com.ark.browser.ui.fragment.dialog.GroupTabPickerDialog;
 import com.ark.browser.ui.widget.FitWidthImageView;
 import com.ark.browser.utils.ThreadPool;
-import com.zpj.fragmentation.dialog.IDialog;
 import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.recyclerview.EasyViewHolder;
 import com.zpj.recyclerview.MultiRecycler;
@@ -264,8 +261,6 @@ public class TabSearchFragment extends BaseSwipeBackFragment {
         protected final ArraySet<ITab> mSelectedSet = new ArraySet<>();
         protected boolean mIsSelectedMode;
 
-        private ThumbnailProvider mThumbnailProvider;
-
         public TabListMultiData() {
             super(new GridLayouter(3));
         }
@@ -321,21 +316,17 @@ public class TabSearchFragment extends BaseSwipeBackFragment {
             holder.setOnItemClickListener(v -> TabListMultiData.this.onClick(holder, v, tab));
             holder.setOnItemLongClickListener(view -> TabListMultiData.this.onLongClick(holder, view, tab));
 
-
-            if (mThumbnailProvider == null) {
-                mThumbnailProvider = new MultiThumbnailCardProvider(holder.getContext(),
-                        TabGroupManager.global().getTabContentManager());
-            }
-            mThumbnailProvider.getTabThumbnailWithCallback(tab, null, new Callback<Bitmap>() {
-                @Override
-                public void onResult(Bitmap result) {
-                    if (result == null && pageInfo != null) {
-                        PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
-                    } else {
-                        ivThumbnail.setImageBitmap(result);
-                    }
-                }
-            }, false, false, false);
+            TabGroupManager.global().getTabContentManager()
+                    .getTabThumbnailWithCallback(tab, null, new Callback<Bitmap>() {
+                        @Override
+                        public void onResult(Bitmap result) {
+                            if (result == null && pageInfo != null) {
+                                PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
+                            } else {
+                                ivThumbnail.setImageBitmap(result);
+                            }
+                        }
+                    }, false, false, false);
 
             holder.setTag(R.id.key_tab_id, tab.getId());
             holder.setTag(R.id.key_tab_position, position);
