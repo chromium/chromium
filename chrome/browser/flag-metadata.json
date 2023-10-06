@@ -6193,7 +6193,7 @@
   {
     "name": "omnibox-keyboard-paste-button",
     "owners": ["christianxu", "stkhapugin", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "omnibox-local-history-zero-suggest-beyond-ntp",
@@ -6218,7 +6218,7 @@
   {
     "name": "omnibox-max-zps-matches",
     "owners": [ "stkhapugin", "christianxu", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone" : 120
+    "expiry_milestone" : 130
   },
   {
     "name": "omnibox-ml-log-url-scoring-signals",
@@ -6759,7 +6759,7 @@
   {
     "name": "popout-omnibox-ipad",
     "owners": [ "stkhapugin", "christianxu", "bling-flags@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "post-restore-default-browser-promo",
@@ -7788,7 +7788,7 @@
   {
     "name": "suggestions-scrolling-ipad",
     "owners": [ "christianxu", "bling-flags@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "support-f11-and-f12-shortcuts",
