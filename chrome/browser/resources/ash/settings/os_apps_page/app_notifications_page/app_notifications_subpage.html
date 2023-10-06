@@ -1,7 +1,17 @@
 <style include="cr-shared-style settings-shared iron-flex">
 </style>
+
+<template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+  <cr-link-row id="appNotificationsManagerRow" class="settings-box"
+      label="$i18n{appNotificationsManagerLabel}"
+      sub-label= "[[getNotificationsCountSublabel_(appList_)]]"
+      on-click="onClickAppNotifications_">
+  </cr-link-row>
+</template>
+
 <settings-toggle-button
     id="doNotDisturbToggle"
+    class="hr"
     label="$i18n{doNotDisturbToggleTitle}"
     sub-label="$i18n{doNotDisturbToggleDescription}"
     pref="[[virtualDndPref_]]"
@@ -20,12 +30,16 @@
       deep-link-focus-id$="[[Setting.kAppBadgingOnOff]]">
   </settings-toggle-button>
 </template>
-<div id="appNotificationsList" class="hr">
-  <template is="dom-repeat" items="[[appList_]]" as="app"
-      sort="alphabeticalSort_">
-    <app-notification-row app="[[app]]"></app-notification-row>
-  </template>
-</div>
+
+<template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+  <div id="appNotificationsList" class="hr">
+    <template is="dom-repeat" items="[[appList_]]" as="app"
+        sort="alphabeticalSort_">
+      <app-notification-row app="[[app]]"></app-notification-row>
+    </template>
+  </div>
+</template>
+
 <div class="cr-row" id="browserSettings">
   <localized-link class="secondary"
       localized-string="$i18n{appNotificationsLinkToBrowserSettingsDescription}"

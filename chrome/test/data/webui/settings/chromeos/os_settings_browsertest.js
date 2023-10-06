@@ -733,10 +733,21 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_apps_page/app_management_page/supported_links_item_test.js',
  ],
  [
-   'OsAppsPageAppNotificationsPageAppNotificationsSubpage',
-   'os_apps_page/app_notifications_page/app_notifications_subpage_test.js'
+   'OsAppsPageAppNotificationsSubpageWithRevamp',
+   'os_apps_page/app_notifications_page/app_notifications_subpage_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsAppsPageAppNotificationsSubpageWithoutRevamp',
+   'os_apps_page/app_notifications_page/app_notifications_subpage_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  ['OsAppsPage', 'os_apps_page/os_apps_page_test.js'],
+ [
+   'OsAppsPageAppNotificationsPageAppNotificationsManagerSubpage',
+   'os_apps_page/app_notifications_page/app_notifications_manager_subpage_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']}
+ ],
  [
    'OsAppsPageManageIsolatedWebAppsPageManageIsolatedWebAppsSubpage',
    'os_apps_page/manage_isolated_web_apps_page/manage_isolated_web_apps_subpage_test.js'

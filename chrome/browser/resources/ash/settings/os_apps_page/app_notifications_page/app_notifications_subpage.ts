@@ -11,27 +11,30 @@
 import './app_notification_row.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 
+import {isPermissionEnabled} from 'chrome://resources/cr_components/app_management/permission_util.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../../deep_linking_mixin.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
 import {App, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../../route_observer_mixin.js';
-import {Route, routes} from '../../router.js';
+import {RouteOriginMixin} from '../../route_origin_mixin.js';
+import {Route, Router, routes} from '../../router.js';
 import {isAppInstalled} from '../os_apps_page.js';
 
 import {getTemplate} from './app_notifications_subpage.html.js';
 import {getAppNotificationProvider} from './mojo_interface_provider.js';
 
 const AppNotificationsSubpageBase =
-    DeepLinkingMixin(RouteObserverMixin(PolymerElement));
+    DeepLinkingMixin(RouteOriginMixin(I18nMixin(PolymerElement)));
 
 export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
   static get is() {
-    return 'settings-app-notifications-subpage';
+    return 'settings-app-notifications-subpage' as const;
   }
 
   static get template() {
@@ -91,6 +94,14 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
           Setting.kAppBadgingOnOff,
         ]),
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value() {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -102,6 +113,7 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
   private showAppBadgingToggle_: boolean;
   private virtualDndPref_: chrome.settingsPrivate.PrefObject<boolean>;
+  private isRevampWayfindingEnabled_: boolean;
 
   constructor() {
     super();
@@ -112,6 +124,9 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
      * Receiver responsible for observing app notification events.
      */
     this.appNotificationsObserverReceiver_ = null;
+
+    /** RouteOriginMixin override */
+    this.route = routes.APP_NOTIFICATIONS;
   }
 
   override connectedCallback(): void {
@@ -130,9 +145,18 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     this.appNotificationsObserverReceiver_!.$.close();
   }
 
-  override currentRouteChanged(route: Route): void {
+  override ready(): void {
+    super.ready();
+
+    this.addFocusConfig(
+        routes.APP_NOTIFICATIONS_MANAGER, '#appNotificationsManagerRow');
+  }
+
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     // Does not apply to this page.
-    if (route !== routes.APP_NOTIFICATIONS) {
+    if (newRoute !== routes.APP_NOTIFICATIONS) {
       return;
     }
     this.attemptDeepLink();
@@ -205,11 +229,28 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     // Programmatically open browser settings.
     this.mojoInterfaceProvider_.openBrowserNotificationSettings();
   }
+
+  private getNotificationsCountSublabel_(): string {
+    let numNotificationsEnabled = 0;
+    this.appList_.forEach((app: App) => {
+      if (isPermissionEnabled(app.notificationPermission.value)) {
+        numNotificationsEnabled++;
+      }
+    });
+
+    return this.i18n(
+        'appNotificationsManagerSublabel', numNotificationsEnabled,
+        this.appList_.length);
+  }
+
+  private onClickAppNotifications_(): void {
+    Router.getInstance().navigateTo(routes.APP_NOTIFICATIONS_MANAGER);
+  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-app-notifications-subpage': AppNotificationsSubpage;
+    [AppNotificationsSubpage.is]: AppNotificationsSubpage;
   }
 }
 

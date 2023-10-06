@@ -5827,6 +5827,12 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_SETTINGS_APP_BADGING_TOGGLE_SUBLABEL" desc="The sublabel for the app badging toggle in the App Notifications page of OS Settings.">
     Show dot on app icon for app alerts
   </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_NOTIFICATIONS_MANAGER_LABEL" desc="The label for the settings row button in the App Notifications section of OS Settings which links to the Manage App Notifications page.">
+    Manage app notifications
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_NOTIFICATIONS_MANAGER_LINK_DESCRIPTION" desc="The sublabel for the settings row button in the App Notifications section of OS Settings which links to the Manage App Notifications page.">
+    <ph name="NUM_ALLOWED_APPS">$1<ex>1</ex></ph> of <ph name="TOTAL_NUM_APPS">$2<ex>2</ex></ph> apps can send notifications
+  </message>
   <message name="IDS_SETTINGS_ENABLE_ISOLATED_WEB_APPS_LABEL" desc="The label for the enable Isolated Web Apps toggle in the Manage Isolated Web Apps page of OS Settings.">
     Turn on isolated web apps
   </message>

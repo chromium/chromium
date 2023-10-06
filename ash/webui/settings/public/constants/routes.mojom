@@ -117,6 +117,7 @@ enum Subpage {
   kAppNotifications = 706,
   kArcVmUsbPreferences = 707,
   kManageIsolatedWebApps = 708,
+  kAppNotificationsManager = 709,
 
   // Crostini section.
   kCrostiniDetails = 800,
@@ -255,6 +256,7 @@ const string kSearchSubpagePath = "osSearch/search";
 const string kAppsSectionPath = "apps";
 const string kAppManagementSubpagePath = "app-management";
 const string kAppNotificationsSubpagePath = "app-notifications";
+const string kAppNotificationsManagerSubpagePath = "app-notifications-manager";
 const string kAppDetailsSubpagePath = "app-management/detail";
 const string kGooglePlayStoreSubpagePath = "androidAppsDetails";
 const string kPluginVmSharedPathsSubpagePath =

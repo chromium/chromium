@@ -96,6 +96,14 @@
     </os-settings-subpage>
   </template>
 
+  <!-- APP NOTIFICATION MANAGEMENT -->
+  <template is="dom-if" route-path="/app-notifications-manager">
+    <os-settings-subpage page-title="$i18n{appNotificationsManagerLabel}">
+      <settings-app-notifications-manager-subpage prefs="{{prefs}}">
+      </settings-app-notifications-manager-subpage>
+    </os-settings-subpage>
+  </template>
+
   <!-- APP MANAGEMENT -->
   <template is="dom-if" route-path="/app-management">
     <os-settings-subpage

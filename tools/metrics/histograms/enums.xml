@@ -81432,6 +81432,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="706" label="App Notifications"/>
   <int value="707" label="Arc Vm USB Preferences"/>
   <int value="708" label="Manage Isolated Web Apps"/>
+  <int value="709" label="App Notifications Manager"/>
   <int value="800" label="Crostini Details"/>
   <int value="801" label="Crostini Manage Shared Folders"/>
   <int value="802" label="Crostini Usb Preferences"/>
