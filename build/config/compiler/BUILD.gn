@@ -1853,6 +1853,11 @@ config("default_warnings") {
           "-Wno-deprecated-this-capture",
         ]
 
+        if (llvm_force_head_revision) {
+          # TODO(https://crbug.com/1490607): Fix and re-enable.
+          cflags += [ "-Wno-thread-safety-reference" ]
+        }
+
         if (enable_precompiled_headers && !is_win) {
           cflags += [
             # TODO(crbug.com/1486799) Find a long-term solution.
