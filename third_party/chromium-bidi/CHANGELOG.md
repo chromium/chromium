@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.29](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.28...chromium-bidi-v0.4.29) (2023-10-06)
+
+
+### Features
+
+* implement angle inputs ([#1342](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1342)) ([90933ee](https://github.com/GoogleChromeLabs/chromium-bidi/commit/90933eee8c847c15135eeb8fe8d8b01c72927e0d))
+* implement network interception fail request ([#1318](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1318)) ([c5f6581](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c5f658168d8eac5fc2dc851991ee825e6d5e1fbf)), closes [#644](https://github.com/GoogleChromeLabs/chromium-bidi/issues/644)
+
+
+### Bug Fixes
+
+* mapper tab debugging logs ([#1336](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1336)) ([54ea831](https://github.com/GoogleChromeLabs/chromium-bidi/commit/54ea831451ba79c0111f1edc4f93fe1ddce0ef5d))
+* round tilt values ([#1387](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1387)) ([2d4707f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/2d4707f80c3766e0d994c659510ce5402b59f6b1))
+* use half the width/height for touch event radii ([#1341](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1341)) ([aa84a40](https://github.com/GoogleChromeLabs/chromium-bidi/commit/aa84a4061449a22e490791c3abad3ce1374377b4))
+
 ## [0.4.28](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.27...chromium-bidi-v0.4.28) (2023-09-20)
 
 
