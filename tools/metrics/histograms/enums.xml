@@ -6230,13 +6230,6 @@ others/histograms.xml -->
   <int value="5" label="Scroll"/>
 </enum>
 
-<enum name="AutocompleteActionPredictorDatabaseAction">
-  <int value="0" label="ADD"/>
-  <int value="1" label="UPDATE"/>
-  <int value="2" label="DELETE SOME"/>
-  <int value="3" label="DELETE ALL"/>
-</enum>
-
 <enum name="AutocompleteActionPredictorPredictionStatus">
   <int value="0" label="NSP/Prerender not started"/>
   <int value="1" label="NSP/Prerender cancelled"/>

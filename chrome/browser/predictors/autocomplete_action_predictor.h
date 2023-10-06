@@ -138,12 +138,9 @@ class AutocompleteActionPredictor
   void OnOmniboxOpenedUrl(const OmniboxLog& log);
 
   // Uses local caches to calculate an exact percentage prediction that the user
-  // will take a particular match given what they have typed. |is_in_db| is set
-  // to differentiate trivial zero results resulting from a match not being
-  // found from actual zero results where the calculation returns 0.0.
+  // will take a particular match given what they have typed.
   double CalculateConfidence(const std::u16string& user_text,
-                             const AutocompleteMatch& match,
-                             bool* is_in_db) const;
+                             const AutocompleteMatch& match) const;
 
   bool initialized() { return initialized_; }
 

@@ -86,16 +86,6 @@ const size_t kMaximumCacheSize = 2000;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class DatabaseAction {
-  kAdd = 0,
-  kUpdate = 1,
-  kDeleteSome = 2,
-  kDeleteAll = 3,
-  kMaxValue = kDeleteAll,
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 enum class PredictionStatus {
   // The no state prefetch was not started at all for this omnibox interaction.
   kNotStarted = 0,
@@ -316,12 +306,8 @@ AutocompleteActionPredictor::RecommendAction(
     const std::u16string& user_text,
     const AutocompleteMatch& match,
     content::WebContents* web_contents) const {
-  bool is_in_db = false;
-  const double confidence = CalculateConfidence(user_text, match, &is_in_db);
+  const double confidence = CalculateConfidence(user_text, match);
   DCHECK(confidence >= 0.0 && confidence <= 1.0);
-
-  base::UmaHistogramBoolean("AutocompleteActionPredictor.MatchIsInDb",
-                            is_in_db);
 
   // Map the confidence to an action.
   Action action = DecideActionByConfidence(confidence);
@@ -492,9 +478,6 @@ void AutocompleteActionPredictor::DeleteAllRows() {
         base::BindOnce(&AutocompleteActionPredictorTable::DeleteAllRows,
                        table_));
   }
-
-  base::UmaHistogramEnumeration("AutocompleteActionPredictor.DatabaseAction",
-                                DatabaseAction::kDeleteAll);
 }
 
 void AutocompleteActionPredictor::DeleteRowsFromCaches(
@@ -531,8 +514,6 @@ void AutocompleteActionPredictor::AddAndUpdateRows(
 
     db_cache_[key] = value;
     db_id_cache_[key] = it->id;
-    base::UmaHistogramEnumeration("AutocompleteActionPredictor.DatabaseAction",
-                                  DatabaseAction::kAdd);
   }
   for (auto it = rows_to_update.begin(); it != rows_to_update.end(); ++it) {
     const DBCacheKey key = { it->user_text, it->url };
@@ -543,8 +524,6 @@ void AutocompleteActionPredictor::AddAndUpdateRows(
 
     db_it->second.number_of_hits = it->number_of_hits;
     db_it->second.number_of_misses = it->number_of_misses;
-    base::UmaHistogramEnumeration("AutocompleteActionPredictor.DatabaseAction",
-                                  DatabaseAction::kUpdate);
   }
 
   if (table_.get()) {
@@ -716,11 +695,9 @@ void AutocompleteActionPredictor::FinishInitialization() {
 
 double AutocompleteActionPredictor::CalculateConfidence(
     const std::u16string& user_text,
-    const AutocompleteMatch& match,
-    bool* is_in_db) const {
+    const AutocompleteMatch& match) const {
   const DBCacheKey key = { user_text, match.destination_url };
 
-  *is_in_db = false;
   if (user_text.length() < kMinimumUserTextLength)
     return 0.0;
 
@@ -728,7 +705,6 @@ double AutocompleteActionPredictor::CalculateConfidence(
   if (iter == db_cache_.end())
     return 0.0;
 
-  *is_in_db = true;
   return CalculateConfidenceForDbEntry(iter);
 }
 
@@ -770,9 +746,6 @@ void AutocompleteActionPredictor::OnURLsDeleted(
         FROM_HERE, base::BindOnce(&AutocompleteActionPredictorTable::DeleteRows,
                                   table_, std::move(id_list)));
   }
-
-  base::UmaHistogramEnumeration("AutocompleteActionPredictor.DatabaseAction",
-                                DatabaseAction::kDeleteSome);
 }
 
 void AutocompleteActionPredictor::OnHistoryServiceLoaded(

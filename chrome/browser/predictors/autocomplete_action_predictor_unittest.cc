@@ -547,10 +547,9 @@ TEST_F(AutocompleteActionPredictorTest, RecommendActionURL) {
 
   // Calculate confidence_interval for the first entry to cross-check with
   // metrics.
-  bool is_in_db = false;
   match.destination_url = GURL(TestUrlDb()[0].url);
-  double confidence = predictor()->CalculateConfidence(TestUrlDb()[0].user_text,
-                                                       match, &is_in_db);
+  double confidence =
+      predictor()->CalculateConfidence(TestUrlDb()[0].user_text, match);
 
   // Set the first url in the database as the destination url to cross-check the
   // metrics for the first Preloading.Prediction UKM.

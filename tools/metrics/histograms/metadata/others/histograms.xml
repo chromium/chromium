@@ -1400,31 +1400,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AutocompleteActionPredictor.DatabaseAction"
-    enum="AutocompleteActionPredictorDatabaseAction" expires_after="2022-11-13">
-  <owner>tbansal@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <summary>
-    Trackes the number of times something is added, removed, or deleted from the
-    AutocompleteActionPredictor backing database.
-  </summary>
-</histogram>
-
-<histogram name="AutocompleteActionPredictor.MatchIsInDb" units="units"
-    expires_after="2022-11-13">
-  <owner>tbansal@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <summary>
-    A boolean that indicates if the autocomplete suggestion under consideration
-    by the AutocompleteActionPredictor was found in the database. This gives an
-    upper bound on the fraction of suggestions it is possible to calculate a
-    confidence for, and thus an upper bound on the fraction of suggestions that
-    can be prerendered.
-  </summary>
-</histogram>
-
 <histogram name="AutocompleteActionPredictor.NavigationCount" units="units"
     expires_after="M85">
   <owner>tbansal@chromium.org</owner>
