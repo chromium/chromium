@@ -8186,7 +8186,7 @@
   {
     "name": "upload-office-to-cloud",
     "owners": [ "jboulic", "petermarshall", "simmonsjosh@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 122
   },
   {
     "name": "upstream-trusted-reports-firmware",
