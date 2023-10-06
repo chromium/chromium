@@ -45,6 +45,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.FeatureList;
@@ -376,7 +377,11 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
         onView(withText("Rename")).check(matches(isDisplayed()));
         onView(withText("Delete")).check(matches(isDisplayed()));
-        onView(withText("Share")).check(matches(isDisplayed()));
+        if (BuildInfo.getInstance().isAutomotive) {
+            onView(withText("Share")).check(doesNotExist());
+        } else {
+            onView(withText("Share")).check(matches(isDisplayed()));
+        }
     }
 
     @Test
@@ -396,7 +401,11 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
         onView(withText("Rename")).check(doesNotExist());
         onView(withText("Delete")).check(matches(isDisplayed()));
-        onView(withText("Share")).check(matches(isDisplayed()));
+        if (BuildInfo.getInstance().isAutomotive) {
+            onView(withText("Share")).check(doesNotExist());
+        } else {
+            onView(withText("Share")).check(matches(isDisplayed()));
+        }
     }
 
     @Test
@@ -426,58 +435,12 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         onView(withId(R.id.search_menu_id)).check(doesNotExist());
         onView(withId(R.id.close_menu_id)).check(doesNotExist());
         onView(withId(R.id.selection_mode_number)).check(matches(isDisplayed()));
-        onView(withId(R.id.selection_mode_share_menu_id)).check(matches(isDisplayed()));
+        if (BuildInfo.getInstance().isAutomotive) {
+            onView(withId(R.id.selection_mode_share_menu_id)).check(matches(not(isDisplayed())));
+        } else {
+            onView(withId(R.id.selection_mode_share_menu_id)).check(matches(isDisplayed()));
+        }
         onView(withId(R.id.selection_mode_delete_menu_id)).check(matches(isDisplayed()));
-
-        // The last item may be outside the view port, that recycler view won't create the view
-        // holder, so scroll to that view holder first.
-        onView(withId(R.id.download_home_recycler_view))
-                .perform(RecyclerViewActions.scrollToHolder(hasTextInViewHolder("page 1")));
-
-        // Deselect the same item.
-        onView(withText("page 1")).perform(ViewActions.longClick());
-
-        // The toolbar should flip back to non-selection state.
-        onView(withId(R.id.settings_menu_id)).check(matches(isDisplayed()));
-        onView(withId(R.id.search_menu_id)).check(matches(isDisplayed()));
-        onView(withId(R.id.close_menu_id)).check(matches(isDisplayed()));
-        onView(withId(R.id.selection_mode_number)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.selection_mode_share_menu_id)).check(doesNotExist());
-        onView(withId(R.id.selection_mode_delete_menu_id)).check(doesNotExist());
-    }
-
-    @Test
-    @MediumTest
-    public void testShowToolbarMenu_noShareOnAutomotive() throws Exception {
-        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
-
-        // In non-selection state settings, search and close menu should be showing, the selection
-        // toolbar should not exist.
-        onView(withId(R.id.settings_menu_id)).check(matches(isDisplayed()));
-        onView(withId(R.id.search_menu_id)).check(matches(isDisplayed()));
-        onView(withId(R.id.close_menu_id)).check(matches(isDisplayed()));
-        onView(withId(R.id.selection_mode_number)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.selection_mode_share_menu_id)).check(doesNotExist());
-        onView(withId(R.id.selection_mode_delete_menu_id)).check(doesNotExist());
-
-        // The last item may be outside the view port, that recycler view won't create the view
-        // holder, so scroll to that view holder first.
-        onView(withId(R.id.download_home_recycler_view))
-                .perform(RecyclerViewActions.scrollToHolder(hasTextInViewHolder("page 1")));
-
-        // Select an item.
-        onView(withText("page 1")).perform(ViewActions.longClick());
-
-        // Selection toolbar should be showing. Settings, search, and close menu should be gone.
-        onView(withId(R.id.settings_menu_id)).check(doesNotExist());
-        onView(withId(R.id.search_menu_id)).check(doesNotExist());
-        onView(withId(R.id.close_menu_id)).check(doesNotExist());
-        onView(withId(R.id.selection_mode_number)).check(matches(isDisplayed()));
-        onView(withId(R.id.selection_mode_delete_menu_id)).check(matches(isDisplayed()));
-        // Sharing downloads is currently disabled on Automotive, so the share menu should never
-        // be displayed.
-        onView(withId(R.id.selection_mode_share_menu_id)).check(matches(not(isDisplayed())));
 
         // The last item may be outside the view port, that recycler view won't create the view
         // holder, so scroll to that view holder first.
@@ -609,23 +572,13 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                 .perform(ViewActions.click());
 
         // Share an item. The share via android dialog should popup.
-        onView(withText("Share")).check(matches(isDisplayed()));
+        if (BuildInfo.getInstance().isAutomotive) {
+            onView(withText("Share")).check(doesNotExist());
+        } else {
+            onView(withText("Share")).check(matches(isDisplayed()));
+        }
 
         // TODO(shaktisahu): Perform a click, capture the Intent and check its contents.
-    }
-
-    @Test
-    @MediumTest
-    public void testShareItem_noSharingOptionOnAutomotive() throws Exception {
-        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
-
-        // Open menu for a list item.
-        onView(allOf(withId(R.id.more), hasSibling(withText("page 4"))))
-                .perform(ViewActions.click());
-
-        // There should not be an option to share.
-        onView(withText("Share")).check(doesNotExist());
     }
 
     @Test
