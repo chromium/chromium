@@ -37,10 +37,10 @@ repos:
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v2.3.0
     hooks:
+      # Most common ones: [build, chore, ci, docs, feat, fix, refactor, test]
+      # https://conventionalcommits.org
       - id: conventional-pre-commit
         stages: [commit-msg]
-        # c.f. https://conventionalcommits.org
-        args: [feat, fix, build, chore, ci, docs, test]
   - repo: https://github.com/PyCQA/flake8.git
     rev: 6.1.0
     hooks:
