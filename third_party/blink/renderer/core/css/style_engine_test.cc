@@ -1796,6 +1796,65 @@ TEST_F(StyleEngineTest, MediaQueriesChangePrefersContrastOverride) {
   EXPECT_EQ(Color::FromRGB(255, 0, 0),
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersContrastMediaFeature, "more");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(0, 0, 255),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersContrastMediaFeature, "no-preference");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersContrastMediaFeature, "less");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 165, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->ClearPreferenceOverrides();
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersContrastMediaFeature, "less");
+
+  UpdateAllLifecyclePhases();
+
+  // Invalid value resets override
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersContrastMediaFeature, "invalid");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersContrastMediaFeature, "less");
+
+  UpdateAllLifecyclePhases();
+
+  // Empty value resets override
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersContrastMediaFeature, "");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
 }
 
 TEST_F(StyleEngineTest, MediaQueriesChangePrefersReducedMotion) {
@@ -2051,6 +2110,221 @@ TEST_F(StyleEngineTest, MediaQueriesColorSchemeOverride) {
   EXPECT_EQ(Color::FromRGB(255, 0, 0),
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersColorSchemeMediaFeature, "dark");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->ClearPreferenceOverrides();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersColorSchemeMediaFeature, "dark");
+  UpdateAllLifecyclePhases();
+
+  // Invalid value resets override
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersColorSchemeMediaFeature, "invalid");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersColorSchemeMediaFeature, "dark");
+
+  UpdateAllLifecyclePhases();
+
+  // Empty value resets override
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersColorSchemeMediaFeature, "");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+}
+
+TEST_F(StyleEngineTest, MediaQueriesReducedTransparencyOverride) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body { color: red }
+      @media (prefers-reduced-transparency: reduce) {
+        body { color: green }
+      }
+    </style>
+    <body></body>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "reduce");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->ClearMediaFeatureOverrides();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "reduce");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->ClearPreferenceOverrides();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "reduce");
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature,
+      "no-preference");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->ClearMediaFeatureOverrides();
+  GetDocument().GetPage()->ClearPreferenceOverrides();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "reduce");
+  UpdateAllLifecyclePhases();
+
+  // Invalid value resets override
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "invalid");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "reduce");
+
+  UpdateAllLifecyclePhases();
+
+  // Empty value resets override
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+}
+
+TEST_F(StyleEngineTest, MediaQueriesReducedDataOverride) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body { color: red }
+      @media (prefers-reduced-data: reduce) {
+        body { color: green }
+      }
+    </style>
+    <body></body>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kPrefersReducedDataMediaFeature, "reduce");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->ClearMediaFeatureOverrides();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedDataMediaFeature, "reduce");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->ClearPreferenceOverrides();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kPrefersReducedDataMediaFeature, "reduce");
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedDataMediaFeature, "no-preference");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->ClearMediaFeatureOverrides();
+  GetDocument().GetPage()->ClearPreferenceOverrides();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedDataMediaFeature, "reduce");
+  UpdateAllLifecyclePhases();
+
+  // Invalid value resets override
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedDataMediaFeature, "invalid");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedDataMediaFeature, "reduce");
+
+  UpdateAllLifecyclePhases();
+
+  // Empty value resets override
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedDataMediaFeature, "");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
 }
 
 TEST_F(StyleEngineTest, PreferredColorSchemeMetric) {
@@ -2174,6 +2448,64 @@ TEST_F(StyleEngineTest, MediaQueriesReducedMotionOverride) {
                 GetCSSPropertyColor()));
 
   GetDocument().GetPage()->ClearMediaFeatureOverrides();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedMotionMediaFeature, "reduce");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->ClearPreferenceOverrides();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+  GetDocument().GetPage()->ClearPreferenceOverrides();
+
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kPrefersReducedMotionMediaFeature, "reduce");
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedMotionMediaFeature, "no-preference");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->ClearMediaFeatureOverrides();
+  GetDocument().GetPage()->ClearPreferenceOverrides();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedMotionMediaFeature, "reduce");
+  UpdateAllLifecyclePhases();
+
+  // Invalid value resets override
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedMotionMediaFeature, "invalid");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedMotionMediaFeature, "reduce");
+
+  UpdateAllLifecyclePhases();
+
+  // Empty value resets override
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersReducedMotionMediaFeature, "");
+
   UpdateAllLifecyclePhases();
   EXPECT_EQ(Color::FromRGB(255, 0, 0),
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
@@ -2598,6 +2930,38 @@ TEST_F(StyleEngineTest, ColorSchemeOverride) {
   GetDocument().GetPage()->SetMediaFeatureOverride(
       media_feature_names::kPrefersColorSchemeMediaFeature, "dark");
 
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(
+      mojom::blink::ColorScheme::kDark,
+      GetDocument().documentElement()->GetComputedStyle()->UsedColorScheme());
+
+  GetDocument().GetPage()->ClearMediaFeatureOverrides();
+  UpdateAllLifecyclePhases();
+
+  EXPECT_EQ(
+      mojom::blink::ColorScheme::kLight,
+      GetDocument().documentElement()->GetComputedStyle()->UsedColorScheme());
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersColorSchemeMediaFeature, "dark");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(
+      mojom::blink::ColorScheme::kDark,
+      GetDocument().documentElement()->GetComputedStyle()->UsedColorScheme());
+
+  GetDocument().GetPage()->ClearPreferenceOverrides();
+  UpdateAllLifecyclePhases();
+
+  EXPECT_EQ(
+      mojom::blink::ColorScheme::kLight,
+      GetDocument().documentElement()->GetComputedStyle()->UsedColorScheme());
+
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kPrefersColorSchemeMediaFeature, "dark");
+
+  GetDocument().GetPage()->SetPreferenceOverride(
+      media_feature_names::kPrefersColorSchemeMediaFeature, "light");
   UpdateAllLifecyclePhases();
   EXPECT_EQ(
       mojom::blink::ColorScheme::kDark,

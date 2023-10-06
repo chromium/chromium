@@ -6444,6 +6444,7 @@ interface Navigator
     getter permissions
     getter platform
     getter plugins
+    getter preferences
     getter presentation
     getter product
     getter productSub
@@ -7234,6 +7235,21 @@ interface PopStateEvent : Event
     getter hasUAVisualTransition
     getter state
     method constructor
+interface PreferenceManager
+    attribute @@toStringTag
+    getter colorScheme
+    getter contrast
+    getter reducedData
+    getter reducedMotion
+    getter reducedTransparency
+    method constructor
+interface PreferenceObject
+    attribute @@toStringTag
+    getter override
+    getter validValues
+    method clearOverride
+    method constructor
+    method requestOverride
 interface Presentation
     attribute @@toStringTag
     getter defaultRequest

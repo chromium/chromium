@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/page/validation_message_client_impl.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/preferences/preference_overrides.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
@@ -1125,6 +1126,28 @@ void Page::SetMediaFeatureOverride(const AtomicString& media_feature,
 
 void Page::ClearMediaFeatureOverrides() {
   media_feature_overrides_.reset();
+  SettingsChanged(ChangeType::kMediaQuery);
+  SettingsChanged(ChangeType::kColorScheme);
+}
+
+void Page::SetPreferenceOverride(const AtomicString& media_feature,
+                                 const String& value) {
+  if (!preference_overrides_) {
+    if (value.empty()) {
+      return;
+    }
+    preference_overrides_ = std::make_unique<PreferenceOverrides>();
+  }
+  preference_overrides_->SetOverride(media_feature, value);
+  if (media_feature == "prefers-color-scheme") {
+    SettingsChanged(ChangeType::kColorScheme);
+  } else {
+    SettingsChanged(ChangeType::kMediaQuery);
+  }
+}
+
+void Page::ClearPreferenceOverrides() {
+  preference_overrides_.reset();
   SettingsChanged(ChangeType::kMediaQuery);
   SettingsChanged(ChangeType::kColorScheme);
 }

@@ -1,0 +1,14 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_preferences = [
+  "preference_manager.cc",
+  "preference_manager.h",
+  "preference_overrides.cc",
+  "preference_overrides.h",
+  "preference_object.cc",
+  "preference_object.h",
+  "navigator_preferences.cc",
+  "navigator_preferences.h",
+]

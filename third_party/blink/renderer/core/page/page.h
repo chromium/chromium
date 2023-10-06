@@ -88,6 +88,7 @@ class PageScaleConstraintsSet;
 class PluginData;
 class PluginsChangedObserver;
 class PointerLockController;
+class PreferenceOverrides;
 class ScopedPagePauser;
 class ScrollingCoordinator;
 class ScrollbarTheme;
@@ -374,6 +375,13 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   }
   void ClearMediaFeatureOverrides();
 
+  void SetPreferenceOverride(const AtomicString& media_feature,
+                             const String& value);
+  const PreferenceOverrides* GetPreferenceOverrides() const {
+    return preference_overrides_.get();
+  }
+  void ClearPreferenceOverrides();
+
   void SetVisionDeficiency(VisionDeficiency new_vision_deficiency);
   VisionDeficiency GetVisionDeficiency() const { return vision_deficiency_; }
 
@@ -566,6 +574,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   // Overrides for various media features, set from DevTools.
   std::unique_ptr<MediaFeatureOverrides> media_feature_overrides_;
+
+  // Overrides for user preference media features, set from Web Preferences API.
+  std::unique_ptr<PreferenceOverrides> preference_overrides_;
 
   // Emulated vision deficiency, set from DevTools.
   VisionDeficiency vision_deficiency_ = VisionDeficiency::kNoVisionDeficiency;

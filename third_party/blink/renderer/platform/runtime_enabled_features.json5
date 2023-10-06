@@ -4262,6 +4262,11 @@
       base_feature: "none",
     },
     {
+      // https://wicg.github.io/web-preferences-api/
+      name: "WebPreferences",
+      status: "test",
+    },
+    {
       name: "WebSerialBluetooth",
       status: "stable",
       base_feature: "none",

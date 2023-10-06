@@ -61,6 +61,11 @@ PASS window.cached_navigator_managed.onmanagedconfigurationchange is null
 PASS window.cached_navigator_mediaDevices.ondevicechange is null
 PASS window.cached_navigator_mediaSession.metadata is null
 PASS window.cached_navigator_mediaSession.playbackState is 'none'
+PASS window.cached_navigator_preferences_colorScheme.override is null
+PASS window.cached_navigator_preferences_contrast.override is null
+PASS window.cached_navigator_preferences_reducedData.override is null
+PASS window.cached_navigator_preferences_reducedMotion.override is null
+PASS window.cached_navigator_preferences_reducedTransparency.override is null
 PASS window.cached_navigator_presentation.defaultRequest is null
 PASS window.cached_navigator_presentation.receiver is null
 PASS window.cached_navigator_serial.onconnect is null

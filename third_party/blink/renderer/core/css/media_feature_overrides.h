@@ -15,6 +15,7 @@ namespace blink {
 
 enum class ColorSpaceGamut;
 enum class ForcedColors;
+class MediaQueryExpValue;
 
 class CORE_EXPORT MediaFeatureOverrides {
   USING_FAST_MALLOC(MediaFeatureOverrides);
@@ -42,6 +43,20 @@ class CORE_EXPORT MediaFeatureOverrides {
   absl::optional<ForcedColors> GetForcedColors() const {
     return forced_colors_;
   }
+
+  static absl::optional<mojom::blink::PreferredColorScheme>
+  ConvertPreferredColorScheme(const MediaQueryExpValue&);
+  static absl::optional<mojom::blink::PreferredContrast>
+  ConvertPreferredContrast(const MediaQueryExpValue&);
+  static absl::optional<bool> ConvertPrefersReducedMotion(
+      const MediaQueryExpValue& value);
+  static absl::optional<bool> ConvertPrefersReducedData(
+      const MediaQueryExpValue& value);
+  static absl::optional<bool> ConvertPrefersReducedTransparency(
+      const MediaQueryExpValue& value);
+
+  static MediaQueryExpValue ParseMediaQueryValue(const AtomicString&,
+                                                 const String&);
 
  private:
   absl::optional<ColorSpaceGamut> color_gamut_;

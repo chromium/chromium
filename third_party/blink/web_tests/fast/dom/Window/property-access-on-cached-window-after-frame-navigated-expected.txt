@@ -66,6 +66,11 @@ PASS oldChildWindow.navigator.mediaSession.playbackState is newChildWindow.navig
 PASS oldChildWindow.navigator.onLine is newChildWindow.navigator.onLine
 PASS oldChildWindow.navigator.pdfViewerEnabled is newChildWindow.navigator.pdfViewerEnabled
 PASS oldChildWindow.navigator.platform is newChildWindow.navigator.platform
+PASS oldChildWindow.navigator.preferences.colorScheme.override is newChildWindow.navigator.preferences.colorScheme.override
+PASS oldChildWindow.navigator.preferences.contrast.override is newChildWindow.navigator.preferences.contrast.override
+PASS oldChildWindow.navigator.preferences.reducedData.override is newChildWindow.navigator.preferences.reducedData.override
+PASS oldChildWindow.navigator.preferences.reducedMotion.override is newChildWindow.navigator.preferences.reducedMotion.override
+PASS oldChildWindow.navigator.preferences.reducedTransparency.override is newChildWindow.navigator.preferences.reducedTransparency.override
 PASS oldChildWindow.navigator.presentation.defaultRequest is newChildWindow.navigator.presentation.defaultRequest
 PASS oldChildWindow.navigator.presentation.receiver is newChildWindow.navigator.presentation.receiver
 PASS oldChildWindow.navigator.product is newChildWindow.navigator.product

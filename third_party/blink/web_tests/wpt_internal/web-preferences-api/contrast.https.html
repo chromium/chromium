@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>WebPreferences Test: contrast attribute tests</title>
+    <link rel="author" title="Luke Warlow" href="mailto:luke@warlow.dev" />
+    <link rel="help" href="https://wicg.github.io/web-preferences-api/" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+      test(() => {
+        assert_true('preferences' in navigator, 'navigator.preferences defined');
+        assert_true('contrast' in navigator.preferences, 'navigator.preferences.contrast defined');
+      }, "navigator.preferences.contrast supported");
+      test(() => {
+        assert_equals(navigator.preferences.contrast.override, null);
+      }, "navigator.preferences.contrast.override is null by default");
+      test(() => {
+        assert_true('validValues' in navigator.preferences.contrast, 'navigator.preferences.contrast.validValues defined');
+        assert_true(navigator.preferences.contrast.validValues.includes('more'), 'navigator.preferences.contrast.validValues includes "more"');
+        assert_true(navigator.preferences.contrast.validValues.includes('less'), 'navigator.preferences.contrast.validValues includes "less"');
+        assert_false(navigator.preferences.contrast.validValues.includes('custom'), 'navigator.preferences.contrast.validValues excludes "custom"');
+        assert_false(navigator.preferences.contrast.validValues.includes('no-preference'), 'navigator.preferences.contrast.validValues excludes "no-preference"');
+      }, "navigator.preferences.contrast.validValues supported");
+      promise_test((t) => {
+        return navigator.preferences.contrast.requestOverride('this-is-an-invalid-value')
+          .then(() => {
+            assert_not_reached('requestOverride with invalid value should not resolve');
+          })
+          .catch((e) => {
+            assert_true(e instanceof DOMException);
+            assert_equals(navigator.preferences.contrast.override, null);
+            t.done();
+          });
+      }, "navigator.preferences.contrast.requestOverride() with invalid value throws");
+      promise_test((t) => {
+        return navigator.preferences.contrast.requestOverride('custom')
+          .then(() => {
+            assert_not_reached('requestOverride with invalid value should not resolve');
+          })
+          .catch((e) => {
+            assert_true(e instanceof DOMException);
+            assert_equals(navigator.preferences.contrast.override, null);
+            t.done();
+          });
+      }, "navigator.preferences.contrast.requestOverride('custom') throws");
+      promise_test((t) => {
+        return navigator.preferences.contrast.requestOverride('no-preference')
+          .then(() => {
+            assert_not_reached('requestOverride with invalid value should not resolve');
+          })
+          .catch((e) => {
+            assert_true(e instanceof DOMException);
+            assert_equals(navigator.preferences.contrast.override, null);
+            t.done();
+          });
+      }, "navigator.preferences.contrast.requestOverride('no-preference') throws");
+      promise_test(async (t) => {
+        await navigator.preferences.contrast.requestOverride('more');
+        assert_equals(navigator.preferences.contrast.override, 'more');
+        navigator.preferences.contrast.clearOverride();
+        assert_equals(navigator.preferences.contrast.override, null);
+        t.done();
+      }, "navigator.preferences.contrast.clearOverride() works");
+      promise_test(async (t) => {
+        await navigator.preferences.contrast.requestOverride('more');
+        assert_equals(navigator.preferences.contrast.override, 'more');
+        await navigator.preferences.contrast.requestOverride(null);
+        assert_equals(navigator.preferences.contrast.override, null);
+        t.done();
+      }, "navigator.preferences.contrast.requestOverride(null) works like clearOverride()");
+      promise_test(async (t) => {
+        await navigator.preferences.contrast.requestOverride('more');
+        assert_equals(navigator.preferences.contrast.override, 'more');
+        await navigator.preferences.contrast.requestOverride('');
+        assert_equals(navigator.preferences.contrast.override, null);
+        t.done();
+      }, "navigator.preferences.contrast.requestOverride('') works like clearOverride()");
+      promise_test(async (t) => {
+        await navigator.preferences.contrast.requestOverride('more');
+        assert_true(window.matchMedia('(prefers-contrast: more)').matches, '(prefers-contrast: more) matches');
+        await navigator.preferences.contrast.requestOverride('less');
+        assert_true(window.matchMedia('(prefers-contrast: less)').matches, '(prefers-contrast: less) matches');
+        navigator.preferences.contrast.clearOverride();
+        assert_true(window.matchMedia('(prefers-contrast: no-preference)').matches);
+        t.done();
+      }, "navigator.preferences.contrast.requestOverride() updates (prefers-contrast)");
+    </script>
+  </body>
+</html>

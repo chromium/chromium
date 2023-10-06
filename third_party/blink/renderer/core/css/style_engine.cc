@@ -100,6 +100,7 @@
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_popup_controller.h"
+#include "third_party/blink/renderer/core/preferences/preference_overrides.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
@@ -3720,8 +3721,11 @@ void StyleEngine::UpdateColorScheme() {
   preferred_color_scheme_ = settings->GetPreferredColorScheme();
   bool old_force_dark_mode_enabled = force_dark_mode_enabled_;
   force_dark_mode_enabled_ = settings->GetForceDarkModeEnabled();
+  bool media_feature_override_color_scheme = false;
 
-  if (const auto* overrides =
+  // TODO(1479201): Should DevTools emulation use the WebPreferences API
+  // overrides?
+  if (const MediaFeatureOverrides* overrides =
           GetDocument().GetPage()->GetMediaFeatureOverrides()) {
     if (absl::optional<ForcedColors> forced_color_override =
             overrides->GetForcedColors()) {
@@ -3730,6 +3734,18 @@ void StyleEngine::UpdateColorScheme() {
     if (absl::optional<mojom::blink::PreferredColorScheme>
             preferred_color_scheme_override =
                 overrides->GetPreferredColorScheme()) {
+      preferred_color_scheme_ = preferred_color_scheme_override.value();
+      media_feature_override_color_scheme = true;
+    }
+  }
+
+  const PreferenceOverrides* preference_overrides =
+      GetDocument().GetPage()->GetPreferenceOverrides();
+  if (preference_overrides && !media_feature_override_color_scheme) {
+    absl::optional<mojom::blink::PreferredColorScheme>
+        preferred_color_scheme_override =
+            preference_overrides->GetPreferredColorScheme();
+    if (preferred_color_scheme_override.has_value()) {
       preferred_color_scheme_ = preferred_color_scheme_override.value();
     }
   }
