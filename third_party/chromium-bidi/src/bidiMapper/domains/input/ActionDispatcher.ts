@@ -439,8 +439,8 @@ export class ActionDispatcher {
                     {
                       x,
                       y,
-                      radiusX: width && width / 2,
-                      radiusY: height && height / 2,
+                      radiusX: width ? width / 2 : 0.5,
+                      radiusY: height ? height / 2 : 0.5,
                       tangentialPressure,
                       tiltX,
                       tiltY,
