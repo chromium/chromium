@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.31](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.30...chromium-bidi-v0.4.31) (2023-10-06)
+
+
+### Bug Fixes
+
+* part 2 of [#1391](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1391) ([#1393](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1393)) ([a875831](https://github.com/GoogleChromeLabs/chromium-bidi/commit/a8758313bf3a0f704973c749da86f01da7df4b83))
+
 ## [0.4.30](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.29...chromium-bidi-v0.4.30) (2023-10-06)
 
 
