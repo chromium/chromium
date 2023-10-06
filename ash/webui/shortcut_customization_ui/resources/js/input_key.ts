@@ -135,6 +135,11 @@ export class InputKeyElement extends InputKeyElementBase {
 
     return this.i18n(ariaLabelStringId);
   }
+
+  // Prevent announcing input keys when in editing mode.
+  private getAriaHidden(): boolean {
+    return this.keyState === KeyInputState.NOT_SELECTED;
+  }
 }
 
 declare global {

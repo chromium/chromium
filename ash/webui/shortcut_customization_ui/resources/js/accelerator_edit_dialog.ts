@@ -125,6 +125,16 @@ export class AcceleratorEditDialogElement extends
     super.connectedCallback();
     this.$.editDialog.showModal();
 
+    // Update the aria-label of editDialog, by default, it would include all the
+    // content within the dialog.
+    // 1. Remove 'aria-describedby' to avoid redundant information.
+    // 2. Set a custom aria-label indicating the dialog for certain shortcut is
+    // open.
+    this.$.editDialog.shadowRoot!.querySelector('#dialog')!.removeAttribute(
+        'aria-describedby');
+    this.$.editDialog.setTitleAriaLabel(
+        this.i18n('editDialogAriaLabel', this.description));
+
     this.eventTracker.add(
         window, 'accelerator-capturing-started',
         () => this.onAcceleratorCapturingStarted());

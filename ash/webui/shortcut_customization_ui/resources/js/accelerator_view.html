@@ -33,7 +33,7 @@
 </style>
 
 <div id="container" class="flex-row" tabindex="-1"
-  aria-label="[[getAriaLabel(acceleratorInfo)]]">
+  aria-label="[[getAriaLabel(acceleratorInfo, viewState)]]">
   <template is="dom-if" if="[[!showEditView(viewState)]]">
     <div id="accelerator-keys">
       <template is="dom-repeat" items="[[modifiers]]">
@@ -85,7 +85,7 @@
       </input-key>
       <!-- TODO(jimmyxgong): Conditionally add this separator based off of the
            shortcut's layout info. -->
-      <div id="acceleratorSeparator"> + </div>
+      <div id="acceleratorSeparator" aria-hidden="true"> + </div>
       <input-key id="pendingKey"
           key="[[getPendingKey(
             pendingAcceleratorInfo.layoutProperties.standardAccelerator.*

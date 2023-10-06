@@ -119,6 +119,6 @@
     <div id="icon-description" hidden>[[getAriaLabelForIcon(key)]]</div>
   </template>
   <template is="dom-if" if="[[!getIconIdForKey(key)]]">
-    <span id="key-text">[[key]]</span>
+    <span id="key-text" aria-hidden="[[getAriaHidden(key, keyState)]]">[[key]]</span>
   </template>
 </div>

@@ -25,6 +25,12 @@ import {createStandardAcceleratorInfo, createUserAcceleratorInfo} from './shortc
 
 export function initAcceleratorViewElement(): AcceleratorViewElement {
   const element = document.createElement('accelerator-view');
+  // Set default acceleratorInfo and viewState
+  element.acceleratorInfo = createUserAcceleratorInfo(
+      Modifier.CONTROL | Modifier.SHIFT,
+      /*key=*/ 71,
+      /*keyDisplay=*/ 'g');
+  element.viewState = ViewState.VIEW;
   document.body.appendChild(element);
   flush();
   return element;
@@ -76,13 +82,6 @@ suite('acceleratorViewTest', function() {
     viewElement = initAcceleratorViewElement();
     await flushTasks();
 
-    const acceleratorInfo = createUserAcceleratorInfo(
-        Modifier.CONTROL | Modifier.SHIFT,
-        /*key=*/ 71,
-        /*keyDisplay=*/ 'g');
-
-    viewElement.acceleratorInfo = acceleratorInfo;
-    await flush();
     const keys = viewElement.shadowRoot!.querySelectorAll('input-key');
     // Three keys: shift, control, g
     assertEquals(3, keys.length);
@@ -101,12 +100,6 @@ suite('acceleratorViewTest', function() {
     viewElement = initAcceleratorViewElement();
     await flushTasks();
 
-    const acceleratorInfo = createStandardAcceleratorInfo(
-        Modifier.ALT,
-        /*key=*/ 221,
-        /*keyDisplay=*/ ']');
-
-    viewElement.acceleratorInfo = acceleratorInfo;
     viewElement.source = AcceleratorSource.kAsh;
     viewElement.action = 1;
     await flush();
@@ -224,12 +217,6 @@ suite('acceleratorViewTest', function() {
     viewElement = initAcceleratorViewElement();
     await flushTasks();
 
-    const acceleratorInfo = createStandardAcceleratorInfo(
-        Modifier.ALT,
-        /*key=*/ 221,
-        /*keyDisplay=*/ ']');
-
-    viewElement.acceleratorInfo = acceleratorInfo;
     viewElement.source = AcceleratorSource.kAsh;
     viewElement.action = 1;
     await flushTasks();
@@ -428,11 +415,6 @@ suite('acceleratorViewTest', function() {
   test('KeyDisplayAndIconDuringEdit', async () => {
     viewElement = initAcceleratorViewElement();
     await flushTasks();
-    const acceleratorInfo = createStandardAcceleratorInfo(
-        Modifier.ALT,
-        /*key=*/ 221,
-        /*keyDisplay=*/ ']');
-    viewElement.acceleratorInfo = acceleratorInfo;
     viewElement.source = AcceleratorSource.kAsh;
     viewElement.action = 1;
     await flush();
@@ -516,11 +498,20 @@ suite('acceleratorViewTest', function() {
     viewElement.acceleratorInfo = acceleratorInfo;
     viewElement.source = AcceleratorSource.kAsh;
     viewElement.action = 1;
+    viewElement.viewState = ViewState.VIEW;
     await flush();
 
-    const viewContainer =
-        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
+    let viewContainer =
+        strictQuery('#container', viewElement.shadowRoot, HTMLDivElement);
     assertEquals('alt shift s', viewContainer.ariaLabel);
+
+    // Aria label is empty during editing process.
+    viewElement.viewState = ViewState.EDIT;
+    await flush();
+
+    viewContainer =
+        strictQuery('#container', viewElement.shadowRoot, HTMLDivElement);
+    assertEquals('', viewContainer.ariaLabel);
   });
 
   test('GetAriaLabelsWithIcon', async () => {
@@ -568,12 +559,6 @@ suite('acceleratorViewTest', function() {
     viewElement = initAcceleratorViewElement();
     await flushTasks();
 
-    const acceleratorInfo = createStandardAcceleratorInfo(
-        Modifier.ALT,
-        /*key=*/ 221,
-        /*keyDisplay=*/ ']');
-
-    viewElement.acceleratorInfo = acceleratorInfo;
     viewElement.source = AcceleratorSource.kAsh;
     viewElement.action = 1;
     // Enable the edit view.

@@ -115,21 +115,22 @@
   <template id="buttonContainer" is="dom-if" if="[[!acceleratorInfo.locked]]">
     <div id="editButtonsContainer" hidden="[[showEditView(viewState)]]">
       <cr-icon-button id="editButton"
+          aria-label="[[i18n('editButtonAriaLabel')]]"
           class="clickable-button"
           iron-icon="shortcut-customization:edit"
-          aria-hidden="true"
           on-click="onEditButtonClicked">
       </cr-icon-button>
-      <hr>
+      <hr aria-hidden="true">
       <cr-icon-button id="deleteButton"
+          aria-label="[[i18n('deleteButtonAriaLabel')]]"
           class="clickable-button"
           iron-icon="shortcut-customization:delete"
-          aria-hidden="true"
           on-click="onDeleteButtonClicked">
       </cr-icon-button>
     </div>
     <div id="cancelButtonContainer" hidden="[[!showEditView(viewState)]]">
       <cr-icon-button id="cancelButton" class="clickable-button"
+          aria-label="[[i18n('cancelButtonAriaLabel')]]"
           iron-icon="shortcut-customization:cancel" aria-hidden="true"
           on-click="onCancelButtonClicked">
       </cr-icon-button>

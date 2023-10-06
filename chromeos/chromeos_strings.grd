@@ -4149,6 +4149,24 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ACCELERATOR_ROW_A11Y" desc="Accessibility text for the selected accelerator row.">
           <ph name="DESCRIPTION">$1<ex>Open notifications</ex></ph>, <ph name="ACCELERATOR_INFO">$2<ex>ctrl T</ex></ph>.
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_BUTTON_A11Y" desc="Accessibility text for the edit button.">
+          Edit shortcut
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CANCEL_BUTTON_A11Y" desc="Accessibility text for the cancel button.">
+          Cancel shortcut editing
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_DELETE_BUTTON_A11Y" desc="Accessibility text for the delete button.">
+          Delete shortcut
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_DIALOG_A11Y" desc="The text read by the screen reader when edit dialog is open.">
+          Edit dialog for <ph name="DESCRIPTION">$1<ex>Open notifications</ex></ph> is open.
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_ADDED_A11Y" desc="The text read by the screen reader when shortcut is added successfully.">
+          Shortcut added
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_EDITED_A11Y" desc="The text read by the screen reader when shortcut is edited successfully.">
+          Shortcut edited
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_RESULT_ROW_A11Y_RESULT_SELECTED" desc="ChromeVox alert to indicate the position number of a selected result in a list of search results and the selected result text itself, and that the user can press enter to navigate to section described by the search result.">
           Search result <ph name="LIST_POSITION">$1<ex>1</ex></ph> of <ph name="LIST_SIZE">$2<ex>2</ex></ph>: <ph name="SEARCH_RESULT_TEXT">$3<ex>Open new tab, ctrl T</ex></ph>. Press Enter to navigate to shortcut.
         </message>
