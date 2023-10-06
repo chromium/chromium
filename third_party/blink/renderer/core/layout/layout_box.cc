@@ -3780,12 +3780,6 @@ NGPhysicalBoxStrut LayoutBox::BorderOutsetsForClipping() const {
       StyleRef().OverflowClipMargin()->GetMargin());
 }
 
-DISABLE_CFI_PERF
-LayoutRect LayoutBox::NoOverflowRect() const {
-  NOT_DESTROYED();
-  return FlipForWritingMode(PhysicalPaddingBoxRect());
-}
-
 PhysicalRect LayoutBox::VisualOverflowRect() const {
   NOT_DESTROYED();
   DCHECK(!IsLayoutMultiColumnSet());
