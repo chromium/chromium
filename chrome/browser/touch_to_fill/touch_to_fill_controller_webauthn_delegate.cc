@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -76,6 +77,12 @@ bool TouchToFillControllerWebAuthnDelegate::ShouldTriggerSubmission() {
 
 bool TouchToFillControllerWebAuthnDelegate::ShouldShowHybridOption() {
   return should_show_hybrid_option_;
+}
+
+bool TouchToFillControllerWebAuthnDelegate::
+    ShouldShowNoPasskeysSheetIfRequired() {
+  return webauthn::WebAuthnCredManDelegate::CredManMode() ==
+         webauthn::WebAuthnCredManDelegate::kNonGpmPasskeys;
 }
 
 gfx::NativeView TouchToFillControllerWebAuthnDelegate::GetNativeView() {

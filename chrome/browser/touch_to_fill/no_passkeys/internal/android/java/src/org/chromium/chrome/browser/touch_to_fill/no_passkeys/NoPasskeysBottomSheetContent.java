@@ -25,6 +25,7 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
     private final Delegate mDelegate;
     private final Context mContext;
     private final String mOrigin;
+    private View mContentView;
 
     /** User actions delegated by this bottom sheet. */
     interface Delegate {
@@ -57,14 +58,18 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
     private View createContentView() {
         View contentView =
                 LayoutInflater.from(mContext).inflate(R.layout.no_passkeys_bottom_sheet, null);
-        contentView.setLayoutDirection(LocalizationUtils.isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL
-                                                                       : View.LAYOUT_DIRECTION_LTR);
+        contentView.setLayoutDirection(
+                LocalizationUtils.isLayoutRtl()
+                        ? View.LAYOUT_DIRECTION_RTL
+                        : View.LAYOUT_DIRECTION_LTR);
         ImageView headerImage = contentView.findViewById(R.id.no_passkeys_sheet_header_image);
         headerImage.setImageResource(
                 PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon());
-        contentView.findViewById(R.id.no_passkeys_ok_button)
+        contentView
+                .findViewById(R.id.no_passkeys_ok_button)
                 .setOnClickListener(v -> mDelegate.onClickOk());
-        contentView.findViewById(R.id.no_passkeys_use_another_device_button)
+        contentView
+                .findViewById(R.id.no_passkeys_use_another_device_button)
                 .setOnClickListener(v -> mDelegate.onClickUseAnotherDevice());
 
         String subtitleString = mContext.getString(R.string.no_passkeys_sheet_subtitle, mOrigin);
@@ -82,7 +87,10 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
     // BottomSheetContent implementation:
     @Override
     public View getContentView() {
-        return createContentView();
+        if (mContentView == null) {
+            mContentView = createContentView();
+        }
+        return mContentView;
     }
 
     @Override

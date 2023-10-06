@@ -221,6 +221,11 @@ bool TouchToFillControllerAutofillDelegate::ShouldShowHybridOption() {
   return should_show_hybrid_option_.value();
 }
 
+bool TouchToFillControllerAutofillDelegate::
+    ShouldShowNoPasskeysSheetIfRequired() {
+  return false;
+}
+
 gfx::NativeView TouchToFillControllerAutofillDelegate::GetNativeView() {
   return web_contents_->GetNativeView();
 }

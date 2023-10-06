@@ -16,6 +16,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "ui/android/view_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -62,6 +63,7 @@ void TouchToFillController::Show(
   visibility_controller_->SetVisible(std::move(frame_driver));
 
   ttf_delegate_->OnShow(credentials, passkey_credentials);
+  GURL url = ttf_delegate_->GetFrameUrl();
   int flags = TouchToFillView::kNone;
   if (cred_man_delegate && cred_man_delegate->HasPasskeys() ==
                                WebAuthnCredManDelegate::kHasPasskeys) {
@@ -75,6 +77,15 @@ void TouchToFillController::Show(
     // and treat this case as dismissal, in order to restore the soft keyboard.
     if (!!(flags & TouchToFillView::kShouldShowCredManEntry)) {
       OnShowCredManSelected();
+      return;
+    }
+    if (ttf_delegate_->ShouldShowNoPasskeysSheetIfRequired()) {
+      if (!no_passkeys_bridge_) {
+        no_passkeys_bridge_ = std::make_unique<NoPasskeysBottomSheetBridge>();
+      }
+      no_passkeys_bridge_->Show(
+          GetNativeView()->GetWindowAndroid(), url::Origin::Create(url).host(),
+          base::BindOnce(&TouchToFillController::OnDismiss, AsWeakPtr()));
       return;
     }
     OnDismiss();
@@ -94,7 +105,6 @@ void TouchToFillController::Show(
     flags |= TouchToFillView::kShouldShowHybridOption;
   }
 
-  GURL url = ttf_delegate_->GetFrameUrl();
   view_->Show(
       url,
       TouchToFillView::IsOriginSecure(
@@ -145,6 +155,7 @@ void TouchToFillController::OnCredManUiClosed(bool success) {
 
 void TouchToFillController::OnDismiss() {
   view_.reset();
+  no_passkeys_bridge_.reset();
   if (!ttf_delegate_) {
     // TODO(crbug/1462532): Remove this check when
     // PasswordSuggestionBottomSheetV2 is launched

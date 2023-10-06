@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/touch_to_fill/no_passkeys/android/no_passkeys_bottom_sheet_bridge.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view_factory.h"
 #include "ui/gfx/native_widget_types.h"
@@ -93,6 +94,11 @@ class TouchToFillController
   void set_view(std::unique_ptr<TouchToFillView> view) {
     view_ = std::move(view);
   }
+
+  void set_no_passkeys_bridge(
+      std::unique_ptr<NoPasskeysBottomSheetBridge> bridge) {
+    no_passkeys_bridge_ = std::move(bridge);
+  }
 #endif
 
  private:
@@ -111,6 +117,8 @@ class TouchToFillController
   // View used to communicate with the Android frontend. Lazily instantiated so
   // that it can be injected by tests.
   std::unique_ptr<TouchToFillView> view_;
+
+  std::unique_ptr<NoPasskeysBottomSheetBridge> no_passkeys_bridge_;
 
   base::WeakPtr<password_manager::KeyboardReplacingSurfaceVisibilityController>
       visibility_controller_;

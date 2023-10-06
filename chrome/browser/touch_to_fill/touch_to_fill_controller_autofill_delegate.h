@@ -117,6 +117,7 @@ class TouchToFillControllerAutofillDelegate
   const GURL& GetFrameUrl() override;
   bool ShouldTriggerSubmission() override;
   bool ShouldShowHybridOption() override;
+  bool ShouldShowNoPasskeysSheetIfRequired() override;
   gfx::NativeView GetNativeView() override;
 
  private:

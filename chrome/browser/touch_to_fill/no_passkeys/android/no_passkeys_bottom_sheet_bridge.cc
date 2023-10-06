@@ -14,14 +14,16 @@ using JniDelegate = NoPasskeysBottomSheetBridge::JniDelegate;
 
 class JniDelegateImpl : public JniDelegate {
  public:
-  JniDelegateImpl() = default;
+  explicit JniDelegateImpl(NoPasskeysBottomSheetBridge* bridge)
+      : bridge_(bridge) {}
   JniDelegateImpl(const JniDelegateImpl&) = delete;
   JniDelegateImpl& operator=(const JniDelegateImpl&) = delete;
   ~JniDelegateImpl() override = default;
 
   void Create(ui::WindowAndroid* window_android) override {
     java_object_.Reset(Java_NoPasskeysBottomSheetBridge_Constructor(
-        base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+        base::android::AttachCurrentThread(),
+        reinterpret_cast<intptr_t>(bridge_.get()),
         window_android->GetJavaObject()));
   }
 
@@ -37,8 +39,10 @@ class JniDelegateImpl : public JniDelegate {
   }
 
  private:
-  // The corresponding Java TouchToFillCreditCardViewBridge.
+  // The corresponding Java NoPasskeysBottomSheetBridge.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  // The owning native NoPasskeysBottomSheetBridge.
+  raw_ptr<NoPasskeysBottomSheetBridge> bridge_;
 };
 
 }  // namespace
@@ -47,10 +51,15 @@ NoPasskeysBottomSheetBridge::JniDelegate::JniDelegate() = default;
 NoPasskeysBottomSheetBridge::JniDelegate::~JniDelegate() = default;
 
 NoPasskeysBottomSheetBridge::NoPasskeysBottomSheetBridge()
-    : jni_delegate_(std::make_unique<JniDelegateImpl>()) {}
+    : jni_delegate_(std::make_unique<JniDelegateImpl>(this)) {}
 
 NoPasskeysBottomSheetBridge::NoPasskeysBottomSheetBridge(
     base::PassKey<class NoPasskeysBottomSheetBridgeTest>,
+    std::unique_ptr<JniDelegate> jni_delegate)
+    : jni_delegate_(std::move(jni_delegate)) {}
+
+NoPasskeysBottomSheetBridge::NoPasskeysBottomSheetBridge(
+    base::PassKey<class TouchToFillControllerWebAuthnTest>,
     std::unique_ptr<JniDelegate> jni_delegate)
     : jni_delegate_(std::move(jni_delegate)) {}
 

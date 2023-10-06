@@ -7,18 +7,23 @@
 #include <memory>
 #include <string>
 
+#include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
+#include "chrome/browser/touch_to_fill/no_passkeys/android/no_passkeys_bottom_sheet_bridge.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/content/browser/mock_keyboard_replacing_surface_visibility_controller.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
+#include "device/fido/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/android/window_android.h"
 #include "url/gurl.h"
 
 namespace {
@@ -76,6 +81,15 @@ struct MockTouchToFillView : public TouchToFillView {
   MOCK_METHOD(void, OnDismiss, ());
 };
 
+struct MockJniDelegate : public NoPasskeysBottomSheetBridge::JniDelegate {
+  ~MockJniDelegate() override = default;
+  MOCK_METHOD(void, Create, (ui::WindowAndroid*), (override));
+  MOCK_METHOD(void, Show, (const std::string&), (override));
+  MOCK_METHOD(void, Dismiss, (), (override));
+};
+
+}  // namespace
+
 class TouchToFillControllerWebAuthnTest
     : public ChromeRenderViewHostTestHarness {
  protected:
@@ -96,8 +110,18 @@ class TouchToFillControllerWebAuthnTest
     mock_view_ = mock_view.get();
     touch_to_fill_controller().set_view(std::move(mock_view));
 
+    auto jni_delegate = std::make_unique<MockJniDelegate>();
+    jni_delegate_ = jni_delegate.get();
+    auto no_passkeys_bridge = std::make_unique<NoPasskeysBottomSheetBridge>(
+        base::PassKey<class TouchToFillControllerWebAuthnTest>(),
+        std::move(jni_delegate));
+    touch_to_fill_controller().set_no_passkeys_bridge(
+        std::move(no_passkeys_bridge));
+
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile(), content::SiteInstance::Create(profile()));
+    window_ = ui::WindowAndroid::CreateForTesting();
+    window_.get()->get()->AddChild(web_contents_->GetNativeView());
     web_contents_tester()->NavigateAndCommit(GURL(kExampleCom));
 
     request_delegate_ = std::make_unique<MockWebAuthnRequestDelegateAndroid>(
@@ -116,6 +140,8 @@ class TouchToFillControllerWebAuthnTest
 
   MockTouchToFillView& view() { return *mock_view_; }
 
+  MockJniDelegate& jni_delegate() { return *jni_delegate_; }
+
   TouchToFillController& touch_to_fill_controller() {
     return *touch_to_fill_controller_;
   }
@@ -132,12 +158,14 @@ class TouchToFillControllerWebAuthnTest
 
  private:
   std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
   std::unique_ptr<MockWebAuthnRequestDelegateAndroid> request_delegate_;
   std::unique_ptr<
       password_manager::MockKeyboardReplacingSurfaceVisibilityController>
       visibility_controller_;
   std::unique_ptr<TouchToFillController> touch_to_fill_controller_;
   raw_ptr<MockTouchToFillView> mock_view_ = nullptr;
+  raw_ptr<MockJniDelegate> jni_delegate_ = nullptr;
 };
 
 TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectCredential) {
@@ -209,4 +237,37 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectHybrid) {
   touch_to_fill_controller().OnHybridSignInSelected();
 }
 
-}  // namespace
+TEST_F(TouchToFillControllerWebAuthnTest,
+       ShowNoPasskeysSheetIfGpmNotInCredMan) {
+  webauthn::WebAuthnCredManDelegate::override_android_version_for_testing(true);
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams feature_params;
+  feature_params[device::kWebAuthnAndroidGpmInCredMan.name] = "false";
+  feature_list.InitAndEnableFeatureWithParameters(
+      device::kWebAuthnAndroidCredMan, feature_params);
+
+  EXPECT_CALL(view(), Show).Times(0);
+  EXPECT_CALL(jni_delegate(), Show).Times(1);
+  touch_to_fill_controller().Show(
+      {}, {},
+      MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false),
+      /*cred_man_delegate=*/nullptr,
+      /*frame_driver=*/nullptr);
+}
+
+TEST_F(TouchToFillControllerWebAuthnTest, ShowNothingIfGpmInCredMan) {
+  webauthn::WebAuthnCredManDelegate::override_android_version_for_testing(true);
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams feature_params;
+  feature_params[device::kWebAuthnAndroidGpmInCredMan.name] = "true";
+  feature_list.InitAndEnableFeatureWithParameters(
+      device::kWebAuthnAndroidCredMan, feature_params);
+
+  EXPECT_CALL(view(), Show).Times(0);
+  EXPECT_CALL(jni_delegate(), Show).Times(0);
+  touch_to_fill_controller().Show(
+      {}, {},
+      MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false),
+      /*cred_man_delegate=*/nullptr,
+      /*frame_driver=*/nullptr);
+}

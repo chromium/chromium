@@ -65,6 +65,10 @@ class TouchToFillControllerDelegate {
   // sign-in for passkeys.
   virtual bool ShouldShowHybridOption() = 0;
 
+  // Indicates if the delegate requires displaying a no passkeys bottom sheet
+  // when the touch to fill component does not have any credentials to display.
+  virtual bool ShouldShowNoPasskeysSheetIfRequired() = 0;
+
   // The web page view containing the focused field.
   virtual gfx::NativeView GetNativeView() = 0;
 };

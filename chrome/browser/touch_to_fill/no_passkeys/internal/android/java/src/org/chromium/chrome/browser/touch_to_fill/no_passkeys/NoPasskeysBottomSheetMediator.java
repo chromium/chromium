@@ -83,8 +83,8 @@ class NoPasskeysBottomSheetMediator implements NoPasskeysBottomSheetContent.Dele
         if (mOnDismissed == null) {
             return; // Dismissal already happened.
         }
-        mBottomSheetController.get().hideContent(mBottomSheetContent, true);
         mOnDismissed.run();
         mOnDismissed = null; // Don't call the callback repeatedly!
+        mBottomSheetController.get().hideContent(mBottomSheetContent, true);
     }
 }
