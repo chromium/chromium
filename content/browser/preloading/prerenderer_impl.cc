@@ -51,11 +51,14 @@ PrerendererImpl::PrerendererImpl(RenderFrameHost& render_frame_host)
   if (registry_) {
     observation_.Observe(registry_.get());
   }
+  ResetReceivedPrerendersCountForMetrics();
 }
 
 PrerendererImpl::~PrerendererImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CancelStartedPrerenders();
+  RecordReceivedPrerendersCountToMetrics();
+  ResetReceivedPrerendersCountForMetrics();
 }
 
 void PrerendererImpl::PrimaryPageChanged(Page& page) {
@@ -69,6 +72,8 @@ void PrerendererImpl::PrimaryPageChanged(Page& page) {
   // new prerender without hitting the max number of running prerenders.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CancelStartedPrerenders();
+  RecordReceivedPrerendersCountToMetrics();
+  ResetReceivedPrerendersCountForMetrics();
 }
 
 // TODO(isaboori) Part of the logic in |ProcessCandidatesForPrerender| method is
@@ -215,6 +220,8 @@ bool PrerendererImpl::MaybePrerender(
 
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       &rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
+  IncrementReceivedPrerendersCountForMetrics(
+      GetTriggerType(candidate->injection_world), candidate->eagerness);
 
   // TODO(crbug.com/1176054): Remove it after supporting cross-site
   // prerender.
@@ -371,48 +378,48 @@ void PrerendererImpl::CancelStartedPrerenders() {
         PrerenderCancellationReason(PrerenderFinalStatus::kTriggerDestroyed));
   }
 
-  RecordReceivedPrerendersCountToMetrics();
-
   started_prerenders_.clear();
 }
 
-void PrerendererImpl::RecordReceivedPrerendersCountToMetrics() {
-  // Records the number of received speculation rules prerender triggers via
-  // started_prerenders_.
-  // This is expected to count up eventually started triggers that developers
-  // actually try to use in one page (Note that started_prerenders_ releases the
-  // prerenders whose rule set is eliminated on current implementation).
-
+void PrerendererImpl::ResetReceivedPrerendersCountForMetrics() {
   for (auto trigger_type :
        {PrerenderTriggerType::kSpeculationRule,
         PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld}) {
-    int conservative = 0, moderate = 0, eager = 0;
-    for (const auto& started_prerender_it : started_prerenders_) {
-      if (GetTriggerType(started_prerender_it.injection_world) ==
-          trigger_type) {
-        switch (started_prerender_it.eagerness) {
-          case blink::mojom::SpeculationEagerness::kConservative:
-            conservative++;
-            break;
-          case blink::mojom::SpeculationEagerness::kModerate:
-            moderate++;
-            break;
-          case blink::mojom::SpeculationEagerness::kEager:
-            eager++;
-            break;
-        }
-      }
-    }
+    received_prerenders_by_eagerness_[trigger_type].fill({});
+  }
+}
 
-    // This should be zero
-    //  1) when there are no started prerenders eventually. Also noted that if
+void PrerendererImpl::IncrementReceivedPrerendersCountForMetrics(
+    PrerenderTriggerType trigger_type,
+    blink::mojom::SpeculationEagerness eagerness) {
+  received_prerenders_by_eagerness_[trigger_type]
+                                   [static_cast<size_t>(eagerness)]++;
+}
+
+void PrerendererImpl::RecordReceivedPrerendersCountToMetrics() {
+  for (auto trigger_type :
+       {PrerenderTriggerType::kSpeculationRule,
+        PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld}) {
+    int conservative =
+        received_prerenders_by_eagerness_[trigger_type][static_cast<size_t>(
+            blink::mojom::SpeculationEagerness::kConservative)];
+    int moderate =
+        received_prerenders_by_eagerness_[trigger_type][static_cast<size_t>(
+            blink::mojom::SpeculationEagerness::kModerate)];
+    int eager =
+        received_prerenders_by_eagerness_[trigger_type][static_cast<size_t>(
+            blink::mojom::SpeculationEagerness::kEager)];
+
+    // This will record zero when
+    //  1) there are no started prerenders eventually. Also noted that if
     //     there is no rule set, PreloadingDecider won't be created (which means
     //     PrerenderImpl also won't be created), so it cannot be reached this
     //     code path at the first place.
-    //  2) after CancelStartedPrerenders is called and started_prerenders_ are
-    //     cleared once (as long as PreloadingDecider (which has the same
+    //  2) when the corresponding RFH lives but is inactive (such as the case in
+    //     BFCache) after once PrimaryPageChanged was called and the recorded
+    //     number was reset (As long as PreloadingDecider (which has the same
     //     lifetime with a document) that owns this (PrerenderImpl) lives, this
-    //     function should be called via PrimaryPageChanged).
+    //     function will be called per PrimaryPageChanged).
     //
     // Avoids recording these cases uniformly.
     if (conservative + moderate + eager == 0) {

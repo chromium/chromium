@@ -430,9 +430,9 @@ void RecordReceivedPrerendersPerPrimaryPageChangedCount(
     PrerenderTriggerType trigger_type,
     const std::string& eagerness_category) {
   base::UmaHistogramCounts100(
-      GenerateHistogramName(
-          "Prerender.Experimental.ReceivedPrerendersPerPrimaryPageChangedCount",
-          trigger_type, /*embedder_suffix=*/"") +
+      GenerateHistogramName("Prerender.Experimental."
+                            "ReceivedPrerendersPerPrimaryPageChangedCount2",
+                            trigger_type, /*embedder_suffix=*/"") +
           "." + eagerness_category,
       number);
 }

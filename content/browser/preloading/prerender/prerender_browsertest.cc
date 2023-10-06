@@ -8112,13 +8112,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kConservative) {
 // test.
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
 // Tests the metrics
-// Prerender.Experimental.ReceivedPrerendersPerPrimaryPageChangedCount correctly
-// records the number of prerenders by each category per primary page changed.
+// Prerender.Experimental.ReceivedPrerendersPerPrimaryPageChangedCount2
+// correctly records the number of prerenders by each category per primary page
+// changed.
 IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest,
-                       EligibleTriggersPerPrimaryPageChangedCount) {
+                       ReceivedPrerendersPerPrimaryPageChangedCount) {
   auto GetAllSamples = [&](const std::string& eagerness_category) {
     return histogram_tester().GetAllSamples(
-        "Prerender.Experimental.ReceivedPrerendersPerPrimaryPageChangedCount."
+        "Prerender.Experimental.ReceivedPrerendersPerPrimaryPageChangedCount2."
         "SpeculationRule." +
         eagerness_category);
   };

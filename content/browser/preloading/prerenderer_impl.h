@@ -46,15 +46,29 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
   void OnRegistryDestroyed() override;
 
  private:
+  struct PrerenderInfo;
+
   void CancelStartedPrerenders();
 
-  // This is only used for metrics that count those prerenders per
+  // Used only for metric that counts received prerenders per
   // primary page changed.
   void RecordReceivedPrerendersCountToMetrics();
+  void ResetReceivedPrerendersCountForMetrics();
+  void IncrementReceivedPrerendersCountForMetrics(
+      PrerenderTriggerType trigger_type,
+      blink::mojom::SpeculationEagerness eagerness);
 
-  // This is kept sorted by URL.
-  struct PrerenderInfo;
+  // Kept sorted by URL.
   std::vector<PrerenderInfo> started_prerenders_;
+
+  // Used only for metric that counts received prerenders per
+  // primary page changed.
+  base::flat_map<PrerenderTriggerType,
+                 std::array<int,
+                            static_cast<size_t>(
+                                blink::mojom::SpeculationEagerness::kMaxValue) +
+                                1>>
+      received_prerenders_by_eagerness_;
 
   // Used to notify cancellation from PrerendererImpl to PreloadingDecider.
   // This is invoked in OnCancel, which is called when receiving a cancellation
