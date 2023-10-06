@@ -372,7 +372,8 @@ public class HistoricalTabSaverImplTest {
         TabRestoreServiceUtils.createTabEntry(mTabModel, tab0);
         assertEntriesAre(empty);
 
-        final Tab tab1 = sActivityTestRule.loadUrlInNewTab("chrome://flags/", /*incognito=*/false);
+        final Tab tab1 =
+                sActivityTestRule.loadUrlInNewTab("chrome://version/", /*incognito=*/false);
         TabRestoreServiceUtils.createTabEntry(mTabModel, tab1);
         assertEntriesAre(empty);
 
