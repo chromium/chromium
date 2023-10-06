@@ -18,6 +18,7 @@ AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityLanguageDetection[];
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityLanguageDetectionDynamic[];
+AX_BASE_EXPORT extern const char kEnableExperimentalAccessibilityManifestV3[];
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilitySwitchAccessText[];
 

@@ -61227,6 +61227,8 @@ from previous Chrome versions.
   <int value="-1906427432" label="WallpaperFastRefresh:disabled"/>
   <int value="-1905470520" label="FirmwareUpdaterApp:enabled"/>
   <int value="-1905351186" label="FeedAblation:disabled"/>
+  <int value="-1903909635"
+      label="enable-experimental-accessibility-manifest-v3:enabled"/>
   <int value="-1903365454" label="SyncPseudoUSSPreferences:disabled"/>
   <int value="-1903166011" label="IsolatedWebAppDevMode:disabled"/>
   <int value="-1902142840" label="CalendarModelDebugMode:enabled"/>
@@ -65554,6 +65556,8 @@ from previous Chrome versions.
   <int value="224476390" label="PageInfoAboutThisSiteNonMsbb:enabled"/>
   <int value="225610933" label="SystemLatinPhysicalTyping:enabled"/>
   <int value="226590039" label="OverviewButton:disabled"/>
+  <int value="226633333"
+      label="enable-experimental-accessibility-manifest-v3:disabled"/>
   <int value="228107154"
       label="OmniboxUpdatedConnectionSecurityIndicators:enabled"/>
   <int value="228845546" label="ShimlessRMAOsUpdate:enabled"/>
@@ -66710,6 +66714,7 @@ from previous Chrome versions.
   <int value="785795587" label="AndroidAppIntegrationSafeSearch:enabled"/>
   <int value="786070201"
       label="EcheSWAProcessAndroidAccessibilityTree:disabled"/>
+  <int value="786877059" label="enable-experimental-accessibility-manifest-v3"/>
   <int value="787080596" label="DynamicTcmallocTuning:enabled"/>
   <int value="787385958" label="RegionalLocalesAsDisplayUI:enabled"/>
   <int value="788130042" label="PrivacySandboxSettings2:enabled"/>

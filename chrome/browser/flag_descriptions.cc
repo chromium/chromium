@@ -6315,6 +6315,12 @@ const char kExperimentalAccessibilityGoogleTtsHighQualityVoicesName[] =
 const char kExperimentalAccessibilityGoogleTtsHighQualityVoicesDescription[] =
     "Enables downloading Google TTS High Quality Voices.";
 
+const char kExperimentalAccessibilityManifestV3Name[] =
+    "Changes accessibility features from extension manifest v2 to v3.";
+const char kExperimentalAccessibilityManifestV3Description[] =
+    "Experimental migration of accessibility features from extension manifest "
+    "v2 to v3. Likely to break accessibility access while experimental.";
+
 const char kExperimentalAccessibilitySwitchAccessTextName[] =
     "Enable enhanced Switch Access text input.";
 const char kExperimentalAccessibilitySwitchAccessTextDescription[] =

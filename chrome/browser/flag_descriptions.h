@@ -3637,6 +3637,9 @@ extern const char kExperimentalAccessibilityGoogleTtsHighQualityVoicesName[];
 extern const char
     kExperimentalAccessibilityGoogleTtsHighQualityVoicesDescription[];
 
+extern const char kExperimentalAccessibilityManifestV3Name[];
+extern const char kExperimentalAccessibilityManifestV3Description[];
+
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 
