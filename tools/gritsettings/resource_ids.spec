@@ -671,6 +671,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [4980],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/on_device_internals/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [4990],
+  },
   # END chrome/ WebUI resources section
 
   # START chrome/ miscellaneous section.

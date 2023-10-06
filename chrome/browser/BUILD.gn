@@ -2528,6 +2528,7 @@ static_library("browser") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//services/network/public/proto",
+    "//services/on_device_model/public/cpp",
     "//services/preferences/public/cpp",
     "//services/preferences/public/cpp/tracked",
     "//services/preferences/public/mojom",

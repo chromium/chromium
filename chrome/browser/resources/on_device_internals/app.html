@@ -1,0 +1,101 @@
+<style include="cr-shared-style cr-hidden-style">
+  :host {
+    display: block;
+    margin: auto;
+    max-width: 800px;
+    padding: 20px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      color: var(--google-grey-200);
+    }
+  }
+
+  .throbber {
+    background: url(chrome://resources/images/throbber_small.svg) no-repeat;
+    display: block;
+    height: 20px;
+    margin: auto;
+    width: 20px;
+  }
+
+  #textInput {
+    --cr-input-error-display: none;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  .model-text {
+    margin: 0 5px 20px 5px;
+  }
+
+  .session {
+    margin-top: 10px;
+  }
+
+  .text,
+  .response {
+    background-color: var(--google-grey-300);
+    border-radius: 15px;
+    color: var(--google-grey-800);
+    margin: 10px 5px 5px 5px;
+    padding: 15px 20px;
+    white-space: pre-wrap;
+  }
+
+  .response {
+    background-color: var(--google-blue-200);
+    margin-bottom: 30px;
+    margin-inline-start: 50px;
+  }
+
+  .text {
+    margin-inline-end: 50px;
+  }
+
+  #modelInput {
+    max-width: 400px;
+  }
+</style>
+<h1>On-Device Internals</h1>
+<cr-input id="modelInput" label="Model directory" placeholder="/tmp/model"
+    disabled="[[isLoading_(loadModelStart_)]]"
+    on-change="onModelSelected_" error-message="[[error_]]"
+    invalid="[[error_.length]]" autofocus>
+  <cr-button slot="suffix" disabled="[[isLoading_(loadModelStart_)]]"
+      on-click="onLoadClick_">
+    Load
+  </cr-button>
+</cr-input>
+<div class="model-text">
+  [[getModelText_(modelPath_, loadModelDuration_)]]
+  <div class="throbber" hidden$="[[!isLoading_(loadModelStart_)]]"></div>
+</div>
+
+<cr-input id="textInput" disabled="[[!canExecute_(currentResponse_, model_)]]"
+    label="Input" placeholder="What is 2+2?" on-change="onExecute_"
+    value="{{text_}}">
+  <cr-button slot="suffix"
+      disabled="[[!canExecute_(currentResponse_, model_)]]"
+      on-click="onExecuteClick_">
+    Execute
+  </cr-button>
+</cr-input>
+
+<div class="session" hidden="[[!currentResponse_]]">
+  <div class="text">[[currentResponse_.text]]</div>
+  <div hidden$="[[!currentResponse_.response.length]]"
+      class="response">[[currentResponse_.response]]</div>
+  <div class="throbber"
+      hidden$="[[currentResponse_.response.length]]"></div>
+</div>
+<template is="dom-repeat" items="[[responses_]]">
+  <div class="session">
+    <div class="text">[[item.text]]</div>
+    <div class="response">[[item.response]]</div>
+  </div>
+</template>

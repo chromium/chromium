@@ -154,6 +154,9 @@ const char kChromeUINewTabURL[] = "chrome://newtab/";
 const char kChromeUIProfileInternalsHost[] = "profile-internals";
 const char kChromeUIOmniboxHost[] = "omnibox";
 const char kChromeUIOmniboxURL[] = "chrome://omnibox/";
+#if !BUILDFLAG(IS_ANDROID)
+const char kChromeUIOnDeviceInternalsHost[] = "on-device-internals";
+#endif
 const char kChromeUIPasswordManagerInternalsHost[] =
     "password-manager-internals";
 const char kChromeUIPasswordManagerURL[] = "chrome://password-manager";
@@ -705,6 +708,9 @@ const char* const kChromeHostURLs[] = {
     kChromeUINetInternalsHost,
     kChromeUINewTabHost,
     kChromeUIOmniboxHost,
+#if !BUILDFLAG(IS_ANDROID)
+    kChromeUIOnDeviceInternalsHost,
+#endif
     optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost,
     kChromeUIPasswordManagerInternalsHost,
     password_manager::kChromeUIPasswordManagerHost,

@@ -150,6 +150,9 @@ extern const char kChromeUIOmniboxHost[];
 extern const char kChromeUIOmniboxURL[];
 extern const char kChromeUIOmniboxPopupHost[];
 extern const char kChromeUIOmniboxPopupURL[];
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kChromeUIOnDeviceInternalsHost[];
+#endif
 extern const char kChromeUISuggestInternalsHost[];
 extern const char kChromeUISuggestInternalsURL[];
 #if BUILDFLAG(IS_CHROMEOS)
