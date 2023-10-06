@@ -1479,6 +1479,8 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
 void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   video_conference_manager_client_.reset();
 
+  arc_container_app_killer_.reset();
+
   // Do this early to keep logging from taking time during shutdown.
   if (memory_pressure_detail_ != nullptr) {
     memory_pressure_detail_->Stop();
