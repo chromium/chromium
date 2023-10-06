@@ -2643,7 +2643,7 @@
     'codesearch_gen_chromium_cronet_bot_reclient': [
       # Set is_cronet_build to true in order to build cronet.
       'codesearch_reclient', 'android_without_codecs', 'static', 'is_cronet_build',
-      'cronet_android',
+      'cronet_android', 'arm_no_neon',
     ],
 
     'codesearch_gen_chromium_fuchsia_bot_reclient': [
