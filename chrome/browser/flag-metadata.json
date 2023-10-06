@@ -4654,7 +4654,7 @@
   {
     "name": "forced-colors",
     "owners": [ "almaher@microsoft.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 123
   },
   {
     "name": "forgot-password-form-support",
