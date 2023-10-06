@@ -595,7 +595,7 @@ as required builders.
 * [android-arm64-siso-rel](https://ci.chromium.org/p/chromium/builders/try/android-arm64-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-arm64-siso-rel""))
   * Experiment percentage: 10.0
 
-* [android-nougat-x86-dual-coverage-exp-rel](https://ci.chromium.org/p/chromium/builders/try/android-nougat-x86-dual-coverage-exp-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-nougat-x86-dual-coverage-exp-rel""))
+* [android-x86-dual-coverage-exp-rel](https://ci.chromium.org/p/chromium/builders/try/android-x86-dual-coverage-exp-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-x86-dual-coverage-exp-rel""))
   * Experiment percentage: 3.0
 
 * [chromeos-amd64-generic-siso-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-siso-rel""))

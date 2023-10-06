@@ -46,6 +46,10 @@
           "group": "tryserver.chromium.android"
         },
         {
+          "builder": "android-x86-dual-coverage-exp-rel",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "android-x86-rel",
           "group": "tryserver.chromium.android"
         }

@@ -42,10 +42,6 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "android-nougat-x86-dual-coverage-exp-rel",
-          "group": "tryserver.chromium.android"
-        },
-        {
           "builder": "android-nougat-x86-rel",
           "group": "tryserver.chromium.android"
         }

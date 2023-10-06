@@ -445,13 +445,14 @@ try_.builder(
 
 # TODO(crbug.com/1416662): Remove the builder after the experiment.
 try_.builder(
-    name = "android-nougat-x86-dual-coverage-exp-rel",
+    name = "android-x86-dual-coverage-exp-rel",
     description_html = """\
-This builder shadows android-nougat-x86-rel builder to experiment both jacoco and clang coverage enabled builds.
+This builder is similar to "try/android-x86-rel", but experiment both jacoco and clang coverage enabled builds.
 """,
     mirrors = [
-        "ci/android-nougat-x86-rel",
+        "ci/android-oreo-x86-rel",
     ],
+    contact_team_email = "clank-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
     experiments = {
         "chromium.add_one_test_shard": 10,
