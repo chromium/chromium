@@ -135,6 +135,19 @@ source_set("session_saving") {
   ]
 }
 
+source_set("session_io") {
+  visibility = [ ":unit_tests" ]
+  sources = [
+    "session_io_request.h",
+    "session_io_request.mm",
+  ]
+  deps = [
+    ":session_internal_util",
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
 source_set("session_restoration_service") {
   sources = [ "session_restoration_service.h" ]
   deps = [ "//components/keyed_service/core" ]
@@ -258,6 +271,7 @@ source_set("unit_tests") {
   sources = [
     "proto_util_unittest.cc",
     "session_internal_util_unittest.mm",
+    "session_io_request_unittest.mm",
     "session_migration_unittest.mm",
     "session_restoration_browser_agent_unittest.mm",
     "session_restoration_observer_helper_unittest.mm",
@@ -279,6 +293,7 @@ source_set("unit_tests") {
     ":serialisation",
     ":session_constants",
     ":session_internal_util",
+    ":session_io",
     ":session_migration",
     ":session_restoration_service_factory",
     ":session_restoration_service_impl",
