@@ -84,6 +84,13 @@ void TestingApplicationContext::SetVariationsService(
   variations_service_ = variations_service;
 }
 
+void TestingApplicationContext::SetSystemIdentityManager(
+    std::unique_ptr<SystemIdentityManager> system_identity_manager) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(!system_identity_manager_);
+  system_identity_manager_ = std::move(system_identity_manager);
+}
+
 void TestingApplicationContext::OnAppEnterForeground() {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
