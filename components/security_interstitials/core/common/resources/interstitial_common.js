@@ -104,7 +104,9 @@ function sendCommand(cmd) {
     return;
   }
   // <if expr="not is_ios">
-  window.domAutomationController.send(cmd);
+  if (window.domAutomationController) {
+    window.domAutomationController.send(cmd);
+  }
   // </if>
   // <if expr="is_ios">
   // Send commands for iOS committed interstitials.
