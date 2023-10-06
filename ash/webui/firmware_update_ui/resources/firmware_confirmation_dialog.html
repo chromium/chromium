@@ -8,9 +8,9 @@
   }
 </style>
 <template is="dom-if" if="[[open]]" restamp>
-  <cr-dialog id="confirmationDialog" on-close="closeDialog_" show-on-attach>
+  <cr-dialog id="confirmationDialog" on-close="closeDialog" show-on-attach>
     <div slot="title" id="updateDialogTitle" class="firmware-dialog-title-font">
-      [[computeTitle_(update.*)]]
+      [[computeTitle(update.*)]]
     </div>
     <div slot="body" class="firmware-dialog-body-font">
       <div id="updateDialogBody">
@@ -22,12 +22,12 @@
     </div>
     <div slot="button-container">
       <cr-button class="cancel-button"
-          on-click="closeDialog_"
+          on-click="closeDialog"
           id="cancelButton">
         [[i18n('cancelButton')]]
       </cr-button>
       <cr-button class="action-button"
-          on-click="openUpdateDialog_"
+          on-click="openUpdateDialog"
           id="nextButton">
         [[i18n('nextButton')]]
       </cr-button>

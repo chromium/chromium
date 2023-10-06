@@ -45,3 +45,18 @@ export let FakeUpdateProviderInterface;
  * }}
  */
 export let DialogContent;
+
+/**
+ * @typedef {{
+ *    update: FirmwareUpdate;
+ *    inflight: boolean;
+ * }}
+ */
+export let OpenUpdateDialogEventDetail;
+
+/**
+ * @typedef {{
+ *    update: FirmwareUpdate;
+ * }}
+ */
+export let OpenConfirmationDialogEventDetail;
