@@ -117,14 +117,12 @@ void PageTimingMetricsSender::DidObserveNewFeatureUsage(
 void PageTimingMetricsSender::DidObserveSoftNavigation(
     blink::SoftNavigationMetrics new_metrics) {
   // The start_time is a TimeDelta, and its resolution is in microseconds.
-  // Successive soft navigations could have the same start time, if the inputs
-  // which triggered them started at the same time, but we should not see an
-  // earlier start time for a later soft navigation. Each soft navigation should
-  // also have a larger count and a different navigation id than the previous
-  // one.
+  // Each soft navigations would have an effectively larger start time than the
+  // previous one. Each soft navigation should also have a larger count and a
+  // different navigation id than the previous one.
   CHECK(new_metrics.count > soft_navigation_metrics_->count);
   CHECK(!new_metrics.start_time.is_zero());
-  CHECK(new_metrics.start_time >= soft_navigation_metrics_->start_time);
+  CHECK(new_metrics.start_time > soft_navigation_metrics_->start_time);
   CHECK(new_metrics.navigation_id != soft_navigation_metrics_->navigation_id);
 
   soft_navigation_metrics_->count = new_metrics.count;

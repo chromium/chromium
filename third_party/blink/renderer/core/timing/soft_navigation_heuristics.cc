@@ -84,7 +84,8 @@ void SoftNavigationHeuristics::ResetHeuristic() {
 
 void SoftNavigationHeuristics::UserInitiatedInteraction(
     ScriptState* script_state,
-    bool is_unfocused_keyboard_event) {
+    bool is_unfocused_keyboard_event,
+    bool is_new_interaction) {
   // Set task ID to the current one.
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
@@ -101,24 +102,11 @@ void SoftNavigationHeuristics::UserInitiatedInteraction(
     if (task) {
       potential_soft_navigation_task_ids_.insert(task->Id().value());
     }
-    CHECK(script_state);
-    ScriptState::Scope scope(script_state);
-    if (LocalFrame* frame =
-            ToLocalFrameIfNotDetached(script_state->GetContext())) {
-      LocalDOMWindow* window = frame->DomWindow();
-      CHECK(window);
-      DOMWindowPerformance& performance = DOMWindowPerformance::From(*window);
-      uint64_t current_interaction_count =
-          performance.GetCurrentInteractionCount();
-      if (current_interaction_count != last_interaction_count_ ||
-          user_interaction_timestamp_.is_null()) {
-        last_interaction_count_ = current_interaction_count;
-        user_interaction_timestamp_ = base::TimeTicks::Now();
-      }
-    }
-  } else {
+  }
+  if (is_new_interaction) {
     user_interaction_timestamp_ = base::TimeTicks::Now();
   }
+
   tracker->RegisterObserver(this);
   SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
   TRACE_EVENT_INSTANT("scheduler",

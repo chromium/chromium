@@ -780,7 +780,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     // as potential soft navigation tasks.
     soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
         soft_navigation_heuristics, script_state,
-        /*is_unfocused_keydown=*/false);
+        /*is_unfocused_keydown=*/false, /*is_new_interaction=*/true);
 
     soft_navigation_heuristics->SameDocumentNavigationStarted(script_state);
   }

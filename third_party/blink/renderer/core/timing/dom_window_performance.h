@@ -27,8 +27,6 @@ class CORE_EXPORT DOMWindowPerformance final
   DOMWindowPerformance(const DOMWindowPerformance&) = delete;
   DOMWindowPerformance& operator=(const DOMWindowPerformance&) = delete;
 
-  uint64_t GetCurrentInteractionCount();
-
   void Trace(Visitor*) const override;
 
  private:

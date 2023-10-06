@@ -33,7 +33,9 @@ class SoftNavigationHeuristics
   void Trace(Visitor*) const override;
 
   // The class's API.
-  void UserInitiatedInteraction(ScriptState*, bool is_unfocused_keyboard_event);
+  void UserInitiatedInteraction(ScriptState*,
+                                bool is_unfocused_keyboard_event,
+                                bool is_new_interaction);
   void ClickEventEnded(ScriptState*);
   void SameDocumentNavigationStarted(ScriptState*);
   void SameDocumentNavigationCommitted(ScriptState*, const String& url);
@@ -71,7 +73,6 @@ class SoftNavigationHeuristics
   // (e.g. a keyboard key press resulting in keydown, keypress, and keyup), this
   // timestamp would be the time before processing started on the first event.
   base::TimeTicks user_interaction_timestamp_;
-  uint64_t last_interaction_count_ = 0;
   uint32_t soft_navigation_count_ = 0;
 };
 
@@ -82,10 +83,11 @@ class SoftNavigationEventScope {
  public:
   SoftNavigationEventScope(SoftNavigationHeuristics* heuristics,
                            ScriptState* script_state,
-                           bool is_unfocused_keyboard_event)
+                           bool is_unfocused_keyboard_event,
+                           bool is_new_interaction)
       : heuristics_(heuristics), script_state_(script_state) {
-    heuristics->UserInitiatedInteraction(script_state,
-                                         is_unfocused_keyboard_event);
+    heuristics->UserInitiatedInteraction(
+        script_state, is_unfocused_keyboard_event, is_new_interaction);
   }
   ~SoftNavigationEventScope() { heuristics_->ClickEventEnded(script_state_); }
 
