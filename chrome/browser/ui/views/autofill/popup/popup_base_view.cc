@@ -17,6 +17,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/views/autofill/popup/custom_cursor_suppressor.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -246,8 +247,14 @@ bool PopupBaseView::DoShow() {
   }
 
   if (content::WebContents* web_contents = GetWebContents()) {
-    custom_cursor_blocker_ = web_contents->CreateDisallowCustomCursorScope(
-        /*max_dimension_dips=*/kMaximumAllowedCustomCursorDimension + 1);
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillPopupMultiWindowCursorSuppression)) {
+      custom_cursor_suppressor_.Start(
+          /*max_dimension_dips=*/kMaximumAllowedCustomCursorDimension + 1);
+    } else {
+      custom_cursor_blocker_ = web_contents->CreateDisallowCustomCursorScope(
+          /*max_dimension_dips=*/kMaximumAllowedCustomCursorDimension + 1);
+    }
   } else {
     // `delegate_` is already gone and `WebContents` is destroying itself.
     return false;

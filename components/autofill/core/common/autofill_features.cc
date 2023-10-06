@@ -521,6 +521,13 @@ BASE_FEATURE(kAutofillPopupDoesNotOverlapWithContextMenu,
              "AutofillPopupDoesNotOverlapWithContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If the feature is enabled, custom cursors exceeding the (24 dips) dimension
+// limit are disallowed for all active tabs in all active windows.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kAutofillPopupMultiWindowCursorSuppression,
+             "AutofillPopupMultiWindowCursorSuppression",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the threshold for accepting Autofill popup suggestions
 // should take into account latency information of the user event.
 BASE_FEATURE(kAutofillPopupUseLatencyInformationForAcceptThreshold,
