@@ -420,6 +420,7 @@ public class CrashesListFragment extends DevUiBaseFragment {
 
     @VisibleForTesting
     public static String uploadStateString(UploadState uploadState) {
+        if (uploadState == null) return null;
         switch (uploadState) {
             case UPLOADED:
                 return "Uploaded";
