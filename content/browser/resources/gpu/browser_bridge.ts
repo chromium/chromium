@@ -43,7 +43,6 @@ interface GpuInfo {
   compositorInfo: any[];
   dawnInfo?: string[];
   devicePerfInfo: any[];
-  devices: any[];
   diagnostics?: any[];
   displayInfo: any[];
   featureStatus: FeatureStatus;

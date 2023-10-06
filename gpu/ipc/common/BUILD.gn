@@ -444,7 +444,7 @@ mojom("interfaces") {
         },
         {
           mojom = "gpu.mojom.GpuDevice"
-          cpp = "::gpu::GPUDevice"
+          cpp = "::gpu::GPUInfo::GPUDevice"
         },
         {
           mojom = "gpu.mojom.GpuInfo"

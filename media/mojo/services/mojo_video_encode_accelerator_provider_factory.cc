@@ -36,12 +36,12 @@ void MojoVideoEncodeAcceleratorProviderFactory::
         mojo::PendingReceiver<mojom::VideoEncodeAcceleratorProvider> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(b/248540499): pass useful gpu::GpuPreferences,
-  // gpu::GpuDriverBugWorkarounds, and gpu::GPUDevice instances.
+  // gpu::GpuDriverBugWorkarounds, and gpu::GPUInfo::GPUDevice instances.
   std::unique_ptr<mojom::VideoEncodeAcceleratorProvider> provider =
       std::make_unique<MojoVideoEncodeAcceleratorProvider>(
           base::BindRepeating(&GpuVideoEncodeAcceleratorFactory::CreateVEA),
           gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds(),
-          gpu::GPUDevice());
+          gpu::GPUInfo::GPUDevice());
 
   video_encoder_providers_.Add(std::move(provider), std::move(receiver));
 }

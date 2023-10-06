@@ -415,12 +415,11 @@ void GpuHostImpl::TerminateGpuProcess(const std::string& message) {
 std::string GpuHostImpl::GetShaderPrefixKey() {
   if (shader_prefix_key_.empty()) {
     const gpu::GPUInfo& info = delegate_->GetGPUInfo();
-    const gpu::GPUDevice& active_gpu = info.active_gpu();
+    const gpu::GPUInfo::GPUDevice& active_gpu = info.active_gpu();
 
-    shader_prefix_key_ = params_.product + "-" + active_gpu.gl_vendor + "-" +
-                         active_gpu.gl_renderer + "-" +
-                         active_gpu.driver_version + "-" +
-                         active_gpu.driver_vendor + "-" +
+    shader_prefix_key_ = params_.product + "-" + info.gl_vendor + "-" +
+                         info.gl_renderer + "-" + active_gpu.driver_version +
+                         "-" + active_gpu.driver_vendor + "-" +
                          base::SysInfo::ProcessCPUArchitecture();
 
 #if BUILDFLAG(IS_ANDROID)

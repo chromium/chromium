@@ -613,14 +613,14 @@ void RendererBlinkPlatformImpl::Collect3DContextInformation(
     blink::Platform::GraphicsInfo* gl_info,
     const gpu::GPUInfo& gpu_info) const {
   DCHECK(gl_info);
-  const gpu::GPUDevice& active_gpu = gpu_info.active_gpu();
+  const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
   gl_info->vendor_id = active_gpu.vendor_id;
   gl_info->device_id = active_gpu.device_id;
-  gl_info->renderer_info = WebString::FromUTF8(active_gpu.gl_renderer);
-  gl_info->vendor_info = WebString::FromUTF8(active_gpu.gl_vendor);
+  gl_info->renderer_info = WebString::FromUTF8(gpu_info.gl_renderer);
+  gl_info->vendor_info = WebString::FromUTF8(gpu_info.gl_vendor);
   gl_info->driver_version = WebString::FromUTF8(active_gpu.driver_version);
   gl_info->reset_notification_strategy =
-      active_gpu.gl_reset_notification_strategy;
+      gpu_info.gl_reset_notification_strategy;
   gl_info->sandboxed = gpu_info.sandboxed;
   gl_info->amd_switchable = gpu_info.amd_switchable;
   gl_info->optimus = gpu_info.optimus;

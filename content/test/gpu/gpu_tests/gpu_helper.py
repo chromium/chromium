@@ -140,8 +140,8 @@ def GetGpuDriverVersion(gpu_info: Optional[tgi.GPUInfo]) -> Optional[str]:
 
 def GetANGLERenderer(gpu_info: Optional[tgi.GPUInfo]) -> str:
   retval = 'angle-disabled'
-  if gpu_info and gpu_info.devices[0]:
-    gl_renderer = gpu_info.devices[0].device_string
+  if gpu_info and gpu_info.aux_attributes:
+    gl_renderer = gpu_info.aux_attributes.get('gl_renderer')
     if gl_renderer and 'ANGLE' in gl_renderer:
       if 'Direct3D11' in gl_renderer:
         retval = 'angle-d3d11'

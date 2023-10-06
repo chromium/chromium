@@ -106,7 +106,7 @@ base::Value::List DxDiagNodeToList(const gpu::DxDiagNode& node) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-std::string GPUDeviceToString(const gpu::GPUDevice& gpu) {
+std::string GPUDeviceToString(const gpu::GPUInfo::GPUDevice& gpu) {
   std::string vendor = base::StringPrintf("0x%04x", gpu.vendor_id);
   if (!gpu.vendor_string.empty())
     vendor += " [" + gpu.vendor_string + "]";
@@ -139,6 +139,7 @@ std::string GPUDeviceToString(const gpu::GPUDevice& gpu) {
 base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
                                   const gpu::GpuFeatureInfo& gpu_feature_info,
                                   const gfx::GpuExtraInfo& gpu_extra_info) {
+  const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
   base::Value::List basic_info;
   basic_info.Append(display::BuildGpuInfoEntry(
       "Initialization time",
@@ -150,6 +151,13 @@ base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
       base::Value(gpu_info.passthrough_cmd_decoder)));
   basic_info.Append(
       display::BuildGpuInfoEntry("Sandboxed", base::Value(gpu_info.sandboxed)));
+  basic_info.Append(
+      display::BuildGpuInfoEntry("GPU0", GPUDeviceToString(gpu_info.gpu)));
+  for (size_t i = 0; i < gpu_info.secondary_gpus.size(); ++i) {
+    basic_info.Append(display::BuildGpuInfoEntry(
+        base::StringPrintf("GPU%d", static_cast<int>(i + 1)),
+        GPUDeviceToString(gpu_info.secondary_gpus[i])));
+  }
   basic_info.Append(
       display::BuildGpuInfoEntry("Optimus", base::Value(gpu_info.optimus)));
   basic_info.Append(display::BuildGpuInfoEntry(
@@ -203,16 +211,42 @@ base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
       gpu::VulkanVersionToString(gpu_info.vulkan_version)));
 #endif
 
+  basic_info.Append(display::BuildGpuInfoEntry(
+      "GPU CUDA compute capability major version",
+      base::Value(active_gpu.cuda_compute_capability_major)));
+  basic_info.Append(display::BuildGpuInfoEntry("Pixel shader version",
+                                               gpu_info.pixel_shader_version));
+  basic_info.Append(display::BuildGpuInfoEntry("Vertex shader version",
+                                               gpu_info.vertex_shader_version));
+  basic_info.Append(display::BuildGpuInfoEntry("Max. MSAA samples",
+                                               gpu_info.max_msaa_samples));
   basic_info.Append(display::BuildGpuInfoEntry("Machine model name",
                                                gpu_info.machine_model_name));
   basic_info.Append(display::BuildGpuInfoEntry("Machine model version",
                                                gpu_info.machine_model_version));
   basic_info.Append(display::BuildGpuInfoEntry(
       "GL implementation parts", gpu_info.gl_implementation_parts.ToString()));
+  basic_info.Append(
+      display::BuildGpuInfoEntry("Display type", gpu_info.display_type));
+  basic_info.Append(
+      display::BuildGpuInfoEntry("GL_VENDOR", gpu_info.gl_vendor));
+  basic_info.Append(
+      display::BuildGpuInfoEntry("GL_RENDERER", gpu_info.gl_renderer));
+  basic_info.Append(
+      display::BuildGpuInfoEntry("GL_VERSION", gpu_info.gl_version));
+  basic_info.Append(
+      display::BuildGpuInfoEntry("GL_EXTENSIONS", gpu_info.gl_extensions));
   basic_info.Append(display::BuildGpuInfoEntry(
       "Disabled Extensions", gpu_feature_info.disabled_extensions));
   basic_info.Append(display::BuildGpuInfoEntry(
       "Disabled WebGL Extensions", gpu_feature_info.disabled_webgl_extensions));
+  basic_info.Append(display::BuildGpuInfoEntry("Window system binding vendor",
+                                               gpu_info.gl_ws_vendor));
+  basic_info.Append(display::BuildGpuInfoEntry("Window system binding version",
+                                               gpu_info.gl_ws_version));
+  basic_info.Append(display::BuildGpuInfoEntry(
+      "Window system binding extensions", gpu_info.gl_ws_extensions));
+
   {
     base::Value::List gpu_extra_info_values =
         display::Screen::GetScreen()->GetGpuExtraInfo(gpu_extra_info);
@@ -225,6 +259,27 @@ base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
       basic_info.Append(base::Value(std::move(pair)));
     }
   }
+
+  std::string direct_rendering_version;
+  if (gpu_info.direct_rendering_version == "1") {
+    direct_rendering_version = "indirect";
+  } else if (gpu_info.direct_rendering_version == "2") {
+    direct_rendering_version = "direct but version unknown";
+  } else if (base::StartsWith(gpu_info.direct_rendering_version, "2.",
+                              base::CompareCase::INSENSITIVE_ASCII)) {
+    direct_rendering_version = gpu_info.direct_rendering_version;
+    base::ReplaceFirstSubstringAfterOffset(&direct_rendering_version, 0, "2.",
+                                           "DRI");
+  } else {
+    direct_rendering_version = "unknown";
+  }
+  basic_info.Append(display::BuildGpuInfoEntry("Direct rendering version",
+                                               direct_rendering_version));
+
+  std::string reset_strategy =
+      base::StringPrintf("0x%04x", gpu_info.gl_reset_notification_strategy);
+  basic_info.Append(display::BuildGpuInfoEntry("Reset notification strategy",
+                                               reset_strategy));
 
   basic_info.Append(display::BuildGpuInfoEntry(
       "GPU process crash count",
@@ -248,58 +303,6 @@ base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
   return basic_info;
 }
 
-base::Value::List GetDeviceInfo(const gpu::GPUDevice& gpu_device,
-                                std::string gpu_device_name) {
-  base::Value::List device_info;
-  device_info.Append(display::BuildGpuInfoEntry(gpu_device_name,
-                                                GPUDeviceToString(gpu_device)));
-  device_info.Append(display::BuildGpuInfoEntry(
-      "GPU CUDA compute capability major version",
-      base::Value(gpu_device.cuda_compute_capability_major)));
-  device_info.Append(display::BuildGpuInfoEntry(
-      "Pixel shader version", gpu_device.pixel_shader_version));
-  device_info.Append(display::BuildGpuInfoEntry(
-      "Vertex shader version", gpu_device.vertex_shader_version));
-  device_info.Append(display::BuildGpuInfoEntry("Max. MSAA samples",
-                                                gpu_device.max_msaa_samples));
-  device_info.Append(
-      display::BuildGpuInfoEntry("Display type", gpu_device.display_type));
-  device_info.Append(
-      display::BuildGpuInfoEntry("GL_VENDOR", gpu_device.gl_vendor));
-  device_info.Append(
-      display::BuildGpuInfoEntry("GL_RENDERER", gpu_device.gl_renderer));
-  device_info.Append(
-      display::BuildGpuInfoEntry("GL_VERSION", gpu_device.gl_version));
-  device_info.Append(
-      display::BuildGpuInfoEntry("GL_EXTENSIONS", gpu_device.gl_extensions));
-  device_info.Append(display::BuildGpuInfoEntry("Window system binding vendor",
-                                                gpu_device.gl_ws_vendor));
-  device_info.Append(display::BuildGpuInfoEntry("Window system binding version",
-                                                gpu_device.gl_ws_version));
-  device_info.Append(display::BuildGpuInfoEntry(
-      "Window system binding extensions", gpu_device.gl_ws_extensions));
-  std::string direct_rendering_version;
-  if (gpu_device.direct_rendering_version == "1") {
-    direct_rendering_version = "indirect";
-  } else if (gpu_device.direct_rendering_version == "2") {
-    direct_rendering_version = "direct but version unknown";
-  } else if (base::StartsWith(gpu_device.direct_rendering_version, "2.",
-                              base::CompareCase::INSENSITIVE_ASCII)) {
-    direct_rendering_version = gpu_device.direct_rendering_version;
-    base::ReplaceFirstSubstringAfterOffset(&direct_rendering_version, 0, "2.",
-                                           "DRI");
-  } else {
-    direct_rendering_version = "unknown";
-  }
-  device_info.Append(display::BuildGpuInfoEntry("Direct rendering version",
-                                                direct_rendering_version));
-  std::string reset_strategy =
-      base::StringPrintf("0x%04x", gpu_device.gl_reset_notification_strategy);
-  device_info.Append(display::BuildGpuInfoEntry("Reset notification strategy",
-                                                reset_strategy));
-  return device_info;
-}
-
 base::Value::Dict GetGpuInfo() {
   base::Value::Dict info;
 
@@ -311,14 +314,6 @@ base::Value::Dict GetGpuInfo() {
   base::Value::List basic_info =
       GetBasicGpuInfo(gpu_info, gpu_feature_info, gpu_extra_info);
   info.Set("basicInfo", std::move(basic_info));
-  base::Value::List device_info;
-  device_info.Append(GetDeviceInfo(gpu_info.gpu, "GPU 0"));
-  int i = 1;
-  for (const gpu::GPUDevice& device : gpu_info.secondary_gpus) {
-    device_info.Append(
-        GetDeviceInfo(device, base::StringPrintf("GPU %d", i++)));
-  }
-  info.Set("devices", std::move(device_info));
 
 #if BUILDFLAG(IS_WIN)
   base::Value::List dx_info;

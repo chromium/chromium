@@ -19,7 +19,7 @@
 
 namespace {
 
-void EnumerateGPUDevice(const gpu::GPUDevice& device,
+void EnumerateGPUDevice(const gpu::GPUInfo::GPUDevice& device,
                         gpu::GPUInfo::Enumerator* enumerator) {
   enumerator->BeginGPUDevice();
   enumerator->AddInt("vendorId", device.vendor_id);
@@ -38,23 +38,6 @@ void EnumerateGPUDevice(const gpu::GPUDevice& device,
   enumerator->AddInt("cudaComputeCapabilityMajor",
                      device.cuda_compute_capability_major);
   enumerator->AddInt("gpuPreference", static_cast<int>(device.gpu_preference));
-  enumerator->AddString("pixelShaderVersion", device.pixel_shader_version);
-  enumerator->AddString("vertexShaderVersion", device.vertex_shader_version);
-  enumerator->AddString("maxMsaaSamples", device.max_msaa_samples);
-  enumerator->AddString("displayType", device.display_type);
-  enumerator->AddString("glVersion", device.gl_version);
-  enumerator->AddString("glVendor", device.gl_vendor);
-  enumerator->AddString("glRenderer", device.gl_renderer);
-  enumerator->AddString("glExtensions", device.gl_extensions);
-  enumerator->AddString("glWsVendor", device.gl_ws_vendor);
-  enumerator->AddString("glWsVersion", device.gl_ws_version);
-  enumerator->AddString("glWsExtensions", device.gl_ws_extensions);
-  enumerator->AddInt("glResetNotificationStrategy",
-                     static_cast<int>(device.gl_reset_notification_strategy));
-  enumerator->AddBool("canSupportThreadedTextureMailbox",
-                      device.can_support_threaded_texture_mailbox);
-  enumerator->AddString("directRenderingVersion",
-                        device.direct_rendering_version);
   enumerator->EndGPUDevice();
 }
 
@@ -206,19 +189,21 @@ operator=(const ImageDecodeAcceleratorSupportedProfile& other) = default;
 ImageDecodeAcceleratorSupportedProfile& ImageDecodeAcceleratorSupportedProfile::
 operator=(ImageDecodeAcceleratorSupportedProfile&& other) = default;
 
-GPUDevice::GPUDevice() = default;
+GPUInfo::GPUDevice::GPUDevice() = default;
 
-GPUDevice::GPUDevice(const GPUDevice& other) = default;
+GPUInfo::GPUDevice::GPUDevice(const GPUInfo::GPUDevice& other) = default;
 
-GPUDevice::GPUDevice(GPUDevice&& other) noexcept = default;
+GPUInfo::GPUDevice::GPUDevice(GPUInfo::GPUDevice&& other) noexcept = default;
 
-GPUDevice::~GPUDevice() noexcept = default;
+GPUInfo::GPUDevice::~GPUDevice() noexcept = default;
 
-GPUDevice& GPUDevice::operator=(const GPUDevice& other) = default;
+GPUInfo::GPUDevice& GPUInfo::GPUDevice::operator=(
+    const GPUInfo::GPUDevice& other) = default;
 
-GPUDevice& GPUDevice::operator=(GPUDevice&& other) noexcept = default;
+GPUInfo::GPUDevice& GPUInfo::GPUDevice::operator=(
+    GPUInfo::GPUDevice&& other) noexcept = default;
 
-bool GPUDevice::IsSoftwareRenderer() const {
+bool GPUInfo::GPUDevice::IsSoftwareRenderer() const {
   switch (vendor_id) {
     case 0x0000:  // Info collection failed to identify a GPU
     case 0xffff:  // Chromium internal flag for software rendering
@@ -233,6 +218,7 @@ bool GPUDevice::IsSoftwareRenderer() const {
 GPUInfo::GPUInfo()
     : optimus(false),
       amd_switchable(false),
+      gl_reset_notification_strategy(0),
       gl_implementation_parts(gl::kGLImplementationNone),
       sandboxed(false),
       in_process_gpu(true),
@@ -248,11 +234,12 @@ GPUInfo::GPUInfo(const GPUInfo& other) = default;
 
 GPUInfo::~GPUInfo() = default;
 
-GPUDevice& GPUInfo::active_gpu() {
-  return const_cast<GPUDevice&>(const_cast<const GPUInfo&>(*this).active_gpu());
+GPUInfo::GPUDevice& GPUInfo::active_gpu() {
+  return const_cast<GPUInfo::GPUDevice&>(
+      const_cast<const GPUInfo&>(*this).active_gpu());
 }
 
-const GPUDevice& GPUInfo::active_gpu() const {
+const GPUInfo::GPUDevice& GPUInfo::active_gpu() const {
   if (gpu.active || secondary_gpus.empty())
     return gpu;
   for (const auto& secondary_gpu : secondary_gpus) {
@@ -264,11 +251,11 @@ const GPUDevice& GPUInfo::active_gpu() const {
 }
 
 bool GPUInfo::IsInitialized() const {
-  return gpu.vendor_id != 0 || !gpu.gl_vendor.empty();
+  return gpu.vendor_id != 0 || !gl_vendor.empty();
 }
 
 bool GPUInfo::UsesSwiftShader() const {
-  return gpu.gl_renderer.find("SwiftShader") != std::string::npos;
+  return gl_renderer.find("SwiftShader") != std::string::npos;
 }
 
 unsigned int GPUInfo::GpuCount() const {
@@ -282,7 +269,7 @@ unsigned int GPUInfo::GpuCount() const {
   return gpu_count;
 }
 
-const GPUDevice* GPUInfo::GetGpuByPreference(
+const GPUInfo::GPUDevice* GPUInfo::GetGpuByPreference(
     gl::GpuPreference preference) const {
   DCHECK(preference == gl::GpuPreference::kHighPerformance ||
          preference == gl::GpuPreference::kLowPower);
@@ -295,31 +282,8 @@ const GPUDevice* GPUInfo::GetGpuByPreference(
   return nullptr;
 }
 
-GPUDevice* GPUInfo::FindGpu(uint64_t system_device_id) {
-  return const_cast<GPUDevice*>(
-      const_cast<const GPUInfo&>(*this).FindGpu(system_device_id));
-}
-
-const GPUDevice* GPUInfo::FindGpu(uint64_t system_device_id) const {
-  // Swiftshader's info is faked directly into the 'gpu' slow in gpu_info so if
-  // we see it there, we can assume we always want to return that GPUDevice.
-  // TODO(crbug.com/1418417): Mock swiftshader device at a lower level to
-  // populate software GPU information.
-  if (gpu.system_device_id == system_device_id ||
-      gpu.system_device_id == gl::GetSoftwareGLImplementationSystemDeviceId()) {
-    return &gpu;
-  }
-  for (const gpu::GPUDevice& device : secondary_gpus) {
-    if (device.system_device_id == system_device_id) {
-      return &device;
-    }
-  }
-  DLOG(ERROR) << "No GPU found with matching system device ID.";
-  return nullptr;
-}
-
 #if BUILDFLAG(IS_WIN)
-GPUDevice* GPUInfo::FindGpuByLuid(DWORD low_part, LONG high_part) {
+GPUInfo::GPUDevice* GPUInfo::FindGpuByLuid(DWORD low_part, LONG high_part) {
   if (gpu.luid.LowPart == low_part && gpu.luid.HighPart == high_part)
     return &gpu;
   for (auto& device : secondary_gpus) {
@@ -337,12 +301,26 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     bool amd_switchable;
     GPUDevice gpu;
     std::vector<GPUDevice> secondary_gpus;
+    std::string pixel_shader_version;
+    std::string vertex_shader_version;
+    std::string max_msaa_samples;
     std::string machine_model_name;
     std::string machine_model_version;
+    std::string display_type;
+    std::string gl_version;
+    std::string gl_vendor;
+    std::string gl_renderer;
+    std::string gl_extensions;
+    std::string gl_ws_vendor;
+    std::string gl_ws_version;
+    std::string gl_ws_extensions;
+    uint32_t gl_reset_notification_strategy;
     gl::GLImplementationParts gl_implementation_parts;
+    std::string direct_rendering_version;
     bool sandboxed;
     bool in_process_gpu;
     bool passthrough_cmd_decoder;
+    bool can_support_threaded_texture_mailbox;
     bool is_asan;
     bool is_clang_coverage;
     uint32_t target_cpu_bits;
@@ -393,14 +371,30 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   enumerator->AddTimeDeltaInSecondsF("initializationTime", initialization_time);
   enumerator->AddBool("optimus", optimus);
   enumerator->AddBool("amdSwitchable", amd_switchable);
+  enumerator->AddString("pixelShaderVersion", pixel_shader_version);
+  enumerator->AddString("vertexShaderVersion", vertex_shader_version);
+  enumerator->AddString("maxMsaaSamples", max_msaa_samples);
+  enumerator->AddString("displayType", display_type);
+  enumerator->AddString("glVersion", gl_version);
+  enumerator->AddString("glVendor", gl_vendor);
+  enumerator->AddString("glRenderer", gl_renderer);
+  enumerator->AddString("glExtensions", gl_extensions);
+  enumerator->AddString("glWsVendor", gl_ws_vendor);
+  enumerator->AddString("glWsVersion", gl_ws_version);
+  enumerator->AddString("glWsExtensions", gl_ws_extensions);
+  enumerator->AddInt("glResetNotificationStrategy",
+                     static_cast<int>(gl_reset_notification_strategy));
   enumerator->AddString("glImplementationParts",
                         gl_implementation_parts.ToString());
+  enumerator->AddString("directRenderingVersion", direct_rendering_version);
   enumerator->AddBool("sandboxed", sandboxed);
   enumerator->AddBool("inProcessGpu", in_process_gpu);
   enumerator->AddBool("passthroughCmdDecoder", passthrough_cmd_decoder);
   enumerator->AddBool("isAsan", is_asan);
   enumerator->AddBool("isClangCoverage", is_clang_coverage);
   enumerator->AddInt("targetCpuBits", static_cast<int>(target_cpu_bits));
+  enumerator->AddBool("canSupportThreadedTextureMailbox",
+                      can_support_threaded_texture_mailbox);
 #if BUILDFLAG(IS_MAC)
   enumerator->AddInt("macOSSpecificTextureTarget",
                      macos_specific_texture_target);

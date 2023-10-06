@@ -88,7 +88,7 @@ std::unique_ptr<VideoEncodeAccelerator> CreateVTVEA() {
 std::unique_ptr<VideoEncodeAccelerator> CreateMediaFoundationVEA(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GPUDevice& gpu_device) {
+    const gpu::GPUInfo::GPUDevice& gpu_device) {
   return base::WrapUnique<VideoEncodeAccelerator>(
       new MediaFoundationVideoEncodeAccelerator(
           gpu_preferences, gpu_workarounds, gpu_device.luid));
@@ -108,7 +108,7 @@ using VEAFactoryFunction =
 std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GPUDevice& gpu_device) {
+    const gpu::GPUInfo::GPUDevice& gpu_device) {
   // Array of VEAFactoryFunctions potentially usable on the current platform.
   // This list is ordered by priority, from most to least preferred, if
   // applicable. This list is composed once and then reused.
@@ -150,7 +150,7 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
 VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesInternal(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GPUDevice& gpu_device) {
+    const gpu::GPUInfo::GPUDevice& gpu_device) {
   if (gpu_preferences.disable_accelerated_video_encode)
     return VideoEncodeAccelerator::SupportedProfiles();
 
@@ -176,7 +176,7 @@ GpuVideoEncodeAcceleratorFactory::CreateVEA(
     VideoEncodeAccelerator::Client* client,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GPUDevice& gpu_device,
+    const gpu::GPUInfo::GPUDevice& gpu_device,
     std::unique_ptr<MediaLog> media_log) {
   // NullMediaLog silently and safely does nothing.
   if (!media_log)
@@ -202,7 +202,7 @@ MEDIA_GPU_EXPORT VideoEncodeAccelerator::SupportedProfiles
 GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GPUDevice& gpu_device) {
+    const gpu::GPUInfo::GPUDevice& gpu_device) {
   // Cache the supported profiles so that they will not be computed more than
   // once per GPU process. It is assumed that |gpu_preferences| do not change
   // between calls.

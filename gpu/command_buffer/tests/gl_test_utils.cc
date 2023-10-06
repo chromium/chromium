@@ -22,7 +22,6 @@
 #include "gpu/config/gpu_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -56,7 +55,7 @@ gl::GLDisplay* GLTestHelper::InitializeGL(gl::GLImplementation gl_impl) {
     return nullptr;
 
   gpu::GPUInfo gpu_info;
-  gpu::CollectGraphicsInfoForTesting(&gpu_info, display);
+  gpu::CollectGraphicsInfoForTesting(&gpu_info);
   gpu::GLManager::g_gpu_feature_info = gpu::ComputeGpuFeatureInfo(
       gpu_info, gpu::GpuPreferences(), base::CommandLine::ForCurrentProcess(),
       nullptr  // needs_more_info
@@ -389,12 +388,12 @@ bool GpuCommandBufferTestEGL::InitializeEGL(int width, int height) {
   if (!(current_impl == gl::kGLImplementationEGLGLES2 ||
         current_impl == gl::kGLImplementationEGLANGLE)) {
     gpu::GPUInfo gpu_info;
+    gpu::CollectContextGraphicsInfo(&gpu_info);
     gpu::CollectBasicGraphicsInfo(base::CommandLine::ForCurrentProcess(),
                                   &gpu_info);
     // See crbug.com/822716, the ATI proprietary driver has eglGetProcAddress
     // but eglInitialize crashes with x11.
-    if (base::Contains(gpu_info.active_gpu().gl_vendor,
-                       "ATI Technologies Inc.")) {
+    if (base::Contains(gpu_info.gl_vendor, "ATI Technologies Inc.")) {
       LOG(INFO) << "Skip test, ATI proprietary driver crashes with egl/x11";
       return false;
     }
@@ -417,7 +416,6 @@ bool GpuCommandBufferTestEGL::InitializeEGL(int width, int height) {
       LOG(INFO) << "Skip test, failed to initialize EGL";
       return false;
     }
-    gpu::CollectContextGraphicsInfo(&gpu_info, gl_display_);
   }
   current_impl = gl::GetGLImplementation();
   DCHECK(current_impl == gl::kGLImplementationEGLGLES2 ||

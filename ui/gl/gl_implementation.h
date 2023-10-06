@@ -186,15 +186,6 @@ GL_EXPORT void SetSoftwareGLCommandLineSwitches(
 GL_EXPORT void SetSoftwareWebGLCommandLineSwitches(
     base::CommandLine* command_line);
 
-// Get the faked vendor ID for the software GL implementation
-GL_EXPORT uint32_t GetSoftwareGLImplementationVendorId();
-
-// Get the faked device ID for the software GL implementation
-GL_EXPORT uint32_t GetSoftwareGLImplementationDeviceId();
-
-// Get the faked system device ID for the software GL implementation
-GL_EXPORT uint64_t GetSoftwareGLImplementationSystemDeviceId();
-
 // Return requested GL implementation by checking commandline. If there isn't
 // gl related argument, nullopt is returned.
 GL_EXPORT absl::optional<GLImplementationParts>

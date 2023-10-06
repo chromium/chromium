@@ -62,8 +62,8 @@ gpu::GpuDriverBugWorkarounds CreateGpuWorkarounds() {
   return gpu_workarounds;
 }
 
-gpu::GPUDevice CreateGpuDevice() {
-  gpu::GPUDevice device;
+gpu::GPUInfo::GPUDevice CreateGpuDevice() {
+  gpu::GPUInfo::GPUDevice device;
   return device;
 }
 

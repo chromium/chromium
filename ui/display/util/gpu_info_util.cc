@@ -24,12 +24,4 @@ base::Value::Dict BuildGpuInfoEntry(base::StringPiece description,
   return dict;
 }
 
-base::Value::Dict BuildGpuInfoEntry(base::StringPiece description,
-                                    base::Value::List value) {
-  base::Value::Dict dict;
-  dict.Set("description", description);
-  dict.Set("value", std::move(value));
-  return dict;
-}
-
 }  // namespace display

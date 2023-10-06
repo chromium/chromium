@@ -100,7 +100,7 @@ void GpuArcVideoEncodeAccelerator::GetSupportedProfiles(
     GetSupportedProfilesCallback callback) {
   std::move(callback).Run(
       media::GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
-          gpu_preferences_, gpu_workarounds_, gpu::GPUDevice()));
+          gpu_preferences_, gpu_workarounds_, gpu::GPUInfo::GPUDevice()));
 }
 
 void GpuArcVideoEncodeAccelerator::Initialize(
@@ -134,7 +134,8 @@ GpuArcVideoEncodeAccelerator::InitializeTask(
 
   visible_size_ = config.input_visible_size;
   accelerator_ = media::GpuVideoEncodeAcceleratorFactory::CreateVEA(
-      config, this, gpu_preferences_, gpu_workarounds_, gpu::GPUDevice());
+      config, this, gpu_preferences_, gpu_workarounds_,
+      gpu::GPUInfo::GPUDevice());
   if (accelerator_ == nullptr) {
     DLOG(ERROR) << "Failed to create a VideoEncodeAccelerator.";
     return mojom::VideoEncodeAccelerator::Result::kPlatformFailureError;

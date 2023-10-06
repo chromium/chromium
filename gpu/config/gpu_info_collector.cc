@@ -25,7 +25,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_switches.h"
-#include "gpu/config/gpu_util.h"
 #include "gpu/config/webgpu_blocklist.h"
 #include "skia/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -144,7 +143,6 @@ std::string GetVersionFromString(const std::string& version_string) {
   return std::string();
 }
 
-#if BUILDFLAG(IS_MAC)
 // Return the array index of the found name, or return -1.
 int StringContainsName(const std::string& str,
                        const std::string* names,
@@ -160,7 +158,6 @@ int StringContainsName(const std::string& str,
   }
   return -1;
 }
-#endif  // BUILDFLAG(IS_MAC)
 
 std::string GetDisplayTypeString(gl::DisplayType type) {
   switch (type) {
@@ -453,8 +450,62 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
 
 namespace gpu {
 
+bool CollectGraphicsDeviceInfoFromCommandLine(
+    const base::CommandLine* command_line,
+    GPUInfo* gpu_info) {
+  GPUInfo::GPUDevice& gpu = gpu_info->gpu;
+
+  if (command_line->HasSwitch(switches::kGpuVendorId)) {
+    const std::string vendor_id_str =
+        command_line->GetSwitchValueASCII(switches::kGpuVendorId);
+    base::StringToUint(vendor_id_str, &gpu.vendor_id);
+  }
+
+  if (command_line->HasSwitch(switches::kGpuDeviceId)) {
+    const std::string device_id_str =
+        command_line->GetSwitchValueASCII(switches::kGpuDeviceId);
+    base::StringToUint(device_id_str, &gpu.device_id);
+  }
+
+#if BUILDFLAG(IS_WIN)
+  if (command_line->HasSwitch(switches::kGpuSubSystemId)) {
+    const std::string syb_system_id_str =
+        command_line->GetSwitchValueASCII(switches::kGpuSubSystemId);
+    base::StringToUint(syb_system_id_str, &gpu.sub_sys_id);
+  }
+
+  if (command_line->HasSwitch(switches::kGpuRevision)) {
+    const std::string revision_str =
+        command_line->GetSwitchValueASCII(switches::kGpuRevision);
+    base::StringToUint(revision_str, &gpu.revision);
+  }
+#endif
+
+  if (command_line->HasSwitch(switches::kGpuDriverVersion)) {
+    gpu.driver_version =
+        command_line->GetSwitchValueASCII(switches::kGpuDriverVersion);
+  }
+
+  bool info_updated = gpu.vendor_id || gpu.device_id ||
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+                      gpu.revision ||
+#endif
+#if BUILDFLAG(IS_WIN)
+                      gpu.sub_sys_id ||
+#endif
+                      !gpu.driver_version.empty();
+
+  return info_updated;
+}
+
 bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
                               GPUInfo* gpu_info) {
+  // In the info-collection GPU process on Windows, we get the device info from
+  // the browser.
+  if (CollectGraphicsDeviceInfoFromCommandLine(command_line, gpu_info)) {
+    return true;
+  }
+
   // We can't check if passthrough is supported yet because GL may not be
   // initialized.
   gpu_info->passthrough_cmd_decoder =
@@ -467,9 +518,9 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
 
   if (implementation == gl::kGLImplementationDisabled) {
     // If GL is disabled then we don't need GPUInfo.
-    gpu_info->gpu.gl_vendor = "Disabled";
-    gpu_info->gpu.gl_renderer = "Disabled";
-    gpu_info->gpu.gl_version = "Disabled";
+    gpu_info->gl_vendor = "Disabled";
+    gpu_info->gl_renderer = "Disabled";
+    gpu_info->gl_version = "Disabled";
     return true;
   } else if (implementation == gl::GetSoftwareGLImplementation()) {
     // If using the software GL implementation, use fake vendor and
@@ -477,14 +528,8 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
     // to proceed with loading the blocklist which may have non-device
     // specific entries we want to apply anyways (e.g., OS version
     // blocklisting).
-    gpu_info->gpu.vendor_id = gl::GetSoftwareGLImplementationVendorId();
-    gpu_info->gpu.device_id = gl::GetSoftwareGLImplementationDeviceId();
-    gpu_info->gpu.system_device_id =
-        gl::GetSoftwareGLImplementationSystemDeviceId();
-#if BUILDFLAG(IS_WIN)
-    gpu_info->gpu.luid = CHROME_LUID{
-        gpu_info->gpu.vendor_id, static_cast<LONG>(gpu_info->gpu.device_id)};
-#endif  // BUILDFLAG(IS_WIN)
+    gpu_info->gpu.vendor_id = 0xffff;
+    gpu_info->gpu.device_id = 0xffff;
 
     // Also declare the driver_vendor to be <SwANGLE> to be able to
     // specify exceptions based on driver_vendor==<SwANGLE> for some
@@ -507,14 +552,7 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
 bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
   TRACE_EVENT0("startup", "gpu_info_collector::CollectGraphicsInfoGL");
   DCHECK_NE(gl::GetGLImplementationParts(), gl::kGLImplementationNone);
-  DCHECK(gpu_info);
-
-  if (!display) {
-    LOG(ERROR) << "Could not collect graphics info. Invalid display.";
-    return false;
-  }
   gl::GLDisplayEGL* egl_display = display->GetAs<gl::GLDisplayEGL>();
-  DCHECK(egl_display);
 
   // Now that we can check GL extensions, update passthrough support info.
   if (!gl::PassthroughCommandDecoderSupported()) {
@@ -533,36 +571,27 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
     return false;
   }
 
-  GPUDevice* gpu_device = GetGPUDeviceFromGLDisplay(gpu_info, display);
-  if (!gpu_device) {
-    LOG(ERROR) << "Could not get GPU device for info collection.";
-    return false;
+  if (egl_display) {
+    gpu_info->display_type =
+        GetDisplayTypeString(egl_display->GetDisplayType());
   }
-
-  gpu_device->display_type =
-      GetDisplayTypeString(egl_display->GetDisplayType());
-  gpu_device->gl_renderer = GetGLString(GL_RENDERER);
-  gpu_device->gl_vendor = GetGLString(GL_VENDOR);
-  gpu_device->gl_version = GetGLString(GL_VERSION);
-  // TODO(crbug.com/1418417): Remove vendor_string/device_string and replace
-  // with gl_vendor, gl_version, gl_renderer, which is more descripitive of
-  // where this info comes from, and not redundant.
-  gpu_device->vendor_string = gpu_device->gl_vendor;
-  gpu_device->device_string = gpu_device->gl_renderer;
+  gpu_info->gl_renderer = GetGLString(GL_RENDERER);
+  gpu_info->gl_vendor = GetGLString(GL_VENDOR);
+  gpu_info->gl_version = GetGLString(GL_VERSION);
   std::string glsl_version_string = GetGLString(GL_SHADING_LANGUAGE_VERSION);
 
-  gpu_device->gl_extensions = gl::GetGLExtensionsFromCurrentContext();
+  gpu_info->gl_extensions = gl::GetGLExtensionsFromCurrentContext();
   gfx::ExtensionSet extension_set =
-      gfx::MakeExtensionSet(gpu_device->gl_extensions);
+      gfx::MakeExtensionSet(gpu_info->gl_extensions);
 
-  gl::GLVersionInfo gl_info(gpu_device->gl_version.c_str(),
-                            gpu_device->gl_renderer.c_str(), extension_set);
-
-  if (!gl_info.driver_vendor.empty() && gpu_device->driver_vendor.empty()) {
-    gpu_device->driver_vendor = gl_info.driver_vendor;
+  gl::GLVersionInfo gl_info(gpu_info->gl_version.c_str(),
+                            gpu_info->gl_renderer.c_str(), extension_set);
+  GPUInfo::GPUDevice& active_gpu = gpu_info->active_gpu();
+  if (!gl_info.driver_vendor.empty() && active_gpu.driver_vendor.empty()) {
+    active_gpu.driver_vendor = gl_info.driver_vendor;
   }
-  if (!gl_info.driver_version.empty() && gpu_device->driver_version.empty()) {
-    gpu_device->driver_version = gl_info.driver_version;
+  if (!gl_info.driver_version.empty() && active_gpu.driver_version.empty()) {
+    active_gpu.driver_version = gl_info.driver_version;
   }
 
   GLint max_samples = 0;
@@ -575,11 +604,11 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
       gfx::HasExtension(extension_set, "GL_NV_framebuffer_multisample")) {
     glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
   }
-  gpu_device->max_msaa_samples = base::NumberToString(max_samples);
+  gpu_info->max_msaa_samples = base::NumberToString(max_samples);
   base::UmaHistogramSparse("GPU.MaxMSAASampleCount", max_samples);
 
 #if BUILDFLAG(IS_ANDROID)
-  gpu_device->can_support_threaded_texture_mailbox =
+  gpu_info->can_support_threaded_texture_mailbox =
       egl_display->ext->b_EGL_KHR_fence_sync &&
       egl_display->ext->b_EGL_KHR_image_base &&
       egl_display->ext->b_EGL_KHR_gl_texture_2D_image &&
@@ -588,10 +617,10 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
   gl::GLWindowSystemBindingInfo window_system_binding_info;
   if (gl::init::GetGLWindowSystemBindingInfo(gl_info,
                                              &window_system_binding_info)) {
-    gpu_device->gl_ws_vendor = window_system_binding_info.vendor;
-    gpu_device->gl_ws_version = window_system_binding_info.version;
-    gpu_device->gl_ws_extensions = window_system_binding_info.extensions;
-    gpu_device->direct_rendering_version =
+    gpu_info->gl_ws_vendor = window_system_binding_info.vendor;
+    gpu_info->gl_ws_version = window_system_binding_info.version;
+    gpu_info->gl_ws_extensions = window_system_binding_info.extensions;
+    gpu_info->direct_rendering_version =
         window_system_binding_info.direct_rendering_version;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -603,7 +632,7 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
   if (supports_robustness) {
     glGetIntegerv(
         GL_RESET_NOTIFICATION_STRATEGY_ARB,
-        reinterpret_cast<GLint*>(&gpu_device->gl_reset_notification_strategy));
+        reinterpret_cast<GLint*>(&gpu_info->gl_reset_notification_strategy));
   }
 
   // TODO(kbr): remove once the destruction of a current context automatically
@@ -611,8 +640,8 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
   context->ReleaseCurrent(surface.get());
 
   std::string glsl_version = GetVersionFromString(glsl_version_string);
-  gpu_device->pixel_shader_version = glsl_version;
-  gpu_device->vertex_shader_version = glsl_version;
+  gpu_info->pixel_shader_version = glsl_version;
+  gpu_info->vertex_shader_version = glsl_version;
 
   bool active_gpu_identified = false;
 #if BUILDFLAG(IS_WIN)
@@ -625,8 +654,7 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
   return true;
 }
 
-#if BUILDFLAG(IS_MAC)
-void IdentifyActiveGPULegacyForMacOpenGL(GPUInfo* gpu_info) {
+void IdentifyActiveGPU(GPUInfo* gpu_info) {
   const std::string kNVidiaName = "nvidia";
   const std::string kNouveauName = "nouveau";
   const std::string kIntelName = "intel";
@@ -646,46 +674,26 @@ void IdentifyActiveGPULegacyForMacOpenGL(GPUInfo* gpu_info) {
   if (gpu_info->secondary_gpus.size() == 0) {
     // If there is only a single GPU, that GPU is active.
     gpu_info->gpu.active = true;
-    gpu_info->gpu.vendor_string = gpu_info->gpu.gl_vendor;
-    gpu_info->gpu.device_string = gpu_info->gpu.gl_renderer;
+    gpu_info->gpu.vendor_string = gpu_info->gl_vendor;
+    gpu_info->gpu.device_string = gpu_info->gl_renderer;
     return;
   }
 
   uint32_t active_vendor_id = 0;
-  if (!gpu_info->gpu.gl_vendor.empty()) {
-    std::string gl_vendor_lower = base::ToLowerASCII(gpu_info->gpu.gl_vendor);
+  if (!gpu_info->gl_vendor.empty()) {
+    std::string gl_vendor_lower = base::ToLowerASCII(gpu_info->gl_vendor);
     int index = StringContainsName(gl_vendor_lower, kVendorNames,
                                    std::size(kVendorNames));
     if (index >= 0) {
       active_vendor_id = kVendorIDs[index];
     }
   }
-  if (active_vendor_id == 0 && !gpu_info->gpu.gl_renderer.empty()) {
-    std::string gl_renderer_lower =
-        base::ToLowerASCII(gpu_info->gpu.gl_renderer);
+  if (active_vendor_id == 0 && !gpu_info->gl_renderer.empty()) {
+    std::string gl_renderer_lower = base::ToLowerASCII(gpu_info->gl_renderer);
     int index = StringContainsName(gl_renderer_lower, kVendorNames,
                                    std::size(kVendorNames));
     if (index >= 0) {
       active_vendor_id = kVendorIDs[index];
-    }
-  }
-  for (auto& secondary_gpu : gpu_info->secondary_gpus) {
-    if (!secondary_gpu.gl_vendor.empty()) {
-      std::string gl_vendor_lower = base::ToLowerASCII(secondary_gpu.gl_vendor);
-      int index = StringContainsName(gl_vendor_lower, kVendorNames,
-                                     std::size(kVendorNames));
-      if (index >= 0) {
-        active_vendor_id = kVendorIDs[index];
-      }
-    }
-    if (active_vendor_id == 0 && !secondary_gpu.gl_renderer.empty()) {
-      std::string gl_renderer_lower =
-          base::ToLowerASCII(secondary_gpu.gl_renderer);
-      int index = StringContainsName(gl_renderer_lower, kVendorNames,
-                                     std::size(kVendorNames));
-      if (index >= 0) {
-        active_vendor_id = kVendorIDs[index];
-      }
     }
   }
   if (active_vendor_id == 0) {
@@ -708,45 +716,6 @@ void IdentifyActiveGPULegacyForMacOpenGL(GPUInfo* gpu_info) {
       return;
     }
   }
-}
-#endif  // BUILDFLAG(IS_MAC)
-
-void IdentifyActiveGPU(GPUInfo* gpu_info) {
-  // TODO(crbug.com/1418417): For now, we follow the legacy path because a
-  // single GLDisplay may be used for multiple GPUs on Mac/OpenGL. Eventually,
-  // we should update the GLDisplay when the underlying GPU switches.
-#if BUILDFLAG(IS_MAC)
-  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
-      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kOpenGL) {
-    return IdentifyActiveGPULegacyForMacOpenGL(gpu_info);
-  }
-#endif  // BUILDFLAG(IS_MAC)
-  DCHECK(gpu_info);
-  if (gpu_info->secondary_gpus.size() == 0) {
-    // If there is only a single GPU, that GPU is active.
-    gpu_info->gpu.active = true;
-    return;
-  }
-  gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
-  if (!display) {
-    display = gl::GetDefaultDisplayEGL();
-  }
-  if (!display) {
-    LOG(ERROR) << "Could not identify active GPU. Missing current display.";
-    return;
-  }
-  GPUDevice* active_gpu = GetGPUDeviceFromGLDisplay(gpu_info, display);
-  if (!active_gpu) {
-    LOG(ERROR) << "Could not identify active GPU.";
-    return;
-  }
-
-  gpu_info->gpu.active = false;
-  for (auto& secondary_gpu : gpu_info->secondary_gpus) {
-    secondary_gpu.active = false;
-  }
-
-  active_gpu->active = true;
 }
 
 void FillGPUInfoFromSystemInfo(GPUInfo* gpu_info,
@@ -779,7 +748,7 @@ void FillGPUInfoFromSystemInfo(GPUInfo* gpu_info,
       continue;
     }
 
-    GPUDevice device;
+    GPUInfo::GPUDevice device;
     device.vendor_id = system_info->gpus[i].vendorId;
     device.device_id = system_info->gpus[i].deviceId;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -799,10 +768,10 @@ void FillGPUInfoFromSystemInfo(GPUInfo* gpu_info,
   gpu_info->machine_model_version = system_info->machineModelVersion;
 }
 
-void CollectGraphicsInfoForTesting(GPUInfo* gpu_info, gl::GLDisplay* display) {
+void CollectGraphicsInfoForTesting(GPUInfo* gpu_info) {
   DCHECK(gpu_info);
 #if BUILDFLAG(IS_ANDROID)
-  CollectContextGraphicsInfo(gpu_info, display);
+  CollectContextGraphicsInfo(gpu_info);
 #else
   CollectBasicGraphicsInfo(gpu_info);
 #endif  // BUILDFLAG(IS_ANDROID)
