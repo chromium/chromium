@@ -39,8 +39,8 @@ source_set("phishing_classifier") {
 
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+    public_deps = [ "//base" ]
     deps = [
-      "//base",
       "//cc/paint",
       "//components/optimization_guide:machine_learning_tflite_buildflags",
       "//components/paint_preview/common",
