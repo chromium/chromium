@@ -145,7 +145,8 @@ void ExclusiveAccessBubbleViews::UpdateContent(
   // notification, a notification was visible earlier, and the earlier
   // notification was either a non-download one, or was one about an override
   // itself.
-  notify_overridden_ = notify_download && IsVisible() &&
+  notify_overridden_ = notify_download &&
+                       (IsVisible() || animation_->IsShowing()) &&
                        (!notify_download_ || notify_overridden_);
   notify_download_ = notify_download;
 
