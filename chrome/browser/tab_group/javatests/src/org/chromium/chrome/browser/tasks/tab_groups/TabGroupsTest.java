@@ -240,6 +240,10 @@ public class TabGroupsTest {
         List<Tab> noTabs = getCurrentTabs();
         assertTrue(noTabs.isEmpty());
 
+        // Wait to enter the tab switcher.
+        ChromeTabbedActivity cta = (ChromeTabbedActivity) sActivityTestRule.getActivity();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
+
         InOrder calledInOrder = inOrder(mTabModelFilterObserver);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             for (Tab tab : tabs) {
@@ -256,9 +260,7 @@ public class TabGroupsTest {
         calledInOrder.verify(mTabModelFilterObserver).tabClosureUndone(eq(tabs.get(3)));
         calledInOrder.verify(mTabModelFilterObserver).tabClosureUndone(eq(tabs.get(4)));
 
-        // Closing all tabs enters the tab switcher. Exit it.
-        ChromeTabbedActivity cta = (ChromeTabbedActivity) sActivityTestRule.getActivity();
-        assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
+        // Exit the tab switcher.
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
 
