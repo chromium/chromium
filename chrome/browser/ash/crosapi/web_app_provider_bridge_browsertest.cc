@@ -47,7 +47,10 @@ class WebAppProviderBridgeBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppProviderBridgeBrowserTest, GetSubAppIds) {
+// This test is disabled as SubApps is now a IWA API.
+// TODO(crbug.com/1490556): Re-enable the test after IWAs are integrated in
+// test_controller.
+IN_PROC_BROWSER_TEST_F(WebAppProviderBridgeBrowserTest, DISABLED_GetSubAppIds) {
   webapps::AppId parent_app_id =
       InstallWebApp("https://www.parent-app.com", apps::WindowMode::kWindow);
   webapps::AppId sub_app_id_1 =
@@ -77,7 +80,11 @@ IN_PROC_BROWSER_TEST_F(WebAppProviderBridgeBrowserTest, GetSubAppIds) {
   EXPECT_EQ(results_set, expected);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppProviderBridgeBrowserTest, GetSubAppToParentMap) {
+// This test is disabled as SubApps is now a IWA API.
+// TODO(crbug.com/1490556): Re-enable the test after IWAs are integrated in
+// test_controller.
+IN_PROC_BROWSER_TEST_F(WebAppProviderBridgeBrowserTest,
+                       DISABLED_GetSubAppToParentMap) {
   webapps::AppId parent_app_id =
       InstallWebApp("https://www.parent-app.com", apps::WindowMode::kWindow);
   webapps::AppId sub_app_id_1 =
