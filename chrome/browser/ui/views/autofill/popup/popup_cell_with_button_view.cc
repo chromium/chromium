@@ -132,12 +132,12 @@ void PopupCellWithButtonView::SetCellButton(
     return;
   }
 
-  button_accessible_name_ = cell_button->GetAccessibleName();
   button_placeholder_ = AddChildView(std::make_unique<ButtonPlaceholder>(this));
   button_placeholder_->SetLayoutManager(std::make_unique<views::BoxLayout>());
   button_placeholder_->SetPreferredSize(cell_button->GetPreferredSize());
   button_ = button_placeholder_->AddChildView(std::move(cell_button));
   button_->SetVisible(ShouldCellButtonBeVisible());
+  button_->GetViewAccessibility().OverrideIsIgnored(true);
   button_->SetButtonController(std::make_unique<CellButtonController>(
       button_, this,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(
@@ -158,7 +158,6 @@ void PopupCellWithButtonView::HandleKeyPressEventFocusOnButton() {
   }
 
   button_focused_ = true;
-  button_->SetAccessibleName(button_accessible_name_);
   button_->GetViewAccessibility().SetPopupFocusOverride();
   button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
   views::InkDrop::Get(button_->ink_drop_view())->GetInkDrop()->SetHovered(true);
@@ -171,14 +170,6 @@ void PopupCellWithButtonView::HandleKeyPressEventFocusOnContent() {
     return;
   }
 
-  // TODO(crbug.com/1417187): Find out the root cause for the necessity of this
-  // workaround. Without explicitly removing the accessible name for the button,
-  // the screen reader is announcing both the content and the delete button (on
-  // MAC). For example, if the content is "jondoe@gmail.com", the screen reader
-  // announces "delete jon". This does not happen if the button has no
-  // accessible name.
-  button_accessible_name_ = button_->GetAccessibleName();
-  button_->SetAccessibleName(u"");
   UpdateSelectedAndRunCallback(true);
   GetViewAccessibility().SetPopupFocusOverride();
   NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
@@ -227,17 +218,6 @@ bool PopupCellWithButtonView::HandleKeyPressEvent(
 }
 
 void PopupCellWithButtonView::SetSelected(bool selected) {
-  // TODO(crbug.com/1417187): Find out the root cause for the necessity of this
-  // workaround. Without explicitly removing the accessible name for the button
-  // the screen reader is announcing both the content and the delete button (on
-  // MAC). For example, if the content is "jondoe@gmail.com", the screen reader
-  // announces "delete jon". This does not happen if the button has no
-  // accessible name.
-  if (button_) {
-    button_->SetVisible(ShouldCellButtonBeVisible());
-    button_->SetAccessibleName(u"");
-  }
-
   autofill::PopupCellView::SetSelected(selected);
   if (button_) {
     button_->SetVisible(ShouldCellButtonBeVisible());

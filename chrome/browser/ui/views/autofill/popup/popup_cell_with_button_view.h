@@ -118,9 +118,6 @@ class PopupCellWithButtonView : public PopupCellView,
 
   CellButtonBehavior cell_button_behavior_ =
       CellButtonBehavior::kShowOnHoverOrSelect;
-
-  // TODO(crbug.com/1417187): Remove once the work-around is fixed.
-  std::u16string button_accessible_name_;
 };
 
 }  // namespace autofill
