@@ -46,7 +46,8 @@ DOMViewTransition::DOMViewTransition(
     ExecutionContext& execution_context,
     ViewTransition& view_transition,
     V8ViewTransitionCallback* update_dom_callback)
-    : execution_context_(&execution_context),
+    : ExecutionContextLifecycleObserver(&execution_context),
+      execution_context_(&execution_context),
       view_transition_{&view_transition},
       update_dom_callback_(update_dom_callback),
       finished_promise_property_(
@@ -59,6 +60,10 @@ DOMViewTransition::DOMViewTransition(
 }
 
 DOMViewTransition::~DOMViewTransition() = default;
+
+void DOMViewTransition::ContextDestroyed() {
+  execution_context_.Clear();
+}
 
 void DOMViewTransition::skipTransition() {
   view_transition_->SkipTransition();
@@ -80,6 +85,10 @@ ScriptPromise DOMViewTransition::updateCallbackDone(
 void DOMViewTransition::DidSkipTransition(
     ViewTransition::PromiseResponse response) {
   CHECK_NE(response, ViewTransition::PromiseResponse::kResolve);
+
+  if (!execution_context_) {
+    return;
+  }
 
   // If the ready promise has not yet been resolved, reject it.
   if (ready_promise_property_->GetState() == PromiseProperty::State::kPending) {
@@ -151,6 +160,11 @@ void DOMViewTransition::DidFinishAnimating() {
 void DOMViewTransition::InvokeDOMChangeCallback() {
   CHECK_EQ(dom_callback_result_, DOMCallbackResult::kNotInvoked)
       << "UpdateDOM callback invoked multiple times.";
+
+  if (!execution_context_) {
+    return;
+  }
+
   dom_callback_result_ = DOMCallbackResult::kRunning;
 
   v8::Maybe<ScriptPromise> result = v8::Nothing<ScriptPromise>();
@@ -174,6 +188,7 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
     // any script.
     script_state =
         ToScriptState(execution_context_, DOMWrapperWorld::MainWorld());
+
     ScriptState::Scope scope(script_state);
 
     // If there's no callback provided, treat the same as an empty promise
@@ -200,11 +215,15 @@ void DOMViewTransition::Trace(Visitor* visitor) const {
   visitor->Trace(ready_promise_property_);
   visitor->Trace(dom_updated_promise_property_);
 
+  ExecutionContextLifecycleObserver::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
 
 void DOMViewTransition::AtMicrotask(ViewTransition::PromiseResponse response,
                                     PromiseProperty* property) {
+  if (!execution_context_) {
+    return;
+  }
   execution_context_->GetAgent()->event_loop()->EnqueueMicrotask(
       WTF::BindOnce(&DOMViewTransition::HandlePromise, WrapPersistent(this),
                     response, WrapPersistent(property)));
@@ -212,6 +231,10 @@ void DOMViewTransition::AtMicrotask(ViewTransition::PromiseResponse response,
 
 void DOMViewTransition::HandlePromise(ViewTransition::PromiseResponse response,
                                       PromiseProperty* property) {
+  if (!execution_context_) {
+    return;
+  }
+
   // It's possible for multiple fulfillment microtasks to be queued so
   // early-out if that's happened.
   if (property->GetState() != PromiseProperty::State::kPending) {

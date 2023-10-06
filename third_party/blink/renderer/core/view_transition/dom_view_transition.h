@@ -22,7 +22,8 @@ class ViewTransition;
 
 // This class handles script interaction for the ViewTransition object. It
 // implements the ViewTransition IDL interface.
-class CORE_EXPORT DOMViewTransition : public ScriptWrappable {
+class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
+                                      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
   using PromiseProperty =
       ScriptPromiseProperty<ToV8UndefinedGenerator, ScriptValue>;
@@ -39,6 +40,9 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable {
                              V8ViewTransitionCallback*);
 
   ~DOMViewTransition() override;
+
+  // ExecutionContextLifecycleObserver implementation.
+  void ContextDestroyed() override;
 
   // IDL implementation. Refer to view_transition.idl for additional comments.
   void skipTransition();
@@ -85,6 +89,7 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable {
     const bool success_;
   };
 
+  // Cleared when the context is destroyed.
   Member<ExecutionContext> execution_context_;
 
   Member<ViewTransition> view_transition_;
