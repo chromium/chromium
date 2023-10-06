@@ -5,7 +5,9 @@
 # found in the LICENSE file.
 
 # Script for updating WebUI's NPM deps.
-#  1) Update package.json file to point to the desired version.
+#  1) Update package.json file to point to the desired version, or update the
+#     versions in download_npm_deps_manually.sh (for packages not pulled via
+#     `npm install`).
 #  2) Run this script.
 #  3) Upload the compressed node_modules.tar.gz file to the Google Storage
 #     bucket (commands to upload binaries are printed at step 2).
@@ -16,12 +18,19 @@ cd "$(dirname "$0")"
 
 rm -rf node_modules
 
+echo 'Step 1: Downloading dependencies listed in packages.json, using npm...'
 npm install --no-bin-links --only=prod
 
+echo 'Step 2: Downloading dependencies not listed in packages.json, manually...'
+./download_npm_deps_manually.sh
+
+echo 'Step 3: Applying local patches...'
+patch -d node_modules/chai/ -p1 < chai.patch
 patch -d node_modules/@types/d3/ -p1 < chromium_d3_types_index.patch
 patch -d node_modules/html-minifier/ -p1 < html_minifier.patch
 patch -p1 < typescript.patch
 
+echo 'Step 4: Filtering out unnecessary files...'
 rsync -c --delete -r -q --include-from="npm_include.txt" --exclude-from="npm_exclude.txt" \
       --prune-empty-dirs "node_modules/" "node_modules_filtered/"
 

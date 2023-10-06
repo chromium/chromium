@@ -1,6 +1,6 @@
-diff --git a/node_modules/typescript/lib/lib2.dom.d.ts b/node_modules/typescript/lib/lib.dom.d.ts
+diff --git a/node_modules/typescript/lib/lib.dom.d.ts b/node_modules/typescript/lib/lib.dom.d.ts
 index 91596a00aee3e..aaa71bbf139d5 100644
---- a/node_modules/typescript/lib/lib2.dom.d.ts
+--- a/node_modules/typescript/lib/lib.dom.d.ts
 +++ b/node_modules/typescript/lib/lib.dom.d.ts
 @@ -12308,7 +12308,10 @@ interface HTMLScriptElement extends HTMLElement {
      /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/HTMLScriptElement/referrerPolicy) */
