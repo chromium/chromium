@@ -1829,6 +1829,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2398546389094871088">Naudojant funkciją „Powerwash“ įrenginyje „eSIM“ kortelės profiliai nebus pašalinti. Eikite į skiltį <ph name="LINK_BEGIN" />„Mobiliojo įrenginio nustatymai“<ph name="LINK_END" /> ir patys pašalinkite šiuos profilius.</translation>
 <translation id="2399699884460174994">Pranešimai įjungti</translation>
 <translation id="2399939490305346086">Saugos rakto prisijungimo duomenys</translation>
+<translation id="240006516586367791">Medijos valdikliai</translation>
 <translation id="2400664245143453337">Reikia nedelsiant atnaujinti</translation>
 <translation id="2402226831639195063">Tonai</translation>
 <translation id="2405887402346713222">Įrenginių ir komponentų serijos numeriai</translation>
@@ -4249,9 +4250,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4349828822184870497">Naudinga</translation>
 <translation id="4350230709416545141">Visada blokuoti <ph name="HOST" />, kad nepasiektų jūsų vietovės informacijos</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Siekiant užtikrinti geriausią veikimą, „<ph name="DEVICE_OS" />“ renka įrenginių aparatinės įrangos duomenis ir juos bendrina su „Google“, kad būtų nustatyta, kurie naujiniai reikalingi. Pasirinktinai galite leisti sistemai „Google“ šiuos duomenis naudoti papildomais tikslais, pvz., siekiant užtikrinti „<ph name="DEVICE_OS" />“ funkcijų ir paslaugų palaikymą bei tobulinimą.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Galite prisijungti šiame įrenginyje ir apsilankyti chrome://system skiltyje CHROMEOSFLEX_HARDWARE_INFO, jei norite sužinoti, kokie duomenys siunčiami sistemai „Google“ naujinių filtravimo tikslais, taip pat kitais atvejais, kai pasirenkate bendrinti duomenis su „Google“.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Daugiau informacijos apie tai, kokius duomenis „<ph name="DEVICE_OS" />“ gali bendrinti su „Google“ ir kaip jie naudojami, rasite apsilankę adresu g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Eikite į programą „<ph name="APP_NAME" />“, jei norite tvarkyti įdiegtas ir srautu perduodamas programas</translation>
 <translation id="4354073718307267720">Klausti, kai svetainė nori kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį</translation>
 <translation id="4354344420232759511">Lankytos svetainės bus rodomos čia</translation>
@@ -8640,6 +8638,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="793531125873261495">Atsisiunčiant virtualų įrenginį įvyko klaida. Bandykite dar kartą.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" /> proc. atlikta</translation>
 <translation id="7937809006412909895">Renkami diagnostikos duomenys</translation>
+<translation id="7938881824185772026">Laboratorijos</translation>
 <translation id="7939062555109487992">Išplėstinės parinktys</translation>
 <translation id="793923212791838">Jūsų įrenginys nesuderinamas su šia svetaine</translation>
 <translation id="7939328347457537652">Tvarkykite įrenginių sertifikatus</translation>

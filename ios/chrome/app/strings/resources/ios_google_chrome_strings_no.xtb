@@ -117,6 +117,7 @@ Du bør tenke på følgende:
 <translation id="5389212809648216794">Google Chrome kan ikke bruke kameraet fordi det brukes av en annen app</translation>
 <translation id="5395376160638294582">Sørg for at du alltid kan bruke Chrome-dataene i Google-kontoen din</translation>
 <translation id="5439191312780166229">Advarer deg om farlige nettsteder, også nettsteder som Google ikke kjenner til fra før, ved å analysere mer data fra nettsteder enn ved standardbeskyttelse. Du kan velge å hoppe over Chrome-advarsler.</translation>
+<translation id="5442013002200339429">Hvis du skjuler «<ph name="MODULE_NAME" />», slutter Chrome å spore fremtidige pakker automatisk, og alle tidligere pakkesporingsdata slettes.</translation>
 <translation id="5460571915754665838">4. Velg Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome hjelper deg med å spore denne pakken på Ny fane-siden.}other{Chrome hjelper deg med å spore disse pakkene på Ny fane-siden.}}</translation>
 <translation id="5492504007368565877">Google Passordlagring kan ikke sjekke passordene dine.</translation>
@@ -188,6 +189,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7933491483529363150">Åpne den nyligste fanen min i Chrome.</translation>
 <translation id="8022947259858476807">Bruk Chrome som standard til å åpne linker, søke i moduler og fylle ut passord i andre apper automatisk</translation>
 <translation id="804638182476029347">Tillat at Chrome-varsler mottar varsler om prisavslag</translation>
+<translation id="8069507567842347179">Denne pakken blir allerede sporet i Chrome.</translation>
 <translation id="81358522153858150">Chrome støtter nå brukerinnstillinger for den administrerte kontoen din</translation>
 <translation id="8160472928944011082">Kan ikke oppdatere Chrome</translation>
 <translation id="8174679664544842874">Åpner en ny fane i Chrome.</translation>

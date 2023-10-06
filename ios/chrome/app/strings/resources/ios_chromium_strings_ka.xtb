@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">გახსნის Chromium-ის ჩანართების ბადეს.</translation>
 <translation id="1617663976202781617">მონაცემები Chromium-ის სინქრონიზაციიდან</translation>
 <translation id="1647558790457890304">Chromium-ის პარამეტრები</translation>
+<translation id="164952285225495380">ამ ამანათისთვის უკვე მიდევნებული იყო თვალი Chromium-ის მეშვეობით.</translation>
 <translation id="1722370509450468186">თქვენი პაროლი თქვენს ანგარიშში (<ph name="EMAIL" />) შეინახება.</translation>
 <translation id="1736662517232558588">Chromium-ის მონაცემები გასუფთავდა</translation>
 <translation id="1791845338122684020">გახსნის თქვენი ისტორიის გვერდს Chromium-ში.</translation>
@@ -140,6 +141,7 @@
 1. გახსენით „პარამეტრები“
 2. შეეხეთ „ბრაუზერის ნაგულისხმევ აპს“
 3. აირჩიეთ Chromium.</translation>
+<translation id="6197255575340902638">„<ph name="MODULE_NAME" />“ თუ დაიმალება, Chromium ავტომატურად აღარ მიადევნებს თვალს თქვენს შემდგომ ამანათებს, ამანათებისთვის თვალის მიდევნებთან დაკავშირებული ძველი მონაცემები კი მთლიანად წაიშლება.</translation>
 <translation id="6247557882553405851">Google პაროლების მმართველი</translation>
 <translation id="6268381023930128611">გსურთ Chromium-იდან გამოსვლა?</translation>
 <translation id="6324041800010509197">ჩანართების ბადეზე გადასვლა Chromium-ში</translation>

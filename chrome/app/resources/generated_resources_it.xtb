@@ -1806,6 +1806,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2398546389094871088">Il Powerwash del dispositivo non comporterà la rimozione dei tuoi profili eSIM. Vai alle <ph name="LINK_BEGIN" />Impostazioni dispositivi mobili<ph name="LINK_END" /> per rimuovere manualmente questi profili.</translation>
 <translation id="2399699884460174994">Notifiche attivate</translation>
 <translation id="2399939490305346086">Dati di accesso del token di sicurezza</translation>
+<translation id="240006516586367791">Controlli multimediali</translation>
 <translation id="2400664245143453337">È richiesto l'aggiornamento immediato</translation>
 <translation id="2402226831639195063">Toni</translation>
 <translation id="2405887402346713222">Numeri di serie del dispositivo e del componente</translation>
@@ -4223,9 +4224,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4349828822184870497">Utili</translation>
 <translation id="4350230709416545141">Impedisci sempre al sito <ph name="HOST" /> di accedere alla tua posizione</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Per garantire un'esperienza ottimale, <ph name="DEVICE_OS" /> raccoglie i dati relativi all'hardware dei dispositivi e li condivide con Google per stabilire quali aggiornamenti devono essere recapitati. Se vuoi, puoi consentire a Google di usare questi dati per ulteriori scopi quali il supporto e i miglioramenti dell'assistenza e dell'esperienza relative a <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puoi accedere su questo dispositivo e visitare la sezione CHROMEOSFLEX_HARDWARE_INFO in chrome://system per visualizzare i dati inviati a Google per il filtro degli aggiornamenti, nonché eventuali altri casi in cui decidi di condividere dati con Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Visita la pagina g.co/flex/HWDataCollection per avere maggiori informazioni sui dati che <ph name="DEVICE_OS" /> potrebbe condividere con Google e sulle relative modalità di utilizzo.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Vai all'app "<ph name="APP_NAME" />" per gestire le app installate e riprodotte in streaming</translation>
 <translation id="4354073718307267720">Chiedi conferma quando un sito vuole creare una mappa 3D dell'ambiente circostante o monitorare la posizione della fotocamera</translation>
 <translation id="4354344420232759511">Qui verranno visualizzati i siti visitati</translation>
@@ -8593,6 +8591,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="793531125873261495">Errore durante il download della macchina virtuale. Riprova.</translation>
 <translation id="7935451262452051102">Completamento: <ph name="PERCENT" />%</translation>
 <translation id="7937809006412909895">Raccolta dati diagnostici in corso…</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Opzioni avanzate</translation>
 <translation id="793923212791838">Il dispositivo non può essere utilizzato con questo sito</translation>
 <translation id="7939328347457537652">Gestisci certificati dispositivo</translation>

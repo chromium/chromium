@@ -1820,6 +1820,7 @@
 <translation id="2398546389094871088">ການໃຊ້ Powerwash ໃນອຸປະກອນຂອງທ່ານຈະບໍ່ລຶບໂປຣໄຟລ໌ eSIM ຂອງທ່ານອອກ. ເຂົ້າໄປ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າມືຖື<ph name="LINK_END" /> ເພື່ອລຶບໂປຣໄຟລ໌ເຫຼົ່ານີ້ອອກດ້ວຍຕົວເອງ.</translation>
 <translation id="2399699884460174994">ເປິດການແຈ້ງເຕືອນແລ້ວ</translation>
 <translation id="2399939490305346086">ຂໍ້ມູນການເຂົ້າສູ່ລະບົບໃນກະແຈຄວາມປອດໄພ</translation>
+<translation id="240006516586367791">ການຄວບຄຸມມີເດຍ</translation>
 <translation id="2400664245143453337">ຈໍາເປັນຕ້ອງອັບເດດໃນທັນທີ</translation>
 <translation id="2402226831639195063">ໂທນສຽງ</translation>
 <translation id="2405887402346713222">ໝາຍເລກຊີຣຽວອຸປະກອນ ແລະ ສ່ວນປະກອບ</translation>
@@ -2584,6 +2585,7 @@
 <translation id="2990583317361835189">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ</translation>
 <translation id="2992931425024192067">ສະແດງເນື້ອຫາການແຈ້ງເຕືອນທັງໝົດ</translation>
 <translation id="2993517869960930405">ຂໍ້​ມູນ​ແອັບ</translation>
+<translation id="2996108796702395498">ໝາຍເລກຊີຣຽວຂອງອຸປະກອນຂອງທ່ານແມ່ນ <ph name="SERIAL_NUMBER" />. ໝາຍເລກນີ້ສາມາດຖືກນຳໃຊ້ເພື່ອຊ່ວຍເປີດການນຳໃຊ້ບໍລິການໄດ້.</translation>
 <translation id="2996286169319737844">ເຂົ້າລະຫັດຂໍ້ມູນໂດຍໃຊ້ລະຫັດຜ່ານການຊິ້ງຂໍ້ມູນຂອງທ່ານ. ນີ້ບໍ່ຮວມເອົາວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່ຈາກ Google Pay.</translation>
 <translation id="2996722619877761919">ກັບດ້ານຕາມແນວຍາວ</translation>
 <translation id="2996932914629936323">ລຶບລ້າງປະຫວັດຈາກອຸປະກອນທີ່ຊິ້ງຂໍ້ມູນທັງໝົດຂອງທ່ານ</translation>
@@ -2971,6 +2973,7 @@
 <translation id="3320630259304269485">Safe Browsing (ການປົກປ້ອງຈາກເວັບໄຊອັນຕະລາຍ) ແລະ ການຕັ້ງຄ່າຄວາມປອດໄພອື່ນໆ</translation>
 <translation id="3321460131042519426">ເປີດ​ໃຊ້​ງານ​ການ​ຕັດຄໍາ</translation>
 <translation id="3321494112580110651">ບໍ່ພົບເຄື່ອງພິມຂອງທ່ານບໍ?</translation>
+<translation id="3321776060736518525">ຈາກ <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">ໂບນັດ! ທ່ານໄດ້ເວລາໜ້າຈໍເພີ່ມ</translation>
 <translation id="3325804108816646710">ກຳລັງຊອກຫາໂປຣໄຟລ໌ທີ່ມີຢູ່...</translation>
 <translation id="3325910708063135066">ກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນປິດຢູ່ໃນການຕັ້ງຄ່າລະບົບ Mac</translation>
@@ -4237,9 +4240,6 @@
 <translation id="4349828822184870497">ມີປະໂຫຍດ</translation>
 <translation id="4350230709416545141">ບລັອກບໍ່ໃຫ້ <ph name="HOST" /> ເຂົ້າເຖິງສະຖານທີ່ຂອງທ່ານທຸກເທື່ອ</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />ເພື່ອມອບປະສົບການທີ່ດີທີ່ສຸດ, <ph name="DEVICE_OS" /> ຈະມີການຮວບຮວມຂໍ້ມູນຮາດແວກ່ຽວກັບອຸປະກອນຕ່າງໆ ແລະ ແບ່ງປັນມັນໃຫ້ກັບ Google ເພື່ອກວດສອບວ່າຄວນຈັດສົ່ງອັບເດດອັນໃດ. ຫຼືຖ້າບໍ່ດັ່ງນັ້ນ, ທ່ານສາມາດອະນຸຍາດໃຫ້ Google ໃຊ້ຂໍ້ມູນນີ້ເພື່ອຈຸດປະສົງເພີ່ມເຕີມໄດ້ ເຊັ່ນ: ການຊ່ວຍເຫຼືອ ແລະ ການປັບປຸງປະສົບການ ແລະ ບໍລິການຂອງ <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ທ່ານສາມາດເຂົ້າສູ່ລະບົບຢູ່ອຸປະກອນນີ້ ແລະ ເຂົ້າໄປພາກສ່ວນ CHROMEOSFLEX_HARDWARE_INFO ໃນ chrome://system ເພື່ອເບິ່ງຂໍ້ມູນທີ່ສົ່ງໄປໃຫ້ Google ສຳລັບການກັ່ນຕອງອັບເດດໄດ້, ຮວມທັງກໍລະນີອື່ນທີ່ທ່ານເລືອກແບ່ງປັນຂໍ້ມູນໃຫ້ກັບ Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />ສຳລັບລາຍລະອຽດເພີ່ມເຕີມກ່ຽວກັບຂໍ້ມູນທີ່ <ph name="DEVICE_OS" /> ອາດແບ່ງປັນໃຫ້ກັບ Google ແລະ ວິທີທີ່ມັນຖືກໃຊ້ ກະລຸນາເຂົ້າໄປ g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">ໄປຫາແອັບ "<ph name="APP_NAME" />" ເພື່ອຈັດການແອັບທີ່ຕິດຕັ້ງໄວ້ ແລະ ສະຕຣີມໄວ້</translation>
 <translation id="4354073718307267720">ຖາມເມື່ອເວັບໄຊຕ້ອງການສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ຫຼື ຕາມຕຳແໜ່ງກ້ອງ</translation>
 <translation id="4354344420232759511">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງຈະປາກົດຢູ່ບ່ອນນີ້</translation>
@@ -6216,6 +6216,7 @@
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{ກວດສອບສຳເລັດ 1 ເວັບໄຊ}other{ກວດສອບສຳເລັດ {NUM_SITES} ເວັບໄຊ}}</translation>
 <translation id="5997337190805127100">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການເຂົ້າເຖິງເວັບໄຊ</translation>
 <translation id="5998458948782718639">ຊ່ວຍປັບປຸງການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
+<translation id="5999024481231496910">ທ່ານໄດ້ເປີດການນຳໃຊ້ການທົດສອບການຍຸຕິການໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມແລ້ວ. ສິ່ງນີ້ບໍ່ສາມາດແທນທີ່ໂດຍໜ້າການຕັ້ງຄ່າໄດ້. ຫາກທ່ານຕ້ອງການເປີດການນຳໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມຄືນ, ໃຫ້ເລີ່ມເປີດໃຊ້ Chrome ຄືນໃໝ່ພ້ອມກັບປິດການນຳໃຊ້ຄຸນສົມບັດນີ້ໄວ້.</translation>
 <translation id="5999630716831179808">ສຽງ</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> ຜົນການຊອກຫາສຳລັບ '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6001839398155993679">ເລີ່ມກັນເລີຍ</translation>
@@ -6698,6 +6699,7 @@
 <translation id="6399675241776343019">ຖືກປະຕິເສດ</translation>
 <translation id="6399774419735315745">ສາຍລັບ</translation>
 <translation id="6400360390396538896">ເປີດຕະຫຼອດຢູ່ <ph name="ORIGIN" /></translation>
+<translation id="6401118106417399952">EID ຂອງອຸປະກອນຂອງທ່ານແມ່ນ <ph name="EID_NUMBER" /> ແລະ ໝາຍເລກຊີຣຽວອຸປະກອນແມ່ນ <ph name="SERIAL_NUMBER" />. ໝາຍເລກເຫຼົ່ານີ້ສາມາດຖືກນຳໃຊ້ເພື່ອຊ່ວຍເປີດການນຳໃຊ້ບໍລິການໄດ້.</translation>
 <translation id="6401458660421980302">ເພື່ອສົ່ງແຖບນີ້ໄປຫາອຸປະກອນອື່ນ, ໃຫ້ເຂົ້າສູ່ລະບົບຫາ Chrome ຢູ່ບ່ອນນັ້ນ</translation>
 <translation id="6401597285454423070">ຄອມພິວເຕີຂອງທ່ານມີອຸປະກອນຄວາມປອດໄພໂມດູນແພລດຟອມທີ່ເຊື່ອຖືໄດ້ (TPM), ເຊິ່ງຖືກນໍາໃຊ້ເພື່ອຈັດຕັ້ງປະຕິບັດຄຸນສົມບັດຄວາມປອດໄພທີ່ສໍາຄັນຫຼາຍອັນໃນ ChromeOS. ເຂົ້າເບິ່ງສູນຊ່ວຍເຫຼືອ Chromebook ເພື່ອສຶກສາເພີ່ມເຕີມ: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404511346730675251">ແກ້​ໄຂບຸກມາກສ໌</translation>
@@ -8207,6 +8209,7 @@
 <translation id="7637272932128132922">ໃນຂະນະທີ່ແຖບນີ້ບໍ່ເຮັດວຽກ, ຕົວປະຢັດໜ່ວຍຄວາມຈຳຈະສ້າງພື້ນທີ່ຫວ່າງໃນໜ່ວຍຄວາມຈຳເພື່ອໃຫ້ໜ້າວຽກອື່ນໃຊ້ໄດ້. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ຕອນໃດກໍໄດ້ໃນ <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">ບ່ອນຈັດເກັບຂໍ້ມູນບໍ່ພຽງພໍ</translation>
 <translation id="7639914187072011620">ໂຫຼດການປ່ຽນເສັ້ນທາງ SAML ຈາກເຊີບເວີບໍ່ສຳເລັດ</translation>
+<translation id="7640256527901510478">IMEI ຂອງອຸປະກອນຂອງທ່ານແມ່ນ <ph name="IMEI_NUMBER" /> ແລະ ຊີຣຽວຂອງອຸປະກອນແມ່ນ <ph name="SERIAL_NUMBER" />. ໝາຍເລກເຫຼົ່ານີ້ສາມາດຖືກນຳໃຊ້ເພື່ອຊ່ວຍເປີດການນຳໃຊ້ບໍລິການໄດ້.</translation>
 <translation id="7640308610547854367">ທ່ານໄດ້ປ່ຽນກັບຄືນໄປໃຊ້ ChromeOS ເວີຊັນກ່ອນໜ້າ. ເພື່ອຮັບການອັບເດດ, ໃຫ້ລໍຖ້າຈົນກວ່າເວີຊັນຕໍ່ໄປຈະພ້ອມໃຫ້ນຳໃຊ້.</translation>
 <translation id="7641513591566880111">ຊື່ໂປຣໄຟລ໌ໃໝ່</translation>
 <translation id="764178579712141045">ເພີ່ມ <ph name="USER_EMAIL" /> ແລ້ວ</translation>
@@ -9703,6 +9706,7 @@
 <translation id="881799181680267069">ເຊື່ອງອື່ນໆ</translation>
 <translation id="8818152010000655963">ພາບພື້ນຫຼັງ</translation>
 <translation id="8818958672113348984">ຢັ້ງຢືນຜ່ານໂທລະສັບຂອງທ່ານ</translation>
+<translation id="8819510664278523111">EID ຂອງອຸປະກອນຂອງທ່ານແມ່ນ <ph name="EID_NUMBER" /> , IMEI ຂອງອຸປະກອນແມ່ນ <ph name="IMEI_NUMBER" /> ແລະ ໝາຍເລກຊີຣຽວຂອງອຸປະກອນແມ່ນ <ph name="SERIAL_NUMBER" />. ໝາຍເລກເຫຼົ່ານີ້ສາມາດຖືກນຳໃຊ້ເພື່ອຊ່ວຍເປີດການນຳໃຊ້ບໍລິການໄດ້.</translation>
 <translation id="8820817407110198400">ບຸກມາກ</translation>
 <translation id="8821045908425223359">ກຳນົດຄ່າທີ່ຢູ່ IP ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> ພ້ອມໃຫ້ນຳໃຊ້ແລ້ວ.</translation>
@@ -10253,6 +10257,7 @@
 <translation id="956500788634395331">ທ່ານໄດ້ຮັບການປົກປ້ອງຈາກສ່ວນຂະຫຍາຍທີ່ອາດຈະເປັນອັນຕະລາຍ</translation>
 <translation id="957179356621191750">6 ຈຸດ</translation>
 <translation id="957960681186851048">ເວັບໄຊນີ້ໄດ້ພະຍາຍາມດາວໂຫຼດຫຼາຍໄຟລ໌ໂດຍອັດຕະໂນມັດ</translation>
+<translation id="958571289841636277">ກັບຫຼັງ ແລະ ໄປໜ້າດ້ວຍທ່າທາງການປັດ</translation>
 <translation id="960987915827980018">ຍັງເຫຼືອປະ​ມານ 1 ຊົ່ວ​ໂມງ</translation>
 <translation id="962802172452141067">ໂຄງສ້າງໂຟນເດີບຸກມາກ</translation>
 <translation id="963000966785016697">ຊອກຫາຮູບດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

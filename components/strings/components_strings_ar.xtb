@@ -327,6 +327,7 @@
 <translation id="1615402009686901181">تحظر سياسة المشرف إمكانية تصوير الشاشة عند عرض محتوى سري.</translation>
 <translation id="1617276713587758852">مركبات كروس أوفر</translation>
 <translation id="1618571384971354160">سحب مركبات ومساعدة في حالات الطوارئ على الطريق</translation>
+<translation id="1619007254056372606">إدارة بيانات الموقع الإلكتروني على الجهاز فقط</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1622571349153632031">أطعمة نباتية</translation>
 <translation id="162285686621567578">حَظَر أحد والدَيك هذا الموقع الإلكتروني.</translation>
@@ -1187,6 +1188,7 @@
 <translation id="3440783957068352691">صفحة مربّعة</translation>
 <translation id="3441653493275994384">الشاشة</translation>
 <translation id="3443504041532578451">قرص ضوئي (برّاق)</translation>
+<translation id="344449859752187052">ملفات تعريف الارتباط التابعة لجهات خارجية محظورة.</translation>
 <translation id="3447661539832366887">أوقف مالك هذا الجهاز تشغيل لعبة الديناصور.</translation>
 <translation id="3447884698081792621">عرض الشهادة (من إصدار <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">الفاصل الزمني للجلب:</translation>
@@ -1237,6 +1239,7 @@
 <translation id="3552297013052089404">‏خط Sans-serif</translation>
 <translation id="3558573058928565255">خلال النهار</translation>
 <translation id="355995771319966853">التراجع عن الملء التلقائي</translation>
+<translation id="3560408312959371419">خيارات الحماية من التتبع وبيانات الموقع الإلكتروني على الجهاز فقط</translation>
 <translation id="3560824484345057728">عرض المواقع الإلكترونية ذات الصلة</translation>
 <translation id="3566021033012934673">اتّصالك غير خاصّ</translation>
 <translation id="3566336457819493938">215 × 315 ملم</translation>
@@ -2292,6 +2295,7 @@
 <translation id="5691848789297492617">تم فتح نافذة بطول الشاشة لحفظ البطاقة</translation>
 <translation id="5695542892312572833">‏هل تريد استخدام Windows Hello لإثبات صحة عملية الشراء وإكمالها؟</translation>
 <translation id="5699628521141772782">منتجات ألبان وبيض</translation>
+<translation id="5700761515355162635">ملفات تعريف الارتباط التابعة لجهات خارجية مسموح بها.</translation>
 <translation id="5701381305118179107">توسيط</translation>
 <translation id="570530837424789914">إدارة...</translation>
 <translation id="5707154300732650394">استئناف سجلّ أنشطة البحث والتصفُّح</translation>
@@ -3881,6 +3885,7 @@
 <translation id="893332455753468063">إضافة اسم</translation>
 <translation id="8942355029279167844">‏لقد سمح مشرفك لتطبيق <ph name="APP_NAME" /> بجمع بيانات التشخيص لتحسين تجربة المنتج. يُرجى الانتقال إلى <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> للحصول على مزيد من المعلومات.</translation>
 <translation id="8943282376843390568">ليموني</translation>
+<translation id="8944485226638699751">محدودة</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">قوانين وحكومات</translation>
 <translation id="8954252855949068147">ملابس</translation>

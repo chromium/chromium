@@ -1829,6 +1829,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2398546389094871088">Če v napravi izvedete postopek Powerwash, profili za eSIM v napravi ne bodo odstranjeni. Odprite <ph name="LINK_BEGIN" />nastavitve za mobilna omrežja<ph name="LINK_END" />, če želite ročno odstraniti te profile.</translation>
 <translation id="2399699884460174994">Obvestila so vklopljena</translation>
 <translation id="2399939490305346086">Podatki za prijavo na varnostnem ključu</translation>
+<translation id="240006516586367791">Kontrolniki predstavnosti</translation>
 <translation id="2400664245143453337">Potrebna je takojšnja posodobitev</translation>
 <translation id="2402226831639195063">Toni</translation>
 <translation id="2405887402346713222">Serijske številke naprav in komponent</translation>
@@ -4249,9 +4250,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4349828822184870497">Uporabno</translation>
 <translation id="4350230709416545141">Gostitelju <ph name="HOST" /> vedno prepreči dostop do lokacije</translation>
 <translation id="4350782034419308508">OK Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Zaradi omogočanja najboljše izkušnje operacijski sistem <ph name="DEVICE_OS" /> zbira podatke o strojni opremi naprav in jih deli z Googlom zaradi določanja, katere posodobitve naj vam zagotovi. Izbirno lahko dovolite Googlu, da te podatke uporablja za dodatne namene, kot so podpora in izboljšanje izkušnje sistema <ph name="DEVICE_OS" /> ter njegovih storitev.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Prijavite se lahko v to napravo in obiščete razdelek CHROMEOSFLEX_HARDWARE_INFO na chrome://system, kjer si ogledate podatke, poslane Googlu zaradi filtriranja posodobitev, in druge primere, v katerih ste izbrali deljenje podatkov z Googlom.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Če želite več podrobnosti o podatkih, ki jih <ph name="DEVICE_OS" /> morda deli z Googlom in kako se ti uporabljajo, obiščite g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Če želite upravljati nameščene aplikacije in aplikacije, ki se izvajajo pretočno, odprite aplikacijo »<ph name="APP_NAME" />«</translation>
 <translation id="4354073718307267720">Vprašaj, ko želi spletno mesto ustvariti 3D-zemljevid vaše okolice ali spremljati položaj kamere</translation>
 <translation id="4354344420232759511">Spletna mesta, ki jih obiščete, bodo prikazana tu</translation>
@@ -8641,6 +8639,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="793531125873261495">Napaka pri prenosu navideznega računalnika. Poskusite znova.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" /> % dokončano</translation>
 <translation id="7937809006412909895">Zbiranje diagnostičnih podatkov</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Dodatne možnosti</translation>
 <translation id="793923212791838">Naprave ni mogoče uporabljati s tem spletnim mestom</translation>
 <translation id="7939328347457537652">Upravljanje potrdil v napravi</translation>

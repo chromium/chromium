@@ -168,6 +168,7 @@
 <translation id="1847795903283049083">يمكنك أيضًا الاطّلاع على هذه العناصر وإدارتها في الإشارات المرجعية أو "قائمة القراءة" أو "مدير كلمات المرور"</translation>
 <translation id="1870148520156231997">الكشف عن كلمة المرور</translation>
 <translation id="1872096359983322073">الكشاف</translation>
+<translation id="1876851015978093044">يؤدي هذا الإجراء إلى عرض هذا العنصر.</translation>
 <translation id="1882901927376062252">{count,plural, =1{‏تم حفظ الإشارة المرجعية في حسابك على Google‏ ({email}).}zero{‏تم حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email}).}two{‏تم حفظ إشارتَين مرجعيتَين ({count}) في حسابك على Google‏ ({email}).}few{‏تم حفظ {count} إشارات مرجعية في حسابك على Google‏ ({email}).}many{‏تم حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email}).}other{‏تم حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email}).}}</translation>
 <translation id="1883255238294161206">تصغير القائمة</translation>
 <translation id="1890237935065108104">هذا الإعداد غير متوفِّر.</translation>
@@ -277,6 +278,7 @@
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="2484459871750294497">كيف يمكنني تفعيل هذه الميزة؟</translation>
 <translation id="2496626742194544812">الانتقال إلى علامة التبويب الأولى</translation>
+<translation id="2499505845365628575">يمكنك العثور على سجلّ التصفُّح بالكامل من <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2500374554657206846">خيارات حفظ كلمة المرور</translation>
 <translation id="2511117522375201202">لديك <ph name="NUMBER_OF_PASSWORDS" /> كلمة مرور محتمَل تعرّضها للاختراق، وقد تسبِّب مشاكل أمنية.</translation>
 <translation id="2523363575747517183">يحاول الموقع الإلكتروني هذا فتح تطبيق آخر بشكلٍ متكرر.</translation>
@@ -306,6 +308,7 @@
 <translation id="2648803196158606475">حذف المقروءة</translation>
 <translation id="2664621323652615289">إيقاف</translation>
 <translation id="2666092431469916601">أعلى</translation>
+<translation id="2669454659051515572">يمكن لأي شخص يستخدم هذا الجهاز الاطّلاع على الملفات التي تم تنزيلها.</translation>
 <translation id="2671426118752779020">‏يمكنك استخدام كلمات المرور التي حفظتها في "مدير كلمات المرور" من Google في التطبيقات الأخرى على هاتف iPhone.</translation>
 <translation id="2690858294534178585">الكاميرا قيد الاستخدام</translation>
 <translation id="26915454213703967">‏البحث في الصور باستخدام Google</translation>
@@ -1096,6 +1099,7 @@
 <translation id="6785453220513215166">جارٍ إرسال تقرير بالأعطال…</translation>
 <translation id="6790502149545262384">قريبًا، ستظهر لك قصص من "<ph name="CHANNEL_NAME" />" عند فتح علامة تبويب جديدة.</translation>
 <translation id="6797885426782475225">البحث الصوتي</translation>
+<translation id="6800349425672670802">يمكنك الوصول إلى جميع علامات التبويب المفتوحة من خلال "أداة التبديل بين علامات التبويب".</translation>
 <translation id="6807889908376551050">إظهار الكل...</translation>
 <translation id="681368974849482173">تم إنشاء العنصر</translation>
 <translation id="6822587385560699678">عند تفعيل هذا الإعداد، يتم حفظ كلمات المرور في <ph name="ACCOUNT" />. وعند إيقافه، يتم حفظ كلمات المرور على هذا الجهاز فقط.</translation>
@@ -1188,6 +1192,7 @@
 <translation id="7367530036083223701">يمكنك معرفة كلمات المرور بأمان من الشاشة الرئيسية باستخدام التطبيق المصغَّر "مدير كلمات المرور".</translation>
 <translation id="7380220816562673297">‏في الوقت الحالي، لا يمكنك مشاركة كلمات المرور إلّا مع أفراد العائلة. ويمكنك <ph name="BEGIN_LINK" />إنشاء مجموعة عائلة<ph name="END_LINK" /> تضم 6 أفراد كحد أقصى والاستفادة بشكل أفضل من المنتجات والاشتراكات التي توفّرها Google.</translation>
 <translation id="7383797227493018512">قائمة القراءة</translation>
+<translation id="7396331865858820922">لم تتم مشاركة كلمة المرور</translation>
 <translation id="7398893703713203428">إنشاء رابط</translation>
 <translation id="7399802613464275309">التحقّق من الأمان</translation>
 <translation id="7400418766976504921">‏عنوان URL</translation>
@@ -1208,6 +1213,7 @@
 <translation id="7488874549363591659">تم التسليم</translation>
 <translation id="7491131399623468277">الانتقال إلى الإعدادات…</translation>
 <translation id="7492574581995589075">‏أوقفت مؤسستك إمكانية استخدام وحفظ بيانات Chrome في حسابك على Google. سيتم حفظ كلمات المرور والإشارات المرجعية الجديدة وغيرها على هذا الجهاز فقط.</translation>
+<translation id="749854780843431406">يمكنك فتح علامة تبويب جديدة من خلال الزر "<ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="750149195207506638">الإشارات المرجعية مخفية.</translation>
 <translation id="750228856503700085">ميزة تلقّي آخر الأخبار غير متاحة.</translation>
 <translation id="750493650310597496">لم يتم اختيار أي إشارات</translation>
@@ -1267,6 +1273,7 @@
 <translation id="778855399387580014">‏يمكنك بدء البحث في علامة تبويب Chrome جديدة.</translation>
 <translation id="7791543448312431591">إضافة</translation>
 <translation id="7807060072011926525">‏خلاصة مقدَّمة من Google</translation>
+<translation id="7812377703891978671">يمكنك الوصول إلى جميع سجلّات التصفُّح من خلال اختيار <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">عمليات التنزيل</translation>
 <translation id="7839985698273989086">صفحة بلا إنترنت</translation>
 <translation id="7840771868269352570">ستتم إزالة العناصر التي اخترتها.</translation>
@@ -1414,6 +1421,7 @@
 <translation id="8560253818350321773">عرض العناصر الأكثر استخدامًا أولاً</translation>
 <translation id="8588404856427128947">غير مفعَّل</translation>
 <translation id="8591976964826315682">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي</translation>
+<translation id="8593565399399144771">يمكنك فتح علامة تبويب جديدة هنا.</translation>
 <translation id="8605219856220328675">إغلاق علامة التبويب.</translation>
 <translation id="8613883225817609844">إخفاء علامات التبويب الأخيرة</translation>
 <translation id="8620640915598389714">تعديل</translation>

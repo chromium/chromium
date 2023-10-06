@@ -1812,6 +1812,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2398546389094871088">Seadmes funktsiooni Powerwash kasutamine ei eemalda teie eSIM-i profiile. Nende profiilide käsitsi eemaldamiseks avage <ph name="LINK_BEGIN" />Mobiiliseaded<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Märguanded on sisse lülitatud</translation>
 <translation id="2399939490305346086">Turvavõtmel olevad sisselogimisandmed</translation>
+<translation id="240006516586367791">Meedia juhtnupud</translation>
 <translation id="2400664245143453337">Kohene värskendamine on nõutav</translation>
 <translation id="2402226831639195063">Toonid</translation>
 <translation id="2405887402346713222">Seadme ja selle komponentide seerianumbrid</translation>
@@ -4229,9 +4230,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4349828822184870497">Kasulik</translation>
 <translation id="4350230709416545141">Blokeeri hosti <ph name="HOST" /> jaoks alati juurdepääs minu asukohale</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Parima kasutuskogemuse pakkumiseks kogub <ph name="DEVICE_OS" /> riistvaraandmeid seadmete kohta ja jagab neid Google'iga, et otsustada, milliseid värskendusi saata. Teil on võimalik lubada Google'il neid andmeid kasutada ka muudel eesmärkidel, nagu toe pakkumine ning operatsioonisüsteemi <ph name="DEVICE_OS" /> kasutuskogemuse ja teenuse täiustamine.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Võite selles seadmes sisse logida ja külastada lehel chrome://system jaotist CHROMEOSFLEX_HARDWARE_INFO, et näha andmeid, mis saadetakse värskenduste filtreerimiseks Google'ile, aga ka muid olukordi, kus otsustate andmeid Google'iga jagada.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Lisateabe saamiseks andmete kohta, mida <ph name="DEVICE_OS" /> võib Google'iga jagada (ja kuidas neid kasutatakse), külastage saiti g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Installitud ja voogedastatavate rakenduste haldamiseks avage rakendus „<ph name="APP_NAME" />“</translation>
 <translation id="4354073718307267720">Küsi, kui sait soovib luua mind ümbritsevast 3D-kaarti või jälgida kaamera asendit</translation>
 <translation id="4354344420232759511">Külastatud saidid kuvatakse siin</translation>
@@ -8602,6 +8600,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="793531125873261495">Viga virtuaalseadme allalaadimisel. Proovige uuesti.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% on lõpetatud</translation>
 <translation id="7937809006412909895">Diagnostikaandmete allalaadimine</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Täpsemad valikud</translation>
 <translation id="793923212791838">Teie seadet ei saa sellel saidil kasutada</translation>
 <translation id="7939328347457537652">Seadmete sertifikaatide haldamine</translation>

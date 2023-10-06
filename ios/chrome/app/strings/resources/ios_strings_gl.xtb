@@ -304,6 +304,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2648803196158606475">Eliminar os elementos lidos</translation>
 <translation id="2664621323652615289">Deter</translation>
 <translation id="2666092431469916601">Parte superior</translation>
+<translation id="2669454659051515572">Calquera que use este dispositivo pode ver os ficheiros descargados</translation>
 <translation id="2671426118752779020">Podes utilizar os contrasinais que gardaches no xestor de contrasinais de Google noutras aplicacións do teu iPhone.</translation>
 <translation id="2690858294534178585">Estase utilizando a cámara</translation>
 <translation id="26915454213703967">Buscar na imaxe con Google</translation>
@@ -799,6 +800,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5360976571138293719">Para ver máis opcións relacionadas coa configuración da privacidade, seguranza e recompilación de datos, consulta <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Os sitios que sigas mostraranse aquí</translation>
 <translation id="5388358297987318779">Abrir imaxe</translation>
+<translation id="5396950905475481456">Invita os membros da familia</translation>
 <translation id="5407969256130905701">Descartar cambios</translation>
 <translation id="5414763847370083940">Recibirás unha alerta se baixa o prezo en calquera sitio.</translation>
 <translation id="5416022985862681400">Últimos 7 días</translation>
@@ -1550,4 +1552,5 @@ Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Intr
 <translation id="988141524645182168">Outros dispositivos</translation>
 <translation id="989988560359834682">Editar enderezo</translation>
 <translation id="994757059139821576">Suxestións de artigos</translation>
+<translation id="999768147936949692">Polo de agora, só podes compartir contrasinais cos membros da familia. <ph name="BEGIN_LINK" />Invita os membros da familia<ph name="END_LINK" /> a unirse ao teu grupo e aproveita os teus produtos e subscricións de Google.</translation>
 </translationbundle>

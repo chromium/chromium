@@ -304,6 +304,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2648803196158606475">Smazat přečtené</translation>
 <translation id="2664621323652615289">Ukončit</translation>
 <translation id="2666092431469916601">Nahoru</translation>
+<translation id="2669454659051515572">Stažené soubory může vidět kdokoli, kdo používá tohle zařízení</translation>
 <translation id="2671426118752779020">Hesla, která jste si uložili do Správce hesel Google, můžete používat v jiných aplikacích na svém iPhonu.</translation>
 <translation id="2690858294534178585">Kamera je používána</translation>
 <translation id="26915454213703967">Vyhledat na obrázku pomocí Googlu</translation>
@@ -799,6 +800,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5360976571138293719">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat najdete v části <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Zde najdete weby, které sledujete</translation>
 <translation id="5388358297987318779">Otevřít obrázek</translation>
+<translation id="5396950905475481456">Pozvěte členy rodiny</translation>
 <translation id="5407969256130905701">Zahodit změny</translation>
 <translation id="5414763847370083940">Pokud cena na některém webu klesne, obdržíte upozornění.</translation>
 <translation id="5416022985862681400">Posledních 7 dní</translation>
@@ -1550,4 +1552,5 @@ Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud 
 <translation id="988141524645182168">Jiná zařízení</translation>
 <translation id="989988560359834682">Upravit adresu</translation>
 <translation id="994757059139821576">Návrhy článků</translation>
+<translation id="999768147936949692">Prozatím můžete hesla sdílet pouze se členy rodiny. <ph name="BEGIN_LINK" />Pozvěte členy rodiny<ph name="END_LINK" /> do skupiny a využívejte své služby a předplatná na Googlu na plno.</translation>
 </translationbundle>

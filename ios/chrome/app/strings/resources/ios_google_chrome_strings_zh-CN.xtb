@@ -117,6 +117,7 @@
 <translation id="5389212809648216794">由于另一个应用正在使用您的相机，因此 Google Chrome 无法使用</translation>
 <translation id="5395376160638294582">请确保您可以一直使用 Google 账号中的 Chrome 数据</translation>
 <translation id="5439191312780166229">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
+<translation id="5442013002200339429">如果您隐藏“<ph name="MODULE_NAME" />”，Chrome 将不再自动跟踪您的未来包裹，而是会删除您的所有过往包裹跟踪数据。</translation>
 <translation id="5460571915754665838">4. 选择“Chrome”</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome 将帮助您在“新标签页”页面中跟踪此包裹。}other{Chrome 将帮助您在“新标签页”页面中跟踪这些包裹。}}</translation>
 <translation id="5492504007368565877">Google 密码管理工具无法检查您的密码。</translation>
@@ -188,6 +189,7 @@
 <translation id="7933491483529363150">在 Chrome 中打开“我最近打开的标签页”。</translation>
 <translation id="8022947259858476807">默认使用 Chrome 来打开链接、在微件中执行搜索以及在其他应用中自动填充密码</translation>
 <translation id="804638182476029347">开启 Chrome 通知功能后才能接收降价提醒</translation>
+<translation id="8069507567842347179">已在 Chrome 上跟踪此包裹。</translation>
 <translation id="81358522153858150">Chrome 现在支持为您的受管理账号设置用户规范</translation>
 <translation id="8160472928944011082">Chrome 无法更新</translation>
 <translation id="8174679664544842874">在 Chrome 中打开新标签页。</translation>

@@ -1811,6 +1811,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2398546389094871088">A função Powerwash do dispositivo não remove os seus perfis de eSIM. Aceda a <ph name="LINK_BEGIN" />Definições para dispositivos móveis<ph name="LINK_END" /> para remover manualmente estes perfis.</translation>
 <translation id="2399699884460174994">Notificações ativadas</translation>
 <translation id="2399939490305346086">Dados de início de sessão da chave de segurança</translation>
+<translation id="240006516586367791">Controlos de multimédia</translation>
 <translation id="2400664245143453337">É necessária uma atualização imediata</translation>
 <translation id="2402226831639195063">Tons</translation>
 <translation id="2405887402346713222">Números de série de dispositivo e componentes</translation>
@@ -4232,9 +4233,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4349828822184870497">Útil</translation>
 <translation id="4350230709416545141">Impedir sempre que <ph name="HOST" /> aceda à sua localização</translation>
 <translation id="4350782034419308508">OK Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Para proporcionar a melhor experiência, o <ph name="DEVICE_OS" /> recolhe dados de hardware acerca dos dispositivos e partilha-os com a Google para determinar que atualizações devem ser fornecidas. Opcionalmente, pode permitir que a Google use estes dados para fins adicionais, como o apoio técnico e melhorias ao serviço e experiência do <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pode iniciar sessão neste dispositivo e visitar a secção CHROMEOSFLEX_HARDWARE_INFO em chrome://system para ver os dados enviados para a Google para atualizar a filtragem, bem como outras instâncias onde opta por partilhar dados com a Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Para obter mais detalhes sobre os dados que o <ph name="DEVICE_OS" /> pode partilhar com a Google e como são usados, visite g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Aceda à app "<ph name="APP_NAME" />" para gerir as apps instaladas e em stream</translation>
 <translation id="4354073718307267720">Perguntar quando um site pretender criar um mapa 3D do ambiente à sua volta ou monitorizar a posição da câmara</translation>
 <translation id="4354344420232759511">Os sites que visitar aparecem aqui</translation>
@@ -8616,6 +8614,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="793531125873261495">Ocorreu um erro ao transferir a máquina virtual. Tente novamente.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% concluído</translation>
 <translation id="7937809006412909895">A recolher dados de diagnóstico</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Opções avançadas</translation>
 <translation id="793923212791838">Não é possível usar o seu dispositivo com este site</translation>
 <translation id="7939328347457537652">Gerir certificados do dispositivo</translation>

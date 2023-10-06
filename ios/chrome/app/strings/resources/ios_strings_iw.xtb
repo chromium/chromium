@@ -303,6 +303,7 @@
 <translation id="2648803196158606475">מחיקת פריטים שנקראו</translation>
 <translation id="2664621323652615289">עצירה</translation>
 <translation id="2666092431469916601">למעלה</translation>
+<translation id="2669454659051515572">כל מי שמשתמש במכשיר הזה יכול לראות את הקבצים שהורדו</translation>
 <translation id="2671426118752779020">‏יש לך אפשרות להשתמש בסיסמאות ששמרת במנהל הסיסמאות של Google באפליקציות אחרות ב-iPhone.</translation>
 <translation id="2690858294534178585">המצלמה נמצאת בשימוש</translation>
 <translation id="26915454213703967">‏חיפוש בתמונה עם Google</translation>
@@ -797,6 +798,7 @@
 <translation id="5360976571138293719">‏הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים ניתן למצוא בדף <ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">כאן אפשר לראות את האתרים שנמצאים במעקב</translation>
 <translation id="5388358297987318779">פתיחת תמונה</translation>
+<translation id="5396950905475481456">הזמנה של בני משפחה לקבוצה המשפחתית</translation>
 <translation id="5407969256130905701">ביטול השינויים</translation>
 <translation id="5414763847370083940">תתקבל התראה על הנחות באתר כלשהו.</translation>
 <translation id="5416022985862681400">7 הימים האחרונים</translation>
@@ -1546,4 +1548,5 @@
 <translation id="988141524645182168">מכשירים אחרים</translation>
 <translation id="989988560359834682">עריכת כתובת</translation>
 <translation id="994757059139821576">מאמרים מוצעים</translation>
+<translation id="999768147936949692">‏בשלב הזה אפשר לשתף סיסמאות רק עם חברים בקבוצה המשפחתית. עליך <ph name="BEGIN_LINK" />להזמין בני משפחה<ph name="END_LINK" /> להצטרף לקבוצה, וכך ניתן יהיה להפיק יותר ממוצרי Google ומהמינויים לשירותי Google.</translation>
 </translationbundle>

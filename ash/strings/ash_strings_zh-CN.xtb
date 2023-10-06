@@ -704,6 +704,7 @@
 <translation id="385300504083504382">开头</translation>
 <translation id="3859364108019690">无法流式传输应用</translation>
 <translation id="3861651314799684201">按 Enter 键即可录制整个屏幕</translation>
+<translation id="3865912916886104060">未连接任何设备。Wi-Fi 将会关闭以开始使用热点。</translation>
 <translation id="3886872229787704059">今天打开过</translation>
 <translation id="3891340733213178823">连按两次Ctrl+Shift+Q即可退出。</translation>
 <translation id="3893630138897523026">ChromeVox（语音反馈）</translation>
@@ -788,6 +789,7 @@
 <translation id="4197790712631116042">已关闭</translation>
 <translation id="4201033867194214117">“<ph name="FEATURE_NAME" />”不可用。</translation>
 <translation id="4201051445878709314">显示上一个月</translation>
+<translation id="4202362334312791952">已连接 1 部设备。Wi-Fi 将会关闭以开始使用热点。</translation>
 <translation id="4209973997261364186">Wi-Fi 处于开启状态</translation>
 <translation id="4212472694152630271">切换到 PIN 码</translation>
 <translation id="4215497585250573029">VPN 设置</translation>
@@ -904,7 +906,6 @@
 <translation id="468293128311738995">您手机中的应用</translation>
 <translation id="4690510401873698237">任务栏位于屏幕底部</translation>
 <translation id="4696813013609194136">使用家长访问代码解锁设备</translation>
-<translation id="4698850295812410683">显示触控笔工具</translation>
 <translation id="4702647871202761252">已关闭隐私保护屏</translation>
 <translation id="4706121060329443414">系统会在晚些时候尝试下载。目前，系统会将语音识别结果文件发送给 Google 进行处理。</translation>
 <translation id="470644585772471629">颜色反转</translation>
@@ -1051,6 +1052,7 @@
 <translation id="5258528442992323769">尚未保存任何桌面</translation>
 <translation id="5260676007519551770">桌面 4</translation>
 <translation id="5268819379131021772">Google 任务列表</translation>
+<translation id="5275923704957843041">桌面预览</translation>
 <translation id="5278086053818066789">开启/关闭 ChromeVox（语音反馈）</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />中有需要您关注的新动态。</translation>
 <translation id="5283198616748585639">加 1 分钟</translation>
@@ -1167,6 +1169,7 @@
 <translation id="5707775774148071965">您的设备支持的数据传输速率高于数据线的数据传输速率。设备性能可能会受到限制。</translation>
 <translation id="5710450975648804523">“请勿打扰”模式已开启</translation>
 <translation id="571295407079589142">移动数据网络处于关闭状态</translation>
+<translation id="5716891621595980681">已连接 <ph name="DEVICECOUNT" /> 部设备。Wi-Fi 将会关闭以开始使用热点。</translation>
 <translation id="5727460725221669831">如果您忘记了密码，或最近更改过自己的 Google 账号密码，请尝试让此用户恢复登录。</translation>
 <translation id="573413375004481890">此设备无法支持您的所有显示屏，因此断开了与其中一个显示屏的连接</translation>
 <translation id="5740328398383587084">附近分享</translation>

@@ -1803,6 +1803,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2398546389094871088">Ein Powerwash des Geräts löscht nicht deine eSIM-Profile. Öffne die <ph name="LINK_BEGIN" />Einstellungen für mobile Nutzung<ph name="LINK_END" />, um diese Profile manuell zu entfernen.</translation>
 <translation id="2399699884460174994">Benachrichtigungen aktiviert</translation>
 <translation id="2399939490305346086">Anmeldedaten auf Sicherheitsschlüssel</translation>
+<translation id="240006516586367791">Mediensteuerelemente</translation>
 <translation id="2400664245143453337">Sofortiges Update erforderlich</translation>
 <translation id="2402226831639195063">Töne</translation>
 <translation id="2405887402346713222">Seriennummern von Geräten und Komponenten</translation>
@@ -4218,9 +4219,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4349828822184870497">Hilfreich</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> immer daran hindern, auf den Standort zuzugreifen</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Um eine optimale Nutzung zu ermöglichen, erhebt <ph name="DEVICE_OS" /> Hardwaredaten zu Geräten und teilt diese mit Google, um zu prüfen, welche Updates installiert werden sollten. Du kannst außerdem zulassen, dass Google diese Daten zu Supportzwecken und zur Verbesserung von <ph name="DEVICE_OS" /> verwendet.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Für einen Überblick über die für die Updatefilterung erhobenen Daten kannst du dich auf diesem Gerät anmelden und unter chrome://system den Abschnitt CHROMEOSFLEX_HARDWARE_INFO aufrufen. Dort siehst du auch, welche Daten du noch mit Google teilst.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Weitere Informationen zu den Daten, die <ph name="DEVICE_OS" /> möglicherweise an Google sendet, und deren Verwendung findest du unter g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Geh zur App „<ph name="APP_NAME" />“, um installierte und gestreamte Apps zu verwalten</translation>
 <translation id="4354073718307267720">Nachfragen, wenn eine Website eine 3D-Karte meiner Umgebung erstellen oder die Kameraposition verfolgen möchte</translation>
 <translation id="4354344420232759511">Hier findest du die von dir besuchten Websites</translation>
@@ -8586,6 +8584,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="793531125873261495">Fehler beim Herunterladen der virtuellen Maschine. Bitte versuche es noch einmal.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" /> % abgeschlossen</translation>
 <translation id="7937809006412909895">Diagnosedaten werden erfasst</translation>
+<translation id="7938881824185772026">Google Labs</translation>
 <translation id="7939062555109487992">Erweiterte Optionen</translation>
 <translation id="793923212791838">Dein Gerät kann für diese Website nicht verwendet werden</translation>
 <translation id="7939328347457537652">Gerätezertifikate verwalten</translation>

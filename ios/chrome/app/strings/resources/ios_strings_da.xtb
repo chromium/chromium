@@ -304,6 +304,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2648803196158606475">Slet læste</translation>
 <translation id="2664621323652615289">Stop</translation>
 <translation id="2666092431469916601">Top</translation>
+<translation id="2669454659051515572">Alle, der bruger denne enhed, kan se downloadede filer</translation>
 <translation id="2671426118752779020">Du kan bruge de adgangskoder, du har gemt i Google Adgangskodeadministrator, i andre apps på din iPhone.</translation>
 <translation id="2690858294534178585">Kameraet er i brug</translation>
 <translation id="26915454213703967">Søg i billedet med Google</translation>
@@ -799,6 +800,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5360976571138293719">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Her finder du de websites, du følger</translation>
 <translation id="5388358297987318779">Åbn billede</translation>
+<translation id="5396950905475481456">Inviter familiemedlemmer</translation>
 <translation id="5407969256130905701">Kassér ændringer</translation>
 <translation id="5414763847370083940">Du får en underretning, hvis prisen falder på et website.</translation>
 <translation id="5416022985862681400">De seneste syv dage</translation>
@@ -1550,4 +1552,5 @@ Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgan
 <translation id="988141524645182168">Andre enheder</translation>
 <translation id="989988560359834682">Rediger adresse</translation>
 <translation id="994757059139821576">Artikelforslag</translation>
+<translation id="999768147936949692">Indtil videre kan du kun dele adgangskoder med familiemedlemmer. <ph name="BEGIN_LINK" />Inviter familiemedlemmer<ph name="END_LINK" /> til at deltage i din gruppe, og få mere ud af dine produkter og abonnementer fra Google.</translation>
 </translationbundle>

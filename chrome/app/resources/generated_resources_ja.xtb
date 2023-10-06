@@ -1801,6 +1801,7 @@
 <translation id="2398546389094871088">デバイスで Powerwash を実行しても eSIM プロファイルは削除されません。[<ph name="LINK_BEGIN" />モバイル設定<ph name="LINK_END" />] で次のプロファイルを手動で削除してください。</translation>
 <translation id="2399699884460174994">通知をオンにしました</translation>
 <translation id="2399939490305346086">セキュリティ キーのログインデータ</translation>
+<translation id="240006516586367791">メディア コントロール</translation>
 <translation id="2400664245143453337">今すぐ更新が必要です</translation>
 <translation id="2402226831639195063">通知音</translation>
 <translation id="2405887402346713222">デバイスとコンポーネントのシリアル番号</translation>
@@ -4216,9 +4217,6 @@
 <translation id="4349828822184870497">役に立った</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> による位置情報へのアクセスを常にブロックする</translation>
 <translation id="4350782034419308508">OK Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />利便性を高めるため、<ph name="DEVICE_OS" /> ではデバイスのハードウェア データを収集し、Google と共有して、適切なアップデートを確認します。さらに、サポートや <ph name="DEVICE_OS" /> の利便性やサービスの改善といった追加の目的で Google がこのデータを使用することを許可できます。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />アップデートの確認時のほか、追加の目的で Google とのデータの共有を許可した場合に、Google に送信されるデータについては、このデバイスにログインして、chrome://system の「CHROMEOSFLEX_HARDWARE_INFO」の欄でご確認いただけます。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> が Google と共有するデータおよびその使用方法について詳しくは、g.co/flex/HWDataCollection をご覧ください。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">インストール（ストリーミング）されるアプリを管理するには「<ph name="APP_NAME" />」アプリに移動してください</translation>
 <translation id="4354073718307267720">サイトから周囲の 3D マップの作成またはカメラ位置の追跡を求められたときに確認する</translation>
 <translation id="4354344420232759511">アクセスしたサイトがここに表示されます</translation>
@@ -8582,6 +8580,7 @@
 <translation id="793531125873261495">仮想マシンのダウンロード中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% 完了</translation>
 <translation id="7937809006412909895">診断データを収集しています</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">詳細オプション</translation>
 <translation id="793923212791838">このサイトはお使いのデバイスではご利用いただけません</translation>
 <translation id="7939328347457537652">デバイス証明書の管理</translation>

@@ -704,6 +704,7 @@
 <translation id="385300504083504382">დასაწყისი</translation>
 <translation id="3859364108019690">აპების სტრიმინგი ვერ ხერხდება</translation>
 <translation id="3861651314799684201">ეკრანის სრულად ჩასაწერად დააჭირეთ Enter-ს</translation>
+<translation id="3865912916886104060">დაკავშირებული მოწყობილობები არ არის. Wi-Fi გამოირთვება უსადენო ქსელით სარგებლობის დასაწყებად.</translation>
 <translation id="3886872229787704059">დღეს გახსნილი</translation>
 <translation id="3891340733213178823">დააჭირეთ Ctrl+Shift+Q ორჯერ, რათა გამოხვიდეთ.</translation>
 <translation id="3893630138897523026">ChromeVox (ხმოვანი შეფასება)</translation>
@@ -788,6 +789,7 @@
 <translation id="4197790712631116042">გამორთვა</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> მიუწვდომელია.</translation>
 <translation id="4201051445878709314">წინა თვის ჩვენება</translation>
+<translation id="4202362334312791952">დაკავშირებულია 1 მოწყობილობა. Wi-Fi გამოირთვება უსადენო ქსელით სარგებლობის დასაწყებად.</translation>
 <translation id="4209973997261364186">Wi-Fi ჩართულია</translation>
 <translation id="4212472694152630271">PIN-კოდზე გადართვა</translation>
 <translation id="4215497585250573029">VPN-ის პარამეტრები</translation>
@@ -904,7 +906,6 @@
 <translation id="468293128311738995">აპები თქვენი ტელეფონიდან</translation>
 <translation id="4690510401873698237">თარო მდებარეობს ქვედა ნაწილში</translation>
 <translation id="4696813013609194136">განბლოკეთ მოწყობილობა მშობლის კოდით</translation>
-<translation id="4698850295812410683">სტილუსის ხელსაწყოების ჩვენება</translation>
 <translation id="4702647871202761252">კონფიდენციალურობის ეკრანი გამორთულია</translation>
 <translation id="4706121060329443414">ჩამოტვირთვას მოგვიანებთ შევეცდებით. ამჟამად მეტყველება გაეგზავნება Google-ს დასამუშავებლად.</translation>
 <translation id="470644585772471629">ფერთა ინვერსია</translation>
@@ -1051,6 +1052,7 @@
 <translation id="5258528442992323769">სამუშაო მაგიდები არ არის შენახული</translation>
 <translation id="5260676007519551770">დესკტოპი 4</translation>
 <translation id="5268819379131021772">Google ამოცანების სია</translation>
+<translation id="5275923704957843041">სამუშაო მაგიდის გადასახედი ვერსია</translation>
 <translation id="5278086053818066789">ChromeVox-ის (გახმოვანებული უკუკავშირის) ჩართვა/გამორთვა</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> საჭიროებს ყურადღების მიქცევას.</translation>
 <translation id="5283198616748585639">1 წუთის დამატება</translation>
@@ -1167,6 +1169,7 @@
 <translation id="5707775774148071965">თქვენს მოწყობილობას აქვს მონაცემების გადაცემის უფრო მაღალი სიჩქარის მხარდაჭერა, ვიდრე თქვენს კაბელს. მოწყობილობის ეფექტურობა შეიძლება შეიზღუდოს.</translation>
 <translation id="5710450975648804523">„არ შემაწუხოთ“ ჩართულია</translation>
 <translation id="571295407079589142">მობილური ინტერნეტი გამორთულია</translation>
+<translation id="5716891621595980681">დაკავშირებულია <ph name="DEVICECOUNT" /> მოწყობილობა. Wi-Fi გამოირთვება უსადენო ქსელით სარგებლობის დასაწყებად.</translation>
 <translation id="5727460725221669831">თუ პაროლი დაგავიწყდათ, ან ახლახან შეცვალეთ თქვენი Google ანგარიშის პაროლი, ცადეთ ამ მომხმარებლის აღდგენა.</translation>
 <translation id="573413375004481890">ამ მოწყობილობას არ შეეძლო თქვენი ყველა ეკრანის მხარდაჭერა, ამიტომ ერთ-ერთი გაითიშა</translation>
 <translation id="5740328398383587084">მახლობლად გაზიარება</translation>

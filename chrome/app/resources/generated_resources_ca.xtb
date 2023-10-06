@@ -1806,6 +1806,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2398546389094871088">En executar la funció Powerwash al dispositiu, no se suprimiran els teus perfils eSIM. Ves a <ph name="LINK_BEGIN" />Configuració de l'accés mòbil<ph name="LINK_END" /> per suprimir manualment aquests perfils.</translation>
 <translation id="2399699884460174994">Les notificacions estan activades</translation>
 <translation id="2399939490305346086">Dades d'inici de sessió de la clau de seguretat</translation>
+<translation id="240006516586367791">Controls multimèdia</translation>
 <translation id="2400664245143453337">Cal una actualització immediatament</translation>
 <translation id="2402226831639195063">Tons</translation>
 <translation id="2405887402346713222">Números de sèrie del dispositiu i del component</translation>
@@ -2156,6 +2157,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2671451824761031126">Les adreces d'interès i la configuració estan preparades</translation>
 <translation id="2672142220933875349">El fitxer crx és incorrecte i no s'ha pogut descomprimir.</translation>
 <translation id="2673135533890720193">Llegir l'historial de navegació</translation>
+<translation id="2673848446870717676">Comprova que el dispositiu Bluetooth es trobi a prop i en mode de vinculació. Vincula'l només amb dispositius en què confiïs. Tots els comptes d'aquest Chromebook poden veure els dispositius vinculats.</translation>
 <translation id="2673873887296220733">Vols copiar 1 fitxer a <ph name="CLOUD_PROVIDER" /> per obrir-lo?</translation>
 <translation id="2674764818721168631">Desactivat</translation>
 <translation id="2676084251379299915">La política d'empresa ha desactivat aquesta extensió perquè ja no està disponible a Chrome Web Store.</translation>
@@ -3832,6 +3834,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4010917659463429001">Per accedir a les teves adreces d'interès des del dispositiu mòbil, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Voleu reparar <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Tens extensions? <ph name="BEGIN_LINK" />Gestiona-les<ph name="END_LINK" /> fàcilment des d'un sol lloc.</translation>
+<translation id="4016762287427926315">Els permisos que concedeixis a <ph name="APP_NAME" /> també es concediran a aquesta aplicació. <ph name="BEGIN_LINK" />Gestiona<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crea un codi QR per a aquest enllaç</translation>
 <translation id="4019983356493507433">Edita la llista d'adreces d'interès</translation>
 <translation id="4020327272915390518">Menú d'opcions</translation>
@@ -4220,9 +4223,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4349828822184870497">És útil</translation>
 <translation id="4350230709416545141">Impedeix sempre que <ph name="HOST" /> accedeixi a la meva ubicació</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Per oferir la millor experiència possible, <ph name="DEVICE_OS" /> recull dades de maquinari dels dispositius i les comparteix amb Google per determinar quines actualitzacions cal fer. De manera opcional, pots permetre que Google utilitzi aquestes dades per a finalitats addicionals, com ara oferir assistència i millores a l'experiència i el servei de <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pots iniciar la sessió en aquest dispositiu i visitar la secció CHROMEOSFLEX_HARDWARE_INFO a chrome://system per veure les dades que s'han enviat a Google per filtrar actualitzacions, així com qualsevol altra vegada que hagis triat compartir dades amb Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Per obtenir més detalls sobre les dades que <ph name="DEVICE_OS" /> pot compartir amb Google i com s'utilitzen, visita g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Ves a l'aplicació <ph name="APP_NAME" /> per gestionar les aplicacions instal·lades i reproduïdes en continu</translation>
 <translation id="4354073718307267720">Pregunta'm quan un lloc web vulgui crear un mapa en 3D del meu entorn o fer un seguiment de la posició de la càmera</translation>
 <translation id="4354344420232759511">Els llocs web que visitis es mostraran aquí</translation>
@@ -6400,6 +6400,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6156863943908443225">Memòria cau de scripts</translation>
 <translation id="6156944117133588106">Mostra els botons de navegació en mode de tauleta</translation>
 <translation id="615930144153753547">Els llocs web poden mostrar imatges</translation>
+<translation id="6160290816917599257">El codi no és vàlid. L'entrada ha de tenir el format <ph name="LPA_0" />$<ph name="LPA_1" />adreça SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />identificador coincident opcional<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Proporciona certificats per a l'autenticació</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Configuració de Kerberos</translation>
@@ -8431,6 +8432,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7807117920154132308">Sembla que <ph name="SUPERVISED_USER_NAME" /> ja ha configurat l'Assistent de Google en un altre dispositiu. <ph name="SUPERVISED_USER_NAME" /> pot treure més profit de l'Assistent activant l'opció Context de la pantalla en aquest dispositiu.</translation>
 <translation id="7807711621188256451">Permet sempre que <ph name="HOST" /> accedeixi a la càmera</translation>
 <translation id="7810202088502699111">S'han bloquejat finestres emergents en aquesta pàgina.</translation>
+<translation id="7810367892333449285">L'entrada ha de tenir el format <ph name="LPA_0" />$<ph name="LPA_1" />adreça SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />identificador coincident opcional<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Copia</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Edita la drecera <ph name="SHORTCUT" /> per a <ph name="EXTENSION_NAME" /></translation>
@@ -8590,6 +8592,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="793531125873261495">S'ha produït un error en baixar la màquina virtual. Torna-ho a provar.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% completat</translation>
 <translation id="7937809006412909895">S'estan recollint les dades de diagnòstic</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Opcions avançades</translation>
 <translation id="793923212791838">El dispositiu no es pot utilitzar en aquest lloc web</translation>
 <translation id="7939328347457537652">Gestiona els certificats del dispositiu</translation>
@@ -9410,6 +9413,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8605428685123651449">Memòria SQLite</translation>
 <translation id="8607171490667464784">Mentre estigui inactiu i utilitzi la bateria</translation>
 <translation id="8607326572516521315">La reducció del frau i del contingut brossa depèn dels testimonis d'estat privat per ajudar els llocs web a lluitar contra el frau i a distingir les persones dels bots.</translation>
+<translation id="8607828412110648570">Comprova que el dispositiu Bluetooth es trobi a prop i en mode de vinculació. Vincula'l només amb dispositius en què confiïs. Tots els comptes d'aquest Chromebook poden veure els dispositius vinculats. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Afegeix un tiquet de Kerberos</translation>
 <translation id="8609465669617005112">Desplaça cap amunt</translation>
 <translation id="8610103157987623234">El format no és correcte. Torna-ho a provar.</translation>

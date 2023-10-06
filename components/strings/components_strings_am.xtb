@@ -1185,6 +1185,7 @@
 <translation id="3440783957068352691">ካሬ</translation>
 <translation id="3441653493275994384">ማያ ገፅ</translation>
 <translation id="3443504041532578451">ኦፕቲካል ዲስክ (ሳትን)</translation>
+<translation id="344449859752187052">የሦስተኛ ወገን ኩኪዎች ታግደዋል</translation>
 <translation id="3447661539832366887">የዚህ መሣሪያ ባለቤት የዳይኖሰር ጨዋታውን አጥፍቶታል።</translation>
 <translation id="3447884698081792621">የእውቅና ማረጋገጫን አሳይ (በ<ph name="ISSUER" /> የሚሰጥ)</translation>
 <translation id="3452404311384756672">የሚመጣው በየ፦</translation>
@@ -1733,6 +1734,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">የይለፍ ቃላትን ለመሙላት ማያ ገፅ መቆለፊያዎን እየተጠቀሙ ነው</translation>
 <translation id="4558551763791394412">ቅጥያዎችዎን አሰናክለው ይሞክሩ።</translation>
+<translation id="456043042661026303">የእርስዎን የክፍያ ዝርዝሮች በአስተማማኝ ሁኔታ በመፈተሽ ላይ</translation>
 <translation id="4566017918361049074">ከቤት ውጭ</translation>
 <translation id="4567686777917670400">የእርስዎ አስተዳዳሪ በርቀት የአሳሽዎን ውቅረት መቀየር ይችላል። በዚህ መሣሪያ ላይ ያለ እንቅስቃሴ እንዲሁም ከChromium ውጭ ሊተዳደር ይችላል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">በአዲስ መስኮት የኩኪዎች ዝርዝሮችን እና የጣቢያ ውሂብን ይገምግሙ</translation>
@@ -2286,6 +2288,7 @@
 <translation id="5691848789297492617">በሙሉ ቁመት የተከፈተ ካርድን ያስቀምጡ።</translation>
 <translation id="5695542892312572833">ግዢዎን ለማረጋገጥ እና ለማጠናቀቅ Windowsን ይጠቀሙ?</translation>
 <translation id="5699628521141772782">የወተት ምርት እና እንቁላሎች</translation>
+<translation id="5700761515355162635">የሦስተኛ ወገን ኩኪዎች ተፈቅደዋል</translation>
 <translation id="5701381305118179107">መሃከል</translation>
 <translation id="570530837424789914">ያቀናብሩ...</translation>
 <translation id="5707154300732650394">ጉዞዎን ከቆመበት ይቀጥሉ</translation>
@@ -3361,6 +3364,7 @@
 <translation id="7865448901209910068">ምርጥ ፍጥነት</translation>
 <translation id="7870281855125116701">የዋጋ ቅናሽ ተገኝቷል</translation>
 <translation id="7871445724586827387">የGoogle መለያ የይለፍ ቃልዎን ይለውጡ</translation>
+<translation id="7876615279559620350">ለፈጣን ክፍያ ማጠናቀቅ ካርድ ማረጋገጫ ኮዱን ለዚህ ካርድ Google መለያዎ ውስጥ ያስቀምጡ</translation>
 <translation id="7877007680666472091">የተጠበቁ የይዘት መታወቂያዎች</translation>
 <translation id="7878562273885520351">የእርስዎ ይለፍ ቃል ተሰርቆ ሊሆን ይችላል</translation>
 <translation id="7880146494886811634">አድራሻን ያስቀምጡ</translation>
@@ -3849,6 +3853,7 @@
 <translation id="8870494189203302833">ተመሳሳይ ቅደም-ተከተል ፊቱ ወደ ታች</translation>
 <translation id="8870700989640064057">ሚስጥራዊ ፋይል ይታተም?</translation>
 <translation id="8871553383647848643">የአሳሽዎን ገጽታ ያብጁ</translation>
+<translation id="8874790741333031443">በጊዜያዊነት የሦስተኛ ወገን ኩኪዎችን ለመፍቀድ ይሞክሩ፣ ይህ ማለት ያነሰ የአሰሳ ጥበቃ ነው ነገር ግን የጣቢያ ባህሪያት እንደተጠበቀው የመሥራት ዕድላቸው ከፍተኛ ነው።</translation>
 <translation id="8874824191258364635">የሚሰራ የካርድ ቁጥር ያስገቡ</translation>
 <translation id="8876033571432926051">የተለመዱ ጨዋታዎች</translation>
 <translation id="8877780815363510165">አሳ ማጥመድ</translation>

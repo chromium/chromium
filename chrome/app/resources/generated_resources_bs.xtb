@@ -1820,6 +1820,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2398546389094871088">Ako izvršite powerwash uređaja, nećete ukloniti profile eSIM-a. Idite u <ph name="LINK_BEGIN" />postavke mobilnog uređaja<ph name="LINK_END" /> da ručno uklonite te profile.</translation>
 <translation id="2399699884460174994">Obavještenja su uključena</translation>
 <translation id="2399939490305346086">Podaci za prijavu sigurnosnog ključa</translation>
+<translation id="240006516586367791">Kontrole medija</translation>
 <translation id="2400664245143453337">Potrebno je odmah ažurirati</translation>
 <translation id="2402226831639195063">Tonovi</translation>
 <translation id="2405887402346713222">Serijski brojevi uređaja i komponente</translation>
@@ -4237,9 +4238,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4349828822184870497">Korisno</translation>
 <translation id="4350230709416545141">Uvijek blokiraj pristup lokaciji za web lokaciju <ph name="HOST" /></translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Da vam pružimo najbolje iskustvo, <ph name="DEVICE_OS" /> prikuplja hardverske podatke o uređajima i dijeli ih s Googleom da se utvrdi koja ažuriranja treba isporučiti. Možete dozvoliti Googleu da koristi ove podatke u dodatne svrhe poput podrške i poboljšanja iskustva i usluge za <ph name="DEVICE_OS" /> (nije obavezno).<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Možete se prijaviti na ovaj uređaj i posjetiti odjeljak CHROMEOSFLEX_HARDWARE_INFO na chrome://system da vidite podatke koji se šalju Googleu radi filtriranja ažuriranja, kao i bilo koje druge primjere gdje odaberete dijeliti podatke s Googleom.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Da saznate više detalja o podacima koje <ph name="DEVICE_OS" /> može dijeliti s Googleom te kako se koriste, posjetite g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Idite u aplikaciju "<ph name="APP_NAME" />" da upravljate instaliranim i prenesenim aplikacijama</translation>
 <translation id="4354073718307267720">Traži odobrenje kada web lokacija želi kreirati 3D mapu okruženja i pratiti položaj kamere</translation>
 <translation id="4354344420232759511">Web lokacije koje posjećujete pojavit će se ovdje.</translation>
@@ -8615,6 +8613,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="793531125873261495">Greška prilikom preuzimanja virtuelne mašine. Pokušajte ponovo.</translation>
 <translation id="7935451262452051102">Završeno <ph name="PERCENT" />%</translation>
 <translation id="7937809006412909895">Prikupljanje dijagnostičkih podataka</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Napredne opcije</translation>
 <translation id="793923212791838">Uređaj se ne može koristiti s ovom web lokacijom</translation>
 <translation id="7939328347457537652">Upravljaj certifikatima uređaja</translation>

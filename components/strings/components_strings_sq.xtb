@@ -1186,6 +1186,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3440783957068352691">katror</translation>
 <translation id="3441653493275994384">Ekrani</translation>
 <translation id="3443504041532578451">Disk optik (saten)</translation>
+<translation id="344449859752187052">Kukit e palëve të treta janë bllokuar</translation>
 <translation id="3447661539832366887">Zotëruesi i kësaj pajisjeje ka çaktivizuar lojën me dinozaurë.</translation>
 <translation id="3447884698081792621">Shfaq certifikatën (lëshuar nga <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Intervali i marrjes:</translation>
@@ -1734,6 +1735,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Po përdor kyçjen e ekranit për plotësimin e fjalëkalimeve</translation>
 <translation id="4558551763791394412">Provo të çaktivizosh shtesat.</translation>
+<translation id="456043042661026303">Po kontrollon në mënyrë të sigurt detajet e pagesës sate</translation>
 <translation id="4566017918361049074">Ambientet e hapura</translation>
 <translation id="4567686777917670400">Administratori yt mund të ndryshojë konfigurimin e shfletuesit në distancë. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chromium. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Rishiko një listë të kukive dhe të dhënave të sajtit në një dritare të re</translation>
@@ -2287,6 +2289,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5691848789297492617">Karta e ruajtur u hap në lartësi të plotë.</translation>
 <translation id="5695542892312572833">Dëshiron të përdorësh Windows Hello për të verifikuar dhe përfunduar blerjen?</translation>
 <translation id="5699628521141772782">Bulmet dhe vezë</translation>
+<translation id="5700761515355162635">Kukit e palëve të treta lejohen</translation>
 <translation id="5701381305118179107">Qendër</translation>
 <translation id="570530837424789914">Menaxho...</translation>
 <translation id="5707154300732650394">Vazhdo udhëtimin tënd</translation>
@@ -3361,6 +3364,7 @@ Detaje shtesë:
 <translation id="7865448901209910068">Shpejtësia më e mirë</translation>
 <translation id="7870281855125116701">U gjet një zbritje çmimi</translation>
 <translation id="7871445724586827387">Ndrysho fjalëkalimin e "Llogarisë sate të Google"</translation>
+<translation id="7876615279559620350">Për përfundimin më të shpejtë të blerjes, ruaje kodin CVC për këtë kartë në "Llogarinë tënde të Google"</translation>
 <translation id="7877007680666472091">ID-të e përmbajtjeve të mbrojtura</translation>
 <translation id="7878562273885520351">Fjalëkalimet e tua mund të jenë kompromentuar</translation>
 <translation id="7880146494886811634">Ruaj adresën</translation>
@@ -3848,6 +3852,7 @@ Detaje shtesë:
 <translation id="8870494189203302833">E njëjta renditje e kthyer poshtë</translation>
 <translation id="8870700989640064057">Të printohet skedari konfidencial?</translation>
 <translation id="8871553383647848643">Personalizo pamjen e shfletuesit tënd</translation>
+<translation id="8874790741333031443">Provo të lejosh përkohësisht kukit e palëve të treta, që do të thotë se ka më pak mbrojtje gjatë shfletimit, por veçoritë e sajteve me shumë mundësi mund të funksionojnë siç pritet.</translation>
 <translation id="8874824191258364635">Fut një numër të vlefshëm karte</translation>
 <translation id="8876033571432926051">Lojërat e rastësishme</translation>
 <translation id="8877780815363510165">Peshkimi</translation>

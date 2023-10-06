@@ -1821,6 +1821,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2398546389094871088">Tindakan menjalankan Powerwash pada peranti anda tidak akan mengalih keluar profil eSIM anda. Pergi ke <ph name="LINK_BEGIN" />Tetapan Mudah Alih<ph name="LINK_END" /> untuk mengalih keluar profil ini secara manual.</translation>
 <translation id="2399699884460174994">Pemberitahuan dihidupkan</translation>
 <translation id="2399939490305346086">Data log masuk kunci keselamatan</translation>
+<translation id="240006516586367791">Kawalan media</translation>
 <translation id="2400664245143453337">Kemas kini segera diperlukan</translation>
 <translation id="2402226831639195063">Nada</translation>
 <translation id="2405887402346713222">Nombor Siri Peranti dan Komponen</translation>
@@ -4238,9 +4239,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4349828822184870497">Membantu</translation>
 <translation id="4350230709416545141">Sentiasa sekat <ph name="HOST" /> daripada mengakses lokasi anda</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Untuk memberikan pengalaman terbaik, <ph name="DEVICE_OS" /> mengumpul data perkakasan tentang peranti dan berkongsi data tersebut dengan Google untuk menentukan kemaskinian yang seharusnya dihantar. Secara pilihan, anda boleh membenarkan Google menggunakan data ini untuk tujuan tambahan seperti sokongan dan peningkatan pada pengalaman dan perkhidmatan <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Anda boleh log masuk pada peranti ini dan melawati bahagian CHROMEOSFLEX_HARDWARE_INFO dalam chrome://system untuk melihat data yang dihantar kepada Google untuk penapisan kemaskinian, serta sebarang keadaan lain yang anda pilih untuk berkongsi data dengan Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Untuk mendapatkan butiran lanjut tentang data yang <ph name="DEVICE_OS" /> boleh berkongsi dengan Google dan cara data itu digunakan, lawati g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Akses apl "<ph name="APP_NAME" />" untuk mengurus apl yang dipasang dan distrim</translation>
 <translation id="4354073718307267720">Tanya apabila tapak mahu membuat peta 3D bagi persekitaran anda atau menjejaki kedudukan kamera</translation>
 <translation id="4354344420232759511">Tapak yang anda lawati akan dipaparkan di sini</translation>

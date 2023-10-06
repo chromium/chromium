@@ -1186,6 +1186,7 @@
 <translation id="3440783957068352691">carrée</translation>
 <translation id="3441653493275994384">Écran</translation>
 <translation id="3443504041532578451">Disque optique (satiné)</translation>
+<translation id="344449859752187052">Témoins tiers bloqués</translation>
 <translation id="3447661539832366887">Le propriétaire de cet appareil a désactivé le jeu dinosaure.</translation>
 <translation id="3447884698081792621">Afficher le certificat (délivré par <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Intervalle de récupération :</translation>
@@ -2287,6 +2288,7 @@
 <translation id="5691848789297492617">Enregistrer la carte ouverte à pleine hauteur.</translation>
 <translation id="5695542892312572833">Utiliser Windows Hello pour vérifier et finaliser votre achat?</translation>
 <translation id="5699628521141772782">Produits laitiers et œufs</translation>
+<translation id="5700761515355162635">Témoins tiers autorisés</translation>
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="570530837424789914">Gérer...</translation>
 <translation id="5707154300732650394">Reprendre votre exploration</translation>
@@ -3720,6 +3722,7 @@ Détails supplémentaires :
 <translation id="8586082901536468629">Équipement de squash et de racquetball</translation>
 <translation id="858637041960032120">Ajouter un numéro de téléphone</translation>
 <translation id="8589998999637048520">Meilleure qualité</translation>
+<translation id="8590264442799989746"><ph name="HOST_NAME" /> et autres</translation>
 <translation id="8600271352425265729">Uniquement cette fois-ci</translation>
 <translation id="860043288473659153">Nom du titulaire de la carte</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Les données sont utilisées :<ph name="END_BOLD" /> Votre activité sur un site que vous visitez à l'aide de Chrome sur cet appareil.</translation>

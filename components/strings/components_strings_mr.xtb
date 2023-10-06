@@ -1186,6 +1186,7 @@
 <translation id="3440783957068352691">चौरस</translation>
 <translation id="3441653493275994384">तपासा</translation>
 <translation id="3443504041532578451">ऑप्टिकल डिस्क (सॅटिन)</translation>
+<translation id="344449859752187052">तृतीय पक्ष कुकी ब्लॉक केल्या आहेत</translation>
 <translation id="3447661539832366887">या डिव्हाइसच्या मालकाने डायनासोर गेम बंद केला आहे.</translation>
 <translation id="3447884698081792621">सर्टिफिकेट दाखवा (<ph name="ISSUER" /> ने जारी केलेले)</translation>
 <translation id="3452404311384756672">मध्यंतर मिळवा:</translation>
@@ -1733,6 +1734,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">पासवर्ड भरण्यासाठी तुम्ही तुमचे स्क्रीन लॉक वापरत आहात</translation>
 <translation id="4558551763791394412">तुमचे विस्तार अक्षम करून पहा.</translation>
+<translation id="456043042661026303">तुमचे पेमेंट तपशील सुरक्षितरीत्या तपासत आहे</translation>
 <translation id="4566017918361049074">आउटडोअर फिटनेस ॲक्टिव्हिटी</translation>
 <translation id="4567686777917670400">तुमचा अ‍ॅडमिनिस्ट्रेटर तुमच्या ब्राउझरचा सेटअप रिमोट पद्धतीने बदलू शकतो. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी Chromium च्या बाहेरदेखील व्यवस्थापित केली जाऊ शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">नवीन विंडोमध्ये कुकी आणि साइट डेटाच्या सूचीचे पुनरावलोकन करा</translation>
@@ -2286,6 +2288,7 @@
 <translation id="5691848789297492617">सेव्ह कार्ड पूर्ण उंचीवर उघडले.</translation>
 <translation id="5695542892312572833">तुमच्या खरेदीची पडताळणी करण्यासाठी आणि ती पूर्ण करण्यासाठी Windows Hello वापरायचे आहे का?</translation>
 <translation id="5699628521141772782">डेअरी आणि अंडी</translation>
+<translation id="5700761515355162635">तृतीय पक्ष कुकीना अनुमती दिली</translation>
 <translation id="5701381305118179107">मध्यभागी</translation>
 <translation id="570530837424789914">व्यवस्थापित करा...</translation>
 <translation id="5707154300732650394">तुमचा प्रवास पुन्हा सुरू करा</translation>
@@ -3362,6 +3365,7 @@
 <translation id="7865448901209910068">सर्वोत्तम गती</translation>
 <translation id="7870281855125116701">सवलत सापडली</translation>
 <translation id="7871445724586827387">तुमचा Google खाते पासवर्ड बदला</translation>
+<translation id="7876615279559620350">जलद चेकआउटसाठी, तुमच्या Google खाते मध्ये या कार्डकरिता CVC सेव्ह करा</translation>
 <translation id="7877007680666472091">संरक्षित आशय आयडी</translation>
 <translation id="7878562273885520351">तुमच्या पासवर्डशी तडजोड होत असल्याची शक्यता आहे</translation>
 <translation id="7880146494886811634">पत्ता सेव्ह करा</translation>
@@ -3849,6 +3853,7 @@
 <translation id="8870494189203302833">तोच क्रम ठेवून फेस डाउन</translation>
 <translation id="8870700989640064057">गोपनीय फाइल प्रिंट करायची आहे का?</translation>
 <translation id="8871553383647848643">तुमच्या ब्राउझरचे रूप कस्टमाइझ करा</translation>
+<translation id="8874790741333031443">तृतीय पक्ष कुकीना तात्पुरती अनुमती देऊन पहा, ज्यामुळे ब्राउझ करण्यासंबंधित संरक्षण कमी मिळेल, पण साइटची वैशिष्ट्ये अपेक्षेनुसार काम करण्याची अधिक शक्यता आहे.</translation>
 <translation id="8874824191258364635">वैध कार्ड नंबर एंटर करा</translation>
 <translation id="8876033571432926051">साधे गेम</translation>
 <translation id="8877780815363510165">मासेमारी</translation>

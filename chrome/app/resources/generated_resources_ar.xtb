@@ -1809,6 +1809,7 @@
 <translation id="2398546389094871088">‏لن يؤدي إجراء عملية Powerwash لجهازك إلى إزالة الملفات التعريفية لشرائح eSIM. انتقِل إلى <ph name="LINK_BEGIN" />إعدادات الجوّال<ph name="LINK_END" /> لإزالة هذه الملفات التعريفية يدويًّا.</translation>
 <translation id="2399699884460174994">تم تفعيل الإشعارات</translation>
 <translation id="2399939490305346086">بيانات تسجيل الدخول على مفتاح الأمان</translation>
+<translation id="240006516586367791">عناصر التحكُّم في الوسائط</translation>
 <translation id="2400664245143453337">مطلوب التحديث فورًا</translation>
 <translation id="2402226831639195063">النبرات</translation>
 <translation id="2405887402346713222">الأرقام التسلسلية للأجهزة وقطعها</translation>
@@ -2574,6 +2575,7 @@
 <translation id="2990583317361835189">عدم السماح للمواقع الإلكترونية باستخدام أجهزة استشعار الحركة</translation>
 <translation id="2992931425024192067">عرض كل محتوى الإشعارات</translation>
 <translation id="2993517869960930405">معلومات التطبيق</translation>
+<translation id="2996108796702395498">الرقم التسلسلي للجهاز هو <ph name="SERIAL_NUMBER" />. يمكن استخدام هذا الرقم للمساعدة في تفعيل الخدمة.</translation>
 <translation id="2996286169319737844">‏تم ترميز بياناتك باستخدام عبارة مرور المزامنة. لا يتضمّن ذلك طرق الدفع والعناوين من Google Pay.</translation>
 <translation id="2996722619877761919">القلب عند الحافة الطويلة</translation>
 <translation id="2996932914629936323">سيتم محو السجلّ من جميع الأجهزة التي تمت مزامنتها.</translation>
@@ -2961,6 +2963,7 @@
 <translation id="3320630259304269485">التصفُّح الآمن (يوفّر حماية من المواقع الإلكترونية الضارة) وإعدادات الأمان الأخرى</translation>
 <translation id="3321460131042519426">تفعيل التفاف الكلمات</translation>
 <translation id="3321494112580110651">ألم تظهر لك الطابعة الخاصة بك؟</translation>
+<translation id="3321776060736518525">بدءًا من <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">إليك مكافأة. ستحظى بالمزيد من وقت النظر إلى الشاشة.</translation>
 <translation id="3325804108816646710">جارٍ البحث عن ملفات شخصية متوفّرة...</translation>
 <translation id="3325910708063135066">‏تم إيقاف الكاميرا والميكروفون في إعدادات نظام Mac المفضلة</translation>
@@ -4225,9 +4228,6 @@
 <translation id="4349828822184870497">مفيد</translation>
 <translation id="4350230709416545141">حظر النطاق <ph name="HOST" /> دائمًا من الوصول إلى موقعك الجغرافي</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505">‏<ph name="BEGIN_PARAGRAPH1" />لتوفير أفضل تجربة، يجمع نظام التشغيل <ph name="DEVICE_OS" /> بيانات الأجهزة ويشاركها مع Google لتحديد التحديثات التي يجب إطلاقها. ويمكنك اختيار السماح لشركة Google باستخدام هذه البيانات لأغراض إضافية مثل تقديم الدعم وإدخال تحسينات على تجربة استخدام <ph name="DEVICE_OS" /> والخدمات التي يقدّمها.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />يمكنك تسجيل الدخول على هذا الجهاز والانتقال إلى القسم CHROMEOSFLEX_HARDWARE_INFO في chrome://system للاطّلاع على البيانات المُرسَلة إلى Google لفلترة التحديثات، بالإضافة إلى أي حالات أخرى تختار فيها مشاركة البيانات مع Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />وللاطّلاع على المزيد من التفاصيل حول البيانات التي قد يشاركها <ph name="DEVICE_OS" /> مع Google وطريقة استخدامها، يُرجى الانتقال إلى الرابط g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">الانتقال إلى تطبيق "<ph name="APP_NAME" />" لإدارة التطبيقات التي يتم تثبيتها وبثّها</translation>
 <translation id="4354073718307267720">طلب الإذن عند محاولة موقع إلكتروني إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك أو تتبُّع موضع الكاميرا</translation>
 <translation id="4354344420232759511">ستظهر المواقع التي تزورها هنا.</translation>
@@ -6204,6 +6204,7 @@
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{اكتملت مراجعة موقع إلكتروني واحد.}zero{اكتملت مراجعة {NUM_SITES} موقع إلكتروني.}two{اكتملت مراجعة موقعَين إلكترونيَّين ({NUM_SITES}).}few{اكتملت مراجعة {NUM_SITES} مواقع إلكترونية.}many{اكتملت مراجعة {NUM_SITES} موقعًا إلكترونيًا.}other{اكتملت مراجعة {NUM_SITES} موقع إلكتروني.}}</translation>
 <translation id="5997337190805127100">مزيد من المعلومات عن إمكانية الوصول إلى الموقع الإلكتروني</translation>
 <translation id="5998458948782718639">المساعدة على تحسين ميزة "الملء التلقائي"</translation>
+<translation id="5999024481231496910">‏لقد فعّلت اختبار الإيقاف التدريجي لملفات تعريف الارتباط التابعة لجهات خارجية. لا يمكن إلغاء هذا من خلال صفحة الإعدادات. إذا كنت ترغب في إعادة تفعيل ملفات تعريف الارتباط التابعة لجهات خارجية، يُرجى إعادة تشغيل Chrome مع إيقاف هذه الميزة.</translation>
 <translation id="5999630716831179808">الأصوات</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> من نتائج البحث عن "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6001839398155993679">البدء</translation>
@@ -6686,6 +6687,7 @@
 <translation id="6399675241776343019">غير مسموح به</translation>
 <translation id="6399774419735315745">الجاسوسة</translation>
 <translation id="6400360390396538896">على <ph name="ORIGIN" /> دائمًا</translation>
+<translation id="6401118106417399952">‏معرِّف شريحة SIM المضمّنة (EID) للجهاز هو <ph name="EID_NUMBER" /> والرقم التسلسلي للجهاز هو <ph name="SERIAL_NUMBER" />. يمكن استخدام هذه الأرقام للمساعدة في تفعيل الخدمة.</translation>
 <translation id="6401458660421980302">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على ذلك الجهاز.</translation>
 <translation id="6401597285454423070">‏يحتوي الكمبيوتر على جهاز الأمان "وحدة النظام الأساسي الموثوقة" (TPM) الذي يُستخدم لتفعيل العديد من ميزات الأمان المُهمة في نظام التشغيل Chrome. يمكنك الانتقال إلى مركز مساعدة Chromebook للتعرّف على مزيد من المعلومات: https://support.google.com/chromebook/?p=tpm.</translation>
 <translation id="6404511346730675251">تعديل الإشارة المرجعية</translation>
@@ -8205,6 +8207,7 @@
 <translation id="7637272932128132922">عندما كانت علامة التبويب هذه غير نشطة، نجحت ميزة "توفير الذاكرة" في تفريغ مساحة من الذاكرة لتنفيذ مهام أخرى. يمكنك تغيير إعدادات هذه الميزة في أي وقت من خلال <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">لا تتوفّر مساحة كافية على القرص.</translation>
 <translation id="7639914187072011620">‏تعذَّر جلب عنوان URL لإعادة التوجيه وفقًا لمعيار SAML من الخادم.</translation>
+<translation id="7640256527901510478">‏رمز IMEI للجهاز هو <ph name="IMEI_NUMBER" /> والرقم التسلسلي للجهاز هو <ph name="SERIAL_NUMBER" />. يمكن استخدام هذه الأرقام للمساعدة في تفعيل الخدمة.</translation>
 <translation id="7640308610547854367">‏تم العودة إلى إصدار سابق من ChromeOS. للحصول على التحديثات، يُرجى الانتظار إلى أن يتوفّر الإصدار التالي.</translation>
 <translation id="7641513591566880111">اسم الملف الشخصي الجديد</translation>
 <translation id="764178579712141045">تمت إضافة <ph name="USER_EMAIL" /></translation>
@@ -8606,6 +8609,7 @@
 <translation id="793531125873261495">حدث خطأ أثناء تنزيل الآلة الافتراضية. يُرجى إعادة المحاولة.</translation>
 <translation id="7935451262452051102">مكتملة بنسبة <ph name="PERCENT" />%</translation>
 <translation id="7937809006412909895">جارٍ جمع بيانات التشخيص</translation>
+<translation id="7938881824185772026">مختبرات</translation>
 <translation id="7939062555109487992">خيارات متقدمة</translation>
 <translation id="793923212791838">جهازك غير متوافق مع هذا الموقع الإلكتروني</translation>
 <translation id="7939328347457537652">إدارة شهادات الجهاز</translation>
@@ -9708,6 +9712,7 @@
 <translation id="881799181680267069">إخفاء النوافذ الأخرى</translation>
 <translation id="8818152010000655963">الخلفية</translation>
 <translation id="8818958672113348984">التحقُّق عبر الهاتف</translation>
+<translation id="8819510664278523111">‏معرّف شريحة SIM المضمّنة (EID) للجهاز هو <ph name="EID_NUMBER" /> ورقم IMEI للجهاز هو <ph name="IMEI_NUMBER" /> والرقم التسلسلي للجهاز هو <ph name="SERIAL_NUMBER" />. يمكن استخدام هذه الأرقام للمساعدة في تفعيل الخدمة.</translation>
 <translation id="8820817407110198400">الإشارات المرجعية</translation>
 <translation id="8821045908425223359">‏ضبط عنوان IP تلقائيًا</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> جاهز للاستخدام.</translation>
@@ -10258,6 +10263,7 @@
 <translation id="956500788634395331">تمت حمايتك من إضافات يُحتمل أن تكون ضارة.</translation>
 <translation id="957179356621191750">‫6 نقاط</translation>
 <translation id="957960681186851048">حاول هذا الموقع تنزيل عدة ملفات تلقائيًا</translation>
+<translation id="958571289841636277">الانتقال للأمام وللخلف باستخدام إيماءة التمرير السريع</translation>
 <translation id="960987915827980018">تتبقى ساعة واحدة تقريبًا</translation>
 <translation id="962802172452141067">شجرة مجلد الإشارات المرجعية</translation>
 <translation id="963000966785016697">البحث عن الصورة باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>

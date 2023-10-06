@@ -1822,6 +1822,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2398546389094871088">Djúphreinsun tækisins fjarlægir ekki eSIM-prófílana þína. Opnaðu <ph name="LINK_BEGIN" />Farsímastillingar<ph name="LINK_END" /> til að fjarlægja þessa prófíla handvirkt.</translation>
 <translation id="2399699884460174994">Kveikt á tilkynningum</translation>
 <translation id="2399939490305346086">Innskráningargögn öryggislykils</translation>
+<translation id="240006516586367791">Efnisstýringar</translation>
 <translation id="2400664245143453337">Uppfæra þarf tafarlaust</translation>
 <translation id="2402226831639195063">Tónar</translation>
 <translation id="2405887402346713222">Raðnúmer tækis og íhlutar</translation>
@@ -4239,9 +4240,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4349828822184870497">Gagnlegt</translation>
 <translation id="4350230709416545141">Loka alltaf fyrir aðgang <ph name="HOST" /> að staðsetningunni þinni</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" /> <ph name="DEVICE_OS" /> safnar vélbúnaðargögnum um tæki og deilir þeim með Google til að ákvarða hvaða uppfærslur skuli sækja. Þetta er gert til að bjóða upp á bestu mögulegu upplifunina. Þú getur einnig leyft Google að nota þessi gögn í öðrum tilgangi eins og til að veita aðstoð og bæta upplifun og þjónustu <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Þú getur skráð þig inn á þetta tæki og opnað hlutann CHROMEOSFLEX_HARDWARE_INFO í chrome://system til að skoða gögnin sem eru send Google til uppfærslusíunar auk annarra tilvika þegar þú kýst að deila gögnum með Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Frekari upplýsingar um gögn sem <ph name="DEVICE_OS" /> kann að deila með Google og um það hvernig gögnin eru notuð er að finna á g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Opnaðu forritið „<ph name="APP_NAME" />“ til að stjórna uppsettum og streymdum forritum</translation>
 <translation id="4354073718307267720">Spyrja þegar vefsvæði vill búa til þrívíddarkort af umhverfinu eða rekja staðsetningu myndavélarinnar</translation>
 <translation id="4354344420232759511">Vefsvæði sem þú skoðar birtast hér</translation>
@@ -10209,7 +10207,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="9214695392875603905">Kaka</translation>
 <translation id="9215293857209265904">„<ph name="EXTENSION_NAME" />“ bætt við</translation>
 <translation id="9215742531438648683">Fjarlægja Google Play Store</translation>
-<translation id="9218430445555521422">Nota sem sjálfgefið</translation>
+<translation id="9218430445555521422">Velja sem sjálfgefið</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (óstutt forrit)</translation>
 <translation id="9219582468404818260">Hjálpaðu okkur að skapa betri vef</translation>
 <translation id="9219741625496141320">Vefskoðunargögnum var eytt sjálfkrafa</translation>

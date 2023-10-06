@@ -327,6 +327,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1615402009686901181">Zasada administratora wyłącza zrzut ekranu, gdy widoczne są treści poufne</translation>
 <translation id="1617276713587758852">Crossovery</translation>
 <translation id="1618571384971354160">Holowanie pojazdów i pomoc drogowa</translation>
+<translation id="1619007254056372606">Zarządzaj danymi witryn na urządzeniu</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Kuchnia wegetariańska</translation>
 <translation id="162285686621567578">Ta strona została zablokowana przez Twojego rodzica.</translation>
@@ -1186,6 +1187,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3440783957068352691">kwadrat</translation>
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3443504041532578451">Dysk optyczny (satyna)</translation>
+<translation id="344449859752187052">Pliki cookie innych firm zostały zablokowane</translation>
 <translation id="3447661539832366887">Właściciel tego urządzenia wyłączył grę z dinozaurem.</translation>
 <translation id="3447884698081792621">Pokaż certyfikat (wydany przez: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Okres pobierania:</translation>
@@ -1236,6 +1238,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3552297013052089404">Czcionka bezszeryfowa</translation>
 <translation id="3558573058928565255">Dzień godzina</translation>
 <translation id="355995771319966853">Cofnij autouzupełnianie</translation>
+<translation id="3560408312959371419">Opcje ochrony przed śledzeniem i danych witryn na urządzeniu</translation>
 <translation id="3560824484345057728">Pokaż powiązane witryny</translation>
 <translation id="3566021033012934673">Połączenie nie jest prywatne</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
@@ -2288,6 +2291,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5691848789297492617">Zapisywanie karty jest otwarte na całą wysokość.</translation>
 <translation id="5695542892312572833">Czy do zweryfikowania i dokończenia zakupu użyć Windows Hello?</translation>
 <translation id="5699628521141772782">Nabiał i jajka</translation>
+<translation id="5700761515355162635">Pliki cookie innych firm są dozwolone</translation>
 <translation id="5701381305118179107">Wyśrodkuj</translation>
 <translation id="570530837424789914">Zarządzaj…</translation>
 <translation id="5707154300732650394">Wznów swoją serię czynności</translation>
@@ -3874,6 +3878,7 @@ Dodatkowe informacje:
 <translation id="893332455753468063">Dodaj imię i nazwisko lub nazwę firmy</translation>
 <translation id="8942355029279167844">Administrator zezwolił aplikacji <ph name="APP_NAME" /> na zbieranie danych diagnostycznych, z których korzystamy, by ulepszać działanie usługi. Więcej informacji znajdziesz na <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Limonkowy</translation>
+<translation id="8944485226638699751">Z ograniczeniami</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Prawo i administracja</translation>
 <translation id="8954252855949068147">Ubrania</translation>

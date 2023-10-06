@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Mabubuksan ang Tab Grid sa Chromium.</translation>
 <translation id="1617663976202781617">Data mula sa pag-sync sa Chromium</translation>
 <translation id="1647558790457890304">Mga Setting ng Chromium</translation>
+<translation id="164952285225495380">Sinusubaybayan na ang package na ito sa Chromium.</translation>
 <translation id="1722370509450468186">Ise-save sa iyong Account (<ph name="EMAIL" />) ang password mo.</translation>
 <translation id="1736662517232558588">Na-clear Chromium data</translation>
 <translation id="1791845338122684020">Bubuksan ang iyong Page ng History sa Chromium.</translation>
@@ -140,6 +141,7 @@ Mga bagay na dapat isaalang-alang:
 1. Buksan ang Settings
 2. I-tap ang Default Browser App
 3. Piliin ang Chromium.</translation>
+<translation id="6197255575340902638">Kung iha-hide mo ang "<ph name="MODULE_NAME" />," hindi na awtomatikong susubaybayan ng Chromium ang iyong mga package sa hinaharap at ide-delete nito ang lahat ng dati mong data ng pagsubaybay sa package.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6268381023930128611">Mag-sign out sa Chromium?</translation>
 <translation id="6324041800010509197">Bisitahin ang Tab Grid sa Chromium</translation>

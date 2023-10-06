@@ -1807,6 +1807,7 @@
 <translation id="2398546389094871088">Пры выкарыстанні функцыі Powerwash для скіду налад профілі eSIM-карты не выдаляюцца. Іх можна выдаліць уручную ў <ph name="LINK_BEGIN" />наладах мабільнай прылады<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Апавяшчэнні ўключаны</translation>
 <translation id="2399939490305346086">Уліковыя даныя ключа бяспекі</translation>
+<translation id="240006516586367791">Элементы кіравання мультымедыя</translation>
 <translation id="2400664245143453337">Патрабуецца неадкладнае абнаўленне</translation>
 <translation id="2402226831639195063">Танальныя сігналы</translation>
 <translation id="2405887402346713222">Серыйныя нумары прылад і кампанентаў</translation>
@@ -2157,6 +2158,7 @@
 <translation id="2671451824761031126">Імпарт закладак і налад выкананы</translation>
 <translation id="2672142220933875349">Памылка распакоўкі: недапушчальны файл "crx".</translation>
 <translation id="2673135533890720193">Чытанне вашай гісторыі прагляду сайтаў</translation>
+<translation id="2673848446870717676">Упэўніцеся, што прылада з Bluetooth знаходзіцца паблізу і пераведзена ў рэжым спалучэння. Ажыццяўляйце спалучэнне толькі з надзейнымі прыладамі. Спалучаныя прылады бачныя ўсім уліковым запісам на гэтай прыладзе Chromebook.</translation>
 <translation id="2673873887296220733">Скапіраваць 1 файл у сэрвіс "<ph name="CLOUD_PROVIDER" />" перад адкрыццём?</translation>
 <translation id="2674764818721168631">Выключана</translation>
 <translation id="2676084251379299915">Гэта пашырэнне было адключана згодна з карпаратыўнай палітыкай, бо яно больш не даступнае ў Вэб-краме Chrome.</translation>
@@ -3832,6 +3834,7 @@
 <translation id="4010917659463429001">Каб карыстацца сваімі закладкамі на мабільнай прыладзе, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Выправіць "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">У вас ёсць пашырэнні? <ph name="BEGIN_LINK" />Кіруйце пашырэннямі<ph name="END_LINK" /> з лёгкасцю з аднаго месца.</translation>
+<translation id="4016762287427926315">Дазволы, якія вы даяце праграме "<ph name="APP_NAME" />", таксама будуць дадзены гэтай праграме. <ph name="BEGIN_LINK" />Кіраваць<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Стварыць QR-код для гэтай спасылкі</translation>
 <translation id="4019983356493507433">Змяніць спіс закладак</translation>
 <translation id="4020327272915390518">Меню параметраў</translation>
@@ -4220,9 +4223,6 @@
 <translation id="4349828822184870497">Карысна</translation>
 <translation id="4350230709416545141">Заўсёды блакіраваць сайту <ph name="HOST" /> доступ да даных пра ваша месцазнаходжанне</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Для зручнасці карыстальнікаў <ph name="DEVICE_OS" /> збірае даныя аб апаратным забеспячэнні прылад і абагульвае іх з Google, што дазваляе выяўляць, якія абнаўленні неабходна ўсталяваць. Вы таксама можаце дазволіць Google выкарыстоўваць гэтыя даныя і ў іншых мэтах, напрыклад, каб удасканальваць работу <ph name="DEVICE_OS" /> і аказваць карыстальнікам падтрымку.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Каб паглядзець, якія звесткі адпраўляюцца ў Google для фільтрацыі абнаўленняў і для якіх яшчэ мэт можна перадаваць нам даныя, увайдзіце ва ўліковы запіс на гэтай прыладзе і азнаёмцеся з раздзелам CHROMEOSFLEX_HARDWARE_INFO на старонцы chrome://system.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Падрабязную інфармацыю пра даныя, якія <ph name="DEVICE_OS" /> можа абагульваць з Google, і іх выкарыстанне чытайце на старонцы g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Каб кіраваць падпраграмамі, якія ўсталяваны або адкрываюцца без спампоўвання, перайдзіце ў праграму "<ph name="APP_NAME" />"</translation>
 <translation id="4354073718307267720">Пытацца, калі сайт запытвае дазвол стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
 <translation id="4354344420232759511">Тут будуць паказвацца наведаныя вамі сайты</translation>
@@ -6401,6 +6401,7 @@
 <translation id="6156863943908443225">Кэш сцэнарыя</translation>
 <translation id="6156944117133588106">Паказваць кнопкі навігацыі ў рэжыме планшэта</translation>
 <translation id="615930144153753547">Сайты могуць паказваць відарысы</translation>
+<translation id="6160290816917599257">Няправільны код. Запіс павінен мець фармат <ph name="LPA_0" />$<ph name="LPA_1" />адрас SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />неабавязковы ідэнтыфікатар для супастаўлення<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Выдаванне сертыфікатаў для аўтэнтыфікацыі</translation>
 <translation id="6163363155248589649">&amp;Звычайны</translation>
 <translation id="6163376401832887457">Налады Kerberos</translation>
@@ -8437,6 +8438,7 @@
 <translation id="7807117920154132308">Здаецца, Памочнік Google ужо наладжаны карыстальнікам <ph name="SUPERVISED_USER_NAME" /> на іншай прыладзе. <ph name="SUPERVISED_USER_NAME" /> можа выкарыстоўваць Памочніка яшчэ эфектыўней, уключыўшы на гэтай прыладзе функцыю "Кантэкст экрана".</translation>
 <translation id="7807711621188256451">Заўсёды даваць хосту <ph name="HOST" /> доступ да камеры</translation>
 <translation id="7810202088502699111">Усплывальныя вокны на гэтай старонцы заблакіраваны.</translation>
+<translation id="7810367892333449285">Запіс павінен мець фармат <ph name="LPA_0" />$<ph name="LPA_1" />адрас SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />неабавязковы ідэнтыфікатар для супастаўлення<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Капіраваць</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Змяніць спалучэнне клавіш <ph name="SHORTCUT" /> для пашырэння "<ph name="EXTENSION_NAME" />"</translation>
@@ -9414,6 +9416,7 @@
 <translation id="8605428685123651449">Памяць SQLite</translation>
 <translation id="8607171490667464784">Калі прылада не выкарыстоўваецца і працуе ад акумулятара</translation>
 <translation id="8607326572516521315">Для змагання са спамам і махлярствам выкарыстоўваюцца прыватныя токены стану, якія дапамагаюць сайтам прадухіляць махлярства і адрозніваць ботаў ад людзей.</translation>
+<translation id="8607828412110648570">Упэўніцеся, што прылада з Bluetooth знаходзіцца паблізу і пераведзена ў рэжым спалучэння. Ажыццяўляйце спалучэнне толькі з надзейнымі прыладамі. Спалучаныя прылады бачныя ўсім уліковым запісам на гэтай прыладзе Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Дадаванне білета Kerberos</translation>
 <translation id="8609465669617005112">Перамясціць уверх</translation>
 <translation id="8610103157987623234">Няправільны фармат. Паўтарыце спробу</translation>

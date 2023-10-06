@@ -571,6 +571,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="4116038641877404294">Descarga as páxinas para velas cando non teñas conexión</translation>
 <translation id="4121654769234887259">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google para <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Fluxo de permiso de notificación aberto completamente</translation>
+<translation id="4126285640274188657">Estatísticas da páxina</translation>
 <translation id="4135200667068010335">A lista de dispositivos cos que compartir unha pestana está pechada.</translation>
 <translation id="4137746084635924146">Idioma actual do dispositivo</translation>
 <translation id="4139654229316918773">Chrome Canary</translation>
@@ -1205,6 +1206,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7376560087009844242">Se inclúes máis texto dunha páxina cando utilizas a función Tocar para buscar, poderías obter mellores resultados. Sempre podes ir á <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> para cambiar esta preferencia.</translation>
 <translation id="7379900596734708416">Xa está dispoñible o tema escuro para os sitios</translation>
 <translation id="7388615499319468910">Os sitios e os anunciantes poden comprender o rendemento dos anuncios. Esta opción de configuración está desactivada.</translation>
+<translation id="7397416715506917976">Ver estatísticas da páxina</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Experiencia de primeira execución de Chrome</translation>
 <translation id="7411224099004328643">Usuario da Conta de Google</translation>

@@ -1818,6 +1818,7 @@
 <translation id="2398546389094871088">‏پس‌از Powerwash دستگاه، نمایه‌های سیم‌کارت داخلی برداشته نخواهد شد. برای برداشتن دستی این نمایه‌ها، به <ph name="LINK_BEGIN" />تنظیمات تلفن همراه<ph name="LINK_END" /> بروید.</translation>
 <translation id="2399699884460174994">اعلان‌ها روشن شد</translation>
 <translation id="2399939490305346086">داده‌های ورود به سیستم کلید امنیتی</translation>
+<translation id="240006516586367791">کنترل‌های رسانه</translation>
 <translation id="2400664245143453337">به‌روزرسانی فوری الزامی است</translation>
 <translation id="2402226831639195063">صداها</translation>
 <translation id="2405887402346713222">شماره‌های سریال دستگاه و قطعات</translation>
@@ -4235,9 +4236,6 @@
 <translation id="4349828822184870497">مفید</translation>
 <translation id="4350230709416545141">دسترسی <ph name="HOST" /> به مکان شما همیشه مسدود شود</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505">‏<ph name="BEGIN_PARAGRAPH1" />برای ارائه بهترین تجربه، <ph name="DEVICE_OS" /> داده‌های سخت‌افزار مربوط دستگاه‌ها را جمع‌آوری می‌کند و آن‌ها را با Google هم‌رسانی می‌کند تا مشخص شود چه به‌روزرسانی‌هایی باید ارائه شود. درصورت تمایل، می‌توانید به Google اجازه دهید از این داده‌ها برای اهداف دیگری مانند پشتیبانی و بهبود بخشیدن به سرویس و تجربه <ph name="DEVICE_OS" /> استفاده کند.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />می‌توانید در این دستگاه به سیستم وارد شوید و به بخش CHROMEOSFLEX_HARDWARE_INFO در chrome://system بروید تا این موارد را ببینید: داده‌های ارسال‌شده به Google برای فیلتر کردن به‌روزرسانی‌ها و همچنین هر نمونه دیگری از انتخاب هم‌رسانی داده با Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />برای دریافت جزئیات بیشتر درباره داده‌هایی که <ph name="DEVICE_OS" /> ممکن است با Google هم‌رسانی کند و نحوه استفاده از این داده‌ها، از g.co/flex/HWDataCollection بازدید کنید.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">برای مدیریت برنامه‌های جاری‌سازی و نصب‌شده به برنامه «<ph name="APP_NAME" />» بروید</translation>
 <translation id="4354073718307267720">وقتی سایتی می‌خواهد نقشه سه‌بعدی از محیط ایجاد کند یا موقعیت دوربین را ردیابی کند سؤال شود</translation>
 <translation id="4354344420232759511">سایت‌هایی که بازدید می‌کنید اینجا نشان داده می‌شود</translation>
@@ -8610,6 +8608,7 @@
 <translation id="793531125873261495">هنگام بارگیری دستگاه مجازی خطایی روی داد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" /> درصد تکمیل شد</translation>
 <translation id="7937809006412909895">درحال جمع‌آوری داده‌های عیب‌یابی</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">گزینه‌های پیشرفته</translation>
 <translation id="793923212791838">نمی‌توان از دستگاهتان در این سایت استفاده کرد</translation>
 <translation id="7939328347457537652">مدیریت گواهینامه‌های دستگاه</translation>

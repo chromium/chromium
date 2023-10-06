@@ -1186,6 +1186,7 @@
 <translation id="3440783957068352691">квадрат</translation>
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3443504041532578451">Оптичний диск (сатиновий)</translation>
+<translation id="344449859752187052">Сторонні файли cookie заблоковано</translation>
 <translation id="3447661539832366887">Власник цього пристрою вимкнув гру з динозавром.</translation>
 <translation id="3447884698081792621">Показати сертифікат (видавець: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Інтервал отримання:</translation>
@@ -1734,6 +1735,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Ви використовуєте функцію блокування екрана для заповнення паролів</translation>
 <translation id="4558551763791394412">Спробуйте вимкнути розширення.</translation>
+<translation id="456043042661026303">Безпечна перевірка відомостей про спосіб оплати</translation>
 <translation id="4566017918361049074">Дозвілля на природі</translation>
 <translation id="4567686777917670400">Адміністратор може змінити налаштування веб-переглядача віддалено. Діями на цьому пристрої можна керувати за межами Chromium. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Перегляньте список файлів cookie й даних сайтів у новому вікні</translation>
@@ -2287,6 +2289,7 @@
 <translation id="5691848789297492617">Зберегти картку у відкритому вигляді на всю висоту.</translation>
 <translation id="5695542892312572833">Підтвердити й завершити покупку за допомогою Windows Hello?</translation>
 <translation id="5699628521141772782">Молоко і яйця</translation>
+<translation id="5700761515355162635">Сторонні файли cookie дозволено</translation>
 <translation id="5701381305118179107">По центру</translation>
 <translation id="570530837424789914">Керувати…</translation>
 <translation id="5707154300732650394">Відновити сеанс</translation>
@@ -3362,6 +3365,7 @@
 <translation id="7865448901209910068">Оптимальна швидкість</translation>
 <translation id="7870281855125116701">Знайдено знижку</translation>
 <translation id="7871445724586827387">Змініть пароль облікового запису Google</translation>
+<translation id="7876615279559620350">Щоб розраховуватися швидше, збережіть код CVC для цієї картки у своєму обліковому записі Google</translation>
 <translation id="7877007680666472091">ідентифікатори захищеного контенту</translation>
 <translation id="7878562273885520351">Ваш пароль можуть зламати</translation>
 <translation id="7880146494886811634">Збережіть адресу</translation>
@@ -3850,6 +3854,7 @@
 <translation id="8870494189203302833">Однаковий порядок лицевою стороною вниз</translation>
 <translation id="8870700989640064057">Надрукувати конфіденційний файл?</translation>
 <translation id="8871553383647848643">Налаштуйте вигляд веб-переглядача</translation>
+<translation id="8874790741333031443">Спробуйте тимчасово дозволити сторонні файли cookie. Це зменшить рівень захисту під час перегляду, але функції сайту з більшою імовірністю працюватимуть належним чином.</translation>
 <translation id="8874824191258364635">Введіть дійсний номер картки</translation>
 <translation id="8876033571432926051">Казуальні ігри</translation>
 <translation id="8877780815363510165">Рибальство</translation>

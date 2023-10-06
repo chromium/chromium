@@ -58,6 +58,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1264156759663453185">Den valgte teksten er for stor for delvis oversettelse.</translation>
 <translation id="1265739287306757398">Finn ut hvordan</translation>
 <translation id="1272079795634619415">Stopp</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} passord}other{{count} passord}}</translation>
 <translation id="1275718070701477396">Valgt</translation>
 <translation id="1279024913354609713">Ikke tillat</translation>
 <translation id="1281818060020671000">Administrer data</translation>
@@ -68,6 +69,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1295289763199166823">Tilpass menyen</translation>
 <translation id="1305822519689023679">For å sikre at du alltid kan bruke passordene i Google-kontoen din, må du bekrefte at det er deg.</translation>
 <translation id="1312721752506309252">Økt beskyttelse er på</translation>
+<translation id="1320164290882380380">{COUNT,plural, =1{Spor denne pakken}other{Spor alle pakkene}}</translation>
 <translation id="1321993286294231467">Feil ved lagring av bilde.</translation>
 <translation id="1322735045095424339">Organisasjonen din krever inkognitomodus</translation>
 <translation id="1323735185997015385">Slett</translation>
@@ -143,6 +145,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1687475363370981210">Merk alle som lest</translation>
 <translation id="1689333818294560261">Kallenavn</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> er valgt</translation>
+<translation id="1713777106376424209">Levert av</translation>
 <translation id="1715515772563243997">Hvis du stoler på <ph name="SITE" />, kan du logge på med et lagret passord.</translation>
 <translation id="1740468249224277719">Dobbelttrykk for å installere.</translation>
 <translation id="1750238553597293878">Fortsett å bruke passordene i Google-kontoen din</translation>
@@ -191,6 +194,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1987779152850321833">Fullfør de foreslåtte handlingene under for å få mest mulig ut av Chrome.</translation>
 <translation id="1989112275319619282">Bla gjennom</translation>
 <translation id="1990820278544963435">Finn</translation>
+<translation id="1991153180045413119">Passordet er delt</translation>
 <translation id="1992055602764528852">Logg på for å se fanene på de andre enhetene dine.</translation>
 <translation id="199425419756152024">Vis passordet</translation>
 <translation id="2008357574463816229">Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
@@ -235,6 +239,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="2268044343513325586">Finstem</translation>
 <translation id="2269277877025820298">Se mer</translation>
 <translation id="2273327106802955778">Mer-menyen</translation>
+<translation id="2274800392139890332">Slutt å spore denne pakken</translation>
 <translation id="2275480389219976105">Fant adressen</translation>
 <translation id="2286505070150039482">Markert tekst</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adressen slettes fra denne enheten.}other{Disse adressene slettes fra denne enheten.}}</translation>
@@ -243,8 +248,10 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="2299218006564889602">Passordene dine krypteres på enheten før de lagres i Google Passordlagring.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Endre passord på nettstedet</translation>
+<translation id="2310154074101836012">Rediger karusell</translation>
 <translation id="2316709634732130529">Bruk foreslått passord</translation>
 <translation id="2320166752086256636">Skjul tastaturet</translation>
+<translation id="2348630484974447747">Pakke</translation>
 <translation id="2351097562818989364">Oversettelsesinnstillingene dine er tilbakestilt.</translation>
 <translation id="235789365079050412">Googles personvernregler</translation>
 <translation id="2359043044084662842">Oversett</translation>
@@ -304,6 +311,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2648803196158606475">Slett leste</translation>
 <translation id="2664621323652615289">Stopp</translation>
 <translation id="2666092431469916601">Topp</translation>
+<translation id="2669454659051515572">Alle som bruker denne enheten, kan se nedlastede filer</translation>
 <translation id="2671426118752779020">Du kan bruke passordene du har lagret i Google Passordlagring, i andre apper på iPhonen din.</translation>
 <translation id="2690858294534178585">Kameraet er i bruk</translation>
 <translation id="26915454213703967">Søk i bildet med Google</translation>
@@ -526,6 +534,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803696231112616155">Tilby å oversette dette nettstedet</translation>
 <translation id="3810973564298564668">Administrer</translation>
+<translation id="3818045793209708987">Sluttet å spore denne pakken</translation>
 <translation id="3818293389945649617">Finn neste</translation>
 <translation id="3819183753496523827">Du er uten nett. Sjekk internettilkoblingen din, og prøv på nytt.</translation>
 <translation id="3832419617903252251">Passordet er bare lagret på denne enheten</translation>
@@ -564,6 +573,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4018310736049373830">Administrer aktivitet</translation>
 <translation id="4038354071007134711">Ingen apper på denne enheten kan åpne filen.</translation>
 <translation id="4042870976416480368">Finn på siden</translation>
+<translation id="4043294777772912240"><ph name="USERNAME" /> kan nå bruke brukernavnet og passordet ditt når hen bruker Google Passordlagring til å logge på <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Opprett og del en direktelink til en del av en side du har markert.</translation>
 <translation id="4045648459118332842">Se de lagrede passordene dine i hvilken som helst app med ett trykk</translation>
 <translation id="4049507953662678203">Sørg for at du er koblet til et nettverk, og prøv igjen.</translation>
@@ -607,6 +617,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4286718549648564014">Adressen er flyttet til kontoen din: <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Søk</translation>
 <translation id="4302248187517737842">Brukernavn mangler ••••••••</translation>
+<translation id="4302415908542657649">Deler passordet</translation>
 <translation id="4304713468139749426">Passordlagring</translation>
 <translation id="430793432425771671">Synkroniser alt</translation>
 <translation id="4309403553630140242">Dobbelttrykk for å se mer informasjon</translation>
@@ -642,6 +653,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4508750114462689118">Lukk påloggingskampanjen</translation>
 <translation id="4514889972748124117">Foreslå et sterkt passord…</translation>
 <translation id="4520798012560649652">Finn ut mer om inkognitomodus</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} bokmerke}other{{count} bokmerker}}</translation>
 <translation id="452750746583162491">Gjennomgå de synkroniserte dataene dine</translation>
 <translation id="4527660062930312477">Kontoen din administreres</translation>
 <translation id="4536418791685807335">Prøv å logge på igjen.</translation>
@@ -661,6 +673,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4619615317237390068">Faner fra andre enheter</translation>
 <translation id="4620246317052452550">Sider du har lest</translation>
 <translation id="4620888520263267479">Vis forhåndsvisninger av linker</translation>
+<translation id="4622477750832577849">Slå på sporing</translation>
 <translation id="4630540211544979320">Oversett sider</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> gjenbrukte passord</translation>
 <translation id="4634124774493850572">Bruk passord</translation>
@@ -776,6 +789,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="519530786644929958">Nedlastingen mislyktes. Det er ikke mulig å prøve på nytt.</translation>
 <translation id="5197255632782567636">Internett</translation>
 <translation id="5211488077761630279">Vil du tillate at «<ph name="SITE_NAME" />» bruker <ph name="PERMISSION" />?</translation>
+<translation id="5215990399368742238">Spor alle registrerte pakker automatisk</translation>
 <translation id="5219295696240154694">Bidra til å gjøre nettet sikrere for alle</translation>
 <translation id="5220945116117011963">Opprett kalenderaktiviteter fra datoer</translation>
 <translation id="5221339005270097309">Sjekker passord …</translation>
@@ -786,6 +800,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5235389474593199952">Skjul loggen</translation>
 <translation id="5238301240406177137">Lagre i konto</translation>
 <translation id="5245322853195994030">Avbryt synkronisering</translation>
+<translation id="5256908199795498284">Chrome registrerer pakkesporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Dataene dine blir delt med Google, slik at vi kan tilby denne funksjonen og gjøre Shopping enda bedre for alle.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Fyll det ut før du lagrer.}other{Noen obligatoriske felt er tomme. Fyll dem ut før du lagrer.}}</translation>
 <translation id="5271549068863921519">Lagre passord</translation>
 <translation id="5283494734135414249">Trykk på snarveien som vises under adressefeltet.</translation>
@@ -794,6 +809,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5318298563956633672">Du sporer allerede dette produktet.</translation>
 <translation id="5339316356165661760">Slå på synkronisering</translation>
+<translation id="5345598430982201510">Registrer aldri pakker automatisk</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Vil du spore denne pakken?}other{Vil du spore {COUNT} pakker?}}</translation>
 <translation id="536067926684072644">Vis bokmerker</translation>
 <translation id="5360976571138293719">For flere innstillinger knyttet til personvern, sikkerhet og datainnsamling, se <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
@@ -810,6 +826,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="54401264925851789">Sikkerhetsinformasjon for siden</translation>
 <translation id="5443952882982198570">Kredittkort</translation>
 <translation id="5444892875087332195">Bokmerker</translation>
+<translation id="5454211924362324495">For å forhindre andre fra å bruke passordet ditt, <ph name="BEGIN_LINK" />endre det på <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Åpne versjon uten nett</translation>
 <translation id="5475069061743940393">Pakkesporing</translation>
 <translation id="5478327362747197944">Opprett kalenderaktiviteter direkte ved å klikke på datoer på nettsider.</translation>
@@ -1029,6 +1046,7 @@ Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og la
 
 Prøv å bruke unike passord for hvert nettsted.</translation>
 <translation id="6497850081273517953">Chrome er utdatert. Oppdater til den nyeste versjonen for å holde deg sikker.</translation>
+<translation id="6502142762807385617">{COUNT,plural, =1{Slutt å spore denne pakken}other{Slutt å spore alle pakker}}</translation>
 <translation id="650279896687777322">Finn ut mer …</translation>
 <translation id="6507973708545996744">Logg på for å få leselisten din på alle enhetene dine.</translation>
 <translation id="6510072653668207258">Påminn meg senere</translation>
@@ -1109,6 +1127,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6869389390665537774">Du kan se sidene du har besøkt, eller fjerne dem fra loggen</translation>
 <translation id="687135068089457384">Vis Innstillinger</translation>
 <translation id="6873263987691478642">Delt visning</translation>
+<translation id="687586529977635009">Chrome registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Dataene dine blir delt med Google, slik at vi kan tilby denne funksjonen og gjøre Shopping enda bedre for alle. Du kan endre dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standardbeskyttelse mot nettsteder, nedlastinger og utvidelser som anses som farlige.</translation>
 <translation id="6888009575607455378">Er du sikker på at du vil forkaste endringene?</translation>
 <translation id="6896758677409633944">Kopiér</translation>
@@ -1156,6 +1175,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7154343200458623869">Fullfør oppgaven din.</translation>
 <translation id="7161230316646448869">Synkroniser bokmerker, logg med mer på alle enheter</translation>
 <translation id="7162168282402939716">Lås opp inkognitofaner med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7168959436351276050">Hvis du skjuler dette kortet, fjernes alle pakkesporingsdataene dine</translation>
 <translation id="7172852049901402487">Beskytt passordene dine mot sikkerhetsproblemer</translation>
 <translation id="7173114856073700355">Åpne Innstillinger</translation>
 <translation id="7189598951263744875">Del</translation>
@@ -1212,6 +1232,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7508728395076009983">For å låse inkognitofanene dine, konfigurer Touch ID, Face ID eller en sikkerhetskode.</translation>
 <translation id="7514365320538308">Last ned</translation>
 <translation id="7524055474074101597">Få tilgang til passordene dine med mer på tvers av apper.</translation>
+<translation id="7527917367892640435">Pakken blir allerede sporet</translation>
 <translation id="7531345132340165516">Gjeldende nettsted</translation>
 <translation id="7537586195939242955">Tillatelsen din kan for øyeblikket ikke installeres i Passbook.</translation>
 <translation id="754655535278952384">Sjekket <ph name="TIME" /></translation>
@@ -1415,6 +1436,7 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="8605219856220328675">Lukk fanen.</translation>
 <translation id="8613883225817609844">Skjul nylige faner</translation>
 <translation id="8620640915598389714">Endre</translation>
+<translation id="8624447588354561276">Pakkenummer</translation>
 <translation id="8626393685701737946">Du kan endre standard nettstedsvisning til datamaskin i Innstillinger &gt; Innholdsinnstillinger</translation>
 <translation id="8636825310635137004">For å få fanene dine fra de andre enhetene du bruker, slå på synkronisering.</translation>
 <translation id="8637431369725868556">Få beskyttelse mot farlige nettsteder.</translation>

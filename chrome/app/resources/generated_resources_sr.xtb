@@ -1804,6 +1804,7 @@
 <translation id="2398546389094871088">Ако обавите Powerwash на уређају, нећете уклонити eSIM профиле. Идите у <ph name="LINK_BEGIN" />подешавања за мобилне уређаја<ph name="LINK_END" /> да бисте ручно уклонили те профиле.</translation>
 <translation id="2399699884460174994">Обавештења су укључена</translation>
 <translation id="2399939490305346086">Подаци за пријављивање са безбедносног кључа</translation>
+<translation id="240006516586367791">Контроле медија</translation>
 <translation id="2400664245143453337">Треба одмах да ажурирате</translation>
 <translation id="2402226831639195063">Звуци</translation>
 <translation id="2405887402346713222">Серијски бројеви уређаја и компоненти</translation>
@@ -4221,9 +4222,6 @@
 <translation id="4349828822184870497">Корисно</translation>
 <translation id="4350230709416545141">Увек блокирај приступ локацији за <ph name="HOST" /></translation>
 <translation id="4350782034419308508">Хеј Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Да би пружио најбољи доживљај, <ph name="DEVICE_OS" /> прикупља податке о хардверу са уређаја и дели их са Google-ом да би утврдио која ажурирања треба да пружи. Можете опционално да дозволите Google-у да користи те податке у додатне сврхе попут подршке и побољшања за <ph name="DEVICE_OS" /> доживљај и услугу.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Можете да се пријавите на овом уређају и посетите одељак CHROMEOSFLEX_HARDWARE_INFO на chrome://system да бисте видели податке који се шаљу Google-у ради филтрирања ажурирања, као и све друге случајеве у којима одлучујете да делите податке са Google-ом.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Више детаља о подацима које <ph name="DEVICE_OS" /> може да дели са Google-ом, као и о томе како се они користе, потражите на g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Идите у апликацију <ph name="APP_NAME" /> да бисте управљали инсталираним и стримованим апликацијама.</translation>
 <translation id="4354073718307267720">Питај када сајт жели да прави 3D мапу окружења или да прати положај камере</translation>
 <translation id="4354344420232759511">Овде се приказују сајтови које сте посетили</translation>
@@ -8598,6 +8596,7 @@
 <translation id="793531125873261495">Грешка при преузимању виртуелне машине. Пробајте поново.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% је завршено</translation>
 <translation id="7937809006412909895">Прикупљају се дијагностички подаци</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Напредне опције</translation>
 <translation id="793923212791838">Уређај не може да се користи са овим сајтом</translation>
 <translation id="7939328347457537652">Управљајте сертификатима уређаја</translation>

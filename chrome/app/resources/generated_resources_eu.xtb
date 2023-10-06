@@ -1806,6 +1806,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2398546389094871088">Gailuaren jatorrizko datuak berrezarrita ere ez dira kenduko eSIMaren profilak. Profilok eskuz kentzeko, joan <ph name="LINK_BEGIN" />Mugikorreko ezarpenak<ph name="LINK_END" /> atalera.</translation>
 <translation id="2399699884460174994">Jakinarazpenak aktibatuta daude</translation>
 <translation id="2399939490305346086">Segurtasun-giltzako saioa hasteko datuak</translation>
+<translation id="240006516586367791">Multimedia-edukia kontrolatzeko aukerak</translation>
 <translation id="2400664245143453337">Berehala eguneratu behar da</translation>
 <translation id="2402226831639195063">Tonuak</translation>
 <translation id="2405887402346713222">Gailuaren eta osagaien serie-zenbakiak</translation>
@@ -4223,9 +4224,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4349828822184870497">Lagungarria</translation>
 <translation id="4350230709416545141">Blokeatu beti <ph name="HOST" /> ostalariari kokapena atzitzeko aukera</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Ahalik eta zerbitzurik onena eskaintzeko, gailuei buruzko hardware-datuak biltzen ditu <ph name="DEVICE_OS" /> sistemak, eta Google-rekin partekatzen ditu instalatu behar diren eguneratzeak zehazteko. Nahi baduzu, datuok beste helburu batzuetarako erabiltzeko baimena eman diezaiokezu Google-ri, hala nola laguntza-zerbitzua eskaintzeko, eta <ph name="DEVICE_OS" /> eta hark eskainitako zerbitzua hobetzeko.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Eguneratzeak iragazteko Google-ra zer datu bidaliko diren ikusteko, hasi saioa gailuan eta joan chrome://system agindua sakatzean bistaratzen den orriko CHROMEOSFLEX_HARDWARE_INFO atalera. Datuak Google-rekin partekatzea zer beste kasutan aukeratu zenuen ere ikusiko duzu bertan.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> sistemak Google-rekin partekatzen dituen datuei eta datu horiek erabiltzeko moduari buruzko xehetasun gehiago lortzeko, joan g.co/flex/HWDataCollection helbidera.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Instalatuta dauden eta zuzenean igorritako aplikazioak kudeatzeko, joan "<ph name="APP_NAME" />" aplikaziora</translation>
 <translation id="4354073718307267720">Eskatu zure baimena webguneren batek inguruaren 3D-ko mapa bat sortu edo kameraren posizioaren jarraipena egin nahi duenean</translation>
 <translation id="4354344420232759511">Hemen agertuko dira bisitatzen dituzun webguneak</translation>

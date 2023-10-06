@@ -251,7 +251,7 @@
 <translation id="1962969542251276847">上鎖畫面</translation>
 <translation id="1967970931040389207">開啟熱點</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
-<translation id="1971815855639997522">已移除桌面和視窗。按下 Ctrl + Z 鍵可復原動作。</translation>
+<translation id="1971815855639997522">移除咗桌面同視窗。㩒 Control + Z 掣就可以復原操作。</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />，您好：</translation>
 <translation id="1978498689038657292">文字輸入</translation>
 <translation id="1980808257969311265">加入 <ph name="EVENT_SUMMARY" /></translation>
@@ -904,7 +904,6 @@
 <translation id="468293128311738995">手機應用程式</translation>
 <translation id="4690510401873698237">捷徑列喺螢幕個底度</translation>
 <translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
-<translation id="4698850295812410683">顯示觸控筆工具</translation>
 <translation id="4702647871202761252">已停用私隱保護畫面</translation>
 <translation id="4706121060329443414">系統稍後將再次嘗試下載，目前會暫時將語音傳送給 Google 處理。</translation>
 <translation id="470644585772471629">色彩反轉</translation>
@@ -1263,7 +1262,7 @@
 <translation id="6095008505822982596">語速</translation>
 <translation id="6095425951508823973">新增 <ph name="PROVIDER" /> 嘅連線</translation>
 <translation id="6099678161144790572">上個月編輯過</translation>
-<translation id="6099793635444444289">麥克風已設為靜音，因此無法啟動語音輸入功能</translation>
+<translation id="6099793635444444289">由於麥克風已設定為靜音，因此無法啟動語音聽寫功能</translation>
 <translation id="6103838137565245112">系統</translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>

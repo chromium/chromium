@@ -1821,6 +1821,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2398546389094871088">Melakukan powerwash pada perangkat tidak akan menghapus profil eSIM Anda. Buka <ph name="LINK_BEGIN" />Setelan Seluler<ph name="LINK_END" /> untuk menghapus profil ini secara manual.</translation>
 <translation id="2399699884460174994">Notifikasi diaktifkan</translation>
 <translation id="2399939490305346086">Data login kunci keamanan</translation>
+<translation id="240006516586367791">Kontrol media</translation>
 <translation id="2400664245143453337">Perlu update segera</translation>
 <translation id="2402226831639195063">Nada</translation>
 <translation id="2405887402346713222">Nomor Seri Perangkat dan Komponen</translation>
@@ -4238,9 +4239,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4349828822184870497">Berguna</translation>
 <translation id="4350230709416545141">Selalu blokir <ph name="HOST" /> agar tidak mengakses lokasi Anda</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Untuk memberikan pengalaman terbaik, <ph name="DEVICE_OS" /> mengumpulkan data hardware tentang perangkat dan membagikannya kepada Google untuk menentukan update mana yang harus diberikan. Secara opsional, Anda dapat mengizinkan Google menggunakan data ini untuk tujuan tambahan seperti dukungan dan peningkatan pada pengalaman dan layanan <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Anda dapat login di perangkat ini dan membuka bagian CHROMEOSFLEX_HARDWARE_INFO di chrome://system guna melihat data yang dikirim ke Google untuk pemfilteran update, serta situasi lain ketika Anda memilih untuk membagikan data kepada Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Untuk detail selengkapnya terkait data yang mungkin dibagikan <ph name="DEVICE_OS" /> kepada Google dan cara data tersebut digunakan, buka g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Buka aplikasi "<ph name="APP_NAME" />" untuk mengelola aplikasi terinstal dan yang di-streaming</translation>
 <translation id="4354073718307267720">Tanyakan saat situs ingin membuat peta 3D untuk area di sekeliling Anda atau melacak posisi kamera</translation>
 <translation id="4354344420232759511">Situs yang Anda kunjungi akan ditampilkan di sini</translation>
@@ -8611,6 +8609,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="793531125873261495">Error saat mendownload mesin virtual. Coba lagi.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% selesai</translation>
 <translation id="7937809006412909895">Mengumpulkan data diagnostik</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Opsi lanjutan</translation>
 <translation id="793923212791838">Perangkat Anda tidak dapat digunakan dengan situs ini</translation>
 <translation id="7939328347457537652">Kelola sertifikat perangkat</translation>

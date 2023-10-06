@@ -1803,6 +1803,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2398546389094871088">Si aplicas la función Powerwash en el dispositivo, no se quitarán los perfiles de eSIM. Para quitarlos de forma manual, va a <ph name="LINK_BEGIN" />Configuración de los dispositivos móviles<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Se activaron las Notificaciones</translation>
 <translation id="2399939490305346086">Datos de acceso de la llave de seguridad</translation>
+<translation id="240006516586367791">Controles multimedia</translation>
 <translation id="2400664245143453337">Se requiere una actualización inmediata</translation>
 <translation id="2402226831639195063">Tonos</translation>
 <translation id="2405887402346713222">Números de serie del dispositivo y los componentes</translation>
@@ -2153,6 +2154,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2671451824761031126">Tus marcadores y opciones de configuración están listos</translation>
 <translation id="2672142220933875349">El archivo crx no es válido; no se pudo desempaquetar.</translation>
 <translation id="2673135533890720193">Leer el historial de navegación</translation>
+<translation id="2673848446870717676">Asegúrate de que tu dispositivo Bluetooth esté cerca y tenga el modo de vinculación activado. Vincúlate solo con dispositivos de confianza. Todas las cuentas de esta Chromebook pueden ver los dispositivos vinculados.</translation>
 <translation id="2673873887296220733">¿Quieres copiar 1 archivo en <ph name="CLOUD_PROVIDER" /> para abrirlo?</translation>
 <translation id="2674764818721168631">No</translation>
 <translation id="2676084251379299915">La política empresarial inhabilitó esta extensión porque ya no está disponible en Chrome Web Store.</translation>
@@ -3830,6 +3832,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4010917659463429001">Para obtener tus favoritos en el dispositivo móvil, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">¿Reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">¿Tienes extensiones? <ph name="BEGIN_LINK" />Administra tus extensiones<ph name="END_LINK" /> en un solo lugar.</translation>
+<translation id="4016762287427926315">Los permisos que otorgues para <ph name="APP_NAME" /> también se otorgarán para esta app. <ph name="BEGIN_LINK" />Administrar<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crear un código QR para este vínculo</translation>
 <translation id="4019983356493507433">Editar lista de Favoritos</translation>
 <translation id="4020327272915390518">Menú de opciones</translation>
@@ -4218,9 +4221,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4349828822184870497">Útil</translation>
 <translation id="4350230709416545141">Siempre impedir que <ph name="HOST" /> acceda a tu ubicación</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />A fin de proporcionar la mejor experiencia, <ph name="DEVICE_OS" /> recopila datos de hardware de los dispositivos y los comparte con Google para determinar qué actualizaciones hacer. De manera opcional, podrás permitir que Google utilice estos datos con otros fines, como la asistencia y mejoras en la experiencia y el servicio de <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puedes acceder en este dispositivo y visitar la sección CHROMEOSFLEX_HARDWARE_INFO en chrome://system a fin de ver los datos que se enviaron a Google para filtrar las actualizaciones, así como cualquier otra instancia en la que decidas compartir datos con Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Para obtener más detalles sobre los datos que <ph name="DEVICE_OS" /> puede compartir con Google y cómo se utilizan, visita g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Ve a la app de "<ph name="APP_NAME" />" para administrar las apps instaladas y transmitidas</translation>
 <translation id="4354073718307267720">Preguntar cuando un sitio desee crear un mapa 3D de tu entorno o hacer un seguimiento de la posición de la cámara</translation>
 <translation id="4354344420232759511">Los sitios que visitas aparecerán aquí</translation>
@@ -6399,6 +6399,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6156863943908443225">Caché de la secuencia de comandos</translation>
 <translation id="6156944117133588106">Mostrar los botones de navegación en el modo tablet</translation>
 <translation id="615930144153753547">Permitir que los sitios muestren imágenes</translation>
+<translation id="6160290816917599257">El código no es válido. El formato de tu entrada debe ser <ph name="LPA_0" />$<ph name="LPA_1" />dirección SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID para coincidencias opcional<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Proporcionar certificados para autenticación</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Configuración de Kerberos</translation>
@@ -8430,6 +8431,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7807117920154132308">Al parecer, <ph name="SUPERVISED_USER_NAME" /> ya configuró Asistente de Google en otro dispositivo. <ph name="SUPERVISED_USER_NAME" /> puede activar el contexto de la pantalla de este dispositivo para sacarle incluso más provecho a Asistente.</translation>
 <translation id="7807711621188256451">Permitir siempre que <ph name="HOST" /> acceda a la cámara</translation>
 <translation id="7810202088502699111">Se bloquearon las ventanas emergentes en esta página.</translation>
+<translation id="7810367892333449285">El formato de tu entrada debe ser <ph name="LPA_0" />$<ph name="LPA_1" />dirección SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID para coincidencias opcional<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editar el acceso directo <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
@@ -8589,6 +8591,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="793531125873261495">Se produjo un error al descargar la máquina virtual. Vuelve a intentarlo.</translation>
 <translation id="7935451262452051102">Se completó el <ph name="PERCENT" />%</translation>
 <translation id="7937809006412909895">Se están recopilando los datos de diagnóstico</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Opciones avanzadas</translation>
 <translation id="793923212791838">No se puede usar tu dispositivo con este sitio</translation>
 <translation id="7939328347457537652">Administrar certificados de dispositivos</translation>
@@ -9408,6 +9411,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8605428685123651449">Memoria SQLite</translation>
 <translation id="8607171490667464784">Mientras esté inactivo y usando la batería</translation>
 <translation id="8607326572516521315">La reducción de spam y fraude se basa en tokens de estado privado que ayudan a los sitios a combatir el fraude y distinguir a los bots de las personas.</translation>
+<translation id="8607828412110648570">Asegúrate de que tu dispositivo Bluetooth esté cerca y tenga el modo de vinculación activado. Vincúlate solo con dispositivos de confianza. Todas las cuentas de esta Chromebook pueden ver los dispositivos vinculados. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Agregar un ticket de Kerberos</translation>
 <translation id="8609465669617005112">Subir</translation>
 <translation id="8610103157987623234">El formato es incorrecto; vuelve a intentarlo</translation>

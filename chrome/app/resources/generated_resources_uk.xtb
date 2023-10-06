@@ -1824,6 +1824,7 @@
 <translation id="2398546389094871088">Під час виконання Powerwash на пристрої профілі eSIM-карти не видаляються. Це можна зробити вручну в розділі <ph name="LINK_BEGIN" />налаштування мобільних пристроїв<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Сповіщення ввімкнено</translation>
 <translation id="2399939490305346086">Дані для входу для ключа безпеки</translation>
+<translation id="240006516586367791">Елементи керування медіа</translation>
 <translation id="2400664245143453337">Потрібно негайно встановити оновлення</translation>
 <translation id="2402226831639195063">Тони</translation>
 <translation id="2405887402346713222">Серійні номери пристрою і компонентів</translation>
@@ -2174,6 +2175,7 @@
 <translation id="2671451824761031126">Ваші закладки та налаштування імпортовано</translation>
 <translation id="2672142220933875349">Неправильний файл .crx. Помилка розпакування.</translation>
 <translation id="2673135533890720193">Переглядати історію веб-перегляду</translation>
+<translation id="2673848446870717676">Переконайтеся, що пристрій із Bluetooth поруч і на ньому ввімкнено режим підключення. Під’єднуйте лише надійні пристрої. Підключені пристрої відображаються для всіх облікових записів на цьому пристрої Chromebook.</translation>
 <translation id="2673873887296220733">Скопіювати 1 файл у сервіс <ph name="CLOUD_PROVIDER" />, щоб відкрити його?</translation>
 <translation id="2674764818721168631">Вимкнено</translation>
 <translation id="2676084251379299915">Це розширення вимкнено згідно з корпоративними правилами, оскільки воно більше не доступне у Веб-магазині Chrome.</translation>
@@ -3851,6 +3853,7 @@
 <translation id="4010917659463429001">Щоб мати доступ до закладок на мобільному пристрої, потрібно <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Відновити розширення <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Користуєтеся розширеннями? <ph name="BEGIN_LINK" />Керуйте ними<ph name="END_LINK" /> в єдиному зручному місці.</translation>
+<translation id="4016762287427926315">Дозволи, які ви надаєте додатку <ph name="APP_NAME" />, також поширюються на цей додаток. <ph name="BEGIN_LINK" />Керувати<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Створити QR-код для цього посилання</translation>
 <translation id="4019983356493507433">Редагувати список закладок</translation>
 <translation id="4020327272915390518">Меню параметрів</translation>
@@ -4239,9 +4242,6 @@
 <translation id="4349828822184870497">Корисно</translation>
 <translation id="4350230709416545141">Завжди забороняти сайту <ph name="HOST" /> доступ до ваших геоданих</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Щоб забезпечити найвищу якість роботи, ОС <ph name="DEVICE_OS" /> збирає дані про апаратне забезпечення пристроїв і передає їх компанії Google, щоб визначати потрібні оновлення. Також ви можете дозволити нам використовувати такі відомості для інших цілей, зокрема щоб покращувати роботу й обслуговування <ph name="DEVICE_OS" /> і надавати підтримку.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Щоб побачити, які дані ви надсилаєте для оновлення пристрою, а також якщо виникнуть інші запитання, пов’язані з наданням доступу до своїх даних компанії Google, перейдіть у розділ CHROMEOSFLEX_HARDWARE_INFO на сторінці chrome://system.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Щоб дізнатися більше про те, які дані ОС <ph name="DEVICE_OS" /> може надавати компанії Google і як вони використовуються, перейдіть на сторінку g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Щоб керувати встановленими додатками й потоковими сервісами, перейдіть у додаток <ph name="APP_NAME" /></translation>
 <translation id="4354073718307267720">Запитувати, коли сайт хоче створити 3D-карту вашого оточення або відстежувати положення камери</translation>
 <translation id="4354344420232759511">Відвідані вами сайти з’являтимуться тут</translation>
@@ -6418,6 +6418,7 @@
 <translation id="6156863943908443225">Кеш сценарію</translation>
 <translation id="6156944117133588106">Показувати кнопки навігації в режимі планшета</translation>
 <translation id="615930144153753547">Сайти можуть показувати зображення</translation>
+<translation id="6160290816917599257">Недійсний код. Введіть дані у форматі: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ адреса<ph name="LPA_2" />$<ph name="LPA_3" />необов’язковий ідентифікатор зіставлення<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Надавати сертифікати для автентифікації</translation>
 <translation id="6163363155248589649">&amp;Звичайний</translation>
 <translation id="6163376401832887457">Налаштування Kerberos</translation>
@@ -8454,6 +8455,7 @@
 <translation id="7807117920154132308">Схоже, у користувача <ph name="SUPERVISED_USER_NAME" /> вже налаштовано Google Асистента на іншому пристрої. <ph name="SUPERVISED_USER_NAME" /> може отримати ще більше функцій, увімкнувши екранний контекст на цьому пристрої.</translation>
 <translation id="7807711621188256451">Завжди дозволяти хосту <ph name="HOST" /> доступ до вашої камери</translation>
 <translation id="7810202088502699111">На цій сторінці спливаючі вікна заблоковано.</translation>
+<translation id="7810367892333449285">Введіть дані у форматі: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ адреса<ph name="LPA_2" />$<ph name="LPA_3" />необов’язковий ідентифікатор зіставлення<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Копіювати</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Змінити комбінацію клавіш <ph name="SHORTCUT" /> для розширення <ph name="EXTENSION_NAME" /></translation>
@@ -8613,6 +8615,7 @@
 <translation id="793531125873261495">Не вдалося завантажити віртуальну машину. Повторіть спробу.</translation>
 <translation id="7935451262452051102">Виконано <ph name="PERCENT" />%</translation>
 <translation id="7937809006412909895">Збирання даних діагностики</translation>
+<translation id="7938881824185772026">Лабораторії</translation>
 <translation id="7939062555109487992">Розширені параметри</translation>
 <translation id="793923212791838">Ваш пристрій не можна використовувати для цього сайту</translation>
 <translation id="7939328347457537652">Керувати сертифікатами на пристрої</translation>
@@ -9432,6 +9435,7 @@
 <translation id="8605428685123651449">Пам’ять SQLite</translation>
 <translation id="8607171490667464784">Якщо пристрій неактивний і не заряджається</translation>
 <translation id="8607326572516521315">Для боротьби зі спамом і шахрайством використовуються приватні маркери стану. Вони допомагають сайтам запобігати спробам шахрайства й відрізняти ботів від людей.</translation>
+<translation id="8607828412110648570">Переконайтеся, що пристрій із Bluetooth поруч і на ньому ввімкнено режим підключення. Під’єднуйте лише надійні пристрої. Підключені пристрої відображаються для всіх облікових записів на цьому пристрої Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Додати квиток Kerberos</translation>
 <translation id="8609465669617005112">Угору</translation>
 <translation id="8610103157987623234">Неправильний формат, повторіть спробу</translation>

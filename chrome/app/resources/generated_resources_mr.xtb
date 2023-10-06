@@ -1820,6 +1820,7 @@
 <translation id="2398546389094871088">तुमचे डिव्हाइस Powerwash केल्यामुळे तुमच्या eSIM प्रोफाइल काढून टाकल्या जाणार नाहीत. या प्रोफाइल मॅन्युअली हटवण्यासाठी, <ph name="LINK_BEGIN" />मोबाइल सेटिंग्ज<ph name="LINK_END" /> वर जा.</translation>
 <translation id="2399699884460174994">सूचना सुरू केल्या आहेत</translation>
 <translation id="2399939490305346086">सिक्युरिटी की साइन इन डेटा</translation>
+<translation id="240006516586367791">मीडिया नियंत्रणे</translation>
 <translation id="2400664245143453337">त्वरित अपडेट आवश्यक आहे</translation>
 <translation id="2402226831639195063">टोन</translation>
 <translation id="2405887402346713222">डिव्हाइस आणि घटक सिरीअल नंबर</translation>
@@ -2170,6 +2171,7 @@
 <translation id="2671451824761031126">तुमचे बुकमार्क आणि सेटिंग्ज तयार आहेत</translation>
 <translation id="2672142220933875349">खराब crx फाईल, पॅकिंग रद्द करणे अयशस्वी.</translation>
 <translation id="2673135533890720193">तुमचा ब्राउझिंग इतिहास वाचा</translation>
+<translation id="2673848446870717676">तुमचे ब्लूटूथ डिव्‍हाइस हे पेअरिंग मोडमध्ये आणि जवळपास असल्याची खात्री करा. तुमचा विश्वास असलेल्या डिव्हाइससोबतच पेअर करा. पेअर केलेली डिव्हाइस या Chromebook वरील सर्व खात्यांना दृश्यमान असतात.</translation>
 <translation id="2673873887296220733">१ फाइल उघडण्यासाठी <ph name="CLOUD_PROVIDER" /> वर कॉपी करायची आहे का?</translation>
 <translation id="2674764818721168631">बंद</translation>
 <translation id="2676084251379299915">हे एक्स्टेंशन एंटरप्राइझ धोरण अंतर्गत बंद करण्यात आले आहे, कारण ते आता Chrome वेब स्टोअरवर उपलब्ध नाही.</translation>
@@ -3847,6 +3849,7 @@
 <translation id="4010917659463429001">तुमचे बुकमार्क तुमच्या मोबाइल डिव्हाइसवर मिळवण्यासाठी, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" दुरुस्त करायचे?</translation>
 <translation id="4015163439792426608">एक्स्टेंशन आहेत का? एकाच ठिकाणी सहजरीत्या <ph name="BEGIN_LINK" />तुमची एक्स्टेंशन व्यवस्थापित करा<ph name="END_LINK" />.</translation>
+<translation id="4016762287427926315">तुम्ही <ph name="APP_NAME" /> साठी ज्या परवानग्यांना अनुमती देता, त्यांना या अ‍ॅपसाठीदेखील अनुमती दिली जाईल. <ph name="BEGIN_LINK" />व्यवस्थापित करा<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">या लिंकसाठी QR कोड तयार करा</translation>
 <translation id="4019983356493507433">बुकमार्क सूची संपादित करा</translation>
 <translation id="4020327272915390518">पर्याय मेनू</translation>
@@ -4233,9 +4236,6 @@
 <translation id="4349828822184870497">उपयुक्त</translation>
 <translation id="4350230709416545141">तुमचे स्थान अ‍ॅक्सेस करण्यापासून <ph name="HOST" /> ला नेहमी ब्लॉक करा</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />सर्वोत्तम अनुभव पुरवण्यासाठी, <ph name="DEVICE_OS" /> हे डिव्हाइसबद्दल हार्डवेअर डेटा गोळा करते आणि कोणती अपडेट डिलिव्हर केली पाहिजे हे निर्धारित करण्यासाठी तो Google सोबत शेअर करते. याव्यतिरिक्त, तुम्ही <ph name="DEVICE_OS" /> मधील अनुभव आणि सेवा यांच्याशी संबंधित सपोर्ट आणि सुधारणा यांसारख्या अतिरिक्त उद्देशांसाठी Google ला हा डेटा वापरण्याची अनुमती देऊ शकता.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />फिल्टर करण्याचे पर्याय अपडेट करण्यासाठी Google ला पाठवलेला डेटा तसेच असे कोणतेही प्रसंग ज्यात तुम्ही Google सोबत डेटा शेअर करण्याचे निवडले होते हे पाहण्याकरिता तुम्ही या डिव्हाइसवर लॉग इन करू शकता आणि chrome://system मधील CHROMEOSFLEX_HARDWARE_INFO विभागाला भेट देऊ शकता.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> हे Google सोबत कदाचित शेअर करेल असा डेटा आणि तो कसा वापरला जातो याविषयीच्या अधिक तपशिलांसाठी g.co/flex/HWDataCollection ला भेट द्या.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">इंस्टॉल आणि स्‍ट्रीम केलेली अ‍ॅप्स व्यवस्थापित करण्यासाठी "<ph name="APP_NAME" />" अ‍ॅपवर जा</translation>
 <translation id="4354073718307267720">साइटला तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करायचा किंवा कॅमेर्‍याचे स्थान ट्रॅक करायचे असेल तेव्हा विचारा</translation>
 <translation id="4354344420232759511">तुम्ही भेट दिलेल्या साइट येथे दिसतील</translation>
@@ -6416,6 +6416,7 @@
 <translation id="6156863943908443225">स्क्रिप्ट कॅशे </translation>
 <translation id="6156944117133588106">टॅबलेट मोडमध्ये नेव्हिगेशन बटणे दाखवा</translation>
 <translation id="615930144153753547">साइट इमेज दाखवू शकतात</translation>
+<translation id="6160290816917599257">कोड चुकीचा आहे. तुमच्या एंट्रीचा फॉरमॅट <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /> असा असायला हवा</translation>
 <translation id="6160625263637492097">ऑथेंटिकेशनसाठी प्रमाणपत्रे द्या</translation>
 <translation id="6163363155248589649">&amp;सामान्य</translation>
 <translation id="6163376401832887457">Kerberos सेटिंग्ज</translation>
@@ -8445,6 +8446,7 @@
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> ने आधीच दुसर्‍या डिव्हाइसवर Google Assistant सेट केले आहे असे दिसते. या डिव्हाइसवर स्क्रीन संदर्भ सुरू करून <ph name="SUPERVISED_USER_NAME" /> हे Assistant चा पुरेपूर वापर करू शकतात.</translation>
 <translation id="7807711621188256451">तुमचा कॅमेरा ॲक्सेस करण्यासाठी <ph name="HOST" /> ला नेहमी परवानगी द्या</translation>
 <translation id="7810202088502699111">या पेजवर पॉप-अप ब्लॉक केलेले होते.</translation>
+<translation id="7810367892333449285">तुमच्या एंट्रीचा फॉरमॅट <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /> असा असायला हवा</translation>
 <translation id="7814458197256864873">&amp;कॉपी करा</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> साठी शॉर्टकट <ph name="SHORTCUT" /> संपादित करा</translation>
@@ -8604,6 +8606,7 @@
 <translation id="793531125873261495">व्हर्च्युअल मशीन डाउनलोड करताना एरर आली. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% पूर्ण झाले आहे</translation>
 <translation id="7937809006412909895">निदानासंबंधित डेटा गोळा करत आहे</translation>
+<translation id="7938881824185772026">लॅब्ज</translation>
 <translation id="7939062555109487992">प्रगत पर्याय</translation>
 <translation id="793923212791838">तुमचे डिव्हाइस या साइटसोबत वापरले जाऊ शकत नाही</translation>
 <translation id="7939328347457537652">डिव्हाइस सर्टिफिकेट व्यवस्थापित करा</translation>
@@ -9423,6 +9426,7 @@
 <translation id="8605428685123651449">SQLite मेमरी</translation>
 <translation id="8607171490667464784">इनॅक्टिव्ह आणि बॅटरीवर सुरू असताना</translation>
 <translation id="8607326572516521315">स्पॅम आणि घोटाळा कमी करणे हे खाजगी स्टेट टोकनवर अवलंबून असते, त्यांच्यामुळे साइटना घोटाळ्याविरुद्ध लढण्यात आणि लोक व बॉट यांच्यातील फरक ओळखण्यात मदत होते.</translation>
+<translation id="8607828412110648570">तुमचे ब्लूटूथ डिव्‍हाइस हे पेअरिंग मोडमध्ये आणि जवळपास असल्याची खात्री करा. तुमचा विश्वास असलेल्या डिव्हाइससोबतच पेअर करा. पेअर केलेली डिव्हाइस या Chromebook वरील सर्व खात्यांना दृश्यमान असतात. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos तिकीट जोडा</translation>
 <translation id="8609465669617005112">वर हलवा</translation>
 <translation id="8610103157987623234">चुकीचा फॉरमॅट, कृपया पुन्हा प्रयत्न करा</translation>

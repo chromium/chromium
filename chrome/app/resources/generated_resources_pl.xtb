@@ -1792,6 +1792,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2398546389094871088">Powerwash urządzenia nie spowoduje usunięcia profili eSIM. Aby usunąć je ręcznie, otwórz <ph name="LINK_BEGIN" />Ustawienia urządzenia mobilnego<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Powiadomienia włączone</translation>
 <translation id="2399939490305346086">Dane logowania na kluczu bezpieczeństwa</translation>
+<translation id="240006516586367791">Sterowanie multimediami</translation>
 <translation id="2400664245143453337">Wymagana natychmiastowa aktualizacja</translation>
 <translation id="2402226831639195063">Tony</translation>
 <translation id="2405887402346713222">Numery seryjne urządzenia i komponentu</translation>
@@ -2554,6 +2555,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2990583317361835189">Nie zezwalaj witrynom na używanie czujników ruchu</translation>
 <translation id="2992931425024192067">Pokazuj wszystkie powiadomienia</translation>
 <translation id="2993517869960930405">Informacje o aplikacji</translation>
+<translation id="2996108796702395498">Numer seryjny Twojego urządzenia to <ph name="SERIAL_NUMBER" />. Tego numeru można użyć do aktywowania usługi.</translation>
 <translation id="2996286169319737844">Dane są szyfrowane Twoim hasłem synchronizacji. Nie obejmuje to form płatności ani adresów w Google Pay.</translation>
 <translation id="2996722619877761919">Odwróć wzdłuż dłuższej krawędzi</translation>
 <translation id="2996932914629936323">Usuwa historię ze wszystkich zsynchronizowanych urządzeń</translation>
@@ -2941,6 +2943,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3320630259304269485">Bezpieczne przeglądanie (ochrona przed niebezpiecznymi stronami) i inne ustawienia zabezpieczeń</translation>
 <translation id="3321460131042519426">Włącz zawijanie wyrazów</translation>
 <translation id="3321494112580110651">Nie widzisz swojej drukarki?</translation>
+<translation id="3321776060736518525">Źródło: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Możesz dłużej korzystać z urządzenia</translation>
 <translation id="3325804108816646710">Szukam dostępnych profili...</translation>
 <translation id="3325910708063135066">Kamera i mikrofon są wyłączone w Preferencjach systemowych Maca</translation>
@@ -4207,9 +4210,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4349828822184870497">Przydatne</translation>
 <translation id="4350230709416545141">Nigdy nie zezwalaj stronie <ph name="HOST" /> na dostęp do Twojej lokalizacji</translation>
 <translation id="4350782034419308508">OK Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Aby zapewnić jak najlepsze działanie systemu, <ph name="DEVICE_OS" /> zbiera dane sprzętowe urządzeń i nam je udostępnia, a my na tej podstawie określamy, które aktualizacje należy dostarczyć. Opcjonalnie możesz pozwolić Google na szersze wykorzystanie tych danych, np. w celu ulepszania systemu <ph name="DEVICE_OS" /> i udostępniania dotyczącej go pomocy.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Aby zobaczyć dane wysyłane do Google i używane do filtrowania aktualizacji, a także wszelkie inne przypadki wyrażenia przez Ciebie zgody na udostępnianie danych firmie Google, możesz zalogować się na tym urządzeniu i otworzyć sekcję CHROMEOSFLEX_HARDWARE_INFO na stronie chrome://system<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Aby dowiedzieć się więcej o tym, jakie dane system <ph name="DEVICE_OS" /> może udostępniać Google i jak są one wykorzystywane, wejdź na g.co/flex/HWDataCollection<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Otwórz aplikację „<ph name="APP_NAME" />”, aby zarządzać aplikacjami zainstalowanymi i przesyłanymi strumieniowo.</translation>
 <translation id="4354073718307267720">Pytaj, gdy strona chce tworzyć mapę 3D otoczenia lub śledzić pozycję kamery</translation>
 <translation id="4354344420232759511">Tutaj pojawią się odwiedzone przez Ciebie strony</translation>
@@ -6185,6 +6185,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Zakończono sprawdzanie 1 witryny}few{Zakończono sprawdzanie {NUM_SITES} witryn}many{Zakończono sprawdzanie {NUM_SITES} witryn}other{Zakończono sprawdzanie {NUM_SITES} witryny}}</translation>
 <translation id="5997337190805127100">Więcej informacji o uprawnieniach dostępu do stron</translation>
 <translation id="5998458948782718639">Pomóż nam ulepszać autouzupełnianie</translation>
+<translation id="5999024481231496910">Masz włączone wycofywanie testowania plików cookie innych firm. Tej opcji nie można zastąpić na stronie ustawień. Jeśli chcesz ponownie włączyć pliki cookie innych firm, uruchom ponownie Chrome z wyłączoną tą funkcją.</translation>
 <translation id="5999630716831179808">Głosy</translation>
 <translation id="6000758707621254961">Wyniki wyszukiwania dla zapytania „<ph name="SEARCH_TEXT" />”: <ph name="RESULT_COUNT" /></translation>
 <translation id="6001839398155993679">Do dzieła</translation>
@@ -6667,6 +6668,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6399675241776343019">Odrzucono</translation>
 <translation id="6399774419735315745">Szpieg</translation>
 <translation id="6400360390396538896">Zawsze na <ph name="ORIGIN" /></translation>
+<translation id="6401118106417399952">EID urządzenia to <ph name="EID_NUMBER" />, a jego numer seryjny to <ph name="SERIAL_NUMBER" />. Tych numerów można użyć do aktywowania usługi.</translation>
 <translation id="6401458660421980302">Aby wysłać tę kartę na inne urządzenie, zaloguj się na nim w Chrome</translation>
 <translation id="6401597285454423070">Twój komputer ma układ TPM (Trusted Platform Module), który umożliwia zastosowanie wielu krytycznych funkcji zabezpieczeń w Chrome OS. Więcej informacji znajdziesz w Centrum pomocy Chromebooka na https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404511346730675251">Edytuj zakładkę</translation>
@@ -8179,6 +8181,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7637272932128132922">Gdy ta karta była nieaktywna, funkcja Oszczędzanie pamięci zwolniła pamięć na inne zadania. Możesz to zmienić w dowolnym momencie, klikając <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Za mało miejsca na dysku</translation>
 <translation id="7639914187072011620">Nie udało się pobrać przekierowania SAML z serwera</translation>
+<translation id="7640256527901510478">IMEI urządzenia to <ph name="IMEI_NUMBER" />, a jego numer seryjny to <ph name="SERIAL_NUMBER" />. Tych numerów można użyć do aktywowania usługi.</translation>
 <translation id="7640308610547854367">Przywróciłeś(-aś) poprzednią wersję ChromeOS. Aby uzyskać aktualizacje, poczekaj, aż będzie dostępna następna wersja.</translation>
 <translation id="7641513591566880111">Nowa nazwa profilu</translation>
 <translation id="764178579712141045">Dodano użytkownika <ph name="USER_EMAIL" /></translation>
@@ -8580,6 +8583,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="793531125873261495">Błąd podczas pobierania maszyny wirtualnej. Spróbuj ponownie.</translation>
 <translation id="7935451262452051102">Ukończono <ph name="PERCENT" />%</translation>
 <translation id="7937809006412909895">Zbieranie danych diagnostycznych</translation>
+<translation id="7938881824185772026">Laboratorium</translation>
 <translation id="7939062555109487992">Opcje zaawansowane</translation>
 <translation id="793923212791838">Twojego urządzenia nie można używać z tą witryną</translation>
 <translation id="7939328347457537652">Zarządzaj certyfikatami urządzenia</translation>
@@ -9677,6 +9681,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="881799181680267069">Ukryj pozostałe</translation>
 <translation id="8818152010000655963">Tapeta</translation>
 <translation id="8818958672113348984">Zweryfikuj przez telefon</translation>
+<translation id="8819510664278523111">EID urządzenia to <ph name="EID_NUMBER" />, jego IMEI to <ph name="IMEI_NUMBER" />, a numer seryjny to <ph name="SERIAL_NUMBER" />. Tych numerów można użyć do aktywowania usługi.</translation>
 <translation id="8820817407110198400">Zakładki</translation>
 <translation id="8821045908425223359">Skonfiguruj adres IP automatycznie</translation>
 <translation id="8821268776955756404">Aplikacja <ph name="APP_NAME" /> jest gotowa do użycia.</translation>
@@ -10224,6 +10229,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="956500788634395331">Masz ochronę przed potencjalnie niebezpiecznymi rozszerzeniami</translation>
 <translation id="957179356621191750">6-punktowa</translation>
 <translation id="957960681186851048">Ta strona próbowała pobrać automatycznie wiele plików</translation>
+<translation id="958571289841636277">Poruszanie się wstecz i do przodu za pomocą gestu przesuwania</translation>
 <translation id="960987915827980018">Zostało około 1 godziny</translation>
 <translation id="962802172452141067">Drzewo folderów zakładek</translation>
 <translation id="963000966785016697">Przeszukaj obraz za pomocą narzędzia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

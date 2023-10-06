@@ -304,6 +304,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2648803196158606475">Suprimeix els elements llegits</translation>
 <translation id="2664621323652615289">Atura</translation>
 <translation id="2666092431469916601">Superior</translation>
+<translation id="2669454659051515572">Qualsevol persona que utilitzi aquest dispositiu pot veure els fitxers baixats</translation>
 <translation id="2671426118752779020">Pots utilitzar les contrasenyes que has desat al gestor de contrasenyes de Google en altres aplicacions de l'iPhone.</translation>
 <translation id="2690858294534178585">La càmera s'està utilitzant</translation>
 <translation id="26915454213703967">Cerca a la imatge amb Google</translation>
@@ -799,6 +800,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5360976571138293719">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta la pàgina <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Aquí trobaràs els llocs web que segueixes</translation>
 <translation id="5388358297987318779">Obre una imatge</translation>
+<translation id="5396950905475481456">Convida membres de la família</translation>
 <translation id="5407969256130905701">Descarta els canvis</translation>
 <translation id="5414763847370083940">Rebràs una alerta si el preu baixa en qualsevol lloc web.</translation>
 <translation id="5416022985862681400">7 darrers dies</translation>
@@ -1550,4 +1552,5 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="988141524645182168">Altres dispositius</translation>
 <translation id="989988560359834682">Edita l'adreça</translation>
 <translation id="994757059139821576">Suggeriments d'articles</translation>
+<translation id="999768147936949692">De moment, només pots compartir les contrasenyes amb membres de la família. <ph name="BEGIN_LINK" />Convida membres de la família<ph name="END_LINK" /> a unir-se al teu grup i treu més profit dels teus productes i subscripcions de Google.</translation>
 </translationbundle>

@@ -1808,6 +1808,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2398546389094871088">Qurilmangiz zavod sozlamalariga qaytarilganda eSIM profillari oʻchib ketmaydi. Bu profillarni oddiy usulda <ph name="LINK_BEGIN" />Mobil sozlamalar<ph name="LINK_END" /> orqali olib tashlash mumkin.</translation>
 <translation id="2399699884460174994">Bildirishnomalar yoqildi</translation>
 <translation id="2399939490305346086">Elektron kalitdagi kirish maʼlumotlari</translation>
+<translation id="240006516586367791">Media boshqaruvi</translation>
 <translation id="2400664245143453337">Hoziroq yangilanishi zarur</translation>
 <translation id="2402226831639195063">Ohanglar</translation>
 <translation id="2405887402346713222">Qurilma va komponent serial raqami</translation>
@@ -2158,6 +2159,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2671451824761031126">Xatcho‘plar va sozlamalaringiz tayyor</translation>
 <translation id="2672142220933875349">CRX fayli shikastlangan, arxivdan chiqarib bo‘lmadi.</translation>
 <translation id="2673135533890720193">Kezish tarixini ko‘rish</translation>
+<translation id="2673848446870717676">Bluetooth qurilmasi ulanish rejimida va yaqin-atrofdaligini tekshiring. Faqat ishonchli qurilmalarga ulang. Ulangan qurilmalar ushbu Chromebook qurilmasidagi barcha hisoblarga koʻrinadi.</translation>
 <translation id="2673873887296220733">Ochishdan oldin 1 ta fayl <ph name="CLOUD_PROVIDER" /> xizmatiga nusxalansinmi?</translation>
 <translation id="2674764818721168631">Oʻchiq</translation>
 <translation id="2676084251379299915">Bu kengaytma endi Chrome Web Storeda mavjud emasligi sababli korporativ siyosat tomonidan faolsizlantiridi.</translation>
@@ -3835,6 +3837,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4010917659463429001">Xatcho‘plaringizni mobil qurilmangizda ko‘rish uchun <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">“<ph name="EXTENSION_NAME" />” kengaytmasi tiklansinmi?</translation>
 <translation id="4015163439792426608">Kengaytmalar ishlatasizmi? Qulay joydan <ph name="BEGIN_LINK" />kengaytmalarni boshqaring<ph name="END_LINK" />.</translation>
+<translation id="4016762287427926315"><ph name="APP_NAME" /> ilovasiga bergan ruxsatlaringiz bu ilova uchun ham amal qiladi. <ph name="BEGIN_LINK" />Boshqarish<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Bu havola uchun QR kod yaratish</translation>
 <translation id="4019983356493507433">Bukmarklar roʻyxatini tahrirlash</translation>
 <translation id="4020327272915390518">Parametrlar menyusi</translation>
@@ -4223,9 +4226,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4349828822184870497">Foydali</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> sayti uchun joylashuv axborotiga ruxsat hech qachon berilmasin</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Xizmat sifatini oshirish uchun <ph name="DEVICE_OS" /> qurilmaga oid maʼlumotlarni jamlaydi va qanday yangilanishni taqdim qilishni aniqlashi uchun ularni Googlega yuboradi. Istasangiz, Googlega bu maʼlumotlardan boshqa maqsadlarda, masalan, <ph name="DEVICE_OS" /> ishlashi va xizmat sifatini oshirish<ph name="END_PARAGRAPH1" /> uchun foydalanishiga ruxsat berishingiz mumkin.
-    <ph name="BEGIN_PARAGRAPH2" />Bu qurilmaga kirishingiz va chrome://system sahifasidagi CHROMEOSFLEX_HARDWARE_INFO qismiga tashrif buyurib, yangilanishni filtrlash uchun Googlega yuborilgan maʼlumotlarni, shuningdek, Googlega ulashilgan boshqa holatlarni ham koʻrishingiz mumkin.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> maʼlumotlarini Googlega ulashish va ulardan qanday maqsadlarda foydalanishi haqida batafsil axborot: g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Oʻrnatilgan va namoyish etilgan ilovalarni boshqarish uchun “<ph name="APP_NAME" />” ilovasini oching</translation>
 <translation id="4354073718307267720">Saytlar atrofingiz 3D xaritasini yaratish yoki kamera holatini kuzatishdan oldin ruxsat olsin</translation>
 <translation id="4354344420232759511">Tashrif buyurgan saytlaringiz shu yerda chiqadi</translation>
@@ -6405,6 +6405,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6156863943908443225">Skript keshi</translation>
 <translation id="6156944117133588106">Planshet rejimida navigatsiya tugmalarini chiqarish</translation>
 <translation id="615930144153753547">Saytlar rasmlar chiqarishi mumkin</translation>
+<translation id="6160290816917599257">Kod xato. Xatosiz formatda kiritilishi zarur <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ manzil<ph name="LPA_2" />$<ph name="LPA_3" />ixtiyoriy mos id<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Haqiqiylik tekshiruvi uchun sertifikatlar taqdim etilishi</translation>
 <translation id="6163363155248589649">&amp;Odatiy</translation>
 <translation id="6163376401832887457">Kerberos sozlamalari</translation>
@@ -8434,6 +8435,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> Google Assistentni allaqachon boshqa qurilmada sozlagan. <ph name="SUPERVISED_USER_NAME" /> bu qurilmada ekran kontekstini yoqish orqali Assistentning barcha funksiyalaridan foydalana oladi.</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> saytiga kameradan foydalanishga doim ruxsat berish</translation>
 <translation id="7810202088502699111">Qalqib chiquvchi oynalar bloklandi.</translation>
+<translation id="7810367892333449285">Xatosiz formatda kiritilishi zarur <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ manzil<ph name="LPA_2" />$<ph name="LPA_3" />ixtiyoriy mos id<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Nuxsa olish</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> uchun <ph name="SHORTCUT" /> tezkor tugmasini tahrirlash</translation>
@@ -9411,6 +9413,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8605428685123651449">SQLite xotirasi</translation>
 <translation id="8607171490667464784">Nofaol va batareya quvvatida</translation>
 <translation id="8607326572516521315">Spam va firibgarlikka qarshi kurashda saytlar botlarni odamlardan ajratish maqsadida ishonch tokenlaridan foydalanadi.</translation>
+<translation id="8607828412110648570">Bluetooth qurilmasi ulanish rejimida va yaqin-atrofdaligini tekshiring. Faqat ishonchli qurilmalarga ulang. Ulangan qurilmalar ushbu Chromebook qurilmasidagi barcha hisoblarga koʻrinadi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos chiptasini kiritish</translation>
 <translation id="8609465669617005112">Tepaga o‘tish</translation>
 <translation id="8610103157987623234">Format xato. Qaytadan urining</translation>

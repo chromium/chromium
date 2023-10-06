@@ -1185,6 +1185,7 @@
 <translation id="3440783957068352691">шаршы</translation>
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3443504041532578451">Оптикалық диск (сәтен)</translation>
+<translation id="344449859752187052">Үшінші тарап cookie файлдары блокталған</translation>
 <translation id="3447661539832366887">Бұл құрылғының иесі динозаврлар ойынын өшірді.</translation>
 <translation id="3447884698081792621">Сертификатты көрсету (шығарушы: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Аралықты алу:</translation>
@@ -1215,7 +1216,7 @@
 <translation id="3507869775212388416">Заңды жұмыстар</translation>
 <translation id="3507936815618196901">Айналаңыздың 3D картасын жасау және камера орнын бақылау</translation>
 <translation id="3512163584740124171">Бұл саясат еленбейді, себебі дәл сол саясаттар тобындағы басқа бір саясаттың басымдығы жоғары болып тұр.</translation>
-<translation id="3515972145999192222">Ұйымыңыз <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> доменін бөгеді, себебі ол саясатты бұзады. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="3515972145999192222">Ұйымыңыз <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> доменін бөгеді, себебі ол саясатқа қайшы. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Бірнеше нысанды өңдеу</translation>
 <translation id="3525130752944427905">10 x 14 дюйм</translation>
 <translation id="3528171143076753409">Сервер сертификаты сенімді емес.</translation>
@@ -1733,6 +1734,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Құпия сөздерді толтыру үшін экран құлпын пайдаланып жатырсыз</translation>
 <translation id="4558551763791394412">Кеңейтімдерді ажыратып көріңіз.</translation>
+<translation id="456043042661026303">Төлем туралы мәліметіңіз қауіпсіз тексеріліп жатыр.</translation>
 <translation id="4566017918361049074">Ашық ауадағы демалыс</translation>
 <translation id="4567686777917670400">Браузер параметрін әкімші қашықтан өзгерте алады. Құрылғыдағы әрекеттерді Chromium браузерінен тыс та басқаруға болады. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Жаңа терезеде cookie файлдары мен сайт деректері тізімін қарап шығу</translation>
@@ -1771,7 +1773,7 @@
 <translation id="4646534391647090355">Қазір өту</translation>
 <translation id="4648262692072505866">Хеш SHA-256 форматында болуы керек.</translation>
 <translation id="4652266463001779298">Рұқсат етілмеген</translation>
-<translation id="4652440160515225514">Ұйымыңыз бұл сайтты бөгеді, себебі ол саясатты бұзады.</translation>
+<translation id="4652440160515225514">Ұйымыңыз бұл сайтты бөгеді, себебі ол саясатқа қайшы.</translation>
 <translation id="4653167719759882810">Қосылу және қосып алу</translation>
 <translation id="4658638640878098064">Жоғарғы сол жағын қапсыру</translation>
 <translation id="4660119392514473465">Енді браузерді құпия пайдалануыңызға болады, ал осы құрылғыны пайдаланатын басқа адамдар әрекетіңізді көрмейді. Бірақ жүктеп алынған материалдар, бетбелгілер және оқу тізіміндегі элементтер сақталады.</translation>
@@ -2286,6 +2288,7 @@
 <translation id="5691848789297492617">Толығымен ашылған картаны сақтау.</translation>
 <translation id="5695542892312572833">Сатып алуды растау және аяқтау үшін Windows Hello пайдаланылсын ба?</translation>
 <translation id="5699628521141772782">Сүт өнімдері және жұмыртқа</translation>
+<translation id="5700761515355162635">Үшінші тарап cookie файлдары рұқсат етілген</translation>
 <translation id="5701381305118179107">Ортаға</translation>
 <translation id="570530837424789914">Басқару…</translation>
 <translation id="5707154300732650394">Шарлауды жалғастыру</translation>
@@ -3361,6 +3364,7 @@
 <translation id="7865448901209910068">Ең жақсы жылдамдық</translation>
 <translation id="7870281855125116701">Жеңілдік табылды</translation>
 <translation id="7871445724586827387">Google аккаунтыңыздың құпия сөзін ауыстыру</translation>
+<translation id="7876615279559620350">Жылдамырақ төлеу үшін осы картаның CVC кодын Google аккаунтыңызға сақтаңыз.</translation>
 <translation id="7877007680666472091">Қорғалған content ID-лер</translation>
 <translation id="7878562273885520351">Құпия сөзіңіз ұрланған болуы мүмкін</translation>
 <translation id="7880146494886811634">Мекенжайды сақтау</translation>
@@ -3848,6 +3852,7 @@
 <translation id="8870494189203302833">Бірдей ретпен артқы жағында</translation>
 <translation id="8870700989640064057">Құпия файл басып шығарылсын ба?</translation>
 <translation id="8871553383647848643">Браузер көрінісін реттеу</translation>
+<translation id="8874790741333031443">Үшінші тарап cookie файлдарына уақытша рұқсат беріп көріңіз. Бұл жағдайда қорғаныс дәрежесі төмен болады, бірақ сайт функцияларының ойдағыдай жұмыс істеу ықтималдығы артады.</translation>
 <translation id="8874824191258364635">Дұрыс карта нөмірін енгізіңіз</translation>
 <translation id="8876033571432926051">Қарапайым ойындар</translation>
 <translation id="8877780815363510165">Балық аулау</translation>

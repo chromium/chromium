@@ -1818,6 +1818,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2398546389094871088">Ukitumia Powerwash kwenye kifaa chako, wasifu wako wa eSIM hautaondolewa. Nenda kwenye <ph name="LINK_BEGIN" />Mipangilio ya Kifaa cha Mkononi<ph name="LINK_END" /> ili uondoe wasifu huu mwenyewe.</translation>
 <translation id="2399699884460174994">Arifa zimewashwa</translation>
 <translation id="2399939490305346086">Data ya kuingia katika akaunti ya ufunguo wa usalama</translation>
+<translation id="240006516586367791">Vidhibiti vya maudhui</translation>
 <translation id="2400664245143453337">Unatakiwa kusasisha mara moja</translation>
 <translation id="2402226831639195063">Sauti</translation>
 <translation id="2405887402346713222">Nambari za Ufuatiliaji za Kifaa na Kijenzi</translation>
@@ -4233,9 +4234,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4349828822184870497">Imenifaa</translation>
 <translation id="4350230709416545141">Zuia <ph name="HOST" /> kila wakati isifikie maelezo ya mahali ulipo</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Ili kukupa hali bora zaidi ya utumiaji, <ph name="DEVICE_OS" /> hukusanya data ya maunzi kuhusu vifaa na kuishiriki na Google ili kubainisha masasisho yanayofaa kutolewa. Ukipenda, unaweza kuruhusu Google itumie data hii kwa madhumuni ya ziada kama vile kuimarisha na kuboresha huduma na hali ya utumiaji wa <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Unaweza kuingia katika akaunti kwenye kifaa hiki kisha utembelee sehemu ya CLOUDREADY_HARDWARE_INFO katika chrome://system ili uone data iliyotumwa kwa Google kwa ajili ya kuchuja masasisho, pamoja na matukio yoyote mengine ambapo unaweza kuchagua kushiriki data na Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Kwa maelezo zaidi kuhusu data ambayo <ph name="DEVICE_OS" /> inaweza kushiriki na Google na jinsi data hiyo inavyotumika, tembelea g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Nenda kwenye programu ya "<ph name="APP_NAME" />" ili udhibiti programu zilizosakinishwa na zinazotiririshwa</translation>
 <translation id="4354073718307267720">Uliza wakati tovuti inataka kubuni ramani ya 3D ya mazingira yako au kufuatilia mkao wa kamera</translation>
 <translation id="4354344420232759511">Tovuti unazotembelea zitaonekana hapa</translation>

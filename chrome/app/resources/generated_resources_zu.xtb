@@ -1822,6 +1822,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2398546389094871088">Ukwenza idivayisi yakho i-Powerwash ngeke kususe amaphrofayela akho we-eSIM. Iya kokuthi <ph name="LINK_BEGIN" />Amasethingi Weselula<ph name="LINK_END" /> ukuze ususe la maphrofayela.</translation>
 <translation id="2399699884460174994">Izaziso zivuliwe</translation>
 <translation id="2399939490305346086">Idatha yokungena ngemvume yokhiye wokuqinisekisa ubunikazi</translation>
+<translation id="240006516586367791">Izilawuli zemidiya</translation>
 <translation id="2400664245143453337">Kudingeka isibuyekezo esisheshayo</translation>
 <translation id="2402226831639195063">Amathoni</translation>
 <translation id="2405887402346713222">Izinombolo Zomkhiqizo Zedivayisi Nengxenye</translation>
@@ -4238,9 +4239,6 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4349828822184870497">Iwusizo</translation>
 <translation id="4350230709416545141">Vimba i-<ph name="HOST" /> njalo ekufinyeleleni indawo yakho</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Ukuhlinzeka ngomuzwa ohamba phambili, i-<ph name="DEVICE_OS" /> iqoqa idatha yezingxenyekazi zekhompyutha mayelana namadivayisi futhi yabelane ngayo ne-Google ukuze inqume ukuthi yiziphi izibuyekezo okufanele zidilivwe. Ongakukhetha, ungavumela i-Google ukuthi isebenzise le datha ngezinjongo ezengeziwe njengosekelo nokuthuthukiswa kwe-<ph name="DEVICE_OS" /> umuzwa nesevisi.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ungangena ngemvume kule divayisi futhi uvakashele esigabeni se-CHROMEOSFLEX_HARDWARE_INFO ku-chrome://system ukuze ubone idatha ethunyelwe ku-Google ukuze ihlungwe isibuyekezo, kanye nanoma yiziphi ezinye izimo lapho ukhetha ukwabelana ngedatha ne-Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Mayelana nemininingwane eminingi ngedatha i-<ph name="DEVICE_OS" /> ingabelana ne-Google, nokuthi isetshenziswa kanjani vakashela okuthi g.co/flex/HWDataCollection<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Yiya ku-"<ph name="APP_NAME" />" app ukuze ulawule ama-app afakiwe nasakaza bukhoma</translation>
 <translation id="4354073718307267720">Buza uma amasayithi efuna ukudala imephu ye-3D yendawo ekuzungezile noma ukulandelela indawo yekhamera (kuyanconywa)</translation>
 <translation id="4354344420232759511">Amasayithi owavakashelayo azovela lapha</translation>

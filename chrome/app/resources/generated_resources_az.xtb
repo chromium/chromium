@@ -1810,6 +1810,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2398546389094871088">Cihazınızı formatladıqda eSIM profilləriniz silinməyəcək. Bu profilləri manual silmək üçün <ph name="LINK_BEGIN" />Mobil Ayarlara<ph name="LINK_END" /> keçin.</translation>
 <translation id="2399699884460174994">Bildirişlər aktiv edildi</translation>
 <translation id="2399939490305346086">Təhlükəsizlik açarının giriş datası</translation>
+<translation id="240006516586367791">Media nizamlayıcıları</translation>
 <translation id="2400664245143453337">Dərhal güncəlləmə tələb edilir</translation>
 <translation id="2402226831639195063">Tonlar</translation>
 <translation id="2405887402346713222">Cihaz və komponentin seriya nömrələri</translation>
@@ -4228,9 +4229,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4349828822184870497">Faydalı</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> üçün məkanınıza girişi həmişə bloklayın</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Ən yaxşı təcrübəni təmin etmək üçün <ph name="DEVICE_OS" /> cihazlar haqqında avadanlıq datasını toplayır və hansı güncəlləmələrin təmin edilməli olduğunu müəyyən etmək üçün onları Google ilə paylaşır. İstəyə görə, Google'a bu datadan <ph name="DEVICE_OS" /> təcrübəsi və xidmətinə dəstək və təkmilləşdirmələr kimi əlavə məqsədlər üçün istifadə etməyə icazə verə bilərsiniz.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Bu cihaza daxil olaraq və chrome://system ünvanında CHROMEOSFLEX_HARDWARE_INFO bölməsinə keçərək güncəlləmə filtrasiyası üçün Google'a göndərilən dataya, həmçinin Google ilə data paylaşmağı seçdiyiniz hər hansı digər hallara baxa bilərsiniz.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> tərəfindən Google ilə paylaşıla biləcək data və ondan necə istifadə edildiyi haqqında ətraflı məlumat üçün g.co/flex/HWDataCollection ünvanına daxil olun.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Quraşdırılmış və yayımlanmış tətbiqləri idarə etmək üçün "<ph name="APP_NAME" />" tətbiqinə keçin</translation>
 <translation id="4354073718307267720">Sayt ətrafınızdakı sahələrin 3D xəritəsini yaratmaq və ya kamera mövqeyini izləmək istədikdə icazə tələb edin</translation>
 <translation id="4354344420232759511">Daxil olduğunuz saytlar burda görünəcək</translation>

@@ -304,6 +304,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="2648803196158606475">Okunanları Sil</translation>
 <translation id="2664621323652615289">Durdur</translation>
 <translation id="2666092431469916601">Üst</translation>
+<translation id="2669454659051515572">Bu cihazı kullanan herkes indirilen dosyaları görebilir</translation>
 <translation id="2671426118752779020">Google Şifre Yöneticisi'ne kaydettiğiniz şifreleri iPhone'unuzdaki diğer uygulamalarda kullanabilirsiniz.</translation>
 <translation id="2690858294534178585">Kamera kullanılıyor</translation>
 <translation id="26915454213703967">Resmin içinde Google'la ara</translation>
@@ -799,6 +800,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="5360976571138293719">Gizlilik, güvenlik ve veri toplamayla ilgili daha fazla ayar için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" /> konusuna bakın</translation>
 <translation id="5386314158584363703">Takip ettiğiniz siteleri burada görebilirsiniz</translation>
 <translation id="5388358297987318779">Resmi Aç</translation>
+<translation id="5396950905475481456">Aile üyelerini davet edin</translation>
 <translation id="5407969256130905701">Değişiklikleri Sil</translation>
 <translation id="5414763847370083940">Herhangi bir sitede fiyatı düştüğünde uyarı alırsınız.</translation>
 <translation id="5416022985862681400">Son 7 Gün</translation>
@@ -1550,4 +1552,5 @@ Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chrome verile
 <translation id="988141524645182168">Diğer Cihazlar</translation>
 <translation id="989988560359834682">Adresi Düzenle</translation>
 <translation id="994757059139821576">Makale Önerileri</translation>
+<translation id="999768147936949692">Şu anda şifreleri yalnızca aile üyelerinizle paylaşabilirsiniz. Grubunuza katılmaları için <ph name="BEGIN_LINK" />aile üyelerini davet edip<ph name="END_LINK" /> Google'daki ürünlerinizden ve aboneliklerinizden daha fazla yararlanın.</translation>
 </translationbundle>

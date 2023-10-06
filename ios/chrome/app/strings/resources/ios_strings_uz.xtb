@@ -304,6 +304,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2648803196158606475">O‘qilganlarni o‘chirish</translation>
 <translation id="2664621323652615289">Toʻxtatish</translation>
 <translation id="2666092431469916601">Tepaga</translation>
+<translation id="2669454659051515572">Bu qurilmaning barcha foydalanuvchilar yuklab olingan fayllarni koʻra oladi</translation>
 <translation id="2671426118752779020">Google Parollar menejeriga saqlangan parollarni iPhonedagi boshqa ilovalarda ishlatish mumkin.</translation>
 <translation id="2690858294534178585">Kamera band.</translation>
 <translation id="26915454213703967">Rasmdagi narsalarni Googledan qidirish</translation>
@@ -799,6 +800,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5360976571138293719">Maxfiylik, xavfsizlik va axborotlar jamlanishi haqida batafsil axborot olish uchun <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> bilan tanishing</translation>
 <translation id="5386314158584363703">Kuzatuvdagi saytlar shu yerda chiqadi</translation>
 <translation id="5388358297987318779">Tasvirni ochish</translation>
+<translation id="5396950905475481456">Oilaga taklif qiling</translation>
 <translation id="5407969256130905701">Bekor qilish</translation>
 <translation id="5414763847370083940">Istalgan saytda narx tushganda ogohlantirish olasiz.</translation>
 <translation id="5416022985862681400">Oxirgi 7 kun</translation>
@@ -1550,4 +1552,5 @@ Maʼlumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Chr
 <translation id="988141524645182168">Boshqa qurilmalar</translation>
 <translation id="989988560359834682">Manzilni o‘zgartirish</translation>
 <translation id="994757059139821576">Maqola takliflari</translation>
+<translation id="999768147936949692">Hozircha parollarni faqat yaqinlarga ulashish mumkin. <ph name="BEGIN_LINK" />Oiladagilarni guruhingizga taklif qiling<ph name="END_LINK" /> va barcha Google mahsulot va obunalaridan birga foydalaning.</translation>
 </translationbundle>

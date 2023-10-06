@@ -304,6 +304,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2648803196158606475">Fshi të lexuarat</translation>
 <translation id="2664621323652615289">Ndalo</translation>
 <translation id="2666092431469916601">I sipërm</translation>
+<translation id="2669454659051515572">Çdo person që e përdor këtë pajisje mund t'i shikojë skedarët e shkarkuar</translation>
 <translation id="2671426118752779020">Fjalëkalimet që ke ruajtur në "Menaxherin e fjalëkalimeve të Google" mund t'i përdorësh në aplikacione të tjera në iPhone.</translation>
 <translation id="2690858294534178585">Kamera është në përdorim</translation>
 <translation id="26915454213703967">Kërko brenda imazhit me Google</translation>
@@ -799,6 +800,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5360976571138293719">Për cilësime të mëtejshme në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shih <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Këtu do të gjesh sajtet që ndjek</translation>
 <translation id="5388358297987318779">Hape imazhin</translation>
+<translation id="5396950905475481456">Fto anëtarët e familjes</translation>
 <translation id="5407969256130905701">Hiq ndryshimet</translation>
 <translation id="5414763847370083940">Do të marrësh një sinjalizim nëse ulet çmimi në ndonjë sajt.</translation>
 <translation id="5416022985862681400">7 ditët e fundit</translation>
@@ -1550,4 +1552,5 @@ Të dhënat e tua janë enkriptuar me frazën tënde të kalimit më <ph name="T
 <translation id="988141524645182168">Pajisjet e tjera</translation>
 <translation id="989988560359834682">Redakto adresën</translation>
 <translation id="994757059139821576">Sugjerimet e artikujve</translation>
+<translation id="999768147936949692">Për momentin, mund t'i ndash fjalëkalimet vetëm me anëtarët e familjes. <ph name="BEGIN_LINK" />Fto anëtarët e familjes<ph name="END_LINK" /> për t'u bashkuar në grupin tënd dhe për të përfituar më shumë nga produktet dhe abonimet e tua në Google.</translation>
 </translationbundle>

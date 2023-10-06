@@ -1824,6 +1824,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2398546389094871088">Ni fydd defnyddio Powerwash ar eich dyfais yn tynnu'ch proffiliau eSIM. Ewch i'r <ph name="LINK_BEGIN" />Gosodiadau Symudol<ph name="LINK_END" /> i dynnu'r proffiliau hyn yn bwrpasol.</translation>
 <translation id="2399699884460174994">Mae hysbysiadau wedi'u troi ymlaen</translation>
 <translation id="2399939490305346086">Data mewngofnodi allwedd ddiogelwch</translation>
+<translation id="240006516586367791">Rheolaethau cyfryngau</translation>
 <translation id="2400664245143453337">Mae angen diweddaru ar unwaith</translation>
 <translation id="2402226831639195063">Tonau</translation>
 <translation id="2405887402346713222">Rhifau Cyfresol Dyfais a Chydrannau</translation>
@@ -4241,9 +4242,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4349828822184870497">O gymorth</translation>
 <translation id="4350230709416545141">Rhwystro <ph name="HOST" /> bob amser rhag cael mynediad at eich lleoliad</translation>
 <translation id="4350782034419308508">Hei Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />I ddarparu'r profiad gorau, mae <ph name="DEVICE_OS" /> yn casglu data caledwedd am ddyfeisiau ac yn eu rhannu gyda Google i benderfynu pa ddiweddariadau y dylid eu hanfon. Gallwch ddewis i ganiatáu i Google ddefnyddio'r data hyn at ddibenion ychwanegol megis cymorth a gwelliannau i'r profiad a gwasanaeth <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Gallwch fewngofnodi ar y ddyfais hon ac ymweld â'r adran CHROMEOSFLEX_HARDWARE_INFO yn chrome://system i weld y data a anfonwyd at Google ar gyfer hidlo diweddariadau, yn ogystal ag unrhyw achosion eraill ble rydych yn dewis i rannu data â Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Am ragor o fanylion ar ddata y gall <ph name="DEVICE_OS" /> eu rhannu â Google, a sut mae'n cael eu defnyddio, ewch i g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Ewch i'r ap "<ph name="APP_NAME" />" i reoli apiau sydd wedi'u gosod a'u ffrydio</translation>
 <translation id="4354073718307267720">Gofyn pan fydd gwefan am greu map 3D o'ch amgylchedd neu olrhain safle'r camera</translation>
 <translation id="4354344420232759511">Bydd y gwefannau rydych yn ymweld â nhw yn ymddangos yma</translation>
@@ -9110,6 +9108,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8324784016256120271">Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol wefannau, er enghraifft, i bersonoleiddio hysbysebion</translation>
 <translation id="8325413836429495820">Ni chaniateir gweld eich clipfwrdd</translation>
 <translation id="8326478304147373412">PKCS #7, cadwyn tystysgrifau</translation>
+<translation id="832684045355488000">Rydych wedi'ch uwchraddio i <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Ffont mathemategol</translation>
 <translation id="8327538105740918488">Gallwch chi bob amser newid y cyfrinair hwn yn nes ymlaen. Bydd yn cael ei gadw i <ph name="GOOGLE_PASSWORD_MANAGER" /> ar gyfer <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Caniatadau a gosodiadau cynnwys</translation>

@@ -729,6 +729,7 @@
 <translation id="165769015320654523">自动授权这些网站连接到具有给定供应商 ID 和产品 ID 的 HID 设备。</translation>
 <translation id="1659406551862245683">更改默认的虚拟键盘调整大小行为，以调整布局视口的大小</translation>
 <translation id="166427968280387991">代理服务器</translation>
+<translation id="1670638264428789878">启用 Related Website Sets</translation>
 <translation id="1673097259557436886">始终告诉网站，没有任何已保存的付款方式</translation>
 <translation id="1674287836076801014">SAML</translation>
 <translation id="1675002386741412210">支持的环境：</translation>
@@ -1817,6 +1818,13 @@
 
       用户无法更改用于放置书签的文件夹，但可从书签栏中将其隐藏。受管理书签的默认文件夹名称为“受管理的书签”，但用户可以更改该名称，方法是：向此政策中添加一个新的仅包含“<ph name="TOPLEVEL_NAME" />”键的子字典条目，并将键值设为所需的文件夹名称。受管理的书签不会同步到用户账号中，且无法由扩展程序修改。</translation>
 <translation id="2552966063069741410">时区</translation>
+<translation id="2554010621206996293">此政策用于控制是否启用 Related Website Sets 功能。
+
+此政策会覆盖 <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" /> 政策。
+
+如果此政策未设置或设为 True，系统会启用 Related Website Sets 功能。
+
+如果此政策设为 False，系统会停用 Related Website Sets 功能。</translation>
 <translation id="2555244983262829274">从工具栏中隐藏首页按钮</translation>
 <translation id="2562213287271514629">允许像运行正常 <ph name="FLASH_PLUGIN_NAME" /> 一样使用已过时的 <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="2562339630163277285">指定用于提供即搜即得结果的搜索引擎网址。该网址应包含字符串“<ph name="SEARCH_TERM_MARKER" />”，系统会在用户进行查询时将该字符串替换为用户输入的文字。
@@ -1834,6 +1842,7 @@
 <translation id="2576324725151524912">允许使用已隔离应用的开发者模式。</translation>
 <translation id="257717978573041245">启用硬件加速</translation>
 <translation id="257788512393330403">必须每 6 小时输入一次密码</translation>
+<translation id="2580606791930800692">设置一系列数据控制规则。</translation>
 <translation id="2580757713966614760">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 中的哪些打印机。
 
       * 如果您选择 <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_BLOCKLISTRESTRICTIONS" />（值为 0），系统会使用 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 来限制用户对指定打印机的访问权
@@ -3647,6 +3656,7 @@
 <translation id="4157594634940419685">允许访问本机 CUPS 打印机</translation>
 <translation id="4158531549614162499">允许在连接移动网络的情况下进行 Google 云端硬盘同步</translation>
 <translation id="4160962198980004898">插入基座后的设备 MAC 地址来源</translation>
+<translation id="4161019158509414446">控制 Related Website Sets 功能的相关政策。</translation>
 <translation id="4164511138197196839">如果此政策已启用，系统会在 <ph name="PRODUCT_NAME" /> 中停用 Chrome 应用商店中处于未发布状态的扩展程序。
 此政策仅适用于那些通过 Chrome 应用商店安装和更新的扩展程序。
 
@@ -6074,6 +6084,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策设为 False，系统会阻止加载 Signed HTTP Exchange (SXG) 内容。</translation>
 <translation id="6368011194414932347">配置主页网址</translation>
 <translation id="6368403635025849609">在这些网站上允许 JavaScript</translation>
+<translation id="6371005337713685988">Related Website Sets 设置</translation>
 <translation id="6371561334154580937">在用户关闭最后一个窗口时显示让用户确认退出登录的对话框。</translation>
 <translation id="6372105930898423193">允许重新启用 AppCache 功能，即使此功能默认处于关闭状态。</translation>
 <translation id="6373299801585455337">启用设备 CPU 信息报告功能</translation>
@@ -7746,6 +7757,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7758378441185523981">为个人资料类型启用静默身份验证。</translation>
 <translation id="776110834126722255">已弃用</translation>
 <translation id="7763614521440615342">在“打开新的标签页”页面上显示内容建议</translation>
+<translation id="776465643636059256">停用 Related Website Sets</translation>
 <translation id="7765879851993224640">允许使用 Smart Lock 登录功能。</translation>
 <translation id="7767066506143083523">通过设置此政策，您可创建一个网址格式列表，从而指定哪些网站能够使用标签页截取功能。
 

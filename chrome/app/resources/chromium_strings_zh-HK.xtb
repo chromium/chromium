@@ -24,7 +24,7 @@
 <translation id="1478370723027452770">查看 Chrome for Testing 相關說明</translation>
 <translation id="1524282610922162960">分享 Chromium 分頁</translation>
 <translation id="1553461853655228091">Chromium 需要取得權限，才能存取相機以建立您身處環境的 3D 地圖</translation>
-<translation id="1574377791422810894">Chromium 安全工具</translation>
+<translation id="1574377791422810894">Chromium 的安全工具</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{管理員要求您重新啟動 Chromium，以套用更新}=1{管理員要求您重新啟動 Chromium，以套用更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chromium，以套用更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="1625909126243026060">查看 Chromium 中重要的私隱和安全控制項</translation>
 <translation id="1632539827495546968">如果您只想使用此帳戶一次，可以在 Chromium 瀏覽器中使用<ph name="GUEST_LINK_BEGIN" />訪客模式<ph name="GUEST_LINK_END" />。如要新增其他人的帳戶，請<ph name="LINK_BEGIN" />新增使用者<ph name="LINK_END" />至您的 <ph name="DEVICE_TYPE" />。
@@ -70,7 +70,7 @@
 <translation id="2396765026452590966">擴充功能「<ph name="EXTENSION_NAME" />」已變更 Chromium 啟動時所顯示的網頁。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{當時至少有一個 Chromium 擴充程式正在存取 1 部 HID 裝置}=1{至少有一個 Chromium 擴充程式正在存取 1 部 HID 裝置}other{至少有一個 Chromium 擴充程式正在存取 # 部 HID 裝置}}</translation>
 <translation id="2401032172288869980">Chromium 需要相機權限和麥克風權限，才能執行此網站要求的功能</translation>
-<translation id="2440750600860946460">有了 <ph name="BEGIN_LINK" />Chromium 的工具<ph name="END_LINK" />，你可以放心瀏覽網路、掌控全局</translation>
+<translation id="2440750600860946460">透過 <ph name="BEGIN_LINK" />Chromium 工具<ph name="END_LINK" />，你可安全瀏覽網絡，一切盡在掌握</translation>
 <translation id="2451727308784734061">透過捷徑快速開啟「密碼管理工具」。您可將捷徑移至電腦的主畫面或應用程式啟動器。</translation>
 <translation id="2478295928299953161">Chromium 即將關閉</translation>
 <translation id="2483889755041906834">在 Chromium 中</translation>
@@ -152,7 +152,7 @@
 <translation id="391789666908693569">您的帳戶由 <ph name="MANAGER_NAME" /> 管理。管理員可查看並編輯此 Chromium 瀏覽器設定檔和其資料，例如書籤、記錄和密碼。</translation>
 <translation id="3945058413678539331">Chromium 正在嘗試複製密碼。如果您同意的話，請輸入 Windows 密碼。</translation>
 <translation id="3962623956404948996">此檔案可能不安全，因此 Chromium 建議掃瞄檔案</translation>
-<translation id="3962647064319009959">瞭解 Chromium 如何保護資料安全</translation>
+<translation id="3962647064319009959">瞭解 Chromium 如何使用者的網上安全</translation>
 <translation id="3975724895399328945">關於 Google Chrome for Testing(&amp;G)</translation>
 <translation id="3997429360543082038">關於 Chromium 作業系統</translation>
 <translation id="4019629340646866719">Chromium 作業系統得以面世，全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>

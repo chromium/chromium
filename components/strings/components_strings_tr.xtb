@@ -1186,6 +1186,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3440783957068352691">kare</translation>
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3443504041532578451">Optik Disk (Saten)</translation>
+<translation id="344449859752187052">Üçüncü taraf çerezleri engellendi</translation>
 <translation id="3447661539832366887">Bu cihazın sahibi dinozor oyununu kapattı.</translation>
 <translation id="3447884698081792621">Sertifikayı göster (yayınlayan: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Getirme aralığı:</translation>
@@ -1734,6 +1735,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Şifreleri doldurmak için ekran kilidinizi kullanıyorsunuz</translation>
 <translation id="4558551763791394412">Uzantılarınızı devre dışı bırakmayı deneyin</translation>
+<translation id="456043042661026303">Ödeme ayrıntılarınız güvenli bir şekilde kontrol ediliyor</translation>
 <translation id="4566017918361049074">Açık hava spor aktiviteleri</translation>
 <translation id="4567686777917670400">Yöneticiniz, tarayıcınızın kurulumunu uzaktan değiştirebilir. Bu cihazdaki etkinlikler Chromium dışında da yönetilebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Çerez ve site verileri listesini yeni bir pencerede inceleyin</translation>
@@ -2287,6 +2289,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5691848789297492617">Kartı kaydet seçeneği tam ekranda açıldı.</translation>
 <translation id="5695542892312572833">Satın alma işleminizi doğrulayıp tamamlamak için Windows Hello kullanılsın mı?</translation>
 <translation id="5699628521141772782">Süt Ürünleri ve Yumurta</translation>
+<translation id="5700761515355162635">Üçüncü taraf çerezlerine izin verildi</translation>
 <translation id="5701381305118179107">Ortala</translation>
 <translation id="570530837424789914">Yönet...</translation>
 <translation id="5707154300732650394">Arama yolculuğunuzu devam ettirin</translation>
@@ -3362,6 +3365,7 @@ Ek ayrıntılar:
 <translation id="7865448901209910068">En iyi hız</translation>
 <translation id="7870281855125116701">İndirim Bulundu</translation>
 <translation id="7871445724586827387">Google Hesabınızın şifresini değiştirin</translation>
+<translation id="7876615279559620350">Daha hızlı ödeme yapmak için bu kartın CVC'sini Google Hesabınıza kaydedin</translation>
 <translation id="7877007680666472091">korumalı içerik kimlikleri</translation>
 <translation id="7878562273885520351">Şifrenizin güvenliği ihlal edilmiş olabilir</translation>
 <translation id="7880146494886811634">Adresi Kaydet</translation>
@@ -3850,6 +3854,7 @@ Ek ayrıntılar:
 <translation id="8870494189203302833">Aynı sırada ön yüz aşağı bakacak şekilde</translation>
 <translation id="8870700989640064057">Gizli dosya yazdırılsın mı?</translation>
 <translation id="8871553383647848643">Tarayıcınızın görünümünü özelleştirin</translation>
+<translation id="8874790741333031443">Üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin. Bu durumda, internette gezinirken daha az korunursunuz ancak site özelliklerinin beklendiği gibi çalışma olasılığı daha yüksektir.</translation>
 <translation id="8874824191258364635">Geçerli bir kart numarası girin</translation>
 <translation id="8876033571432926051">Basit oyunlar</translation>
 <translation id="8877780815363510165">Balıkçılık</translation>

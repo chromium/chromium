@@ -1804,6 +1804,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2398546389094871088">Ako obavite Powerwash na uređaju, nećete ukloniti eSIM profile. Idite u <ph name="LINK_BEGIN" />podešavanja za mobilne uređaja<ph name="LINK_END" /> da biste ručno uklonili te profile.</translation>
 <translation id="2399699884460174994">Obaveštenja su uključena</translation>
 <translation id="2399939490305346086">Podaci za prijavljivanje sa bezbednosnog ključa</translation>
+<translation id="240006516586367791">Kontrole medija</translation>
 <translation id="2400664245143453337">Treba odmah da ažurirate</translation>
 <translation id="2402226831639195063">Zvuci</translation>
 <translation id="2405887402346713222">Serijski brojevi uređaja i komponenti</translation>
@@ -4221,9 +4222,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4349828822184870497">Korisno</translation>
 <translation id="4350230709416545141">Uvek blokiraj pristup lokaciji za <ph name="HOST" /></translation>
 <translation id="4350782034419308508">Hej Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Da bi pružio najbolji doživljaj, <ph name="DEVICE_OS" /> prikuplja podatke o hardveru sa uređaja i deli ih sa Google-om da bi utvrdio koja ažuriranja treba da pruži. Možete opcionalno da dozvolite Google-u da koristi te podatke u dodatne svrhe poput podrške i poboljšanja za <ph name="DEVICE_OS" /> doživljaj i uslugu.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Možete da se prijavite na ovom uređaju i posetite odeljak CHROMEOSFLEX_HARDWARE_INFO na chrome://system da biste videli podatke koji se šalju Google-u radi filtriranja ažuriranja, kao i sve druge slučajeve u kojima odlučujete da delite podatke sa Google-om.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Više detalja o podacima koje <ph name="DEVICE_OS" /> može da deli sa Google-om, kao i o tome kako se oni koriste, potražite na g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Idite u aplikaciju <ph name="APP_NAME" /> da biste upravljali instaliranim i strimovanim aplikacijama.</translation>
 <translation id="4354073718307267720">Pitaj kada sajt želi da pravi 3D mapu okruženja ili da prati položaj kamere</translation>
 <translation id="4354344420232759511">Ovde se prikazuju sajtovi koje ste posetili</translation>
@@ -8598,6 +8596,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="793531125873261495">Greška pri preuzimanju virtuelne mašine. Probajte ponovo.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% je završeno</translation>
 <translation id="7937809006412909895">Prikupljaju se dijagnostički podaci</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Napredne opcije</translation>
 <translation id="793923212791838">Uređaj ne može da se koristi sa ovim sajtom</translation>
 <translation id="7939328347457537652">Upravljajte sertifikatima uređaja</translation>

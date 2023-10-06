@@ -925,7 +925,7 @@
 <translation id="1709972045049031556">無法分享</translation>
 <translation id="1714644264617423774">啟用無障礙功能，讓您使用裝置更輕鬆。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">要刪除 <ph name="SITE_NAME" /> 和網站已安裝應用程式的網站資料和權限嗎？</translation>
-<translation id="171826447717908393">隔離網頁應用程式 (Beta 版)</translation>
+<translation id="171826447717908393">隔離的網絡應用程式 (Beta 版本)</translation>
 <translation id="1718835860248848330">過去一小時</translation>
 <translation id="1719312230114180055">請注意：相比安全性較強的密碼或 PIN，指紋識別的安全性較低。</translation>
 <translation id="1720318856472900922">TLS WWW 伺服器驗證</translation>
@@ -1821,6 +1821,7 @@
 <translation id="2398546389094871088">在裝置上執行 Powerwash 並不會移除 eSIM 卡設定檔。請前往<ph name="LINK_BEGIN" />流動裝置設定<ph name="LINK_END" />手動移除這些設定檔。</translation>
 <translation id="2399699884460174994">已開啟通知</translation>
 <translation id="2399939490305346086">安全密鑰登入資料</translation>
+<translation id="240006516586367791">媒體控制項</translation>
 <translation id="2400664245143453337">必須立即更新</translation>
 <translation id="2402226831639195063">音調</translation>
 <translation id="2405887402346713222">裝置和組件序號</translation>
@@ -2791,7 +2792,7 @@
 <translation id="3166443275568926403">效能和電池狀態</translation>
 <translation id="3169930038976362151">選擇切合您需要的主題。如要變更主題、桌布、螢幕保護程式和其他設定，只要輕觸並按住桌面即可。</translation>
 <translation id="3170072451822350649">您也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
-<translation id="3177430966804511955">管理隔離的網頁應用程式 (Beta 版)</translation>
+<translation id="3177430966804511955">管理隔離的網絡應用程式 (Beta 版本)</translation>
 <translation id="31774765611822736">新分頁位於左側</translation>
 <translation id="3177909033752230686">網頁語言：</translation>
 <translation id="3177914167275935955">您的裝置包含一項 Chrome Education 升級，但您的使用者名稱尚未連結 Google for Education 帳戶。請在次要裝置上前往 g.co/workspace/edusignup 建立 Google for Education 帳戶。</translation>
@@ -4234,9 +4235,6 @@
 <translation id="4349828822184870497">有幫助</translation>
 <translation id="4350230709416545141">一律禁止 <ph name="HOST" /> 存取您的位置</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />為提供最佳體驗，<ph name="DEVICE_OS" /> 會收集有關裝置的硬件資料並與 Google 分享，以判斷要提供哪些更新內容。您可選擇是否允許 Google 將這些資料用於其他用途，例如支援和改善 <ph name="DEVICE_OS" /> 體驗和服務。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />您可在此裝置上登入並前往 chrome://system 中的 CHROMEOSFLEX_HARDWARE_INFO 部分，以查看傳送至 Google 進行更新篩選的資料，以及其他您選擇與 Google 分享資料的情況。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />如要進一步瞭解 <ph name="DEVICE_OS" /> 可能與 Google 分享的資料，以及這些資料的用途，請前往 g.co/flex/HWDataCollection。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">請前往「<ph name="APP_NAME" />」應用程式，管理已安裝和串流的應用程式</translation>
 <translation id="4354073718307267720">在網站要求建立您身處環境的 3D 地圖或追蹤攝錄機位置時詢問您</translation>
 <translation id="4354344420232759511">您瀏覽過的網站會在這裡顯示</translation>
@@ -5089,7 +5087,7 @@
 <translation id="5067399438976153555">保持開啟</translation>
 <translation id="5067867186035333991">當 <ph name="HOST" /> 要求存取麥克風時詢問我。</translation>
 <translation id="5068553687099139861">顯示密碼</translation>
-<translation id="506886127401228110">開啟隔離網頁應用程式</translation>
+<translation id="506886127401228110">開啟隔離的網絡應用程式</translation>
 <translation id="5068919226082848014">薄餅</translation>
 <translation id="506934332411950286">從 Android 手機傳輸 Wi-Fi 資料</translation>
 <translation id="5070710277167211639">將瀏覽升級為採用 HTTPS，並在載入不支援該協定的網站前發出警告</translation>
@@ -5892,7 +5890,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> 硬件支援和穩定性</translation>
 <translation id="574104302965107104">螢幕鏡像</translation>
 <translation id="574209121243317957">音調</translation>
-<translation id="5742787970423162234">具備進階功能的封裝網頁應用程式。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="5742787970423162234">具備進階功能的套裝網絡軟件。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="5743501966138291117">PIN 長度不得超過 12 個數字，才能使用自動解鎖功能</translation>
 <translation id="5745316408658560138">要讓 Chrome 根據購物車中的商品尋找個人化折扣嗎？</translation>
 <translation id="5746169159649715125">另存為 PDF</translation>
@@ -7027,7 +7025,7 @@
 <translation id="6671320560732140690">{COUNT,plural, =1{1 個地址}other{# 個地址}}</translation>
 <translation id="6671497123040790595">正在設定由 <ph name="MANAGER" /> 進行管理</translation>
 <translation id="6672917148207387131">新增 <ph name="DOMAIN" /></translation>
-<translation id="6673353404516008367">無痕模式<ph name="BEGIN_LINK" />可保護瀏覽隱私<ph name="END_LINK" />，防止裝置的其他使用者查看你的瀏覽資料</translation>
+<translation id="6673353404516008367">無痕模式<ph name="BEGIN_LINK" />可保護瀏覽私隱<ph name="END_LINK" />，防止裝置的其他使用者查看你的瀏覽資料</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6673797129585578649">系統會調低亮度、限制背景活動和視覺效果、延遲通知和開啟 Chrome「省電模式」，以延長電池壽命。</translation>
 <translation id="6674571176963658787">如要開始同步處理，請輸入密碼短語</translation>
@@ -8605,6 +8603,7 @@
 <translation id="793531125873261495">下載虛擬機器時發生錯誤，請再試一次。</translation>
 <translation id="7935451262452051102">已完成 <ph name="PERCENT" />%</translation>
 <translation id="7937809006412909895">正在收集診斷資料</translation>
+<translation id="7938881824185772026">Google 研究室</translation>
 <translation id="7939062555109487992">進階選項</translation>
 <translation id="793923212791838">無法配搭您的裝置使用此網站</translation>
 <translation id="7939328347457537652">管理裝置憑證</translation>
@@ -9403,7 +9402,7 @@
 <translation id="8584843865238667486">使用量為 <ph name="USAGE" /> (數據來自 <ph name="USAGE_PAGE" /> 使用量頁面) 的 HID 裝置</translation>
 <translation id="8585480574870650651">移除 Crostini</translation>
 <translation id="8585841788766257444">下列網站採用的是自訂設定，而非預設設定</translation>
-<translation id="8585878117541674680">{NUM_SITES,plural, =1{已從 1 個未使用的網站移除權限}other{已從 {NUM_SITES} 個網站移除權限}}</translation>
+<translation id="8585878117541674680">{NUM_SITES,plural, =1{已從 1 個未使用的網站移除權限}other{已從 {NUM_SITES} 個未使用的網站移除權限}}</translation>
 <translation id="8588866096426746242">顯示設定檔統計資料</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - 將 VR 內容投放緊去眼罩度</translation>
 <translation id="8590375307970699841">設定自動更新</translation>

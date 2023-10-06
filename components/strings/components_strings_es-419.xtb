@@ -1187,6 +1187,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3440783957068352691">cuadrada</translation>
 <translation id="3441653493275994384">Pantalla</translation>
 <translation id="3443504041532578451">Disco óptico (satinado)</translation>
+<translation id="344449859752187052">Se bloquearon las cookies de terceros</translation>
 <translation id="3447661539832366887">El propietario del dispositivo desactivó el juego de dinosaurios.</translation>
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Obtener intervalo:</translation>
@@ -1735,6 +1736,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Estás usando tu bloqueo de pantalla para completar contraseñas</translation>
 <translation id="4558551763791394412">Intenta inhabilitar tus extensiones.</translation>
+<translation id="456043042661026303">Cómo verificar tus detalles del pago de forma segura</translation>
 <translation id="4566017918361049074">Al aire libre</translation>
 <translation id="4567686777917670400">El administrador puede cambiar la configuración de tu navegador de forma remota. Es posible que la actividad correspondiente a este dispositivo también se administre fuera de Chromium. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Revisar una lista de cookies y datos de sitios en una nueva ventana</translation>
@@ -2288,6 +2290,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5691848789297492617">El mensaje para guardar la tarjeta está totalmente abierto.</translation>
 <translation id="5695542892312572833">¿Deseas usar Windows Hello para verificar y completar tu compra?</translation>
 <translation id="5699628521141772782">Productos lácteos y huevos</translation>
+<translation id="5700761515355162635">Se permiten cookies de terceros</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="570530837424789914">Administrar…</translation>
 <translation id="5707154300732650394">Reanudar tu exploración</translation>
@@ -3363,6 +3366,7 @@ Detalles adicionales:
 <translation id="7865448901209910068">Mejor velocidad</translation>
 <translation id="7870281855125116701">Se encontró un descuento</translation>
 <translation id="7871445724586827387">Cambiar la contraseña de tu Cuenta de Google</translation>
+<translation id="7876615279559620350">Para agilizar el proceso de confirmación de compra, guarda el CVC de esta tarjeta en tu Cuenta de Google</translation>
 <translation id="7877007680666472091">ID de contenido protegidos</translation>
 <translation id="7878562273885520351">Es posible que tu contraseña esté en peligro</translation>
 <translation id="7880146494886811634">Guardar dirección</translation>
@@ -3851,6 +3855,7 @@ Detalles adicionales:
 <translation id="8870494189203302833">Mismo orden hacia abajo</translation>
 <translation id="8870700989640064057">¿Deseas imprimir un archivo confidencial?</translation>
 <translation id="8871553383647848643">Personaliza el estilo del navegador</translation>
+<translation id="8874790741333031443">Intenta permitir temporalmente cookies de terceros, lo que implica menos protección al navegar, pero aumenta las probabilidades de que las funciones del sitio funcionen como se espera.</translation>
 <translation id="8874824191258364635">Ingresa un número de tarjeta válido</translation>
 <translation id="8876033571432926051">Juegos casuales</translation>
 <translation id="8877780815363510165">Pesca</translation>

@@ -1825,6 +1825,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2398546389094871088">Az eszközén végzett powerwash nem távolítja el az eSIM-profilokat. A szóban forgó profilok manuális eltávolításához lépjen a <ph name="LINK_BEGIN" />Mobilbeállítások<ph name="LINK_END" /> menüpontra.</translation>
 <translation id="2399699884460174994">Értesítések bekapcsolva</translation>
 <translation id="2399939490305346086">Biztonsági hardverkulcs bejelentkezési adatai</translation>
+<translation id="240006516586367791">Médiaelemek vezérlője</translation>
 <translation id="2400664245143453337">Azonnali frissítés szükséges</translation>
 <translation id="2402226831639195063">Hanglejtés</translation>
 <translation id="2405887402346713222">Eszköz- és összetevő-sorozatszámok</translation>
@@ -4244,9 +4245,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4349828822184870497">Hasznos</translation>
 <translation id="4350230709416545141">A(z) <ph name="HOST" /> soha nem férhet hozzá az Ön tartózkodási helyéhez</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />A legjobb felhasználói élmény biztosítása érdekében a <ph name="DEVICE_OS" /> hardveradatokat gyűjt az eszközökről, majd megosztja az adatokat a Google-lal a szükséges frissítések meghatározásához. Önnek arra is lehetősége van, hogy engedélyezze a Google-nak az adatok egyéb célból való felhasználását (pl. a <ph name="DEVICE_OS" /> által nyújtott felhasználói élmény és szolgáltatás támogatása és fejlesztése érdekében).<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ha bejelentkezik az eszközön, megtekintheti a CHROMEOSFLEX_HARDWARE_INFO szakaszt a chrome://system oldalon, ahol láthatja azokat az adatokat, amelyeket a frissítésszűrés érdekében és egyéb olyan alkalmakkor küld el a rendszer a Google-nak, amikor Ön úgy dönt, hogy adatokat oszt meg vele.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ha többet szeretne megtudni arról, hogy milyen adatokat oszthat meg a <ph name="DEVICE_OS" /> a Google-lal, és hogy hogyan használják fel ezeket az adatokat, látogasson el a g.co/flex/HWDataCollection weboldalra.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Nyissa meg a(z) „<ph name="APP_NAME" />” alkalmazást a telepített és a streamalkalmazások kezeléséhez</translation>
 <translation id="4354073718307267720">Kérdezzen rá, ha valamelyik webhely 3D-s térképet szeretne létrehozni az Ön környezetéről, valamint ha követni szeretné a kamera pozícióját</translation>
 <translation id="4354344420232759511">Az Ön által felkeresett webhelyek itt jelennek meg</translation>
@@ -8629,6 +8627,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="793531125873261495">Nem sikerült letölteni a virtuális gépet. Próbálja újra.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% kész</translation>
 <translation id="7937809006412909895">Diagnosztikai adatok gyűjtése folyamatban</translation>
+<translation id="7938881824185772026">Laboratóriumok</translation>
 <translation id="7939062555109487992">Haladó beállítások</translation>
 <translation id="793923212791838">Az eszköz nem használható ezzel a webhellyel</translation>
 <translation id="7939328347457537652">Eszköztanúsítványok kezelése</translation>

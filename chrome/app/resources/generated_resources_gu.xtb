@@ -1804,6 +1804,7 @@
 <translation id="2398546389094871088">તમારા ડિવાઇસને પાવરવોશ કરવાથી તમારી ઇ-સિમની બધી પ્રોફાઇલ કાઢી નાખવામાં આવશે નહીં. આ બધી પ્રોફાઇલને મેન્યુઅલી કાઢી નાખવા માટે, <ph name="LINK_BEGIN" />મોબાઇલ સેટિંગ<ph name="LINK_END" /> પર જાઓ.</translation>
 <translation id="2399699884460174994">નોટિફિકેશન ચાલુ કર્યા</translation>
 <translation id="2399939490305346086">સુરક્ષા કોડનો સાઇન ઇન ડેટા</translation>
+<translation id="240006516586367791">મીડિયા નિયંત્રણો</translation>
 <translation id="2400664245143453337">તાત્કાલિક અપડેટ આવશ્યક છે</translation>
 <translation id="2402226831639195063">ટોન</translation>
 <translation id="2405887402346713222">ડિવાઇસ અને ઘટકના અનુક્રમ નંબર</translation>
@@ -4221,9 +4222,6 @@
 <translation id="4349828822184870497">સહાયરૂપ</translation>
 <translation id="4350230709416545141"><ph name="HOST" />ને હંમેશાં તમારા સ્થાનને ઍક્સેસ કરવાથી બ્લૉક કરો</translation>
 <translation id="4350782034419308508">ઓકે Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />શ્રેષ્ઠ અનુભવ પ્રદાન કરવા માટે, <ph name="DEVICE_OS" /> ડિવાઇસ વિશેનો હાર્ડવેર ડેટા એકત્રિત કરે છે અને કઈ અપડેટ ડિલિવર કરવી જોઈએ તે નક્કી કરવા માટે તેને Google સાથે શેર કરે છે. વૈકલ્પિક રીતે, તમે <ph name="DEVICE_OS" />માંનો અનુભવ અને સેવા સંબંધિત સપોર્ટ અને સુધારણાઓ જેવા વધારાના હેતુઓ માટે Googleને આ ડેટાનો ઉપયોગ કરવાની મંજૂરી આપી શકો છો.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />અપડેટ ફિલ્ટરિંગ માટે Googleને મોકલવામાં આવેલો ડેટા તેમજ તમે Google સાથે ડેટા શેર કરવાનું પસંદ કરો છો તેવો કોઈપણ અન્ય કિસ્સો જોવા માટે, તમે આ ડિવાઇસ પર લૉગ ઇન કરી શકો છો અને chrome://system વિભાગમાં CHROMEOSFLEX_HARDWARE_INFO વિભાગની મુલાકાત લઈ શકો છો.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" />, Google સાથે કયો ડેટા શેર કરી શકે છે અને તેનો ઉપયોગ કેવી રીતે કરવામાં આવે છે, તેના વિશે વધુ વિગતો જાણવા g.co/flex/HWDataCollectionની મુલાકાત લો.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">ઇન્સ્ટૉલ કરેલી અને સ્ટ્રીમ કરેલી ઍપ મેનેજ કરવા માટે, "<ph name="APP_NAME" />" પર જાઓ</translation>
 <translation id="4354073718307267720">જ્યારે કોઈ સાઇટ તમારી આજુબાજુનો 3D નકશો બનાવવા અથવા કૅમેરાના સ્ટેટસને ટ્રૅક કરવા ઇચ્છતી હોય, ત્યારે પૂછો</translation>
 <translation id="4354344420232759511">તમે મુલાકાત લીધેલી સાઇટ અહીં દેખાશે</translation>
@@ -8597,6 +8595,7 @@ USB ડિવાઇસ</translation>
 <translation id="793531125873261495">વર્ચ્યુઅલ મશીન ડાઉનલોડ કરવામાં ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% પૂર્ણ થયું</translation>
 <translation id="7937809006412909895">ડાયગ્નોસ્ટિક્સ ડેટા એકત્રિત કરી રહ્યાં છીએ</translation>
+<translation id="7938881824185772026">લેબ્સ</translation>
 <translation id="7939062555109487992">વિગતવાર વિકલ્પો</translation>
 <translation id="793923212791838">આ સાઇટ સાથે તમારા ડિવાઇસનો ઉપયોગ કરી શકાશે નહીં</translation>
 <translation id="7939328347457537652">ડિવાઇસના પ્રમાણપત્રો મેનેજ કરો</translation>

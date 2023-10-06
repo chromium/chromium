@@ -433,6 +433,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1340527397989195812">Sauvegarder les fichiers médiatiques de l’appareil en utilisant l’application Fichiers.</translation>
 <translation id="1341701348342335220">Félicitations!</translation>
 <translation id="1341871421050612057">Impossible de synchroniser avec <ph name="USERNAME" /></translation>
+<translation id="1342886103232377846">Pour vérifier les mots de passe compromis, accédez au gestionnaire de mots de passe Google</translation>
 <translation id="1343865611738742294">Accordez aux applications Linux l'autorisation d'accéder à des appareils USB. Le système Linux ne se souviendra pas d'un appareil USB une fois celui-ci retiré.</translation>
 <translation id="1343920184519992513">Reprenez le cours de vos activités et ouvrez un ensemble défini de pages</translation>
 <translation id="1344141078024003905">Vous diffusez votre écran. Vous pouvez suspendre ou arrêter la diffusion de votre écran à tout moment.</translation>
@@ -456,6 +457,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1363585519747660921">L'imprimante USB doit être configurée</translation>
 <translation id="136378536198524553">L'économiseur d'énergie est activé</translation>
 <translation id="1368603372088757436">Linux n'est pas pris en charge sur votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="1370384480654163477">Affichez et modifiez les fichiers enregistrés lors de votre dernière visite sur ce site :</translation>
 <translation id="1372841398847029212">Synchroniser vers votre compte</translation>
 <translation id="1373176046406139583">La visibilité de votre appareil détermine qui peut partager du contenu avec vous lorsque l'écran est déverrouillé. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Le certificat requis par le réseau « <ph name="NETWORK_NAME" /> » n'est pas installé ou n'est plus valide. Veuillez obtenir un nouveau certificat et réessayer de vous connecter.</translation>
@@ -714,6 +716,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1570235441606255261">Programme d'installation de Steam</translation>
 <translation id="1570604804919108255">Réactiver les notifications</translation>
 <translation id="1570990174567554976">Dossier de favoris « <ph name="BOOKMARK_TITLE" /> » créé.</translation>
+<translation id="1571041387761170095">Pas de mots de passe faibles ou réutilisés</translation>
 <translation id="1571304935088121812">Copier le nom d'utilisateur</translation>
 <translation id="1571738973904005196">Afficher l'onglet : <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (invité)</translation>
@@ -1237,6 +1240,9 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Préparation en cours…</translation>
 <translation id="1969654639948595766">Journaux de texte WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
+<translation id="1970895205072379091"><ph name="BEGIN_PARAGRAPH1" />Le fait d'autoriser vos appareils ChromeOS à envoyer des rapports automatiques nous permet de prioriser les éléments à corriger et à améliorer dans ChromeOS. Ces rapports peuvent comprendre des renseignements sur, entre autres, le moment où ChromeOS plante, les fonctionnalités que vous utilisez, la quantité de mémoire que vous utilisez normalement. Certaines données agrégées contribueront également à améliorer les applications Google et elles aideront nos partenaires, comme les développeurs Android. D'autres données de diagnostic et d'utilisation des applications, y compris pour les applications Android et Web, seront collectées si la synchronisation des applications est également activée.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Vous pouvez activer ou désactiver l'autorisation de ces rapports en tout temps dans les paramètres de votre appareil ChromeOS. Si vous êtes un administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administrateur.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Si le paramètre d'activité sur le Web et dans les applications est activé pour votre compte Google, vos données Android peuvent être enregistrées dans ce dernier. Vous pouvez consulter et supprimer vos données ainsi que modifier vos paramètres de compte sur le site account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1972313920920745320">Les sites que vous ajoutez resteront toujours actifs et leur mémoire ne sera pas libérée. <ph name="BEGIN_LINK" />En savoir plus sur la façon de maintenir certains sites actifs<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Vous naviguerez plus rapidement parce que le contenu sera chargé à l'avance en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="197288927597451399">Garder</translation>
@@ -1801,6 +1807,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2398546389094871088">Utiliser la fonctionnalité Powerwash sur votre appareil ne retirera pas vos profils eSIM. Accédez aux <ph name="LINK_BEGIN" />Paramètres de téléphone mobile<ph name="LINK_END" /> pour retirer manuellement ces profils.</translation>
 <translation id="2399699884460174994">Notifications activées</translation>
 <translation id="2399939490305346086">Données de connexion de la clé de sécurité</translation>
+<translation id="240006516586367791">Commandes multimédias</translation>
 <translation id="2400664245143453337">Une mise à jour immédiate est requise</translation>
 <translation id="2402226831639195063">Tonalités</translation>
 <translation id="2405887402346713222">Numéros de série de l'appareil et des composants</translation>
@@ -1971,6 +1978,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2519250377986324805">Voir comment</translation>
 <translation id="2519517390894391510">Nom de profil du certificat</translation>
 <translation id="2520644704042891903">En attente d'une interface de connexion disponible…</translation>
+<translation id="2521427645491031107">La synchronisation des applications est définie dans les paramètres de l'appareil</translation>
 <translation id="2521854691574443804">Vérification de la conformité du fichier <ph name="FILE_NAME" /> aux politiques de sécurité de votre organisation en cours…</translation>
 <translation id="2523184218357549926">Envoie les URL des pages que vous consultez à Google</translation>
 <translation id="252418934079508528">Installer <ph name="DEVICE_OS" /></translation>
@@ -2793,6 +2801,9 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3193695589337931419">Utilitaires pour les signaux système</translation>
 <translation id="3194786596445804250">Afficher les détails sur le blocage des témoins tiers</translation>
 <translation id="3197453258332670132">Obtenez de l'information à propos du texte sélectionné lorsque vous faites un clic droit ou que vous maintenez le doigt dessus</translation>
+<translation id="3198487209506801480"><ph name="BEGIN_PARAGRAPH1" />Le fait d'autoriser les appareils ChromeOS à envoyer des rapports automatiques nous permet de prioriser les éléments à corriger et à améliorer dans ChromeOS. Ces rapports peuvent comprendre des éléments comme le moment où ChromeOS plante, les fonctionnalités utilisées, la quantité de mémoire utilisée. Certaines données agrégées contribueront également à améliorer les applications Google et elles aideront nos partenaires, comme les développeurs Android. D'autres données de diagnostic et d'utilisation des applications, y compris pour les applications Android et Web, seront collectées si la synchronisation des applications est également activée.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Vous pouvez activer ou désactiver l'autorisation de ces rapports en tout temps dans les paramètres de l'appareil ChromeOS de votre enfant. Si vous êtes un administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administrateur.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH4" />Si le paramètre d'activité sur le Web et dans les applications est activé pour le compte Google de votre enfant, ses données peuvent être enregistrées dans son compte Google. Apprenez-en plus à propos de ces paramètres ou découvrez comment les ajuster en vous rendant sur le site families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="3199127022143353223">Serveurs</translation>
 <translation id="3199637719075529971">Cet onglet est connecté à un port série</translation>
 <translation id="3200061262156232574">Votre panier d'achats</translation>
@@ -4212,9 +4223,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4349828822184870497">Utile</translation>
 <translation id="4350230709416545141">Toujours empêcher <ph name="HOST" /> d'accéder à votre position</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Pour que vous profitiez d'une expérience optimale, <ph name="DEVICE_OS" /> collecte des données matérielles relatives aux appareils et les partage avec Google aux fins de détermination des mises à jour qui doivent être fournies. Si vous le souhaitez, vous pouvez autoriser Google à utiliser ces données à d'autres fins, comme l'assistance ou l'amélioration de l'expérience et du service proposés par <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Vous pouvez vous connecter sur cet appareil et consulter la section CHROMEOSFLEX_HARDWARE_INFO dans chrome://system pour savoir quelles données sont envoyées à Google aux fins de filtrage des mises à jour ainsi que pour découvrir les autres contextes où vous choisissez de partager des données avec Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Pour en savoir plus sur les données que <ph name="DEVICE_OS" /> peut partager avec Google et comment elles sont utilisées, consultez la page g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Accédez à l'application « <ph name="APP_NAME" /> » pour gérer les applications installées et diffusées en continu</translation>
 <translation id="4354073718307267720">Demander une autorisation lorsqu'un site veut créer une carte 3D de votre environnement ou faire le suivi de la position de l'appareil photo</translation>
 <translation id="4354344420232759511">Les sites que vous visiterez apparaîtront ici</translation>
@@ -6276,6 +6284,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6071181508177083058">confirmer le mot de passe</translation>
 <translation id="6071576563962215370">Le système n'a pas réussi à établir le verrouillage des attributs du temps d'installation de l'appareil.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> de mémoire économisée</translation>
+<translation id="6071995715087444295">Pour vérifier les mots de passe compromis, connectez-vous à votre compte Google</translation>
 <translation id="6072442788591997866">L'utilisation de <ph name="APP_NAME" /> n'est pas permise sur cet appareil. Communiquez avec votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
 <translation id="6073903501322152803">Ajouter des fonctionnalités d'accessibilité</translation>
@@ -6806,6 +6815,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6513247462497316522">Si vous n'êtes pas connecté à un autre réseau, Google Chrome va utiliser un service de données mobiles.</translation>
 <translation id="6514010653036109809">Appareil disponible :</translation>
 <translation id="6514565641373682518">Cette page a désactivé le curseur de votre souris.</translation>
+<translation id="6517227424170598783">Retirer le raccourci « <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" /> »?</translation>
 <translation id="6517420300299531857">Vos fichiers dans Mon Disque sont automatiquement synchronisés avec votre Chromebook afin que vous puissiez y accéder sans connexion Internet. Cela nécessitera environ <ph name="REQUIRED_SPACE" />. Vous disposez actuellement de <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Votre appareil pourrait ne plus fonctionner correctement, et vous pourriez rencontrer des problèmes de sécurité et de performance. La désactivation des mises à jour peut également avoir une incidence sur votre droit de faire des réclamations légales en cas de problème.</translation>
 <translation id="6518014396551869914">Cop&amp;ier l'image</translation>
@@ -7954,6 +7964,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7453467225369441013">Vous déconnecte de la plupart des sites. Vous ne serez pas déconnecté de votre compte Google.</translation>
 <translation id="7453597054492098060">{NUM_EXTENSIONS,plural, =1{Cette extension pourrait être dangereuse. Chrome vous recommande de la retirer.}one{Cette extension pourrait être dangereuse. Chrome vous recommande de la retirer.}other{Ces extensions pourraient être dangereuses. Chrome vous recommande de les retirer.}}</translation>
 <translation id="7454548535253569100">Portail : <ph name="SUBFRAME_SITE" /></translation>
+<translation id="7454744349230173024">Votre organisation a désactivé l'enregistrement des mots de passe</translation>
 <translation id="7455730275746867420">Gérer des conteneurs supplémentaires</translation>
 <translation id="7455988709578031708">En fonction de votre historique de navigation. Ce paramètre est activé.</translation>
 <translation id="7456142309650173560">développeur</translation>
@@ -8268,6 +8279,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7697109152153663933">Cliquez sur « Mots de passe et remplissage automatique »</translation>
 <translation id="769824636077131955">Impossible d'effectuer la vérification de sécurité de ce document parce qu'il est trop volumineux. Vous pouvez imprimer des documents jusqu'à 50 Mo.</translation>
 <translation id="7698507637739331665">Certains éléments sont bloqués</translation>
+<translation id="7700516433658473670">Imprimantes et numériseurs</translation>
 <translation id="7701040980221191251">Aucun</translation>
 <translation id="7701869757853594372">Descripteurs de l'UTILISATEUR</translation>
 <translation id="7702463352133825032">Arrêter la diffusion sur <ph name="DEVICE_NAME" /></translation>

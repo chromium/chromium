@@ -1186,6 +1186,7 @@
 <translation id="3440783957068352691">สี่เหลี่ยมจัตุรัส</translation>
 <translation id="3441653493275994384">หน้าจอ</translation>
 <translation id="3443504041532578451">แผ่นออปติคัลดิสก์ (ซาติน)</translation>
+<translation id="344449859752187052">บล็อกคุกกี้ของบุคคลที่สามแล้ว</translation>
 <translation id="3447661539832366887">เจ้าของอุปกรณ์นี้ปิดเกมไดโนเสาร์</translation>
 <translation id="3447884698081792621">แสดงใบรับรอง (ออกโดย <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">ช่วงการดึงข้อมูล:</translation>
@@ -1733,6 +1734,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">คุณกําลังใช้การล็อกหน้าจอเพื่อป้อนรหัสผ่าน</translation>
 <translation id="4558551763791394412">ลองปิดใช้ส่วนขยาย</translation>
+<translation id="456043042661026303">กำลังตรวจสอบรายละเอียดการชำระเงินอย่างปลอดภัย</translation>
 <translation id="4566017918361049074">กลางแจ้ง</translation>
 <translation id="4567686777917670400">ผู้ดูแลระบบจะเปลี่ยนการตั้งค่าเบราว์เซอร์จากระยะไกลได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chromium ได้ด้วย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">ตรวจสอบรายการคุกกี้และข้อมูลเว็บไซต์ในหน้าต่างใหม่</translation>
@@ -2286,6 +2288,7 @@
 <translation id="5691848789297492617">ข้อความแจ้งให้บันทึกบัตรที่เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="5695542892312572833">ใช้ Windows Hello เพื่อยืนยันและทำการซื้อให้เสร็จใช่ไหม</translation>
 <translation id="5699628521141772782">ผลิตภัณฑ์นมและไข่</translation>
+<translation id="5700761515355162635">อนุญาตคุกกี้ของบุคคลที่สามแล้ว</translation>
 <translation id="5701381305118179107">กึ่งกลาง</translation>
 <translation id="570530837424789914">จัดการ...</translation>
 <translation id="5707154300732650394">สำรวจต่อ</translation>
@@ -3361,6 +3364,7 @@
 <translation id="7865448901209910068">เร็วที่สุด</translation>
 <translation id="7870281855125116701">พบส่วนลด</translation>
 <translation id="7871445724586827387">เปลี่ยนรหัสผ่านของบัญชี Google</translation>
+<translation id="7876615279559620350">บันทึกหมายเลข CVC ของบัตรใบนี้ไว้ในบัญชี Google เพื่อให้ชำระเงินได้เร็วขึ้น</translation>
 <translation id="7877007680666472091">รหัสเนื้อหาที่มีการคุ้มครอง</translation>
 <translation id="7878562273885520351">รหัสผ่านของคุณอาจถูกขโมยได้</translation>
 <translation id="7880146494886811634">บันทึกที่อยู่</translation>
@@ -3849,6 +3853,7 @@
 <translation id="8870494189203302833">ลำดับเดียวกันคว่ำหน้าลง</translation>
 <translation id="8870700989640064057">พิมพ์ไฟล์ลับไหม</translation>
 <translation id="8871553383647848643">ปรับแต่งรูปลักษณ์ของเบราว์เซอร์</translation>
+<translation id="8874790741333031443">ลองอนุญาตคุกกี้ของบุคคลที่สามชั่วคราว ซึ่งหมายความว่าการปกป้องขณะท่องเว็บจะลดลง แต่ฟีเจอร์ของเว็บไซต์มีแนวโน้มที่จะทํางานตามที่คาดได้มากกว่า</translation>
 <translation id="8874824191258364635">ป้อนหมายเลขบัตรที่ถูกต้อง</translation>
 <translation id="8876033571432926051">เกมเล่นฆ่าเวลา</translation>
 <translation id="8877780815363510165">การตกปลา</translation>

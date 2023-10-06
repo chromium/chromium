@@ -327,6 +327,7 @@
 <translation id="1615402009686901181">ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບປິດການນຳໃຊ້ການຖ່າຍຮູບໜ້າຈໍໄວ້ເມື່ອສະແດງເນື້ອຫາທີ່ເປັນຄວາມລັບຢູ່</translation>
 <translation id="1617276713587758852">ຄຣອສໂອເວີ</translation>
 <translation id="1618571384971354160">ບໍລິການລົດລາກ ແລະ ຄວາມຊ່ວຍເຫຼືອຕາມຫົນທາງ</translation>
+<translation id="1619007254056372606">ຈັດການຂໍ້ມູນເວັບໄຊຢູ່ອຸປະກອນ</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="1622571349153632031">ອາຫານມັງສະວິລັດ</translation>
 <translation id="162285686621567578">ຜູ້ປົກຄອງຂອງທ່ານບລັອກເວັບໄຊນີ້.</translation>
@@ -1186,6 +1187,7 @@
 <translation id="3440783957068352691">ສີ່ຫຼ່ຽມ</translation>
 <translation id="3441653493275994384">ຫນ້າ​ຈໍ</translation>
 <translation id="3443504041532578451">ອັອບຕິຄອລດິສ (ຊາຕິນ)</translation>
+<translation id="344449859752187052">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມແລ້ວ</translation>
 <translation id="3447661539832366887">ເຈົ້າ​ຂອງ​ອຸ​ປະ​ກອນ​ນີ້​ປິດ​ເກມ​ໄດ​ໂນ​ເສົາ​ໄວ້.</translation>
 <translation id="3447884698081792621">ສະແດງໃບຮັບຮອງ (ທີ່ອອກໃຫ້ໂດຍ <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">ເອົາໄລຍະ​ຫ່າງ​:</translation>
@@ -1236,6 +1238,7 @@
 <translation id="3552297013052089404">ຟອນ Sans-serif</translation>
 <translation id="3558573058928565255">ຕອນກາງເວັນ</translation>
 <translation id="355995771319966853">ຍົກເລີກການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
+<translation id="3560408312959371419">ທາງເລືອກສຳລັບການປົກປ້ອງການຕິດຕາມ ແລະ ຂໍ້ມູນເວັບໄຊຢູ່ອຸປະກອນ</translation>
 <translation id="3560824484345057728">ເບິ່ງເວັບໄຊທີ່ກ່ຽວຂ້ອງ</translation>
 <translation id="3566021033012934673">ການເຊື່ອມຕໍ່ຂອງທ່ານບໍ່ເປັນສ່ວນຕົວ</translation>
 <translation id="3566336457819493938">215 x 315 ມມ</translation>
@@ -2288,6 +2291,7 @@
 <translation id="5691848789297492617">ເປີດບັດທີ່ບັນທຶກໄວ້ແບບເຕັມຄວາມສູງແລ້ວ.</translation>
 <translation id="5695542892312572833">ໃຊ້ Windows Hello ເພື່ອຢັ້ງຢືນ ແລະ ເຮັດສຳເລັດການຊື້ຂອງທ່ານບໍ?</translation>
 <translation id="5699628521141772782">ນົມ ແລະ ໄຂ່</translation>
+<translation id="5700761515355162635">ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມແລ້ວ</translation>
 <translation id="5701381305118179107">ໃຈກາງ</translation>
 <translation id="570530837424789914">ຈັດການ...</translation>
 <translation id="5707154300732650394">ສືບຕໍ່ບັນທຶກຂອງທ່ານ</translation>
@@ -3874,6 +3878,7 @@
 <translation id="893332455753468063">ເພີ່ມຊື່</translation>
 <translation id="8942355029279167844">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ເກັບເອົາຂໍ້ມູນການວິເຄາະບັນຫາເພື່ອປັບປຸງປະສົບການຜະລິດຕະພັນແລ້ວ. ເບິ່ງ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
 <translation id="8943282376843390568">ສີຂຽວໝາກນາວ</translation>
+<translation id="8944485226638699751">ຈຳກັດ</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">ກົດໝາຍ ແລະ ລັດຖະບານ</translation>
 <translation id="8954252855949068147">ເຄື່ອງແຕ່ງກາຍ</translation>

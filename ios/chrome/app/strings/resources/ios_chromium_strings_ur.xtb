@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">‏Chromium میں ٹیب گرِڈ کھلتا ہے۔</translation>
 <translation id="1617663976202781617">‏Chromium مطابقت پذیری کا ڈیٹا</translation>
 <translation id="1647558790457890304">‏Chromium کی ترتیبات</translation>
+<translation id="164952285225495380">‏یہ پیکیج پہلے ہی Chromium پر ٹریک کیا جا چکا ہے۔</translation>
 <translation id="1722370509450468186">آپ کا پاس ورڈ آپ کے اکاؤنٹ (<ph name="EMAIL" />) میں محفوظ ہو جائے گا۔</translation>
 <translation id="1736662517232558588">‏Chromium ڈیٹا کو صاف کر دیا گیا</translation>
 <translation id="1791845338122684020">‏آپ کے Chromium کی سرگزشت کا صفحہ کھولتا ہے۔</translation>
@@ -140,6 +141,7 @@
 1۔ ترتیبات کھولیں
 2۔ ڈیفالٹ براؤزر ایپ پر تھپتھپائیں
 3۔ Chromium کو منتخب کریں۔</translation>
+<translation id="6197255575340902638">‏اگر آپ "<ph name="MODULE_NAME" />" کو چھپائیں گے تو Chromium اب آپ کے مستقبل کے پیکجز کو خودکار طور پر ٹریک نہیں کرے گا اور آپ کا تمام پچھلا پیکج ٹریکنگ ڈیٹا حذف کر دے گا۔</translation>
 <translation id="6247557882553405851">‏Google پاس ورڈ مینیجر</translation>
 <translation id="6268381023930128611">‏Chromium سے سائن آؤٹ کریں؟</translation>
 <translation id="6324041800010509197">‏Chromium میں ٹیب گرِڈ ملاحظہ کریں</translation>

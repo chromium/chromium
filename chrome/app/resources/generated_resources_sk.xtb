@@ -1808,6 +1808,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2398546389094871088">Obnovením zariadenia pomocou funkcie Powerwash neodstránite profily eSIM karty. Ak chcete tieto profily odstrániť ručne, prejdite do <ph name="LINK_BEGIN" />Nastavení mobilného zariadenia<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Upozornenia sú zapnuté</translation>
 <translation id="2399939490305346086">Prihlasovacie údaje bezpečnostného kľúča</translation>
+<translation id="240006516586367791">Ovládanie médií</translation>
 <translation id="2400664245143453337">Vyžaduje sa okamžitá aktualizácia</translation>
 <translation id="2402226831639195063">Tóny</translation>
 <translation id="2405887402346713222">Sériové čísla zariadenia a komponentov</translation>
@@ -4225,9 +4226,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4349828822184870497">Užitočné</translation>
 <translation id="4350230709416545141">Vždy blokovať prístup webu <ph name="HOST" /> k polohe</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> zaisťuje to najlepšie prostredie zhromažďovaním údajov o hardvéri zariadení a ich zdieľaním s Googlom, aby bolo možné určiť, ktoré aktualizácie majú byť doručené. Voliteľne môžete Googlu povoliť používať tieto údajov na ďalšie účely, napríklad na podporu a zlepšovanie prostredia a služieb systému <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />V tomto zariadení sa môžete prihlásiť a prejsť do sekcie CHROMEOSFLEX_HARDWARE_INFO na chrome://system, kde nájdete údaje odoslané Googlu na filtrovanie aktualizácií, ako aj ďalšie prípady, kedy ste povolili zdieľanie údajov s Googlom.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Viac o údajoch, ktoré systém <ph name="DEVICE_OS" /> môže zdieľať s Googlom, a o tom, ako sú používané, nájdete na g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Nainštalované a streamované aplikácie môžete spravovať v aplikácii <ph name="APP_NAME" /></translation>
 <translation id="4354073718307267720">Opýtať sa, keď chce web vytvoriť 3D mapu vášho okolia alebo sledovať umiestnenie kamier</translation>
 <translation id="4354344420232759511">Navštívené weby sa zobrazia tu</translation>
@@ -8601,6 +8599,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="793531125873261495">Pri sťahovaní virtuálneho počítača sa vyskytla chyba. Skúste to znova.</translation>
 <translation id="7935451262452051102">Dokončené: <ph name="PERCENT" /> %</translation>
 <translation id="7937809006412909895">Zhromažďujú sa diagnostické údaje</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Rozšírené možnosti</translation>
 <translation id="793923212791838">Vaše zariadenie s týmto webom nedá použiť</translation>
 <translation id="7939328347457537652">Správa certifikátov zariadení</translation>

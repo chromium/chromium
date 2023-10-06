@@ -1806,6 +1806,7 @@
 <translation id="2398546389094871088">在裝置上執行 Powerwash 並不會移除 eSIM 卡設定檔。請前往<ph name="LINK_BEGIN" />行動設定<ph name="LINK_END" />手動移除這些設定檔。</translation>
 <translation id="2399699884460174994">已開啟通知功能</translation>
 <translation id="2399939490305346086">安全金鑰登入資料</translation>
+<translation id="240006516586367791">媒體控制項</translation>
 <translation id="2400664245143453337">必須立即更新</translation>
 <translation id="2402226831639195063">音調</translation>
 <translation id="2405887402346713222">裝置和元件序號</translation>
@@ -3601,7 +3602,7 @@
 <translation id="3828029223314399057">搜尋書籤</translation>
 <translation id="3828953470056652895">我已詳閱並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》、《<ph name="BEGIN_LINK2" />Chrome 和 ChromeOS 附加服務條款<ph name="END_LINK2" />》以及《<ph name="BEGIN_LINK3" />Play 服務條款<ph name="END_LINK3" />》。</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - 高記憶體用量 - <ph name="MEMORY_VALUE" /></translation>
-<translation id="3829765597456725595">SMB 檔案共用</translation>
+<translation id="3829765597456725595">SMB 檔案共用區</translation>
 <translation id="3830470485672984938">使用其他密碼金鑰</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{系統管理員已重新開啟 1 個可能有害的擴充功能}other{系統管理員已重新開啟 {NUM_EXTENSIONS} 個可能有害的擴充功能}}</translation>
 <translation id="3834728400518755610">必須先關閉 Linux，麥克風設定的變更才會生效。請關閉 Linux 以繼續操作。</translation>
@@ -4222,9 +4223,6 @@
 <translation id="4349828822184870497">有幫助</translation>
 <translation id="4350230709416545141">一律禁止 <ph name="HOST" /> 存取你的位置資訊</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />為了提供最佳服務體驗，<ph name="DEVICE_OS" /> 會收集有關裝置的硬體資料並提供給 Google，以判斷要提供哪些更新內容。你可以選擇是否允許 Google 將這些資料用於其他用途，例如支援作業以及改善 <ph name="DEVICE_OS" /> 的使用體驗與服務。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />你可以登入這部裝置，並造訪 chrome://system 查看 CHROMEOSFLEX_HARDWARE_INFO 部分，瞭解傳送給 Google 供篩選更新項目的資料，以及你選擇將資料提供給 Google 的任何其他情況。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />如要進一步瞭解 <ph name="DEVICE_OS" /> 可能會將哪些資料提供給 Google，以及這些資料的用途，請造訪 g.co/flex/HWDataCollection。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">請前往「<ph name="APP_NAME" />」應用程式，管理已安裝和串流的應用程式</translation>
 <translation id="4354073718307267720">網站必須先詢問你，才能根據你的周遭環境建立 3D 地圖或追蹤攝影機位置</translation>
 <translation id="4354344420232759511">這裡會顯示你曾造訪的網站</translation>
@@ -8591,6 +8589,7 @@
 <translation id="793531125873261495">下載虛擬機器時發生錯誤，請再試一次。</translation>
 <translation id="7935451262452051102">已完成 <ph name="PERCENT" />%</translation>
 <translation id="7937809006412909895">正在收集診斷資料</translation>
+<translation id="7938881824185772026">Google 研究室</translation>
 <translation id="7939062555109487992">進階選項</translation>
 <translation id="793923212791838">無法搭配你的裝置使用這個網站</translation>
 <translation id="7939328347457537652">管理裝置憑證</translation>

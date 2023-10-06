@@ -1822,6 +1822,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2398546389094871088">Dine eSIM-profiler fjernes ikke, når du udfører en powerwash på din enhed. Gå til <ph name="LINK_BEGIN" />Mobilindstillinger<ph name="LINK_END" /> for at fjerne disse profiler manuelt.</translation>
 <translation id="2399699884460174994">Notifikationer er slået til</translation>
 <translation id="2399939490305346086">Logindata på sikkerhedsnøglen</translation>
+<translation id="240006516586367791">Mediestyring</translation>
 <translation id="2400664245143453337">Kræver omgående opdatering</translation>
 <translation id="2402226831639195063">Toner</translation>
 <translation id="2405887402346713222">Enheds- og komponentserienumre</translation>
@@ -2172,6 +2173,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2671451824761031126">Dine bogmærker og indstillinger er klar</translation>
 <translation id="2672142220933875349">Ugyldig CRX-fil. Udpakning mislykkedes.</translation>
 <translation id="2673135533890720193">Læse din browserhistorik</translation>
+<translation id="2673848446870717676">Sørg for, at din Bluetooth-enhed er i parringstilstand og befinder sig tæt på. Par kun med enheder, du har tillid til. Parrede enheder er synlige for alle konti på denne Chromebook.</translation>
 <translation id="2673873887296220733">Vil du kopiere 1 fil til <ph name="CLOUD_PROVIDER" />, så den kan åbnes?</translation>
 <translation id="2674764818721168631">Fra</translation>
 <translation id="2676084251379299915">Denne udvidelse er blevet deaktiveret af virksomhedspolitikken, da den ikke længere er tilgængelig i Chrome Webshop.</translation>
@@ -3849,6 +3851,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> for at få dine bogmærker på alle dine mobilenheder.</translation>
 <translation id="4014432863917027322">Vil du reparere "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Har du nogen udvidelser? <ph name="BEGIN_LINK" />Administrer nemt dine udvidelser<ph name="END_LINK" /> fra ét sted.</translation>
+<translation id="4016762287427926315">De tilladelser, du giver <ph name="APP_NAME" />, gives også til denne app. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Opret QR-kode for dette link</translation>
 <translation id="4019983356493507433">Rediger liste over bogmærker</translation>
 <translation id="4020327272915390518">Menuen Valgmuligheder</translation>
@@ -4237,9 +4240,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4349828822184870497">Nyttig</translation>
 <translation id="4350230709416545141">Giv aldrig <ph name="HOST" /> adgang til din lokation</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> indsamler hardwaredata om enheder og deler dem med Google for at fastslå, hvilke opdateringer der skal leveres. Du kan vælge at give Google tilladelse til at bruge disse data til yderligere formål som f.eks. support til og forbedringer af <ph name="DEVICE_OS" />-oplevelsen og -tjenesten.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan logge ind på denne enhed og gå til afsnittet CHROMEOSFLEX_HARDWARE_INFO på chrome://system for at se de data, der er sendt til Google med henblik på filtrering af opdateringer, samt alle andre forekomster, hvor du har valgt at dele data med Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Du kan få flere oplysninger om, hvilke data <ph name="DEVICE_OS" /> kan dele med Google, og hvordan de anvendes, på g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Gå til appen "<ph name="APP_NAME" />" for at administrere installerede og streamede apps</translation>
 <translation id="4354073718307267720">Spørg, når et website gerne vil oprette et 3D-kort over dine omgivelser eller registrere kamerapositionen</translation>
 <translation id="4354344420232759511">Her vises de websites, du besøger</translation>
@@ -6419,6 +6419,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6156863943908443225">Scriptcache</translation>
 <translation id="6156944117133588106">Vis navigationsknapper i tablettilstand</translation>
 <translation id="615930144153753547">Websites kan vise billeder</translation>
+<translation id="6160290816917599257">Ugyldig kode. Din indtastning skal have formatet <ph name="LPA_0" />$<ph name="LPA_1" />adresse for SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />valgfrit match-id<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Levér certifikater til godkendelse</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Indstillinger for Kerberos</translation>
@@ -8451,6 +8452,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7807117920154132308">Det ser ud til, at <ph name="SUPERVISED_USER_NAME" /> allerede har konfigureret Google Assistent på en anden enhed. <ph name="SUPERVISED_USER_NAME" /> kan få endnu mere ud af Google Assistent ved at aktivere Skærmkontekst på denne enhed.</translation>
 <translation id="7807711621188256451">Tillad altid, at <ph name="HOST" /> har adgang til dit kamera</translation>
 <translation id="7810202088502699111">Pop op-vinduer blev blokeret på denne side.</translation>
+<translation id="7810367892333449285">Din indtastning skal have formatet <ph name="LPA_0" />$<ph name="LPA_1" />adresse for SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />valgfrit match-id<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Kopier</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Rediger genvejen <ph name="SHORTCUT" /> til <ph name="EXTENSION_NAME" /></translation>
@@ -8610,6 +8612,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="793531125873261495">Der opstod en fejl under forsøget på at downloade den virtuelle maskine. Prøv igen.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" /> % gennemført</translation>
 <translation id="7937809006412909895">Indsamler diagnosticeringsdata</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Avancerede valgmuligheder</translation>
 <translation id="793923212791838">Din enhed kan ikke bruges på dette website</translation>
 <translation id="7939328347457537652">Administrer enhedscertifikater</translation>
@@ -9429,6 +9432,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8605428685123651449">SQLite-hukommelse</translation>
 <translation id="8607171490667464784">Når enheden er inaktiv og kører på batteri</translation>
 <translation id="8607326572516521315">"Reducering af spam og svindel" kræver brugen af private state tokens, som hjælper websites med at bekæmpe svindel og skelne mellem bots og mennesker.</translation>
+<translation id="8607828412110648570">Sørg for, at din Bluetooth-enhed er i parringstilstand og befinder sig tæt på. Par kun med enheder, du har tillid til. Parrede enheder er synlige for alle konti på denne Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Tilføj en Kerberos-billet</translation>
 <translation id="8609465669617005112">Flyt op</translation>
 <translation id="8610103157987623234">Formatet er forkert. Prøv igen.</translation>

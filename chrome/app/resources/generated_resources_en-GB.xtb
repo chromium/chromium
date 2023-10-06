@@ -1826,6 +1826,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2398546389094871088">Powerwashing your device won't remove your eSIM profiles. Go to <ph name="LINK_BEGIN" />Mobile settings<ph name="LINK_END" /> to manually remove these profiles.</translation>
 <translation id="2399699884460174994">Notifications turned on</translation>
 <translation id="2399939490305346086">Security key sign-in data</translation>
+<translation id="240006516586367791">Media controls</translation>
 <translation id="2400664245143453337">Immediate update required</translation>
 <translation id="2402226831639195063">Tones</translation>
 <translation id="2405887402346713222">Device and Component Serial Numbers</translation>
@@ -4246,9 +4247,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4349828822184870497">Helpful</translation>
 <translation id="4350230709416545141">Always block <ph name="HOST" /> from accessing your location</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />To provide the best experience, <ph name="DEVICE_OS" /> collects hardware data about devices and shares it with Google to determine which updates should be delivered. Optionally, you can allow Google to use this data for additional purposes, like support and improvements to the <ph name="DEVICE_OS" /> experience and service.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />You can log in on this device and visit the CHROMEOSFLEX_HARDWARE_INFO section in chrome://system to see the data sent to Google for update filtering, as well as any other instances where you choose to share data with Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />For more details on data that <ph name="DEVICE_OS" /> may share with Google, and how it is used, visit g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Go to the '<ph name="APP_NAME" />' app to manage installed and streamed apps</translation>
 <translation id="4354073718307267720">Ask when a site wants to create a 3D map of your surroundings or track camera position</translation>
 <translation id="4354344420232759511">Sites that you visit will appear here</translation>
@@ -8630,6 +8628,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="793531125873261495">Error downloading the virtual machine. Please try again.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% completed</translation>
 <translation id="7937809006412909895">Collecting diagnostic data</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Advanced options</translation>
 <translation id="793923212791838">Your device can't be used with this site</translation>
 <translation id="7939328347457537652">Manage device certificates</translation>

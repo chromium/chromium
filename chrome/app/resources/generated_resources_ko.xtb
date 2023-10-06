@@ -1823,6 +1823,7 @@
 <translation id="2398546389094871088">기기를 파워워시해도 eSIM 프로필이 삭제되지는 않습니다. <ph name="LINK_BEGIN" />모바일 설정<ph name="LINK_END" />으로 이동하여 프로필을 직접 삭제하세요.</translation>
 <translation id="2399699884460174994">알림 사용 설정됨</translation>
 <translation id="2399939490305346086">보안 키 로그인 데이터</translation>
+<translation id="240006516586367791">미디어 컨트롤</translation>
 <translation id="2400664245143453337">즉시 업데이트 필요</translation>
 <translation id="2402226831639195063">신호음</translation>
 <translation id="2405887402346713222">기기 및 구성요소 일련번호</translation>
@@ -4238,9 +4239,6 @@
 <translation id="4349828822184870497">유용함</translation>
 <translation id="4350230709416545141"><ph name="HOST" />의 위치 액세스 항상 차단</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />최상의 사용자 경험을 제공하기 위해 <ph name="DEVICE_OS" />에서는 어떤 업데이트가 전송되어야 하는지 결정하고자 기기의 하드웨어 데이터를 수집하여 Google과 공유합니다. <ph name="DEVICE_OS" /> 사용자 경험과 서비스 지원 개선이라는 추가적인 목적을 위해 사용자가 Google에서 이 데이터를 사용하도록 허용할 수도 있습니다.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />이 기기에 로그인한 후 chrome://system의 CHROMEOSFLEX_HARDWARE_INFO 섹션으로 이동하면 업데이트 필터링을 사용하여 Google에 전송되는 데이터를 확인할 수 있으며, Google과 데이터를 공유하도록 선택한 다른 항목도 살펴볼 수 있습니다.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" />에서 Google과 공유할 수 있는 데이터와 데이터가 사용되는 방식에 관해 자세히 알아보려면 다음 페이지를 참고하세요. g.co/flex/HWDataCollection<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">설치 및 스트리밍된 앱을 관리하려면 "<ph name="APP_NAME" />" 앱으로 이동하세요.</translation>
 <translation id="4354073718307267720">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하려고 할 때 확인</translation>
 <translation id="4354344420232759511">내가 방문한 사이트가 여기에 표시됩니다.</translation>
@@ -8612,6 +8610,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="793531125873261495">가상 머신을 다운로드하는 중 문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% 완료됨</translation>
 <translation id="7937809006412909895">진단 데이터 수집 중</translation>
+<translation id="7938881824185772026">실험실</translation>
 <translation id="7939062555109487992">고급 옵션</translation>
 <translation id="793923212791838">이 사이트에서 기기를 사용할 수 없음</translation>
 <translation id="7939328347457537652">기기 인증서 관리</translation>
@@ -9101,7 +9100,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8324784016256120271">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하기 위해 쿠키를 사용할 수 있습니다.</translation>
 <translation id="8325413836429495820">클립보드 확인이 허용되지 않음</translation>
 <translation id="8326478304147373412">PKCS #7, 인증서 체인</translation>
-<translation id="832684045355488000"><ph name="NAME" />(으)로 업그레이드되었습니다</translation>
+<translation id="832684045355488000"><ph name="NAME" />으로 업그레이드되었습니다</translation>
 <translation id="8327386430364625757">산술 글꼴</translation>
 <translation id="8327538105740918488">이 비밀번호는 나중에 언제든지 변경할 수 있습니다. 비밀번호는 <ph name="EMAIL" />의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="8327676037044516220">권한 및 콘텐츠 설정</translation>

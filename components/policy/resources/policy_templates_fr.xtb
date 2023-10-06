@@ -737,6 +737,7 @@ Si cette règle n'est pas configurée, les utilisateurs peuvent ajouter des exce
 <translation id="165769015320654523">Autoriser automatiquement ces sites à se connecter aux appareils HID correspondant aux ID produit et du fournisseur indiqués.</translation>
 <translation id="1659406551862245683">Le comportement par défaut du redimensionnement du clavier virtuel est modifié pour que la fenêtre d'affichage de mise en page soit redimensionnée</translation>
 <translation id="166427968280387991">Serveur proxy</translation>
+<translation id="1670638264428789878">Activer la fonctionnalité d'ensembles de sites Web associés</translation>
 <translation id="1673097259557436886">Toujours indiquer aux sites Web qu'aucun mode de paiement n'est enregistré</translation>
 <translation id="1674287836076801014">SAML</translation>
 <translation id="1675002386741412210">Compatible avec :</translation>
@@ -1827,6 +1828,13 @@ Remarque : Si vous ne renseignez pas un champ, toutes les valeurs seront prises
 
       Les utilisateurs ne peuvent pas modifier les dossiers dans lesquels les favoris sont placés (bien qu'ils puissent les masquer dans la barre de favoris). Le nom du dossier par défaut est "Favoris gérés", mais vous pouvez le modifier en ajoutant à la règle un sous-dictionnaire contenant la clé unique "<ph name="TOPLEVEL_NAME" />" avec le nom de dossier souhaité comme valeur. Les favoris gérés ne sont pas synchronisés avec le compte utilisateur, et les extensions ne peuvent pas les modifier.</translation>
 <translation id="2552966063069741410">Fuseau horaire</translation>
+<translation id="2554010621206996293">Cette règle permet de contrôler l'activation de la fonctionnalité d'ensembles de sites Web associés.
+
+Elle remplace la règle <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
+
+Si cette règle est définie sur "True" ou n'est pas configurée, la fonctionnalité d'ensembles de sites Web associés est activée.
+
+Si cette règle est définie sur "False", la fonctionnalité d'ensembles de sites Web associés est désactivée.</translation>
 <translation id="2555244983262829274">Masquer le bouton Accueil dans la barre d'outils</translation>
 <translation id="2562213287271514629">Autoriser le plug-in obsolète <ph name="FLASH_PLUGIN_NAME" /> à être utilisé comme un plug-in <ph name="FLASH_PLUGIN_NAME" /> normal</translation>
 <translation id="2562339630163277285">Spécifie l'URL du moteur de recherche utilisé pour fournir des résultats instantanés. Cette URL doit contenir la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée lors de la requête par le texte déjà saisi par l'utilisateur.
@@ -1844,6 +1852,7 @@ Remarque : Si vous ne renseignez pas un champ, toutes les valeurs seront prises
 <translation id="2576324725151524912">Autoriser le mode développeur pour les applis isolées.</translation>
 <translation id="257717978573041245">Activer l'accélération matérielle</translation>
 <translation id="257788512393330403">La saisie du mot de passe est requise toutes les six heures</translation>
+<translation id="2580606791930800692">Lister les règles des contrôles de données.</translation>
 <translation id="2580757713966614760">Cette règle permet de désigner la règle d'accès qui s'applique à la configuration groupée des imprimantes, en déterminant les imprimantes soumises à la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" /> qui sont accessibles aux utilisateurs.
 
       * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_BLOCKLISTRESTRICTIONS" /> (valeur 0), <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> peut limiter l'accès aux imprimantes spécifiées
@@ -3662,6 +3671,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4157594634940419685">Autoriser l'accès à des imprimantes CUPS en natif</translation>
 <translation id="4158531549614162499">Activer la synchronisation de Google Drive via des connexions au réseau mobile</translation>
 <translation id="4160962198980004898">Source de l'adresse MAC de l'appareil lorsqu'il est connecté à une station d'accueil</translation>
+<translation id="4161019158509414446">Contrôle les règles pour la fonctionnalité d'ensembles de sites Web associés.</translation>
 <translation id="4164511138197196839">Si cette règle est activée, les extensions dont la publication est annulée sur le Chrome Web Store sont désactivées dans <ph name="PRODUCT_NAME" />.
 Elle ne s'applique qu'aux extensions installées et mises à jour à partir du Chrome Web Store.
 
@@ -6112,6 +6122,7 @@ AVERTISSEMENT : Faites attention quand vous modifiez ce paramètre, car cela po
       Si cette règle est définie sur "False", les Signed HTTP Exchanges ne peuvent pas être chargés.</translation>
 <translation id="6368011194414932347">Configurer l'URL de la page d'accueil</translation>
 <translation id="6368403635025849609">Autoriser JavaScript sur ces sites</translation>
+<translation id="6371005337713685988">Paramètres de la fonctionnalité d'ensembles de sites Web associés</translation>
 <translation id="6371561334154580937">Afficher la boîte de dialogue de déconnexion sur la dernière fenêtre fermée.</translation>
 <translation id="6372105930898423193">Permet de réactiver le cache des applications même s'il est désactivé par défaut.</translation>
 <translation id="6373299801585455337">Activer les rapports sur le CPU de l'appareil</translation>
@@ -7789,6 +7800,7 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
 <translation id="7758378441185523981">Activer l'authentification ambiante en fonction du type de profil.</translation>
 <translation id="776110834126722255">Obsolète</translation>
 <translation id="7763614521440615342">Afficher des recommandations de contenus sur la page "Nouvel onglet"</translation>
+<translation id="776465643636059256">Désactiver la fonctionnalité d'ensembles de sites Web associés</translation>
 <translation id="7765879851993224640">Autorise la connexion avec Smart Lock.</translation>
 <translation id="7767066506143083523">Si cette règle est configurée, vous pouvez lister les formats d'URL qui peuvent utiliser la capture d'onglet.
 

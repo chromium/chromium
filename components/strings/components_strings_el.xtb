@@ -328,6 +328,7 @@
 <translation id="1615402009686901181">Η πολιτική διαχειριστή απενεργοποιεί τη λήψη οθόνης όταν είναι ορατό εμπιστευτικό περιεχόμενο.</translation>
 <translation id="1617276713587758852">Οχήματα τύπου crossover</translation>
 <translation id="1618571384971354160">Ρυμούλκηση και οδική βοήθεια</translation>
+<translation id="1619007254056372606">Διαχείριση δεδομένων ιστοτόπου στη συσκευή</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1622571349153632031">Κουζίνα για χορτοφάγους</translation>
 <translation id="162285686621567578">Αυτός ο ιστότοπος έχει αποκλειστεί από τον γονέα σου.</translation>
@@ -1190,6 +1191,7 @@
 <translation id="3440783957068352691">τετράγωνο</translation>
 <translation id="3441653493275994384">Έλεγχος</translation>
 <translation id="3443504041532578451">Οπτικός δίσκος (Σατέν)</translation>
+<translation id="344449859752187052">Τα cookie τρίτου μέρους αποκλείστηκαν</translation>
 <translation id="3447661539832366887">Ο κάτοχος αυτής της συσκευής απενεργοποίησε το παιχνίδι με τους δεινοσαύρους.</translation>
 <translation id="3447884698081792621">Εμφάνιση πιστοποιητικού (εκδόθηκε από <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Διάστημα ανάκτησης:</translation>
@@ -1240,6 +1242,7 @@
 <translation id="3552297013052089404">Γραμματοσειρά Sans-serif</translation>
 <translation id="3558573058928565255">Ημέρα</translation>
 <translation id="355995771319966853">Αναίρεση αυτόματης συμπλήρωσης</translation>
+<translation id="3560408312959371419">Επιλογές για προστασίες από παρακολούθηση και δεδομένα ιστοτόπου στη συσκευή</translation>
 <translation id="3560824484345057728">Εμφάνιση σχετικών ιστοτόπων</translation>
 <translation id="3566021033012934673">Η σύνδεσή σας δεν είναι ιδιωτική</translation>
 <translation id="3566336457819493938">215 x 315 χιλ.</translation>
@@ -2293,6 +2296,7 @@
 <translation id="5691848789297492617">Η κάρτα αποθήκευσης άνοιξε σε πλήρες ύψος.</translation>
 <translation id="5695542892312572833">Χρήση του Windows Hello για επαλήθευση και ολοκλήρωση της αγοράς σας;</translation>
 <translation id="5699628521141772782">Γαλακτοκομικά προϊόντα και αυγά</translation>
+<translation id="5700761515355162635">Επιτρέπονται τα cookie τρίτου μέρους</translation>
 <translation id="5701381305118179107">Κέντρο</translation>
 <translation id="570530837424789914">Διαχείριση…</translation>
 <translation id="5707154300732650394">Συνέχιση της διαδρομής σας</translation>
@@ -3883,6 +3887,7 @@
 <translation id="893332455753468063">Προσθήκη ονόματος</translation>
 <translation id="8942355029279167844">Ο διαχειριστής επέτρεψε στην εφαρμογή <ph name="APP_NAME" /> να συλλέγει διαγνωστικά στοιχεία για τη βελτίωση της εμπειρίας του προϊόντος. Ανατρέξτε στη διεύθυνση <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> για περισσότερες πληροφορίες.</translation>
 <translation id="8943282376843390568">Λάιμ</translation>
+<translation id="8944485226638699751">Περιορισμένα</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Νομοθεσία και κυβέρνηση</translation>
 <translation id="8954252855949068147">Ενδύματα</translation>

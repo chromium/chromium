@@ -1186,6 +1186,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3440783957068352691">cadrado</translation>
 <translation id="3441653493275994384">Pantalla</translation>
 <translation id="3443504041532578451">Disco óptico (satinado)</translation>
+<translation id="344449859752187052">Cookies de terceiros bloqueadas</translation>
 <translation id="3447661539832366887">O propietario deste dispositivo desactivou o xogo do dinosauro.</translation>
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Intervalo de recuperación:</translation>
@@ -1734,6 +1735,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Estás usando o bloqueo de pantalla para completar contrasinais</translation>
 <translation id="4558551763791394412">Proba a desactivar as extensións.</translation>
+<translation id="456043042661026303">Comprobando os detalles de pago de maneira segura</translation>
 <translation id="4566017918361049074">Aire libre</translation>
 <translation id="4567686777917670400">O teu administrador pode cambiar a configuración do navegador de forma remota. A actividade deste dispositivo tamén se pode xestionar fóra de Chromium. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Revisar unha lista de cookies e datos do sitio nunha nova ventá</translation>
@@ -2287,6 +2289,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5691848789297492617">Tarxeta de gardado aberta a altura completa.</translation>
 <translation id="5695542892312572833">Queres utilizar Windows Hello para verificar e completar a compra?</translation>
 <translation id="5699628521141772782">Ovos e produtos lácteos</translation>
+<translation id="5700761515355162635">Cookies de terceiros permitidas</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="570530837424789914">Xestiona o contido...</translation>
 <translation id="5707154300732650394">Retomar percorrido</translation>
@@ -3362,6 +3365,7 @@ Detalles adicionais:
 <translation id="7865448901209910068">A mellor velocidade</translation>
 <translation id="7870281855125116701">Desconto atopado</translation>
 <translation id="7871445724586827387">Cambiar o contrasinal da Conta de Google</translation>
+<translation id="7876615279559620350">Para tramitar as compras máis rápido, garda o CVC desta tarxeta na túa Conta de Google</translation>
 <translation id="7877007680666472091">códigos de identificación de contido protexido</translation>
 <translation id="7878562273885520351">Pode que o teu contrasinal estea en perigo</translation>
 <translation id="7880146494886811634">Gardar enderezo</translation>
@@ -3849,6 +3853,7 @@ Detalles adicionais:
 <translation id="8870494189203302833">A mesma orde cara abaixo</translation>
 <translation id="8870700989640064057">Queres imprimir o ficheiro confidencial?</translation>
 <translation id="8871553383647848643">Personalizar o aspecto do navegador</translation>
+<translation id="8874790741333031443">Proba a permitir de maneira temporal as cookies de terceiros. Terás menos protección, pero é máis probable que as funcións do sitio vaian segundo o previsto.</translation>
 <translation id="8874824191258364635">Introduce un número de tarxeta válido</translation>
 <translation id="8876033571432926051">Xogos casuais</translation>
 <translation id="8877780815363510165">Pesca</translation>

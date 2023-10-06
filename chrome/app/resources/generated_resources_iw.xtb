@@ -1817,6 +1817,7 @@
 <translation id="2398546389094871088">‏ביצוע Powerwash למכשיר לא יסיר את פרופילי ה-eSIM. יש לעבור אל ה<ph name="LINK_BEGIN" />הגדרות לנייד<ph name="LINK_END" /> כדי להסיר את הפרופילים האלה באופן ידני.</translation>
 <translation id="2399699884460174994">ההתראות פועלות</translation>
 <translation id="2399939490305346086">נתוני כניסה במפתח אבטחה</translation>
+<translation id="240006516586367791">פקדי מדיה</translation>
 <translation id="2400664245143453337">דרוש עדכון מידי</translation>
 <translation id="2402226831639195063">צלילים</translation>
 <translation id="2405887402346713222">מספרים סידוריים של מכשירים ורכיבים</translation>
@@ -2167,6 +2168,7 @@
 <translation id="2671451824761031126">הסימניות וההגדרות שלך מוכנות</translation>
 <translation id="2672142220933875349">‏קובץ crx פגום, פירוק האריזה נכשל.</translation>
 <translation id="2673135533890720193">לקרוא את היסטוריית הגלישה שלך</translation>
+<translation id="2673848446870717676">‏צריך לוודא שמכשיר ה-Bluetooth נמצא במצב התאמה ובקרבת מקום. חשוב לבצע התאמה רק עם מכשירים מהימנים. המכשירים המותאמים גלויים לכל החשבונות ב-Chromebook הזה.</translation>
 <translation id="2673873887296220733">להעתיק קובץ אחד אל <ph name="CLOUD_PROVIDER" /> כדי לפתוח אותו?</translation>
 <translation id="2674764818721168631">כבוי</translation>
 <translation id="2676084251379299915">‏התוסף הזה הושבת על ידי מדיניות הארגון כי הוא לא זמין יותר בחנות האינטרנט של Chrome.</translation>
@@ -3841,6 +3843,7 @@
 <translation id="4010917659463429001">כדי לגשת לסימניות שלך בנייד, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">לתקן את '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="4015163439792426608">מותקנים אצלך תוספים? אפשר <ph name="BEGIN_LINK" />לנהל את התוספים<ph name="END_LINK" /> בקלות במקום אחד.</translation>
+<translation id="4016762287427926315">ההרשאות שמוענקות לאפליקציה <ph name="APP_NAME" /> יוענקו גם לאפליקציה הזו. <ph name="BEGIN_LINK" />לניהול ההרשאות<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">‏צריך ליצור קוד QR לקישור הזה</translation>
 <translation id="4019983356493507433">עריכה של רשימת הסימניות</translation>
 <translation id="4020327272915390518">תפריט אפשרויות</translation>
@@ -4228,9 +4231,6 @@
 <translation id="4349828822184870497">מועילה</translation>
 <translation id="4350230709416545141">לחסום תמיד – ל-<ph name="HOST" /> לא תהיה יותר גישה למיקום שלך</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351770750390404505">‏<ph name="BEGIN_PARAGRAPH1" />כדי לספק את החוויה הטובה ביותר, מערכת <ph name="DEVICE_OS" /> אוספת נתוני חומרה בנוגע למכשירים ומשתפת אותם עם Google כדי לקבוע אילו עדכונים צריך לשלוח. יש לך אפשרות לתת ל-Google הרשאה להשתמש בנתונים האלה למטרות נוספות, כמו תמיכה ושיפורים בחוויית המשתמש ובשירותים של <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />אפשר להתחבר לחשבון במכשיר הזה ולעבור אל הקטע CHROMEOSFLEX_HARDWARE_INFO שבכתובת chrome://system כדי לראות את הנתונים שנשלחו אל Google לסינון עדכונים. בקטע הזה מופיעים גם נתונים שנשלחו אל Google במקרים אחרים שבהם בחרת לשתף אותם עם Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />למידע נוסף על נתונים שמערכת <ph name="DEVICE_OS" /> יכולה לשתף עם Google ועל האופן שבו נעשה בהם שימוש, יש לעבור לכתובת g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">כדי לנהל אפליקציות שמותקנות ואפליקציות סטרימינג, עוברים לאפליקציה '<ph name="APP_NAME" />'</translation>
 <translation id="4354073718307267720">תוצג שאלה כשאתר ירצה ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה</translation>
 <translation id="4354344420232759511">אתרים שבהם ביקרת יופיעו כאן</translation>
@@ -6407,6 +6407,7 @@
 <translation id="6156863943908443225">מטמון סקריפטים</translation>
 <translation id="6156944117133588106">הצגת לחצני ניווט במצב טאבלט</translation>
 <translation id="615930144153753547">אתרים יכולים להציג תמונות</translation>
+<translation id="6160290816917599257">‏הקוד לא תקין. הפורמט של הרשומה צריך להיות <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />מזהה תואם אופציונלי<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">אספקת אישורים לאימות</translation>
 <translation id="6163363155248589649">&amp;רגיל</translation>
 <translation id="6163376401832887457">‏הגדרות Kerberos</translation>
@@ -8437,6 +8438,7 @@
 <translation id="7807117920154132308">‏נראה שכבר התבצעה הגדרה של Google Assistant על ידי <ph name="SUPERVISED_USER_NAME" /> במכשיר אחר. באמצעות הפעלה של הקשר המסך, ל<ph name="SUPERVISED_USER_NAME" /> תהיה אפשרות להפיק יותר תועלת מ-Assistant במכשיר הזה.</translation>
 <translation id="7807711621188256451">התרה תמיד ל-<ph name="HOST" /> לגשת למצלמה שלך</translation>
 <translation id="7810202088502699111">חלונות קופצים נחסמו בדף זה.</translation>
+<translation id="7810367892333449285">‏הפורמט של הרשומה צריך להיות <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />מזהה תואם אופציונלי<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;העתקה</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">עריכת קיצור הדרך <ph name="SHORTCUT" /> עבור <ph name="EXTENSION_NAME" /></translation>
@@ -8596,6 +8598,7 @@
 <translation id="793531125873261495">קרתה שגיאה בהורדת המכונה הווירטואלית. צריך לנסות שוב.</translation>
 <translation id="7935451262452051102">הושלמו %<ph name="PERCENT" /></translation>
 <translation id="7937809006412909895">איסוף נתוני אבחון</translation>
+<translation id="7938881824185772026">Google Labs</translation>
 <translation id="7939062555109487992">אפשרויות מתקדמות</translation>
 <translation id="793923212791838">לא ניתן להשתמש במכשיר שלך במסגרת האתר הזה</translation>
 <translation id="7939328347457537652">ניהול אישורי מכשירים</translation>
@@ -9416,6 +9419,7 @@
 <translation id="8605428685123651449">‏זיכרון SQLite</translation>
 <translation id="8607171490667464784">בזמן שימוש בסוללה ובמצב לא פעיל</translation>
 <translation id="8607326572516521315">אסימוני מצב פרטי מאפשרים לאתרים להתמודד עם ספאם והונאות ולהבחין בין בוטים לאנשים.</translation>
+<translation id="8607828412110648570">‏צריך לוודא שמכשיר ה-Bluetooth נמצא במצב התאמה ובקרבת מקום. חשוב לבצע התאמה רק עם מכשירים מהימנים. המכשירים המותאמים גלויים לכל החשבונות ב-Chromebook הזה. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">‏הוספת כרטיס Kerberos</translation>
 <translation id="8609465669617005112">הזזה למעלה</translation>
 <translation id="8610103157987623234">פורמט לא נכון, צריך לנסות שוב</translation>

@@ -1806,6 +1806,7 @@
 <translation id="2398546389094871088">การทำ Powerwash อุปกรณ์จะไม่นำโปรไฟล์ eSIM ของคุณออก ไปที่<ph name="LINK_BEGIN" />การตั้งค่าอุปกรณ์เคลื่อนที่<ph name="LINK_END" />เพื่อนำโปรไฟล์เหล่านี้ออกด้วยตัวเอง</translation>
 <translation id="2399699884460174994">เปิดการแจ้งเตือนแล้ว</translation>
 <translation id="2399939490305346086">ข้อมูลการลงชื่อเข้าใช้ในคีย์ความปลอดภัย</translation>
+<translation id="240006516586367791">การควบคุมสื่อ</translation>
 <translation id="2400664245143453337">ต้องอัปเดตทันที</translation>
 <translation id="2402226831639195063">ระดับเสียงสูงต่ำ</translation>
 <translation id="2405887402346713222">หมายเลขซีเรียลของอุปกรณ์และคอมโพเนนต์</translation>
@@ -2156,6 +2157,7 @@
 <translation id="2671451824761031126">บุ๊กมาร์กและการตั้งค่าของคุณพร้อมแล้ว</translation>
 <translation id="2672142220933875349">ไฟล์ crx ใช้ไม่ได้ การคลายการแพ็กล้มเหลว</translation>
 <translation id="2673135533890720193">อ่านประวัติการเข้าชม</translation>
+<translation id="2673848446870717676">โปรดตรวจสอบว่าอุปกรณ์บลูทูธอยู่ในโหมดการจับคู่และอยู่ใกล้ จับคู่กับอุปกรณ์ที่คุณเชื่อถือเท่านั้น ทุกบัญชีใน Chromebook เครื่องนี้จะมองเห็นอุปกรณ์ที่จับคู่แล้ว</translation>
 <translation id="2673873887296220733">คัดลอก 1 ไฟล์ไปที่ <ph name="CLOUD_PROVIDER" /> เพื่อเปิดใช่ไหม</translation>
 <translation id="2674764818721168631">ปิด</translation>
 <translation id="2676084251379299915">ส่วนขยายนี้ปิดใช้โดยนโยบายระดับองค์กรเนื่องจากไม่มีให้ใช้งานใน Chrome เว็บสโตร์แล้ว</translation>
@@ -3833,6 +3835,7 @@
 <translation id="4010917659463429001">หากต้องการรับบุ๊กมาร์กบนอุปกรณ์เคลื่อนที่ ให้<ph name="GET_IOS_APP_LINK" /></translation>
 <translation id="4014432863917027322">ต้องการซ่อม "<ph name="EXTENSION_NAME" />" ไหม</translation>
 <translation id="4015163439792426608">หากมีส่วนขยายหลายรายการ คุณจะ<ph name="BEGIN_LINK" />จัดการส่วนขยาย<ph name="END_LINK" />ได้โดยง่ายในที่เดียว</translation>
+<translation id="4016762287427926315">สิทธิ์ที่คุณให้แก่ <ph name="APP_NAME" /> จะให้แก่แอปนี้ด้วย <ph name="BEGIN_LINK" />จัดการ<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">สร้างคิวอาร์โค้ดสำหรับลิงก์นี้</translation>
 <translation id="4019983356493507433">แก้ไขรายการบุ๊กมาร์ก</translation>
 <translation id="4020327272915390518">เมนูตัวเลือก</translation>
@@ -4221,9 +4224,6 @@
 <translation id="4349828822184870497">มีประโยชน์</translation>
 <translation id="4350230709416545141">บล็อก <ph name="HOST" /> ไม่ให้เข้าถึงตำแหน่งของคุณเสมอ</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />เพื่อมอบประสบการณ์ที่ดีที่สุด <ph name="DEVICE_OS" /> จะรวบรวมข้อมูลฮาร์ดแวร์เกี่ยวกับอุปกรณ์และแชร์กับ Google เพื่อพิจารณาอัปเดตที่ควรส่ง นอกจากนี้ คุณสามารถอนุญาตให้ Google ใช้ข้อมูลนี้เพื่อวัตถุประสงค์อื่นๆ เพิ่มเติม เช่น การสนับสนุนและการปรับปรุงด้าน<ph name="DEVICE_OS" />ประสบการณ์และบริการ<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />คุณสามารถลงชื่อเข้าสู่ระบบในอุปกรณ์เครื่องนี้และไปที่ส่วน CHROMEOSFLEX_HARDWARE_INFO ใน chrome://system เพื่อดูข้อมูลที่ส่งไปยัง Google เพื่อกรองอัปเดต รวมถึงสถานการณ์ใดๆ ที่คุณเลือกแชร์ข้อมูลกับ Google<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />ดูรายละเอียดเพิ่มเติมเกี่ยวกับข้อมูลที่ <ph name="DEVICE_OS" /> อาจแชร์กับ Google และวิธีนำข้อมูลไปใช้ได้ที่ g.co/flex/HWDataCollection<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">ไปที่แอป "<ph name="APP_NAME" />" เพื่อจัดการแอปที่ติดตั้งและสตรีมแอป</translation>
 <translation id="4354073718307267720">ถามเมื่อเว็บไซต์ต้องการสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณหรือติดตามตำแหน่งของกล้อง</translation>
 <translation id="4354344420232759511">เว็บไซต์ที่คุณเข้าชมจะปรากฏที่นี่</translation>
@@ -6399,6 +6399,7 @@
 <translation id="6156863943908443225">แคชของสคริปต์</translation>
 <translation id="6156944117133588106">แสดงปุ่มการนำทางในโหมดแท็บเล็ต</translation>
 <translation id="615930144153753547">เว็บไซต์แสดงรูปภาพได้</translation>
+<translation id="6160290816917599257">รหัสไม่ถูกต้อง รหัสที่คุณป้อนควรอยู่ในรูปแบบ <ph name="LPA_0" />$<ph name="LPA_1" />ที่อยู่ SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />รหัสที่ตรงกัน (ไม่บังคับ)<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">มอบใบรับรองสำหรับการตรวจสอบสิทธิ์</translation>
 <translation id="6163363155248589649">&amp;ปกติ</translation>
 <translation id="6163376401832887457">การตั้งค่า Kerberos</translation>
@@ -8429,6 +8430,7 @@
 <translation id="7807117920154132308">ดูเหมือนว่า <ph name="SUPERVISED_USER_NAME" /> ตั้งค่า Google Assistant ไว้แล้วในอุปกรณ์อื่น <ph name="SUPERVISED_USER_NAME" /> จะได้รับความช่วยเหลือจาก Assistant ได้ดียิ่งขึ้นเมื่อเปิดบริบทบนหน้าจอในอุปกรณ์นี้</translation>
 <translation id="7807711621188256451">อนุญาตให้ <ph name="HOST" /> เข้าถึงกล้องของคุณเสมอ</translation>
 <translation id="7810202088502699111">หน้าเว็บนี้บล็อกป๊อปอัป</translation>
+<translation id="7810367892333449285">รหัสที่คุณป้อนควรอยู่ในรูปแบบ <ph name="LPA_0" />$<ph name="LPA_1" />ที่อยู่ SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />รหัสที่ตรงกัน (ไม่บังคับ)<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;คัดลอก</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">แก้ไขทางลัด <ph name="SHORTCUT" /> สำหรับ <ph name="EXTENSION_NAME" /></translation>
@@ -8588,6 +8590,7 @@
 <translation id="793531125873261495">เกิดข้อผิดพลาดขณะดาวน์โหลดเครื่องเสมือน โปรดลองอีกครั้ง</translation>
 <translation id="7935451262452051102">เสร็จสมบูรณ์ <ph name="PERCENT" />%</translation>
 <translation id="7937809006412909895">กำลังรวบรวมข้อมูลการวินิจฉัย</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">ตัวเลือกขั้นสูง</translation>
 <translation id="793923212791838">อุปกรณ์ของคุณใช้ไม่ได้กับเว็บไซต์นี้</translation>
 <translation id="7939328347457537652">จัดการใบรับรองอุปกรณ์</translation>
@@ -9407,6 +9410,7 @@
 <translation id="8605428685123651449">หน่วยความจำ SQLite</translation>
 <translation id="8607171490667464784">ขณะที่ไม่มีการใช้งานและใช้แบตเตอรี่อยู่</translation>
 <translation id="8607326572516521315">การลดจำนวนสแปมและการประพฤติมิชอบจะใช้โทเค็นสถานะส่วนตัวเพื่อช่วยเว็บไซต์ป้องกันการประพฤติมิชอบและแยกบ็อตออกจากมนุษย์</translation>
+<translation id="8607828412110648570">โปรดตรวจสอบว่าอุปกรณ์บลูทูธอยู่ในโหมดการจับคู่และอยู่ใกล้ จับคู่กับอุปกรณ์ที่คุณเชื่อถือเท่านั้น ทุกบัญชีใน Chromebook เครื่องนี้จะมองเห็นอุปกรณ์ที่จับคู่แล้ว <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">เพิ่มตั๋ว Kerberos</translation>
 <translation id="8609465669617005112">เลื่อนขึ้น</translation>
 <translation id="8610103157987623234">รูปแบบไม่ถูกต้อง โปรดลองอีกครั้ง</translation>

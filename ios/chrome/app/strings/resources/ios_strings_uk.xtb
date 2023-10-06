@@ -304,6 +304,7 @@
 <translation id="2648803196158606475">Видалити прочитані</translation>
 <translation id="2664621323652615289">Зупинити</translation>
 <translation id="2666092431469916601">Верх</translation>
+<translation id="2669454659051515572">Усі користувачі цього пристрою можуть бачити завантажені файли</translation>
 <translation id="2671426118752779020">Ви можете використовувати паролі, збережені в Менеджері паролів Google, в інших додатках на iPhone.</translation>
 <translation id="2690858294534178585">Камера використовується</translation>
 <translation id="26915454213703967">Пошук на зображенні через Google</translation>
@@ -799,6 +800,7 @@
 <translation id="5360976571138293719">Інші налаштування конфіденційності, безпеки та збору даних доступні в розділі <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Тут показуватимуться сайти, на які ви підписалися</translation>
 <translation id="5388358297987318779">Відкрити зображення</translation>
+<translation id="5396950905475481456">Запросіть учасників у сімейну групу</translation>
 <translation id="5407969256130905701">Відхилити зміни</translation>
 <translation id="5414763847370083940">Ви отримаєте сповіщення, коли на якомусь сайті знизиться ціна.</translation>
 <translation id="5416022985862681400">Останні 7 днів</translation>
@@ -1550,4 +1552,5 @@
 <translation id="988141524645182168">Інші пристрої</translation>
 <translation id="989988560359834682">Редагувати адресу</translation>
 <translation id="994757059139821576">Пропозиції статей</translation>
+<translation id="999768147936949692">Зараз ви можете обмінюватися паролями лише з учасниками сімейної групи. <ph name="BEGIN_LINK" />Запросіть учасників<ph name="END_LINK" /> до своєї групи й користуйтеся всіма перевагами продуктів і підписок у Google.</translation>
 </translationbundle>

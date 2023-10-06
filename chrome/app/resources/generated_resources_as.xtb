@@ -1824,6 +1824,7 @@
 <translation id="2398546389094871088">আপোনাৰ ডিভাইচটো পাৱাৰৱাশ্ব কৰাটোৱে আপোনাৰ ই-ছিমৰ প্ৰ'ফাইল আঁতৰাই নিদিব। এই প্ৰ'ফাইলসমূহ মেনুৱেলী আঁতৰাবলৈ <ph name="LINK_BEGIN" />ম'বাইলৰ ছেটিঙ<ph name="LINK_END" />লৈ যাওক।</translation>
 <translation id="2399699884460174994">জাননী সক্ৰিয় কৰা হ’ল</translation>
 <translation id="2399939490305346086">সুৰক্ষা চাবিৰ ছাইন-ইন ডেটা</translation>
+<translation id="240006516586367791">মিডিয়াৰ নিয়ন্ত্ৰণ</translation>
 <translation id="2400664245143453337">তাৎক্ষণিকভাৱে আপডে’ট কৰাৰ প্ৰয়োজন</translation>
 <translation id="2402226831639195063">ট’ন</translation>
 <translation id="2405887402346713222">ডিভাইচ আৰু উপাদানৰ ক্ৰমিক নম্বৰসমূহ</translation>
@@ -4243,9 +4244,6 @@
 <translation id="4349828822184870497">উপযোগী</translation>
 <translation id="4350230709416545141"><ph name="HOST" />এ আপোনাৰ অৱস্থান এক্সেছ কৰাটো সদায় অৱৰোধ কৰক</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />শ্ৰেষ্ঠ অভিজ্ঞতাটো প্ৰদান কৰিবলৈ, <ph name="DEVICE_OS" />এ ডিভাইচৰ বিষয়ে হাৰ্ডৱেৰৰ ডেটা সংগ্ৰহ কৰে আৰু কোনটো আপডে’ট দিব লাগে সেয়া নিৰ্ধাৰণ কৰিবলৈ সেই ডেটা Googleৰ সৈতে শ্বেয়াৰ কৰে। বিকল্প হিচাপে, আপুনি Googleক অতিৰিক্ত উদ্দেশ্যসমূহৰ বাবে এই ডেটা ব্যৱহাৰ কৰিবলৈ অনুমতি দিব পাৰে, যেনে <ph name="DEVICE_OS" />ৰ অভিজ্ঞতা আৰু সেৱাৰ সহায়তা আৰু উন্নীতকৰণৰ বাবে।<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />আপুনি ফিল্টাৰ আপডে’ট কৰিবলৈ Googleলৈ পঠিওৱা আৰু আপুনি Googleৰ সৈতে ডেটা শ্বেয়াৰ কৰিবলৈ সিদ্ধান্ত লোৱা অন্য যিকোনো নিদৰ্শনৰ ডেটাখিনি চাবলৈ এই ডিভাইচটোত লগ ইন কৰি chrome://systemৰ CLOUDREADY_HARDWARE_INFO শাখাটোলৈ যাব পাৰে।<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" />এ Googleৰ সৈতে শ্বেয়াৰ কৰা ডেটা আৰু সেয়া ব্যৱহাৰ কৰা হৈছে সেই বিষয়ে অধিক সবিশেষৰ বাবে g.co/flex/HWDataCollectionলৈ যাওক।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">ইনষ্টল কৰা আৰু ষ্ট্ৰীম কৰা এপ্‍ পৰিচালনা কৰিবলৈ "<ph name="APP_NAME" />"লৈ যাওক</translation>
 <translation id="4354073718307267720">কোনো ছাইটে আপোনাৰ চৌপাশৰ এখন 3D মেপ সৃষ্টি কৰিবলৈ অথবা কেমেৰাৰ স্থান ট্ৰেক কৰিবলৈ বিচাৰিলে সোধক</translation>
 <translation id="4354344420232759511">আপুনি চোৱা ছাইটসমূহ ইয়াত দেখা যাব</translation>

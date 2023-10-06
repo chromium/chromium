@@ -571,6 +571,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4116038641877404294">Stáhněte si stránky k použití offline</translation>
 <translation id="4121654769234887259">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel Google pro účet <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Postup udělení oprávnění k zasílání oznámení je otevřený na celou výšku</translation>
+<translation id="4126285640274188657">Statistiky stránky</translation>
 <translation id="4135200667068010335">Seznam zařízení, se kterými se má karta sdílet, je zavřený.</translation>
 <translation id="4137746084635924146">Aktuální jazyk zařízení</translation>
 <translation id="4139654229316918773">Chrome Canary</translation>
@@ -1205,6 +1206,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7376560087009844242">Zahrnutím většího množství textu ze stránky můžete pomocí Vyhledání klepnutím získat lepší výsledky. Tuto možnost můžete v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" /> kdykoliv změnit.</translation>
 <translation id="7379900596734708416">Pro weby je k dispozici tmavý motiv</translation>
 <translation id="7388615499319468910">Weby a inzerenti se mohou dozvědět, jak si reklamy vedou. Toto nastavení je vypnuté.</translation>
+<translation id="7397416715506917976">Zobrazit statistiky stránky</translation>
 <translation id="7400418766976504921">Adresa URL</translation>
 <translation id="7403691278183511381">První spuštění Chromu</translation>
 <translation id="7411224099004328643">Uživatel účtu Google</translation>

@@ -1821,6 +1821,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2398546389094871088">Việc định dạng lại thiết bị bằng chức năng Powerwash sẽ không xóa hồ sơ eSIM của bạn. Hãy chuyển đến phần <ph name="LINK_BEGIN" />Cài đặt cho thiết bị di động<ph name="LINK_END" /> để xóa những hồ sơ này theo cách thủ công.</translation>
 <translation id="2399699884460174994">Đã bật thông báo</translation>
 <translation id="2399939490305346086">Dữ liệu đăng nhập trên khóa bảo mật</translation>
+<translation id="240006516586367791">Điều khiển nội dung nghe nhìn</translation>
 <translation id="2400664245143453337">Bạn cần cập nhật ngay</translation>
 <translation id="2402226831639195063">Âm</translation>
 <translation id="2405887402346713222">Số sê-ri của thành phần và thiết bị</translation>
@@ -4238,9 +4239,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4349828822184870497">Hữu ích</translation>
 <translation id="4350230709416545141">Luôn chặn không cho <ph name="HOST" /> truy cập thông tin vị trí của bạn</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Để mang lại trải nghiệm tốt nhất, <ph name="DEVICE_OS" /> sẽ thu thập dữ liệu phần cứng của thiết bị rồi chia sẻ dữ liệu đó cho Google để xác định xem nên phân phối bản cập nhật nào. Bạn có thể tuỳ ý cho phép Google dùng dữ liệu này cho các mục đích khác như hỗ trợ và cải thiện trải nghiệm cũng như chất lượng dịch vụ của <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Bạn có thể đăng nhập trên thiết bị này rồi truy cập mục CHROMEOSFLEX_HARDWARE_INFO trong chrome://system để xem dữ liệu được gửi tới Google phục vụ việc lọc bản cập nhật, cũng như xem mọi trường hợp khác mà bạn chọn chia sẻ dữ liệu với Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Để biết thêm thông tin về dữ liệu mà <ph name="DEVICE_OS" /> có thể chia sẻ với Google cũng như cách dữ liệu đó được sử dụng, hãy truy cập g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Chuyển đến ứng dụng "<ph name="APP_NAME" />" để quản lý các ứng dụng đã cài đặt và ứng dụng được truyền trực tuyến</translation>
 <translation id="4354073718307267720">Hỏi khi một trang web muốn tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh</translation>
 <translation id="4354344420232759511">Các trang web bạn truy cập sẽ xuất hiện ở đây</translation>
@@ -8612,6 +8610,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="793531125873261495">Lỗi khi tải máy ảo xuống. Vui lòng thử lại.</translation>
 <translation id="7935451262452051102">Đã hoàn thành <ph name="PERCENT" />%</translation>
 <translation id="7937809006412909895">Đang thu thập dữ liệu chẩn đoán</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Tùy chọn nâng cao</translation>
 <translation id="793923212791838">Không thể sử dụng thiết bị của bạn với trang web này</translation>
 <translation id="7939328347457537652">Quản lý chứng chỉ thiết bị</translation>
@@ -9101,6 +9100,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8324784016256120271">Các trang web có thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn để điều chỉnh quảng cáo cho phù hợp với bạn</translation>
 <translation id="8325413836429495820">Không được phép xem bảng nhớ tạm của bạn</translation>
 <translation id="8326478304147373412">PKCS #7, chuỗi chứng chỉ</translation>
+<translation id="832684045355488000">Thiết bị của bạn đã được nâng cấp lên <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Phông chữ toán học</translation>
 <translation id="8327538105740918488">Bạn có thể thay đổi mật khẩu này bất cứ lúc nào về sau. Mật khẩu này sẽ được lưu vào <ph name="GOOGLE_PASSWORD_MANAGER" /> cho <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Các chế độ cài đặt nội dung và quyền</translation>

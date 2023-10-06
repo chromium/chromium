@@ -1808,6 +1808,7 @@
 <translation id="2398546389094871088">При использовании функции Powerwash профили eSIM не удаляются. Это можно сделать вручную в разделе <ph name="LINK_BEGIN" />настроек для мобильных устройств<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Уведомления включены</translation>
 <translation id="2399939490305346086">Учетные данные электронного ключа</translation>
+<translation id="240006516586367791">Управление медиаконтентом</translation>
 <translation id="2400664245143453337">Требуется немедленно обновить ОС</translation>
 <translation id="2402226831639195063">Тональные символы</translation>
 <translation id="2405887402346713222">Серийные номера устройства и компонентов</translation>
@@ -4225,9 +4226,6 @@
 <translation id="4349828822184870497">Полезно</translation>
 <translation id="4350230709416545141">Не сообщать сайту <ph name="HOST" />, где я нахожусь</translation>
 <translation id="4350782034419308508">Фраза "Окей, Google"</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Для удобства пользователей <ph name="DEVICE_OS" /> собирает данные об аппаратном обеспечении устройств и передает эту информацию компании Google, чтобы определять подходящие обновления. Вы также можете разрешить Google использовать эти данные в других целях, например для улучшения <ph name="DEVICE_OS" /> и предоставления поддержки.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Чтобы посмотреть, какие сведения отправляются в Google для фильтрации обновлений и для каких ещё целей можно передавать нам данные, войдите в аккаунт на этом устройстве и изучите раздел CHROMEOSFLEX_HARDWARE_INFO на странице chrome://system.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Чтобы узнать больше о том, какую информацию <ph name="DEVICE_OS" /> может отправлять в Google и как она будет использоваться, перейдите на страницу g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Для управления установленными и транслируемыми приложениями откройте приложение "<ph name="APP_NAME" />".</translation>
 <translation id="4354073718307267720">Запрашивать для сайтов разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры</translation>
 <translation id="4354344420232759511">Здесь появятся сайты, на которые вы заходили.</translation>
@@ -8603,6 +8601,7 @@
 <translation id="793531125873261495">Не удалось скачать виртуальную машину. Повторите попытку.</translation>
 <translation id="7935451262452051102">Выполнено: <ph name="PERCENT" /> %</translation>
 <translation id="7937809006412909895">Сбор данных диагностики…</translation>
+<translation id="7938881824185772026">Лаборатория Google</translation>
 <translation id="7939062555109487992">Расширенные настройки</translation>
 <translation id="793923212791838">Ваше устройство нельзя использовать на этом сайте</translation>
 <translation id="7939328347457537652">Управление сертификатами устройства</translation>
@@ -9092,7 +9091,7 @@
 <translation id="8324784016256120271">Сайты могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например, для показа персонализированной рекламы.</translation>
 <translation id="8325413836429495820">Запретить сайтам просматривать буфер обмена</translation>
 <translation id="8326478304147373412">PKCS #7, цепочка сертификатов</translation>
-<translation id="832684045355488000">Установлена новая версия <ph name="NAME" /></translation>
+<translation id="832684045355488000">Вы перешли на <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Математический шрифт</translation>
 <translation id="8327538105740918488">Этот пароль можно изменить в любое время. Он будет сохранен для аккаунта <ph name="EMAIL" /> здесь: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="8327676037044516220">Разрешения и настройки контента</translation>

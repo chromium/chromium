@@ -1807,6 +1807,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2398546389094871088">Rularea funcției Powerwash a dispozitivului nu va elimina profilurile eSIM. Accesează <ph name="LINK_BEGIN" />Setările pentru date mobile<ph name="LINK_END" /> ca să elimini manual aceste profiluri.</translation>
 <translation id="2399699884460174994">Notificări activate</translation>
 <translation id="2399939490305346086">Datele de conectare ale cheii de securitate</translation>
+<translation id="240006516586367791">Comenzi media</translation>
 <translation id="2400664245143453337">Este necesară actualizarea imediată</translation>
 <translation id="2402226831639195063">Tonuri</translation>
 <translation id="2405887402346713222">Numere de serie ale dispozitivului și ale componentelor</translation>
@@ -4224,9 +4225,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4349828822184870497">Utile</translation>
 <translation id="4350230709416545141">Blochează întotdeauna accesul <ph name="HOST" /> la locație</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Pentru a asigura o experiență optimă, <ph name="DEVICE_OS" /> colectează date despre hardware de la dispozitive și le trimite la Google pentru a stabili ce actualizări vor fi livrate. Opțional, poți permite ca Google să folosească aceste date și în alte scopuri, cum ar fi asistență și îmbunătățiri ale experienței și serviciului <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Conectează-te pe acest dispozitiv și accesează secțiunea CHROMEOSFLEX_HARDWARE_INFO de pe chrome://system pentru a vedea datele trimise la Google pentru filtrarea actualizărilor, precum și alte situații în care poți alege să trimiți date la Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Pentru detalii suplimentare despre datele pe care <ph name="DEVICE_OS" /> le poate trimite la Google și cum sunt folosite acestea, accesează g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Accesează aplicația <ph name="APP_NAME" /> pentru a gestiona aplicațiile instalate și redate în stream</translation>
 <translation id="4354073718307267720">Anunță-mă dacă un site vrea să creeze o hartă 3D a lucrurilor din jur sau să urmărească poziția camerei video</translation>
 <translation id="4354344420232759511">Site-urile pe care le accesezi apar aici</translation>
@@ -8599,6 +8597,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="793531125873261495">A apărut o eroare la descărcarea mașinii virtuale. Încearcă din nou.</translation>
 <translation id="7935451262452051102">S-a finalizat <ph name="PERCENT" />%</translation>
 <translation id="7937809006412909895">Se colectează date de diagnosticare</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Opțiuni avansate</translation>
 <translation id="793923212791838">Dispozitivul nu poate fi folosit cu acest site</translation>
 <translation id="7939328347457537652">Gestionează certificatele dispozitivelor</translation>

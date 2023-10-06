@@ -217,6 +217,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="218608176142494674">Udostępnianie</translation>
 <translation id="2194856509914051091">Istotne kwestie</translation>
 <translation id="2200113223741723867">Zarządzanie udostępnianiem danych o korzystaniu</translation>
+<translation id="22091350895006575">Dodaj nazwę użytkownika</translation>
 <translation id="221494669172414749">Otwarcie Chrome bez blokady profilu spowoduje usunięcie z samochodu zapisanych haseł i form płatności. Blokada profilu zapewnia bezpieczeństwo tych danych.</translation>
 <translation id="2218567645332692482">Uaktualnij elementy nawigacyjne do protokołu HTTPS i wyświetlaj ostrzeżenia przed wczytaniem stron, które go nie obsługują</translation>
 <translation id="2227444325776770048">Kontynuuj jako <ph name="USER_FULL_NAME" /></translation>
@@ -244,6 +245,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="235789365079050412">Polityka prywatności Google</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2362083820973145409">Zalogowano jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otwiera ustawienia.</translation>
+<translation id="2364539095045928896">Przycisk Zamknij służący do zamykania informacji na temat ochrony prywatności w centrum statystyk strony.</translation>
 <translation id="2386938421315164605">Ukrywaj i odkrywaj tematy</translation>
 <translation id="2390510615457643724">Czy chcesz ponownie pobrać plik <ph name="FILE_NAME" /> <ph name="FILE_SIZE" />?</translation>
 <translation id="2394602618534698961">Tutaj pojawią się pobrane pliki</translation>
@@ -312,6 +314,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="2718846868787000099">Odwiedzane witryny będą miały dostęp do Twoich ustawień, by mogły pokazywać zawartość w wybranym przez Ciebie języku</translation>
 <translation id="2722945394406572875">Okno piaskownicy prywatności zostało zamknięte</translation>
 <translation id="2723001399770238859">dźwięk</translation>
+<translation id="2760805590727089264">MM/RR</translation>
 <translation id="2760989362628427051">Włącz ciemny motyw, gdy urządzenie ma włączony ciemny motyw lub Oszczędzanie baterii</translation>
 <translation id="2762000892062317888">przed chwilą</translation>
 <translation id="276969039800130567">Zalogowano jako <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -835,6 +838,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5458366071038729214">Tu znajdziesz witryny, które obserwujesz</translation>
 <translation id="5468068603361015296">Czy mimo wszystko chcesz pobrać plik <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Otwórz w aplikacji z mapami</translation>
+<translation id="5486841595534124508">Logo informacji na temat ochrony prywatności w centrum statystyk strony, które przekierowuje na stronę Moja aktywność.</translation>
 <translation id="5487521232677179737">Wyczyść dane</translation>
 <translation id="5492637351392383067">Szyfrowanie na urządzeniu</translation>
 <translation id="5514904542973294328">Wyłączone przez administratora tego urządzenia</translation>
@@ -951,6 +955,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="6112702117600201073">Odświeżam stronę</translation>
 <translation id="6122831415929794347">Wyłączyć Bezpieczne przeglądanie?</translation>
 <translation id="6127379762771434464">Element został usunięty</translation>
+<translation id="6130303040046284160">Minimalizuj kartę</translation>
 <translation id="6137022273846704445">Język aplikacji <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Tu możesz zmienić ustawienia witryn</translation>
 <translation id="6140709049082532940">Silniejsza ochrona:</translation>
@@ -1253,6 +1258,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7588219262685291874">Włącz ciemny motyw, gdy na urządzeniu jest aktywne oszczędzanie baterii</translation>
 <translation id="7594687499944811403">Pozwól stronie <ph name="EMBEDDED_ORIGIN" /> sprawdzać Twoją tożsamość, gdy korzystasz ze strony <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">System operacyjny</translation>
+<translation id="7603168929588204083">Nieprawidłowa data</translation>
 <translation id="7605594153474022051">Synchronizacja nie działa</translation>
 <translation id="7612619742409846846">Jesteś zalogowany w Google jako</translation>
 <translation id="7612989789287281429">Loguję Cię…</translation>
@@ -1301,6 +1307,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7810647596859435254">Otwórz za pomocą…</translation>
 <translation id="7815484226266492798">Długi zrzut ekranu</translation>
 <translation id="7822705602465980873">Gdy się zalogujesz, dane te będą powiązane z Twoim kontem Google, co pozwoli chronić Cię we wszystkich usługach Google. Na przykład w razie incydentu związanego z bezpieczeństwem zwiększy się ochrona w Gmailu.</translation>
+<translation id="782705168687182233">Twoja aktywność jest zapisywana na <ph name="BEGIN_LINK" />koncie Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Twój komputer chce zarejestrować to urządzenie, aby umożliwić Ci zalogowanie się na stronie</translation>
 <translation id="7844171778363018843">Nie wybrano danych do synchronizacji</translation>
 <translation id="7846296061357476882">Usługi Google</translation>
@@ -1393,6 +1400,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8223642481677794647">Menu karty kanału</translation>
 <translation id="8236097722223016103">Dodaj do zakładek</translation>
 <translation id="8237871086242677046">Plansza dolna ze statystykami strony</translation>
+<translation id="8243077599929149377">Dodaj nazwę użytkownika</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
 <translation id="8255617931166444521">Witryny mogą używać plików cookie tylko do śledzenia Twojej aktywności związanej z przeglądaniem tych witryn</translation>
 <translation id="8259179246279078674">Wstępnie wczytywane strony są zaszyfrowane, dlatego Google nie dowie się niczego o ich zawartości. Serwery Google wiedzą, jakie witryny są wstępnie wczytywane w trybie prywatnym. Te informacje są używane tylko w celu wczytywania stron i nie są łączone z innymi informacjami na Twoim koncie Google.</translation>

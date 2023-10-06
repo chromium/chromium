@@ -1809,6 +1809,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2398546389094871088">Izvršavanjem powerwasha na uređaju neće se ukloniti eSIM profili. Otvorite <ph name="LINK_BEGIN" />Mobilne postavke<ph name="LINK_END" /> da biste ručno uklonili te profile.</translation>
 <translation id="2399699884460174994">Obavijesti uključene</translation>
 <translation id="2399939490305346086">Podaci za prijavu na sigurnosnom ključu</translation>
+<translation id="240006516586367791">Medijske kontrole</translation>
 <translation id="2400664245143453337">Odmah je potrebno ažuriranje</translation>
 <translation id="2402226831639195063">Tonovi</translation>
 <translation id="2405887402346713222">Serijski brojevi uređaja i komponenti</translation>
@@ -4226,9 +4227,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4349828822184870497">Korisno</translation>
 <translation id="4350230709416545141">Uvijek blokirajte pristup svojoj lokaciji za <ph name="HOST" /></translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Sustav <ph name="DEVICE_OS" /> prikuplja hardverske podatke o uređajima i dijeli ih s Googleom kako bi odredio koja će ažuriranja provesti i time vam omogućio najbolji doživljaj. Googleu možete dopustiti upotrebu tih podataka i u dodatne svrhe kao što su podrška i poboljšanja za doživljaj i uslugu sustava <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Možete se prijaviti na ovom uređaju i posjetiti odjeljak CHROMEOSFLEX_HARDWARE_INFO na stranici chrome://system da biste vidjeli koji se podaci šalju Googleu radi filtriranja ažuriranja te druge situacije u kojima odaberete dijeliti podatke s Googleom.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Da biste saznali više o podacima koje <ph name="DEVICE_OS" /> može dijeliti s Googleom te načinu njihovog korištenja, posjetite stranicu g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Otvorite aplikaciju <ph name="APP_NAME" /> kako biste upravljali instaliranim aplikacijama i aplikacijama za streaming</translation>
 <translation id="4354073718307267720">Prikaži upit kada web-lokacija želi izraditi 3D kartu vašeg okruženja ili pratiti položaj kamere</translation>
 <translation id="4354344420232759511">Web-lokacije koje posjetite pojavit će se ovdje</translation>
@@ -8600,6 +8598,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="793531125873261495">Došlo je do pogreške prilikom preuzimanja virtualnog računala. Pokušajte ponovo.</translation>
 <translation id="7935451262452051102">Dovršeno: <ph name="PERCENT" />%</translation>
 <translation id="7937809006412909895">Prikupljanje dijagnostičkih podataka</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Napredne opcije</translation>
 <translation id="793923212791838">Uređaj se ne može upotrebljavati s ovom web-lokacijom</translation>
 <translation id="7939328347457537652">Upravljanje certifikatima uređaja</translation>
@@ -9089,7 +9088,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8324784016256120271">Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledavanja na različitim web-lokacijama, primjerice radi prilagođavanja oglasa</translation>
 <translation id="8325413836429495820">Nije dopušten pregled međuspremnika</translation>
 <translation id="8326478304147373412">PKCS br. 7, lanac certifikata</translation>
-<translation id="832684045355488000">Nadogradnja na <ph name="NAME" /> je gotova</translation>
+<translation id="832684045355488000">Nadogradili ste na <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Matematički font</translation>
 <translation id="8327538105740918488">Kasnije uvijek možete promijeniti tu zaporku. Spremit će se u <ph name="GOOGLE_PASSWORD_MANAGER" /> za <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Postavke dopuštenja i sadržaja</translation>
