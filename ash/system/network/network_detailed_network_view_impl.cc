@@ -40,13 +40,16 @@ using chromeos::network_config::mojom::InhibitReason;
 constexpr auto kMainContainerMargins = gfx::Insets::TLBR(2, 0, 0, 0);
 constexpr auto kTopContainerBorder = gfx::Insets::TLBR(4, 0, 4, 4);
 
-// The following getter methods should only be used for `NetworkType::kWiFi` and
-// `NetworkType::kMobile` types otherwise a crash will occur.
+// The following getter methods should only be used for `NetworkType::kWiFi`,
+// `NetworkType::kMobile`, or `NetworkType::kCellular` types otherwise a crash
+// will occur.
 std::u16string GetLabelForWifiAndMobileNetwork(NetworkType type) {
   switch (type) {
     case NetworkType::kWiFi:
       return l10n_util::GetStringUTF16(
           IDS_ASH_QUICK_SETTINGS_JOIN_WIFI_NETWORK);
+    case NetworkType::kCellular:
+      [[fallthrough]];
     case NetworkType::kMobile:
       return l10n_util::GetStringUTF16(IDS_ASH_QUICK_SETTINGS_ADD_ESIM);
     default:
@@ -58,6 +61,8 @@ std::u16string GetTooltipForWifiAndMobileNetwork(NetworkType type) {
   switch (type) {
     case NetworkType::kWiFi:
       return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_OTHER_WIFI);
+    case NetworkType::kCellular:
+      [[fallthrough]];
     case NetworkType::kMobile:
       return l10n_util::GetStringUTF16(GetAddESimTooltipMessageId());
     default:
@@ -69,6 +74,8 @@ int GetViewIDForWifiAndMobileNetwork(NetworkType type) {
   switch (type) {
     case NetworkType::kWiFi:
       return VIEW_ID_JOIN_WIFI_NETWORK_ENTRY;
+    case NetworkType::kCellular:
+      [[fallthrough]];
     case NetworkType::kMobile:
       return VIEW_ID_ADD_ESIM_ENTRY;
     default:
@@ -123,7 +130,8 @@ NetworkListNetworkItemView* NetworkDetailedNetworkViewImpl::AddNetworkListItem(
 
 HoverHighlightView* NetworkDetailedNetworkViewImpl::AddConfigureNetworkEntry(
     NetworkType type) {
-  CHECK(type == NetworkType::kWiFi || type == NetworkType::kMobile);
+  CHECK(type == NetworkType::kWiFi || type == NetworkType::kMobile ||
+        type == NetworkType::kCellular);
   HoverHighlightView* entry = GetNetworkList(type)->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
   entry->SetID(GetViewIDForWifiAndMobileNetwork(type));

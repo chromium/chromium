@@ -1004,6 +1004,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonQuickAppAccessEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonWithTextEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHotspotEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInstantHotspotRebrandEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputNoiseCancellationUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInstantTetheringBackgroundAdvertisingSupported();

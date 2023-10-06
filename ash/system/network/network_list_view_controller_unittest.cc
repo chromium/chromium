@@ -172,8 +172,9 @@ class FakeNetworkDetailedNetworkViewDelegate
 
 }  // namespace
 
-class NetworkListViewControllerTest : public AshTestBase,
-                                      public testing::WithParamInterface<bool> {
+class NetworkListViewControllerTest
+    : public AshTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   NetworkListViewControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
@@ -183,11 +184,20 @@ class NetworkListViewControllerTest : public AshTestBase,
   ~NetworkListViewControllerTest() override = default;
 
   void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (IsQsRevampEnabled()) {
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
+      enabled_features.push_back(features::kQsRevamp);
     } else {
-      feature_list_.InitAndDisableFeature(features::kQsRevamp);
+      disabled_features.push_back(features::kQsRevamp);
     }
+    if (IsInstantHotspotRebrandEnabled()) {
+      enabled_features.push_back(features::kInstantHotspotRebrand);
+    } else {
+      disabled_features.push_back(features::kInstantHotspotRebrand);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
     AshTestBase::SetUp();
 
     cros_network_ = std::make_unique<FakeCrosNetworkConfig>();
@@ -215,7 +225,9 @@ class NetworkListViewControllerTest : public AshTestBase,
             network_detailed_network_view_);
   }
 
-  bool IsQsRevampEnabled() { return GetParam(); }
+  bool IsQsRevampEnabled() { return std::get<0>(GetParam()); }
+
+  bool IsInstantHotspotRebrandEnabled() { return std::get<1>(GetParam()); }
 
   void TearDown() override {
     network_list_view_controller_impl_.reset();
@@ -554,9 +566,9 @@ class NetworkListViewControllerTest : public AshTestBase,
       network_list_view_controller_impl_;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp,
+INSTANTIATE_TEST_SUITE_P(All,
                          NetworkListViewControllerTest,
-                         testing::Bool() /* IsQsRevampEnabled() */);
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 TEST_P(NetworkListViewControllerTest, MobileDataSectionIsShown) {
   EXPECT_THAT(GetMobileSubHeader(), IsNull());
@@ -872,9 +884,19 @@ TEST_P(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
       CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
           kTetherName, NetworkType::kTether, ConnectionStateType::kConnected));
 
-  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                           /*mobile_network_count=*/1,
-                           /*wifi_network_count=*/0);
+  if (IsInstantHotspotRebrandEnabled() && IsQsRevampEnabled()) {
+    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                             /*mobile_network_count=*/0,
+                             /*wifi_network_count=*/0);
+  } else {
+    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                             /*mobile_network_count=*/1,
+                             /*wifi_network_count=*/0);
+  }
+
+  if (IsInstantHotspotRebrandEnabled()) {
+    return;
+  }
   if (IsQsRevampEnabled()) {
     CheckNetworkListItem(NetworkType::kTether, /*index=*/0u,
                          /*guid=*/kTetherName);

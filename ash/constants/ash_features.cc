@@ -3489,6 +3489,11 @@ bool IsHotspotEnabled() {
   return base::FeatureList::IsEnabled(kHotspot);
 }
 
+bool IsInstantHotspotRebrandEnabled() {
+  return base::FeatureList::IsEnabled(kInstantHotspotRebrand) &&
+         base::FeatureList::IsEnabled(kQsRevamp);
+}
+
 bool IsScreenSaverDurationEnabled() {
   return base::FeatureList::IsEnabled(kScreenSaverDuration);
 }

@@ -265,8 +265,9 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // for: #addr-of
   RAW_PTR_EXCLUSION HoverHighlightView* add_esim_entry_ = nullptr;
 
-  bool has_mobile_networks_;
+  bool has_cellular_networks_;
   bool has_wifi_networks_;
+  bool has_tether_networks_;
   bool is_mobile_network_enabled_;
   bool is_wifi_enabled_;
   std::string connected_vpn_guid_;
