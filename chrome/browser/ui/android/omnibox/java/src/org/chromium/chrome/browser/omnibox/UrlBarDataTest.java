@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.url.GURL;
 
 /**
  * Unit tests for {@link UrlBarData}.
@@ -21,9 +22,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class UrlBarDataTest {
     @Test
     public void forUrlAndText_nonHttpOrHttps_DisplayTextDiffersFromUrl() {
-        UrlBarData data =
-                UrlBarData.forUrlAndText("data:text/html,blah,blah", "data:text/html,blah", "BLAH");
-        Assert.assertEquals("data:text/html,blah,blah", data.url);
+        var url = new GURL("data:text/html,blah,blah");
+        UrlBarData data = UrlBarData.forUrlAndText(url, "data:text/html,blah", "BLAH");
+        Assert.assertEquals(url, data.url);
         Assert.assertEquals("data:text/html,blah", data.displayText);
         Assert.assertEquals(0, data.originStartIndex);
         // Ensure that the end index is the length of the display text and not the URL.
@@ -32,38 +33,37 @@ public class UrlBarDataTest {
 
     @Test
     public void forUrlAndText_aboutUri_NoSlashes() {
-        final String aboutUrl = "about:blank#verylongurl.totallylegit.notsuspicious.url.com";
-        UrlBarData data = UrlBarData.forUrlAndText(aboutUrl, aboutUrl);
+        var aboutUrl = new GURL("about:blank#verylongurl.totallylegit.notsuspicious.url.com");
+        UrlBarData data = UrlBarData.forUrlAndText(aboutUrl, aboutUrl.getSpec());
         Assert.assertEquals(aboutUrl, data.url);
-        Assert.assertEquals(aboutUrl, data.displayText);
+        Assert.assertEquals(aboutUrl.getSpec(), data.displayText);
         Assert.assertEquals(0, data.originStartIndex);
         // Ensure that the end index is the length of the display text and not the URL.
-        Assert.assertEquals(aboutUrl.length(), data.originEndIndex);
+        Assert.assertEquals(aboutUrl.getSpec().length(), data.originEndIndex);
     }
 
     @Test
     public void forUrlAndText_aboutUri_WithSlashes() {
-        final String aboutUrl = "about://blank#verylongurl.totallylegit.notsuspicious.url.com";
-        UrlBarData data = UrlBarData.forUrlAndText(aboutUrl, aboutUrl);
+        var aboutUrl = new GURL("about://blank#verylongurl.totallylegit.notsuspicious.url.com");
+        UrlBarData data = UrlBarData.forUrlAndText(aboutUrl, aboutUrl.getSpec());
         Assert.assertEquals(aboutUrl, data.url);
-        Assert.assertEquals(aboutUrl, data.displayText);
+        Assert.assertEquals(aboutUrl.getSpec(), data.displayText);
         Assert.assertEquals(0, data.originStartIndex);
         // Ensure that the end index is the length of the display text and not the URL.
-        Assert.assertEquals(aboutUrl.length(), data.originEndIndex);
+        Assert.assertEquals(aboutUrl.getSpec().length(), data.originEndIndex);
     }
 
     @Test
     public void originSpans() {
         verifyOriginSpan("", null, "");
-        verifyOriginSpan("https:", null, "https:");
         verifyOriginSpan("about:blank", null, "about:blank");
 
-        verifyOriginSpan("chrome://flags", null, "chrome://flags");
+        verifyOriginSpan("chrome://flags/", null, "chrome://flags");
         verifyOriginSpan("chrome://flags/?egads", null, "chrome://flags/?egads");
 
-        verifyOriginSpan("www.google.com", null, "www.google.com");
-        verifyOriginSpan("www.google.com", null, "www.google.com/");
-        verifyOriginSpan("www.google.com", "/?q=blah", "www.google.com/?q=blah");
+        verifyOriginSpan("http://www.google.com", null, "http://www.google.com");
+        verifyOriginSpan("http://www.google.com", null, "http://www.google.com/");
+        verifyOriginSpan("http://www.google.com", "/?q=blah", "http://www.google.com/?q=blah");
 
         verifyOriginSpan("https://www.google.com", null, "https://www.google.com");
         verifyOriginSpan("https://www.google.com", null, "https://www.google.com/");
@@ -101,7 +101,7 @@ public class UrlBarDataTest {
     // http://crbug/1485446
     @Test
     public void forUrlAndText_missingDisplayTextSchemeDoesNotConfuseHosts() {
-        var url = "https://www.a.com/https://bbb.com/i.htm";
+        var url = new GURL("https://www.a.com/https://bbb.com/i.htm");
         var displayText = "a.com/https://bbb.com/i.htm";
         UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
         Assert.assertEquals(url, data.url);
@@ -113,7 +113,7 @@ public class UrlBarDataTest {
     // http://crbug/1485446
     @Test
     public void forUrlAndText_missingDisplayTextSchemeDoesNotConfusePaths() {
-        var url = "https://www.a.com/?k=v/bbb.com/i.htm";
+        var url = new GURL("https://www.a.com/?k=v/bbb.com/i.htm");
         var displayText = "a.com/?k=v/bbb.com/i.htm";
         UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
         Assert.assertEquals(url, data.url);
@@ -124,7 +124,7 @@ public class UrlBarDataTest {
 
     @Test
     public void forUrlAndText_portNumberDoesNotConfuseHostForScheme() {
-        var url = "https://https:1234/abcd";
+        var url = new GURL("https://https:1234/abcd");
         var displayText = "https:1234/abcd";
         UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
         Assert.assertEquals(url, data.url);
@@ -135,7 +135,7 @@ public class UrlBarDataTest {
 
     @Test
     public void forUrlAndText_doesNotExtractPathFromUnsupportedSchemes() {
-        var url = "data:google.com/test";
+        var url = new GURL("data:google.com/test");
         var displayText = "data:google.com/test";
         UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
         Assert.assertEquals(url, data.url);
@@ -146,7 +146,7 @@ public class UrlBarDataTest {
 
     @Test
     public void forUrlAndText_lookupPathInEligibleBlobScheme() {
-        var url = "blob:https://www.a.com/1234-5678";
+        var url = new GURL("blob:https://www.a.com/1234-5678");
         var displayText = "blob:https://www.a.com/1234-5678";
         UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
         Assert.assertEquals(url, data.url);
@@ -157,7 +157,7 @@ public class UrlBarDataTest {
 
     @Test
     public void forUrlAndText_skipPathInNonEligibleBlobScheme() {
-        var url = "blob:object://www.a.com/1234-5678";
+        var url = new GURL("blob:object://www.a.com/1234-5678");
         var displayText = "blob:object://www.a.com/1234-5678";
         UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
         Assert.assertEquals(url, data.url);
@@ -168,7 +168,7 @@ public class UrlBarDataTest {
 
     @Test
     public void forUrlAndText_misleadingBlobUrlHandledCorrectly() {
-        var url = "blob:https:///";
+        var url = new GURL("blob:https:///");
         // Pick embedded scheme that is eligible for host/path split.
         var displayText = "blob:https:///";
         UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
@@ -178,15 +178,52 @@ public class UrlBarDataTest {
         Assert.assertEquals("blob:https:///".length(), data.originEndIndex);
     }
 
+    @Test
+    public void forUrlAndText_maliciousHostName() {
+        // Captures a corner case variant, where DNS resolves "https" host.
+        var url = new GURL("https://https:1234/https://a.com/");
+        var displayText = "https:1234/https://a.com/";
+        UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
+        Assert.assertEquals(url, data.url);
+        Assert.assertEquals(displayText, data.displayText);
+        Assert.assertEquals(0, data.originStartIndex);
+        Assert.assertEquals("https:1234".length(), data.originEndIndex);
+    }
+
+    @Test
+    public void forUrlAndText_invalidUrl() {
+        var displayText = "example.com/https://www.google.com";
+        var url = new GURL(displayText); // invalid.
+        Assert.assertFalse(url.isValid());
+        UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
+        Assert.assertEquals(null, data.url);
+        Assert.assertEquals(displayText, data.displayText);
+        Assert.assertEquals(0, data.originStartIndex);
+        Assert.assertEquals(0, data.originEndIndex);
+    }
+
+    @Test
+    public void forUrlAndText_emptyUrl() {
+        var displayText = "example.com/https://www.google.com";
+        var url = GURL.emptyGURL();
+        Assert.assertFalse(url.isValid());
+        UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
+        Assert.assertEquals(null, data.url);
+        Assert.assertEquals(displayText, data.displayText);
+        Assert.assertEquals(0, data.originStartIndex);
+        Assert.assertEquals(0, data.originEndIndex);
+    }
+
     private void verifyOriginSpan(
             String expectedOrigin, @Nullable String expectedOriginSuffix, String url) {
-        UrlBarData urlBarData = UrlBarData.forUrl(url);
+        UrlBarData urlBarData = UrlBarData.forUrl(new GURL(url));
         String displayText =
                 urlBarData.displayText == null ? "" : urlBarData.displayText.toString();
         Assert.assertEquals(expectedOriginSuffix == null ? expectedOrigin
                                                          : expectedOrigin + expectedOriginSuffix,
                 displayText);
-        Assert.assertEquals("Origina start index, end index did not generate expected origin",
+        Assert.assertEquals(
+                "Original start index, end index did not generate expected origin",
                 expectedOrigin,
                 displayText.substring(urlBarData.originStartIndex, urlBarData.originEndIndex));
     }

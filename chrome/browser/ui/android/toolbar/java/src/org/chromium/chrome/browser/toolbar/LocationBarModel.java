@@ -377,12 +377,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             String url = gurl.getSpec().trim();
             boolean isOfflinePage = isOfflinePage();
             String formattedUrl = getFormattedFullUrl();
-            if (mTab.isFrozen()) return buildUrlBarData(url, isOfflinePage, formattedUrl);
+            if (mTab.isFrozen()) return buildUrlBarData(gurl, isOfflinePage, formattedUrl);
 
             if (DomDistillerUrlUtils.isDistilledPage(url)) {
                 GURL originalUrl =
                         DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(new GURL(url));
-                return buildUrlBarData(mUrlFormatter.format(originalUrl), isOfflinePage);
+                return buildUrlBarData(originalUrl, isOfflinePage);
             }
 
             if (isOfflinePage) {
@@ -391,31 +391,31 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
                 // Clear the editing text for untrusted offline pages.
                 if (!mOfflineStatus.isShowingTrustedOfflinePage(mTab)) {
-                    return buildUrlBarData(url, true, formattedUrl, "");
+                    return buildUrlBarData(gurl, true, formattedUrl, "");
                 }
 
-                return buildUrlBarData(url, true, formattedUrl);
+                return buildUrlBarData(gurl, true, formattedUrl);
             }
 
             String urlForDisplay = getUrlForDisplay();
             if (!urlForDisplay.equals(formattedUrl)) {
-                return buildUrlBarData(url, false, urlForDisplay, formattedUrl);
+                return buildUrlBarData(gurl, false, urlForDisplay, formattedUrl);
             }
 
-            return buildUrlBarData(url, false, formattedUrl);
+            return buildUrlBarData(gurl, false, formattedUrl);
         }
     }
 
-    private UrlBarData buildUrlBarData(String url, boolean isOfflinePage) {
-        return buildUrlBarData(url, isOfflinePage, url, url);
+    private UrlBarData buildUrlBarData(GURL url, boolean isOfflinePage) {
+        return buildUrlBarData(url, isOfflinePage, url.getSpec());
     }
 
-    private UrlBarData buildUrlBarData(String url, boolean isOfflinePage, String displayText) {
+    private UrlBarData buildUrlBarData(GURL url, boolean isOfflinePage, String displayText) {
         return buildUrlBarData(url, isOfflinePage, displayText, displayText);
     }
 
     private UrlBarData buildUrlBarData(
-            String url, boolean isOfflinePage, String displayText, String editingText) {
+            GURL url, boolean isOfflinePage, String displayText, String editingText) {
         SpannableStringBuilder spannableDisplayText = null;
         if (mNativeLocationBarModelAndroid != 0 && displayText != null && displayText.length() > 0
                 && shouldEmphasizeUrl()) {
@@ -435,8 +435,14 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             AutocompleteSchemeClassifier autocompleteSchemeClassifier;
             int securityLevel = getSecurityLevel(getTab(), isOfflinePage);
             SpannableDisplayTextCacheKey cacheKey =
-                    new SpannableDisplayTextCacheKey(url, displayText, securityLevel,
-                            nonEmphasizedColor, emphasizedColor, dangerColor, secureColor);
+                    new SpannableDisplayTextCacheKey(
+                            url.getSpec(),
+                            displayText,
+                            securityLevel,
+                            nonEmphasizedColor,
+                            emphasizedColor,
+                            dangerColor,
+                            secureColor);
             SpannableStringBuilder cachedSpannableDisplayText =
                     mSpannableDisplayTextCache.get(cacheKey);
             autocompleteSchemeClassifier = mChromeAutocompleteSchemeClassifier;

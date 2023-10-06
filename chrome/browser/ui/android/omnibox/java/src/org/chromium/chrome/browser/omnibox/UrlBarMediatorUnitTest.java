@@ -29,6 +29,7 @@ import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisColorSpan
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
+import org.chromium.url.GURL;
 
 /**
  * Unit tests for {@link UrlBarMediator}.
@@ -62,12 +63,27 @@ public class UrlBarMediatorUnitTest {
 
     @Test
     public void setUrlData_SendsUpdates() {
-        UrlBarData baseData = UrlBarData.create(
-                "http://www.example.com", spannable("www.example.com"), 0, 14, "Blah");
-        UrlBarData dataWithDifferentDisplay = UrlBarData.create(
-                "http://www.example.com", spannable("www.foo.com"), 0, 11, "Blah");
-        UrlBarData dataWithDifferentEditing = UrlBarData.create(
-                "http://www.example.com", spannable("www.example.com"), 0, 14, "Bar");
+        UrlBarData baseData =
+                UrlBarData.create(
+                        new GURL("http://www.example.com"),
+                        spannable("www.example.com"),
+                        0,
+                        14,
+                        "Blah");
+        UrlBarData dataWithDifferentDisplay =
+                UrlBarData.create(
+                        new GURL("http://www.example.com"),
+                        spannable("www.foo.com"),
+                        0,
+                        11,
+                        "Blah");
+        UrlBarData dataWithDifferentEditing =
+                UrlBarData.create(
+                        new GURL("http://www.example.com"),
+                        spannable("www.example.com"),
+                        0,
+                        14,
+                        "Bar");
 
         Assert.assertTrue(mMediator.setUrlBarData(baseData, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
 
@@ -89,10 +105,20 @@ public class UrlBarMediatorUnitTest {
 
     @Test
     public void setUrlData_PreventsDuplicateUpdates() {
-        UrlBarData data1 = UrlBarData.create(
-                "http://www.example.com", spannable("www.example.com"), 0, 0, "Blah");
-        UrlBarData data2 = UrlBarData.create(
-                "http://www.example.com", spannable("www.example.com"), 0, 0, "Blah");
+        UrlBarData data1 =
+                UrlBarData.create(
+                        new GURL("http://www.example.com"),
+                        spannable("www.example.com"),
+                        0,
+                        0,
+                        "Blah");
+        UrlBarData data2 =
+                UrlBarData.create(
+                        new GURL("http://www.example.com"),
+                        spannable("www.example.com"),
+                        0,
+                        0,
+                        "Blah");
 
         Assert.assertTrue(mMediator.setUrlBarData(data1, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
 
@@ -110,8 +136,13 @@ public class UrlBarMediatorUnitTest {
     @Test
     public void setUrlData_ScrollStateForDataUrl() {
         String displayText = "data:text/html,blah";
-        UrlBarData data = UrlBarData.create(
-                "data:text/html,blah,blah", spannable(displayText), 0, displayText.length(), null);
+        UrlBarData data =
+                UrlBarData.create(
+                        new GURL("data:text/html,blah,blah"),
+                        spannable(displayText),
+                        0,
+                        displayText.length(),
+                        null);
         Assert.assertTrue(mMediator.setUrlBarData(data, UrlBar.ScrollType.SCROLL_TO_TLD,
                 UrlBarCoordinator.SelectionState.SELECT_ALL));
 
@@ -123,8 +154,13 @@ public class UrlBarMediatorUnitTest {
     @Test
     public void setUrlData_ScrollStateForAboutUrl() {
         String displayText = "about:blank#verylongurl.totallylegit.notsuspicious.url.com";
-        UrlBarData data = UrlBarData.create(
-                displayText, spannable(displayText), 0, displayText.length(), null);
+        UrlBarData data =
+                UrlBarData.create(
+                        new GURL(displayText),
+                        spannable(displayText),
+                        0,
+                        displayText.length(),
+                        null);
         Assert.assertTrue(mMediator.setUrlBarData(data, UrlBar.ScrollType.SCROLL_TO_TLD,
                 UrlBarCoordinator.SelectionState.SELECT_ALL));
 
@@ -239,8 +275,10 @@ public class UrlBarMediatorUnitTest {
         String url = "https://www.test.com/blah";
         String displayText = "test.com/blah";
         String editingText = "www.test.com/blah";
-        mMediator.setUrlBarData(UrlBarData.create(url, displayText, 0, 12, editingText),
-                UrlBar.ScrollType.NO_SCROLL, UrlBarCoordinator.SelectionState.SELECT_ALL);
+        mMediator.setUrlBarData(
+                UrlBarData.create(new GURL(url), displayText, 0, 12, editingText),
+                UrlBar.ScrollType.NO_SCROLL,
+                UrlBarCoordinator.SelectionState.SELECT_ALL);
 
         // Replacement is only valid if selecting the full text.
         Assert.assertNull(mMediator.getReplacementCutCopyText(editingText, 1, 2));

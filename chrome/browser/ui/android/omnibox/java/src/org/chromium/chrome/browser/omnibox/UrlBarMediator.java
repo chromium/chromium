@@ -8,7 +8,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.text.Spanned;
 import android.text.TextUtils;
 
@@ -29,8 +28,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,10 +100,8 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         // Do not scroll to the end of the host for URLs such as data:, javascript:, etc...
         if (data.url != null && data.displayText != null
                 && data.originEndIndex == data.displayText.length()) {
-            Uri uri = Uri.parse(data.url);
-            String scheme = uri.getScheme();
-            if (!TextUtils.isEmpty(scheme)
-                    && UrlBarData.UNSUPPORTED_SCHEMES_TO_SPLIT.contains(scheme)) {
+            String scheme = data.url.getScheme();
+            if (!TextUtils.isEmpty(scheme) && !UrlBarData.SCHEMES_TO_SPLIT.contains(scheme)) {
                 scrollType = UrlBar.ScrollType.SCROLL_TO_BEGINNING;
             }
         }
@@ -133,7 +128,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         CharSequence textForAutofillServices = text;
 
         if (!(mHasFocus || TextUtils.isEmpty(text) || mUrlBarData.url == null)) {
-            textForAutofillServices = mUrlBarData.url;
+            textForAutofillServices = mUrlBarData.url.getSpec();
         }
 
         @ScrollType
@@ -285,16 +280,13 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
 
         String formattedUrlLocation;
         String originalUrlLocation;
-        try {
-            // TODO(bauerb): Use |urlBarData.originEndIndex| for this instead?
-            URL javaUrl = new URL(mUrlBarData.url);
-            formattedUrlLocation = getUrlContentsPrePath(
-                    mUrlBarData.getEditingOrDisplayText().toString(), javaUrl.getHost());
-            originalUrlLocation = getUrlContentsPrePath(mUrlBarData.url, javaUrl.getHost());
-        } catch (MalformedURLException mue) {
-            // Just keep the existing selected text for cut/copy if unable to parse the URL.
-            return null;
-        }
+
+        formattedUrlLocation =
+                getUrlContentsPrePath(
+                        mUrlBarData.getEditingOrDisplayText().toString(),
+                        mUrlBarData.url.getHost());
+        originalUrlLocation =
+                getUrlContentsPrePath(mUrlBarData.url.getSpec(), mUrlBarData.url.getHost());
 
         // If we are copying/cutting the full previously formatted URL, reset the URL
         // text before initiating the TextViews handling of the context menu.
