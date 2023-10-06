@@ -44,7 +44,8 @@ void SetUpTestServerWithoutStarting(EmbeddedTestServer* server) {
       root_dir.AppendASCII("components/dom_distiller/core/javascript"));
   server->ServeFilesFromDirectory(
       root_dir.AppendASCII("components/test/data/dom_distiller"));
-  server->ServeFilesFromDirectory(root_dir.AppendASCII("third_party/chaijs"));
+  server->ServeFilesFromDirectory(
+      root_dir.AppendASCII("third_party/node/node_modules/chai"));
   server->ServeFilesFromDirectory(
       root_dir.AppendASCII("third_party/node/node_modules/mocha"));
 }

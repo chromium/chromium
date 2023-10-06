@@ -39,7 +39,7 @@ TestDataSource::TestDataSource(std::string root) {
   DCHECK(exe_dir.IsParent(gen_root_));
 
   custom_paths_ = {
-      {"/chai.js", "third_party/chaijs/chai.js"},
+      {"/chai.js", "third_party/node/node_modules/chai/chai.js"},
       {"/mocha.js", "third_party/node/node_modules/mocha/mocha.js"},
   };
 }

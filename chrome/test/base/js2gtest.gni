@@ -14,7 +14,8 @@ js2gtest_js_input_libraries = [
 ]
 
 # Additional libraries loaded at test runtime.
-js2gtest_runtime_js_libraries = [ "//third_party/chaijs/chai.js" ]
+js2gtest_runtime_js_libraries =
+    [ "//third_party/node/node_modules/chai/chai.js" ]
 
 js2gtest_js_libraries =
     js2gtest_js_input_libraries + js2gtest_runtime_js_libraries
