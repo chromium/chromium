@@ -19,8 +19,6 @@ namespace remoting {
 
 // Following constants define names for configuration parameters.
 
-// Status of the host, whether it is enabled or disabled.
-extern const char kHostEnabledConfigPath[];
 // Base JID of the host owner.
 // TODO(yuweih): This is now always equal to the host owner email. Consider
 // unifying these two fields.
@@ -38,16 +36,10 @@ extern const char kHostIdConfigPath[];
 extern const char kHostNameConfigPath[];
 // Hash of the host secret used for authentication.
 extern const char kHostSecretHashConfigPath[];
-// Private keys used for host authentication.
+// Private key used for host authentication.
 extern const char kPrivateKeyConfigPath[];
 // Whether consent is given for usage stats reporting.
 extern const char kUsageStatsConsentConfigPath[];
-// Whether to offer VP9 encoding to clients.
-extern const char kEnableVp9ConfigPath[];
-// Whether to offer H264 encoding to clients.
-extern const char kEnableH264ConfigPath[];
-// Number of Kibibytes of frame data to allow each client to record.
-extern const char kFrameRecorderBufferKbConfigPath[];
 
 // Helpers for serializing/deserializing Host configuration dictionaries.
 absl::optional<base::Value::Dict> HostConfigFromJson(
