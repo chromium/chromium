@@ -248,4 +248,10 @@ AutofillClient::GetDeviceAuthenticator() {
   return nullptr;
 }
 
+std::optional<AutofillClient::PopupScreenLocation>
+AutofillClient::GetPopupScreenLocation() const {
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
 }  // namespace autofill

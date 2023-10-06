@@ -13,6 +13,8 @@ namespace compose {
 
 class ComposeManagerImpl : public ComposeManager {
  public:
+  using PopupScreenLocation = autofill::AutofillClient::PopupScreenLocation;
+
   explicit ComposeManagerImpl(ComposeClient* client);
   ComposeManagerImpl(const ComposeManagerImpl&) = delete;
   ComposeManagerImpl& operator=(const ComposeManagerImpl&) = delete;
@@ -22,7 +24,10 @@ class ComposeManagerImpl : public ComposeManager {
   bool ShouldOfferCompose(
       UiEntryPoint ui_entry_point,
       const autofill::FormFieldData& trigger_field) override;
-  void OpenCompose(ComposeCallback callback) override;
+  void OpenCompose(UiEntryPoint ui_entry_point,
+                   const autofill::FormFieldData& trigger_field,
+                   std::optional<PopupScreenLocation> popup_screen_location,
+                   ComposeCallback callback) override;
 
  private:
   bool IsEnabled() const;

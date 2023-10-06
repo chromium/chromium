@@ -121,6 +121,8 @@ class AutofillPopupControllerImpl
       const gfx::RectF& anchor_bounds,
       std::vector<Suggestion> suggestions,
       AutoselectFirstSuggestion autoselect_first_suggestion) override;
+  std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
+      const override;
   void HideSubPopup() override;
 
   // PictureInPictureWindowManager::Observer

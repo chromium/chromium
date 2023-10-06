@@ -284,6 +284,12 @@ std::vector<Suggestion> AutofillKeyboardAccessoryAdapter::GetSuggestions()
   return suggestions;
 }
 
+std::optional<AutofillClient::PopupScreenLocation>
+AutofillKeyboardAccessoryAdapter::GetPopupScreenLocation() const {
+  NOTIMPLEMENTED() << "No popup screen location for keyboard accessories.";
+  return std::nullopt;
+}
+
 void AutofillKeyboardAccessoryAdapter::OnDeletionConfirmed(int index) {
   if (controller_)
     controller_->RemoveSuggestion(OffsetIndexFor(index));

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_features.h"
 
@@ -29,7 +30,11 @@ bool ComposeManagerImpl::IsEnabled() const {
   return base::FeatureList::IsEnabled(features::kEnableCompose);
 }
 
-void ComposeManagerImpl::OpenCompose(ComposeCallback callback) {
+void ComposeManagerImpl::OpenCompose(
+    UiEntryPoint ui_entry_point,
+    const autofill::FormFieldData& trigger_field,
+    std::optional<PopupScreenLocation> popup_screen_location,
+    ComposeCallback callback) {
   callback_ = std::move(callback);
   CHECK(IsEnabled());
   // TODO(b/301609035): Either pass a weak pointer or make sure that

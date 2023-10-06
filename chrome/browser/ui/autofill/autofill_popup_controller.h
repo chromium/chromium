@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -100,6 +102,9 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
 
   // Hides open by `OpenSubPopup()` popup, noop if there is no open sub-popup.
   virtual void HideSubPopup() = 0;
+
+  virtual std::optional<AutofillClient::PopupScreenLocation>
+  GetPopupScreenLocation() const = 0;
 
  protected:
   ~AutofillPopupController() override = default;

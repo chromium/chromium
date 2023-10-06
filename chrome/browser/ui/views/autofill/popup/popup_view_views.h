@@ -101,6 +101,8 @@ class PopupViewViews : public PopupBaseView,
   void AxAnnounce(const std::u16string& text) override;
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(
       base::WeakPtr<AutofillPopupController> controller) override;
+  std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
+      const override;
   base::WeakPtr<AutofillPopupView> GetWeakPtr() override;
 
   // PopupBaseView:

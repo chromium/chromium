@@ -610,6 +610,12 @@ PopupType AutofillPopupControllerImpl::GetPopupType() const {
   return delegate_->GetPopupType();
 }
 
+std::optional<AutofillClient::PopupScreenLocation>
+AutofillPopupControllerImpl::GetPopupScreenLocation() const {
+  return view_ ? view_->GetPopupScreenLocation()
+               : std::make_optional<AutofillClient::PopupScreenLocation>();
+}
+
 bool AutofillPopupControllerImpl::HasSuggestions() const {
   if (suggestions_.empty()) {
     return false;

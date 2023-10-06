@@ -121,6 +121,8 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   const gfx::RectF& element_bounds() const override;
   base::i18n::TextDirection GetElementTextDirection() const override;
   std::vector<Suggestion> GetSuggestions() const override;
+  std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
+      const override;
 
   void OnDeletionConfirmed(int index);
 

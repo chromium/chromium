@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -319,6 +320,24 @@ class AutofillClient : public RiskDataLoader {
     std::vector<Suggestion> suggestions;
     AutofillSuggestionTriggerSource trigger_source{
         AutofillSuggestionTriggerSource::kUnspecified};
+  };
+
+  // Describes the position of the Autofill popup on the screen.
+  struct PopupScreenLocation {
+    // The bounds of the popup in the screen coordinate system.
+    gfx::Rect bounds;
+    // Describes the position of the arrow on the popup's border and corresponds
+    // to a subset of the available options in `views::BubbleBorder::Arrow`.
+    enum class ArrowPosition {
+      kTopRight,
+      kTopLeft,
+      kBottomRight,
+      kBottomLeft,
+      kLeftTop,
+      kRightTop,
+      kMax = kRightTop
+    };
+    ArrowPosition arrow_position;
   };
 
   // Callback to run after local credit card save or local CVC save is offered.
@@ -783,6 +802,10 @@ class AutofillClient : public RiskDataLoader {
   // Note that the password manager doesn't distinguish between trigger sources.
   virtual PopupOpenArgs GetReopenPopupArgs(
       AutofillSuggestionTriggerSource trigger_source) const = 0;
+
+  // Returns the information of the popup on the screen, if there is one that is
+  // showing. Note that this implemented only on Desktop.
+  virtual std::optional<PopupScreenLocation> GetPopupScreenLocation() const;
 
   // Returns (not elided) suggestions currently held by the UI.
   virtual std::vector<Suggestion> GetPopupSuggestions() const = 0;

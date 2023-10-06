@@ -246,6 +246,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void PinPopupView() override;
   PopupOpenArgs GetReopenPopupArgs(
       AutofillSuggestionTriggerSource trigger_source) const override;
+  std::optional<PopupScreenLocation> GetPopupScreenLocation() const override;
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
                    PopupType popup_type,
                    AutofillSuggestionTriggerSource trigger_source) override;

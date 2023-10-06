@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/common/aliases.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -58,6 +59,9 @@ class AutofillPopupView {
   // the child dies also.
   virtual base::WeakPtr<AutofillPopupView> CreateSubPopupView(
       base::WeakPtr<AutofillPopupController> sub_controller) = 0;
+
+  virtual std::optional<AutofillClient::PopupScreenLocation>
+  GetPopupScreenLocation() const = 0;
 
   // Returns a weak pointer to itself.
   virtual base::WeakPtr<AutofillPopupView> GetWeakPtr() = 0;

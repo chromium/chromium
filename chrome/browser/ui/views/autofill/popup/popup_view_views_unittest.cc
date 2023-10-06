@@ -59,8 +59,11 @@ namespace autofill {
 namespace {
 
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Field;
 using ::testing::Mock;
 using ::testing::NiceMock;
+using ::testing::Optional;
 using ::testing::Return;
 using CellIndex = PopupViewViews::CellIndex;
 using CellType = PopupRowView::CellType;
@@ -1000,6 +1003,27 @@ TEST_F(PopupViewViewsTest, SubPopupOwnSelectionPreventsHiding) {
   EXPECT_NE(test_api(view()).GetOpenSubPopupCell(), absl::nullopt);
   EXPECT_EQ(test_api(*sub_view).GetOpenSubPopupCell(), absl::nullopt);
 }
+
+// TODO(crbug.com/1489673): Enable once the view shows itself properly.
+#if !BUILDFLAG(IS_MAC)
+// Tests that `GetPopupScreenLocation` returns the bounds and arrow position of
+// the popup.
+TEST_F(PopupViewViewsTest, GetPopupScreenLocation) {
+  CreateAndShowView({PopupItemId::kCompose});
+
+  using PopupScreenLocation = AutofillClient::PopupScreenLocation;
+  auto MatchesScreenLocation =
+      [](gfx::Rect bounds, PopupScreenLocation::ArrowPosition arrow_position) {
+        return Optional(
+            AllOf(Field(&PopupScreenLocation::bounds, bounds),
+                  Field(&PopupScreenLocation::arrow_position, arrow_position)));
+      };
+  EXPECT_THAT(
+      view().GetPopupScreenLocation(),
+      MatchesScreenLocation(widget().GetWindowBoundsInScreen(),
+                            PopupScreenLocation::ArrowPosition::kTopLeft));
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ShowClickTest DISABLED_ShowClickTest

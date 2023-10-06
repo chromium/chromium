@@ -1060,6 +1060,13 @@ ChromeAutofillClient::GetReopenPopupArgs(
       controller->GetSuggestions(), trigger_source);
 }
 
+std::optional<AutofillClient::PopupScreenLocation>
+ChromeAutofillClient::GetPopupScreenLocation() const {
+  return popup_controller_
+             ? popup_controller_->GetPopupScreenLocation()
+             : std::make_optional<AutofillClient::PopupScreenLocation>();
+}
+
 void ChromeAutofillClient::UpdatePopup(
     const std::vector<Suggestion>& suggestions,
     PopupType popup_type,

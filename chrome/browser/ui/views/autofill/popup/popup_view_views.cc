@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/platform_util.h"
@@ -55,6 +56,8 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_border_arrow_utils.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -501,6 +504,41 @@ base::WeakPtr<AutofillPopupView> PopupViewViews::CreateSubPopupView(
         ->GetWeakPtr();
   }
   return nullptr;
+}
+
+std::optional<AutofillClient::PopupScreenLocation>
+PopupViewViews::GetPopupScreenLocation() const {
+  if (!GetWidget()) {
+    return std::nullopt;
+  }
+
+  using ArrowPosition = AutofillClient::PopupScreenLocation::ArrowPosition;
+  auto convert_arrow_enum =
+      [](views::BubbleBorder::Arrow arrow) -> ArrowPosition {
+    switch (arrow) {
+      case views::BubbleBorder::Arrow::TOP_RIGHT:
+        return ArrowPosition::kTopRight;
+      case views::BubbleBorder::Arrow::TOP_LEFT:
+        return ArrowPosition::kTopLeft;
+      case views::BubbleBorder::Arrow::BOTTOM_RIGHT:
+        return ArrowPosition::kBottomRight;
+      case views::BubbleBorder::Arrow::BOTTOM_LEFT:
+        return ArrowPosition::kBottomLeft;
+      case views::BubbleBorder::Arrow::LEFT_TOP:
+        return ArrowPosition::kLeftTop;
+      case views::BubbleBorder::Arrow::RIGHT_TOP:
+        return ArrowPosition::kRightTop;
+      default:
+        NOTREACHED_NORETURN();
+    }
+  };
+  views::Border* border = GetWidget()->GetRootView()->GetBorder();
+  CHECK(border);
+
+  return AutofillClient::PopupScreenLocation{
+      .bounds = GetWidget()->GetWindowBoundsInScreen(),
+      .arrow_position = convert_arrow_enum(
+          static_cast<views::BubbleBorder*>(border)->arrow())};
 }
 
 void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,

@@ -485,6 +485,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     }
     case PopupItemId::kCompose:
+      // TODO(crbug.com/1484810): Implement compose response.
       break;
     default:
       if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||

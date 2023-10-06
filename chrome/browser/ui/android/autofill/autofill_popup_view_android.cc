@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -176,6 +177,12 @@ base::WeakPtr<AutofillPopupView> AutofillPopupViewAndroid::CreateSubPopupView(
     base::WeakPtr<AutofillPopupController> controller) {
   NOTIMPLEMENTED() << "No sub-popups on Android";
   return nullptr;
+}
+
+std::optional<AutofillClient::PopupScreenLocation>
+AutofillPopupViewAndroid::GetPopupScreenLocation() const {
+  NOTIMPLEMENTED();
+  return std::nullopt;
 }
 
 void AutofillPopupViewAndroid::SuggestionSelected(

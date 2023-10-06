@@ -71,19 +71,21 @@
 #include "chrome/browser/autofill/mock_password_accessory_controller.h"
 #endif
 
+namespace autofill {
+namespace {
+
 using base::ASCIIToUTF16;
 using base::WeakPtr;
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
+using ::testing::Optional;
 using ::testing::Return;
 using ::testing::StrictMock;
-
-namespace autofill {
-namespace {
 
 class MockAutofillDriver : public ContentAutofillDriver {
  public:
@@ -148,6 +150,10 @@ class MockAutofillPopupView : public AutofillPopupView {
               CreateSubPopupView,
               (base::WeakPtr<AutofillPopupController>),
               (override));
+  MOCK_METHOD(std::optional<AutofillClient::PopupScreenLocation>,
+              GetPopupScreenLocation,
+              (),
+              (const override));
 
   base::WeakPtr<AutofillPopupView> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -477,7 +483,7 @@ TEST_F(AutofillPopupControllerImplTest,
                   {Suggestion(u"main text", PopupItemId::kAutocompleteEntry)});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
 
-  EXPECT_CALL(*&client().popup_view(),
+  EXPECT_CALL(client().popup_view(),
               AxAnnounce(Eq(u"Entry main text has been deleted")));
   EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(0));
 }
@@ -952,6 +958,18 @@ TEST_F(AutofillPopupControllerImplTest, ButtonActionsAreSentToDelegate) {
   client().popup_controller(manager()).PerformButtonActionForSuggestion(0);
 }
 #endif
+
+// Tests that the popup controller queries the view for its screen location.
+TEST_F(AutofillPopupControllerImplTest, GetPopupScreenLocationCallsView) {
+  ShowSuggestions(manager(), {PopupItemId::kCompose});
+
+  using PopupScreenLocation = AutofillClient::PopupScreenLocation;
+  constexpr gfx::Rect kSampleRect = gfx::Rect(123, 234);
+  EXPECT_CALL(client().popup_view(), GetPopupScreenLocation)
+      .WillOnce(Return(PopupScreenLocation{.bounds = kSampleRect}));
+  EXPECT_THAT(client().popup_controller(manager()).GetPopupScreenLocation(),
+              Optional(Field(&PopupScreenLocation::bounds, kSampleRect)));
+}
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 class MockAxTreeManager : public ui::AXTreeManager {
