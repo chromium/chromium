@@ -38,6 +38,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/page_load_metrics/observers/bookmark_navigation_handle_user_data.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
@@ -1657,7 +1658,9 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
   DCHECK(node->is_url());
   RecordAppLaunch(browser_->profile(), node->url());
   chrome::OpenAllIfAllowed(
-      browser_, {node}, ui::DispositionFromEventFlags(event.flags()), false,
+      browser_, {node}, ui::DispositionFromEventFlags(event.flags()),
+      /*add_to_group=*/false,
+      BookmarkNavigationHandleUserData::InitiatorLocation::kBookmarkBar,
       {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
   if (event.IsMouseEvent()) {
     base::UmaHistogramEnumeration(
@@ -1677,7 +1680,9 @@ void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
       (event.flags() & ui::EF_PLATFORM_ACCELERATOR)) {
     RecordBookmarkFolderLaunch(BookmarkLaunchLocation::kAttachedBar);
     chrome::OpenAllIfAllowed(
-        browser_, {node}, ui::DispositionFromEventFlags(event.flags()), false,
+        browser_, {node}, ui::DispositionFromEventFlags(event.flags()),
+        /*add_to_group=*/false,
+        BookmarkNavigationHandleUserData::InitiatorLocation::kBookmarkBar,
         {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
   } else {
     RecordBookmarkFolderOpen(BookmarkLaunchLocation::kAttachedBar);

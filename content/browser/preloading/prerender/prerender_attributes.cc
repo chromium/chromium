@@ -30,6 +30,8 @@ PrerenderAttributes::PrerenderAttributes(
     ui::PageTransition transition_type,
     absl::optional<base::RepeatingCallback<bool(const GURL&)>>
         url_match_predicate,
+    absl::optional<base::RepeatingCallback<void(NavigationHandle&)>>
+        prerender_navigation_handle_callback,
     const absl::optional<base::UnguessableToken>&
         initiator_devtools_navigation_token)
     : prerendering_url(prerendering_url),
@@ -45,6 +47,8 @@ PrerenderAttributes::PrerenderAttributes(
       initiator_ukm_id(initiator_ukm_id),
       transition_type(transition_type),
       url_match_predicate(std::move(url_match_predicate)),
+      prerender_navigation_handle_callback(
+          std::move(prerender_navigation_handle_callback)),
       initiator_devtools_navigation_token(initiator_devtools_navigation_token) {
   CHECK(!IsBrowserInitiated() ||
         !initiator_devtools_navigation_token.has_value());
@@ -71,6 +75,8 @@ PrerenderAttributes::PrerenderAttributes(PrerenderAttributes&& attributes)
       transition_type(attributes.transition_type),
       holdback_status_override(attributes.holdback_status_override),
       url_match_predicate(attributes.url_match_predicate),
+      prerender_navigation_handle_callback(
+          attributes.prerender_navigation_handle_callback),
       initiator_devtools_navigation_token(
           attributes.initiator_devtools_navigation_token) {}
 

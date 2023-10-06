@@ -146,6 +146,7 @@ OpenedWebContentsSet OpenAllHelper(
     Browser* browser,
     std::vector<UrlAndId> bookmark_urls,
     WindowOpenDisposition initial_disposition,
+    BookmarkNavigationHandleUserData::InitiatorLocation navigation_type,
     absl::optional<BookmarkLaunchAction> launch_action) {
   OpenedWebContentsSet::container_type opened_tabs;
   WindowOpenDisposition disposition = initial_disposition;
@@ -194,6 +195,10 @@ OpenedWebContentsSet OpenAllHelper(
     params.browser = browser_to_use;
     base::WeakPtr<content::NavigationHandle> handle =
         nav_wrapper.NavigateTo(&params);
+    if (handle) {
+      BookmarkNavigationHandleUserData::CreateForNavigationHandle(
+          *handle, navigation_type);
+    }
     content::WebContents* opened_tab =
         handle ? handle->GetWebContents() : nullptr;
     if (!opened_tab)
@@ -252,24 +257,28 @@ OpenedWebContentsSet OpenAllHelper(
 
 }  // namespace
 
-void OpenAllIfAllowed(Browser* browser,
-                      const std::vector<const bookmarks::BookmarkNode*>& nodes,
-                      WindowOpenDisposition initial_disposition,
-                      bool add_to_group,
-                      absl::optional<BookmarkLaunchAction> launch_action) {
+void OpenAllIfAllowed(
+    Browser* browser,
+    const std::vector<const bookmarks::BookmarkNode*>& nodes,
+    WindowOpenDisposition initial_disposition,
+    bool add_to_group,
+    BookmarkNavigationHandleUserData::InitiatorLocation navigation_type,
+    absl::optional<BookmarkLaunchAction> launch_action) {
   std::vector<UrlAndId> url_and_ids = GetURLsToOpen(
       nodes, browser->profile(),
       initial_disposition == WindowOpenDisposition::OFF_THE_RECORD);
   auto do_open = [](Browser* browser, std::vector<UrlAndId> url_and_ids_to_open,
                     WindowOpenDisposition initial_disposition,
                     absl::optional<std::u16string> folder_title,
+                    BookmarkNavigationHandleUserData::InitiatorLocation
+                        navigation_type,
                     absl::optional<BookmarkLaunchAction> launch_action,
                     chrome::MessageBoxResult result) {
     if (result != chrome::MESSAGE_BOX_RESULT_YES)
       return;
-    const auto opened_web_contents =
-        OpenAllHelper(browser, std::move(url_and_ids_to_open),
-                      initial_disposition, std::move(launch_action));
+    const auto opened_web_contents = OpenAllHelper(
+        browser, std::move(url_and_ids_to_open), initial_disposition,
+        navigation_type, std::move(launch_action));
     if (folder_title.has_value()) {
       TabStripModel* model = browser->tab_strip_model();
 
@@ -311,7 +320,8 @@ void OpenAllIfAllowed(Browser* browser,
             add_to_group ? absl::optional<std::u16string>(
                                nodes[0]->GetTitledUrlNodeTitle())
                          : absl::nullopt,
-            std::move(launch_action), chrome::MESSAGE_BOX_RESULT_YES);
+            navigation_type, std::move(launch_action),
+            chrome::MESSAGE_BOX_RESULT_YES);
     return;
   }
 
@@ -329,7 +339,7 @@ void OpenAllIfAllowed(Browser* browser,
                      add_to_group ? absl::optional<std::u16string>(
                                         nodes[0]->GetTitledUrlNodeTitle())
                                   : absl::nullopt,
-                     absl::nullopt));
+                     navigation_type, absl::nullopt));
 }
 
 int OpenCount(gfx::NativeWindow parent,

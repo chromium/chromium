@@ -238,7 +238,9 @@ bool PrerendererImpl::MaybePrerender(
       web_contents->GetWeakPtr(), rfhi.GetFrameToken(),
       rfhi.GetFrameTreeNodeId(), rfhi.GetPageUkmSourceId(),
       ui::PAGE_TRANSITION_LINK,
-      /*url_match_predicate=*/absl::nullopt, rfhi.GetDevToolsNavigationToken());
+      /*url_match_predicate=*/absl::nullopt,
+      /*prerender_navigation_handle_callback=*/absl::nullopt,
+      rfhi.GetDevToolsNavigationToken());
 
   // TODO(crbug.com/1354049): Handle the case where multiple speculation rules
   // have the same URL but its `target_browsing_context_name_hint` is

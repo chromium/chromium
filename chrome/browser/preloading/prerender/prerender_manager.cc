@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/page_load_metrics/observers/bookmark_navigation_handle_user_data.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -103,6 +104,13 @@ content::PreloadingFailureReason ToPreloadingFailureReason(
       static_cast<int>(status) +
       static_cast<int>(content::PreloadingFailureReason::
                            kPreloadingFailureReasonContentEnd));
+}
+
+void AttachBookmarkBarNavigationHandleUserData(
+    content::NavigationHandle& navigation_handle) {
+  BookmarkNavigationHandleUserData::CreateForNavigationHandle(
+      navigation_handle,
+      BookmarkNavigationHandleUserData::InitiatorLocation::kBookmarkBar);
 }
 
 }  // namespace
@@ -365,11 +373,17 @@ PrerenderManager::StartPrerenderBookmark(
     bookmark_prerender_handle_.reset();
   }
 
+  base::RepeatingCallback<void(content::NavigationHandle&)>
+      prerender_navigation_handle_callback =
+          base::BindRepeating(&AttachBookmarkBarNavigationHandleUserData);
+
   bookmark_prerender_handle_ = web_contents()->StartPrerendering(
       prerendering_url, content::PrerenderTriggerType::kEmbedder,
       prerender_utils::kBookmarkBarMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
-      content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt);
+      content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
+      /*url_match_predicate=*/absl::nullopt,
+      std::move(prerender_navigation_handle_callback));
 
   return bookmark_prerender_handle_ ? bookmark_prerender_handle_->GetWeakPtr()
                                     : nullptr;

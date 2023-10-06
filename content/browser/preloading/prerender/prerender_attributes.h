@@ -37,6 +37,8 @@ struct CONTENT_EXPORT PrerenderAttributes {
       ui::PageTransition transition_type,
       absl::optional<base::RepeatingCallback<bool(const GURL&)>>
           url_match_predicate,
+      absl::optional<base::RepeatingCallback<void(NavigationHandle&)>>
+          prerender_navigation_handle_callback,
       // TODO(crbug/1384419): use pattern other than default parameter.
       const absl::optional<base::UnguessableToken>&
           initiator_devtools_navigation_token = absl::nullopt);
@@ -98,6 +100,9 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // same-origin.
   absl::optional<base::RepeatingCallback<bool(const GURL&)>>
       url_match_predicate;
+
+  absl::optional<base::RepeatingCallback<void(NavigationHandle&)>>
+      prerender_navigation_handle_callback;
 
   // This is absl::nullopt when prerendering is initiated by the browser.
   absl::optional<base::UnguessableToken> initiator_devtools_navigation_token;

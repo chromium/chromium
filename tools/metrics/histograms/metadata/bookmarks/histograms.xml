@@ -123,6 +123,54 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Bookmarks.BookmarkBar.NavigationOrActivationToFirstContentfulPaint"
+    units="ms" expires_after="2024-01-30">
+  <owner>robertlin@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Measures the time from navigation start or prerender activation to first
+    contentful paint for bookmark bar. Refer to
+    BookmarkBarMetricsObserver::OnFirstContentfulPaintInPage() for details.
+  </summary>
+</histogram>
+
+<histogram
+    name="Bookmarks.BookmarkBar.NavigationOrActivationToFirstMeaningfulPaint"
+    units="ms" expires_after="2024-01-30">
+  <owner>robertlin@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Measures the time from navigation start or prerender activation to first
+    meaningful paint for bookmark bar. Refer to
+    BookmarkBarMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument() for
+    details.
+  </summary>
+</histogram>
+
+<histogram
+    name="Bookmarks.BookmarkBar.NavigationOrActivationToLargestContentfulPaint"
+    units="ms" expires_after="2024-01-30">
+  <owner>robertlin@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Measures the time from navigation start or prerender activation to largest
+    contentful paint for bookmark bar. Refer to
+    BookmarkBarMetricsObserver::OnComplete() for details.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BookmarkBar.PrerenderNavigationToActivation"
+    units="ms" expires_after="2024-01-30">
+  <owner>robertlin@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Measures the time from the prerendering navigation starts to prerender
+    activation. Refer to
+    BookmarkBarMetricsObserver::DidActivatePrerenderedPage() for details.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.BookmarksBar.DragDropType"
     enum="BookmarkBarDragDropType" expires_after="2024-02-11">
   <owner>dfried@chromium.org</owner>

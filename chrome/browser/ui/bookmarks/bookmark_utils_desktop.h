@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/page_load_metrics/observers/bookmark_navigation_handle_user_data.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/simple_message_box.h"
@@ -66,6 +67,8 @@ void OpenAllIfAllowed(
     const std::vector<const bookmarks::BookmarkNode*>& nodes,
     WindowOpenDisposition initial_disposition,
     bool add_to_group,
+    BookmarkNavigationHandleUserData::InitiatorLocation navigation_type =
+        BookmarkNavigationHandleUserData::InitiatorLocation::kOther,
     absl::optional<BookmarkLaunchAction> launch_action = absl::nullopt);
 
 // Returns the count of bookmarks that would be opened by OpenAll. If
