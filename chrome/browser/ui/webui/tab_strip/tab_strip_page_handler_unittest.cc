@@ -641,8 +641,7 @@ TEST_F(TabStripPageHandlerTest, PreventsInvalidTabDrags) {
                                        blink::kDragOperationMove));
 
   content::DropData invalid_drop_data;
-  invalid_drop_data.custom_data.insert(
-      std::make_pair(base::ASCIIToUTF16(kWebUITabIdDataType), u"3000"));
+  invalid_drop_data.custom_data.insert({kWebUITabIdDataType, u"3000"});
   EXPECT_FALSE(handler()->CanDragEnter(nullptr, invalid_drop_data,
                                        blink::kDragOperationMove));
 
@@ -651,16 +650,15 @@ TEST_F(TabStripPageHandlerTest, PreventsInvalidTabDrags) {
       browser()->tab_strip_model()->GetWebContentsAt(0));
   content::DropData valid_drop_data;
   valid_drop_data.custom_data.insert(
-      std::make_pair(base::ASCIIToUTF16(kWebUITabIdDataType),
-                     base::NumberToString16(valid_tab_id)));
+      {kWebUITabIdDataType, base::NumberToString16(valid_tab_id)});
   EXPECT_TRUE(handler()->CanDragEnter(nullptr, valid_drop_data,
                                       blink::kDragOperationMove));
 }
 
 TEST_F(TabStripPageHandlerTest, PreventsInvalidGroupDrags) {
   content::DropData invalid_drop_data;
-  invalid_drop_data.custom_data.insert(std::make_pair(
-      base::ASCIIToUTF16(kWebUITabGroupIdDataType), u"not a real group"));
+  invalid_drop_data.custom_data.insert(
+      {kWebUITabGroupIdDataType, u"not a real group"});
   EXPECT_FALSE(handler()->CanDragEnter(nullptr, invalid_drop_data,
                                        blink::kDragOperationMove));
 
@@ -669,8 +667,7 @@ TEST_F(TabStripPageHandlerTest, PreventsInvalidGroupDrags) {
       browser()->tab_strip_model()->AddToNewGroup({0});
   content::DropData valid_drop_data;
   valid_drop_data.custom_data.insert(
-      std::make_pair(base::ASCIIToUTF16(kWebUITabGroupIdDataType),
-                     base::ASCIIToUTF16(group_id.ToString())));
+      {kWebUITabGroupIdDataType, base::ASCIIToUTF16(group_id.ToString())});
   EXPECT_TRUE(handler()->CanDragEnter(nullptr, valid_drop_data,
                                       blink::kDragOperationMove));
 
@@ -686,8 +683,7 @@ TEST_F(TabStripPageHandlerTest, PreventsInvalidGroupDrags) {
       new_browser.get()->tab_strip_model()->AddToNewGroup({0});
   content::DropData different_profile_drop_data;
   different_profile_drop_data.custom_data.insert(
-      std::make_pair(base::ASCIIToUTF16(kWebUITabGroupIdDataType),
-                     base::ASCIIToUTF16(new_group_id.ToString())));
+      {kWebUITabGroupIdDataType, base::ASCIIToUTF16(new_group_id.ToString())});
   EXPECT_FALSE(handler()->CanDragEnter(nullptr, different_profile_drop_data,
                                        blink::kDragOperationMove));
 

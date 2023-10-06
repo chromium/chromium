@@ -432,19 +432,17 @@ bool TabStripPageHandler::CanDragEnter(
     const content::DropData& data,
     blink::DragOperationsMask operations_allowed) {
   // TODO(crbug.com/1032592): Prevent dragging across Chromium instances.
-  if (data.custom_data.find(base::ASCIIToUTF16(kWebUITabIdDataType)) !=
-      data.custom_data.end()) {
+  if (auto it = data.custom_data.find(kWebUITabIdDataType);
+      it != data.custom_data.end()) {
     int tab_id;
-    bool found_tab_id = base::StringToInt(
-        data.custom_data.at(base::ASCIIToUTF16(kWebUITabIdDataType)), &tab_id);
+    bool found_tab_id = base::StringToInt(it->second, &tab_id);
     return found_tab_id && extensions::ExtensionTabUtil::GetTabById(
                                tab_id, browser_->profile(), false, nullptr);
   }
 
-  if (data.custom_data.find(base::ASCIIToUTF16(kWebUITabGroupIdDataType)) !=
-      data.custom_data.end()) {
-    std::string group_id = base::UTF16ToUTF8(
-        data.custom_data.at(base::ASCIIToUTF16(kWebUITabGroupIdDataType)));
+  if (auto it = data.custom_data.find(kWebUITabGroupIdDataType);
+      it != data.custom_data.end()) {
+    std::string group_id = base::UTF16ToUTF8(it->second);
     Browser* found_browser = tab_strip_ui::GetBrowserWithGroupId(
         Profile::FromBrowserContext(browser_->profile()), group_id);
     return found_browser != nullptr;

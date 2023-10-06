@@ -35,10 +35,6 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
-// These data types must be in all lowercase.
-const char kWebUITabIdDataType[] = "application/vnd.chromium.tab";
-const char kWebUITabGroupIdDataType[] = "application/vnd.chromium.tabgroup";
-
 TabStripUI::TabStripUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /* enable_chrome_send */ true),
       webui_load_timer_(web_ui->GetWebContents(),
@@ -56,8 +52,8 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       html_source, base::make_span(kTabStripResources, kTabStripResourcesSize),
       IDR_TAB_STRIP_TAB_STRIP_HTML);
 
-  html_source->AddString("tabIdDataType", kWebUITabIdDataType);
-  html_source->AddString("tabGroupIdDataType", kWebUITabGroupIdDataType);
+  html_source->AddString("tabIdDataType",kWebUITabIdDataType);
+  html_source->AddString("tabGroupIdDataType",kWebUITabGroupIdDataType);
   webui::SetupChromeRefresh2023(html_source);
 
   static constexpr webui::LocalizedString kStrings[] = {
