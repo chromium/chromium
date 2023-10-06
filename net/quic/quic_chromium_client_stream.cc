@@ -523,7 +523,6 @@ void QuicChromiumClientStream::OnInitialHeadersComplete(
   }
 
   ConsumeHeaderList();
-  session_->OnInitialHeadersComplete(id(), header_block);
 
   // Buffer the headers and deliver them when the handle arrives.
   initial_headers_arrived_ = true;
