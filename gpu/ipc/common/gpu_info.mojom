@@ -16,7 +16,7 @@ import "ui/gl/mojom/gpu_preference.mojom";
 [EnableIf=supports_vulkan]
 import "gpu/ipc/common/vulkan_info.mojom";
 
-// gpu::GPUDevice
+// gpu::GPUInfo::GPUDevice
 struct GpuDevice {
   uint32 vendor_id;
   uint32 device_id;
@@ -33,20 +33,6 @@ struct GpuDevice {
   [EnableIf=is_win]
   Luid luid;
   gl.mojom.GpuPreference gpu_preference;
-  string pixel_shader_version;
-  string vertex_shader_version;
-  string max_msaa_samples;
-  string display_type;
-  string gl_version;
-  string gl_vendor;
-  string gl_renderer;
-  string gl_extensions;
-  string gl_ws_vendor;
-  string gl_ws_version;
-  string gl_ws_extensions;
-  uint32 gl_reset_notification_strategy;
-  string direct_rendering_version;
-  bool can_support_threaded_texture_mailbox;
 };
 
 // gpu::VideoCodecProfile
@@ -178,12 +164,26 @@ struct GpuInfo {
   bool amd_switchable;
   GpuDevice gpu;
   array<GpuDevice> secondary_gpus;
+  string pixel_shader_version;
+  string vertex_shader_version;
+  string max_msaa_samples;
   string machine_model_name;
   string machine_model_version;
+  string display_type;
+  string gl_version;
+  string gl_vendor;
+  string gl_renderer;
+  string gl_extensions;
+  string gl_ws_vendor;
+  string gl_ws_version;
+  string gl_ws_extensions;
+  uint32 gl_reset_notification_strategy;
   gl.mojom.GLImplementationParts gl_implementation_parts;
+  string direct_rendering_version;
   bool sandboxed;
   bool in_process_gpu;
   bool passthrough_cmd_decoder;
+  bool can_support_threaded_texture_mailbox;
 
   [EnableIf=is_mac]
   uint32 macos_specific_texture_target;

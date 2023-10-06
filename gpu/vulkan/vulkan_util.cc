@@ -95,7 +95,7 @@ bool IsBlockedByBuildInfo() {
 
 BASE_FEATURE(kVulkanV2, "VulkanV2", base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsVulkanV2Enabled(const GPUDevice* gpu_device,
+bool IsVulkanV2Enabled(const GPUInfo& gpu_info,
                        base::StringPiece experiment_arm) {
   const auto* build_info = base::android::BuildInfo::GetInstance();
   // We require at least android T deqp test to pass for v2.
@@ -170,11 +170,12 @@ bool IsVulkanV2Enabled(const GPUDevice* gpu_device,
     return false;
   }
 
-  if (IsDeviceBlocked(gpu_device->gl_renderer, kBlockListByGLRenderer.Get())) {
+  if (IsDeviceBlocked(gpu_info.gl_renderer, kBlockListByGLRenderer.Get())) {
     return false;
   }
 
-  if (IsDeviceBlocked(gpu_device->driver_version, kBlockListByGLDriver.Get())) {
+  if (IsDeviceBlocked(gpu_info.gpu.driver_version,
+                      kBlockListByGLDriver.Get())) {
     return false;
   }
 
@@ -185,16 +186,16 @@ bool IsVulkanV2Enabled(const GPUDevice* gpu_device,
   return true;
 }
 
-bool ShouldBypassImaginationBlock(const GPUDevice* gpu_device) {
-  return IsVulkanV2Enabled(gpu_device, "Imagination");
+bool ShouldBypassImaginationBlock(const GPUInfo& gpu_info) {
+  return IsVulkanV2Enabled(gpu_info, "Imagination");
 }
 
-bool ShouldBypassAdrenoBlock(const GPUDevice* gpu_device) {
-  return IsVulkanV2Enabled(gpu_device, "Adreno");
+bool ShouldBypassAdrenoBlock(const GPUInfo& gpu_info) {
+  return IsVulkanV2Enabled(gpu_info, "Adreno");
 }
 
-bool ShouldBypassMediatekBlock(const GPUDevice* gpu_device) {
-  return IsVulkanV2Enabled(gpu_device, "Mediatek");
+bool ShouldBypassMediatekBlock(const GPUInfo& gpu_info) {
+  return IsVulkanV2Enabled(gpu_info, "Mediatek");
 }
 
 #endif
@@ -313,7 +314,7 @@ VkResult VulkanQueuePresentKHRHook(VkQueue queue,
 }
 
 bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
-                              const GPUDevice* gpu_device,
+                              const GPUInfo& gpu_info,
                               std::string enable_by_device_name) {
 // Android uses AHB and SyncFD for interop. They are imported into GL with other
 // API.
@@ -328,18 +329,12 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
   constexpr char kMemoryObjectExtension[] = "GL_EXT_memory_object_fd";
   constexpr char kSemaphoreExtension[] = "GL_EXT_semaphore_fd";
 #endif
-
-  if (!gpu_device) {
-    DLOG(ERROR) << "Attempted to initialize vulkan on non-existant device.";
-    return false;
-  }
-
   // If Chrome and ANGLE share the same VkQueue, they can share vulkan
   // resource without those extensions. 
   if (!base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
     // If both Vulkan and GL are using native GPU (non swiftshader), check
     // necessary extensions for GL and Vulkan interop.
-    const auto extensions = gfx::MakeExtensionSet(gpu_device->gl_extensions);
+    const auto extensions = gfx::MakeExtensionSet(gpu_info.gl_extensions);
     if (!gfx::HasExtension(extensions, kMemoryObjectExtension) ||
         !gfx::HasExtension(extensions, kSemaphoreExtension)) {
         DLOG(ERROR) << kMemoryObjectExtension << " or " << kSemaphoreExtension
@@ -355,7 +350,7 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
   return true;
 #endif
 #else   // BUILDFLAG(IS_ANDROID)
-  if (IsBlockedByBuildInfo() && !ShouldBypassMediatekBlock(gpu_device)) {
+  if (IsBlockedByBuildInfo() && !ShouldBypassMediatekBlock(gpu_info)) {
     return false;
   }
 
@@ -374,13 +369,13 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
   const base::FeatureParam<std::string> disable_patterns(
       &features::kVulkan, "disable_by_gl_renderer", "");
 
-  if (IsDeviceBlocked(gpu_device->gl_renderer, disable_patterns.Get())) {
+  if (IsDeviceBlocked(gpu_info.gl_renderer, disable_patterns.Get())) {
     return false;
   }
 
   const base::FeatureParam<std::string> disable_driver_patterns(
       &features::kVulkan, "disable_by_gl_driver", "");
-  if (IsDeviceBlocked(gpu_device->driver_version,
+  if (IsDeviceBlocked(gpu_info.gpu.driver_version,
                       disable_driver_patterns.Get())) {
     return false;
   }
@@ -395,8 +390,8 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
     }
 
     // https://crbug.com/1183702
-    if (IsDeviceBlocked(gpu_device->gl_renderer, "*Mali-G?? M*") &&
-        !ShouldBypassMediatekBlock(gpu_device)) {
+    if (IsDeviceBlocked(gpu_info.gl_renderer, "*Mali-G?? M*") &&
+        !ShouldBypassMediatekBlock(gpu_info)) {
       return false;
     }
 
@@ -423,9 +418,9 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
 
   if (device_info.properties.vendorID == kVendorQualcomm) {
     // https://crbug.com/1246857
-    if (IsDeviceBlocked(gpu_device->driver_version,
+    if (IsDeviceBlocked(gpu_info.gpu.driver_version,
                         "324.0|331.0|334.0|378.0|415.0|420.0|444.0") &&
-        !ShouldBypassAdrenoBlock(gpu_device)) {
+        !ShouldBypassAdrenoBlock(gpu_info)) {
       return false;
     }
 
@@ -446,7 +441,7 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
         });
 
     // Don't run vulkan for old gpus or if we are not in v2.
-    if (is_slow_gpu_for_v2 || !ShouldBypassAdrenoBlock(gpu_device)) {
+    if (is_slow_gpu_for_v2 || !ShouldBypassAdrenoBlock(gpu_info)) {
       return false;
     }
 
@@ -456,7 +451,7 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
   // https://crbug.com/1122650: Poor performance and untriaged crashes with
   // Imagination GPUs.
   if (device_info.properties.vendorID == kVendorImagination &&
-      !ShouldBypassImaginationBlock(gpu_device)) {
+      !ShouldBypassImaginationBlock(gpu_info)) {
     return false;
   }
 

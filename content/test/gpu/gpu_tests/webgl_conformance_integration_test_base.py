@@ -671,7 +671,8 @@ class WebGLConformanceIntegrationTestBase(
 def _GetGPUInfoErrorString(gpu_info: telemetry_gpu_info.GPUInfo) -> str:
   primary_gpu = gpu_info.devices[0]
   error_str = 'primary gpu=' + primary_gpu.device_string
-  gl_renderer = primary_gpu.device_string
-  if gl_renderer:
-    error_str += ', gl_renderer=' + gl_renderer
+  if gpu_info.aux_attributes:
+    gl_renderer = gpu_info.aux_attributes.get('gl_renderer')
+    if gl_renderer:
+      error_str += ', gl_renderer=' + gl_renderer
   return error_str

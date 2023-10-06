@@ -74,8 +74,8 @@ class GpuBlocklistTest : public testing::Test {
     gpu_info_.gpu.driver_version = "1.6.18";
     gpu_info_.machine_model_name = "MacBookPro";
     gpu_info_.machine_model_version = "7.1";
-    gpu_info_.gpu.gl_vendor = "NVIDIA Corporation";
-    gpu_info_.gpu.gl_renderer = "NVIDIA GeForce GT 120 OpenGL Engine";
+    gpu_info_.gl_vendor = "NVIDIA Corporation";
+    gpu_info_.gl_renderer = "NVIDIA GeForce GT 120 OpenGL Engine";
   }
 
  private:

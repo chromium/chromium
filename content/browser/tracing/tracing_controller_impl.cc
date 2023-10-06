@@ -332,7 +332,7 @@ TracingControllerImpl::GenerateMetadataDict() {
   // GPU
   const gpu::GPUInfo gpu_info =
       content::GpuDataManagerImpl::GetInstance()->GetGPUInfo();
-  const gpu::GPUDevice& active_gpu = gpu_info.active_gpu();
+  const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
 
 #if !BUILDFLAG(IS_ANDROID)
   metadata_dict.Set("gpu-venid", static_cast<int>(active_gpu.vendor_id));
@@ -340,14 +340,14 @@ TracingControllerImpl::GenerateMetadataDict() {
 #endif
 
   metadata_dict.Set("gpu-driver", active_gpu.driver_version);
-  metadata_dict.Set("gpu-psver", active_gpu.pixel_shader_version);
-  metadata_dict.Set("gpu-vsver", active_gpu.vertex_shader_version);
+  metadata_dict.Set("gpu-psver", gpu_info.pixel_shader_version);
+  metadata_dict.Set("gpu-vsver", gpu_info.vertex_shader_version);
 
 #if BUILDFLAG(IS_MAC)
-  metadata_dict.Set("gpu-glver", active_gpu.gl_version);
+  metadata_dict.Set("gpu-glver", gpu_info.gl_version);
 #elif BUILDFLAG(IS_POSIX)
-  metadata_dict.Set("gpu-gl-vendor", active_gpu.gl_vendor);
-  metadata_dict.Set("gpu-gl-renderer", active_gpu.gl_renderer);
+  metadata_dict.Set("gpu-gl-vendor", gpu_info.gl_vendor);
+  metadata_dict.Set("gpu-gl-renderer", gpu_info.gl_renderer);
 #endif
   metadata_dict.Set("gpu-features", GetFeatureStatus());
 

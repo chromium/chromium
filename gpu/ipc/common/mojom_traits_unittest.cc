@@ -40,7 +40,7 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
     std::move(callback).Run(d);
   }
 
-  void EchoGpuDevice(const GPUDevice& g,
+  void EchoGpuDevice(const GPUInfo::GPUDevice& g,
                      EchoGpuDeviceCallback callback) override {
     std::move(callback).Run(g);
   }
@@ -105,7 +105,7 @@ TEST_F(StructTraitsTest, DxDiagNode) {
 }
 
 TEST_F(StructTraitsTest, GPUDevice) {
-  gpu::GPUDevice input;
+  gpu::GPUInfo::GPUDevice input;
   // Using the values from gpu/config/gpu_info_collector_unittest.cc::nvidia_gpu
   const uint32_t vendor_id = 0x10de;
   const uint32_t device_id = 0x0df8;
@@ -126,7 +126,7 @@ TEST_F(StructTraitsTest, GPUDevice) {
   input.device_string = device_string;
   input.active = false;
   mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
-  gpu::GPUDevice output;
+  gpu::GPUInfo::GPUDevice output;
   remote->EchoGpuDevice(input, &output);
 
   EXPECT_EQ(vendor_id, output.vendor_id);
@@ -144,8 +144,8 @@ TEST_F(StructTraitsTest, GpuInfo) {
   const base::TimeDelta initialization_time = base::TimeDelta::Max();
   const bool optimus = true;
   const bool amd_switchable = true;
-  const gpu::GPUDevice gpu;
-  const std::vector<gpu::GPUDevice> secondary_gpus;
+  const gpu::GPUInfo::GPUDevice gpu;
+  const std::vector<gpu::GPUInfo::GPUDevice> secondary_gpus;
   const std::string driver_vendor = "driver_vendor";
   const std::string driver_version = "driver_version";
   const std::string driver_date = "driver_date";
@@ -189,21 +189,21 @@ TEST_F(StructTraitsTest, GpuInfo) {
   input.secondary_gpus = secondary_gpus;
   input.gpu.driver_vendor = driver_vendor;
   input.gpu.driver_version = driver_version;
-  input.gpu.pixel_shader_version = pixel_shader_version;
-  input.gpu.vertex_shader_version = vertex_shader_version;
-  input.gpu.max_msaa_samples = max_msaa_samples;
+  input.pixel_shader_version = pixel_shader_version;
+  input.vertex_shader_version = vertex_shader_version;
+  input.max_msaa_samples = max_msaa_samples;
   input.machine_model_name = machine_model_name;
   input.machine_model_version = machine_model_version;
-  input.gpu.gl_version = gl_version;
-  input.gpu.gl_vendor = gl_vendor;
-  input.gpu.gl_renderer = gl_renderer;
-  input.gpu.gl_extensions = gl_extensions;
-  input.gpu.gl_ws_vendor = gl_ws_vendor;
-  input.gpu.gl_ws_version = gl_ws_version;
-  input.gpu.gl_ws_extensions = gl_ws_extensions;
-  input.gpu.gl_reset_notification_strategy = gl_reset_notification_strategy;
+  input.gl_version = gl_version;
+  input.gl_vendor = gl_vendor;
+  input.gl_renderer = gl_renderer;
+  input.gl_extensions = gl_extensions;
+  input.gl_ws_vendor = gl_ws_vendor;
+  input.gl_ws_version = gl_ws_version;
+  input.gl_ws_extensions = gl_ws_extensions;
+  input.gl_reset_notification_strategy = gl_reset_notification_strategy;
   input.gl_implementation_parts = gl_implementation_parts;
-  input.gpu.direct_rendering_version = direct_rendering_version;
+  input.direct_rendering_version = direct_rendering_version;
   input.sandboxed = sandboxed;
   input.in_process_gpu = in_process_gpu;
   input.passthrough_cmd_decoder = passthrough_cmd_decoder;
@@ -237,8 +237,8 @@ TEST_F(StructTraitsTest, GpuInfo) {
   EXPECT_EQ(gpu.device_string, output.gpu.device_string);
   EXPECT_EQ(secondary_gpus.size(), output.secondary_gpus.size());
   for (size_t i = 0; i < secondary_gpus.size(); ++i) {
-    const gpu::GPUDevice& expected_gpu = secondary_gpus[i];
-    const gpu::GPUDevice& actual_gpu = output.secondary_gpus[i];
+    const gpu::GPUInfo::GPUDevice& expected_gpu = secondary_gpus[i];
+    const gpu::GPUInfo::GPUDevice& actual_gpu = output.secondary_gpus[i];
     EXPECT_EQ(expected_gpu.vendor_id, actual_gpu.vendor_id);
     EXPECT_EQ(expected_gpu.device_id, actual_gpu.device_id);
 #if BUILDFLAG(IS_WIN)
@@ -251,22 +251,22 @@ TEST_F(StructTraitsTest, GpuInfo) {
   }
   EXPECT_EQ(driver_vendor, output.gpu.driver_vendor);
   EXPECT_EQ(driver_version, output.gpu.driver_version);
-  EXPECT_EQ(pixel_shader_version, output.gpu.pixel_shader_version);
-  EXPECT_EQ(vertex_shader_version, output.gpu.vertex_shader_version);
-  EXPECT_EQ(max_msaa_samples, output.gpu.max_msaa_samples);
+  EXPECT_EQ(pixel_shader_version, output.pixel_shader_version);
+  EXPECT_EQ(vertex_shader_version, output.vertex_shader_version);
+  EXPECT_EQ(max_msaa_samples, output.max_msaa_samples);
   EXPECT_EQ(machine_model_name, output.machine_model_name);
   EXPECT_EQ(machine_model_version, output.machine_model_version);
-  EXPECT_EQ(gl_version, output.gpu.gl_version);
-  EXPECT_EQ(gl_vendor, output.gpu.gl_vendor);
-  EXPECT_EQ(gl_renderer, output.gpu.gl_renderer);
-  EXPECT_EQ(gl_extensions, output.gpu.gl_extensions);
-  EXPECT_EQ(gl_ws_vendor, output.gpu.gl_ws_vendor);
-  EXPECT_EQ(gl_ws_version, output.gpu.gl_ws_version);
-  EXPECT_EQ(gl_ws_extensions, output.gpu.gl_ws_extensions);
+  EXPECT_EQ(gl_version, output.gl_version);
+  EXPECT_EQ(gl_vendor, output.gl_vendor);
+  EXPECT_EQ(gl_renderer, output.gl_renderer);
+  EXPECT_EQ(gl_extensions, output.gl_extensions);
+  EXPECT_EQ(gl_ws_vendor, output.gl_ws_vendor);
+  EXPECT_EQ(gl_ws_version, output.gl_ws_version);
+  EXPECT_EQ(gl_ws_extensions, output.gl_ws_extensions);
   EXPECT_EQ(gl_reset_notification_strategy,
-            output.gpu.gl_reset_notification_strategy);
+            output.gl_reset_notification_strategy);
   EXPECT_EQ(gl_implementation_parts, output.gl_implementation_parts);
-  EXPECT_EQ(direct_rendering_version, output.gpu.direct_rendering_version);
+  EXPECT_EQ(direct_rendering_version, output.direct_rendering_version);
   EXPECT_EQ(sandboxed, output.sandboxed);
   EXPECT_EQ(in_process_gpu, output.in_process_gpu);
   EXPECT_EQ(passthrough_cmd_decoder, output.passthrough_cmd_decoder);

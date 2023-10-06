@@ -12,7 +12,7 @@
 
 namespace gpu {
 
-bool CollectContextGraphicsInfo(GPUInfo* gpu_info, gl::GLDisplay* display) {
+bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
   DCHECK(gpu_info);
 
   TRACE_EVENT0("gpu", "gpu_info_collector::CollectGraphicsInfo");
@@ -24,7 +24,7 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info, gl::GLDisplay* display) {
   gpu_info->machine_model_name = "Chromecast";
 #endif  // BUILDFLAG(IS_CASTOS)
 
-  return CollectGraphicsInfoGL(gpu_info, display);
+  return CollectGraphicsInfoGL(gpu_info, gl::GetDefaultDisplay());
 }
 
 bool CollectBasicGraphicsInfo(GPUInfo* gpu_info) {

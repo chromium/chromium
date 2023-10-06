@@ -21,13 +21,13 @@ void GPUMetricsProvider::ProvideSystemProfileMetrics(
 
   const gpu::GPUInfo& gpu_info =
       content::GpuDataManager::GetInstance()->GetGPUInfo();
-  const gpu::GPUDevice& active_gpu = gpu_info.active_gpu();
+  const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
   SystemProfileProto::Hardware::Graphics* gpu = hardware->mutable_gpu();
   gpu->set_vendor_id(active_gpu.vendor_id);
   gpu->set_device_id(active_gpu.device_id);
   gpu->set_driver_version(active_gpu.driver_version);
-  gpu->set_gl_vendor(active_gpu.gl_vendor);
-  gpu->set_gl_renderer(active_gpu.gl_renderer);
+  gpu->set_gl_vendor(gpu_info.gl_vendor);
+  gpu->set_gl_renderer(gpu_info.gl_renderer);
 }
 
 }  // namespace metrics

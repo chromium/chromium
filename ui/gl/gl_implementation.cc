@@ -269,18 +269,6 @@ void SetSoftwareWebGLCommandLineSwitches(base::CommandLine* command_line) {
                                   kANGLEImplementationSwiftShaderForWebGLName);
 }
 
-uint32_t GetSoftwareGLImplementationVendorId() {
-  return 0xFFFF;
-}
-
-uint32_t GetSoftwareGLImplementationDeviceId() {
-  return 0xFFFF;
-}
-
-uint64_t GetSoftwareGLImplementationSystemDeviceId() {
-  return 0xFFFF0000FFFF;
-}
-
 absl::optional<GLImplementationParts>
 GetRequestedGLImplementationFromCommandLine(
     const base::CommandLine* command_line,

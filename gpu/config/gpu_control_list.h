@@ -141,7 +141,7 @@ class GPU_EXPORT GpuControlList {
     const char* driver_vendor;
     Version driver_version;
 
-    bool Contains(const std::vector<GPUDevice>& gpus) const;
+    bool Contains(const std::vector<GPUInfo::GPUDevice>& gpus) const;
   };
 
   struct GPU_EXPORT GLStrings {

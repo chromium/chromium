@@ -22,114 +22,66 @@
 namespace mojo {
 
 template <>
-struct GPU_EXPORT StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUDevice> {
-  static bool Read(gpu::mojom::GpuDeviceDataView data, gpu::GPUDevice* out);
+struct GPU_EXPORT
+    StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice> {
+  static bool Read(gpu::mojom::GpuDeviceDataView data,
+                   gpu::GPUInfo::GPUDevice* out);
 
-  static uint32_t vendor_id(const gpu::GPUDevice& input) {
+  static uint32_t vendor_id(const gpu::GPUInfo::GPUDevice& input) {
     return input.vendor_id;
   }
 
-  static uint32_t device_id(const gpu::GPUDevice& input) {
+  static uint32_t device_id(const gpu::GPUInfo::GPUDevice& input) {
     return input.device_id;
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  static uint32_t revision(const gpu::GPUDevice& input) {
+  static uint32_t revision(const gpu::GPUInfo::GPUDevice& input) {
     return input.revision;
   }
 #endif
 #if BUILDFLAG(IS_WIN)
-  static uint32_t sub_sys_id(const gpu::GPUDevice& input) {
+  static uint32_t sub_sys_id(const gpu::GPUInfo::GPUDevice& input) {
     return input.sub_sys_id;
   }
 
-  static const CHROME_LUID luid(const gpu::GPUDevice& input) {
+  static const CHROME_LUID luid(const gpu::GPUInfo::GPUDevice& input) {
     return input.luid;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  static bool active(const gpu::GPUDevice& input) { return input.active; }
+  static bool active(const gpu::GPUInfo::GPUDevice& input) {
+    return input.active;
+  }
 
-  static const std::string& vendor_string(const gpu::GPUDevice& input) {
+  static const std::string& vendor_string(
+      const gpu::GPUInfo::GPUDevice& input) {
     return input.vendor_string;
   }
 
-  static const std::string& device_string(const gpu::GPUDevice& input) {
+  static const std::string& device_string(
+      const gpu::GPUInfo::GPUDevice& input) {
     return input.device_string;
   }
 
-  static const std::string& driver_vendor(const gpu::GPUDevice& input) {
+  static const std::string& driver_vendor(
+      const gpu::GPUInfo::GPUDevice& input) {
     return input.driver_vendor;
   }
 
-  static const std::string& driver_version(const gpu::GPUDevice& input) {
+  static const std::string& driver_version(
+      const gpu::GPUInfo::GPUDevice& input) {
     return input.driver_version;
   }
 
-  static int cuda_compute_capability_major(const gpu::GPUDevice& input) {
+  static int cuda_compute_capability_major(
+      const gpu::GPUInfo::GPUDevice& input) {
     return input.cuda_compute_capability_major;
   }
 
-  static gl::GpuPreference gpu_preference(const gpu::GPUDevice& input) {
+  static gl::GpuPreference gpu_preference(
+      const gpu::GPUInfo::GPUDevice& input) {
     return input.gpu_preference;
-  }
-
-  static const std::string& pixel_shader_version(const gpu::GPUDevice& input) {
-    return input.pixel_shader_version;
-  }
-
-  static const std::string& vertex_shader_version(const gpu::GPUDevice& input) {
-    return input.vertex_shader_version;
-  }
-
-  static const std::string& max_msaa_samples(const gpu::GPUDevice& input) {
-    return input.max_msaa_samples;
-  }
-
-  static const std::string& display_type(const gpu::GPUDevice& input) {
-    return input.display_type;
-  }
-
-  static const std::string& gl_version(const gpu::GPUDevice& input) {
-    return input.gl_version;
-  }
-
-  static const std::string& gl_vendor(const gpu::GPUDevice& input) {
-    return input.gl_vendor;
-  }
-
-  static const std::string& gl_renderer(const gpu::GPUDevice& input) {
-    return input.gl_renderer;
-  }
-
-  static const std::string& gl_extensions(const gpu::GPUDevice& input) {
-    return input.gl_extensions;
-  }
-
-  static const std::string& gl_ws_vendor(const gpu::GPUDevice& input) {
-    return input.gl_ws_vendor;
-  }
-
-  static const std::string& gl_ws_version(const gpu::GPUDevice& input) {
-    return input.gl_ws_version;
-  }
-
-  static const std::string& gl_ws_extensions(const gpu::GPUDevice& input) {
-    return input.gl_ws_extensions;
-  }
-
-  static uint32_t gl_reset_notification_strategy(const gpu::GPUDevice& input) {
-    return input.gl_reset_notification_strategy;
-  }
-
-  static const std::string& direct_rendering_version(
-      const gpu::GPUDevice& input) {
-    return input.direct_rendering_version;
-  }
-
-  static bool can_support_threaded_texture_mailbox(
-      const gpu::GPUDevice& input) {
-    return input.can_support_threaded_texture_mailbox;
   }
 };
 
@@ -327,13 +279,25 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.amd_switchable;
   }
 
-  static const gpu::GPUDevice& gpu(const gpu::GPUInfo& input) {
+  static const gpu::GPUInfo::GPUDevice& gpu(const gpu::GPUInfo& input) {
     return input.gpu;
   }
 
-  static const std::vector<gpu::GPUDevice>& secondary_gpus(
+  static const std::vector<gpu::GPUInfo::GPUDevice>& secondary_gpus(
       const gpu::GPUInfo& input) {
     return input.secondary_gpus;
+  }
+
+  static const std::string& pixel_shader_version(const gpu::GPUInfo& input) {
+    return input.pixel_shader_version;
+  }
+
+  static const std::string& vertex_shader_version(const gpu::GPUInfo& input) {
+    return input.vertex_shader_version;
+  }
+
+  static const std::string& max_msaa_samples(const gpu::GPUInfo& input) {
+    return input.max_msaa_samples;
   }
 
   static const std::string& machine_model_name(const gpu::GPUInfo& input) {
@@ -344,9 +308,50 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.machine_model_version;
   }
 
+  static const std::string& display_type(const gpu::GPUInfo& input) {
+    return input.display_type;
+  }
+
+  static const std::string& gl_version(const gpu::GPUInfo& input) {
+    return input.gl_version;
+  }
+
+  static const std::string& gl_vendor(const gpu::GPUInfo& input) {
+    return input.gl_vendor;
+  }
+
+  static const std::string& gl_renderer(const gpu::GPUInfo& input) {
+    return input.gl_renderer;
+  }
+
+  static const std::string& gl_extensions(const gpu::GPUInfo& input) {
+    return input.gl_extensions;
+  }
+
+  static const std::string& gl_ws_vendor(const gpu::GPUInfo& input) {
+    return input.gl_ws_vendor;
+  }
+
+  static const std::string& gl_ws_version(const gpu::GPUInfo& input) {
+    return input.gl_ws_version;
+  }
+
+  static const std::string& gl_ws_extensions(const gpu::GPUInfo& input) {
+    return input.gl_ws_extensions;
+  }
+
+  static uint32_t gl_reset_notification_strategy(const gpu::GPUInfo& input) {
+    return input.gl_reset_notification_strategy;
+  }
+
   static const gl::GLImplementationParts gl_implementation_parts(
       const gpu::GPUInfo& input) {
     return input.gl_implementation_parts;
+  }
+
+  static const std::string& direct_rendering_version(
+      const gpu::GPUInfo& input) {
+    return input.direct_rendering_version;
   }
 
   static bool sandboxed(const gpu::GPUInfo& input) { return input.sandboxed; }
@@ -357,6 +362,10 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
 
   static bool passthrough_cmd_decoder(const gpu::GPUInfo& input) {
     return input.passthrough_cmd_decoder;
+  }
+
+  static bool can_support_threaded_texture_mailbox(const gpu::GPUInfo& input) {
+    return input.can_support_threaded_texture_mailbox;
   }
 
 #if BUILDFLAG(IS_MAC)

@@ -16,7 +16,7 @@ InfoCollectionGpuServiceImpl::InfoCollectionGpuServiceImpl(
     scoped_refptr<base::SingleThreadTaskRunner> main_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_runner,
     const gpu::DevicePerfInfo& device_perf_info,
-    const gpu::GPUDevice& gpu_device,
+    const gpu::GPUInfo::GPUDevice& gpu_device,
     mojo::PendingReceiver<mojom::InfoCollectionGpuService> pending_receiver)
     : main_runner_(std::move(main_runner)),
       io_runner_(std::move(io_runner)),

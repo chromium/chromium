@@ -71,12 +71,12 @@ class GPUInfoCollectorTest
         test_values_.gpu.device_id = 0;  // not implemented
         test_values_.gpu.driver_vendor = "";  // not implemented
         test_values_.gpu.driver_version = "14.0";
-        test_values_.gpu.pixel_shader_version = "1.00";
-        test_values_.gpu.vertex_shader_version = "1.00";
-        test_values_.gpu.gl_renderer = "Adreno (TM) 320";
-        test_values_.gpu.gl_vendor = "Qualcomm";
-        test_values_.gpu.gl_version = "OpenGL ES 2.0 V@14.0 AU@04.02 (CL@3206)";
-        test_values_.gpu.gl_extensions =
+        test_values_.pixel_shader_version = "1.00";
+        test_values_.vertex_shader_version = "1.00";
+        test_values_.gl_renderer = "Adreno (TM) 320";
+        test_values_.gl_vendor = "Qualcomm";
+        test_values_.gl_version = "OpenGL ES 2.0 V@14.0 AU@04.02 (CL@3206)";
+        test_values_.gl_extensions =
             "GL_OES_packed_depth_stencil GL_EXT_texture_format_BGRA8888 "
             "GL_EXT_read_format_bgra GL_EXT_multisampled_render_to_texture";
         gl_shading_language_version_ = "1.00";
@@ -87,12 +87,12 @@ class GPUInfoCollectorTest
         test_values_.gpu.device_id = 0x0658;
         test_values_.gpu.driver_vendor = "NVIDIA";
         test_values_.gpu.driver_version = "195.36.24";
-        test_values_.gpu.pixel_shader_version = "1.50";
-        test_values_.gpu.vertex_shader_version = "1.50";
-        test_values_.gpu.gl_renderer = "Quadro FX 380/PCI/SSE2";
-        test_values_.gpu.gl_vendor = "NVIDIA Corporation";
-        test_values_.gpu.gl_version = "3.2.0 NVIDIA 195.36.24";
-        test_values_.gpu.gl_extensions =
+        test_values_.pixel_shader_version = "1.50";
+        test_values_.vertex_shader_version = "1.50";
+        test_values_.gl_renderer = "Quadro FX 380/PCI/SSE2";
+        test_values_.gl_vendor = "NVIDIA Corporation";
+        test_values_.gl_version = "3.2.0 NVIDIA 195.36.24";
+        test_values_.gl_extensions =
             "GL_OES_packed_depth_stencil GL_EXT_texture_format_BGRA8888 "
             "GL_EXT_read_format_bgra";
         gl_shading_language_version_ = "1.50 NVIDIA via Cg compiler";
@@ -103,12 +103,12 @@ class GPUInfoCollectorTest
         test_values_.gpu.device_id = 0x0640;
         test_values_.gpu.driver_vendor = "NVIDIA";
         test_values_.gpu.driver_version = "1.6.18";
-        test_values_.gpu.pixel_shader_version = "1.20";
-        test_values_.gpu.vertex_shader_version = "1.20";
-        test_values_.gpu.gl_renderer = "NVIDIA GeForce GT 120 OpenGL Engine";
-        test_values_.gpu.gl_vendor = "NVIDIA Corporation";
-        test_values_.gpu.gl_version = "2.1 NVIDIA-1.6.18";
-        test_values_.gpu.gl_extensions =
+        test_values_.pixel_shader_version = "1.20";
+        test_values_.vertex_shader_version = "1.20";
+        test_values_.gl_renderer = "NVIDIA GeForce GT 120 OpenGL Engine";
+        test_values_.gl_vendor = "NVIDIA Corporation";
+        test_values_.gl_version = "2.1 NVIDIA-1.6.18";
+        test_values_.gl_extensions =
             "GL_OES_packed_depth_stencil GL_EXT_texture_format_BGRA8888 "
             "GL_EXT_read_format_bgra GL_EXT_framebuffer_multisample";
         gl_shading_language_version_ = "1.20 ";
@@ -119,12 +119,12 @@ class GPUInfoCollectorTest
         test_values_.gpu.device_id = 0x0658;
         test_values_.gpu.driver_vendor = "";  // not implemented
         test_values_.gpu.driver_version = "";
-        test_values_.gpu.pixel_shader_version = "1.40";
-        test_values_.gpu.vertex_shader_version = "1.40";
-        test_values_.gpu.gl_renderer = "Quadro FX 380/PCI/SSE2";
-        test_values_.gpu.gl_vendor = "NVIDIA Corporation";
-        test_values_.gpu.gl_version = "3.1.0";
-        test_values_.gpu.gl_extensions =
+        test_values_.pixel_shader_version = "1.40";
+        test_values_.vertex_shader_version = "1.40";
+        test_values_.gl_renderer = "Quadro FX 380/PCI/SSE2";
+        test_values_.gl_vendor = "NVIDIA Corporation";
+        test_values_.gl_version = "3.1.0";
+        test_values_.gl_extensions =
             "GL_OES_packed_depth_stencil GL_EXT_texture_format_BGRA8888 "
             "GL_EXT_read_format_bgra";
         gl_shading_language_version_ = "1.40 NVIDIA via Cg compiler";
@@ -139,29 +139,28 @@ class GPUInfoCollectorTest
     // Need to make a context current so that WillUseGLGetStringForExtensions
     // can be called
     context_ = new gl::GLContextStub;
-    context_->SetExtensionsString(test_values_.gpu.gl_extensions.c_str());
-    context_->SetGLVersionString(test_values_.gpu.gl_version.c_str());
-    context_->SetGLDisplayEGL(display_->GetAs<gl::GLDisplayEGL>());
+    context_->SetExtensionsString(test_values_.gl_extensions.c_str());
+    context_->SetGLVersionString(test_values_.gl_version.c_str());
     surface_ = new gl::GLSurfaceStub;
     context_->MakeCurrent(surface_.get());
 
     EXPECT_CALL(*gl_, GetString(GL_VERSION))
-        .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
-            test_values_.gpu.gl_version.c_str())));
+        .WillRepeatedly(Return(
+            reinterpret_cast<const GLubyte*>(test_values_.gl_version.c_str())));
 
     EXPECT_CALL(*gl_, GetString(GL_RENDERER))
         .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
-            test_values_.gpu.gl_renderer.c_str())));
+            test_values_.gl_renderer.c_str())));
 
     // Now that that expectation is set up, we can call this helper function.
     if (gl::WillUseGLGetStringForExtensions()) {
       EXPECT_CALL(*gl_, GetString(GL_EXTENSIONS))
           .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
-              test_values_.gpu.gl_extensions.c_str())));
+              test_values_.gl_extensions.c_str())));
     } else {
       split_extensions_.clear();
       split_extensions_ =
-          base::SplitString(test_values_.gpu.gl_extensions, " ",
+          base::SplitString(test_values_.gl_extensions, " ",
                             base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       EXPECT_CALL(*gl_, GetIntegerv(GL_NUM_EXTENSIONS, _))
           .WillRepeatedly(SetArgPointee<1>(split_extensions_.size()));
@@ -175,11 +174,11 @@ class GPUInfoCollectorTest
         .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
             gl_shading_language_version_)));
     EXPECT_CALL(*gl_, GetString(GL_VENDOR))
-        .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
-            test_values_.gpu.gl_vendor.c_str())));
+        .WillRepeatedly(Return(
+            reinterpret_cast<const GLubyte*>(test_values_.gl_vendor.c_str())));
     EXPECT_CALL(*gl_, GetString(GL_RENDERER))
         .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
-            test_values_.gpu.gl_renderer.c_str())));
+            test_values_.gl_renderer.c_str())));
     EXPECT_CALL(*gl_, GetIntegerv(GL_MAX_SAMPLES, _))
         .WillOnce(SetArgPointee<1>(8))
         .RetiresOnSaturation();
@@ -219,8 +218,7 @@ INSTANTIATE_TEST_SUITE_P(GPUConfig,
 // be fixed.
 TEST_P(GPUInfoCollectorTest, CollectGraphicsInfoGL) {
   GPUInfo gpu_info;
-  gpu_info.gpu.system_device_id = display_->system_device_id();
-  CollectGraphicsInfoGL(&gpu_info, display_);
+  CollectGraphicsInfoGL(&gpu_info, gl::GetDefaultDisplay());
 #if BUILDFLAG(IS_WIN)
   if (GetParam() == kMockedWindows) {
     EXPECT_EQ(test_values_.gpu.driver_vendor, gpu_info.gpu.driver_vendor);
@@ -244,60 +242,21 @@ TEST_P(GPUInfoCollectorTest, CollectGraphicsInfoGL) {
   }
 #endif
 
-  EXPECT_EQ(test_values_.gpu.pixel_shader_version,
-            gpu_info.gpu.pixel_shader_version);
-  EXPECT_EQ(test_values_.gpu.vertex_shader_version,
-            gpu_info.gpu.vertex_shader_version);
-  EXPECT_EQ(test_values_.gpu.gl_version, gpu_info.gpu.gl_version);
-  EXPECT_EQ(test_values_.gpu.gl_renderer, gpu_info.gpu.gl_renderer);
-  EXPECT_EQ(test_values_.gpu.gl_vendor, gpu_info.gpu.gl_vendor);
-  EXPECT_EQ(test_values_.gpu.gl_extensions, gpu_info.gpu.gl_extensions);
+  EXPECT_EQ(test_values_.pixel_shader_version, gpu_info.pixel_shader_version);
+  EXPECT_EQ(test_values_.vertex_shader_version, gpu_info.vertex_shader_version);
+  EXPECT_EQ(test_values_.gl_version, gpu_info.gl_version);
+  EXPECT_EQ(test_values_.gl_renderer, gpu_info.gl_renderer);
+  EXPECT_EQ(test_values_.gl_vendor, gpu_info.gl_vendor);
+  EXPECT_EQ(test_values_.gl_extensions, gpu_info.gl_extensions);
 }
 
-class MultiGPUsTest
-    : public testing::Test,
-      public ::testing::WithParamInterface<MockedOperatingSystemKind> {
- public:
-  MultiGPUsTest() = default;
-  ~MultiGPUsTest() override = default;
-
-  void SetUp() override {
-    testing::Test::SetUp();
-    gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
-    display_ = gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
-    gl_ = std::make_unique<::testing::StrictMock<::gl::MockGLInterface>>();
-    ::gl::MockGLInterface::SetGLInterface(gl_.get());
-    // Need to make a context current so that WillUseGLGetStringForExtensions
-    // can be called
-    context_ = new gl::GLContextStub;
-    context_->SetGLDisplayEGL(display_->GetAs<gl::GLDisplayEGL>());
-    surface_ = new gl::GLSurfaceStub;
-    context_->MakeCurrent(surface_.get());
-  }
-
-  void TearDown() override {
-    ::gl::MockGLInterface::SetGLInterface(nullptr);
-    gl_.reset();
-    gl::GLSurfaceTestSupport::ShutdownGL(display_);
-
-    testing::Test::TearDown();
-  }
-
- protected:
-  // Use StrictMock to make 100% sure we know how GL will be called.
-  std::unique_ptr<::testing::StrictMock<::gl::MockGLInterface>> gl_;
-  scoped_refptr<gl::GLContextStub> context_;
-  scoped_refptr<gl::GLSurfaceStub> surface_;
-  raw_ptr<gl::GLDisplay> display_ = nullptr;
-};
-
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(MultiGPUsTest);
-
-TEST_F(MultiGPUsTest, IdentifyActiveGPU) {
-  GPUDevice nvidia_gpu;
-  nvidia_gpu.system_device_id = 0x10de;
-  GPUDevice intel_gpu;
-  intel_gpu.system_device_id = 0x8086;
+TEST(MultiGPUsTest, IdentifyActiveGPU0) {
+  GPUInfo::GPUDevice nvidia_gpu;
+  nvidia_gpu.vendor_id = 0x10de;
+  nvidia_gpu.device_id = 0x0df8;
+  GPUInfo::GPUDevice intel_gpu;
+  intel_gpu.vendor_id = 0x8086;
+  intel_gpu.device_id = 0x0416;
 
   GPUInfo gpu_info;
   gpu_info.gpu = nvidia_gpu;
@@ -310,15 +269,137 @@ TEST_F(MultiGPUsTest, IdentifyActiveGPU) {
   EXPECT_FALSE(gpu_info.gpu.active);
   EXPECT_FALSE(gpu_info.secondary_gpus[0].active);
 
-  gpu_info.secondary_gpus[0].system_device_id = display_->system_device_id();
+  gpu_info.gl_vendor = "Intel Open Source Technology Center";
+  gpu_info.gl_renderer = "Mesa DRI Intel(R) Haswell Mobile";
   IdentifyActiveGPU(&gpu_info);
   EXPECT_FALSE(gpu_info.gpu.active);
   EXPECT_TRUE(gpu_info.secondary_gpus[0].active);
 
-  gpu_info.secondary_gpus[0].system_device_id = 0x8086;
-  gpu_info.gpu.system_device_id = display_->system_device_id();
+  gpu_info.gl_vendor = "NVIDIA Corporation";
+  gpu_info.gl_renderer = "Quadro 600/PCIe/SSE2";
   IdentifyActiveGPU(&gpu_info);
   EXPECT_TRUE(gpu_info.gpu.active);
+  EXPECT_FALSE(gpu_info.secondary_gpus[0].active);
+}
+
+TEST(MultiGPUsTest, IdentifyActiveGPU1) {
+  GPUInfo::GPUDevice nvidia_gpu;
+  nvidia_gpu.vendor_id = 0x10de;
+  nvidia_gpu.device_id = 0x0de1;
+  GPUInfo::GPUDevice intel_gpu;
+  intel_gpu.vendor_id = 0x8086;
+  intel_gpu.device_id = 0x040a;
+
+  GPUInfo gpu_info;
+  gpu_info.gpu = intel_gpu;
+  gpu_info.secondary_gpus.push_back(nvidia_gpu);
+
+  EXPECT_FALSE(gpu_info.gpu.active);
+  EXPECT_FALSE(gpu_info.secondary_gpus[0].active);
+
+  IdentifyActiveGPU(&gpu_info);
+  EXPECT_FALSE(gpu_info.gpu.active);
+  EXPECT_FALSE(gpu_info.secondary_gpus[0].active);
+
+  gpu_info.gl_vendor = "nouveau";
+  IdentifyActiveGPU(&gpu_info);
+  EXPECT_FALSE(gpu_info.gpu.active);
+  EXPECT_TRUE(gpu_info.secondary_gpus[0].active);
+}
+
+TEST(MultiGPUsTest, IdentifyActiveGPU2) {
+  GPUInfo::GPUDevice nvidia_gpu;
+  nvidia_gpu.vendor_id = 0x10de;
+  nvidia_gpu.device_id = 0x0de1;
+  GPUInfo::GPUDevice intel_gpu;
+  intel_gpu.vendor_id = 0x8086;
+  intel_gpu.device_id = 0x040a;
+
+  GPUInfo gpu_info;
+  gpu_info.gpu = intel_gpu;
+  gpu_info.secondary_gpus.push_back(nvidia_gpu);
+
+  EXPECT_FALSE(gpu_info.gpu.active);
+  EXPECT_FALSE(gpu_info.secondary_gpus[0].active);
+
+  IdentifyActiveGPU(&gpu_info);
+  EXPECT_FALSE(gpu_info.gpu.active);
+  EXPECT_FALSE(gpu_info.secondary_gpus[0].active);
+
+  gpu_info.gl_vendor = "Intel";
+  IdentifyActiveGPU(&gpu_info);
+  EXPECT_TRUE(gpu_info.gpu.active);
+  EXPECT_FALSE(gpu_info.secondary_gpus[0].active);
+}
+
+TEST(MultiGPUsTest, IdentifyActiveGPU3) {
+  GPUInfo::GPUDevice nvidia_gpu;
+  nvidia_gpu.vendor_id = 0x10de;
+  nvidia_gpu.device_id = 0x0de1;
+  GPUInfo::GPUDevice intel_gpu;
+  intel_gpu.vendor_id = 0x8086;
+  intel_gpu.device_id = 0x040a;
+  GPUInfo::GPUDevice amd_gpu;
+  amd_gpu.vendor_id = 0x1002;
+  amd_gpu.device_id = 0x6779;
+
+  GPUInfo gpu_info;
+  gpu_info.gpu = intel_gpu;
+  gpu_info.secondary_gpus.push_back(nvidia_gpu);
+  gpu_info.secondary_gpus.push_back(amd_gpu);
+
+  EXPECT_FALSE(gpu_info.gpu.active);
+  EXPECT_FALSE(gpu_info.secondary_gpus[0].active);
+  EXPECT_FALSE(gpu_info.secondary_gpus[1].active);
+
+  IdentifyActiveGPU(&gpu_info);
+  EXPECT_FALSE(gpu_info.gpu.active);
+  EXPECT_FALSE(gpu_info.secondary_gpus[0].active);
+  EXPECT_FALSE(gpu_info.secondary_gpus[1].active);
+
+  gpu_info.gl_vendor = "X.Org";
+  gpu_info.gl_renderer = "AMD R600";
+  IdentifyActiveGPU(&gpu_info);
+  EXPECT_FALSE(gpu_info.gpu.active);
+  EXPECT_FALSE(gpu_info.secondary_gpus[0].active);
+  EXPECT_TRUE(gpu_info.secondary_gpus[1].active);
+}
+
+TEST(MultiGPUsTest, IdentifyActiveGPU4) {
+  GPUInfo::GPUDevice nvidia_gpu;
+  nvidia_gpu.vendor_id = 0x10de;
+  nvidia_gpu.device_id = 0x0de1;
+
+  GPUInfo gpu_info;
+  gpu_info.gpu = nvidia_gpu;
+
+  EXPECT_FALSE(gpu_info.gpu.active);
+
+  IdentifyActiveGPU(&gpu_info);
+  EXPECT_TRUE(gpu_info.gpu.active);
+
+  gpu_info.gl_vendor = "nouveau";
+  IdentifyActiveGPU(&gpu_info);
+  EXPECT_TRUE(gpu_info.gpu.active);
+}
+
+TEST(MultiGPUsTest, IdentifyActiveGPUAvoidFalseMatch) {
+  // Verify that "Corporation" won't be matched with "ati".
+  GPUInfo::GPUDevice amd_gpu;
+  amd_gpu.vendor_id = 0x1002;
+  amd_gpu.device_id = 0x0df8;
+  GPUInfo::GPUDevice intel_gpu;
+  intel_gpu.vendor_id = 0x8086;
+  intel_gpu.device_id = 0x0416;
+
+  GPUInfo gpu_info;
+  gpu_info.gpu = amd_gpu;
+  gpu_info.secondary_gpus.push_back(intel_gpu);
+
+  gpu_info.gl_vendor = "Google Corporation";
+  gpu_info.gl_renderer = "Chrome GPU Team";
+  IdentifyActiveGPU(&gpu_info);
+  EXPECT_FALSE(gpu_info.gpu.active);
   EXPECT_FALSE(gpu_info.secondary_gpus[0].active);
 }
 

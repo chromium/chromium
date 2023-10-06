@@ -489,7 +489,7 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
 
   // GPU
   gpu::GPUInfo gpu_info = content::GpuDataManager::GetInstance()->GetGPUInfo();
-  const gpu::GPUDevice& active_gpu = gpu_info.active_gpu();
+  const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
   LogToCircularBuffer(
       "Gpu: machine-model-name=" + gpu_info.machine_model_name +
       ", machine-model-version=" + gpu_info.machine_model_version +
@@ -497,9 +497,9 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
       ", device-id=" + base::NumberToString(active_gpu.device_id) +
       ", driver-vendor=" + active_gpu.driver_vendor +
       ", driver-version=" + active_gpu.driver_version);
-  LogToCircularBuffer("OpenGL: gl-vendor=" + active_gpu.gl_vendor +
-                      ", gl-renderer=" + active_gpu.gl_renderer +
-                      ", gl-version=" + active_gpu.gl_version);
+  LogToCircularBuffer("OpenGL: gl-vendor=" + gpu_info.gl_vendor +
+                      ", gl-renderer=" + gpu_info.gl_renderer +
+                      ", gl-version=" + gpu_info.gl_version);
 
   // AudioService features
   auto enabled_or_disabled_feature_string = [](auto& feature) {
