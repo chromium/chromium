@@ -173,13 +173,12 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // The task runner to be used for device callbacks.
   const scoped_refptr<base::SequencedTaskRunner> device_task_runner_;
 
-  // Owned by FrameSinkVideoCaptureDevice. This will be valid for the life of
-  // WebContentsFrameTracker because the WebContentsFrameTracker deleter task
-  // will be posted to the UI thread before the MouseCursorOverlayController
-  // deleter task.
+  // Owned by FrameSinkVideoCaptureDevice.  This may only be accessed on the
+  // UI thread. This is not guaranteed to be valid and must be checked before
+  // use.
+  // https://crbug.com/1480152
 #if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<MouseCursorOverlayController, AcrossTasksDanglingUntriaged>
-      cursor_controller_ = nullptr;
+  const base::WeakPtr<MouseCursorOverlayController> cursor_controller_;
 #endif
 
   // We may not have a frame sink ID target at all times.

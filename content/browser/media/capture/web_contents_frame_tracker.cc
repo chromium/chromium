@@ -134,17 +134,20 @@ WebContentsFrameTracker::WebContentsFrameTracker(
     base::WeakPtr<WebContentsVideoCaptureDevice> device,
     MouseCursorOverlayController* cursor_controller)
     : device_(std::move(device)),
-      device_task_runner_(std::move(device_task_runner)) {
+      device_task_runner_(std::move(device_task_runner))
+#if !BUILDFLAG(IS_ANDROID)
+      ,
+      cursor_controller_(cursor_controller->GetWeakPtr())
+#endif
+{
   // Verify on construction that this object is created on the UI thread.  After
   // this, depend on the sequence checker to ensure consistent execution.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  DCHECK(device_task_runner_);
+  CHECK(device_task_runner_);
 
 #if !BUILDFLAG(IS_ANDROID)
-  cursor_controller_ = cursor_controller;
-  DCHECK(cursor_controller_);
+  CHECK(cursor_controller_);
 #endif
 }
 
@@ -528,7 +531,9 @@ void WebContentsFrameTracker::SetTargetView(gfx::NativeView view) {
   }
   target_native_view_ = view;
 #if !BUILDFLAG(IS_ANDROID)
-  cursor_controller_->SetTargetView(view);
+  if (cursor_controller_) {
+    cursor_controller_->SetTargetView(view);
+  }
 #endif
 }
 
