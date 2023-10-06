@@ -6895,7 +6895,7 @@
       "rainhard",
       "msramek",
       "chrome-privacy-controls@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 123
   },
   {
     "name": "privacy-guide-android",
@@ -6911,7 +6911,7 @@
       "rubindl",
       "msramek",
       "chrome-privacy-controls@google.com"],
-    "expiry_milestone": 121
+    "expiry_milestone": 123
   },
   {
     "name": "privacy-guide-preload",
@@ -6919,7 +6919,7 @@
       "rainhard",
       "msramek",
       "chrome-privacy-controls@google.com"],
-    "expiry_milestone": 121
+    "expiry_milestone": 124
   },
   {
     "name": "privacy-guide-preload-android",
@@ -6927,7 +6927,7 @@
       "rubindl",
       "msramek",
       "chrome-privacy-controls@google.com"],
-    "expiry_milestone": 121
+    "expiry_milestone": 124
   },
   {
     "name": "privacy-sandbox-ads-apis",
