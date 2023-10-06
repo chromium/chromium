@@ -13,6 +13,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 
+class AutocompleteInput;
 class AutocompleteProviderClient;
 
 // This is the provider for built-in URLs, such as about:settings and
@@ -36,7 +37,7 @@ class BuiltinProvider : public AutocompleteProvider {
 
   // Populates `matches_` with matching starter pack keywords such as @history,
   // and @bookmarks
-  void DoStarterPackAutocompletion(const std::u16string& text);
+  void DoStarterPackAutocompletion(const AutocompleteInput& input);
 
   // Populates `matches_` with matching built-in URLs such as about:settings and
   // chrome://version.
@@ -55,7 +56,7 @@ class BuiltinProvider : public AutocompleteProvider {
   // Constructs an AutocompleteMatch for starter pack suggestions such as
   // @bookmarks, @history, etc. and adds it to `matches_`.
   void AddStarterPackMatch(const TemplateURL& template_url,
-                           const std::u16string& text);
+                           const AutocompleteInput& input);
 
   // Returns true if |matches_| contains a match that should be allowed to be
   // the default match. If true, the index of that match in |matches_| is

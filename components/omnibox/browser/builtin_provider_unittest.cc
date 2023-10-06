@@ -128,7 +128,8 @@ class BuiltinProviderTest : public testing::Test {
       for (size_t j = 0; j < cases[i].output.size(); ++j) {
         EXPECT_EQ(cases[i].output[j], matches[j].destination_url);
         EXPECT_EQ(matches[j].allowed_to_be_default_match,
-                  matches[j].type == AutocompleteMatchType::STARTER_PACK);
+                  matches[j].type == AutocompleteMatchType::STARTER_PACK &&
+                      matches[j].inline_autocompletion.empty());
       }
     }
   }
@@ -326,16 +327,16 @@ TEST_F(BuiltinProviderTest, Subpages) {
   const GURL kURLThree(kSubpage + kPageThree);
 
   TestData settings_subpage_cases[] = {
-    // Typing the settings path should show settings and the first two subpages.
-    {kSubpage, {GURL(kSubpage), kURLOne, kURLTwo}},
+      // Typing the settings path should show settings and the first two
+      // subpages.
+      {kSubpage, {GURL(kSubpage), kURLOne, kURLTwo}},
 
-    // Typing a subpage path should return the appropriate results.
-    {kSubpage + kPageTwo.substr(0, 1),                 {kURLTwo, kURLThree}},
-    {kSubpage + kPageTwo.substr(0, 2),                 {kURLTwo}},
-    {kSubpage + kPageThree.substr(0, kPageThree.length() - 1),
-                                                       {kURLThree}},
-    {kSubpage + kPageOne,                              {kURLOne}},
-    {kSubpage + kPageTwo,                              {kURLTwo}},
+      // Typing a subpage path should return the appropriate results.
+      {kSubpage + kPageTwo.substr(0, 1), {kURLTwo, kURLThree}},
+      {kSubpage + kPageTwo.substr(0, 2), {kURLTwo}},
+      {kSubpage + kPageThree.substr(0, kPageThree.length() - 1), {kURLThree}},
+      {kSubpage + kPageOne, {kURLOne}},
+      {kSubpage + kPageTwo, {kURLTwo}},
   };
 
   RunTest(settings_subpage_cases, std::size(settings_subpage_cases));
@@ -488,8 +489,8 @@ TEST_F(BuiltinProviderTest, Inlining) {
 
   ACMatches matches;
   for (size_t i = 0; i < std::size(cases); ++i) {
-    SCOPED_TRACE(base::StringPrintf(
-        "case %" PRIuS ": %s", i, base::UTF16ToUTF8(cases[i].input).c_str()));
+    SCOPED_TRACE(base::StringPrintf("case %" PRIuS ": %s", i,
+                                    base::UTF16ToUTF8(cases[i].input).c_str()));
     AutocompleteInput input(cases[i].input, metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     provider_->Start(input, false);
