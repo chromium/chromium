@@ -900,52 +900,52 @@
   {
     "name": "borealis-big-gl",
     "owners": [ "danielng@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 132
   },
   {
     "name": "borealis-dgpu",
     "owners": [ "dbehr@google.com", "chromeos-gfx-gpu@google.com", "buganizer-system+995569@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 132
   },
   {
     "name": "borealis-disk-management",
     "owners": [ "danielng@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 132
   },
   {
     "name": "borealis-enabled",
     "owners": [ "hollingum@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 132
   },
   {
     "name": "borealis-force-beta-client",
     "owners": [ "hollingum@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 132
   },
   {
     "name": "borealis-force-double-scale",
     "owners": [ "hollingum@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 132
   },
   {
     "name": "borealis-linux-mode",
     "owners": [ "hollingum@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 132
   },
   {
     "name": "borealis-provision",
     "owners": [ "danielng@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 132
   },
   {
     "name": "borealis-storage-ballooning",
     "owners": [ "danielng@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 132
   },
   {
     "name": "borealis-web-ui-installer",
     "owners": [ "lqu@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 132
   },
   {
     "name": "bottom-omnibox-default-setting",
