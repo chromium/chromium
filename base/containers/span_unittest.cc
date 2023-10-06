@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/containers/adapters.h"
@@ -25,6 +26,39 @@ using ::testing::Eq;
 using ::testing::Pointwise;
 
 namespace base {
+
+// Tests for span(Container&&) deduction guide.
+static_assert(std::is_same_v<decltype(span(std::declval<const std::string&>())),
+                             span<const char>>);
+static_assert(
+    std::is_same_v<decltype(span(std::declval<const std::string&&>())),
+                   span<const char>>);
+static_assert(
+    std::is_same_v<decltype(span(std::declval<std::string&>())), span<char>>);
+static_assert(std::is_same_v<decltype(span(std::declval<std::string&&>())),
+                             span<const char>>);
+static_assert(
+    std::is_same_v<decltype(span(std::declval<const std::u16string&>())),
+                   span<const char16_t>>);
+static_assert(
+    std::is_same_v<decltype(span(std::declval<const std::u16string&&>())),
+                   span<const char16_t>>);
+static_assert(std::is_same_v<decltype(span(std::declval<std::u16string&>())),
+                             span<char16_t>>);
+static_assert(std::is_same_v<decltype(span(std::declval<std::u16string&&>())),
+                             span<const char16_t>>);
+static_assert(
+    std::is_same_v<decltype(span(std::declval<const std::array<float, 9>&>())),
+                   span<const float, 9>>);
+static_assert(
+    std::is_same_v<decltype(span(std::declval<const std::array<float, 9>&&>())),
+                   span<const float, 9>>);
+static_assert(
+    std::is_same_v<decltype(span(std::declval<std::array<float, 9>&>())),
+                   span<float, 9>>);
+static_assert(
+    std::is_same_v<decltype(span(std::declval<std::array<float, 9>&&>())),
+                   span<const float, 9>>);
 
 TEST(SpanTest, DefaultConstructor) {
   span<int> dynamic_span;

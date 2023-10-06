@@ -460,6 +460,12 @@ class GSL_POINTER span : public internal::ExtentStorage<Extent> {
 template <class T, size_t Extent>
 constexpr size_t span<T, Extent>::extent;
 
+template <typename Container,
+          typename T = std::remove_pointer_t<
+              decltype(std::data(std::declval<Container>()))>,
+          size_t X = internal::Extent<Container>::value>
+span(Container&& container) -> span<T, X>;
+
 // [span.objectrep], views of object representation
 template <typename T, size_t X>
 span<const uint8_t, (X == dynamic_extent ? dynamic_extent : sizeof(T) * X)>
