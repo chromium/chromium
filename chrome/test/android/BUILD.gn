@@ -193,6 +193,47 @@ java_group("chrome_java_unit_test_support") {
   public_deps = [ ":chrome_java_test_support_common" ]
 }
 
+android_library("chrome_java_transit") {
+  testonly = true
+
+  sources = [
+    "javatests/src/org/chromium/chrome/test/transit/AppMenuFacility.java",
+    "javatests/src/org/chromium/chrome/test/transit/BasePageStation.java",
+    "javatests/src/org/chromium/chrome/test/transit/ChromeTabbedActivityPublicTransitEntryPoints.java",
+    "javatests/src/org/chromium/chrome/test/transit/EntryPageStation.java",
+    "javatests/src/org/chromium/chrome/test/transit/NewTabPageStation.java",
+    "javatests/src/org/chromium/chrome/test/transit/NtpLoadedCondition.java",
+    "javatests/src/org/chromium/chrome/test/transit/PageInteractableCondition.java",
+    "javatests/src/org/chromium/chrome/test/transit/PageLoadedCondition.java",
+    "javatests/src/org/chromium/chrome/test/transit/PageStation.java",
+    "javatests/src/org/chromium/chrome/test/transit/TabSwitcherActionMenuFacility.java",
+    "javatests/src/org/chromium/chrome/test/transit/TabSwitcherStation.java",
+  ]
+
+  deps = [
+    ":chrome_java_integration_test_support",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base/test:public_transit_java",
+    "//build/android:build_java",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/native_page:java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/android_sdk:android_test_base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}
+
 # Rules, utilities and fakes for integration tests. Unit test targets shouldn't
 # depend on this.
 android_library("chrome_java_integration_test_support") {
@@ -247,6 +288,7 @@ android_library("chrome_java_integration_test_support") {
     "$google_play_services_package:google_play_services_basement_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base/test:public_transit_java",
     "//build/android:build_java",
     "//chrome/android:base_module_java",
     "//chrome/android:browser_java_test_support",
