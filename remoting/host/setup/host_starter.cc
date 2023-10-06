@@ -31,6 +31,9 @@ namespace remoting {
 HostStarter::~HostStarter() = default;
 
 HostStarter::Params::Params() = default;
+HostStarter::Params::Params(HostStarter::Params&&) = default;
+HostStarter::Params& HostStarter::Params::operator=(HostStarter::Params&&) =
+    default;
 HostStarter::Params::~Params() = default;
 
 namespace {
@@ -54,7 +57,7 @@ class HostStarterImpl : public HostStarter,
   ~HostStarterImpl() override;
 
   // HostStarterImpl implementation.
-  void StartHost(const Params& params, CompletionCallback on_done) override;
+  void StartHost(Params params, CompletionCallback on_done) override;
 
   // gaia::GaiaOAuthClient::Delegate
   void OnGetTokensResponse(const std::string& refresh_token,
@@ -91,22 +94,19 @@ class HostStarterImpl : public HostStarter,
   void OnLocalHostStopped();
   void OnHostStarted(DaemonController::AsyncResult result);
 
+  Params start_host_params_;
   std::unique_ptr<gaia::GaiaOAuthClient> oauth_client_;
   std::unique_ptr<remoting::ServiceClient> service_client_;
   scoped_refptr<remoting::DaemonController> daemon_controller_;
   std::unique_ptr<remoting::HostStopper> host_stopper_;
   gaia::OAuthClientInfo oauth_client_info_;
-  std::string host_name_;
-  std::string host_pin_;
   CompletionCallback on_done_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   std::string host_refresh_token_;
   std::string host_access_token_;
   std::string directory_access_token_;
-  std::string host_owner_;
-  std::string xmpp_login_;
+  std::string service_account_email_;
   scoped_refptr<remoting::RsaKeyPair> key_pair_;
-  std::string host_id_;
   bool auth_code_exchanged_ = false;
 
   // True if the host was not started and unregistration was requested. If this
@@ -135,25 +135,22 @@ HostStarterImpl::HostStarterImpl(
 
 HostStarterImpl::~HostStarterImpl() = default;
 
-void HostStarterImpl::StartHost(const Params& params,
-                                CompletionCallback on_done) {
+void HostStarterImpl::StartHost(Params params, CompletionCallback on_done) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DCHECK(!on_done_);
 
-  host_id_ = params.host_id;
-  host_name_ = params.host_name;
-  host_pin_ = params.host_pin;
-  host_owner_ = params.host_owner;
+  start_host_params_ = std::move(params);
   on_done_ = std::move(on_done);
   oauth_client_info_.client_id =
       google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING);
   oauth_client_info_.client_secret =
       google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING);
-  oauth_client_info_.redirect_uri = params.redirect_url;
+  oauth_client_info_.redirect_uri = start_host_params_.redirect_url;
   // Map the authorization code to refresh and access tokens.
   DCHECK_EQ(pending_get_tokens_, GET_TOKENS_NONE);
   pending_get_tokens_ = GET_TOKENS_DIRECTORY;
-  oauth_client_->GetTokensFromAuthCode(oauth_client_info_, params.auth_code,
+  oauth_client_->GetTokensFromAuthCode(oauth_client_info_,
+                                       start_host_params_.auth_code,
                                        kMaxGetTokensRetries, this);
 }
 
@@ -209,11 +206,13 @@ void HostStarterImpl::OnGetUserEmailResponse(const std::string& user_email) {
     // Note that the auth_code has been exchanged at this point so the user
     // can't just re-run the command with the same nonce and a different
     // host_owner to get the command to succeed.
-    if (host_owner_.empty()) {
-      host_owner_ = user_email;
-    } else if (!base::EqualsCaseInsensitiveASCII(host_owner_, user_email)) {
+    if (start_host_params_.owner_email.empty()) {
+      start_host_params_.owner_email = user_email;
+    } else if (!base::EqualsCaseInsensitiveASCII(start_host_params_.owner_email,
+                                                 user_email)) {
       LOG(ERROR) << "User email from auth_code (" << user_email << ") does not "
-                 << "match the host owner provided (" << host_owner_ << ")";
+                 << "match the host owner provided ("
+                 << start_host_params_.owner_email << ")";
       std::move(on_done_).Run(OAUTH_ERROR);
       return;
     }
@@ -225,8 +224,8 @@ void HostStarterImpl::OnGetUserEmailResponse(const std::string& user_email) {
                        base::Unretained(this)));
   } else {
     // This is the second callback, with the service account credentials.
-    // This email is the service account's email, used to login to XMPP.
-    xmpp_login_ = user_email;
+    // This email is the service account's email.
+    service_account_email_ = user_email;
     StartHostProcess();
   }
 }
@@ -263,13 +262,19 @@ void HostStarterImpl::OnHostRegistered(const std::string& authorization_code) {
 
 void HostStarterImpl::StartHostProcess() {
   // Start the host.
-  std::string host_secret_hash = remoting::MakeHostPinHash(host_id_, host_pin_);
+  std::string host_secret_hash =
+      remoting::MakeHostPinHash(start_host_params_.id, start_host_params_.pin);
   base::Value::Dict config;
-  config.Set("host_owner", host_owner_);
-  config.Set("xmpp_login", xmpp_login_);
+  config.Set("host_owner", start_host_params_.owner_email);
+  // Note: `xmpp_login` is a legacy term which was used with Google Talk. Though
+  // we no longer rely on that service, existing hosts still use this key in
+  // their configuration file so we continue to use it.
+  // TODO(joedow): Update this key and modify the config file parsing logic to
+  // look for a new, more accurate key or fallback to the value of `xmpp_login`.
+  config.Set("xmpp_login", service_account_email_);
   config.Set("oauth_refresh_token", host_refresh_token_);
-  config.Set("host_id", host_id_);
-  config.Set("host_name", host_name_);
+  config.Set("host_id", start_host_params_.id);
+  config.Set("host_name", start_host_params_.name);
   config.Set("private_key", key_pair_->ToString());
   config.Set("host_secret_hash", host_secret_hash);
 
@@ -279,17 +284,17 @@ void HostStarterImpl::StartHostProcess() {
 }
 
 void HostStarterImpl::OnLocalHostStopped() {
-  if (host_id_.empty()) {
-    host_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  if (start_host_params_.id.empty()) {
+    start_host_params_.id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   }
   key_pair_ = RsaKeyPair::Generate();
 
-  std::string host_client_id;
-  host_client_id =
+  std::string host_client_id =
       google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST);
 
-  service_client_->RegisterHost(host_id_, host_name_, key_pair_->GetPublicKey(),
-                                host_client_id, directory_access_token_, this);
+  service_client_->RegisterHost(start_host_params_.id, start_host_params_.name,
+                                key_pair_->GetPublicKey(), host_client_id,
+                                directory_access_token_, this);
 }
 
 void HostStarterImpl::OnHostStarted(DaemonController::AsyncResult result) {
@@ -301,7 +306,8 @@ void HostStarterImpl::OnHostStarted(DaemonController::AsyncResult result) {
   }
   if (result != DaemonController::RESULT_OK) {
     unregistering_host_ = true;
-    service_client_->UnregisterHost(host_id_, directory_access_token_, this);
+    service_client_->UnregisterHost(start_host_params_.id,
+                                    directory_access_token_, this);
     return;
   }
   std::move(on_done_).Run(START_COMPLETE);

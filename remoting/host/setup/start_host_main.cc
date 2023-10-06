@@ -144,39 +144,39 @@ void OnDone(HostStarter::Result result) {
 
 bool InitializeHostStarterParams(HostStarter::Params& params,
                                  const base::CommandLine* command_line) {
-  params.host_name = command_line->GetSwitchValueASCII("name");
-  params.host_pin = command_line->GetSwitchValueASCII("pin");
+  params.id = command_line->GetSwitchValueASCII("host-id");
+  params.name = command_line->GetSwitchValueASCII("name");
+  params.pin = command_line->GetSwitchValueASCII("pin");
   params.auth_code = command_line->GetSwitchValueASCII("code");
   params.redirect_url = command_line->GetSwitchValueASCII("redirect-url");
-  params.host_id = command_line->GetSwitchValueASCII("host-id");
-  params.host_owner = command_line->GetSwitchValueASCII("host-owner");
+  params.owner_email = command_line->GetSwitchValueASCII("host-owner");
 
   if (params.auth_code.empty() || params.redirect_url.empty()) {
     return false;
   }
 
-  if (params.host_name.empty()) {
+  if (params.name.empty()) {
     fprintf(stdout, "Enter a name for this computer: ");
     fflush(stdout);
-    params.host_name = ReadString(false);
+    params.name = ReadString(false);
   }
 
-  if (params.host_pin.empty()) {
+  if (params.pin.empty()) {
     while (true) {
       fprintf(stdout, "Enter a PIN of at least six digits: ");
       fflush(stdout);
-      params.host_pin = ReadString(true);
-      if (!remoting::IsPinValid(params.host_pin)) {
+      params.pin = ReadString(true);
+      if (!remoting::IsPinValid(params.pin)) {
         fprintf(stdout,
                 "Please use a PIN consisting of at least six digits.\n");
         fflush(stdout);
         continue;
       }
-      std::string host_pin_confirm;
+      std::string pin_confirmation;
       fprintf(stdout, "Enter the same PIN again: ");
       fflush(stdout);
-      host_pin_confirm = ReadString(true);
-      if (params.host_pin != host_pin_confirm) {
+      pin_confirmation = ReadString(true);
+      if (params.pin != pin_confirmation) {
         fprintf(stdout, "You entered different PINs.\n");
         fflush(stdout);
         continue;
@@ -184,7 +184,7 @@ bool InitializeHostStarterParams(HostStarter::Params& params,
       break;
     }
   } else {
-    if (!remoting::IsPinValid(params.host_pin)) {
+    if (!remoting::IsPinValid(params.pin)) {
       fprintf(stderr, "Please use a PIN consisting of at least six digits.\n");
       return false;
     }
@@ -276,7 +276,7 @@ int StartHostMain(int argc, char** argv) {
   // Start the host.
   std::unique_ptr<HostStarter> host_starter(
       HostStarter::Create(url_loader_factory_owner.GetURLLoaderFactory()));
-  host_starter->StartHost(params, base::BindOnce(&OnDone));
+  host_starter->StartHost(std::move(params), base::BindOnce(&OnDone));
 
   // Run the task executor until the StartHost completion callback.
   base::RunLoop run_loop;
