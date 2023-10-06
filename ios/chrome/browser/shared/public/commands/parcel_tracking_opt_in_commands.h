@@ -11,8 +11,15 @@
 // Commands related to the parcel tracking opt-in prompt.
 @protocol ParcelTrackingOptInCommands <NSObject>
 
-// Shows the parcel tracking opt-in UI if the user is eligible.
-- (void)showParcelTrackingUIWithParcels:
+// Shows the parcel tracking opt-in UI if the user is eligible for parcel list
+// `parcels`.
+- (void)showTrackingForParcels:(NSArray<CustomTextCheckingResult*>*)parcels;
+
+// Shows the parcel tracking opt-in UI if the user is eligible for filtered
+// parcel list `parcels`. Should only be called on a list of parcels that are
+// not already being tracked by the ShoppingService. Otherwise, use command
+// `showTrackingForParcels`.
+- (void)showTrackingForFilteredParcels:
     (NSArray<CustomTextCheckingResult*>*)parcels;
 
 // Shows the parcel tracking infobar.

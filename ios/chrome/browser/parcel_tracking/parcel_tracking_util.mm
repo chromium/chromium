@@ -74,3 +74,39 @@ void TrackParcels(
           },
           display_infobar, parcel_tracking_commands_handler, parcels));
 }
+
+void FilterParcelsAndShowParcelTrackingUI(
+    commerce::ShoppingService* shopping_service,
+    NSArray<CustomTextCheckingResult*>* parcels,
+    id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler) {
+  shopping_service->GetAllParcelStatuses(base::BindOnce(
+      [](id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler,
+         NSArray<CustomTextCheckingResult*>* parcels, bool success,
+         std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>>
+             statuses) {
+        NSMutableSet* parcel_numbers = [NSMutableSet
+            setWithArray:[parcels valueForKeyPath:@"carrierNumber"]];
+        // Remove the tracking numbers of already tracked parcels from
+        // parcel_numbers array.
+        for (commerce::ParcelTrackingStatus status : *statuses) {
+          NSString* tracking_id = base::SysUTF8ToNSString(status.tracking_id);
+          if ([parcel_numbers containsObject:tracking_id]) {
+            [parcel_numbers removeObject:tracking_id];
+          }
+        }
+        NSMutableArray<CustomTextCheckingResult*>* filtered_parcels =
+            [[NSMutableArray alloc] init];
+        // Add the remaining parcels to filtered_parcels array.
+        for (CustomTextCheckingResult* parcel : parcels) {
+          if ([parcel_numbers containsObject:parcel.carrierNumber]) {
+            [filtered_parcels addObject:parcel];
+          }
+        }
+        if (filtered_parcels.count == 0) {
+          return;
+        }
+        [parcel_tracking_commands_handler
+            showTrackingForFilteredParcels:filtered_parcels];
+      },
+      parcel_tracking_commands_handler, parcels));
+}
