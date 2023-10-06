@@ -1877,23 +1877,6 @@ String StylePropertySerializer::GetShorthandValueForDoubleBarCombinator(
   return result.ReleaseString();
 }
 
-namespace {
-
-String NamedGridAreaTextForPosition(const NamedGridAreaMap& grid_area_map,
-                                    wtf_size_t row,
-                                    wtf_size_t column) {
-  for (const auto& item : grid_area_map) {
-    const GridArea& area = item.value;
-    if (row >= area.rows.StartLine() && row < area.rows.EndLine() &&
-        column >= area.columns.StartLine() && column < area.columns.EndLine()) {
-      return item.key;
-    }
-  }
-  return ".";
-}
-
-}  // namespace
-
 String StylePropertySerializer::GetShorthandValueForGrid(
     const StylePropertyShorthand& shorthand) const {
   DCHECK_EQ(shorthand.length(), 6u);
@@ -2113,106 +2096,10 @@ String StylePropertySerializer::GetShorthandValueForGridTemplate(
   const CSSValue* template_area_values =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
 
-  const bool has_initial_template_rows =
-      IsA<CSSIdentifierValue>(template_row_values) &&
-      To<CSSIdentifierValue>(template_row_values)->GetValueID() ==
-          CSSValueID::kNone;
-  const bool has_initial_template_columns =
-      IsA<CSSIdentifierValue>(template_column_values) &&
-      To<CSSIdentifierValue>(template_column_values)->GetValueID() ==
-          CSSValueID::kNone;
-  const bool has_initial_template_areas =
-      !template_area_values ||
-      (IsA<CSSIdentifierValue>(template_area_values) &&
-       To<CSSIdentifierValue>(template_area_values)->GetValueID() ==
-           CSSValueID::kNone);
-
-  // 1- 'none' case.
-  if (has_initial_template_areas && has_initial_template_rows &&
-      has_initial_template_columns) {
-    return "none";
-  }
-
-  // It is invalid to specify `grid-template-areas` without
-  // `grid-template-rows`.
-  if (!has_initial_template_areas && has_initial_template_rows) {
-    return "";
-  }
-
-  const CSSValueList* template_row_value_list =
-      DynamicTo<CSSValueList>(template_row_values);
-  StringBuilder result;
-
-  // 2- <grid-template-rows> / <grid-template-columns>
-  if (!template_row_value_list || has_initial_template_areas) {
-    result.Append(template_row_values->CssText());
-    result.Append(" / ");
-    result.Append(template_column_values->CssText());
-    return result.ReleaseString();
-  }
-
-  // 3- [ <line-names>? <string> <track-size>? <line-names>? ]+
-  // [ / <track-list> ]?
-  if (template_row_value_list->length() == 1 &&
-      IsA<CSSIdentifierValue>(template_row_value_list->Item(0)) &&
-      To<CSSIdentifierValue>(template_row_value_list->Item(0)).GetValueID() ==
-          CSSValueID::kAuto) {
-    // If the |template_row_value_list| has only one value and it is 'auto',
-    // then we append the 'grid-template-area' values.
-    result.Append(template_area_values->CssText());
-  } else {
-    const cssvalue::CSSGridTemplateAreasValue* template_areas =
-        DynamicTo<cssvalue::CSSGridTemplateAreasValue>(template_area_values);
-    DCHECK(template_areas);
-    const NamedGridAreaMap& grid_area_map = template_areas->GridAreaMap();
-    wtf_size_t grid_area_column_count = template_areas->ColumnCount();
-    wtf_size_t grid_area_index = 0;
-    for (const auto& row_value : *template_row_value_list) {
-      const String row_value_text = row_value->CssText();
-      if (row_value->IsGridLineNamesValue()) {
-        if (!result.empty()) {
-          result.Append(' ');
-        }
-        result.Append(row_value_text);
-        continue;
-      }
-      StringBuilder grid_area_text;
-      for (wtf_size_t column = 0; column < grid_area_column_count; ++column) {
-        grid_area_text.Append(NamedGridAreaTextForPosition(
-            grid_area_map, grid_area_index, column));
-        if (column != grid_area_column_count - 1) {
-          grid_area_text.Append(' ');
-        }
-      }
-      if (!grid_area_text.empty()) {
-        if (!result.empty()) {
-          result.Append(' ');
-        }
-        result.Append('"');
-        result.Append(grid_area_text);
-        result.Append('"');
-        ++grid_area_index;
-      }
-
-      // Omit `auto` values.
-      const bool is_auto_value =
-          IsA<CSSIdentifierValue>(row_value.Get()) &&
-          To<CSSIdentifierValue>(row_value.Get())->GetValueID() ==
-              CSSValueID::kAuto;
-      if (!is_auto_value) {
-        if (!result.empty()) {
-          result.Append(' ');
-        }
-        result.Append(row_value_text);
-      }
-    }
-  }
-
-  if (!has_initial_template_columns) {
-    result.Append(" / ");
-    result.Append(template_column_values->CssText());
-  }
-  return result.ReleaseString();
+  const CSSValueList* grid_template_list =
+      CSSOMUtils::ComputedValueForGridTemplateShorthand(
+          template_row_values, template_column_values, template_area_values);
+  return grid_template_list->CssText();
 }
 
 // only returns a non-null value if all properties have the same, non-null value

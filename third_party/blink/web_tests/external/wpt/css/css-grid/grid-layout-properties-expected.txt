@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 140 tests; 137 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 140 tests; 138 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS display: grid
 PASS display: inline-grid
 PASS grid-template-columns
@@ -35,8 +35,8 @@ PASS grid-template
 PASS grid-template.initial
 PASS grid-template.none
 PASS grid-template.<grid-template-rows> / <grid-template-columns>
-FAIL grid-template.<line-names> assert_equals: <line-names> expected "[a] auto [b] auto [c] / [d] auto [e] auto [f]" but got "[a] 50px [b] 50px [c] / [d] 150px [e] 100px [f]"
-FAIL grid-template.<string>+ assert_equals: <string>+ expected "\"a b\" \"a b\"" but got "50px 50px / 150px 100px / \"a b\" \"a b\""
+PASS grid-template.<line-names>
+FAIL grid-template.<string>+ assert_equals: <string>+ expected "\"a b\" \"a b\"" but got "\"a b\" \"a b\" / 150px 100px"
 FAIL grid-template.<string><track-size>+ assert_equals: <string><track-size>+ expected "100px / \"a b\" 50px" but got "\"a b\" \"a b\""
 PASS grid-template.reset
 PASS grid-auto-columns

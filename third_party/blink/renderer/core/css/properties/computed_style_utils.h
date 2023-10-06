@@ -143,7 +143,8 @@ class CORE_EXPORT ComputedStyleUtils {
                                              const ComputedStyle&);
   static CSSValue* ValueForGridTrackList(GridTrackSizingDirection,
                                          const LayoutObject*,
-                                         const ComputedStyle&);
+                                         const ComputedStyle&,
+                                         bool force_computed_value = false);
   static CSSValue* ValueForGridPosition(const GridPosition&);
   static gfx::SizeF UsedBoxSize(const LayoutObject&);
   static CSSValue* RenderTextDecorationFlagsToCSSValue(TextDecorationLine);
@@ -294,6 +295,11 @@ class CORE_EXPORT ComputedStyleUtils {
                                                   const ComputedStyle&,
                                                   const LayoutObject*,
                                                   bool allow_visited_style);
+  static CSSValueList* ValuesForGridTemplateShorthand(
+      const StylePropertyShorthand&,
+      const ComputedStyle&,
+      const LayoutObject*,
+      bool allow_visited_style);
   static CSSValueList* ValuesForSidesShorthand(const StylePropertyShorthand&,
                                                const ComputedStyle&,
                                                const LayoutObject*,

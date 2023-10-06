@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
+#include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -1799,14 +1800,14 @@ CSSValue* ComputedStyleUtils::ValueForGridAutoTrackList(
   return list;
 }
 
-void PopulateGridTrackList(CSSValueList* list,
-                           OrderedNamedLinesCollector& collector,
-                           const Vector<LayoutUnit, 1>& tracks,
-                           const ComputedStyle& style,
-                           wtf_size_t start,
-                           wtf_size_t end,
-                           int offset,
-                           bool discard_line_names) {
+void PopulateGridTrackListUsedValues(CSSValueList* list,
+                                     OrderedNamedLinesCollector& collector,
+                                     const Vector<LayoutUnit, 1>& tracks,
+                                     const ComputedStyle& style,
+                                     wtf_size_t start,
+                                     wtf_size_t end,
+                                     int offset,
+                                     bool discard_line_names) {
   DCHECK_LE(start, end);
   if (collector.HasCollapsedAutoRepeatNamedLines()) {
     // If the collector has a collapsed auto-repeat track, we need to adjust
@@ -1961,10 +1962,11 @@ wtf_size_t PopulateIntegerRepeater(CSSValueList* list,
   return repeat_size * number_of_repetitions;
 }
 
-void PopulateGridTrackListForNonGrid(CSSValueList* list,
-                                     OrderedNamedLinesCollector& collector,
-                                     const blink::NGGridTrackList& track_list,
-                                     const ComputedStyle& style) {
+void PopulateGridTrackListComputedValues(
+    CSSValueList* list,
+    OrderedNamedLinesCollector& collector,
+    const blink::NGGridTrackList& track_list,
+    const ComputedStyle& style) {
   const bool is_subgrid = collector.IsSubgriddedAxis();
   wtf_size_t track_index = 0;
 
@@ -2019,7 +2021,8 @@ void PopulateGridTrackListForNonGrid(CSSValueList* list,
 CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     GridTrackSizingDirection direction,
     const LayoutObject* layout_object,
-    const ComputedStyle& style) {
+    const ComputedStyle& style,
+    bool force_computed_value) {
   const bool is_for_columns = direction == kForColumns;
   const ComputedGridTrackList& computed_grid_track_list =
       is_for_columns ? style.GridTemplateColumns() : style.GridTemplateRows();
@@ -2063,7 +2066,17 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
       computed_grid_track_list.auto_repeat_insertion_point;
   const NGGridTrackList& ng_track_list = computed_grid_track_list.track_list;
 
-  if (grid) {
+  // "Note: In general, resolved values are the computed values, except for a
+  // small list of legacy 2.1 properties. However, compatibility with early
+  // implementations of this module requires us to define grid-template-rows and
+  // grid-template-columns as returning used values."
+  //
+  // https://www.w3.org/TR/css-grid-2/#resolved-track-list-standalone
+  //
+  // Default to the used value if it's a layout grid, unless
+  // `force_computed_value` is set (which is used for `grid-template`). Non
+  // layout-grids will always report the computed value.
+  if (grid && !force_computed_value) {
     // The number of auto repeat tracks. For 'repeat(auto-fill, [x][y])' this
     // will be 2, regardless of what auto-fill computes to. For subgrids, use
     // the number of grid line names specified on the track definition. For
@@ -2107,17 +2120,17 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     // https://github.com/w3c/csswg-drafts/issues/9015.
     const bool discard_line_names =
         grid && is_subgrid_specified && !is_subgrid_valid;
-    PopulateGridTrackList(list, collector, track_sizes, style, start_index,
-                          end_index, offset, discard_line_names);
+    PopulateGridTrackListUsedValues(list, collector, track_sizes, style,
+                                    start_index, end_index, offset,
+                                    discard_line_names);
     return list;
   }
 
-  // Otherwise, the resolved value is the computed value, preserving repeat().
   OrderedNamedLinesCollector collector(
       computed_grid_track_list.ordered_named_grid_lines,
       computed_grid_track_list.auto_repeat_ordered_named_grid_lines,
       is_subgrid_specified, !!grid);
-  PopulateGridTrackListForNonGrid(list, collector, ng_track_list, style);
+  PopulateGridTrackListComputedValues(list, collector, ng_track_list, style);
   return list;
 }
 
@@ -3705,6 +3718,56 @@ CSSValueList* ComputedStyleUtils::ValuesForGridLineShorthand(
   }
 
   return list;
+}
+
+CSSValueList* ComputedStyleUtils::ValuesForGridTemplateShorthand(
+    const StylePropertyShorthand& shorthand,
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) {
+  DCHECK_EQ(shorthand.length(), 3u);
+
+  // "Note: In general, resolved values are the computed values, except for a
+  // small list of legacy 2.1 properties. However, compatibility with early
+  // implementations of this module requires us to define grid-template-rows and
+  // grid-template-columns as returning used values."
+  //
+  // https://www.w3.org/TR/css-grid-2/#resolved-track-list-standalone
+  //
+  // For `grid-template`, this doesn't apply, so we shouldn't be returning used
+  // values. The following method mostly mirrors
+  // `StylePropertySerializer::GetShorthandValueForGridTemplate`, except it
+  // produces a `CSSValueList` instead of a String.
+  const CSSValue* template_rows_computed =
+      ValueForGridTrackList(kForRows, layout_object, style,
+                            /* force_computed_values */ true);
+  const CSSValue* template_columns_computed =
+      ValueForGridTrackList(kForColumns, layout_object, style,
+                            /* force_computed_values */ true);
+
+  const CSSValue* template_row_values =
+      shorthand.properties()[0]->CSSValueFromComputedStyle(style, layout_object,
+                                                           allow_visited_style);
+  const CSSValue* template_column_values =
+      shorthand.properties()[1]->CSSValueFromComputedStyle(style, layout_object,
+                                                           allow_visited_style);
+  const CSSValue* template_area_values =
+      shorthand.properties()[2]->CSSValueFromComputedStyle(style, layout_object,
+                                                           allow_visited_style);
+
+  // Implicit tracks will generate an empty list from `ValueForGridTrackList`,
+  // as they don't create repeaters. In this case, they will already be
+  // equivalent to the expected computed value (since implicit tracks don't
+  // generate repeaters and are always fixed sizes). So in that case, we can
+  // simply use the values directly from the shorthand.
+  return CSSOMUtils::ComputedValueForGridTemplateShorthand(
+      CSSOMUtils::IsEmptyValueList(template_rows_computed)
+          ? template_row_values
+          : template_rows_computed,
+      CSSOMUtils::IsEmptyValueList(template_columns_computed)
+          ? template_column_values
+          : template_columns_computed,
+      template_area_values);
 }
 
 CSSValueList* ComputedStyleUtils::ValuesForSidesShorthand(

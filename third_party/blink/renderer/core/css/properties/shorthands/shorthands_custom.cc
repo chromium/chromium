@@ -2345,7 +2345,7 @@ const CSSValue* GridTemplate::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValuesForGridShorthand(
+  return ComputedStyleUtils::ValuesForGridTemplateShorthand(
       gridTemplateShorthand(), style, layout_object, allow_visited_style);
 }
 
