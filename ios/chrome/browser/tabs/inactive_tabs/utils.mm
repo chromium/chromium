@@ -68,17 +68,14 @@ void MoveTabsFromActiveToInactive(Browser* active_browser,
                        WebStateList* inactive_web_state_list) {
         const base::TimeDelta inactivity_threshold =
             InactiveTabsTimeThreshold();
-        int removed_web_state_number = 0;
         for (int index = active_web_state_list->pinned_tabs_count();
-             index < active_web_state_list->count() &&
-             !IsInactiveTabsMoveNumberExceeded(removed_web_state_number);) {
+             index < active_web_state_list->count();) {
           web::WebState* current_web_state =
               active_web_state_list->GetWebStateAt(index);
           if (!IsVisibleURLNewTabPage(current_web_state) &&
               IsInactive(inactivity_threshold, current_web_state)) {
             MoveTabFromBrowserToBrowser(active_browser, index, inactive_browser,
                                         inactive_web_state_list->count());
-            removed_web_state_number++;
           } else {
             ++index;
           }
@@ -97,9 +94,7 @@ void MoveTabsFromInactiveToActive(Browser* inactive_browser,
         const base::TimeDelta inactivity_threshold =
             InactiveTabsTimeThreshold();
         int removed_web_state_number = 0;
-        for (int index = 0;
-             index < inactive_web_state_list->count() &&
-             !IsInactiveTabsMoveNumberExceeded(removed_web_state_number);) {
+        for (int index = 0; index < inactive_web_state_list->count();) {
           if (!IsInactive(inactivity_threshold,
                           inactive_web_state_list->GetWebStateAt(index))) {
             int insertion_index = active_web_state_list->pinned_tabs_count() +
