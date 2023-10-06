@@ -33,6 +33,15 @@
 #include <android/api-level.h>
 #endif
 
+// crbug.com/1474421: Used to debug clusterfuzz in_process_fuzzer failures.
+// Remove this once the bug is fixed.
+#if __has_include("chrome/test/fuzzing/in_process_fuzzer_buildflags.h")
+#include "chrome/test/fuzzing/in_process_fuzzer_buildflags.h"  // nogncheck
+#define DEBUG_CLUSTERFUZZ_FAILURE BUILDFLAG(DEBUG_CLUSTERFUZZ_FAILURE)
+#else
+#define DEBUG_CLUSTERFUZZ_FAILURE 0
+#endif
+
 extern char** environ;
 
 namespace crashpad {
@@ -211,6 +220,12 @@ bool SpawnSubprocess(const std::vector<std::string>& argv,
     const posix_spawn_file_actions_t* file_actions_p = nullptr;
 #endif
 
+#if DEBUG_CLUSTERFUZZ_FAILURE
+    // crbug.com/1474421: Used to debug clusterfuzz in_process_fuzzer failures.
+    // Log at WARNING level to ensure it gets logged in.
+    // Remove this once the bug is fixed.
+    LOG(WARNING) << "[DEBUG] " << std::string(argv_for_spawn[0]);
+#endif
     auto posix_spawn_fp = use_path ? posix_spawnp : posix_spawn;
     if ((errno = posix_spawn_fp(nullptr,
                                 argv_for_spawn[0],
