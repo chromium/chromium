@@ -42,6 +42,7 @@ void GeneratedPasswordSavedMessageDelegate::HandleDismissCallback(
     messages::DismissReason dismiss_reason) {
   message_.reset();
   add_username_dialog_bridge_.reset();
+  saved_form_.reset();
 }
 
 void GeneratedPasswordSavedMessageDelegate::HandleUsernameAddedCallback(
@@ -53,22 +54,22 @@ void GeneratedPasswordSavedMessageDelegate::HandleUsernameAddedCallback(
 void GeneratedPasswordSavedMessageDelegate::ShowPrompt(
     content::WebContents* web_contents,
     std::unique_ptr<password_manager::PasswordFormManagerForUI> saved_form) {
+  saved_form_ = std::move(saved_form);
   const std::u16string& username =
-      saved_form->GetPendingCredentials().username_value;
+      saved_form_->GetPendingCredentials().username_value;
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordGenerationBottomSheet) &&
       username.empty()) {
-    ShowAddUsernameDialog(web_contents, std::move(saved_form));
+    ShowAddUsernameDialog(web_contents);
   } else {
     ShowPasswordSavedMessage(web_contents);
   }
 }
 
 void GeneratedPasswordSavedMessageDelegate::ShowAddUsernameDialog(
-    content::WebContents* web_contents,
-    std::unique_ptr<password_manager::PasswordFormManagerForUI> saved_form) {
+    content::WebContents* web_contents) {
   const std::u16string& password =
-      saved_form->GetPendingCredentials().password_value;
+      saved_form_->GetPendingCredentials().password_value;
 
   add_username_dialog_bridge_ = add_username_dialog_factory_.Run();
   // The delegate owns the bridge, so binding callbacks unretained is fine here.

@@ -30,7 +30,7 @@ public class AddUsernameDialogBridge implements AddUsernameDialogController.Dele
 
         AddUsernameDialogController controller = new AddUsernameDialogController(
                 context, mWindowAndroid.getModalDialogManager(), this);
-        controller.showAddUsernameDialog();
+        controller.showAddUsernameDialog(password);
     }
 
     @Override

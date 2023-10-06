@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.add_username_dialog;
 
+import static org.chromium.chrome.browser.add_username_dialog.AddUsernameDialogContentProperties.PASSWORD;
+import static org.chromium.chrome.browser.add_username_dialog.AddUsernameDialogContentProperties.USERNAME;
+import static org.chromium.chrome.browser.add_username_dialog.AddUsernameDialogContentProperties.USERNAME_CHANGED_CALLBACK;
+
 import android.content.Context;
 import android.content.res.Resources;
+import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
 
@@ -16,6 +21,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * Coordinator for the add username dialog. The dialog is displayed when the password is being
@@ -43,6 +49,8 @@ public class AddUsernameDialogController implements ModalDialogProperties.Contro
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
     private final Delegate mDelegate;
+    private final AddUsernameDialogContentView mContentView;
+    private PropertyModel mContentViewModel;
 
     /**
      * Creates the {@link AddUsernameDialogController}.
@@ -56,11 +64,27 @@ public class AddUsernameDialogController implements ModalDialogProperties.Contro
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mDelegate = delegate;
+        mContentView =
+                (AddUsernameDialogContentView)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.add_username_dialog_content, null);
     }
 
-    public void showAddUsernameDialog() {
+    public void showAddUsernameDialog(String password) {
+        mContentViewModel = createContentViewModel(password);
+        PropertyModelChangeProcessor.create(
+                mContentViewModel, mContentView, AddUsernameDialogContentViewBinder::bind);
+
         mModalDialogManager.showDialog(
                 createModalDialogModel(), ModalDialogManager.ModalDialogType.APP);
+    }
+
+    private PropertyModel createContentViewModel(String password) {
+        return new PropertyModel.Builder(AddUsernameDialogContentProperties.ALL_KEYS)
+                .with(PASSWORD, password)
+                .with(USERNAME, "")
+                .with(USERNAME_CHANGED_CALLBACK, this::onUsernameChanged)
+                .build();
     }
 
     private PropertyModel createModalDialogModel() {
@@ -70,24 +94,40 @@ public class AddUsernameDialogController implements ModalDialogProperties.Contro
         PropertyModel.Builder dialogModeBuilder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
-                        .with(ModalDialogProperties.TITLE, resources,
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mContentView)
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                resources,
                                 R.string.add_username_dialog_title)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                resources,
                                 R.string.add_username_dialog_add_username)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                resources,
                                 R.string.add_username_dialog_cancel)
-                        .with(ModalDialogProperties.BUTTON_STYLES,
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
-                        .with(ModalDialogProperties.TITLE_ICON, mContext,
+                        .with(
+                                ModalDialogProperties.TITLE_ICON,
+                                mContext,
                                 resourceProvider.getPasswordManagerIcon());
         return dialogModeBuilder.build();
+    }
+
+    private void onUsernameChanged(String username) {
+        mContentViewModel.set(AddUsernameDialogContentProperties.USERNAME, username);
     }
 
     // ModalDialogProperties.Controller implementation.
     @Override
     public void onClick(PropertyModel model, @ButtonType int buttonType) {
-        // TODO(https://crbug.com/1421753): Implement the functionality to pass the changed username
-        // over the bridge to save it in the password manager.
+        if (buttonType == ButtonType.POSITIVE) {
+            mDelegate.onDialogAccepted(
+                    mContentViewModel.get(AddUsernameDialogContentProperties.USERNAME));
+        }
         mModalDialogManager.dismissDialog(model,
                 buttonType == ButtonType.POSITIVE ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
                                                   : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);

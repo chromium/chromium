@@ -27,10 +27,14 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/add_username_dialog/AddUsernameDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/add_username_dialog/AddUsernameDialogContentProperties.java",
+    "java/src/org/chromium/chrome/browser/add_username_dialog/AddUsernameDialogContentView.java",
+    "java/src/org/chromium/chrome/browser/add_username_dialog/AddUsernameDialogContentViewBinder.java",
     "java/src/org/chromium/chrome/browser/add_username_dialog/AddUsernameDialogController.java",
   ]
 
   deps = [
+    ":java_resources",
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
@@ -45,6 +49,11 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.add_username_dialog"
 }
 
+android_resources("java_resources") {
+  deps = [ "//ui/android:ui_java_resources" ]
+  sources = [ "java/res/layout/add_username_dialog_content.xml" ]
+}
+
 robolectric_library("junit") {
   testonly = true
 
@@ -55,11 +64,14 @@ robolectric_library("junit") {
 
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:jni_java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/google-truth:google_truth_java",
     "//third_party/junit",

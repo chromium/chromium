@@ -43,14 +43,13 @@ class GeneratedPasswordSavedMessageDelegate {
   friend class GeneratedPasswordSavedMessageDelegateTest;
 
   void ShowPasswordSavedMessage(content::WebContents* web_contents);
-  void ShowAddUsernameDialog(
-      content::WebContents* web_contents,
-      std::unique_ptr<password_manager::PasswordFormManagerForUI> saved_form);
+  void ShowAddUsernameDialog(content::WebContents* web_contents);
 
   void HandleDismissCallback(messages::DismissReason dismiss_reason);
   void DismissPromptInternal();
   void HandleUsernameAddedCallback(const std::u16string& username);
 
+  std::unique_ptr<password_manager::PasswordFormManagerForUI> saved_form_;
   std::unique_ptr<messages::MessageWrapper> message_;
   std::unique_ptr<AddUsernameDialogBridge> add_username_dialog_bridge_;
   CreateAddUsernameDialogBridge add_username_dialog_factory_;
