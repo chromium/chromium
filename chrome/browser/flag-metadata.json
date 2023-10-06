@@ -8708,8 +8708,8 @@
       "chromeos-camera-eng@google.com",
       "chromeos-gfx-video@google.com",
       // For MacOS and Windows
-      "video-cmi-mpp@google.com"
+      "video-performance-team@google.com"
     ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   }
 ]
