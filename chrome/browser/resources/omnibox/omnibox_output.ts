@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {ACMatchClassification, AutocompleteMatch, DictionaryEntry, OmniboxResponse} from './omnibox.mojom-webui.js';
+import {ACMatchClassification, AutocompleteMatch, DictionaryEntry, OmniboxResponse, Signals} from './omnibox.mojom-webui.js';
 import {OmniboxElement} from './omnibox_element.js';
 import {DisplayInputs, OmniboxInput} from './omnibox_input.js';
 // @ts-ignore:next-line
@@ -534,21 +534,37 @@ class OutputBooleanProperty extends OutputProperty {
 }
 
 class OutputDictionaryProperty extends OutputProperty {
+  protected readonly container: HTMLElement;
+
   constructor(value: DictionaryEntry[]) {
     super(value.map(({key, value}) => `${key}: ${value}`).join('\n'));
-
-    const container = createEl('div', this);
-
-    const pre = createEl('pre', container, ['json']);
+    this.container = createEl('div', this);
+    const pre = createEl('pre', this.container, ['json']);
     value.forEach(({key, value}) => {
       createEl('span', pre, ['key'], key + ': ');
       createEl('span', pre, ['value'], value + '\n');
     });
+  }
+}
 
+class OutputScoringSignalsProperty extends OutputDictionaryProperty {
+  constructor(value: Signals) {
+    super(Object.entries(value)
+              .filter(([, value]) => value)
+              .map(([key, value]) => ({
+                     key,
+                     value,
+                   } as DictionaryEntry)));
+  }
+}
+
+class OutputAdditionalInfoProperty extends OutputDictionaryProperty {
+  constructor(value: DictionaryEntry[]) {
+    super(value);
     const link = createEl('a', null, ['icon', 'download-icon']);
     link.download = 'AdditionalInfo.json';
-    link.href = OutputDictionaryProperty.createDownloadLink(value);
-    container.insertBefore(link, container.firstChild);
+    link.href = OutputAdditionalInfoProperty.createDownloadLink(value);
+    this.container.insertBefore(link, this.container.firstChild);
   }
 
   private static createDownloadLink(value: DictionaryEntry[]): string {
@@ -763,11 +779,11 @@ const COLUMNS: Column[] = [
   new Column(
       ['Scoring Signals'], '', 'scoring-signals', false,
       'Scoring Signals\nSignals used by the ML Model to score suggestions.',
-      match => new OutputDictionaryProperty(match.scoringSignals)),
+      match => new OutputScoringSignalsProperty(match.scoringSignals)),
   new Column(
       ['Additional Info'], '', 'additional-info', true,
       'Additional Info\nProvider-specific information about the result.',
-      match => new OutputDictionaryProperty(match.additionalInfo)),
+      match => new OutputAdditionalInfoProperty(match.additionalInfo)),
 ];
 
 customElements.define('omnibox-output', OmniboxOutput);
@@ -787,7 +803,10 @@ customElements.define(
 customElements.define(
     'output-boolean-property', OutputBooleanProperty, {extends: 'td'});
 customElements.define(
-    'output-additional-info-property', OutputDictionaryProperty,
+    'output-scoring-signals-property', OutputScoringSignalsProperty,
+    {extends: 'td'});
+customElements.define(
+    'output-additional-info-property', OutputAdditionalInfoProperty,
     {extends: 'td'});
 customElements.define(
     'output-url-property', OutputUrlProperty, {extends: 'td'});

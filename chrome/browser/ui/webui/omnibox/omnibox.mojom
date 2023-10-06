@@ -16,6 +16,33 @@ struct DictionaryEntry {
   string value;
 };
 
+struct Signals {
+  string typed_count;
+  string visit_count;
+  string elapsed_time_last_visit_secs;
+  string shortcut_visit_count;
+  string shortest_shortcut_len;
+  string elapsed_time_last_shortcut_visit_sec;
+  string is_host_only;
+  string num_bookmarks_of_url;
+  string first_bookmark_title_match_position;
+  string total_bookmark_title_match_length;
+  string num_input_terms_matched_by_bookmark_title;
+  string first_url_match_position;
+  string total_url_match_length;
+  string host_match_at_word_boundary;
+  string total_host_match_length;
+  string total_path_match_length;
+  string total_query_or_ref_match_length;
+  string total_title_match_length;
+  string has_non_scheme_www_match;
+  string num_input_terms_matched_by_title;
+  string num_input_terms_matched_by_url;
+  string length_of_url;
+  string site_engagement;
+  string allowed_to_be_default_match;
+};
+
 struct AutocompleteMatch {
   string provider_name;
   bool provider_done;
@@ -44,7 +71,7 @@ struct AutocompleteMatch {
   int32 duplicates;
   bool from_previous;
   int32 pedal_id;
-  array<DictionaryEntry> scoring_signals;
+  Signals scoring_signals;
   array<DictionaryEntry> additional_info;
 };
 
