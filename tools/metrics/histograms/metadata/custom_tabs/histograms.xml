@@ -212,7 +212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="CustomTabs.DetachedResourceRequest.Duration"
-    units="ms" expires_after="2021-10-17">
+    units="ms" expires_after="2024-03-17">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="CustomTabs.DetachedResourceRequest.RedirectsCount"
-    units="redirects" expires_after="M92">
+    units="redirects" expires_after="2024-03-17">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>
