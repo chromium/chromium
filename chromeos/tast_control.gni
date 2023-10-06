@@ -231,5 +231,9 @@ tast_disabled_tests_from_lacros_all = [
   # On branch day, Lacros is +3 newer than ash which break the test.
   "lacros.CompareVersionWithAsh",
 
+  # b/b/288933829, until LKGM containing 120.0.6049.0-onward ASH Chrome comes.
+  "inputs.PhysicalKeyboardMultiwordSuggestion.lacros",
+  "inputs.VirtualKeyboardHandwriting.floating_lacros",
+
   # THIS IS THE LACROS LIST, SCROLL UP FOR CHROME/CHROMEOS.
 ]
