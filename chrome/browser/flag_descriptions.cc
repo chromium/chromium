@@ -2499,13 +2499,6 @@ const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[] =
     "Enables local history zero-prefix suggestions in every context in which "
     "the remote zero-prefix suggestions are enabled.";
 
-const char kOmniboxFocusTriggersSRPZeroSuggestName[] =
-    "Allow Omnibox contextual web on-focus suggestions on the SRP";
-const char kOmniboxFocusTriggersSRPZeroSuggestDescription[] =
-    "Enables on-focus suggestions on the Search Results page. "
-    "Requires on-focus suggestions for the contextual web to be enabled. "
-    "Will only work if user is signed-in and syncing.";
-
 const char kOmniboxFocusTriggersContextualWebZeroSuggestName[] =
     "Omnibox on-focus suggestions for the contextual Web";
 const char kOmniboxFocusTriggersContextualWebZeroSuggestDescription[] =

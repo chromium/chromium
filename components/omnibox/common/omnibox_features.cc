@@ -146,11 +146,6 @@ BASE_FEATURE(kFocusTriggersContextualWebZeroSuggest,
              "OmniboxFocusTriggersContextualWebZeroSuggest",
              enabled_by_default_android_ios);
 
-// Enables on-focus zero-prefix suggestions on the SRP.
-BASE_FEATURE(kFocusTriggersSRPZeroSuggest,
-             "OmniboxFocusTriggersSRPZeroSuggest",
-             enabled_by_default_android_ios);
-
 // Enables local history zero-prefix suggestions in every context in which the
 // remote zero-prefix suggestions are enabled.
 BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP,

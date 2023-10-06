@@ -696,10 +696,6 @@ extern const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription[];
 extern const char kOmniboxOnDeviceTailSuggestionsName[];
 extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 
-// Title and description for the flag to control Omnibox on-focus suggestions.
-extern const char kOmniboxOnFocusSuggestionsName[];
-extern const char kOmniboxOnFocusSuggestionsDescription[];
-
 // Title and description for storing query/match in the shortcuts database.
 extern const char kOmniboxPopulateShortcutsDatabaseName[];
 extern const char kOmniboxPopulateShortcutsDatabaseDescription[];

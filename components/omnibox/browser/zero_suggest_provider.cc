@@ -52,6 +52,8 @@ using OIT = metrics::OmniboxInputType;
 namespace {
 
 using ResultType = ZeroSuggestProvider::ResultType;
+constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
+constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
 
 // Represents whether ZeroSuggestProvider is allowed to display zero-prefix
 // suggestions, and if not, why not.
@@ -356,7 +358,7 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
   if (omnibox::IsSearchResultsPage(page_class)) {
     if (focus_type_input_type ==
             std::make_pair(OFT::INTERACTION_FOCUS, OIT::URL) &&
-        base::FeatureList::IsEnabled(omnibox::kFocusTriggersSRPZeroSuggest)) {
+        (is_ios || is_android)) {
       return ResultType::kRemoteSendURL;
     }
     if (focus_type_input_type ==

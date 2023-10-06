@@ -6200,11 +6200,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kFocusTriggersContextualWebZeroSuggest)},
 
-    {"omnibox-on-focus-suggestions-srp",
-     flag_descriptions::kOmniboxFocusTriggersSRPZeroSuggestName,
-     flag_descriptions::kOmniboxFocusTriggersSRPZeroSuggestDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kFocusTriggersSRPZeroSuggest)},
-
     {"omnibox-fuzzy-url-suggestions",
      flag_descriptions::kOmniboxFuzzyUrlSuggestionsName,
      flag_descriptions::kOmniboxFuzzyUrlSuggestionsDescription, kOsAll,

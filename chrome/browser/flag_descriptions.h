@@ -1423,9 +1423,6 @@ extern const char kOmniboxRichAutocompletionPromisingDescription[];
 extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPName[];
 extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[];
 
-extern const char kOmniboxFocusTriggersSRPZeroSuggestName[];
-extern const char kOmniboxFocusTriggersSRPZeroSuggestDescription[];
-
 extern const char kOmniboxFocusTriggersContextualWebZeroSuggestName[];
 extern const char kOmniboxFocusTriggersContextualWebZeroSuggestDescription[];
 

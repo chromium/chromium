@@ -769,12 +769,6 @@ const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription[] =
     "Shows Google head non personalized search suggestions provided by a "
     "compact on device model for non-incognito";
 
-const char kOmniboxOnFocusSuggestionsName[] = "Omnibox on-focus suggestions";
-const char kOmniboxOnFocusSuggestionsDescription[] =
-    "Configures Omnibox on-focus suggestions - suggestions displayed on-focus "
-    "before the user has typed any input. This provides overrides for the "
-    "default suggestion locations.";
-
 const char kOmniboxMaxURLMatchesName[] = "Omnibox Max URL matches";
 const char kOmniboxMaxURLMatchesDescription[] =
     "Limit the number of URL suggestions in the omnibox. The omnibox will "
