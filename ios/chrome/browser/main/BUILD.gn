@@ -46,7 +46,7 @@ source_set("main") {
     "//ios/chrome/browser/tabs/tab_pickup",
     "//ios/chrome/browser/ui/start_surface",
     "//ios/chrome/browser/upgrade/model",
-    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/view_source/model",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:delegate",

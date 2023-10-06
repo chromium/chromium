@@ -52,7 +52,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
-    "//ios/chrome/browser/url_loading:new_tab_animation_tab_helper",
+    "//ios/chrome/browser/url_loading/model:new_tab_animation_tab_helper",
     "//ios/web/public/navigation",
     "//ios/web/public/navigation:referrer",
     "//ios/web/public/session",

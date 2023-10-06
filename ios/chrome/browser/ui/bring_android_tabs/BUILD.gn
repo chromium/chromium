@@ -33,7 +33,7 @@ source_set("bring_android_tabs") {
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/synced_sessions/model",
-    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common/ui/favicon:favicon_constants",
   ]
 }

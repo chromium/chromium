@@ -41,7 +41,7 @@ source_set("bubble") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common",
     "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",

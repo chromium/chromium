@@ -90,7 +90,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/location_bar",
     "//ios/chrome/browser/ui/scanner",
     "//ios/chrome/browser/ui/scanner:camera_state",
-    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",
     "//net",

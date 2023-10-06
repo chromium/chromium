@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/url_loading/url_loading_util.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_util.h"
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -37,8 +37,9 @@ void LoadJavaScriptURL(const GURL& url,
   }
   NSString* jsToEval = [base::SysUTF8ToNSString(url.GetContent())
       stringByRemovingPercentEncoding];
-  if (web_state)
+  if (web_state) {
     web_state->ExecuteUserJavaScript(jsToEval);
+  }
 }
 
 void RestoreTab(const SessionID session_id,

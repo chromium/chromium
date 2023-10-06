@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 
 UrlLoadParams UrlLoadParams::InCurrentTab(
     const web::NavigationManager::WebLoadParams& web_params) {

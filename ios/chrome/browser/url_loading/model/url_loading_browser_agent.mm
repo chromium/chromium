@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 
 #import "base/compiler_specific.h"
 #import "base/immediate_crash.h"
@@ -21,10 +21,10 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
-#import "ios/chrome/browser/url_loading/scene_url_loading_service.h"
-#import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/url_loading/url_loading_util.h"
+#import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_util.h"
 #import "ios/chrome/browser/web/load_timing_tab_helper.h"
 #import "net/base/url_util.h"
 
@@ -35,8 +35,9 @@ namespace {
 // Rapidly starts leaking memory by 10MB blocks.
 void StartLeakingMemory() {
   static NSMutableArray* memory = nil;
-  if (!memory)
+  if (!memory) {
     memory = [[NSMutableArray alloc] init];
+  }
 
   // Store block of memory into NSArray to ensure that compiler does not throw
   // away unused code.
@@ -366,8 +367,9 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
     // However, this is highly likely to happen. Even if it were to happen, it
     // would be benign as the only drawback is that the wrong tab would be
     // selected upon closing the newly opened tab.
-    if (hint && hint.value() != parent_web_state)
+    if (hint && hint.value() != parent_web_state) {
       parent_web_state = nullptr;
+    }
   }
 
   int insertion_index = TabInsertion::kPositionAutomatically;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_observer_bridge.h"
 
 UrlLoadingObserverBridge::UrlLoadingObserverBridge(id<URLLoadingObserver> owner)
     : owner_(owner) {}

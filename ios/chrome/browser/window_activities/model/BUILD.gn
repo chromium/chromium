@@ -14,7 +14,7 @@ source_set("model") {
     ":ios_move_tab_activity_type_buildflags",
     "//base",
     "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/chrome/browser/url_loading:url_loading_params_header",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/web/public",
     "//ios/web/public/navigation",
     "//net",

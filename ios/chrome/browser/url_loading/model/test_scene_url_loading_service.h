@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_URL_LOADING_TEST_SCENE_URL_LOADING_SERVICE_H_
-#define IOS_CHROME_BROWSER_URL_LOADING_TEST_SCENE_URL_LOADING_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_URL_LOADING_MODEL_TEST_SCENE_URL_LOADING_SERVICE_H_
+#define IOS_CHROME_BROWSER_URL_LOADING_MODEL_TEST_SCENE_URL_LOADING_SERVICE_H_
 
-#include "ios/chrome/browser/url_loading/scene_url_loading_service.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
+#include "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 
 class Browser;
 
@@ -30,4 +30,4 @@ class TestSceneUrlLoadingService : public SceneUrlLoadingService {
   Browser* current_browser_;
 };
 
-#endif  // IOS_CHROME_BROWSER_URL_LOADING_TEST_SCENE_URL_LOADING_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_URL_LOADING_MODEL_TEST_SCENE_URL_LOADING_SERVICE_H_

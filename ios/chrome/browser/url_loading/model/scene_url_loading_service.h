@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_URL_LOADING_SCENE_URL_LOADING_SERVICE_H_
-#define IOS_CHROME_BROWSER_URL_LOADING_SCENE_URL_LOADING_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_URL_LOADING_MODEL_SCENE_URL_LOADING_SERVICE_H_
+#define IOS_CHROME_BROWSER_URL_LOADING_MODEL_SCENE_URL_LOADING_SERVICE_H_
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -76,4 +76,4 @@ class SceneUrlLoadingService {
   __weak id<SceneURLLoadingServiceDelegate> delegate_;
 };
 
-#endif  // IOS_CHROME_BROWSER_URL_LOADING_SCENE_URL_LOADING_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_URL_LOADING_MODEL_SCENE_URL_LOADING_SERVICE_H_

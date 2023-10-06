@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 
 void FakeUrlLoadingBrowserAgent::InjectForBrowser(Browser* browser) {
   // No other instance should already have been attached.

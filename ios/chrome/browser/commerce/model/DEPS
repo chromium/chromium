@@ -10,7 +10,7 @@ include_rules = [
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/feature_engagement",
   "+ios/chrome/browser/push_notification",
-  "+ios/chrome/browser/url_loading",
+  "+ios/chrome/browser/url_loading/model",
 ]
 
 specific_include_rules = {

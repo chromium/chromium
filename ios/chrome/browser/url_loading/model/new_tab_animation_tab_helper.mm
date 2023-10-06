@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
+#import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
 
 WEB_STATE_USER_DATA_KEY_IMPL(NewTabAnimationTabHelper)
 

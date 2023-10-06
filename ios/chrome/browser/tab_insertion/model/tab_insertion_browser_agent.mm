@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
+#import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
 #import "ios/web/common/features.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"

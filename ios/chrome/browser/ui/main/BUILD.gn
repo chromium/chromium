@@ -114,7 +114,7 @@ source_set("main") {
     "//ios/chrome/browser/ui/settings/sync",
     "//ios/chrome/browser/ui/snackbar",
     "//ios/chrome/browser/ui/tabs:constants",
-    "//ios/chrome/browser/url_loading:url_loading_params_header",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:tab_helper_delegates",
     "//ios/chrome/browser/web:web_internal",

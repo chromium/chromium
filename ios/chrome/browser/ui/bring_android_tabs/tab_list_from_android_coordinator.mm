@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_mediator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_view_controller.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 
 @implementation TabListFromAndroidCoordinator {
   // Main mediator for this coordinator.

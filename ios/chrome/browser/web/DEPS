@@ -38,7 +38,7 @@ include_rules = [
   "+ios/chrome/browser/tab_insertion/model",
   "+ios/chrome/browser/text_selection/model",
   "+ios/chrome/browser/translate/model",
-  "+ios/chrome/browser/url_loading",
+  "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web_selection/model",
 ]
 

@@ -50,8 +50,8 @@ source_set("incognito_interstitial") {
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/ntp/incognito",
     "//ios/chrome/browser/ui/ntp/incognito:util",
-    "//ios/chrome/browser/url_loading:url_loading",
-    "//ios/chrome/browser/url_loading:url_loading_params_header",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
   ]
   frameworks = [ "UIKit.framework" ]
 }

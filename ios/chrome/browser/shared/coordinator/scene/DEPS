@@ -16,7 +16,7 @@ include_rules = [
   "+ios/chrome/browser/sessions",
   "+ios/chrome/browser/signin",
   "+ios/chrome/browser/snapshots/model",
-  "+ios/chrome/browser/url_loading",
+  "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web",
   "+ios/chrome/browser/tab_insertion/model",
   "+ios/chrome/browser/window_activities/model",

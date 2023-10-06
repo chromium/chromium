@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/url_loading/test_scene_url_loading_service.h"
+#import "ios/chrome/browser/url_loading/model/test_scene_url_loading_service.h"
 
 TestSceneUrlLoadingService::TestSceneUrlLoadingService() {}
 

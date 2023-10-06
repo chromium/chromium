@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/shared/public/commands/bring_android_tabs_commands.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_prompt_mediator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_ui_swift.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 
 namespace {
 

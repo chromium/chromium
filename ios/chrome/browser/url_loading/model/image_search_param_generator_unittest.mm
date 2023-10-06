@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/url_loading/image_search_param_generator.h"
+#import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
