@@ -268,7 +268,7 @@ IbanManager* ChromeAutofillClient::GetIbanManager() {
 AutofillComposeDelegate* ChromeAutofillClient::GetComposeDelegate() {
 #if BUILDFLAG(ENABLE_COMPOSE)
   auto* client = ChromeComposeClient::FromWebContents(web_contents());
-  return client ? &client->manager() : nullptr;
+  return client ? &client->GetManager() : nullptr;
 #else
   return nullptr;
 #endif

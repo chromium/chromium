@@ -25,7 +25,7 @@ class ComposeClient {
   virtual ~ComposeClient() = default;
 
   // Returns the `ComposeManager` associated with this client.
-  virtual ComposeManager& manager() = 0;
+  virtual ComposeManager& GetManager() = 0;
 
   using ComposeDialogCallback = base::OnceCallback<void(const QueryParams&)>;
   virtual void ShowComposeDialog(ComposeDialogCallback callback) = 0;

@@ -33,7 +33,7 @@ class ChromeComposeClient
   ~ChromeComposeClient() override;
 
   // compose::ComposeClient:
-  compose::ComposeManager& manager() override;
+  compose::ComposeManager& GetManager() override;
   void ShowComposeDialog(ComposeDialogCallback callback) override;
 
   void BindComposeDialog(

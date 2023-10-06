@@ -55,7 +55,7 @@ void ChromeComposeClient::ShowComposeDialog(ComposeDialogCallback callback) {
   // TODO(b/301609035) Add the compose dialog call here.
 }
 
-compose::ComposeManager& ChromeComposeClient::manager() {
+compose::ComposeManager& ChromeComposeClient::GetManager() {
   return manager_;
 }
 
