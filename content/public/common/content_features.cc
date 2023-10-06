@@ -669,7 +669,7 @@ BASE_FEATURE(kLogJsConsoleMessages,
 // Enables a fix for a macOS IME Live Conversion issue. crbug.com/1328530.
 BASE_FEATURE(kMacImeLiveConversionFix,
              "MacImeLiveConversionFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Uses ThreadType::kCompositing for the main thread
 BASE_FEATURE(kMainThreadCompositingPriority,

@@ -1802,6 +1802,9 @@ TEST_F(InputMethodMacTest, SetMarkedText) {
 // This test makes sure that selectedRange and markedRange are updated correctly
 // in various scenarios.
 TEST_F(InputMethodMacTest, MarkedRangeSelectedRange) {
+  if (!base::FeatureList::IsEnabled(features::kMacImeLiveConversionFix)) {
+    return;
+  }
   // If the replacement range is valid, the range should be replaced with the
   // new text.
   {
