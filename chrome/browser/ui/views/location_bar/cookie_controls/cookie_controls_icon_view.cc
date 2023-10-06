@@ -178,13 +178,12 @@ void CookieControlsIconView::OnIPHClosed() {
 void CookieControlsIconView::UpdateVisibilityAndAnimate(
     bool confidence_changed) {
   UpdateIconImage();
-  bool should_show = ShouldBeVisible();
-  if (should_show) {
+  if (ShouldBeVisible()) {
+    auto label = GetLabelForStatus();
     // TODO(crbug.com/1446230): Don't animate when the LHS toggle is used.
     if (!GetAssociatedBubble() && (!GetVisible() || confidence_changed)) {
       if (!MaybeShowIPH() &&
           confidence_ == CookieControlsBreakageConfidenceLevel::kHigh) {
-        auto label = GetLabelForStatus();
         AnimateIn(label);
 // VoiceOver on Mac already announces this text.
 #if !BUILDFLAG(IS_MAC)
@@ -201,15 +200,16 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
       }
       RecordShownActionForConfidence(confidence_);
     }
+    SetVisible(true);
+    SetLabel(
+        l10n_util::GetStringUTF16(label.value_or(IDS_COOKIE_CONTROLS_TOOLTIP)));
+    SetTooltipText(
+        l10n_util::GetStringUTF16(label.value_or(IDS_COOKIE_CONTROLS_TOOLTIP)));
   } else {
     UnpauseAnimation();
     ResetSlideAnimation(false);
+    SetVisible(false);
   }
-  SetVisible(should_show);
-  SetLabel(l10n_util::GetStringUTF16(
-      GetLabelForStatus().value_or(IDS_COOKIE_CONTROLS_TOOLTIP)));
-  SetTooltipText(l10n_util::GetStringUTF16(
-      GetLabelForStatus().value_or(IDS_COOKIE_CONTROLS_TOOLTIP)));
 }
 
 absl::optional<int> CookieControlsIconView::GetLabelForStatus() const {
