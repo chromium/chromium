@@ -78,12 +78,8 @@ declare_args() {
 declare_args() {
   # Individual Rust components.
 
-  # Conversions between Rust types and C++ types. iOS remains excluded because
-  # the only dependency of `enable_rust_base_conversions` (`enable_rust_qr`)
-  # does not apply to iOS.
-  # TODO(crbug.com/1466967): When Rust rolls next, enable for iOS globally.
-  enable_rust_base_conversions =
-      enable_rust && (!(is_ios && is_asan) || enable_all_rust_features)
+  # Conversions between Rust types and C++ types.
+  enable_rust_base_conversions = enable_rust
 
   # The base::JSONReader implementation. Requires base conversions.
   enable_rust_json = enable_rust && enable_all_rust_features
@@ -92,13 +88,7 @@ declare_args() {
   enable_rust_crash = enable_rust
 
   # Support for QR code generation - see https://crbug.com/1431991.
-  #
-  # Per go/rusty-qr-code-generator the feature is not actually used on iOS, but
-  # `is_ios` below is checked for parity with `enable_rust_base_conversions`
-  # (which is a dependency of `enable_rust_qr`).
-  # TODO(crbug.com/1466967): When Rust rolls next, enable for iOS globally.
-  enable_rust_qr =
-      enable_rust && (!(is_ios && is_asan) || enable_all_rust_features)
+  enable_rust_qr = enable_rust
 
   # Support for Rust mojo bindings.
   enable_rust_mojo = enable_rust && enable_all_rust_features
