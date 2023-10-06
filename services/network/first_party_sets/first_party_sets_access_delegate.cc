@@ -123,11 +123,11 @@ FirstPartySetsAccessDelegate::FindEntries(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!enabled_)
-    return {{}};
+    return FirstPartySetsAccessDelegate::EntriesResult();
 
   if (!ready_event_.has_value()) {
     if (!wait_for_init_) {
-      return {{}};
+      return FirstPartySetsAccessDelegate::EntriesResult();
     }
     // base::Unretained() is safe because `this` owns `pending_queries_` and
     // `pending_queries_` will not run the enqueued callbacks after `this` is

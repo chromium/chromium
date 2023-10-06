@@ -83,7 +83,7 @@ CookieAccessDelegateImpl::FindFirstPartySetEntries(
     base::OnceCallback<void(FirstPartySetsAccessDelegate::EntriesResult)>
         callback) const {
   if (!first_party_sets_access_delegate_)
-    return {{}};
+    return FirstPartySetsAccessDelegate::EntriesResult();
   return first_party_sets_access_delegate_->FindEntries(sites,
                                                         std::move(callback));
 }

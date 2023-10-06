@@ -117,7 +117,7 @@ FirstPartySetsManager::FindEntries(
 
   if (!sets_.has_value()) {
     if (!wait_for_init_) {
-      return {{}};
+      return FirstPartySetsManager::EntriesResult();
     }
     EnqueuePendingQuery(base::BindOnce(
         &FirstPartySetsManager::FindEntriesAndInvoke,
