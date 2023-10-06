@@ -245,51 +245,35 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ApplyGainmap(
   return surface->makeImageSnapshot();
 }
 
-sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
-    sk_sp<SkImage> image,
-    sk_sp<SkColorSpace> target_color_space,
-    absl::optional<gfx::HDRMetadata> src_hdr_metadata,
-    float sdr_max_luminance_nits,
-    float dst_max_luminance_relative,
-    bool enable_tone_mapping,
-    GrDirectContext* gr_context,
-    skgpu::graphite::Recorder* graphite_recorder) {
+bool ColorConversionSkFilterCache::UseToneCurve(sk_sp<SkImage> image) {
   DCHECK(image);
-  DCHECK(target_color_space);
-  sk_sp<SkColorSpace> image_sk_color_space = image->refColorSpace();
-  bool has_mipmaps = image->hasMipmaps();
-  if (!image_sk_color_space || !enable_tone_mapping) {
-    // TODO(crbug.com/1443068): It's possible for both `gr_context` and
-    // `graphite_recorder` to be nullptr if `image` is not texture backed. Need
-    // to handle this case (currently just goes through gr_context path with
-    // nullptr context).
-    if (graphite_recorder) {
-      SkImage::RequiredProperties props{.fMipmapped = has_mipmaps};
-      return image->makeColorSpace(graphite_recorder, target_color_space,
-                                   props);
-    } else {
-      return image->makeColorSpace(gr_context, target_color_space);
-    }
+  auto* image_sk_color_space = image->colorSpace();
+  if (!image_sk_color_space) {
+    return false;
   }
-
   gfx::ColorSpace image_color_space(*image_sk_color_space);
   switch (image_color_space.GetTransferID()) {
     case ColorSpace::TransferID::PQ:
     case ColorSpace::TransferID::HLG:
-      break;
+      return true;
     default:
-      // TODO(crbug.com/1443068): It's possible for both `gr_context` and
-      // `graphite_recorder` to be nullptr if `image` is not texture backed.
-      // Need to handle this case (currently just goes through gr_context path
-      // with nullptr context).
-      if (graphite_recorder) {
-        SkImage::RequiredProperties props{.fMipmapped = has_mipmaps};
-        return image->makeColorSpace(graphite_recorder, target_color_space,
-                                     props);
-      } else {
-        return image->makeColorSpace(gr_context, target_color_space);
-      }
+      return false;
   }
+}
+
+sk_sp<SkImage> ColorConversionSkFilterCache::ApplyToneCurve(
+    sk_sp<SkImage> image,
+    absl::optional<HDRMetadata> src_hdr_metadata,
+    float sdr_max_luminance_nits,
+    float dst_max_luminance_relative,
+    GrDirectContext* gr_context,
+    skgpu::graphite::Recorder* graphite_recorder) {
+  DCHECK(image);
+  sk_sp<SkColorSpace> image_sk_color_space = image->refColorSpace();
+  DCHECK(image_sk_color_space);
+  ColorSpace image_color_space(*image_sk_color_space);
+  DCHECK(image_color_space.GetTransferID() == ColorSpace::TransferID::PQ ||
+         image_color_space.GetTransferID() == ColorSpace::TransferID::HLG);
 
   SkImageInfo image_info =
       SkImageInfo::Make(image->dimensions(),
@@ -302,8 +286,10 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
     return nullptr;
   }
 
+  ColorSpace target_color_space(ColorSpace::PrimaryID::BT2020,
+                                ColorSpace::TransferID::LINEAR_HDR);
   sk_sp<SkColorFilter> filter =
-      Get(image_color_space, gfx::ColorSpace(*target_color_space),
+      Get(image_color_space, target_color_space,
           /*resource_offset=*/0, /*resource_multiplier=*/1,
           /*src_bit_depth=*/absl::nullopt, src_hdr_metadata,
           sdr_max_luminance_nits, dst_max_luminance_relative);
@@ -314,7 +300,7 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
   surface->getCanvas()->drawImage(image,
                                   /*x=*/0, /*y=*/0, sampling_options, &paint);
   return surface->makeImageSnapshot()->reinterpretColorSpace(
-      target_color_space);
+      target_color_space.ToSkColorSpace());
 }
 
 }  // namespace gfx

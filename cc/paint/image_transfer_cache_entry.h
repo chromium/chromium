@@ -175,9 +175,23 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   bool fits_on_gpu() const;
 
  private:
+  // Return this image, tone mapped to match the specified HDR headroom.
+  sk_sp<SkImage> GetImageWithToneMapApplied(float hdr_headroom,
+                                            bool needs_mips) const;
+
   raw_ptr<GrDirectContext, DanglingUntriaged> gr_context_ = nullptr;
   raw_ptr<skgpu::graphite::Recorder> graphite_recorder_ = nullptr;
   sk_sp<SkImage> image_;
+
+  // HDR tonemapping may be done with a gainmap (for local tone mapping).
+  bool has_gainmap_ = false;
+  sk_sp<SkImage> gainmap_image_;
+  SkGainmapInfo gainmap_info_;
+
+  // HDR tonemapping may be done with a tone curve (for global tone mapping).
+  bool use_tone_curve_ = false;
+  absl::optional<gfx::HDRMetadata> tone_curve_hdr_metadata_;
+  float tone_curve_sdr_max_luminance_nits_;
 
   // The value of `size_` is computed during deserialization and never updated
   // (even if the size of the image changes due to mipmaps being requested).
