@@ -67,6 +67,10 @@ class MEDIA_EXPORT FFmpegGlue {
 
   ~FFmpegGlue();
 
+  // Returns the list of allowed decoders for audio/video respectively.
+  static const char* GetAllowedAudioDecoders();
+  static const char* GetAllowedVideoDecoders();
+
   // Opens an AVFormatContext specially prepared to process reads and seeks
   // through the FFmpegURLProtocol provided during construction.
   // |is_local_file| is an optional parameter used for metrics reporting.
@@ -85,6 +89,7 @@ class MEDIA_EXPORT FFmpegGlue {
  private:
   bool open_called_ = false;
   bool detected_hls_ = false;
+
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION AVFormatContext* format_context_ = nullptr;

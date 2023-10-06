@@ -476,8 +476,14 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseWindowBoundsForPip);
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseSharedImagesForPepperVideo);
 
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kFFmpegAllowLists);
+
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kTheoraVideoCodec);
+
+#if BUILDFLAG(IS_CHROMEOS)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSLegacyMediaFormats);
+#endif
 #endif
 
 // Based on a |command_line| and the current platform, returns the effective

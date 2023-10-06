@@ -27,6 +27,7 @@
 #include "media/base/video_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/ffmpeg/ffmpeg_decoding_loop.h"
+#include "media/filters/ffmpeg_glue.h"
 
 namespace media {
 
@@ -130,6 +131,12 @@ bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
       !base::FeatureList::IsEnabled(kFFmpegDecodeOpaqueVP8)) {
     return false;
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (codec == VideoCodec::kMPEG4 &&
+      !base::FeatureList::IsEnabled(kCrOSLegacyMediaFormats)) {
+    return false;
+  }
+#endif
 
   return avcodec_find_decoder(VideoCodecToCodecID(codec)) != nullptr;
 }
@@ -502,8 +509,15 @@ bool FFmpegVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config,
   codec_context_->opaque = this;
   codec_context_->get_buffer2 = GetVideoBufferImpl;
 
-  if (decode_nalus_)
+  if (base::FeatureList::IsEnabled(kFFmpegAllowLists)) {
+    // Note: FFmpeg will try to free this string, so we must duplicate it.
+    codec_context_->codec_whitelist =
+        av_strdup(FFmpegGlue::GetAllowedVideoDecoders());
+  }
+
+  if (decode_nalus_) {
     codec_context_->flags2 |= AV_CODEC_FLAG2_CHUNKS;
+  }
 
   const AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
   if (!codec || avcodec_open2(codec_context_.get(), codec, NULL) < 0) {

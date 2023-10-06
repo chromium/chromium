@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
+#include "media/base/media_switches.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/ffmpeg/ffmpeg_decoding_loop.h"
 
@@ -80,6 +81,14 @@ bool AudioFileReader::OpenDemuxer() {
       AVStreamToAVCodecContext(format_context->streams[stream_index_]);
   if (!codec_context_)
     return false;
+
+  // Future versions of ffmpeg may copy the allow list from the format context.
+  if (base::FeatureList::IsEnabled(kFFmpegAllowLists) &&
+      !codec_context_->codec_whitelist) {
+    // Note: FFmpeg will try to free this string, so we must duplicate it.
+    codec_context_->codec_whitelist =
+        av_strdup(FFmpegGlue::GetAllowedAudioDecoders());
+  }
 
   DCHECK_EQ(codec_context_->codec_type, AVMEDIA_TYPE_AUDIO);
   return true;

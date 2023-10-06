@@ -6,9 +6,12 @@
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "media/base/container_names.h"
+#include "media/base/media_switches.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 
 namespace media {
@@ -68,6 +71,24 @@ static void LogContainer(bool is_local_file,
   }
 }
 
+static const char* GetAllowedDemuxers() {
+  static const base::NoDestructor<std::string> kAllowedDemuxers([]() {
+    // This should match the configured lists in //third_party/ffmpeg.
+    std::vector<std::string> allowed_demuxers = {"ogg",  "matroska", "wav",
+                                                 "flac", "mp3",      "mov"};
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    allowed_demuxers.push_back("aac");
+#if BUILDFLAG(IS_CHROMEOS)
+    if (base::FeatureList::IsEnabled(kCrOSLegacyMediaFormats)) {
+      allowed_demuxers.push_back("avi");
+    }
+#endif
+#endif
+    return base::JoinString(allowed_demuxers, ",");
+  }());
+  return kAllowedDemuxers->c_str();
+}
+
 FFmpegGlue::FFmpegGlue(FFmpegURLProtocol* protocol) {
   // Initialize an AVIOContext using our custom read and seek operations.  Don't
   // keep pointers to the buffer since FFmpeg may reallocate it on the fly.  It
@@ -97,6 +118,66 @@ FFmpegGlue::FFmpegGlue(FFmpegURLProtocol* protocol) {
   format_context_->error_recognition |= AV_EF_EXPLODE;
 
   format_context_->pb = avio_context_.get();
+
+  if (base::FeatureList::IsEnabled(kFFmpegAllowLists)) {
+    // Enhance security by forbidding ffmpeg from decoding / demuxing codecs and
+    // containers which should be unsupported.
+    //
+    // Normally these aren't even compiled in, but during codec/container
+    // deprecations and when an external ffmpeg is used this adds extra
+    // security.
+    static const base::NoDestructor<std::string> kCombinedCodecList([]() {
+      return base::JoinString(
+          {GetAllowedAudioDecoders(), GetAllowedVideoDecoders()}, ",");
+    }());
+
+    // Note: FFmpeg will try to free these strings, so we must duplicate them.
+    format_context_->codec_whitelist = av_strdup(kCombinedCodecList->c_str());
+    format_context_->format_whitelist = av_strdup(GetAllowedDemuxers());
+  }
+}
+
+// static
+const char* FFmpegGlue::GetAllowedAudioDecoders() {
+  static const base::NoDestructor<std::string> kAllowedAudioCodecs([]() {
+    // This should match the configured lists in //third_party/ffmpeg.
+    std::string allowed_decoders(
+        "vorbis,libopus,flac,pcm_u8,pcm_s16le,pcm_s24le,pcm_s32le,pcm_f32le,"
+        "mp3,pcm_s16be,pcm_s24be,pcm_mulaw,pcm_alaw");
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    allowed_decoders += ",aac";
+#endif
+    return allowed_decoders;
+  }());
+  return kAllowedAudioCodecs->c_str();
+}
+
+// static
+const char* FFmpegGlue::GetAllowedVideoDecoders() {
+  static const base::NoDestructor<std::string> kAllowedVideoCodecs([]() {
+  // This should match the configured lists in //third_party/ffmpeg.
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+    std::vector<std::string> allowed_decoders;
+    if (base::FeatureList::IsEnabled(kTheoraVideoCodec)) {
+      allowed_decoders.push_back("theora");
+    }
+    if (base::FeatureList::IsEnabled(kFFmpegDecodeOpaqueVP8)) {
+      allowed_decoders.push_back("vp8");
+    }
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    allowed_decoders.push_back("h264");
+#if BUILDFLAG(IS_CHROMEOS)
+    if (base::FeatureList::IsEnabled(kCrOSLegacyMediaFormats)) {
+      allowed_decoders.push_back("mpeg4");
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+    return base::JoinString(allowed_decoders, ",");
+#else
+    return std::string();
+#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  }());
+  return kAllowedVideoCodecs->c_str();
 }
 
 bool FFmpegGlue::OpenContext(bool is_local_file) {

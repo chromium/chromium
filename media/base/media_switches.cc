@@ -1627,11 +1627,24 @@ BASE_FEATURE(kUseSharedImagesForPepperVideo,
              "UseSharedImagesForPepperVideo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables FFmpeg allow lists for supported codecs / containers.
+BASE_FEATURE(kFFmpegAllowLists,
+             "FFmpegAllowLists",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 // Allows decoding of theora / vp3 content.
 BASE_FEATURE(kTheoraVideoCodec,
              "TheoraVideoCodec",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Allows demuxing of AVI and decoding of MPEG4 streams. These should not be
+// allowed through the web in Chrome, but may be enabled by the local file app.
+BASE_FEATURE(kCrOSLegacyMediaFormats,
+             "CrOSLegacyMediaFormats",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 #endif
 
 bool IsChromeWideEchoCancellationEnabled() {
