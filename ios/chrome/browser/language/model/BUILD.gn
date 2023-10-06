@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("language") {
+source_set("model") {
   sources = [
     "accept_languages_service_factory.cc",
     "accept_languages_service_factory.h",
@@ -32,7 +32,7 @@ source_set("unit_tests") {
     "url_language_histogram_factory_unittest.cc",
   ]
   deps = [
-    ":language",
+    ":model",
     "//base",
     "//base/test:test_support",
     "//components/language/core/browser",

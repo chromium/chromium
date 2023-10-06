@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/language/url_language_histogram_factory.h"
+#include "ios/chrome/browser/language/model/url_language_histogram_factory.h"
 
 #include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #include "ios/web/public/test/web_task_environment.h"

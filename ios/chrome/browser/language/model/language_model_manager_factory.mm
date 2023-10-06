@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/language/language_model_manager_factory.h"
+#import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 
 #import "base/feature_list.h"
 #import "base/no_destructor.h"

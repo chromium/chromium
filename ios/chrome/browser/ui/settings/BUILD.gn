@@ -120,7 +120,7 @@ source_set("settings") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/history",
-    "//ios/chrome/browser/language",
+    "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ntp:features",
