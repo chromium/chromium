@@ -109,30 +109,6 @@ chromium-metrics-reviews@google.com.
   <summary>The resident set of the oldest urgent discarding candidate.</summary>
 </histogram>
 
-<histogram name="Discarding.OnCriticalPressure.TotalRSS_Mb2" units="MB"
-    expires_after="2021-10-30">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    An estimate of the total resident set of Chrome when receiving a critical
-    memory pressure event, in megabytes. Note that the estimate is based on the
-    most recent data collected by Performance Manager, which are refreshed at a
-    low frequency (up to 2 minutes).
-  </summary>
-</histogram>
-
-<histogram name="Discarding.OnCriticalPressure.TotalRSS_PercentOfRAM2"
-    units="%" expires_after="2021-10-30">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    An estimate of the total resident set of Chrome when receiving a critical
-    memory pressure event, in percentage of the total amount of RAM. Note that
-    the estimate is based on the most recent data collected by Performance
-    Manager, which are refreshed at a low frequency (up to 2 minutes).
-  </summary>
-</histogram>
-
 <histogram name="Tab.AgeAtDeletion" units="ms" expires_after="2024-02-11">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>

@@ -69,12 +69,6 @@ TEST_F(MemoryPressureMetricsTest, MAYBE_TestHistograms) {
   mock_graph.system->OnMemoryPressureForTesting(
       base::MemoryPressureListener::MemoryPressureLevel::
           MEMORY_PRESSURE_LEVEL_CRITICAL);
-
-  histogram_tester()->ExpectBucketCount(
-      "Discarding.OnCriticalPressure.TotalRSS_Mb2", kFakeSystemRamMb / 2, 1);
-
-  histogram_tester()->ExpectBucketCount(
-      "Discarding.OnCriticalPressure.TotalRSS_PercentOfRAM2", 50, 1);
 }
 
 }  // namespace metrics
