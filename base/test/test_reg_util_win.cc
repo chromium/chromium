@@ -12,6 +12,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time_override.h"
 #include "base/uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -87,7 +88,15 @@ RegistryOverrideManager::
 }
 
 RegistryOverrideManager::RegistryOverrideManager()
-    : timestamp_(base::Time::Now()), test_key_root_(kTempTestKeyPath) {
+    : timestamp_(base::subtle::TimeNowIgnoringOverride()),
+      test_key_root_(kTempTestKeyPath) {
+  // Use |base::subtle::TimeNowIgnoringOverride()| instead of
+  // |base::Time::Now()| can give us the real current time instead of the mock
+  // time in 1970 when MOCK_TIME is enabled. This can prevent test bugs where
+  // new instances of RegistryOverrideManager will clean up any redirected
+  // registry paths that have the timestamp from 1970, which then cause the
+  // currently running tests to fail since their expected reg keys were deleted
+  // by the other test.
   DeleteStaleTestKeys(timestamp_, test_key_root_);
 }
 
@@ -129,7 +138,8 @@ void RegistryOverrideManager::SetAllowHKLMRegistryOverrideForIntegrationTests(
 }
 
 std::wstring GenerateTempKeyPath() {
-  return GenerateTempKeyPath(kTempTestKeyPath, base::Time::Now());
+  return GenerateTempKeyPath(kTempTestKeyPath,
+                             base::subtle::TimeNowIgnoringOverride());
 }
 
 }  // namespace registry_util

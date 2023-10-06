@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -129,6 +130,84 @@ TEST_F(RegistryOverrideManagerTest, DeleteStaleKeys) {
   ASSERT_NO_FATAL_FAILURE(AssertKeyAbsent(path_stale));
   ASSERT_NO_FATAL_FAILURE(AssertKeyExists(path_current));
   ASSERT_NO_FATAL_FAILURE(AssertKeyExists(path_future));
+}
+
+TEST_F(RegistryOverrideManagerTest, DoesNotUseMockTime) {
+  // This test is targeted at scenarios when multiple tests run at the same
+  // time using `RegistryOverrideManager`, new instances of
+  // `RegistryOverrideManager` will clean up any redirected registry paths that
+  // have the timestamp generated (1970) when using `base::Time::Now()` with
+  // MOCK_TIME enabled, which then cause the currently running tests to fail
+  // since their expected reg keys were deleted by the other test.
+
+  // To fix this issue, we have updated `RegistryOverrideManager` by using
+  // `base::subtle::TimeNowIgnoringOverride()` instead of `base::Time::Now()`.
+  // So the real current time is used instead of the mock time in 1970. This can
+  // resolve related `RegistryOverrideManager` test failure when using
+  // MOCK_TIME. This test ensures we are fetching the real current time even
+  // when using MOCK_TIME.
+
+  // Use mock time to init RegKey, which is based on 1970-01-03.
+  // The RegKey contains information about the registry for the
+  // `RegistryOverrideManager`, which also contains a time stamp, which is used
+  // to delete stale keys left over from crashed tests.
+  base::test::TaskEnvironment test_task_env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  const base::Time kTestTime = base::Time::Now();
+
+  std::wstring mock_time_path_stale =
+      FakeOverrideManagerPath(kTestTime - base::Days(5));
+  std::wstring mock_time_path_current =
+      FakeOverrideManagerPath(kTestTime - base::Minutes(1));
+
+  ASSERT_NO_FATAL_FAILURE(CreateKey(mock_time_path_stale));
+  ASSERT_NO_FATAL_FAILURE(CreateKey(mock_time_path_current));
+
+  // Use real time to init `path_real`.
+  std::wstring path_real = GenerateTempKeyPath();
+  ASSERT_NO_FATAL_FAILURE(CreateKey(path_real));
+
+  ASSERT_NO_FATAL_FAILURE(CreateManager(kTestTime));
+  manager_.reset();
+
+  ASSERT_NO_FATAL_FAILURE(AssertKeyAbsent(mock_time_path_stale));
+  ASSERT_NO_FATAL_FAILURE(AssertKeyExists(mock_time_path_current));
+  // `path_real` should exist as it is initiated using real time, not mock time
+  // in 1970.
+  ASSERT_NO_FATAL_FAILURE(AssertKeyExists(path_real));
+
+  // Use real time to init following the new set of keys with
+  // `base::subtle::TimeNowIgnoringOverride()`.
+  const base::Time kTestTime_new = base::subtle::TimeNowIgnoringOverride();
+  std::wstring system_time_path_stale =
+      FakeOverrideManagerPath(kTestTime_new - base::Days(5));
+  std::wstring system_time_path_current =
+      FakeOverrideManagerPath(kTestTime_new - base::Minutes(1));
+
+  ASSERT_NO_FATAL_FAILURE(CreateKey(system_time_path_stale));
+  ASSERT_NO_FATAL_FAILURE(CreateKey(system_time_path_current));
+
+  ASSERT_NO_FATAL_FAILURE(CreateManager(kTestTime_new));
+  manager_.reset();
+
+  // Check old keys created with mock time
+  ASSERT_NO_FATAL_FAILURE(AssertKeyAbsent(mock_time_path_stale));
+  // While old keys are created using mock time in 1970, these keys will be
+  // deleted.
+  ASSERT_NO_FATAL_FAILURE(AssertKeyAbsent(mock_time_path_current));
+  // `path_real` should exist as it is initiated using real time, not mock time
+  // in 1970.
+  ASSERT_NO_FATAL_FAILURE(AssertKeyExists(path_real));
+
+  // Create a new manager with real system time.
+  const base::Time kTestTime_latest = base::subtle::TimeNowIgnoringOverride();
+  ASSERT_NO_FATAL_FAILURE(CreateManager(kTestTime_latest));
+  manager_.reset();
+
+  // Check new keys created with current time
+  ASSERT_NO_FATAL_FAILURE(AssertKeyAbsent(system_time_path_stale));
+  ASSERT_NO_FATAL_FAILURE(AssertKeyExists(system_time_path_current));
 }
 
 }  // namespace registry_util
