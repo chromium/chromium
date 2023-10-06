@@ -6,7 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
   sources = [ "webxr_internals.mojom" ]
-  deps = [ "//device/vr/public/mojom:xr_session" ]
+  deps = [ "//device/vr/public/mojom:xr_common" ]
   webui_module_path = "/"
   use_typescript_sources = true
 }

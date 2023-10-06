@@ -4,6 +4,7 @@
 
 module webxr.mojom;
 
+import "device/vr/public/mojom/xr_device.mojom";
 import "device/vr/public/mojom/xr_session.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
@@ -45,6 +46,16 @@ struct SessionStoppedRecord {
     mojo_base.mojom.Time stopped_time;
 };
 
+// Human readable information about the runtime info.
+// Note: We don't use device.mojom.XRDeviceData here due to conflicts with
+// building the luid for WebUI. Instead, we create RuntimeInfo without
+// specifying the luid.
+struct RuntimeInfo {
+    device.mojom.XRDeviceId device_id;
+    array<device.mojom.XRSessionFeature> supported_features;
+    bool is_ar_blend_mode_supported;
+};
+
 // Interface for controlling WebXR Internals.
 // Handles requests from "chrome://webxr-internals"
 // This is expected to be hosted in the browser process and is used from the
@@ -53,6 +64,10 @@ interface WebXrInternalsHandler {
     // Returns information about the operating system name,
     // operating system version, GPU driver and GPU vendor ID.
     GetDeviceInfo() => (DeviceInfo device_info);
+
+    // Returns information about active runtimes, including:
+    // Device ID, Supported Features and the runtime supports AR or not.
+    GetActiveRuntimes() => (array<RuntimeInfo> active_runtimes);
 
     // Subscribes to events with a pending remote XrInternalsSessionListener
     SubscribeToEvents(pending_remote<XRInternalsSessionListener> listener);
@@ -72,4 +87,13 @@ interface XRInternalsSessionListener {
 
     // Begin listening for updates to log session stopped record.
     LogXrSessionStopped(SessionStoppedRecord session_stopped_record);
+
+    // Begin listening for updates to log runtime added record.
+    // This method does not send historical data.
+    LogXrRuntimeAdded(RuntimeInfo runtime_added_record);
+
+    // Begin listening for updates to log runtime removed
+    // for the specified XR device.
+    // This method does not send historical data.
+    LogXrRuntimeRemoved(device.mojom.XRDeviceId device_id);
 };

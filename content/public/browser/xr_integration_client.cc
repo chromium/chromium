@@ -8,6 +8,7 @@
 #include "content/public/browser/xr_install_helper.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
+#include "device/vr/public/mojom/xr_device.mojom-shared.h"
 
 namespace content {
 

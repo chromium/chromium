@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "content/browser/xr/webxr_internals/mojom/webxr_internals.mojom.h"
+#include "device/vr/public/mojom/xr_device.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -50,6 +51,20 @@ void WebXrLoggerManager::RecordSessionStopped(
   }
 
   session_stopped_records_.push_back(std::move(session_stopped_record));
+}
+
+void WebXrLoggerManager::RecordRuntimeAdded(
+    webxr::mojom::RuntimeInfoPtr runtime_added_record) {
+  for (const auto& remote : remote_set_) {
+    remote->LogXrRuntimeAdded(runtime_added_record->Clone());
+  }
+}
+
+void WebXrLoggerManager::RecordRuntimeRemoved(
+    device::mojom::XRDeviceId device_id) {
+  for (const auto& remote : remote_set_) {
+    remote->LogXrRuntimeRemoved(device_id);
+  }
 }
 
 void WebXrLoggerManager::SubscribeToEvents(

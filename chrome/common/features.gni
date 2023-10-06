@@ -90,6 +90,9 @@ use_brlapi = is_chromeos_ash
 # proper build flags can be set.
 chrome_grit_defines = [
   "enable_arcore=$enable_arcore",
+  "enable_gvr_services=$enable_gvr_services",
+  "enable_cardboard=$enable_cardboard",
+  "enable_openxr=$enable_openxr",
   "enable_printing=$enable_printing",
   "enable_extensions=$enable_extensions",
   "enable_hangout_services_extension=$enable_hangout_services_extension",

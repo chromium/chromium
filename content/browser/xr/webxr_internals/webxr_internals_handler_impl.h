@@ -32,6 +32,7 @@ class WebXrInternalsHandlerImpl : public webxr::mojom::WebXrInternalsHandler {
 
   // webxr::mojom::WebXrInternalsHandler overrides:
   void GetDeviceInfo(GetDeviceInfoCallback callback) override;
+  void GetActiveRuntimes(GetActiveRuntimesCallback callback) override;
   void SubscribeToEvents(
       mojo::PendingRemote<webxr::mojom::XRInternalsSessionListener>
           pending_remote) override;

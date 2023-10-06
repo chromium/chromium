@@ -22,6 +22,7 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/session_mode.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
+#include "device/vr/public/mojom/xr_device.mojom-shared.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/transform.h"
@@ -454,6 +455,11 @@ void BrowserXRRuntimeImpl::BeforeRuntimeRemoved() {
   // Since this no-ops if we don't have an active immersive session, try to end
   // any immersive session we may be currently responsible for.
   StopImmersiveSession(base::DoNothing());
+}
+
+std::vector<device::mojom::XRSessionFeature>
+BrowserXRRuntimeImpl::GetSupportedFeatures() {
+  return device_data_->supported_features;
 }
 
 #if BUILDFLAG(IS_WIN)

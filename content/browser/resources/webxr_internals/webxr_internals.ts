@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './active_runtime_info_table.js';
 import './device_info_table.js';
+import './runtime_changelog_table.js';
 import './session_info_table.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
+import {ActiveRuntimeInfoTableElement} from './active_runtime_info_table.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {SessionRejectedRecord, SessionRequestedRecord, SessionStartedRecord, SessionStoppedRecord} from './webxr_internals.mojom-webui.js';
+import {RuntimeInfo, SessionRejectedRecord, SessionRequestedRecord, SessionStartedRecord, SessionStoppedRecord} from './webxr_internals.mojom-webui.js';
+import {XRDeviceId} from './xr_device.mojom-webui.js';
 
 let browserProxy: BrowserProxy;
 
@@ -18,13 +22,15 @@ async function bootstrap() {
   assert(browserProxy);
 
   setupSidebarButtonListeners();
-  renderDeviceInfo();
-  renderSessionsInfo();
+  renderDeviceInfoContent();
+  renderSessionInfoContent();
+  renderRuntimeInfoContent();
 }
 
 async function setupSidebarButtonListeners() {
   const deviceInfoButton = getRequiredElement('device-info-button');
   const sessionInfoButton = getRequiredElement('session-info-button');
+  const runtimeInfoButton = getRequiredElement('runtime-info-button');
 
   deviceInfoButton.addEventListener('click', () => {
     switchSidebar('device-info');
@@ -32,6 +38,10 @@ async function setupSidebarButtonListeners() {
 
   sessionInfoButton.addEventListener('click', () => {
     switchSidebar('session-info');
+  });
+
+  runtimeInfoButton.addEventListener('click', () => {
+    switchSidebar('runtime-info');
   });
 }
 
@@ -48,7 +58,7 @@ function switchSidebar(sidebarId: string) {
   ensureOnlyContentSelected(sidebarId, '.tab-button', '-button');
 }
 
-async function renderDeviceInfo() {
+async function renderDeviceInfoContent() {
   const deviceInfo = await browserProxy.getDeviceInfo();
 
   const deviceInfoContent = getRequiredElement('device-info-content');
@@ -62,9 +72,9 @@ async function renderDeviceInfo() {
   deviceInfoContent.appendChild(table);
 }
 
-async function renderSessionsInfo() {
-  const sessionInfoConent = getRequiredElement('session-info-content');
-  assert(sessionInfoConent);
+async function renderSessionInfoContent() {
+  const sessionInfoContent = getRequiredElement('session-info-content');
+  assert(sessionInfoContent);
 
   const table = document.createElement('session-info-table');
 
@@ -88,7 +98,40 @@ async function renderSessionsInfo() {
         table.addSessionStoppedRow(sessionStoppedRecord);
       });
 
-  sessionInfoConent.appendChild(table);
+  sessionInfoContent.appendChild(table);
+}
+
+async function renderActiveRuntimesTable(
+    runtimeInfoTable: ActiveRuntimeInfoTableElement) {
+  const activeRuntimes = await browserProxy.getActiveRuntimes();
+  runtimeInfoTable.recreateActiveRuntimesTable(activeRuntimes);
+}
+
+async function renderRuntimeInfoContent() {
+  const runtimeInfoContent = getRequiredElement('runtime-info-content');
+  assert(runtimeInfoContent);
+
+  const activeRuntimeTable =
+      document.createElement('active-runtime-info-table');
+  const runtimeChangelogTable =
+      document.createElement('runtime-changelog-table');
+
+  renderActiveRuntimesTable(activeRuntimeTable);
+
+  browserProxy.getBrowserCallback().logXrRuntimeAdded.addListener(
+      (runtimeInfo: RuntimeInfo) => {
+        runtimeChangelogTable.addRuntimeAddedRecord(runtimeInfo);
+        renderActiveRuntimesTable(activeRuntimeTable);
+      });
+
+  browserProxy.getBrowserCallback().logXrRuntimeRemoved.addListener(
+      (deviceId: XRDeviceId) => {
+        runtimeChangelogTable.addRuntimeRemovedRecord(deviceId);
+        renderActiveRuntimesTable(activeRuntimeTable);
+      });
+
+  runtimeInfoContent.appendChild(activeRuntimeTable);
+  runtimeInfoContent.appendChild(runtimeChangelogTable);
 }
 
 document.addEventListener('DOMContentLoaded', bootstrap);

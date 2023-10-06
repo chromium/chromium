@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DeviceInfo, WebXrInternalsHandler, XRInternalsSessionListenerCallbackRouter} from './webxr_internals.mojom-webui.js';
+import {DeviceInfo, RuntimeInfo, WebXrInternalsHandler, XRInternalsSessionListenerCallbackRouter} from './webxr_internals.mojom-webui.js';
 
 export class BrowserProxy {
   private callbackRouter_ = new XRInternalsSessionListenerCallbackRouter();
@@ -20,6 +20,11 @@ export class BrowserProxy {
   async getDeviceInfo(): Promise<DeviceInfo> {
     const response = await this.handler_.getDeviceInfo();
     return response.deviceInfo;
+  }
+
+  async getActiveRuntimes(): Promise<RuntimeInfo[]> {
+    const response = await this.handler_.getActiveRuntimes();
+    return response.activeRuntimes;
   }
 
   static getInstance() {

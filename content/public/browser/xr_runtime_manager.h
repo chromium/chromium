@@ -9,6 +9,7 @@
 #include "base/observer_list_types.h"
 #include "content/common/content_export.h"
 #include "device/vr/public/mojom/vr_service.mojom-forward.h"
+#include "device/vr/public/mojom/xr_device.mojom-forward.h"
 
 namespace content {
 class BrowserXRRuntime;

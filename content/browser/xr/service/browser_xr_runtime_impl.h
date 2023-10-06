@@ -17,6 +17,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom-forward.h"
+#include "device/vr/public/mojom/xr_device.mojom-forward.h"
 #include "device/vr/public/mojom/xr_session.mojom-forward.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -98,6 +99,8 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   // Called to allow the runtime to conduct any cleanup it needs to do before it
   // is removed.
   void BeforeRuntimeRemoved();
+
+  std::vector<device::mojom::XRSessionFeature> GetSupportedFeatures();
 
  private:
   // device::XRRuntimeEventListener

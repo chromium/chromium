@@ -13,7 +13,7 @@ mojom_component("vr_service") {
 
   public_deps = [
     ":test_mojom",
-    ":xr_session",
+    ":xr_common",
     "//device/gamepad/public/mojom",
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
@@ -21,23 +21,6 @@ mojom_component("vr_service") {
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
-
-  enabled_features = []
-  if (enable_openxr) {
-    enabled_features += [ "enable_openxr" ]
-  }
-
-  if (enable_cardboard) {
-    enabled_features += [ "enable_cardboard" ]
-  }
-
-  if (enable_gvr_services) {
-    enabled_features += [ "enable_gvr_services" ]
-  }
-
-  if (enable_arcore) {
-    enabled_features += [ "enable_arcore" ]
-  }
 
   shared_cpp_typemap = {
     types = [
@@ -76,7 +59,7 @@ mojom_component("isolated_xr_service") {
   public_deps = [
     ":test_mojom",
     ":vr_service",
-    ":xr_session",
+    ":xr_common",
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
@@ -117,17 +100,37 @@ component("vr_public_typemaps") {
   ]
 }
 
-mojom_component("xr_session") {
-  output_prefix = "device_xr_session_mojo_bindings"
-  macro_prefix = "DEVICE_XR_SESSION_MOJO_BINDINGS"
+mojom_component("xr_common") {
+  output_prefix = "device_xr_common_mojo_bindings"
+  macro_prefix = "DEVICE_XR_COMMON_MOJO_BINDINGS"
 
-  sources = [ "xr_session.mojom" ]
+  sources = [
+    "xr_device.mojom",
+    "xr_session.mojom",
+  ]
 
   public_deps = [
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
+
+  enabled_features = []
+  if (enable_openxr) {
+    enabled_features += [ "enable_openxr" ]
+  }
+
+  if (enable_cardboard) {
+    enabled_features += [ "enable_cardboard" ]
+  }
+
+  if (enable_gvr_services) {
+    enabled_features += [ "enable_gvr_services" ]
+  }
+
+  if (enable_arcore) {
+    enabled_features += [ "enable_arcore" ]
+  }
 
   webui_module_path = "/"
   use_typescript_sources = true

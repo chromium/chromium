@@ -62,6 +62,13 @@ void WebXrInternalsHandlerImpl::GetDeviceInfo(GetDeviceInfoCallback callback) {
   std::move(callback).Run(std::move(info));
 }
 
+void WebXrInternalsHandlerImpl::GetActiveRuntimes(
+    GetActiveRuntimesCallback callback) {
+  std::vector<webxr::mojom::RuntimeInfoPtr> info =
+      runtime_manager_->GetActiveRuntimes();
+  std::move(callback).Run(std::move(info));
+}
+
 void WebXrInternalsHandlerImpl::SubscribeToEvents(
     mojo::PendingRemote<webxr::mojom::XRInternalsSessionListener>
         pending_remote) {

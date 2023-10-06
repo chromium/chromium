@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {getTemplate} from './session_info_table.html.js';
+import * as TimeUtil from './time_util.js';
 import {SessionRejectedRecord, SessionRequestedRecord, SessionStartedRecord, SessionStoppedRecord} from './webxr_internals.mojom-webui.js';
 import * as XRSessionUtil from './xr_session_util.js';
 
@@ -49,7 +49,7 @@ export class SessionInfoTableElement extends CustomElement {
       `Optional Features: ${
           optionalFeatures.map(XRSessionUtil.sessionFeatureToString)
               .join(', ')}`,
-      `Requested Time: ${formatMojoTime(requestedTime)}`,
+      `Requested Time: ${TimeUtil.formatMojoTime(requestedTime)}`,
     ];
 
     const depthUsagePreferences = depthOptions?.usagePreferences || [];
@@ -89,7 +89,7 @@ export class SessionInfoTableElement extends CustomElement {
           XRSessionUtil.requestSessionErrorToString(failureReason)}`,
       `Failure Reason Description: ${failureReasonDescription} ${
           rejectedFeaturesDescription}`,
-      `Rejected Time: ${formatMojoTime(rejectedTime)}`,
+      `Rejected Time: ${TimeUtil.formatMojoTime(rejectedTime)}`,
     ];
 
     this.addSessionRow(traceId.toString(), 'Rejected', attributes);
@@ -98,7 +98,7 @@ export class SessionInfoTableElement extends CustomElement {
   addSessionStartedRow(sessionStartedRecord: SessionStartedRecord) {
     const {traceId, startedTime} = sessionStartedRecord;
     const attributes = [
-      `Started Time: ${formatMojoTime(startedTime)}`,
+      `Started Time: ${TimeUtil.formatMojoTime(startedTime)}`,
     ];
 
     this.addSessionRow(traceId.toString(), 'Started', attributes);
@@ -107,7 +107,7 @@ export class SessionInfoTableElement extends CustomElement {
   addSessionStoppedRow(sessionStoppedRecord: SessionStoppedRecord) {
     const {traceId, stoppedTime} = sessionStoppedRecord;
     const attributes = [
-      `Stopped Time: ${formatMojoTime(stoppedTime)}`,
+      `Stopped Time: ${TimeUtil.formatMojoTime(stoppedTime)}`,
     ];
 
     this.addSessionRow(traceId.toString(), 'Stopped', attributes);
@@ -161,22 +161,6 @@ export class SessionInfoTableElement extends CustomElement {
     attributesCell.appendChild(ul);
     newRow.appendChild(attributesCell);
   }
-}
-
-function formatMojoTime(mojoTime: Time) {
-  // The JS Date() is based off of the number of milliseconds since the
-  // UNIX epoch (1970-01-01 00::00:00 UTC), while |internalValue| of the
-  // base::Time (represented in mojom.Time) represents the number of
-  // microseconds since the Windows FILETIME epoch (1601-01-01 00:00:00 UTC).
-  // This computes the final JS time by computing the epoch delta and the
-  // conversion from microseconds to milliseconds.
-  const windowsEpoch = Date.UTC(1601, 0, 1, 0, 0, 0, 0);
-  const unixEpoch = Date.UTC(1970, 0, 1, 0, 0, 0, 0);
-  // |epochDeltaInMs| equals to base::Time::kTimeTToMicrosecondsOffset.
-  const epochDeltaInMs = unixEpoch - windowsEpoch;
-  const timeInMs = Number(mojoTime.internalValue) / 1000;
-
-  return (new Date(timeInMs - epochDeltaInMs)).toLocaleString();
 }
 
 // Declare the custom element
