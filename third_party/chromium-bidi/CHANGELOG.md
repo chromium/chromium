@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.30](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.29...chromium-bidi-v0.4.30) (2023-10-06)
+
+
+### Bug Fixes
+
+* use 0.5 for default radiusX and radiusY ([#1391](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1391)) ([8a423d3](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8a423d301981e18bcd517cc600c0b7456e029fbe))
+
 ## [0.4.29](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.28...chromium-bidi-v0.4.29) (2023-10-06)
 
 
