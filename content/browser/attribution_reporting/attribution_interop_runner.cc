@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
@@ -52,11 +51,9 @@
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/storage_partition.h"
@@ -137,13 +134,10 @@ class AttributionReportJsonConverter {
         report.data());
 
     return MakeReport(base::Value(std::move(report_body)),
-                      report.ReportURL(is_debug_report),
-                      is_debug_report ? report.attribution_info().time
-                                      : report.report_time());
+                      report.ReportURL(is_debug_report));
   }
 
-  base::Value::Dict ToJson(const AttributionDebugReport& report,
-                           base::Time time) const {
+  base::Value::Dict ToJson(const AttributionDebugReport& report) const {
     base::Value::List report_body = report.ReportBody().Clone();
     for (auto& value : report_body) {
       if (base::Value::Dict* dict = value.GetIfDict()) {
@@ -157,8 +151,7 @@ class AttributionReportJsonConverter {
       }
     }
 
-    return MakeReport(base::Value(std::move(report_body)), report.ReportUrl(),
-                      time);
+    return MakeReport(base::Value(std::move(report_body)), report.ReportUrl());
   }
 
   std::string FormatTime(base::Time time) const {
@@ -180,12 +173,11 @@ class AttributionReportJsonConverter {
   }
 
   base::Value::Dict MakeReport(base::Value payload,
-                               const GURL& report_url,
-                               base::Time report_time) const {
+                               const GURL& report_url) const {
     return base::Value::Dict()
         .Set("payload", std::move(payload))
         .Set("report_url", report_url.spec())
-        .Set("report_time", FormatTime(report_time));
+        .Set("report_time", FormatTime(base::Time::Now()));
   }
 
   const base::Time time_origin_;
@@ -193,7 +185,10 @@ class AttributionReportJsonConverter {
 
 class FakeReportSender : public AttributionReportSender {
  public:
-  FakeReportSender() = default;
+  FakeReportSender(base::Value::List* reports,
+                   AttributionReportJsonConverter json_converter)
+      : reports_(raw_ref<base::Value::List>::from_ptr(reports)),
+        json_converter_(json_converter) {}
 
   ~FakeReportSender() override = default;
 
@@ -208,6 +203,8 @@ class FakeReportSender : public AttributionReportSender {
   void SendReport(AttributionReport report,
                   bool is_debug_report,
                   ReportSentCallback sent_callback) override {
+    reports_->Append(json_converter_.ToJson(report, is_debug_report));
+
     std::move(sent_callback)
         .Run(std::move(report), SendResult(SendResult::Status::kSent,
                                            /*http_response_code=*/200));
@@ -215,8 +212,12 @@ class FakeReportSender : public AttributionReportSender {
 
   void SendReport(AttributionDebugReport report,
                   DebugReportSentCallback done) override {
+    reports_->Append(json_converter_.ToJson(report));
     std::move(done).Run(std::move(report), /*status=*/200);
   }
+
+  raw_ref<base::Value::List> reports_;
+  const AttributionReportJsonConverter json_converter_;
 };
 
 class FakeCookieChecker : public AttributionCookieChecker {
@@ -310,29 +311,12 @@ class AttributionEventHandler : public AttributionObserver {
         GlobalRenderFrameHostId());
   }
 
-  base::Value::Dict TakeOutput() {
-    return MakeOutput(std::exchange(reports_, {}),
-                      std::exchange(unparsable_, {}));
-  }
+  base::Value::List TakeUnparsable() && { return std::move(unparsable_); }
 
   base::Time max_report_time() const { return max_report_time_; }
 
  private:
   // AttributionObserver:
-
-  void OnReportSent(const AttributionReport& report,
-                    bool is_debug_report,
-                    const SendResult& info) override {
-    DCHECK_EQ(info.status, SendResult::Status::kSent);
-    reports_.Append(json_converter_.ToJson(report, is_debug_report));
-  }
-
-  void OnDebugReportSent(const AttributionDebugReport& report,
-                         int status,
-                         base::Time time) override {
-    DCHECK_EQ(status, 200);
-    reports_.Append(json_converter_.ToJson(report, time));
-  }
 
   void OnTriggerHandled(const AttributionTrigger&,
                         absl::optional<uint64_t> cleared_debug_key,
@@ -347,10 +331,10 @@ class AttributionEventHandler : public AttributionObserver {
   }
 
   void AddUnparsableRegistration(const AttributionSimulationEvent& event) {
-    base::Value::Dict dict;
-    dict.Set("time", json_converter_.FormatTime(event.time));
-    dict.Set("type", event.source_type.has_value() ? "source" : "trigger");
-    unparsable_.Append(std::move(dict));
+    unparsable_.Append(
+        base::Value::Dict()
+            .Set("time", json_converter_.FormatTime(event.time))
+            .Set("type", event.source_type.has_value() ? "source" : "trigger"));
   }
 
   const std::unique_ptr<AttributionManagerImpl> manager_;
@@ -360,7 +344,6 @@ class AttributionEventHandler : public AttributionObserver {
 
   base::Time max_report_time_;
 
-  base::Value::List reports_;
   base::Value::List unparsable_;
 };
 
@@ -399,6 +382,9 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
   auto fake_cookie_checker = std::make_unique<FakeCookieChecker>();
   auto* raw_fake_cookie_checker = fake_cookie_checker.get();
 
+  base::Value::List reports;
+  AttributionReportJsonConverter json_converter(time_origin);
+
   auto manager = AttributionManagerImpl::CreateForTesting(
       // Avoid creating an on-disk sqlite DB.
       /*user_data_directory=*/base::FilePath(),
@@ -406,7 +392,8 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
       /*special_storage_policy=*/nullptr,
       AttributionStorageDelegateImpl::CreateForTesting(
           AttributionNoiseMode::kNone, AttributionDelayMode::kDefault, config),
-      std::move(fake_cookie_checker), std::make_unique<FakeReportSender>(),
+      std::move(fake_cookie_checker),
+      std::make_unique<FakeReportSender>(&reports, json_converter),
       std::make_unique<NoOpAttributionOsLevelManager>(), storage_partition,
       base::ThreadPool::CreateUpdateableSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
@@ -414,7 +401,7 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
            base::ThreadPolicy::MUST_USE_FOREGROUND}));
 
   AttributionEventHandler handler(std::move(manager), raw_fake_cookie_checker,
-                                  AttributionReportJsonConverter(time_origin));
+                                  json_converter);
 
   static_cast<AggregationServiceImpl*>(
       storage_partition->GetAggregationService())
@@ -443,7 +430,7 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
     task_environment.FastForwardBy(max_report_time - now);
   }
 
-  return handler.TakeOutput();
+  return MakeOutput(std::move(reports), std::move(handler).TakeUnparsable());
 }
 
 }  // namespace content
