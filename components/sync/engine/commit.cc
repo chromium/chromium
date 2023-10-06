@@ -11,7 +11,6 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
-#include "components/sync/base/data_type_histogram.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/commit_processor.h"
 #include "components/sync/engine/commit_util.h"
@@ -77,7 +76,6 @@ Commit::~Commit() = default;
 // static
 std::unique_ptr<Commit> Commit::Init(
     ModelTypeSet enabled_types,
-    bool proxy_tabs_datatype_enabled,
     size_t max_entries,
     const std::string& account_name,
     const std::string& cache_guid,
@@ -120,7 +118,7 @@ std::unique_ptr<Commit> Commit::Init(
 
   // Set the client config params.
   commit_util::AddClientConfigParamsToMessage(
-      enabled_types, proxy_tabs_datatype_enabled, cookie_jar_mismatch,
+      enabled_types, cookie_jar_mismatch,
       active_devices_invalidation_info.IsSingleClientForTypes(
           contributed_data_types),
       active_devices_invalidation_info

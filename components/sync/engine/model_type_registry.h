@@ -51,7 +51,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
       ModelType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) override;
   void DisconnectDataType(ModelType type) override;
-  void SetProxyTabsDatatypeEnabled(bool enabled) override;
 
   // Implementation of SyncEncryptionHandler::Observer.
   void OnPassphraseRequired(
@@ -71,8 +70,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
   // the sync engine cares about. For each of these, a worker exists to
   // propagate changes between the server and the local model's processor.
   ModelTypeSet GetConnectedTypes() const;
-
-  bool proxy_tabs_datatype_enabled() const;
 
   // Returns set of types for which initial set of updates was downloaded and
   // applied.
@@ -99,10 +96,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
   base::WeakPtr<ModelTypeConnector> AsWeakPtr();
 
  private:
-  // Whether PROXY_TABS is enabled, which is not enabled for real (e.g. it
-  // doesn't have a worker).
-  bool proxy_tabs_datatype_enabled_ = false;
-
   std::vector<std::unique_ptr<ModelTypeWorker>> connected_model_type_workers_;
 
   // Maps of UpdateHandlers and CommitContributors.

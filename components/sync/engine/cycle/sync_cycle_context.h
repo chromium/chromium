@@ -58,8 +58,6 @@ class SyncCycleContext {
 
   ModelTypeSet GetConnectedTypes() const;
 
-  bool proxy_tabs_datatype_enabled() const;
-
   ExtensionsActivity* extensions_activity() {
     return extensions_activity_.get();
   }

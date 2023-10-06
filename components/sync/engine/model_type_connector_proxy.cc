@@ -35,11 +35,4 @@ void ModelTypeConnectorProxy::DisconnectDataType(ModelType type) {
                                         model_type_connector_, type));
 }
 
-void ModelTypeConnectorProxy::SetProxyTabsDatatypeEnabled(bool enabled) {
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ModelTypeConnector::SetProxyTabsDatatypeEnabled,
-                     model_type_connector_, enabled));
-}
-
 }  // namespace syncer

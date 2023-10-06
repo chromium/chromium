@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_SERVICE_GLUE_SYNC_ENGINE_BACKEND_H_
 #define COMPONENTS_SYNC_SERVICE_GLUE_SYNC_ENGINE_BACKEND_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/invalidation/public/invalidator_state.h"
+#include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/model_type_configurer.h"

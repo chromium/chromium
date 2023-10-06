@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_SERVICE_GLUE_SYNC_ENGINE_IMPL_H_
 #define COMPONENTS_SYNC_SERVICE_GLUE_SYNC_ENGINE_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -84,7 +83,6 @@ class SyncEngineImpl : public SyncEngine,
   void ConnectDataType(ModelType type,
                        std::unique_ptr<DataTypeActivationResponse>) override;
   void DisconnectDataType(ModelType type) override;
-  void SetProxyTabsDatatypeEnabled(bool enabled) override;
   const Status& GetDetailedStatus() const override;
   void GetTypesWithUnsyncedData(
       base::OnceCallback<void(ModelTypeSet)> cb) const override;

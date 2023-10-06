@@ -88,8 +88,6 @@ class FakeModelTypeConfigurer : public ModelTypeConfigurer {
     connected_types_.Remove(type);
   }
 
-  void SetProxyTabsDatatypeEnabled(bool enabled) override {}
-
   void FinishDownload(ModelTypeSet types_to_configure,
                       ModelTypeSet failed_download_types) {
     ASSERT_FALSE(last_params_.ready_task.is_null());

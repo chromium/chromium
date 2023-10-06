@@ -94,8 +94,6 @@ class FakeSyncEngine : public SyncEngine,
                        std::unique_ptr<DataTypeActivationResponse>) override;
   void DisconnectDataType(ModelType type) override;
 
-  void SetProxyTabsDatatypeEnabled(bool enabled) override;
-
   const SyncStatus& GetDetailedStatus() const override;
 
   void GetTypesWithUnsyncedData(

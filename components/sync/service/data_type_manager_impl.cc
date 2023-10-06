@@ -279,7 +279,7 @@ void DataTypeManagerImpl::ConnectDataTypes() {
       // |skip_engine_connection| means ConnectDataType() shouldn't be invoked
       // because the datatype has some alternative way to sync changes to the
       // server, without relying on this instance of the sync engine. This is
-      // currently possible for PROXY_TABS and, on Android, for PASSWORDS.
+      // currently possible for PASSWORDS on Android.
       DCHECK(!activation_response->type_processor);
       downloaded_types_.Put(type);
       configured_proxy_types_.Put(type);
@@ -427,13 +427,6 @@ void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
   // could have failed loading and should be excluded from configuration. I need
   // to adjust |configuration_types_queue_| for such types.
   ConnectDataTypes();
-
-  // Propagate the state of PROXY_TABS to the sync engine.
-  auto dtc_iter = controllers_->find(PROXY_TABS);
-  if (dtc_iter != controllers_->end()) {
-    configurer_->SetProxyTabsDatatypeEnabled(dtc_iter->second->state() ==
-                                             DataTypeController::RUNNING);
-  }
 
   StartNextConfiguration();
 }

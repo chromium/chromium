@@ -48,7 +48,8 @@ message ClientConfigParams {
   repeated int32 enabled_type_ids = 1;
 
   // Whether the PROXY_TABS proxy datatype is enabled on this client.
-  optional bool tabs_datatype_enabled = 2;
+  // Deprecated and not populated anymore since M120.
+  optional bool tabs_datatype_enabled = 2 [deprecated = true];
 
   // Whether the account(s) present in the content area's cookie jar match the
   // chrome account. If multiple accounts are present in the cookie jar, a

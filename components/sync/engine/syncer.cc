@@ -22,7 +22,6 @@
 #include "components/sync/engine/cycle/sync_cycle.h"
 #include "components/sync/engine/get_updates_delegate.h"
 #include "components/sync/engine/get_updates_processor.h"
-#include "components/sync/engine/net/server_connection_manager.h"
 #include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/engine/syncer_error.h"
 #include "net/http/http_status_code.h"
@@ -221,13 +220,12 @@ SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
   // errors from the ServerConnectionManager if an exist has been requested.
   // However, it doesn't hurt to check it anyway.
   while (!ExitRequested()) {
-    std::unique_ptr<Commit> commit(Commit::Init(
+    std::unique_ptr<Commit> commit = Commit::Init(
         cycle->context()->GetConnectedTypes(),
-        cycle->context()->proxy_tabs_datatype_enabled(),
         cycle->context()->max_commit_batch_size(),
         cycle->context()->account_name(), cycle->context()->cache_guid(),
         cycle->context()->cookie_jar_mismatch(), GetInvalidationInfo(cycle),
-        &commit_processor, cycle->context()->extensions_activity()));
+        &commit_processor, cycle->context()->extensions_activity());
     if (!commit) {
       break;
     }

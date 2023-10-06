@@ -50,7 +50,6 @@ class Commit {
   // |extensions_activity| may be null.
   static std::unique_ptr<Commit> Init(
       ModelTypeSet enabled_types,
-      bool proxy_tabs_datatype_enabled,
       size_t max_entries,
       const std::string& account_name,
       const std::string& cache_guid,

@@ -318,10 +318,6 @@ void SyncEngineImpl::DisconnectDataType(ModelType type) {
   model_type_connector_->DisconnectDataType(type);
 }
 
-void SyncEngineImpl::SetProxyTabsDatatypeEnabled(bool enabled) {
-  model_type_connector_->SetProxyTabsDatatypeEnabled(enabled);
-}
-
 const SyncEngineImpl::Status& SyncEngineImpl::GetDetailedStatus() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsInitialized());
