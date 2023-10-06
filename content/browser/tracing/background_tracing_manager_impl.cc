@@ -108,7 +108,8 @@ void AddTraceOnDatabaseTaskRunner(
   base::Time since = base::Time::Now() - kMinTimeUntilNextUpload;
   auto upload_count =
       database->UploadCountSince(base_report.scenario_name, since);
-  if (!is_crash_scenario && upload_count && *upload_count > 0) {
+  if (base_report.skip_reason == SkipUploadReason::kNoSkip &&
+      !is_crash_scenario && upload_count && *upload_count > 0) {
     base_report.skip_reason = SkipUploadReason::kScenarioQuotaExceeded;
     if (!should_save_trace) {
       return;
@@ -793,8 +794,7 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     SkipUploadReason skip_reason = SkipUploadReason::kNoSkip;
     if (!requires_anonymized_data_) {
       skip_reason = SkipUploadReason::kNotAnonymized;
-    }
-    if (serialized_trace.size() > upload_limit_kb_ * 1024) {
+    } else if (serialized_trace.size() > upload_limit_kb_ * 1024) {
       skip_reason = SkipUploadReason::kSizeLimitExceeded;
     }
     bool should_save_trace =
