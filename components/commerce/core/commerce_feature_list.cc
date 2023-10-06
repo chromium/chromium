@@ -186,6 +186,9 @@ const base::FeatureParam<bool> kPriceInsightsChipLabelExpandOnHighPrice{
 const char kPriceInsightsShowFeedbackParam[] = "price-insights-show-feedback";
 const base::FeatureParam<bool> kPriceInsightsShowFeedback{
     &commerce::kPriceInsights, kPriceInsightsShowFeedbackParam, false};
+const char kPriceInsightsUseCacheParam[] = "price-insights-use-cache";
+const base::FeatureParam<bool> kPriceInsightsUseCache{
+    &commerce::kPriceInsights, kPriceInsightsUseCacheParam, true};
 
 // Tonal colors for the expanded state of the price tracking chip on desktop.
 BASE_FEATURE(kPriceTrackingIconColors,
