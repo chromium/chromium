@@ -467,6 +467,7 @@ This builder shadows android-nougat-x86-rel builder to experiment both jacoco an
     use_java_coverage = True,
 )
 
+# TODO(crbug.com/1487812): Remove the builder once all builds finish.
 try_.orchestrator_builder(
     name = "android-nougat-x86-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
@@ -479,7 +480,7 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
+    # tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -655,11 +656,7 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    # TODO(crbug.com/1487812): Enable CQ and remove experiment_percentage
-    # after cache is warmed up.
-    tryjob = try_.job(
-        experiment_percentage = 100,
-    ),
+    tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
