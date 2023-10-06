@@ -5972,7 +5972,7 @@
   {
     "name": "ntp-reduced-logo-space",
     "owners": [ "//components/search/OWNERS" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 123
   },
   {
     "name": "ntp-safe-browsing-module",
@@ -5982,7 +5982,7 @@
   {
     "name": "ntp-single-row-shortcuts",
     "owners": [ "//components/search/OWNERS" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 123
   },
   {
     "name": "ntp-view-hierarchy-repair",
