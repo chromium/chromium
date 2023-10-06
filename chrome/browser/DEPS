@@ -94,7 +94,7 @@ include_rules = [
   "+components/commerce",
   "+components/component_updater",
   "+components/component_updater/installer_policies",
-  "+components/compose/core/browser",
+  "+components/compose",
   "+components/consent_auditor",
   "+components/constrained_window",
   "+components/content_capture/browser",

@@ -471,6 +471,7 @@ static_library("ui") {
     "//components/commerce/content/browser",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service",
+    "//components/compose:buildflags",
     "//components/compose/core/browser:features",
     "//components/consent_auditor/",
     "//components/content_settings/browser",

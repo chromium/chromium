@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_COMPOSE_CHROME_COMPOSE_CLIENT_H_
 
 #include "components/compose/core/browser/compose_client.h"
+#include "components/compose/core/browser/compose_manager_impl.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -21,11 +22,15 @@ class ChromeComposeClient
   ChromeComposeClient& operator=(const ChromeComposeClient&) = delete;
   ~ChromeComposeClient() override;
 
+  // compose::ComposeClient:
+  compose::ComposeManager& manager() override;
   void ShowComposeDialog(ComposeDialogCallback callback) override;
 
  private:
   friend class content::WebContentsUserData<ChromeComposeClient>;
   explicit ChromeComposeClient(content::WebContents* web_contents);
+
+  compose::ComposeManagerImpl compose_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
