@@ -769,7 +769,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ApplySyncChanges.AddLoginSyncError"
-    enum="PasswordAddLoginSyncError" expires_after="2023-11-12">
+    enum="PasswordAddLoginSyncError" expires_after="2024-04-12">
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -780,7 +780,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ApplySyncChanges.UpdateLoginSyncError"
-    enum="PasswordUpdateLoginSyncError" expires_after="2023-11-12">
+    enum="PasswordUpdateLoginSyncError" expires_after="2024-04-12">
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
