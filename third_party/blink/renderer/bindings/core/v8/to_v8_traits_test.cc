@@ -317,12 +317,7 @@ TEST(ToV8TraitsTest, HeapVector) {
   const HeapVector<Member<GarbageCollectedScriptWrappable>>*
       const_garbage_collected_heap_vector = &heap_vector;
   TEST_TOV8_TRAITS(scope, IDLSequence<GarbageCollectedScriptWrappable>,
-                   "hoge,fuga", const_garbage_collected_heap_vector);
-
-  HeapVector<Member<GarbageCollectedScriptWrappable>>*
-      garbage_collected_heap_vector = &heap_vector;
-  TEST_TOV8_TRAITS(scope, IDLSequence<GarbageCollectedScriptWrappable>,
-                   "hoge,fuga", garbage_collected_heap_vector);
+                   "hoge,fuga", *const_garbage_collected_heap_vector);
 }
 
 TEST(ToV8TraitsTest, BasicIDLTypeVectors) {
@@ -505,11 +500,6 @@ TEST(ToV8TraitsTest, PairHeapVector) {
   EXPECT_TRUE(two->IsObject());
   EXPECT_EQ(String("bar"),
             ToCoreString(two->ToString(scope.GetContext()).ToLocalChecked()));
-
-  HeapVector<std::pair<String, Member<GarbageCollectedScriptWrappable>>>*
-      garbage_collected_pair_heap_vector = &pair_heap_vector;
-  TEST_TOV8_TRAITS(scope, HeapRecord, "[object Object]",
-                   garbage_collected_pair_heap_vector);
 }
 
 TEST(ToV8TraitsTest, NullStringInputForNoneNullableType) {
