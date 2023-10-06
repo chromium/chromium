@@ -120,7 +120,8 @@ function wrapFunctionInHeartbeat(prototype, key) {
 if (inIframe) {
   // Wrap a subset of GL calls in heartbeats to ensure that longer-running tests
   // still send them regularly.
-  const wrappedFunctions = [
+  const wrappedGLFunctions = [
+      'getError',
       // conformance/uniforms/no-over-optimization-on-uniform-array-*
       'getUniform',
       'getUniformLocation',
@@ -131,9 +132,17 @@ if (inIframe) {
       'clientWaitSync',
       'getSyncParameter',
   ];
-  for (const funcName of wrappedFunctions) {
+  for (const funcName of wrappedGLFunctions) {
     wrapFunctionInHeartbeat(WebGLRenderingContext.prototype, funcName);
     wrapFunctionInHeartbeat(WebGL2RenderingContext.prototype, funcName);
+  }
+
+  // Do the same for HTML canvas elements.
+  const wrappedHTMLCanvasFunctions = [
+      'getContext',
+  ];
+  for (const funcName of wrappedHTMLCanvasFunctions) {
+    wrapFunctionInHeartbeat(HTMLCanvasElement.prototype, funcName);
   }
 }
 
