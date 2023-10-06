@@ -548,20 +548,20 @@ NavigationResult* NavigationApi::traverseTo(ScriptState* script_state,
       MakeGarbageCollected<NavigationApiMethodTracker>(script_state, options,
                                                        key);
   upcoming_traverse_api_method_trackers_.insert(key, api_method_tracker);
-  if (window_->GetFrame()->IsMainFrame()) {
+  LocalFrame* frame = window_->GetFrame();
+  scheduler::TaskAttributionInfo* task = nullptr;
+  if (frame->IsOutermostMainFrame()) {
     SoftNavigationHeuristics* heuristics =
         SoftNavigationHeuristics::From(*window_);
     heuristics->SameDocumentNavigationStarted(script_state);
+    auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+    if (tracker && script_state->World().IsMainWorld()) {
+      task = tracker->RunningTask(script_state);
+      tracker->AddSameDocumentNavigationTask(task);
+    }
   }
-  auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
-  scheduler::TaskAttributionInfo* task = nullptr;
-  if (tracker && script_state->World().IsMainWorld()) {
-    task = tracker->RunningTask(script_state);
-
-    tracker->AddSameDocumentNavigationTask(task);
-  }
-  window_->GetFrame()->GetLocalFrameHostRemote().NavigateToNavigationApiKey(
-      key, LocalFrame::HasTransientUserActivation(window_->GetFrame()),
+  frame->GetLocalFrameHostRemote().NavigateToNavigationApiKey(
+      key, LocalFrame::HasTransientUserActivation(frame),
       task ? absl::optional<scheduler::TaskAttributionId>(task->Id())
            : absl::nullopt);
   return api_method_tracker->GetNavigationResult();

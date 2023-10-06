@@ -172,7 +172,8 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::CommitSameDocumentNavigation(
     auto task = same_document_navigation_tasks_.front();
     same_document_navigation_tasks_.pop_front();
     // TODO(https://crbug.com/1486774) - Investigate when |task| can be nullptr.
-    if (task && (task->Id() == task_id)) {
+    CHECK(task);
+    if (task->Id() == task_id) {
       return task;
     }
   }
