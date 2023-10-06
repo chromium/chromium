@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS lang only on slot
+PASS lang only on host
+PASS lang on host and slot
+PASS lang on host and slotted element
+PASS lang on host and slot and slotted element
+FAIL lang on slot inherits from shadow host assert_true: element matches expected language en-GB expected true got false
+Harness: the test ran to completion.
+
