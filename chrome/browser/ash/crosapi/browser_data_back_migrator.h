@@ -166,6 +166,12 @@ class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
                            MergesLacrosPreferencesCorrectly);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorTest,
                            MergesDictWithKeysContainingDot);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorShouldMigrateBackTest,
+                           CommandLineForceMigration);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorShouldMigrateBackTest,
+                           CommandLineForceSkip);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorShouldMigrateBackTest,
+                           MaybeRestartToMigrateSecondaryUser);
 
   enum class MigrationStep {
     kStart = 0,

@@ -1344,6 +1344,20 @@ bool BrowserDataBackMigrator::ShouldMigrateBack(
       return false;
     }
 
+    // Backward migration should not run for secondary users.
+    const auto* primary_user =
+        user_manager::UserManager::Get()->GetPrimaryUser();
+    // `ShouldMigrateBack()` is called from `MaybeRestartToMigrateBack()`, which
+    // is called either before or after profile initialization. In the former
+    // case it is called from `PreProfileInit()` and this is only called for the
+    // primary profile so we can assume that the user is the primary user if
+    // `primary_user == nullptr`. If primary_user is not null then we check if
+    // `user != primary_user`.
+    if (primary_user && (user != primary_user)) {
+      VLOG(1) << "Skip backward migration for secondary users.";
+      return false;
+    }
+
     if (crosapi::browser_util::IsLacrosEnabledForMigration(user,
                                                            policy_init_state)) {
       VLOG(1) << "Lacros is enabled, not triggering backward migration";
