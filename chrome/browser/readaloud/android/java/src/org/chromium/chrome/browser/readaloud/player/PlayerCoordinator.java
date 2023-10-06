@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.readaloud.player;
 import android.content.Context;
 import android.view.ViewStub;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
 import org.chromium.chrome.modules.readaloud.Playback;
@@ -33,8 +35,7 @@ public class PlayerCoordinator implements Player {
     private static final String TAG = "ReadAloudPlayer";
 
     private final ObserverList<Observer> mObserverList;
-    private final PropertyModel mModel;
-    private PlayerMediator mMediator;
+    private final PlayerMediator mMediator;
     private final MiniPlayerCoordinator mMiniPlayer;
 
     // TODO(b/302567541): remove this constructor when Delegate is available.
@@ -43,13 +44,18 @@ public class PlayerCoordinator implements Player {
     }
 
     public PlayerCoordinator(Context context, ViewStub miniPlayerStub, Delegate delegate) {
+        // Note, context isn't used yet but will be needed by the expanded player.
         mObserverList = new ObserverList<Observer>();
-        mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS)
-                         .with(PlayerProperties.MINI_PLAYER_VISIBILITY, VisibilityState.GONE)
-                         .with(PlayerProperties.PLAYBACK_STATE, PlaybackListener.State.BUFFERING)
-                         .build();
-        mMiniPlayer = new MiniPlayerCoordinator(miniPlayerStub, mModel);
-        mMediator = new PlayerMediator(/*coordinator=*/this, mModel);
+        PropertyModel model = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
+        mMiniPlayer = new MiniPlayerCoordinator(miniPlayerStub, model);
+        mMediator = new PlayerMediator(/* coordinator= */ this, model);
+    }
+
+    @VisibleForTesting
+    PlayerCoordinator(MiniPlayerCoordinator miniPlayer, PlayerMediator mediator) {
+        mObserverList = new ObserverList<Observer>();
+        mMiniPlayer = miniPlayer;
+        mMediator = mediator;
     }
 
     @Override
@@ -109,18 +115,10 @@ public class PlayerCoordinator implements Player {
         }
     }
 
-    PropertyModel getModelForTesting() {
-        return mModel;
-    }
-
     private boolean shouldAnimateMiniPlayer() {
         // If the expanded player is definitely covering the mini player, we can skip
         // animating the mini player show and hide.
         // TODO return !mExpandedPlayer.isVisible();
         return true;
-    }
-
-    void setMediatorForTesting(PlayerMediator mediator) {
-        mMediator = mediator;
     }
 }

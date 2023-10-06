@@ -38,6 +38,7 @@ public class MiniPlayerCoordinatorUnitTest {
     private ViewStub mViewStub;
     @Mock
     private MiniPlayerLayout mLayout;
+    @Mock private MiniPlayerMediator mMediator;
     private PropertyModel mModel;
 
     private MiniPlayerCoordinator mCoordinator;
@@ -46,40 +47,42 @@ public class MiniPlayerCoordinatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(mLayout).when(mViewStub).inflate();
-
         mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
-
-        mCoordinator = new MiniPlayerCoordinator(mViewStub, mModel);
+        mCoordinator = new MiniPlayerCoordinator(mViewStub, mModel, mMediator);
     }
 
     @Test
-    public void testShowInflatesViewOnce() {
-        mCoordinator.show(/*animate=*/false);
-        verify(mViewStub, times(1)).inflate();
+    public void testViewInflated() {
+        // Test the real constructor
+        reset(mViewStub);
+        mCoordinator = new MiniPlayerCoordinator(mViewStub, mModel);
+        verify(mViewStub).inflate();
+    }
 
-        assertEquals(VisibilityState.VISIBLE, mCoordinator.getVisibility());
+    @Test
+    public void testShow() {
+        mCoordinator.show(/*animate=*/false);
+        verify(mViewStub).inflate();
+        verify(mMediator).show(eq(false));
 
         // Second show() shouldn't inflate the stub again.
         reset(mViewStub);
         mCoordinator.show(/*animate=*/false);
         verify(mViewStub, never()).inflate();
-
-        assertEquals(VisibilityState.VISIBLE, mCoordinator.getVisibility());
+        verify(mMediator, times(2)).show(eq(false));
     }
 
     @Test
     public void testDismissWhenNeverShown() {
-        // Check that methods depending on the mediator don't crash when it's null.
+        // Ensure there's no crash.
         assertEquals(VisibilityState.GONE, mCoordinator.getVisibility());
         mCoordinator.dismiss(false);
     }
 
     @Test
-    public void testShowDismiss() {
-        mCoordinator.show(/*animate=*/false);
-        assertEquals(VisibilityState.VISIBLE, mCoordinator.getVisibility());
+    public void testDismiss() {
         mCoordinator.dismiss(/*animate=*/false);
-        assertEquals(VisibilityState.GONE, mCoordinator.getVisibility());
+        verify(mMediator).dismiss(eq(false));
     }
 
     @Test
