@@ -1485,6 +1485,7 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
   if (duplicate_match.relevance > relevance) {
     RecordAdditionalInfo(kACMatchPropertyScoreBoostedFrom, relevance);
     relevance = duplicate_match.relevance;
+    shortcut_boosted |= duplicate_match.shortcut_boosted;
   }
 
   from_previous = from_previous && duplicate_match.from_previous;
