@@ -4353,24 +4353,7 @@
                         "FederatedLauncherQueryAnalyticsTask",
                         "FederatedService",
                         "FederatedServiceScheduleTasks",
-                        "LauncherQueryFederatedAnalyticsPHH"
-                    ],
-                    "disable_features": [
-                        "FederatedTimezoneCodePhh"
-                    ]
-                },
-                {
-                    "name": "EnabledTimezoneCodePhh_20230906",
-                    "params": {
-                        "launch_stage": "prod"
-                    },
-                    "enable_features": [
-                        "FederatedService",
-                        "FederatedServiceScheduleTasks",
-                        "FederatedTimezoneCodePhh"
-                    ],
-                    "disable_features": [
-                        "FederatedLauncherQueryAnalyticsTask",
+                        "FederatedTimezoneCodePhh",
                         "LauncherQueryFederatedAnalyticsPHH"
                     ]
                 }
