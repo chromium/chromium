@@ -45,6 +45,9 @@
 // The layout guide center to use to retrieve the bottom margin.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
+// Whether the download prompt is displaying in Incognito mode.
+@property(nonatomic, assign) BOOL incognito;
+
 @end
 
 // All UI elements presend in view controller's view.

@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -82,9 +83,11 @@
                         name:UIApplicationDidEnterBackgroundNotification
                       object:nil];
 
+  BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
   _viewController = [[DownloadManagerViewController alloc] init];
   _viewController.delegate = self;
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
+  _viewController.incognito = isIncognito;
   _mediator.SetDownloadTask(_downloadTask);
   _mediator.SetConsumer(_viewController);
 

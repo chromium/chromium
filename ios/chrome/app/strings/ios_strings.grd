@@ -1153,6 +1153,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE" desc="Title of the alert displaying a warning message before downloading a .mobileconfig file.[iOS only]">
           Configuration Profile Available
       </message>
+      <message name="IDS_IOS_DOWNLOAD_INCOGNITO_WARNING_MESSAGE" desc="Warning message displayed when the user downloads a file while on Incognito.[iOS only]">
+          Anyone using this device can see downloaded files
+      </message>
       <message name="IDS_IOS_FACETIME_BUTTON" desc="Text in the confirmation dialog button that will initiate a FaceTime call for the presented number. [Length: 10em] [iOS only]">
         FaceTime
       </message>

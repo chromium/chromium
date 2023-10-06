@@ -30,6 +30,7 @@ source_set("download") {
     "vcard_coordinator.mm",
   ]
   deps = [
+    ":features",
     "resources:background_compact",
     "resources:background_regular",
     "//base",
@@ -44,6 +45,7 @@ source_set("download") {
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",

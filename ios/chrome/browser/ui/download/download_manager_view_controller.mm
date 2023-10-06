@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/download/download_manager_animation_constants.h"
 #import "ios/chrome/browser/ui/download/download_manager_state_view.h"
+#import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/download/radial_progress_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -32,6 +34,9 @@ const CGFloat kLeftRightShadowHeight = 16;
 
 // Height of download or install drive controls row.
 const CGFloat kRowHeight = 48;
+
+// Default number of lines displayed for download label.
+const NSInteger kNumberOfLines = 1;
 
 // Returns formatted size string.
 NSString* GetSizeString(long long size_in_bytes) {
@@ -127,6 +132,7 @@ NSString* GetSizeString(long long size_in_bytes) {
     _installDriveControlsRowTrailingConstraint;
 @synthesize statusLabelTrailingConstraint = _statusLabelTrailingConstraint;
 @synthesize bottomMarginGuide = _bottomMarginGuide;
+@synthesize incognito = _incognito;
 
 #pragma mark - UIViewController overrides
 
@@ -322,6 +328,14 @@ NSString* GetSizeString(long long size_in_bytes) {
 }
 
 #pragma mark - Public
+
+- (void)setIncognito:(BOOL)incognito {
+  _incognito = incognito;
+  self.overrideUserInterfaceStyle =
+      incognito && base::FeatureList::IsEnabled(kIOSIncognitoDownloadsWarning)
+          ? UIUserInterfaceStyleDark
+          : UIUserInterfaceStyleUnspecified;
+}
 
 - (void)setFileName:(NSString*)fileName {
   if (![_fileName isEqualToString:fileName]) {
@@ -689,8 +703,18 @@ NSString* GetSizeString(long long size_in_bytes) {
 // Updates status label text depending on `state`.
 - (void)updateStatusLabel {
   NSString* statusText = nil;
+  self.statusLabel.numberOfLines = kNumberOfLines;
   switch (_state) {
     case kDownloadManagerStateNotStarted:
+      if (base::FeatureList::IsEnabled(kIOSIncognitoDownloadsWarning) &&
+          self.incognito) {
+        statusText =
+            l10n_util::GetNSString(IDS_IOS_DOWNLOAD_INCOGNITO_WARNING_MESSAGE);
+        // Set to '0' to ensure the entire incognito warning is visible.
+        self.statusLabel.numberOfLines = 0;
+        break;
+      }
+
       statusText = _fileName;
       if (_countOfBytesExpectedToReceive != -1) {
         statusText = [statusText

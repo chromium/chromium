@@ -6,12 +6,16 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/ui/download/download_manager_state_view.h"
+#import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/download/radial_progress_view.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 // Test fixture for testing DownloadManagerViewController class.
 class DownloadManagerViewControllerTest : public PlatformTest {
@@ -19,9 +23,11 @@ class DownloadManagerViewControllerTest : public PlatformTest {
   DownloadManagerViewControllerTest()
       : view_controller_([[DownloadManagerViewController alloc] init]) {
     state_symbol_partial_mock_ = OCMPartialMock(view_controller_.stateSymbol);
+    feature_list_.InitAndEnableFeature(kIOSIncognitoDownloadsWarning);
   }
   DownloadManagerViewController* view_controller_;
   id state_symbol_partial_mock_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests label and button titles with kDownloadManagerStateNotStarted state
@@ -47,6 +53,22 @@ TEST_F(DownloadManagerViewControllerTest,
   view_controller_.countOfBytesExpectedToReceive = 1000 * 1024 * 1024;
 
   EXPECT_NSEQ(@"file.zip - 1.05 GB", view_controller_.statusLabel.text);
+  EXPECT_NSEQ(@"Download", [view_controller_.actionButton
+                               titleForState:UIControlStateNormal]);
+  EXPECT_TRUE(view_controller_.progressView.hidden);
+}
+
+// Tests Incognito warning with kDownloadManagerStateNotStarted state
+// and incognito mode.
+TEST_F(DownloadManagerViewControllerTest, NotStartedWithIncognitoWarning) {
+  view_controller_.incognito = YES;
+  view_controller_.state = kDownloadManagerStateNotStarted;
+  view_controller_.fileName = @"file.zip";
+  view_controller_.countOfBytesExpectedToReceive = 1024;
+
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_INCOGNITO_WARNING_MESSAGE),
+      view_controller_.statusLabel.text);
   EXPECT_NSEQ(@"Download", [view_controller_.actionButton
                                titleForState:UIControlStateNormal]);
   EXPECT_TRUE(view_controller_.progressView.hidden);
