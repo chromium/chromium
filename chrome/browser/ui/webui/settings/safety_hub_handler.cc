@@ -289,7 +289,7 @@ void SafetyHubHandler::HandleGetNotificationPermissionReviewList(
   }
 
   base::Value::List result =
-      service->PopulateNotificationPermissionReviewData(profile_);
+      service->PopulateNotificationPermissionReviewData();
 
   ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
 }
@@ -612,13 +612,11 @@ void SafetyHubHandler::SendNotificationPermissionReviewList() {
     return;
   }
 
-  base::Value::List result =
-      service->PopulateNotificationPermissionReviewData(profile_);
   // Notify observers that the permission review list could have changed. Note
   // that the list is not guaranteed to have changed.
   FireWebUIListener(
       site_settings::kNotificationPermissionsReviewListMaybeChangedEvent,
-      service->PopulateNotificationPermissionReviewData(profile_));
+      service->PopulateNotificationPermissionReviewData());
 }
 
 void SafetyHubHandler::SetClockForTesting(base::Clock* clock) {

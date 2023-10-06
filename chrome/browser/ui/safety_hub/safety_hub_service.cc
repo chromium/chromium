@@ -109,3 +109,8 @@ void SafetyHubService::InitializeLatestResult() {
 bool SafetyHubService::IsTimerRunningForTesting() {
   return update_timer_.IsRunning();
 }
+
+void SafetyHubService::SetLatestResult(
+    std::unique_ptr<SafetyHubService::Result> result) {
+  latest_result_ = std::move(result);
+}

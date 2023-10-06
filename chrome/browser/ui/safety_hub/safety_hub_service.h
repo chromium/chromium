@@ -133,6 +133,10 @@ class SafetyHubService : public KeyedService,
   // the Update function will be called.
   virtual base::TimeDelta GetRepeatedUpdateInterval() = 0;
 
+  // TODO(crbug.com/1443466): Not each service needs to execute a task in the
+  // background. The SafetyHubService class should be redesigned such that
+  // there's no needless boilerplate code needed in this case.
+
   // Should return the background task that will be executed, containing the
   // computation-heavy part of the update process. This task should be static
   // and not be bound to the service, as it will be executed on a separate
@@ -155,6 +159,9 @@ class SafetyHubService : public KeyedService,
   // update process (i.e. `UpdateOnUIThread()`).
   virtual std::unique_ptr<SafetyHubService::Result>
   InitializeLatestResultImpl() = 0;
+
+  // Updates the latest result to the provided value.
+  void SetLatestResult(std::unique_ptr<SafetyHubService::Result> result);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SafetyHubServiceTest, ManageObservers);

@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
@@ -91,34 +92,6 @@ GetNotificationCountMapPerPatternPair(
   return result;
 }
 
-bool ShouldAddToNotificationPermissionReviewList(
-    site_engagement::SiteEngagementService* service,
-    GURL url,
-    int notification_count) {
-  // The notification permission should be added to the list if one of the
-  // criteria below holds:
-  // - Site engagement level is NONE OR MINIMAL and average daily notification
-  // count is more than 0.
-  // - Site engamment level is LOW and average daily notification count is
-  // more than 3. Otherwise, the notification permission should not be added
-  // to review list.
-  double score = service->GetScore(url);
-  int low_engagement_notification_limit =
-      features::kSafetyCheckNotificationPermissionsLowEnagementLimit.Get();
-  bool is_low_engagement =
-      !site_engagement::SiteEngagementService::IsEngagementAtLeast(
-          score, blink::mojom::EngagementLevel::MEDIUM) &&
-      notification_count > low_engagement_notification_limit;
-  int min_engagement_notification_limit =
-      features::kSafetyCheckNotificationPermissionsMinEnagementLimit.Get();
-  bool is_minimal_engagement =
-      !site_engagement::SiteEngagementService::IsEngagementAtLeast(
-          score, blink::mojom::EngagementLevel::LOW) &&
-      notification_count > min_engagement_notification_limit;
-
-  return is_minimal_engagement || is_low_engagement;
-}
-
 }  // namespace
 
 NotificationPermissions::NotificationPermissions(
@@ -155,6 +128,33 @@ void NotificationPermissionsReviewService::NotificationPermissionsResult::
     AddNotificationPermission(ContentSettingsPattern origin,
                               int notification_count) {
   notification_permissions_.emplace_back(origin, notification_count);
+}
+
+base::Value::List NotificationPermissionsReviewService::
+    NotificationPermissionsResult::GetSortedListValueForUI() {
+  base::Value::List result;
+
+  // Sort notification permissions by their priority for surfacing to the user.
+  auto notification_permission_ordering = [](const auto& left,
+                                             const auto& right) {
+    return left.second > right.second;
+  };
+  std::sort(notification_permissions_.begin(), notification_permissions_.end(),
+            notification_permission_ordering);
+
+  // Each entry is a dictionary with origin as key and notification count as
+  // value.
+  for (const auto& notification_permission : notification_permissions_) {
+    base::Value::Dict permission;
+    permission.Set(kSafetyHubOriginKey,
+                   notification_permission.first.ToString());
+    std::string notification_info_string = l10n_util::GetPluralStringFUTF8(
+        IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_COUNT_LABEL,
+        notification_permission.second);
+    permission.Set(kSafetyHubNotificationInfoString, notification_info_string);
+    result.Append(std::move(permission));
+  }
+  return result;
 }
 
 std::vector<std::pair<ContentSettingsPattern, int>>
@@ -234,9 +234,22 @@ int NotificationPermissionsReviewService::NotificationPermissionsResult::
 }
 
 NotificationPermissionsReviewService::NotificationPermissionsReviewService(
-    HostContentSettingsMap* hcsm)
-    : hcsm_(hcsm) {
+    HostContentSettingsMap* hcsm,
+    site_engagement::SiteEngagementService* engagement_service)
+    : engagement_service_(engagement_service), hcsm_(hcsm) {
   content_settings_observation_.Observe(hcsm);
+
+  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
+    return;
+  }
+
+  // TODO(crbug.com/1443466): Because there is only an UI thread for this
+  // service, calling both |StartRepeatedUpdates()| and
+  // |InitializeLatestResult()| will result in the result being calculated twice
+  // when the service starts. When redesigning SafetyHubService, that should be
+  // avoided.
+  StartRepeatedUpdates();
+  InitializeLatestResult();
 }
 
 NotificationPermissionsReviewService::~NotificationPermissionsReviewService() =
@@ -246,6 +259,19 @@ void NotificationPermissionsReviewService::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsTypeSet content_type_set) {
+  if (content_type_set.Contains(
+          ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW)) {
+    // In order to keep the latest result updated with the actual list that
+    // should be reviewed, the latest result should be updated here. This is
+    // triggered whenever an update is made to the ignore list. For other
+    // updates on notification permissions,
+    // |RemovePatternFromNotificationPermissionReviewBlocklist| will also update
+    // the ignore list, and thus will eventually result in the latest result
+    // being updated.
+    SetLatestResult(
+        UpdateOnUIThread(std::make_unique<NotificationPermissionsResult>()));
+    return;
+  }
   if (!content_type_set.Contains(ContentSettingsType::NOTIFICATIONS)) {
     return;
   }
@@ -267,48 +293,6 @@ std::unique_ptr<SafetyHubService::Result>
 NotificationPermissionsReviewService::GetResultFromDictValue(
     const base::Value::Dict& dict) {
   return std::make_unique<NotificationPermissionsResult>(dict);
-}
-
-std::vector<NotificationPermissions>
-NotificationPermissionsReviewService::GetNotificationSiteListForReview() {
-  // Get blocklisted pattern pairs that should not be shown in the review list.
-  std::set<std::pair<ContentSettingsPattern, ContentSettingsPattern>>
-      ignored_patterns_set = GetIgnoredPatternPairs(hcsm_);
-
-  // Get daily average notification count of pattern pairs.
-  std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
-      notification_count_map = GetNotificationCountMapPerPatternPair(hcsm_);
-
-  // Get the permissions with notification counts that needs to be reviewed.
-  // This list will be filtered based on notification count and site engagement
-  // score in the PopulateNotificationPermissionReviewData function.
-  std::vector<NotificationPermissions> notification_permissions_list;
-  for (auto& item :
-       hcsm_->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS)) {
-    std::pair pair(item.primary_pattern, item.secondary_pattern);
-
-    // Blocklisted permissions should not be in the review list.
-    if (base::Contains(ignored_patterns_set, pair)) {
-      continue;
-    }
-
-    // Only granted permissions should be in the review list.
-    if (item.GetContentSetting() != CONTENT_SETTING_ALLOW) {
-      continue;
-    }
-
-    // Only URLs that belong to a single origin should be in the review list.
-    if (!content_settings::PatternAppliesToSingleOrigin(
-            item.primary_pattern, item.secondary_pattern)) {
-      continue;
-    }
-
-    int notification_count = notification_count_map[pair];
-    notification_permissions_list.emplace_back(
-        item.primary_pattern, item.secondary_pattern, notification_count);
-  }
-
-  return notification_permissions_list;
 }
 
 void NotificationPermissionsReviewService::
@@ -333,51 +317,124 @@ void NotificationPermissionsReviewService::
       ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, {});
 }
 
-base::Value::List
-NotificationPermissionsReviewService::PopulateNotificationPermissionReviewData(
-    Profile* profile) {
-  base::Value::List result;
+std::unique_ptr<SafetyHubService::Result>
+NotificationPermissionsReviewService::UpdateOnUIThread(
+    std::unique_ptr<SafetyHubService::Result> interim_result) {
+  auto result = std::make_unique<NotificationPermissionsResult>();
   if (!base::FeatureList::IsEnabled(
-          features::kSafetyCheckNotificationPermissions)) {
+          features::kSafetyCheckNotificationPermissions) &&
+      !base::FeatureList::IsEnabled(features::kSafetyHub)) {
     return result;
   }
+  // Get blocklisted pattern pairs that should not be shown in the review list.
+  std::set<std::pair<ContentSettingsPattern, ContentSettingsPattern>>
+      ignored_patterns_set = GetIgnoredPatternPairs(hcsm_);
 
-  auto notification_permissions = GetNotificationSiteListForReview();
+  // Get daily average notification count of pattern pairs.
+  std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
+      notification_count_map = GetNotificationCountMapPerPatternPair(hcsm_);
 
-  site_engagement::SiteEngagementService* engagement_service =
-      site_engagement::SiteEngagementService::Get(profile);
+  // Get the permissions with notification counts that needs to be reviewed.
+  // This list is filtered based on notification count and site engagement
+  // score.
+  std::vector<NotificationPermissions> notification_permissions_list;
+  for (auto& item :
+       hcsm_->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS)) {
+    std::pair pair(item.primary_pattern, item.secondary_pattern);
 
-  // Sort notification permissions by their priority for surfacing to the user.
-  auto notification_permission_ordering =
-      [](const NotificationPermissions& left,
-         const NotificationPermissions& right) {
-        return left.notification_count > right.notification_count;
-      };
-  std::sort(notification_permissions.begin(), notification_permissions.end(),
-            notification_permission_ordering);
-
-  for (const auto& notification_permission : notification_permissions) {
-    // Converting primary pattern to GURL should always be valid, since
-    // Notification Permission Review list only contains single origins. Those
-    // are filtered in
-    // NotificationPermissionsReviewService::GetNotificationSiteListForReview.
-    GURL url = GURL(notification_permission.primary_pattern.ToString());
-    DCHECK(url.is_valid());
-    if (!ShouldAddToNotificationPermissionReviewList(
-            engagement_service, url,
-            notification_permission.notification_count)) {
+    // Blocklisted permissions should not be in the review list.
+    if (base::Contains(ignored_patterns_set, pair)) {
       continue;
     }
 
-    base::Value::Dict permission;
-    permission.Set(kSafetyHubOriginKey,
-                   notification_permission.primary_pattern.ToString());
-    std::string notification_info_string = l10n_util::GetPluralStringFUTF8(
-        IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_COUNT_LABEL,
-        notification_permission.notification_count);
-    permission.Set(kSafetyHubNotificationInfoString, notification_info_string);
-    result.Append(std::move(permission));
+    // Only granted permissions should be in the review list.
+    if (item.GetContentSetting() != CONTENT_SETTING_ALLOW) {
+      continue;
+    }
+
+    // Only URLs that belong to a single origin should be in the review list.
+    if (!content_settings::PatternAppliesToSingleOrigin(
+            item.primary_pattern, item.secondary_pattern)) {
+      continue;
+    }
+
+    int notification_count = notification_count_map[pair];
+
+    // Converting primary pattern to GURL should always be valid, since
+    // Notification Permission Review list only contains single origins.
+    GURL url = GURL(item.primary_pattern.ToString());
+    DCHECK(url.is_valid());
+    if (!ShouldAddToNotificationPermissionReviewList(url, notification_count)) {
+      continue;
+    }
+
+    result->AddNotificationPermission(item.primary_pattern, notification_count);
   }
 
   return result;
+}
+
+base::Value::List NotificationPermissionsReviewService::
+    PopulateNotificationPermissionReviewData() {
+  // Return the cached result, which is kept in sync with the values on disk
+  // (i.e. HCSM), when available. Otherwise, re-calculate the result.
+  std::unique_ptr<SafetyHubService::Result> cached_result =
+      GetCachedResult().value_or(
+          UpdateOnUIThread(std::make_unique<NotificationPermissionsResult>()));
+  return (static_cast<NotificationPermissionsResult*>(cached_result.get()))
+      ->GetSortedListValueForUI();
+}
+
+base::TimeDelta
+NotificationPermissionsReviewService::GetRepeatedUpdateInterval() {
+  return base::Days(1);
+}
+
+base::OnceCallback<std::unique_ptr<SafetyHubService::Result>()>
+NotificationPermissionsReviewService::GetBackgroundTask() {
+  return base::BindOnce(&UpdateOnBackgroundThread);
+}
+
+// static
+std::unique_ptr<SafetyHubService::Result>
+NotificationPermissionsReviewService::UpdateOnBackgroundThread() {
+  // Return an empty result.
+  return std::make_unique<NotificationPermissionsResult>();
+}
+
+std::unique_ptr<SafetyHubService::Result>
+NotificationPermissionsReviewService::InitializeLatestResultImpl() {
+  return UpdateOnUIThread(std::make_unique<NotificationPermissionsResult>());
+}
+
+base::WeakPtr<SafetyHubService>
+NotificationPermissionsReviewService::GetAsWeakRef() {
+  return weak_factory_.GetWeakPtr();
+}
+
+bool NotificationPermissionsReviewService::
+    ShouldAddToNotificationPermissionReviewList(GURL url,
+                                                int notification_count) {
+  // The notification permission should be added to the list if one of the
+  // criteria below holds:
+  // - Site engagement level is NONE OR MINIMAL and average daily notification
+  // count is more than 0.
+  // - Site engamment level is LOW and average daily notification count is
+  // more than 3. Otherwise, the notification permission should not be added
+  // to review list.
+  double score = engagement_service_->GetScore(url);
+  int low_engagement_notification_limit =
+      features::kSafetyCheckNotificationPermissionsLowEnagementLimit.Get();
+  bool is_low_engagement =
+      !site_engagement::SiteEngagementService::IsEngagementAtLeast(
+          score, blink::mojom::EngagementLevel::MEDIUM) &&
+      notification_count > low_engagement_notification_limit;
+  int min_engagement_notification_limit =
+      features::kSafetyCheckNotificationPermissionsMinEnagementLimit.Get();
+  bool is_minimal_engagement =
+      !site_engagement::SiteEngagementService::IsEngagementAtLeast(
+          score, blink::mojom::EngagementLevel::LOW) &&
+      notification_count > min_engagement_notification_limit;
+
+  return is_minimal_engagement || is_low_engagement;
 }

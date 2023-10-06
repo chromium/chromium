@@ -6,7 +6,9 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 
 // static
 NotificationPermissionsReviewServiceFactory*
@@ -31,6 +33,7 @@ NotificationPermissionsReviewServiceFactory::
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
 }
 
 NotificationPermissionsReviewServiceFactory::
@@ -39,6 +42,15 @@ NotificationPermissionsReviewServiceFactory::
 std::unique_ptr<KeyedService> NotificationPermissionsReviewServiceFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
+  site_engagement::SiteEngagementService* engagement_service =
+      site_engagement::SiteEngagementService::Get(
+          Profile::FromBrowserContext(context));
   return std::make_unique<NotificationPermissionsReviewService>(
-      HostContentSettingsMapFactory::GetForProfile(context));
+      HostContentSettingsMapFactory::GetForProfile(context),
+      engagement_service);
+}
+
+bool NotificationPermissionsReviewServiceFactory::
+    ServiceIsCreatedWithBrowserContext() const {
+  return base::FeatureList::IsEnabled(features::kSafetyHub);
 }
