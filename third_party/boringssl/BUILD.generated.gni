@@ -425,6 +425,8 @@ crypto_sources_asm = [
   "src/crypto/poly1305/poly1305_arm_asm.S",
   "src/third_party/fiat/asm/fiat_curve25519_adx_mul.S",
   "src/third_party/fiat/asm/fiat_curve25519_adx_square.S",
+  "src/third_party/fiat/asm/fiat_p256_adx_mul.S",
+  "src/third_party/fiat/asm/fiat_p256_adx_sqr.S",
   "win-aarch64/crypto/chacha/chacha-armv8-win.S",
   "win-aarch64/crypto/cipher_extra/chacha20_poly1305_armv8-win.S",
   "win-aarch64/crypto/fipsmodule/aesv8-armv8-win.S",

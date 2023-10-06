@@ -68,6 +68,7 @@ crypto_test_sources = [
   "src/crypto/fipsmodule/cmac/cmac_test.cc",
   "src/crypto/fipsmodule/ec/ec_test.cc",
   "src/crypto/fipsmodule/ec/p256-nistz_test.cc",
+  "src/crypto/fipsmodule/ec/p256_test.cc",
   "src/crypto/fipsmodule/ecdsa/ecdsa_test.cc",
   "src/crypto/fipsmodule/hkdf/hkdf_test.cc",
   "src/crypto/fipsmodule/md5/md5_test.cc",
