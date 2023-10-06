@@ -12009,6 +12009,21 @@
             ]
         }
     ],
+    "PasswordManagerWidgetPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_iOSPromoPasswordManagerWidget"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordSuggestionBottomSheetV2": [
         {
             "platforms": [

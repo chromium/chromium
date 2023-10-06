@@ -85,12 +85,17 @@ using ::testing::Return;
 
 namespace {
 
+// Returns whether or not the Password Manager widget promo feature is enabled.
+bool IsPasswordMangerWidgetPromoEnabled() {
+  return base::FeatureList::IsEnabled(
+      feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature);
+}
+
 // Returns the offset to take into account when expecting a certain number of
 // sections. Offset depends on whether or not the Password Manager widget promo
 // flag is enabled.
 int GetNumberOfSectionsOffset() {
-  return base::FeatureList::IsEnabled(
-      feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature);
+  return IsPasswordMangerWidgetPromoEnabled();
 }
 
 // Use this test suite for tests that verify behaviors of
@@ -150,6 +155,10 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
         OCMStrictProtocolMock(@protocol(PasswordsSettingsCommands));
     passwords_controller.handler = passwords_settings_commands_strict_mock_;
 
+    // Show the Password Manager widget promo if the feature is enabled.
+    passwords_controller.shouldShowPasswordManagerWidgetPromo =
+        IsPasswordMangerWidgetPromoEnabled();
+
     WaitForPasswordsLoadingCompletion();
   }
 
@@ -197,6 +206,8 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
     passwords_controller.delegate = mediator_;
     mediator_.consumer = passwords_controller;
     passwords_controller.handler = passwords_settings_commands_strict_mock_;
+    passwords_controller.shouldShowPasswordManagerWidgetPromo =
+        IsPasswordMangerWidgetPromoEnabled();
 
     // Wait for passwords loading completion.
     EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
