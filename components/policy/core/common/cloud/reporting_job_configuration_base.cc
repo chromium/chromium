@@ -182,6 +182,7 @@ std::string ReportingJobConfigurationBase::GetPayload() {
 }
 
 std::string ReportingJobConfigurationBase::GetUmaName() {
+  DCHECK(ShouldRecordUma());
   return GetUmaString() + GetJobTypeAsString(GetType());
 }
 

@@ -121,8 +121,13 @@ void RealtimeReportingJobConfiguration::OnBeforeRetryInternal(
   }
 }
 
+bool RealtimeReportingJobConfiguration::ShouldRecordUma() const {
+  return false;
+}
+
 std::string RealtimeReportingJobConfiguration::GetUmaString() const {
-  return "Enterprise.RealtimeReportingSuccess";
+  NOTREACHED();
+  return "";
 }
 
 std::set<std::string> RealtimeReportingJobConfiguration::GetFailedUploadIds(

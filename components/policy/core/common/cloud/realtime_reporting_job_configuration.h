@@ -75,6 +75,7 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
   void OnBeforeRetryInternal(int response_code,
                              const std::string& response_body) override;
 
+  bool ShouldRecordUma() const override;
   std::string GetUmaString() const override;
 
  private:

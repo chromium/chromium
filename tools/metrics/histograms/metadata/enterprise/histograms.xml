@@ -2625,17 +2625,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.RealtimeReportingSuccess"
-    enum="EnterpriseDMServerRequestSuccess" expires_after="2020-07-01">
-  <owner>rogerta@chromium.org</owner>
-  <summary>
-    Number of retries the client did to execute a real-time reporting upload
-    request. It's recorded after the request has been completed, either
-    successfully after 0 or more retries, with a failure (too many retries or
-    non-retriable error) or with a server error.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.RegularUserSession.SessionLength" units="minutes"
     expires_after="2024-03-17">
   <owner>bfranz@chromium.org</owner>

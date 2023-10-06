@@ -414,6 +414,10 @@ JobConfigurationBase::GetResourceRequest(bool bypass_proxy, int last_error) {
   return rr;
 }
 
+bool JobConfigurationBase::ShouldRecordUma() const {
+  return true;
+}
+
 DeviceManagementService::Job::RetryMethod JobConfigurationBase::ShouldRetry(
     int response_code,
     const std::string& response_body) {
@@ -562,11 +566,12 @@ DeviceManagementService::JobImpl::HandleResponseData(
     int net_error,
     int response_code,
     bool was_fetched_via_proxy) {
-  std::string uma_name = config_->GetUmaName();
   if (net_error != net::OK) {
-    // Using histogram functions which allows runtime histogram name.
-    base::UmaHistogramEnumeration(uma_name,
-                                  DMServerRequestSuccess::kRequestFailed);
+    if (config_->ShouldRecordUma()) {
+      // Using histogram functions which allows runtime histogram name.
+      base::UmaHistogramEnumeration(config_->GetUmaName(),
+                                    DMServerRequestSuccess::kRequestFailed);
+    }
     LOG_POLICY(WARNING, CBCM_ENROLLMENT)
         << "Request of type "
         << JobConfiguration::GetJobTypeAsString(config_->GetType())
@@ -582,8 +587,10 @@ DeviceManagementService::JobImpl::HandleResponseData(
         << JobConfiguration::GetJobTypeAsString(config_->GetType())
         << " failed (response_code = " << ResponseCodeToString(response_code)
         << " (" << response_code << ")).";
-    base::UmaHistogramEnumeration(uma_name,
-                                  DMServerRequestSuccess::kRequestError);
+    if (config_->ShouldRecordUma()) {
+      base::UmaHistogramEnumeration(config_->GetUmaName(),
+                                    DMServerRequestSuccess::kRequestError);
+    }
   } else {
     // Success with retries_count_ retries.
     if (retries_count_) {
@@ -592,9 +599,11 @@ DeviceManagementService::JobImpl::HandleResponseData(
           << JobConfiguration::GetJobTypeAsString(config_->GetType())
           << " succeeded after " << retries_count_ << " retries.";
     }
-    base::UmaHistogramExactLinear(
-        uma_name, retries_count_,
-        static_cast<int>(DMServerRequestSuccess::kMaxValue) + 1);
+    if (config_->ShouldRecordUma()) {
+      base::UmaHistogramExactLinear(
+          config_->GetUmaName(), retries_count_,
+          static_cast<int>(DMServerRequestSuccess::kMaxValue) + 1);
+    }
   }
 
   config_->OnURLLoadComplete(this, net_error, response_code, response_body);

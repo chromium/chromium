@@ -253,6 +253,9 @@ class POLICY_EXPORT DeviceManagementService {
         bool bypass_proxy,
         int last_error) = 0;
 
+    // Returns whether UMA histograms should be recorded. If this is false
+    // then GetUmaName() is invalid.
+    virtual bool ShouldRecordUma() const = 0;
     // Returns the the UMA histogram to record stats about the network request.
     virtual std::string GetUmaName() = 0;
 
@@ -366,6 +369,7 @@ class POLICY_EXPORT JobConfigurationBase
   std::unique_ptr<network::ResourceRequest> GetResourceRequest(
       bool bypass_proxy,
       int last_error) override;
+  bool ShouldRecordUma() const override;
   DeviceManagementService::Job::RetryMethod ShouldRetry(
       int response_code,
       const std::string& response_body) override;
