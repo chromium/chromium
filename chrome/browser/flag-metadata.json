@@ -5442,7 +5442,7 @@
   {
     "name": "layout-extraction",
     "owners": [ "rhalavati", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "legacy-tech-report-top-level-url",
@@ -6692,7 +6692,7 @@
   {
     "name": "pdf-ocr",
     "owners": [ "rhalavati", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "pdf-oopif",
