@@ -381,13 +381,8 @@ void AutocompleteResult::SortAndCull(
     PSections sections;
     if constexpr (is_android) {
       if (omnibox::IsNTPPage(page_classification)) {
-        size_t num_related_queries =
-            OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.Get();
-        size_t num_trending_queries =
-            OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.Get();
-
-        sections.push_back(std::make_unique<AndroidNTPZpsSection>(
-            num_related_queries, num_trending_queries, suggestion_groups_map_));
+        sections.push_back(
+            std::make_unique<AndroidNTPZpsSection>(suggestion_groups_map_));
       } else if (omnibox::IsSearchResultsPage(page_classification)) {
         sections.push_back(
             std::make_unique<AndroidSRPZpsSection>(suggestion_groups_map_));

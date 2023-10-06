@@ -66,13 +66,10 @@ class ZpsSection : public Section {
 //   total.
 //  - up to 1 clipboard suggestion.
 //  - up to 15 personalized suggestions.
-//  - up to `max_related_queries` previous search related suggestions.
-//  - up to `max_trending_queries` trending search suggestions.
+//  - up to 5 trending search suggestions.
 class AndroidNTPZpsSection : public ZpsSection {
  public:
-  AndroidNTPZpsSection(size_t max_related_queries,
-                       size_t max_trending_queries,
-                       omnibox::GroupConfigMap& group_configs);
+  explicit AndroidNTPZpsSection(omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the Android ZPS limits and grouping for the SRP.

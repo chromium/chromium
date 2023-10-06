@@ -1729,39 +1729,6 @@ constexpr FeatureEntry::FeatureVariation kOmniboxActionsInSuggestVariants[] = {
     {"T8: Directions, Reviews", kOmniboxActionsInSuggestTreatment8,
      std::size(kOmniboxActionsInSuggestTreatment8), "t3366528"},
 };
-
-constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith5Trends[] = {
-    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "5"},
-    {OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "0"}};
-constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith5Related[] = {
-    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "0"},
-    {OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "5"}};
-constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith5Mixed[] = {
-    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "2"},
-    {OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "3"}};
-constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith10Trends[] = {
-    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "10"},
-    {OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "0"}};
-constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith10Related[] = {
-    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "0"},
-    {OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "10"}};
-constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith10Mixed[] = {
-    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "5"},
-    {OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "5"}};
-
-constexpr FeatureEntry::FeatureVariation kOmniboxInspireMeVariants[] = {
-    {"5 Trends", kOmniboxInspireMeWith5Trends,
-     std::size(kOmniboxInspireMeWith5Trends), "t3363415"},
-    {"5 Related", kOmniboxInspireMeWith5Related,
-     std::size(kOmniboxInspireMeWith5Related), "t3363415"},
-    {"3 Related + 2 Trends", kOmniboxInspireMeWith5Mixed,
-     std::size(kOmniboxInspireMeWith5Mixed), "t3363415"},
-    {"10 Trends", kOmniboxInspireMeWith10Trends,
-     std::size(kOmniboxInspireMeWith10Trends), "t3363415"},
-    {"10 Related", kOmniboxInspireMeWith10Related,
-     std::size(kOmniboxInspireMeWith10Related), "t3363415"},
-    {"5 Related + 5 Trends", kOmniboxInspireMeWith10Mixed,
-     std::size(kOmniboxInspireMeWith10Mixed), "t3363415"}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconFavicons[] = {
@@ -6307,11 +6274,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxActionsInSuggestVariants,
                                     "OmniboxBundledExperimentV1")},
 
-    {"omnibox-inspire-me", flag_descriptions::kOmniboxInspireMeName,
-     flag_descriptions::kOmniboxInspireMeDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kInspireMe,
-                                    kOmniboxInspireMeVariants,
-                                    "OmniboxBundledExperimentV1")},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
     {"omnibox-on-device-head-suggestions",

@@ -490,10 +490,6 @@ BASE_FEATURE(kUrlScoringModel,
              "UrlScoringModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, appends additional Trending and Recent Search Related Queries to
-// the suggestion list on the NTP and SRP.
-BASE_FEATURE(kInspireMe, "OmniboxInspireMe", enabled_by_default_android_only);
-
 // Actions in Suggest is a data-driven feature; it's considered enabled when the
 // data is available.
 // The feature flag below helps us tune feature behaviors.

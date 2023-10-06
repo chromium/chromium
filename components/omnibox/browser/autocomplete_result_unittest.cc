@@ -2970,95 +2970,7 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
   // the grouping framework.
 
   {
-    SCOPED_TRACE("Inspire Me Enabled with no queries");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kInspireMe,
-          {{OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "0"},
-           {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
-            "0"}}}},
-        {omnibox::kGroupingFrameworkForNonZPS});
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(zero_input, template_url_service_.get(),
-                       triggered_feature_service());
-
-    const std::array<TestData, 3> expected_data{{
-        // Default suggestion comes 1st.
-        {1, 1, 490, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        // Other types exclude Inspire Me
-        {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-    }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
-  }
-
-  {
-    SCOPED_TRACE("Inspire Me Enabled with 1 Trend and 0 Related query");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kInspireMe,
-          {{OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "0"},
-           {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
-            "1"}}}},
-        {omnibox::kGroupingFrameworkForNonZPS});
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(zero_input, template_url_service_.get(),
-                       triggered_feature_service());
-
-    const std::array<TestData, 4> expected_data{{
-        // Default suggestion comes 1st.
-        {1, 1, 490, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        // Other types include 1 trend.
-        {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-    }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
-  }
-
-  {
-    SCOPED_TRACE("Inspire Me Enabled with 0 Trend and 1 Related query");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kInspireMe,
-          {{OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "1"},
-           {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
-            "0"}}}},
-        {omnibox::kGroupingFrameworkForNonZPS});
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(zero_input, template_url_service_.get(),
-                       triggered_feature_service());
-
-    const std::array<TestData, 4> expected_data{{
-        // Default suggestion comes 1st.
-        {1, 1, 490, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        // Other types include 1 query related to recent search.
-        {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {5, 1, 450, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
-    }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
-  }
-
-  {
-    SCOPED_TRACE("Inspire Me Enabled with 1 Trend and 1 Related query");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kInspireMe,
-          {{OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "1"},
-           {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
-            "1"}}}},
-        {omnibox::kGroupingFrameworkForNonZPS});
+    SCOPED_TRACE("Inspire Me Passes Only Trending Queries");
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     result.AppendMatches(matches);
@@ -3068,39 +2980,9 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
     const std::array<TestData, 5> expected_data{{
         // Default suggestion comes 1st.
         {1, 1, 490, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        // Other types include 1 trend and 1 query related to recent search.
-        {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {5, 1, 450, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
-        {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-    }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
-  }
-
-  {
-    SCOPED_TRACE("Inspire Me Enabled with 5 Trends and 5 Related queries");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kInspireMe,
-          {{OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "5"},
-           {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
-            "5"}}}},
-        {omnibox::kGroupingFrameworkForNonZPS});
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(zero_input, template_url_service_.get(),
-                       triggered_feature_service());
-
-    const std::array<TestData, 7> expected_data{{
-        // Default suggestion comes 1st.
-        {1, 1, 490, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
         // Other types include all of the Inspire Me queries.
         {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
         {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {5, 1, 450, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
-        {6, 1, 440, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
         {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
         {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
     }};
