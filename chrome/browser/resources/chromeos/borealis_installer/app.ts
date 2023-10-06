@@ -68,11 +68,6 @@ export class BorealisInstallerAppElement extends PolymerElement {
         this.router.onInstallFinished.addListener(() => {
           this.state = State.COMPLETED;
         }),
-        // Called when retry is clicked from the error dialog.
-        // Restarts the installation.
-        this.router.restartInstallation.addListener(() => {
-          this.startInstall();
-        }),
         // Called when the user closes the installer (e.g. from the window bar)
         this.router.requestClose.addListener(() => {
           this.cancelAndClose();

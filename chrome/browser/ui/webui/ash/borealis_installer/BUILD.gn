@@ -9,6 +9,7 @@ assert(is_chromeos_ash)
 mojom("mojo_bindings") {
   sources = [ "borealis_installer.mojom" ]
   webui_module_path = "/"
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps =
+      [ "//chrome/browser/ash/borealis:borealis_installer_types_mojom" ]
   use_typescript_sources = true
 }

@@ -36,6 +36,7 @@ class BorealisInstallerPageHandler
   void Launch() override;
   void CancelInstall() override;
   void OnPageClosed() override;
+  void OpenStoragePage() override;
 
   // borealis::BorealisInstaller::Observer implementation.
   void OnStateUpdated(
@@ -49,8 +50,6 @@ class BorealisInstallerPageHandler
   void RequestClosePage();
 
  private:
-  void OnErrorDialogDismissed(views::borealis::ErrorDialogChoice choice);
-
   mojo::Receiver<ash::borealis_installer::mojom::PageHandler> receiver_;
   mojo::Remote<ash::borealis_installer::mojom::Page> page_;
   base::OnceClosure on_page_closed_;
@@ -60,7 +59,6 @@ class BorealisInstallerPageHandler
   base::ScopedObservation<borealis::BorealisInstaller,
                           borealis::BorealisInstaller::Observer>
       observation_;
-  double fraction_complete_;
   base::WeakPtrFactory<BorealisInstallerPageHandler> weak_factory_{this};
 };
 

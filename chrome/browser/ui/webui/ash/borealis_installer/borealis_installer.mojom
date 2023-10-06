@@ -4,6 +4,8 @@
 
 module ash.borealis_installer.mojom;
 
+import "chrome/browser/ash/borealis/borealis_types.mojom";
+
 // Lives in the browser process. A renderer uses this to create a page handler
 // for controlling Borealis installation.
 interface PageHandlerFactory {
@@ -27,6 +29,10 @@ interface PageHandler {
   // Page::RequestClose() being called, or it can happen spontaneously (e.g.
   // user clicking cancel on the page or installation finished).
   OnPageClosed();
+  // Called when install finishes with kDlcNeedSpaceError and the user clicks
+  // on the storage management button. This will open the storage page in
+  // settings.
+  OpenStoragePage();
 };
 
 // Lives in the renderer process. The browser uses this to sends installation
@@ -35,10 +41,7 @@ interface Page {
   // Called to update the install percentage.
   OnProgressUpdate(double progress_fraction, string label);
   // Called when installation finishes.
-  OnInstallFinished();
-  // Restarts the installation if an error occurs. Triggered from an error
-  // dialog.
-  RestartInstallation();
+  OnInstallFinished(borealis.mojom.InstallResult error);
   // Informs the page that it should be closed. The page should respond with
   // PageHandler::OnPageClosed() to indicate it is ready to be closed.
   RequestClose();

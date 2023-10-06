@@ -6,6 +6,7 @@ import 'chrome://borealis-installer/app.js';
 
 import {BorealisInstallerAppElement} from 'chrome://borealis-installer/app.js';
 import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://borealis-installer/borealis_installer.mojom-webui.js';
+import {InstallResult} from 'chrome://borealis-installer/borealis_types.mojom-webui.js';
 import {BrowserProxy} from 'chrome://borealis-installer/browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -90,7 +91,7 @@ suite('<borealis-installer-app>', async () => {
     assertEquals(
         shadowRoot().querySelector('#progress-message')!.textContent!.trim(),
         '50% completed | 3 seconds left');
-    fakeBrowserProxy.page.onInstallFinished();
+    fakeBrowserProxy.page.onInstallFinished(InstallResult.kSuccess);
     await flushTasks();
 
     assertEquals(fakeBrowserProxy.handler.getCallCount('launch'), 0);
@@ -98,55 +99,5 @@ suite('<borealis-installer-app>', async () => {
     await clickButton('launch');
     assertEquals(fakeBrowserProxy.handler.getCallCount('launch'), 1);
     assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
-  });
-
-  test('errorDuringInstall', async () => {
-    await clickButton('install');
-
-    fakeBrowserProxy.page.onProgressUpdate(0.5, '3 seconds left');
-    await flushTasks();
-    fakeBrowserProxy.page.restartInstallation();
-    await flushTasks();
-
-    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 2);
-    assertEquals(shadowRoot().querySelector('paper-progress')!.value, 0);
-    fakeBrowserProxy.page.onInstallFinished();
-    await flushTasks();
-
-    await clickButton('launch');
-    assertEquals(fakeBrowserProxy.handler.getCallCount('launch'), 1);
-    assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
-  });
-
-  test('cancelBeforeLaunch', async () => {
-    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 0);
-
-    await clickButton('install');
-    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
-
-    fakeBrowserProxy.page.restartInstallation();
-    await flushTasks();
-    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 2);
-    fakeBrowserProxy.page.onInstallFinished();
-    await flushTasks();
-    await clickButton('cancel');
-    assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
-    assertEquals(fakeBrowserProxy.handler.getCallCount('shutDown'), 1);
-  });
-
-  test('cancelDuringInstall', async () => {
-    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 0);
-
-    await clickButton('install');
-    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
-
-    fakeBrowserProxy.page.restartInstallation();
-    await flushTasks();
-    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 2);
-    fakeBrowserProxy.page.onInstallFinished();
-    await flushTasks();
-    await clickButton('cancel');
-    assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
-    assertEquals(fakeBrowserProxy.handler.getCallCount('shutDown'), 1);
   });
 });
