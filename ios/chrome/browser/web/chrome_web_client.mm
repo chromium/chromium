@@ -559,21 +559,16 @@ bool ChromeWebClient::IsMixedContentAutoupgradeEnabled(
 
 bool ChromeWebClient::IsBrowserLockdownModeEnabled(
     web::BrowserState* browser_state) {
-  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
-    ChromeBrowserState* chrome_browser_state =
-        ChromeBrowserState::FromBrowserState(browser_state);
-    PrefService* prefs = chrome_browser_state->GetPrefs();
-    return prefs->GetBoolean(prefs::kBrowserLockdownModeEnabled);
-  }
-  return false;
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(browser_state);
+  PrefService* prefs = chrome_browser_state->GetPrefs();
+  return prefs->GetBoolean(prefs::kBrowserLockdownModeEnabled);
 }
 
 void ChromeWebClient::SetOSLockdownModeEnabled(web::BrowserState* browser_state,
                                                bool enabled) {
-  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
-    ChromeBrowserState* chrome_browser_state =
-        ChromeBrowserState::FromBrowserState(browser_state);
-    PrefService* prefs = chrome_browser_state->GetPrefs();
-    prefs->SetBoolean(prefs::kOSLockdownModeEnabled, enabled);
-  }
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(browser_state);
+  PrefService* prefs = chrome_browser_state->GetPrefs();
+  prefs->SetBoolean(prefs::kOSLockdownModeEnabled, enabled);
 }

@@ -87,9 +87,6 @@ class PrivacyTableViewControllerTest
         policy::policy_prefs::kIncognitoModeAvailability,
         std::make_unique<base::Value>(
             static_cast<int>(GetParam().incognitoModeAvailability)));
-
-    // TODO(crbug.com/1443624): Remove when feature is enabled by default.
-    feature_list_.InitAndEnableFeature(web::kBrowserLockdownModeAvailable);
   }
 
   void TearDown() override {
@@ -146,13 +143,9 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 4;
+  int expectedNumberOfSections = 5;
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsOnlyMode)) {
-    expectedNumberOfSections++;
-  }
-
-  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
     expectedNumberOfSections++;
   }
 
@@ -224,13 +217,11 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   }
 
   // Lockdown Mode section.
-  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
-    currentSection++;
-    EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
-    CheckTextCellTextAndDetailText(
-        l10n_util::GetNSString(IDS_IOS_LOCKDOWN_MODE_TITLE),
-        l10n_util::GetNSString(IDS_IOS_SETTING_OFF), currentSection, 0);
-  }
+  currentSection++;
+  EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+  CheckTextCellTextAndDetailText(
+      l10n_util::GetNSString(IDS_IOS_LOCKDOWN_MODE_TITLE),
+      l10n_util::GetNSString(IDS_IOS_SETTING_OFF), currentSection, 0);
 
   // Testing section index and text of the privacy footer.
   CheckSectionFooter(
@@ -248,13 +239,9 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 4;
+  int expectedNumberOfSections = 5;
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsOnlyMode)) {
-    expectedNumberOfSections++;
-  }
-
-  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
     expectedNumberOfSections++;
   }
 
@@ -279,13 +266,9 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 4;
+  int expectedNumberOfSections = 5;
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsOnlyMode)) {
-    expectedNumberOfSections++;
-  }
-
-  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
     expectedNumberOfSections++;
   }
 

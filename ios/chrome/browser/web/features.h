@@ -8,13 +8,6 @@
 #include "base/feature_list.h"
 
 namespace web {
-
-// Feature flag to enable lockdown mode within browser.
-BASE_DECLARE_FEATURE(kBrowserLockdownModeAvailable);
-
-// Returns true if the use of Browser Lockdown Mode is enabled.
-bool IsBrowserLockdownModeEnabled();
-
 // Feature flag to tie the default zoom level for webpages to the current
 // dynamic type setting.
 BASE_DECLARE_FEATURE(kWebPageDefaultZoomFromDynamicType);

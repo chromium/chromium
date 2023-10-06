@@ -219,10 +219,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [model addSectionWithIdentifier:SectionIdentifierWebServices];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
-
-  if (web::IsBrowserLockdownModeEnabled()) {
-    [model addSectionWithIdentifier:SectionIdentifierLockdownMode];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierLockdownMode];
 
   // Clear Browsing item.
   [model addItem:[self clearBrowsingDetailItem]
@@ -260,15 +257,10 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       toSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
 
   // Lockdown Mode item.
-  if (web::IsBrowserLockdownModeEnabled()) {
-    [model addItem:[self lockdownModeDetailItem]
-        toSectionWithIdentifier:SectionIdentifierLockdownMode];
-    [model setFooter:[self showPrivacyFooterItem]
-        forSectionWithIdentifier:SectionIdentifierLockdownMode];
-  } else {
-    [model setFooter:[self showPrivacyFooterItem]
-        forSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
-  }
+  [model addItem:[self lockdownModeDetailItem]
+      toSectionWithIdentifier:SectionIdentifierLockdownMode];
+  [model setFooter:[self showPrivacyFooterItem]
+      forSectionWithIdentifier:SectionIdentifierLockdownMode];
 }
 
 #pragma mark - Model Objects

@@ -51,7 +51,6 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
   AppLaunchConfiguration config;
   // TODO (crbug.com/1285974) Remove when bug is resolved.
   config.features_disabled.push_back(kNewOverflowMenu);
-  config.features_enabled.push_back(web::kBrowserLockdownModeAvailable);
   return config;
 }
 
