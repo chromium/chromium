@@ -72,8 +72,7 @@ class CONTENT_EXPORT VideoCaptureHost
   void OnBufferDestroyed(const VideoCaptureControllerID& id,
                          int buffer_id) override;
   void OnBufferReady(const VideoCaptureControllerID& controller_id,
-                     const ReadyBuffer& buffer,
-                     const std::vector<ReadyBuffer>& scaled_buffers) override;
+                     const ReadyBuffer& buffer) override;
   void OnFrameDropped(const VideoCaptureControllerID& controller_id,
                       media::VideoCaptureFrameDropReason reason) override;
   void OnFrameWithEmptyRegionCapture(

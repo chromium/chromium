@@ -206,9 +206,7 @@ class VideoCaptureTest : public testing::Test,
     DoOnNewBuffer(buffer_id);
   }
   MOCK_METHOD1(DoOnNewBuffer, void(int32_t));
-  void OnBufferReady(
-      media::mojom::ReadyBufferPtr buffer,
-      std::vector<media::mojom::ReadyBufferPtr> scaled_buffers) override {
+  void OnBufferReady(media::mojom::ReadyBufferPtr buffer) override {
     DoOnBufferReady(buffer->buffer_id);
   }
   MOCK_METHOD1(DoOnBufferReady, void(int32_t));

@@ -164,8 +164,7 @@ void VideoCaptureHost::OnBufferDestroyed(
 
 void VideoCaptureHost::OnBufferReady(
     const VideoCaptureControllerID& controller_id,
-    const ReadyBuffer& buffer,
-    const std::vector<ReadyBuffer>& scaled_buffers) {
+    const ReadyBuffer& buffer) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (controllers_.find(controller_id) == controllers_.end())
     return;
@@ -181,14 +180,8 @@ void VideoCaptureHost::OnBufferReady(
 
   media::mojom::ReadyBufferPtr mojom_buffer = media::mojom::ReadyBuffer::New(
       buffer.buffer_id, buffer.frame_info->Clone());
-  std::vector<media::mojom::ReadyBufferPtr> mojom_scaled_buffers;
-  mojom_scaled_buffers.reserve(scaled_buffers.size());
-  for (const auto& scaled_buffer : scaled_buffers) {
-    mojom_scaled_buffers.push_back(media::mojom::ReadyBuffer::New(
-        scaled_buffer.buffer_id, scaled_buffer.frame_info->Clone()));
-  }
   device_id_to_observer_map_[controller_id]->OnBufferReady(
-      std::move(mojom_buffer), std::move(mojom_scaled_buffers));
+      std::move(mojom_buffer));
 }
 
 void VideoCaptureHost::OnFrameDropped(

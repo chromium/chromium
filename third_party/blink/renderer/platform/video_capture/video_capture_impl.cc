@@ -974,21 +974,15 @@ void VideoCaptureImpl::OnNewBuffer(
 }
 
 void VideoCaptureImpl::OnBufferReady(
-    media::mojom::blink::ReadyBufferPtr buffer,
-    Vector<media::mojom::blink::ReadyBufferPtr> scaled_buffers) {
+    media::mojom::blink::ReadyBufferPtr buffer) {
   DVLOG(1) << __func__ << " buffer_id: " << buffer->buffer_id;
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
-  bool consume_buffer = state_ == VIDEO_CAPTURE_STATE_STARTED;
-  if (!consume_buffer) {
+  if (state_ != VIDEO_CAPTURE_STATE_STARTED) {
     OnFrameDropped(
         media::VideoCaptureFrameDropReason::kVideoCaptureImplNotInStartedState);
     GetVideoCaptureHost()->ReleaseBuffer(device_id_, buffer->buffer_id,
                                          DefaultFeedback());
-    for (auto& scaled_buffer : scaled_buffers) {
-      GetVideoCaptureHost()->ReleaseBuffer(device_id_, scaled_buffer->buffer_id,
-                                           DefaultFeedback());
-    }
     return;
   }
 
@@ -1030,37 +1024,21 @@ void VideoCaptureImpl::OnBufferReady(
   // frames.
   auto frame_preparer =
       std::make_unique<VideoFrameBufferPreparer>(*this, std::move(buffer));
-  bool init_successful = frame_preparer->Initialize();
-  bool need_binding_on_media_thread = !frame_preparer->IsVideoFrameBound();
-  std::vector<std::unique_ptr<VideoFrameBufferPreparer>> scaled_frame_preparers;
-  scaled_frame_preparers.reserve(scaled_buffers.size());
-  for (media::mojom::blink::ReadyBufferPtr& scaled_buffer : scaled_buffers) {
-    auto scaled_frame_preparer = std::make_unique<VideoFrameBufferPreparer>(
-        *this, std::move(scaled_buffer));
-    init_successful &= scaled_frame_preparer->Initialize();
-    need_binding_on_media_thread |= !scaled_frame_preparer->IsVideoFrameBound();
-    scaled_frame_preparers.push_back(std::move(scaled_frame_preparer));
-  }
-  if (!init_successful) {
+  if (!frame_preparer->Initialize()) {
     OnFrameDropped(media::VideoCaptureFrameDropReason::
                        kVideoCaptureImplFailedToWrapDataAsMediaVideoFrame);
     GetVideoCaptureHost()->ReleaseBuffer(
         device_id_, frame_preparer->buffer_id(), DefaultFeedback());
-    for (auto& scaled_frame_preparer : scaled_frame_preparers) {
-      GetVideoCaptureHost()->ReleaseBuffer(
-          device_id_, scaled_frame_preparer->buffer_id(), DefaultFeedback());
-    }
     return;
   }
 
-  // If any of the video frames needs to be bound we do a round-trip time to the
-  // media thread, otherwise we'll go directly to OnVideoFrameReady().
-  if (need_binding_on_media_thread) {
+  // If the video frame needs to be bound we do a round-trip time to the media
+  // thread, otherwise we'll go directly to OnVideoFrameReady().
+  if (!frame_preparer->IsVideoFrameBound()) {
     media_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&VideoCaptureImpl::BindVideoFramesOnMediaThread,
+        base::BindOnce(&VideoCaptureImpl::BindVideoFrameOnMediaThread,
                        gpu_factories_, std::move(frame_preparer),
-                       std::move(scaled_frame_preparers),
                        base::BindPostTaskToCurrentDefault(base::BindOnce(
                            &VideoCaptureImpl::OnVideoFrameReady,
                            weak_factory_.GetWeakPtr(), reference_time)),
@@ -1070,82 +1048,50 @@ void VideoCaptureImpl::OnBufferReady(
                                           weak_factory_.GetWeakPtr()))));
     return;
   }
-  OnVideoFrameReady(reference_time, std::move(frame_preparer),
-                    std::move(scaled_frame_preparers));
+  OnVideoFrameReady(reference_time, std::move(frame_preparer));
 }
 
 // static
-void VideoCaptureImpl::BindVideoFramesOnMediaThread(
+void VideoCaptureImpl::BindVideoFrameOnMediaThread(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     std::unique_ptr<VideoFrameBufferPreparer> frame_preparer,
-    std::vector<std::unique_ptr<VideoFrameBufferPreparer>>
-        scaled_frame_preparers,
-    base::OnceCallback<
-        void(std::unique_ptr<VideoFrameBufferPreparer>,
-             std::vector<std::unique_ptr<VideoFrameBufferPreparer>>)>
+    base::OnceCallback<void(std::unique_ptr<VideoFrameBufferPreparer>)>
         on_frame_ready_callback,
     base::OnceCallback<void()> on_gpu_context_lost) {
-  // Bind all frames that needs binding, i.e. the GPU frames. Software frames
-  // already bound are not touched, allowing mixing software and hardware
-  // frames.
-  bool bind_failed = false;
-  if (!frame_preparer->IsVideoFrameBound()) {
-    bind_failed |= !frame_preparer->BindVideoFrameOnMediaThread(gpu_factories);
-  }
-  for (auto& scaled_frame_preparer : scaled_frame_preparers) {
-    if (!scaled_frame_preparer->IsVideoFrameBound()) {
-      bind_failed |=
-          !scaled_frame_preparer->BindVideoFrameOnMediaThread(gpu_factories);
-    }
-  }
-  if (bind_failed) {
+  // This method should only be called when binding is needed, i.e. the frame is
+  // a GPU frame.
+  CHECK(!frame_preparer->IsVideoFrameBound());
+  if (!frame_preparer->BindVideoFrameOnMediaThread(gpu_factories)) {
+    // Bind failed.
     std::move(on_gpu_context_lost).Run();
-    // Proceed to invoke |on_frame_ready_callback| even though we failed. It
-    // takes care of dropping the frames.
+    // Proceed to invoke |on_frame_ready_callback| even though we failed - it
+    // takes care of dropping the frame.
   }
-  std::move(on_frame_ready_callback)
-      .Run(std::move(frame_preparer), std::move(scaled_frame_preparers));
+  std::move(on_frame_ready_callback).Run(std::move(frame_preparer));
 }
 
 void VideoCaptureImpl::OnVideoFrameReady(
     base::TimeTicks reference_time,
-    std::unique_ptr<VideoFrameBufferPreparer> frame_preparer,
-    std::vector<std::unique_ptr<VideoFrameBufferPreparer>>
-        scaled_frame_preparers) {
+    std::unique_ptr<VideoFrameBufferPreparer> frame_preparer) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
-  // If any of the frames are not bound and ready we drop all of them.
-  bool is_any_frame_not_bound = !frame_preparer->IsVideoFrameBound();
-  for (const auto& scaled_frame_preparer : scaled_frame_preparers) {
-    is_any_frame_not_bound |= !scaled_frame_preparer->IsVideoFrameBound();
-  }
-  if (is_any_frame_not_bound) {
+  // If the frame is not bound and ready we drop it.
+  if (!frame_preparer->IsVideoFrameBound()) {
     OnFrameDropped(media::VideoCaptureFrameDropReason::
                        kVideoCaptureImplFailedToWrapDataAsMediaVideoFrame);
     // Release all buffers.
     GetVideoCaptureHost()->ReleaseBuffer(
         device_id_, frame_preparer->buffer_id(), DefaultFeedback());
-    for (const auto& scaled_frame_preparer : scaled_frame_preparers) {
-      GetVideoCaptureHost()->ReleaseBuffer(
-          device_id_, scaled_frame_preparer->buffer_id(), DefaultFeedback());
-    }
     return;
   }
-
-  // The buffers will be used. Finaize them.
+  // The buffer will be used. Finaize it.
   frame_preparer->Finalize();
-  std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames;
-  scaled_video_frames.reserve(scaled_frame_preparers.size());
-  for (const auto& scaled_frame_preparer : scaled_frame_preparers) {
-    scaled_frame_preparer->Finalize();
-    scaled_video_frames.push_back(scaled_frame_preparer->frame());
-  }
 
   // TODO(qiangchen): Dive into the full code path to let frame metadata hold
   // reference time rather than using an extra parameter.
   for (const auto& client : clients_) {
-    client.second.deliver_frame_cb.Run(frame_preparer->frame(),
-                                       scaled_video_frames, reference_time);
+    client.second.deliver_frame_cb.Run(frame_preparer->frame(), {},
+                                       reference_time);
   }
 }
 

@@ -74,8 +74,8 @@ interface VideoCaptureObserver {
   // video frames via calls to OnBufferReady().
   OnNewBuffer(int32 buffer_id, media.mojom.VideoBufferHandle buffer_handle);
 
-  // |buffer| and |scaled_buffers| have capture data ready for consumption.
-  OnBufferReady(ReadyBuffer buffer, array<ReadyBuffer> scaled_buffers);
+  // |buffer| has capture data ready for consumption.
+  OnBufferReady(ReadyBuffer buffer);
 
   // The buffer handle previously registered for |buffer_id| via OnNewBuffer(),
   // is no longer going to be used by the Browser/Host.

@@ -111,8 +111,7 @@ class VideoCaptureClientTest : public ::testing::Test,
     EXPECT_CALL(*host_impl_, ReleaseBuffer(_, 0, kFeedback))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
     client_->OnBufferReady(media::mojom::ReadyBuffer::New(
-                               buffer_id, GetVideoFrameInfo(frame_size)),
-                           {});
+        buffer_id, GetVideoFrameInfo(frame_size)));
     run_loop.Run();
     task_environment_.RunUntilIdle();
   }

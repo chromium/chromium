@@ -164,18 +164,9 @@ void VideoCaptureClient::OnNewBuffer(
   DCHECK(insert_result.second);
 }
 
-void VideoCaptureClient::OnBufferReady(
-    media::mojom::ReadyBufferPtr buffer,
-    std::vector<media::mojom::ReadyBufferPtr> scaled_buffers) {
+void VideoCaptureClient::OnBufferReady(media::mojom::ReadyBufferPtr buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(3) << __func__ << ": buffer_id=" << buffer->buffer_id;
-
-  // Scaled buffers are currently ignored by VideoCaptureClient.
-  for (media::mojom::ReadyBufferPtr& scaled_buffer : scaled_buffers) {
-    video_capture_host_->ReleaseBuffer(DeviceId(), scaled_buffer->buffer_id,
-                                       media::VideoCaptureFeedback());
-  }
-  scaled_buffers.clear();
 
   bool consume_buffer = !frame_deliver_callback_.is_null();
   if (buffer->info->pixel_format != media::PIXEL_FORMAT_NV12 &&

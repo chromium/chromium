@@ -126,9 +126,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
   void OnNewBuffer(
       int32_t buffer_id,
       media::mojom::blink::VideoBufferHandlePtr buffer_handle) override;
-  void OnBufferReady(
-      media::mojom::blink::ReadyBufferPtr buffer,
-      Vector<media::mojom::blink::ReadyBufferPtr> scaled_buffers) override;
+  void OnBufferReady(media::mojom::blink::ReadyBufferPtr buffer) override;
   void OnBufferDestroyed(int32_t buffer_id) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
   void OnNewCropVersion(uint32_t crop_version) override;
@@ -195,21 +193,15 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   using BufferFinishedCallback = base::OnceClosure;
 
-  static void BindVideoFramesOnMediaThread(
+  static void BindVideoFrameOnMediaThread(
       media::GpuVideoAcceleratorFactories* gpu_factories,
       std::unique_ptr<VideoFrameBufferPreparer> frame_preparer,
-      std::vector<std::unique_ptr<VideoFrameBufferPreparer>>
-          scaled_frame_preparers,
-      base::OnceCallback<
-          void(std::unique_ptr<VideoFrameBufferPreparer>,
-               std::vector<std::unique_ptr<VideoFrameBufferPreparer>>)>
+      base::OnceCallback<void(std::unique_ptr<VideoFrameBufferPreparer>)>
           on_frame_ready_callback,
       base::OnceCallback<void()> on_gpu_context_lost);
   void OnVideoFrameReady(
       base::TimeTicks reference_time,
-      std::unique_ptr<VideoFrameBufferPreparer> frame_preparer,
-      std::vector<std::unique_ptr<VideoFrameBufferPreparer>>
-          scaled_frame_preparers);
+      std::unique_ptr<VideoFrameBufferPreparer> frame_preparer);
 
   void OnAllClientsFinishedConsumingFrame(
       int buffer_id,

@@ -442,7 +442,7 @@ void VideoCaptureController::OnFrameReadyInBuffer(
         continue;
       MakeClientUseBufferContext(frame_context, client.get());
       client->event_handler->OnBufferReady(client->controller_id,
-                                           frame_ready_buffer, {});
+                                           frame_ready_buffer);
     }
     // Transfer buffer read permissions to any contexts that now have consumers.
     if (frame_context->HasConsumers()) {

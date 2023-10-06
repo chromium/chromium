@@ -229,8 +229,7 @@ void SingleClientVideoCaptureHost::OnFrameReadyInBuffer(
   DCHECK(insert_result.second);
   // This implementation does not forward scaled frames.
   observer_->OnBufferReady(media::mojom::ReadyBuffer::New(
-                               buffer_context_id, std::move(frame.frame_info)),
-                           {});
+      buffer_context_id, std::move(frame.frame_info)));
 }
 
 void SingleClientVideoCaptureHost::OnBufferRetired(int buffer_id) {

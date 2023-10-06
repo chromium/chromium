@@ -76,7 +76,7 @@ void FakeVideoCaptureHost::SendOneFrame(const gfx::Size& size,
              base::TimeDelta(), metadata, media::PIXEL_FORMAT_I420, size,
              gfx::Rect(size), kNotPremapped, gfx::ColorSpace::CreateREC709(),
              nullptr));
-  observer_->OnBufferReady(std::move(buffer), {});
+  observer_->OnBufferReady(std::move(buffer));
 }
 
 media::VideoCaptureParams FakeVideoCaptureHost::GetVideoCaptureParams() const {

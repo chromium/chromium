@@ -114,8 +114,7 @@ class MockVideoCaptureControllerEventHandler
     DoBufferDestroyed(id, buffer_id);
   }
   void OnBufferReady(const VideoCaptureControllerID& id,
-                     const ReadyBuffer& buffer,
-                     const std::vector<ReadyBuffer>& scaled_buffers) override {
+                     const ReadyBuffer& buffer) override {
     EXPECT_EQ(expected_pixel_format_, buffer.frame_info->pixel_format);
     EXPECT_EQ(expected_color_space_, buffer.frame_info->color_space);
     EXPECT_TRUE(buffer.frame_info->metadata.reference_time.has_value());
@@ -125,12 +124,6 @@ class MockVideoCaptureControllerEventHandler
           FROM_HERE, base::BindOnce(&VideoCaptureController::ReturnBuffer,
                                     base::Unretained(controller_), id, this,
                                     buffer.buffer_id, feedback_));
-      for (const auto& scaled_buffer : scaled_buffers) {
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(&VideoCaptureController::ReturnBuffer,
-                                      base::Unretained(controller_), id, this,
-                                      scaled_buffer.buffer_id, feedback_));
-      }
     }
   }
   void OnEnded(const VideoCaptureControllerID& id) override {

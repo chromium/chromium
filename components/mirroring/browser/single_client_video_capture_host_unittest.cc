@@ -138,9 +138,7 @@ class MockVideoCaptureObserver final
     OnBufferCreatedCall(buffer_id);
   }
   MOCK_METHOD1(OnBufferReadyCall, void(int buffer_id));
-  void OnBufferReady(
-      media::mojom::ReadyBufferPtr buffer,
-      std::vector<media::mojom::ReadyBufferPtr> scaled_buffers) override {
+  void OnBufferReady(media::mojom::ReadyBufferPtr buffer) override {
     EXPECT_TRUE(buffers_.find(buffer->buffer_id) != buffers_.end());
     EXPECT_EQ(frame_infos_.find(buffer->buffer_id), frame_infos_.end());
     frame_infos_[buffer->buffer_id] = std::move(buffer->info);
