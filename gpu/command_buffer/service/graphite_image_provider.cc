@@ -70,6 +70,7 @@ void GraphiteImageProvider::PurgeCacheIfNecessaryToAllowForNewImage(
   // allowed size, in which case we just empty the cache.
   if (new_bytes > preferred_max_cache_bytes_) {
     cache_.clear();
+    current_cache_bytes_ = 0;
     return;
   }
 
