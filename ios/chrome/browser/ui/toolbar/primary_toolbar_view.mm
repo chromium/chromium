@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
@@ -162,12 +163,26 @@
   self.fakeOmniboxTarget = nil;
 }
 
+#pragma mark - Properties
+
+- (void)setMatchNTPHeight:(BOOL)matchNTPHeight {
+  if (_matchNTPHeight == matchNTPHeight) {
+    return;
+  }
+  _matchNTPHeight = matchNTPHeight;
+  [self invalidateIntrinsicContentSize];
+  [self.superview setNeedsLayout];
+  [self.superview layoutIfNeeded];
+}
+
 #pragma mark - UIView
 
 - (CGSize)intrinsicContentSize {
-  return CGSizeMake(
-      UIViewNoIntrinsicMetric,
-      ToolbarExpandedHeight(self.traitCollection.preferredContentSizeCategory));
+  CGFloat height = self.matchNTPHeight
+                       ? content_suggestions::FakeToolbarHeight()
+                       : ToolbarExpandedHeight(
+                             self.traitCollection.preferredContentSizeCategory);
+  return CGSizeMake(UIViewNoIntrinsicMetric, height);
 }
 
 #pragma mark - Setup

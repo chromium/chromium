@@ -264,7 +264,8 @@
 
 #pragma mark Omnibox and LocationBar
 
-- (void)transitionToLocationBarFocusedState:(BOOL)focused {
+- (void)transitionToLocationBarFocusedState:(BOOL)focused
+                                 completion:(ProceduralBlock)completion {
   // Disable infobarBanner overlays when focusing the omnibox as they overlap
   // with primary toolbar.
   OverlayPresentationContext* infobarBannerContext =
@@ -290,7 +291,9 @@
       transitionToStateOmniboxFocused:focused
                       toolbarExpanded:focused && !IsRegularXRegularSizeClass(
                                                      self.traitEnvironment)
-                             animated:animateTransition];
+              animateFromLargeFakebox:[self isNTP]
+                             animated:animateTransition
+                           completion:completion];
   self.locationBarFocused = focused;
 }
 
@@ -572,7 +575,19 @@
                       toolbarExpanded:omniboxFocused &&
                                       !IsRegularXRegularSizeClass(
                                           self.traitEnvironment)
-                             animated:NO];
+              animateFromLargeFakebox:[self isNTP]
+                             animated:NO
+                           completion:nil];
 }
 
+/// Returns YES if the current webstate is an NTP.
+- (BOOL)isNTP {
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!webState) {
+    return NO;
+  }
+  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
+  return NTPHelper && NTPHelper->IsActive();
+}
 @end

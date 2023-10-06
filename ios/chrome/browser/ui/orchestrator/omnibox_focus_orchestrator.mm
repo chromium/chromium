@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/orchestrator/omnibox_focus_orchestrator.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/orchestrator/edit_view_animatee.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_animatee.h"
 #import "ios/chrome/browser/ui/orchestrator/toolbar_animatee.h"
@@ -24,11 +25,18 @@
 
 @end
 
-@implementation OmniboxFocusOrchestrator
+@implementation OmniboxFocusOrchestrator {
+  ProceduralBlock _completion;
+  BOOL _animateFromLargeFakebox;
+}
 
 - (void)transitionToStateOmniboxFocused:(BOOL)omniboxFocused
                         toolbarExpanded:(BOOL)toolbarExpanded
-                               animated:(BOOL)animated {
+                animateFromLargeFakebox:(BOOL)animateFromLargeFakebox
+                               animated:(BOOL)animated
+                             completion:(ProceduralBlock)completion {
+  _completion = completion;
+  _animateFromLargeFakebox = animateFromLargeFakebox;
   // If a new transition is requested while one is ongoing, we don't want
   // to start the new one immediately. However, we do want the omnibox to end
   // up in whatever state was requested last. Therefore, we cache the last
@@ -145,7 +153,7 @@
         animations:^{
           [self.locationBarAnimatee setEditViewFaded:NO];
         }
-        completion:^(BOOL _) {
+        completion:^(BOOL finished) {
           [self animationFinished];
         }];
 
@@ -157,7 +165,7 @@
           [self.editViewAnimatee setLeadingIconFaded:NO];
           [self.editViewAnimatee setClearButtonFaded:NO];
         }
-        completion:^(BOOL _) {
+        completion:^(BOOL finished) {
           [self animationFinished];
         }];
   } else {
@@ -195,7 +203,7 @@
           [self.locationBarAnimatee
                   resetSteadyViewOffsetAndOffsetEditViewToMatch];
         }
-        completion:^(BOOL _) {
+        completion:^(BOOL finished) {
           cleanup();
           [self animationFinished];
         }];
@@ -208,7 +216,7 @@
           [self.editViewAnimatee setLeadingIconFaded:YES];
           [self.editViewAnimatee setClearButtonFaded:YES];
         }
-        completion:^(BOOL _) {
+        completion:^(BOOL finished) {
           [self animationFinished];
         }];
 
@@ -219,7 +227,7 @@
         animations:^{
           [self.locationBarAnimatee setEditViewFaded:YES];
         }
-        completion:^(BOOL _) {
+        completion:^(BOOL finished) {
           [self animationFinished];
         }];
 
@@ -230,7 +238,7 @@
         animations:^{
           [self.locationBarAnimatee setSteadyViewFaded:NO];
         }
-        completion:^(BOOL _) {
+        completion:^(BOOL finished) {
           [self animationFinished];
         }];
 
@@ -242,56 +250,43 @@
 // Updates the UI elements reflect the toolbar expanded state, `animated` or
 // not.
 - (void)updateUIToExpandedState:(BOOL)animated {
-  void (^expansion)() = ^{
-    [self.toolbarAnimatee expandLocationBar];
-    [self.toolbarAnimatee showCancelButton];
-  };
-
-  void (^hideControls)() = ^{
-    [self.toolbarAnimatee hideControlButtons];
-  };
-
   if (animated) {
     // Use UIView animateWithDuration instead of UIViewPropertyAnimator to
     // avoid UIKit bug. See https://crbug.com/856155.
     self.inProgressAnimationCount += 1;
-    [UIView animateWithDuration:kMaterialDuration1
-                          delay:0
-                        options:UIViewAnimationCurveEaseInOut
-                     animations:expansion
-                     completion:^(BOOL _) {
-                       [self animationFinished];
-                     }];
+    if (_animateFromLargeFakebox && IsIOSLargeFakeboxEnabled()) {
+      [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
+    }
+    [UIView animateKeyframesWithDuration:kMaterialDuration1
+        delay:0
+        options:UIViewAnimationCurveEaseInOut
+        animations:^{
+          [UIView addKeyframeWithRelativeStartTime:0
+                                  relativeDuration:1
+                                        animations:^{
+                                          [self expansion];
+                                        }];
+          [UIView
+              addKeyframeWithRelativeStartTime:0
+                              relativeDuration:kMaterialDuration2 /
+                                               kMaterialDuration1
+                                    animations:^{
+                                      [self.toolbarAnimatee hideControlButtons];
+                                    }];
+        }
+        completion:^(BOOL finished) {
+          [self animationFinished];
+        }];
 
-    self.inProgressAnimationCount += 1;
-    [UIView animateWithDuration:kMaterialDuration2
-                          delay:0
-                        options:UIViewAnimationCurveEaseInOut
-                     animations:hideControls
-                     completion:^(BOOL _) {
-                       [self animationFinished];
-                     }];
   } else {
-    expansion();
-    hideControls();
+    [self expansion];
+    [self.toolbarAnimatee hideControlButtons];
   }
 }
 
 // Updates the UI elements reflect the toolbar contracted state, `animated` or
 // not.
 - (void)updateUIToContractedState:(BOOL)animated {
-  void (^contraction)() = ^{
-    [self.toolbarAnimatee contractLocationBar];
-  };
-
-  void (^hideCancel)() = ^{
-    [self.toolbarAnimatee hideCancelButton];
-  };
-
-  void (^showControls)() = ^{
-    [self.toolbarAnimatee showControlButtons];
-  };
-
   if (animated) {
     // Use UIView animateWithDuration instead of UIViewPropertyAnimator to
     // avoid UIKit bug. See https://crbug.com/856155.
@@ -305,23 +300,23 @@
           [UIView addKeyframeWithRelativeStartTime:0
                                   relativeDuration:relativeDurationAnimation1
                                         animations:^{
-                                          contraction();
+                                          [self contraction];
                                         }];
           [UIView
               addKeyframeWithRelativeStartTime:relativeDurationAnimation1
                               relativeDuration:1 - relativeDurationAnimation1
                                     animations:^{
-                                      showControls();
+                                      [self.toolbarAnimatee showControlButtons];
                                     }];
         }
-        completion:^(BOOL _) {
-          hideCancel();
+        completion:^(BOOL finished) {
+          [self.toolbarAnimatee hideCancelButton];
           [self animationFinished];
         }];
   } else {
-    contraction();
-    showControls();
-    hideCancel();
+    [self contraction];
+    [self.toolbarAnimatee showControlButtons];
+    [self.toolbarAnimatee hideCancelButton];
   }
 }
 
@@ -345,9 +340,39 @@
   if (self.stateChangedDuringAnimation) {
     [self transitionToStateOmniboxFocused:self.finalOmniboxFocusedState
                           toolbarExpanded:self.finalToolbarExpandedState
-                                 animated:NO];
+                  animateFromLargeFakebox:_animateFromLargeFakebox
+                                 animated:NO
+                               completion:_completion];
+  } else {
+    if (_completion) {
+      _completion();
+      _completion = nil;
+      if (_animateFromLargeFakebox && IsIOSLargeFakeboxEnabled()) {
+        // Reset the location bar height back to the default.
+        [self.toolbarAnimatee setLocationBarHeightExpanded];
+      }
+    }
   }
   self.stateChangedDuringAnimation = NO;
+}
+
+#pragma mark - Private animation helpers
+
+// Visually expands the location bar for focus.
+- (void)expansion {
+  [self.toolbarAnimatee expandLocationBar];
+  [self.toolbarAnimatee showCancelButton];
+  if (_animateFromLargeFakebox && IsIOSLargeFakeboxEnabled()) {
+    [self.toolbarAnimatee setLocationBarHeightExpanded];
+  }
+}
+
+// Visually contracts the location bar for defocus.
+- (void)contraction {
+  [self.toolbarAnimatee contractLocationBar];
+  if (_animateFromLargeFakebox && IsIOSLargeFakeboxEnabled()) {
+    [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
+  }
 }
 
 @end

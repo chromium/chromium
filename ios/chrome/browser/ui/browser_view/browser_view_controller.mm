@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
@@ -2069,13 +2070,14 @@ enum HeaderBehaviour {
                      }];
   }
 
-  [self.toolbarCoordinator transitionToLocationBarFocusedState:YES];
+  [self.toolbarCoordinator transitionToLocationBarFocusedState:YES
+                                                    completion:nil];
 }
 
 - (void)omniboxDidResignFirstResponder {
   [_sideSwipeMediator setEnabled:YES];
 
-  [self.ntpCoordinator locationBarDidResignFirstResponder];
+  [self.ntpCoordinator locationBarWillResignFirstResponder];
 
   [UIView animateWithDuration:0.3
       animations:^{
@@ -2092,7 +2094,16 @@ enum HeaderBehaviour {
         [self.typingShield setHidden:YES];
       }];
 
-  [self.toolbarCoordinator transitionToLocationBarFocusedState:NO];
+  ProceduralBlock completion = nil;
+  if (IsIOSLargeFakeboxEnabled()) {
+    // Show the NTP's fake toolbar after the defocus animation completes.
+    completion = ^{
+      [self.ntpCoordinator locationBarDidResignFirstResponder];
+    };
+  };
+
+  [self.toolbarCoordinator transitionToLocationBarFocusedState:NO
+                                                    completion:completion];
 }
 
 #pragma mark - BrowserCommands

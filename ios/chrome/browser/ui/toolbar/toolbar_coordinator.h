@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_COORDINATOR_H_
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_updating.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
@@ -60,7 +61,8 @@
 
 /// Coordinates the location bar focusing/defocusing. For example, initiates
 /// transition to the expanded location bar state of the view controller.
-- (void)transitionToLocationBarFocusedState:(BOOL)focused;
+- (void)transitionToLocationBarFocusedState:(BOOL)focused
+                                 completion:(ProceduralBlock)completion;
 /// Whether the omnibox is currently the first responder.
 - (BOOL)isOmniboxFirstResponder;
 /// Whether the omnibox popup is currently presented.

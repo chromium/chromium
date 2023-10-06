@@ -480,6 +480,14 @@
   self.NTPViewController.omniboxFocused = YES;
 }
 
+- (void)locationBarWillResignFirstResponder {
+  // Do not trigger defocus animation if the user is already navigating away
+  // from the NTP.
+  if (self.visible) {
+    [self.NTPViewController omniboxWillResignFirstResponder];
+  }
+}
+
 - (void)locationBarDidResignFirstResponder {
   // Do not trigger defocus animation if the user is already navigating away
   // from the NTP.

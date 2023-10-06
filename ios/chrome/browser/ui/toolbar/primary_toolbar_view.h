@@ -59,6 +59,9 @@
 // square.
 @property(nonatomic, assign) BOOL topCornersRounded;
 
+// Whether the height should match the height of the "fake" toolbar of the NTP.
+@property(nonatomic, assign) BOOL matchNTPHeight;
+
 // Sets all the subviews and constraints of the view. The `topSafeAnchor` needs
 // to be set before calling this.
 - (void)setUp;

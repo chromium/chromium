@@ -71,6 +71,9 @@ class WebState;
 // Called when the user navigates away from the NTP.
 - (void)didNavigateAwayFromNTP;
 
+// The location bar will lose focus.
+- (void)locationBarWillResignFirstResponder;
+
 // The location bar has lost focus.
 - (void)locationBarDidResignFirstResponder;
 

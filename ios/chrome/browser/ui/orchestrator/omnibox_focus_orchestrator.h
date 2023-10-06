@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
+
 @protocol EditViewAnimatee;
 @protocol LocationBarAnimatee;
 @protocol ToolbarAnimatee;
@@ -24,9 +26,13 @@
 
 // Updates the UI elements orchestrated by this object to reflect the
 // `omniboxFocused` state, and the `toolbarExpanded` state, `animated` or not.
+// `isNTP` indicates whether this transition was initiated from the NTP. When
+// the transition is complete, `completion` will be executed.
 - (void)transitionToStateOmniboxFocused:(BOOL)omniboxFocused
                         toolbarExpanded:(BOOL)toolbarExpanded
-                               animated:(BOOL)animated;
+                animateFromLargeFakebox:(BOOL)animateFromLargeFakebox
+                               animated:(BOOL)animated
+                             completion:(ProceduralBlock)completion;
 
 @end
 

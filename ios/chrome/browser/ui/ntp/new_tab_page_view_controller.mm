@@ -650,6 +650,14 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   return [self.headerViewController pinnedOffsetY] - [self heightAboveFeed];
 }
 
+- (void)omniboxWillResignFirstResponder {
+  if (IsIOSLargeFakeboxEnabled() && [self fakeOmniboxPinnedToTop]) {
+    // Return early to allow the omnibox defocus animation show.
+    return;
+  }
+  [self omniboxDidResignFirstResponder];
+}
+
 - (void)omniboxDidResignFirstResponder {
   if (![self.headerViewController isShowing] && !self.scrolledToMinimumHeight) {
     return;
