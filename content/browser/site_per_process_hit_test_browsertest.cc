@@ -7400,7 +7400,8 @@ class SitePerProcessDelegatedInkBrowserTest
 // trails results in the metadata being correctly sent to the child's
 // RenderWidgetHost and is usable for sending delegated ink points.
 // TODO(https://crbug.com/1318221): Fix and enable the test on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
+// TODO(https://crbug.com/1490367): flaky on ChromeOS
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_MetadataAndPointGoThroughOOPIF \
   DISABLED_MetadataAndPointGoThroughOOPIF
 #else
