@@ -27,6 +27,7 @@
 #include "ios/web/public/web_state_id.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -105,7 +106,7 @@ class WebState : public base::SupportsUserData {
     // is left default initialized, then the value will not be passed on
     // to the WebState and GetLastActiveTime() will return the WebState's
     // creation time.
-    base::Time last_active_time;
+    absl::optional<base::Time> last_active_time;
   };
 
   // Parameters for the OpenURL() method.

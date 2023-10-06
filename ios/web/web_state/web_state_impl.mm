@@ -87,10 +87,13 @@ void IgnoreOverRealizationCheck() {
 WebStateImpl::WebStateImpl(const CreateParams& params) {
   AddWebStateImplMarker();
 
-  pimpl_ = std::make_unique<RealizedWebState>(this, base::Time::Now(),
-                                              [[NSUUID UUID] UUIDString],
-                                              WebStateID::NewUnique());
-  pimpl_->Init(params.browser_state, params.last_active_time,
+  const base::Time creation_time = base::Time::Now();
+  const base::Time last_active_time =
+      params.last_active_time.value_or(creation_time);
+
+  pimpl_ = std::make_unique<RealizedWebState>(
+      this, creation_time, [[NSUUID UUID] UUIDString], WebStateID::NewUnique());
+  pimpl_->Init(params.browser_state, last_active_time,
                params.created_with_opener);
 
   SendGlobalCreationEvent();

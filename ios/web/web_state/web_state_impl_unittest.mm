@@ -1102,6 +1102,42 @@ TEST_F(WebStateImplTest, LastActiveTimeUpdatedWhenBecomeVisible) {
   EXPECT_EQ(web_state.GetCreationTime(), creation_time);
 }
 
+// Tests that at creation the last active time is initialized to the creation
+// time if unspecified in CreateParams.
+TEST_F(WebStateImplTest, LastActiveTimeSetOnCreation) {
+  WebStateImpl web_state =
+      WebStateImpl(WebState::CreateParams(GetBrowserState()));
+
+  EXPECT_NE(web_state.GetLastActiveTime(), base::Time());
+  EXPECT_EQ(web_state.GetLastActiveTime(), web_state.GetCreationTime());
+}
+
+// Tests that at creation the last active time is initialized to the time
+// specified in CreateParams.
+TEST_F(WebStateImplTest, LastActiveTimeSetOnCreationToCreateParamsValue) {
+  const base::Time last_active_time = base::Time::Now() + base::Days(1);
+  WebState::CreateParams params = WebState::CreateParams(GetBrowserState());
+  params.last_active_time = last_active_time;
+
+  WebStateImpl web_state = WebStateImpl(params);
+
+  EXPECT_NE(web_state.GetLastActiveTime(), base::Time());
+  EXPECT_NE(web_state.GetLastActiveTime(), web_state.GetCreationTime());
+  EXPECT_EQ(web_state.GetLastActiveTime(), last_active_time);
+}
+
+// Tests that at creation the last active time is initialized to the time
+// specified in CreateParams, even if set to the epoch.
+TEST_F(WebStateImplTest, LastActiveTimeCanBeForcedToEpochViaCreateParams) {
+  WebState::CreateParams params = WebState::CreateParams(GetBrowserState());
+  params.last_active_time = base::Time();
+
+  WebStateImpl web_state = WebStateImpl(params);
+
+  EXPECT_EQ(web_state.GetLastActiveTime(), base::Time());
+  EXPECT_NE(web_state.GetLastActiveTime(), web_state.GetCreationTime());
+}
+
 // Tests that WebState sessionState data can be read and writen.
 TEST_F(WebStateImplTest, ReadAndWriteSessionStateData) {
   if (@available(iOS 15, *)) {
