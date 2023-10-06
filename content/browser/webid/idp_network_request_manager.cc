@@ -779,8 +779,8 @@ void IdpNetworkRequestManager::SendAccountsRequest(
     const std::string& client_id,
     AccountsRequestCallback callback) {
   std::unique_ptr<network::ResourceRequest> resource_request =
-      CreateCredentialedResourceRequest(accounts_url,
-                                        /* send_origin= */ false);
+      CreateCredentialedResourceRequest(
+          accounts_url, CredentialedResourceRequestType::kNoOrigin);
   DownloadJsonAndParse(
       std::move(resource_request),
       /*url_encoded_post_data=*/absl::nullopt,
@@ -795,8 +795,11 @@ void IdpNetworkRequestManager::SendTokenRequest(
     TokenRequestCallback callback,
     ContinueOnCallback continue_on) {
   std::unique_ptr<network::ResourceRequest> resource_request =
-      CreateCredentialedResourceRequest(token_url,
-                                        /* send_origin= */ true);
+      CreateCredentialedResourceRequest(
+          token_url,
+          base::FeatureList::IsEnabled(features::kFedCmIdAssertionCORS)
+              ? CredentialedResourceRequestType::kOriginWithCORS
+              : CredentialedResourceRequestType::kOriginWithoutCORS);
   DownloadJsonAndParse(
       std::move(resource_request), url_encoded_post_data,
       base::BindOnce(&OnTokenRequestParsed, std::move(callback),
@@ -822,8 +825,9 @@ void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
       static_cast<int>(api_call_to_token_response_time.InMilliseconds()));
 
   std::unique_ptr<network::ResourceRequest> resource_request =
-      CreateCredentialedResourceRequest(metrics_endpoint_url,
-                                        /* send_origin= */ true);
+      CreateCredentialedResourceRequest(
+          metrics_endpoint_url,
+          CredentialedResourceRequestType::kOriginWithoutCORS);
   DownloadJsonAndParse(std::move(resource_request), url_encoded_post_data,
                        IdpNetworkRequestManager::ParseJsonCallback(),
                        maxResponseSizeInKiB * 1024);
@@ -848,8 +852,8 @@ void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
   // TODO(kenrb): Add browser test verifying that the response to this can
   // clear cookies. https://crbug.com/1155312.
 
-  auto resource_request =
-      CreateCredentialedResourceRequest(logout_url, /* send_origin= */ false);
+  auto resource_request = CreateCredentialedResourceRequest(
+      logout_url, CredentialedResourceRequestType::kNoOrigin);
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept, "*/*");
 
   DownloadUrl(std::move(resource_request),
@@ -975,7 +979,7 @@ IdpNetworkRequestManager::CreateUncredentialedResourceRequest(
 std::unique_ptr<network::ResourceRequest>
 IdpNetworkRequestManager::CreateCredentialedResourceRequest(
     const GURL& target_url,
-    bool send_origin) const {
+    CredentialedResourceRequestType type) const {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   auto target_origin = url::Origin::Create(target_url);
   auto site_for_cookies = net::SiteForCookies::FromOrigin(target_origin);
@@ -991,9 +995,15 @@ IdpNetworkRequestManager::CreateCredentialedResourceRequest(
       network::mojom::RequestDestination::kWebIdentity;
   resource_request->url = target_url;
   resource_request->site_for_cookies = site_for_cookies;
-  if (send_origin) {
+  // TODO(crbug.com/1489662): Figure out why when using CORS we still need to
+  // explicitly pass the Origin header.
+  if (type != CredentialedResourceRequestType::kNoOrigin) {
     resource_request->headers.SetHeader(net::HttpRequestHeaders::kOrigin,
                                         relying_party_origin_.Serialize());
+  }
+  if (type == CredentialedResourceRequestType::kOriginWithCORS) {
+    resource_request->mode = network::mojom::RequestMode::kCors;
+    resource_request->request_initiator = relying_party_origin_;
   }
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,

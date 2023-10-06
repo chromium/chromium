@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "content/common/features.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/common/content_features.h"
@@ -938,6 +939,42 @@ TEST_F(IdpNetworkRequestManagerTest, TokenRequest) {
         const network::DataElementBytes& byte_elem =
             elem.As<network::DataElementBytes>();
         EXPECT_EQ("request", byte_elem.AsStringPiece());
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+  FetchStatus fetch_status;
+  TokenResult token_result;
+  std::tie(fetch_status, token_result) =
+      SendTokenRequestAndWaitForResponse("account", "request");
+  ASSERT_TRUE(called);
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  ASSERT_EQ("token", token_result.token);
+}
+
+// Tests the token request implementation when CORS is enforced on the endpoint.
+TEST_F(IdpNetworkRequestManagerTest, TokenRequestWithCORS) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIdAssertionCORS);
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        EXPECT_EQ(GURL(kTestTokenEndpoint), request.url);
+        EXPECT_FALSE(request.referrer.is_valid());
+        url::Origin rpOrigin = url::Origin::Create(GURL(kTestRpUrl));
+        EXPECT_EQ(GetOriginHeader(request), rpOrigin);
+
+        // Check that the request body is correct (should be "request")
+        ASSERT_NE(request.request_body, nullptr);
+        ASSERT_EQ(1ul, request.request_body->elements()->size());
+        const network::DataElement& elem =
+            request.request_body->elements()->at(0);
+        ASSERT_EQ(network::DataElement::Tag::kBytes, elem.type());
+        const network::DataElementBytes& byte_elem =
+            elem.As<network::DataElementBytes>();
+        EXPECT_EQ("request", byte_elem.AsStringPiece());
+        ASSERT_EQ(request.mode, network::mojom::RequestMode::kCors);
+        ASSERT_EQ(request.request_initiator, rpOrigin);
       });
   test_url_loader_factory().SetInterceptor(interceptor);
   FetchStatus fetch_status;

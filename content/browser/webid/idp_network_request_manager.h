@@ -261,9 +261,15 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       bool send_origin,
       bool follow_redirects = false) const;
 
+  enum class CredentialedResourceRequestType {
+    kNoOrigin,
+    kOriginWithoutCORS,
+    kOriginWithCORS
+  };
+
   std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
       const GURL& target_url,
-      bool send_origin) const;
+      CredentialedResourceRequestType type) const;
 
   url::Origin relying_party_origin_;
 
