@@ -195,7 +195,7 @@ class SmartCardTest : public ContentBrowserTest {
 
       mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
       mock_connection.ExpectBeginTransaction(transaction_receiver);
-      mock_transaction.ExpectEndTransaction(SmartCardDisposition::kLeave);
+      mock_transaction.ExpectEndTransaction(SmartCardDisposition::kReset);
     }
 
     std::string js_snippet = std::format(R"(
@@ -1510,7 +1510,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, EndTransactionAfterFailedOperation) {
           std::move(callback).Run(std::move(result));
         });
 
-    mock_transaction.ExpectEndTransaction(SmartCardDisposition::kLeave);
+    mock_transaction.ExpectEndTransaction(SmartCardDisposition::kReset);
   }
 
   EXPECT_EQ(
@@ -1570,7 +1570,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, EndTransactionAfterContextOperation) {
           std::move(callback).Run(std::move(result));
         });
 
-    mock_transaction.ExpectEndTransaction(SmartCardDisposition::kLeave);
+    mock_transaction.ExpectEndTransaction(SmartCardDisposition::kEject);
   }
 
   EXPECT_EQ(
@@ -1586,6 +1586,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, EndTransactionAfterContextOperation) {
 
       let transaction = () => {
         context.listReaders();
+        return "eject";
       };
 
       try {
