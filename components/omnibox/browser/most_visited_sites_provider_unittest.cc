@@ -340,29 +340,14 @@ TEST_F(MostVisitedSitesProviderTest, AllowMostVisitedSitesSuggestions) {
           WEB_URL, WEB_URL, OEP::OTHER, OFT::INTERACTION_CLOBBER)));
 }
 
-TEST_F(MostVisitedSitesProviderTest, SrpCoverageIsControlledWithFeatureFlag) {
+TEST_F(MostVisitedSitesProviderTest, NoSRPCoverage) {
   using OEP = metrics::OmniboxEventProto;
   using OFT = metrics::OmniboxFocusType;
 
-  {  // Feature flag enabled: offer MV Tiles on SRP.
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(omnibox::kOmniboxMostVisitedTilesOnSrp);
-    EXPECT_TRUE(
-        provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-            WEB_URL, WEB_URL,
-            OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-            OFT::INTERACTION_FOCUS)));
-  }
-
-  {  // Feature flag disabled: no MV Tiles on SRP.
-    base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(omnibox::kOmniboxMostVisitedTilesOnSrp);
-    EXPECT_FALSE(
-        provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-            WEB_URL, WEB_URL,
-            OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-            OFT::INTERACTION_FOCUS)));
-  }
+  EXPECT_FALSE(
+      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
+          WEB_URL, WEB_URL, OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+          OFT::INTERACTION_FOCUS)));
 }
 
 TEST_F(MostVisitedSitesProviderTest, TestCreateMostVisitedMatch) {

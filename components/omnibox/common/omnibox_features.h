@@ -88,7 +88,6 @@ BASE_DECLARE_FEATURE(kNtpRealboxPedals);
 BASE_DECLARE_FEATURE(kOmniboxActionsUISimplification);
 BASE_DECLARE_FEATURE(kOmniboxFuzzyUrlSuggestions);
 BASE_DECLARE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor);
-BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesOnSrp);
 BASE_DECLARE_FEATURE(kSearchReadyOmniboxAllowQueryEdit);
 BASE_DECLARE_FEATURE(kSquareSuggestIcons);
 BASE_DECLARE_FEATURE(kUniformRowHeight);

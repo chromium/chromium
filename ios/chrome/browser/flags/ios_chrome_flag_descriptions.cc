@@ -751,12 +751,6 @@ const char kOmniboxMaxZPSMatchesDescription[] =
     "Changes the maximum number of autocomplete matches displayed in the "
     "zero-prefix state in the omnibox (e.g. on NTP when tapped on OB).";
 
-const char kOmniboxMostVisitedTilesOnSrpName[] =
-    "Omnibox Most Visited Tiles on Search Results Page";
-const char kOmniboxMostVisitedTilesOnSrpDescription[] =
-    "Offer most visited website tiles when the User is on the Search Results "
-    "Page.";
-
 const char kOmniboxOnDeviceHeadSuggestionsIncognitoName[] =
     "Omnibox on device head suggestions (incognito only)";
 const char kOmniboxOnDeviceHeadSuggestionsIncognitoDescription[] =

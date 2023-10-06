@@ -333,12 +333,6 @@ BASE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor,
              "OmniboxMatchToolbarAndStatusBarColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature used to add most visited tiles to the suggestions when the user is on
-// a search result page that does not do search term replacement.
-BASE_FEATURE(kOmniboxMostVisitedTilesOnSrp,
-             "OmniboxMostVisitedTilesOnSrp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, allows Search Ready Omnibox to populate original search query
 // when the user presses the <edit> button on EditUrl suggestion.
 BASE_FEATURE(kSearchReadyOmniboxAllowQueryEdit,

@@ -31,8 +31,7 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
  private:
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
                            AllowMostVisitedSitesSuggestions);
-  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
-                           SrpCoverageIsControlledWithFeatureFlag);
+  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, NoSRPCoverage);
 
   ~MostVisitedSitesProvider() override;
 
