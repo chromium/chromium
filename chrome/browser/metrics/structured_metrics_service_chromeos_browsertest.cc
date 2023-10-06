@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include "build/build_config.h"
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -195,8 +196,16 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   EXPECT_EQ(sm_service->recorder()->events()->uma_events_size(), 0);
 }
 
+// TODO(crbug.com/1482059): Re-enable this test
+// Only flaky on chromeos-rel.
+#if BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG) && !defined(ADDRESS_SANITIZER)
+#define MAYBE_StagedLogPurgeOnConsentRevoke \
+  DISABLED_StagedLogPurgeOnConsentRevoke
+#else
+#define MAYBE_StagedLogPurgeOnConsentRevoke StagedLogPurgeOnConsentRevoke
+#endif
 IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
-                       StagedLogPurgeOnConsentRevoke) {
+                       MAYBE_StagedLogPurgeOnConsentRevoke) {
   auto* sm_service = GetSMService();
 
   // Enable consent for profile.
