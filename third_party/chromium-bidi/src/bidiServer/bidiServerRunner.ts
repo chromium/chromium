@@ -20,6 +20,9 @@ import debug from 'debug';
 import websocket from 'websocket';
 
 import type {ITransport} from '../utils/transport.js';
+import {ErrorCode} from '../protocol/webdriver-bidi.js';
+
+import type {CloseBrowserDelegate} from './index.js';
 
 export const debugInfo = debug('bidi:server:info');
 const debugInternal = debug('bidi:server:internal');
@@ -40,7 +43,7 @@ export class BidiServerRunner {
     onNewBidiConnectionOpen: (
       bidiServer: ITransport,
       args?: string[]
-    ) => Promise<() => void> | (() => void)
+    ) => Promise<CloseBrowserDelegate>
   ) {
     let jsonBody: any;
     const server = http.createServer(
@@ -50,7 +53,9 @@ export class BidiServerRunner {
             request.method ?? 'UNKNOWN METHOD'
           } request for ${request.url ?? 'UNKNOWN URL'}`
         );
-        if (!request.url) return response.end(404);
+        if (!request.url) {
+          return response.end(404);
+        }
 
         // https://w3c.github.io/webdriver-bidi/#transport, step 2.
         if (request.url === '/session') {
@@ -129,39 +134,67 @@ export class BidiServerRunner {
 
       const transport = new MessageTransport();
 
-      const onBidiConnectionClosed = await onNewBidiConnectionOpen(
-        transport,
-        chromeOptions?.args
-      );
+      const closeBrowserDelegate: CloseBrowserDelegate =
+        await onNewBidiConnectionOpen(transport, chromeOptions?.args);
 
       const connection = request.accept();
 
-      connection.on('message', (message) => {
-        // 1. If |type| is not text, return.
+      connection.on('message', async (message) => {
+        // If |type| is not text, return a error.
         if (message.type !== 'utf8') {
           this.#respondWithError(
             connection,
             {},
-            'invalid argument',
+            ErrorCode.InvalidArgument,
             `not supported type (${message.type})`
           );
           return;
         }
 
         const plainCommandData = message.utf8Data;
-
         debugRecv(plainCommandData);
+
+        // Try to parse the message to handle some of BiDi commands.
+        let parsedCommandData: {id: number; method: string};
+        try {
+          parsedCommandData = JSON.parse(plainCommandData);
+        } catch (e) {
+          this.#respondWithError(
+            connection,
+            {},
+            ErrorCode.InvalidArgument,
+            `Cannot parse data as JSON`
+          );
+          return;
+        }
+
+        // Handle `browser.close` command.
+        if (parsedCommandData.method === 'browser.close') {
+          await closeBrowserDelegate();
+          await this.#sendClientMessage(
+            {
+              id: parsedCommandData.id,
+              type: 'success',
+              result: {},
+            },
+            connection
+          );
+          return;
+        }
+
+        // Forward all other commands to BiDi Mapper.
         transport.onMessage(plainCommandData);
       });
 
-      connection.on('close', () => {
+      connection.on('close', async () => {
         debugInternal(
           `${new Date().toString()} Peer ${
             connection.remoteAddress
           } disconnected.`
         );
-
-        onBidiConnectionClosed();
+        // TODO: handle reconnection which is used in WPT. Until then, close the
+        //  browser after each WS connection is closed.
+        await closeBrowserDelegate();
       });
 
       transport.initialize((message) => {
