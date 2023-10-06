@@ -29,20 +29,6 @@
 
 namespace blink {
 
-inline void UniteLayoutOverflowRect(LayoutRect& layout_overflow,
-                                    const LayoutRect& rect) {
-  LayoutUnit max_x = std::max(rect.MaxX(), layout_overflow.MaxX());
-  LayoutUnit max_y = std::max(rect.MaxY(), layout_overflow.MaxY());
-  LayoutUnit min_x = std::min(rect.X(), layout_overflow.X());
-  LayoutUnit min_y = std::min(rect.Y(), layout_overflow.Y());
-  // In case the width/height is larger than LayoutUnit can represent, fix the
-  // right/bottom edge and shift the top/left ones.
-  layout_overflow.SetWidth(max_x - min_x);
-  layout_overflow.SetHeight(max_y - min_y);
-  layout_overflow.SetX(max_x - layout_overflow.Width());
-  layout_overflow.SetY(max_y - layout_overflow.Height());
-}
-
 // BoxOverflowModel class tracks content that spills out of an object.
 // It is used by LayoutBox.
 //
