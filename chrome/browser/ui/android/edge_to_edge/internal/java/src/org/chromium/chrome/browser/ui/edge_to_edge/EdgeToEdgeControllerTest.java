@@ -184,7 +184,7 @@ public class EdgeToEdgeControllerTest {
     @SuppressLint("NewApi")
     public void onObservingDifferentTab_changeToWebDisabled() {
         // First go ToEdge by invoking the changeToTabSwitcher test logic.
-        mEdgeToEdgeControllerImpl.setToEdge(true);
+        mEdgeToEdgeControllerImpl.setToEdgeForTesting(true);
 
         // Now test that a Web page causes a transition ToNormal (when Web forcing is disabled).
         ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(false);
@@ -247,7 +247,6 @@ public class EdgeToEdgeControllerTest {
     /** Test the OSWrapper implementation without mocking it. Native ToNormal. */
     @Test
     public void onObservingDifferentTab_osWrapperImplToNormal() {
-        ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(false);
         EdgeToEdgeControllerImpl liveController =
                 (EdgeToEdgeControllerImpl) EdgeToEdgeControllerFactory.create(
                         mActivity, mObservableSupplierImpl);
@@ -258,6 +257,17 @@ public class EdgeToEdgeControllerTest {
         assertFalse(liveController.isToEdge());
         // Check the Navigation Bar color, as an indicator that we really changed the window.
         assertNotEquals(Color.TRANSPARENT, mActivity.getWindow().getNavigationBarColor());
+    }
+
+    /** Test switching to the Tab Switcher, which uses a null Tab. */
+    @Test
+    public void onObservingDifferentTab_nullTabSwitcher() {
+        mEdgeToEdgeControllerImpl.setToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.onTabSwitched(null);
+        assertFalse(mEdgeToEdgeControllerImpl.isToEdge());
+        // Check the Navigation Bar color, as an indicator that we really changed the window.
+        assertNotEquals(Color.TRANSPARENT, mActivity.getWindow().getNavigationBarColor());
+        assertToNormalExpectations();
     }
 
     /** Test that we update WebContentsObservers when a Tab changes WebContents. */

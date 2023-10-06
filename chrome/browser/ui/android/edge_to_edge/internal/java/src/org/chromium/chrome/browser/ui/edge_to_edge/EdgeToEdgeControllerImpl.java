@@ -108,7 +108,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         }
 
         boolean shouldDrawToEdge = alwaysDrawToEdgeForTabKind(tab);
-        if (!shouldDrawToEdge) shouldDrawToEdge = getWasViewportFitCover(tab);
+        if (!shouldDrawToEdge && tab != null) shouldDrawToEdge = getWasViewportFitCover(tab);
         drawToEdge(ROOT_UI_VIEW_ID, shouldDrawToEdge, tab == null ? null : tab.getWebContents());
     }
 
@@ -274,8 +274,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         return mToEdge;
     }
 
-    @VisibleForTesting
-    void setToEdge(boolean toEdge) {
+    void setToEdgeForTesting(boolean toEdge) {
         mToEdge = toEdge;
     }
 
