@@ -2547,7 +2547,7 @@
   {
     "name": "enable-delegated-compositing",
     "owners": [ "petermcneeley" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 126
   },
   {
     "name": "enable-desk-button",
