@@ -915,6 +915,7 @@ TEST(CSSPropertyParserTest, UAInternalLightDarkColor) {
       {"-internal-light-dark(rgba(0, 0, 0, 0.5), hsla(180, 75%, 50%, "
        "0.7))",
        true},
+      {"-internal-light-dark(ff0000, green)", false},
   };
 
   for (const auto& test : tests) {

@@ -1969,7 +1969,8 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
   }
 
   return ConsumeInternalLightDark(ConsumeColor, range, context,
-                                  accept_quirky_colors, allowed_keywords);
+                                  false /* accept_quirky_colors */,
+                                  allowed_keywords);
 }
 
 CSSValue* ConsumeLineWidth(CSSParserTokenRange& range,
