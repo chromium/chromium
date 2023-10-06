@@ -403,14 +403,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // B2  A2
 //     |
 //     C3
-// TODO(crbug.com/1012185): Flaky timeouts on Linux and Mac.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_UnloadHandlerSubframes DISABLED_UnloadHandlerSubframes
-#else
-#define MAYBE_UnloadHandlerSubframes UnloadHandlerSubframes
-#endif
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       MAYBE_UnloadHandlerSubframes) {
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadHandlerSubframes) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c(b),c(a(c))),d)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
