@@ -527,15 +527,13 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
   EXPECT_EQ(response.http_request()->content, "response");
 }
 
-class
-    PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest
+class PrivacySandboxSettingsAttestProtectedAudienceBrowserTest
     : public PrivacySandboxSettingsAttestationsBrowserTestBase {
  public:
-  PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest() {
+  PrivacySandboxSettingsAttestProtectedAudienceBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kPrivateAggregationApi,
-         blink::features::kInterestGroupStorage,
+        {blink::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          blink::features::kFledgeBiddingAndAuctionServer,
          blink::features::kFencedFrames,
@@ -546,7 +544,7 @@ class
 
   void FinishSetUp() override {
     https_server_.RegisterRequestHandler(base::BindRepeating(
-        &PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest::
+        &PrivacySandboxSettingsAttestProtectedAudienceBrowserTest::
             HandleWellKnownRequest,
         base::Unretained(this)));
     content::SetupCrossSiteRedirector(&https_server_);
@@ -571,6 +569,21 @@ class
     response->set_content(R"({"joinAdInterestGroup" : true})");
     response->AddCustomHeader("Access-Control-Allow-Origin", "*");
     return response;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class
+    PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest
+    : public PrivacySandboxSettingsAttestProtectedAudienceBrowserTest {
+ public:
+  PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {blink::features::kPrivateAggregationApi},
+        /*disabled_features=*/{});
   }
 
   size_t GetTotalSampleCount(const std::string& histogram_name) {
@@ -653,6 +666,96 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester_.ExpectUniqueSample(
       kPrivateAggregationHostPipeResultHistogram,
       content::GetPrivateAggregationHostPipeApiDisabledValue(), 2);
+}
+
+// Verifies that joining interest groups and running auctions in the Protected
+// Audience API are subject to attestation checks.
+//
+// navigtor.joinAdInterestGroup() doesn't have a separate attestation from
+// navigator.runAdAuction() -- they both check the same kProtectedAudience
+// attestation.
+IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsAttestProtectedAudienceBrowserTest,
+                       Join_RunAdAuction_Enrollment) {
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+
+  struct TestCase {
+    AttestedApiStatus join_origin_attestation;
+    AttestedApiStatus run_origin_attestation;
+    bool expect_auction_succeeds;
+  } kTestCases[] = {
+      {/*join_origin_attestation=*/AttestedApiStatus::kProtectedAudience,
+       /*run_origin_attestation=*/AttestedApiStatus::kProtectedAudience,
+       /*expect_auction_succeeds=*/true},
+      {/*join_origin_attestation=*/AttestedApiStatus::kSharedStorage,
+       AttestedApiStatus::kProtectedAudience,
+       /*expect_auction_succeeds=*/false},
+      {/*join_origin_attestation=*/AttestedApiStatus::kProtectedAudience,
+       /*run_origin_attestation=*/AttestedApiStatus::kSharedStorage,
+       /*expect_auction_succeeds=*/false},
+      {/*join_origin_attestation=*/AttestedApiStatus::kSharedStorage,
+       /*run_origin_attestation=*/AttestedApiStatus::kSharedStorage,
+       /*expect_auction_succeeds=*/false},
+  };
+  for (const auto test_case : kTestCases) {
+    SCOPED_TRACE(::testing::Message()
+                 << "Join origin attestation "
+                 << static_cast<int>(test_case.join_origin_attestation)
+                 << " run origin attestation "
+                 << static_cast<int>(test_case.run_origin_attestation));
+    SetAttestations(
+        {std::make_pair("a.test", test_case.join_origin_attestation),
+         std::make_pair("b.test", test_case.run_origin_attestation)});
+
+    const GURL join_page = https_server_.GetURL("a.test", "/echo");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), join_page));
+
+    EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                       content::JsReplace(R"(
+      (async() => {
+        const FLEDGE_BIDDING_URL = "/interest_group/bidding_logic.js";
+
+        const page_origin = new URL($1).origin;
+        const bidding_url = new URL(FLEDGE_BIDDING_URL, page_origin);
+        const interest_group = {
+          name: 'testAd1',
+          owner: page_origin,
+          biddingLogicUrl: bidding_url,
+          ads: [{renderURL: $1, bid: 1}],
+        };
+
+        // Pick an arbitrarily high duration to guarantee that we never leave
+        // the ad interest group while the test runs.
+        await navigator.joinAdInterestGroup(
+            interest_group, /*durationSeconds=*/3000000);
+      })())",
+                                          join_page)));
+
+    const GURL auction_page = https_server_.GetURL("b.test", "/echo");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), auction_page));
+
+    content::EvalJsResult result =
+        EvalJs(web_contents()->GetPrimaryMainFrame(),
+               content::JsReplace(R"(
+      (async() => {
+          const FLEDGE_DECISION_URL = "/interest_group/decision_logic.js";
+
+          const page_origin = new URL($1).origin;
+          const join_origin = new URL($2).origin;
+          const auction_config = {
+            seller: page_origin,
+            interestGroupBuyers: [join_origin],
+            decisionLogicURL: new URL(FLEDGE_DECISION_URL, page_origin),
+          };
+
+          return await navigator.runAdAuction(auction_config);
+      })())",
+                                  auction_page, join_page));
+    if (test_case.expect_auction_succeeds) {
+      EXPECT_NE(nullptr, result);
+    } else {
+      EXPECT_EQ(nullptr, result);
+    }
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(
