@@ -54,7 +54,10 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/android_theme_resources.h"
+#include "chrome/browser/translate/android/auto_translate_snackbar_controller.h"
 #include "components/translate/content/android/translate_message.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/visibility.h"
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -230,13 +233,21 @@ bool ChromeTranslateClient::ShowTranslateUI(
     // Get the TranslationType from associated manager's language state.
     translate::TranslationType translate_type =
         GetLanguageState().translation_type();
+    // Use the automatic translation Snackbar if the current translation is an
+    // automatic translation and there was no error.
     if (IsAutomaticTranslationType(translate_type) &&
+        step != translate::TRANSLATE_STEP_TRANSLATE_ERROR &&
         IsMessageUISnackbarEnabled()) {
       // The Automatic translation snackbar is only shown after translation
       // has completed. The translating step is a no-op with the Snackbar.
       if (step == translate::TRANSLATE_STEP_AFTER_TRANSLATE) {
         // An automatic translation has completed show the snackbar.
-        // TODO(https://crbug.com/1462755) Show snackbar here
+        if (!auto_translate_snackbar_controller_) {
+          auto_translate_snackbar_controller_ =
+              std::make_unique<translate::AutoTranslateSnackbarController>(
+                  web_contents(), translate_manager_->GetWeakPtr());
+        }
+        auto_translate_snackbar_controller_->ShowSnackbar(target_language);
       }
     } else {
       // Snackbar disabled or not an automatic translation. Use
@@ -329,6 +340,7 @@ bool ChromeTranslateClient::IsTranslatableURL(const GURL& url) {
   return TranslateService::IsTranslatableURL(url);
 }
 
+// content::WebContentsObserver implementation.
 void ChromeTranslateClient::WebContentsDestroyed() {
   // Translation process can be interrupted.
   // Destroying the TranslateManager now guarantees that it never has to deal
@@ -341,8 +353,25 @@ void ChromeTranslateClient::WebContentsDestroyed() {
   }
 }
 
-// TranslateDriver::LanguageDetectionObserver implementation.
+#if BUILDFLAG(IS_ANDROID)
+void ChromeTranslateClient::PrimaryPageChanged(content::Page& page) {
+  if (auto_translate_snackbar_controller_ &&
+      auto_translate_snackbar_controller_->IsShowing()) {
+    auto_translate_snackbar_controller_->NativeDismissSnackbar();
+  }
+}
 
+void ChromeTranslateClient::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (auto_translate_snackbar_controller_ &&
+      auto_translate_snackbar_controller_->IsShowing() &&
+      visibility == content::Visibility::HIDDEN) {
+    auto_translate_snackbar_controller_->NativeDismissSnackbar();
+  }
+}
+#endif  // IS_ANDROID
+
+// TranslateDriver::LanguageDetectionObserver implementation.
 void ChromeTranslateClient::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
   if (details.has_run_lang_detection) {
