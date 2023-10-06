@@ -397,9 +397,14 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
      * @return true if the click was handled, false otherwise.
      */
     private boolean showLocalCardEditPageAfterAuthenticationIfRequired(Preference preference) {
-        // If mandatory reauth is not enabled, just show the local card edit page.
-        if (!ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH)
+        // If mandatory reauth is not enabled, just show the local card edit page. Note that
+        // mandatory reauth is always enabled on automotive devices.
+        boolean mandatoryReauthFeatureEnabled =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH)
+                        || BuildInfo.getInstance().isAutomotive;
+
+        if (!mandatoryReauthFeatureEnabled
                 || !PersonalDataManager.isPaymentMethodsMandatoryReauthEnabled()) {
             showLocalCardEditPage(preference);
             return true;
