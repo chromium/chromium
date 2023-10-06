@@ -3336,9 +3336,8 @@
     },
     {
       name: "SecurePaymentConfirmationExtensions",
-      // No status since extensions are not set in the payment app without the
-      // corresponding chromium feature flag.
       public: true,
+      status: "stable",
     },
     {
       name: "SecurePaymentConfirmationOptOut",
