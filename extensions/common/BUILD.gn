@@ -439,6 +439,8 @@ static_library("common") {
     "utils/content_script_utils.h",
     "utils/extension_types_utils.cc",
     "utils/extension_types_utils.h",
+    "utils/extension_utils.cc",
+    "utils/extension_utils.h",
     "value_counter.cc",
     "value_counter.h",
     "verifier_formats.cc",

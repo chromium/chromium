@@ -26,6 +26,7 @@
 #include "chrome/common/extensions/api/chrome_web_view_internal.h"
 #include "chrome/common/extensions/api/context_menus.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
+#include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
@@ -378,7 +379,8 @@ bool MenuManager::AddContextItem(const Extension* extension,
   if (key.empty() || base::Contains(items_by_id_, item->id()))
     return false;
 
-  DCHECK_EQ(extension->id(), key.extension_id);
+  const std::string& extension_id = extension ? extension->id() : "";
+  DCHECK_EQ(extension_id, key.extension_id);
 
   bool first_item = !base::Contains(context_items_, key);
   context_items_[key].push_back(std::move(item));
@@ -392,8 +394,9 @@ bool MenuManager::AddContextItem(const Extension* extension,
   }
 
   // If this is the first item for this extension, start loading its icon.
-  if (first_item)
+  if (first_item && extension) {
     icon_manager_.LoadIcon(browser_context_, extension);
+  }
 
   return true;
 }
@@ -747,8 +750,10 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
         webview_guest ? kOnWebviewContextMenus : kOnContextMenus, args.Clone(),
         context);
     event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
-    event_router->DispatchEventToExtension(item->extension_id(),
-                                           std::move(event));
+    if (!item->extension_id().empty()) {
+      event_router->DispatchEventToExtension(item->extension_id(),
+                                             std::move(event));
+    }
   }
   {
     // Dispatch to .contextMenus.onClicked handler.
@@ -763,8 +768,13 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
       event->filter_info->has_instance_id = true;
       event->filter_info->instance_id = webview_guest->view_instance_id();
     }
-    event_router->DispatchEventToExtension(item->extension_id(),
-                                           std::move(event));
+    if (item->extension_id().empty() && webview_guest) {
+      event_router->DispatchEventToURL(
+          webview_guest->owner_rfh()->GetLastCommittedURL(), std::move(event));
+    } else {
+      event_router->DispatchEventToExtension(item->extension_id(),
+                                             std::move(event));
+    }
   }
 }
 
@@ -828,11 +838,18 @@ bool MenuManager::ItemUpdated(const MenuItem::Id& id) {
 
 void MenuManager::WriteToStorage(const Extension* extension,
                                  const MenuItem::ExtensionKey& extension_key) {
-  if (!BackgroundInfo::HasLazyContext(extension))
-    return;
   // <webview> menu items are transient and not stored in storage.
-  if (extension_key.webview_instance_id)
+  if (extension_key.webview_instance_id != kInstanceIDNone) {
     return;
+  }
+
+  // Test |BackgroundInfo::HasLazyContext()| after checking
+  // |webview_instance_id| to be an invalid ID. It's possible for |extension| to
+  // be null in the case that |webview_instance_id| is valid.
+  DCHECK(extension);
+  if (!BackgroundInfo::HasLazyContext(extension)) {
+    return;
+  }
 
   // Schedule a task to write to storage since there could be many calls in a
   // short span of time. See crbug.com/1476858.
@@ -986,8 +1003,8 @@ bool MenuItem::ExtensionKey::operator<(const ExtensionKey& other) const {
   if (webview_instance_id != other.webview_instance_id)
     return webview_instance_id < other.webview_instance_id;
 
-  // If either extension ID is empty, then these ExtensionKeys will be compared
-  // only based on the other IDs.
+  // If either extension ID is empty, then these ExtensionKeys will be
+  // compared only based on the other IDs.
   if (extension_id.empty() || other.extension_id.empty())
     return false;
 

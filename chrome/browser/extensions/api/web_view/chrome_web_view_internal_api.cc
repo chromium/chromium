@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/web_view/chrome_web_view_internal_api.h"
 
+#include "base/strings/string_util.h"
 #include "chrome/browser/extensions/api/context_menus/context_menus_api.h"
 #include "chrome/browser/extensions/api/context_menus/context_menus_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,7 +28,7 @@ ChromeWebViewInternalContextMenusCreateFunction::Run() {
 
   MenuItem::Id id(
       Profile::FromBrowserContext(browser_context())->IsOffTheRecord(),
-      MenuItem::ExtensionKey(extension_id(),
+      MenuItem::ExtensionKey(MaybeGetExtensionId(extension()),
                              render_frame_host()->GetProcess()->GetID(),
                              params->instance_id));
 
@@ -61,7 +62,7 @@ ChromeWebViewInternalContextMenusUpdateFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   MenuItem::Id item_id(
       profile->IsOffTheRecord(),
-      MenuItem::ExtensionKey(extension_id(),
+      MenuItem::ExtensionKey(MaybeGetExtensionId(extension()),
                              render_frame_host()->GetProcess()->GetID(),
                              params->instance_id));
 
@@ -90,7 +91,7 @@ ChromeWebViewInternalContextMenusRemoveFunction::Run() {
 
   MenuItem::Id id(
       Profile::FromBrowserContext(browser_context())->IsOffTheRecord(),
-      MenuItem::ExtensionKey(extension_id(),
+      MenuItem::ExtensionKey(MaybeGetExtensionId(extension()),
                              render_frame_host()->GetProcess()->GetID(),
                              params->instance_id));
 
@@ -124,8 +125,8 @@ ChromeWebViewInternalContextMenusRemoveAllFunction::Run() {
   MenuManager* menu_manager =
       MenuManager::Get(Profile::FromBrowserContext(browser_context()));
   menu_manager->RemoveAllContextItems(MenuItem::ExtensionKey(
-      extension_id(), render_frame_host()->GetProcess()->GetID(),
-      params->instance_id));
+      MaybeGetExtensionId(extension()),
+      render_frame_host()->GetProcess()->GetID(), params->instance_id));
 
   return RespondNow(NoArguments());
 }

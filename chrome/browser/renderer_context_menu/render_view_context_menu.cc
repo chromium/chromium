@@ -946,17 +946,19 @@ void RenderViewContextMenu::AppendCurrentExtensionItems() {
   // For Panel, this happens when the panel is navigated to a url outside of the
   // extension's package.
   const Extension* extension = GetExtension();
-  if (!extension)
-    return;
-
   extensions::WebViewGuest* web_view_guest =
       extensions::WebViewGuest::FromRenderFrameHost(
           content::RenderFrameHost::FromID(render_process_id_,
                                            render_frame_id_));
   MenuItem::ExtensionKey key;
+  std::u16string title;
   if (web_view_guest) {
+    const std::string& extension_id =
+        extension ? extension->id() : std::string();
+    title = extension ? base::UTF8ToUTF16(extension->name())
+                      : web_view_guest->owner_web_contents()->GetTitle();
     key = MenuItem::ExtensionKey(
-        extension->id(), web_view_guest->owner_rfh()->GetProcess()->GetID(),
+        extension_id, web_view_guest->owner_rfh()->GetProcess()->GetID(),
         web_view_guest->view_instance_id());
   } else {
     key = MenuItem::ExtensionKey(extension->id());
@@ -965,7 +967,7 @@ void RenderViewContextMenu::AppendCurrentExtensionItems() {
   // Only add extension items from this extension.
   int index = 0;
   extension_items_.AppendExtensionItems(key, PrintableSelectionText(), &index,
-                                        /*is_action_menu=*/false);
+                                        /*is_action_menu=*/false, title);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

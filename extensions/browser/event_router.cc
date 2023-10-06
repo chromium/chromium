@@ -1063,27 +1063,35 @@ void EventRouter::DispatchEventToProcess(
       process_map->GetMostLikelyContextType(extension, process->GetID(), url);
 
   // We shouldn't be dispatching an event to a webpage, since all such events
-  // (e.g.  messaging) don't go through EventRouter. The one exception to this
-  // is the new chrome webstore domain, which has permission to receive
-  // extension events.
-  if (target_context == Feature::WEB_PAGE_CONTEXT) {
-    // |url| can only be null for service workers, so should never be null here.
-    CHECK(url);
-    bool is_new_webstore_origin =
-        url::Origin::Create(extension_urls::GetNewWebstoreLaunchURL())
-            .IsSameOriginWith(*url);
-    CHECK(is_new_webstore_origin)
-        << "Trying to dispatch event " << event.event_name << " to a webpage,"
-        << " but this shouldn't be possible";
-  }
-
+  // (e.g.  messaging) don't go through EventRouter. The exceptions to this are
+  // the new chrome webstore domain, which has permission to receive extension
+  // events and features with delegated availability checks, such as Controlled
+  // Frame which runs within Isolated Web Apps and appear as web pages.
   Feature::Availability availability =
       ExtensionAPI::GetSharedInstance()->IsAvailable(
           event.event_name, extension, target_context, listener_url,
           CheckAliasStatus::ALLOWED,
           util::GetBrowserContextId(browser_context_),
           BrowserProcessContextData(process));
-  if (!availability.is_available()) {
+  bool feature_available_to_context = availability.is_available();
+  if (target_context == Feature::WEB_PAGE_CONTEXT) {
+    // |url| can only be null for service workers, so should never be null here.
+    CHECK(url);
+    bool is_new_webstore_origin =
+        url::Origin::Create(extension_urls::GetNewWebstoreLaunchURL())
+            .IsSameOriginWith(*url);
+    const Feature* feature =
+        ExtensionAPI::GetSharedInstance()->GetFeatureDependency(
+            event.event_name);
+    bool feature_available_to_web_page_context =
+        feature_available_to_context &&
+        feature->RequiresDelegatedAvailabilityCheck();
+
+    CHECK(feature_available_to_web_page_context || is_new_webstore_origin)
+        << "Trying to dispatch event " << event.event_name << " to a webpage,"
+        << " but this shouldn't be possible";
+  }
+  if (!feature_available_to_context) {
     // TODO(crbug.com/1412151): Ideally it shouldn't be possible to reach here,
     // because access is checked on registration. However, we don't always
     // refresh the list of events an extension has registered when other factors

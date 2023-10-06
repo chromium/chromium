@@ -56,10 +56,12 @@ class ContextMenuMatcher {
   // each item actually added. |is_action_menu| is used for browser and page
   // action context menus, in which menu items are not placed in submenus
   // and the extension's icon is not shown.
-  void AppendExtensionItems(const MenuItem::ExtensionKey& extension_key,
-                            const std::u16string& selection_text,
-                            int* index,
-                            bool is_action_menu);
+  void AppendExtensionItems(
+      const MenuItem::ExtensionKey& extension_key,
+      const std::u16string& selection_text,
+      int* index,
+      bool is_action_menu,
+      const std::u16string& group_title = std::u16string());
 
   // Returns true if the given menu_model has any visible items.
   bool HasVisibleItems(ui::MenuModel* menu_model) const;
@@ -93,8 +95,8 @@ class ContextMenuMatcher {
 
   bool GetRelevantExtensionTopLevelItems(
       const MenuItem::ExtensionKey& extension_key,
-      const Extension** extension,
-      bool* can_cross_incognito,
+      const Extension*& extension,
+      bool& can_cross_incognito,
       MenuItem::List* items);
 
   MenuItem::List GetRelevantExtensionItems(const MenuItem::OwnedList& items,

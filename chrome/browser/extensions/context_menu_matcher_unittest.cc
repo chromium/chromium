@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/context_menu_matcher.h"
+#include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
@@ -14,6 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/utils/extension_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace extensions {
@@ -38,6 +41,22 @@ class ContextMenuMatcherTest : public testing::Test {
                                            const std::string& string_id,
                                            bool visible) {
     MenuItem::Id id(false, MenuItem::ExtensionKey(extension->id()));
+    id.string_uid = string_id;
+    return std::make_unique<MenuItem>(
+        id, "test", false, visible, true, MenuItem::NORMAL,
+        MenuItem::ContextList(MenuItem::LAUNCHER));
+  }
+
+  // Returns a test item with the given string ID for WebView.
+  std::unique_ptr<MenuItem> CreateTestItem(Extension* extension,
+                                           int webview_embedder_process_id,
+                                           int webview_instance_id,
+                                           const std::string& string_id,
+                                           bool visible) {
+    const std::string& extension_id = MaybeGetExtensionId(extension);
+    MenuItem::Id id(
+        false, MenuItem::ExtensionKey(extension_id, webview_embedder_process_id,
+                                      webview_instance_id));
     id.string_uid = string_id;
     return std::make_unique<MenuItem>(
         id, "test", false, visible, true, MenuItem::NORMAL,
@@ -137,6 +156,83 @@ TEST_F(ContextMenuMatcherTest, AppendExtensionItemsWithVisibleSubmenu) {
       extension_items->ConvertToExtensionsCustomCommandId(parent_index)));
   EXPECT_TRUE(extension_items->IsCommandIdVisible(
       extension_items->ConvertToExtensionsCustomCommandId(child_index)));
+}
+
+TEST_F(ContextMenuMatcherTest, AppendExtensionItemsGroupTitle) {
+  Extension* extension = AddExtension("test");
+
+  // Add a parent item, with a visible child item.
+  std::unique_ptr<MenuItem> parent = CreateTestItem(extension, "parent", true);
+  MenuItem::Id parent_id = parent->id();
+  int parent_index = 0;
+  std::unique_ptr<MenuItem> child = CreateTestItem(extension, "child", true);
+  int child_index = 1;
+  ASSERT_TRUE(manager_->AddContextItem(extension, std::move(parent)));
+  manager_->AddChildItem(parent_id, std::move(child));
+
+  auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
+
+  std::unique_ptr<extensions::ContextMenuMatcher> extension_items =
+      std::make_unique<extensions::ContextMenuMatcher>(
+          profile_.get(), nullptr, menu_model.get(),
+          base::BindRepeating(MenuItemHasAnyContext));
+
+  // Add the items associated with the test extension.
+  int index = 0;
+  std::u16string group_title = base::UTF8ToUTF16(extension->name());
+  extension_items->AppendExtensionItems(MenuItem::ExtensionKey(extension->id()),
+                                        std::u16string(), &index, false,
+                                        group_title);
+
+  // Verify both parent and child are visible.
+  EXPECT_TRUE(extension_items->IsCommandIdVisible(
+      extension_items->ConvertToExtensionsCustomCommandId(parent_index)));
+  EXPECT_TRUE(extension_items->IsCommandIdVisible(
+      extension_items->ConvertToExtensionsCustomCommandId(child_index)));
+  EXPECT_EQ(menu_model->GetLabelAt(0), group_title);
+}
+
+TEST_F(ContextMenuMatcherTest,
+       AppendExtensionItemsGroupTitleWithNullExtension) {
+  const int fake_webview_embedder_process_id = 1;
+  const int fake_webview_instance_id = 1;
+  // Add a parent item, with a visible child item.
+  std::unique_ptr<MenuItem> parent =
+      CreateTestItem(/*extension=*/nullptr, fake_webview_embedder_process_id,
+                     fake_webview_instance_id, "parent", /*visible=*/true);
+  MenuItem::Id parent_id = parent->id();
+  int parent_index = 0;
+  std::unique_ptr<MenuItem> child =
+      CreateTestItem(/*extension=*/nullptr, fake_webview_embedder_process_id,
+                     fake_webview_instance_id, "child", /*visible=*/true);
+  int child_index = 1;
+  ASSERT_TRUE(
+      manager_->AddContextItem(/*extension=*/nullptr, std::move(parent)));
+  manager_->AddChildItem(parent_id, std::move(child));
+
+  auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
+
+  std::unique_ptr<extensions::ContextMenuMatcher> extension_items =
+      std::make_unique<extensions::ContextMenuMatcher>(
+          profile_.get(), nullptr, menu_model.get(),
+          base::BindRepeating(MenuItemHasAnyContext));
+
+  // Add the items associated with the test extension.
+  int index = 0;
+  std::u16string group_title = u"test";
+  extension_items->AppendExtensionItems(
+      MenuItem::ExtensionKey(/*extension_id=*/"",
+                             fake_webview_embedder_process_id,
+                             fake_webview_instance_id),
+      /*selection_text=*/u"test", &index, /*is_action_menu=*/false,
+      group_title);
+
+  // Verify both parent and child are visible.
+  EXPECT_TRUE(extension_items->IsCommandIdVisible(
+      extension_items->ConvertToExtensionsCustomCommandId(parent_index)));
+  EXPECT_TRUE(extension_items->IsCommandIdVisible(
+      extension_items->ConvertToExtensionsCustomCommandId(child_index)));
+  EXPECT_EQ(menu_model->GetLabelAt(0), group_title);
 }
 
 // Tests appending a visible extension item with an invisible child.

@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/utils/extension_utils.h"
 
 namespace extensions {
 namespace context_menus_api_helpers {
@@ -94,7 +95,7 @@ bool CreateMenuItem(const PropertyWithEnumT& create_properties,
 
   if (contexts.Contains(MenuItem::LAUNCHER)) {
     // Launcher item is not allowed for <webview>.
-    if (!extension->is_platform_app() || is_webview) {
+    if (is_webview || !extension->is_platform_app()) {
       *error = kLauncherNotAllowedError;
       return false;
     }
@@ -104,7 +105,7 @@ bool CreateMenuItem(const PropertyWithEnumT& create_properties,
       contexts.Contains(MenuItem::PAGE_ACTION) ||
       contexts.Contains(MenuItem::ACTION)) {
     // Action items are not allowed for <webview>.
-    if (!extension->is_extension() || is_webview) {
+    if (is_webview || !extension->is_extension()) {
       *error = kActionNotAllowedError;
       return false;
     }
@@ -173,7 +174,8 @@ bool UpdateMenuItem(const PropertyWithEnumT& update_properties,
   MenuManager* menu_manager = MenuManager::Get(browser_context);
 
   MenuItem* item = menu_manager->GetItemById(item_id);
-  if (!item || item->extension_id() != extension->id()){
+  const std::string& extension_id = MaybeGetExtensionId(extension);
+  if (!item || item->extension_id() != extension_id) {
     *error = ErrorUtils::FormatErrorMessage(
         kCannotFindItemError, GetIDString(item_id));
     return false;
@@ -240,7 +242,7 @@ bool UpdateMenuItem(const PropertyWithEnumT& update_properties,
 
     if (contexts.Contains(MenuItem::LAUNCHER)) {
       // Launcher item is not allowed for <webview>.
-      if (!extension->is_platform_app() || is_webview) {
+      if (is_webview || !extension->is_platform_app()) {
         *error = kLauncherNotAllowedError;
         return false;
       }

@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/common/extensions/api/context_menus.h"
+#include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_registry.h"
@@ -61,7 +62,8 @@ void ContextMenuMatcher::AppendExtensionItems(
     const MenuItem::ExtensionKey& extension_key,
     const std::u16string& selection_text,
     int* index,
-    bool is_action_menu) {
+    bool is_action_menu,
+    const std::u16string& group_title) {
   DCHECK_GE(*index, 0);
   int max_index =
       extensions_context_custom_last - extensions_context_custom_first;
@@ -70,10 +72,11 @@ void ContextMenuMatcher::AppendExtensionItems(
 
   const Extension* extension = nullptr;
   MenuItem::List items;
-  bool can_cross_incognito;
-  if (!GetRelevantExtensionTopLevelItems(
-          extension_key, &extension, &can_cross_incognito, &items))
+  bool can_cross_incognito = false;
+  if (!GetRelevantExtensionTopLevelItems(extension_key, extension,
+                                         can_cross_incognito, &items)) {
     return;
+  }
 
   if (items.empty())
     return;
@@ -97,7 +100,7 @@ void ContextMenuMatcher::AppendExtensionItems(
   // items from one extension, so they are not placed within a submenu.
   // Otherwise, we automatically push them into a submenu if there is more than
   // one top-level item.
-  if (extension->is_platform_app() || is_action_menu) {
+  if ((extension && extension->is_platform_app()) || is_action_menu) {
     if (prepend_separator)
       menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
     RecursivelyAppendExtensionItems(items,
@@ -109,7 +112,7 @@ void ContextMenuMatcher::AppendExtensionItems(
   } else {
     int menu_id = ConvertToExtensionsCustomCommandId(*index);
     (*index)++;
-    std::u16string title;
+    std::u16string title = group_title;
     MenuItem::List submenu_items;
 
     if (items.size() > 1 || items[0]->type() != MenuItem::NORMAL) {
@@ -121,7 +124,9 @@ void ContextMenuMatcher::AppendExtensionItems(
       if (prepend_separator && has_visible_child) {
         menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
       }
-      title = base::UTF8ToUTF16(extension->name());
+      if (title.empty() && extension) {
+        title = base::UTF8ToUTF16(extension->name());
+      }
       submenu_items = items;
     } else {
       // The top-level menu item, |item[0]|, is sandwiched between two menu
@@ -151,8 +156,9 @@ void ContextMenuMatcher::AppendExtensionItems(
                                       selection_text, submenu, index,
                                       false);  // is_action_menu_top_level
     }
-    if (!is_action_menu)
+    if (!is_action_menu && !extension_key.extension_id.empty()) {
       SetExtensionIcon(extension_key.extension_id);
+    }
   }
 }
 
@@ -183,9 +189,9 @@ std::u16string ContextMenuMatcher::GetTopLevelContextMenuTitle(
     const std::u16string& selection_text) {
   const Extension* extension = nullptr;
   MenuItem::List items;
-  bool can_cross_incognito;
-  GetRelevantExtensionTopLevelItems(
-      extension_key, &extension, &can_cross_incognito, &items);
+  bool can_cross_incognito = false;
+  GetRelevantExtensionTopLevelItems(extension_key, extension,
+                                    can_cross_incognito, &items);
 
   std::u16string title;
 
@@ -258,14 +264,24 @@ void ContextMenuMatcher::ExecuteCommand(
 
 bool ContextMenuMatcher::GetRelevantExtensionTopLevelItems(
     const MenuItem::ExtensionKey& extension_key,
-    const Extension** extension,
-    bool* can_cross_incognito,
+    const Extension*& extension,
+    bool& can_cross_incognito,
     MenuItem::List* items) {
-  *extension = ExtensionRegistry::Get(
-      browser_context_)->enabled_extensions().GetByID(
-          extension_key.extension_id);
-  if (!*extension)
-    return false;
+  extension = ExtensionRegistry::Get(browser_context_)
+                  ->enabled_extensions()
+                  .GetByID(extension_key.extension_id);
+
+  // The |extension| is able to be null for context menus created by a WebView
+  // API. Verify that the |extension_key| is valid for a null |extension|.
+  if (!extension) {
+    // The |extension_key.extension_id| should be empty for a null |extension|.
+    if (!extension_key.extension_id.empty()) {
+      return false;
+    }
+    // |extension_key.extension_id| should be empty only if
+    // |extension_key.webview_instance_id| is valid.
+    DCHECK(extension_key.webview_instance_id != guest_view::kInstanceIDNone);
+  }
 
   // Find matching items.
   MenuManager* manager = MenuManager::Get(browser_context_);
@@ -273,8 +289,11 @@ bool ContextMenuMatcher::GetRelevantExtensionTopLevelItems(
   if (!all_items || all_items->empty())
     return false;
 
-  *can_cross_incognito = util::CanCrossIncognito(*extension, browser_context_);
-  *items = GetRelevantExtensionItems(*all_items, *can_cross_incognito);
+  if (extension) {
+    can_cross_incognito = util::CanCrossIncognito(extension, browser_context_);
+  }
+
+  *items = GetRelevantExtensionItems(*all_items, can_cross_incognito);
 
   return true;
 }
