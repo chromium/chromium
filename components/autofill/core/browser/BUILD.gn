@@ -867,6 +867,7 @@ static_library("test_support") {
     "//components/device_reauth:test_support",
     "//components/feature_engagement",
     "//components/leveldb_proto",
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/os_crypt/sync",
     "//components/os_crypt/sync:test_support",
     "//components/plus_addresses",

@@ -39,6 +39,14 @@ class AutofillMlPredictionModelHandler
   void GetModelPredictionsForForm(
       std::unique_ptr<FormStructure> form_structure,
       base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback);
+
+  // Same as `GetModelPredictionsForForm()` but executes the model on multiple
+  // forms.
+  // Virtual for testing.
+  virtual void GetModelPredictionsForForms(
+      std::vector<std::unique_ptr<FormStructure>> forms,
+      base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>
+          callback);
 };
 
 }  // namespace autofill

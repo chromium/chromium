@@ -76,6 +76,29 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  // The overfitted model is overtrained on this form. Which is the only form
+  // that can be used for unittests. The model that is
+  // provided by the server side is trained on many different other forms.
+  std::unique_ptr<FormStructure> CreateForm() const {
+    return std::make_unique<FormStructure>(
+        test::GetFormData({.fields = {{.label = u"nome completo"},
+                                      {.label = u"cpf"},
+                                      {.label = u"data de nascimento ddmmaaaa"},
+                                      {.label = u"seu telefone"},
+                                      {.label = u"email"},
+                                      {.label = u"senha"},
+                                      {.label = u"cep"}}}));
+  }
+
+  // The expected types for the form in `CreateForm()` using the overfitted
+  // model.
+  std::vector<ServerFieldType> ExpectedTypes() const {
+    return {NAME_FULL,       UNKNOWN_TYPE,
+            UNKNOWN_TYPE,    PHONE_HOME_CITY_AND_NUMBER,
+            EMAIL_ADDRESS,   UNKNOWN_TYPE,
+            ADDRESS_HOME_ZIP};
+  }
+
  protected:
   base::test::ScopedFeatureList features_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
@@ -88,22 +111,26 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
 }  // namespace
 
 TEST_F(AutofillMlPredictionModelHandlerTest, ModelExecutedFormData) {
-  auto form_structure = std::make_unique<FormStructure>(
-      test::GetFormData({.fields = {{.label = u"nome completo"},
-                                    {.label = u"cpf"},
-                                    {.label = u"data de nascimento ddmmaaaa"},
-                                    {.label = u"seu telefone"},
-                                    {.label = u"email"},
-                                    {.label = u"senha"},
-                                    {.label = u"cep"}}}));
+  auto form_structure = CreateForm();
   base::test::TestFuture<std::unique_ptr<FormStructure>> future;
   model_handler_->GetModelPredictionsForForm(std::move(form_structure),
                                              future.GetCallback());
-  EXPECT_THAT(
-      future.Get()->fields(),
-      testing::Pointwise(MlTypeEq(), {NAME_FULL, UNKNOWN_TYPE, UNKNOWN_TYPE,
-                                      PHONE_HOME_CITY_AND_NUMBER, EMAIL_ADDRESS,
-                                      UNKNOWN_TYPE, ADDRESS_HOME_ZIP}));
+  EXPECT_THAT(future.Get()->fields(),
+              testing::Pointwise(MlTypeEq(), ExpectedTypes()));
+}
+
+TEST_F(AutofillMlPredictionModelHandlerTest, ModelExecutedMultipleForms) {
+  std::vector<std::unique_ptr<FormStructure>> forms;
+  forms.emplace_back(CreateForm());
+  forms.emplace_back(CreateForm());
+  base::test::TestFuture<std::vector<std::unique_ptr<FormStructure>>> future;
+  model_handler_->GetModelPredictionsForForms(std::move(forms),
+                                              future.GetCallback());
+  ASSERT_EQ(future.Get().size(), 2u);
+  EXPECT_THAT(future.Get()[0]->fields(),
+              testing::Pointwise(MlTypeEq(), ExpectedTypes()));
+  EXPECT_THAT(future.Get()[1]->fields(),
+              testing::Pointwise(MlTypeEq(), ExpectedTypes()));
 }
 
 }  // namespace autofill

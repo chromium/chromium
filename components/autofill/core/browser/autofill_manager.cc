@@ -25,9 +25,14 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "ui/gfx/geometry/rect_f.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
+#endif
 
 namespace autofill {
 
@@ -160,6 +165,11 @@ AutofillManager::~AutofillManager() {
   translate_observation_.Reset();
 }
 
+// TODO(crbug.com/1309848): Unify form parsing logic.
+// TODO(crbug.com/1465926): ML predictions are not computed here since
+// `kAutofillPageLanguageDetection` is disabled by default. Once the form
+// parsing logic is unified with `ParseFormsAsync()`, this won't be necessary
+// anymore.
 void AutofillManager::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
   if (!base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection))
@@ -769,7 +779,7 @@ void AutofillManager::ParseFormsAsync(
   // variables).
   // TODO(crbug.com/1309848): We can't pass a UKM logger because it's a member
   // variable. To be fixed.
-  auto RunHeuristics = [](AsyncContext context) {
+  auto run_heuristics = [](AsyncContext context) {
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.RunHeuristics");
     for (auto& form_structure : context.form_structures) {
       form_structure->DetermineHeuristicTypes(
@@ -780,7 +790,7 @@ void AutofillManager::ParseFormsAsync(
   };
 
   // To be run on the main thread (accesses member variables).
-  auto UpdateCache =
+  auto update_cache = base::BindOnce(
       [](base::WeakPtr<AutofillManager> self,
          base::OnceCallback<void(AutofillManager&,
                                  const std::vector<FormData>&)> callback,
@@ -801,16 +811,41 @@ void AutofillManager::ParseFormsAsync(
               Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
         }
         std::move(callback).Run(*self, parsed_forms);
-      };
+      },
+      parsing_weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+      parsed_forms);
 
-  parsing_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          RunHeuristics,
-          AsyncContext(std::move(form_structures),
-                       client().GetVariationConfigCountryCode(), log_manager_)),
-      base::BindOnce(UpdateCache, parsing_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback), parsed_forms));
+  // To be run on the main thread (accesses member variables).
+  auto run_heuristics_and_update_cache = base::BindOnce(
+      [](base::WeakPtr<AutofillManager> self,
+         AsyncContext (*run_heuristics)(AsyncContext),
+         base::OnceCallback<void(AsyncContext)> update_cache,
+         std::vector<std::unique_ptr<FormStructure>> forms) {
+        if (!self) {
+          return;
+        }
+        self->parsing_task_runner_->PostTaskAndReplyWithResult(
+            FROM_HERE,
+            base::BindOnce(
+                run_heuristics,
+                AsyncContext(std::move(forms),
+                             self->client().GetVariationConfigCountryCode(),
+                             self->log_manager_)),
+            std::move(update_cache));
+      },
+      parsing_weak_ptr_factory_.GetWeakPtr(), run_heuristics,
+      std::move(update_cache));
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  // Run ML Model before running heuristics to ensure that
+  // rationalization and sectioning are done.
+  if (auto* ml_handler = client().GetAutofillMlPredictionModelHandler()) {
+    ml_handler->GetModelPredictionsForForms(
+        std::move(form_structures), std::move(run_heuristics_and_update_cache));
+    return;
+  }
+#endif
+  std::move(run_heuristics_and_update_cache).Run(std::move(form_structures));
 }
 
 void AutofillManager::ParseFormAsync(
@@ -868,7 +903,7 @@ void AutofillManager::ParseFormAsync(
   // variables).
   // TODO(crbug.com/1309848): We can't pass a UKM logger because it's a member
   // variable. To be fixed.
-  auto RunHeuristics = [](AsyncContext context) {
+  auto run_heuristics = [](AsyncContext context) {
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormAsync.RunHeuristics");
     context.form_structure->DetermineHeuristicTypes(
         context.country_code,
@@ -883,7 +918,7 @@ void AutofillManager::ParseFormAsync(
   // TODO(crbug/1345089): Make FormStructure's and FormData's fields correspond,
   // migrate all event handlers in BrowserAutofillManager take a FormStructure,
   // and drop the FormData from UpdateCache().
-  auto UpdateCache =
+  auto update_cache = base::BindOnce(
       [](base::WeakPtr<AutofillManager> self,
          base::OnceCallback<void(AutofillManager&, const FormData&)> callback,
          const FormData& form_data, AsyncContext context) {
@@ -901,16 +936,40 @@ void AutofillManager::ParseFormAsync(
             &Observer::OnFieldTypesDetermined, id,
             Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
         std::move(callback).Run(*self, form_data);
-      };
+      },
+      parsing_weak_ptr_factory_.GetWeakPtr(), std::move(callback), form_data);
 
-  parsing_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          RunHeuristics,
-          AsyncContext(std::move(form_structure),
-                       client().GetVariationConfigCountryCode(), log_manager_)),
-      base::BindOnce(UpdateCache, parsing_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback), form_data));
+  // To be run on the main thread (accesses member variables).
+  auto run_heuristics_and_update_cache = base::BindOnce(
+      [](base::WeakPtr<AutofillManager> self,
+         AsyncContext (*run_heuristics)(AsyncContext),
+         base::OnceCallback<void(AsyncContext)> update_cache,
+         std::unique_ptr<FormStructure> form) {
+        if (!self) {
+          return;
+        }
+        self->parsing_task_runner_->PostTaskAndReplyWithResult(
+            FROM_HERE,
+            base::BindOnce(
+                run_heuristics,
+                AsyncContext(std::move(form),
+                             self->client().GetVariationConfigCountryCode(),
+                             self->log_manager_)),
+            std::move(update_cache));
+      },
+      parsing_weak_ptr_factory_.GetWeakPtr(), run_heuristics,
+      std::move(update_cache));
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  // Run ML Model before running heuristics to ensure that
+  // rationalization and sectioning are done.
+  if (auto* ml_handler = client().GetAutofillMlPredictionModelHandler()) {
+    ml_handler->GetModelPredictionsForForm(
+        std::move(form_structure), std::move(run_heuristics_and_update_cache));
+    return;
+  }
+#endif
+  std::move(run_heuristics_and_update_cache).Run(std::move(form_structure));
 }
 
 FormStructure* AutofillManager::ParseForm(const FormData& form,

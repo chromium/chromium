@@ -21,9 +21,14 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
+#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
+#endif
 
 using testing::_;
 using testing::AtLeast;
@@ -197,6 +202,24 @@ class MockAutofillManager : public AutofillManager {
  private:
   base::WeakPtrFactory<MockAutofillManager> weak_ptr_factory_{this};
 };
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+class MockAutofillMlPredictionModelHandler
+    : public AutofillMlPredictionModelHandler {
+ public:
+  explicit MockAutofillMlPredictionModelHandler(
+      optimization_guide::OptimizationGuideModelProvider* provider)
+      : AutofillMlPredictionModelHandler(provider) {}
+  ~MockAutofillMlPredictionModelHandler() override = default;
+
+  MOCK_METHOD(
+      void,
+      GetModelPredictionsForForms,
+      (std::vector<std::unique_ptr<FormStructure>>,
+       base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>),
+      (override));
+};
+#endif
 
 // Creates a vector of test forms which differ in their FormGlobalIds
 // and FieldGlobalIds.
@@ -498,6 +521,42 @@ TEST_F(AutofillManagerTest, TriggerFormExtractionInAllFrames) {
   EXPECT_CALL(*driver_, TriggerFormExtractionInAllFrames);
   manager_->TriggerFormExtractionInAllFrames(base::DoNothing());
 }
+
+// Ensure that `AutofillMlPredictionModelHandler` is called when parsing the
+// form in `ParseFormsAsync()`
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+TEST_F(AutofillManagerTest, GetMlModelPredictionsForForm) {
+  base::test::ScopedFeatureList features(features::kAutofillModelPredictions);
+
+  auto provider = std::make_unique<
+      optimization_guide::TestOptimizationGuideModelProvider>();
+  auto mock_handler =
+      std::make_unique<MockAutofillMlPredictionModelHandler>(provider.get());
+  // This test intentionally doesn't associate predictions to the
+  // `FormStructure`, it only expects that `GetModelPredictionsForForms` gets
+  // called.
+  ON_CALL(*mock_handler, GetModelPredictionsForForms)
+      .WillByDefault(
+          [](std::vector<std::unique_ptr<FormStructure>> forms,
+             base::OnceCallback<void(
+                 std::vector<std::unique_ptr<FormStructure>>)> callback) {
+            std::move(callback).Run(std::move(forms));
+          });
+  EXPECT_CALL(*mock_handler, GetModelPredictionsForForms);
+  client_.set_ml_prediction_model_handler(std::move(mock_handler));
+
+  FormData form = test::CreateTestAddressFormData();
+  OnFormsSeenWithExpectations(*manager_, /*updated_forms=*/{form},
+                              /*removed_forms=*/{}, /*expectation=*/{form});
+
+  // The handler own the model executor, which operates on a background thread
+  // and is destroyed asynchronously. Resetting the `client_`'s handler triggers
+  // the deletion. Wait for it to complete. This needs to happen before the
+  // `provider` goes out of scope.
+  client_.set_ml_prediction_model_handler(nullptr);
+  task_environment_.RunUntilIdle();
+}
+#endif
 
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,

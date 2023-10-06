@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/mock_iban_manager.h"
@@ -49,6 +50,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -211,6 +213,18 @@ class TestAutofillClientTemplate : public T {
   FastCheckoutClient* GetFastCheckoutClient() override {
     return &mock_fast_checkout_client_;
   }
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  AutofillMlPredictionModelHandler* GetAutofillMlPredictionModelHandler()
+      override {
+    return ml_prediction_model_handler_.get();
+  }
+
+  void set_ml_prediction_model_handler(
+      std::unique_ptr<AutofillMlPredictionModelHandler> handler) {
+    ml_prediction_model_handler_ = std::move(handler);
+  }
+#endif
 
   const GURL& GetLastCommittedPrimaryMainFrameURL() const override {
     return last_committed_primary_main_frame_url_;
@@ -717,6 +731,11 @@ class TestAutofillClientTemplate : public T {
       mock_payments_mandatory_reauth_manager_;
   std::unique_ptr<device_reauth::MockDeviceAuthenticator>
       device_authenticator_ = nullptr;
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  std::unique_ptr<AutofillMlPredictionModelHandler>
+      ml_prediction_model_handler_;
+#endif
 
   // NULL by default.
   std::unique_ptr<PrefService> prefs_;

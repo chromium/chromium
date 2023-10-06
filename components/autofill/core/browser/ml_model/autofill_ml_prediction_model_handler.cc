@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -63,6 +64,17 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
           },
           std::move(form_structure), std::move(callback)),
       std::move(form_data));
+}
+
+void AutofillMlPredictionModelHandler::GetModelPredictionsForForms(
+    std::vector<std::unique_ptr<FormStructure>> forms,
+    base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>
+        callback) {
+  auto barrier_callback = base::BarrierCallback<std::unique_ptr<FormStructure>>(
+      forms.size(), std::move(callback));
+  for (std::unique_ptr<FormStructure>& form : forms) {
+    GetModelPredictionsForForm(std::move(form), barrier_callback);
+  }
 }
 
 }  // namespace autofill
