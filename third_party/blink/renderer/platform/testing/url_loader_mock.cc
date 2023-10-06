@@ -11,13 +11,13 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/url_conversion.h"
-#include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory_impl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
@@ -102,7 +102,7 @@ WebURL URLLoaderMock::ServeRedirect(const WebString& method,
 
 void URLLoaderMock::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+    scoped_refptr<const SecurityOrigin> top_frame_origin,
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
@@ -122,7 +122,7 @@ void URLLoaderMock::LoadSynchronously(
 
 void URLLoaderMock::LoadAsynchronously(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+    scoped_refptr<const SecurityOrigin> top_frame_origin,
     bool no_mime_sniffing,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,

@@ -97,7 +97,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
     ~NoopURLLoader() override = default;
     void LoadSynchronously(
         std::unique_ptr<network::ResourceRequest> request,
-        scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+        scoped_refptr<const SecurityOrigin> top_frame_origin,
         bool pass_response_pipe_to_client,
         bool no_mime_sniffing,
         base::TimeDelta timeout_interval,
@@ -114,7 +114,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
     }
     void LoadAsynchronously(
         std::unique_ptr<network::ResourceRequest> request,
-        scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+        scoped_refptr<const SecurityOrigin> top_frame_origin,
         bool no_mime_sniffing,
         std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
             resource_load_info_notifier_wrapper,

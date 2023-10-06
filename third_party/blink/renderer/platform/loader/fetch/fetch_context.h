@@ -58,6 +58,7 @@ enum class ResourceType : uint8_t;
 class PermissionsPolicy;
 class KURL;
 struct ResourceLoaderOptions;
+class SecurityOrigin;
 class WebScopedVirtualTimePauser;
 
 // The FetchContext is an interface for performing context specific processing
@@ -187,6 +188,12 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
 
   // Returns true iff we have LCPP hint data for the fetch context.
   virtual bool DoesLCPPHaveAnyHintData() { return false; }
+
+  // Returns the origin of the top frame in the document or the dedicated
+  // worker. This returns nullptr for Shared Workers and Service Workers.
+  virtual scoped_refptr<const SecurityOrigin> GetTopFrameOrigin() const {
+    return nullptr;
+  }
 };
 
 }  // namespace blink

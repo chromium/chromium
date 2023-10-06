@@ -28,7 +28,6 @@ class DetachableConsoleLogger;
 class DOMWrapperWorld;
 class DetachableResourceFetcherProperties;
 class KURL;
-class SecurityOrigin;
 class SubresourceFilter;
 class WebSocketHandshakeThrottle;
 
@@ -83,9 +82,6 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   virtual void CountUsage(mojom::WebFeature) const = 0;
   virtual void CountDeprecation(mojom::WebFeature) const = 0;
   virtual net::SiteForCookies GetSiteForCookies() const = 0;
-
-  // Returns the origin of the top frame in the document.
-  virtual scoped_refptr<const SecurityOrigin> GetTopFrameOrigin() const = 0;
 
   virtual SubresourceFilter* GetSubresourceFilter() const = 0;
   virtual bool ShouldBlockWebSocketByMixedContentCheck(const KURL&) const = 0;

@@ -89,35 +89,33 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
   }
 
   // URLLoader methods:
-  void LoadSynchronously(
-      std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-      bool pass_response_pipe_to_client,
-      bool no_mime_sniffing,
-      base::TimeDelta timeout_interval,
-      URLLoaderClient* client,
-      WebURLResponse& response,
-      absl::optional<WebURLError>& error,
-      scoped_refptr<SharedBuffer>& data,
-      int64_t& encoded_data_length,
-      uint64_t& encoded_body_length,
-      scoped_refptr<BlobDataHandle>& downloaded_blob,
-      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-          resource_load_info_notifier_wrapper) override {
+  void LoadSynchronously(std::unique_ptr<network::ResourceRequest> request,
+                         scoped_refptr<const SecurityOrigin> top_frame_origin,
+                         bool pass_response_pipe_to_client,
+                         bool no_mime_sniffing,
+                         base::TimeDelta timeout_interval,
+                         URLLoaderClient* client,
+                         WebURLResponse& response,
+                         absl::optional<WebURLError>& error,
+                         scoped_refptr<SharedBuffer>& data,
+                         int64_t& encoded_data_length,
+                         uint64_t& encoded_body_length,
+                         scoped_refptr<BlobDataHandle>& downloaded_blob,
+                         std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+                             resource_load_info_notifier_wrapper) override {
     NOTREACHED();
   }
   void LoadAsynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+      scoped_refptr<const SecurityOrigin> top_frame_origin,
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       URLLoaderClient* client) override {
     if (url_loader_) {
       url_loader_->LoadAsynchronously(
-          std::move(request), std::move(url_request_extra_data),
-          no_mime_sniffing, std::move(resource_load_info_notifier_wrapper),
-          client);
+          std::move(request), std::move(top_frame_origin), no_mime_sniffing,
+          std::move(resource_load_info_notifier_wrapper), client);
       return;
     }
     // It is safe to use Unretained(client), because |client| is a
@@ -125,7 +123,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
     // |this| here.
     pending_method_calls_.push(WTF::BindOnce(
         &PrefetchedSignedExchangeLoader::LoadAsynchronously, GetWeakPtr(),
-        std::move(request), std::move(url_request_extra_data), no_mime_sniffing,
+        std::move(request), std::move(top_frame_origin), no_mime_sniffing,
         std::move(resource_load_info_notifier_wrapper),
         WTF::Unretained(client)));
   }

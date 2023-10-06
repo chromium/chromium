@@ -62,10 +62,10 @@ class BackForwardCacheLoaderHelper;
 class BlobDataHandle;
 class ResourceLoadInfoNotifierWrapper;
 class ResourceRequestSender;
+class SecurityOrigin;
 class URLLoaderClient;
 class URLLoaderThrottle;
 struct WebURLError;
-class WebURLRequestExtraData;
 class WebURLResponse;
 
 class BLINK_PLATFORM_EXPORT URLLoader {
@@ -96,7 +96,7 @@ class BLINK_PLATFORM_EXPORT URLLoader {
   // |downloaded_blob|.
   virtual void LoadSynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+      scoped_refptr<const SecurityOrigin> top_frame_origin,
       bool pass_response_pipe_to_client,
       bool no_mime_sniffing,
       base::TimeDelta timeout_interval,
@@ -115,7 +115,7 @@ class BLINK_PLATFORM_EXPORT URLLoader {
   // loader is disposed before it completes its work.
   virtual void LoadAsynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+      scoped_refptr<const SecurityOrigin> top_frame_origin,
       bool no_mime_sniffing,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,

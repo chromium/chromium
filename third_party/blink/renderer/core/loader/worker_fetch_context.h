@@ -47,8 +47,6 @@ class WorkerFetchContext final : public BaseFetchContext {
 
   // BaseFetchContext implementation:
   net::SiteForCookies GetSiteForCookies() const override;
-  scoped_refptr<const SecurityOrigin> GetTopFrameOrigin() const override;
-
   SubresourceFilter* GetSubresourceFilter() const override;
   bool AllowScriptFromSource(const KURL&) const override;
   bool ShouldBlockRequestByInspector(const KURL&) const override;
@@ -88,9 +86,9 @@ class WorkerFetchContext final : public BaseFetchContext {
                                const absl::optional<float> resource_width,
                                ResourceRequest&,
                                const ResourceLoaderOptions&) override;
-
   std::unique_ptr<ResourceLoadInfoNotifierWrapper>
   CreateResourceLoadInfoNotifierWrapper() override;
+  scoped_refptr<const SecurityOrigin> GetTopFrameOrigin() const override;
 
   WorkerSettings* GetWorkerSettings() const;
   WebWorkerFetchContext* GetWebWorkerFetchContext() const {

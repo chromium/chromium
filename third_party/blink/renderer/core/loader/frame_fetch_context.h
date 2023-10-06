@@ -145,6 +145,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   void UpdateSubresourceLoadMetrics(
       const SubresourceLoadMetrics& subresource_load_metrics) override;
 
+  scoped_refptr<const SecurityOrigin> GetTopFrameOrigin() const override;
+
  private:
   friend class FrameFetchContextTest;
 
@@ -159,7 +161,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   // BaseFetchContext overrides:
   net::SiteForCookies GetSiteForCookies() const override;
-  scoped_refptr<const SecurityOrigin> GetTopFrameOrigin() const override;
   SubresourceFilter* GetSubresourceFilter() const override;
   bool AllowScriptFromSource(const KURL&) const override;
   bool ShouldBlockRequestByInspector(const KURL&) const override;

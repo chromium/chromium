@@ -51,7 +51,6 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
@@ -100,7 +99,7 @@ class URLLoader::Context : public ResourceRequestClient {
   void DidChangePriority(WebURLRequest::Priority new_priority,
                          int intra_priority_value);
   void Start(std::unique_ptr<network::ResourceRequest> request,
-             scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+             scoped_refptr<const SecurityOrigin> top_frame_origin,
              bool pass_response_pipe_to_client,
              bool no_mime_sniffing,
              base::TimeDelta timeout_interval,
@@ -234,7 +233,7 @@ void URLLoader::Context::DidChangePriority(WebURLRequest::Priority new_priority,
 
 void URLLoader::Context::Start(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<WebURLRequestExtraData> passed_url_request_extra_data,
+    scoped_refptr<const SecurityOrigin> top_frame_origin,
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
@@ -246,27 +245,15 @@ void URLLoader::Context::Start(
   url_ = KURL(request->url);
   has_devtools_request_id_ = request->devtools_request_id.has_value();
 
-  scoped_refptr<WebURLRequestExtraData> empty_url_request_extra_data;
-  WebURLRequestExtraData* url_request_extra_data;
-  if (passed_url_request_extra_data) {
-    url_request_extra_data = static_cast<WebURLRequestExtraData*>(
-        passed_url_request_extra_data.get());
-  } else {
-    empty_url_request_extra_data =
-        base::MakeRefCounted<WebURLRequestExtraData>();
-    url_request_extra_data = empty_url_request_extra_data.get();
-  }
-
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
   for (auto& throttle : throttles_) {
     throttles.push_back(std::move(throttle));
   }
 
-  // TODO(falken): URLLoader should be able to get the top frame origin via some
-  // plumbing such as through ResourceLoader -> FetchContext -> LocalFrame
-  // -> RenderHostImpl instead of needing WebURLRequestExtraData.
+  // The top frame origin of shared and service workers is null.
   Platform::Current()->AppendVariationsThrottles(
-      url_request_extra_data->top_frame_origin(), &throttles);
+      top_frame_origin ? top_frame_origin->ToUrlOrigin() : url::Origin(),
+      &throttles);
 
   uint32_t loader_options = network::mojom::kURLLoadOptionNone;
   if (!no_mime_sniffing) {
@@ -462,7 +449,7 @@ URLLoader::~URLLoader() {
 
 void URLLoader::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+    scoped_refptr<const SecurityOrigin> top_frame_origin,
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
@@ -486,7 +473,7 @@ void URLLoader::LoadSynchronously(
   context_->set_client(client);
 
   const bool has_devtools_request_id = request->devtools_request_id.has_value();
-  context_->Start(std::move(request), std::move(url_request_extra_data),
+  context_->Start(std::move(request), std::move(top_frame_origin),
                   pass_response_pipe_to_client, no_mime_sniffing,
                   timeout_interval, &sync_load_response,
                   std::move(resource_load_info_notifier_wrapper));
@@ -540,7 +527,7 @@ void URLLoader::LoadSynchronously(
 
 void URLLoader::LoadAsynchronously(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+    scoped_refptr<const SecurityOrigin> top_frame_origin,
     bool no_mime_sniffing,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
@@ -554,7 +541,7 @@ void URLLoader::LoadAsynchronously(
   DCHECK(!context_->client());
 
   context_->set_client(client);
-  context_->Start(std::move(request), std::move(url_request_extra_data),
+  context_->Start(std::move(request), std::move(top_frame_origin),
                   /*pass_response_pipe_to_client=*/false, no_mime_sniffing,
                   base::TimeDelta(), nullptr,
                   std::move(resource_load_info_notifier_wrapper));

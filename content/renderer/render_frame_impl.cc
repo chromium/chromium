@@ -4296,7 +4296,6 @@ void RenderFrameImpl::WillSendRequestInternal(
       is_for_no_state_prefetch);
   url_request_extra_data->set_allow_cross_origin_auth_prompt(
       GetWebView()->GetRendererPreferences().allow_cross_origin_auth_prompt);
-  url_request_extra_data->set_top_frame_origin(GetSecurityOriginOfTopFrame());
 
   request.SetDownloadToNetworkCacheOnly(is_for_no_state_prefetch &&
                                         !for_outermost_main_frame);

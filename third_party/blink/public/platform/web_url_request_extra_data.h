@@ -9,7 +9,6 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
@@ -33,14 +32,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
   void set_transition_type(ui::PageTransition transition_type) {
     transition_type_ = transition_type;
   }
-
-  // Set the top origin. Only applicable for frames.
-  void set_top_frame_origin(const url::Origin& origin) {
-    top_frame_origin_ = origin;
-  }
-
-  // The origin of the topmost frame. Only applicable for frames.
-  const url::Origin& top_frame_origin() { return top_frame_origin_; }
 
   // The request is for a prefetch-only client (i.e. running NoStatePrefetch)
   // and should use LOAD_PREFETCH network flags.
@@ -84,9 +75,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
   bool originated_from_service_worker_ = false;
   WebString custom_user_agent_;
   bool allow_cross_origin_auth_prompt_ = false;
-
-  // The origin of the top most frame. Only applicable for frames.
-  url::Origin top_frame_origin_;
 };
 
 }  // namespace blink
