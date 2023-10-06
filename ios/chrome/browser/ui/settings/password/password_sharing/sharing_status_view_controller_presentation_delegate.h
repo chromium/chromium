@@ -14,6 +14,11 @@
 // TODO(crbug.com/1463882): Handle dismissing by swiping.
 - (void)sharingStatusWasDismissed:(SharingStatusViewController*)controller;
 
+// Called when the sharing progress animation finishes (is not cancelled by the
+// user). The actual sharing should kick off at this point in the main password
+// sharing coordinator.
+- (void)startPasswordSharing;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_

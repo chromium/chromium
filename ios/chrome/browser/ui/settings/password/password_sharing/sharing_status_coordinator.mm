@@ -70,4 +70,8 @@
   [self.delegate sharingStatusCoordinatorWasDismissed:self];
 }
 
+- (void)startPasswordSharing {
+  [self.delegate startPasswordSharing];
+}
+
 @end

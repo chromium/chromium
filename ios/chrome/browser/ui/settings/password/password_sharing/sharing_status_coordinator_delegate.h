@@ -14,6 +14,11 @@
 - (void)sharingStatusCoordinatorWasDismissed:
     (SharingStatusCoordinator*)coordinator;
 
+// Called when the animation finishes and the user does not cancel it. The
+// actual password sharing should kick off at this point in the main password
+// sharing coordinator.
+- (void)startPasswordSharing;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_COORDINATOR_DELEGATE_H_

@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_view_controller_presentation_delegate.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -349,9 +350,11 @@ const CGFloat kImagesSlidingInDistance = 51;
                   recipientImage.center.x - kImagesSlidingInDistance,
                   recipientImage.center.y);
             }];
+  __weak __typeof(self.delegate) weakDelegate = self.delegate;
   [self.imagesSlidingInAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
         [weakSelf displaySuccessStatus];
+        [weakDelegate startPasswordSharing];
       }];
 
   self.sharingCancelledAnimation = [[UIViewPropertyAnimator alloc]
@@ -433,12 +436,12 @@ const CGFloat kImagesSlidingInDistance = 51;
   [doneButton setTitle:l10n_util::GetNSString(IDS_DONE)
               forState:UIControlStateNormal];
   doneButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+  doneButton.accessibilityIdentifier = kSharingStatusDoneButtonId;
   return doneButton;
 }
 
 // Replaces text of the title label, cancel button with done button and adds a
 // subtitle and a footer.
-// TODO(crbug.com/1463882): Add test.
 - (void)displaySuccessStatus {
   UILabel* titleLabel = self.titleLabel;
   titleLabel.text =

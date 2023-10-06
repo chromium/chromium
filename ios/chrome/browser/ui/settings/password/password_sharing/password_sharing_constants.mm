@@ -13,6 +13,8 @@ NSString* const kFamilyPickerInfoButtonId = @"FamilyPickerInfoButtonId";
 NSString* const kPasswordPickerCancelButtonId = @"PasswordPickerCancelButtonId";
 NSString* const kPasswordPickerNextButtonId = @"PasswordPickerNextButtonId";
 
+NSString* const kSharingStatusDoneButtonId = @"SharingStatusDoneButtonId";
+
 const char kFamilyGroupSiteURL[] = "https://families.google.com/families/";
 
 const char kPasswordSharingLearnMoreURL[] =

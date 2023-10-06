@@ -47,13 +47,16 @@ class IdentityManager;
 
 // Fetches corresponding password forms for all `selectedCredentials` and
 // invokes SendPasswords method of PasswordSenderService with all forms for each
-// of the `recipients`.
-- (void)sendSelectedPasswordsToRecipients:
-    (NSArray<RecipientInfoForIOSDisplay*>*)recipients;
+// of the `selectedRecipients`.
+- (void)sendSelectedPasswordsToSelectedRecipients;
 
 // Credentials selected by the user to be shared.
 @property(nonatomic, assign) std::vector<password_manager::CredentialUIEntry>
     selectedCredentials;
+
+// Recipients selected by the user to receive the shared passwords.
+@property(nonatomic, strong)
+    NSArray<RecipientInfoForIOSDisplay*>* selectedRecipients;
 
 @end
 

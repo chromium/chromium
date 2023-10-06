@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/test/ios/wait_util.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -24,6 +25,7 @@
 
 namespace {
 
+using base::test::ios::kWaitForActionTimeout;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using password_manager_test_utils::kScrollAmount;
 using password_manager_test_utils::OpenPasswordManager;
@@ -318,22 +320,45 @@ void SignInAndEnableSync() {
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
       performAction:grey_tap()];
 
-  // Make sure share button is disabled before selecting recipient.
+  // Make sure that the share button is disabled before the recipient selection
+  // and enabled after.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kFamilyPickerShareButtonId)]
       assertWithMatcher:grey_not(grey_enabled())];
-
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user1@gmail.com")]
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kFamilyPickerShareButtonId)]
       assertWithMatcher:grey_enabled()];
 
+  // Initiate sharing and wait for the animation to finish.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kFamilyPickerShareButtonId)]
       performAction:grey_tap()];
+  // TODO(crbug.com/1463882): Override animation time for tests.
+  GREYCondition* waitForAnimationEnding = [GREYCondition
+      conditionWithName:@"Wait for sharing animation to end"
+                  block:^{
+                    NSError* error = nil;
+                    [[EarlGrey
+                        selectElementWithMatcher:
+                            grey_allOf(
+                                grey_accessibilityLabel(l10n_util::GetNSString(
+                                    IDS_IOS_PASSWORD_SHARING_SUCCESS_TITLE)),
+                                grey_kindOfClassName(@"UILabel"), nil)]
+                        assertWithMatcher:grey_sufficientlyVisible()
+                                    error:&error];
+                    return error == nil;
+                  }];
+  GREYAssertTrue([waitForAnimationEnding
+                     waitWithTimeout:kWaitForActionTimeout.InSecondsF()],
+                 @"Animation did not finish.");
 
-  // Check that the current view is the password details view.
+  // Dismiss the success status view and check that the password details view is
+  // currently displayed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSharingStatusDoneButtonId)]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kPasswordDetailsTableViewId)]
       assertWithMatcher:grey_notNil()];

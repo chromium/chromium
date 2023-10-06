@@ -18,6 +18,9 @@ extern NSString* const kFamilyPickerInfoButtonId;
 extern NSString* const kPasswordPickerCancelButtonId;
 extern NSString* const kPasswordPickerNextButtonId;
 
+// The accessibility identifier of the sharing status view.
+extern NSString* const kSharingStatusDoneButtonId;
+
 // Link for creating family group with Google Families.
 extern const char kFamilyGroupSiteURL[];
 
