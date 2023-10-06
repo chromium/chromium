@@ -144,6 +144,8 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   protocol::TargetAutoAttacher* auto_attacher() override;
   std::string GetSubtype() override;
   RenderProcessHost* GetProcessHost() override;
+  void MainThreadDebuggerPaused() override;
+  void MainThreadDebuggerResumed() override;
 
   // WebContentsObserver overrides.
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
@@ -182,6 +184,11 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   base::flat_set<NavigationRequest*> navigation_requests_;
   bool render_frame_alive_ = false;
   bool render_frame_crashed_ = false;
+
+  // TODO(https://crbug.com/1449114): Remove these fields once we collect enough
+  // data.
+  bool is_debugger_paused_ = false;
+  bool is_debugger_pause_situation_recorded_ = false;
 
   // The FrameTreeNode associated with this agent.
   FrameTreeNode* frame_tree_node_;

@@ -68,6 +68,8 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
 
   void Dispose();
   void FlushProtocolNotifications();
+  void DebuggerPaused();
+  void DebuggerResumed();
   // For workers, we use the IO thread similar to DevToolsSession::IOSession to
   // ensure that we can always interrupt a worker that is stuck in JS. We don't
   // use an associated channel for workers, meaning we don't have the ordering

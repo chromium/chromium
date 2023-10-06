@@ -299,6 +299,20 @@ void DevToolsAgent::FlushProtocolNotifications() {
     session->FlushProtocolNotifications();
 }
 
+void DevToolsAgent::DebuggerPaused() {
+  CHECK(!host_remote_.is_bound());
+  if (associated_host_remote_.is_bound()) {
+    associated_host_remote_->MainThreadDebuggerPaused();
+  }
+}
+
+void DevToolsAgent::DebuggerResumed() {
+  CHECK(!host_remote_.is_bound());
+  if (associated_host_remote_.is_bound()) {
+    associated_host_remote_->MainThreadDebuggerResumed();
+  }
+}
+
 void DevToolsAgent::ReportChildTargetsPostCallbackToIO(
     bool report,
     bool wait_for_debugger,

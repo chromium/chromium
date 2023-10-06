@@ -3497,6 +3497,73 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, NoJavascriptUrlOnDevtools) {
   EXPECT_EQ(false, content::EvalJs(wc, "!!window.xss"));
 }
 
+// According to DevToolsTest.AutoAttachToWindowOpen, using
+// `waitForDebuggerPaused()` is flaky on Linux.
+// TODO(https://crbug.com/1216219): Enable the test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PauseWhenSameOriginDebuggerAlreadyAttached \
+  DISABLED_PauseWhenSameOriginDebuggerAlreadyAttached
+#else
+#define MAYBE_PauseWhenSameOriginDebuggerAlreadyAttached \
+  PauseWhenSameOriginDebuggerAlreadyAttached
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest,
+                       MAYBE_PauseWhenSameOriginDebuggerAlreadyAttached) {
+  base::HistogramTester histograms;
+
+  const GURL hello_url =
+      embedded_test_server()->GetURL("a.test", "/hello.html");
+  const GURL pause_url = embedded_test_server()->GetURL(
+      "a.test", "/devtools/pause_when_loading_devtools.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), hello_url));
+  DevToolsWindowTesting::OpenDevToolsWindowSync(
+      browser()->tab_strip_model()->GetWebContentsAt(0), true);
+
+  Browser* another_browser = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(another_browser, pause_url));
+  DevToolsWindow* another_window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(
+          another_browser->tab_strip_model()->GetWebContentsAt(0), true);
+  DispatchOnTestSuite(another_window, "waitForDebuggerPaused");
+
+  histograms.ExpectBucketCount(
+      "DevTools.IsSameOriginDebuggerAttachedInAnotherRenderer", true, 1);
+}
+
+// According to DevToolsTest.AutoAttachToWindowOpen, using
+// `waitForDebuggerPaused()` is flaky on Linux.
+// TODO(https://crbug.com/1216219): Enable the test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PauseWhenSameOriginDebuggerAlreadyPaused \
+  DISABLED_PauseWhenSameOriginDebuggerAlreadyPaused
+#else
+#define MAYBE_PauseWhenSameOriginDebuggerAlreadyPaused \
+  PauseWhenSameOriginDebuggerAlreadyPaused
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest,
+                       MAYBE_PauseWhenSameOriginDebuggerAlreadyPaused) {
+  base::HistogramTester histograms;
+
+  const GURL pause_url = embedded_test_server()->GetURL(
+      "a.test", "/devtools/pause_when_loading_devtools.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pause_url));
+  DevToolsWindow* window = DevToolsWindowTesting::OpenDevToolsWindowSync(
+      browser()->tab_strip_model()->GetWebContentsAt(0), true);
+  DispatchOnTestSuite(window, "waitForDebuggerPaused");
+
+  Browser* another_browser = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(another_browser, pause_url));
+  DevToolsWindow* another_window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(
+          another_browser->tab_strip_model()->GetWebContentsAt(0), true);
+  DispatchOnTestSuite(another_window, "waitForDebuggerPaused");
+
+  histograms.ExpectBucketCount(
+      "DevTools.IsSameOriginDebuggerPausedInAnotherRenderer", true, 1);
+}
+
 class DevToolsSyncTest : public SyncTest {
  public:
   DevToolsSyncTest() : SyncTest(SyncTest::SINGLE_CLIENT) {}

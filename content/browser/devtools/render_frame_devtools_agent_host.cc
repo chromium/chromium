@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/viz/common/buildflags.h"
@@ -876,6 +877,9 @@ base::TimeTicks RenderFrameDevToolsAgentHost::GetLastActivityTime() {
 }
 
 void RenderFrameDevToolsAgentHost::UpdateRendererChannel(bool force) {
+  is_debugger_paused_ = false;
+  is_debugger_pause_situation_recorded_ = false;
+
   mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgent> agent_remote;
   mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgentHost>
       host_receiver;
@@ -930,6 +934,58 @@ std::string RenderFrameDevToolsAgentHost::GetSubtype() {
 
 RenderProcessHost* RenderFrameDevToolsAgentHost::GetProcessHost() {
   return frame_host_ ? frame_host_->GetProcess() : nullptr;
+}
+
+void RenderFrameDevToolsAgentHost::MainThreadDebuggerPaused() {
+  is_debugger_paused_ = true;
+
+  if (!GetWebContents() || is_debugger_pause_situation_recorded_) {
+    return;
+  }
+
+  if (GetWebContents() != GetWebContents()->GetOutermostWebContents()) {
+    return;
+  }
+
+  url::Origin our_origin =
+      url::Origin::Create(GetWebContents()->GetLastCommittedURL());
+
+  bool is_same_origin_debugger_attached_in_another_renderer = false;
+  bool is_same_origin_debugger_paused_in_another_renderer = false;
+  for (const auto& entry : g_agent_host_instances.Get()) {
+    RenderFrameDevToolsAgentHost* agent_host = entry.second;
+    if (agent_host == this || !agent_host->GetWebContents()) {
+      continue;
+    }
+    if (agent_host->GetWebContents() !=
+        agent_host->GetWebContents()->GetOutermostWebContents()) {
+      continue;
+    }
+    if (!our_origin.IsSameOriginWith(
+            agent_host->GetWebContents()->GetLastCommittedURL())) {
+      continue;
+    }
+
+    if (agent_host->IsAttached()) {
+      is_same_origin_debugger_attached_in_another_renderer = true;
+    }
+    if (agent_host->is_debugger_paused_) {
+      is_same_origin_debugger_paused_in_another_renderer = true;
+    }
+  }
+
+  base::UmaHistogramBoolean(
+      "DevTools.IsSameOriginDebuggerAttachedInAnotherRenderer",
+      is_same_origin_debugger_attached_in_another_renderer);
+  base::UmaHistogramBoolean(
+      "DevTools.IsSameOriginDebuggerPausedInAnotherRenderer",
+      is_same_origin_debugger_paused_in_another_renderer);
+
+  is_debugger_pause_situation_recorded_ = true;
+}
+
+void RenderFrameDevToolsAgentHost::MainThreadDebuggerResumed() {
+  is_debugger_paused_ = false;
 }
 
 bool RenderFrameDevToolsAgentHost::IsChildFrame() {

@@ -139,6 +139,18 @@ interface DevToolsAgentHost {
       mojo_base.mojom.UnguessableToken devtools_worker_token,
       bool waiting_for_debugger,
       DevToolsExecutionContextType context_type);
+
+  // Informs the host that the main thread debugger is paused. Must be used only
+  // for recording histograms.
+  // TODO(https://crbug.com/1449114): Remove this method once we collect enough
+  // data.
+  MainThreadDebuggerPaused();
+
+  // Informs the host that the main thread debugger is resumed. Must be used
+  // only for recording histograms.
+  // TODO(https://crbug.com/1449114): Remove this method once we collect enough
+  // data.
+  MainThreadDebuggerResumed();
 };
 
 // Represents an attached session which exposes remote debugging protocol.

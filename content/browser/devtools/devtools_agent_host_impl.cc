@@ -466,6 +466,9 @@ DevToolsAgentHostImpl::ForceDetachAllSessionsImpl() {
   return retain_this;
 }
 
+void DevToolsAgentHostImpl::MainThreadDebuggerPaused() {}
+void DevToolsAgentHostImpl::MainThreadDebuggerResumed() {}
+
 void DevToolsAgentHostImpl::ForceDetachRestrictedSessions(
     const std::vector<DevToolsSession*>& restricted_sessions) {
   scoped_refptr<DevToolsAgentHostImpl> protect(this);
