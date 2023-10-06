@@ -274,6 +274,7 @@ markerEnd
 markerMid
 markerStart
 mask
+maskClip
 maskImage
 maskType
 mathDepth

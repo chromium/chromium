@@ -9212,6 +9212,29 @@ const CSSValue* WebkitMaskBoxImageWidth::CSSValueFromComputedStyleInternal(
       style.MaskBoxImage().BorderSlices(), style);
 }
 
+const CSSValue* MaskClip::ParseSingleValue(CSSParserTokenRange& range,
+                                           const CSSParserContext&,
+                                           const CSSParserLocalContext&) const {
+  CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumePrefixedBackgroundBox, range,
+      css_parsing_utils::AllowTextValue::kAllow);
+}
+
+const CSSValue* MaskClip::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  const FillLayer* curr_layer = &style.MaskLayers();
+  for (; curr_layer; curr_layer = curr_layer->Next()) {
+    EFillBox box = curr_layer->Clip();
+    list->Append(*CSSIdentifierValue::Create(box));
+  }
+  return list;
+}
+
 const CSSValue* WebkitMaskClip::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,

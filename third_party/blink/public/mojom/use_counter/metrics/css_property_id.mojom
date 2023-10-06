@@ -826,6 +826,7 @@ enum CSSSampleId {
     kFormSizing = 770,
     kTextSpacingTrim = 771,
     kMaskImage = 772,
+    kMaskClip = 773,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

@@ -4263,6 +4263,9 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
                                    ParsingStyle::kNotLegacy);
     case CSSPropertyID::kBackgroundColor:
       return ConsumeColor(range, context);
+    case CSSPropertyID::kMaskClip:
+      // TODO(pdr): Update the allowed mask-clip values.
+      return ConsumePrefixedBackgroundBox(range, AllowTextValue::kAllow);
     case CSSPropertyID::kWebkitMaskClip:
       return ConsumePrefixedBackgroundBox(range, AllowTextValue::kAllow);
     case CSSPropertyID::kWebkitMaskOrigin:
@@ -4389,6 +4392,7 @@ bool ParseBackgroundOrMask(bool important,
         continue;
       }
       if ((property.IDEquals(CSSPropertyID::kBackgroundClip) ||
+           property.IDEquals(CSSPropertyID::kMaskClip) ||
            property.IDEquals(CSSPropertyID::kWebkitMaskClip)) &&
           !parsed_longhand[i] && origin_value) {
         AddBackgroundValue(longhands[i], origin_value);

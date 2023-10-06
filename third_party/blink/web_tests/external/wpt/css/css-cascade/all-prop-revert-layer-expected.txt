@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 329 tests; 328 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 330 tests; 329 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS accent-color
 PASS align-content
 PASS align-items
@@ -187,6 +187,7 @@ PASS margin-top
 PASS marker-end
 PASS marker-mid
 PASS marker-start
+PASS mask-clip
 PASS mask-image
 PASS mask-type
 PASS math-depth

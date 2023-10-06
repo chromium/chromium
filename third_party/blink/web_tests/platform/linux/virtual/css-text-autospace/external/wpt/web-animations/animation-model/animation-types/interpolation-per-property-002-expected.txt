@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 379 tests; 365 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 383 tests; 369 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testInterpolation function
 PASS isolation uses discrete animation when animating between "auto" and "isolate" with linear easing
@@ -62,6 +62,10 @@ PASS mask (type: discrete) has testInterpolation function
 PASS mask uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing
 PASS mask uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing
 PASS mask uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing
+PASS mask-clip (type: discrete) has testInterpolation function
+PASS mask-clip uses discrete animation when animating between "content-box" and "border-box" with linear easing
+PASS mask-clip uses discrete animation when animating between "content-box" and "border-box" with effect easing
+PASS mask-clip uses discrete animation when animating between "content-box" and "border-box" with keyframe easing
 PASS mask-image (type: discrete) has testInterpolation function
 PASS mask-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing
 PASS mask-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing

@@ -23,7 +23,6 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 -webkit-mask-box-image-slice: 0 fill
 -webkit-mask-box-image-source: none
 -webkit-mask-box-image-width: auto
--webkit-mask-clip: border-box
 -webkit-mask-composite: source-over
 -webkit-mask-origin: border-box
 -webkit-mask-position: 0% 0%
@@ -236,6 +235,7 @@ margin-top: 0px
 marker-end: none
 marker-mid: none
 marker-start: none
+mask-clip: border-box
 mask-image: none
 mask-type: luminance
 math-depth: 0
