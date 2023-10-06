@@ -105884,7 +105884,7 @@ would be helpful to identify which type is being sent.
   <int value="12" label="Encourage Unlock"/>
   <int value="13" label="Network Auto Connect"/>
   <int value="14" label="Assistant Loading"/>
-  <int value="15" label="Toast Manager Unittest"/>
+  <int value="15" label="Test Catalog Name"/>
   <int value="16" label="Maximum Desk Launch Template"/>
   <int value="17" label="Enter Overview Gesture"/>
   <int value="18" label="Exit Overview Gesture"/>

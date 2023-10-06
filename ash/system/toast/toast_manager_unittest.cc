@@ -178,7 +178,7 @@ class ToastManagerImplTest : public AshTestBase,
                         base::TimeDelta duration,
                         bool visible_on_lock_screen = false,
                         const ToastCatalogName catalog_name =
-                            ToastCatalogName::kToastManagerUnittest) {
+                            ToastCatalogName::kTestCatalogName) {
     std::string id = "TOAST_ID_" + base::NumberToString(serial_++);
     manager()->Show(ToastData(id, catalog_name, base::ASCIIToUTF16(text),
                               duration, visible_on_lock_screen));
@@ -190,7 +190,7 @@ class ToastManagerImplTest : public AshTestBase,
       base::TimeDelta duration,
       const std::u16string& dismiss_text = std::u16string()) {
     std::string id = "TOAST_ID_" + base::NumberToString(serial_++);
-    manager()->Show(ToastData(id, ToastCatalogName::kToastManagerUnittest,
+    manager()->Show(ToastData(id, ToastCatalogName::kTestCatalogName,
                               base::ASCIIToUTF16(text), duration,
                               /*visible_on_lock_screen=*/false,
                               /*has_dismiss_button=*/true, dismiss_text));
@@ -199,7 +199,7 @@ class ToastManagerImplTest : public AshTestBase,
 
   void ShowToastWithLeadingIcon(const gfx::VectorIcon& icon) {
     manager()->Show(ToastData(
-        "id", ToastCatalogName::kToastManagerUnittest, u"text",
+        "id", ToastCatalogName::kTestCatalogName, u"text",
         ToastData::kDefaultToastDuration, /*visible_on_lock_screen=*/false,
         /*has_dismiss_button=*/false, /*custom_dismiss_text=*/u"",
         /*dismiss_callback=*/base::DoNothing(), icon));
@@ -212,7 +212,7 @@ class ToastManagerImplTest : public AshTestBase,
                     base::TimeDelta duration,
                     bool visible_on_lock_screen = false,
                     const ToastCatalogName catalog_name =
-                        ToastCatalogName::kToastManagerUnittest) {
+                        ToastCatalogName::kTestCatalogName) {
     manager()->Show(ToastData(id, catalog_name, base::ASCIIToUTF16(text),
                               duration, visible_on_lock_screen));
   }
@@ -456,7 +456,7 @@ TEST_P(ToastManagerImplTest, ToastsOnMultipleMonitors) {
   std::string toast_id = "TOAST_ID_" + base::NumberToString(GetToastSerial());
 
   // Create a basic toast with `ToastData::kDefaultToastDuration` as duration.
-  ToastData toast_data(toast_id, ToastCatalogName::kToastManagerUnittest,
+  ToastData toast_data(toast_id, ToastCatalogName::kTestCatalogName,
                        /*text=*/u"");
 
   // Indicate that the toast will show on all root windows.
@@ -990,7 +990,7 @@ TEST_P(ToastManagerImplTest, TimeInQueueMetric) {
 TEST_P(ToastManagerImplTest, UserJourneyTimeMetric) {
   base::HistogramTester histogram_tester;
 
-  const ToastCatalogName catalog_name = ToastCatalogName::kToastManagerUnittest;
+  const ToastCatalogName catalog_name = ToastCatalogName::kTestCatalogName;
   const base::TimeDelta duration = base::Seconds(6);
   constexpr char text[] = "sample text";
 
@@ -1051,7 +1051,7 @@ TEST_P(ToastManagerImplTest, ExpiredCallbackRunsWhenToastOverlayClosed) {
     // is not `kDismissButton` then we do not need a dismiss button on the
     // toast.
     ToastData toast_data(
-        toast_id, ToastCatalogName::kToastManagerUnittest,
+        toast_id, ToastCatalogName::kTestCatalogName,
         /*text=*/u"",
         /*duration=*/test_case.source == CancellationSource::kToastDuration
             ? ToastData::kDefaultToastDuration
@@ -1091,7 +1091,7 @@ TEST_P(ToastManagerImplTest, ExpiredCallbackRunsWhenToastOverlayClosed) {
 TEST_P(ToastManagerImplTest, ToastsCanPersistOnHover) {
   std::string toast_id = "TOAST_ID_" + base::NumberToString(GetToastSerial());
 
-  ToastData toast_data(toast_id, ToastCatalogName::kToastManagerUnittest,
+  ToastData toast_data(toast_id, ToastCatalogName::kTestCatalogName,
                        /*text=*/u"");
   toast_data.persist_on_hover = true;
 
@@ -1161,7 +1161,7 @@ TEST_P(ToastManagerImplTest, ShowAndCloseToastsOnAllRootWindows) {
     // is not `kDismissButton` then we do not need a dismiss button on the
     // toast.
     ToastData toast_data(
-        toast_id, ToastCatalogName::kToastManagerUnittest,
+        toast_id, ToastCatalogName::kTestCatalogName,
         /*text=*/u"",
         /*duration=*/test_case.source == CancellationSource::kToastDuration
             ? ToastData::kDefaultToastDuration
@@ -1211,7 +1211,7 @@ TEST_P(ToastManagerImplTest, ToastsThatPersistOnHoverOnAllRootWindows) {
   std::string toast_id = "TOAST_ID_" + base::NumberToString(GetToastSerial());
 
   // Create a basic toast with `ToastData::kDefaultToastDuration` as duration.
-  ToastData toast_data(toast_id, ToastCatalogName::kToastManagerUnittest,
+  ToastData toast_data(toast_id, ToastCatalogName::kTestCatalogName,
                        /*text=*/u"");
 
   // Indicate that the toast will show on all root windows and persist on hover.
@@ -1266,7 +1266,7 @@ TEST_P(ToastManagerImplTest, ExpiredCallbackNotCalledOnRootWindowRemoved) {
   std::string toast_id = "TOAST_ID_" + base::NumberToString(GetToastSerial());
 
   // Create a basic toast with `ToastData::kDefaultToastDuration` as duration.
-  ToastData toast_data(toast_id, ToastCatalogName::kToastManagerUnittest,
+  ToastData toast_data(toast_id, ToastCatalogName::kTestCatalogName,
                        /*text=*/u"");
 
   // Indicate that the toast will show on all root windows.
@@ -1311,7 +1311,7 @@ TEST_P(ToastManagerImplTest,
   std::string toast_id = "TOAST_ID_" + base::NumberToString(GetToastSerial());
 
   // Create a basic toast with `ToastData::kDefaultToastDuration` as duration.
-  ToastData toast_data(toast_id, ToastCatalogName::kToastManagerUnittest,
+  ToastData toast_data(toast_id, ToastCatalogName::kTestCatalogName,
                        /*text=*/u"");
 
   // Indicate that the toast will show on all root windows and persist on hover.

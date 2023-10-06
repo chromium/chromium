@@ -244,7 +244,7 @@ enum class ToastCatalogName {
   kEncourageUnlock = 12,
   kNetworkAutoConnect = 13,
   kAssistantLoading = 14,
-  kToastManagerUnittest = 15,
+  kTestCatalogName = 15,
   kMaximumDeskLaunchTemplate = 16,
   kEnterOverviewGesture = 17,
   kExitOverviewGesture = 18,
