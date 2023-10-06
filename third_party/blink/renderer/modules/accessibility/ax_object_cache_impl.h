@@ -209,8 +209,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // corresponded with an AXLayoutObject (useful for subtrees that lose layout).
   void RemoveSubtreeWithFlatTraversal(const Node*,
                                       bool remove_root = true,
-                                      bool notify_parent = true,
-                                      bool only_layout_objects = false);
+                                      bool notify_parent = true);
   void RemoveSubtreeWhenSafe(Node*, bool remove_root = true) override;
 
   // Remove the cached subtree of included AXObjects. If |remove_root| is false,
