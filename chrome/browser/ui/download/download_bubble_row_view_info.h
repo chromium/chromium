@@ -7,6 +7,7 @@
 
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/download/download_bubble_info.h"
+#include "chrome/browser/ui/download/download_item_mode.h"
 
 namespace offline_item_collection {
 class ContentId;
@@ -18,7 +19,15 @@ class DownloadBubbleRowViewInfoObserver : public base::CheckedObserver {
   DownloadBubbleRowViewInfoObserver();
   ~DownloadBubbleRowViewInfoObserver() override;
 
+  // Called whenever the info changes
   virtual void OnInfoChanged() {}
+
+  // Called when the download changes state.
+  virtual void OnDownloadStateChanged(
+      download::DownloadItem::DownloadState old_state,
+      download::DownloadItem::DownloadState new_state) {}
+
+  // Called when the download is destroyed.
   virtual void OnDownloadDestroyed(
       const offline_items_collection::ContentId& id) {}
 };
@@ -32,6 +41,7 @@ class DownloadBubbleRowViewInfo
   ~DownloadBubbleRowViewInfo() override;
 
   DownloadUIModel* model() const { return model_.get(); }
+  download::DownloadItemMode mode() const { return mode_; }
 
  private:
   // Overrides DownloadUIModel::Delegate:
@@ -41,6 +51,13 @@ class DownloadBubbleRowViewInfo
       const offline_items_collection::ContentId& id) override;
 
   DownloadUIModel::DownloadUIModelPtr model_;
+
+  // Cached attributes of the model. This helps filter when we have to update
+  // the other fields.
+  download::DownloadItemMode mode_ = download::DownloadItemMode::kNormal;
+  download::DownloadItem::DownloadState state_ =
+      download::DownloadItem::IN_PROGRESS;
+  bool is_paused_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_BUBBLE_ROW_VIEW_INFO_H_

@@ -143,37 +143,6 @@ bool DownloadBubbleRowView::UpdateBubbleUIInfo(bool initial_setup) {
   if (!info_->model()) {
     return false;
   }
-  auto mode = download::GetDesiredDownloadItemMode(info_->model());
-  auto state = info_->model()->GetState();
-  bool is_paused = info_->model()->IsPaused();
-  if (!initial_setup && (mode_ == mode) && (state_ == state) &&
-      (is_paused_ == is_paused)) {
-    return false;
-  }
-
-  // Announce completion of downloads
-  if (state == download::DownloadItem::COMPLETE && !initial_setup &&
-      state_ != state) {
-    const std::u16string alert_text = l10n_util::GetStringFUTF16(
-        IDS_DOWNLOAD_COMPLETE_ACCESSIBLE_ALERT,
-        info_->model()->GetFileNameToReportUser().LossyDisplayName());
-    GetViewAccessibility().AnnounceText(alert_text);
-  }
-
-  // When in progress, announce the progress immediately and start the timer for
-  // further updates.
-  if (state == download::DownloadItem::IN_PROGRESS &&
-      (initial_setup || state_ != state)) {
-    AnnounceInProgressAlert();
-    accessible_alert_in_progress_timer_.Reset();
-  } else if (!initial_setup && state_ == download::DownloadItem::IN_PROGRESS &&
-             state != state_) {
-    accessible_alert_in_progress_timer_.Stop();
-  }
-
-  mode_ = mode;
-  state_ = state;
-  is_paused_ = is_paused;
 
   // If either of mode or state changes, or if it is the initial setup,
   // we might need to change UI.
@@ -189,6 +158,13 @@ void DownloadBubbleRowView::UpdateRow(bool initial_setup) {
   if (!info_->model()) {
     return;
   }
+
+  if (initial_setup &&
+      info_->model()->GetState() == download::DownloadItem::IN_PROGRESS) {
+    AnnounceInProgressAlert();
+    accessible_alert_in_progress_timer_.Reset();
+  }
+
   bool ui_info_changed = UpdateBubbleUIInfo(initial_setup);
   if (ui_info_changed) {
     RecordMetricsOnUpdate();
@@ -599,8 +575,9 @@ views::View::Views DownloadBubbleRowView::GetChildrenInZOrder() {
 bool DownloadBubbleRowView::OnMouseDragged(const ui::MouseEvent& event) {
   // Handle drag (file copy) operations.
   // Drag and drop should only be activated in normal mode.
-  if (mode_ != download::DownloadItemMode::kNormal)
+  if (info_->mode() != download::DownloadItemMode::kNormal) {
     return true;
+  }
 
   if (!drag_start_point_)
     drag_start_point_ = event.location();
@@ -640,8 +617,9 @@ void DownloadBubbleRowView::OnMouseExited(const ui::MouseEvent& event) {
 
 void DownloadBubbleRowView::OnMouseCaptureLost() {
   // Drag and drop should only be activated in normal mode.
-  if (mode_ != download::DownloadItemMode::kNormal)
+  if (info_->mode() != download::DownloadItemMode::kNormal) {
     return;
+  }
 
   if (dragging_) {
     // Starting a drag results in a MouseCaptureLost.
@@ -1110,8 +1088,31 @@ void DownloadBubbleRowView::OnInfoChanged() {
   navigation_handler_->ResizeDialog();
 }
 
-void DownloadBubbleRowView::OnDownloadDestroyed(
-    const offline_items_collection::ContentId& id) {}
+void DownloadBubbleRowView::OnDownloadStateChanged(
+    download::DownloadItem::DownloadState old_state,
+    download::DownloadItem::DownloadState new_state) {
+  CHECK(old_state != new_state);
+
+  // Announce completion of downloads
+  if (new_state == download::DownloadItem::COMPLETE) {
+    const std::u16string alert_text = l10n_util::GetStringFUTF16(
+        IDS_DOWNLOAD_COMPLETE_ACCESSIBLE_ALERT,
+        info_->model()->GetFileNameToReportUser().LossyDisplayName());
+    GetViewAccessibility().AnnounceText(alert_text);
+  }
+
+  // When in progress, announce the progress immediately and start the timer for
+  // further updates.
+  if (new_state == download::DownloadItem::IN_PROGRESS) {
+    AnnounceInProgressAlert();
+    accessible_alert_in_progress_timer_.Reset();
+  }
+
+  // When no longer in progress, stop announcing.
+  if (old_state == download::DownloadItem::IN_PROGRESS) {
+    accessible_alert_in_progress_timer_.Stop();
+  }
+}
 
 void DownloadBubbleRowView::SimulateMainButtonClickForTesting(
     const ui::Event& event) {

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
+#include "components/download/public/common/download_item.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
@@ -166,8 +167,9 @@ class DownloadBubbleRowView : public views::View,
 
   // DownloadBubbleRowViewInfoObserver implementation:
   void OnInfoChanged() override;
-  void OnDownloadDestroyed(
-      const offline_items_collection::ContentId& id) override;
+  void OnDownloadStateChanged(
+      download::DownloadItem::DownloadState old_state,
+      download::DownloadItem::DownloadState new_state) override;
 
   // The icon for the file. We get platform-specific file type icons from
   // IconLoader (see below).
@@ -223,10 +225,7 @@ class DownloadBubbleRowView : public views::View,
 
   base::WeakPtr<Browser> browser_ = nullptr;
 
-  download::DownloadItemMode mode_;
-  download::DownloadItem::DownloadState state_;
   DownloadUIModel::BubbleUIInfo ui_info_;
-  bool is_paused_;
 
   // The last override icon, e.g. an incognito or warning icon. If this is
   // null, we should either use the filetype icon or a default icon.
