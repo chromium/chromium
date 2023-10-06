@@ -59,7 +59,8 @@ using content::BrowserContext;
 using content::WebContents;
 using content::WebContentsTester;
 using permissions::PermissionAction;
-using GrantStatus = ChromeFileSystemAccessPermissionContext::GrantStatus;
+using PersistedGrantStatus =
+    ChromeFileSystemAccessPermissionContext::PersistedGrantStatus;
 using GrantType = ChromeFileSystemAccessPermissionContext::GrantType;
 using HandleType = ChromeFileSystemAccessPermissionContext::HandleType;
 using PathType = ChromeFileSystemAccessPermissionContext::PathType;
@@ -1562,8 +1563,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, OnWebAppInstalled) {
   // revoked and the grant status is set to current.
   ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
               testing::IsEmpty());
-  EXPECT_EQ(permission_context()->GetGrantStatusForTesting(kTestOrigin),
-            GrantStatus::kCurrent);
+  EXPECT_EQ(
+      permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin),
+      PersistedGrantStatus::kCurrent);
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -1659,8 +1661,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
   ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
               testing::SizeIs(1));
-  EXPECT_EQ(permission_context()->GetGrantStatusForTesting(kTestOrigin),
-            GrantStatus::kLoaded);
+  EXPECT_EQ(
+      permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin),
+      PersistedGrantStatus::kLoaded);
 
   // Uninstall the web app for `kTestOrigin`, while there are persistent grants
   // and no granted active grants.
@@ -1671,8 +1674,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // active grants at the time the web app was uninstalled.
   ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
               testing::IsEmpty());
-  EXPECT_EQ(permission_context()->GetGrantStatusForTesting(kTestOrigin),
-            GrantStatus::kCurrent);
+  EXPECT_EQ(
+      permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin),
+      PersistedGrantStatus::kCurrent);
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -1744,18 +1748,20 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       OnLastPageFromOriginClosed_GrantStatusUpdated) {
+       OnLastPageFromOriginClosed_PersistedGrantStatusUpdated) {
   // Create a current grant by triggering the restore prompt, and accepting it.
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
   TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin);
-  EXPECT_EQ(permission_context()->GetGrantStatusForTesting(kTestOrigin),
-            GrantStatus::kCurrent);
+  EXPECT_EQ(
+      permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin),
+      PersistedGrantStatus::kCurrent);
   // The grant status is updated to loaded, as a result of the last tab being
   // navigated away from.
   permission_context()->OnLastPageFromOriginClosed(kTestOrigin);
-  EXPECT_EQ(permission_context()->GetGrantStatusForTesting(kTestOrigin),
-            GrantStatus::kLoaded);
+  EXPECT_EQ(
+      permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin),
+      PersistedGrantStatus::kLoaded);
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,

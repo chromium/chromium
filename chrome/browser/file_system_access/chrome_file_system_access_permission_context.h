@@ -50,10 +50,10 @@ class BrowserContext;
 // 2. Persistent permissions, which are stored via ObjectPermissionContextBase,
 //    allow for auto-granting permissions that the user had given access to
 //    prior. Before user accepts the Extend Permission prompt, the permission
-//    objects are simply "dormant grants", representing recently granted
-//    permission, which are created together with active permissions. After
-//    user accepts the Extend Permission prompt, dormant grants become
-//    "extended grants", which can auto-grant permissions.
+//    objects are simply "shadow grants" or "dormant grants", representing
+//    recently granted permission, which are created together with active
+//    permissions. After user accepts the Extend Permission prompt, dormant
+//    grants become "extended grants", which can auto-grant permissions.
 //
 // All methods must be called on the UI thread.
 class ChromeFileSystemAccessPermissionContext
@@ -66,25 +66,9 @@ class ChromeFileSystemAccessPermissionContext
 #endif
 {
  public:
-  // Represents the origin-scoped state for a given origin's permission grants.
-  // The associated `grant_status` value is stored on the `OriginState`, for
-  // the `active_permissions_map`.
-  // TODO(crbug.com/1011533): Update naming of this enum to better reflect
-  // its purpose, and move the definition to `OriginState` if needed.
-  enum class GrantStatus {
-    // Origin state has been loaded, and persisted grants can may represent
-    // Dormant grants if they exist, or Extended grants if Extended permissions
-    // are enabled.
-    kLoaded,
-    // Persisted grants are synced for this session and represent Shadow or
-    // Extended grants.
-    kCurrent,
-    // Persisted grants are in dormant state due to being backgrounded.
-    kBackgrounded
-  };
-  enum class GrantType { kRead, kWrite };
-  // This value should not be stored, and should only be used to check the
-  // state of persisted grants, using the `GetPersistedGrantType()` method.
+  // Represents the type of persisted grant. This value should not be stored
+  // and should only be used to check the state of persisted grants,
+  // using the `GetPersistedGrantType()` method.
   enum class PersistedGrantType {
     // Represents a grant that was granted access on previous visit.
     // Extended Permissions is not enabled for the given origin.
@@ -100,6 +84,22 @@ class ChromeFileSystemAccessPermissionContext
     // used to auto-grant permission requests.
     kExtended,
   };
+
+  // Represents the origin-scoped state that helps determining
+  // `PersistedGrantType`.
+  enum class PersistedGrantStatus {
+    // Origin state has been loaded, and persisted grants can may represent
+    // dormant grants if they exist, or extended grants if the origin has
+    // extended permission enabled.
+    kLoaded,
+    // Persisted grants are synced for this session and represent Shadow or
+    // Extended grants.
+    kCurrent,
+    // Persisted grants are in dormant state due to being backgrounded.
+    kBackgrounded
+  };
+
+  enum class GrantType { kRead, kWrite };
 
   explicit ChromeFileSystemAccessPermissionContext(
       content::BrowserContext* context,
@@ -186,10 +186,11 @@ class ChromeFileSystemAccessPermissionContext
 
   // This method may only be called when the Persistent Permissions feature
   // flag is enabled.
-  GrantStatus GetGrantStatusForTesting(const url::Origin& origin) {
+  PersistedGrantStatus GetPersistedGrantStatusForTesting(
+      const url::Origin& origin) {
     CHECK(base::FeatureList::IsEnabled(
         features::kFileSystemAccessPersistentPermissions));
-    return GetGrantStatus(origin);
+    return GetPersistedGrantStatus(origin);
   }
 
   bool RevokeActiveGrantsForTesting(
@@ -244,7 +245,7 @@ class ChromeFileSystemAccessPermissionContext
   bool OriginHasWriteAccess(const url::Origin& origin);
 
   // Called by FileSystemAccessTabHelper when a top-level frame was navigated
-  // away from |origin| to some other origin. Is virtual for testing purposes.
+  // away from `origin` to some other origin. Is virtual for testing purposes.
   virtual void NavigatedAwayFromOrigin(const url::Origin& origin);
 
   content::BrowserContext* profile() const { return profile_; }
@@ -398,8 +399,9 @@ class ChromeFileSystemAccessPermissionContext
   // Retrieve the persisted grant type for a given origin.
   PersistedGrantType GetPersistedGrantType(const url::Origin& origin) const;
 
-  GrantStatus GetGrantStatus(const url::Origin& origin) const;
-  void SetGrantStatus(const url::Origin& origin, GrantStatus grant_status);
+  PersistedGrantStatus GetPersistedGrantStatus(const url::Origin& origin) const;
+  void SetPersistedGrantStatus(const url::Origin& origin,
+                               PersistedGrantStatus persisted_grant_status);
 
   // Similar to GetGrantedObjects() but returns only extended grants.
   std::vector<std::unique_ptr<Object>> GetExtendedPersistedObjects(
