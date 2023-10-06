@@ -50,7 +50,11 @@ const DBusTypeInfo& GetDBusTypeInfo<AdapterWithEnabled>(
 
 // static
 const char FlossManagerClient::kExportedCallbacksPath[] =
-    "/org/chromium/bluetooth/managerclient";
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "/org/chromium/bluetooth/manager/callback/lacros";
+#else
+    "/org/chromium/bluetooth/manager/callback";
+#endif
 
 // static
 const char FlossManagerClient::kObjectManagerPath[] = "/";

@@ -76,7 +76,11 @@ BatterySet::BatterySet(const BatterySet&) = default;
 BatterySet::~BatterySet() = default;
 
 const char FlossBatteryManagerClient::kExportedCallbacksPath[] =
-    "/org/chromium/bluetooth/batterymanagerclient";
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "/org/chromium/bluetooth/battery_manager/callback/lacros";
+#else
+    "/org/chromium/bluetooth/battery_manager/callback";
+#endif
 
 void FlossBatteryManagerClient::AddObserver(
     FlossBatteryManagerClient::FlossBatteryManagerClientObserver* observer) {

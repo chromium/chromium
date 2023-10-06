@@ -323,7 +323,11 @@ const char FlossSocketManager::kErrorInvalidCallback[] =
 
 // static
 const char FlossSocketManager::kExportedCallbacksPath[] =
-    "/org/chromium/bluetooth/socketmanager";
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "/org/chromium/bluetooth/socket_manager/callback/lacros";
+#else
+    "/org/chromium/bluetooth/socket_manager/callback";
+#endif
 
 // static
 std::unique_ptr<FlossSocketManager> FlossSocketManager::Create() {

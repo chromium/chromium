@@ -34,7 +34,11 @@ void HandleExported(const std::string& method_name,
 constexpr char FlossAdapterClient::kErrorUnknownAdapter[] =
     "org.chromium.Error.UnknownAdapter";
 constexpr char FlossAdapterClient::kExportedCallbacksPath[] =
-    "/org/chromium/bluetooth/adapterclient";
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "/org/chromium/bluetooth/adapter/callback/lacros";
+#else
+    "/org/chromium/bluetooth/adapter/callback";
+#endif
 static uint32_t callback_path_index_ = 0;
 
 void FlossAdapterClient::SetName(ResponseCallback<Void> callback,
