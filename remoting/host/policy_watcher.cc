@@ -83,8 +83,7 @@ std::unique_ptr<policy::SchemaRegistry> CreateSchemaRegistry() {
   // impact).
   policy::Schema schema = policy::Schema::Wrap(policy::GetChromeSchemaData());
 
-  std::unique_ptr<policy::SchemaRegistry> schema_registry(
-      new policy::SchemaRegistry());
+  auto schema_registry = std::make_unique<policy::SchemaRegistry>();
   schema_registry->RegisterComponent(GetPolicyNamespace(), schema);
   return schema_registry;
 }
@@ -395,9 +394,8 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateFromPolicyLoader(
     std::unique_ptr<policy::AsyncPolicyLoader> async_policy_loader) {
   std::unique_ptr<policy::SchemaRegistry> schema_registry =
       CreateSchemaRegistry();
-  std::unique_ptr<policy::AsyncPolicyProvider> policy_provider(
-      new policy::AsyncPolicyProvider(schema_registry.get(),
-                                      std::move(async_policy_loader)));
+  auto policy_provider = std::make_unique<policy::AsyncPolicyProvider>(
+      schema_registry.get(), std::move(async_policy_loader));
   policy_provider->Init(schema_registry.get());
 
   policy::PolicyServiceImpl::Providers providers;
