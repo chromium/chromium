@@ -38,7 +38,6 @@ constexpr char kActionIdWebDriveOfficeExcel[] = "open-web-drive-office-excel";
 constexpr char kActionIdWebDriveOfficePowerPoint[] =
     "open-web-drive-office-powerpoint";
 constexpr char kActionIdOpenInOffice[] = "open-in-office";
-constexpr char kActionIdOpenWeb[] = "OPEN_WEB";
 
 // UMA metric name that tracks the result of using a MS Office file outside
 // of Drive.
