@@ -3022,7 +3022,7 @@
   {
     "name": "enable-input-in-diagnostics-app",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-instant-start",
@@ -3276,7 +3276,7 @@
   {
     "name": "enable-only-show-new-shortcut-app",
     "owners": [ "jimmyxgong", "michaelcheco", "cros-peripherals@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-oop-print-drivers",
@@ -3561,7 +3561,7 @@
   {
     "name": "enable-shortcut-customization-app",
     "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-show-autofill-signatures",
