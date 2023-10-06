@@ -399,6 +399,51 @@ const NGLogicalAnchorReference* NGAnchorEvaluatorImpl::ResolveAnchorReference(
   return anchor_query->AnchorReference(*query_object_, implicit_anchor_);
 }
 
+const LayoutObject* NGAnchorEvaluatorImpl::DefaultAnchor() const {
+  if (!default_anchor_.has_value()) {
+    const NGLogicalAnchorReference* reference =
+        ResolveAnchorReference(*AnchorSpecifierValue::Default());
+    default_anchor_ = reference ? reference->layout_object : nullptr;
+  } else {
+#if DCHECK_IS_ON()
+    const NGLogicalAnchorReference* reference =
+        ResolveAnchorReference(*AnchorSpecifierValue::Default());
+    DCHECK_EQ(*default_anchor_, reference ? reference->layout_object : nullptr);
+#endif
+  }
+  return *default_anchor_;
+}
+
+const PaintLayer* NGAnchorEvaluatorImpl::DefaultAnchorScrollContainerLayer()
+    const {
+  if (!default_anchor_scroll_container_layer_.has_value()) {
+    // We won't reach here without a default anchor.
+    default_anchor_scroll_container_layer_ =
+        DefaultAnchor()->ContainingScrollContainerLayer(
+            true /*ignore_layout_view_for_fixed_pos*/);
+  } else {
+#if DCHECK_IS_ON()
+    DCHECK_EQ(*default_anchor_scroll_container_layer_,
+              DefaultAnchor()->ContainingScrollContainerLayer(
+                  true /*ignore_layout_view_for_fixed_pos*/));
+#endif
+  }
+  return *default_anchor_scroll_container_layer_;
+}
+
+bool NGAnchorEvaluatorImpl::ShouldUseScrollAdjustmentFor(
+    const LayoutObject* anchor) const {
+  if (!DefaultAnchor()) {
+    return false;
+  }
+  if (anchor == DefaultAnchor()) {
+    return true;
+  }
+  return anchor->ContainingScrollContainerLayer(
+             true /*ignore_layout_view_for_fixed_pos*/) ==
+         DefaultAnchorScrollContainerLayer();
+}
+
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
     const AnchorSpecifierValue& anchor_specifier,
     CSSAnchorValue anchor_value,
@@ -411,10 +456,19 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
   }
 
   DCHECK(AnchorQuery());
-  return AnchorQuery()->EvaluateAnchor(
-      *anchor_reference, anchor_value, percentage, available_size_,
-      container_converter_, self_writing_direction_, offset_to_padding_box_,
-      is_y_axis_, is_right_or_bottom_);
+  if (absl::optional<LayoutUnit> result = AnchorQuery()->EvaluateAnchor(
+          *anchor_reference, anchor_value, percentage, available_size_,
+          container_converter_, self_writing_direction_, offset_to_padding_box_,
+          is_y_axis_, is_right_or_bottom_)) {
+    bool& needs_scroll_adjustment = is_y_axis_ ? needs_scroll_adjustment_in_y_
+                                               : needs_scroll_adjustment_in_x_;
+    if (!needs_scroll_adjustment &&
+        ShouldUseScrollAdjustmentFor(anchor_reference->layout_object)) {
+      needs_scroll_adjustment = true;
+    }
+    return result;
+  }
+  return absl::nullopt;
 }
 
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(

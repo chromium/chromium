@@ -1354,10 +1354,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // See StickyPositionScrollingConstraints::constraining_rect.
   PhysicalRect ComputeStickyConstrainingRect() const;
 
-  bool HasAnchorPositionScrollTranslation() const;
+  bool NeedsAnchorPositionScrollAdjustment() const;
   PhysicalOffset AnchorPositionScrollTranslationOffset() const;
 
-  bool HasAnchorPositionScrollTranslationAffectedByViewportScrolling() const;
+  bool AnchorPositionScrollAdjustmentAfectedByViewportScrolling() const;
 
   bool HasScrollbarGutters(ScrollbarOrientation orientation) const;
 
@@ -1381,6 +1381,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   PositionFallbackNonOverflowingRanges() const;
 
   const NGBoxStrut& OutOfFlowInsetsForGetComputedStyle() const;
+
+  bool NeedsAnchorPositionScrollAdjustmentInX() const;
+  bool NeedsAnchorPositionScrollAdjustmentInY() const;
 
   using LayoutObject::GetBackgroundPaintLocation;
 

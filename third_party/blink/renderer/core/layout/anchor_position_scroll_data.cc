@@ -47,11 +47,26 @@ const Vector<NonOverflowingScrollRange>* GetNonOverflowingScrollRanges(
   return To<LayoutBox>(layout_object)->PositionFallbackNonOverflowingRanges();
 }
 
+// First return value for x axis, second for y axis.
+std::pair<bool, bool> CheckHasDefaultAnchorReferences(
+    const LayoutObject* layout_object) {
+  if (!layout_object || !layout_object->IsOutOfFlowPositioned()) {
+    return std::make_pair(false, false);
+  }
+  CHECK(layout_object->IsBox());
+  const LayoutBox* box = To<LayoutBox>(layout_object);
+  return std::make_pair(box->NeedsAnchorPositionScrollAdjustmentInX(),
+                        box->NeedsAnchorPositionScrollAdjustmentInY());
+}
+
 AnchorPositionScrollData::ScrollContainersData GetScrollContainersData(
     const LayoutObject* layout_object,
-    const LayoutObject* anchor_or_bounds) {
+    const LayoutObject* anchor_or_bounds,
+    bool accumulate_offsets_in_x = true,
+    bool accumulate_offsets_in_y = true) {
   AnchorPositionScrollData::ScrollContainersData result;
-  if (!layout_object || !anchor_or_bounds) {
+  if (!layout_object || !anchor_or_bounds ||
+      (!accumulate_offsets_in_x && !accumulate_offsets_in_y)) {
     return result;
   }
 
@@ -77,6 +92,15 @@ AnchorPositionScrollData::ScrollContainersData GetScrollContainersData(
       result.scroll_containers_include_viewport = true;
     }
   }
+
+  if (!accumulate_offsets_in_x) {
+    result.accumulated_scroll_offset.set_x(0);
+    result.accumulated_scroll_origin.set_x(0);
+  }
+  if (!accumulate_offsets_in_y) {
+    result.accumulated_scroll_offset.set_y(0);
+    result.accumulated_scroll_origin.set_y(0);
+  }
   return result;
 }
 
@@ -97,8 +121,20 @@ AnchorPositionScrollData::TakeAndCompareSnapshot(bool update) {
   DCHECK(IsActive());
 
   const LayoutObject* layout_object = owner_->GetLayoutObject();
+  bool needs_scroll_adjustment_in_x;
+  bool needs_scroll_adjustment_in_y;
+  std::tie(needs_scroll_adjustment_in_x, needs_scroll_adjustment_in_y) =
+      CheckHasDefaultAnchorReferences(layout_object);
+
+  const LayoutObject* anchor_default_object =
+      AnchorDefaultObject(layout_object);
   ScrollContainersData new_scrollers_data = GetScrollContainersData(
-      layout_object, AnchorDefaultObject(layout_object));
+      layout_object, anchor_default_object, needs_scroll_adjustment_in_x,
+      needs_scroll_adjustment_in_y);
+  if (!new_scrollers_data.scroll_container_ids.size()) {
+    needs_scroll_adjustment_in_x = false;
+    needs_scroll_adjustment_in_y = false;
+  }
 
   gfx::Vector2dF new_additional_bounds_scroll_offset;
   if (const LayoutObject* position_fallback_bounds_object =
@@ -123,7 +159,12 @@ AnchorPositionScrollData::TakeAndCompareSnapshot(bool update) {
         !IsFallbackPositionValid(new_scrollers_data.accumulated_scroll_offset,
                                  new_additional_bounds_scroll_offset)) {
       diff = SnapshotDiff::kScrollersOrFallbackPosition;
-    } else if (anchor_scrolled) {
+    } else if (anchor_scrolled ||
+               needs_scroll_adjustment_in_x_ != needs_scroll_adjustment_in_x ||
+               needs_scroll_adjustment_in_y_ != needs_scroll_adjustment_in_y) {
+      // When needs_scroll_adjustment_in_x/y changes, we still need to update
+      // paint properties so that compositor can calculate the translation
+      // offset correctly.
       diff = SnapshotDiff::kOffsetOnly;
     } else {
       // When the additional bounds rect is scrolled without invalidating the
@@ -139,6 +180,8 @@ AnchorPositionScrollData::TakeAndCompareSnapshot(bool update) {
     additional_bounds_scroll_offset_ = new_additional_bounds_scroll_offset;
     is_affected_by_viewport_scrolling_ =
         new_scrollers_data.scroll_containers_include_viewport;
+    needs_scroll_adjustment_in_x_ = needs_scroll_adjustment_in_x;
+    needs_scroll_adjustment_in_y_ = needs_scroll_adjustment_in_y;
   }
 
   return diff;

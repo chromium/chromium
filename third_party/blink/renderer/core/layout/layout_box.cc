@@ -2588,7 +2588,7 @@ PhysicalOffset LayoutBox::OffsetFromContainerInternal(
   if (o->IsScrollContainer())
     offset += OffsetFromScrollableContainer(o, ignore_scroll_offset);
 
-  if (HasAnchorPositionScrollTranslation()) {
+  if (NeedsAnchorPositionScrollAdjustment()) {
     offset += AnchorPositionScrollTranslationOffset();
   }
 
@@ -3022,7 +3022,7 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
 
   if (IsStickyPositioned()) {
     container_offset += StickyPositionOffset();
-  } else if (UNLIKELY(HasAnchorPositionScrollTranslation())) {
+  } else if (UNLIKELY(NeedsAnchorPositionScrollAdjustment())) {
     container_offset += AnchorPositionScrollTranslationOffset();
   }
 
@@ -4335,20 +4335,21 @@ PhysicalRect LayoutBox::ComputeStickyConstrainingRect() const {
   return constraining_rect;
 }
 
-bool LayoutBox::HasAnchorPositionScrollTranslation() const {
+bool LayoutBox::NeedsAnchorPositionScrollAdjustment() const {
   if (Element* element = DynamicTo<Element>(GetNode())) {
     return element->GetAnchorPositionScrollData() &&
-           element->GetAnchorPositionScrollData()->HasTranslation();
+           element->GetAnchorPositionScrollData()->NeedsScrollAdjustment();
   }
   return false;
 }
 
-bool LayoutBox::HasAnchorPositionScrollTranslationAffectedByViewportScrolling()
+bool LayoutBox::AnchorPositionScrollAdjustmentAfectedByViewportScrolling()
     const {
   if (Element* element = DynamicTo<Element>(GetNode())) {
     if (AnchorPositionScrollData* data =
             element->GetAnchorPositionScrollData()) {
-      return data->HasTranslation() && data->IsAffectedByViewportScrolling();
+      return data->NeedsScrollAdjustment() &&
+             data->IsAffectedByViewportScrolling();
     }
   }
   return false;
@@ -4396,6 +4397,20 @@ void ForEachAnchorQueryOnContainer(const LayoutBox& box, Function func) {
     }
   }
 }
+
+#if EXPENSIVE_DCHECKS_ARE_ON()
+template <typename Function>
+void AssertSameDataOnLayoutResults(
+    const LayoutBox::NGLayoutResultList& layout_results,
+    Function func) {
+  // When an out-of-flow box is fragmented, the position fallback results on all
+  // fragments should be the same.
+  for (wtf_size_t i = 1; i < layout_results.size(); ++i) {
+    DCHECK(func(layout_results[i]) == func(layout_results[i - 1]));
+  }
+}
+
+#endif
 
 }  // namespace
 
@@ -4451,10 +4466,9 @@ absl::optional<wtf_size_t> LayoutBox::PositionFallbackIndex() const {
   // We only need to check the first fragment, because when the box is
   // fragmented, position fallback results are duplicated on all fragments.
 #if EXPENSIVE_DCHECKS_ARE_ON()
-  for (wtf_size_t i = 1; i < layout_results.size(); ++i) {
-    DCHECK(layout_results[i]->PositionFallbackIndex() ==
-           layout_results[i - 1]->PositionFallbackIndex());
-  }
+  AssertSameDataOnLayoutResults(layout_results, [](const auto& result) {
+    return result->PositionFallbackIndex();
+  });
 #endif
   return layout_results.front()->PositionFallbackIndex();
 }
@@ -4484,10 +4498,9 @@ const NGBoxStrut& LayoutBox::OutOfFlowInsetsForGetComputedStyle() const {
   // We only need to check the first fragment, because when the box is
   // fragmented, insets are duplicated on all fragments.
 #if EXPENSIVE_DCHECKS_ARE_ON()
-  for (wtf_size_t i = 1; i < layout_results.size(); ++i) {
-    DCHECK_EQ(layout_results[i]->OutOfFlowInsetsForGetComputedStyle(),
-              layout_results[i - 1]->OutOfFlowInsetsForGetComputedStyle());
-  }
+  AssertSameDataOnLayoutResults(layout_results, [](const auto& result) {
+    return result->OutOfFlowInsetsForGetComputedStyle();
+  });
 #endif
   return GetLayoutResults().front()->OutOfFlowInsetsForGetComputedStyle();
 }
@@ -4501,6 +4514,36 @@ bool LayoutBox::UsesPositionFallbackStyle() const {
   }
   // TODO(crbug.com/1475321): Return true for the new auto fallback syntax.
   return false;
+}
+
+bool LayoutBox::NeedsAnchorPositionScrollAdjustmentInX() const {
+  const auto& layout_results = GetLayoutResults();
+  if (layout_results.empty()) {
+    return false;
+  }
+  // We only need to check the first fragment, because when the box is
+  // fragmented, position fallback results are duplicated on all fragments.
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  AssertSameDataOnLayoutResults(layout_results, [](const auto& result) {
+    return result->NeedsAnchorPositionScrollAdjustmentInX();
+  });
+#endif
+  return layout_results.front()->NeedsAnchorPositionScrollAdjustmentInX();
+}
+
+bool LayoutBox::NeedsAnchorPositionScrollAdjustmentInY() const {
+  const auto& layout_results = GetLayoutResults();
+  if (layout_results.empty()) {
+    return false;
+  }
+  // We only need to check the first fragment, because when the box is
+  // fragmented, position fallback results are duplicated on all fragments.
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  AssertSameDataOnLayoutResults(layout_results, [](const auto& result) {
+    return result->NeedsAnchorPositionScrollAdjustmentInY();
+  });
+#endif
+  return layout_results.front()->NeedsAnchorPositionScrollAdjustmentInY();
 }
 
 WritingModeConverter LayoutBox::CreateWritingModeConverter() const {

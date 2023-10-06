@@ -481,7 +481,7 @@ static bool NeedsStickyTranslation(const LayoutObject& object) {
 
 static bool NeedsAnchorPositionScrollTranslation(const LayoutObject& object) {
   if (const LayoutBox* box = DynamicTo<LayoutBox>(object))
-    return box->HasAnchorPositionScrollTranslation();
+    return box->NeedsAnchorPositionScrollAdjustment();
   return false;
 }
 
@@ -834,6 +834,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
               anchor_position_scroll_data.ScrollContainerIds().end());
       state.anchor_position_scrollers_data->accumulated_scroll_origin =
           anchor_position_scroll_data.AccumulatedScrollOrigin();
+      state.anchor_position_scrollers_data->needs_scroll_adjustment_in_x =
+          anchor_position_scroll_data.NeedsScrollAdjustmentInX();
+      state.anchor_position_scrollers_data->needs_scroll_adjustment_in_y =
+          anchor_position_scroll_data.NeedsScrollAdjustmentInY();
 
       OnUpdateTransform(properties_->UpdateAnchorPositionScrollTranslation(
           *context_.current.transform, std::move(state)));

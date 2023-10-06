@@ -211,6 +211,15 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     absl::optional<LayoutUnit> block_estimate;
     NGLogicalOutOfFlowDimensions node_dimensions;
 
+    // The offset from the OOF to the top of the fragmentation context root.
+    // This should only be used when laying out a fragmentainer descendant.
+    LogicalOffset original_offset;
+
+    // These fields are set only if this |OffsetInfo| is calculated from a
+    // position fallback style, either from a @try rule or auto-generated.
+    absl::optional<wtf_size_t> fallback_index;
+    Vector<NonOverflowingScrollRange> non_overflowing_ranges;
+
     bool inline_size_depends_on_min_max_sizes = false;
 
     // If true, a cached layout result was found. See the comment for
@@ -219,15 +228,13 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
     bool disable_first_tier_cache = false;
 
-    // The offset from the OOF to the top of the fragmentation context root.
-    // This should only be used when laying out a fragmentainer descendant.
-    LogicalOffset original_offset;
-
-    // These fields are set only if this |OffsetInfo| is calculated from a
-    // position fallback style, either from a @try rule or auto-generated.
     bool uses_fallback_style = false;
-    absl::optional<wtf_size_t> fallback_index;
-    Vector<NonOverflowingScrollRange> non_overflowing_ranges;
+
+    // True if this element is anchor-positioned, and any anchor reference in
+    // the axis is in the same scroll container as the default anchor, in which
+    // case we need scroll adjustment in the axis after layout.
+    bool needs_scroll_adjustment_in_x = false;
+    bool needs_scroll_adjustment_in_y = false;
 
     void Trace(Visitor* visitor) const;
   };

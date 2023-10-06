@@ -40,7 +40,7 @@ class AnchorPositionScrollDataTest : public RenderingTest,
   }
 };
 
-TEST_F(AnchorPositionScrollDataTest, HasDataAndTranslation) {
+TEST_F(AnchorPositionScrollDataTest, HasDataAndScrollAdjustment) {
   SetBodyInnerHTML(R"HTML(
     <div style="position: relative">
       <div style="overflow: scroll; height: 20px;">
@@ -49,13 +49,20 @@ TEST_F(AnchorPositionScrollDataTest, HasDataAndTranslation) {
         dolor sit amet
         <div style="height: 100px"></div>
       </div>
-      <div id="anchored" style="position: absolute; anchor-default: --a1">
+      <div id="anchored"
+           style="position: absolute; anchor-default: --a1; top: anchor(top)">
         anchored
       </div>
-      <div id="no-anchor" style="position: absolute; anchor-default: --b1">
+      <div id="no-anchor-usage"
+           style="position: absolute; anchor-default: --a1;">
+        anchor not used in any anchor function
+      </div>
+      <div id="no-anchor"
+           style="position: absolute; anchor-default: --b1; top: anchor(top)">
         anchor not found
       </div>
-      <div id="not-anchor-positioned" style="anchor-default: --a1">
+      <div id="not-anchor-positioned"
+           style="anchor-default: --a1; top: anchor(top)">
         not anchor positioned
       </div>
     </div>
@@ -63,11 +70,17 @@ TEST_F(AnchorPositionScrollDataTest, HasDataAndTranslation) {
 
   const Element* anchored = GetElementById("anchored");
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
-  EXPECT_TRUE(anchored->GetAnchorPositionScrollData()->HasTranslation());
+  EXPECT_TRUE(anchored->GetAnchorPositionScrollData()->NeedsScrollAdjustment());
+
+  const Element* no_anchor_usage = GetElementById("no-anchor-usage");
+  EXPECT_TRUE(no_anchor_usage->GetAnchorPositionScrollData());
+  EXPECT_FALSE(
+      no_anchor_usage->GetAnchorPositionScrollData()->NeedsScrollAdjustment());
 
   const Element* no_anchor = GetElementById("no-anchor");
   EXPECT_TRUE(no_anchor->GetAnchorPositionScrollData());
-  EXPECT_FALSE(no_anchor->GetAnchorPositionScrollData()->HasTranslation());
+  EXPECT_FALSE(
+      no_anchor->GetAnchorPositionScrollData()->NeedsScrollAdjustment());
 
   const Element* not_anchor_positioned =
       GetElementById("not-anchor-positioned");

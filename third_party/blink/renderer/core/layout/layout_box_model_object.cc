@@ -704,9 +704,9 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
         reference_point +=
             To<LayoutBox>(offset_parent_object)->PhysicalLocation();
       }
-    } else if (UNLIKELY(
-                   IsBox() &&
-                   To<LayoutBox>(this)->HasAnchorPositionScrollTranslation())) {
+    } else if (UNLIKELY(IsBox() &&
+                        To<LayoutBox>(this)
+                            ->NeedsAnchorPositionScrollAdjustment())) {
       reference_point +=
           To<LayoutBox>(this)->AnchorPositionScrollTranslationOffset();
     }

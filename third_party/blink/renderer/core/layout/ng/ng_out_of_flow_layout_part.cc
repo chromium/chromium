@@ -2009,6 +2009,11 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
     }
   }
 
+  offset_info.needs_scroll_adjustment_in_x =
+      anchor_evaluator->NeedsScrollAdjustmentInX();
+  offset_info.needs_scroll_adjustment_in_y =
+      anchor_evaluator->NeedsScrollAdjustmentInY();
+
   return offset_info;
 }
 
@@ -2043,6 +2048,10 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
 
   layout_result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
       offset_info.offset);
+
+  layout_result->GetMutableForOutOfFlow().SetNeedsScrollAdjustment(
+      offset_info.needs_scroll_adjustment_in_x,
+      offset_info.needs_scroll_adjustment_in_y);
 
   if (offset_info.uses_fallback_style) {
     layout_result->GetMutableForOutOfFlow().SetPositionFallbackResult(

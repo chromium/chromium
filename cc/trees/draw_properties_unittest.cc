@@ -5636,6 +5636,8 @@ class DrawPropertiesAnchorPositionScrollTest : public DrawPropertiesTest {
                      ->transform_tree_mutable()
                      .EnsureAnchorPositionScrollersData(
                          anchored->transform_tree_index());
+    data.needs_scroll_adjustment_in_x = true;
+    data.needs_scroll_adjustment_in_y = true;
     for (int scroller_id = inner_most_scroll_container_id;
          scroller_id != kInvalidPropertyNodeId;) {
       const ScrollNode* scroll_node =

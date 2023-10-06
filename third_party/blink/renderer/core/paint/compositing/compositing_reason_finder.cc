@@ -225,7 +225,7 @@ CompositingReasons CompositingReasonsForViewportScrollEffect(
           OverscrollType::kTransform) {
     reasons |= CompositingReason::kFixedPosition;
     if (!To<LayoutBox>(layout_object)
-             .HasAnchorPositionScrollTranslationAffectedByViewportScrolling()) {
+             .AnchorPositionScrollAdjustmentAfectedByViewportScrolling()) {
       reasons |= CompositingReason::kUndoOverscroll;
     }
   }
@@ -255,7 +255,7 @@ CompositingReasons CompositingReasonsForScrollDependentPosition(
         reasons |= CompositingReason::kFixedPosition;
     }
 
-    if (box->HasAnchorPositionScrollTranslation()) {
+    if (box->NeedsAnchorPositionScrollAdjustment()) {
       reasons |= CompositingReason::kAnchorPosition;
     }
   }

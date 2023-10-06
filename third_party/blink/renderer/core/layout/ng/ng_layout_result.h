@@ -187,6 +187,15 @@ class CORE_EXPORT NGLayoutResult final
                       : nullptr;
   }
 
+  bool NeedsAnchorPositionScrollAdjustmentInX() const {
+    return rare_data_ &&
+           rare_data_->needs_anchor_position_scroll_adjustment_in_x();
+  }
+  bool NeedsAnchorPositionScrollAdjustmentInY() const {
+    return rare_data_ &&
+           rare_data_->needs_anchor_position_scroll_adjustment_in_y();
+  }
+
   // Get the path to the column spanner (if any) that interrupted column layout.
   const NGColumnSpannerPath* ColumnSpannerPath() const {
     if (rare_data_) {
@@ -513,6 +522,19 @@ class CORE_EXPORT NGLayoutResult final
       }
     }
 
+    void SetNeedsScrollAdjustment(bool needs_scroll_adjustment_in_x,
+                                  bool needs_scroll_adjustment_in_y) {
+      if (!needs_scroll_adjustment_in_x && !needs_scroll_adjustment_in_y) {
+        return;
+      }
+      layout_result_->EnsureRareData()
+          ->set_needs_anchor_position_scroll_adjustment_in_x(
+              needs_scroll_adjustment_in_x);
+      layout_result_->EnsureRareData()
+          ->set_needs_anchor_position_scroll_adjustment_in_y(
+              needs_scroll_adjustment_in_y);
+    }
+
     void SetPositionFallbackResult(
         absl::optional<wtf_size_t> fallback_index,
         const Vector<NonOverflowingScrollRange>& non_overflowing_ranges) {
@@ -612,8 +634,12 @@ class CORE_EXPORT NGLayoutResult final
         LineBoxBfcBlockOffsetIsSetFlag::DefineNextValue<bool, 1>;
     using OutOfFlowPositionedOffsetIsSetFlag =
         PositionFallbackResultIsSetFlag::DefineNextValue<bool, 1>;
+    using NeedsAnchorPositionScrollAdjustmentInXFlag =
+        OutOfFlowPositionedOffsetIsSetFlag::DefineNextValue<bool, 1>;
+    using NeedsAnchorPositionScrollAdjustmentInYFlag =
+        NeedsAnchorPositionScrollAdjustmentInXFlag::DefineNextValue<bool, 1>;
     using DataUnionTypeValue =
-        OutOfFlowPositionedOffsetIsSetFlag::DefineNextValue<uint8_t, 3>;
+        NeedsAnchorPositionScrollAdjustmentInYFlag::DefineNextValue<uint8_t, 3>;
 
     struct BlockData {
       GC_PLUGIN_IGNORE("crbug.com/1146383")
@@ -676,6 +702,22 @@ class CORE_EXPORT NGLayoutResult final
 
     void set_oof_positioned_offset_is_set(bool flag) {
       return bit_field.set<OutOfFlowPositionedOffsetIsSetFlag>(flag);
+    }
+
+    bool needs_anchor_position_scroll_adjustment_in_x() const {
+      return bit_field.get<NeedsAnchorPositionScrollAdjustmentInXFlag>();
+    }
+
+    void set_needs_anchor_position_scroll_adjustment_in_x(bool flag) {
+      return bit_field.set<NeedsAnchorPositionScrollAdjustmentInXFlag>(flag);
+    }
+
+    bool needs_anchor_position_scroll_adjustment_in_y() const {
+      return bit_field.get<NeedsAnchorPositionScrollAdjustmentInYFlag>();
+    }
+
+    void set_needs_anchor_position_scroll_adjustment_in_y(bool flag) {
+      return bit_field.set<NeedsAnchorPositionScrollAdjustmentInYFlag>(flag);
     }
 
     DataUnionType data_union_type() const {

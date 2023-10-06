@@ -27,6 +27,7 @@ class LayoutObject;
 class NGLogicalAnchorQuery;
 class NGLogicalAnchorQueryMap;
 struct NGLogicalAnchorReference;
+class PaintLayer;
 
 using NGAnchorKey = absl::variant<const ScopedCSSName*, const LayoutObject*>;
 
@@ -299,6 +300,16 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
   // `anchor-size()` functions.
   bool HasAnchorFunctions() const { return has_anchor_functions_; }
 
+  // Returns true if any anchor reference in the axis is in the same scroll
+  // container as the default anchor, in which case we need scroll adjustment in
+  // the axis after layout.
+  bool NeedsScrollAdjustmentInX() const {
+    return needs_scroll_adjustment_in_x_;
+  }
+  bool NeedsScrollAdjustmentInY() const {
+    return needs_scroll_adjustment_in_y_;
+  }
+
   // This must be set before evaluating `anchor()` function.
   void SetAxis(bool is_y_axis,
                bool is_right_or_bottom,
@@ -321,6 +332,7 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
   const NGLogicalAnchorQuery* AnchorQuery() const;
   const NGLogicalAnchorReference* ResolveAnchorReference(
       const AnchorSpecifierValue& anchor_specifier) const;
+  bool ShouldUseScrollAdjustmentFor(const LayoutObject* anchor) const;
 
   absl::optional<LayoutUnit> EvaluateAnchor(
       const AnchorSpecifierValue& anchor_specifier,
@@ -329,6 +341,9 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
   absl::optional<LayoutUnit> EvaluateAnchorSize(
       const AnchorSpecifierValue& anchor_specifier,
       CSSAnchorSizeValue anchor_size_value) const;
+
+  const LayoutObject* DefaultAnchor() const;
+  const PaintLayer* DefaultAnchorScrollContainerLayer() const;
 
   const LayoutObject* query_object_ = nullptr;
   mutable const NGLogicalAnchorQuery* anchor_query_ = nullptr;
@@ -340,11 +355,20 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
       {WritingMode::kHorizontalTb, TextDirection::kLtr}};
   WritingDirectionMode self_writing_direction_{WritingMode::kHorizontalTb,
                                                TextDirection::kLtr};
+
   PhysicalOffset offset_to_padding_box_;
   LayoutUnit available_size_;
+
+  // These fields will be populated during `anchor()` evaluation if needed.
+  mutable absl::optional<const LayoutObject*> default_anchor_;
+  mutable absl::optional<const PaintLayer*>
+      default_anchor_scroll_container_layer_;
+
   bool is_y_axis_ = false;
   bool is_right_or_bottom_ = false;
   mutable bool has_anchor_functions_ = false;
+  mutable bool needs_scroll_adjustment_in_x_ = false;
+  mutable bool needs_scroll_adjustment_in_y_ = false;
 };
 
 }  // namespace blink

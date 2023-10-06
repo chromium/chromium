@@ -310,6 +310,8 @@ struct CC_EXPORT AnchorPositionScrollersData {
 
   std::vector<ElementId> scroll_container_ids;
   gfx::Vector2d accumulated_scroll_origin;
+  bool needs_scroll_adjustment_in_x = false;
+  bool needs_scroll_adjustment_in_y = false;
 };
 
 struct StickyPositionNodeData {
