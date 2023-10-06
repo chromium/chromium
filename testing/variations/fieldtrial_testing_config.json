@@ -18458,6 +18458,22 @@
             ]
         }
     ],
+    "WaffleStudy": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled1",
+                    "enable_features": [
+                        "SearchEngineChoice",
+                        "SearchEngineChoiceFre"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebApkAllowIconUpdate": [
         {
             "platforms": [
