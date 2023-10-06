@@ -23156,6 +23156,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="4" label="ResumeSuccess"/>
   <int value="5" label="ResumeFailure"/>
   <int value="6" label="ResumePending"/>
+  <int value="7" label="ResumeSkippedUserMismatch"/>
 </enum>
 
 <enum name="CrosHibernateFileSystemStatus">
