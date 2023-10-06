@@ -268,12 +268,14 @@ FontCacheKey FontDescription::CacheKey(
     const FontFaceCreationParams& creation_params,
     bool is_unique_match) const {
   unsigned options =
-      static_cast<unsigned>(fields_.font_optical_sizing_) << 7 |  // bit 8
-      static_cast<unsigned>(fields_.synthetic_italic_) << 6 |     // bit 7
-      static_cast<unsigned>(fields_.synthetic_bold_) << 5 |       // bit 6
-      static_cast<unsigned>(fields_.text_rendering_) << 3 |       // bits 4-5
-      static_cast<unsigned>(fields_.orientation_) << 1 |          // bit 2-3
-      static_cast<unsigned>(fields_.subpixel_text_position_);     // bit 1
+      static_cast<unsigned>(fields_.font_synthesis_style_) << 9 |   // bit 10
+      static_cast<unsigned>(fields_.font_synthesis_weight_) << 8 |  // bit 9
+      static_cast<unsigned>(fields_.font_optical_sizing_) << 7 |    // bit 8
+      static_cast<unsigned>(fields_.synthetic_italic_) << 6 |       // bit 7
+      static_cast<unsigned>(fields_.synthetic_bold_) << 5 |         // bit 6
+      static_cast<unsigned>(fields_.text_rendering_) << 3 |         // bits 4-5
+      static_cast<unsigned>(fields_.orientation_) << 1 |            // bit 2-3
+      static_cast<unsigned>(fields_.subpixel_text_position_);       // bit 1
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   float device_scale_factor_for_key = FontCache::DeviceScaleFactor();
@@ -281,7 +283,7 @@ FontCacheKey FontDescription::CacheKey(
   float device_scale_factor_for_key = 1.0f;
 #endif
   FontCacheKey cache_key(creation_params, EffectiveFontSize(),
-                         options | font_selection_request_.GetHash() << 9,
+                         options | font_selection_request_.GetHash() << 11,
                          device_scale_factor_for_key, size_adjust_,
                          variation_settings_, font_palette_,
                          font_variant_alternates_, is_unique_match);
