@@ -710,6 +710,79 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       }
     }
   }
+
+  private onToolbarKeyDown_(e: KeyboardEvent) {
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const toolbar = shadowRoot.getElementById('toolbar-container');
+    assert(toolbar);
+    const buttons = Array.from(toolbar.querySelectorAll('.toolbar-button')) as
+        HTMLElement[];
+    assert(buttons);
+
+    // Only allow focus on the currently visible and actionable elements.
+    const focusableElements = buttons.filter(el => {
+      return (el.clientHeight > 0) && (el.clientWidth > 0) &&
+          (el.getBoundingClientRect().right < toolbar.clientWidth) &&
+          (el.className !== 'separator');
+    });
+
+    // Allow focusing the font selection if it's visible.
+    if (!this.isReadAloudEnabled_) {
+      const select = shadowRoot.getElementById('font-select') as HTMLElement;
+      assert(select);
+      focusableElements.unshift(select);
+    }
+
+    // Allow focusing the more options menu if it's visible.
+    const moreOptionsButton = toolbar.querySelector('#more') as HTMLElement;
+    assert(moreOptionsButton);
+    if (moreOptionsButton.style.display &&
+        (moreOptionsButton.style.display !== 'none')) {
+      focusableElements.push(moreOptionsButton);
+    }
+
+    this.onKeyDown_(e, focusableElements);
+  }
+
+  private onFontSizeMenuKeyDown_(e: KeyboardEvent) {
+    this.onKeyDown_(
+        e, Array.from(this.$.fontSizeMenu.children) as HTMLElement[]);
+  }
+
+  private onMoreOptionsMenuKeyDown_(e: KeyboardEvent) {
+    const buttons =
+        Array.from(this.$.moreOptionsMenu.children) as HTMLElement[];
+    // Only focus the currently visible buttons in the menu.
+    const focusableElements = buttons.filter(button => {
+      return button.style.display !== 'none';
+    });
+    this.onKeyDown_(e, focusableElements);
+  }
+
+  private onKeyDown_(e: KeyboardEvent, focusableElements: HTMLElement[]) {
+    if (!['ArrowRight', 'ArrowLeft'].includes(e.key)) {
+      return;
+    }
+
+    e.preventDefault();
+    const currentIndex = focusableElements.indexOf(e.target as HTMLElement);
+    const direction = e.key === 'ArrowRight' ? 1 : -1;
+    // Move to the next focusable item in the toolbar, wrapping around
+    // if we've reached the end or beginning.
+    const newIndex = (currentIndex + direction + focusableElements.length) %
+        focusableElements.length;
+    focusableElements[newIndex]!.focus();
+  }
+
+  private onFontSelectKeyDown_(e: KeyboardEvent) {
+    // The default behavior goes to the next select option. However, we want
+    // to instead go to the next toolbar button (handled in onToolbarKeyDown_).
+    // ArrowDown and ArrowUp will still move to the next/previous option.
+    if (['ArrowRight', 'ArrowLeft'].includes(e.key)) {
+      e.preventDefault();
+    }
+  }
 }
 
 customElements.define('read-anything-toolbar', ReadAnythingToolbar);
