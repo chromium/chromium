@@ -1791,9 +1791,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
 // Tells the delegate that the user tapped the item with identifier
 // corresponding to `indexPath`.
-// TODO(crbug.com/1350453): Use the "Primary Action" APIs for collection views
-// when running under iOS16 instead of overloading selection changes to handle
-// cell taps.
 - (void)tappedItemAtIndexPath:(NSIndexPath*)indexPath {
   // Speculative fix for crbug.com/1134663, where this method is called while
   // updates from a tab insertion are processing.
