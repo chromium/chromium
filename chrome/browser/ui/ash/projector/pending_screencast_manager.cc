@@ -171,7 +171,7 @@ std::string GetIndexableText(const base::FilePath& metadata_file_local_path) {
       continue;
     }
     const std::string* text = caption_dict->FindString("text");
-    if (!text->empty()) {
+    if (text && !text->empty()) {
       base::StrAppend(&indexable_text, {" ", *text});
     }
   }
