@@ -79,8 +79,8 @@ extra_kv = { include_coverage = false }
 extra_kv = { include_coverage = false }
 
 [crate.std]
-extra_src_roots = ['../../backtrace/src', '../../portable-simd/crates/std_float/src', '../../core/src']
-extra_input_roots = [ '../../portable-simd/crates/core_simd/src', '../../stdarch/crates/core_arch/src']
+extra_src_roots = ['../../backtrace/src', '../../portable-simd/crates/std_float/src', '../../core/src/primitive_docs.rs']
+extra_input_roots = [ '../../portable-simd/crates/core_simd/src', '../../stdarch/crates/core_arch/src', '../../core/src']
 
 # Remove this from std. It will be depended on directly when needed.
 exclude_deps_in_gn = ['profiler_builtins']
