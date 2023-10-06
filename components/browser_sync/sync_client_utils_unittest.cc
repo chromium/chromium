@@ -59,6 +59,8 @@ class LocalDataQueryHelperTest : public testing::Test {
   LocalDataQueryHelperTest() {
     local_password_store_->Init(/*prefs=*/nullptr,
                                 /*affiliated_match_helper=*/nullptr);
+    account_password_store_->Init(/*prefs=*/nullptr,
+                                  /*affiliated_match_helper=*/nullptr);
 
     auto local_bookmark_client =
         std::make_unique<bookmarks::TestBookmarkClient>();
@@ -68,21 +70,42 @@ class LocalDataQueryHelperTest : public testing::Test {
             std::move(local_bookmark_client));
 
     // TODO(crbug.com/1451508): Simplify by wrapping into a helper.
-    auto storage_layer_ptr = std::make_unique<FakeReadingListModelStorage>();
-    auto& storage_layer = *storage_layer_ptr;
-    local_reading_list_model_ = std::make_unique<ReadingListModelImpl>(
-        std::move(storage_layer_ptr), syncer::StorageType::kUnspecified,
+    auto local_reading_list_storage =
+        std::make_unique<FakeReadingListModelStorage>();
+    auto* local_reading_list_storage_ptr = local_reading_list_storage.get();
+    auto local_reading_list_model = std::make_unique<ReadingListModelImpl>(
+        std::move(local_reading_list_storage),
+        syncer::StorageType::kUnspecified,
         syncer::WipeModelUponSyncDisabledBehavior::kNever, &clock_);
-    storage_layer.TriggerLoadCompletion();
+    local_reading_list_model_ = local_reading_list_model.get();
+
+    auto account_reading_list_storage =
+        std::make_unique<FakeReadingListModelStorage>();
+    auto* account_reading_list_storage_ptr = account_reading_list_storage.get();
+    auto account_reading_list_model = ReadingListModelImpl::BuildNewForTest(
+        std::move(account_reading_list_storage), syncer::StorageType::kAccount,
+        syncer::WipeModelUponSyncDisabledBehavior::kAlways, &clock_,
+        processor_.CreateForwardingProcessor());
+    account_reading_list_model_ = account_reading_list_model.get();
+
+    dual_reading_list_model_ =
+        std::make_unique<reading_list::DualReadingListModel>(
+            std::move(local_reading_list_model),
+            std::move(account_reading_list_model));
+    local_reading_list_storage_ptr->TriggerLoadCompletion();
+    account_reading_list_storage_ptr->TriggerLoadCompletion();
 
     local_data_query_helper_ =
         std::make_unique<browser_sync::LocalDataQueryHelper>(
             /*profile_password_store=*/local_password_store_.get(),
+            /*account_password_store=*/account_password_store_.get(),
             /*local_bookmark_model=*/local_bookmark_model_.get(),
-            /*local_reading_list_model=*/local_reading_list_model_.get());
+            /*account_bookmark_model=*/account_bookmark_model_.get(),
+            /*dual_reading_list_model=*/dual_reading_list_model_.get());
   }
   ~LocalDataQueryHelperTest() override {
     local_password_store_->ShutdownOnUIThread();
+    account_password_store_->ShutdownOnUIThread();
   }
   void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }
 
@@ -92,9 +115,20 @@ class LocalDataQueryHelperTest : public testing::Test {
 
   scoped_refptr<password_manager::TestPasswordStore> local_password_store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
+  scoped_refptr<password_manager::TestPasswordStore> account_password_store_ =
+      base::MakeRefCounted<password_manager::TestPasswordStore>(
+          password_manager::IsAccountStore{true});
+
   std::unique_ptr<bookmarks::BookmarkModel> local_bookmark_model_;
   raw_ptr<bookmarks::TestBookmarkClient> local_bookmark_client_;
-  std::unique_ptr<ReadingListModelImpl> local_reading_list_model_;
+  std::unique_ptr<bookmarks::BookmarkModel> account_bookmark_model_ =
+      bookmarks::TestBookmarkClient::CreateModel();
+
+  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  std::unique_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;
+  raw_ptr<ReadingListModel> local_reading_list_model_;
+  raw_ptr<ReadingListModel> account_reading_list_model_;
+
   std::unique_ptr<browser_sync::LocalDataQueryHelper> local_data_query_helper_;
 };
 

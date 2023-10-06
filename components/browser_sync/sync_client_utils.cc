@@ -139,7 +139,7 @@ class LocalDataQueryHelper::LocalDataQueryRequest
               weak_ptr_factory_.GetWeakPtr()));
     }
     if (types_.Has(syncer::READING_LIST)) {
-      CHECK(helper_->local_reading_list_model_);
+      CHECK(helper_->dual_reading_list_model_);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&LocalDataQueryHelper::LocalDataQueryRequest::
@@ -175,7 +175,8 @@ class LocalDataQueryHelper::LocalDataQueryRequest
   }
 
   void FetchLocalReadingList() {
-    base::flat_set<GURL> keys = helper_->local_reading_list_model_->GetKeys();
+    base::flat_set<GURL> keys =
+        helper_->dual_reading_list_model_->GetLocalOrSyncableModel()->GetKeys();
 
     result_.emplace(
         syncer::READING_LIST,
@@ -205,11 +206,15 @@ class LocalDataQueryHelper::LocalDataQueryRequest
 
 LocalDataQueryHelper::LocalDataQueryHelper(
     password_manager::PasswordStoreInterface* profile_password_store,
+    password_manager::PasswordStoreInterface* account_password_store,
     bookmarks::BookmarkModel* local_bookmark_model,
-    ReadingListModel* local_reading_list_model)
+    bookmarks::BookmarkModel* account_bookmark_model,
+    reading_list::DualReadingListModel* dual_reading_list_model)
     : profile_password_store_(profile_password_store),
+      account_password_store_(account_password_store),
       local_bookmark_model_(local_bookmark_model),
-      local_reading_list_model_(local_reading_list_model) {}
+      account_bookmark_model_(account_bookmark_model),
+      dual_reading_list_model_(dual_reading_list_model) {}
 
 LocalDataQueryHelper::~LocalDataQueryHelper() = default;
 
