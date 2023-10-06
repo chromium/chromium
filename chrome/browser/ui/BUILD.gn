@@ -6695,12 +6695,12 @@ static_library("test_support") {
       "ash/test_session_controller.h",
       "ash/test_wallpaper_controller.cc",
       "ash/test_wallpaper_controller.h",
-      "webui/settings/ash/fake_hierarchy.cc",
-      "webui/settings/ash/fake_hierarchy.h",
-      "webui/settings/ash/fake_os_settings_section.cc",
-      "webui/settings/ash/fake_os_settings_section.h",
-      "webui/settings/ash/fake_os_settings_sections.cc",
-      "webui/settings/ash/fake_os_settings_sections.h",
+      "webui/ash/settings/test_support/fake_hierarchy.cc",
+      "webui/ash/settings/test_support/fake_hierarchy.h",
+      "webui/ash/settings/test_support/fake_os_settings_section.cc",
+      "webui/ash/settings/test_support/fake_os_settings_section.h",
+      "webui/ash/settings/test_support/fake_os_settings_sections.cc",
+      "webui/ash/settings/test_support/fake_os_settings_sections.h",
     ]
     deps += [
       "//ash",

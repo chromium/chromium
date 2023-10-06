@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/fake_hierarchy.h"
+#include "chrome/browser/ui/webui/ash/settings/test_support/fake_hierarchy.h"
 
 #include <utility>
 
-#include "chrome/browser/ui/webui/settings/ash/fake_os_settings_section.h"
+#include "chrome/browser/ui/webui/ash/settings/test_support/fake_os_settings_section.h"
 
 namespace ash::settings {
 
