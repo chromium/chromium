@@ -35,6 +35,8 @@ const CGFloat kVoiceSearchButtonTrailingSpacing = -7;
 const CGFloat kbadgeViewAnimationDuration = 0.2;
 // Location label vertical offset.
 const CGFloat kLocationLabelVerticalOffset = -1;
+// The margin from the leading side when not centered.
+const CGFloat kLeadingMargin = 20;
 }  // namespace
 
 @interface LocationBarSteadyView ()
@@ -138,7 +140,9 @@ const CGFloat kLocationLabelVerticalOffset = -1;
 
 #pragma mark - LocationBarSteadyView
 
-@implementation LocationBarSteadyView
+@implementation LocationBarSteadyView {
+  NSLayoutConstraint* _xConstraint;
+}
 
 - (instancetype)init {
   self = [super initWithFrame:CGRectZero];
@@ -212,9 +216,9 @@ const CGFloat kLocationLabelVerticalOffset = -1;
     AddSameConstraints(self, _locationButton);
 
     // Make the label gravitate towards the center of the view.
-    NSLayoutConstraint* centerX = [_locationContainerView.centerXAnchor
+    _xConstraint = [_locationContainerView.centerXAnchor
         constraintEqualToAnchor:self.centerXAnchor];
-    centerX.priority = UILayoutPriorityDefaultHigh;
+    _xConstraint.priority = UILayoutPriorityDefaultHigh;
 
     _locationContainerViewLeadingAnchorConstraint =
         [_locationContainerView.leadingAnchor
@@ -244,7 +248,7 @@ const CGFloat kLocationLabelVerticalOffset = -1;
       [_trailingButton.widthAnchor constraintEqualToConstant:kButtonSize],
       [_trailingButton.heightAnchor constraintEqualToConstant:kButtonSize],
       _trailingButtonTrailingAnchorConstraint,
-      centerX,
+      _xConstraint,
       _locationContainerViewLeadingAnchorConstraint,
     ]];
   }
@@ -418,6 +422,20 @@ const CGFloat kLocationLabelVerticalOffset = -1;
 - (void)enableTrailingButton:(BOOL)enabled {
   self.trailingButton.enabled = enabled;
   [self updateAccessibility];
+}
+
+- (void)setCentered:(BOOL)centered {
+  _xConstraint.active = NO;
+  if (centered) {
+    _xConstraint = [_locationContainerView.centerXAnchor
+        constraintEqualToAnchor:self.centerXAnchor];
+  } else {
+    _xConstraint = [_locationContainerView.leadingAnchor
+        constraintEqualToAnchor:self.leadingAnchor
+                       constant:kLeadingMargin];
+  }
+  _xConstraint.priority = UILayoutPriorityDefaultHigh;
+  _xConstraint.active = YES;
 }
 
 #pragma mark - UIResponder

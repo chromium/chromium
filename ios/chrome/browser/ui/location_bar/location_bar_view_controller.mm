@@ -264,6 +264,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
     [self.locationBarSteadyView
         setLocationLabelPlaceholderText:placeholderString];
   }
+  if (base::FeatureList::IsEnabled(kNewNTPOmniboxLayout)) {
+    [self.locationBarSteadyView setCentered:!isNTP];
+  }
   self.hideShareButtonWhileOnIncognitoNTP = isNTP;
 }
 

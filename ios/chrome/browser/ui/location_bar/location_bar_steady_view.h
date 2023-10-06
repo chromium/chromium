@@ -48,6 +48,9 @@
 // appropriately.
 - (void)enableTrailingButton:(BOOL)enabled;
 
+// Sets whether the contents are centered or aligned to the leading side.
+- (void)setCentered:(BOOL)centered;
+
 // The tappable button representing the location bar.
 @property(nonatomic, strong) UIButton* locationButton;
 // The label displaying the current location URL.
