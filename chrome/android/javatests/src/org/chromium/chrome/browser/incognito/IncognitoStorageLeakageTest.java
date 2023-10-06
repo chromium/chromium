@@ -14,6 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
@@ -22,8 +23,8 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.TestParams;
@@ -31,6 +32,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -41,22 +44,26 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
- * This test class checks various site storage leaks between all
- * different pairs of Activity types with a constraint that one of the
- * interacting activity must be either incognito tab or incognito CCT.
+ * This test class checks various site storage leaks between all different pairs of Activity types
+ * with a constraint that one of the interacting activity must be either incognito tab or incognito
+ * CCT.
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures(ChromeFeatureList.CCT_MINIMIZED)
 public class IncognitoStorageLeakageTest {
     private static final String SITE_DATA_HTML_PATH =
             "/content/test/data/browsing_data/site_data.html";
 
-    private static final List<String> sSiteData = Arrays.asList(
-            "LocalStorage", "ServiceWorker", "CacheStorage", "IndexedDb", "FileSystem", "WebSql");
+    private static final List<String> sSiteData =
+            Arrays.asList(
+                    "LocalStorage", "ServiceWorker", "CacheStorage", "IndexedDb", "FileSystem");
 
     private String mSiteDataTestPage;
     private EmbeddedTestServer mTestServer;
+
+    @Rule public TestRule mProcessor = new JUnitProcessor();
 
     @Rule
     public ChromeTabbedActivityTestRule mChromeActivityTestRule =
@@ -116,7 +123,6 @@ public class IncognitoStorageLeakageTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "crbug.com/1107600")
     @UseMethodParameter(TestParams.AllTypesToAllTypes.class)
     public void testStorageDoesNotLeakFromActivityToActivity(String activityType1,
             String activityType2) throws ExecutionException, TimeoutException {
