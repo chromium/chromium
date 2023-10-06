@@ -870,9 +870,7 @@
       "kojii@chromium.org",
       "lingqi@chromium.org"
     ],
-    "platforms": [
-      "Linux"
-    ],
+    "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "fast/css/getComputedStyle/computed-style-listing.html",
       "fast/css/getComputedStyle/computed-style-without-renderer-listing.html",
@@ -931,9 +929,7 @@
       "kojii@chromium.org",
       "lingqi@chromium.org"
     ],
-    "platforms": [
-      "Linux"
-    ],
+    "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/css/css-text/parsing/text-spacing-trim-computed.html",
       "external/wpt/css/css-text/parsing/text-spacing-trim-invalid.html",
