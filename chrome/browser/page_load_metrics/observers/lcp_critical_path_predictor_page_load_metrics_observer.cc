@@ -73,10 +73,8 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 LcpCriticalPathPredictorPageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  // TODO(crbug.com/1468188): Currently, LCPP doesn't support prerendered cases
-  // since prerendered cases are different from the normal navigation. Revisit
-  // here when we decided to support prerendered cases.
-  return STOP_OBSERVING;
+  is_prerender_ = true;
+  return CONTINUE_OBSERVING;
 }
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::OnComplete(
@@ -106,8 +104,8 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
           .MergeMainFrameAndSubframes();
 
   if (!largest_contentful_paint.ContainsValidTime() ||
-      !WasStartedInForegroundOptionalEventInForeground(
-          largest_contentful_paint.Time(), GetDelegate())) {
+      (!is_prerender_ && !WasStartedInForegroundOptionalEventInForeground(
+                             largest_contentful_paint.Time(), GetDelegate()))) {
     return;
   }
 
@@ -118,7 +116,10 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
   // `IsOffTheRecord`.
   // TODO(crbug.com/715525): kSpeculativePreconnectFeature flag can also affect
   // this. Unflag the feature.
-  if (lcpp_data_inputs_.has_value()) {
+  if (lcpp_data_inputs_.has_value()
+      // Don't learn LCPP when prerender to avoid data skew. Activation LCP
+      // should be much shorter than regular LCP.
+      && !is_prerender_) {
     if (auto* loading_predictor =
             predictors::LoadingPredictorFactory::GetForProfile(
                 Profile::FromBrowserContext(
@@ -131,8 +132,10 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
 
   // * Emit LCPP breakdown PageLoad UMAs.
   // The UMAs are recorded iff the navigation was made with a non-empty LCPP
-  // hint.
-  if (is_lcpp_hinted_navigation_) {
+  // hint
+  if (is_lcpp_hinted_navigation_ &&
+      (!is_prerender_ ||
+       GetDelegate().WasPrerenderedThenActivatedInForeground())) {
     base::TimeDelta corrected =
         page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
             GetDelegate(), largest_contentful_paint.Time().value());
