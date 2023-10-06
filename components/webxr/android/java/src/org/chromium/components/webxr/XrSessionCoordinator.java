@@ -140,8 +140,12 @@ public class XrSessionCoordinator {
         // active session going on.
         assert (sActiveSessionInstance == null);
 
-        XrImmersiveOverlay.Delegate overlayDelegate = ArClassProvider.getOverlayDelegate(
-                compositorDelegateProvider.create(webContents), useOverlay, canRenderDomContent);
+        XrImmersiveOverlay.Delegate overlayDelegate =
+                ArClassProvider.getOverlayDelegate(
+                        compositorDelegateProvider.create(webContents),
+                        webContents,
+                        useOverlay,
+                        canRenderDomContent);
         startSession(SessionType.AR, overlayDelegate, webContents);
     }
 
