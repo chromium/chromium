@@ -287,6 +287,7 @@ void GameDashboardContext::OnWidgetDestroying(views::Widget* widget) {
   DCHECK(main_menu_view_);
   DCHECK_EQ(widget, main_menu_view_->GetWidget());
   main_menu_view_ = nullptr;
+  game_dashboard_button_->SetToggled(false);
 }
 
 void GameDashboardContext::CreateAndAddGameDashboardButtonWidget() {
