@@ -8,8 +8,11 @@
 
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
+#include "base/process/launch.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -17,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/variations/hashing.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
+#include "components/variations/variations_switches.h"
 
 namespace variations {
 
@@ -131,6 +135,17 @@ void SetSeedVersion(const std::string& seed_version) {
 const std::string& GetSeedVersion() {
   return GetSeedVersionInternal();
 }
+
+#if BUILDFLAG(USE_BLINK)
+void PopulateLaunchOptionsWithVariationsInfo(
+    base::CommandLine* command_line,
+    base::LaunchOptions* launch_options) {
+  base::FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
+      command_line, launch_options);
+  command_line->AppendSwitchASCII(switches::kVariationsSeedVersion,
+                                  GetSeedVersion());
+}
+#endif  // !BUILDFLAG(USE_BLINK)
 
 namespace testing {
 

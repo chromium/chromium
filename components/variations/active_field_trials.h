@@ -9,8 +9,10 @@
 
 #include <string>
 
+#include "base/command_line.h"
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
+#include "base/process/launch.h"
 #include "base/strings/string_piece.h"
 
 namespace variations {
@@ -131,6 +133,16 @@ void SetSeedVersion(const std::string& seed_version);
 // into components/variations
 COMPONENT_EXPORT(VARIATIONS)
 const std::string& GetSeedVersion();
+
+#if BUILDFLAG(USE_BLINK)
+// Populates |command_line| and |launch_options| with the handles and command
+// line arguments necessary for a child process to get the needed variations
+// info.
+COMPONENT_EXPORT(VARIATIONS)
+void PopulateLaunchOptionsWithVariationsInfo(
+    base::CommandLine* command_line,
+    base::LaunchOptions* launch_options);
+#endif  // !BUILDFLAG(USE_BLINK)
 
 // Expose some functions for testing. These functions just wrap functionality
 // that is implemented above.

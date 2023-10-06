@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/process/launch.h"
@@ -17,6 +16,7 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
+#include "components/variations/active_field_trials.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
@@ -148,8 +148,8 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
 
   Process process;
   if (BeforeLaunchOnLauncherThread(*files_to_register, options_ptr)) {
-    base::FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
-        command_line(), options_ptr);
+    variations::PopulateLaunchOptionsWithVariationsInfo(command_line(),
+                                                        options_ptr);
     process =
         LaunchProcessOnLauncherThread(options_ptr, std::move(files_to_register),
 #if BUILDFLAG(IS_ANDROID)

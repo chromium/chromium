@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/command_line.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -15,6 +16,7 @@
 #include "components/variations/hashing.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
+#include "components/variations/variations_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
@@ -131,10 +133,17 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
       info.experiment_list);
 }
 
-TEST_F(VariationsCrashKeysTest, SeedVersionKey) {
+TEST_F(VariationsCrashKeysTest, SeedVersionFromParsedSeed) {
   SetSeedVersion("version-123");
   InitCrashKeys();
   EXPECT_EQ("version-123", GetVariationsSeedVersionCrashKey());
+}
+
+TEST_F(VariationsCrashKeysTest, SeedVersionFromCommandLineSwitch) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      variations::switches::kVariationsSeedVersion, "version-456");
+  InitCrashKeys();
+  EXPECT_EQ("version-456", GetVariationsSeedVersionCrashKey());
 }
 
 }  // namespace variations

@@ -60,6 +60,9 @@ const char kForceVariationIds[] = "force-variation-ids";
 // prefixed with the character "t" will be treated as Trigger Variation Ids.
 const char kForceDisableVariationIds[] = "force-disable-variation-ids";
 
+// Used to share variations seed version with child processes.
+const char kVariationsSeedVersion[] = "variations-seed-version";
+
 // Allows overriding the country used for evaluating variations. This is similar
 // to the "Override Variations Country" entry on chrome://translate-internals,
 // but is exposed as a command-line flag to allow testing First Run scenarios.

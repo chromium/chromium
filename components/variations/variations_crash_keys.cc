@@ -7,6 +7,7 @@
 #include <set>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/histogram_macros.h"
@@ -21,6 +22,7 @@
 #include "components/variations/active_field_trials.h"
 #include "components/variations/buildflags.h"
 #include "components/variations/synthetic_trials.h"
+#include "components/variations/variations_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/task/thread_pool.h"
@@ -59,6 +61,20 @@ crash_reporter::CrashKeyString<64> g_variations_seed_version_crash_key(
 
 std::string ActiveGroupToString(const ActiveGroupId& active_group) {
   return base::StringPrintf("%x-%x,", active_group.name, active_group.group);
+}
+
+std::string GetVariationsSeedVersion() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  // kVariationsSeedVersion should be set by the browser process in
+  // variations::PopulateLaunchOptionsWithVariationsInfo() before launching the
+  // child process.
+  if (command_line->HasSwitch(variations::switches::kVariationsSeedVersion)) {
+    return command_line->GetSwitchValueASCII(
+        variations::switches::kVariationsSeedVersion);
+  }
+
+  // Only works for the browser process.
+  return GetSeedVersion();
 }
 
 }  // namespace
@@ -230,7 +246,7 @@ void VariationsCrashKeys::UpdateCrashKeys() {
   }
 
   g_variations_crash_key.Set(info.experiment_list);
-  g_variations_seed_version_crash_key.Set(GetSeedVersion());
+  g_variations_seed_version_crash_key.Set(GetVariationsSeedVersion());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   ReportVariationsToChromeOs(background_thread_task_runner_, info);
