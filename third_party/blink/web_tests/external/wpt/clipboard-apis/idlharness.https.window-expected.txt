@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 52 tests; 51 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 53 tests; 51 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -32,6 +32,7 @@ PASS ClipboardItem interface: existence and properties of interface prototype ob
 FAIL ClipboardItem interface: attribute presentationStyle assert_true: The prototype object must have a property "presentationStyle" expected true got false
 PASS ClipboardItem interface: attribute types
 PASS ClipboardItem interface: operation getType(DOMString)
+FAIL ClipboardItem interface: operation supports(DOMString) assert_own_property: interface object missing static operation expected property "supports" missing
 PASS Clipboard interface: existence and properties of interface object
 PASS Clipboard interface object length
 PASS Clipboard interface object name

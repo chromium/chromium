@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 251 tests; 250 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 257 tests; 256 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface UIEvent: original interface defined
@@ -67,6 +67,8 @@ PASS MouseEvent interface: attribute screenX
 PASS MouseEvent interface: attribute screenY
 PASS MouseEvent interface: attribute clientX
 PASS MouseEvent interface: attribute clientY
+PASS MouseEvent interface: attribute layerX
+PASS MouseEvent interface: attribute layerY
 PASS MouseEvent interface: attribute ctrlKey
 PASS MouseEvent interface: attribute shiftKey
 PASS MouseEvent interface: attribute altKey
@@ -82,6 +84,8 @@ PASS MouseEvent interface: new MouseEvent("event") must inherit property "screen
 PASS MouseEvent interface: new MouseEvent("event") must inherit property "screenY" with the proper type
 PASS MouseEvent interface: new MouseEvent("event") must inherit property "clientX" with the proper type
 PASS MouseEvent interface: new MouseEvent("event") must inherit property "clientY" with the proper type
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "layerX" with the proper type
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "layerY" with the proper type
 PASS MouseEvent interface: new MouseEvent("event") must inherit property "ctrlKey" with the proper type
 PASS MouseEvent interface: new MouseEvent("event") must inherit property "shiftKey" with the proper type
 PASS MouseEvent interface: new MouseEvent("event") must inherit property "altKey" with the proper type
@@ -127,6 +131,8 @@ PASS MouseEvent interface: new WheelEvent("event") must inherit property "screen
 PASS MouseEvent interface: new WheelEvent("event") must inherit property "screenY" with the proper type
 PASS MouseEvent interface: new WheelEvent("event") must inherit property "clientX" with the proper type
 PASS MouseEvent interface: new WheelEvent("event") must inherit property "clientY" with the proper type
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "layerX" with the proper type
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "layerY" with the proper type
 PASS MouseEvent interface: new WheelEvent("event") must inherit property "ctrlKey" with the proper type
 PASS MouseEvent interface: new WheelEvent("event") must inherit property "shiftKey" with the proper type
 PASS MouseEvent interface: new WheelEvent("event") must inherit property "altKey" with the proper type

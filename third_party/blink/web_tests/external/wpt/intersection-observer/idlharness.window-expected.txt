@@ -13,6 +13,7 @@ PASS IntersectionObserver interface: existence and properties of interface proto
 PASS IntersectionObserver interface: existence and properties of interface prototype object's @@unscopables property
 PASS IntersectionObserver interface: attribute root
 PASS IntersectionObserver interface: attribute rootMargin
+PASS IntersectionObserver interface: attribute scrollMargin
 PASS IntersectionObserver interface: attribute thresholds
 PASS IntersectionObserver interface: operation observe(Element)
 PASS IntersectionObserver interface: operation unobserve(Element)
@@ -22,6 +23,7 @@ PASS IntersectionObserver must be primary interface of observer
 PASS Stringification of observer
 PASS IntersectionObserver interface: observer must inherit property "root" with the proper type
 PASS IntersectionObserver interface: observer must inherit property "rootMargin" with the proper type
+PASS IntersectionObserver interface: observer must inherit property "scrollMargin" with the proper type
 PASS IntersectionObserver interface: observer must inherit property "thresholds" with the proper type
 PASS IntersectionObserver interface: observer must inherit property "observe(Element)" with the proper type
 PASS IntersectionObserver interface: calling observe(Element) on observer with too few arguments must throw TypeError

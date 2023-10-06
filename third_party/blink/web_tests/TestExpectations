@@ -2695,6 +2695,9 @@ crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-delet
 crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-color/light-dark-currentcolor.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-color/light-dark-inheritance.html [ Failure ]
+crbug.com/626703 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-display-type-002.tentative.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/mathml/presentation-markup/operators/non-spacing-accent-1.xhtml [ Failure ]
 crbug.com/626703 [ Mac13 ] external/wpt/IndexedDB/reading-autoincrement-indexes.any.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-text/tab-size/tab-size-integer-005.html [ Failure ]
@@ -6767,8 +6770,8 @@ external/wpt/fs/FileSystemFileHandle-sync-access-handle-lock-modes.https.tentati
 external/wpt/fs/FileSystemFileHandle-writable-file-stream-lock-modes.https.tentative.worker.html [ Failure Skip ]
 
 # Disabling tests for landing fix to crbug.com/1490510
-crbug.com/1490510 external/wpt/webrtc/RTCPeerConnection-setLocalDescription-answer.html [ Pass Failure ]
-crbug.com/1490510 external/wpt/webrtc/RTCPeerConnection-setLocalDescription-pranswer.html [ Pass Failure ]
+crbug.com/1490510 external/wpt/webrtc/RTCPeerConnection-setLocalDescription-answer.html [ Failure Pass ]
+crbug.com/1490510 external/wpt/webrtc/RTCPeerConnection-setLocalDescription-pranswer.html [ Failure Pass ]
 
 
 # Gardener 2023-10-02

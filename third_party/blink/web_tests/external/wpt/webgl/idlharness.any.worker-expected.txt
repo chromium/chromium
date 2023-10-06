@@ -2080,7 +2080,7 @@ PASS WebGL2RenderingContext interface: constant TIMEOUT_IGNORED on interface pro
 PASS WebGL2RenderingContext interface: constant MAX_CLIENT_WAIT_TIMEOUT_WEBGL on interface object
 PASS WebGL2RenderingContext interface: constant MAX_CLIENT_WAIT_TIMEOUT_WEBGL on interface prototype object
 PASS WebGL2RenderingContext interface: operation copyBufferSubData(GLenum, GLenum, GLintptr, GLintptr, GLsizeiptr)
-PASS WebGL2RenderingContext interface: operation getBufferSubData(GLenum, GLintptr, ArrayBufferView, optional GLuint, optional GLuint)
+PASS WebGL2RenderingContext interface: operation getBufferSubData(GLenum, GLintptr, ArrayBufferView, optional unsigned long long, optional GLuint)
 PASS WebGL2RenderingContext interface: operation blitFramebuffer(GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLbitfield, GLenum)
 PASS WebGL2RenderingContext interface: operation framebufferTextureLayer(GLenum, GLenum, WebGLTexture?, GLint, GLint)
 PASS WebGL2RenderingContext interface: operation invalidateFramebuffer(GLenum, sequence<GLenum>)
