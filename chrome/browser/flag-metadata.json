@@ -2811,7 +2811,7 @@
   {
     "name": "enable-federated-service",
     "owners": [ "alanlxl", "amoylan"],
-    "expiry_milestone": 120
+    "expiry_milestone": 122
   },
   {
     "name": "enable-feed-ablation",
