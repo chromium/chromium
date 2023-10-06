@@ -242,6 +242,9 @@ Pickle::Pickle(size_t header_size)
   header_->payload_size = 0;
 }
 
+Pickle::Pickle(span<const uint8_t> data)
+    : Pickle(reinterpret_cast<const char*>(data.data()), data.size()) {}
+
 Pickle::Pickle(const char* data, size_t data_len)
     : header_(reinterpret_cast<Header*>(const_cast<char*>(data))),
       header_size_(0),
