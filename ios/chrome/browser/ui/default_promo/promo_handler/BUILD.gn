@@ -8,6 +8,8 @@ source_set("promo_handler") {
     "default_browser_promo_display_handler.mm",
     "default_browser_promo_manager.h",
     "default_browser_promo_manager.mm",
+    "default_browser_remind_me_later_promo_display_handler.h",
+    "default_browser_remind_me_later_promo_display_handler.mm",
   ]
   deps = [
     "//base",
@@ -32,7 +34,10 @@ source_set("promo_handler") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "default_browser_promo_manager_unittest.mm" ]
+  sources = [
+    "default_browser_promo_manager_unittest.mm",
+    "default_browser_remind_me_later_promo_display_handler_unittest.mm",
+  ]
 
   deps = [
     ":promo_handler",

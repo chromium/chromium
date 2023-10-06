@@ -2078,6 +2078,18 @@ enum class ToolbarKind {
   [self.defaultBrowserPromoManager start];
 }
 
+- (void)displayDefaultBrowserPromoAfterRemindMeLater {
+  CHECK(IsDefaultBrowserInPromoManagerEnabled());
+
+  self.defaultBrowserPromoManager = [[DefaultBrowserPromoManager alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  self.defaultBrowserPromoManager.promosUIHandler =
+      self.promosManagerCoordinator;
+  self.defaultBrowserPromoManager.promoWasFromRemindMeLater = YES;
+  [self.defaultBrowserPromoManager start];
+}
+
 #pragma mark - PageInfoCommands
 
 - (void)showPageInfo {

@@ -48,6 +48,10 @@ absl::optional<Promo> PromoForName(base::StringPiece promo) {
     return promos_manager::Promo::PostRestoreDefaultBrowserAlert;
   }
 
+  if (promo == "promos_manager::Promo::DefaultBrowserRemindMeLater") {
+    return promos_manager::Promo::DefaultBrowserRemindMeLater;
+  }
+
   return absl::nullopt;
 }
 
@@ -75,6 +79,8 @@ base::StringPiece ShortNameForPromo(Promo promo) {
       return "Choice";
     case promos_manager::Promo::PostRestoreDefaultBrowserAlert:
       return "PostRestoreDefaultBrowserAlert";
+    case promos_manager::Promo::DefaultBrowserRemindMeLater:
+      return "DefaultBrowserRemindMeLater";
   }
 }
 

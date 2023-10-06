@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -400,6 +401,22 @@ TEST_F(BrowserCoordinatorTest, StartsAndStopsSaveToPhotosCoordinator) {
   [handler stopSaveToPhotos];
   EXPECT_OCMOCK_VERIFY(mockSaveToPhotosCoordinator);
   EXPECT_EQ(browser_coordinator.saveToPhotosCoordinator, nil);
+
+  [browser_coordinator stop];
+}
+
+// Tests that the displayDefaultBrowserPromoAfterRemindMeLater command does not
+// crash.
+TEST_F(BrowserCoordinatorTest, DisplayDefaultBrowserPromoAfterRemindMeLater) {
+  // Start the BrowserCoordinator
+  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
+  [browser_coordinator start];
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<PromosManagerCommands> handler =
+      HandlerForProtocol(dispatcher, PromosManagerCommands);
+
+  [handler displayDefaultBrowserPromoAfterRemindMeLater];
 
   [browser_coordinator stop];
 }
