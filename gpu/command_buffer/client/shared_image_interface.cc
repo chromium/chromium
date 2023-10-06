@@ -77,6 +77,11 @@ size_t SharedImageInterface::ScopedMapping::Stride(const uint32_t plane_index) {
   return buffer_->stride(plane_index);
 }
 
+gfx::Size SharedImageInterface::ScopedMapping::Size() {
+  CHECK(buffer_);
+  return buffer_->GetSize();
+}
+
 gfx::BufferFormat SharedImageInterface::ScopedMapping::Format() {
   CHECK(buffer_);
   return buffer_->GetFormat();

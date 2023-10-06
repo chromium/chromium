@@ -67,6 +67,9 @@ class GPU_EXPORT SharedImageInterface {
     // Returns plane stride.
     size_t Stride(const uint32_t plane_index);
 
+    // Returns the size of the buffer.
+    gfx::Size Size();
+
     // Returns BufferFormat.
     gfx::BufferFormat Format();
 
