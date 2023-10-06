@@ -44,7 +44,8 @@ class GPU_GLES2_EXPORT AbstractTextureAndroid
   explicit AbstractTextureAndroid(std::unique_ptr<TextureBase> texture);
   explicit AbstractTextureAndroid(gles2::Texture* texture);
   explicit AbstractTextureAndroid(
-      scoped_refptr<gles2::TexturePassthrough> texture);
+      scoped_refptr<gles2::TexturePassthrough> texture,
+      const gfx::Size& size);
 
   // The texture is guaranteed to be around while |this| exists, as long as
   // the decoder isn't destroyed / context isn't lost.
@@ -73,6 +74,7 @@ class GPU_GLES2_EXPORT AbstractTextureAndroid
   std::unique_ptr<TextureBase> texture_for_testing_;
   raw_ptr<gles2::Texture> texture_ = nullptr;
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
+  gfx::Size texture_passthrough_size_;
   raw_ptr<gl::GLApi, DanglingUntriaged> api_ = nullptr;
 };
 

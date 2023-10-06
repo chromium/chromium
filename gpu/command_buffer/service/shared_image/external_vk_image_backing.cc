@@ -829,10 +829,7 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
 
   if (is_passthrough) {
     auto texture = base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
-        texture_service_id, GL_TEXTURE_2D, format_desc.storage_internal_format,
-        plane_size.width(), plane_size.height(),
-        /*depth=*/1, /*border=*/0, format_desc.data_format,
-        format_desc.data_type);
+        texture_service_id, GL_TEXTURE_2D);
     gl_texture.InitializeWithTexture(format_desc, std::move(texture));
   } else {
     auto* texture = gles2::CreateGLES2TextureWithLightRef(texture_service_id,

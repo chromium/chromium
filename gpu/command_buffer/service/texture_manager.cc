@@ -499,39 +499,11 @@ void TextureManager::Destroy() {
   DCHECK_EQ(0u, memory_type_tracker_->GetMemRepresented());
 }
 
-TexturePassthrough::LevelInfo::LevelInfo() = default;
-
-TexturePassthrough::LevelInfo::LevelInfo(const LevelInfo& rhs) = default;
-
-TexturePassthrough::LevelInfo::~LevelInfo() = default;
-
 TexturePassthrough::TexturePassthrough(GLuint service_id, GLenum target)
     : TextureBase(service_id),
       owned_service_id_(service_id),
-      have_context_(true),
-      level_images_(target == GL_TEXTURE_CUBE_MAP ? 6 : 1) {
+      have_context_(true) {
   TextureBase::SetTarget(target);
-}
-
-TexturePassthrough::TexturePassthrough(GLuint service_id,
-                                       GLenum target,
-                                       GLenum internal_format,
-                                       GLsizei width,
-                                       GLsizei height,
-                                       GLsizei depth,
-                                       GLint border,
-                                       GLenum format,
-                                       GLenum type)
-    : TexturePassthrough(service_id, target) {
-  DCHECK(target != GL_TEXTURE_CUBE_MAP);
-  LevelInfo* level_info = GetLevelInfo(target, 0);
-  level_info->internal_format = internal_format;
-  level_info->width = width;
-  level_info->height = height;
-  level_info->depth = depth;
-  level_info->border = border;
-  level_info->format = format;
-  level_info->type = type;
 }
 
 TexturePassthrough::~TexturePassthrough() {
@@ -564,61 +536,11 @@ void TexturePassthrough::BindToServiceId(GLuint service_id) {
   if (service_id != 0 && service_id != service_id_) {
     service_id_ = service_id;
   }
-
-  if (gl::g_current_gl_driver->ext.b_GL_ANGLE_texture_external_update) {
-    // Notify the texture that its size has changed.
-    LevelInfo* level_0_info = GetLevelInfo(target_, 0);
-    GLint prev_texture = 0;
-    glGetIntegerv(GetTextureBindingQuery(target_), &prev_texture);
-    glBindTexture(target_, service_id_);
-
-    glTexImage2DExternalANGLE(
-        target_, /*level=*/0, level_0_info->internal_format,
-        level_0_info->width, level_0_info->height, level_0_info->border,
-        level_0_info->format, level_0_info->type);
-
-    glBindTexture(target_, prev_texture);
-  }
 }
 #endif
 
 void TexturePassthrough::SetEstimatedSize(size_t size) {
   estimated_size_ = size;
-}
-
-bool TexturePassthrough::LevelInfoExists(GLenum target,
-                                         GLint level,
-                                         size_t* out_face_idx) const {
-  DCHECK(out_face_idx);
-
-  if (GLES2Util::GLFaceTargetToTextureTarget(target) != target_) {
-    return false;
-  }
-
-  size_t face_idx = GLES2Util::GLTargetToFaceIndex(target);
-  DCHECK(face_idx < level_images_.size());
-  DCHECK(level >= 0);
-
-  if (static_cast<GLint>(level_images_[face_idx].size()) <= level) {
-    return false;
-  }
-
-  *out_face_idx = face_idx;
-  return true;
-}
-
-TexturePassthrough::LevelInfo* TexturePassthrough::GetLevelInfo(GLenum target,
-                                                                GLint level) {
-  size_t face_idx = GLES2Util::GLTargetToFaceIndex(target);
-  DCHECK(face_idx < level_images_.size());
-  DCHECK(level >= 0);
-
-  // Don't allocate space for the images until needed
-  if (static_cast<GLint>(level_images_[face_idx].size()) <= level) {
-    level_images_[face_idx].resize(level + 1);
-  }
-
-  return &level_images_[face_idx][level];
 }
 
 Texture::Texture(GLuint service_id)

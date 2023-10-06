@@ -290,16 +290,9 @@ GLOzoneImageRepresentationShared::CreateTextureHolderPassthrough(
     return nullptr;
   }
 
-  // TODO(crbug.com/1468989): Make sure these match with corresponding formats
-  // from ToGLFormatDesc{ExternalSampler}.
-  GLuint internal_format = np_gl_binding->GetInternalFormat();
-  GLenum gl_format = GetDataFormatFromInternalFormat(internal_format);
-  GLenum gl_type = np_gl_binding->GetDataType();
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough =
       base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
-          gl_texture_service_id, target, internal_format,
-          backing->size().width(), backing->size().height(),
-          /*depth=*/1, /*border=*/0, gl_format, gl_type);
+          gl_texture_service_id, target);
 
   return base::MakeRefCounted<TextureHolder>(std::move(np_gl_binding),
                                              std::move(texture_passthrough));

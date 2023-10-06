@@ -494,11 +494,8 @@ EGLImageBacking::GenEGLImageSibling(base::span<const uint8_t> pixel_data) {
 
   if (use_passthrough_) {
     auto texture_passthrough =
-        base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
-            service_id, GL_TEXTURE_2D, format_info_.gl_format, size().width(),
-            size().height(),
-            /*depth=*/1, /*border=*/0, format_info_.gl_format,
-            format_info_.gl_type);
+        base::MakeRefCounted<gpu::gles2::TexturePassthrough>(service_id,
+                                                             GL_TEXTURE_2D);
     return base::MakeRefCounted<TextureHolder>(std::move(texture_passthrough));
   }
 

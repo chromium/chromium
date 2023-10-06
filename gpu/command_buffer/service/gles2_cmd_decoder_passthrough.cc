@@ -1651,8 +1651,7 @@ GLES2DecoderPassthroughImpl::CreateAbstractTexture(GLenum target,
   GLuint service_id = 0;
   api()->glGenTexturesFn(1, &service_id);
   scoped_refptr<TexturePassthrough> texture(
-      new TexturePassthrough(service_id, target, internal_format, width, height,
-                             depth, border, format, type));
+      new TexturePassthrough(service_id, target));
 
   // Unretained is safe, because of the destruction cb.
   std::unique_ptr<PassthroughAbstractTextureImpl> abstract_texture =
