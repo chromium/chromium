@@ -46,14 +46,10 @@ const NGLayoutResult* NGLayoutResult::Clone(const NGLayoutResult& other) {
 
 // static
 const NGLayoutResult* NGLayoutResult::CloneWithPostLayoutFragments(
-    const NGLayoutResult& other,
-    const absl::optional<PhysicalRect> updated_layout_overflow) {
-  DCHECK(!RuntimeEnabledFeatures::LayoutOverflowNoCloneEnabled() ||
-         !updated_layout_overflow);
+    const NGLayoutResult& other) {
   return MakeGarbageCollected<NGLayoutResult>(
       other, NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
-                 To<NGPhysicalBoxFragment>(other.PhysicalFragment()),
-                 updated_layout_overflow));
+                 To<NGPhysicalBoxFragment>(other.PhysicalFragment())));
 }
 
 NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,

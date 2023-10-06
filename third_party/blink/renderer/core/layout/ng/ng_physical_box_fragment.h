@@ -42,9 +42,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   // Creates a shallow copy of |other| but uses the "post-layout" fragments to
   // ensure fragment-tree consistency.
   static const NGPhysicalBoxFragment* CloneWithPostLayoutFragments(
-      const NGPhysicalBoxFragment& other,
-      const absl::optional<PhysicalRect> updated_layout_overflow =
-          absl::nullopt);
+      const NGPhysicalBoxFragment& other);
 
   using PassKey = base::PassKey<NGPhysicalBoxFragment>;
   NGPhysicalBoxFragment(PassKey,
@@ -217,22 +215,14 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   // Returns the layout-overflow for this fragment.
   const PhysicalRect LayoutOverflow() const {
-    if (RuntimeEnabledFeatures::LayoutOverflowNoCloneEnabled()) {
-      if (const auto* field = GetRareField(FieldId::kLayoutOverflow)) {
-        return field->layout_overflow;
-      }
-      return {{}, Size()};
+    if (const auto* field = GetRareField(FieldId::kLayoutOverflow)) {
+      return field->layout_overflow;
     }
-    if (!HasLayoutOverflow())
-      return {{}, Size()};
-    return *ComputeLayoutOverflowAddress();
+    return {{}, Size()};
   }
 
   bool HasLayoutOverflow() const {
-    if (RuntimeEnabledFeatures::LayoutOverflowNoCloneEnabled()) {
-      return GetRareField(FieldId::kLayoutOverflow);
-    }
-    return bit_field_.get<HasLayoutOverflowFlag>();
+    return GetRareField(FieldId::kLayoutOverflow);
   }
 
   const NGPhysicalBoxStrut Borders() const {
@@ -556,9 +546,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
       IncludeBorderRightFlag::DefineNextValue<bool, 1>;
   using IncludeBorderLeftFlag =
       IncludeBorderBottomFlag::DefineNextValue<bool, 1>;
-  using HasLayoutOverflowFlag = IncludeBorderLeftFlag::DefineNextValue<bool, 1>;
   using InkOverflowTypeValue =
-      HasLayoutOverflowFlag::DefineNextValue<uint8_t, NGInkOverflow::kTypeBits>;
+      IncludeBorderLeftFlag::DefineNextValue<uint8_t, NGInkOverflow::kTypeBits>;
   using IsFirstForNodeFlag = InkOverflowTypeValue::DefineNextValue<bool, 1>;
   using HasDescendantsForTablePartFlag =
       IsFirstForNodeFlag::DefineNextValue<bool, 1>;
@@ -585,8 +574,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return !!GetRareField(FieldId::kInflowBounds);
   }
 
-  static size_t AdditionalByteSize(bool has_fragment_items,
-                                   bool has_layout_overflow);
+  static size_t AdditionalByteSize(bool has_fragment_items);
 
   using FieldId = PhysicalFragmentRareData::FieldId;
   ALWAYS_INLINE const PhysicalFragmentRareData::RareField* GetRareField(
@@ -599,28 +587,9 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   PhysicalFragmentRareData::RareField& EnsureRareField(FieldId id);
 
   const NGFragmentItems* ComputeItemsAddress() const {
-#if DCHECK_IS_ON()
-    if (RuntimeEnabledFeatures::LayoutOverflowNoCloneEnabled()) {
-      DCHECK(HasItems() || HasBorders() || HasPadding() || HasInflowBounds());
-    } else {
-      DCHECK(HasItems() || HasLayoutOverflow() || HasBorders() ||
-             HasPadding() || HasInflowBounds());
-    }
-#endif
+    DCHECK(HasItems());
     return reinterpret_cast<const NGFragmentItems*>(base::bits::AlignUp(
         reinterpret_cast<const uint8_t*>(this + 1), alignof(NGFragmentItems)));
-  }
-
-  const PhysicalRect* ComputeLayoutOverflowAddress() const {
-    DCHECK(!RuntimeEnabledFeatures::LayoutOverflowNoCloneEnabled());
-    DCHECK(HasLayoutOverflow() || HasBorders() || HasPadding() ||
-           HasInflowBounds());
-    const NGFragmentItems* items = ComputeItemsAddress();
-    const uint8_t* unaligned_layout_overflow =
-        HasItems() ? reinterpret_cast<const uint8_t*>(items + 1)
-                   : reinterpret_cast<const uint8_t*>(items);
-    return reinterpret_cast<const PhysicalRect*>(
-        base::bits::AlignUp(unaligned_layout_overflow, alignof(PhysicalRect)));
   }
 
   void SetInkOverflow(const PhysicalRect& self, const PhysicalRect& contents);

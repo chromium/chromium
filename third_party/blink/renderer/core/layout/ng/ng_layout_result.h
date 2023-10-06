@@ -70,9 +70,7 @@ class CORE_EXPORT NGLayoutResult final
   // Same as Clone(), but uses the "post-layout" fragments to ensure
   // fragment-tree consistency.
   static const NGLayoutResult* CloneWithPostLayoutFragments(
-      const NGLayoutResult& other,
-      const absl::optional<PhysicalRect> updated_layout_overflow =
-          absl::nullopt);
+      const NGLayoutResult& other);
 
   // Create a copy of NGLayoutResult with |BfcBlockOffset| replaced by the given
   // parameter. Note, when |bfc_block_offset| is |nullopt|, |BfcBlockOffset| is
