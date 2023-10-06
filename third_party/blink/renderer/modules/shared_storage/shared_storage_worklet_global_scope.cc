@@ -20,7 +20,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/module_script_downloader.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -319,23 +318,6 @@ void SharedStorageWorkletGlobalScope::NotifyContextDestroyed() {
   }
 
   WorkletGlobalScope::NotifyContextDestroyed();
-}
-
-bool SharedStorageWorkletGlobalScope::FeatureEnabled(
-    mojom::blink::OriginTrialFeature feature) const {
-  // The shared storage worklet infrastructure doesn't yet support checking the
-  // origin trial features. We'll go over each feature that can potentially be
-  // checked (e.g. IDL attribute/interface exposures conditioned on
-  // RuntimeEnabled=XXX), and replicate their status manually.
-
-  // The worklet must have been created from a context eligible for shared
-  // storage. It's okay to treat `kSharedStorageAPI` as enabled.
-  if (feature == mojom::blink::OriginTrialFeature::kSharedStorageAPI) {
-    return true;
-  }
-
-  // For unknown features, return false to be on the safe side.
-  return false;
 }
 
 void SharedStorageWorkletGlobalScope::Trace(Visitor* visitor) const {

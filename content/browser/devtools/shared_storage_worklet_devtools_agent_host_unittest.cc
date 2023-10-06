@@ -107,7 +107,9 @@ class SharedStorageWorkletDevToolsAgentHostTest
         SharedStorageDocumentServiceImpl::GetOrCreateForCurrentDocument(
             main_rfh);
     document_service->AddModuleOnWorklet(
-        GURL("http://www.google.com/script.js"), base::DoNothing());
+        GURL("http://www.google.com/script.js"),
+        {blink::mojom::OriginTrialFeature::kSharedStorageAPI},
+        base::DoNothing());
 
     SharedStorageWorkletHostManager* manager =
         GetSharedStorageWorkletHostManagerForStoragePartition(

@@ -111,6 +111,7 @@ void SharedStorageDocumentServiceImpl::Bind(
 
 void SharedStorageDocumentServiceImpl::AddModuleOnWorklet(
     const GURL& script_source_url,
+    const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     AddModuleOnWorkletCallback callback) {
   if (!render_frame_host().GetLastCommittedOrigin().IsSameOriginWith(
           script_source_url)) {
@@ -161,7 +162,7 @@ void SharedStorageDocumentServiceImpl::AddModuleOnWorklet(
   GetSharedStorageWorkletHost()->AddModuleOnWorklet(
       std::move(frame_url_loader_factory),
       render_frame_host().GetLastCommittedOrigin(), script_source_url,
-      std::move(callback));
+      origin_trial_features, std::move(callback));
 }
 
 void SharedStorageDocumentServiceImpl::RunOperationOnWorklet(

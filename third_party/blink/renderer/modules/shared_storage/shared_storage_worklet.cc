@@ -7,11 +7,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage.h"
 #include "third_party/blink/renderer/modules/shared_storage/util.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -75,9 +77,15 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
     return promise;
   }
 
+  std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+      origin_trial_features =
+          OriginTrialContext::GetInheritedTrialFeatures(execution_context);
+
   shared_storage_->GetSharedStorageDocumentService(execution_context)
       ->AddModuleOnWorklet(
           script_source_url,
+          origin_trial_features ? *origin_trial_features
+                                : Vector<mojom::blink::OriginTrialFeature>(),
           WTF::BindOnce(
               [](ScriptPromiseResolver* resolver,
                  SharedStorageWorklet* shared_storage_worklet,

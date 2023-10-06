@@ -214,6 +214,7 @@ void SharedStorageWorkletHost::AddModuleOnWorklet(
         frame_url_loader_factory,
     const url::Origin& frame_origin,
     const GURL& script_source_url,
+    const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     blink::mojom::SharedStorageDocumentService::AddModuleOnWorkletCallback
         callback) {
   // This function is invoked from `document_service_`. Thus both `page_` and
@@ -233,6 +234,7 @@ void SharedStorageWorkletHost::AddModuleOnWorklet(
 
   add_module_state_ = AddModuleState::kInitiated;
   script_source_url_ = script_source_url;
+  origin_trial_features_ = origin_trial_features;
 
   devtools_handle_ = std::make_unique<ScopedDevToolsHandle>(*this);
 
@@ -959,7 +961,8 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
 
     auto global_scope_creation_params =
         blink::mojom::WorkletGlobalScopeCreationParams::New(
-            script_source_url_, devtools_handle_->devtools_token(),
+            script_source_url_, origin_trial_features_,
+            devtools_handle_->devtools_token(),
             devtools_handle_->BindNewPipeAndPassRemote());
 
     driver_->StartWorkletService(

@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "url/origin.h"
 
@@ -59,6 +60,8 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
 
   // blink::mojom::SharedStorageDocumentService.
   void AddModuleOnWorklet(const GURL& script_source_url,
+                          const std::vector<blink::mojom::OriginTrialFeature>&
+                              origin_trial_features,
                           AddModuleOnWorkletCallback callback) override;
   void RunOperationOnWorklet(const std::string& name,
                              blink::CloneableMessage serialized_data,

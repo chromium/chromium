@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,6 +40,7 @@
 #include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_paths.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -52,6 +54,7 @@
 #include "content/public/test/test_select_url_fenced_frame_config_observer.h"
 #include "content/public/test/test_shared_storage_header_observer.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/fenced_frame_test_utils.h"
@@ -11201,6 +11204,74 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   ASSERT_TRUE(observer_);
   EXPECT_TRUE(observer_->header_results().empty());
   EXPECT_TRUE(observer_->operations().empty());
+}
+
+class SharedStorageOriginTrialBrowserTest : public ContentBrowserTest {
+ public:
+  SharedStorageOriginTrialBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kPrivacySandboxAdsAPIs,
+                              blink::features::kSharedStorageAPI},
+        /*disabled_features=*/{features::kPrivacySandboxAdsAPIsM1Override});
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+
+    // We use a URLLoaderInterceptor, rather than the EmbeddedTestServer, since
+    // the origin trial token in the response is associated with a fixed
+    // origin, whereas EmbeddedTestServer serves content on a random port.
+    url_loader_interceptor_ =
+        std::make_unique<URLLoaderInterceptor>(base::BindLambdaForTesting(
+            [](URLLoaderInterceptor::RequestParams* params) -> bool {
+              base::ScopedAllowBlockingForTesting allow_blocking;
+
+              base::FilePath test_data_dir;
+              CHECK(base::PathService::Get(DIR_TEST_DATA, &test_data_dir));
+
+              std::string relative_path =
+                  params->url_request.url.path().substr(1);
+
+              base::FilePath file_path =
+                  test_data_dir.AppendASCII(relative_path);
+
+              URLLoaderInterceptor::WriteResponse(file_path,
+                                                  params->client.get());
+
+              return true;
+            }));
+  }
+
+  void TearDownOnMainThread() override {
+    // Resetting `URLLoaderInterceptor` needs a single-threaded context. Thus,
+    // reset it here instead of during destruction of `this`.
+    url_loader_interceptor_.reset();
+  }
+
+ private:
+  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SharedStorageOriginTrialBrowserTest,
+                       OriginTrialEnabled_SharedStorageClassExposedInWorklet) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), GURL("https://example.test/attribution_reporting/"
+                                  "page_with_ads_apis_ot.html")));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      // Try accessing the `SharedStorage` interface which is gated by
+      // [RuntimeEnabled=SharedStorageAPI] which has an associated Origin Trial
+      // feature. If the OT features are correctly propagated to the worklet
+      // environment, the module script should execute successfully.
+      let module_content = `
+        SharedStorage;
+      `;
+
+      let blob = new Blob([module_content], {type: 'text/javascript'});
+      sharedStorage.worklet.addModule(URL.createObjectURL(blob));
+    )"));
 }
 
 }  // namespace content

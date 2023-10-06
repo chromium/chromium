@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
+import "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom";
 import "url/mojom/url.mojom";
 
 // The input argument of the shared storage key. The data will be checked at
@@ -42,8 +43,10 @@ interface SharedStorageDocumentService {
   // Handle sharedStorage.worklet.addModule(): download and load the script in
   // the worklet environment. The origin of the `script_source_url` should be
   // checked at the Mojo boundary to ensure it's from the same origin of the
-  // current context.
-  AddModuleOnWorklet(url.mojom.Url script_source_url)
+  // current context. The worklet will be initialized with
+  // `origin_trial_features` (i.e. inherit the creator document's OT features).
+  AddModuleOnWorklet(url.mojom.Url script_source_url,
+                     array<OriginTrialFeature> origin_trial_features)
       => (bool success,
           string error_message);
 
