@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/quick_unlock_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/people/quick_unlock_handler.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"

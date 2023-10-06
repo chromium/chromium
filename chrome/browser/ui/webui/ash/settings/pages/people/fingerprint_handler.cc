@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/fingerprint_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/people/fingerprint_handler.h"
 
 #include <algorithm>
 #include <memory>
@@ -46,7 +46,7 @@ base::Value::Dict GetFingerprintsInfo(
 
   DCHECK_LE(static_cast<int>(fingerprints_list.size()),
             kMaxAllowedFingerprints);
-  for (auto& fingerprint_name: fingerprints_list) {
+  for (auto& fingerprint_name : fingerprints_list) {
     fingerprints.Append(fingerprint_name);
   }
 
@@ -64,8 +64,7 @@ FingerprintHandler::FingerprintHandler(Profile* profile) : profile_(profile) {
   user_id_ = ProfileHelper::Get()->GetUserIdHashFromProfile(profile);
 }
 
-FingerprintHandler::~FingerprintHandler() {
-}
+FingerprintHandler::~FingerprintHandler() {}
 
 void FingerprintHandler::RegisterMessages() {
   // Note: getFingerprintsList must be called before observers will be added.
@@ -100,8 +99,9 @@ void FingerprintHandler::RegisterMessages() {
 
 void FingerprintHandler::OnJavascriptAllowed() {
   // SessionManager may not exist in some tests.
-  if (SessionManager::Get())
+  if (SessionManager::Get()) {
     session_observation_.Observe(SessionManager::Get());
+  }
 
   fp_service_->AddFingerprintObserver(receiver_.BindNewPipeAndPassRemote());
 }
@@ -201,8 +201,9 @@ void FingerprintHandler::HandleStartEnroll(const base::Value::List& args) {
 
   // Auth token expiration will trigger password prompt.
   // Silently fail if auth token is incorrect.
-  if (!CheckAuthTokenValidity(auth_token))
+  if (!CheckAuthTokenValidity(auth_token)) {
     return;
+  }
 
   // Determines what the newly added fingerprint's name should be.
   for (int i = 1; i <= kMaxAllowedFingerprints; ++i) {
@@ -225,8 +226,9 @@ void FingerprintHandler::HandleCancelCurrentEnroll(
 }
 
 void FingerprintHandler::OnCancelCurrentEnrollSession(bool success) {
-  if (!success)
+  if (!success) {
     LOG(ERROR) << "Failed to cancel current fingerprint enroll session.";
+  }
 }
 
 void FingerprintHandler::HandleGetEnrollmentLabel(
@@ -261,8 +263,9 @@ void FingerprintHandler::HandleRemoveEnrollment(const base::Value::List& args) {
   CHECK_LT(index, static_cast<int>(fingerprints_paths_.size()));
 
   // Silently fail if auth token is incorrect.
-  if (!CheckAuthTokenValidity(auth_token))
+  if (!CheckAuthTokenValidity(auth_token)) {
     return;
+  }
 
   AllowJavascript();
   fp_service_->RemoveRecord(
@@ -273,8 +276,9 @@ void FingerprintHandler::HandleRemoveEnrollment(const base::Value::List& args) {
 
 void FingerprintHandler::OnRemoveRecord(const std::string& callback_id,
                                         bool success) {
-  if (!success)
+  if (!success) {
     LOG(ERROR) << "Failed to remove fingerprint record.";
+  }
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(success));
 }
 
@@ -299,8 +303,9 @@ void FingerprintHandler::HandleChangeEnrollmentLabel(
 
 void FingerprintHandler::OnSetRecordLabel(const std::string& callback_id,
                                           bool success) {
-  if (!success)
+  if (!success) {
     LOG(ERROR) << "Failed to set fingerprint record label.";
+  }
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(success));
 }
 
