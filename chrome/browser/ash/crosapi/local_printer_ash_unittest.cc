@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/printing/oauth2/mock_authorization_zones_manager.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "chrome/test/base/testing_profile.h"
@@ -463,8 +464,8 @@ class LocalPrinterAshTest : public LocalPrinterAshTestBase {
   bool SupportFallback() override { return false; }
 
   std::vector<base::test::FeatureRefAndParams> FeaturesToEnable() override {
-    return {base::test::FeatureRefAndParams(
-        ash::features::kLocalPrinterObserving, {})};
+    return {base::test::FeatureRefAndParams(::features::kLocalPrinterObserving,
+                                            {})};
   }
 };
 

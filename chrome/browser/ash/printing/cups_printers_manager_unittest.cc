@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/ash/printing/usb_printer_detector.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
@@ -1192,7 +1193,7 @@ TEST_F(CupsPrintersManagerTest, ActiveNetworkStrengthChanged) {
 
 // Tests that local printers observers are triggered when added.
 TEST_F(CupsPrintersManagerTest, AddLocalPrintersObserver) {
-  feature_list_.InitAndEnableFeature(features::kLocalPrinterObserving);
+  feature_list_.InitAndEnableFeature(::features::kLocalPrinterObserving);
 
   // Add the same observer twice to verify it's only added once and triggered
   // once.

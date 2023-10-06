@@ -1052,6 +1052,11 @@ BASE_FEATURE(kPrerenderFallbackToPreconnect,
 BASE_FEATURE(kPrintPreviewSetupAssistance,
              "PrintPreviewSetupAssistance",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Enables the observing of local printers to provide UI surfaces with live
+// updates.
+BASE_FEATURE(kLocalPrinterObserving,
+             "LocalPrinterObserving",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

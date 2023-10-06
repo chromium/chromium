@@ -2144,12 +2144,6 @@ BASE_FEATURE(kPreferConstantFrameRate,
              "PreferConstantFrameRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the observing of local printers to provide UI surfaces with live
-// updates.
-BASE_FEATURE(kLocalPrinterObserving,
-             "LocalPrinterObserving",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the jelly colors will be used in the print management app.
 // Requires jelly-colors flag to also be enabled.
 BASE_FEATURE(kPrintManagementJelly,
@@ -3926,10 +3920,6 @@ bool IsPipTiltEnabled() {
 
 bool IsPipTuckEnabled() {
   return base::FeatureList::IsEnabled(kPipTuck);
-}
-
-bool IsLocalPrinterObservingEnabled() {
-  return base::FeatureList::IsEnabled(kLocalPrinterObserving);
 }
 
 bool IsPrinterSettingsPrinterStatusEnabled() {

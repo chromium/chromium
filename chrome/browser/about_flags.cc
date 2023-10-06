@@ -6112,9 +6112,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPhoneHubOnboardingNotifierRevampName,
      flag_descriptions::kPhoneHubOnboardingNotifierRevampDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPhoneHubOnboardingNotifierRevamp)},
-    {"local-printer-observing", flag_descriptions::kLocalPrinterObservingName,
-     flag_descriptions::kLocalPrinterObservingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kLocalPrinterObserving)},
     {"print-management-jelly", flag_descriptions::kPrintManagementJellyName,
      flag_descriptions::kPrintManagementJellyDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPrintManagementJelly)},
@@ -9403,6 +9400,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+    {"local-printer-observing", flag_descriptions::kLocalPrinterObservingName,
+     flag_descriptions::kLocalPrinterObservingDescription, kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kLocalPrinterObserving)},
     {"print-preview-setup-assistance",
      flag_descriptions::kPrintPreviewSetupAssistanceName,
      flag_descriptions::kPrintPreviewSetupAssistanceDescription,

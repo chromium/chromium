@@ -3883,9 +3883,6 @@ extern const char kPolicyProvidedTrustAnchorsAllowedAtLockScreenDescription[];
 extern const char kPreferDcheckName[];
 extern const char kPreferDcheckDescription[];
 
-extern const char kLocalPrinterObservingName[];
-extern const char kLocalPrinterObservingDescription[];
-
 extern const char kPrinterSettingsPrinterStatusName[];
 extern const char kPrinterSettingsPrinterStatusDescription[];
 
@@ -4222,6 +4219,9 @@ extern const char kPreinstalledWebAppWindowExperimentDescription[];
 
 extern const char kPrintPreviewSetupAssistanceName[];
 extern const char kPrintPreviewSetupAssistanceDescription[];
+
+extern const char kLocalPrinterObservingName[];
+extern const char kLocalPrinterObservingDescription[];
 
 extern const char kDisableQuickAnswersV2TranslationName[];
 extern const char kDisableQuickAnswersV2TranslationDescription[];

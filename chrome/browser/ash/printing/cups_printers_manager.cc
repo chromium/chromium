@@ -40,6 +40,7 @@
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/printing/cups_printer_status.h"
@@ -241,7 +242,7 @@ class CupsPrintersManagerImpl
   // Public API function.
   void AddLocalPrintersObserver(
       CupsPrintersManager::LocalPrintersObserver* observer) override {
-    CHECK(ash::features::IsLocalPrinterObservingEnabled());
+    CHECK(base::FeatureList::IsEnabled(::features::kLocalPrinterObserving));
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
 
     if (!local_printers_observer_list_.HasObserver(observer)) {
@@ -253,7 +254,7 @@ class CupsPrintersManagerImpl
   // Public API function.
   void RemoveLocalPrintersObserver(
       CupsPrintersManager::LocalPrintersObserver* observer) override {
-    CHECK(ash::features::IsLocalPrinterObservingEnabled());
+    CHECK(base::FeatureList::IsEnabled(::features::kLocalPrinterObserving));
 
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     local_printers_observer_list_.RemoveObserver(observer);
