@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL checking serialized value of font-variant assert_equals: expected "tabular-nums" but got "tabular-nums  "
-Harness: the test ran to completion.
-

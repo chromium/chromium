@@ -775,6 +775,24 @@ bool StylePropertySerializer::AppendFontLonghandValueIfNotNormal(
     return true;
   }
 
+  String value;
+  // In the font-variant shorthand a "none" ligatures value needs to be
+  // expanded.
+  if (property.IDEquals(CSSPropertyID::kFontVariantLigatures) &&
+      identifier_value && identifier_value->GetValueID() == CSSValueID::kNone) {
+    value =
+        "no-common-ligatures no-discretionary-ligatures "
+        "no-historical-ligatures no-contextual";
+  } else {
+    value = val->CssText();
+  }
+
+  // The font longhand property values can be empty where the font shorthand
+  // properties (e.g., font, font-variant, etc.) initialize them.
+  if (value.empty()) {
+    return true;
+  }
+
   if (!result.empty()) {
     switch (property.PropertyID()) {
       case CSSPropertyID::kFontStyle:
@@ -797,19 +815,6 @@ bool StylePropertySerializer::AppendFontLonghandValueIfNotNormal(
         NOTREACHED();
     }
   }
-
-  String value;
-  // In the font-variant shorthand a "none" ligatures value needs to be
-  // expanded.
-  if (property.IDEquals(CSSPropertyID::kFontVariantLigatures) &&
-      identifier_value && identifier_value->GetValueID() == CSSValueID::kNone) {
-    value =
-        "no-common-ligatures no-discretionary-ligatures "
-        "no-historical-ligatures no-contextual";
-  } else {
-    value = val->CssText();
-  }
-
   result.Append(value);
   return true;
 }
