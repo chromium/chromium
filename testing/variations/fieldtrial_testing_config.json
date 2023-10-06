@@ -18608,6 +18608,21 @@
             ]
         }
     ],
+    "WebGPUUseTintIR": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebGPUUseTintIR"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebOtpBackendAuto": [
         {
             "platforms": [
