@@ -86,7 +86,7 @@ std::u16string GetNotificationMessage(
       return file_count > 1
                  ? l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_BLOCK_MESSAGE)
                  : policy::files_string_util::GetBlockReasonMessage(
-                       reason.value(), file_count, first_file);
+                       reason.value(), first_file);
     case NotificationType::kWarning:
       const std::u16string placeholder_value =
           file_count == 1 ? first_file : base::NumberToString16(file_count);

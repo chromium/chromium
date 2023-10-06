@@ -1078,10 +1078,16 @@ Additional details:
                 =1 {File blocked from opening}
                 other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files blocked from opening}}
   </message>
+  <message name="IDS_POLICY_DLP_FILES_POLICY_BLOCK_SINGLE_FILE_MESSAGE" desc="The message for notification/dialog informing the user an action (e.g. open, upload) of the selected file is blocked because of policy.">
+    1 file was blocked because of policy
+  </message>
   <message name="IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE" desc="The message for notification/dialog informing the user an action (e.g. open, upload) of the selected file(s) is blocked because of policy.">
         {0, plural,
                 =1 {<ph name="FILE_NAME">$1<ex>Example.txt</ex></ph> was blocked because of policy}
                 other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files were blocked because of policy}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_CONTENT_BLOCK_SINGLE_FILE_MESSAGE" desc="The message for notification/dialog informing the user an action (e.g. open, upload) of the selected file is blocked because of sensitive content.">
+    1 file was blocked because of content
   </message>
   <message name="IDS_POLICY_DLP_FILES_CONTENT_BLOCK_MESSAGE" desc="The message for notification/dialog informing the user an action (e.g. open, upload) of the selected file(s) is blocked because of sensitive content.">
         {0, plural,

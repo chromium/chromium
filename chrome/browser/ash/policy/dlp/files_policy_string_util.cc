@@ -96,11 +96,39 @@ std::u16string GetContinueAnywayButton(dlp::FileAction action) {
 }
 
 std::u16string GetBlockReasonMessage(FilesPolicyDialog::BlockReason reason,
-                                     size_t file_count,
+                                     size_t file_count) {
+  int message_id;
+  switch (reason) {
+    case FilesPolicyDialog::BlockReason::kDlp:
+      message_id = file_count == 1
+                       ? IDS_POLICY_DLP_FILES_POLICY_BLOCK_SINGLE_FILE_MESSAGE
+                       : IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE;
+      break;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData:
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile:
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile:
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown:
+      // TODO(b/300705572): provide a proper message for every switch case.
+      message_id = file_count == 1
+                       ? IDS_POLICY_DLP_FILES_CONTENT_BLOCK_SINGLE_FILE_MESSAGE
+                       : IDS_POLICY_DLP_FILES_CONTENT_BLOCK_MESSAGE;
+      break;
+  }
+
+  if (file_count == 1) {
+    return l10n_util::GetStringUTF16(message_id);
+  }
+
+  return base::ReplaceStringPlaceholders(
+      l10n_util::GetPluralStringFUTF16(message_id, file_count),
+      base::NumberToString16(file_count),
+      /*offset=*/nullptr);
+}
+
+std::u16string GetBlockReasonMessage(FilesPolicyDialog::BlockReason reason,
                                      const std::u16string& first_file) {
   int message_id;
-  const std::u16string placeholder_value =
-      file_count == 1 ? first_file : base::NumberToString16(file_count);
   switch (reason) {
     case FilesPolicyDialog::BlockReason::kDlp:
       message_id = IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE;
@@ -115,8 +143,8 @@ std::u16string GetBlockReasonMessage(FilesPolicyDialog::BlockReason reason,
       break;
   }
   return base::ReplaceStringPlaceholders(
-      l10n_util::GetPluralStringFUTF16(message_id, file_count),
-      placeholder_value,
+      l10n_util::GetPluralStringFUTF16(message_id, /*number=*/1), first_file,
       /*offset=*/nullptr);
 }
+
 }  // namespace policy::files_string_util
