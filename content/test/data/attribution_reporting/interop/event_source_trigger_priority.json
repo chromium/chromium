@@ -3,7 +3,7 @@
   "input": {
     "registrations": [
       {
-        "timestamp": "1643235573000",
+        "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -20,7 +20,7 @@
         }]
       },
       {
-        "timestamp": "1643235574000",
+        "timestamp": "1000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -41,7 +41,7 @@
       },
       // Will replace the first report as its priority is higher.
       {
-        "timestamp": "1643235575000",
+        "timestamp": "2000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -61,7 +61,7 @@
       },
       // Will not replace the second report as its priority is not higher.
       {
-        "timestamp": "1643235576000",
+        "timestamp": "3000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -90,27 +90,27 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0000025,
-          "scheduled_report_time": "1645827573",
+          "scheduled_report_time": "2592000",
           "source_event_id": "123",
           "source_type": "event",
           "trigger_data": "1"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1645827573000"
+        "report_time": "2592000000"
       },
       {
         "payload": [ {
           "body": {
              "attribution_destination": "https://destination.test",
              "randomized_trigger_rate": 0.0000025,
-             "scheduled_report_time": "1645827573",
+             "scheduled_report_time": "2592000",
              "source_event_id": "123",
              "source_type": "event",
              "trigger_data": "0"
           },
           "type": "trigger-event-low-priority"
        } ],
-       "report_time": "1643235576000",
+       "report_time": "3000",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]

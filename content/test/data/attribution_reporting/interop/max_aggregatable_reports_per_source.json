@@ -3,7 +3,7 @@
   "input": {
     "registrations": [
       {
-        "timestamp": "1643235573000",
+        "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -23,7 +23,7 @@
         }]
       },
       {
-        "timestamp": "1643235574000",
+        "timestamp": "1000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -46,7 +46,7 @@
         }]
       },
       {
-        "timestamp": "1643235574001",
+        "timestamp": "1001",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -69,7 +69,7 @@
         }]
       },
       {
-        "timestamp": "1643235574002",
+        "timestamp": "1002",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -92,7 +92,7 @@
         }]
       },
       {
-        "timestamp": "1643235574003",
+        "timestamp": "1003",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -115,7 +115,7 @@
         }]
       },
       {
-        "timestamp": "1643235574004",
+        "timestamp": "1004",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -138,7 +138,7 @@
         }]
       },
       {
-        "timestamp": "1643235574005",
+        "timestamp": "1005",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -161,7 +161,7 @@
         }]
       },
       {
-        "timestamp": "1643235574006",
+        "timestamp": "1006",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -184,7 +184,7 @@
         }]
       },
       {
-        "timestamp": "1643235574007",
+        "timestamp": "1007",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -207,7 +207,7 @@
         }]
       },
       {
-        "timestamp": "1643235574008",
+        "timestamp": "1008",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -230,7 +230,7 @@
         }]
       },
       {
-        "timestamp": "1643235574009",
+        "timestamp": "1009",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -253,7 +253,7 @@
         }]
       },
       {
-        "timestamp": "1643235574010",
+        "timestamp": "1010",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -276,7 +276,7 @@
         }]
       },
       {
-        "timestamp": "1643235574011",
+        "timestamp": "1011",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -299,7 +299,7 @@
         }]
       },
       {
-        "timestamp": "1643235574012",
+        "timestamp": "1012",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -322,7 +322,7 @@
         }]
       },
       {
-        "timestamp": "1643235574013",
+        "timestamp": "1013",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -345,7 +345,7 @@
         }]
       },
       {
-        "timestamp": "1643235574014",
+        "timestamp": "1014",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -368,7 +368,7 @@
         }]
       },
       {
-        "timestamp": "1643235574015",
+        "timestamp": "1015",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -391,7 +391,7 @@
         }]
       },
       {
-        "timestamp": "1643235574016",
+        "timestamp": "1016",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -414,7 +414,7 @@
         }]
       },
       {
-        "timestamp": "1643235574017",
+        "timestamp": "1017",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -437,7 +437,7 @@
         }]
       },
       {
-        "timestamp": "1643235574018",
+        "timestamp": "1018",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -460,7 +460,7 @@
         }]
       },
       {
-        "timestamp": "1643235574019",
+        "timestamp": "1019",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -483,7 +483,7 @@
         }]
       },
       {
-        "timestamp": "1643235574020",
+        "timestamp": "1020",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -523,7 +523,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174000"
+        "report_time": "3601000"
       },
       {
         "payload": {
@@ -536,7 +536,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174001"
+        "report_time": "3601001"
       },
       {
         "payload": {
@@ -549,7 +549,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174002"
+        "report_time": "3601002"
       },
       {
         "payload": {
@@ -562,7 +562,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174003"
+        "report_time": "3601003"
       },
       {
         "payload": {
@@ -575,7 +575,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174004"
+        "report_time": "3601004"
       },
       {
         "payload": {
@@ -588,7 +588,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174005"
+        "report_time": "3601005"
       },
       {
         "payload": {
@@ -601,7 +601,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174006"
+        "report_time": "3601006"
       },
       {
         "payload": {
@@ -614,7 +614,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174007"
+        "report_time": "3601007"
       },
       {
         "payload": {
@@ -627,7 +627,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174008"
+        "report_time": "3601008"
       },
       {
         "payload": {
@@ -640,7 +640,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174009"
+        "report_time": "3601009"
       },
       {
         "payload": {
@@ -653,7 +653,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174010"
+        "report_time": "3601010"
       },
       {
         "payload": {
@@ -666,7 +666,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174011"
+        "report_time": "3601011"
       },
       {
         "payload": {
@@ -679,7 +679,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174012"
+        "report_time": "3601012"
       },
       {
         "payload": {
@@ -692,7 +692,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174013"
+        "report_time": "3601013"
       },
       {
         "payload": {
@@ -705,7 +705,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174014"
+        "report_time": "3601014"
       },
       {
         "payload": {
@@ -718,7 +718,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174015"
+        "report_time": "3601015"
       },
       {
         "payload": {
@@ -731,7 +731,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174016"
+        "report_time": "3601016"
       },
       {
         "payload": {
@@ -744,7 +744,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174017"
+        "report_time": "3601017"
       },
       {
         "payload": {
@@ -757,7 +757,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174018"
+        "report_time": "3601018"
       },
       {
         "payload": {
@@ -770,7 +770,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174019"
+        "report_time": "3601019"
       },
       {
         "payload": [ {
@@ -782,7 +782,7 @@
           },
           "type": "trigger-aggregate-excessive-reports"
        } ],
-       "report_time": "1643235574020",
+       "report_time": "1020",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
