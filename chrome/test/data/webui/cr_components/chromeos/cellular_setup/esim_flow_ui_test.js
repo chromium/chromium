@@ -524,6 +524,28 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
           /*backButtonState*/ ButtonState.ENABLED);
     }
 
+    function skipProfileList() {
+      profileDiscoveryPage.$$('#profileListMessage')
+          .shadowRoot.querySelector('a')
+          .click();
+
+      flushAsync();
+
+      // Should now be at the activation code page.
+      assertActivationCodePage(
+          /*forwardButtonShouldBeEnabled*/ false,
+          /*backButtonState*/ ButtonState.ENABLED);
+      assertFocusDefaultButtonEventFired();
+
+      // Insert an activation code.
+      activationCodePage.$$('#activationCode').value = ACTIVATION_CODE_VALID;
+      assertFalse(focusDefaultButtonEventFired);
+
+      assertActivationCodePage(
+          /*forwardButtonShouldBeEnabled*/ true,
+          /*backButtonState*/ ButtonState.ENABLED);
+    }
+
     [1, 2].forEach(profileCount => {
       test(`Skip discovery flow (${profileCount} profiles)`, async function() {
         await setupWithProfiles(profileCount);
@@ -540,6 +562,48 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
         endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
       });
     });
+
+    test('Skip profile list manually', async function() {
+      await setupWithProfiles(1);
+      skipProfileList();
+      await navigateForwardForInstall(
+          activationCodePage,
+          /*backButtonState*/ ButtonState.ENABLED);
+
+      // Should now be at the final page.
+      await assertFinalPageAndPressDoneButton(false);
+      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+    });
+
+    test(
+        'Skip profile list manually, after profile selection',
+        async function() {
+          await setupWithProfiles(1);
+
+          const getProfilesList = () =>
+              profileDiscoveryPage.shadowRoot.querySelector('iron-list');
+
+          assertTrue(!!getProfilesList());
+          assertEquals(getProfilesList().items.length, 1);
+          assertFalse(!!getProfilesList().selectedItem);
+
+          // Select a profile.
+          getProfilesList()
+              .querySelector('profile-discovery-list-item')
+              .click();
+
+          await flushAsync();
+          assertTrue(!!getProfilesList().selectedItem);
+
+          skipProfileList();
+          await navigateForwardForInstall(
+              activationCodePage,
+              /*backButtonState*/ ButtonState.ENABLED);
+
+          // Should now be at the final page.
+          await assertFinalPageAndPressDoneButton(false);
+          endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+        });
 
     [1, 2].forEach(profileCount => {
       test(

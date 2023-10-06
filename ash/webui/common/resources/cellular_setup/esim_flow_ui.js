@@ -843,7 +843,8 @@ Polymer({
   onForwardNavigationRequested_() {
     if (this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY_READY ||
         this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY_READY ||
-        this.state_ === ESimUiState.PROFILE_SEARCH_CONSENT) {
+        this.state_ === ESimUiState.PROFILE_SEARCH_CONSENT ||
+        this.state_ === ESimUiState.PROFILE_SELECTION) {
       this.navigateForward();
     }
   },
