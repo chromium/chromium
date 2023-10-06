@@ -48,9 +48,6 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   void set_avoid_stencil_buffers(bool avoid_stencil_buffers) {
     caps_.avoid_stencil_buffers = avoid_stencil_buffers;
   }
-  void set_multisample_compatibility(bool multisample_compatibility) {
-    caps_.multisample_compatibility = multisample_compatibility;
-  }
   void set_max_texture_size(int max_texture_size) {
     caps_.max_texture_size = max_texture_size;
   }

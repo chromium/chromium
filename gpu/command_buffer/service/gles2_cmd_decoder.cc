@@ -3511,7 +3511,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
                  feature_info_->workarounds().webgl_or_caps_max_texture_size);
   }
   if (feature_info_->IsWebGL2OrES3Context()) {
-    DoGetIntegerv(GL_NUM_EXTENSIONS, &caps.num_extensions, 1);
     // TODO(zmo): once we switch to MANGLE, we should query version numbers.
     caps.major_version = 3;
     caps.minor_version = 0;
@@ -3540,9 +3539,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
        features::IsUsingVulkan());
   caps.sync_query = feature_info_->feature_flags().chromium_sync_query;
 
-  bool is_offscreen = !!offscreen_target_frame_buffer_.get();
-  caps.surface_origin =
-      !is_offscreen ? surface_->GetOrigin() : gfx::SurfaceOrigin::kBottomLeft;
   // Only query the kEnableMSAAOnNewIntelGPUs feature flag if the host device
   // is affected by the experiment.
   bool eligible_for_experiment =
@@ -3552,14 +3548,10 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
           ? !base::FeatureList::IsEnabled(features::kEnableMSAAOnNewIntelGPUs)
           : workarounds().msaa_is_slow;
   caps.avoid_stencil_buffers = workarounds().avoid_stencil_buffers;
-  caps.multisample_compatibility =
-      feature_info_->feature_flags().ext_multisample_compatibility;
   caps.texture_rg = feature_info_->feature_flags().ext_texture_rg;
   caps.texture_norm16 = feature_info_->feature_flags().ext_texture_norm16;
   caps.texture_half_float_linear =
       feature_info_->oes_texture_half_float_linear_available();
-  caps.image_ycbcr_422 =
-      feature_info_->feature_flags().chromium_image_ycbcr_422;
   caps.image_ycbcr_420v =
       feature_info_->feature_flags().chromium_image_ycbcr_420v;
   caps.image_ycbcr_420v_disabled_for_video_frames =
@@ -3581,11 +3573,8 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
       group_->gpu_preferences().enable_threaded_texture_mailboxes) {
     caps.disable_2d_canvas_copy_on_write = true;
   }
-  caps.texture_npot = feature_info_->feature_flags().npot_ok;
   caps.supports_oop_raster = false;
   caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
-  caps.chromium_nonblocking_readback =
-      feature_info_->context_type() == CONTEXT_TYPE_WEBGL2;
   caps.mesa_framebuffer_flip_y =
       feature_info_->feature_flags().mesa_framebuffer_flip_y;
   caps.disable_legacy_mailbox =

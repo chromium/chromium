@@ -80,7 +80,6 @@ struct GPU_EXPORT Capabilities {
 
   int max_copy_texture_chromium_size = 0;
   int max_samples = 0;
-  int num_extensions = 0;
   bool egl_image_external = false;
   bool egl_image_external_essl3 = false;
   bool texture_format_bgra8888 = false;
@@ -89,24 +88,19 @@ struct GPU_EXPORT Capabilities {
   bool texture_rg = false;
   bool texture_norm16 = false;
   bool texture_half_float_linear = false;
-  bool image_ycbcr_422 = false;
   bool image_ycbcr_420v = false;
   bool image_ycbcr_420v_disabled_for_video_frames = false;
   bool image_ar30 = false;
   bool image_ab30 = false;
   bool image_ycbcr_p010 = false;
   bool render_buffer_format_bgra8888 = false;
-  gfx::SurfaceOrigin surface_origin = gfx::SurfaceOrigin::kBottomLeft;
   bool msaa_is_slow = false;
   bool disable_one_component_textures = false;
   bool gpu_rasterization = false;
   bool avoid_stencil_buffers = false;
-  bool multisample_compatibility = false;
   bool angle_rgbx_internal_format = false;
 
   bool disable_2d_canvas_copy_on_write = false;
-
-  bool texture_npot = false;
 
   bool supports_oop_raster = false;
 
@@ -114,8 +108,6 @@ struct GPU_EXPORT Capabilities {
   bool supports_yuv_readback = false;
 
   bool chromium_gpu_fence = false;
-
-  bool chromium_nonblocking_readback = false;
 
   bool mesa_framebuffer_flip_y = false;
 

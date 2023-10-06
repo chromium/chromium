@@ -1383,8 +1383,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.texture_norm16 = feature_info_->feature_flags().ext_texture_norm16;
   caps.texture_half_float_linear =
       feature_info_->feature_flags().enable_texture_half_float_linear;
-  caps.image_ycbcr_422 =
-      feature_info_->feature_flags().chromium_image_ycbcr_422;
   caps.image_ycbcr_420v =
       feature_info_->feature_flags().chromium_image_ycbcr_420v;
   caps.image_ycbcr_420v_disabled_for_video_frames =
@@ -1410,17 +1408,13 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.msaa_is_slow = MSAAIsSlow(feature_info_->workarounds());
   caps.avoid_stencil_buffers =
       feature_info_->workarounds().avoid_stencil_buffers;
-  caps.multisample_compatibility =
-      feature_info_->feature_flags().ext_multisample_compatibility;
   if (base::FeatureList::IsEnabled(features::kPassthroughYuvRgbConversion)) {
     caps.supports_yuv_rgb_conversion = true;
   }
   // Technically, YUV readback is handled on the client side, but enable it here
   // so that clients can use this to detect support.
   caps.supports_yuv_readback = true;
-  caps.texture_npot = feature_info_->feature_flags().npot_ok;
   caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
-  caps.chromium_nonblocking_readback = true;
   caps.mesa_framebuffer_flip_y =
       feature_info_->feature_flags().mesa_framebuffer_flip_y;
 

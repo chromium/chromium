@@ -195,7 +195,6 @@ void PopulateNumericCapabilities(Capabilities* caps,
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &caps->max_texture_size);
 
   if (feature_info->IsWebGL2OrES3OrHigherContext()) {
-    glGetIntegerv(GL_NUM_EXTENSIONS, &caps->num_extensions);
     caps->major_version = 3;
     if (feature_info->IsES31ForTestingContext()) {
       caps->minor_version = 1;

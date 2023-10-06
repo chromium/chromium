@@ -6511,7 +6511,6 @@ void GLES2Implementation::EndQueryEXT(GLenum target) {
   }  // GPU_CLIENT_SINGLE_THREAD_CHECK ends here
 
   if (target == GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM) {
-    DCHECK(capabilities_.chromium_nonblocking_readback);
     DCHECK(query);
     auto serial = readback_buffer_shadow_tracker_->buffer_shadow_serial();
     readback_buffer_shadow_tracker_->IncrementSerial();
