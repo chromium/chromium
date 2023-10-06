@@ -10,7 +10,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "components/signin/public/base/signin_switches.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -25,7 +25,8 @@ SearchEngineChoiceTabHelper::SearchEngineChoiceTabHelper(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
       content::WebContentsUserData<SearchEngineChoiceTabHelper>(*web_contents) {
-  CHECK(base::FeatureList::IsEnabled(switches::kSearchEngineChoice));
+  CHECK(search_engines::IsChoiceScreenFlagEnabled(
+      search_engines::ChoicePromo::kDialog));
 }
 
 void SearchEngineChoiceTabHelper::DidFinishNavigation(

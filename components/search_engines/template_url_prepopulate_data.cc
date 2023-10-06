@@ -20,7 +20,6 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/public/base/signin_switches.h"
 
 namespace TemplateURLPrepopulateData {
 
@@ -1644,12 +1643,10 @@ GetPrepopulatedEnginesForEeaRegionCountries(int country_id) {
   std::vector<const PrepopulatedEngine*> top_engines;
   std::vector<const PrepopulatedEngine*> tying_engines;
   std::vector<const PrepopulatedEngine*> remaining_engines;
-  const bool kIsEeaCountry = search_engines::IsEeaChoiceCountry(country_id);
-  const bool kSearchEngineChoiceEnabled =
-      base::FeatureList::IsEnabled(switches::kSearchEngineChoice) ||
-      base::FeatureList::IsEnabled(switches::kSearchEngineChoiceFre);
 
-  CHECK(kIsEeaCountry && kSearchEngineChoiceEnabled);
+  CHECK(search_engines::IsEeaChoiceCountry(country_id) &&
+        search_engines::IsChoiceScreenFlagEnabled(
+            search_engines::ChoicePromo::kAny));
   const size_t kMaxNumberOfEngines = 12;
 
   const std::vector<EngineAndTier> country_engines =
@@ -1704,13 +1701,11 @@ GetPrepopulatedEnginesForEeaRegionCountries(int country_id) {
 
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedTemplateURLData(
     int country_id) {
-  const bool kIsEeaCountry = search_engines::IsEeaChoiceCountry(country_id);
-  const bool kSearchEngineChoiceEnabled =
-      base::FeatureList::IsEnabled(switches::kSearchEngineChoice) ||
-      base::FeatureList::IsEnabled(switches::kSearchEngineChoiceFre);
   std::vector<std::unique_ptr<TemplateURLData>> t_urls;
 
-  if (kIsEeaCountry && kSearchEngineChoiceEnabled) {
+  if (search_engines::IsEeaChoiceCountry(country_id) &&
+      search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
     return GetPrepopulatedEnginesForEeaRegionCountries(country_id);
   }
 
@@ -1776,8 +1771,8 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
         search_engines::GetSearchEngineChoiceCountryId(prefs));
 
     if (include_current_default && template_url_service) {
-      CHECK(base::FeatureList::IsEnabled(switches::kSearchEngineChoice) ||
-            base::FeatureList::IsEnabled(switches::kSearchEngineChoiceFre));
+      CHECK(search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny));
       // This would add the current default search engine to the top of the
       // returned list if it's not already there.
       const TemplateURL* default_search_engine =

@@ -29,6 +29,7 @@
 #include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_terms_data.h"
@@ -37,7 +38,6 @@
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/util.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -292,7 +292,8 @@ void TemplateURLService::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kDefaultSearchProviderContextMenuAccessAllowed, true);
 
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+  if (search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
     registry->RegisterInt64Pref(
         prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
   }
@@ -1626,7 +1627,8 @@ void TemplateURLService::Init(const Initializer* initializers,
 
   if (prefs_) {
     pref_change_registrar_.Init(prefs_);
-    if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+    if (search_engines::IsChoiceScreenFlagEnabled(
+            search_engines::ChoicePromo::kAny)) {
       pref_change_registrar_.Add(
           prefs::kDefaultSearchProviderGUID,
           base::BindRepeating(

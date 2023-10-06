@@ -254,7 +254,8 @@ TemplateURLServiceSyncTest::TemplateURLServiceSyncTest()
   // the feature flag is inlined."
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{switches::kSearchEngineChoice});
+      /*disabled_features=*/{switches::kSearchEngineChoice,
+                             switches::kSearchEngineChoiceFre});
 }
 
 void TemplateURLServiceSyncTest::SetUp() {
