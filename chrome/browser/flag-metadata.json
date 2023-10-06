@@ -2233,7 +2233,7 @@
   {
     "name": "enable-cardboard",
     "owners": [ "alcooper", "chrome-xr-eng@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 122
   },
   {
     "name": "enable-cast-streaming-av1",
