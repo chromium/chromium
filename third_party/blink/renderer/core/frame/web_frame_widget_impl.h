@@ -403,6 +403,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   // WebWidget overrides.
   void InitializeCompositing(const display::ScreenInfos& screen_infos,
                              const cc::LayerTreeSettings* settings) override;
+  void InitializeCompositingFromPreviousWidget(
+      const display::ScreenInfos& screen_infos,
+      const cc::LayerTreeSettings* settings,
+      WebFrameWidget& previous_widget) override;
   void SetCompositorVisible(bool visible) override;
   gfx::Size Size() override;
   void Resize(const gfx::Size& size_with_dsf) override;
@@ -906,6 +910,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   Page* GetPage() const;
 
   mojom::blink::FrameWidgetHost* GetAssociatedFrameWidgetHost() const;
+
+  void InitializeCompositingInternal(const display::ScreenInfos& screen_infos,
+                                     const cc::LayerTreeSettings* settings,
+                                     WebFrameWidget* previous_widget);
 
   // Notifies RenderWidgetHostImpl that the frame widget has painted something.
   void DidMeaningfulLayout(WebMeaningfulLayout layout_type);

@@ -409,5 +409,205 @@ TEST(LayerTreeViewTest, RunPresentationCallbackOnSuccess) {
   EXPECT_EQ(callback_timestamp, success_timestamp);
 }
 
+class LayerTreeViewDelegateChangeTest : public testing::Test {
+ public:
+  LayerTreeViewDelegateChangeTest()
+      : dummy_page_scheduler_(scheduler::CreateDummyPageScheduler()),
+        layer_tree_view_(&old_layer_tree_view_delegate_,
+                         dummy_page_scheduler_->CreateWidgetScheduler()) {
+    cc::LayerTreeSettings settings;
+    settings.single_thread_proxy_scheduler = false;
+    layer_tree_view_.Initialize(
+        settings, blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+        /*compositor_thread=*/nullptr, &test_task_graph_runner_);
+    layer_tree_view_.SetVisible(true);
+  }
+
+  LayerTreeViewDelegateChangeTest(const LayerTreeViewDelegateChangeTest&) =
+      delete;
+  LayerTreeViewDelegateChangeTest& operator=(
+      const LayerTreeViewDelegateChangeTest&) = delete;
+
+  void SwapDelegate() {
+    layer_tree_view_.ReattachTo(&new_layer_tree_view_delegate_,
+                                dummy_page_scheduler_->CreateWidgetScheduler());
+  }
+
+ protected:
+  class FakeLayerTreeViewDelegate : public StubLayerTreeViewDelegate {
+   public:
+    void RequestNewLayerTreeFrameSink(
+        LayerTreeFrameSinkCallback callback) override {
+      EXPECT_FALSE(did_request_frame_sink_);
+      did_request_frame_sink_ = true;
+
+      if (service_frame_sink_request_) {
+        auto context_provider = viz::TestContextProvider::Create();
+        std::move(callback).Run(
+            cc::FakeLayerTreeFrameSink::Create3d(std::move(context_provider)),
+            nullptr);
+      }
+    }
+
+    std::unique_ptr<cc::RenderFrameMetadataObserver> CreateRenderFrameObserver()
+        override {
+      EXPECT_FALSE(did_request_frame_observer_);
+      did_request_frame_observer_ = true;
+      return nullptr;
+    }
+
+    bool GetAndResetDidRequestFrameSink() {
+      bool val = did_request_frame_sink_;
+      did_request_frame_sink_ = false;
+      return val;
+    }
+
+    bool GetAndResetDidRequestFrameObserver() {
+      bool val = did_request_frame_observer_;
+      did_request_frame_observer_ = false;
+      return val;
+    }
+
+    void set_service_frame_sink_request() {
+      service_frame_sink_request_ = true;
+    }
+
+   private:
+    bool did_request_frame_sink_ = false;
+    bool did_request_frame_observer_ = false;
+    bool service_frame_sink_request_ = false;
+  };
+
+  class LayerTreeViewForTesting : public LayerTreeView {
+   public:
+    LayerTreeViewForTesting(LayerTreeViewDelegate* delegate,
+                            scoped_refptr<scheduler::WidgetScheduler> scheduler)
+        : LayerTreeView(delegate, std::move(scheduler)) {}
+
+    void set_suppress_initialization_success() {
+      suppress_initialization_success_ = true;
+    }
+
+    void DidInitializeLayerTreeFrameSink() override {
+      EXPECT_FALSE(did_initialize_frame_sink_);
+      did_initialize_frame_sink_ = true;
+
+      if (suppress_initialization_success_) {
+        return;
+      }
+
+      LayerTreeView::DidInitializeLayerTreeFrameSink();
+    }
+
+    bool GetAndResetDidInitializeFrameSink() {
+      bool val = did_initialize_frame_sink_;
+      did_initialize_frame_sink_ = true;
+      return val;
+    }
+
+   private:
+    bool suppress_initialization_success_ = false;
+    bool did_initialize_frame_sink_ = false;
+  };
+
+  base::test::TaskEnvironment task_environment_;
+  cc::TestTaskGraphRunner test_task_graph_runner_;
+  std::unique_ptr<PageScheduler> dummy_page_scheduler_;
+
+  FakeLayerTreeViewDelegate old_layer_tree_view_delegate_;
+  FakeLayerTreeViewDelegate new_layer_tree_view_delegate_;
+  LayerTreeViewForTesting layer_tree_view_;
+};
+
+TEST_F(LayerTreeViewDelegateChangeTest, NoFrameSink) {
+  // Swap the delegate when no FrameSink is initialized. No frame sink requests
+  // should be made.
+  SwapDelegate();
+  EXPECT_FALSE(old_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+  EXPECT_FALSE(new_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+
+  base::TimeTicks some_time;
+  layer_tree_view_.layer_tree_host()->CompositeForTest(
+      some_time, true /* raster */, base::OnceClosure());
+  EXPECT_FALSE(old_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+  EXPECT_TRUE(new_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+  EXPECT_FALSE(
+      new_layer_tree_view_delegate_.GetAndResetDidRequestFrameObserver());
+}
+
+TEST_F(LayerTreeViewDelegateChangeTest, RequestBufferedBecauseInvisible) {
+  // Swap the delegate while a request is buffered because the LayerTreeView was
+  // hidden.
+  layer_tree_view_.SetVisible(false);
+  base::TimeTicks some_time;
+  layer_tree_view_.layer_tree_host()->CompositeForTest(
+      some_time, true /* raster */, base::OnceClosure());
+  EXPECT_FALSE(old_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+
+  SwapDelegate();
+  EXPECT_FALSE(old_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+  EXPECT_FALSE(new_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+
+  layer_tree_view_.SetVisible(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(old_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+  EXPECT_TRUE(new_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+  EXPECT_FALSE(
+      new_layer_tree_view_delegate_.GetAndResetDidRequestFrameObserver());
+}
+
+TEST_F(LayerTreeViewDelegateChangeTest, RequestPendingBeforeSwap) {
+  // Swap the delegate while a request is pending with the old delegate. It
+  // should be re-issued to the new delegate.
+  base::TimeTicks some_time;
+  layer_tree_view_.layer_tree_host()->CompositeForTest(
+      some_time, true /* raster */, base::OnceClosure());
+  EXPECT_TRUE(old_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+
+  SwapDelegate();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(old_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+  EXPECT_TRUE(new_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+  EXPECT_FALSE(
+      new_layer_tree_view_delegate_.GetAndResetDidRequestFrameObserver());
+}
+
+TEST_F(LayerTreeViewDelegateChangeTest, SwapDuringFrameSinkInitialization) {
+  // Swap the delegate while the frame sink is pending initialization in CC.
+  // There should be no frame sink request on the new delegate.
+  layer_tree_view_.set_suppress_initialization_success();
+  old_layer_tree_view_delegate_.set_service_frame_sink_request();
+  base::TimeTicks some_time;
+  layer_tree_view_.layer_tree_host()->CompositeForTest(
+      some_time, true /* raster */, base::OnceClosure());
+  EXPECT_TRUE(old_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+  EXPECT_TRUE(layer_tree_view_.GetAndResetDidInitializeFrameSink());
+
+  SwapDelegate();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(old_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+  EXPECT_FALSE(new_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+  EXPECT_TRUE(
+      new_layer_tree_view_delegate_.GetAndResetDidRequestFrameObserver());
+}
+
+TEST_F(LayerTreeViewDelegateChangeTest, SwapAfterFrameSinkInitialization) {
+  // Swap the delegate after the frame sink is initialized in CC.
+  // There should be no frame sink request on the new delegate.
+  old_layer_tree_view_delegate_.set_service_frame_sink_request();
+  base::TimeTicks some_time;
+  layer_tree_view_.layer_tree_host()->CompositeForTest(
+      some_time, true /* raster */, base::OnceClosure());
+  EXPECT_TRUE(old_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+  EXPECT_TRUE(layer_tree_view_.GetAndResetDidInitializeFrameSink());
+
+  SwapDelegate();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(old_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+  EXPECT_FALSE(new_layer_tree_view_delegate_.GetAndResetDidRequestFrameSink());
+  EXPECT_TRUE(
+      new_layer_tree_view_delegate_.GetAndResetDidRequestFrameObserver());
+}
+
 }  // namespace
 }  // namespace blink

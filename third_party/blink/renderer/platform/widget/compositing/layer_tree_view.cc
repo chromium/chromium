@@ -131,12 +131,54 @@ void LayerTreeView::Disconnect() {
   delegate_ = nullptr;
 }
 
+void LayerTreeView::ReattachTo(
+    LayerTreeViewDelegate* delegate,
+    scoped_refptr<scheduler::WidgetScheduler> scheduler) {
+  layer_tree_host_->WaitForProtectedSequenceCompletion();
+  layer_tree_host_->DetachInputDelegateAndRenderFrameObserver();
+  delegate_ = delegate;
+  widget_scheduler_ = std::move(scheduler);
+
+  // Invalidate weak ptrs so callbacks from the previous delegate are dropped.
+  weak_factory_for_delegate_.InvalidateWeakPtrs();
+
+  switch (frame_sink_state_) {
+    case FrameSinkState::kNoFrameSink:
+      // No frame sink, the LTH should issue a request which will set both the
+      // frame sink and RenderFrameObserver.
+      break;
+    case FrameSinkState::kRequestBufferedInvisible:
+      // The frame sink request was buffered because it was made when the LTH
+      // was invisible. It will be issued when the LTH is made visible.
+      break;
+    case FrameSinkState::kRequestPending:
+      // If the request was pending, it targeted the previous delegate and we
+      // cancelled it by invalidating the weak pointers above. Re-issue it
+      // targeting the new delegate.
+      DidFailToInitializeLayerTreeFrameSink();
+      break;
+    case FrameSinkState::kInitializing:
+      // The LTH is initializing a new FrameSink which can be reused but we need
+      // a new RenderFrameObserver associated with the new delegate.
+    case FrameSinkState::kInitialized:
+      // The LTH has an initialized FrameSink which can be reused but we need a
+      // new RenderFrameObserver associated with the new delegate.
+      if (auto render_frame_observer = delegate_->CreateRenderFrameObserver()) {
+        layer_tree_host_->SetRenderFrameObserver(
+            std::move(render_frame_observer));
+      }
+      break;
+  }
+}
+
 void LayerTreeView::SetVisible(bool visible) {
   DCHECK(delegate_);
   layer_tree_host_->SetVisible(visible);
 
-  if (visible && layer_tree_frame_sink_request_failed_while_invisible_)
+  if (visible &&
+      frame_sink_state_ == FrameSinkState::kRequestBufferedInvisible) {
     DidFailToInitializeLayerTreeFrameSink();
+  }
 }
 
 void LayerTreeView::SetLayerTreeFrameSink(
@@ -144,6 +186,10 @@ void LayerTreeView::SetLayerTreeFrameSink(
     std::unique_ptr<cc::RenderFrameMetadataObserver>
         render_frame_metadata_observer) {
   DCHECK(delegate_);
+
+  CHECK_EQ(frame_sink_state_, FrameSinkState::kRequestPending);
+  frame_sink_state_ = FrameSinkState::kInitializing;
+
   if (!layer_tree_frame_sink) {
     DidFailToInitializeLayerTreeFrameSink();
     return;
@@ -249,33 +295,48 @@ void LayerTreeView::UpdateCompositorScrollState(
 void LayerTreeView::RequestNewLayerTreeFrameSink() {
   if (!delegate_)
     return;
+
+  CHECK(frame_sink_state_ == FrameSinkState::kNoFrameSink ||
+        frame_sink_state_ == FrameSinkState::kInitialized);
+
   // When the compositor is not visible it would not request a
   // LayerTreeFrameSink so this is a race where it requested one on the
   // compositor thread while becoming non-visible on the main thread. In that
   // case, we can wait for it to become visible again before replying.
   if (!layer_tree_host_->IsVisible()) {
-    layer_tree_frame_sink_request_failed_while_invisible_ = true;
+    frame_sink_state_ = FrameSinkState::kRequestBufferedInvisible;
     return;
   }
 
-  delegate_->RequestNewLayerTreeFrameSink(base::BindOnce(
-      &LayerTreeView::SetLayerTreeFrameSink, weak_factory_.GetWeakPtr()));
+  frame_sink_state_ = FrameSinkState::kRequestPending;
+  delegate_->RequestNewLayerTreeFrameSink(
+      base::BindOnce(&LayerTreeView::SetLayerTreeFrameSink,
+                     weak_factory_for_delegate_.GetWeakPtr()));
 }
 
-void LayerTreeView::DidInitializeLayerTreeFrameSink() {}
+void LayerTreeView::DidInitializeLayerTreeFrameSink() {
+  CHECK_EQ(frame_sink_state_, FrameSinkState::kInitializing);
+  frame_sink_state_ = FrameSinkState::kInitialized;
+}
 
 void LayerTreeView::DidFailToInitializeLayerTreeFrameSink() {
   if (!delegate_)
     return;
+
+  CHECK(frame_sink_state_ == FrameSinkState::kRequestBufferedInvisible ||
+        frame_sink_state_ == FrameSinkState::kInitializing ||
+        frame_sink_state_ == FrameSinkState::kRequestPending);
+
   // When the RenderWidget is made hidden while an async request for a
   // LayerTreeFrameSink is being processed, then if it fails we would arrive
   // here. Since the compositor does not request a LayerTreeFrameSink while not
   // visible, we can delay trying again until becoming visible again.
   if (!layer_tree_host_->IsVisible()) {
-    layer_tree_frame_sink_request_failed_while_invisible_ = true;
+    frame_sink_state_ = FrameSinkState::kRequestBufferedInvisible;
     return;
   }
-  layer_tree_frame_sink_request_failed_while_invisible_ = false;
+
+  frame_sink_state_ = FrameSinkState::kNoFrameSink;
   layer_tree_host_->GetTaskRunnerProvider()->MainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&LayerTreeView::RequestNewLayerTreeFrameSink,
                                 weak_factory_.GetWeakPtr()));

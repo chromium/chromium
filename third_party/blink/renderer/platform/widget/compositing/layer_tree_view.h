@@ -63,6 +63,11 @@ class PLATFORM_EXPORT LayerTreeView
   // destroyed.
   void Disconnect();
 
+  // Drops any references back to the current delegate and attaches to
+  // `delegate`.
+  void ReattachTo(LayerTreeViewDelegate* delegate,
+                  scoped_refptr<scheduler::WidgetScheduler> scheduler);
+
   cc::AnimationHost* animation_host() { return animation_host_.get(); }
 
   void SetVisible(bool visible);
@@ -163,9 +168,14 @@ class PLATFORM_EXPORT LayerTreeView
   raw_ptr<LayerTreeViewDelegate, ExperimentalRenderer> delegate_;
   std::unique_ptr<cc::LayerTreeHost> layer_tree_host_;
 
-  // This class should do nothing and access no pointers once this value becomes
-  // true.
-  bool layer_tree_frame_sink_request_failed_while_invisible_ = false;
+  enum class FrameSinkState {
+    kNoFrameSink,
+    kRequestBufferedInvisible,
+    kRequestPending,
+    kInitializing,
+    kInitialized
+  };
+  FrameSinkState frame_sink_state_ = FrameSinkState::kNoFrameSink;
 
   base::circular_deque<
       std::pair<uint32_t,
@@ -180,6 +190,7 @@ class PLATFORM_EXPORT LayerTreeView
 #endif
 
   base::WeakPtrFactory<LayerTreeView> weak_factory_{this};
+  base::WeakPtrFactory<LayerTreeView> weak_factory_for_delegate_{this};
 };
 
 }  // namespace blink

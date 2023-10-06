@@ -1622,6 +1622,11 @@ void WebFrameWidgetImpl::ScheduleAnimation() {
     non_composited_client_->ScheduleNonCompositedAnimation();
     return;
   }
+
+  if (widget_base_->WillBeDestroyed()) {
+    return;
+  }
+
   widget_base_->LayerTreeHost()->SetNeedsAnimate();
 }
 
@@ -2287,11 +2292,28 @@ void WebFrameWidgetImpl::ResetMeaningfulLayoutStateForMainFrame() {
 void WebFrameWidgetImpl::InitializeCompositing(
     const display::ScreenInfos& screen_infos,
     const cc::LayerTreeSettings* settings) {
+  InitializeCompositingInternal(screen_infos, settings, nullptr);
+}
+
+void WebFrameWidgetImpl::InitializeCompositingFromPreviousWidget(
+    const display::ScreenInfos& screen_infos,
+    const cc::LayerTreeSettings* settings,
+    WebFrameWidget& previous_widget) {
+  InitializeCompositingInternal(screen_infos, settings, &previous_widget);
+}
+
+void WebFrameWidgetImpl::InitializeCompositingInternal(
+    const display::ScreenInfos& screen_infos,
+    const cc::LayerTreeSettings* settings,
+    WebFrameWidget* previous_widget) {
   DCHECK(View()->does_composite());
   DCHECK(!non_composited_client_);  // Assure only one initialize is called.
   widget_base_->InitializeCompositing(
       *GetPage()->GetPageScheduler(), screen_infos, settings,
-      input_handler_weak_ptr_factory_.GetWeakPtr());
+      input_handler_weak_ptr_factory_.GetWeakPtr(),
+      previous_widget ? static_cast<WebFrameWidgetImpl*>(previous_widget)
+                            ->widget_base_.get()
+                      : nullptr);
 
   // TODO(bokan): This seems wrong. Page may host multiple FrameWidgets so this
   // will call DidInitializeCompositing once per FrameWidget. It probably makes
@@ -3140,7 +3162,11 @@ void WebFrameWidgetImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {
   }
 
   bool root_layer_exists = !!layer;
-  widget_base_->LayerTreeHost()->SetRootLayer(std::move(layer));
+  if (widget_base_->WillBeDestroyed()) {
+    CHECK(!layer);
+  } else {
+    widget_base_->LayerTreeHost()->SetRootLayer(std::move(layer));
+  }
 
   // Notify the WebView that we did set a layer.
   if (ForMainFrame()) {

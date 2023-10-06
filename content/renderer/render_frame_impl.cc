@@ -1219,6 +1219,79 @@ class WebURLLoaderThrottleProviderForFrameImpl
   const int routing_id_;
 };
 
+blink::WebFrameWidget* PreviousWidgetForLazyCompositorInitialization(
+    const absl::optional<blink::FrameToken>& previous_frame_token) {
+  if (!previous_frame_token) {
+    return nullptr;
+  }
+
+  auto* previous_web_frame = WebFrame::FromFrameToken(*previous_frame_token);
+
+  CHECK(previous_web_frame);
+  CHECK(previous_web_frame->IsWebLocalFrame());
+
+  return previous_web_frame->ToWebLocalFrame()->FrameWidget();
+}
+
+// Initialize the WebFrameWidget with compositing. Only local root frames
+// create a widget.
+// `previous_widget` indicates whether the compositor for the frame which
+// is being replaced by this frame should be used instead of creating a new
+// compositor instance.
+void InitializeFrameWidgetForSubframe(
+    WebLocalFrame& frame,
+    blink::WebFrameWidget* previous_widget,
+    mojom::CreateFrameWidgetParamsPtr widget_params) {
+  CHECK(widget_params);
+
+  // This frame is a child local root, so we require a separate RenderWidget
+  // for it from any other frames in the frame tree. Each local root defines
+  // a separate context/coordinate space/world for compositing, painting,
+  // input, etc. And each local root has a RenderWidget which provides
+  // such services independent from other RenderWidgets.
+  // Notably, we do not attempt to reuse the main frame's RenderWidget (if the
+  // main frame in this frame tree is local) as that RenderWidget is
+  // functioning in a different local root. Because this is a child local
+  // root, it implies there is some remote frame ancestor between this frame
+  // and the main frame, thus its coordinate space etc is not known relative
+  // to the main frame.
+
+  // Non-owning pointer that is self-referencing and destroyed by calling
+  // Close(). We use the new RenderWidget as the client for this
+  // WebFrameWidget, *not* the RenderWidget of the MainFrame, which is
+  // accessible from the RenderViewImpl.
+  const auto frame_sink_id =
+      previous_widget ? previous_widget->GetFrameSinkId()
+                      : viz::FrameSinkId(RenderThread::Get()->GetClientId(),
+                                         widget_params->routing_id);
+  auto* web_frame_widget = frame.InitializeFrameWidget(
+      std::move(widget_params->frame_widget_host),
+      std::move(widget_params->frame_widget),
+      std::move(widget_params->widget_host), std::move(widget_params->widget),
+      frame_sink_id,
+      /*is_for_nested_main_frame=*/false,
+      /*is_for_scalable_page=*/false,
+      /*hidden=*/true);
+
+  if (previous_widget) {
+    web_frame_widget->InitializeCompositingFromPreviousWidget(
+        widget_params->visual_properties.screen_infos,
+        /*settings=*/nullptr, *previous_widget);
+  } else {
+    web_frame_widget->InitializeCompositing(
+        widget_params->visual_properties.screen_infos,
+        /*settings=*/nullptr);
+  }
+
+  // The WebFrameWidget should start with valid VisualProperties, including a
+  // non-zero size. While WebFrameWidget would not normally receive IPCs and
+  // thus would not get VisualProperty updates while the frame is provisional,
+  // we need at least one update to them in order to meet expectations in the
+  // renderer, and that update comes as part of the CreateFrame message.
+  // TODO(crbug.com/419087): This could become part of WebFrameWidget Init.
+  web_frame_widget->ApplyVisualProperties(widget_params->visual_properties);
+}
+
 }  // namespace
 
 RenderFrameImpl::AssertNavigationCommits::AssertNavigationCommits(
@@ -1715,6 +1788,7 @@ void RenderFrameImpl::CreateFrame(
         is_for_nested_main_frame,
         /*is_for_scalable_page=*/!is_for_nested_main_frame,
         /*hidden=*/true);
+
     web_frame_widget->InitializeCompositing(
         widget_params->visual_properties.screen_infos,
         /*settings=*/nullptr);
@@ -1732,46 +1806,32 @@ void RenderFrameImpl::CreateFrame(
     // will tell WebViewImpl about it once it is swapped in.
   } else if (widget_params) {
     DCHECK(widget_params->routing_id != MSG_ROUTING_NONE);
-    // This frame is a child local root, so we require a separate RenderWidget
-    // for it from any other frames in the frame tree. Each local root defines
-    // a separate context/coordinate space/world for compositing, painting,
-    // input, etc. And each local root has a RenderWidget which provides
-    // such services independent from other RenderWidgets.
-    // Notably, we do not attempt to reuse the main frame's RenderWidget (if the
-    // main frame in this frame tree is local) as that RenderWidget is
-    // functioning in a different local root. Because this is a child local
-    // root, it implies there is some remote frame ancestor between this frame
-    // and the main frame, thus its coordinate space etc is not known relative
-    // to the main frame.
 
-    // Non-owning pointer that is self-referencing and destroyed by calling
-    // Close(). We use the new RenderWidget as the client for this
-    // WebFrameWidget, *not* the RenderWidget of the MainFrame, which is
-    // accessible from the RenderViewImpl.
-    blink::WebFrameWidget* web_frame_widget = web_frame->InitializeFrameWidget(
-        std::move(widget_params->frame_widget_host),
-        std::move(widget_params->frame_widget),
-        std::move(widget_params->widget_host), std::move(widget_params->widget),
-        viz::FrameSinkId(RenderThread::Get()->GetClientId(),
-                         widget_params->routing_id),
-        /*is_for_nested_main_frame=*/false,
-        /*is_for_scalable_page=*/false,
-        /*hidden=*/true);
-    web_frame_widget->InitializeCompositing(
-        widget_params->visual_properties.screen_infos,
-        /*settings=*/nullptr);
-
-    // The WebFrameWidget should start with valid VisualProperties, including a
-    // non-zero size. While WebFrameWidget would not normally receive IPCs and
-    // thus would not get VisualProperty updates while the frame is provisional,
-    // we need at least one update to them in order to meet expectations in the
-    // renderer, and that update comes as part of the CreateFrame message.
-    // TODO(crbug.com/419087): This could become part of WebFrameWidget Init.
-    web_frame_widget->ApplyVisualProperties(widget_params->visual_properties);
+    // Initializing the widget is deferred until commit if this RenderFrame will
+    // be replacing a previous RenderFrame. This enables reuse of the
+    // compositing setup which is expensive.
+    // This step must be deferred until commit since this RenderFrame could be
+    // speculative and the previous RenderFrame will continue to be visible and
+    // animating until commit.
+    //
+    // TODO(khushalsagar): Ideal would be to move the widget initialization to
+    // the commit stage for all cases. This shouldn't have any perf impact since
+    // the expensive parts of compositing (setting up a connection to the GPU
+    // process) is not done until the frame is made visible, which happens at
+    // commit.
+    if (!PreviousWidgetForLazyCompositorInitialization(
+            widget_params->previous_frame_token_for_compositor_reuse)) {
+      InitializeFrameWidgetForSubframe(*web_frame, /*previous_widget=*/nullptr,
+                                       std::move(widget_params));
+    } else {
+      render_frame->widget_params_for_lazy_widget_creation_ =
+          std::move(widget_params);
+    }
   }
 
-  if (!is_on_initial_empty_document)
+  if (!is_on_initial_empty_document) {
     render_frame->frame_->SetIsNotOnInitialEmptyDocument();
+  }
 
   render_frame->Initialize(web_frame->Parent());
 }
@@ -2766,6 +2826,19 @@ void RenderFrameImpl::CommitNavigationWithParams(
     mojom::StorageInfoPtr storage_info,
     std::unique_ptr<DocumentState> document_state,
     std::unique_ptr<WebNavigationParams> navigation_params) {
+  // Initialize the FrameWidget at the beginning of commit because the empty
+  // Document that the frame is initialized with requires it during commit.
+  if (widget_params_for_lazy_widget_creation_) {
+    auto* previous_widget = PreviousWidgetForLazyCompositorInitialization(
+        widget_params_for_lazy_widget_creation_
+            ->previous_frame_token_for_compositor_reuse);
+    CHECK(previous_widget);
+
+    InitializeFrameWidgetForSubframe(
+        *frame_, previous_widget,
+        std::move(widget_params_for_lazy_widget_creation_));
+  }
+
   if (common_params->url.IsAboutSrcdoc()) {
     WebNavigationParams::FillStaticResponse(navigation_params.get(),
                                             "text/html", "UTF-8",
@@ -2898,6 +2971,19 @@ void RenderFrameImpl::CommitFailedNavigation(
 
   AssertNavigationCommits assert_navigation_commits(
       this, kMayReplaceInitialEmptyDocument);
+
+  // Initialize the FrameWidget at the beginning of commit because the empty
+  // Document that the frame is initialized with requires it during commit.
+  if (widget_params_for_lazy_widget_creation_) {
+    auto* previous_widget = PreviousWidgetForLazyCompositorInitialization(
+        widget_params_for_lazy_widget_creation_
+            ->previous_frame_token_for_compositor_reuse);
+    CHECK(previous_widget);
+
+    InitializeFrameWidgetForSubframe(
+        *frame_, previous_widget,
+        std::move(widget_params_for_lazy_widget_creation_));
+  }
 
   GetWebView()->SetHistoryListFromNavigation(
       commit_params->current_history_list_offset,

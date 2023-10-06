@@ -78,6 +78,14 @@ class WebFrameWidget : public WebWidget {
   virtual void InitializeNonCompositing(
       WebNonCompositedWidgetClient* client) = 0;
 
+  // Similar to `WebWidget::InitializeCompositing()` but for cases where there
+  // is a `previous_widget` whose compositing setup should be reused instead of
+  // initializing a new compositor.
+  virtual void InitializeCompositingFromPreviousWidget(
+      const display::ScreenInfos& screen_info,
+      const cc::LayerTreeSettings* settings,
+      WebFrameWidget& previous_widget) = 0;
+
   // Returns the local root of this WebFrameWidget.
   virtual WebLocalFrame* LocalRoot() const = 0;
 

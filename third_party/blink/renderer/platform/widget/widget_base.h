@@ -102,7 +102,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       const display::ScreenInfos& screen_infos,
       const cc::LayerTreeSettings* settings,
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
-          frame_widget_input_handler);
+          frame_widget_input_handler,
+      WidgetBase* previous_widget);
 
   // Similar to `InitializeCompositing()` but for non-compositing widgets.
   // Exactly one of either `InitializeCompositing()` or this method must
@@ -148,7 +149,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       override;
   void CancelSuccessfulPresentationTimeRequest() override;
 
-  // LayerTreeDelegate overrides:
+  // LayerTreeViewDelegate overrides:
   // Applies viewport related properties during a commit from the compositor
   // thread.
   void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override;
@@ -186,6 +187,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void RunPaintBenchmark(int repeat_count,
                          cc::PaintBenchmarkResult& result) override;
   void ScheduleAnimationForWebTests() override;
+  std::unique_ptr<cc::RenderFrameMetadataObserver> CreateRenderFrameObserver()
+      override;
 
   cc::AnimationHost* AnimationHost() const;
   cc::AnimationTimeline* ScrollAnimationTimeline() const;
@@ -384,7 +387,11 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Returns null if the compositing stack has not been initialized yet.
   absl::optional<int> GetMaxRenderBufferBounds() const;
 
+  bool WillBeDestroyed() const { return will_be_destroyed_; }
+
  private:
+  static void AssertAreCompatible(const WidgetBase& a, const WidgetBase& b);
+
   bool CanComposeInline();
   void UpdateTextInputStateInternal(bool show_virtual_keyboard,
                                     bool immediate_request);
@@ -431,6 +438,10 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
           params,
       LayerTreeFrameSinkCallback callback,
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
+
+  // Detaches the LayerTreeView from this widget and attaches it to
+  // `new_widget`, if provided.
+  void DisconnectLayerTreeView(WidgetBase* new_widget);
 
   // Indicates that we are never visible, so never produce graphical output.
   const bool never_composited_;
@@ -563,6 +574,10 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Set when the compositor is initialized.
   absl::optional<int> max_render_buffer_bounds_gpu_;
   absl::optional<int> max_render_buffer_bounds_sw_;
+
+  // Tracks when the compositing setup for this widget has been torn down or
+  // disconnected in preparation to destroy this widget.
+  bool will_be_destroyed_ = false;
 
   base::WeakPtrFactory<WidgetBase> weak_ptr_factory_{this};
 };

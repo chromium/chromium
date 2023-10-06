@@ -238,6 +238,10 @@ struct CreateFrameWidgetParams {
 
   // The initial visual properties of the widget.
   blink.mojom.VisualProperties visual_properties;
+
+  // If set, this widget should take the compositor from this frame instead of
+  // creating a new instance.
+  blink.mojom.FrameToken? previous_frame_token_for_compositor_reuse;
 };
 
 // Used for recreating child frames after a crash (does this still happen?) and

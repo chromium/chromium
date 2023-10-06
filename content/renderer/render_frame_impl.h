@@ -1538,6 +1538,21 @@ class CONTENT_EXPORT RenderFrameImpl
   // false, but set to true by some tests.
   bool send_content_state_immediately_ = false;
 
+  // The RenderFrameImpl can be created in 2 modes.
+  //
+  // 1. The associated WebFrameWidget and its compositor is initialized at
+  //    creation time. This is default mode.
+  //
+  // 2. The associated WebFrameWidget and its compositor is initialized at
+  //    commit time. This is done for local RF->local RF navigations to reuse
+  //    the compositor from the previous RFH. This is purely a performance
+  //    optimization.
+  //
+  // When in mode 2, the parameters to create the WebFrameWidget (which are
+  // part of the IPC that created this frame) are cached until commit to lazily
+  // create the WebFrameWidget.
+  mojom::CreateFrameWidgetParamsPtr widget_params_for_lazy_widget_creation_;
+
   base::WeakPtrFactory<RenderFrameImpl> weak_factory_{this};
 };
 

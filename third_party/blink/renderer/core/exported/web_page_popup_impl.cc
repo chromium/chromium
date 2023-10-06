@@ -444,7 +444,8 @@ void WebPagePopupImpl::InitializeCompositing(
   // much work here.
   widget_base_->InitializeCompositing(*page_->GetPageScheduler(), screen_infos,
                                       settings,
-                                      /*frame_widget_input_handler=*/nullptr);
+                                      /*frame_widget_input_handler=*/nullptr,
+                                      /*previous_widget=*/nullptr);
   cc::LayerTreeDebugState debug_state =
       widget_base_->LayerTreeHost()->GetDebugState();
   debug_state.TurnOffHudInfoDisplay();

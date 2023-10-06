@@ -176,7 +176,8 @@ void WidgetBase::InitializeCompositing(
     const display::ScreenInfos& screen_infos,
     const cc::LayerTreeSettings* settings,
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
-        frame_widget_input_handler) {
+        frame_widget_input_handler,
+    WidgetBase* previous_widget) {
   DCHECK(!initialized_);
 
   widget_scheduler_ = page_scheduler.CreateWidgetScheduler();
@@ -189,26 +190,38 @@ void WidgetBase::InitializeCompositing(
 
   auto* compositing_thread_scheduler =
       ThreadScheduler::CompositorThreadScheduler();
-  layer_tree_view_ = std::make_unique<LayerTreeView>(this, widget_scheduler_);
 
-  absl::optional<cc::LayerTreeSettings> default_settings;
-  if (!settings) {
-    const display::ScreenInfo& screen_info = screen_infos.current();
-    default_settings = GenerateLayerTreeSettings(
-        compositing_thread_scheduler, is_embedded_, is_for_scalable_page_,
-        screen_info.rect.size(), screen_info.device_scale_factor);
-    settings = &default_settings.value();
+  if (previous_widget) {
+    CHECK(previous_widget->layer_tree_view_);
+    CHECK(!settings);
+    AssertAreCompatible(*this, *previous_widget);
+
+    // `screen_infos` is applied to this LayerTreeView below.
+    previous_widget->DisconnectLayerTreeView(this);
+    CHECK(layer_tree_view_);
+  } else {
+    layer_tree_view_ = std::make_unique<LayerTreeView>(this, widget_scheduler_);
+
+    absl::optional<cc::LayerTreeSettings> default_settings;
+    if (!settings) {
+      const display::ScreenInfo& screen_info = screen_infos.current();
+      default_settings = GenerateLayerTreeSettings(
+          compositing_thread_scheduler, is_embedded_, is_for_scalable_page_,
+          screen_info.rect.size(), screen_info.device_scale_factor);
+      settings = &default_settings.value();
+    }
+    layer_tree_view_->Initialize(
+        *settings, main_thread_compositor_task_runner_,
+        compositing_thread_scheduler
+            ? compositing_thread_scheduler->DefaultTaskRunner()
+            : nullptr,
+        cc::CategorizedWorkerPool::GetOrCreate(
+            &BlinkCategorizedWorkerPoolDelegate::Get()));
   }
-  screen_infos_ = screen_infos;
-  max_render_buffer_bounds_sw_ = settings->max_render_buffer_bounds_for_sw;
-  layer_tree_view_->Initialize(
-      *settings, main_thread_compositor_task_runner_,
-      compositing_thread_scheduler
-          ? compositing_thread_scheduler->DefaultTaskRunner()
-          : nullptr,
-      cc::CategorizedWorkerPool::GetOrCreate(
-          &BlinkCategorizedWorkerPoolDelegate::Get()));
 
+  screen_infos_ = screen_infos;
+  max_render_buffer_bounds_sw_ =
+      LayerTreeHost()->GetSettings().max_render_buffer_bounds_for_sw;
   FrameWidget* frame_widget = client_->FrameWidget();
 
   // Even if we have a |compositing_thread_scheduler| we do not process input
@@ -273,29 +286,16 @@ void WidgetBase::Shutdown() {
   if (widget_input_handler_manager_)
     widget_input_handler_manager_->ClearClient();
 
-  // The LayerTreeHost may already be in the call stack, if this WidgetBase
-  // is being destroyed during an animation callback for instance. We can not
-  // delete it here and unwind the stack back up to it, or it will crash. So
-  // we post the deletion to another task, but disconnect the LayerTreeHost
-  // (via the LayerTreeView) from the destroying WidgetBase. The
-  // LayerTreeView owns the LayerTreeHost, and is its client, so they are kept
-  // alive together for a clean call stack.
-  if (layer_tree_view_) {
-    if (ScrollAnimationTimeline()) {
-      DCHECK(AnimationHost());
-      AnimationHost()->RemoveAnimationTimeline(ScrollAnimationTimeline());
-    }
+  DisconnectLayerTreeView(nullptr);
 
-    layer_tree_view_->Disconnect();
-
-    // The `widget_scheduler_` must be deleted last because the
-    // `widget_input_handler_manager_` may request to post a task on the
-    // InputTaskQueue. The `widget_input_handler_manager_` must outlive
-    // the `layer_tree_view_` because it's `LayerTreeHost` holds a raw ptr to
-    // the `InputHandlerProxy` interface on the compositor thread. The
-    // `LayerTreeHost` destruction is synchronous and will join with the
-    // compositor thread.
-
+  // The `widget_scheduler_` must be deleted last because the
+  // `widget_input_handler_manager_` may request to post a task on the
+  // InputTaskQueue. The `widget_input_handler_manager_` must outlive
+  // the `layer_tree_view_` because it's `LayerTreeHost` holds a raw ptr to
+  // the `InputHandlerProxy` interface on the compositor thread. The
+  // `LayerTreeHost` destruction is synchronous and will join with the
+  // compositor thread
+  if (widget_scheduler_) {
     scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner =
         base::SingleThreadTaskRunner::GetCurrentDefault();
     cleanup_runner->PostNonNestableTask(
@@ -315,6 +315,35 @@ void WidgetBase::Shutdown() {
   if (widget_compositor_) {
     widget_compositor_->Shutdown();
     widget_compositor_ = nullptr;
+  }
+}
+
+void WidgetBase::DisconnectLayerTreeView(WidgetBase* new_widget) {
+  will_be_destroyed_ = true;
+
+  if (!layer_tree_view_) {
+    CHECK(!new_widget);
+    return;
+  }
+
+  // The LayerTreeHost may already be in the call stack, if this WidgetBase
+  // is being destroyed during an animation callback for instance. We can not
+  // delete it here and unwind the stack back up to it, or it will crash. So
+  // we post the deletion to another task, but disconnect the LayerTreeHost
+  // (via the LayerTreeView) from the destroying WidgetBase. The
+  // LayerTreeView owns the LayerTreeHost, and is its client, so they are kept
+  // alive together for a clean call stack.
+  if (ScrollAnimationTimeline()) {
+    DCHECK(AnimationHost());
+    AnimationHost()->RemoveAnimationTimeline(ScrollAnimationTimeline());
+  }
+
+  if (new_widget) {
+    layer_tree_view_->ReattachTo(new_widget, widget_scheduler_);
+    new_widget->layer_tree_view_ = std::move(layer_tree_view_);
+    layer_tree_view_ = nullptr;
+  } else {
+    layer_tree_view_->Disconnect();
   }
 }
 
@@ -912,6 +941,26 @@ void WidgetBase::ScheduleAnimationForWebTests() {
   client_->ScheduleAnimationForWebTests();
 }
 
+std::unique_ptr<cc::RenderFrameMetadataObserver>
+WidgetBase::CreateRenderFrameObserver() {
+  mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserver>
+      render_frame_metadata_observer_remote;
+  mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserverClient>
+      render_frame_metadata_client_remote;
+  mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserverClient>
+      render_frame_metadata_observer_client_receiver =
+          render_frame_metadata_client_remote.InitWithNewPipeAndPassReceiver();
+  auto render_frame_metadata_observer =
+      std::make_unique<RenderFrameMetadataObserverImpl>(
+          render_frame_metadata_observer_remote
+              .InitWithNewPipeAndPassReceiver(),
+          std::move(render_frame_metadata_client_remote));
+  widget_host_->RegisterRenderFrameMetadataObserver(
+      std::move(render_frame_metadata_observer_client_receiver),
+      std::move(render_frame_metadata_observer_remote));
+  return render_frame_metadata_observer;
+}
+
 void WidgetBase::SetCompositorVisible(bool visible) {
   if (never_composited_)
     return;
@@ -1002,6 +1051,14 @@ void WidgetBase::ShowVirtualKeyboard() {
 
 void WidgetBase::UpdateTextInputState() {
   UpdateTextInputStateInternal(false, false);
+}
+
+// static
+void WidgetBase::AssertAreCompatible(const WidgetBase& a, const WidgetBase& b) {
+  CHECK_EQ(a.is_embedded_, b.is_embedded_);
+  CHECK_EQ(a.is_for_scalable_page_, b.is_for_scalable_page_);
+  CHECK_EQ(a.main_thread_compositor_task_runner_,
+           b.main_thread_compositor_task_runner_);
 }
 
 bool WidgetBase::CanComposeInline() {

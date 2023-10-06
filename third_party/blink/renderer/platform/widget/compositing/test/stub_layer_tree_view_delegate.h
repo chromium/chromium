@@ -60,6 +60,10 @@ class StubLayerTreeViewDelegate : public LayerTreeViewDelegate {
   void RunPaintBenchmark(int repeat_count,
                          cc::PaintBenchmarkResult& result) override {}
   void ScheduleAnimationForWebTests() override {}
+  std::unique_ptr<cc::RenderFrameMetadataObserver> CreateRenderFrameObserver()
+      override {
+    return nullptr;
+  }
 };
 
 }  // namespace blink
