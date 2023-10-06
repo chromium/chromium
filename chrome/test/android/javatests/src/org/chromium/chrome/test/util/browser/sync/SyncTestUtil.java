@@ -21,6 +21,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -163,7 +164,7 @@ public final class SyncTestUtil {
     private static JSONArray getAllNodesAsJsonArray() {
         class NodesCallbackHelper extends CallbackHelper {
             public JSONArray nodes;
-        };
+        }
         NodesCallbackHelper callbackHelper = new NodesCallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SyncServiceFactory.get().getAllNodes((nodes) -> {
@@ -173,7 +174,7 @@ public final class SyncTestUtil {
         });
 
         try {
-            callbackHelper.waitForNext();
+            callbackHelper.waitForNext(TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             assert false : "Timed out waiting for SyncService.getAllNodes()";
         }
