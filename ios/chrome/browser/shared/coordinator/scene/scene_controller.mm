@@ -920,17 +920,19 @@ void InjectNTP(Browser* browser) {
   DCHECK(_sceneURLLoadingService.get());
   DCHECK(self.sceneState.appState.mainBrowserState);
 
+  SceneState* sceneState = self.sceneState;
+  ChromeBrowserState* browserState = sceneState.appState.mainBrowserState;
   self.browserViewWrangler = [[BrowserViewWrangler alloc]
-             initWithBrowserState:self.sceneState.appState.mainBrowserState
-                       sceneState:self.sceneState
+             initWithBrowserState:browserState
+                       sceneState:sceneState
        applicationCommandEndpoint:self
       browsingDataCommandEndpoint:self.browsingDataCommandsHandler];
 
-  // Ensure the main browser is created.
-  Browser* mainBrowser = [self.browserViewWrangler createMainBrowser];
+  // Create and start the BVC.
+  [self.browserViewWrangler createMainCoordinatorAndInterface];
+  Browser* mainBrowser = self.browserViewWrangler.mainInterface.browser;
   CommandDispatcher* mainCommandDispatcher =
       mainBrowser->GetCommandDispatcher();
-  ChromeBrowserState* browserState = self.sceneState.appState.mainBrowserState;
 
   PromosManager* promosManager =
       PromosManagerFactory::GetForBrowserState(browserState);
@@ -940,27 +942,16 @@ void InjectNTP(Browser* browser) {
       [[DefaultBrowserPromoSceneAgent alloc]
           initWithCommandDispatcher:mainCommandDispatcher];
   defaultBrowserAgent.promosManager = promosManager;
-  [self.sceneState addAgent:defaultBrowserAgent];
-  [self.sceneState
+  [sceneState addAgent:defaultBrowserAgent];
+  [sceneState
       addAgent:[[NonModalDefaultBrowserPromoSchedulerSceneAgent alloc] init]];
-
-  // Create and start the BVC.
-  [self.browserViewWrangler createMainCoordinatorAndInterface];
-
-  // Create the inactive browser. Should be called after the main browser is
-  // created (in -createMainBrowser) and restored (in
-  // -createMainCoordinatorAndInterface). Even if the feature is disabled, we
-  // always create the inactive browser to restore any element that have been
-  // saved in the past. To avoid any tab disappearance from user perspective, we
-  // move all tabs accordingly.
-  [self.browserViewWrangler createInactiveBrowser];
 
   id<ApplicationCommands> applicationCommandsHandler =
       HandlerForProtocol(mainCommandDispatcher, ApplicationCommands);
   id<PolicyChangeCommands> policyChangeCommandsHandler =
       HandlerForProtocol(mainCommandDispatcher, PolicyChangeCommands);
 
-  [self.sceneState
+  [sceneState
       addAgent:[[SigninPolicySceneAgent alloc]
                        initWithSceneUIProvider:self
                     applicationCommandsHandler:applicationCommandsHandler
@@ -974,7 +965,7 @@ void InjectNTP(Browser* browser) {
     policy::UserPolicySigninService* userPolicyService =
         policy::UserPolicySigninServiceFactory::GetForBrowserState(
             browserState);
-    [self.sceneState
+    [sceneState
         addAgent:[[UserPolicySceneAgent alloc]
                         initWithSceneUIProvider:self
                                     authService:authService
@@ -998,37 +989,35 @@ void InjectNTP(Browser* browser) {
 
   self.screenshotDelegate = [[ScreenshotDelegate alloc]
       initWithBrowserProviderInterface:self.browserViewWrangler];
-  [self.sceneState.scene.screenshotService setDelegate:self.screenshotDelegate];
+  [sceneState.scene.screenshotService setDelegate:self.screenshotDelegate];
 
+  [self.browserViewWrangler loadSession];
   [self createInitialUI:[self initialUIMode]];
 
   // Make sure the geolocation controller is created to observe permission
   // events.
   [GeolocationLogger sharedInstance];
 
-  [self.sceneState
-      addAgent:[[PromosManagerSceneAgent alloc]
-                   initWithCommandDispatcher:mainCommandDispatcher]];
+  [sceneState addAgent:[[PromosManagerSceneAgent alloc]
+                           initWithCommandDispatcher:mainCommandDispatcher]];
 
   if (IsAppStoreRatingEnabled()) {
-    [self.sceneState addAgent:[[AppStoreRatingSceneAgent alloc]
-                                  initWithPromosManager:promosManager]];
+    [sceneState addAgent:[[AppStoreRatingSceneAgent alloc]
+                             initWithPromosManager:promosManager]];
   }
 
-  [self.sceneState addAgent:[[WhatsNewSceneAgent alloc]
-                                initWithPromosManager:promosManager]];
+  [sceneState addAgent:[[WhatsNewSceneAgent alloc]
+                           initWithPromosManager:promosManager]];
 
   if (ios::provider::IsChoiceEnabled()) {
-    [self.sceneState
-        addAgent:ios::provider::CreateChoiceSceneAgent(promosManager)];
+    [sceneState addAgent:ios::provider::CreateChoiceSceneAgent(promosManager)];
   }
 
   // Do not gate by feature flag so it can run for enabled -> disabled
   // scenarios.
-  [self.sceneState
-      addAgent:[[CredentialProviderPromoSceneAgent alloc]
-                   initWithPromosManager:promosManager
-                             prefService:browserState->GetPrefs()]];
+  [sceneState addAgent:[[CredentialProviderPromoSceneAgent alloc]
+                           initWithPromosManager:promosManager
+                                     prefService:browserState->GetPrefs()]];
 }
 
 // Determines the mode (normal or incognito) the initial UI should be in.

@@ -134,9 +134,8 @@ TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
                          sceneState:scene_state_
          applicationCommandEndpoint:(id<ApplicationCommands>)nil
         browsingDataCommandEndpoint:nil];
-    [wrangler createMainBrowser];
     [wrangler createMainCoordinatorAndInterface];
-    [wrangler createInactiveBrowser];
+
     // Test that BVC is created on demand.
     UIViewController* bvc = wrangler.mainInterface.viewController;
     EXPECT_NE(bvc, nil);
@@ -182,29 +181,23 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
        applicationCommandEndpoint:nil
       browsingDataCommandEndpoint:nil];
 
-  // After creating the main browser, it should have been added to the browser
-  // list.
-  [wrangler createMainBrowser];
+  // Create the coordinator and interface. This is required to get access
+  // to the Browser via the -mainInterface/-incognitoInterface providers.
   [wrangler createMainCoordinatorAndInterface];
-  EXPECT_EQ(wrangler.mainInterface.browser, observer.GetLastAddedBrowser());
-  EXPECT_EQ(1UL, browser_list->AllRegularBrowsers().size());
 
-  // Create the inactive browser. Sould be added in the main interface and in
-  // the browser list even if the feature is disabled.
-  [wrangler createInactiveBrowser];
+  // The BrowserViewWrangler creates all browser in its initializer. The
+  // first created CL is the main Browser, the second one the inactive
+  // Browser, and then the OTR Browser.
   EXPECT_EQ(2UL, browser_list->AllRegularBrowsers().size());
+  EXPECT_EQ(1UL, browser_list->AllIncognitoBrowsers().size());
   EXPECT_EQ(wrangler.mainInterface.inactiveBrowser,
             observer.GetLastAddedBrowser());
-
-  // The lazy OTR browser creation should involve an addition to the browser
-  // list.
   EXPECT_EQ(wrangler.incognitoInterface.browser,
             observer.GetLastAddedIncognitoBrowser());
-  EXPECT_EQ(1UL, browser_list->AllIncognitoBrowsers().size());
 
-  Browser* prior_otr_browser = observer.GetLastAddedIncognitoBrowser();
-
-  // WARNING: after the following call, `last_otr_browser` is unsafe.
+  // Record the old Browser before it is destroyed. This will be dangling
+  // after the call to -willDestroyIncognitoBrowserState.
+  Browser* prior_otr_browser = wrangler.incognitoInterface.browser;
   [wrangler willDestroyIncognitoBrowserState];
   chrome_browser_state_->DestroyOffTheRecordChromeBrowserState();
   chrome_browser_state_->GetOffTheRecordChromeBrowserState();
@@ -223,6 +216,7 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
 
   // After shutdown all browsers are destroyed.
   [wrangler shutdown];
+
   // There should be no browsers in the BrowserList.
   EXPECT_EQ(0UL, browser_list->AllRegularBrowsers().size());
   EXPECT_EQ(0UL, browser_list->AllIncognitoBrowsers().size());
@@ -258,9 +252,7 @@ TEST_F(BrowserViewWranglerTest, TestInactiveInterface) {
        applicationCommandEndpoint:nil
       browsingDataCommandEndpoint:nil];
 
-  [wrangler createMainBrowser];
   [wrangler createMainCoordinatorAndInterface];
-  [wrangler createInactiveBrowser];
   EXPECT_EQ(2UL, browser_list->AllRegularBrowsers().size());
   EXPECT_EQ(wrangler.mainInterface.inactiveBrowser,
             observer.GetLastAddedBrowser());
@@ -284,15 +276,15 @@ TEST_F(BrowserViewWranglerTest, TestIncognitoBrowserSessionRestorationLogic) {
        applicationCommandEndpoint:nil
       browsingDataCommandEndpoint:nil];
 
-  // Creation of the main browser should restore the sessions.
-  [wrangler createMainBrowser];
+  // Create the coordinator and interface. This is required to get access
+  // to the Browser via the -mainInterface/-incognitoInterface providers.
   [wrangler createMainCoordinatorAndInterface];
-  EXPECT_EQ(1, test_session_service_.loadSessionCallsCount);
+  EXPECT_EQ(0, test_session_service_.loadSessionCallsCount);
 
-  // Initial creation of incognito browser should restore the sessions.
-  EXPECT_EQ(wrangler.incognitoInterface.browser,
-            observer.GetLastAddedIncognitoBrowser());
-  EXPECT_EQ(2, test_session_service_.loadSessionCallsCount);
+  // Load the session for all Browser. There should be one for the main
+  // Browser, one for the inactive Browser and one for the OTR Browser.
+  [wrangler loadSession];
+  EXPECT_EQ(3, test_session_service_.loadSessionCallsCount);
 
   // Destroing and rebuilding the incognito browser should not restore the
   // sessions.
@@ -300,9 +292,9 @@ TEST_F(BrowserViewWranglerTest, TestIncognitoBrowserSessionRestorationLogic) {
   chrome_browser_state_->DestroyOffTheRecordChromeBrowserState();
   chrome_browser_state_->GetOffTheRecordChromeBrowserState();
   [wrangler incognitoBrowserStateCreated];
-  EXPECT_EQ(2, test_session_service_.loadSessionCallsCount);
 
-  [wrangler createInactiveBrowser];
+  EXPECT_EQ(3, test_session_service_.loadSessionCallsCount);
+
   [wrangler shutdown];
 
   browser_list->RemoveObserver(&observer);
