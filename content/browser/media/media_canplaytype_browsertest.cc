@@ -58,7 +58,11 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_webm) {
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_ogg) {
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  ExecuteTest("testOggVariants(true)");  // has_theora_support=true
+  if (base::FeatureList::IsEnabled(media::kTheoraVideoCodec)) {
+    ExecuteTest("testOggVariants(true)");  // has_theora_support=true
+  } else {
+    ExecuteTest("testOggVariants(false)");  // has_theora_support=false
+  }
 #else
   ExecuteTest("testOggVariants(false)");  // has_theora_support=false
 #endif

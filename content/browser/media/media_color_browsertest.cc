@@ -7,6 +7,7 @@
 #include "content/browser/media/media_browsertest.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
 #include "media/media_buildflags.h"
 
@@ -36,18 +37,29 @@ class MediaColorTest : public MediaBrowserTest {
   }
 };
 
-// Android doesn't support Theora.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pTheora) {
-  RunColorTest("yuv420p.ogv");
+  if (base::FeatureList::IsEnabled(media::kTheoraVideoCodec)) {
+    RunColorTest("yuv420p.ogv");
+  } else {
+    GTEST_SKIP() << "Theora isn't supported";
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv422pTheora) {
-  RunColorTest("yuv422p.ogv");
+  if (base::FeatureList::IsEnabled(media::kTheoraVideoCodec)) {
+    RunColorTest("yuv422p.ogv");
+  } else {
+    GTEST_SKIP() << "Theora isn't supported";
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv444pTheora) {
-  RunColorTest("yuv444p.ogv");
+  if (base::FeatureList::IsEnabled(media::kTheoraVideoCodec)) {
+    RunColorTest("yuv444p.ogv");
+  } else {
+    GTEST_SKIP() << "Theora isn't supported";
+  }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

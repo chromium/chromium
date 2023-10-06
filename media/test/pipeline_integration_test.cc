@@ -2954,14 +2954,19 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackPositiveStartTime) {
 // Ensures audio-video playback with missing or negative timestamps fails
 // instead of crashing.  See http://crbug.com/396864.
 TEST_F(PipelineIntegrationTest, BasicPlaybackChainedOggVideo) {
-  ASSERT_EQ(PIPELINE_OK, Start("double-bear.ogv", kUnreliableDuration));
-  Play();
-  EXPECT_EQ(PIPELINE_ERROR_DECODE, WaitUntilEndedOrError());
+  if (base::FeatureList::IsEnabled(kTheoraVideoCodec)) {
+    ASSERT_EQ(PIPELINE_OK, Start("double-bear.ogv", kUnreliableDuration));
+    Play();
+    EXPECT_EQ(PIPELINE_ERROR_DECODE, WaitUntilEndedOrError());
+  } else {
+    ASSERT_EQ(DECODER_ERROR_NOT_SUPPORTED,
+              Start("double-bear.ogv", kUnreliableDuration));
+  }
 }
 
 // Tests that we signal ended even when audio runs longer than video track.
 TEST_F(PipelineIntegrationTest, BasicPlaybackAudioLongerThanVideo) {
-  ASSERT_EQ(PIPELINE_OK, Start("bear_audio_longer_than_video.ogv"));
+  ASSERT_EQ(PIPELINE_OK, Start("bear_audio_longer_than_video_vp8.ogv"));
   // Audio track is 2000ms. Video track is 1001ms. Duration should be higher
   // of the two.
   EXPECT_EQ(2000, pipeline_->GetMediaDuration().InMilliseconds());
@@ -2971,7 +2976,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackAudioLongerThanVideo) {
 
 // Tests that we signal ended even when audio runs shorter than video track.
 TEST_F(PipelineIntegrationTest, BasicPlaybackAudioShorterThanVideo) {
-  ASSERT_EQ(PIPELINE_OK, Start("bear_audio_shorter_than_video.ogv"));
+  ASSERT_EQ(PIPELINE_OK, Start("bear_audio_shorter_than_video_vp8.ogv"));
   // Audio track is 500ms. Video track is 1001ms. Duration should be higher of
   // the two.
   EXPECT_EQ(1001, pipeline_->GetMediaDuration().InMilliseconds());

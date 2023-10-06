@@ -279,7 +279,9 @@
 //media/test/data/bear_adts_in_private_stream_1.ts
 //media/test/data/bear_alaw.wav
 //media/test/data/bear_audio_longer_than_video.ogv
+//media/test/data/bear_audio_longer_than_video_vp8.ogv
 //media/test/data/bear_audio_shorter_than_video.ogv
+//media/test/data/bear_audio_shorter_than_video_vp8.ogv
 //media/test/data/bear_divx_mp3.avi
 //media/test/data/bear_dtsc.mp4
 //media/test/data/bear_dtse.mp4

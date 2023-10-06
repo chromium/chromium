@@ -267,7 +267,9 @@ data/bear_640x384_40frames.yuv.webm
 data/bear_adts_in_private_stream_1.ts
 data/bear_alaw.wav
 data/bear_audio_longer_than_video.ogv
+data/bear_audio_longer_than_video_vp8.ogv
 data/bear_audio_shorter_than_video.ogv
+data/bear_audio_shorter_than_video_vp8.ogv
 data/bear_divx_mp3.avi
 data/bear_dtsc.mp4
 data/bear_dtse.mp4
