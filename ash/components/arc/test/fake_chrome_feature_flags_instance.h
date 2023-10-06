@@ -7,7 +7,6 @@
 
 #include "ash/components/arc/mojom/chrome_feature_flags.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace arc {
 
@@ -23,9 +22,6 @@ class FakeChromeFeatureFlagsInstance
 
   ~FakeChromeFeatureFlagsInstance() override;
 
-  void Init(mojo::PendingRemote<mojom::ChromeFeatureFlagsHost> host_remote,
-            InitCallback callback) override;
-
   const mojom::FeatureFlagsPtr& flags_called_value() {
     return flags_called_value_.value();
   }
@@ -35,7 +31,6 @@ class FakeChromeFeatureFlagsInstance
 
  private:
   absl::optional<mojom::FeatureFlagsPtr> flags_called_value_;
-  mojo::Remote<mojom::ChromeFeatureFlagsHost> host_remote_;
 };
 
 }  // namespace arc
