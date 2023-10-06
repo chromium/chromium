@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertEnumVariant} from '../../assert.js';
+import {queuedAsyncCallback} from '../../async_job_queue.js';
 import * as barcodeChip from '../../barcode_chip.js';
 import {CameraManager, CameraUI} from '../../device/index.js';
 import * as dom from '../../dom.js';
@@ -53,6 +54,11 @@ export class ScanOptions implements CameraUI {
 
   private readonly onChangeListeners = new Set<ScanOptionsChangeListener>();
 
+  private readonly updateDocumentModeStatus =
+      queuedAsyncCallback('keepLatest', async () => {
+        await this.checkDocumentModeReadiness();
+      });
+
   constructor(private readonly cameraManager: CameraManager) {
     this.cameraManager.registerCameraUI(this);
 
@@ -65,8 +71,8 @@ export class ScanOptions implements CameraUI {
 
     // TODO(pihsun): Move this outside of the constructor.
     void (async () => {
-      const {supported} =
-          await ChromeHelper.getInstance().getDocumentScannerReadyState();
+      const supported =
+          await ChromeHelper.getInstance().isDocumentScannerSupported();
       dom.get('#scan-document-option', HTMLElement).hidden = !supported;
     })();
 
@@ -137,7 +143,7 @@ export class ScanOptions implements CameraUI {
       this.detachPreview();
     })();
     await this.switchToScanType(scanType);
-    await this.checkDocumentModeReadiness();
+    this.updateDocumentModeStatus();
   }
 
   /**

@@ -83,8 +83,8 @@ class CameraAppHelperImpl : public TabletModeObserver,
                   const std::string& name) override;
   void MonitorFileDeletion(const std::string& name,
                            MonitorFileDeletionCallback callback) override;
-  void GetDocumentScannerReadyState(
-      GetDocumentScannerReadyStateCallback callback) override;
+  void IsDocumentScannerSupported(
+      IsDocumentScannerSupportedCallback callback) override;
   void CheckDocumentModeReadiness(
       CheckDocumentModeReadinessCallback callback) override;
   void ScanDocumentCorners(const std::vector<uint8_t>& jpeg_data,

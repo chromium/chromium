@@ -115,14 +115,14 @@ export class ChromeHelperFake extends ChromeHelper {
     /* Do nothing. */
   }
 
-  override async getDocumentScannerReadyState():
-      Promise<{supported: boolean, ready: boolean}> {
-    return {supported: false, ready: false};
+  override async isDocumentScannerSupported(): Promise<boolean> {
+    return false;
   }
 
   override async checkDocumentModeReadiness(): Promise<boolean> {
     return false;
   }
+
 
   override async scanDocumentCorners(_blob: Blob): Promise<Point[]|null> {
     return null;

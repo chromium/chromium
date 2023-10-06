@@ -25,16 +25,6 @@ enum ScreenState {
     OFF_AUTO,
 };
 
-// Ready state for document scanner.
-enum DocumentScannerReadyState {
-  // The library is not supported on the device.
-  NOT_SUPPORTED,
-  // The library is supported but needs to wait for its installation.
-  SUPPORTED_BUT_NOT_READY,
-  // The library is supported and ready.
-  SUPPORTED_AND_READY,
-};
-
 // Interface for monitoring screen state of device. The state is detected from
 // Chrome browser process and is notified to Chrome Camera App in renderer
 // process.
@@ -220,8 +210,8 @@ interface CameraAppHelper {
   // by result.
   MonitorFileDeletion(string name) => (FileMonitorResult result);
 
-  // Returns the ready type of the document scanner on the device.
-  GetDocumentScannerReadyState() => (DocumentScannerReadyState ready_state);
+  // Check if document scanner is supported.
+  IsDocumentScannerSupported() => (bool is_supported);
 
   // Registers a callback which will be resolved once the document scanner is
   // ready or when it fails to load. If the document scanner is not supported on

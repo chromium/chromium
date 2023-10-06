@@ -410,8 +410,9 @@ export class Camera extends View implements CameraViewUI {
   }
 
   private async initScanMode() {
-    const isLoaded = await this.scanOptions.checkDocumentModeReadiness();
-    if (!isLoaded) {
+    const isSupported =
+        await ChromeHelper.getInstance().isDocumentScannerSupported();
+    if (!isSupported) {
       return;
     }
     // When entering document mode, refocus to shutter button for letting user

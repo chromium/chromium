@@ -18,7 +18,6 @@ import {
   CameraAppHelperRemote,
   CameraIntentAction,
   DocumentOutputFormat,
-  DocumentScannerReadyState,
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
   Rotation,
@@ -182,8 +181,7 @@ export abstract class ChromeHelper {
   abstract monitorFileDeletion(name: string, callback: () => void):
       Promise<void>;
 
-  abstract getDocumentScannerReadyState():
-      Promise<{supported: boolean, ready: boolean}>;
+  abstract isDocumentScannerSupported(): Promise<boolean>;
 
   /**
    * Checks the document mode readiness. Returns false if it fails to load.
@@ -377,19 +375,16 @@ class ChromeHelperImpl extends ChromeHelper {
     }
   }
 
-  override async getDocumentScannerReadyState():
-      Promise<{supported: boolean, ready: boolean}> {
-    const {readyState} = await this.remote.getDocumentScannerReadyState();
-    return {
-      supported: readyState !== DocumentScannerReadyState.NOT_SUPPORTED,
-      ready: readyState === DocumentScannerReadyState.SUPPORTED_AND_READY,
-    };
+  override async isDocumentScannerSupported(): Promise<boolean> {
+    const {isSupported} = await this.remote.isDocumentScannerSupported();
+    return isSupported;
   }
 
   override async checkDocumentModeReadiness(): Promise<boolean> {
     const {isLoaded} = await this.remote.checkDocumentModeReadiness();
     return isLoaded;
   }
+
 
   override async scanDocumentCorners(blob: Blob): Promise<Point[]|null> {
     const buffer = new Uint8Array(await blob.arrayBuffer());

@@ -65,6 +65,8 @@ class DocumentScannerServiceClient {
   void OnLoadedDocumentScanner(
       chromeos::machine_learning::mojom::LoadModelResult result);
 
+  void OnMojoDisconnected();
+
   // Guards |document_scanner_loaded_| and |on_ready_callbacks_| which are
   // related to the load status.
   base::Lock load_status_lock_;

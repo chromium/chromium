@@ -152,9 +152,15 @@ void DocumentScannerServiceClient::DoPostProcessing(
           std::move(callback)));
 }
 
-DocumentScannerServiceClient::DocumentScannerServiceClient() {
-  chromeos::machine_learning::ServiceConnection::GetInstance()
-      ->BindMachineLearningService(ml_service_.BindNewPipeAndPassReceiver());
+DocumentScannerServiceClient::DocumentScannerServiceClient() {}
+
+void DocumentScannerServiceClient::OnMojoDisconnected() {
+  ml_service_.reset();
+  document_scanner_.reset();
+  {
+    base::AutoLock auto_lock(load_status_lock_);
+    is_loading_ = false;
+  }
   LoadDocumentScanner();
 }
 
@@ -186,10 +192,15 @@ void DocumentScannerServiceClient::LoadDocumentScannerInternal(
   auto config = chromeos::machine_learning::mojom::DocumentScannerConfig::New();
   config->library_dlc_path = base::FilePath(lib_path);
 
+  chromeos::machine_learning::ServiceConnection::GetInstance()
+      ->BindMachineLearningService(ml_service_.BindNewPipeAndPassReceiver());
   ml_service_->LoadDocumentScanner(
       document_scanner_.BindNewPipeAndPassReceiver(), std::move(config),
       base::BindOnce(&DocumentScannerServiceClient::OnLoadedDocumentScanner,
                      base::Unretained(this)));
+  document_scanner_.set_disconnect_handler(
+      base::BindOnce(&DocumentScannerServiceClient::OnMojoDisconnected,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DocumentScannerServiceClient::OnLoadedDocumentScanner(
