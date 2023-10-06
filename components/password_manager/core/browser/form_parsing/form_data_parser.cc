@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <iterator>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -1066,12 +1067,14 @@ FormDataParser::FormDataParser() = default;
 
 FormDataParser::~FormDataParser() = default;
 
-std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
-                                                    Mode mode) {
+std::tuple<std::unique_ptr<PasswordForm>,
+           FormDataParser::UsernameDetectionMethod>
+FormDataParser::ParseAndReturnUsernameDetection(const FormData& form_data,
+                                                Mode mode) {
   if (form_data.fields.size() > kMaxParseableFields)
-    return nullptr;
+    return {nullptr, UsernameDetectionMethod::kNoUsernameDetected};
   if (!form_data.url.is_valid())
-    return nullptr;
+    return {nullptr, UsernameDetectionMethod::kNoUsernameDetected};
 
   readonly_status_ = ReadonlyPasswordFields::kNoHeuristics;
   AlternativeElementVector all_alternative_passwords;
@@ -1081,7 +1084,7 @@ std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
                     &all_alternative_usernames, mode);
 
   if (processed_fields.empty())
-    return nullptr;
+    return {nullptr, UsernameDetectionMethod::kNoUsernameDetected};
 
   SignificantFields significant_fields;
   UsernameDetectionMethod method = UsernameDetectionMethod::kNoUsernameDetected;
@@ -1180,9 +1183,16 @@ std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
   base::UmaHistogramEnumeration("PasswordManager.UsernameDetectionMethod",
                                 method);
 
-  return AssemblePasswordForm(
-      form_data, significant_fields, std::move(all_alternative_passwords),
-      std::move(all_alternative_usernames), predictions_);
+  return {
+      AssemblePasswordForm(form_data, significant_fields,
+                           std::move(all_alternative_passwords),
+                           std::move(all_alternative_usernames), predictions_),
+      method};
+}
+
+std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
+                                                    Mode mode) {
+  return std::get<0>(ParseAndReturnUsernameDetection(form_data, mode));
 }
 
 std::string GetSignonRealm(const GURL& url) {

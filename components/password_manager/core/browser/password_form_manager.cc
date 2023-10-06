@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/containers/lru_cache.h"
@@ -811,7 +812,7 @@ bool PasswordFormManager::ProvisionallySave(
         possible_usernames) {
   DCHECK(DoesManage(submitted_form.unique_renderer_id, driver));
   DCHECK(client_->IsSavingAndFillingEnabled(submitted_form.url));
-  std::unique_ptr<PasswordForm> parsed_submitted_form =
+  auto [parsed_submitted_form, username_detection_method] =
       ParseFormAndMakeLogging(submitted_form, FormDataParser::Mode::kSaving);
   RecordMetricOnReadonly(parser_.readonly_status(), !!parsed_submitted_form,
                          FormDataParser::Mode::kSaving);
@@ -947,7 +948,7 @@ void PasswordFormManager::FillNow() {
   // filling and saving mode might be different so it is better not to cache
   // parse result, but to parse each time again.
   CHECK(observed_form());
-  std::unique_ptr<PasswordForm> observed_password_form =
+  auto [observed_password_form, username_detection_method] =
       ParseFormAndMakeLogging(*observed_form(), FormDataParser::Mode::kFilling);
   RecordMetricOnReadonly(parser_.readonly_status(), !!observed_password_form,
                          FormDataParser::Mode::kFilling);
@@ -991,7 +992,7 @@ void PasswordFormManager::OnGeneratedPasswordAccepted(
   if (it == form_data.fields.end())
     return;
   it->value = password;
-  std::unique_ptr<PasswordForm> parsed_form =
+  auto [parsed_form, username_detection_method] =
       ParseFormAndMakeLogging(form_data, FormDataParser::Mode::kSaving);
   if (!parsed_form) {
     // Create a password form with a minimum data.
@@ -1086,10 +1087,12 @@ void PasswordFormManager::FillHttpAuth() {
   client_->AutofillHttpAuth(*form_fetcher_->GetPreferredMatch(), this);
 }
 
-std::unique_ptr<PasswordForm> PasswordFormManager::ParseFormAndMakeLogging(
-    const FormData& form,
-    FormDataParser::Mode mode) {
-  std::unique_ptr<PasswordForm> password_form = parser_.Parse(form, mode);
+std::tuple<std::unique_ptr<PasswordForm>,
+           FormDataParser::UsernameDetectionMethod>
+PasswordFormManager::ParseFormAndMakeLogging(const FormData& form,
+                                             FormDataParser::Mode mode) {
+  auto [password_form, username_detection_method] =
+      parser_.ParseAndReturnUsernameDetection(form, mode);
 
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
@@ -1099,13 +1102,13 @@ std::unique_ptr<PasswordForm> PasswordFormManager::ParseFormAndMakeLogging(
                              *password_form);
     }
   }
-  return password_form;
+  return {std::move(password_form), username_detection_method};
 }
 
 void PasswordFormManager::PresaveGeneratedPasswordInternal(
     const FormData& form,
     const std::u16string& generated_password) {
-  std::unique_ptr<PasswordForm> parsed_form =
+  auto [parsed_form, username_detection_method] =
       ParseFormAndMakeLogging(form, FormDataParser::Mode::kSaving);
 
   if (!parsed_form) {

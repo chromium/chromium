@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -287,9 +288,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // Helper function for calling form parsing and logging results if logging is
   // active.
-  std::unique_ptr<PasswordForm> ParseFormAndMakeLogging(
-      const autofill::FormData& form,
-      FormDataParser::Mode mode);
+  std::tuple<std::unique_ptr<PasswordForm>,
+             FormDataParser::UsernameDetectionMethod>
+  ParseFormAndMakeLogging(const autofill::FormData& form,
+                          FormDataParser::Mode mode);
 
   void PresaveGeneratedPasswordInternal(
       const autofill::FormData& form,

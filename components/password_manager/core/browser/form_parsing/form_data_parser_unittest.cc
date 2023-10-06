@@ -3222,6 +3222,34 @@ TEST_F(FormParserTest, AcceptsUsernameWebAuthnCredentials) {
   });
 }
 
+// Tests that if a username field was found by server prediction then the
+// `username_detection_method` enum is correctly set.
+TEST_F(FormParserTest, UsernameFoundByServerPredictions) {
+  FormPredictions predictions;
+  ParseResultIds fill_result;
+  ParseResultIds save_result;
+  FormParsingTestCase test_case = {
+      .description_for_logging = "Username with server predictions",
+      .fields = {{.role = ElementRole::USERNAME,
+                  .form_control_type = FormControlType::kInputText,
+                  .prediction = {.type = autofill::USERNAME}},
+
+                 {.role = ElementRole::CURRENT_PASSWORD,
+                  .form_control_type = FormControlType::kInputPassword,
+                  .prediction = {.type = autofill::PASSWORD}}},
+  };
+  const FormData form_data = GetFormDataAndExpectation(
+      {test_case}, &predictions, &fill_result, &save_result);
+  FormDataParser parser;
+  parser.set_predictions(std::move(predictions));
+
+  auto [result, username_detection_method] =
+      parser.ParseAndReturnUsernameDetection(form_data,
+                                             FormDataParser::Mode::kSaving);
+  EXPECT_EQ(username_detection_method,
+            UsernameDetectionMethod::kServerSidePrediction);
+}
+
 }  // namespace
 
 }  // namespace password_manager
