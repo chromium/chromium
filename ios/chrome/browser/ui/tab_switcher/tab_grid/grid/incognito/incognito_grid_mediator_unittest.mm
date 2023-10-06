@@ -16,9 +16,7 @@ class IncognitoGridMediatorTest : public GridMediatorTestClass {
 
   void SetUp() override {
     GridMediatorTestClass::SetUp();
-    mediator_ = [[IncognitoGridMediator alloc]
-        initWithPrefService:scoped_testing_local_state_.Get()
-                   consumer:consumer_];
+    mediator_ = [[IncognitoGridMediator alloc] initWithConsumer:consumer_];
     mediator_.browser = browser_.get();
   }
 

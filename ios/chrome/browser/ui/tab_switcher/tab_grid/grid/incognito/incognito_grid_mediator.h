@@ -17,14 +17,6 @@ class PrefService;
 // Incognito mediator delegate.
 @property(nonatomic, weak) id<IncognitoGridMediatorDelegate> incognitoDelegate;
 
-- (instancetype)initWithPrefService:(PrefService*)prefService
-                           consumer:(id<TabCollectionConsumer>)consumer
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer
-    NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_INCOGNITO_INCOGNITO_GRID_MEDIATOR_H_
