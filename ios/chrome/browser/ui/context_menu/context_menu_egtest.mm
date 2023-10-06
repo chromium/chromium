@@ -512,9 +512,7 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 
 // Checks that "open in new window" shows up on a long press of a url link
 // and that it actually opens in a new window.
-// TODO(crbug.com/1487586): This test is very flaky on both device and
-// simulator.
-- (void)DISABLED_testOpenLinkInNewWindow {
+- (void)testOpenLinkInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
