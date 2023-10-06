@@ -21,6 +21,7 @@ script_test("chrome_ios_wpt") {
 
     # TODO(crbug.com/1351820): Enable more tests to run, update the dependency to third_party/blink/tools build file.
     "external/wpt/css/css-transforms/",
+    "external/wpt/dom/events/Event-timestamp-high-resolution.https.html",
   ]
   deps = [ ":all_tests" ]
   data = [

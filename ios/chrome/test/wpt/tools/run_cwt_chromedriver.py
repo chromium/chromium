@@ -72,6 +72,7 @@ egtests_app = test_apps.EgtestsApp(
 
 launch_command = xcodebuild_runner.LaunchCommand(egtests_app, destination,
     shards=1, retries=1, readline_timeout=constants.READLINE_TIMEOUT,
-    out_dir=output_directory)
+    out_dir=output_directory,
+    cert_path='../../wpt_tools/wpt/tools/certs/cacert.pem')
 
 launch_command.launch()
