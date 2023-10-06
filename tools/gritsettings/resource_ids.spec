@@ -1073,7 +1073,7 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [6440],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/firmware_update_ui/resources/ash_firmware_update_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/firmware_update_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [200],}},
     "includes": [6460],
   },

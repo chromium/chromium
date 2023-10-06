@@ -111,6 +111,9 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'ash/webui/diagnostics_ui/',
       'ash/webui/face_ml_app_ui/',
       'ash/webui/file_manager/resources/labs/',
+      # TODO(b/302140708): Migrate firmware update ui to Typescript and remove
+      # exception.
+      'ash/webui/firmware_update_ui/',
       'ash/webui/shortcut_customization_ui/',
       'ash/webui/sample_system_web_app_ui/',
       'ui/file_manager/',

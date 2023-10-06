@@ -85,13 +85,6 @@ ash_generated_grit("files_internals_resources") {
   deps = [ "//ash/webui/files_internals:build_grd" ]
 }
 
-ash_generated_grit("firmware_update_app_resources") {
-  firmware_update_app_gen_dir =
-      "$root_gen_dir/ash/webui/firmware_update_ui/resources"
-  source = "$firmware_update_app_gen_dir/ash_firmware_update_app_resources.grd"
-  deps = [ "//ash/webui/firmware_update_ui/resources:build_grd" ]
-}
-
 ash_generated_grit("system_extensions_internals_resources") {
   source = "$root_gen_dir/ash/webui/system_extensions_internals_ui/ash_system_extensions_internals_resources.grd"
   deps = [ "//ash/webui/system_extensions_internals_ui:build_grd" ]
