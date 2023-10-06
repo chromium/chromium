@@ -159,14 +159,25 @@ void OfferNotificationBubbleViews::InitWithFreeListingCouponOfferContent() {
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   // Create bubble content:
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
-  layout->set_cross_axis_alignment(
-      ::features::IsChromeRefresh2023()
-          ? views::BoxLayout::CrossAxisAlignment::kStart
-          : views::BoxLayout::CrossAxisAlignment::kCenter);
+  if (::features::IsChromeRefresh2023()) {
+    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kStart);
+  } else {
+    auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+    layout->SetOrientation(views::LayoutOrientation::kVertical)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+        .SetIgnoreDefaultMainAxisMargins(true)
+        .SetCollapseMargins(true)
+        .SetDefault(
+            views::kMarginsKey,
+            gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                            0));
+  }
 
   const AutofillOfferData* offer = controller_->GetOffer();
   DCHECK(offer);
@@ -222,6 +233,10 @@ void OfferNotificationBubbleViews::InitWithFreeListingCouponOfferContent() {
     auto* promo_code_value_prop = AddChildView(std::make_unique<views::Label>(
         promo_code_value_prop_string, views::style::CONTEXT_DIALOG_BODY_TEXT,
         views::style::STYLE_SECONDARY));
+    if (!::features::IsChromeRefresh2023()) {
+      promo_code_value_prop->SetProperty(views::kCrossAxisAlignmentKey,
+                                         views::LayoutAlignment::kStart);
+    }
     promo_code_value_prop->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     promo_code_value_prop->SetMultiLine(true);
   }
