@@ -258,12 +258,14 @@ bool PowerStatus::SupportsDualRoleDevices() const {
 }
 
 bool PowerStatus::HasDualRoleDevices() const {
-  if (!SupportsDualRoleDevices())
+  if (!SupportsDualRoleDevices()) {
     return false;
+  }
 
   for (int i = 0; i < proto_.available_external_power_source_size(); i++) {
-    if (!proto_.available_external_power_source(i).active_by_default())
+    if (!proto_.available_external_power_source(i).active_by_default()) {
       return true;
+    }
   }
   return false;
 }
@@ -350,10 +352,28 @@ std::u16string PowerStatus::GetAccessibleNameString(
         IDS_ASH_STATUS_TRAY_BATTERY_FULL_CHARGE_ACCESSIBLE);
   }
 
+  int percentage_accessibility_token = -1;
+  if (features::IsBatterySaverAvailable()) {
+    if (IsBatteryCharging()) {
+      percentage_accessibility_token =
+          IsBatterySaverActive()
+              ? IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_BSM_ON_ACCESSIBLE
+              : IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ACCESSIBLE;
+    } else {
+      percentage_accessibility_token =
+          IsBatterySaverActive()
+              ? IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_BSM_ON_ACCESSIBLE
+              : IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_ACCESSIBLE;
+    }
+  } else {  // Backwards compatibility with battery saver feature flag disabled.
+    percentage_accessibility_token =
+        IsBatteryCharging()
+            ? IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ACCESSIBLE
+            : IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_ACCESSIBLE;
+  }
+
   std::u16string battery_percentage_accessible = l10n_util::GetStringFUTF16(
-      IsBatteryCharging()
-          ? IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ACCESSIBLE
-          : IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_ACCESSIBLE,
+      percentage_accessibility_token,
       base::NumberToString16(GetRoundedBatteryPercent()));
   if (!full_description)
     return battery_percentage_accessible;
@@ -407,8 +427,9 @@ std::pair<std::u16string, std::u16string> PowerStatus::GetStatusStrings()
           !IsBatteryDischargingOnLinePower()) {
         std::u16string duration;
         if (!base::TimeDurationFormat(*time, base::DURATION_WIDTH_NUMERIC,
-                                      &duration))
+                                      &duration)) {
           LOG(ERROR) << "Failed to format duration " << *time;
+        }
         status = l10n_util::GetStringFUTF16(
             IsBatteryCharging()
                 ? IDS_ASH_STATUS_TRAY_BATTERY_TIME_UNTIL_FULL_SHORT
@@ -469,8 +490,9 @@ void PowerStatus::PowerChanged(
     const power_manager::PowerSupplyProperties& proto) {
   proto_ = proto;
   proto_initialized_ = true;
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnPowerStatusChanged();
+  }
 }
 
 void PowerStatus::BatterySaverModeStateChanged(

@@ -2749,6 +2749,12 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ACCESSIBLE" desc="The message used by accessibility to show battery is being charged.">
         Battery at <ph name="percentage">$1<ex>56</ex></ph>% and charging.
       </message>
+            <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_BSM_ON_ACCESSIBLE" translateable="false" desc="The message used by accessibility to show battery is discharging with battery saver enabled.">
+        Battery at <ph name="percentage">$1<ex>56</ex></ph> percent. Battery Saver is on.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_BSM_ON_ACCESSIBLE" translateable="false" desc="The message used by accessibility to show battery is being charged with battery saver enabled.">
+        Battery at <ph name="percentage">$1<ex>56</ex></ph>% and charging. Battery Saver is on.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING_ACCESSIBLE" desc="The message used by accessibility to show battery is calculating its time in short message.">
         Calculating battery time.
       </message>
