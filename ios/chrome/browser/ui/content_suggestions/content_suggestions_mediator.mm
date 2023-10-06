@@ -520,6 +520,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)disableParcelTracking {
   DisableParcelTracking(_localState);
+  _shoppingService->StopTrackingAllParcels(base::BindOnce(^(bool){
+  }));
 
   // Find all parcel tracking modules and remove them.
   for (NSUInteger i = 0; i < [_latestMagicStackOrder count]; i++) {
