@@ -132,6 +132,19 @@ public class AutofillPaymentMethodsFragmentTest {
             /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.ENROLLED,
             /* productDescription= */ "", /* cardNameForAutofillDisplay= */ "",
             /* obfuscatedLastFourDigits= */ "", /* cvc= */ "");
+    private static final CreditCard SAMPLE_CARD_WITH_CVC = new CreditCard(/* guid= */ "",
+            /* origin= */ "",
+            /* isLocal= */ false, /* isCached= */ false, /* isVirtual= */ false,
+            /* name= */ "John Doe",
+            /* number= */ "4444333322221111",
+            /* obfuscatedNumber= */ "", /* month= */ "5", AutofillTestHelper.nextYear(),
+            /* basicCardIssuerNetwork =*/"visa",
+            /* issuerIconDrawableId= */ 0, /* billingAddressId= */ "",
+            /* serverId= */ "", /* instrumentId= */ 0, /* cardLabel= */ "", /* nickname= */ "",
+            /* cardArtUrl= */ null,
+            /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNENROLLED_AND_ELIGIBLE,
+            /* productDescription= */ "", /* cardNameForAutofillDisplay= */ "",
+            /* obfuscatedLastFourDigits= */ "", /* cvc= */ "123");
 
     private AutofillTestHelper mAutofillTestHelper;
 
@@ -271,6 +284,55 @@ public class AutofillPaymentMethodsFragmentTest {
         Preference cardPreference = getFirstPaymentMethodPreference(activity);
         String summary = cardPreference.getSummary().toString();
         assertThat(summary).contains(String.format("05/%s", AutofillTestHelper.twoDigitNextYear()));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testCreditCardSummary_whenCvcExists_doesNotDisplayCvcSavedMessageWhenCvcFlagOff()
+            throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_WITH_CVC);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference cardPreference = getFirstPaymentMethodPreference(activity);
+        String summary = cardPreference.getSummary().toString();
+        assertThat(summary).contains(String.format("05/%s", AutofillTestHelper.twoDigitNextYear()));
+        assertThat(summary).doesNotContain(
+                activity.getString(R.string.autofill_settings_page_cvc_saved_label));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testCreditCardSummary_whenCvcExists_displayCvcSavedMessage() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_WITH_CVC);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference cardPreference = getPreferenceScreen(activity).getPreference(4);
+        String summary = cardPreference.getSummary().toString();
+        assertThat(summary).contains(
+                String.format(activity.getString(
+                        R.string.autofill_settings_page_summary_separated_by_pipe),
+                        String.format("05/%s", AutofillTestHelper.twoDigitNextYear()),
+                        activity.getString(R.string.autofill_settings_page_cvc_saved_label)));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testCreditCardSummary_whenCvcDoesNotExist_doesNotDisplayCvcSavedMessage()
+            throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_VISA);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference cardPreference = getPreferenceScreen(activity).getPreference(4);
+        String summary = cardPreference.getSummary().toString();
+        assertThat(summary).contains(String.format("05/%s", AutofillTestHelper.twoDigitNextYear()));
+        assertThat(summary).doesNotContain(
+                activity.getString(R.string.autofill_settings_page_cvc_saved_label));
     }
 
     @Test

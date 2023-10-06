@@ -195,6 +195,14 @@ public class PersonalDataManager {
                     + twoDigityear;
         }
 
+        public String getFormattedExpirationDateWithCvcSavedMessage(Context context) {
+            return context.getResources().getString(
+                    R.string.autofill_settings_page_summary_separated_by_pipe,
+                    getFormattedExpirationDate(context),
+                    context.getResources().getString(
+                            R.string.autofill_settings_page_cvc_saved_label));
+        }
+
         @CalledByNative("CreditCard")
         public boolean getIsLocal() {
             return mIsLocal;

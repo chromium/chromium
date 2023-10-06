@@ -1014,4 +1014,10 @@
   <message name="IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT" desc="The main text shown in the credit card suggestion list when the CVC field is focused. It will be the main text which is on the first line of suggestion. If the user hovers over the suggestion, the credit card will be previewed. If the user clicks on the suggestion, credit card will be filled.">
     CVC
   </message>
+  <message name="IDS_AUTOFILL_SETTINGS_PAGE_CVC_SAVED_LABEL" desc="Label for a credit card on the payment settings page when the user has stored the cvc." formatter_data="android_java">
+    CVC saved
+  </message>
+  <message name="IDS_AUTOFILL_SETTINGS_PAGE_SUMMARY_SEPARATED_BY_PIPE" desc="Summary text separator with pipe symbol. i.e. arg1 | arg2" formatter_data="android_java">
+    <ph name="EXPIRATION_DATE">%1$s<ex>12/24</ex></ph> | <ph name="SECURITY_CODE">%2$s<ex>123</ex></ph>
+  </message>
 </grit-part>
