@@ -585,6 +585,8 @@ PeopleSection::~PeopleSection() = default;
 void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"osPeoplePageTitle", IDS_OS_SETTINGS_PEOPLE_V2},
+      {"accountsMenuItemDescription",
+       IDS_OS_SETTINGS_ACCOUNTS_MENU_ITEM_DESCRIPTION},
       {"accountManagerSubMenuLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_SUBMENU_LABEL},
       {"accountManagerPageTitle", IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE},

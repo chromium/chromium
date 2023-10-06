@@ -16,12 +16,15 @@ import '../os_settings_icons.html.js';
 import './menu_item.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {assertExists} from '../assert_extras.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import * as routesMojom from '../mojom-webui/routes.mojom-webui.js';
 import {OsPageAvailability} from '../os_page_availability.js';
+import {AccountManagerBrowserProxyImpl} from '../os_people_page/account_manager_browser_proxy.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {isAdvancedRoute, Route, Router} from '../router.js';
 
@@ -46,7 +49,8 @@ export interface OsSettingsMenuElement {
   };
 }
 
-const OsSettingsMenuElementBase = RouteObserverMixin(I18nMixin(PolymerElement));
+const OsSettingsMenuElementBase =
+    WebUiListenerMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
 
 export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   static get is() {
@@ -74,7 +78,8 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
 
       basicMenuItems_: {
         type: Array,
-        computed: 'computeBasicMenuItems_(pageAvailability.*)',
+        computed: 'computeBasicMenuItems_(pageAvailability.*,' +
+            'accountsMenuItemDescription_)',
         readOnly: true,
       },
 
@@ -104,6 +109,13 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         },
         readOnly: true,
       },
+
+      accountsMenuItemDescription_: {
+        type: String,
+        value(this: OsSettingsMenuElement) {
+          return this.i18n('primaryUserEmail');
+        },
+      },
     };
   }
 
@@ -114,6 +126,18 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   private isRevampWayfindingEnabled_: boolean;
   private selectedItemPath_: string;
   private aboutMenuItemPath_: string;
+  private accountsMenuItemDescription_: string;
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    if (this.isRevampWayfindingEnabled_) {
+      this.updateAccountsMenuItemDescription_();
+      this.addWebUiListener(
+          'accounts-changed',
+          this.updateAccountsMenuItemDescription_.bind(this));
+    }
+  }
 
   override ready(): void {
     super.ready();
@@ -181,6 +205,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: `/${routesMojom.PEOPLE_SECTION_PATH}`,
           icon: 'os-settings:account',
           label: this.i18n('osPeoplePageTitle'),
+          sublabel: this.accountsMenuItemDescription_,
         },
         {
           section: Section.kKerberos,
@@ -395,6 +420,24 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
 
   private boolToString_(bool: boolean): string {
     return bool.toString();
+  }
+
+  /**
+   * Updates the "Accounts" menu item description to one of the following:
+   * - If there are multiple accounts (> 1), show "N accounts".
+   * - If there is only one account, show the account email.
+   */
+  private async updateAccountsMenuItemDescription_(): Promise<void> {
+    const accounts =
+        await AccountManagerBrowserProxyImpl.getInstance().getAccounts();
+    if (accounts.length > 1) {
+      this.accountsMenuItemDescription_ =
+          this.i18n('accountsMenuItemDescription', accounts.length);
+      return;
+    }
+    const deviceAccount = accounts.find(account => account.isDeviceAccount);
+    assertExists(deviceAccount, 'No device account found.');
+    this.accountsMenuItemDescription_ = deviceAccount.email;
   }
 }
 

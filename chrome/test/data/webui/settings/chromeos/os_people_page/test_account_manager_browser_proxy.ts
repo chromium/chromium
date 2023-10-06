@@ -7,6 +7,58 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestAccountManagerBrowserProxy extends TestBrowserProxy implements
     AccountManagerBrowserProxy {
+  private accounts_: Account[] = [
+    {
+      id: '123',
+      accountType: 1,
+      isDeviceAccount: true,
+      isSignedIn: true,
+      unmigrated: false,
+      isManaged: true,
+      fullName: 'Primary Account',
+      pic: 'data:image/png;base64,primaryAccountPicData',
+      email: 'primary@gmail.com',
+      isAvailableInArc: true,
+      organization: 'Family Link',
+    },
+    {
+      id: '456',
+      accountType: 1,
+      isDeviceAccount: false,
+      isSignedIn: true,
+      unmigrated: false,
+      isManaged: true,
+      fullName: 'Secondary Account 1',
+      email: 'user1@example.com',
+      pic: '',
+      isAvailableInArc: true,
+    },
+    {
+      id: '789',
+      accountType: 1,
+      isDeviceAccount: false,
+      isSignedIn: false,
+      unmigrated: false,
+      isManaged: false,
+      fullName: 'Secondary Account 2',
+      email: 'user2@example.com',
+      pic: '',
+      isAvailableInArc: false,
+    },
+    {
+      id: '1010',
+      accountType: 1,
+      isDeviceAccount: false,
+      isSignedIn: false,
+      unmigrated: true,
+      isManaged: false,
+      fullName: 'Secondary Account 3',
+      email: 'user3@example.com',
+      pic: '',
+      isAvailableInArc: false,
+    },
+  ];
+
   constructor() {
     super([
       'getAccounts',
@@ -21,57 +73,11 @@ export class TestAccountManagerBrowserProxy extends TestBrowserProxy implements
   getAccounts(): Promise<Account[]> {
     this.methodCalled('getAccounts');
 
-    return Promise.resolve([
-      {
-        id: '123',
-        accountType: 1,
-        isDeviceAccount: true,
-        isSignedIn: true,
-        unmigrated: false,
-        isManaged: true,
-        fullName: 'Primary Account',
-        pic: 'data:image/png;base64,primaryAccountPicData',
-        email: 'primary@gmail.com',
-        isAvailableInArc: true,
-        organization: 'Family Link',
-      },
-      {
-        id: '456',
-        accountType: 1,
-        isDeviceAccount: false,
-        isSignedIn: true,
-        unmigrated: false,
-        isManaged: true,
-        fullName: 'Secondary Account 1',
-        email: 'user1@example.com',
-        pic: '',
-        isAvailableInArc: true,
-      },
-      {
-        id: '789',
-        accountType: 1,
-        isDeviceAccount: false,
-        isSignedIn: false,
-        unmigrated: false,
-        isManaged: false,
-        fullName: 'Secondary Account 2',
-        email: 'user2@example.com',
-        pic: '',
-        isAvailableInArc: false,
-      },
-      {
-        id: '1010',
-        accountType: 1,
-        isDeviceAccount: false,
-        isSignedIn: false,
-        unmigrated: true,
-        isManaged: false,
-        fullName: 'Secondary Account 3',
-        email: 'user3@example.com',
-        pic: '',
-        isAvailableInArc: false,
-      },
-    ]);
+    return Promise.resolve(this.accounts_);
+  }
+
+  setAccountsForTesting(accounts: Account[]): void {
+    this.accounts_ = accounts;
   }
 
   addAccount(): void {

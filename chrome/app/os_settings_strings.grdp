@@ -312,6 +312,9 @@
      =1 {1 Google Account}
      other {<ph name="EXTRA_ACCOUNTS">$2<ex>2</ex></ph> Google Accounts}}
   </message>
+  <message name="IDS_OS_SETTINGS_ACCOUNTS_MENU_ITEM_DESCRIPTION" desc="Description text showing number of accounts. This string shows only when there is more than 1 account. Displayed in the menu item for the Accounts page.">
+    <ph name="NUM_ACCOUNTS">$1<ex>2</ex></ph> accounts
+  </message>
   <message name="IDS_OS_SETTINGS_SYNC_TURN_ON" desc="Button label for turning on synchronization of settings across ChromeOS devices.">
     Turn on
   </message>
