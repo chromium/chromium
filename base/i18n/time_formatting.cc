@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -265,22 +264,8 @@ std::string UnlocalizedTimeFormatWithPattern(const Time& time,
 }
 
 std::string TimeFormatAsIso8601(const Time& time) {
-  const std::string formatted = UnlocalizedTimeFormatWithPattern(
-      time, "yyyy-MM-dd'T'HH:mm:ss.SSSX", icu::TimeZone::getGMT());
-  // TODO(crbug.com/1484832): Remove this block when the bug is addressed.
-  if constexpr (DCHECK_IS_ON()) {
-    DCHECK(!time.is_null()) << "Formatting a null time is likely a caller bug.";
-    Time::Exploded exploded;
-    time.UTCExplode(&exploded);
-    const std::string printf_formatted =
-        StringPrintf("%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", exploded.year,
-                     exploded.month, exploded.day_of_month, exploded.hour,
-                     exploded.minute, exploded.second, exploded.millisecond);
-    DCHECK_EQ(formatted, printf_formatted)
-        << ". Formatted Time internal value: "
-        << time.ToDeltaSinceWindowsEpoch().InMicroseconds();
-  }
-  return formatted;
+  return UnlocalizedTimeFormatWithPattern(time, "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+                                          icu::TimeZone::getGMT());
 }
 
 std::string TimeFormatHTTP(const Time& time) {
