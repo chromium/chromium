@@ -80,6 +80,9 @@
   <message name="IDS_PROFILES_DICE_SIGNIN_BUTTON" desc="Button in the profile user menu to sign in and turn on Sync.">
     Turn on sync...
   </message>
+  <message name="IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON" desc="Button in the profile menu to sign in on Chrome and turn on Sync for a specific web account that is signed in only on the web.">
+    Continue as <ph name="ACCOUNT_NAME">$1<ex>John</ex></ph>
+  </message>
   <message name="IDS_PROFILES_DICE_NOT_SYNCING_TITLE" desc="Title of the sync promo account card in the user menu.">
     Sync is off
   </message>
