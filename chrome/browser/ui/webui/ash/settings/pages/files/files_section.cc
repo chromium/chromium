@@ -240,6 +240,7 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"oneDriveLabel", IDS_SETTINGS_ONE_DRIVE_LABEL},
       {"oneDriveSignedInAs", IDS_SETTINGS_ONE_DRIVE_SIGNED_IN_AS},
       {"oneDriveDisconnected", IDS_SETTINGS_ONE_DRIVE_DISCONNECTED},
+      {"oneDriveLoading", IDS_OS_SETTINGS_ONE_DRIVE_LOADING},
       {"oneDriveConnect", IDS_SETTINGS_ONE_DRIVE_CONNECT},
       {"oneDriveDisconnect", IDS_SETTINGS_ONE_DRIVE_DISCONNECT},
       {"openOneDriveFolder", IDS_SETTINGS_OPEN_ONE_DRIVE_FOLDER},

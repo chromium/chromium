@@ -1135,6 +1135,9 @@
   <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECTED" desc="Label prompting, in the Files Settings subpage, the user to add a new account for OneDrive">
     Add your Microsoft account
   </message>
+  <message name="IDS_OS_SETTINGS_ONE_DRIVE_LOADING" desc="Label indicating that the user's connection status is still being queried.">
+    Loading...
+  </message>
   <message name="IDS_SETTINGS_ONE_DRIVE_CONNECT" desc="Action to connect OneDrive in Settings: Files: OneDrive.">
     Add
   </message>

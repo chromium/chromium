@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {FilesSettingsCardElement, SmbBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import {FilesSettingsCardElement, OneDriveConnectionState, SmbBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {createRouterForTesting, CrLinkRowElement, CrSettingsPrefs, OneDriveBrowserProxy, Route, Router, routes, settingMojom, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -234,6 +234,23 @@ suite('<files-settings-card>', () => {
               '#oneDriveRow');
       assert(oneDriveRow);
       assertEquals(`Signed in as ${email}`, oneDriveRow.subLabel);
+    });
+
+    test('OneDrive row shows loading state', async () => {
+      const email = 'email@gmail.com';
+      setupBrowserProxy({email});
+      await createFilesSettingsCard();
+
+      const oneDriveRow =
+          filesSettingsCard.shadowRoot!.querySelector<CrLinkRowElement>(
+              '#oneDriveRow');
+      assert(oneDriveRow);
+
+      // Change connection status to "LOADING".
+      filesSettingsCard.updateOneDriveConnectionStateForTesting(
+          OneDriveConnectionState.LOADING);
+      flush();
+      assertEquals('Loading…', oneDriveRow.subLabel);
     });
 
     test('OneDrive row shows email address on OneDrive mount', async () => {

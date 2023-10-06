@@ -85,11 +85,11 @@ suite('<one-drive-subpage>', function() {
     const openOneDriveFolderButton =
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#openOneDriveFolder')!;
-    // Change connection statue to "LOADING".
+    // Change connection status to "LOADING".
     oneDrivePage.updateConnectionStateForTesting(
         OneDriveConnectionState.LOADING);
     flush();
-    assertEquals('', signedInAsLabelElement.innerText);
+    assertEquals('Loading…', signedInAsLabelElement.innerText);
     assertEquals('Add', connectDisconnectButton.textContent!.trim());
     assertTrue(connectDisconnectButton.hasAttribute('disabled'));
     assertFalse(openOneDriveFolderButton.checkVisibility());

@@ -22,6 +22,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {assertExhaustive} from '../assert_extras.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -129,7 +130,7 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
   private isBulkPinningEnabled_: boolean;
   private isRevampWayfindingEnabled_: boolean;
   private oneDriveBrowserProxy_: OneDriveBrowserProxy|undefined;
-  private oneDriveConnectionState_: string;
+  private oneDriveConnectionState_: OneDriveConnectionState;
   private oneDriveEmailAddress_: string|null;
   private smbBrowserProxy_: SmbBrowserProxy;
   private shouldShowAddSmbButton_: boolean;
@@ -191,6 +192,11 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
     this.attemptDeepLink();
   }
 
+  updateOneDriveConnectionStateForTesting(oneDriveConnectionState:
+                                              OneDriveConnectionState): void {
+    this.oneDriveConnectionState_ = oneDriveConnectionState;
+  }
+
   private updateDriveDisabled_(): void {
     const disabled = this.getPref('gdata.disabled').value;
     this.driveDisabled_ = disabled;
@@ -219,8 +225,9 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
       case OneDriveConnectionState.DISCONNECTED:
         return this.i18n('oneDriveDisconnected');
       case OneDriveConnectionState.LOADING:
+        return this.i18n('oneDriveLoading');
       default:
-        return '';
+        assertExhaustive(this.oneDriveConnectionState_);
     }
   }
 
