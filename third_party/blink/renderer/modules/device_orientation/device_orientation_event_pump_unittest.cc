@@ -113,7 +113,7 @@ class DeviceOrientationEventPumpTest : public testing::Test {
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>();
 
-    mojo::PendingRemote<device::mojom::blink::SensorProvider> sensor_provider;
+    mojo::PendingRemote<mojom::blink::WebSensorProvider> sensor_provider;
     sensor_provider_.Bind(ToCrossVariantMojoType(
         sensor_provider.InitWithNewPipeAndPassReceiver()));
     auto* orientation_pump = MakeGarbageCollected<DeviceOrientationEventPump>(
@@ -580,7 +580,7 @@ class DeviceAbsoluteOrientationEventPumpTest : public testing::Test {
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>();
 
-    mojo::PendingRemote<device::mojom::blink::SensorProvider> sensor_provider;
+    mojo::PendingRemote<mojom::blink::WebSensorProvider> sensor_provider;
     sensor_provider_.Bind(ToCrossVariantMojoType(
         sensor_provider.InitWithNewPipeAndPassReceiver()));
     auto* absolute_orientation_pump =

@@ -68,13 +68,26 @@ The `//services` side also includes a few other directories:
     *   [SensorProvider](/services/device/public/mojom/sensor_provider.mojom) is
         a “factory-like” interface that provides data about the sensors present
         on the device and their capabilities (reporting mode, maximum sampling
-        frequency), and allows users to request a specific sensor.
+        frequency), and allows users to request a specific sensor. Note that
+        Blink calls go through
+        [WebSensorProvider](/third_party/blink/public/mojom/sensor/web_sensor_provider.mojom)
+        first.
     *   [Sensor](/services/device/public/mojom/sensor.mojom) is an interface
         wrapping a concrete device sensor.
     *   [SensorClient](/services/device/public/mojom/sensor.mojom) is
         implemented by Blink (and other consumers) to be notified about errors
         occurred on platform side and about sensor reading updates for sensors
         with ‘onchange’ reporting mode.
+
+The Blink implementation also contains the following directories:
+
+*   `third_party/blink/public/mojom/sensor` contains the Mojo interfaces that
+    are exposed to Blink users.
+    *   [WebSensorProvider](/third_party/blink/public/mojom/sensor/web_sensor_provider.mojom)
+        provides an API that is a subset of what `SensorProvider` exposes. This
+        allows the latter to offer privileged methods that should not be
+        visible or accessible by Blink. The translation between the two Mojo
+        interfaces happens in `//content`.
 
 Actual sensor data is not passed to consumers (such as Blink) via Mojo
 calls \- a shared memory buffer is used instead, thus we avoid filling up the

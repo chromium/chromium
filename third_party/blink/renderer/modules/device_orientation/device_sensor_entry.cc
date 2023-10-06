@@ -7,6 +7,8 @@
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer_reader.h"
+#include "services/device/public/mojom/sensor_provider.mojom-blink.h"
+#include "third_party/blink/public/mojom/sensor/web_sensor_provider.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_sensor_event_pump.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -25,7 +27,7 @@ DeviceSensorEntry::DeviceSensorEntry(DeviceSensorEventPump* event_pump,
 DeviceSensorEntry::~DeviceSensorEntry() = default;
 
 void DeviceSensorEntry::Start(
-    device::mojom::blink::SensorProvider* sensor_provider) {
+    mojom::blink::WebSensorProvider* sensor_provider) {
   // If sensor remote is not bound, reset to |kNotInitialized| state (in case
   // we're in some other state), unless we're currently being initialized (which
   // is indicated by either |kInitializing| or |kShouldSuspend| state).

@@ -94,7 +94,7 @@ void SensorProviderProxy::RemoveSensorProxy(SensorProxy* proxy) {
 
 void SensorProviderProxy::GetSensor(
     device::mojom::blink::SensorType type,
-    device::mojom::blink::SensorProviderProxy::GetSensorCallback callback) {
+    mojom::blink::WebSensorProviderProxy::GetSensorCallback callback) {
   InitializeIfNeeded();
   sensor_provider_->GetSensor(type, std::move(callback));
 }

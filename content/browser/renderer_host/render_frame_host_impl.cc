@@ -11932,7 +11932,7 @@ void RenderFrameHostImpl::GetSpeechSynthesis(
 }
 
 void RenderFrameHostImpl::GetSensorProvider(
-    mojo::PendingReceiver<device::mojom::SensorProvider> receiver) {
+    mojo::PendingReceiver<blink::mojom::WebSensorProvider> receiver) {
   FrameSensorProviderProxy::GetOrCreateForCurrentDocument(this)->Bind(
       std::move(receiver));
 }

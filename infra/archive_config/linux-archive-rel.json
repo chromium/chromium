@@ -123,7 +123,8 @@
                 "gen/services/device/public/mojom/battery_monitor.mojom.m.js",
                 "gen/services/device/public/mojom/battery_status.mojom.m.js",
                 "gen/services/device/public/mojom/pressure_manager.mojom.m.js",
-                "gen/services/device/public/mojom/pressure_update.mojom.m.js"
+                "gen/services/device/public/mojom/pressure_update.mojom.m.js",
+                "gen/third_party/blink/public/mojom/sensor/web_sensor_provider.mojom.m.js"
             ],
             "file_globs": [
                 "gen/gpu/ipc/common/mailbox*.mojom.m.js",

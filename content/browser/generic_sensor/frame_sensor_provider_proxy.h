@@ -12,15 +12,15 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/sensor.mojom-shared.h"
-#include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
+#include "third_party/blink/public/mojom/sensor/web_sensor_provider.mojom.h"
 
 namespace content {
 
 // Per-RenderFrameHost SensorProvider implementation. It does permission checks
 // before forwarding GetSensor() calls in WebContentsSensorProviderProxy.
 class FrameSensorProviderProxy final
-    : public device::mojom::SensorProvider,
+    : public blink::mojom::WebSensorProvider,
       public WebContentsSensorProviderProxy::Observer,
       public DocumentUserData<FrameSensorProviderProxy> {
  public:
@@ -29,7 +29,7 @@ class FrameSensorProviderProxy final
 
   ~FrameSensorProviderProxy() override;
 
-  void Bind(mojo::PendingReceiver<device::mojom::SensorProvider> receiver);
+  void Bind(mojo::PendingReceiver<blink::mojom::WebSensorProvider> receiver);
 
   // WebContentsSensorProviderProxy::Observer overrides.
   void OnMojoConnectionError() override;
@@ -37,7 +37,7 @@ class FrameSensorProviderProxy final
  private:
   explicit FrameSensorProviderProxy(RenderFrameHost* render_frame_host);
 
-  // device::mojom::SensorProvider overrides.
+  // blink::mojom::WebSensorProvider overrides.
   void GetSensor(device::mojom::SensorType type,
                  GetSensorCallback callback) override;
 
@@ -45,7 +45,7 @@ class FrameSensorProviderProxy final
                                     GetSensorCallback callback,
                                     blink::mojom::PermissionStatus);
 
-  mojo::ReceiverSet<device::mojom::SensorProvider> receiver_set_;
+  mojo::ReceiverSet<blink::mojom::WebSensorProvider> receiver_set_;
 
   base::ScopedObservation<WebContentsSensorProviderProxy,
                           WebContentsSensorProviderProxy::Observer>

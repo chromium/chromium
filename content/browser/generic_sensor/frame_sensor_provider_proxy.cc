@@ -56,7 +56,7 @@ FrameSensorProviderProxy::FrameSensorProviderProxy(
 FrameSensorProviderProxy::~FrameSensorProviderProxy() = default;
 
 void FrameSensorProviderProxy::Bind(
-    mojo::PendingReceiver<device::mojom::SensorProvider> receiver) {
+    mojo::PendingReceiver<blink::mojom::WebSensorProvider> receiver) {
   receiver_set_.Add(this, std::move(receiver));
 }
 

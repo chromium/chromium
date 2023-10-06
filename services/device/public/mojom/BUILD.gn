@@ -134,6 +134,7 @@ mojom("generic_sensor") {
 
   visibility_blink = [
     ":mojom_blink",
+    "//third_party/blink/public/mojom:mojom_platform_blink",
     "//third_party/blink/renderer/platform:blink_platform_public_deps",
   ]
 

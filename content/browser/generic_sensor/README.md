@@ -7,7 +7,9 @@ From a spec perspective, the code here implements the following steps together w
 * [Check sensor policy-controlled features](https://w3c.github.io/sensors/#check-sensor-policy-controlled-features).
 * [Request sensor access](https://w3c.github.io/sensors/#request-sensor-access).
 
-`//content/browser/generic_sensor` implements permission checks invoked by the Blink code, and acts as a bridge between Blink and `//services/device/generic_sensor`. When code in Blink invokes `SensorProvider::GetSensor()`, it reaches `FrameSensorProviderProxy::GetSensor()` in `//content/browser/generic_sensor` rather than `SensorProviderImpl::GetSensor()` in `//services/device/generic_sensor`. If all permission checks pass, `FrameSensorProviderProxy` will forward the request from Blink to `WebContentsSensorProviderProxy::GetSensor()`, which ultimately invokes `SensorProviderImpl::GetSensor()` via Mojo.
+`//content/browser/generic_sensor` implements permission checks invoked by the Blink code, and acts as a bridge between Blink and `//services/device/generic_sensor`. It also translates calls to the [`WebSensorProvider`](/third_party/blink/public/mojom/sensor/web_sensor_provider.mojom) Mojo interface to [`SensorProvider`](/services/device/public/mojom/sensor_provider.mojom) ones.
+
+When code in Blink invokes `WebSensorProvider::GetSensor()`, it reaches `FrameSensorProviderProxy::GetSensor()` in `//content/browser/generic_sensor` rather than `SensorProviderImpl::GetSensor()` in `//services/device/generic_sensor`. If all permission checks pass, `FrameSensorProviderProxy` will forward the request from Blink to `WebContentsSensorProviderProxy::GetSensor()`, which ultimately invokes `SensorProviderImpl::GetSensor()` via Mojo.
 
 `WebContentsSensorProviderProxy` itself does not implement any Mojo interface, but it contains the required `mojo::Remote`s that invoke sensor operations in `SensorProviderImpl`.
 

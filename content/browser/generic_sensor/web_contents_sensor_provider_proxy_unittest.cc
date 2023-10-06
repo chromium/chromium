@@ -16,8 +16,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/cpp/test/fake_sensor_and_provider.h"
 #include "services/device/public/mojom/sensor.mojom.h"
-#include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/sensor/web_sensor_provider.mojom.h"
 
 namespace content {
 
@@ -127,7 +127,7 @@ TEST_F(WebContentsSensorProviderProxyTest,
           }));
   set_fake_sensor_provider(std::move(intercepting_fake_sensor_provider));
 
-  mojo::Remote<device::mojom::SensorProvider> provider;
+  mojo::Remote<blink::mojom::WebSensorProvider> provider;
   contents()->GetPrimaryMainFrame()->GetSensorProvider(
       provider.BindNewPipeAndPassReceiver());
 
