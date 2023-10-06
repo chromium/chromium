@@ -362,6 +362,11 @@ void HandleSettingsUpdatedMetric(const T& device) {
 void RecordCurrentButtonRemappingAction(
     const mojom::ButtonRemappingPtr& button_remapping,
     const char* peripheral_kind) {
+  if (!button_remapping->remapping_action) {
+    // TOOD(dpad): Add metric for recording default button remapping.
+    return;
+  }
+
   const std::string metric_name_prefix = base::StrCat(
       {"ChromeOS.Settings.Device.", peripheral_kind, ".ButtonRemapping."});
   switch (button_remapping->remapping_action->which()) {
