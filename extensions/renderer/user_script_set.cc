@@ -255,8 +255,7 @@ blink::WebString UserScriptSet::GetJsSource(const UserScript::Content& file,
         base::StrCat({kUserScriptHead, script_content, kUserScriptTail});
     source = blink::WebString::FromUTF8(content);
   } else {
-    source = blink::WebString::FromUTF8(script_content.data(),
-                                        script_content.length());
+    source = blink::WebString::FromUTF8(script_content);
   }
   script_sources_[url] = source;
   return source;
@@ -270,9 +269,7 @@ blink::WebString UserScriptSet::GetCssSource(const UserScript::Content& file) {
 
   base::StringPiece script_content = file.GetContent();
   return script_sources_
-      .insert(std::make_pair(
-          url, blink::WebString::FromUTF8(script_content.data(),
-                                          script_content.length())))
+      .insert(std::make_pair(url, blink::WebString::FromUTF8(script_content)))
       .first->second;
 }
 

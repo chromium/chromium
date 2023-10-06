@@ -55,10 +55,10 @@ WebString::WebString(WebString&&) = default;
 WebString& WebString::operator=(const WebString&) = default;
 WebString& WebString::operator=(WebString&&) = default;
 
-WebString::WebString(const WebUChar* data, size_t len)
+WebString::WebString(std::u16string_view s)
     : impl_(StringImpl::Create8BitIfPossible(
-          data,
-          base::checked_cast<wtf_size_t>(len))) {}
+          s.data(),
+          base::checked_cast<wtf_size_t>(s.length()))) {}
 
 void WebString::Reset() {
   impl_ = nullptr;
@@ -89,30 +89,24 @@ WebString WebString::Substring(size_t pos, size_t len) const {
                                  base::checked_cast<wtf_size_t>(len)));
 }
 
-WebString WebString::FromUTF8(const char* data, size_t length) {
-  return String::FromUTF8(data, length);
+WebString WebString::FromUTF8(std::string_view s) {
+  return String::FromUTF8(s.data(), s.length());
 }
 
-WebString WebString::FromUTF16(const char16_t* s) {
-  return WebString(s, std::char_traits<char16_t>::length(s));
-}
-
-WebString WebString::FromUTF16(const std::u16string& s) {
-  return WebString(s.data(), s.length());
-}
-
-WebString WebString::FromUTF16(const absl::optional<std::u16string>& s) {
-  if (!s.has_value())
+WebString WebString::FromUTF16(absl::optional<std::u16string_view> s) {
+  if (!s.has_value()) {
     return WebString();
-  return WebString(s->data(), s->length());
+  }
+  return WebString(*s);
 }
 
 std::string WebString::Latin1() const {
   return String(impl_).Latin1();
 }
 
-WebString WebString::FromLatin1(const WebLChar* data, size_t length) {
-  return String(data, base::checked_cast<wtf_size_t>(length));
+WebString WebString::FromLatin1(std::string_view s) {
+  return String(reinterpret_cast<const WebLChar*>(s.data()),
+                base::checked_cast<wtf_size_t>(s.length()));
 }
 
 std::string WebString::Ascii() const {
@@ -134,7 +128,7 @@ bool WebString::ContainsOnlyASCII() const {
   return String(impl_).ContainsOnlyASCIIOrEmpty();
 }
 
-WebString WebString::FromASCII(const std::string& s) {
+WebString WebString::FromASCII(std::string_view s) {
   DCHECK(base::IsStringASCII(s));
   return FromLatin1(s);
 }
@@ -143,8 +137,9 @@ bool WebString::Equals(const WebString& s) const {
   return Equal(impl_.get(), s.impl_.get());
 }
 
-bool WebString::Equals(const char* characters, size_t length) const {
-  return Equal(impl_.get(), characters, base::checked_cast<wtf_size_t>(length));
+bool WebString::Equals(std::string_view characters) const {
+  return Equal(impl_.get(), characters.data(),
+               base::checked_cast<wtf_size_t>(characters.length()));
 }
 
 bool WebString::operator<(const WebString& other) const {

@@ -346,10 +346,8 @@ class PdfViewWebPluginWithoutInitializeTest
   static void AddToPluginParams(base::StringPiece name,
                                 base::StringPiece value,
                                 blink::WebPluginParams& params) {
-    params.attribute_names.push_back(
-        blink::WebString::FromUTF8(name.data(), name.size()));
-    params.attribute_values.push_back(
-        blink::WebString::FromUTF8(value.data(), value.size()));
+    params.attribute_names.push_back(blink::WebString::FromUTF8(name));
+    params.attribute_values.push_back(blink::WebString::FromUTF8(value));
   }
 
   void SetUpPlugin(base::StringPiece document_url,

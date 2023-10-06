@@ -12,17 +12,16 @@ namespace blink {
 TEST(WebStringTest, UTF8ConversionRoundTrip) {
   // Valid characters.
   for (WebUChar uchar = 0; uchar <= 0xD7FF; ++uchar) {
-    WebString utf16_string(&uchar, 1);
+    WebString utf16_string(std::u16string_view(&uchar, 1));
     std::string utf8_string(utf16_string.Utf8());
-    WebString utf16_new_string =
-        WebString::FromUTF8(utf8_string.data(), utf8_string.length());
+    WebString utf16_new_string = WebString::FromUTF8(utf8_string);
     EXPECT_FALSE(utf16_new_string.IsNull());
     EXPECT_TRUE(utf16_string == utf16_new_string);
   }
 
   // Unpaired surrogates.
   for (WebUChar uchar = 0xD800; uchar <= 0xDFFF; ++uchar) {
-    WebString utf16_string(&uchar, 1);
+    WebString utf16_string(std::u16string_view(&uchar, 1));
 
     // Conversion with Strict mode results in an empty string.
     std::string utf8_string(
@@ -32,16 +31,14 @@ TEST(WebStringTest, UTF8ConversionRoundTrip) {
     // Unpaired surrogates can't be converted back in Lenient mode.
     utf8_string = utf16_string.Utf8(WebString::UTF8ConversionMode::kLenient);
     EXPECT_FALSE(utf8_string.empty());
-    WebString utf16_new_string =
-        WebString::FromUTF8(utf8_string.data(), utf8_string.length());
+    WebString utf16_new_string = WebString::FromUTF8(utf8_string);
     EXPECT_TRUE(utf16_new_string.IsNull());
 
     // Round-trip works with StrictReplacingErrorsWithFFFD mode.
     utf8_string = utf16_string.Utf8(
         WebString::UTF8ConversionMode::kStrictReplacingErrorsWithFFFD);
     EXPECT_FALSE(utf8_string.empty());
-    utf16_new_string =
-        WebString::FromUTF8(utf8_string.data(), utf8_string.length());
+    utf16_new_string = WebString::FromUTF8(utf8_string);
     EXPECT_FALSE(utf16_new_string.IsNull());
     EXPECT_FALSE(utf16_string == utf16_new_string);
   }

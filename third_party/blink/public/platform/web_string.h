@@ -34,6 +34,7 @@
 #include <cstring>
 #include <limits>
 #include <string>
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/latin1_string_conversions.h"
@@ -53,12 +54,10 @@ namespace blink {
 // Use either one of static methods to convert ASCII, Latin1, UTF-8 or
 // UTF-16 string into WebString:
 //
-// * WebString::FromASCII(const std::string& ascii)
-// * WebString::FromLatin1(const std::string& latin1)
-// * WebString::FromUTF8(const std::string& utf8)
-// * WebString::FromUTF16(const char16_t* utf16)
-// * WebString::FromUTF16(const std::u16string& utf16)
-// * WebString::FromUTF16(const absl::optional<std::u16string>& utf16)
+// * WebString::FromASCII(std::string_view ascii)
+// * WebString::FromLatin1(std::string_view latin1)
+// * WebString::FromUTF8(std::string_view utf8)
+// * WebString::FromUTF16(absl::optional<std::u16string_view> utf16)
 //
 // Similarly, use either of following methods to convert WebString to
 // ASCII, Latin1, UTF-8 or UTF-16:
@@ -98,7 +97,7 @@ class BLINK_PLATFORM_EXPORT WebString {
 
   ~WebString();
   WebString();
-  WebString(const WebUChar* data, size_t len);
+  explicit WebString(std::u16string_view s);
 
   WebString(const WebString&);
   WebString(WebString&&);
@@ -109,9 +108,10 @@ class BLINK_PLATFORM_EXPORT WebString {
   void Reset();
 
   bool Equals(const WebString&) const;
-  bool Equals(const char* characters, size_t len) const;
+  bool Equals(std::string_view characters) const;
   bool Equals(const char* characters) const {
-    return Equals(characters, characters ? std::strlen(characters) : 0);
+    return Equals(
+        characters ? std::string_view(characters) : std::string_view());
   }
 
   size_t length() const;
@@ -124,18 +124,13 @@ class BLINK_PLATFORM_EXPORT WebString {
   WebString Substring(size_t pos,
                       size_t len = std::numeric_limits<size_t>::max()) const;
 
-  static WebString FromUTF8(const char* data, size_t length);
-  static WebString FromUTF8(const std::string& s) {
-    return FromUTF8(s.data(), s.length());
-  }
+  static WebString FromUTF8(std::string_view s);
 
   std::u16string Utf16() const {
     return base::Latin1OrUTF16ToUTF16(length(), Data8(), Data16());
   }
 
-  static WebString FromUTF16(const char16_t*);
-  static WebString FromUTF16(const std::u16string&);
-  static WebString FromUTF16(const absl::optional<std::u16string>&);
+  static WebString FromUTF16(absl::optional<std::u16string_view>);
 
   static absl::optional<std::u16string> ToOptionalString16(const WebString& s) {
     return s.IsNull() ? absl::nullopt : absl::make_optional(s.Utf16());
@@ -143,11 +138,7 @@ class BLINK_PLATFORM_EXPORT WebString {
 
   std::string Latin1() const;
 
-  static WebString FromLatin1(const WebLChar* data, size_t length);
-
-  static WebString FromLatin1(const std::string& s) {
-    return FromLatin1(reinterpret_cast<const WebLChar*>(s.data()), s.length());
-  }
+  static WebString FromLatin1(std::string_view s);
 
   // This asserts if the string contains non-ascii characters.
   // Use this rather than calling base::UTF16ToASCII() which always incurs
@@ -158,14 +149,15 @@ class BLINK_PLATFORM_EXPORT WebString {
   bool ContainsOnlyASCII() const;
 
   // Does same as FromLatin1 but asserts if the given string has non-ascii char.
-  static WebString FromASCII(const std::string&);
+  static WebString FromASCII(std::string_view);
 
   template <int N>
-  WebString(const char (&data)[N]) : WebString(FromUTF8(data, N - 1)) {}
+  WebString(const char (&data)[N])
+      : WebString(FromUTF8(std::string_view(data, N - 1))) {}
 
   template <int N>
   WebString& operator=(const char (&data)[N]) {
-    *this = FromUTF8(data, N - 1);
+    *this = FromUTF8(std::string_view(data, N - 1));
     return *this;
   }
 

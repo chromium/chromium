@@ -556,8 +556,8 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
   }
 
   void OnPrintPagesInFrame(base::StringPiece frame_name) {
-    blink::WebFrame* frame = GetMainFrame()->FindFrameByName(
-        blink::WebString::FromUTF8(frame_name.data(), frame_name.size()));
+    blink::WebFrame* frame =
+        GetMainFrame()->FindFrameByName(blink::WebString::FromUTF8(frame_name));
     ASSERT_TRUE(frame);
     content::RenderFrame* render_frame =
         content::RenderFrame::FromWebFrame(frame->ToWebLocalFrame());

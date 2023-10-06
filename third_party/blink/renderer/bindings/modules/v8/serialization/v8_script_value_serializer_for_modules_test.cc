@@ -196,9 +196,8 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripRTCCertificate) {
 
   // Make a certificate with the existing key above.
   rtc::scoped_refptr<rtc::RTCCertificate> web_certificate =
-      certificate_generator->FromPEM(
-          WebString::FromUTF8(kEcdsaPrivateKey, sizeof(kEcdsaPrivateKey)),
-          WebString::FromUTF8(kEcdsaCertificate, sizeof(kEcdsaCertificate)));
+      certificate_generator->FromPEM(WebString::FromUTF8(kEcdsaPrivateKey),
+                                     WebString::FromUTF8(kEcdsaCertificate));
   ASSERT_TRUE(web_certificate);
   RTCCertificate* certificate =
       MakeGarbageCollected<RTCCertificate>(std::move(web_certificate));

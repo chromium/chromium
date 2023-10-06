@@ -181,7 +181,7 @@ constexpr base::StringPiece kValue = "value";
 template <const base::StringPiece& string>
 const WebString& GetWebString() {
   static const base::NoDestructor<WebString> web_string(
-      WebString::FromUTF8(string.data(), string.length()));
+      WebString::FromUTF8(string));
   return *web_string;
 }
 
@@ -1720,8 +1720,7 @@ std::vector<WebElement> GetWebElementsFromIdList(const WebDocument& document,
   for (const auto& id : base::SplitStringPiece(
            id_list_utf16, base::kWhitespaceUTF16, base::KEEP_WHITESPACE,
            base::SPLIT_WANT_NONEMPTY)) {
-    web_elements.push_back(
-        document.GetElementById(WebString(id.data(), id.length())));
+    web_elements.push_back(document.GetElementById(WebString(id)));
   }
   return web_elements;
 }
@@ -2894,9 +2893,7 @@ void MaybeEmitAriaLabelledByDevtoolsIssue(const WebElement& element,
                                  base::KEEP_WHITESPACE,
                                  base::SPLIT_WANT_NONEMPTY),
           [&](const auto& id) {
-            return element.GetDocument()
-                .GetElementById(WebString(id.data(), id.length()))
-                .IsNull();
+            return element.GetDocument().GetElementById(WebString(id)).IsNull();
           })) {
     element.GetDocument().GetFrame()->AddGenericIssue(
         blink::mojom::GenericIssueErrorType::kFormAriaLabelledByToNonExistingId,

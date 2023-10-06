@@ -354,8 +354,8 @@ void PasswordGenerationAgentTest::LoadHTMLWithUserGesture(const char* html) {
 WebElement PasswordGenerationAgentTest::GetElementById(
     base::StringPiece element_id) {
   WebDocument document = GetMainFrame()->GetDocument();
-  WebElement element = document.GetElementById(
-      blink::WebString::FromUTF8(element_id.data(), element_id.size()));
+  WebElement element =
+      document.GetElementById(blink::WebString::FromUTF8(element_id));
   CHECK(!element.IsNull());
   return element;
 }
@@ -435,8 +435,8 @@ void PasswordGenerationAgentTest::ExpectAttribute(
     const WebElement& element,
     base::StringPiece attribute,
     base::StringPiece expected_value) {
-  WebString actual_value = element.GetAttribute(
-      blink::WebString::FromUTF8(attribute.data(), attribute.size()));
+  WebString actual_value =
+      element.GetAttribute(blink::WebString::FromUTF8(attribute));
   ASSERT_FALSE(actual_value.IsNull());
   EXPECT_EQ(expected_value, actual_value.Ascii());
 }

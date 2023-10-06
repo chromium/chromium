@@ -48,7 +48,7 @@ constexpr base::StringPiece kAutocomplete = "autocomplete";
 template <const base::StringPiece& string>
 const WebString& GetWebString() {
   static const base::NoDestructor<WebString> web_string(
-      WebString::FromUTF8(string.data(), string.length()));
+      WebString::FromUTF8(string));
   return *web_string;
 }
 
@@ -77,9 +77,7 @@ void MaybeAppendAriaLabelledByDevtoolsIssue(
                                  base::kWhitespaceUTF16, base::KEEP_WHITESPACE,
                                  base::SPLIT_WANT_NONEMPTY),
           [&](const auto& id) {
-            return element.GetDocument()
-                .GetElementById(WebString(id.data(), id.length()))
-                .IsNull();
+            return element.GetDocument().GetElementById(WebString(id)).IsNull();
           })) {
     form_issues.emplace_back(
         GenericIssueErrorType::kFormAriaLabelledByToNonExistingId,

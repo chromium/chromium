@@ -103,9 +103,9 @@ bool CanonicalizeCssSelectors(v8::Local<v8::Context> context,
     v8::String::Utf8Value selector(isolate, val.As<v8::String>());
     // Note: See the TODO in css_natives_handler.cc.
     std::string parsed =
-        blink::CanonicalizeSelector(
-            blink::WebString::FromUTF8(*selector, selector.length()),
-            blink::kWebSelectorTypeCompound)
+        blink::CanonicalizeSelector(blink::WebString::FromUTF8(std::string_view(
+                                        *selector, selector.length())),
+                                    blink::kWebSelectorTypeCompound)
             .Utf8();
     if (parsed.empty()) {
       *error =
