@@ -314,6 +314,9 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
             handler.setResultFor('getClusters', Promise.resolve({clusters}));
             handler.setResultFor(
                 'getCartForCluster', Promise.resolve({cart: null}));
+            handler.setResultFor(
+                'getDiscountsForCluster',
+                Promise.resolve({discounts: new Map<Url, Discount[]>()}));
             const moduleElement = await historyClustersDescriptor.initialize(
                                       0) as HistoryClustersModuleElement;
             await handler.whenCalled('getClusters');
