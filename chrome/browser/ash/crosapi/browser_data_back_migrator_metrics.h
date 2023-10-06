@@ -17,6 +17,8 @@ constexpr char kNumberOfLacrosSecondaryProfilesUMA[] =
     "Ash.BrowserDataBackMigrator.NumberOfLacrosSecondaryProfiles";
 constexpr char kElapsedTimeBetweenDataMigrations[] =
     "Ash.BrowserDataBackMigrator.ElapsedTimeBetweenDataMigrations";
+constexpr char kIsBackwardMigrationPrecededByForwardMigration[] =
+    "Ash.BrowserDataBackMigrator.IsPrecededByForwardMigration";
 
 constexpr char kPreMigrationCleanUpTimeUMA[] =
     "Ash.BrowserDataBackMigrator.ElapsedTimePreMigrationCleanUp";
@@ -53,6 +55,13 @@ void RecordNumberOfLacrosSecondaryProfiles(
 // Records `kElapsedTimeBetweenDataMigrations` with the amount of time between
 // successfully completing forward migration and starting backward migration.
 void RecordBackwardMigrationTimeDelta(
+    absl::optional<base::Time> forward_migration_completion_time);
+
+// Records `kIsBackwardMigrationPrecededByForwardMigration` based on whether
+// `forward_migration_completion_time` has a value. This time is only recorded
+// if forward migration is actually completed, as opposed to it being marked as
+// completed without doing anything.
+void RecordBackwardMigrationPrecededByForwardMigration(
     absl::optional<base::Time> forward_migration_completion_time);
 
 // Converts `TaskStatus` to string.

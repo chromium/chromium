@@ -111,6 +111,9 @@ void BrowserDataBackMigrator::Migrate(
           local_state_, user_id_hash_);
   browser_data_back_migrator_metrics::RecordBackwardMigrationTimeDelta(
       forward_migration_completion_time);
+  browser_data_back_migrator_metrics::
+      RecordBackwardMigrationPrecededByForwardMigration(
+          forward_migration_completion_time);
   crosapi::browser_util::ClearProfileMigrationCompletionTimeForUser(
       local_state_, user_id_hash_);
 

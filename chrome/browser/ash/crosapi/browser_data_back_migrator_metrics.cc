@@ -93,6 +93,17 @@ void RecordBackwardMigrationTimeDelta(
       time_delta, base::Minutes(1), base::Days(24), 100);
 }
 
+void RecordBackwardMigrationPrecededByForwardMigration(
+    absl::optional<base::Time> forward_migration_completion_time) {
+  bool is_backward_migration_preceded_by_forward_migration =
+      forward_migration_completion_time.has_value();
+
+  base::UmaHistogramBoolean(
+      browser_data_back_migrator_metrics::
+          kIsBackwardMigrationPrecededByForwardMigration,
+      is_backward_migration_preceded_by_forward_migration);
+}
+
 std::string TaskStatusToString(
     BrowserDataBackMigrator::TaskStatus task_status) {
   switch (task_status) {

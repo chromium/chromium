@@ -201,4 +201,37 @@ TEST(BrowserDataBackMigratorMetricsTest, RecordBackwardMigrationTimeDelta) {
       browser_data_back_migrator_metrics::kElapsedTimeBetweenDataMigrations, 1);
 }
 
+TEST(BrowserDataBackMigratorMetricsTest,
+     RecordBackwardMigrationNotPrecededByForwardMigration) {
+  base::HistogramTester histogram_tester;
+
+  browser_data_back_migrator_metrics::
+      RecordBackwardMigrationPrecededByForwardMigration(absl::nullopt);
+  histogram_tester.ExpectBucketCount(
+      browser_data_back_migrator_metrics::
+          kIsBackwardMigrationPrecededByForwardMigration,
+      false, 1);
+  histogram_tester.ExpectTotalCount(
+      browser_data_back_migrator_metrics::
+          kIsBackwardMigrationPrecededByForwardMigration,
+      1);
+}
+
+TEST(BrowserDataBackMigratorMetricsTest,
+     RecordBackwardMigrationPrecededByForwardMigration) {
+  base::HistogramTester histogram_tester;
+
+  browser_data_back_migrator_metrics::
+      RecordBackwardMigrationPrecededByForwardMigration(
+          base::Time::UnixEpoch());
+  histogram_tester.ExpectBucketCount(
+      browser_data_back_migrator_metrics::
+          kIsBackwardMigrationPrecededByForwardMigration,
+      true, 1);
+  histogram_tester.ExpectTotalCount(
+      browser_data_back_migrator_metrics::
+          kIsBackwardMigrationPrecededByForwardMigration,
+      1);
+}
+
 }  // namespace ash

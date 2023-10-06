@@ -801,6 +801,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.BrowserDataBackMigrator.IsPrecededByForwardMigration"
+    enum="Boolean" expires_after="2024-10-01">
+  <owner>janagrill@google.com</owner>
+  <owner>artyomchen@google.com</owner>
+  <summary>
+    Whether forward migration was performed before backward migration. True if
+    the user was first on Ash, then moved to Lacros (forward migration), and
+    then back to Ash (backward migration). False if the user started with Lacros
+    (no forward migration) and then moved to Ash (backward migration). Recorded
+    every time backward migration is started, if forward migration was performed
+    prior to it.
+  </summary>
+</histogram>
+
 <histogram name="Ash.BrowserDataBackMigrator.NumberOfLacrosSecondaryProfiles"
     units="profiles" expires_after="2024-03-24">
   <owner>janagrill@google.com</owner>
