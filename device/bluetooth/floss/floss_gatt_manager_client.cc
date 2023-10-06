@@ -257,8 +257,13 @@ GattService::GattService() = default;
 GattService::GattService(const GattService&) = default;
 GattService::~GattService() = default;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+const char FlossGattManagerClient::kExportedCallbacksPath[] =
+    "/org/chromium/bluetooth/gattclient_lacros";
+#else
 const char FlossGattManagerClient::kExportedCallbacksPath[] =
     "/org/chromium/bluetooth/gattclient";
+#endif
 
 // static
 std::unique_ptr<FlossGattManagerClient> FlossGattManagerClient::Create() {
