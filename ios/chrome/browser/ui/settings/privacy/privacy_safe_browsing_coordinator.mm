@@ -100,7 +100,13 @@
 #pragma mark - PrivacySafeBrowsingNavigationCommands
 
 - (void)showSafeBrowsingEnhancedProtection {
-  DCHECK(!self.safeBrowsingEnhancedProtectionCoordinator);
+  // Asynchronized UI sequences can cause coordinators to exist when
+  // re-initializing a new coordinator. To ensure that the object is reset
+  // properly, we forcefully stop the coordinator so that we can properly
+  // initialize a new one.
+  if (self.safeBrowsingEnhancedProtectionCoordinator) {
+    [self stopSafeBrowsingEnhancedProtectionCoordinator];
+  }
   self.safeBrowsingEnhancedProtectionCoordinator =
       [[SafeBrowsingEnhancedProtectionCoordinator alloc]
           initWithBaseNavigationController:self.baseNavigationController
@@ -110,7 +116,13 @@
 }
 
 - (void)showSafeBrowsingStandardProtection {
-  DCHECK(!self.safeBrowsingStandardProtectionCoordinator);
+  // Asynchronized UI sequences can cause coordinators to exist when
+  // re-initializing a new coordinator. To ensure that the object is reset
+  // properly, we forcefully stop the coordinator so that we can properly
+  // initialize a new one.
+  if (self.safeBrowsingStandardProtectionCoordinator) {
+    [self stopSafeBrowsingStandardProtectionCoordinator];
+  }
   self.safeBrowsingStandardProtectionCoordinator =
       [[SafeBrowsingStandardProtectionCoordinator alloc]
           initWithBaseNavigationController:self.baseNavigationController
