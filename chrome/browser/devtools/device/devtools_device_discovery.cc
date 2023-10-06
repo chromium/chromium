@@ -405,6 +405,9 @@ class DevToolsDeviceDiscovery::DiscoveryRequest
                      scoped_refptr<RemoteBrowser>,
                      int result,
                      const std::string& response);
+  void ParseBrowserInfo(scoped_refptr<RemoteBrowser> browser,
+                        const std::string& version_response,
+                        bool& is_node);
 
   base::OnceCallback<void(const CompleteDevices&)> callback_;
   DevToolsDeviceDiscovery::CompleteDevices complete_devices_;
@@ -456,27 +459,13 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedDeviceInfo(
   }
 }
 
-void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedVersion(
-    scoped_refptr<AndroidDeviceManager::Device> device,
+void DevToolsDeviceDiscovery::DiscoveryRequest::ParseBrowserInfo(
     scoped_refptr<RemoteBrowser> browser,
-    int result,
-    const std::string& response) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  std::string url = kPageListRequest;
-  if (base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)) {
-    url += "?for_tab";
-  }
-  device->SendJsonRequest(
-      browser->socket(), url,
-      base::BindOnce(&DiscoveryRequest::ReceivedPages, this, device, browser));
-
-  if (result < 0) {
-    return;
-  }
+    const std::string& version_response,
+    bool& is_node) {
   // Parse version, append to package name if available,
   absl::optional<base::Value::Dict> value_dict =
-      base::JSONReader::ReadDict(response);
+      base::JSONReader::ReadDict(version_response);
   if (!value_dict) {
     return;
   }
@@ -486,6 +475,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedVersion(
         *browser_name, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (parts.size() == 2) {
       browser->version_ = parts[1];
+      is_node = parts[0] == "node.js";
     } else {
       browser->version_ = *browser_name;
     }
@@ -499,6 +489,27 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedVersion(
     browser->display_name_ =
         AndroidDeviceManager::GetBrowserName(browser->socket(), *package);
   }
+}
+
+void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedVersion(
+    scoped_refptr<AndroidDeviceManager::Device> device,
+    scoped_refptr<RemoteBrowser> browser,
+    int result,
+    const std::string& response) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  std::string url = kPageListRequest;
+  bool is_node = false;
+  if (result >= 0) {
+    ParseBrowserInfo(browser, response, is_node);
+  }
+  if (base::FeatureList::IsEnabled(::features::kDevToolsTabTarget) &&
+      !is_node) {
+    url += "?for_tab";
+  }
+  device->SendJsonRequest(
+      browser->socket(), url,
+      base::BindOnce(&DiscoveryRequest::ReceivedPages, this, device, browser));
 }
 
 void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedPages(
