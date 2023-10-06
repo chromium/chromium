@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/observer_list_types.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
@@ -29,7 +30,36 @@ namespace content {
 // stable partitioning key until cookie partitioning is fully rolled out.
 class CONTENT_EXPORT OriginTrialsControllerDelegate {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the observed trial is enabled or disabled for `origin`
+    // (under `partition_site`).
+    //
+    // NOTE: The status provided to this callback cannot be
+    // guaranteed across startups, despite the observer being scoped to
+    // persistent origin trials. Embedders that intend to use the
+    // callbacks to inform some persisted setting should check those settings
+    // against their associated trials on startup.
+    // TODO (crbug.com/1466156): Verify that the call-sites for these methods
+    // fully consider whether an active OriginTrialPolicy is disabling the
+    // associated token, trial, and/or feature. Disabling one of these after a
+    // persistent trial has previously been enabled for an origin should
+    // effectively disabled also disable the trial for that origin.
+    virtual void OnStatusChanged(const url::Origin& origin,
+                                 const std::string& partition_site,
+                                 bool enable) {}
+    // Called when all persisted tokens are removed.
+    virtual void OnPersistedTokensCleared() {}
+    // The name of the persistent origin trial whose status changes `this`
+    // is observing.
+    virtual std::string trial_name() = 0;
+  };
+
   virtual ~OriginTrialsControllerDelegate() = default;
+
+  // Observers.
+  virtual void AddObserver(Observer* observer) {}
+  virtual void RemoveObserver(Observer* observer) {}
 
   // Persist all enabled and persistable tokens in the `header_tokens`.
   //

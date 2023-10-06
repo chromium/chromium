@@ -26,6 +26,8 @@ namespace {
 using blink::mojom::OriginTrialFeature;
 
 const char kPersistentTrialName[] = "FrobulatePersistent";
+const char kPersistentThirdPartyDeprecationTrialName[] =
+    "FrobulatePersistentThirdPartyDeprecation";
 const char kNonPersistentTrialName[] = "Frobulate";
 const char kInvalidTrialName[] = "InvalidTrial";
 const char kTrialEnabledOriginA[] = "https://enabled.example.com";
@@ -125,6 +127,26 @@ const char kFrobulatePersistentInvalidOsToken[] =
     "WF0dXJlIjogIkZyb2J1bGF0ZVBlcnNpc3RlbnRJbnZhbGlkT1MiLCAiZXhwaXJ5IjogMjAwMDA"
     "wMDAwMH0=";
 
+struct statusInfo {
+  url::Origin origin;
+  std::string partition_site;
+  bool enabled;
+};
+
+inline bool operator==(const statusInfo& lhs, const statusInfo& rhs) {
+  return std::tie(lhs.origin, lhs.partition_site, lhs.enabled) ==
+         std::tie(rhs.origin, rhs.partition_site, rhs.enabled);
+}
+
+std::ostream& operator<<(std::ostream& out, const statusInfo& info) {
+  out << "{";
+  out << "origin: " << info.origin << ", ";
+  out << "partition_site: " << info.partition_site << ", ";
+  out << "enabled: " << (info.enabled ? "true" : "false");
+  out << "}";
+  return out;
+}
+
 class OpenScopedTestOriginTrialPolicy
     : public blink::ScopedTestOriginTrialPolicy {
  public:
@@ -161,6 +183,39 @@ class OpenScopedTestOriginTrialPolicy
   base::flat_set<std::string> disabled_trials_;
   base::flat_set<std::string> disabled_signatures_;
   base::flat_set<std::string> user_disabled_trials_;
+};
+
+class TestStatusObserver
+    : public content::OriginTrialsControllerDelegate::Observer {
+ public:
+  explicit TestStatusObserver(const std::string& trial_name)
+      : trial_name_(trial_name) {}
+
+  TestStatusObserver(const TestStatusObserver&) = delete;
+  TestStatusObserver& operator=(const TestStatusObserver&) = delete;
+
+  void OnStatusChanged(const url::Origin& origin,
+                       const std::string& partition_site,
+                       bool enabled) override {
+    on_status_changed_count_++;
+    last_status_change_ = {origin, partition_site, enabled};
+  }
+  void OnPersistedTokensCleared() override {
+    on_persisted_tokens_cleared_count_++;
+  }
+  std::string trial_name() override { return trial_name_; }
+
+  int on_status_changed_count() { return on_status_changed_count_; }
+  int on_persisted_tokens_cleared_count() {
+    return on_persisted_tokens_cleared_count_;
+  }
+  statusInfo last_status_change() { return last_status_change_; }
+
+ private:
+  std::string trial_name_;
+  statusInfo last_status_change_;
+  int on_status_changed_count_ = 0;
+  int on_persisted_tokens_cleared_count_ = 0;
 };
 
 }  // namespace
@@ -205,6 +260,23 @@ class OriginTrialsTest : public testing::Test {
 
   std::string GetTokenPartitionSite(const url::Origin& origin) {
     return OriginTrials::GetTokenPartitionSite(origin);
+  }
+
+  std::unique_ptr<TestStatusObserver> CreateAndAddObserver(
+      const std::string& trial_name) {
+    std::unique_ptr<TestStatusObserver> observer =
+        std::make_unique<TestStatusObserver>(trial_name);
+    origin_trials_.AddObserver(observer.get());
+
+    return observer;
+  }
+
+  void RemoveObserver(TestStatusObserver* observer) {
+    origin_trials_.RemoveObserver(observer);
+  }
+
+  OriginTrials::ObserverMap& GetObserverMap() {
+    return origin_trials_.observer_map_;
   }
 
   // Test helper that creates an origin for the domain_name with https scheme
@@ -385,6 +457,213 @@ TEST_F(OriginTrialsTest, StoredEnabledTrialNotReturnedIfNoLongerPersistent) {
           kValidTime);
   ASSERT_EQ(1ul, enabled_trials.size());
   EXPECT_EQ(kPersistentTrialName, *(enabled_trials.begin()));
+}
+
+TEST_F(OriginTrialsTest, StatusObserverIsAdded) {
+  std::unique_ptr<TestStatusObserver> observer =
+      CreateAndAddObserver(kPersistentTrialName);
+
+  EXPECT_TRUE(
+      GetObserverMap()[kPersistentTrialName].HasObserver(observer.get()));
+}
+
+TEST_F(OriginTrialsTest, StatusObserverIsRemoved) {
+  std::unique_ptr<TestStatusObserver> observer =
+      CreateAndAddObserver(kPersistentTrialName);
+
+  ASSERT_TRUE(
+      GetObserverMap()[kPersistentTrialName].HasObserver(observer.get()));
+
+  RemoveObserver(observer.get());
+
+  EXPECT_FALSE(
+      GetObserverMap()[kPersistentTrialName].HasObserver(observer.get()));
+}
+
+TEST_F(OriginTrialsTest, NotifyOnEnable) {
+  std::unique_ptr<TestStatusObserver> observer =
+      CreateAndAddObserver(kPersistentTrialName);
+
+  std::vector<std::string> tokens = {kFrobulatePersistentToken};
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+
+  EXPECT_EQ(observer->on_status_changed_count(), 1);
+  EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 0);
+  EXPECT_EQ(observer->last_status_change(),
+            statusInfo(trial_enabled_origin_,
+                       GetTokenPartitionSite(trial_enabled_origin_), true));
+}
+
+TEST_F(OriginTrialsTest, NotifyOnDisable) {
+  std::vector<std::string> tokens = {kFrobulatePersistentToken};
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+
+  std::unique_ptr<TestStatusObserver> observer =
+      CreateAndAddObserver(kPersistentTrialName);
+
+  tokens = {};
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+
+  EXPECT_EQ(observer->on_status_changed_count(), 1);
+  EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 0);
+  EXPECT_EQ(observer->last_status_change(),
+            statusInfo(trial_enabled_origin_,
+                       GetTokenPartitionSite(trial_enabled_origin_), false));
+}
+
+TEST_F(OriginTrialsTest, DontNotifyOnDisableIfNotPreviouslyEnabled) {
+  std::unique_ptr<TestStatusObserver> observer =
+      CreateAndAddObserver(kPersistentTrialName);
+
+  EXPECT_TRUE(
+      GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime).empty());
+
+  PersistTrialsFromTokens(trial_enabled_origin_, {}, kValidTime);
+
+  EXPECT_EQ(observer->on_status_changed_count(), 0);
+}
+
+TEST_F(OriginTrialsTest, NotifyOnEnabledOnlyIfPreviouslyDisabled) {
+  std::unique_ptr<TestStatusObserver> observer =
+      CreateAndAddObserver(kPersistentTrialName);
+
+  EXPECT_TRUE(
+      GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime).empty());
+
+  std::vector<std::string> tokens = {kFrobulatePersistentToken};
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+
+  EXPECT_EQ(observer->on_status_changed_count(), 1);
+  EXPECT_EQ(observer->last_status_change(),
+            statusInfo(trial_enabled_origin_,
+                       GetTokenPartitionSite(trial_enabled_origin_), true));
+
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  origin_trials_.PersistAdditionalTrialsFromTokens(
+      trial_enabled_origin_, /*partition_origin=*/trial_enabled_origin_,
+      /*script_origins=*/{}, tokens, kValidTime);
+
+  EXPECT_EQ(observer->on_status_changed_count(), 1);
+}
+
+TEST_F(OriginTrialsTest, NotifyOnStatusChangeMultiplePartitionSites) {
+  url::Origin origin_a = trial_enabled_origin_;
+  url::Origin origin_b = url::Origin::Create(GURL(kTrialEnabledOriginB));
+  std::vector<std::string> tokens = {kFrobulatePersistentToken};
+  std::unique_ptr<TestStatusObserver> observer =
+      CreateAndAddObserver(kPersistentTrialName);
+
+  // Enable trial for `trial_enabled_origin_`, partitioned under `origin_a`.
+  origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, origin_a,
+                                         tokens, kValidTime);
+  EXPECT_EQ(observer->on_status_changed_count(), 1);
+  EXPECT_EQ(
+      observer->last_status_change(),
+      statusInfo(trial_enabled_origin_, GetTokenPartitionSite(origin_a), true));
+
+  // Enable trial for `trial_enabled_origin_`, partitioned under `origin_b`.
+  origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, origin_b,
+                                         tokens, kValidTime);
+  EXPECT_EQ(observer->on_status_changed_count(), 2);
+  EXPECT_EQ(
+      observer->last_status_change(),
+      statusInfo(trial_enabled_origin_, GetTokenPartitionSite(origin_b), true));
+
+  // Disable trial for `trial_enabled_origin_`, partitioned under `origin_a`.
+  tokens = {};
+  origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, origin_a,
+                                         tokens, kValidTime);
+  EXPECT_EQ(observer->on_status_changed_count(), 3);
+  EXPECT_EQ(observer->last_status_change(),
+            statusInfo(trial_enabled_origin_, GetTokenPartitionSite(origin_a),
+                       false));
+
+  // Disable trial for `trial_enabled_origin_`, partitioned under `origin_b`.
+  tokens = {};
+  origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, origin_b,
+                                         tokens, kValidTime);
+  EXPECT_EQ(observer->on_status_changed_count(), 4);
+  EXPECT_EQ(observer->last_status_change(),
+            statusInfo(trial_enabled_origin_, GetTokenPartitionSite(origin_b),
+                       false));
+}
+
+// Check that observers are only notified of status change events for the trial
+// corresponding to their `trial_name` value.
+TEST_F(OriginTrialsTest, NotifyForCorrectTrial) {
+  url::Origin origin_a = trial_enabled_origin_;
+  url::Origin origin_b =
+      url::Origin::Create(GURL(kThirdPartyTrialEnabledOrigin));
+  std::vector<std::string> tokens_a = {kFrobulatePersistentToken};
+  std::vector<std::string> tokens_b = {
+      kFrobulatePersistentThirdPartyDeprecationToken};
+
+  std::unique_ptr<TestStatusObserver> observer_a =
+      CreateAndAddObserver(kPersistentTrialName);
+  std::unique_ptr<TestStatusObserver> observer_b =
+      CreateAndAddObserver(kPersistentThirdPartyDeprecationTrialName);
+
+  // Enable `kPersistentTrialName` for `origin_a`.
+  origin_trials_.PersistTrialsFromTokens(
+      origin_a, /*partition_origin=*/origin_a, tokens_a, kValidTime);
+
+  EXPECT_EQ(observer_a->on_status_changed_count(), 1);
+  EXPECT_EQ(observer_a->last_status_change(),
+            statusInfo(origin_a, GetTokenPartitionSite(origin_a),
+                       /*enabled=*/true));
+  EXPECT_EQ(observer_b->on_status_changed_count(), 0);
+
+  // Enable `kPersistentThirdPartyDeprecationTrialName` for `origin_b`
+  // (partitioned under `origin_a`).
+  std::vector<url::Origin> script_origins = {origin_b};
+  origin_trials_.PersistAdditionalTrialsFromTokens(
+      origin_a, /*partition_origin=*/origin_a, script_origins, tokens_b,
+      kValidTime);
+
+  EXPECT_EQ(observer_a->on_status_changed_count(), 1);
+  EXPECT_EQ(observer_b->on_status_changed_count(), 1);
+  EXPECT_EQ(observer_b->last_status_change(),
+            statusInfo(origin_b, GetTokenPartitionSite(origin_a),
+                       /*enabled=*/true));
+
+  // Disable `kPersistentTrialName` for `origin_a`.
+  tokens_a = {};
+  origin_trials_.PersistTrialsFromTokens(
+      origin_a, /*partition_origin=*/origin_a, tokens_a, kValidTime);
+
+  EXPECT_EQ(observer_a->on_status_changed_count(), 2);
+  EXPECT_EQ(observer_a->last_status_change(),
+            statusInfo(origin_a, GetTokenPartitionSite(origin_a),
+                       /*enabled=*/false));
+  EXPECT_EQ(observer_b->on_status_changed_count(), 1);
+  EXPECT_EQ(observer_b->last_status_change(),
+            statusInfo(origin_b, GetTokenPartitionSite(origin_a),
+                       /*enabled=*/true));
+}
+
+TEST_F(OriginTrialsTest, NotifyOnPersistedTokensCleared) {
+  std::vector<std::string> tokens = {kFrobulatePersistentToken};
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+
+  std::unique_ptr<TestStatusObserver> observer =
+      CreateAndAddObserver(kPersistentTrialName);
+  EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 0);
+
+  origin_trials_.ClearPersistedTokens();
+
+  EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 1);
+  EXPECT_EQ(observer->on_status_changed_count(), 0);
+}
+
+TEST_F(OriginTrialsTest, NotifyOnPersistedTokensClearedNoTokens) {
+  std::unique_ptr<TestStatusObserver> observer =
+      CreateAndAddObserver(kPersistentTrialName);
+  EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 0);
+
+  origin_trials_.ClearPersistedTokens();
+
+  EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 1);
+  EXPECT_EQ(observer->on_status_changed_count(), 0);
 }
 
 // Check that a saved trial name is not returned if it has been disabled by
