@@ -14,9 +14,8 @@ namespace media {
 // Convert to ISO time, seconds since midnight, Jan. 1, 1904, in UTC time.
 // base::Time time1904;
 // base::Time::FromUTCString("1904-01-01 00:00:00 UTC", &time1904);
-// 9561628800000 = time1904.ToDeltaSinceWindowsEpoch().InMilliseconds();
-static constexpr int64_t k1601To1904DeltaInMilliseconds =
-    INT64_C(9561628800000);
+// 9561628800000 = time1904.ToDeltaSinceWindowsEpoch().InSecondsF();
+static constexpr int64_t k1601To1904DeltaInSeconds = INT64_C(9561628800);
 
 static constexpr uint16_t kUndefinedLanguageCode =
     0x55C4;  // "und" on ISO 639-2/T.

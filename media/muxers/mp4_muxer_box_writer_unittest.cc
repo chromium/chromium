@@ -66,10 +66,10 @@ constexpr uint8_t kLumaMinus8 = 0x4;
 constexpr uint8_t kChromaMinus8 = 0x4;
 #endif
 
-uint64_t ConvertTo1904TimeInMilliseconds(base::Time time) {
+uint64_t ConvertTo1904TimeInSeconds(base::Time time) {
   base::Time time1904;
   CHECK(base::Time::FromUTCString("1904-01-01 00:00:00 UTC", &time1904));
-  uint64_t iso_time = (time - time1904).InMilliseconds();
+  uint64_t iso_time = (time - time1904).InSeconds();
   return iso_time;
 }
 
@@ -169,10 +169,9 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAndHeader) {
   EXPECT_TRUE(reader->ReadChild(&mvhd_box));
   EXPECT_EQ(mvhd_box.version, 1);
 
-  EXPECT_EQ(mvhd_box.creation_time,
-            ConvertTo1904TimeInMilliseconds(creation_time));
+  EXPECT_EQ(mvhd_box.creation_time, ConvertTo1904TimeInSeconds(creation_time));
   EXPECT_EQ(mvhd_box.modification_time,
-            ConvertTo1904TimeInMilliseconds(modification_time));
+            ConvertTo1904TimeInSeconds(modification_time));
   EXPECT_EQ(mvhd_box.timescale, kVideoTimescale);
   EXPECT_EQ(mvhd_box.duration, 0u);
   EXPECT_EQ(mvhd_box.next_track_id, 1u);
@@ -350,9 +349,9 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
 
   EXPECT_EQ(track_boxes[kVideoIndex].header.track_id, 1u);
   EXPECT_EQ(track_boxes[kVideoIndex].header.creation_time,
-            ConvertTo1904TimeInMilliseconds(creation_time));
+            ConvertTo1904TimeInSeconds(creation_time));
   EXPECT_EQ(track_boxes[kVideoIndex].header.modification_time,
-            ConvertTo1904TimeInMilliseconds(modification_time));
+            ConvertTo1904TimeInSeconds(modification_time));
   EXPECT_EQ(track_boxes[kVideoIndex].header.duration, kDuration1);
   EXPECT_EQ(track_boxes[kVideoIndex].header.volume, 0);
   EXPECT_EQ(track_boxes[kVideoIndex].header.width, kWidth);
@@ -360,9 +359,9 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
 
   EXPECT_EQ(track_boxes[kAudioIndex].header.track_id, 2u);
   EXPECT_EQ(track_boxes[kAudioIndex].header.creation_time,
-            ConvertTo1904TimeInMilliseconds(creation_time));
+            ConvertTo1904TimeInSeconds(creation_time));
   EXPECT_EQ(track_boxes[kAudioIndex].header.modification_time,
-            ConvertTo1904TimeInMilliseconds(modification_time));
+            ConvertTo1904TimeInSeconds(modification_time));
   EXPECT_EQ(track_boxes[kAudioIndex].header.duration, kDuration2);
   EXPECT_EQ(track_boxes[kAudioIndex].header.volume, kAudioVolume);
   EXPECT_EQ(track_boxes[kAudioIndex].header.width, 0u);
@@ -370,18 +369,18 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
 
   // Media Header validation.
   EXPECT_EQ(track_boxes[kAudioIndex].media.header.creation_time,
-            ConvertTo1904TimeInMilliseconds(creation_time));
+            ConvertTo1904TimeInSeconds(creation_time));
   EXPECT_EQ(track_boxes[kAudioIndex].media.header.modification_time,
-            ConvertTo1904TimeInMilliseconds(modification_time));
+            ConvertTo1904TimeInSeconds(modification_time));
   EXPECT_EQ(track_boxes[kAudioIndex].media.header.duration, kDuration2);
   EXPECT_EQ(track_boxes[kAudioIndex].media.header.timescale, kAudioTimescale);
   EXPECT_EQ(track_boxes[kAudioIndex].media.header.language_code,
             kUndefinedLanguageCode);
 
   EXPECT_EQ(track_boxes[kVideoIndex].media.header.creation_time,
-            ConvertTo1904TimeInMilliseconds(creation_time));
+            ConvertTo1904TimeInSeconds(creation_time));
   EXPECT_EQ(track_boxes[kVideoIndex].media.header.modification_time,
-            ConvertTo1904TimeInMilliseconds(modification_time));
+            ConvertTo1904TimeInSeconds(modification_time));
   EXPECT_EQ(track_boxes[kVideoIndex].media.header.duration, kDuration1);
   EXPECT_EQ(track_boxes[kVideoIndex].media.header.timescale, kVideoTimescale);
   EXPECT_EQ(track_boxes[kVideoIndex].media.header.language_code,

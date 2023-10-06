@@ -37,8 +37,8 @@ constexpr int32_t kDisplayIdentityMatrix[9] = {
     0x00010000, 0, 0, 0, 0x00010000, 0, 0, 0, 0x40000000};
 
 void WriteIsoTime(BoxByteStream& writer, base::Time time) {
-  uint64_t iso_time = time.ToDeltaSinceWindowsEpoch().InMilliseconds() -
-                      k1601To1904DeltaInMilliseconds;
+  uint64_t iso_time =
+      time.ToDeltaSinceWindowsEpoch().InSecondsF() - k1601To1904DeltaInSeconds;
 
   writer.WriteU64(iso_time);
 }
