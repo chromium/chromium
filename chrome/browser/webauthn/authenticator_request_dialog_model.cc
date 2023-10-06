@@ -2174,6 +2174,10 @@ void AuthenticatorRequestDialogModel::OnPasskeysChanged() {
   }
 }
 
+void AuthenticatorRequestDialogModel::OnPasskeyModelShuttingDown() {
+  passkey_model_observation_.Reset();
+}
+
 void AuthenticatorRequestDialogModel::
     HideDialogAndDispatchToPlatformAuthenticator(
         absl::optional<device::AuthenticatorType> type) {

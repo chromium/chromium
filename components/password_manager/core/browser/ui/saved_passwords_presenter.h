@@ -205,6 +205,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
   // PasskeyModel::Observer:
   void OnPasskeysChanged() override;
+  void OnPasskeyModelShuttingDown() override;
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(

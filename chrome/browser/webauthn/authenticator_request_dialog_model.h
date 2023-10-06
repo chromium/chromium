@@ -775,6 +775,7 @@ class AuthenticatorRequestDialogModel
 
   // webauthn::PasskeyModel::Observer:
   void OnPasskeysChanged() override;
+  void OnPasskeyModelShuttingDown() override;
 
   // Identifier for the RenderFrameHost of the frame that initiated the current
   // request.

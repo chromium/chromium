@@ -43,6 +43,7 @@ class LocalPasskeysChangedChecker : public StatusChangeChecker,
 
   // webauthn::PasskeyModel::Observer:
   void OnPasskeysChanged() override;
+  void OnPasskeyModelShuttingDown() override;
 
  private:
   int profile_;
@@ -66,6 +67,7 @@ class LocalPasskeysMatchChecker : public StatusChangeChecker,
 
   // webauthn::PasskeyModel::Observer:
   void OnPasskeysChanged() override;
+  void OnPasskeyModelShuttingDown() override;
 
  private:
   const int profile_;
@@ -96,6 +98,7 @@ class MockPasskeyModelObserver : public webauthn::PasskeyModel::Observer {
   ~MockPasskeyModelObserver() override;
 
   MOCK_METHOD(void, OnPasskeysChanged, (), (override));
+  MOCK_METHOD(void, OnPasskeyModelShuttingDown, (), (override));
 
  private:
   base::ScopedObservation<webauthn::PasskeyModel,

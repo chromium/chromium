@@ -471,6 +471,10 @@ void SavedPasswordsPresenter::OnPasskeysChanged() {
       weak_ptr_factory_.GetWeakPtr(), PasswordStoreChangeList()));
 }
 
+void SavedPasswordsPresenter::OnPasskeyModelShuttingDown() {
+  passkey_store_observation_.Reset();
+}
+
 void SavedPasswordsPresenter::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   // This class overrides OnGetPasswordStoreResultsFrom() (the version of this

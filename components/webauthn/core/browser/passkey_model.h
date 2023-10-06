@@ -42,6 +42,9 @@ class PasskeyModel : public KeyedService {
     // Notifies the observer that passkeys have changed, e.g. because a new one
     // was downloaded or deleted.
     virtual void OnPasskeysChanged() = 0;
+
+    // Notifies the observer that the passkey model is shutting down.
+    virtual void OnPasskeyModelShuttingDown() = 0;
   };
 
   // Attributes of a passkey that can be updated. If an attribute is set to

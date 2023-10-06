@@ -69,6 +69,10 @@ void LocalPasskeysChangedChecker::OnPasskeysChanged() {
   CheckExitCondition();
 }
 
+void LocalPasskeysChangedChecker::OnPasskeyModelShuttingDown() {
+  observation_.Reset();
+}
+
 LocalPasskeysMatchChecker::LocalPasskeysMatchChecker(int profile,
                                                      Matcher matcher)
     : profile_(profile), matcher_(matcher) {
@@ -88,6 +92,10 @@ bool LocalPasskeysMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
 
 void LocalPasskeysMatchChecker::OnPasskeysChanged() {
   CheckExitCondition();
+}
+
+void LocalPasskeysMatchChecker::OnPasskeyModelShuttingDown() {
+  observation_.Reset();
 }
 
 ServerPasskeysMatchChecker::ServerPasskeysMatchChecker(Matcher matcher)

@@ -14,7 +14,12 @@
 namespace webauthn {
 
 TestPasskeyModel::TestPasskeyModel() = default;
-TestPasskeyModel::~TestPasskeyModel() = default;
+
+TestPasskeyModel::~TestPasskeyModel() {
+  for (auto& observer : observers_) {
+    observer.OnPasskeyModelShuttingDown();
+  }
+}
 
 void TestPasskeyModel::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);

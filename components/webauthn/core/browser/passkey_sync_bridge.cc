@@ -97,7 +97,11 @@ PasskeySyncBridge::PasskeySyncBridge(
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-PasskeySyncBridge::~PasskeySyncBridge() = default;
+PasskeySyncBridge::~PasskeySyncBridge() {
+  for (auto& observer : observers_) {
+    observer.OnPasskeyModelShuttingDown();
+  }
+}
 
 void PasskeySyncBridge::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
