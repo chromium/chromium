@@ -2169,6 +2169,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2671451824761031126">Отметките и настройките ви са готови</translation>
 <translation id="2672142220933875349">Невалиден crx файл. Разпакетирането не бе успешно.</translation>
 <translation id="2673135533890720193">Да чете историята на сърфирането ви</translation>
+<translation id="2673848446870717676">Уверете се, че устройството ви с Bluetooth е в режим за сдвояване и e наблизо. Сдвоявайте само устройства, които смятате за надеждни. Сдвоените устройства са видими за всички профили на този Chromebook.</translation>
 <translation id="2673873887296220733">Искате ли да копирате 1 файл в <ph name="CLOUD_PROVIDER" />, за да бъде отворен?</translation>
 <translation id="2674764818721168631">Изключено</translation>
 <translation id="2676084251379299915">Това разширение е деактивирано чрез корпоративно правило, защото вече не е налице в уеб магазина на Chrome.</translation>
@@ -3846,6 +3847,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" />, за да получите отметките си на мобилното си устройство.</translation>
 <translation id="4014432863917027322">Да се поправи ли <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Използвате разширения? <ph name="BEGIN_LINK" />Управлявайте ги<ph name="END_LINK" /> от едно лесно място.</translation>
+<translation id="4016762287427926315">Разрешенията, които дадете на <ph name="APP_NAME" />, ще бъдат предоставени и на това приложение. <ph name="BEGIN_LINK" />Управление<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Създаване на QR код за тази връзка</translation>
 <translation id="4019983356493507433">Редактиране на списъка с отметки</translation>
 <translation id="4020327272915390518">Меню с опции</translation>
@@ -3966,7 +3968,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4110485659976215879">Възстановяване на предупреждението</translation>
 <translation id="4110490973560452005">Изтеглянето завърши: <ph name="FILE_NAME" />. Натиснете Shift + F6, за да преминете към лентата на изтеглянето.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
-<translation id="411318099524508025">Извършена бе надстройка до <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Парола за файла</translation>
 <translation id="4114524937989710624">Показват се предложени файлове, с чиято помощ лесно да се върнете към скорошната си активност в Google Диск.
         <ph name="BREAK" />
@@ -6423,6 +6424,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6156863943908443225">Кеш за скриптове</translation>
 <translation id="6156944117133588106">Показване на бутоните за навигация в режим на таблет</translation>
 <translation id="615930144153753547">Сайтовете могат да показват изображения</translation>
+<translation id="6160290816917599257">Невалиден код. Въведеното от вас трябва да е във формат <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ адрес<ph name="LPA_2" />$<ph name="LPA_3" />незадължителен идентификатор за съответствие<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Предоставяне на сертификати за удостоверяване</translation>
 <translation id="6163363155248589649">&amp;Нормален</translation>
 <translation id="6163376401832887457">Настройки за Kerberos</translation>
@@ -8455,6 +8457,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7807117920154132308">Изглежда, че Google Асистент вече е настроен от <ph name="SUPERVISED_USER_NAME" /> на друго устройство. <ph name="SUPERVISED_USER_NAME" /> може да се възползва в още по-голяма степен от Асистент, като включи „Контекст на екрана“.</translation>
 <translation id="7807711621188256451">Достъпът на <ph name="HOST" /> до камерата ви винаги да е разрешен</translation>
 <translation id="7810202088502699111">Изскачащите прозорци са блокирани на тази страница.</translation>
+<translation id="7810367892333449285">Въведеното от вас трябва да е във формат <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ адрес<ph name="LPA_2" />$<ph name="LPA_3" />незадължителен идентификатор за съответствие<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Копиране</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Редактиране на прекия път <ph name="SHORTCUT" /> за <ph name="EXTENSION_NAME" /></translation>
@@ -9103,6 +9106,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8324784016256120271">Сайтовете могат да използват „бисквитки“, за да следят активността ви при сърфиране в различни сайтове, например за да персонализират реклами</translation>
 <translation id="8325413836429495820">Сайтове без разрешение за преглед на буферната памет</translation>
 <translation id="8326478304147373412">PKCS 7, верига сертификати</translation>
+<translation id="832684045355488000">Извършена бе надстройка до <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Математически символи</translation>
 <translation id="8327538105740918488">Винаги можете да промените тази парола по-късно. Тя ще бъде запазена в <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Разрешения и настройки за съдържанието</translation>
@@ -9433,6 +9437,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8605428685123651449">Памет за SQLite</translation>
 <translation id="8607171490667464784">При неактивност и захранване от батерията</translation>
 <translation id="8607326572516521315">Функцията за намаляване на спама и измамите разчита на означения за частно състояние, за да помага на сайтовете да се борят с измамите и да различават роботи от хора.</translation>
+<translation id="8607828412110648570">Уверете се, че устройството ви с Bluetooth е в режим за сдвояване и e наблизо. Сдвоявайте само устройства, които смятате за надеждни. Сдвоените устройства са видими за всички профили на този Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Добавяне на пропуск за Kerberos</translation>
 <translation id="8609465669617005112">Придвижване нагоре</translation>
 <translation id="8610103157987623234">Неправилен формат. Моля, опитайте отново</translation>

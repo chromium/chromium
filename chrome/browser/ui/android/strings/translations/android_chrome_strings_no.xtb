@@ -345,6 +345,7 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="2856503607207334158">Pålogging mislyktes</translation>
 <translation id="2860954141821109167">Kontroller at en telefon-app er påslått på denne enheten</translation>
 <translation id="2861923151411510142">Enkelte Chrome-funksjoner kommer ikke til å være tilgjengelige lenger</translation>
+<translation id="2869430948265924908">For å beskytte det sensitive innholdet ditt i bilen må du opprette en profillås for bilen.  Det kan du gjøre med en PIN-kode, en kode eller et passord.</translation>
 <translation id="2870560284913253234">Nettsted</translation>
 <translation id="2871733351037274014">Forhåndslasting av sider</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> vil at du skal godkjenne dette nettstedet:</translation>
@@ -466,6 +467,7 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="3421726884497337397">Velg når informasjonskapsler fra tredjeparter skal blokkeres</translation>
 <translation id="3428747202529429621">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget</translation>
 <translation id="3429160811076349561">Prøvefunksjoner er avslått</translation>
+<translation id="3430670036890315772">Hvis du slår av profillåsen, fjernes den lagrede informasjonen din</translation>
 <translation id="3435465986463792564">Har du mange vinduer? Du kan administrere dem her</translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="3439276997620616816">Her finner du de nylige fanene dine</translation>
@@ -645,6 +647,7 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="438319986296050901">Del kun kort</translation>
 <translation id="4384468725000734951">Bruker Sogou til å søke</translation>
+<translation id="4387647248986092471">Opprett en profillås for bilen</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Laster ned …</translation>
 <translation id="4404568932422911380">Ingen bokmerker</translation>
 <translation id="4405224443901389797">Flytt til …</translation>
@@ -816,6 +819,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5171045022955879922">Søk, eller skriv inn en nettadresse</translation>
 <translation id="5174700554036517242">Fanen er tilbake i opprinnelig høyde</translation>
+<translation id="5180063720319462041">Siden er oversatt til <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Administrer emnene og søkene du er interessert i</translation>
 <translation id="5191251636205085390">Finn ut om og kontroller nye teknologier som tar sikte på å erstatte tredjeparts informasjonskapsler</translation>
 <translation id="5193988420012215838">Kopiert til utklippstavlen</translation>
@@ -824,6 +828,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5210286577605176222">Gå til den forrige fanen</translation>
 <translation id="5210365745912300556">Lukk fanen</translation>
 <translation id="5222676887888702881">Logg av</translation>
+<translation id="5226378907213531272">Du låser opp skjermen hver gang du bruker bilen</translation>
 <translation id="5227554086496586518">Trykk for å se søkeresultater</translation>
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5234971936051226002">«Lytt til denne siden»-avspilleren er minimert.</translation>
@@ -1318,6 +1323,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7691043218961417207">Utforsk innhold du kan følge</translation>
 <translation id="7697383401610880082">Håndtak</translation>
 <translation id="7698359219371678927">Opprett en e-post i <ph name="APP_NAME" /></translation>
+<translation id="7702388902581909985">Du blir ikke logget av Google-kontoen din selv om du sletter nettlesingsdataene dine. For å gjøre det, <ph name="BEGIN_LINK1" />logg av Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Bruk mobildata</translation>
 <translation id="7709094866268987903">Interesser du fjerner, vises her</translation>
 <translation id="7709918231054955894">Hent alle fanene dine</translation>

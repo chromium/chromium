@@ -56,6 +56,7 @@
 <translation id="1264156759663453185">所选文字太多，无法进行局部翻译。</translation>
 <translation id="1265739287306757398">了解如何操作</translation>
 <translation id="1272079795634619415">停止</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} 个密码}other{{count} 个密码}}</translation>
 <translation id="1275718070701477396">已选择</translation>
 <translation id="1279024913354609713">不允许</translation>
 <translation id="1281818060020671000">管理数据</translation>
@@ -189,6 +190,7 @@
 <translation id="1987779152850321833">请完成下面这些建议的操作，以便充分利用 Chrome。</translation>
 <translation id="1989112275319619282">浏览</translation>
 <translation id="1990820278544963435">查找</translation>
+<translation id="1991153180045413119">已分享密码</translation>
 <translation id="1992055602764528852">登录即可查看您在其他设备上打开的标签页。</translation>
 <translation id="199425419756152024">查看密码</translation>
 <translation id="2008357574463816229">如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
@@ -232,6 +234,7 @@
 <translation id="2268044343513325586">优化</translation>
 <translation id="2269277877025820298">查看更多</translation>
 <translation id="2273327106802955778">“更多”菜单</translation>
+<translation id="2274800392139890332">取消跟踪此包裹</translation>
 <translation id="2275480389219976105">找到地址</translation>
 <translation id="2286505070150039482">突出显示的文字</translation>
 <translation id="2287614783861766820">{count,plural, =1{这个地址将被从此设备中删除。}other{这些地址将被从此设备中删除。}}</translation>
@@ -240,6 +243,7 @@
 <translation id="2299218006564889602">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理器中。</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">在网站上更改密码</translation>
+<translation id="2310154074101836012">编辑轮播界面</translation>
 <translation id="2316709634732130529">使用建议的密码</translation>
 <translation id="2320166752086256636">隐藏键盘</translation>
 <translation id="2351097562818989364">您的翻译设置已重置。</translation>
@@ -524,6 +528,7 @@
 <translation id="380329542618494757">名称</translation>
 <translation id="3803696231112616155">主动询问是否翻译此网站</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3818045793209708987">已停止跟踪此包裹</translation>
 <translation id="3818293389945649617">查找下一个</translation>
 <translation id="3819183753496523827">您未联网。请检查您的互联网连接状况，然后重试。</translation>
 <translation id="3832419617903252251">密码仅保存在此设备上</translation>
@@ -562,6 +567,7 @@
 <translation id="4018310736049373830">管理我的活动记录</translation>
 <translation id="4038354071007134711">此设备上没有可以打开该文件的应用。</translation>
 <translation id="4042870976416480368">在网页中查找</translation>
+<translation id="4043294777772912240">现在，<ph name="USERNAME" />可在使用 Google 密码管理工具登录 <ph name="WEBSITE" /> 时使用您的用户名和密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">为您突出显示的部分网页内容创建直接链接并分享。</translation>
 <translation id="4045648459118332842">在任意应用中点按一下即可获取您已保存的密码</translation>
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
@@ -605,6 +611,7 @@
 <translation id="4286718549648564014">已将地址迁移到您的账号 <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">搜索</translation>
 <translation id="4302248187517737842">无用户名 ••••••••</translation>
+<translation id="4302415908542657649">正在分享密码</translation>
 <translation id="4304713468139749426">密码管理工具</translation>
 <translation id="430793432425771671">同步所有内容</translation>
 <translation id="4309403553630140242">点按两次可了解详情</translation>
@@ -640,6 +647,7 @@
 <translation id="4508750114462689118">关闭登录推广元素</translation>
 <translation id="4514889972748124117">建议一个安全系数高的密码…</translation>
 <translation id="4520798012560649652">详细了解无痕模式</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} 个书签}other{{count} 个书签}}</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4527660062930312477">您的账号是受管理的账号</translation>
 <translation id="4536418791685807335">请尝试重新登录。</translation>
@@ -659,6 +667,7 @@
 <translation id="4619615317237390068">从其他设备打开的标签页</translation>
 <translation id="4620246317052452550">您浏览过的网页</translation>
 <translation id="4620888520263267479">显示链接预览</translation>
+<translation id="4622477750832577849">启用跟踪功能</translation>
 <translation id="4630540211544979320">翻译网页</translation>
 <translation id="4631335160486397366">有 <ph name="COUNT" /> 个重复使用的密码</translation>
 <translation id="4634124774493850572">使用密码</translation>
@@ -797,6 +806,7 @@
 <translation id="5360976571138293719">如需了解更多与隐私、安全和数据收集相关的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />部分。</translation>
 <translation id="5386314158584363703">您已关注的网站都会显示在此处</translation>
 <translation id="5388358297987318779">打开图片</translation>
+<translation id="5396950905475481456">邀请家庭成员</translation>
 <translation id="5407969256130905701">舍弃更改</translation>
 <translation id="5414763847370083940">当相应商品在所跟踪的任何网站上降价时，您都会收到提醒。</translation>
 <translation id="5416022985862681400">过去 7 天</translation>
@@ -807,6 +817,7 @@
 <translation id="54401264925851789">网页安全信息</translation>
 <translation id="5443952882982198570">信用卡</translation>
 <translation id="5444892875087332195">书签</translation>
+<translation id="5454211924362324495">为防止他人使用您的密码，请<ph name="BEGIN_LINK" />前往 <ph name="WEBSITE" /> 更改密码<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">打开离线版</translation>
 <translation id="5475069061743940393">包裹跟踪</translation>
 <translation id="5478327362747197944">点击网页上的日期即可直接创建日历活动。</translation>
@@ -1151,6 +1162,7 @@
 <translation id="7154343200458623869">完成任务。</translation>
 <translation id="7161230316646448869">将您的书签、历史记录等信息同步到所有设备上</translation>
 <translation id="7162168282402939716">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁无痕式标签页</translation>
+<translation id="7168959436351276050">隐藏此卡片将移除您的所有包裹跟踪数据</translation>
 <translation id="7172852049901402487">保护您的密码免受安全威胁</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7189598951263744875">分享...</translation>
@@ -1544,4 +1556,5 @@
 <translation id="988141524645182168">其他设备</translation>
 <translation id="989988560359834682">修改地址</translation>
 <translation id="994757059139821576">文章推荐</translation>
+<translation id="999768147936949692">目前，您只能向家庭成员分享密码。<ph name="BEGIN_LINK" />邀请家庭成员<ph name="END_LINK" />加入您的群组，与他们一起充分利用您所用的 Google 产品和订阅。</translation>
 </translationbundle>

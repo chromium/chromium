@@ -704,6 +704,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="385300504083504382">Begin</translation>
 <translation id="3859364108019690">Kan geen apps streamen</translation>
 <translation id="3861651314799684201">Druk op Enter om het volledige scherm op te nemen</translation>
+<translation id="3865912916886104060">Geen apparaten gekoppeld. Wifi wordt uitgezet om de hotspot te gebruiken.</translation>
 <translation id="3886872229787704059">Vandaag geopend</translation>
 <translation id="3891340733213178823">Druk twee keer op Ctrl+Shift+Q om uit te loggen.</translation>
 <translation id="3893630138897523026">ChromeVox (gesproken feedback)</translation>
@@ -788,6 +789,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4197790712631116042">Uit</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> is niet beschikbaar.</translation>
 <translation id="4201051445878709314">Vorige maand bekijken</translation>
+<translation id="4202362334312791952">1 apparaat verbonden. Wifi wordt uitgezet om de hotspot te gebruiken.</translation>
 <translation id="4209973997261364186">Wifi staat aan</translation>
 <translation id="4212472694152630271">Overschakelen naar pincode</translation>
 <translation id="4215497585250573029">VPN-instellingen</translation>
@@ -1051,6 +1053,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5258528442992323769">Geen opgeslagen bureaus</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
 <translation id="5268819379131021772">Google-takenlijst</translation>
+<translation id="5275923704957843041">Desktopvoorbeeld</translation>
 <translation id="5278086053818066789">ChromeVox (gesproken feedback) aan-/uitzetten</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vraagt om je aandacht.</translation>
 <translation id="5283198616748585639">1 min toevoegen</translation>
@@ -1167,6 +1170,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5707775774148071965">Je apparaat ondersteunt een hogere datasnelheid dan je kabel. De prestaties van het apparaat kunnen beperkt zijn.</translation>
 <translation id="5710450975648804523">Niet storen staat aan</translation>
 <translation id="571295407079589142">Mobiele data staan uit</translation>
+<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> apparaten verbonden. Wifi wordt uitgezet om de hotspot te gebruiken.</translation>
 <translation id="5727460725221669831">Als je je wachtwoord bent vergeten of onlangs het wachtwoord van je Google-account hebt gewijzigd, probeer je deze gebruiker te herstellen.</translation>
 <translation id="573413375004481890">Dit apparaat kan niet al je schermen ondersteunen, dus één scherm is ontkoppeld</translation>
 <translation id="5740328398383587084">Dichtbij delen</translation>

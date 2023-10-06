@@ -2155,6 +2155,7 @@
 <translation id="2671451824761031126">Бетбелгілер мен параметрлер дайын</translation>
 <translation id="2672142220933875349">CRX файлы жарамсыз, пакеттен шығару сәтсіз аяқталды.</translation>
 <translation id="2673135533890720193">Шолу журналыңызды оқу</translation>
+<translation id="2673848446870717676">Bluetooth құрылғыңыз жұптау режимінде және маңайда болсын. Сенімді құрылғылармен ғана жұптаңыз. Жұпталған құрылғылар осы Chromebook-тегі барлық аккаунтқа көрінеді.</translation>
 <translation id="2673873887296220733">Ашу үшін 1 файлды <ph name="CLOUD_PROVIDER" /> қызметіне көшіру керек пе?</translation>
 <translation id="2674764818721168631">Өшірулі</translation>
 <translation id="2676084251379299915">Бұл кеңейтім корпоративтік саясатпен өшірілген, себебі ол енді Chrome Web Store дүкенінде қолжетімсіз.</translation>
@@ -3831,6 +3832,7 @@
 <translation id="4010917659463429001">Мобильдік құрылғыда бетбелгілерді алу үшін <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" жөндейсіз бе?</translation>
 <translation id="4015163439792426608">Кеңейтімдер пайдаланасыз ба? <ph name="BEGIN_LINK" />Кеңейтімдерді бір орыннан<ph name="END_LINK" /> басқарыңыз.</translation>
+<translation id="4016762287427926315">Сіз <ph name="APP_NAME" /> қолданбасына берген рұқсаттар осы қолданбаға да беріледі. <ph name="BEGIN_LINK" />Реттеу<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Осы сілтемеге QR кодын жасау</translation>
 <translation id="4019983356493507433">Бетбелгілер тізімін өңдеу</translation>
 <translation id="4020327272915390518">Опциялар мәзірі</translation>
@@ -3951,7 +3953,6 @@
 <translation id="4110485659976215879">Ескертуді қалпына келтіру</translation>
 <translation id="4110490973560452005">Жүктеп алу аяқталды: <ph name="FILE_NAME" />. Жүктеп алынғандар жолағы аумағына оралу үшін Shift+F6 пернелерін басыңыз.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
-<translation id="411318099524508025"><ph name="NAME" /> нұсқасына жаңарттыңыз.</translation>
 <translation id="4113743276555482284">Файл құпия сөзі</translation>
 <translation id="4114524937989710624">Google Drive қызметіндегі соңғы іс-әрекеттерге оңай оралуға көмектесетін файлдарды көріп тұрсыз.
         <ph name="BREAK" />
@@ -6403,6 +6404,7 @@
 <translation id="6156863943908443225">Сценарий кэші</translation>
 <translation id="6156944117133588106">Навигация түймелерін планшет режимінде көрсету</translation>
 <translation id="615930144153753547">Сайттар суреттерді көрсете алады</translation>
+<translation id="6160290816917599257">Код дұрыс емес. <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ мекенжай<ph name="LPA_2" />$<ph name="LPA_3" />қосымша сәйкестендіру идентификаторы<ph name="LPA_4" /> форматында жазуыңыз керек.</translation>
 <translation id="6160625263637492097">Аутентификация жасау үшін сертификаттармен қамтамасыз ету</translation>
 <translation id="6163363155248589649">&amp;Қалыпты</translation>
 <translation id="6163376401832887457">Kerberos параметрлері</translation>
@@ -8433,6 +8435,7 @@
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> Google Assistant қызметін басқа құрылғыда реттеп қойған сияқты. <ph name="SUPERVISED_USER_NAME" /> құрылғыдағы Экран контексін қосу арқылы Assistant-ті барынша тиімді пайдалана алады.</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> үшін камераға кіру рұқсатын әрдайым беру</translation>
 <translation id="7810202088502699111">Қалқымалы терезелерге бұл бетте тыйым салынған.</translation>
+<translation id="7810367892333449285"><ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ мекенжай<ph name="LPA_2" />$<ph name="LPA_3" />қосымша сәйкестендіру идентификаторы<ph name="LPA_4" /> форматында жазуыңыз керек.</translation>
 <translation id="7814458197256864873">&amp;Көшіру</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> <ph name="SHORTCUT" /> таңбашасын өңдеу</translation>
@@ -9080,6 +9083,7 @@
 <translation id="8324784016256120271">Сайттар, мысалы, жарнамаларды жекелендіру үшін түрлі сайттарда браузерді пайдалану мәліметіңізді көру үшін cookie файлдарын пайдалана алады.</translation>
 <translation id="8325413836429495820">Буфердегі контентті көруге рұқсаты жоқтар</translation>
 <translation id="8326478304147373412">PKCS #7, сертификаттар тізбегі</translation>
+<translation id="832684045355488000"><ph name="NAME" /> нұсқасына жаңартылды</translation>
 <translation id="8327386430364625757">Математикалық қаріп</translation>
 <translation id="8327538105740918488">Бұл құпия сөзді кез келген уақытта өзгерте аласыз. <ph name="EMAIL" /> аккаунты үшін ол мына жерде сақталады: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="8327676037044516220">Рұқсаттар және контент параметрлері</translation>
@@ -9410,6 +9414,7 @@
 <translation id="8605428685123651449">SQLite жады</translation>
 <translation id="8607171490667464784">Әрекетсіз күйде болғанда және батарея салынған кезде</translation>
 <translation id="8607326572516521315">Спам мен алаяқтықты азайту функциясы сайттарға алаяқтықпен күресуге және боттарды адамдардан ажыратуға көмектесетін жеке күй токендерін қолданады.</translation>
+<translation id="8607828412110648570">Bluetooth құрылғыңыз жұптау режимінде және маңайда болсын. Сенімді құрылғылармен ғана жұптаңыз. Жұпталған құрылғылар осы Chromebook-тегі барлық аккаунтқа көрінеді. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos билетін қосу</translation>
 <translation id="8609465669617005112">Жоғары қарай жылжыту</translation>
 <translation id="8610103157987623234">Формат дұрыс емес, қайталап көріңіз</translation>

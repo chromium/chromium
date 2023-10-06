@@ -2172,6 +2172,7 @@
 <translation id="2671451824761031126">तुमचे बुकमार्क आणि सेटिंग्ज तयार आहेत</translation>
 <translation id="2672142220933875349">खराब crx फाईल, पॅकिंग रद्द करणे अयशस्वी.</translation>
 <translation id="2673135533890720193">तुमचा ब्राउझिंग इतिहास वाचा</translation>
+<translation id="2673848446870717676">तुमचे ब्लूटूथ डिव्‍हाइस हे पेअरिंग मोडमध्ये आणि जवळपास असल्याची खात्री करा. तुमचा विश्वास असलेल्या डिव्हाइससोबतच पेअर करा. पेअर केलेली डिव्हाइस या Chromebook वरील सर्व खात्यांना दृश्यमान असतात.</translation>
 <translation id="2673873887296220733">१ फाइल उघडण्यासाठी <ph name="CLOUD_PROVIDER" /> वर कॉपी करायची आहे का?</translation>
 <translation id="2674764818721168631">बंद</translation>
 <translation id="2676084251379299915">हे एक्स्टेंशन एंटरप्राइझ धोरण अंतर्गत बंद करण्यात आले आहे, कारण ते आता Chrome वेब स्टोअरवर उपलब्ध नाही.</translation>
@@ -3848,6 +3849,7 @@
 <translation id="4010917659463429001">तुमचे बुकमार्क तुमच्या मोबाइल डिव्हाइसवर मिळवण्यासाठी, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" दुरुस्त करायचे?</translation>
 <translation id="4015163439792426608">एक्स्टेंशन आहेत का? एकाच ठिकाणी सहजरीत्या <ph name="BEGIN_LINK" />तुमची एक्स्टेंशन व्यवस्थापित करा<ph name="END_LINK" />.</translation>
+<translation id="4016762287427926315">तुम्ही <ph name="APP_NAME" /> साठी ज्या परवानग्यांना अनुमती देता, त्यांना या अ‍ॅपसाठीदेखील अनुमती दिली जाईल. <ph name="BEGIN_LINK" />व्यवस्थापित करा<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">या लिंकसाठी QR कोड तयार करा</translation>
 <translation id="4019983356493507433">बुकमार्क सूची संपादित करा</translation>
 <translation id="4020327272915390518">पर्याय मेनू</translation>
@@ -3966,7 +3968,6 @@
 <translation id="4110485659976215879">चेतावणी रिस्टोअर करा</translation>
 <translation id="4110490973560452005">डाउनलोड पूर्ण: <ph name="FILE_NAME" />. डाउनलोड बार भागाकडे जाण्यासाठी Shift+F6 प्रेस करा.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफलाइन)</translation>
-<translation id="411318099524508025">तुम्हाला <ph name="NAME" /> वर अपग्रेड केले गेले आहे.</translation>
 <translation id="4113743276555482284">फाइलचा पासवर्ड</translation>
 <translation id="4114524937989710624">Google Drive मधील तुमच्या सर्वात अलीकडील अ‍ॅक्टिव्हिटीवर सहजपणे परत जाण्यात मदत करण्यासाठी, तुम्हाला सुचवलेल्या फाइल दिसत आहेत.
         <ph name="BREAK" />
@@ -6423,6 +6424,7 @@
 <translation id="6156863943908443225">स्क्रिप्ट कॅशे </translation>
 <translation id="6156944117133588106">टॅबलेट मोडमध्ये नेव्हिगेशन बटणे दाखवा</translation>
 <translation id="615930144153753547">साइट इमेज दाखवू शकतात</translation>
+<translation id="6160290816917599257">कोड चुकीचा आहे. तुमच्या एंट्रीचा फॉरमॅट <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /> असा असायला हवा</translation>
 <translation id="6160625263637492097">ऑथेंटिकेशनसाठी प्रमाणपत्रे द्या</translation>
 <translation id="6163363155248589649">&amp;सामान्य</translation>
 <translation id="6163376401832887457">Kerberos सेटिंग्ज</translation>
@@ -8453,6 +8455,7 @@
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> ने आधीच दुसर्‍या डिव्हाइसवर Google Assistant सेट केले आहे असे दिसते. या डिव्हाइसवर स्क्रीन संदर्भ सुरू करून <ph name="SUPERVISED_USER_NAME" /> हे Assistant चा पुरेपूर वापर करू शकतात.</translation>
 <translation id="7807711621188256451">तुमचा कॅमेरा ॲक्सेस करण्यासाठी <ph name="HOST" /> ला नेहमी परवानगी द्या</translation>
 <translation id="7810202088502699111">या पेजवर पॉप-अप ब्लॉक केलेले होते.</translation>
+<translation id="7810367892333449285">तुमच्या एंट्रीचा फॉरमॅट <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /> असा असायला हवा</translation>
 <translation id="7814458197256864873">&amp;कॉपी करा</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> साठी शॉर्टकट <ph name="SHORTCUT" /> संपादित करा</translation>
@@ -9101,6 +9104,7 @@
 <translation id="8324784016256120271">वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकतात, उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी</translation>
 <translation id="8325413836429495820">तुमचा क्लिपबोर्ड पाहण्याची अनुमती नाही</translation>
 <translation id="8326478304147373412">PKCS #7, सर्टिफिकेट श्रृंखला</translation>
+<translation id="832684045355488000">तुम्हाला <ph name="NAME" /> वर अपग्रेड केले गेले आहे</translation>
 <translation id="8327386430364625757">गणिती फाँट</translation>
 <translation id="8327538105740918488">तुम्ही नंतर कधीही हा पासवर्ड बदलू शकता. तो <ph name="EMAIL" /> साठी <ph name="GOOGLE_PASSWORD_MANAGER" /> मध्ये सेव्ह केला जाईल.</translation>
 <translation id="8327676037044516220">परवानग्या आणि आशय सेटिंग्ज</translation>
@@ -9431,6 +9435,7 @@
 <translation id="8605428685123651449">SQLite मेमरी</translation>
 <translation id="8607171490667464784">इनॅक्टिव्ह आणि बॅटरीवर सुरू असताना</translation>
 <translation id="8607326572516521315">स्पॅम आणि घोटाळा कमी करणे हे खाजगी स्टेट टोकनवर अवलंबून असते, त्यांच्यामुळे साइटना घोटाळ्याविरुद्ध लढण्यात आणि लोक व बॉट यांच्यातील फरक ओळखण्यात मदत होते.</translation>
+<translation id="8607828412110648570">तुमचे ब्लूटूथ डिव्‍हाइस हे पेअरिंग मोडमध्ये आणि जवळपास असल्याची खात्री करा. तुमचा विश्वास असलेल्या डिव्हाइससोबतच पेअर करा. पेअर केलेली डिव्हाइस या Chromebook वरील सर्व खात्यांना दृश्यमान असतात. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos तिकीट जोडा</translation>
 <translation id="8609465669617005112">वर हलवा</translation>
 <translation id="8610103157987623234">चुकीचा फॉरमॅट, कृपया पुन्हा प्रयत्न करा</translation>

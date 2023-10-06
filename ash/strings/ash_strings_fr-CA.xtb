@@ -227,6 +227,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1831565490995294689">Sélectionnez pour ouvrir <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838895407229022812">Le mode Éclairage nocturne est désactivé.</translation>
 <translation id="1854180393107901205">Arrêter l'envoi de contenu</translation>
+<translation id="1862077610023398675">Masquer les commandes</translation>
 <translation id="1862380676329487333">Mettre à jour et se déconnecter</translation>
 <translation id="1864454756846565995">Appareil USB-C (port arrière)</translation>
 <translation id="1869497990620230175">Accès rapide aux fichiers</translation>
@@ -792,6 +793,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4215497585250573029">Paramètres de RPV</translation>
 <translation id="4217571870635786043">Dictée</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, application installée, en pause</translation>
+<translation id="4228078597006700451">Commandes non configurées</translation>
 <translation id="4231053948789591973">La diffusion est actuellement en pause. Vous pouvez reprendre la diffusion ou arrêter la diffusion de votre écran à tout moment.</translation>
 <translation id="423685346499232137">Impossible de copier ni de coller du contenu pour le moment</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1432,6 +1434,7 @@ Nouvelle installation</translation>
 <translation id="6802196538183166658">Ouvrir les paramètres rapides en sélectionnant l'heure</translation>
 <translation id="6802687695197837794">Cela autorise l'accès à <ph name="APP1_NAME" />, à <ph name="APP2_NAME" />, à toutes les applications et à tous les sites Web disposant des autorisations de caméra et de microphone</translation>
 <translation id="6803622936009808957">La mise en miroir n'a pas été possible faute de résolutions prises en charge. Le mode de bureau étendu a plutôt été sélectionné.</translation>
+<translation id="6809556495807506746">Commandes non proposées</translation>
 <translation id="6812232930908427253">Impossible d'enregistrer le bureau. Trop de fenêtres ou d'onglets sont ouverts.</translation>
 <translation id="6818242057446442178">Déplacer un mot vers l'arrière</translation>
 <translation id="6819327813400217281">Caméra alignée sur le coin inférieur gauche</translation>
@@ -1458,6 +1461,7 @@ Nouvelle installation</translation>
 <translation id="6919251195245069855">Votre carte à puce n'a pas été reconnue. Réessayez.</translation>
 <translation id="6920245099716267363">Désactiver le point d'accès sans fil. Point d'accès sans fil activé, 1 appareil connecté.</translation>
 <translation id="692135145298539227">supprimer</translation>
+<translation id="6929081673585394903">Afficher les commandes</translation>
 <translation id="6931576957638141829">Enregistrer dans</translation>
 <translation id="6942518653766415536">Menu du format d'enregistrement</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
@@ -1655,6 +1659,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7773536009433685931">Activez plutôt le Wi-Fi</translation>
 <translation id="7780094051999721182">raccourcis</translation>
 <translation id="7780159184141939021">Faire pivoter l'écran</translation>
+<translation id="7792590255364786396">Visible</translation>
 <translation id="7796735576426975947">Nouvelle notification masquée</translation>
 <translation id="7798302898096527229">Appuyez sur Recherche ou Majuscule pour le désactiver.</translation>
 <translation id="780301667611848630">Non merci</translation>

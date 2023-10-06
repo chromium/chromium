@@ -3956,7 +3956,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4110485659976215879">Ripristina avviso</translation>
 <translation id="4110490973560452005">Download completato: <ph name="FILE_NAME" />. Premi MAIUSC+F6 per passare alla parte con la barra dei download.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">È stato eseguito l'upgrade a <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Password del file</translation>
 <translation id="4114524937989710624">Visualizzi i file suggeriti per aiutarti a tornare facilmente alle tue attività più recenti in Google Drive.
         <ph name="BREAK" />
@@ -9090,6 +9089,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8324784016256120271">I siti possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci</translation>
 <translation id="8325413836429495820">Non possono accedere agli appunti</translation>
 <translation id="8326478304147373412">PKCS #7, catena di certificati</translation>
+<translation id="832684045355488000">È stato eseguito l'upgrade a <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Carattere matematico</translation>
 <translation id="8327538105740918488">Puoi cambiare questa password in qualsiasi momento. Verrà salvata in <ph name="GOOGLE_PASSWORD_MANAGER" /> per <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Autorizzazioni e impostazioni contenuti</translation>

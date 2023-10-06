@@ -58,6 +58,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="1264156759663453185">De geselecteerde tekst is te groot voor een gedeeltelijke vertaling.</translation>
 <translation id="1265739287306757398">Meer informatie</translation>
 <translation id="1272079795634619415">Stop</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} wachtwoord}other{{count} wachtwoorden}}</translation>
 <translation id="1275718070701477396">Geselecteerd</translation>
 <translation id="1279024913354609713">Niet toestaan</translation>
 <translation id="1281818060020671000">Gegevens beheren</translation>
@@ -191,6 +192,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="1987779152850321833">Voer de voorgestelde acties hieronder uit om het maximale uit Chrome te halen.</translation>
 <translation id="1989112275319619282">Browsen</translation>
 <translation id="1990820278544963435">Zoeken</translation>
+<translation id="1991153180045413119">Wachtwoord gedeeld</translation>
 <translation id="1992055602764528852">Log in om je tabbladen op je andere apparaten te bekijken.</translation>
 <translation id="199425419756152024">Wachtwoord bekijken</translation>
 <translation id="2008357574463816229">Als je je wachtwoordzin vergeet of een andere instelling wilt, <ph name="BEGIN_LINK" />wis je Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
@@ -234,6 +236,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="2268044343513325586">Verfijnen</translation>
 <translation id="2269277877025820298">Meer zien</translation>
 <translation id="2273327106802955778">Menu Meer</translation>
+<translation id="2274800392139890332">Dit pakket niet meer volgen</translation>
 <translation id="2275480389219976105">Adres gevonden</translation>
 <translation id="2286505070150039482">Gemarkeerde tekst</translation>
 <translation id="2287614783861766820">{count,plural, =1{Dit adres wordt verwijderd van dit apparaat.}other{Deze adressen worden verwijderd van dit apparaat.}}</translation>
@@ -242,6 +245,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="2299218006564889602">Je wachtwoorden worden versleuteld op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Wachtwoord wijzigen op website</translation>
+<translation id="2310154074101836012">Carrousel bewerken</translation>
 <translation id="2316709634732130529">Voorgesteld wachtwoord gebruiken</translation>
 <translation id="2320166752086256636">Toetsenbord verbergen</translation>
 <translation id="2351097562818989364">Je vertaalinstellingen zijn opnieuw ingesteld.</translation>
@@ -526,6 +530,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803696231112616155">Aanbieden om deze site te vertalen</translation>
 <translation id="3810973564298564668">Beheren</translation>
+<translation id="3818045793209708987">Dit pakket wordt niet meer gevolgd</translation>
 <translation id="3818293389945649617">Volgende zoeken</translation>
 <translation id="3819183753496523827">Je bent offline. Check de internetverbinding en probeer het opnieuw.</translation>
 <translation id="3832419617903252251">Wachtwoord alleen opgeslagen op dit apparaat</translation>
@@ -564,6 +569,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4018310736049373830">Activiteit beheren</translation>
 <translation id="4038354071007134711">Geen app op dit apparaat kan het bestand openen.</translation>
 <translation id="4042870976416480368">Zoeken op pagina</translation>
+<translation id="4043294777772912240"><ph name="USERNAME" /> kan nu je gebruikersnaam en wachtwoord gebruiken als die Google Wachtwoordmanager gebruikt om in te loggen bij <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Maak en deel een rechtstreekse link naar een gemarkeerd deel van een pagina.</translation>
 <translation id="4045648459118332842">Gebruik met één tik je opgeslagen wachtwoorden in elke app</translation>
 <translation id="4049507953662678203">Zorg ervoor dat je beschikt over een netwerkverbinding en probeer het opnieuw.</translation>
@@ -607,6 +613,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4286718549648564014">Adres verplaatst naar je account <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Zoeken</translation>
 <translation id="4302248187517737842">Geen gebruikersnaam ••••••••</translation>
+<translation id="4302415908542657649">Wachtwoord delen</translation>
 <translation id="4304713468139749426">Wachtwoordmanager</translation>
 <translation id="430793432425771671">Alles synchroniseren</translation>
 <translation id="4309403553630140242">Dubbeltik voor meer informatie</translation>
@@ -642,6 +649,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4508750114462689118">Inlogpromo sluiten</translation>
 <translation id="4514889972748124117">Sterk wachtwoord voorstellen…</translation>
 <translation id="4520798012560649652">Meer informatie over de incognitomodus</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} bookmark}other{{count} bookmarks}}</translation>
 <translation id="452750746583162491">Je gesynchroniseerde gegevens controleren</translation>
 <translation id="4527660062930312477">Je account wordt beheerd</translation>
 <translation id="4536418791685807335">Probeer opnieuw in te loggen.</translation>
@@ -661,6 +669,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4619615317237390068">Tabbladen van andere apparaten</translation>
 <translation id="4620246317052452550">Pagina's die je hebt gelezen</translation>
 <translation id="4620888520263267479">Linkvoorbeelden bekijken</translation>
+<translation id="4622477750832577849">Tracking aanzetten</translation>
 <translation id="4630540211544979320">Pagina's vertalen</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> hergebruikte wachtwoorden</translation>
 <translation id="4634124774493850572">Wachtwoord gebruiken</translation>
@@ -810,6 +819,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="54401264925851789">Paginabeveiligingsinfo</translation>
 <translation id="5443952882982198570">Creditcards</translation>
 <translation id="5444892875087332195">Bookmarks</translation>
+<translation id="5454211924362324495"><ph name="BEGIN_LINK" />Wijzig je wachtwoord op <ph name="WEBSITE" /><ph name="END_LINK" /> om te voorkomen dat anderen het gebruiken</translation>
 <translation id="5457226814769348910">Offline versie openen</translation>
 <translation id="5475069061743940393">Verzendstatus bijhouden</translation>
 <translation id="5478327362747197944">Maak rechtstreeks Agenda-afspraken door op een datum op een webpagina te klikken.</translation>
@@ -1156,6 +1166,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7154343200458623869">Voltooi de taak.</translation>
 <translation id="7161230316646448869">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
 <translation id="7162168282402939716">Incognitotabbladen ontgrendelen met <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7168959436351276050">Als je deze kaart verbergt, worden al je trackinggegevens voor pakketten verwijderd</translation>
 <translation id="7172852049901402487">Bescherm je wachtwoorden tegen beveiligingsproblemen</translation>
 <translation id="7173114856073700355">Instellingen openen</translation>
 <translation id="7189598951263744875">Delen</translation>

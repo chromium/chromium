@@ -1734,6 +1734,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Du bruger din skærmlås til at udfylde adgangskoder</translation>
 <translation id="4558551763791394412">Prøv at deaktivere dine udvidelser.</translation>
+<translation id="456043042661026303">Dine betalingsoplysninger tjekkes på sikker vis</translation>
 <translation id="4566017918361049074">Udendørsaktiviteter</translation>
 <translation id="4567686777917670400">Din administrator kan ændre konfigurationen af din browser via fjernadgang. Aktivitet på denne enhed administreres muligvis også uden for Chromium. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Gennemgå en liste over cookies og websitedata i et nyt vindue</translation>
@@ -3361,6 +3362,7 @@ Yderligere oplysninger:
 <translation id="7865448901209910068">Bedste hastighed</translation>
 <translation id="7870281855125116701">Der blev fundet en rabat</translation>
 <translation id="7871445724586827387">Skift adgangskoden til din Google-konto</translation>
+<translation id="7876615279559620350">Klar betalinger hurtigere ved at gemme CVC for dette kort på din Google-konto</translation>
 <translation id="7877007680666472091">beskyttede indholds-id'er</translation>
 <translation id="7878562273885520351">Din adgangskode kan være kompromitteret</translation>
 <translation id="7880146494886811634">Gem adresse</translation>
@@ -3849,6 +3851,7 @@ Yderligere oplysninger:
 <translation id="8870494189203302833">Samme rækkefølge med forside nedad</translation>
 <translation id="8870700989640064057">Vil du udskrive den fortrolige fil?</translation>
 <translation id="8871553383647848643">Tilpas din browsers udseende</translation>
+<translation id="8874790741333031443">Prøv midlertidigt at tillade tredjepartscookies, hvilket vil betyde mindre browserbeskyttelse, men større sandsynlighed for, at websitefunktionerne fungerer som forventet.</translation>
 <translation id="8874824191258364635">Angiv et gyldigt kortnummer</translation>
 <translation id="8876033571432926051">Hyggespil</translation>
 <translation id="8877780815363510165">Fiskeri</translation>

@@ -58,6 +58,7 @@
 <translation id="1264156759663453185">منتخب کردہ ٹیکسٹ جزوی ترجمہ کے لیے بہت بڑا ہے۔</translation>
 <translation id="1265739287306757398">طریقہ جانیں</translation>
 <translation id="1272079795634619415">روکیں</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} پاس ورڈ}other{{count} پاس ورڈز}}</translation>
 <translation id="1275718070701477396">منتخب</translation>
 <translation id="1279024913354609713">اجازت نہ دیں</translation>
 <translation id="1281818060020671000">ڈیٹا کا نظم کریں</translation>
@@ -191,6 +192,7 @@
 <translation id="1987779152850321833">‏Chrome سے بھرپور فائدہ اٹھانے کے لیے ذیل میں تجویز کردہ ان کارروائیوں کو مکمل کریں۔</translation>
 <translation id="1989112275319619282">براؤز کریں</translation>
 <translation id="1990820278544963435">تلاش کریں</translation>
+<translation id="1991153180045413119">پاس ورڈ کا اشتراک کر دیا گیا</translation>
 <translation id="1992055602764528852">اپنے دوسرے آلات سے اپنے ٹیبز دیکھنے کے لیے سائن ان کریں۔</translation>
 <translation id="199425419756152024">پاس ورڈ دیکھیں</translation>
 <translation id="2008357574463816229">‏اگر آپ اپنی پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
@@ -234,6 +236,7 @@
 <translation id="2268044343513325586">بہتر بنائیں</translation>
 <translation id="2269277877025820298">مزید دیکھیں</translation>
 <translation id="2273327106802955778">مزید مینیو</translation>
+<translation id="2274800392139890332">اس پیکیج کو ٹریک کرنا بند کریں</translation>
 <translation id="2275480389219976105">پتہ مل گیا</translation>
 <translation id="2286505070150039482">نمایاں کردہ ٹیکسٹ</translation>
 <translation id="2287614783861766820">{count,plural, =1{یہ پتہ اس آلے سے حذف ہو جائے گا۔}other{یہ پتے اس آلے سے حذف ہو جائیں گے۔}}</translation>
@@ -242,6 +245,7 @@
 <translation id="2299218006564889602">‏آپ کے پاس ورڈز Google پاس ورڈ مینیجر میں محفوظ ہونے سے پہلے آپ کے آلے پر مرموز ہو ہوتا ہے۔</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">ویب سائٹ پر پاس ورڈ تبدیل کریں</translation>
+<translation id="2310154074101836012">کیراسیل میں ترمیم کریں</translation>
 <translation id="2316709634732130529">تجویز کردہ پاس ورڈ استعمال کریں</translation>
 <translation id="2320166752086256636">کی بورڈ چھپائیں</translation>
 <translation id="2351097562818989364">ترجمہ کی آپ کی ترتیبات دوبارہ ترتیب دی گئیں ہیں۔</translation>
@@ -526,6 +530,7 @@
 <translation id="380329542618494757">نام</translation>
 <translation id="3803696231112616155">اس سائٹ کا ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="3810973564298564668">نظم کریں</translation>
+<translation id="3818045793209708987">اس پیکیج کو ٹریک کرنا بند کر دیا گیا ہے</translation>
 <translation id="3818293389945649617">اگلا تلاش کریں</translation>
 <translation id="3819183753496523827">آپ آف لائن ہیں۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="3832419617903252251">پاس ورڈ صرف اس آلہ پر محفوظ ہے</translation>
@@ -564,6 +569,7 @@
 <translation id="4018310736049373830">سرگرمی کا نظم کریں</translation>
 <translation id="4038354071007134711">اس آلہ پر کوئی ایپلیکیشن اس فائل کو نہیں کھول سکتی ہے۔</translation>
 <translation id="4042870976416480368">صفحہ میں تلاش کریں</translation>
+<translation id="4043294777772912240">‏<ph name="USERNAME" /> Google پاس ورڈ مینیجر کا استعمال کر کے <ph name="WEBSITE" /> میں سائن ان کرنے کے لیے اب آپ کا صارف نام اور پاس ورڈ استعمال کر سکتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">آپ نے جس صفحہ کو نمایاں کیا ہے اس کے حصے کا براہ راست لنک بنائیں اور تخلیق کریں۔</translation>
 <translation id="4045648459118332842">ایک بار تھپتھپا کر کسی بھی ایپ میں اپنے محفوظ کردہ پاس ورڈز پائیں</translation>
 <translation id="4049507953662678203">یقینی بنائیں کہ آپ کے پاس نیٹ ورک کنکشن ہے اور دوبارہ کوشش کریں۔</translation>
@@ -607,6 +613,7 @@
 <translation id="4286718549648564014">پتہ آپ کے اکاؤنٹ <ph name="USER_EMAIL" /> میں منتقل کر دیا گیا</translation>
 <translation id="4293080268407233932">تلاش کریں</translation>
 <translation id="4302248187517737842">کوئی صارف نام نہیں ہے ••••••••</translation>
+<translation id="4302415908542657649">پاس ورڈ کا اشتراک ہو رہا ہے</translation>
 <translation id="4304713468139749426">پاس ورڈ مینیجر</translation>
 <translation id="430793432425771671">ہر چیز کی مطابقت پذیری کریں</translation>
 <translation id="4309403553630140242">مزيد معلومات کے لیے دوبار تھپتھپائيں</translation>
@@ -642,6 +649,7 @@
 <translation id="4508750114462689118">سائن ان پرومو بند کریں</translation>
 <translation id="4514889972748124117">مضبوط پاس ورڈ تجویز کریں...</translation>
 <translation id="4520798012560649652">پوشیدگی وضع کے بارے میں مزید جانیں</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} بُک مارک}other{{count} بُک مارکس}}</translation>
 <translation id="452750746583162491">اپنے مطابقت پذیر ڈیٹا کا جائزہ لیں</translation>
 <translation id="4527660062930312477">آپ کا اکاؤنٹ نظم کردہ ہے</translation>
 <translation id="4536418791685807335">دوبارہ سائن ان کرنے کی کوشش کریں۔</translation>
@@ -661,6 +669,7 @@
 <translation id="4619615317237390068">دیگر آلات کے ٹیبز</translation>
 <translation id="4620246317052452550">آپ کے پڑھے ہوئے صفحات</translation>
 <translation id="4620888520263267479">لنک کے پیش مناظر دکھائیں</translation>
+<translation id="4622477750832577849">ٹریکنگ کو فعال کریں</translation>
 <translation id="4630540211544979320">صفحات کا ترجمہ کریں</translation>
 <translation id="4631335160486397366">دوبارہ استعمال کردہ <ph name="COUNT" /> پاس ورڈز</translation>
 <translation id="4634124774493850572">پاس ورڈ استعمال کریں</translation>
@@ -810,6 +819,7 @@
 <translation id="54401264925851789">صفحہ کی سیکیورٹی کی معلومات</translation>
 <translation id="5443952882982198570">کریڈٹ کارڈز</translation>
 <translation id="5444892875087332195">بُک مارکس</translation>
+<translation id="5454211924362324495">دوسروں کو اپنا پاس ورڈ استعمال کرنے سے روکنے کے لیے، <ph name="BEGIN_LINK" />اسے <ph name="WEBSITE" /> پر تبدیل کریں<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">آف لائن ورژن کھولیں</translation>
 <translation id="5475069061743940393">پیکیج ٹریکنگ</translation>
 <translation id="5478327362747197944">ویب صفحہ میں کسی تاریخ پر کلک کر کے براہ راست کیلنڈر کے ایونٹس تخلیق کریں۔</translation>
@@ -1156,6 +1166,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7154343200458623869">اپنا ٹاسک مکمل کریں۔</translation>
 <translation id="7161230316646448869">سبھی آلات پر اپنے بُک مارکس اور سرگزشت وغیرہ سنک کریں</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> سے پوشیدگی ٹیبز غیر مقفل کریں</translation>
+<translation id="7168959436351276050">اس کارڈ کو چھپانے سے آپ کا تمام پیکیج ٹریکنگ ڈیٹا ہٹ جائے گا</translation>
 <translation id="7172852049901402487">سیکیورٹی کے معاملات سے اپنے پاس ورڈز محفوظ رکھیں</translation>
 <translation id="7173114856073700355">ترتیبات کھولیں</translation>
 <translation id="7189598951263744875">اشتراک کریں…</translation>

@@ -222,7 +222,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">此檔案可能不安全，因此 Chrome 已封鎖此檔案。</translation>
 <translation id="479167709087336770">這會使用與「Google 搜尋」相同的的拼字檢查工具。您在瀏覽器輸入的文字將會傳送給 Google。您可以在設定中變更此行為。</translation>
-<translation id="4793679854893018356">瞭解 Chrome 如何保護資料安全</translation>
+<translation id="4793679854893018356">瞭解 Chrome 如何保護使用者的網上安全</translation>
 <translation id="4828579605166583682">Google Chrome 正嘗試更換現有密碼。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="4842397268809523050">您的網域無法使用同步功能，因此 ChromeOS Flex 無法同步處理您的資料。</translation>
 <translation id="4873783916118289636">查看 Chrome 中重要的私隱和安全控制項</translation>
@@ -283,7 +283,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5941830788786076944">將 Google Chrome 設為預設瀏覽器</translation>
 <translation id="6003112304606738118">正在下載… 剩餘 <ph name="HOURS" /> 小時</translation>
 <translation id="6010556343189461180">如要取得日後的 Google Chrome 更新，您將需要 macOS 10.15 或以上版本。此電腦正在使用 macOS 10.14。</translation>
-<translation id="6014316319780893079">有了 <ph name="BEGIN_LINK" />Chrome 的工具<ph name="END_LINK" />，你可以放心瀏覽網路、掌控全局</translation>
+<translation id="6014316319780893079">透過 <ph name="BEGIN_LINK" />Chrome 工具<ph name="END_LINK" />，你可安全瀏覽網絡，一切盡在掌握</translation>
 <translation id="6022659036123304283">自訂屬於您的 Chrome</translation>
 <translation id="6025087594896450715">Google Chrome 將會在 <ph name="REMAINING_TIME" />後重新啟動</translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -417,7 +417,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8403038600646341038">電腦畫面中的 Chromium 圖示。</translation>
 <translation id="8416347857511542594">前往 Chrome 進一步瞭解廣告個人化</translation>
 <translation id="8418845734693287262">您的帳戶登入詳情尚未更新，因此 Chrome OS 無法同步處理您的資料。</translation>
-<translation id="842386925677997438">Chrome 安全工具</translation>
+<translation id="842386925677997438">Chrome 的安全工具</translation>
 <translation id="8433638294851456451">如要將號碼從此處傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8451192282033883849">您的帳戶由 <ph name="MANAGER_NAME" /> 管理。管理員可查看並編輯此 Chrome 瀏覽器設定檔和其資料，例如書籤、記錄和密碼。</translation>
 <translation id="8496177819998570653">Google 密碼管理工具(&amp;A)</translation>

@@ -2155,6 +2155,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2671451824761031126">Tus marcadores y opciones de configuración están listos</translation>
 <translation id="2672142220933875349">El archivo crx no es válido; no se pudo desempaquetar.</translation>
 <translation id="2673135533890720193">Leer el historial de navegación</translation>
+<translation id="2673848446870717676">Asegúrate de que tu dispositivo Bluetooth esté cerca y tenga el modo de vinculación activado. Vincúlate solo con dispositivos de confianza. Todas las cuentas de esta Chromebook pueden ver los dispositivos vinculados.</translation>
 <translation id="2673873887296220733">¿Quieres copiar 1 archivo en <ph name="CLOUD_PROVIDER" /> para abrirlo?</translation>
 <translation id="2674764818721168631">No</translation>
 <translation id="2676084251379299915">La política empresarial inhabilitó esta extensión porque ya no está disponible en Chrome Web Store.</translation>
@@ -3831,6 +3832,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4010917659463429001">Para obtener tus favoritos en el dispositivo móvil, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">¿Reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">¿Tienes extensiones? <ph name="BEGIN_LINK" />Administra tus extensiones<ph name="END_LINK" /> en un solo lugar.</translation>
+<translation id="4016762287427926315">Los permisos que otorgues para <ph name="APP_NAME" /> también se otorgarán para esta app. <ph name="BEGIN_LINK" />Administrar<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crear un código QR para este vínculo</translation>
 <translation id="4019983356493507433">Editar lista de Favoritos</translation>
 <translation id="4020327272915390518">Menú de opciones</translation>
@@ -3951,7 +3953,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4110485659976215879">Restablecer advertencia</translation>
 <translation id="4110490973560452005">Se completó la descarga: <ph name="FILE_NAME" />. Presiona mayúscula + F6 para ir al área de la barra de descargas.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sin conexión)</translation>
-<translation id="411318099524508025">El sistema se actualizó a <ph name="NAME" /></translation>
 <translation id="4113743276555482284">Contraseña del archivo</translation>
 <translation id="4114524937989710624">Estás viendo archivos sugeridos para que puedas regresar a la actividad más reciente en Google Drive.
         <ph name="BREAK" />
@@ -6406,6 +6407,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6156863943908443225">Caché de la secuencia de comandos</translation>
 <translation id="6156944117133588106">Mostrar los botones de navegación en el modo tablet</translation>
 <translation id="615930144153753547">Permitir que los sitios muestren imágenes</translation>
+<translation id="6160290816917599257">El código no es válido. El formato de tu entrada debe ser <ph name="LPA_0" />$<ph name="LPA_1" />dirección SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID para coincidencias opcional<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Proporcionar certificados para autenticación</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Configuración de Kerberos</translation>
@@ -8438,6 +8440,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7807117920154132308">Al parecer, <ph name="SUPERVISED_USER_NAME" /> ya configuró Asistente de Google en otro dispositivo. <ph name="SUPERVISED_USER_NAME" /> puede activar el contexto de la pantalla de este dispositivo para sacarle incluso más provecho a Asistente.</translation>
 <translation id="7807711621188256451">Permitir siempre que <ph name="HOST" /> acceda a la cámara</translation>
 <translation id="7810202088502699111">Se bloquearon las ventanas emergentes en esta página.</translation>
+<translation id="7810367892333449285">El formato de tu entrada debe ser <ph name="LPA_0" />$<ph name="LPA_1" />dirección SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID para coincidencias opcional<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editar el acceso directo <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
@@ -9086,6 +9089,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8324784016256120271">Los sitios pueden usar cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
 <translation id="8325413836429495820">No puede ver el contenido del portapapeles</translation>
 <translation id="8326478304147373412">PKCS N. º 7, cadena de certificados</translation>
+<translation id="832684045355488000">El sistema se actualizó a <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Fuente matemática</translation>
 <translation id="8327538105740918488">Si quieres, puedes cambiar esta contraseña más adelante. Se guardará en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Configuración de contenido y permisos</translation>
@@ -9416,6 +9420,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8605428685123651449">Memoria SQLite</translation>
 <translation id="8607171490667464784">Mientras esté inactivo y usando la batería</translation>
 <translation id="8607326572516521315">La reducción de spam y fraude se basa en tokens de estado privado que ayudan a los sitios a combatir el fraude y distinguir a los bots de las personas.</translation>
+<translation id="8607828412110648570">Asegúrate de que tu dispositivo Bluetooth esté cerca y tenga el modo de vinculación activado. Vincúlate solo con dispositivos de confianza. Todas las cuentas de esta Chromebook pueden ver los dispositivos vinculados. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Agregar un ticket de Kerberos</translation>
 <translation id="8609465669617005112">Subir</translation>
 <translation id="8610103157987623234">El formato es incorrecto; vuelve a intentarlo</translation>

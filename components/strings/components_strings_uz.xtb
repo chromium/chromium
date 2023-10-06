@@ -1729,6 +1729,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Parollarni kiritish uchun ekran qulfidan foydalanmoqdasiz</translation>
 <translation id="4558551763791394412">Brauzer kengaytmalarini o‘chirib qo‘yib, keyin tekshirib ko‘ring.</translation>
+<translation id="456043042661026303">Toʻlov tafsilotlari xavfsiz tekshirilmoqda</translation>
 <translation id="4566017918361049074">Ochiq havoda</translation>
 <translation id="4567686777917670400">Adminitratoringiz brauzerni masofadan sozlashi mumkin. Bu qurilmadagi amallar Chromium tashqarisidan boshqarilishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Cookie fayllar va sayt maʼlumotlari roʻyxatini yangi oynada tekshirish</translation>
@@ -3355,6 +3356,7 @@ Batafsil axborot:
 <translation id="7865448901209910068">Eng tez</translation>
 <translation id="7870281855125116701">Chegirma mavjud</translation>
 <translation id="7871445724586827387">Google hisobi parolini oʻzgartirish</translation>
+<translation id="7876615279559620350">Tezroq hisob-kitob qilish uchun ushbu kartaning CVC kodini Google hisobingizga saqlang</translation>
 <translation id="7877007680666472091">himoyalangan kontent identifikatori</translation>
 <translation id="7878562273885520351">Parolingiz o‘g‘irlangan bo‘lishi mumkin</translation>
 <translation id="7880146494886811634">Manzilni saqlash</translation>
@@ -3842,6 +3844,7 @@ Batafsil axborot:
 <translation id="8870494189203302833">Bir xil tartibda orqa tomonida</translation>
 <translation id="8870700989640064057">Maxfiy fayl chop etilsinmi?</translation>
 <translation id="8871553383647848643">Brauzer koʻrinishini moslash</translation>
+<translation id="8874790741333031443">Tashqi cookie fayllarga vaqtincha ruxsat bering, bunda himoya pasayadi, lekin sayt funksiyalari kutilganidek ishlaydi.</translation>
 <translation id="8874824191258364635">Karta raqamini xatosiz kiriting</translation>
 <translation id="8876033571432926051">Kazual oʻyinlar</translation>
 <translation id="8877780815363510165">Baliq ovi</translation>

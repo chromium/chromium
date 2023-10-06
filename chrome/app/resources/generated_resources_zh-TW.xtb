@@ -3602,7 +3602,7 @@
 <translation id="3828029223314399057">搜尋書籤</translation>
 <translation id="3828953470056652895">我已詳閱並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》、《<ph name="BEGIN_LINK2" />Chrome 和 ChromeOS 附加服務條款<ph name="END_LINK2" />》以及《<ph name="BEGIN_LINK3" />Play 服務條款<ph name="END_LINK3" />》。</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - 高記憶體用量 - <ph name="MEMORY_VALUE" /></translation>
-<translation id="3829765597456725595">SMB 檔案共用</translation>
+<translation id="3829765597456725595">SMB 檔案共用區</translation>
 <translation id="3830470485672984938">使用其他密碼金鑰</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{系統管理員已重新開啟 1 個可能有害的擴充功能}other{系統管理員已重新開啟 {NUM_EXTENSIONS} 個可能有害的擴充功能}}</translation>
 <translation id="3834728400518755610">必須先關閉 Linux，麥克風設定的變更才會生效。請關閉 Linux 以繼續操作。</translation>
@@ -3955,7 +3955,6 @@
 <translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4110490973560452005">下載完成：<ph name="FILE_NAME" />。按下 Shift+F6 即可回到下載內容列區域。</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
-<translation id="411318099524508025">你已升級到 <ph name="NAME" />。</translation>
 <translation id="4113743276555482284">檔案密碼</translation>
 <translation id="4114524937989710624">畫面上會顯示建議的檔案，方便你繼續執行最近在 Google 雲端硬碟中的活動。
         <ph name="BREAK" />
@@ -9088,6 +9087,7 @@
 <translation id="8324784016256120271">網站可使用 Cookie 查看你在各網站的瀏覽活動，並提供個人化廣告等服務</translation>
 <translation id="8325413836429495820">不得查看剪貼簿</translation>
 <translation id="8326478304147373412">PKCS #7，憑證鏈結</translation>
+<translation id="832684045355488000">你已升級到 <ph name="NAME" /></translation>
 <translation id="8327386430364625757">數學字型</translation>
 <translation id="8327538105740918488">以後隨時可以變更這組密碼。系統會將這組密碼儲存至 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="8327676037044516220">權限和內容設定</translation>

@@ -1730,6 +1730,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">K vyplňování hesel používáte zámek obrazovky</translation>
 <translation id="4558551763791394412">Zkuste zakázat rozšíření.</translation>
+<translation id="456043042661026303">Bezpečná kontrola vašich platebních údajů</translation>
 <translation id="4566017918361049074">Příroda</translation>
 <translation id="4567686777917670400">Administrátor může nastavení prohlížeče vzdáleně změnit. Aktivita na tomto zařízení může být spravována také mimo Chromium. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Zkontrolovat seznam souborů cookie a dat webů v novém okně</translation>
@@ -3355,6 +3356,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7865448901209910068">Nejlepší rychlost</translation>
 <translation id="7870281855125116701">Byla nalezena sleva</translation>
 <translation id="7871445724586827387">Změnit heslo účtu Google</translation>
+<translation id="7876615279559620350">Pro rychlejší placení si kód CVC této karty uložte do účtu Google</translation>
 <translation id="7877007680666472091">chráněná ID obsahu</translation>
 <translation id="7878562273885520351">Heslo může být prolomeno</translation>
 <translation id="7880146494886811634">Uložit adresu</translation>
@@ -3843,6 +3845,7 @@ Další podrobnosti:
 <translation id="8870494189203302833">Stejné pořadí lícem dolů</translation>
 <translation id="8870700989640064057">Vytisknout důvěrný soubor?</translation>
 <translation id="8871553383647848643">Přizpůsobte si vzhled prohlížeče</translation>
+<translation id="8874790741333031443">Zkuste dočasně povolit soubory cookie třetích stran – budete při procházení méně chráněni, ale funkce webu budou s větší pravděpodobností fungovat správně.</translation>
 <translation id="8874824191258364635">Zadejte platné číslo karty</translation>
 <translation id="8876033571432926051">Nenáročné hry</translation>
 <translation id="8877780815363510165">Rybaření</translation>

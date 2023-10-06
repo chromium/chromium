@@ -799,6 +799,7 @@
 <translation id="5360976571138293719">ดูการตั้งค่าเพิ่มเติมเกี่ยวกับความเป็นส่วนตัว ความปลอดภัย และการรวบรวมข้อมูลได้ที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
 <translation id="5386314158584363703">คุณจะเห็นเว็บไซต์ที่ติดตามที่นี่</translation>
 <translation id="5388358297987318779">เปิดภาพ</translation>
+<translation id="5396950905475481456">เชิญสมาชิกในครอบครัว</translation>
 <translation id="5407969256130905701">ยกเลิกการเปลี่ยนแปลง</translation>
 <translation id="5414763847370083940">คุณจะได้รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="5416022985862681400">7 วันที่ผ่านมา</translation>
@@ -1550,4 +1551,5 @@
 <translation id="988141524645182168">อุปกรณ์อื่นๆ</translation>
 <translation id="989988560359834682">แก้ไขที่อยู่</translation>
 <translation id="994757059139821576">บทความแนะนำ</translation>
+<translation id="999768147936949692">ตอนนี้คุณจะแชร์รหัสผ่านกับสมาชิกในครอบครัวได้เท่านั้น <ph name="BEGIN_LINK" />เชิญสมาชิกในครอบครัว<ph name="END_LINK" />เข้าร่วมกลุ่ม และรับประโยชน์เพิ่มเติมจากผลิตภัณฑ์และการสมัครใช้บริการต่างๆ ของ Google</translation>
 </translationbundle>

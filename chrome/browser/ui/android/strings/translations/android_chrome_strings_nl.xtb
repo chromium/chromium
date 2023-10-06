@@ -345,6 +345,7 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="2856503607207334158">Inloggen mislukt</translation>
 <translation id="2860954141821109167">Zorg ervoor dat een telefoon-app aanstaat op dit apparaat</translation>
 <translation id="2861923151411510142">Sommige Chrome-functies zijn niet meer beschikbaar</translation>
+<translation id="2869430948265924908">Als je je gevoelige content in de auto wilt beschermen, stel je een profielvergrendeling voor je auto in.  Dit kun je doen met een pincode, code of wachtwoord.</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Pagina's vooraf laden</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> vraagt of je deze website wilt goedkeuren:</translation>
@@ -466,6 +467,7 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="3421726884497337397">Kies wanneer je cookies van derden wilt blokkeren</translation>
 <translation id="3428747202529429621">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd</translation>
 <translation id="3429160811076349561">Proeffuncties staan uit</translation>
+<translation id="3430670036890315772">Als je de profielvergrendeling uitzet, worden je opgeslagen gegevens verwijderd</translation>
 <translation id="3435465986463792564">Heb je veel vensters open? Beheer ze hier.</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="3439276997620616816">Hier vind je je recente tabbladen</translation>
@@ -645,6 +647,7 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="4378154925671717803">Telefoon</translation>
 <translation id="438319986296050901">Alleen kaart delen</translation>
 <translation id="4384468725000734951">Sogou wordt gebruikt om te zoeken</translation>
+<translation id="4387647248986092471">Profielvergrendeling voor auto instellen</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Downloaden…</translation>
 <translation id="4404568932422911380">Geen bookmarks</translation>
 <translation id="4405224443901389797">Verplaatsen naar…</translation>
@@ -816,6 +819,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="5171045022955879922">Zoek of typ een URL</translation>
 <translation id="5174700554036517242">Tabblad is teruggezet naar oorspronkelijke hoogte</translation>
+<translation id="5180063720319462041">Pagina vertaald naar het <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Beheer de onderwerpen en zoekopdrachten waarin je bent geïnteresseerd</translation>
 <translation id="5191251636205085390">Bekijk meer informatie over en beheer nieuwe technologieën die cookies van derden willen vervangen</translation>
 <translation id="5193988420012215838">Naar klembord gekopieerd</translation>
@@ -824,6 +828,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5210286577605176222">Naar het vorige tabblad gaan</translation>
 <translation id="5210365745912300556">Tabblad sluiten</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
+<translation id="5226378907213531272">Je ontgrendelt je scherm elke keer dat je de auto gebruikt</translation>
 <translation id="5227554086496586518">Tik om zoekresultaten te bekijken</translation>
 <translation id="5233638681132016545">Nieuw tabblad</translation>
 <translation id="5234971936051226002">De speler 'Deze pagina beluisteren' is geminimaliseerd.</translation>
@@ -1318,6 +1323,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7691043218961417207">Ontdek content om te volgen</translation>
 <translation id="7697383401610880082">Handgreep voor slepen</translation>
 <translation id="7698359219371678927">E-mail in <ph name="APP_NAME" /> maken</translation>
+<translation id="7702388902581909985">Als je je browsegegevens wist, word je niet uitgelogd van je Google-account. <ph name="BEGIN_LINK1" />Log hiervoor uit bij Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Mobiele data gebruiken</translation>
 <translation id="7709094866268987903">Door jou verwijderde interesses verschijnen hier</translation>
 <translation id="7709918231054955894">Haal al je tabbladen op</translation>

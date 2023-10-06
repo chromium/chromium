@@ -2169,6 +2169,7 @@
 <translation id="2671451824761031126">Таны хавчуурга, тохиргоо бэлэн боллоо</translation>
 <translation id="2672142220933875349">crx файл алдаатай байна, задлаж чадсангүй.</translation>
 <translation id="2673135533890720193">Хайлтын хадгалагдсан мэдээллийг уншина</translation>
+<translation id="2673848446870717676">Bluetooth төхөөрөмжөө хослуулах горимд болон ойролцоо байгаа эсэхийг шалгаарай. Зөвхөн итгэдэг төхөөрөмжүүдтэйгээ хослуулна уу. Хослуулсан төхөөрөмжүүд нь энэ Chromebook-н бүх бүртгэлд харагдана.</translation>
 <translation id="2673873887296220733">Нээхийн тулд <ph name="CLOUD_PROVIDER" /> руу 1 файл хуулах уу?</translation>
 <translation id="2674764818721168631">Унтраалттай</translation>
 <translation id="2676084251379299915">Энэ өргөтгөл цаашид Chrome Веб Дэлгүүрт боломжгүй болсон тул үүнийг байгууллагын бодлогоор идэвхгүй болгосон.</translation>
@@ -3844,6 +3845,7 @@
 <translation id="4010917659463429001">Хавчуургаа мобайл төхөөрөмждөө авахын тулд, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Та "<ph name="EXTENSION_NAME" />-г" засварлах уу?</translation>
 <translation id="4015163439792426608">Өргөтгөлтэй болсон уу? Хялбарчилсан нэг газраас <ph name="BEGIN_LINK" />өргөтгөлүүдээ удирдаарай<ph name="END_LINK" />.</translation>
+<translation id="4016762287427926315">Таны <ph name="APP_NAME" />-д өгсөн зөвшөөрлийг энэ аппад мөн зөвшөөрнө. <ph name="BEGIN_LINK" />Удирдах<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Энэ холбоосонд QR код үүсгэх</translation>
 <translation id="4019983356493507433">Хавчуургын жагсаалтыг засах</translation>
 <translation id="4020327272915390518">Сонголтын цэс</translation>
@@ -3964,7 +3966,6 @@
 <translation id="4110485659976215879">Сануулгыг сэргээх</translation>
 <translation id="4110490973560452005">Татаж дууссан: <ph name="FILE_NAME" />. Татаж авсан файл хадгалах эсвэл нээх хэсэгт гүйлгэхийн тулд Shift+F6-г дарна уу.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
-<translation id="411318099524508025">Таныг <ph name="NAME" /> руу сайжруулсан.</translation>
 <translation id="4113743276555482284">Файлын нууц үг</translation>
 <translation id="4114524937989710624">Та Google Драйвт хамгийн саяхны үйл ажиллагаа руугаа хялбархан буцахад тань туслах санал болгосон файлуудыг харж байна.
         <ph name="BREAK" />
@@ -6420,6 +6421,7 @@
 <translation id="6156863943908443225">Скрипт кэш</translation>
 <translation id="6156944117133588106">Таблетын горимд навигацын товчлуурыг харуулах</translation>
 <translation id="615930144153753547">Сайтууд зураг харуулах боломжтой</translation>
+<translation id="6160290816917599257">Код буруу байна. Таны оролт <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ хаяг<ph name="LPA_2" />$<ph name="LPA_3" />нэмэлт таарах ID<ph name="LPA_4" /> гэсэн форматтай байх ёстой</translation>
 <translation id="6160625263637492097">Нотолгоонд зориулсан сертификат олгох</translation>
 <translation id="6163363155248589649">&amp;Хэвийн</translation>
 <translation id="6163376401832887457">Kerberos-н тохиргоо</translation>
@@ -8450,6 +8452,7 @@
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> өөр төхөөрөмжид Google Туслахыг аль хэдийн тохируулсан бололтой. <ph name="SUPERVISED_USER_NAME" /> энэ төхөөрөмж дээр Дэлгэцийн хам сэдвийг асааснаар Туслахаа илүү сайн ашиглах боломжтой.</translation>
 <translation id="7807711621188256451"><ph name="HOST" />-д таны камерт нэвтрэх зөвшөөрөл олгох</translation>
 <translation id="7810202088502699111">Зар сурталчилгааг энэ хуудсанд хориглосон байна.</translation>
+<translation id="7810367892333449285">Таны оролт <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ хаяг<ph name="LPA_2" />$<ph name="LPA_3" />нэмэлт таарах ID<ph name="LPA_4" /> гэсэн форматтай байх ёстой</translation>
 <translation id="7814458197256864873">Хуулах</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" />-д зориулсан <ph name="SHORTCUT" /> товчлолыг засах</translation>
@@ -9096,6 +9099,7 @@
 <translation id="8324784016256120271">Сайтууд нь, жишээлбэл зарыг хувийн болгохын тулд өөр өөр сайт дээрх таны хөтчийн үйл ажиллагааг харахын тулд күүки ашиглах боломжтой</translation>
 <translation id="8325413836429495820">Таны түр санах ойг харахыг зөвшөөрөөгүй</translation>
 <translation id="8326478304147373412">PKCS # 7, сертификат хэлхээ</translation>
+<translation id="832684045355488000">Таныг <ph name="NAME" /> руу сайжрууллаа</translation>
 <translation id="8327386430364625757">Математикийн фонт</translation>
 <translation id="8327538105740918488">Та үүнийг дараа нь хүссэн үедээ өөрчлөх боломжтой. Үүнийг <ph name="EMAIL" />-д зориулж <ph name="GOOGLE_PASSWORD_MANAGER" />-д хадгална.</translation>
 <translation id="8327676037044516220">Зөвшөөрөл болон контентын тохиргоо</translation>
@@ -9426,6 +9430,7 @@
 <translation id="8605428685123651449">SQLite санах ой</translation>
 <translation id="8607171490667464784">Идэвхгүй бөгөөд батарейг ашиглаж байх үед</translation>
 <translation id="8607326572516521315">Спам болон залилан бууруулалт нь сайтуудад залилантай тэмцэх болон ботуудыг хүмүүсээс ялгахад туслахын тулд хувийн төлөвийн токенд тулгуурлана.</translation>
+<translation id="8607828412110648570">Bluetooth төхөөрөмжөө хослуулах горимд болон ойролцоо байгаа эсэхийг шалгаарай. Зөвхөн итгэдэг төхөөрөмжүүдтэйгээ хослуулна уу. Хослуулсан төхөөрөмжүүд нь энэ Chromebook-н бүх бүртгэлд харагдана. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos тасалбар нэмэх</translation>
 <translation id="8609465669617005112">Дээш зөөх</translation>
 <translation id="8610103157987623234">Формат буруу байна. Дахин оролдоно уу</translation>

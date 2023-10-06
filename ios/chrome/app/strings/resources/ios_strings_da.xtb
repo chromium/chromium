@@ -799,6 +799,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5360976571138293719">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Her finder du de websites, du følger</translation>
 <translation id="5388358297987318779">Åbn billede</translation>
+<translation id="5396950905475481456">Inviter familiemedlemmer</translation>
 <translation id="5407969256130905701">Kassér ændringer</translation>
 <translation id="5414763847370083940">Du får en underretning, hvis prisen falder på et website.</translation>
 <translation id="5416022985862681400">De seneste syv dage</translation>
@@ -1550,4 +1551,5 @@ Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgan
 <translation id="988141524645182168">Andre enheder</translation>
 <translation id="989988560359834682">Rediger adresse</translation>
 <translation id="994757059139821576">Artikelforslag</translation>
+<translation id="999768147936949692">Indtil videre kan du kun dele adgangskoder med familiemedlemmer. <ph name="BEGIN_LINK" />Inviter familiemedlemmer<ph name="END_LINK" /> til at deltage i din gruppe, og få mere ud af dine produkter og abonnementer fra Google.</translation>
 </translationbundle>

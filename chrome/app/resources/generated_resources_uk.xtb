@@ -2176,6 +2176,7 @@
 <translation id="2671451824761031126">Ваші закладки та налаштування імпортовано</translation>
 <translation id="2672142220933875349">Неправильний файл .crx. Помилка розпакування.</translation>
 <translation id="2673135533890720193">Переглядати історію веб-перегляду</translation>
+<translation id="2673848446870717676">Переконайтеся, що пристрій із Bluetooth поруч і на ньому ввімкнено режим підключення. Під’єднуйте лише надійні пристрої. Підключені пристрої відображаються для всіх облікових записів на цьому пристрої Chromebook.</translation>
 <translation id="2673873887296220733">Скопіювати 1 файл у сервіс <ph name="CLOUD_PROVIDER" />, щоб відкрити його?</translation>
 <translation id="2674764818721168631">Вимкнено</translation>
 <translation id="2676084251379299915">Це розширення вимкнено згідно з корпоративними правилами, оскільки воно більше не доступне у Веб-магазині Chrome.</translation>
@@ -3852,6 +3853,7 @@
 <translation id="4010917659463429001">Щоб мати доступ до закладок на мобільному пристрої, потрібно <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Відновити розширення <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Користуєтеся розширеннями? <ph name="BEGIN_LINK" />Керуйте ними<ph name="END_LINK" /> в єдиному зручному місці.</translation>
+<translation id="4016762287427926315">Дозволи, які ви надаєте додатку <ph name="APP_NAME" />, також поширюються на цей додаток. <ph name="BEGIN_LINK" />Керувати<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Створити QR-код для цього посилання</translation>
 <translation id="4019983356493507433">Редагувати список закладок</translation>
 <translation id="4020327272915390518">Меню параметрів</translation>
@@ -3972,7 +3974,6 @@
 <translation id="4110485659976215879">Відновити попередження</translation>
 <translation id="4110490973560452005">Завантажено: <ph name="FILE_NAME" />. Натисніть Shift+F6, щоб перейти на панель завантажень.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
-<translation id="411318099524508025">Ви перейшли на <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Пароль файлу</translation>
 <translation id="4114524937989710624">Ви бачите пропозиції файлів, які допоможуть вам легко повернутися до останніх дій на Google Диску.
         <ph name="BREAK" />
@@ -6425,6 +6426,7 @@
 <translation id="6156863943908443225">Кеш сценарію</translation>
 <translation id="6156944117133588106">Показувати кнопки навігації в режимі планшета</translation>
 <translation id="615930144153753547">Сайти можуть показувати зображення</translation>
+<translation id="6160290816917599257">Недійсний код. Введіть дані у форматі: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ адреса<ph name="LPA_2" />$<ph name="LPA_3" />необов’язковий ідентифікатор зіставлення<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Надавати сертифікати для автентифікації</translation>
 <translation id="6163363155248589649">&amp;Звичайний</translation>
 <translation id="6163376401832887457">Налаштування Kerberos</translation>
@@ -8462,6 +8464,7 @@
 <translation id="7807117920154132308">Схоже, у користувача <ph name="SUPERVISED_USER_NAME" /> вже налаштовано Google Асистента на іншому пристрої. <ph name="SUPERVISED_USER_NAME" /> може отримати ще більше функцій, увімкнувши екранний контекст на цьому пристрої.</translation>
 <translation id="7807711621188256451">Завжди дозволяти хосту <ph name="HOST" /> доступ до вашої камери</translation>
 <translation id="7810202088502699111">На цій сторінці спливаючі вікна заблоковано.</translation>
+<translation id="7810367892333449285">Введіть дані у форматі: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ адреса<ph name="LPA_2" />$<ph name="LPA_3" />необов’язковий ідентифікатор зіставлення<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Копіювати</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Змінити комбінацію клавіш <ph name="SHORTCUT" /> для розширення <ph name="EXTENSION_NAME" /></translation>
@@ -9110,6 +9113,7 @@
 <translation id="8324784016256120271">Сайти можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу</translation>
 <translation id="8325413836429495820">Заборонено переглядати буфер обміну</translation>
 <translation id="8326478304147373412">PKCS #7, ланцюжок сертифікатів</translation>
+<translation id="832684045355488000">Ви перейшли на <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Математичний шрифт</translation>
 <translation id="8327538105740918488">Цей пароль завжди можна змінити. Його буде збережено в сервісі <ph name="GOOGLE_PASSWORD_MANAGER" /> для адреси <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Дозволи й налаштування контенту</translation>
@@ -9440,6 +9444,7 @@
 <translation id="8605428685123651449">Пам’ять SQLite</translation>
 <translation id="8607171490667464784">Якщо пристрій неактивний і не заряджається</translation>
 <translation id="8607326572516521315">Для боротьби зі спамом і шахрайством використовуються приватні маркери стану. Вони допомагають сайтам запобігати спробам шахрайства й відрізняти ботів від людей.</translation>
+<translation id="8607828412110648570">Переконайтеся, що пристрій із Bluetooth поруч і на ньому ввімкнено режим підключення. Під’єднуйте лише надійні пристрої. Підключені пристрої відображаються для всіх облікових записів на цьому пристрої Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Додати квиток Kerberos</translation>
 <translation id="8609465669617005112">Угору</translation>
 <translation id="8610103157987623234">Неправильний формат, повторіть спробу</translation>

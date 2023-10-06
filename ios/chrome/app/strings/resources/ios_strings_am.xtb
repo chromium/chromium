@@ -799,6 +799,7 @@
 <translation id="5360976571138293719">ከግላዊነት፣ ደህንነት እና የውሂብ አሰባሰብ ጋር ለሚዛመዱ ተጨማሪ ቅንብሮች <ph name="BEGIN_LINK" />የGoogle አገልግሎቶች<ph name="END_LINK" />ን ይመልከቱ።</translation>
 <translation id="5386314158584363703">የሚከተሏቸውን ጣቢያዎች እዚህ ያገኛሉ</translation>
 <translation id="5388358297987318779">ምስል ክፈት</translation>
+<translation id="5396950905475481456">የቤተሰብ አባላትን ይጋብዙ</translation>
 <translation id="5407969256130905701">ለውጦችን አስወግድ</translation>
 <translation id="5414763847370083940">በማንኛውም ጣቢያ ላይ ዋጋው ከቀነሰ ማንቂያ ያገኛሉ።</translation>
 <translation id="5416022985862681400">ባለፉት 7 ቀኖች</translation>
@@ -1550,4 +1551,5 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="988141524645182168">ሌሎች መሣሪያዎች</translation>
 <translation id="989988560359834682">አድራሻ ያርትዑ</translation>
 <translation id="994757059139821576">የጽሑፍ አስተያየት ጥቆማዎች</translation>
+<translation id="999768147936949692">ለአሁን የይለፍ ቃላትን ማጋራት የሚችሉት ለቤተሰብ አባላት ብቻ ነው። ቡድንዎን እንዲቀላቀሉ <ph name="BEGIN_LINK" />የቤተሰብ አባላትን ይጋብዙ<ph name="END_LINK" /> እና በመላው Google ላይ ካሉት የእርስዎ ምርቶች እና የደንበኝነት ምዝገባዎች ተጨማሪ ያግኙ።</translation>
 </translationbundle>

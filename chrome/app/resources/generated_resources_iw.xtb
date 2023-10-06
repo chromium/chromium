@@ -2169,6 +2169,7 @@
 <translation id="2671451824761031126">הסימניות וההגדרות שלך מוכנות</translation>
 <translation id="2672142220933875349">‏קובץ crx פגום, פירוק האריזה נכשל.</translation>
 <translation id="2673135533890720193">לקרוא את היסטוריית הגלישה שלך</translation>
+<translation id="2673848446870717676">‏צריך לוודא שמכשיר ה-Bluetooth נמצא במצב התאמה ובקרבת מקום. חשוב לבצע התאמה רק עם מכשירים מהימנים. המכשירים המותאמים גלויים לכל החשבונות ב-Chromebook הזה.</translation>
 <translation id="2673873887296220733">להעתיק קובץ אחד אל <ph name="CLOUD_PROVIDER" /> כדי לפתוח אותו?</translation>
 <translation id="2674764818721168631">כבוי</translation>
 <translation id="2676084251379299915">‏התוסף הזה הושבת על ידי מדיניות הארגון כי הוא לא זמין יותר בחנות האינטרנט של Chrome.</translation>
@@ -3842,6 +3843,7 @@
 <translation id="4010917659463429001">כדי לגשת לסימניות שלך בנייד, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">לתקן את '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="4015163439792426608">מותקנים אצלך תוספים? אפשר <ph name="BEGIN_LINK" />לנהל את התוספים<ph name="END_LINK" /> בקלות במקום אחד.</translation>
+<translation id="4016762287427926315">ההרשאות שמוענקות לאפליקציה <ph name="APP_NAME" /> יוענקו גם לאפליקציה הזו. <ph name="BEGIN_LINK" />לניהול ההרשאות<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">‏צריך ליצור קוד QR לקישור הזה</translation>
 <translation id="4019983356493507433">עריכה של רשימת הסימניות</translation>
 <translation id="4020327272915390518">תפריט אפשרויות</translation>
@@ -3961,7 +3963,6 @@
 <translation id="4110485659976215879">שחזור האזהרה</translation>
 <translation id="4110490973560452005">‏ההורדה הושלמה: <ph name="FILE_NAME" />. אפשר להקיש על Shift+F6 כדי לעבור לאזור סרגל ההורדות.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (אופליין)</translation>
-<translation id="411318099524508025">הושלם שדרוג ל-<ph name="NAME" />.</translation>
 <translation id="4113743276555482284">סיסמה לקובץ</translation>
 <translation id="4114524937989710624">‏מוצגות לך הצעות לקבצים כדי לעזור לך לחזור לפעילות האחרונה שלך ב-Google Drive.
         <ph name="BREAK" />
@@ -6414,6 +6415,7 @@
 <translation id="6156863943908443225">מטמון סקריפטים</translation>
 <translation id="6156944117133588106">הצגת לחצני ניווט במצב טאבלט</translation>
 <translation id="615930144153753547">אתרים יכולים להציג תמונות</translation>
+<translation id="6160290816917599257">‏הקוד לא תקין. הפורמט של הרשומה צריך להיות <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />מזהה תואם אופציונלי<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">אספקת אישורים לאימות</translation>
 <translation id="6163363155248589649">&amp;רגיל</translation>
 <translation id="6163376401832887457">‏הגדרות Kerberos</translation>
@@ -8445,6 +8447,7 @@
 <translation id="7807117920154132308">‏נראה שכבר התבצעה הגדרה של Google Assistant על ידי <ph name="SUPERVISED_USER_NAME" /> במכשיר אחר. באמצעות הפעלה של הקשר המסך, ל<ph name="SUPERVISED_USER_NAME" /> תהיה אפשרות להפיק יותר תועלת מ-Assistant במכשיר הזה.</translation>
 <translation id="7807711621188256451">התרה תמיד ל-<ph name="HOST" /> לגשת למצלמה שלך</translation>
 <translation id="7810202088502699111">חלונות קופצים נחסמו בדף זה.</translation>
+<translation id="7810367892333449285">‏הפורמט של הרשומה צריך להיות <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />מזהה תואם אופציונלי<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;העתקה</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">עריכת קיצור הדרך <ph name="SHORTCUT" /> עבור <ph name="EXTENSION_NAME" /></translation>
@@ -9094,6 +9097,7 @@
 <translation id="8324784016256120271">‏אתרים יכולים להשתמש בקובצי cookie כדי לראות את פעילות הגלישה שלך באתרים שונים, למשל לצורך התאמה אישית של מודעות</translation>
 <translation id="8325413836429495820">לא מורשים לראות את הלוח</translation>
 <translation id="8326478304147373412">‏PKCS #7, שרשרת אישורים</translation>
+<translation id="832684045355488000">הושלם שדרוג ל-<ph name="NAME" /></translation>
 <translation id="8327386430364625757">גופן מתמטי</translation>
 <translation id="8327538105740918488">תמיד אפשר לשנות את הסיסמה הזו. היא תישמר ב<ph name="GOOGLE_PASSWORD_MANAGER" /> בחשבון <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">הגדרות תוכן והרשאות</translation>
@@ -9424,6 +9428,7 @@
 <translation id="8605428685123651449">‏זיכרון SQLite</translation>
 <translation id="8607171490667464784">בזמן שימוש בסוללה ובמצב לא פעיל</translation>
 <translation id="8607326572516521315">אסימוני מצב פרטי מאפשרים לאתרים להתמודד עם ספאם והונאות ולהבחין בין בוטים לאנשים.</translation>
+<translation id="8607828412110648570">‏צריך לוודא שמכשיר ה-Bluetooth נמצא במצב התאמה ובקרבת מקום. חשוב לבצע התאמה רק עם מכשירים מהימנים. המכשירים המותאמים גלויים לכל החשבונות ב-Chromebook הזה. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">‏הוספת כרטיס Kerberos</translation>
 <translation id="8609465669617005112">הזזה למעלה</translation>
 <translation id="8610103157987623234">פורמט לא נכון, צריך לנסות שוב</translation>

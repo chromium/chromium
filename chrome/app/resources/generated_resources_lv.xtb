@@ -2160,6 +2160,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2671451824761031126">Jūsu grāmatzīmes un iestatījumi ir gatavi.</translation>
 <translation id="2672142220933875349">.crx fails ir bojāts. Neizdevās atvērt pakotni.</translation>
 <translation id="2673135533890720193">Skatīt jūsu pārlūkošanas vēsturi</translation>
+<translation id="2673848446870717676">Jūsu Bluetooth ierīcē ir jābūt aktivizētam režīmam savienošanai pārī, un tai ir jāatrodas tuvumā. Veiciet savienošanu pārī tikai ar uzticamām ierīcēm. Pārī savienotās ierīces ir redzamas visiem kontiem šajā Chromebook datorā.</translation>
 <translation id="2673873887296220733">Vai kopēt 1 failu uz pakalpojumu <ph name="CLOUD_PROVIDER" />, lai to atvērtu?</translation>
 <translation id="2674764818721168631">Izslēgts</translation>
 <translation id="2676084251379299915">Šis paplašinājums ir atspējots saskaņā ar Enterprise politiku, jo tas vairs nav pieejams Chrome interneta veikalā.</translation>
@@ -3836,6 +3837,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4010917659463429001">Lai iegūtu savas grāmatzīmes mobilajā ierīcē, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Vai labot “<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="4015163439792426608">Vai izmantojat paplašinājumus? Ērti <ph name="BEGIN_LINK" />pārvaldiet paplašinājumus<ph name="END_LINK" /> vienuviet.</translation>
+<translation id="4016762287427926315">Lietotnei <ph name="APP_NAME" /> piešķirtās atļaujas tiks izmantotas arī šajā lietotnē. <ph name="BEGIN_LINK" />Pārvaldīt<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Izveidot kvadrātkodu šai saitei</translation>
 <translation id="4019983356493507433">Rediģēt grāmatzīmju sarakstu</translation>
 <translation id="4020327272915390518">Opciju izvēlne</translation>
@@ -3956,7 +3958,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4110485659976215879">Atjaunot brīdinājumu</translation>
 <translation id="4110490973560452005">Lejupielāde ir pabeigta: <ph name="FILE_NAME" />. Nospiediet taustiņus Shift+F6, lai pārslēgtos uz lejupielāžu joslas zonu.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (bezsaistē)</translation>
-<translation id="411318099524508025">Jūs veicāt jaunināšanu uz <ph name="NAME" /></translation>
 <translation id="4113743276555482284">Faila parole</translation>
 <translation id="4114524937989710624">Jums tiek rādīti ieteiktie faili, lai palīdzētu ērti atgriezties pie pēdējām darbībām Google diskā.
         <ph name="BREAK" />
@@ -6408,6 +6409,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6156863943908443225">Skriptu kešatmiņa</translation>
 <translation id="6156944117133588106">Rādīt navigācijas pogas planšetdatora režīmā</translation>
 <translation id="615930144153753547">Atļaut vietnēm rādīt attēlus</translation>
+<translation id="6160290816917599257">Kods nav derīgs. Ierakstam ir jābūt šādā formātā: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ adrese<ph name="LPA_2" />$<ph name="LPA_3" />neobligāts atbilstības ID<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Nodrošināt sertifikātus autentifikācijai</translation>
 <translation id="6163363155248589649">Parasts</translation>
 <translation id="6163376401832887457">Kerberos iestatījumi</translation>
@@ -8443,6 +8445,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7807117920154132308">Šķiet, ka lietotājs <ph name="SUPERVISED_USER_NAME" /> jau iestatīja Google asistentu citā ierīcē. Šajā ierīcē ieslēdzot ekrāna kontekstu, <ph name="SUPERVISED_USER_NAME" /> varēs izmantot vēl vairāk Asistenta iespēju.</translation>
 <translation id="7807711621188256451">Vienmēr ļaut vietnei <ph name="HOST" /> piekļūt kamerai</translation>
 <translation id="7810202088502699111">Uznirstošie logi šajā lapā tika bloķēti.</translation>
+<translation id="7810367892333449285">Ierakstam ir jābūt šādā formātā: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ adrese<ph name="LPA_2" />$<ph name="LPA_3" />neobligāts atbilstības ID<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">Ko&amp;pēt</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Rediģēt paplašinājuma <ph name="EXTENSION_NAME" /> saīsni <ph name="SHORTCUT" /></translation>
@@ -9091,6 +9094,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8324784016256120271">Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, lai personalizētu reklāmas.</translation>
 <translation id="8325413836429495820">Nedrīkst skatīt starpliktuvi</translation>
 <translation id="8326478304147373412">PKCS #7, sertificēšanas ķēde</translation>
+<translation id="832684045355488000">Jūs veicāt jaunināšanu uz <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Matemātiskais fonts</translation>
 <translation id="8327538105740918488">Varat vēlāk nomainīt šo paroli. Tā tiks saglabāta pakalpojumā <ph name="GOOGLE_PASSWORD_MANAGER" /> kontam <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Atļaujas un satura iestatījumi</translation>
@@ -9421,6 +9425,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8605428685123651449">SQLite atmiņa</translation>
 <translation id="8607171490667464784">Kamēr ierīce ir neaktīva un tiek izmantots akumulators</translation>
 <translation id="8607326572516521315">Nevēlama satura un krāpšanas mazināšanai tiek izmantotas privāta stāvokļa pilnvaras, lai palīdzētu vietnēm apkarot krāpšanu un atšķirt robotus no cilvēkiem.</translation>
+<translation id="8607828412110648570">Jūsu Bluetooth ierīcē ir jābūt aktivizētam režīmam savienošanai pārī, un tai ir jāatrodas tuvumā. Veiciet savienošanu pārī tikai ar uzticamām ierīcēm. Pārī savienotās ierīces ir redzamas visiem kontiem šajā Chromebook datorā. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="8608618451198398104">Kerberos biļetes pievienošana</translation>
 <translation id="8609465669617005112">Virziet uz augšu</translation>
 <translation id="8610103157987623234">Nepareizs formāts, lūdzu, mēģiniet vēlreiz.</translation>

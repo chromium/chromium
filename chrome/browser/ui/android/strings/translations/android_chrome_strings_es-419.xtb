@@ -593,6 +593,7 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="4116038641877404294">Descarga las páginas para usarlas sin conexión</translation>
 <translation id="4121654769234887259">No será necesario que recuerdes esta contraseña. Se guardará en el Administrador de contraseñas de Google de <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">El flujo de permisos de notificaciones está abierto en su totalidad</translation>
+<translation id="4126285640274188657">Estadísticas de la página</translation>
 <translation id="4135200667068010335">La lista de dispositivos con los que se puede compartir una pestaña está cerrada.</translation>
 <translation id="4137746084635924146">Idioma actual del dispositivo</translation>
 <translation id="4139654229316918773">Chrome Canary</translation>
@@ -1244,6 +1245,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7376560087009844242">Si incluyes más texto de la página, obtendrás mejores resultados cuando uses la función Tocar para buscar. Puedes cambiar esta opción en la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> en cualquier momento.</translation>
 <translation id="7379900596734708416">El Tema oscuro está disponible para los sitios</translation>
 <translation id="7388615499319468910">Los sitios y anunciantes pueden entender el rendimiento de los anuncios. Esta configuración está desactivada.</translation>
+<translation id="7397416715506917976">Ver estadísticas de la pág.</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Primera experiencia de ejecución de Chrome</translation>
 <translation id="7411224099004328643">Usuario de la Cuenta de Google</translation>

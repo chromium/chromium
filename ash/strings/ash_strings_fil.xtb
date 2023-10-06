@@ -704,6 +704,7 @@ Isaksak ang iyong device.</translation>
 <translation id="385300504083504382">Simula</translation>
 <translation id="3859364108019690">Hindi makapag-stream ng mga app</translation>
 <translation id="3861651314799684201">Pindutin ang enter para mag-record nang full screen</translation>
+<translation id="3865912916886104060">Walang nakakonektang device. Io-off ang WiFi para simulan ang paggamit ng Hotspot.</translation>
 <translation id="3886872229787704059">Binuksan ngayon</translation>
 <translation id="3891340733213178823">Pindutin ang Ctrl+Shift+Q nang dalawang beses upang mag-sign out.</translation>
 <translation id="3893630138897523026">ChromeVox (pasalitang feedback)</translation>
@@ -788,6 +789,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4197790712631116042">Naka-off</translation>
 <translation id="4201033867194214117">Hindi available ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="4201051445878709314">Ipakita ang nakaraang buwan</translation>
+<translation id="4202362334312791952">1 device ang nakakonekta. Io-off ang WiFi para simulan ang paggamit ng Hotspot.</translation>
 <translation id="4209973997261364186">Naka-on ang Wi-Fi</translation>
 <translation id="4212472694152630271">Lumipat sa PIN</translation>
 <translation id="4215497585250573029">Mga setting ng VPN</translation>
@@ -1051,6 +1053,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5258528442992323769">Walang naka-save na desk</translation>
 <translation id="5260676007519551770">Desk 4</translation>
 <translation id="5268819379131021772">Listahan ng mga gawain sa Google</translation>
+<translation id="5275923704957843041">Preview ng desk</translation>
 <translation id="5278086053818066789">I-on/i-off ang ChromeVox (pasalitang feedback)</translation>
 <translation id="5283099933536931082">Hinihiling ng <ph name="APP_ITEM_TITLE" /> ang iyong atensyon.</translation>
 <translation id="5283198616748585639">Magdagdag ng 1 minuto</translation>
@@ -1167,6 +1170,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5707775774148071965">Sinusuportahan ng iyong device ang mas mataas na rate ng data kaysa sa iyong cable. Posibleng maging limitado ang performance ng device.</translation>
 <translation id="5710450975648804523">Naka-on ang Huwag Istorbohin</translation>
 <translation id="571295407079589142">Naka-off ang mobile data</translation>
+<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> (na) device ang nakakonekta. Io-off ang WiFi para simulan ang paggamit ng Hotspot.</translation>
 <translation id="5727460725221669831">Kung nakalimutan mo ang iyong password o pinalitan mo ang iyong password ng Google Account kamakailan, subukang i-recover ang user na ito.</translation>
 <translation id="573413375004481890">Hindi masuportahan ng device na ito ang lahat ng iyong display kaya may isang nadiskonekta</translation>
 <translation id="5740328398383587084">Nearby Share</translation>

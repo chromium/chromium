@@ -3957,7 +3957,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4110485659976215879">Restabilește avertismentul</translation>
 <translation id="4110490973560452005">Descărcare finalizată: <ph name="FILE_NAME" />. Apasă Shift+F6 ca să revii la zona barei de descărcări.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025"><ph name="NAME" /> s-a actualizat.</translation>
 <translation id="4113743276555482284">Parola fișierului</translation>
 <translation id="4114524937989710624">Vezi fișierele sugerate ca să poți reveni ușor la cea mai recentă activitate din Google Drive.
         <ph name="BREAK" />
@@ -9096,6 +9095,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8324784016256120271">Site-urile pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile</translation>
 <translation id="8325413836429495820">Nu au permisiunea de a vedea clipboardul</translation>
 <translation id="8326478304147373412">PKCS #7, lanț de certificate</translation>
+<translation id="832684045355488000">Ți s-a făcut upgrade la <ph name="NAME" />.</translation>
 <translation id="8327386430364625757">Font matematic</translation>
 <translation id="8327538105740918488">Poți modifica oricând această parolă ulterior. Ea se va salva în <ph name="GOOGLE_PASSWORD_MANAGER" /> pentru <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Permisiuni și setări privind conținutul</translation>

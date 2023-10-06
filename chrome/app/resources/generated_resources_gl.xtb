@@ -2157,6 +2157,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2671451824761031126">Os marcadores e a configuración están listos</translation>
 <translation id="2672142220933875349">Ficheiro crx incorrecto, fallo na descompresión.</translation>
 <translation id="2673135533890720193">Ler o teu historial de navegación</translation>
+<translation id="2673848446870717676">Asegúrate de que o dispositivo Bluetooth teña activado o modo de vinculación e estea preto. Vincula só os dispositivos nos que confíes. Todas as contas deste Chromebook poderán ver os dispositivos vinculados.</translation>
 <translation id="2673873887296220733">Queres copiar 1 ficheiro en <ph name="CLOUD_PROVIDER" /> para abrilo?</translation>
 <translation id="2674764818721168631">Non</translation>
 <translation id="2676084251379299915">De acordo coa política de Enterprise, desactivouse esta extensión porque deixou de estar dispoñible en Chrome Web Store.</translation>
@@ -3836,6 +3837,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4010917659463429001">Para ter os teus marcadores no teu dispositivo móbil, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Queres reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Tes extensións? <ph name="BEGIN_LINK" />Xestiónaas<ph name="END_LINK" /> facilmente desde un único lugar.</translation>
+<translation id="4016762287427926315">Os permisos que lle concedas a <ph name="APP_NAME" /> tamén se lle darán a esta aplicación. <ph name="BEGIN_LINK" />Xestionar<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crear código QR para esta ligazón</translation>
 <translation id="4019983356493507433">Editar lista de marcadores</translation>
 <translation id="4020327272915390518">Menú de opcións</translation>
@@ -3956,7 +3958,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4110485659976215879">Restaurar advertencia</translation>
 <translation id="4110490973560452005">Completouse a descarga: <ph name="FILE_NAME" />. Preme Maiús+F6 para acceder á área da barra de descargas.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sen conexión)</translation>
-<translation id="411318099524508025">Pasaches a <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Contrasinal do ficheiro</translation>
 <translation id="4114524937989710624">Estás vendo suxestións de ficheiros que che axudarán a acceder con facilidade á túa actividade máis recente en Google Drive.
         <ph name="BREAK" />
@@ -6408,6 +6409,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6156863943908443225">Caché de script</translation>
 <translation id="6156944117133588106">Mostrar botóns de navegación no modo de tableta</translation>
 <translation id="615930144153753547">Os sitios poden mostrar imaxes</translation>
+<translation id="6160290816917599257">O código non é válido. Os datos introducidos deberían ter o formato <ph name="LPA_0" />$<ph name="LPA_1" />enderezo de SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />código de coincidencia opcional<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Proporcionar certificados para autenticación</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Configuración de Kerberos</translation>
@@ -8439,6 +8441,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7807117920154132308">Parece que <ph name="SUPERVISED_USER_NAME" /> xa configurou o Asistente de Google noutro dispositivo. <ph name="SUPERVISED_USER_NAME" /> pode tirar aínda máis proveito do Asistente se activa o contexto da pantalla neste dispositivo.</translation>
 <translation id="7807711621188256451">Permitir sempre a <ph name="HOST" /> acceder á túa cámara</translation>
 <translation id="7810202088502699111">Bloqueáronse as ventás emerxentes nesta páxina.</translation>
+<translation id="7810367892333449285">Os datos introducidos deberían ter o formato <ph name="LPA_0" />$<ph name="LPA_1" />enderezo de SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />código de coincidencia opcional<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editar atallo <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
@@ -9086,6 +9089,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8324784016256120271">Os sitios poden utilizar cookies para ver a túa actividade de navegación en distintos sitios (por exemplo, para personalizar os anuncios)</translation>
 <translation id="8325413836429495820">Sitios que non poden consultar o portapapeis</translation>
 <translation id="8326478304147373412">PKCS n.º 7, cadea de certificados</translation>
+<translation id="832684045355488000">Actualizouse a <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Tipo de letra matemático</translation>
 <translation id="8327538105740918488">Podes cambiar este contrasinal máis adiante sempre que queiras. Gardarase no <ph name="GOOGLE_PASSWORD_MANAGER" /> para <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Permisos e configuración de contido</translation>
@@ -9416,6 +9420,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8605428685123651449">Memoria SQLite</translation>
 <translation id="8607171490667464784">Cando o dispositivo estea inactivo e usando a batería</translation>
 <translation id="8607326572516521315">A redución do spam e da fraude baséase en tokens de estado privado, que lles axudan aos sitios a loitar contra a fraude, así como a distinguir entre os bots e as persoas.</translation>
+<translation id="8607828412110648570">Asegúrate de que o dispositivo Bluetooth teña activado o modo de vinculación e estea preto. Vincula só os dispositivos nos que confíes. Todas as contas deste Chromebook poderán ver os dispositivos vinculados. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Engadir un tícket de Kerberos</translation>
 <translation id="8609465669617005112">Mover cara arriba</translation>
 <translation id="8610103157987623234">O formato é incorrecto. Téntao de novo</translation>

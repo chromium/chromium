@@ -118,6 +118,7 @@ Notas importantes:
 <translation id="5389212809648216794">Google Chrome no puede utilizar la cámara porque la está usando otra aplicación</translation>
 <translation id="5395376160638294582">Asegúrate de que siempre puedas usar los datos de Chrome en tu cuenta de Google</translation>
 <translation id="5439191312780166229">Te envía advertencias sobre sitios peligrosos (aunque Google no los conozca) analizando más datos de sitios que la protección estándar. Si quieres, puedes omitir las advertencias de Chrome.</translation>
+<translation id="5442013002200339429">Si ocultas <ph name="MODULE_NAME" />, Chrome dejará de hacer un seguimiento automático de tus próximos paquetes y eliminará todos los datos de seguimiento de envíos anteriores.</translation>
 <translation id="5460571915754665838">4. Selecciona Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome te ayudará a hacer un seguimiento de este paquete en la página Nueva pestaña.}other{Chrome te ayudará a hacer un seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="5492504007368565877">El Gestor de contraseñas de Google no puede comprobar tus contraseñas.</translation>

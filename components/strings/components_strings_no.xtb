@@ -13,6 +13,7 @@
 <translation id="1024913885641459127">Produktanmeldelser og prissammenligninger</translation>
 <translation id="1028781062521375153">Se detaljer</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ber om å lagre store datamengder permanent på enheten din</translation>
+<translation id="1030949145805074938">{COUNT,plural, =0{Ingen}=1{Fra 1 nettsted. Du blir logget av de fleste nettsteder. }other{Fra # nettsteder. Du blir logget av de fleste nettsteder. }}</translation>
 <translation id="1033329911862281889">Inkognito gjør deg ikke usynlig på nettet:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Nettsteder og tjenestene de bruker, kan se når du besøker dem<ph name="END_LIST_ITEM" />
@@ -484,6 +485,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1939059826036755332">Automatisk bilde-i-bilde</translation>
 <translation id="1939175642807587452">Kan be om å få sende varsler</translation>
 <translation id="1940441167050915935">Slett lagrede sikkerhetskoder</translation>
+<translation id="194174710521904357">Du har midlertidig tillatt dette nettstedet å bruke informasjonskapsler fra tredjeparter, noe som innebærer mindre surfebeskyttelse, men øker sannsynligheten for at funksjonene på nettstedet fungerer som forventet.</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Du kan miste tilgangen til organisasjonskontoen din eller bli utsatt for identitetstyveri. Chromium anbefaler at du endrer passordet ditt nå.</translation>
 <translation id="1946849748901605102">12 x 15 tommer</translation>
@@ -661,6 +663,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2300306941146563769">Ikke lastet opp</translation>
 <translation id="230286397113210245">Knappen «Åpne et inkognitovindu» – aktiver for å åpne et nytt inkognitovindu for privat surfing</translation>
 <translation id="2312234273148520048">Sauser og dressinger</translation>
+<translation id="2316087952091171402">Mindre enn <ph name="UPPER_ESTIMATE" />. Det kan hende at enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
 <translation id="2316159751672436664">Gi tilgjengelighetsverktøyene dine personlig preg i ChromeOS-innstillingene</translation>
 <translation id="2316887270356262533">Frigjør mindre enn 1 MB. Det kan hende enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> krever brukernavn og passord.</translation>
@@ -1105,6 +1108,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3271648667212143903"><ph name="ORIGIN" /> vil koble til</translation>
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Skriv inn den <ph name="NUMBER_OF_DIGITS" />-sifrede bekreftelseskoden</translation>
+<translation id="3272643614306383237">Mindre enn 1 MB. Det kan hende at enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administratorreglene anbefaler ikke at du åpner denne filen i <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du åpner disse filene i <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisasjonen din, <ph name="ENROLLMENT_DOMAIN" />, har sendt noe informasjon til de følgende nettstedene, for eksempel innstillinger eller retningslinjer.</translation>
 <translation id="3286372614333682499">stående</translation>
@@ -2869,6 +2873,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Med standardsøkemotoren din kan du søke på nettet og dra nytte av Chrome-funksjoner<ph name="END_BOLD" /> som søk i adressefeltet og via bilder på nettsider. Det kan hende at enkelte funksjoner ikke er tilgjengelige hvis søkemotoren din ikke støtter dem.</translation>
 <translation id="6934672428414710184">Dette navnet er fra Google-kontoen din</translation>
 <translation id="6935082727755903526">Regnskaps- og finansjobber</translation>
+<translation id="6935179587384421592"><ph name="SIZE" />. Det kan hende at enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
 <translation id="6936976777388162184">Dette er en pakkeenhet og kan ikke registreres med Kiosk- og skiltoppgradering.</translation>
 <translation id="6939469646605424232">TV-dramaer</translation>
 <translation id="6944692733090228304">Du har skrevet inn passordet ditt på et nettsted som ikke administreres av <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. For å beskytte kontoen din må du ikke bruke det samme passordet i andre apper eller på andre nettsteder.</translation>
@@ -3133,6 +3138,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7441864845853794192">Gourmetmat og delikatesser</translation>
 <translation id="7442725080345379071">Lys oransje</translation>
 <translation id="7444046173054089907">Dette nettstedet er blokkert</translation>
+<translation id="7444176988908839653">{COUNT,plural, =0{Informasjonskapsler blir blokkert igjen i dag}=1{Informasjonskapsler blir blokkert igjen i morgen}other{# dager til informasjonskapsler blir blokkert igjen}}</translation>
 <translation id="7445762425076701745">Identiteten til tjernen du er tilkoblet kan ikke valideres. Du er tilkoblet en tjener som bruker et navn som kun er gyldig i ditt nettverk, som en ekstern sertifiseringsinstans ikke har noen mulighet til å validere eierskap for. Siden enkelte sertifiseringsinstanser likevel utsteder sertifikater for disse navnene, er det umulig å sikre at du er tilkoblet ønsket nettsted og ikke en angriper.</translation>
 <translation id="7447234474237738389">Klestjenester</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
@@ -3499,6 +3505,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="81563721597823545">Hockeyutstyr</translation>
 <translation id="8161095570253161196">Gjenoppta surfingen</translation>
 <translation id="8163866351304776260">Fire hull venstre</translation>
+<translation id="8164078261547504572">Vil du motta e-post når prisene går ned?</translation>
 <translation id="8175796834047840627">Chrome tilbyr å lagre kort i Google-kontoen din fordi du er logget på. Du kan endre dette i innstillingene.</translation>
 <translation id="8176440868214972690">Enhetsadministratoren har sendt noe informasjon til de følgende nettstedene, for eksempel innstillinger eller retningslinjer.</translation>
 <translation id="817820454357658398">Feminine hygieneprodukter</translation>
@@ -3939,6 +3946,7 @@ Mer informasjon:
 <translation id="9078912659001679888">Blendere og saftpresser</translation>
 <translation id="9078964945751709336">Mer informasjon er nødvendig</translation>
 <translation id="9080712759204168376">Bestillingssammendrag</translation>
+<translation id="9084304544887760521">Vi sender e-post til <ph name="EMAIL" /> når prisen på varene du sporer, går ned på et nettsted.</translation>
 <translation id="908796725011587895">Studentsport</translation>
 <translation id="9089260154716455634">Regler for bruk utenom arbeidstiden:</translation>
 <translation id="9090243919347147717">Vedlegg</translation>
@@ -4008,7 +4016,7 @@ Mer informasjon:
 <translation id="9207861905230894330">Kunne ikke legge til artikkelen.</translation>
 <translation id="9213433120051936369">Tilpass utseendet</translation>
 <translation id="9215416866750762878">Et program hindrer Chrome i å koble trygt til dette nettstedet.</translation>
-<translation id="9218430445555521422">Bruk som standard</translation>
+<translation id="9218430445555521422">Angi som standard</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="922152298093051471">Tilpass Chrome</translation>
 <translation id="9222403027701923763">Grunnskole og videregående skole (K-12)</translation>
@@ -4023,6 +4031,7 @@ Mer informasjon:
 <translation id="944540589955480312">Bruk passord og passnøkler som er lagret i Google-kontoen din</translation>
 <translation id="945855313015696284">Gå gjennom informasjonen nedenfor, og slett eventuelle ugyldige kort</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette et nytt nettsted i Google Nettsteder raskt</translation>
+<translation id="947974362755924771">{COUNT,plural, =0{Chrome begynner å begrense informasjonskapsler igjen i dag}=1{Chrome begynner å begrense informasjonskapsler igjen i morgen}other{# dager til Chrome begynner å begrense informasjonskapsler igjen}}</translation>
 <translation id="949314938206378263">Du ba om å få besøke dette nettstedet. Forelderen din kan svare i Family Link.</translation>
 <translation id="950736567201356821">Tre hull topp</translation>
 <translation id="961663415146723894">Innbinding bunn</translation>

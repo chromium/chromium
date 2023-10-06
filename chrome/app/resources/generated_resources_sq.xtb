@@ -2156,6 +2156,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2671451824761031126">Faqeshënuesit dhe cilësimet e tua janë gati</translation>
 <translation id="2672142220933875349">Skedar i prishur crx. Shpaketimi dështoi.</translation>
 <translation id="2673135533890720193">Lexo historikun e shfletimit</translation>
+<translation id="2673848446870717676">Sigurohu që pajisja jote me Bluetooth të jetë në modalitetin e çiftimit dhe në afërsi. Çiftoje vetëm me pajisjet të cilave u beson. Pajisjet e çiftuara janë të dukshme për të gjitha llogaritë në këtë Chromebook.</translation>
 <translation id="2673873887296220733">Të kopjohet 1 skedar te <ph name="CLOUD_PROVIDER" /> për ta hapur?</translation>
 <translation id="2674764818721168631">Joaktive</translation>
 <translation id="2676084251379299915">Kjo shtesë është çaktivizuar nga politika e ndërmarrjes sepse ajo nuk ofrohet më në "Dyqanin e uebit të Chrome".</translation>
@@ -3832,6 +3833,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4010917659463429001">Për të marrë faqeshënuesit në pajisjen tënde celulare, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Të riparohet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Ke shtesa? <ph name="BEGIN_LINK" />Menaxho shtesat e tua<ph name="END_LINK" /> në një vend me lehtësi.</translation>
+<translation id="4016762287427926315">Lejet që lejon për <ph name="APP_NAME" /> do të lejohen edhe për këtë aplikacion. <ph name="BEGIN_LINK" />Menaxho<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Krijo një kod QR për këtë lidhje</translation>
 <translation id="4019983356493507433">Modifiko listën e faqeshënuesve</translation>
 <translation id="4020327272915390518">Menyja e opsioneve</translation>
@@ -3952,7 +3954,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4110485659976215879">Rikthe paralajmërimin</translation>
 <translation id="4110490973560452005">Shkarkimi përfundoi: <ph name="FILE_NAME" />. Shtyp Shift+F6 për të kaluar në cikël në zonën e shiritit të shkarkimeve.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">Ke kaluar në <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Fjalëkalimi i skedarit</translation>
 <translation id="4114524937989710624">Po shikon skedarë të sugjeruar për të të ndihmuar të kthehesh me lehtësi te aktiviteti yt i fundit në "Diskun e Google".
         <ph name="BREAK" />
@@ -6407,6 +6408,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6156863943908443225">Memoria specifike e skriptit</translation>
 <translation id="6156944117133588106">Shfaq butonat e navigimit në modalitetin e tabletit</translation>
 <translation id="615930144153753547">Sajtet mund të shfaqin imazhet</translation>
+<translation id="6160290816917599257">Kod i pavlefshëm. Hyrja jote duhet të jetë në formatin <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />dokument opsional identifikimi i përputhshëm<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Ofron certifikata për vërtetimin</translation>
 <translation id="6163363155248589649">&amp;Normale</translation>
 <translation id="6163376401832887457">Cilësimet e Kerberos</translation>
@@ -8437,6 +8439,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7807117920154132308">Me sa duket <ph name="SUPERVISED_USER_NAME" /> e ka konfiguruar tashmë "Asistentin e Google" në një pajisje tjetër. <ph name="SUPERVISED_USER_NAME" /> mund të përfitojë edhe më shumë nga "Asistenti" duke aktivizuar "Kontekstin e ekranit" në këtë pajisje.</translation>
 <translation id="7807711621188256451">Lejo gjithmonë që <ph name="HOST" /> të qaset në kamerën tënde</translation>
 <translation id="7810202088502699111">Dritaret kërcyese u bllokuan në këtë faqe.</translation>
+<translation id="7810367892333449285">Hyrja jote duhet të jetë në formatin <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />dokument opsional identifikimi i përputhshëm<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Kopjo</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Modifiko shkurtoren <ph name="SHORTCUT" /> për <ph name="EXTENSION_NAME" /></translation>
@@ -9084,6 +9087,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8324784016256120271">Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, për shembull për t'i personalizuar reklamat</translation>
 <translation id="8325413836429495820">Nuk lejohen të shikojnë kujtesën e fragmenteve</translation>
 <translation id="8326478304147373412">PKCS #7, zinxhiri i certifikatës</translation>
+<translation id="832684045355488000">Ke kaluar në <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Font matematikor</translation>
 <translation id="8327538105740918488">Mund ta ndryshosh gjithmonë këtë fjalëkalim më vonë. Ai do të ruhet te "<ph name="GOOGLE_PASSWORD_MANAGER" />" për <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Cilësimet e lejeve dhe të përmbajtjeve</translation>
@@ -9414,6 +9418,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8605428685123651449">Memoria e SQLite</translation>
 <translation id="8607171490667464784">Kur është joaktive dhe punon me bateri</translation>
 <translation id="8607326572516521315">Reduktimi i mesazheve të bezdisshme dhe mashtrimit mbështetet në kodet e gjendjes private për të ndihmuar sajtet të luftojnë mashtrimin dhe të dallojnë robotët nga personat.</translation>
+<translation id="8607828412110648570">Sigurohu që pajisja jote me Bluetooth të jetë në modalitetin e çiftimit dhe në afërsi. Çiftoje vetëm me pajisjet të cilave u beson. Pajisjet e çiftuara janë të dukshme për të gjitha llogaritë në këtë Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Shto një biletë Kerberos</translation>
 <translation id="8609465669617005112">Lëviz lart</translation>
 <translation id="8610103157987623234">Format i pasaktë! Provo përsëri më vonë</translation>

@@ -705,6 +705,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="385300504083504382">Principio</translation>
 <translation id="3859364108019690">No se pueden emitir aplicaciones</translation>
 <translation id="3861651314799684201">Pulsa Intro para grabar toda la pantalla</translation>
+<translation id="3865912916886104060">No hay dispositivos conectados. La conexión Wi‐Fi se desactivará para empezar a usar el punto de acceso.</translation>
 <translation id="3886872229787704059">Abierto hoy</translation>
 <translation id="3891340733213178823">Pulsa Ctrl+Mayús+Q dos veces para cerrar sesión.</translation>
 <translation id="3893630138897523026">ChromeVox (mensajes de voz)</translation>
@@ -789,6 +790,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4197790712631116042">Desactivado</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> no está disponible.</translation>
 <translation id="4201051445878709314">Mostrar mes anterior</translation>
+<translation id="4202362334312791952">1 dispositivo conectado. La conexión Wi‐Fi se desactivará para empezar a usar el punto de acceso.</translation>
 <translation id="4209973997261364186">La conexión Wi-Fi está activada</translation>
 <translation id="4212472694152630271">Cambiar a PIN</translation>
 <translation id="4215497585250573029">Ajustes de VPN</translation>
@@ -1052,6 +1054,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5258528442992323769">No hay escritorios guardados</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
 <translation id="5268819379131021772">Lista de tareas de Google</translation>
+<translation id="5275923704957843041">Vista previa del escritorio</translation>
 <translation id="5278086053818066789">Activar/Desactivar ChromeVox (mensajes de voz)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> solicita tu atención.</translation>
 <translation id="5283198616748585639">Añadir 1 minuto</translation>
@@ -1168,6 +1171,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5707775774148071965">Tu dispositivo admite una tasa de datos mayor que tu cable. El rendimiento del dispositivo puede verse limitado.</translation>
 <translation id="5710450975648804523">Modo No molestar activado</translation>
 <translation id="571295407079589142">Los datos móviles están desactivados</translation>
+<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> dispositivos conectados. La conexión Wi‐Fi se desactivará para empezar a usar el punto de acceso.</translation>
 <translation id="5727460725221669831">Si has olvidado la contraseña o has cambiado la contraseña de tu cuenta de Google recientemente, prueba a recuperar este usuario.</translation>
 <translation id="573413375004481890">Este dispositivo no puede admitir todas tus pantallas, así que se ha desconectado una</translation>
 <translation id="5740328398383587084">Compartir con Nearby</translation>

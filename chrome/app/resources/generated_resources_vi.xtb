@@ -3971,7 +3971,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4110485659976215879">Khôi phục cảnh báo</translation>
 <translation id="4110490973560452005">Đã tải xuống xong: <ph name="FILE_NAME" />. Nhấn tổ hợp phím Shift + F6 để chuyển tới khu vực thanh Tệp đã tải xuống.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (không kết nối Internet)</translation>
-<translation id="411318099524508025">Bạn đã nâng cấp lên <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Mật khẩu của tệp</translation>
 <translation id="4114524937989710624">Bạn đang xem những tệp được đề xuất để giúp bạn dễ dàng trở lại hoạt động gần đây nhất của mình trong Google Drive.
         <ph name="BREAK" />
@@ -9109,6 +9108,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8324784016256120271">Các trang web có thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn để điều chỉnh quảng cáo cho phù hợp với bạn</translation>
 <translation id="8325413836429495820">Không được phép xem bảng nhớ tạm của bạn</translation>
 <translation id="8326478304147373412">PKCS #7, chuỗi chứng chỉ</translation>
+<translation id="832684045355488000">Thiết bị của bạn đã được nâng cấp lên <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Phông chữ toán học</translation>
 <translation id="8327538105740918488">Bạn có thể thay đổi mật khẩu này bất cứ lúc nào về sau. Mật khẩu này sẽ được lưu vào <ph name="GOOGLE_PASSWORD_MANAGER" /> cho <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Các chế độ cài đặt nội dung và quyền</translation>

@@ -2160,6 +2160,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2671451824761031126">Vaše záložky a nastavení jsou připravena</translation>
 <translation id="2672142220933875349">Soubor CRX je chybný, rozbalení se nezdařilo.</translation>
 <translation id="2673135533890720193">Čtení vaší historie procházení</translation>
+<translation id="2673848446870717676">Zařízení Bluetooth musí být v režimu párování a poblíž. Zařízení párujte pouze se zařízeními, kterým důvěřujete. Spárovaná zařízení jsou viditelná pro všechny účty v tomto Chromebooku.</translation>
 <translation id="2673873887296220733">Zkopírovat soubor k otevření do úložiště <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="2674764818721168631">Vypnuto</translation>
 <translation id="2676084251379299915">Toto rozšíření bylo podnikovými zásadami zakázáno, protože již není dostupné v Internetovém obchodě Chrome.</translation>
@@ -3835,6 +3836,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4010917659463429001">Chcete-li své záložky mít na mobilním zařízení, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Opravit rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Používáte rozšíření? <ph name="BEGIN_LINK" />Spravujte rozšíření<ph name="END_LINK" /> snadno na jednom místě.</translation>
+<translation id="4016762287427926315">Oprávnění, která povolíte pro aplikaci <ph name="APP_NAME" />, budou povolena i pro tuto aplikaci. <ph name="BEGIN_LINK" />Spravovat<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Vytvořit pro tento odkaz QR kód</translation>
 <translation id="4019983356493507433">Upravit seznam záložek</translation>
 <translation id="4020327272915390518">Nabídka možností</translation>
@@ -3955,7 +3957,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4110485659976215879">Obnovit upozornění</translation>
 <translation id="4110490973560452005">Stažení bylo dokončeno: <ph name="FILE_NAME" />. Stisknutím kombinace kláves Shift+F6 přejdete na lištu se staženými soubory.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">Byli jste upgradováni na <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Heslo souboru</translation>
 <translation id="4114524937989710624">Zobrazují se vám navrhované soubory, abyste se mohli snadno vrátit k nedávné aktivitě na Disku Google.
         <ph name="BREAK" />
@@ -6407,6 +6408,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6156863943908443225">Mezipaměť skript</translation>
 <translation id="6156944117133588106">Zobrazit navigační tlačítka v režimu tabletu</translation>
 <translation id="615930144153753547">Weby mohou zobrazovat obrázky</translation>
+<translation id="6160290816917599257">Neplatný kód. Záznam by měl mít formát <ph name="LPA_0" />$<ph name="LPA_1" />adresa SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />volitelné odpovídající ID<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Poskytovat certifikáty k oveření</translation>
 <translation id="6163363155248589649">Normální</translation>
 <translation id="6163376401832887457">Nastavení protokolu Kerberos</translation>
@@ -8442,6 +8444,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7807117920154132308">Zdá se, že uživatel <ph name="SUPERVISED_USER_NAME" /> už si Asistenta Google nastavil na jiném zařízení. Když si uživatel <ph name="SUPERVISED_USER_NAME" /> zapne Kontext obrazovky, bude na tomto zařízení moci Asistenta využívat ještě lépe.</translation>
 <translation id="7807711621188256451">Vždy povolit webu <ph name="HOST" /> přístup ke kameře</translation>
 <translation id="7810202088502699111">Na této stránce byla zablokována vyskakovací okna.</translation>
+<translation id="7810367892333449285">Záznam by měl mít formát <ph name="LPA_0" />$<ph name="LPA_1" />adresa SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />volitelné odpovídající ID<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Kopírovat</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Upravit zkratku <ph name="SHORTCUT" /> pro rozšíření <ph name="EXTENSION_NAME" /></translation>
@@ -9090,6 +9093,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8324784016256120271">Weby mohou pomocí souborů cookie sledovat vaši aktivitu prohlížení na různých webech, například k personalizaci reklam</translation>
 <translation id="8325413836429495820">Zákaz přístupu ke schránce</translation>
 <translation id="8326478304147373412">PKCS #7, řetězec certifikátu</translation>
+<translation id="832684045355488000">Provedli jste upgrade na <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Matematické písmo</translation>
 <translation id="8327538105740918488">Toto heslo můžete kdykoli později změnit. Uloží se do správce hesel <ph name="GOOGLE_PASSWORD_MANAGER" /> pro <ph name="EMAIL" /></translation>
 <translation id="8327676037044516220">Oprávnění a nastavení obsahu</translation>
@@ -9420,6 +9424,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8605428685123651449">Paměť SQLite</translation>
 <translation id="8607171490667464784">Při nečinnosti a napájení z baterie</translation>
 <translation id="8607326572516521315">Omezení spamu a podvodů závisí na tokenech soukromého stavu, které webům pomáhají bojovat proti podvodům a odlišit lidi od robotů.</translation>
+<translation id="8607828412110648570">Zařízení Bluetooth musí být v režimu párování a poblíž. Zařízení párujte pouze se zařízeními, kterým důvěřujete. Spárovaná zařízení jsou viditelná pro všechny účty v tomto Chromebooku. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Přidat lístek Kerberos</translation>
 <translation id="8609465669617005112">Posunout nahoru</translation>
 <translation id="8610103157987623234">Nesprávný formát, zkuste to znovu</translation>

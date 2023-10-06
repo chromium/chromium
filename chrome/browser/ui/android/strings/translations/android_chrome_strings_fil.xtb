@@ -345,6 +345,7 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="2856503607207334158">Pumalya ang pag-sign in</translation>
 <translation id="2860954141821109167">Tiyaking may naka-enable na phone app sa device na ito</translation>
 <translation id="2861923151411510142">Hindi na magiging available ang ilang feature ng Chrome</translation>
+<translation id="2869430948265924908">Para maprotektahan ang iyong sensitibong content sa kotse, dapat kang gumawa ng lock ng profile ng kotse.  Magagawa mo ito gamit ang isang pin, code, o password.</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Mag-preload ng mga page</translation>
 <translation id="2876136027428473467">Gusto ni <ph name="CHILD_NAME" /> na aprubahan mo ang website na ito:</translation>
@@ -466,6 +467,7 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="3421726884497337397">Piliin kung kailan iba-block ang cookies ng third-party</translation>
 <translation id="3428747202529429621">Pinapanatili kang ligtas sa Chrome at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka</translation>
 <translation id="3429160811076349561">Naka-off ang mga feature ng trial</translation>
+<translation id="3430670036890315772">Kapag in-off ang iyong lock ng profile, maaalis ang naka-save na impormasyon mo</translation>
 <translation id="3435465986463792564">Maraming window? Puwede mong pamahalaan ang mga ito mula rito</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3439276997620616816">Makikita mo rito ang iyong mga kamakailang tab</translation>
@@ -645,6 +647,7 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="4378154925671717803">Telepono</translation>
 <translation id="438319986296050901">Ibahagi lang ang card</translation>
 <translation id="4384468725000734951">Ginagamit ang Sogou para sa paghahanap</translation>
+<translation id="4387647248986092471">Gumawa ng lock ng profile ng kotse</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Dina-download…</translation>
 <translation id="4404568932422911380">Walang bookmark</translation>
 <translation id="4405224443901389797">Ilipat sa…</translation>
@@ -816,6 +819,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5171045022955879922">Hanapin o i-type ang URL</translation>
 <translation id="5174700554036517242">Ibinalik ang tab sa unang taas</translation>
+<translation id="5180063720319462041">Isinalin ang page sa <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Pamahalaan ang mga paksa at paghahanap kung saan ka interesado</translation>
 <translation id="5191251636205085390">Matuto pa tungkol sa at kontrolin ang mga bagong teknolohiyang naglalayong palitan ang third-party na cookies</translation>
 <translation id="5193988420012215838">Kinopya sa iyong clipboard</translation>
@@ -824,6 +828,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5210286577605176222">Pumunta sa nakaraang tab</translation>
 <translation id="5210365745912300556">Isara ang tab</translation>
 <translation id="5222676887888702881">Mag-sign out</translation>
+<translation id="5226378907213531272">Ia-unlock mo ang iyong screen sa tuwing gagamitin mo ang kotse</translation>
 <translation id="5227554086496586518">I-tap para makita ang mga resulta ng paghahanap</translation>
 <translation id="5233638681132016545">Bagong tab</translation>
 <translation id="5234971936051226002">Na-minimize ang player ng “Makinig sa page na ito.”</translation>
@@ -1318,6 +1323,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7691043218961417207">Mag-explore ng content na susubaybayan</translation>
 <translation id="7697383401610880082">Handle sa pag-drag</translation>
 <translation id="7698359219371678927">Gumawa ng email sa <ph name="APP_NAME" /></translation>
+<translation id="7702388902581909985">Hindi ka masa-sign out sa Google Account mo kapag nag-clear ka ng iyong data mula sa pag-browse. Para magawa ito, <ph name="BEGIN_LINK1" />mag-sign out sa Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Gumamit ng mobile data</translation>
 <translation id="7709094866268987903">Lalabas dito ang mga interes na inalis mo</translation>
 <translation id="7709918231054955894">Kunin ang lahat ng iyong tab</translation>

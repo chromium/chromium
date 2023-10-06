@@ -2167,6 +2167,7 @@
 <translation id="2671451824761031126">የእርስዎ ዕልባቶች እና ቅንብሮች ዝግጁ ናቸው</translation>
 <translation id="2672142220933875349">መጥፎ የcrx ፋይል፣ ጥቅል መክፈት አልተሳካም።</translation>
 <translation id="2673135533890720193">የአሰሳ ታሪክዎን ያነብባል</translation>
+<translation id="2673848446870717676">የብሉቱዝ መሣሪያዎ በማጣመር ሁነታ ላይ እና በአቅራቢያ መሆኑን ያረጋግጡ። ከሚያምኗቸው መሣሪያዎች ጋር ብቻ ያጣምሩ። የተጣመሩ መሣሪያዎች በዚህ Chromebook ላይ ለሁሉም መለያዎች ይታያሉ።</translation>
 <translation id="2673873887296220733">ለመክፈት 1 ፋይል ወደ <ph name="CLOUD_PROVIDER" /> ይቀዳ?</translation>
 <translation id="2674764818721168631">አጥፋ</translation>
 <translation id="2676084251379299915">ይህ ቅጥያ ከአሁን ወዲህ በChrome የድር መደብር ላይ ስለማይገኝ በድርጅት መመሪያ ተሰናክሏል።</translation>
@@ -3843,6 +3844,7 @@
 <translation id="4010917659463429001">ዕልባቶችዎን በተንቀሳቃሽ መሣሪያዎ ላይ ለማግኘት <ph name="GET_IOS_APP_LINK" />።</translation>
 <translation id="4014432863917027322">«<ph name="EXTENSION_NAME" />» ይጠገን?</translation>
 <translation id="4015163439792426608">ቅጥያዎች አለዎት? በአንዲት ቦታ ላይ ሆነው <ph name="BEGIN_LINK" />ቅጥያዎችዎን ማቀናበር<ph name="END_LINK" /> ይችላሉ።</translation>
+<translation id="4016762287427926315">ለ<ph name="APP_NAME" /> የሚፈቅዷቸው ፈቃዶች እንዲሁም ለዚህ መተግበሪያ ይፈቀዳሉ። <ph name="BEGIN_LINK" />አስተዳድር<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">ለዚህ አገናኝ የQR ኮድ ይፍጠሩ</translation>
 <translation id="4019983356493507433">የዕልባት ዝርዝርን አርትዕ አድርግ</translation>
 <translation id="4020327272915390518">የአማራጮች ምናሌ</translation>
@@ -3961,7 +3963,6 @@
 <translation id="4110485659976215879">ማስጠንቀቂያን ወደነበረበት መልስ</translation>
 <translation id="4110490973560452005">ውርድ ተጠናቅቋል፦ <ph name="FILE_NAME" />። የውርዶች አሞሌ አካባቢውን ለመቀየር Shift+F6 ይጫኑ።</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ከመስመር ውጭ)</translation>
-<translation id="411318099524508025">ወደ <ph name="NAME" /> ልቀዋል።</translation>
 <translation id="4113743276555482284">የፋይል የይለፍ ቃል</translation>
 <translation id="4114524937989710624">በGoogle Drive ውስጥ ወደ በጣም የቅርብ ጊዜ እንቅስቃሴዎ በቀላሉ እንዲመለሱ የሚያግዙ የተጠቆሙ ፋይሎችን እየተመለከቱ ነው።
         <ph name="BREAK" />
@@ -6416,6 +6417,7 @@
 <translation id="6156863943908443225">የስክሪፕት መሸጎጫ</translation>
 <translation id="6156944117133588106">በጡባዊ ሁነታ ውስጥ የዳሰሳ አዝራሮችን አሳይ</translation>
 <translation id="615930144153753547">ጣቢያዎች ምስሎችን ማሳየት ይችላሉ</translation>
+<translation id="6160290816917599257">ልክ ያልሆነ ኮድ። የእርስዎ ግቤት የ<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /> ቅርጸት ሊኖረው ይገባል</translation>
 <translation id="6160625263637492097">የማረጋገጫ የእውቅና ማረጋገጫ ያቅርቡ</translation>
 <translation id="6163363155248589649">&amp;መደበኛ</translation>
 <translation id="6163376401832887457">የKerberos ቅንብሮች</translation>
@@ -8450,6 +8452,7 @@
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> አስቀድመው በሌላ መሣሪያ ላይ Google ረዳትን ያቀናበሩ ይመስላሉ። <ph name="SUPERVISED_USER_NAME" /> በዚህ መሣሪያ ላይ የማያ ገፅ ሁኔታን በማብራት ከረዳት የበለጠ ማግኘት ይችላል።</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> ሁልጊዜ የእርስዎ ካሜራ መዳረሻ ይፈቀድለት</translation>
 <translation id="7810202088502699111">በዚህ ገፅ ብቅ-ባዮች ታግደዋል።</translation>
+<translation id="7810367892333449285">የእርስዎ ግቤት የ<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /> ቅርጸት ሊኖረው ይገባል</translation>
 <translation id="7814458197256864873">&amp;ቅዳ</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">ለ<ph name="EXTENSION_NAME" /> <ph name="SHORTCUT" /> አቋራጭን አርትዕ</translation>
@@ -9103,6 +9106,7 @@ nil</translation>
 <translation id="8324784016256120271">ጣቢያዎች በተለያዩ ጣቢያዎች ላይ ለምሳሌ ማስታወቂያዎችን ግላዊነት ለማላበስ የእርስዎን የአሰሳ እንቅስቃሴ ለመመልከት ኩኪዎችን መጠቀም ይችላሉ</translation>
 <translation id="8325413836429495820">ቅንጥብ ሰሌዳዎን ለማየት አልተፈቀደም</translation>
 <translation id="8326478304147373412">PKCS #7፣ የሰርቲፊኬት ሰንሰለት</translation>
+<translation id="832684045355488000">እርስዎ ወደ <ph name="NAME" /> አሻሽለዋል</translation>
 <translation id="8327386430364625757">የሂሳብ ቅርጸ-ቁምፊ</translation>
 <translation id="8327538105740918488">ይህን በኋላ ላይ በማንኛውም ጊዜ በኋላ ላይ መለወጥ ይችላሉ። ለ<ph name="EMAIL" /> በ<ph name="GOOGLE_PASSWORD_MANAGER" /> ላይ ይቀመጣል።</translation>
 <translation id="8327676037044516220">ፈቃዶች እና የይዘት ቅንብሮች</translation>
@@ -9433,6 +9437,7 @@ nil</translation>
 <translation id="8605428685123651449">የSQLite ማህደረ ትውስታ</translation>
 <translation id="8607171490667464784">ገቢር ሳይሆን እና ባትሪ ላይ</translation>
 <translation id="8607326572516521315">የአይፈለጌ መልዕክት እና የመጭበርበር ቅነሳ ጣቢያዎች መጭበርበርን እንዲዋጉ እና ቦቶቹን ከሰዎች እንዲለዩ ለማገዝ በግል ሁኔታ ማስመሰያዎች ላይ ይተማመናል።</translation>
+<translation id="8607828412110648570">የብሉቱዝ መሣሪያዎ በማጣመር ሁነታ ላይ እና በአቅራቢያ መሆኑን ያረጋግጡ። ከሚያምኗቸው መሣሪያዎች ጋር ብቻ ያጣምሩ። የተጣመሩ መሣሪያዎች በዚህ Chromebook ላይ ለሁሉም መለያዎች ይታያሉ። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">የKerberos ቲኬት ያክሉ</translation>
 <translation id="8609465669617005112">ወደላይ አውጣ</translation>
 <translation id="8610103157987623234">ትክክል ያልሆነ ቅርጸት፣ እባክዎ እንደገና ይሞክሩ</translation>

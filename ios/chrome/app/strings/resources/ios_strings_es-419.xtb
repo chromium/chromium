@@ -799,6 +799,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5360976571138293719">Para ver más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos, visita <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Puedes encontrar los sitios que sigues aquí</translation>
 <translation id="5388358297987318779">Abrir imagen</translation>
+<translation id="5396950905475481456">Invita a miembros de la familia</translation>
 <translation id="5407969256130905701">Descartar cambios</translation>
 <translation id="5414763847370083940">Recibirás una alerta si el precio disminuye en algún sitio.</translation>
 <translation id="5416022985862681400">Últimos 7 días</translation>
@@ -1550,4 +1551,5 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <translation id="988141524645182168">Otros dispositivos</translation>
 <translation id="989988560359834682">Modificar dirección</translation>
 <translation id="994757059139821576">Sugerencias de artículos</translation>
+<translation id="999768147936949692">Por el momento, solo puedes compartir contraseñas con miembros de la familia. <ph name="BEGIN_LINK" />Invita a miembros de la familia<ph name="END_LINK" /> a unirse a tu grupo y aprovecha al máximo tus productos y suscripciones en Google.</translation>
 </translationbundle>

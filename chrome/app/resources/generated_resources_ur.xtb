@@ -109,6 +109,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> کے لیے املا کی جانچ کرنے والی لغت ڈاؤن لوڈ نہیں ہو سکی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="1078037449555275327">‏ChromeVox کی ترتیبات</translation>
+<translation id="1079285777677001938">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں۔</translation>
 <translation id="1079766198702302550">کیمرا رسائی کو ہمیشہ مسدود کریں</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ٹیب}other{<ph name="GROUP_TITLE" /> - # ٹیبز}}</translation>
 <translation id="1082214733466244292">آپ کے منتظم نے اس آلے کے لیے کچھ فعالیت کو مسدود کر دیا ہے</translation>
@@ -301,6 +302,7 @@
 <translation id="1227660082540388410">پاس کی میں ترمیم کریں</translation>
 <translation id="1227993798763400520">کاسٹ کرنے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="1230417814058465809">معیاری تحفظ آن ہے۔ اور بھی مزید سیکیورٹی کے لیے، بہتر تحفظ کا استعمال کریں۔</translation>
+<translation id="1231426483209637778">اگلی بار جب آپ <ph name="DEVICE_TYPE" /> استعمال کریں گے تو ہم آپ کے نیٹ ورک کو یاد رکھیں گے</translation>
 <translation id="1232569758102978740">بلا عنوان</translation>
 <translation id="1233497634904001272">درخواست کو مکمل کرنے کیلئے، اپنی سیکیورٹی کلید پر دوبارہ ٹچ کریں۔</translation>
 <translation id="1233721473400465416">زبان</translation>
@@ -541,6 +543,7 @@
 <translation id="1431188203598586230">فائنل سافٹ ویئر کی اپ ڈیٹ</translation>
 <translation id="1432581352905426595">سرچ انجنز کا نظم کریں</translation>
 <translation id="1433478348197382180">Reading Mode</translation>
+<translation id="1433980411933182122">اسٹارٹ اپ</translation>
 <translation id="1434696352799406980">یہ آپ کے ابتدائی صفحہ، نئے ٹیب کے صفحہ، سرچ انجن اور پن کردہ ٹیبز کو دوبارہ ترتیب دے گا۔ یہ سبھی ایکسٹینشنز کو غیر فعال اور کوکیز جیسے عارضی ڈیٹا کو صاف بھی کر دے گا۔ آپ کے بُک مارکس، سرگزشت اور محفوظ کردہ پاس ورڈز کو صاف نہیں کیا جائے گا۔</translation>
 <translation id="1434886155212424586">ہوم صفحہ نیا ٹیب صفحہ ہے</translation>
 <translation id="1435940442311036198">کسی دوسرے آلے پر پاس کی استعمال کریں</translation>
@@ -671,6 +674,7 @@
 <translation id="1536754031901697553">منقطع کیا جا رہا ہے...</translation>
 <translation id="1537254971476575106">پوری اسکرین مکبّر</translation>
 <translation id="15373452373711364">بڑا ماؤس کرسر</translation>
+<translation id="1540265419569299117">‏ChromeOS ایپ سروس</translation>
 <translation id="1540605929960647700">ڈیمو موڈ فعال کریں</translation>
 <translation id="1541346352678737112">کوئی نیٹ ورک نہیں ملا</translation>
 <translation id="154198613844929213">{0,plural, =0{ابھی حذف ہو رہا ہے۔}=1{حذف ہو رہا ہے: 1 سیکنڈ}other{حذف ہو رہا ہے: # سیکنڈ}}</translation>
@@ -1500,6 +1504,7 @@
 <translation id="2157474325782140681">‏اضافی خصوصیات حاصل کرنے کیلئے، اس Chromebook کے ساتھ کام کرنے کیلئے ڈیزائن کردہ ایک Dell ڈاکنگ اسٹیشن استعمال کریں۔</translation>
 <translation id="215753907730220065">پوری اسکرین سے خارج ہوں</translation>
 <translation id="2157875535253991059">یہ صفحہ اب پوری اسکرین ہے۔</translation>
+<translation id="2158249272743343757">ذاتی نوعیت کا ڈیٹا حذف کریں...</translation>
 <translation id="2158475082070321257">نمایاں کرنے کا لنک کاپی کریں</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> کے لیے <ph name="SHORTCUT" /> کا دائرہ کار</translation>
@@ -3362,6 +3367,7 @@
 <translation id="3660234220361471169">غیر بھروسہ مند</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 موجودہ پاس ورڈ ملا}other{{NUM_PASSWORDS} موجودہ پاس ورڈز ملے}}</translation>
 <translation id="3664511988987167893">ایکسٹینشن آئیکن</translation>
+<translation id="3665100783276035932">زیادہ تر سائٹس کو توقع کے مطابق کام کرنا چاہیے</translation>
 <translation id="3665301845536101715">سائیڈ پینل میں کھولیں</translation>
 <translation id="3665589677786828986">‏Chrome کو پتا چلا کہ آپ کی کچھ ترتیبات دوسرے پروگرام کی وجہ سے خراب ہوگئی تھیں اور انہیں ان کی اصل ڈیفالٹ میں دوبارہ ترتیب دے دیا گیا تھا۔</translation>
 <translation id="3665919494326051362">موجودہ ورژن <ph name="CURRENT_VERSION" /> ہے</translation>
@@ -3812,11 +3818,13 @@
 <translation id="398477389655464998">نمایاں کرنے کا لنک کاپی کریں</translation>
 <translation id="3984862166739904574">فوری جوابات کی تعریف</translation>
 <translation id="3985022125189960801">اگر آپ سائٹس کے پول میں ایسی سائٹ چاہتے ہیں جو اندازہ لگا سکے کہ آپ کو کیا پسند ہے تو اسے دوبارہ شامل کریں</translation>
+<translation id="3986813315215454677">‏ChromeOS بلوٹوتھ</translation>
 <translation id="3987544746655539083">اس سائٹ کو اپنے مقام تک رسائی سے مسدود کرنا جاری رکھیں</translation>
 <translation id="3987938432087324095">معذرت، سنائی نہیں دیا۔</translation>
 <translation id="3987993985790029246">لنک کاپی کریں</translation>
 <translation id="3988124842897276887">‏یہ ٹیب ایک USB آلہ سے منسلک ہے</translation>
 <translation id="3988996860813292272">ٹائم زون منتخب کریں</translation>
+<translation id="3991055816270226534">فریق ثالث کوکیز اور ٹریکنگ تحفظات کا نظم کریں</translation>
 <translation id="399179161741278232">درآمد کردہ</translation>
 <translation id="3992008114154328194">ڈاؤن لوڈ جاری ہے <ph name="FILE_NAME" />، <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">ڈیٹا کا بیک اپ لیں</translation>
@@ -3958,7 +3966,6 @@
 <translation id="4110485659976215879">وارننگ بحال کریں</translation>
 <translation id="4110490973560452005">‏ڈاؤن لوڈ مکمل ہو گیا: <ph name="FILE_NAME" />۔ ڈاؤن لوڈز بار ایریا پر جانے کے لیے Shift+F6 دبائيں۔</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (آف لائن)</translation>
-<translation id="411318099524508025">آپ کو <ph name="NAME" /> میں اپ گریڈ کیا گیا ہے۔</translation>
 <translation id="4113743276555482284">فائل کا پاس ورڈ</translation>
 <translation id="4114524937989710624">‏آپ Google Drive میں اپنی حالیہ ترین سرگرمی پر آسانی سے واپس جانے میں آپ کی مدد کیلئے تجویز کردہ فائلز کو دیکھ رہے ہیں۔
         <ph name="BREAK" />
@@ -4475,6 +4482,7 @@
 <translation id="4546692474302123343">‏Google اسسٹنٹ صوتی ان پٹ</translation>
 <translation id="4547659257713117923">دوسرے آلات سے کوئی ٹیبز نہیں ہیں</translation>
 <translation id="4547672827276975204">خودکار طور پر سیٹ کریں</translation>
+<translation id="4548858987594081919">‏Google پاس ورڈ مینیجر کو اپنی سائن ان معلومات محفوظ کرنے میں مدد کرنے کے لئے، اس سائٹ کے لئے اپنا صارف نام شامل کریں</translation>
 <translation id="4549791035683739768">آپ کی سیکیورٹی کلید میں کوئی فنگر پرنٹ اسٹور نہیں ہے</translation>
 <translation id="4550926046134589611">کچھ تعاون یافتہ لنکس اب بھی <ph name="APP_NAME" /> میں کھلیں گے۔</translation>
 <translation id="4551763574344810652">کالعدم کرنے کے لیے <ph name="MODIFIER_KEY_DESCRIPTION" /> دبائيں</translation>
@@ -4893,6 +4901,7 @@
 <translation id="4887424188275796356">سسٹم ویور کے ساتھ کھولیں</translation>
 <translation id="488785315393301722">تفصیلات دکھائیں</translation>
 <translation id="488862352499217187">نیا فولڈر بنائیں</translation>
+<translation id="4890292359366636311">خودکار طور پر تصویر میں تصویر درج کریں تاکہ آپ اسے دوسرے ٹیبز اور ونڈوز کے اوپر استعمال کر سکیں۔</translation>
 <translation id="4890773143211625964">جدید ترین پرنٹر کے اختیارات دکھائیں</translation>
 <translation id="4891089016822695758">بی ٹا فورم</translation>
 <translation id="4892229439761351791">سائٹ بلوٹوتھ استعمال کر سکتی ہے</translation>
@@ -5066,6 +5075,7 @@
 <translation id="5051461727068120271">غیر تصدیق شدہ فائل ڈاؤن لوڈ کریں</translation>
 <translation id="5051836348807686060">املا کی جانچ آپ کی منتخب زبانوں کے لیے تعاون یافتہ نہیں ہے</translation>
 <translation id="5052499409147950210">سائٹ میں ترمیم کریں</translation>
+<translation id="5053233576223592551">صارف نام شامل کریں</translation>
 <translation id="505347685865235222">بغیر نام کے گروپ - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054374119096692193">‏<ph name="BEGIN_LINK" />حسب ضرورت Chrome<ph name="END_LINK" /> میں کارڈ کے تمام اختیارات دیکھیں</translation>
 <translation id="5056950756634735043">کنٹینر سے منسلک ہو رہا ہے</translation>
@@ -5827,6 +5837,7 @@
 <translation id="5684661240348539843">اثاثہ شناخت کنندہ</translation>
 <translation id="5684950556880280580">آپ کا پاس ورڈ اپ ڈیٹ کر دیا گیا ہے</translation>
 <translation id="5687326903064479980">ٹائم زون</translation>
+<translation id="5687340364605915800">اس درخواست کا جواب دیتے وقت سائٹس اپنی صوابدید استعمال کرتی ہیں</translation>
 <translation id="5687606994963670306">‏Chrome ‏30 دن سے زیادہ پرانی سائٹس کو خودکار طور پر حذف کر دیتا ہے۔ آپ کے کسی سائٹ کو دوبارہ ملاحظہ کرنے پر فہرست میں وہ دوبارہ نظر آ سکتی ہے۔ یا آپ کے لیے تجویز کردہ اشتہارات سے آپ سائٹ کو مسدود کر سکتے ہیں۔ <ph name="BEGIN_LINK" />Chrome میں اپنے اشتہار کی رازداری کا نظم کرنے<ph name="END_LINK" /> کے بارے میں مزید جانیں۔</translation>
 <translation id="5687935527303996204">یقینی بنائیں کہ آپ کا آلہ پلگ ان ہے اور اسے آف نہ کریں۔ انسٹالیشن میں 20 تک لگ سکتے ہیں۔ انسٹالیشن مکمل ہونے پر آپ کا آلہ خودکار طور پر شٹ ڈاؤن ہو جائے گا۔</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
@@ -6060,6 +6071,7 @@
 <translation id="5869522115854928033">محفوظ کردہ پاس ورڈز</translation>
 <translation id="5870086504539785141">ایکسیسبیلٹی مینیو بند کریں</translation>
 <translation id="5870155679953074650">بڑی خرابیاں</translation>
+<translation id="5872318519182427835">‏یہاں درج سائٹس اور ان کے ذیلی ڈومینز کو متاثر کرتا ہے۔ مثال کے طور پر، "google.com" کو شامل کرنے کا مطلب ہے کہ فریق ثالث کوکیز mail.google.com کے لیے بھی فعال ہو سکتی ہیں، کیونکہ یہ google.com کا حصہ ہے۔</translation>
 <translation id="5875534259258494936">اسکرین کا اشتراک ختم ہو گیا ہے</translation>
 <translation id="5876576639916258720">چل رہا ہے...</translation>
 <translation id="5876851302954717356">دائیں طرف نیا ٹیب</translation>
@@ -6442,6 +6454,7 @@
 <translation id="6180550893222597997"><ph name="APP_NAME" /> کے لئے آپ کون سی پاس کی استعمال کرنا چاہتے ہیں؟</translation>
 <translation id="6181431612547969857">ڈاؤن لوڈ مسدود ہوگیا</translation>
 <translation id="6184099524311454384">ٹیبز تلاش کریں</translation>
+<translation id="6184868291074982484">‏Chrome خودکار طور پر فریق ثالث کوکیز کو محدود کر دیتا ہے</translation>
 <translation id="6185132558746749656">آلہ کا مقام</translation>
 <translation id="6190953336330058278">فون ہب کی ایپس</translation>
 <translation id="6192333916571137726">فائل ڈاؤن لوڈ کریں</translation>
@@ -7293,12 +7306,14 @@
 <translation id="6876469544038980967">مددگار نہیں ہے</translation>
 <translation id="6878422606530379992">سینسرز کی اجازت ہے</translation>
 <translation id="6880587130513028875">تصاویر کو اس صفحہ پر مسدود کر دیا گیا۔</translation>
+<translation id="6882210908253838664">اگر کوئی سائٹ کام نہیں کر رہی ہے تو آپ اسے فریق ثالث کوکیز استعمال کرنے کی عارضی اجازت دینے کی کوشش کر سکتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">افوہ! سسٹم آلہ کی کنفگریشن کو محفوظ کرنے میں ناکام ہوگیا۔</translation>
 <translation id="6884474387073389421">کیا آپ واقعی منتخب کردہ سائن ان ڈیٹا حذف کرنا چاہتے ہیں؟</translation>
 <translation id="6885122019363983153">تمام آلات پر ڈیسک ٹاپ کے پس منظر میچ ہوتے ہیں</translation>
 <translation id="6885771755599377173">سسٹم کی معلومات کا پیش منظر</translation>
 <translation id="6886380424988777998">‏Linux اپ گریڈ نہیں ہو سکا</translation>
 <translation id="6886871292305414135">لنک کو نئے &amp;ٹیب میں کھولیں</translation>
+<translation id="6888831646723563669">اپنے نئے <ph name="DEVICE_TYPE" /> پر تمام خصوصیات سے لطف اندوز ہونے کے لیے جڑے رہیں</translation>
 <translation id="6889957081990109136">سوئچ ابھی تک تفویض نہیں کیا گیا ہے</translation>
 <translation id="689007770043972343">دیگر کھلے ٹیبز کو اپنے گروپ میں گھسیٹنے کی کوشش کریں</translation>
 <translation id="6892812721183419409">لنک کو <ph name="USER" /> کے بطور کھولیں</translation>
@@ -7613,6 +7628,7 @@
 <translation id="7145413760160421938">گزشتہ سیشن کو دوبارہ شروع نہیں کیا جا سکتا</translation>
 <translation id="7146882055510146554">‏Word، Excel اور PowerPoint فائلز کو کھولنے اور ان میں ترمیم کرنے کے لیے Microsoft 365 ‏OneDrive کا استعمال کرتا ہے۔ یہ فائلز "Microsoft OneDrive" کے لیبل والے Files ایپ سائیڈ نیویگیشن میں ملیں گی۔ آپ کو اپنے Microsoft اکاؤنٹ سے سائن ان کرنا ہوگا۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">ہو سکتا ہے سائٹس اس طرح کام نہ کریں جیسا آپ کی توقع ہے۔ اس اختیار کو منتخب کریں اگر آپ اپنے آلے پر ان سائٹس کے بارے میں معلومات نہیں چھوڑنا چاہتے جنہیں آپ دیکھتے ہیں۔</translation>
+<translation id="7148954254185728510">جب آپ براؤز کرتے ہیں تو زیادہ تر سائٹیں آپ کو ٹریک کرنے کے لیے فریق ثالث کوکیز کا استعمال نہیں کر سکتیں اور سائٹیں پوشیدگی وضع میں فریق ثالث کوکیز استعمال نہیں کر سکتیں۔</translation>
 <translation id="7149839598364933473">اس آلے کو ایک <ph name="DEVICE_OS" /> آلے میں تبدیل کریں۔</translation>
 <translation id="7149893636342594995">آخری 72 گھنٹے</translation>
 <translation id="7152478047064750137">اس ایکسٹینشن کو کوئی خاص اجازتیں درکار نہیں ہیں</translation>
@@ -8198,6 +8214,7 @@
 <translation id="7634566076839829401">کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="7635048370253485243">آپ کے منتظم کے ذریعے پن کردہ</translation>
 <translation id="7635711411613274199">براؤز کرتے وقت، آپ جو اشتہار دیکھتے ہیں وہ ذاتی نوعیت کے ہیں یا نہیں اس کا انحصار اس ترتیب پر ہوتا ہے، <ph name="BEGIN_LINK1" />اشتہار کے موضوعات<ph name="LINK_END1" /> آپ کی<ph name="BEGIN_LINK2" /> کوکی کی ترتیبات<ph name="LINK_END2" /> اور آیا آپ جو سائٹ دیکھ رہے ہیں وہ اشتہارات کو ذاتی بناتی ہے یا نہیں</translation>
+<translation id="7636346903338549690">فریق ثالث کوکیز استعمال کرنے کی اجازت والی سائٹس</translation>
 <translation id="7636919061354591437">اس آلہ پر انسٹال کریں</translation>
 <translation id="7637253234491814483">پاور بٹن کے آگے اپنے کی بورڈ کے اوپری دائیں کونے میں فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="7637272932128132922">جب یہ ٹیب غیر فعال تھا، میموری سیور نے دوسرے ٹاسکس کے لیے میموری کو خالی کر دیا۔ آپ اسے <ph name="SETTINGS_LINK" /> میں کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
@@ -9092,6 +9109,7 @@
 <translation id="8324784016256120271">سائٹس کوکیز کے ذریعے مختلف سائٹس پر، مثال کے طور پر، اشتہارات کو ذاتی نوعیت کا بنانے کے لیے آپ کی براؤزنگ کی سرگرمی دیکھ سکتی ہیں</translation>
 <translation id="8325413836429495820">آپ کے کلپ بورڈ کو دیکھنے کی اجازت نہیں ہے</translation>
 <translation id="8326478304147373412">‏PKCS #7، سرٹیفیکیٹ چین</translation>
+<translation id="832684045355488000">آپ کو <ph name="NAME" /> میں اپ گریڈ کیا گیا ہے</translation>
 <translation id="8327386430364625757">ریاضی کا فونٹ</translation>
 <translation id="8327538105740918488">آپ بعد میں کبھی بھی اس پاس ورڈ کو تبدیل کر سکتے ہیں۔ اسے <ph name="EMAIL" /> کے لیے <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ کیا جائے گا۔</translation>
 <translation id="8327676037044516220">اجازتیں اور مواد کی ترتیبات</translation>
@@ -9528,6 +9546,7 @@
 <translation id="8678378565142776698">دوبارہ شروع کریں اور خودکار اپ ڈیٹس حاصل کریں</translation>
 <translation id="8678538439778360739">‏<ph name="TIME" /> پر، آپ کے مطابقت پذیر پاس فریز کی مدد سے ڈيٹا کی مرموزکاری کر دی گئی۔ اس میں Google Pay سے ادائیگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔</translation>
 <translation id="8678582529642151449">ٹیبز چھوٹے نہیں کئے جاتے</translation>
+<translation id="867882552362231068">‏Chrome اس قسم کی معلومات کو محدود کرتا ہے جسے سائٹیں آپ کو براؤز کرتے وقت ٹریک کرنے کے لئے استعمال کر سکتی ہیں۔ آپ اپنی سطح کے تحفظ کا انتخاب کرنے کے لیے اپنی ترتیبات کو تبدیل کر سکتے ہیں۔</translation>
 <translation id="8678933587484842200">آپ اس ایپلیکیشن کو کس طرح لانچ کرنا چاہیں گے؟</translation>
 <translation id="8679054765393461130">‏رینڈر نیٹ ورک سیلیکٹ کی فہرست WiFi کو بار بار اسکین کرنے کے لیے متحرک کرے گی؛ اس سے آپ کے WiFi نیٹ ورک کی کارکردگی متاثر ہو سکتی ہے۔</translation>
 <translation id="8680251145628383637">‏اپنے سبھی آلات پر اپنے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات حاصل کرنے کیلئے سائن ان کریں۔ آپ اپنی Google سروسز میں خود بخود سائن ان بھی ہو جائیں گے۔</translation>

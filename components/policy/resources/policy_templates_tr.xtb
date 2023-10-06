@@ -738,6 +738,7 @@ Bu politika ayarlanmadan bırakılırsa kullanıcıların, engellenebilir karma 
 <translation id="165769015320654523">Bu sitelere, sağlanan tedarikçi ve ürün kimlikleriyle otomatik olarak HID cihazlarına bağlanma izni verir.</translation>
 <translation id="1659406551862245683">Varsayılan sanal klavye yeniden boyutlandırma davranışı, düzen görüntü alanını yeniden boyutlandırmak için değiştirilir</translation>
 <translation id="166427968280387991">Proxy sunucu</translation>
+<translation id="1670638264428789878">İlgili Web Sitesi Gruplarını etkinleştir</translation>
 <translation id="1673097259557436886">Web sitelerine her zaman hiçbir ödeme yönteminin kayıtlı olmadığını söyle</translation>
 <translation id="1674287836076801014">SAML</translation>
 <translation id="1675002386741412210">Desteklendiği yerler:</translation>
@@ -1836,6 +1837,13 @@ Not: Bir alanın atlanması, tüm değerlerin o alanla eşleştiği anlamına ge
 
       Kullanıcılar, yer işaretlerinin yerleştirildiği klasörleri değiştiremezler (ancak yer işareti çubuğunda gizleyebilirler). Yönetilen yer işaretlerinin varsayılan klasör ismi "Yönetilen Yer İşaretleri"dir fakat politikaya değere istenilen klasör adı yazılan "<ph name="TOPLEVEL_NAME" />" isminde tek bir anahtara sahip yeni bir alt sözlük ekleyerek değiştirilebilir. Yönetilen yer işaretleri kullanıcı hesabıyla senkronize edilmez ve uzantılar bunların üzerinde değişiklik yapamaz.</translation>
 <translation id="2552966063069741410">Saat dilimi</translation>
+<translation id="2554010621206996293">Bu politika, İlgili Web Sitesi Grupları özelliğini etkinleştirme işleminin kontrol edilmesini sağlar.
+
+Bu politika <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" /> politikasını geçersiz kılar.
+
+Bu politika ayarlanmadığında veya Doğru değerine ayarlandığında İlgili Web Sitesi Grupları özelliği etkinleştirilir.
+
+Bu politika Yanlış değerine ayarlandığında İlgili Web Sitesi Grupları özelliği devre dışı bırakılır.</translation>
 <translation id="2555244983262829274">Araç çubuğundan Ana sayfa düğmesini gizle</translation>
 <translation id="2562213287271514629">Eski <ph name="FLASH_PLUGIN_NAME" /> eklentisinin normal <ph name="FLASH_PLUGIN_NAME" /> olarak kullanılmasına izin ver</translation>
 <translation id="2562339630163277285">Anında arama sonuçları sağlamak için kullanılan arama motorunun URL'sini belirtir. URL, <ph name="SEARCH_TERM_MARKER" /> dizesini içermelidir. Sorgu sırasında, kullanıcının girdiği metin bu dizenin yerini alır.
@@ -1853,6 +1861,7 @@ Not: Bir alanın atlanması, tüm değerlerin o alanla eşleştiği anlamına ge
 <translation id="2576324725151524912">Erişime kapalı uygulamalar için geliştirici moduna izin ver.</translation>
 <translation id="257717978573041245">Donanım hızlandırmayı etkinleştir</translation>
 <translation id="257788512393330403">Altı saatte bir şifre girilmesi gerekir</translation>
+<translation id="2580606791930800692">Veri denetimleri kural listesini ayarlar.</translation>
 <translation id="2580757713966614760">Politika ayarlanırsa toplu yazıcı yapılandırması için hangi erişim politikasının geçerli olacağı belirlenerek <ph name="DEVICE_PRINTERS_POLICY_NAME" /> içerisinden hangi yazıcıların kullanılabileceği kontrol edilir.
 
       * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_BLOCKLISTRESTRICTIONS" /> (0 değeri) ayarlanırsa <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> belirtilen yazıcılara erişimi kısıtlayabilir.
@@ -3732,6 +3741,7 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
 <translation id="4157594634940419685">Yerel CUPS yazıcılarına erişim izni ver</translation>
 <translation id="4158531549614162499">Hücresel bağlantılar üzerinden Google Drive senkronizasyonunu etkinleştir</translation>
 <translation id="4160962198980004898">Yuvaya yerleştirildiğinde cihaz MAC adresi kaynağı</translation>
+<translation id="4161019158509414446">İlgili Web Sitesi Grupları özelliğiyle ilgili politikaları kontrol eder.</translation>
 <translation id="4164511138197196839">Bu politika etkinleştirilirse Chrome Web Mağazası'nda yayından kaldırılan uzantılar <ph name="PRODUCT_NAME" /> ürününde devre dışı bırakılır.
 Bu politika yalnızca Chrome Web Mağazası'ndan yüklenen ve güncellenen uzantılar
 için geçerlidir.
@@ -6217,6 +6227,7 @@ UYARI: Bu ayarı değiştirirken dikkatli olun. Bu ayar, coğrafi konumla ilgili
       Politikanın False (Yanlış) değerine ayarlanması, İmzalanmış HTTP Takası içeriğinin yüklenmesini önler.</translation>
 <translation id="6368011194414932347">Ana sayfa URL'sini yapılandır</translation>
 <translation id="6368403635025849609">Bu sitelerde JavaScript'e izin ver</translation>
+<translation id="6371005337713685988">İlgili Web Sitesi Grupları Ayarları</translation>
 <translation id="6371561334154580937">Son kapatılan pencerede oturum kapatma iletişimi göster.</translation>
 <translation id="6372105930898423193">AppCache özelliğinin, varsayılan olarak kapalı olsa bile yeniden etkinleştirilmesine olanak tanır.</translation>
 <translation id="6373299801585455337">Cihazın CPU bilgileri raporlamasını etkinleştir</translation>
@@ -7948,6 +7959,7 @@ Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından s
 <translation id="7758378441185523981">Ambiyans Kimlik Doğrulamasını profil türlerine göre etkinleştir.</translation>
 <translation id="776110834126722255">Kullanımdan kaldırıldı</translation>
 <translation id="7763614521440615342">Yeni Sekme sayfasında içerik önerileri göster</translation>
+<translation id="776465643636059256">İlgili Web Sitesi Gruplarını devre dışı bırak</translation>
 <translation id="7765879851993224640">Smart Lock oturum açmanın kullanılmasına izin ver</translation>
 <translation id="7767066506143083523">Politikayı ayarlamak, Sekme Yakalama'yı kullanabilen URL kalıpları için bir liste yapmanıza olanak tanır.
 

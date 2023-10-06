@@ -58,6 +58,7 @@
 <translation id="1264156759663453185">ಆಯ್ಕೆಮಾಡಿದ ಪಠ್ಯವು ಭಾಗಶಃ ಅನುವಾದಕ್ಕೆ ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ.</translation>
 <translation id="1265739287306757398">ಹೇಗೆ ಎಂಬುದನ್ನು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
 <translation id="1272079795634619415">ನಿಲ್ಲಿಸಿ</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} ಪಾಸ್‌ವರ್ಡ್}one{{count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{{count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
 <translation id="1275718070701477396">ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1279024913354609713">ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="1281818060020671000">ಡೇಟಾವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -191,6 +192,7 @@
 <translation id="1987779152850321833">Chrome ನಿಂದ ಇನ್ನಷ್ಟನ್ನು ಪಡೆಯಲು ಕೆಳಗೆ ಸೂಚಿಸಲಾದ ಈ ಕ್ರಿಯೆಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ.</translation>
 <translation id="1989112275319619282">ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="1990820278544963435">ಹುಡುಕಿ</translation>
+<translation id="1991153180045413119">ಪಾಸ್‌ವರ್ಡ್ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="1992055602764528852">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಿಂದ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೋಡಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="199425419756152024">ಪಾಸ್‌ವರ್ಡ್ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="2008357574463816229">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ಮರೆತರೆ ಅಥವಾ ಈ ಸೆಟ್ಟಿಂಗ್ ಬದಲಾಯಿಸಬೇಕಾದರೆ <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿರುವ Chrome ಡೇಟಾ ತೆರವುಗೊಳಿಸಿ<ph name="END_LINK" />.</translation>
@@ -234,6 +236,7 @@
 <translation id="2268044343513325586">ಪರಿಷ್ಕರಿಸು</translation>
 <translation id="2269277877025820298">ಇನ್ನಷ್ಟು ನೋಡಿ</translation>
 <translation id="2273327106802955778">ಹೆಚ್ಚಿನ ಮೆನು</translation>
+<translation id="2274800392139890332">ಈ ಪ್ಯಾಕೇಜ್ ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="2275480389219976105">ವಿಳಾಸ ದೊರೆತಿದೆ</translation>
 <translation id="2286505070150039482">ಹೈಲೈಟ್ ಮಾಡಿದ ಪಠ್ಯ</translation>
 <translation id="2287614783861766820">{count,plural, =1{ಈ ಸಾಧನದಿಂದ ಈ ವಿಳಾಸವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.}one{ಈ ಸಾಧನದಿಂದ ಈ ವಿಳಾಸಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.}other{ಈ ಸಾಧನದಿಂದ ಈ ವಿಳಾಸಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.}}</translation>
@@ -242,6 +245,7 @@
 <translation id="2299218006564889602">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸುವ ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾಯಿಸಿ</translation>
+<translation id="2310154074101836012">ಕರೋಸಲ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2316709634732130529">ಸೂಚಿಸಿರುವ ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
 <translation id="2320166752086256636">ಕೀಬೋರ್ಡ್ ಮರೆಮಾಡಿ</translation>
 <translation id="2351097562818989364">ನಿಮ್ಮ ಅನುವಾದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರು ಹೊಂದಿಸಲಾಗಿದೆ.</translation>
@@ -526,6 +530,7 @@
 <translation id="380329542618494757">ಹೆಸರು</translation>
 <translation id="3803696231112616155">ಈ ಸೈಟ್ ಅನ್ನು ಅನುವಾದಿಸುವ ಕೊಡುಗೆ</translation>
 <translation id="3810973564298564668">ನಿರ್ವಹಿಸಿ</translation>
+<translation id="3818045793209708987">ಈ ಪ್ಯಾಕೇಜ್ ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3818293389945649617">ಮುಂದಿನದು ಹುಡುಕಿ</translation>
 <translation id="3819183753496523827">ನೀವು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಿರಿ. ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ, ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3832419617903252251">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಉಳಿಸಲಾಗಿದೆ</translation>
@@ -564,6 +569,7 @@
 <translation id="4018310736049373830">ಚಟುವಟಿಕೆ ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4038354071007134711">ಫೈಲ್‌ ತೆರೆಯಬಹುದಾದ ಯಾವುದೇ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಈ ಸಾಧನದಲ್ಲಿ ಇಲ್ಲ.</translation>
 <translation id="4042870976416480368">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ</translation>
+<translation id="4043294777772912240"><ph name="USERNAME" /> ಅವರು <ph name="WEBSITE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು Google Password Manager ಅನ್ನು ಬಳಸುವಾಗ, ಅವರು ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">ನೀವು ಹೈಲೈಟ್ ಮಾಡಿರುವ ಪುಟದ ಭಾಗವೊಂದಕ್ಕೆ ನೇರ ಲಿಂಕ್ ಅನ್ನು ರಚಿಸಿ ಮತ್ತು ಹಂಚಿಕೊಳ್ಳಿ.</translation>
 <translation id="4045648459118332842">ಒಂದೇ ಟ್ಯಾಪ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಯಾವುದೇ ಆ್ಯಪ್‌ನಲ್ಲಿ ಪಡೆಯಿರಿ</translation>
 <translation id="4049507953662678203">ನೀವು ನೆಟ್‌‌ವರ್ಕ್ ಸಂಪರ್ಕ ಹೊಂದಿರುವಿರಾ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -607,6 +613,7 @@
 <translation id="4286718549648564014">ವಿಳಾಸವನ್ನು ನಿಮ್ಮ ಖಾತೆಗೆ ಸರಿಸಲಾಗಿದೆ <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">ಹುಡುಕಾಟ</translation>
 <translation id="4302248187517737842">ಯಾವುದೇ ಬಳಕೆದಾರರ ಹೆಸರಿಲ್ಲ ••••••••</translation>
+<translation id="4302415908542657649">ಪಾಸ್‌ವರ್ಡ್ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4304713468139749426">ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="430793432425771671">ಪ್ರತಿಯೊಂದನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="4309403553630140242">ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
@@ -642,6 +649,7 @@
 <translation id="4508750114462689118">ಸೈನ್-ಇನ್ ಪ್ರೋಮೋ ಮುಚ್ಚಿ</translation>
 <translation id="4514889972748124117">ಸದೃಢವಾದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೂಚಿಸಿ...</translation>
 <translation id="4520798012560649652">ಅಜ್ಞಾತ ಮೋಡ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} ಬುಕ್‌ಮಾರ್ಕ್‌}one{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}other{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}}</translation>
 <translation id="452750746583162491">ಸಿಂಕ್ ಮಾಡಲಾಗಿರುವ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4527660062930312477">ನಿಮ್ಮ ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="4536418791685807335">ಮತ್ತೊಮ್ಮೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -661,6 +669,7 @@
 <translation id="4619615317237390068">ಇತರ ಸಾಧನಗಳಿಂದ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="4620246317052452550">ನೀವು ಓದಿದ ಪುಟಗಳು</translation>
 <translation id="4620888520263267479">ಲಿಂಕ್ ಪೂರ್ವವೀಕ್ಷಣೆಗಳನ್ನು ತೋರಿಸಿ</translation>
+<translation id="4622477750832577849">ಟ್ರ್ಯಾಕಿಂಗ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4630540211544979320">ಪುಟಗಳನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="4634124774493850572">ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
@@ -810,6 +819,7 @@
 <translation id="54401264925851789">ಪುಟ ಭದ್ರತೆಯ ಮಾಹಿತಿ</translation>
 <translation id="5443952882982198570">ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು</translation>
 <translation id="5444892875087332195">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
+<translation id="5454211924362324495">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಇತರರು ಬಳಸದಂತೆ ತಡೆಯಲು, <ph name="BEGIN_LINK" />ಅದನ್ನು <ph name="WEBSITE" /> ನಲ್ಲಿ ಬದಲಾಯಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">ಆಫ್‌ಲೈನ್ ಆವೃತ್ತಿಯನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5475069061743940393">ಪ್ಯಾಕೇಜ್ ಟ್ರಾಕಿಂಗ್</translation>
 <translation id="5478327362747197944">ವೆಬ್ ಪುಟದಲ್ಲಿನ ದಿನಾಂಕವನ್ನು ಕ್ಲಿಕ್ ಮಾಡುವ ಮೂಲಕ ನೇರವಾಗಿ ಕ್ಯಾಲೆಂಡರ್ ಈವೆಂಟ್‌ಗಳನ್ನು ರಚಿಸಿ.</translation>
@@ -1156,6 +1166,7 @@
 <translation id="7154343200458623869">ನಿಮ್ಮ ಕಾರ್ಯವನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ.</translation>
 <translation id="7161230316646448869">ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲೂ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ ಹಾಗೂ ಇನ್ನಷ್ಟವುಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ಬಳಸಿಕೊಂಡು ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
+<translation id="7168959436351276050">ಈ ಕಾರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡುವುದು ನಿಮ್ಮ ಎಲ್ಲಾ ಪ್ಯಾಕೇಜ್ ಟ್ರ್ಯಾಕಿಂಗ್ ಡೇಟಾವನ್ನು ತೆಗೆದುಹಾಕುತ್ತದೆ</translation>
 <translation id="7172852049901402487">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಭದ್ರತಾ ಸಮಸ್ಯೆಗಳಿಂದ ಸುರಕ್ಷಿತವಾಗಿರಿಸಿ</translation>
 <translation id="7173114856073700355">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7189598951263744875">ಹಂಚಿ...</translation>

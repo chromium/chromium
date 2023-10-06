@@ -2158,6 +2158,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2671451824761031126">Les adreces d'interès i la configuració estan preparades</translation>
 <translation id="2672142220933875349">El fitxer crx és incorrecte i no s'ha pogut descomprimir.</translation>
 <translation id="2673135533890720193">Llegir l'historial de navegació</translation>
+<translation id="2673848446870717676">Comprova que el dispositiu Bluetooth es trobi a prop i en mode de vinculació. Vincula'l només amb dispositius en què confiïs. Tots els comptes d'aquest Chromebook poden veure els dispositius vinculats.</translation>
 <translation id="2673873887296220733">Vols copiar 1 fitxer a <ph name="CLOUD_PROVIDER" /> per obrir-lo?</translation>
 <translation id="2674764818721168631">Desactivat</translation>
 <translation id="2676084251379299915">La política d'empresa ha desactivat aquesta extensió perquè ja no està disponible a Chrome Web Store.</translation>
@@ -3833,6 +3834,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4010917659463429001">Per accedir a les teves adreces d'interès des del dispositiu mòbil, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Voleu reparar <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Tens extensions? <ph name="BEGIN_LINK" />Gestiona-les<ph name="END_LINK" /> fàcilment des d'un sol lloc.</translation>
+<translation id="4016762287427926315">Els permisos que concedeixis a <ph name="APP_NAME" /> també es concediran a aquesta aplicació. <ph name="BEGIN_LINK" />Gestiona<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crea un codi QR per a aquest enllaç</translation>
 <translation id="4019983356493507433">Edita la llista d'adreces d'interès</translation>
 <translation id="4020327272915390518">Menú d'opcions</translation>
@@ -3953,7 +3955,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4110485659976215879">Restaura l'advertiment</translation>
 <translation id="4110490973560452005">S'ha completat la baixada: <ph name="FILE_NAME" />. Prem Maj+F6 per anar a l'àrea de la barra de baixades.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sense connexió)</translation>
-<translation id="411318099524508025">Se t'ha actualitzat a <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Contrasenya del fitxer</translation>
 <translation id="4114524937989710624">Veus suggeriments de fitxers per ajudar-te a trobar fàcilment la teva activitat més recent a Google Drive.
         <ph name="BREAK" />
@@ -6407,6 +6408,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6156863943908443225">Memòria cau de scripts</translation>
 <translation id="6156944117133588106">Mostra els botons de navegació en mode de tauleta</translation>
 <translation id="615930144153753547">Els llocs web poden mostrar imatges</translation>
+<translation id="6160290816917599257">El codi no és vàlid. L'entrada ha de tenir el format <ph name="LPA_0" />$<ph name="LPA_1" />adreça SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />identificador coincident opcional<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Proporciona certificats per a l'autenticació</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Configuració de Kerberos</translation>
@@ -8439,6 +8441,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7807117920154132308">Sembla que <ph name="SUPERVISED_USER_NAME" /> ja ha configurat l'Assistent de Google en un altre dispositiu. <ph name="SUPERVISED_USER_NAME" /> pot treure més profit de l'Assistent activant l'opció Context de la pantalla en aquest dispositiu.</translation>
 <translation id="7807711621188256451">Permet sempre que <ph name="HOST" /> accedeixi a la càmera</translation>
 <translation id="7810202088502699111">S'han bloquejat finestres emergents en aquesta pàgina.</translation>
+<translation id="7810367892333449285">L'entrada ha de tenir el format <ph name="LPA_0" />$<ph name="LPA_1" />adreça SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />identificador coincident opcional<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Copia</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Edita la drecera <ph name="SHORTCUT" /> per a <ph name="EXTENSION_NAME" /></translation>
@@ -9088,6 +9091,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8324784016256120271">Els llocs web poden fer servir galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis</translation>
 <translation id="8325413836429495820">Sense permís per veure el porta-retalls</translation>
 <translation id="8326478304147373412">PKCS #7, cadena de certificats</translation>
+<translation id="832684045355488000">Se t'ha actualitzat a <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Font matemàtica</translation>
 <translation id="8327538105740918488">Pots canviar aquesta contrasenya més endavant. Es desarà al <ph name="GOOGLE_PASSWORD_MANAGER" /> per a <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Configuració dels permisos i del contingut</translation>
@@ -9418,6 +9422,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8605428685123651449">Memòria SQLite</translation>
 <translation id="8607171490667464784">Mentre estigui inactiu i utilitzi la bateria</translation>
 <translation id="8607326572516521315">La reducció del frau i del contingut brossa depèn dels testimonis d'estat privat per ajudar els llocs web a lluitar contra el frau i a distingir les persones dels bots.</translation>
+<translation id="8607828412110648570">Comprova que el dispositiu Bluetooth es trobi a prop i en mode de vinculació. Vincula'l només amb dispositius en què confiïs. Tots els comptes d'aquest Chromebook poden veure els dispositius vinculats. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Afegeix un tiquet de Kerberos</translation>
 <translation id="8609465669617005112">Desplaça cap amunt</translation>
 <translation id="8610103157987623234">El format no és correcte. Torna-ho a provar.</translation>

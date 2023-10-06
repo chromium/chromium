@@ -2026,6 +2026,7 @@ Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar htt
 
       Als dit beleid is ingesteld op 'False' of niet is ingesteld, zijn de pictogrammen zichtbaar.</translation>
 <translation id="2744751866269053547">Protocolhandlers registreren</translation>
+<translation id="2744980433176488921">F11-/F12-instellingen gebruiken de sneltoets met de functietoets Shift</translation>
 <translation id="2745150813292162313">Toestaan dat partitionering door derden wordt aangezet.</translation>
 <translation id="2746016768603629042">Dit beleid is verouderd. Gebruik in plaats hiervan DefaultJavaScriptSetting.
 
@@ -3583,6 +3584,7 @@ Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_
 
       Als <ph name="PRODUCT_NAME" /> niet correct wordt afgesloten (bijvoorbeeld als de browser of het besturingssysteem crasht), worden de browsegegevens gewist wanneer het profiel weer wordt geladen.</translation>
 <translation id="4056910949759281379">SPDY-protocol uitzetten</translation>
+<translation id="4057442294431066708">Dit beleid is van toepassing op de geselecteerde snelkoppelingsoptie om gebeurtenissen opnieuw toe te wijzen aan F11/F12 op de subpagina voor het opnieuw toewijzen van toetsen. Deze instellingen gelden alleen voor ChromeOS-toetsenborden en staan standaard uit als het beleid niet is ingesteld.</translation>
 <translation id="4061107397839125009">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van de sites die geen meldingen mogen bekijken.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
@@ -3691,6 +3693,7 @@ Afgedwongen geïnstalleerde extensies die zelf worden gehost, worden genegeerd. 
 
 Als je het beleid instelt op <ph name="ALLOW_UNPUBLISHED" /> (0) of niet instelt, zijn extensies toegestaan waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store.
 Als je het beleid instelt op <ph name="DISABLE_UNPUBLISHED" /> (1), worden extensies uitgezet waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store.</translation>
+<translation id="4164866067069311355">De sneltoets beheren die wordt gebruikt om F11/F12 te activeren</translation>
 <translation id="4165986682804962316">Site-instellingen</translation>
 <translation id="4166174702671320480">Als je het beleid toepast, worden beleidsregels van een atomische groep genegeerd die niet dezelfde bron met de hoogste prioriteit van die groep hebben.
 
@@ -6057,6 +6060,7 @@ Zie https://developer.chrome.com/blog/immutable-document-domain/ voor meer infor
 
       Opmerking: Pas dit beleid niet toe als <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> aanstaat, want die functie heeft dezelfde functionaliteit aan de clientzijde. In dit geval staat de door Google gehoste synchronisatie helemaal uit.</translation>
 <translation id="6320935916601887506">Standaard wordt het nieuwe offsetParent-gedrag gebruikt.</translation>
+<translation id="6324274808543634377">F11-/F12-instellingen gebruiken de sneltoets met de functietoets Alt</translation>
 <translation id="6327643515544933974">Web-USB-instellingen</translation>
 <translation id="6330882599388782338">Toestaan dat sites toegang hebben tot sensoren</translation>
 <translation id="6331167725613770725">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
@@ -7320,6 +7324,7 @@ Dit beleid wordt verwijderd in <ph name="PRODUCT_OS_NAME" /> versie 120, <ph nam
 
 Dit beleid is verwijderd in <ph name="PRODUCT_NAME" /> voor <ph name="MS_WIN_NAME" /> en <ph name="MAC_OS_NAME" /> versie 113 wanneer de ondersteuning voor het gebruik van de door het platform geleverde certificaatverificatie en rootcertificaten werd verwijderd.</translation>
 <translation id="7298197471363105063">First-Party Sets overschrijven.</translation>
+<translation id="7300320787419338290">F11-/F12-instellingen gebruiken de sneltoets met de functietoetsen Ctrl en Shift</translation>
 <translation id="7302043767260300182">Vertraging van schermvergrendeling wanneer op netstroom wordt gewerkt</translation>
 <translation id="7303902834678570827">Gebruikers van beheerde gastsessies kunnen geen weergave-eigenschappen voor het hele apparaat opslaan</translation>
 <translation id="7306926210354955892">Als je het beleid instelt, geef je de actie op die moet worden uitgevoerd als de ARC-gegevensdirectory van de gebruiker is gemaakt met virtio-fs. Tenzij virtio-fs-gegevens worden gemigreerd naar virtio-blk, worden Android-apps misschien langzamer uitgevoerd op ARC VM.
@@ -9265,6 +9270,7 @@ Als je dit beleid niet instelt op een beheerd apparaat, kan het apparaat geen vi
 
       De beleidswaarde moet worden gespecificeerd in seconden.</translation>
 <translation id="9015578113567730893">Snelheid voor verzameling van audiotelemetrie in milliseconden.</translation>
+<translation id="9015759770696099204">F11-/F12-instellingen staan uit</translation>
 <translation id="9015952763003753868">Overeenkomende <ph name="ACAM_HEADER_NAME" /> in pre-flightverzoek voor <ph name="CORS" /> laten overeenkomen met de specificaties</translation>
 <translation id="9020630127193895800">Indigo achtergrondverlichting van toetsenbord</translation>
 <translation id="9031831501689819108">Ondersteuning voor oudere browsers aanzetten</translation>

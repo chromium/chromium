@@ -3958,7 +3958,6 @@
 <translation id="4110485659976215879">Восстановить предупреждение</translation>
 <translation id="4110490973560452005">Скачивание завершено: <ph name="FILE_NAME" />. Чтобы перейти к панели загрузок, нажмите Shift + F6.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
-<translation id="411318099524508025">Установлена новая версия <ph name="NAME" /></translation>
 <translation id="4113743276555482284">Пароль файла</translation>
 <translation id="4114524937989710624">Эти рекомендованные файлы помогут вам вернуться к действиям, которые вы недавно выполняли на Google Диске.
         <ph name="BREAK" />
@@ -9100,6 +9099,7 @@
 <translation id="8324784016256120271">Сайты могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например, для показа персонализированной рекламы.</translation>
 <translation id="8325413836429495820">Запретить сайтам просматривать буфер обмена</translation>
 <translation id="8326478304147373412">PKCS #7, цепочка сертификатов</translation>
+<translation id="832684045355488000">Вы перешли на <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Математический шрифт</translation>
 <translation id="8327538105740918488">Этот пароль можно изменить в любое время. Он будет сохранен для аккаунта <ph name="EMAIL" /> здесь: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="8327676037044516220">Разрешения и настройки контента</translation>

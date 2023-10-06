@@ -1734,6 +1734,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Estàs utilitzant el bloqueig de pantalla per emplenar contrasenyes</translation>
 <translation id="4558551763791394412">Desactiva les extensions</translation>
+<translation id="456043042661026303">S'estan comprovant de manera segura les teves dades de pagament</translation>
 <translation id="4566017918361049074">Activitats a l'aire lliure</translation>
 <translation id="4567686777917670400">L'administrador pot modificar la configuració del navegador de manera remota. És possible que l'activitat d'aquest dispositiu també es gestioni fora de Chromium. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Revisa una llista de galetes i dades dels llocs web en una finestra nova</translation>
@@ -3361,6 +3362,7 @@ Detalls addicionals:
 <translation id="7865448901209910068">Velocitat òptima</translation>
 <translation id="7870281855125116701">S'ha trobat un descompte</translation>
 <translation id="7871445724586827387">Canvia la contrasenya del teu Compte de Google.</translation>
+<translation id="7876615279559620350">Per pagar ràpidament, desa el CVC de la targeta al teu Compte de Google</translation>
 <translation id="7877007680666472091">identificadors de contingut protegit</translation>
 <translation id="7878562273885520351">La teva contrasenya pot estar en perill</translation>
 <translation id="7880146494886811634">Desa l'adreça</translation>
@@ -3848,6 +3850,7 @@ Detalls addicionals:
 <translation id="8870494189203302833">Ordre idèntic de cara avall</translation>
 <translation id="8870700989640064057">Vols imprimir el fitxer confidencial?</translation>
 <translation id="8871553383647848643">Personalitza l'aspecte del teu navegador</translation>
+<translation id="8874790741333031443">Prova de permetre temporalment les galetes de tercers. Això implica menys protecció de navegació, però és més probable que les funcions del lloc web funcionin de la manera prevista.</translation>
 <translation id="8874824191258364635">Introdueix un número de targeta vàlid</translation>
 <translation id="8876033571432926051">Jocs de gran públic</translation>
 <translation id="8877780815363510165">Pesca</translation>
