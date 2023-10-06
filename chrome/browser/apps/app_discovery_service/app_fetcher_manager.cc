@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/notreached.h"
+#include "chrome/browser/apps/app_discovery_service/almanac_fetcher.h"
 #include "chrome/browser/apps/app_discovery_service/game_fetcher.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_app_fetcher.h"
 #include "ui/gfx/image/image_skia.h"
@@ -34,7 +35,8 @@ AppFetcherManager::AppFetcherManager(Profile* profile)
     : profile_(profile),
       recommended_arc_app_fetcher_(
           std::make_unique<RecommendedArcAppFetcher>(profile_)),
-      game_fetcher_(std::make_unique<GameFetcher>(profile_)) {}
+      game_fetcher_(std::make_unique<GameFetcher>(profile_)),
+      almanac_fetcher_(std::make_unique<AlmanacFetcher>(profile_)) {}
 
 AppFetcherManager::~AppFetcherManager() = default;
 

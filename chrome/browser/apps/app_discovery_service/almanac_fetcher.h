@@ -5,11 +5,17 @@
 #ifndef CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_ALMANAC_FETCHER_H_
 #define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_ALMANAC_FETCHER_H_
 
+#include "chrome/browser/apps/almanac_api_client/proto_file_manager.h"
 #include "chrome/browser/apps/app_discovery_service/almanac_api/launcher_app.pb.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/app_fetcher_manager.h"
+#include "chrome/browser/apps/app_discovery_service/launcher_app_almanac_connector.h"
 
 class Profile;
+
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
 namespace apps {
 
@@ -30,15 +36,48 @@ class AlmanacFetcher : public AppFetcher {
                int32_t size_hint_in_dip,
                GetIconCallback callback) override;
 
-  // Parses all app data on update and notifies all subscribers with it.
-  void OnAppsUpdate(const proto::LauncherAppResponse& launcher_app_response);
+  // Registers prefs used for calling the Almanac.
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // Methods exposed for testing the Almanac server.
+
+  // Returns the time the server was last called.
+  base::Time GetLastAppsUpdateTime() const;
+
+  // Sets the time when the server was last called.
+  void SetLastAppsUpdateTime(base::Time value);
 
  private:
+  // Downloads apps from the server, updates the disk and the in-memory app
+  // caches, and notifies the class subscribers.
+  void DownloadApps();
+
+  // Calls the Almanac server with the device information provided.
+  void OnGetDeviceInfo(DeviceInfo device_info);
+
+  // Writes the response to disk if the call to the server succeeded or reads
+  // the cached data otherwise.
+  void OnServerResponse(absl::optional<proto::LauncherAppResponse> response);
+
+  // Updates the app caches and relevant profile preferences on a successful
+  // response.
+  void OnFileWritten(proto::LauncherAppResponse response, bool write_complete);
+
+  // Parses all app data on update and notifies all subscribers with it.
+  void OnAppsUpdate(absl::optional<proto::LauncherAppResponse> response);
+
   raw_ptr<Profile> profile_;
 
   std::vector<Result> apps_;
 
   ResultCallbackList subscribers_;
+
+  std::unique_ptr<LauncherAppAlmanacConnector> server_connector_;
+  std::unique_ptr<DeviceInfoManager> device_info_manager_;
+  std::unique_ptr<ProtoFileManager<proto::LauncherAppResponse>>
+      proto_file_manager_;
+
+  base::WeakPtrFactory<AlmanacFetcher> weak_factory_{this};
 };
 
 }  // namespace apps

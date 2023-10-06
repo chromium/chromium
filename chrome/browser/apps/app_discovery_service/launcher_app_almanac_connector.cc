@@ -74,7 +74,10 @@ void LauncherAppAlmanacConnector::GetApps(
   std::unique_ptr<network::SimpleURLLoader> loader =
       GetAlmanacUrlLoader(kTrafficAnnotation, BuildRequestBody(device_info),
                           kAlmanacLauncherAppEndpoint);
-
+  if (!url_loader_factory.get()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
   // Retain a pointer while keeping the loader alive by std::moving it into the
   // callback.
   auto* loader_ptr = loader.get();
