@@ -27,20 +27,15 @@ document.querySelector('button#run_parts').textContent = `PARTS: Create ${nRows}
 
 function template(tplStr) {
   const tplEl = document.createElement('template');
+  tplEl.parseparts = true;
   tplEl.innerHTML = tplStr;
-
   return tplEl;
 }
 const tbodyEl = document.querySelector('tbody');
 const rowTplBaseline = template(`<tr><td class="col-md-1"> </td><td class="col-md-4"><a href="#"> </a></td><td class="col-md-1"><a href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`);
-// Declarative version:
-// const rowTplParts = template(`<?node-part?><tr><td class="col-md-1"><?node-part?> </td><td class="col-md-4"><?node-part?><a href="#"> </a></td><td class="col-md-1"><?node-part?><a href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`);
-const rowTplParts = template(`<tr><td class="col-md-1"> </td><td class="col-md-4"><a href="#"> </a></td><td class="col-md-1"><a href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`);
+// The space at the front of this template works around crbug.com/1490375, and can be removed once that's fixed:
+const rowTplParts = template(` <tr {{}}><td class="col-md-1"><?node-part?> </td><td class="col-md-4"><a {{}} href="#"> </a></td><td class="col-md-1"><a {{}} href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`);
 const partRoot = rowTplParts.content.getPartRoot();
-new NodePart(partRoot,rowTplParts.content.firstChild);
-new NodePart(partRoot,rowTplParts.content.firstChild.firstChild.firstChild);
-new NodePart(partRoot,rowTplParts.content.firstChild.firstChild.nextSibling.firstChild);
-new NodePart(partRoot,rowTplParts.content.firstChild.firstChild.nextSibling.nextSibling.firstChild);
 
 let tbodyPart;
 function resetTable() {
@@ -110,20 +105,24 @@ function createRowParts(i) {
   next = performance.now();
   perfs.push(next - now); // cloning
   now = next;
-  perfs.push(0); // getParts - no more getParts!
-  // const parts = tplCloneRoot.getParts();
-  // next = performance.now();
-  // perfs.push(next - now); // getParts
-  // now = next;
 
-  const trEl = tplCloneRoot.getPartNode(0);
-  const labelTxtNode = tplCloneRoot.getPartNode(1);
-  const aEl1 = tplCloneRoot.getPartNode(2);
-  const aEl2 = tplCloneRoot.getPartNode(3);
-  // const trEl = parts[0].node;
-  // const labelTxtNode = parts[1].node;
-  // const aEl1 = parts[2].node;
-  // const aEl2 = parts[3].node;
+  // step (2): get parts
+  const parts = tplCloneRoot.getParts();
+  next = performance.now();
+  perfs.push(next - now); // getParts
+  now = next;
+  // Use this instead if you're using getPartNode():
+  // perfs.push(0); // getParts
+
+  const trEl = parts[0].node;
+  const labelTxtNode = parts[1].node;
+  const aEl1 = parts[2].node;
+  const aEl2 = parts[3].node;
+  // Use this instead if you're using getPartNode():
+  // const trEl = tplCloneRoot.getPartNode(0);
+  // const labelTxtNode = tplCloneRoot.getPartNode(1);
+  // const aEl1 = tplCloneRoot.getPartNode(2);
+  // const aEl2 = tplCloneRoot.getPartNode(3);
   next = performance.now();
   perfs.push(next - now); // accessNodes
   now = next;

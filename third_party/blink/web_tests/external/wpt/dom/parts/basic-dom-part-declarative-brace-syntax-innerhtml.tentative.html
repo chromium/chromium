@@ -57,5 +57,18 @@ Array.from(document.querySelectorAll('#context_elements>*')).forEach(contextEl =
     }, `Declarative DOM Parts innerHTML ${description} (expect${expectParts ? "" : " no"} parts)`);
   });
 });
+
+test((t) => {
+  const tmpl = document.createElement('template');
+  tmpl.parseparts = true;
+  // See crbug.com/1490375.
+  tmpl.innerHTML = '<div {{}}></div>';
+  const root = tmpl.content.getPartRoot();
+  t.add_cleanup(() => {
+    tmpl.remove();
+    root.getParts().forEach(part => part.disconnect());
+  });
+  assert_equals(root.getParts().length,1,'There should be one NodePart');
+}, `Basic NodePart parsing`);
 </script>
 
