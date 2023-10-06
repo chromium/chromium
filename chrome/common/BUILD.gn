@@ -188,7 +188,6 @@ static_library("common_lib") {
     "//chrome/common/profiler",
     "//chrome/common/search:mojo_bindings",
     "//chrome/installer/util:with_no_strings",
-    "//components/cdm/common",
     "//components/client_hints/common",
     "//components/cloud_devices/common",
     "//components/component_updater",
@@ -262,6 +261,10 @@ static_library("common_lib") {
     "//components/no_state_prefetch/common:mojo_bindings",
     "//components/page_load_metrics/common:common",
   ]
+
+  if (is_android || enable_library_cdms) {
+    public_deps += [ "//components/cdm/common" ]
+  }
 
   if (enable_supervised_users) {
     public_deps += [ "//components/supervised_user/core/common" ]

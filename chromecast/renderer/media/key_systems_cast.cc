@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/media/base/key_systems_common.h"
-#include "components/cdm/renderer/android_key_systems.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
 #include "media/base/key_system_info.h"

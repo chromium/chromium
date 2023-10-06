@@ -465,7 +465,6 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/chrome_descriptors.h"
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
-#include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/content/browser/crash_memory_metrics_collector_android.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
@@ -1937,10 +1936,6 @@ void ChromeContentBrowserClient::RenderProcessWillLaunch(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  // Data cannot be persisted if the profile is off the record.
-  host->AddFilter(
-      new cdm::CdmMessageFilterAndroid(!profile->IsOffTheRecord(), false));
-
   // Register CrashMemoryMetricsCollector to report oom related metrics.
   host->SetUserData(
       CrashMemoryMetricsCollector::kCrashMemoryMetricsCollectorKey,

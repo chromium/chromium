@@ -19,21 +19,12 @@ if (enable_media_drm_storage) {
     ]
 
     deps = [
-      "//components/cdm/common",
       "//components/prefs",
       "//components/user_prefs",
       "//content/public/common",
       "//ipc",
       "//media",
     ]
-
-    if (is_android) {
-      sources += [
-        "cdm_message_filter_android.cc",
-        "cdm_message_filter_android.h",
-      ]
-      deps += [ "//third_party/widevine/cdm:headers" ]
-    }
   }
 
   source_set("unit_tests") {
