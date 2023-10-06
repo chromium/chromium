@@ -29,7 +29,9 @@
 import hashlib
 import logging
 import re
+from typing import Optional
 
+from blinkpy.web_tests.port.base import FuzzyRange
 from blinkpy.web_tests.port.driver import DeviceFailure, DriverInput, DriverOutput
 from blinkpy.web_tests.models import test_failures, testharness_results
 from blinkpy.web_tests.models.test_results import TestResult, build_test_result
@@ -608,9 +610,10 @@ class SingleTestRunner(object):
         if not driver_output.image or not driver_output.image_hash:
             return []
 
-        if driver_output.image_hash != expected_driver_output.image_hash:
-            max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
-                self._test_name)
+        max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
+            self._test_name)
+        if (driver_output.image_hash != expected_driver_output.image_hash or
+                not _allows_exact_matches(max_channel_diff, max_pixels_diff)):
             diff, stats, err_str = self._port.diff_image(
                 expected_driver_output.image,
                 driver_output.image,
@@ -727,6 +730,8 @@ class SingleTestRunner(object):
         if failures:
             return failures
 
+        max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
+            self._test_name)
         if not actual_driver_output.image_hash:
             failures.append(
                 test_failures.FailureReftestNoImageGenerated(
@@ -743,9 +748,12 @@ class SingleTestRunner(object):
                     test_failures.FailureReftestMismatchDidNotOccur(
                         actual_driver_output, reference_driver_output,
                         reference_filename))
-        elif reference_driver_output.image_hash != actual_driver_output.image_hash:
-            max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
-                self._test_name)
+        elif (reference_driver_output.image_hash !=
+              actual_driver_output.image_hash
+              or not _allows_exact_matches(max_channel_diff, max_pixels_diff)):
+            # When either fuzzy parameter has a nonzero minimum, a diff is
+            # expected. Always diff the images in that case, even if the image
+            # hashes match.
             diff, stats, err_str = self._port.diff_image(
                 reference_driver_output.image,
                 actual_driver_output.image,
@@ -776,3 +784,9 @@ class SingleTestRunner(object):
                     self._test_name)
 
         return failures
+
+
+def _allows_exact_matches(max_channel_diff: Optional[FuzzyRange],
+                          max_pixels_diff: Optional[FuzzyRange]) -> bool:
+    return (not max_channel_diff or max_channel_diff[0] == 0
+            or not max_pixels_diff or max_pixels_diff[0] == 0)
