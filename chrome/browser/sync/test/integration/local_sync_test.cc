@@ -127,6 +127,10 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
     expected_active_data_types.Put(syncer::POWER_BOOKMARK);
   }
 
+  if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
+    expected_active_data_types.Put(syncer::WEBAUTHN_CREDENTIAL);
+  }
+
   // The dictionary is currently only synced on Windows, Linux, and Lacros.
   // TODO(crbug.com/1052397): Reassess whether the following block needs to be
   // included in lacros-chrome once build flag switch of lacros-chrome is
