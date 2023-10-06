@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {IBidiParser} from '../bidiMapper/bidiMapper.js';
+import type {IBidiParser} from '../bidiMapper/BidiMapper.js';
 import * as Parser from '../protocol-parser/protocol-parser.js';
 import type {
   BrowsingContext,

@@ -15,30 +15,10 @@
  * limitations under the License.
  */
 
-import path from 'path';
-import os from 'os';
-import {mkdtemp} from 'fs/promises';
-
 import argparse from 'argparse';
-import {
-  launch,
-  computeSystemExecutablePath,
-  Browser,
-  CDP_WEBSOCKET_ENDPOINT_REGEX,
-  ChromeReleaseChannel,
-} from '@puppeteer/browsers';
+import {ChromeReleaseChannel} from '@puppeteer/browsers';
 
-import type {ITransport} from '../utils/transport.js';
-
-import {BidiServerRunner, debugInfo} from './bidiServerRunner.js';
-import {MapperServer} from './MapperServer.js';
-import {readMapperTabFile} from './reader.js';
-
-/**
- * Delegate to be called to close the browser. It is used when the
- * `browser.close` command is called.
- */
-export type CloseBrowserDelegate = () => Promise<void>;
+import {debugInfo, WebSocketServer} from './WebSocketServer.js';
 
 function parseArguments(): {
   channel: ChromeReleaseChannel;
@@ -88,111 +68,9 @@ function parseArguments(): {
 
     debugInfo('Launching BiDi server...');
 
-    new BidiServerRunner().run(port, (bidiServer, chromeArgs) => {
-      return onNewBidiConnectionOpen(
-        channel,
-        headless,
-        bidiServer,
-        verbose,
-        chromeArgs
-      );
-    });
+    WebSocketServer.run(port, channel, headless, verbose);
     debugInfo('BiDi server launched');
   } catch (e) {
-    debugInfo('Error', e);
+    debugInfo('Error launching BiDi server', e);
   }
 })();
-
-/**
- * On each new BiDi connection:
- * 1. Launch Chromium (using Puppeteer for now).
- * 2. Get `BiDi-CDP` mapper JS binaries using `mapperReader`.
- * 3. Run `BiDi-CDP` mapper in launched browser.
- * 4. Bind `BiDi-CDP` mapper to the `BiDi server`.
- *
- * @return delegate to be called when the connection is closed
- */
-async function onNewBidiConnectionOpen(
-  channel: ChromeReleaseChannel,
-  headless: boolean,
-  bidiTransport: ITransport,
-  verbose: boolean,
-  chromeArgs?: string[]
-): Promise<CloseBrowserDelegate> {
-  // 1. Launch the browser using @puppeteer/browsers.
-  const profileDir = await mkdtemp(
-    path.join(os.tmpdir(), 'web-driver-bidi-server-')
-  );
-  // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
-  const chromeArguments = [
-    ...(headless ? ['--headless', '--hide-scrollbars', '--mute-audio'] : []),
-    // keep-sorted start
-    '--disable-component-update',
-    '--disable-default-apps',
-    '--disable-features=DialMediaRouteProvider',
-    '--disable-notifications',
-    '--disable-popup-blocking',
-    '--enable-automation',
-    '--no-default-browser-check',
-    '--no-first-run',
-    '--password-store=basic',
-    '--remote-debugging-port=9222',
-    '--use-mock-keychain',
-    `--user-data-dir=${profileDir}`,
-    // keep-sorted end
-    ...(chromeArgs
-      ? chromeArgs.filter((arg) => !arg.startsWith('--headless'))
-      : []),
-    'about:blank',
-  ];
-
-  const executablePath =
-    process.env['BROWSER_BIN'] ??
-    computeSystemExecutablePath({
-      browser: Browser.CHROME,
-      channel,
-    });
-
-  if (!executablePath) {
-    throw new Error('Could not find Chrome binary');
-  }
-
-  const browser = launch({
-    executablePath,
-    args: chromeArguments,
-  });
-
-  const wsEndpoint = await browser.waitForLineOutput(
-    CDP_WEBSOCKET_ENDPOINT_REGEX
-  );
-
-  // 2. Get `BiDi-CDP` mapper JS binaries using `readMapperTabFile`.
-  const bidiMapperScript = await readMapperTabFile();
-
-  // 3. Run `BiDi-CDP` mapper in launched browser.
-  const mapperServer = await MapperServer.create(
-    wsEndpoint,
-    bidiMapperScript,
-    verbose
-  );
-
-  // 4. Bind `BiDi-CDP` mapper to the `BiDi server`.
-  // Forward messages from BiDi Mapper to the client.
-  mapperServer.setOnMessage(async (message) => {
-    await bidiTransport.sendMessage(message);
-  });
-
-  // Forward messages from the client to BiDi Mapper.
-  bidiTransport.setOnMessage(async (message) => {
-    await mapperServer.sendMessage(message);
-  });
-
-  // Return delegate to be called when the connection is closed.
-  return async () => {
-    // Close the mapper server.
-    mapperServer.close();
-
-    // Close browser.
-    await browser.close();
-  };
-}

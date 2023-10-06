@@ -18,32 +18,30 @@ import http from 'http';
 
 import debug from 'debug';
 import websocket from 'websocket';
+import type {ChromeReleaseChannel} from '@puppeteer/browsers';
 
-import type {ITransport} from '../utils/transport.js';
 import {ErrorCode} from '../protocol/webdriver-bidi.js';
 
-import type {CloseBrowserDelegate} from './index.js';
+import {BrowserInstance} from './BrowserInstance.js';
 
 export const debugInfo = debug('bidi:server:info');
 const debugInternal = debug('bidi:server:internal');
 const debugSend = debug('bidi:server:SEND ▸');
 const debugRecv = debug('bidi:server:RECV ◂');
 
-export class BidiServerRunner {
+export class WebSocketServer {
   /**
    *
-   * @param bidiPort port to start ws server on
-   * @param onNewBidiConnectionOpen delegate to be called for each new
-   * connection. `onNewBidiConnectionOpen` delegate should return another
-   * `onConnectionClose` delegate, which will be called after the connection is
-   * closed.
+   * @param bidiPort port to start ws server on.
+   * @param channel
+   * @param headless
+   * @param verbose
    */
-  run(
+  static run(
     bidiPort: number,
-    onNewBidiConnectionOpen: (
-      bidiServer: ITransport,
-      args?: string[]
-    ) => Promise<CloseBrowserDelegate>
+    channel: ChromeReleaseChannel,
+    headless: boolean,
+    verbose: boolean
   ) {
     let jsonBody: any;
     const server = http.createServer(
@@ -89,7 +87,7 @@ export class BidiServerRunner {
               request.method ?? 'UNKNOWN METHOD'
             } request for ${
               request.url
-            } with payload ${await BidiServerRunner.#getHttpRequestPayload(
+            } with payload ${await WebSocketServer.#getHttpRequestPayload(
               request
             )}. 200 returned.`
           );
@@ -110,7 +108,7 @@ export class BidiServerRunner {
             )} request for ${JSON.stringify(
               request.url
             )} with payload ${JSON.stringify(
-              await BidiServerRunner.#getHttpRequestPayload(request)
+              await WebSocketServer.#getHttpRequestPayload(request)
             )}. 404 returned.`
           );
           response.writeHead(404);
@@ -132,10 +130,17 @@ export class BidiServerRunner {
         jsonBody?.capabilities?.alwaysMatch?.['goog:chromeOptions'];
       debugInternal('new WS request received:', request.resourceURL.path);
 
-      const transport = new MessageTransport();
+      const browserInstance = await BrowserInstance.run(
+        channel,
+        headless,
+        verbose,
+        chromeOptions?.args
+      );
 
-      const closeBrowserDelegate: CloseBrowserDelegate =
-        await onNewBidiConnectionOpen(transport, chromeOptions?.args);
+      // Forward messages from BiDi Mapper to the client unconditionally.
+      browserInstance.on('message', (message) => {
+        void this.#sendClientMessageString(message, connection);
+      });
 
       const connection = request.accept();
 
@@ -170,7 +175,7 @@ export class BidiServerRunner {
 
         // Handle `browser.close` command.
         if (parsedCommandData.method === 'browser.close') {
-          await closeBrowserDelegate();
+          await browserInstance.close();
           await this.#sendClientMessage(
             {
               id: parsedCommandData.id,
@@ -183,7 +188,7 @@ export class BidiServerRunner {
         }
 
         // Forward all other commands to BiDi Mapper.
-        transport.onMessage(plainCommandData);
+        await browserInstance.sendCommand(plainCommandData);
       });
 
       connection.on('close', async () => {
@@ -194,16 +199,12 @@ export class BidiServerRunner {
         );
         // TODO: handle reconnection which is used in WPT. Until then, close the
         //  browser after each WS connection is closed.
-        await closeBrowserDelegate();
-      });
-
-      transport.initialize((message) => {
-        return this.#sendClientMessageString(message, connection);
+        await browserInstance.close();
       });
     });
   }
 
-  #sendClientMessageString(
+  static #sendClientMessageString(
     message: string,
     connection: websocket.connection
   ): Promise<void> {
@@ -212,7 +213,7 @@ export class BidiServerRunner {
     return Promise.resolve();
   }
 
-  #sendClientMessage(
+  static #sendClientMessage(
     object: unknown,
     connection: websocket.connection
   ): Promise<void> {
@@ -220,7 +221,7 @@ export class BidiServerRunner {
     return this.#sendClientMessageString(json, connection);
   }
 
-  #respondWithError(
+  static #respondWithError(
     connection: websocket.connection,
     plainCommandData: unknown,
     errorCode: string,
@@ -234,7 +235,7 @@ export class BidiServerRunner {
     void this.#sendClientMessage(errorResponse, connection);
   }
 
-  #getErrorResponse(
+  static #getErrorResponse(
     plainCommandData: any,
     errorCode: string,
     errorMessage: string
@@ -273,34 +274,5 @@ export class BidiServerRunner {
         reject(error);
       });
     });
-  }
-}
-
-class MessageTransport implements ITransport {
-  #handlers: ((message: string) => void)[] = [];
-  #sendBidiMessage: ((message: string) => Promise<void>) | null = null;
-
-  setOnMessage(handler: Parameters<ITransport['setOnMessage']>[0]) {
-    this.#handlers.push(handler);
-  }
-
-  sendMessage(message: string) {
-    if (!this.#sendBidiMessage) {
-      throw new Error('BiDi connection is not initialized yet');
-    }
-
-    return this.#sendBidiMessage(message);
-  }
-
-  close() {
-    // Intentionally empty.
-  }
-
-  initialize(sendBidiMessage: (message: string) => Promise<void>) {
-    this.#sendBidiMessage = sendBidiMessage;
-  }
-
-  onMessage(messageStr: string) {
-    for (const handler of this.#handlers) handler(messageStr);
   }
 }

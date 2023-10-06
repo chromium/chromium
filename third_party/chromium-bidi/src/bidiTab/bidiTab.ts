@@ -17,7 +17,7 @@
  * @license
  */
 
-import {BidiServer, OutgoingMessage} from '../bidiMapper/bidiMapper.js';
+import {BidiServer, OutgoingMessage} from '../bidiMapper/BidiMapper.js';
 import {CdpConnection} from '../cdp/CdpConnection.js';
 import {LogType} from '../utils/log.js';
 

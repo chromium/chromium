@@ -16,7 +16,7 @@
  */
 
 import type {Cdp} from '../../../protocol/protocol.js';
-import type {ICdpConnection} from '../../bidiMapper.js';
+import type {ICdpConnection} from '../../BidiMapper.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 export class CdpProcessor {

@@ -16,13 +16,12 @@
  */
 
 import type Protocol from 'devtools-protocol';
-import WebSocket from 'ws';
 import debug, {type Debugger} from 'debug';
 
-import {CdpConnection} from '../cdp/CdpConnection.js';
+import type {CdpConnection} from '../cdp/CdpConnection.js';
 import type {CdpClient} from '../cdp/CdpClient.js';
 import type {LogType, LogPrefix} from '../utils/log.js';
-import {WebSocketTransport} from '../utils/WebsocketTransport.js';
+import {EventEmitter} from '../utils/EventEmitter.js';
 
 const debugInternal = debug('bidi:mapper:internal');
 const debugInfo = debug('bidi:mapper:info');
@@ -39,24 +38,24 @@ const getLogger = (type: LogPrefix) => {
   return logger;
 };
 
-export class MapperServer {
-  #handlers: ((message: string) => void)[] = [];
+export class MapperCdpConnection extends EventEmitter<
+  Record<'message', string>
+> {
   #cdpConnection: CdpConnection;
   #mapperCdpClient: CdpClient;
 
   static async create(
-    cdpUrl: string,
+    cdpConnection: CdpConnection,
     mapperContent: string,
     verbose: boolean
-  ): Promise<MapperServer> {
-    const cdpConnection = await this.#establishCdpConnection(cdpUrl);
+  ): Promise<MapperCdpConnection> {
     try {
       const mapperCdpClient = await this.#initMapper(
         cdpConnection,
         mapperContent,
         verbose
       );
-      return new MapperServer(cdpConnection, mapperCdpClient);
+      return new MapperCdpConnection(cdpConnection, mapperCdpClient);
     } catch (e) {
       cdpConnection.close();
       throw e;
@@ -67,6 +66,7 @@ export class MapperServer {
     cdpConnection: CdpConnection,
     mapperCdpClient: CdpClient
   ) {
+    super();
     this.#cdpConnection = cdpConnection;
     this.#mapperCdpClient = mapperCdpClient;
 
@@ -82,50 +82,22 @@ export class MapperServer {
     );
   }
 
-  setOnMessage(handler: (message: string) => void): void {
-    this.#handlers.push(handler);
-  }
-
-  sendMessage(message: string): Promise<void> {
-    return this.#sendBidiMessage(message);
-  }
-
-  close() {
-    this.#cdpConnection.close();
-  }
-
-  static #establishCdpConnection(cdpUrl: string): Promise<CdpConnection> {
-    return new Promise((resolve, reject) => {
-      debugInternal('Establishing session with cdpUrl: ', cdpUrl);
-
-      const ws = new WebSocket(cdpUrl);
-
-      ws.once('error', reject);
-
-      ws.on('open', () => {
-        debugInternal('Session established.');
-
-        const transport = new WebSocketTransport(ws);
-        const connection = new CdpConnection(transport);
-        resolve(connection);
-      });
-    });
-  }
-
-  async #sendBidiMessage(json: string): Promise<void> {
+  async sendMessage(message: string): Promise<void> {
     try {
       await this.#mapperCdpClient.sendCommand('Runtime.evaluate', {
-        expression: `onBidiMessage(${JSON.stringify(json)})`,
+        expression: `onBidiMessage(${JSON.stringify(message)})`,
       });
     } catch (error) {
       debugInternal('Call to onBidiMessage failed', error);
     }
   }
 
+  close() {
+    this.#cdpConnection.close();
+  }
+
   #onBidiMessage(message: string): void {
-    for (const handler of this.#handlers) {
-      handler(message);
-    }
+    this.emit('message', message);
   }
 
   #onBindingCalled = (params: Protocol.Runtime.BindingCalledEvent) => {
@@ -230,7 +202,7 @@ export class MapperServer {
       expression: mapperContent,
     });
 
-    // Let Mapper know what is it's TargetId to filter out related targets.
+    // Let Mapper know its TargetId to filter out related targets.
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
       expression: `window.setSelfTargetId('${targetId}')`,
     });

@@ -16,7 +16,7 @@
  */
 
 import type {EmptyResult} from '../../../protocol/protocol.js';
-import type {ICdpConnection} from '../../bidiMapper';
+import type {ICdpConnection} from '../../BidiMapper.js';
 
 export class BrowserProcessor {
   #cdpConnection: ICdpConnection;
