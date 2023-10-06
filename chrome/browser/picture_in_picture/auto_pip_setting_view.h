@@ -24,10 +24,6 @@ class AutoPipSettingView : public views::BubbleDialogDelegate {
 
     // User selected 'Don't allow'.
     kBlock,
-
-    // UI was dismissed without the user selecting anything.
-    // TODO(crbug.com/1465527): Call back with `kDismissed` sometimes.
-    kDismissed,
   };
   using ResultCb = base::OnceCallback<void(UiResult result)>;
   // This callback is responsible for hiding the AutoPiP overlay view, after

@@ -87,6 +87,10 @@ std::string GetStringForContentType(ContentSettingsType content_type) {
     return "FileSystemWriteGuard";
   }
 
+  if (content_type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE) {
+    return "AutoPictureInPicture";
+  }
+
   return PermissionUtil::GetPermissionString(content_type);
 }
 
@@ -240,7 +244,8 @@ bool PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
          content_setting == ContentSettingsType::FEDERATED_IDENTITY_API ||
          content_setting ==
              ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION ||
-         content_setting == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD;
+         content_setting == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD ||
+         content_setting == ContentSettingsType::AUTO_PICTURE_IN_PICTURE;
 }
 
 // static

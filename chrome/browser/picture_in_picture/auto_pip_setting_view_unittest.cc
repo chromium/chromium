@@ -78,8 +78,6 @@ class AutoPipSettingViewTest : public views::ViewsTestBase,
         return GetButton(UiResult::kAllowOnEveryVisit, widget);
       case UiResult::kBlock:
         return GetButton(UiResult::kBlock, widget);
-      case UiResult::kDismissed:
-        return nullptr;
     }
   }
 
