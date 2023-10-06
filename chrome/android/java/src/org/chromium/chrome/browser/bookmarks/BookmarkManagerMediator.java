@@ -321,11 +321,20 @@ class BookmarkManagerMediator
                             BookmarkUtils.getImageIconSize(res, displayPref),
                             BookmarkUtils.getFaviconDisplaySize(res));
                     refresh();
+
+                    // TODO(crbug.com/1479578): Consider announcing the selected row display
+                    // preference.
                 }
 
                 @Override
                 public void onBookmarkRowSortOrderChanged(@BookmarkRowSortOrder int sortOrder) {
                     refresh();
+
+                    if (AccessibilityState.isTouchExplorationEnabled()) {
+                        mRecyclerView.announceForAccessibility(
+                                mBookmarkUiPrefs.getSortOrderAccessibilityAnnouncementText(
+                                        mContext, sortOrder));
+                    }
                 }
             };
 

@@ -118,6 +118,7 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -1777,5 +1778,16 @@ public class BookmarkManagerMediatorTest {
         // Measure number of #setBookmarks by counting #getChildIds.
         verify(mBookmarkModel, times(2)).getChildIds(mFolderId1);
         verifyCurrentBookmarkIds(null, mFolderId2);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void onPreferenceChanged_sortOrderChanged_readsAccessibility() {
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
+
+        mMediator.onBookmarkModelLoaded();
+        mMediator.openFolder(mFolderId1);
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
+        verify(mRecyclerView).announceForAccessibility("Sorting from A to Z");
     }
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.IntDef;
@@ -11,6 +12,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
 import java.lang.annotation.Retention;
@@ -46,6 +48,7 @@ public class BookmarkUiPrefs {
             BookmarkRowSortOrder.COUNT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface BookmarkRowSortOrder {
+        // Oldest -> newest
         int CHRONOLOGICAL = 0;
         int REVERSE_CHRONOLOGICAL = 1;
         int ALPHABETICAL = 2;
@@ -138,6 +141,35 @@ public class BookmarkUiPrefs {
     public void setBookmarkRowSortOrder(@BookmarkRowSortOrder int sortOrder) {
         BookmarkMetrics.reportBookmarkManagerSortChanged(sortOrder);
         mPrefsManager.writeInt(ChromePreferenceKeys.BOOKMARKS_SORT_ORDER, sortOrder);
+    }
+
+    /**
+     * Returns the text resource which is read aloud when a sort option is selected (for talkback).
+     *
+     * @param context The android context to get strings.
+     * @param sortOrder The currently active sort order.
+     * @return The string to be read aloud when the sort order is selected.
+     */
+    public String getSortOrderAccessibilityAnnouncementText(
+            Context context, @BookmarkRowSortOrder int sortOrder) {
+        int stringRes = 0;
+        if (sortOrder == BookmarkRowSortOrder.CHRONOLOGICAL) {
+            stringRes = R.string.sort_by_oldest_announcement;
+        } else if (sortOrder == BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL) {
+            stringRes = R.string.sort_by_newest_announcement;
+        } else if (sortOrder == BookmarkRowSortOrder.ALPHABETICAL) {
+            stringRes = R.string.sort_by_alpha_announcement;
+        } else if (sortOrder == BookmarkRowSortOrder.REVERSE_ALPHABETICAL) {
+            stringRes = R.string.sort_by_reverse_alpha_announcement;
+        } else if (sortOrder == BookmarkRowSortOrder.RECENTLY_USED) {
+            stringRes = R.string.sort_by_last_opened_announcement;
+        } else if (sortOrder == BookmarkRowSortOrder.MANUAL) {
+            stringRes = R.string.sort_by_manual_announcement;
+        } else {
+            assert false;
+        }
+
+        return context.getString(stringRes);
     }
 
     void notifyObserversForSortOrderChange(@BookmarkRowSortOrder int sortOrder) {
