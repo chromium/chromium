@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/sync/os_sync_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/people/os_sync_handler.h"
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/auto_reset.h"
@@ -115,8 +115,9 @@ void OSSyncHandler::HandleSetOsSyncDatatypes(const base::Value::List& args) {
   syncer::SyncService* service = GetSyncService();
 
   // If the sync engine has shutdown for some reason, just stop.
-  if (!service || !service->IsEngineInitialized())
+  if (!service || !service->IsEngineInitialized()) {
     return;
+  }
 
   bool sync_all_os_types = result.FindBool("syncAllOsTypes").value();
 
@@ -126,8 +127,9 @@ void OSSyncHandler::HandleSetOsSyncDatatypes(const base::Value::List& args) {
         syncer::GetUserSelectableOsTypeName(type) + std::string("Synced");
     absl::optional<bool> sync_value = result.FindBool(key);
     CHECK(sync_value.has_value()) << key;
-    if (sync_value.value())
+    if (sync_value.value()) {
       selected_types.Put(type);
+    }
   }
 
   // Filter out any non-registered types. The WebUI may echo back values from
@@ -143,8 +145,9 @@ void OSSyncHandler::HandleSetOsSyncDatatypes(const base::Value::List& args) {
 void OSSyncHandler::PushSyncPrefs() {
   syncer::SyncService* service = GetSyncService();
   // The sync service may be nullptr if it has been just disabled by policy.
-  if (!service || !service->IsEngineInitialized())
+  if (!service || !service->IsEngineInitialized()) {
     return;
+  }
 
   base::Value::Dict args;
   SyncUserSettings* user_settings = service->GetUserSettings();
@@ -178,14 +181,16 @@ syncer::SyncService* OSSyncHandler::GetSyncService() const {
 void OSSyncHandler::AddSyncServiceObserver() {
   // Observe even if sync isn't allowed. IsSyncAllowed() can change mid-session.
   SyncService* service = SyncServiceFactory::GetForProfile(profile_);
-  if (service)
+  if (service) {
     service->AddObserver(this);
+  }
 }
 
 void OSSyncHandler::RemoveSyncServiceObserver() {
   SyncService* service = SyncServiceFactory::GetForProfile(profile_);
-  if (service)
+  if (service) {
     service->RemoveObserver(this);
+  }
 }
 
 }  // namespace ash
