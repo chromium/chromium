@@ -9,12 +9,15 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/loading_stats_collector.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/network_anonymization_key.h"
+#include "services/network/public/cpp/request_destination.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -148,6 +151,22 @@ bool LoadingPredictor::PrepareForPageLoad(
     // Try to preconnect to the |url| even if the predictor has no
     // prediction.
     AddInitialUrlToPreconnectPrediction(url, &prediction);
+  }
+
+  // LCPP: set fonts to be prefetched to prefetch_requests.
+  if (base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor)) {
+    absl::optional<LcppData> lcpp_data =
+        resource_prefetch_predictor()->GetLcppData(url);
+    if (lcpp_data) {
+      auto network_anonymization_key =
+          net::NetworkAnonymizationKey::CreateSameSite(
+              net::SchemefulSite(url::Origin::Create(url)));
+      for (const GURL& font_url : PredictFetchedFontUrls(*lcpp_data)) {
+        prediction.prefetch_requests.emplace_back(
+            font_url, network_anonymization_key,
+            network::mojom::RequestDestination::kFont);
+      }
+    }
   }
 
   // Return early if we do not have any requests.

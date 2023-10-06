@@ -4,8 +4,10 @@
 
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace predictors {
 
@@ -217,6 +219,110 @@ TEST(IsValidLcppStatTest, MixedPattern) {
     stat->mutable_main_buckets()->insert({"https://example.com/a.woff", 0.1});
   }
   EXPECT_TRUE(IsValidLcppStat(lcpp_stat));
+}
+
+TEST(PredictFetchedFontUrls, Empty) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kLCPPFontURLPredictor, {}}}, {});
+  LcppData lcpp_data;
+  EXPECT_EQ(std::vector<GURL>(), PredictFetchedFontUrls(lcpp_data));
+}
+
+TEST(PredictFetchedFontUrls, Simple) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kLCPPFontURLPredictor,
+        {{blink::features::kLCPPFontURLPredictorFrequencyThreshold.name, "0.5"},
+         {blink::features::kLCPPFontURLPredictorMaxPreloadCount.name, "10"}}}},
+      {});
+  LcppData lcpp_data;
+  lcpp_data.mutable_lcpp_stat()
+      ->mutable_fetched_font_url_stat()
+      ->mutable_main_buckets()
+      ->insert({"https://example.com/a.woff", 0.9});
+  std::vector<GURL> expected;
+  expected.emplace_back("https://example.com/a.woff");
+  EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_data));
+}
+
+TEST(PredictFetchedFontUrls, BrokenFontNames) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kLCPPFontURLPredictor,
+        {{blink::features::kLCPPFontURLPredictorFrequencyThreshold.name, "0.5"},
+         {blink::features::kLCPPFontURLPredictorMaxPreloadCount.name, "10"}}}},
+      {});
+  LcppData lcpp_data;
+  auto* main_buckets = lcpp_data.mutable_lcpp_stat()
+                           ->mutable_fetched_font_url_stat()
+                           ->mutable_main_buckets();
+  // Duplicated.
+  main_buckets->insert({"https://example.com/a.woff", 0.9});
+  main_buckets->insert({"https://example.com/a.woff", 0.8});
+  main_buckets->insert({"https://example.com/a.woff", 0.7});
+  main_buckets->insert({"https://example.com/a.woff", 0.6});
+  // Not an HTTP/HTTPS.
+  main_buckets->insert({"wss://example.com/", 0.9});
+  std::vector<GURL> expected;
+  expected.emplace_back("https://example.com/a.woff");
+  EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_data));
+}
+
+TEST(PredictFetchedFontUrls, Threshold) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kLCPPFontURLPredictor,
+        {{blink::features::kLCPPFontURLPredictorFrequencyThreshold.name, "0.5"},
+         {blink::features::kLCPPFontURLPredictorMaxPreloadCount.name, "10"}}}},
+      {});
+  LcppData lcpp_data;
+  auto* main_buckets = lcpp_data.mutable_lcpp_stat()
+                           ->mutable_fetched_font_url_stat()
+                           ->mutable_main_buckets();
+  main_buckets->insert({"https://example.com/a.woff", 0.9});
+  main_buckets->insert({"https://example.com/b.woff", 0.1});
+  std::vector<GURL> expected;
+  expected.emplace_back("https://example.com/a.woff");
+  EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_data));
+}
+
+TEST(PredictFetchedFontUrls, MaxUrls) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{blink::features::kLCPPFontURLPredictor,
+          {{blink::features::kLCPPFontURLPredictorFrequencyThreshold.name,
+            "0.5"},
+           {blink::features::kLCPPFontURLPredictorMaxPreloadCount.name, "1"}}}},
+        {});
+    LcppData lcpp_data;
+    auto* main_buckets = lcpp_data.mutable_lcpp_stat()
+                             ->mutable_fetched_font_url_stat()
+                             ->mutable_main_buckets();
+    main_buckets->insert({"https://example.com/a.woff", 0.9});
+    main_buckets->insert({"https://example.com/b.woff", 0.8});
+    std::vector<GURL> expected;
+    expected.emplace_back("https://example.com/a.woff");
+    EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_data));
+  }
+  {  // Use MaxUrls as a kill switch.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{blink::features::kLCPPFontURLPredictor,
+          {{blink::features::kLCPPFontURLPredictorFrequencyThreshold.name,
+            "0.5"},
+           {blink::features::kLCPPFontURLPredictorMaxPreloadCount.name, "0"}}}},
+        {});
+    LcppData lcpp_data;
+    auto* main_buckets = lcpp_data.mutable_lcpp_stat()
+                             ->mutable_fetched_font_url_stat()
+                             ->mutable_main_buckets();
+    main_buckets->insert({"https://example.com/a.woff", 0.9});
+    main_buckets->insert({"https://example.com/b.woff", 0.8});
+    std::vector<GURL> expected;
+    EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_data));
+  }
 }
 
 }  // namespace
