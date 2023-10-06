@@ -104,11 +104,12 @@ std::u16string GetBlockReasonMessage(FilesPolicyDialog::BlockReason reason,
                        ? IDS_POLICY_DLP_FILES_POLICY_BLOCK_SINGLE_FILE_MESSAGE
                        : IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE;
       break;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile:
-    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown:
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectors:
       // TODO(b/300705572): provide a proper message for every switch case.
       message_id = file_count == 1
                        ? IDS_POLICY_DLP_FILES_CONTENT_BLOCK_SINGLE_FILE_MESSAGE
@@ -133,11 +134,12 @@ std::u16string GetBlockReasonMessage(FilesPolicyDialog::BlockReason reason,
     case FilesPolicyDialog::BlockReason::kDlp:
       message_id = IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE;
       break;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile:
-    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown:
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectors:
       // TODO(b/300705572): provide a proper message for every switch case.
       message_id = IDS_POLICY_DLP_FILES_CONTENT_BLOCK_MESSAGE;
       break;

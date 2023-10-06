@@ -48,8 +48,9 @@ class FilesPolicyDialog : public PolicyDialogBase {
   enum class BlockReason {
     // File was blocked because of Data Leak Prevention policies.
     kDlp,
-    // File was blocked but the reason is not known.
-    kEnterpriseConnectorsUnknown,
+    // File was blocked because added to an Enterprise Connectors scanned
+    // directory after the scan begun, and thus the file was not scanned.
+    kEnterpriseConnectorsUnknownScanResult,
     // File was blocked because it contains sensitive data (e.g., SSNs).
     kEnterpriseConnectorsSensitiveData,
     // File was blocked because it's a malware.
@@ -58,6 +59,10 @@ class FilesPolicyDialog : public PolicyDialogBase {
     kEnterpriseConnectorsEncryptedFile,
     // File was blocked because it could not be uploaded due to its size.
     kEnterpriseConnectorsLargeFile,
+    // File was blocked because of Enterprise Connectors policies. This can be
+    // used to mark files that do not require a more specific description of the
+    // reason for which they were blocked.
+    kEnterpriseConnectors,
   };
 
   // Class holding information to build a dialog such as a message to the user,

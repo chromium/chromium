@@ -114,8 +114,8 @@ FilesPolicyDialog::BlockReason ConvertPolicy(
     case file_manager::io_task::PolicyErrorType::kEnterpriseConnectors:
       // We don't have elements to identify a specific enterprise connectors
       // block reason from a PolicyErrorType. For testing purposes, we simply
-      // return one among the existing reasons.
-      return FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown;
+      // return a generic reason.
+      return FilesPolicyDialog::BlockReason::kEnterpriseConnectors;
     case file_manager::io_task::PolicyErrorType::kDlpWarningTimeout:
       NOTREACHED_NORETURN();
   }
@@ -714,11 +714,12 @@ INSTANTIATE_TEST_SUITE_P(
     FilesPolicyNotificationManagerDlpAndConnectorsBlockTest,
     ::testing::Values(
         FilesPolicyDialog::BlockReason::kDlp,
+        FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult,
         FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
         FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware,
         FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile,
         FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile,
-        FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown));
+        FilesPolicyDialog::BlockReason::kEnterpriseConnectors));
 
 // ShowDlpBlockedFiles/AddConnectorsBlockedFiles updates IO task info.
 TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsBlockTest,

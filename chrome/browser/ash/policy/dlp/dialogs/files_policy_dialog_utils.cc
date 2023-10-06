@@ -17,7 +17,8 @@ FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
   CHECK(result.IsUnknown() || result.IsBlocked());
 
   if (result.IsUnknown()) {
-    return FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown;
+    return FilesPolicyDialog::BlockReason::
+        kEnterpriseConnectorsUnknownScanResult;
   }
 
   // Blocked files without a tag may happen for several reasons including
@@ -43,7 +44,7 @@ FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
         << "Enterprise connector result representing a blocked transfer "
            "without a tag but with an unexpected final result value.";
 
-    return FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown;
+    return FilesPolicyDialog::BlockReason::kEnterpriseConnectors;
   }
 
   DCHECK(result.tag() == enterprise_connectors::kDlpTag ||
@@ -60,7 +61,7 @@ FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
   NOTREACHED() << "Enterprise connector result representing a blocked transfer "
                   "with an unexpected tag.";
 
-  return FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown;
+  return FilesPolicyDialog::BlockReason::kEnterpriseConnectors;
 }
 
 policy::FilesPolicyDialog::Info GetDialogInfoForEnterpriseConnectorsBlockReason(

@@ -812,9 +812,8 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, BlockSingleFileUsingResultUnknown) {
            : absl::nullopt});
 
   if (UseNewPolicyUI() && UseNewConnectorsUI()) {
-    ExpectFPNMBlockedFiles(
-        {file},
-        policy::FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown);
+    ExpectFPNMBlockedFiles({file}, policy::FilesPolicyDialog::BlockReason::
+                                       kEnterpriseConnectorsUnknownScanResult);
   }
 
   // Start the copy/move.
