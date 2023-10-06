@@ -20,7 +20,7 @@ build_webui("build") {
 
   web_component_files = [
     "firmware_confirmation_dialog.js",
-    "firmware_update_app.js",
+    "firmware_update_app.ts",
     "firmware_update_dialog.js",
     "peripheral_updates_list.js",
     "update_card.js",

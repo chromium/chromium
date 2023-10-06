@@ -9,10 +9,10 @@ import './firmware_update_dialog.js';
 import './peripheral_updates_list.js';
 import './strings.m.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './firmware_update_app.html.js';
 
@@ -22,26 +22,18 @@ import {getTemplate} from './firmware_update_app.html.js';
  * update app.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const FirmwareUpdateAppElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const FirmwareUpdateAppElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class FirmwareUpdateAppElement extends FirmwareUpdateAppElementBase {
   static get is() {
-    return 'firmware-update-app';
+    return 'firmware-update-app' as const;
   }
 
   static get template() {
     return getTemplate();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     if (loadTimeData.getBoolean('isJellyEnabledForFirmwareUpdate')) {
       // TODO(b/276493795): After the Jelly experiment is launched, replace
@@ -59,6 +51,12 @@ export class FirmwareUpdateAppElement extends FirmwareUpdateAppElementBase {
         ColorChangeUpdater.forDocument().start();
       })();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [FirmwareUpdateAppElement.is]: FirmwareUpdateAppElement;
   }
 }
 
