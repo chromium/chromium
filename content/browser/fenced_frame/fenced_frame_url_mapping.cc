@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -315,11 +317,23 @@ void FencedFrameURLMapping::ConvertFencedFrameURNToURL(
 void FencedFrameURLMapping::RemoveObserverForURN(
     const GURL& urn_uuid,
     MappingResultObserver* observer) {
+  // TODO(crbug.com/1488795): Change these `DumpWithoutCrashing` to CHECK when
+  // we identify and fix the root cause. (Or just remove them if it is a
+  // harmless race condition.)
   auto it = pending_urn_uuid_to_url_map_.find(urn_uuid);
-  DCHECK(it != pending_urn_uuid_to_url_map_.end());
+  if (it == pending_urn_uuid_to_url_map_.end()) {
+    SCOPED_CRASH_KEY_STRING32("RemoveObserverForURN", "dump_location", "urn");
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
 
   auto observer_it = it->second.find(observer);
-  DCHECK(observer_it != it->second.end());
+  if (observer_it == it->second.end()) {
+    SCOPED_CRASH_KEY_STRING32("RemoveObserverForURN", "dump_location",
+                              "observer");
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
 
   it->second.erase(observer_it);
 }
