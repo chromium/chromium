@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<body>
+<div id="group">
+  <details name="n" open></details>
+  <details name="n"></details>
+</div>
+<script>
+
+const kHTMLDetailsElementNameAttributeClosesOther = 4679;
+
+test(() => {
+  assert_false(internals.isUseCounted(document, kHTMLDetailsElementNameAttributeClosesOther),
+               "shouldn't be counted before the test.");
+
+  const e1 = document.querySelector("details[open]");
+  const e2 = document.querySelector("details:not([open])");
+  assert_true(e1.open, "should be open initially");
+
+  e2.open = true;
+  assert_true(internals.isUseCounted(document, kHTMLDetailsElementNameAttributeClosesOther),
+              "should be counted after toggling");
+  assert_false(e1.open, "should be closed after toggling");
+}, 'Behavior of kHTMLDetailsElementNameAttributeClosesOther use counter');
+
+</script>

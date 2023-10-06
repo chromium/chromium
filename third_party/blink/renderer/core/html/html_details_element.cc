@@ -234,6 +234,9 @@ void HTMLDetailsElement::ParseAttribute(
             OtherElementsInNameGroup());
         for (HTMLDetailsElement* other_details : details_with_name) {
           CHECK_NE(other_details, this);
+          UseCounter::Count(
+              GetDocument(),
+              WebFeature::kHTMLDetailsElementNameAttributeClosesOther);
           other_details->setAttribute(html_names::kOpenAttr, g_null_atom);
         }
       }
@@ -253,6 +256,10 @@ void HTMLDetailsElement::AttributeChanged(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
   if (name == html_names::kNameAttr) {
+    if (!params.new_value.empty()) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kHTMLDetailsElementNameAttribute);
+    }
     MaybeCloseForExclusivity();
   }
 
@@ -288,6 +295,8 @@ void HTMLDetailsElement::MaybeCloseForExclusivity() {
     CHECK_NE(other_details, this);
     if (other_details->is_open_) {
       // close this details element
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kHTMLDetailsElementNameAttributeClosesSelf);
       ToggleOpen();
       break;
     }

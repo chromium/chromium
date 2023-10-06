@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<body>
+<div id="group">
+  <details name="n" open></details>
+  <details name="m" open></details>
+</div>
+<script>
+
+const kHTMLDetailsElementNameAttributeClosesSelf = 4678;
+
+test(() => {
+  assert_false(internals.isUseCounted(document, kHTMLDetailsElementNameAttributeClosesSelf),
+               "shouldn't be counted before the test.");
+
+  const e = document.querySelector("details[name='m']");
+  assert_true(e.open, "should be open before name change");
+  e.setAttribute("name", "n");
+
+  assert_true(internals.isUseCounted(document, kHTMLDetailsElementNameAttributeClosesSelf),
+              "should be counted after name change");
+  assert_false(e.open, "should be closed after name change");
+}, 'Behavior of kHTMLDetailsElementNameAttributeClosesSelf use counter');
+
+</script>
