@@ -48,7 +48,6 @@ public class EnterpriseInfoImplTest {
 
     @After
     public void tearDown() {
-        ShadowPostTask.reset();
         EnterpriseInfoJni.TEST_HOOKS.setInstanceForTesting(null);
     }
 
@@ -74,7 +73,7 @@ public class EnterpriseInfoImplTest {
             public void onResult(EnterpriseInfo.OwnedState result) {
                 this.result = result;
             }
-        };
+        }
         CallbackWithResult callback = new CallbackWithResult();
         CallbackWithResult callback2 = new CallbackWithResult();
 
@@ -250,11 +249,8 @@ public class EnterpriseInfoImplTest {
     @SmallTest
     public void testGetManagedStateForNativeNullOwnedState() {
         getEnterpriseInfoImpl().setSkipAsyncCheckForTesting(false);
-        ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
-            @Override
-            public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
-                throw new RejectedExecutionException();
-            }
+        ShadowPostTask.setTestImpl((@TaskTraits int taskTraits, Runnable task, long delay) -> {
+            throw new RejectedExecutionException();
         });
 
         EnterpriseInfo.getManagedStateForNative();

@@ -58,7 +58,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
-import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -144,11 +143,8 @@ public class CustomTabToolbarUnitTest {
 
     @Before
     public void setup() {
-        ShadowPostTask.setTestImpl(new TestImpl() {
-            @Override
-            public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
-                new Handler(Looper.getMainLooper()).postDelayed(task, delay);
-            }
+        ShadowPostTask.setTestImpl((@TaskTraits int taskTraits, Runnable task, long delay) -> {
+            new Handler(Looper.getMainLooper()).postDelayed(task, delay);
         });
         Mockito.doReturn(R.string.accessibility_security_btn_secure)
                 .when(mLocationBarModel)
@@ -176,7 +172,6 @@ public class CustomTabToolbarUnitTest {
     @After
     public void tearDown() {
         mActivity.finish();
-        ShadowPostTask.reset();
     }
 
     @Test

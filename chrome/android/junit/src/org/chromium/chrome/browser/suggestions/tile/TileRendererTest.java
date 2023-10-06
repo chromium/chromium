@@ -59,7 +59,7 @@ public class TileRendererTest {
      * Backend that substitutes normal PostTask operations. Allow us to coordinate task execution
      * without having to wait or yield.
      */
-    private static class ShadowPostTaskImpl extends ShadowPostTask.TestImpl {
+    private static class ShadowPostTaskImpl implements ShadowPostTask.TestImpl {
         private final List<Runnable> mRunnables = new ArrayList<>();
 
         @Override

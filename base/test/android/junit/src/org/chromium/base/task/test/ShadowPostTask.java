@@ -10,38 +10,43 @@ import org.robolectric.annotation.Resetter;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.util.ReflectionHelpers.ClassParameter;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
-/**
- * Shadow implementation for {@link PostTask}.
- */
+/** Shadow implementation for {@link PostTask}. */
 @Implements(PostTask.class)
 public class ShadowPostTask {
-    private static TestImpl sTestImpl = new TestImpl();
-
-    /** Set implementation for tests. Don't forget to call {@link #reset} later. */
-    public static void setTestImpl(TestImpl testImpl) {
-        sTestImpl = testImpl;
+    @FunctionalInterface
+    public interface TestImpl {
+        void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay);
     }
 
+    private static TestImpl sTestImpl;
+
+    /** Set implementation for tests. */
+    public static void setTestImpl(TestImpl testImpl) {
+        sTestImpl = testImpl;
+        ResettersForTesting.register(ShadowPostTask::reset);
+    }
+
+    /** Resets the {@link TestImpl} instance, undoing any shadowing. */
     @Resetter
     public static void reset() {
-        sTestImpl = new TestImpl();
+        sTestImpl = null;
     }
 
     @Implementation
     public static void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
-        sTestImpl.postDelayedTask(taskTraits, task, delay);
-    }
-
-    /** Default implementation for tests. Override methods or add new ones as necessary. */
-    public static class TestImpl {
-        public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
+        if (sTestImpl == null) {
+            // Can use reflection to call into the real method that is being shadowed. This is the
+            // same as not having a shadow.
             Shadow.directlyOn(PostTask.class, "postDelayedTask",
                     ClassParameter.from(int.class, taskTraits),
                     ClassParameter.from(Runnable.class, task),
                     ClassParameter.from(long.class, delay));
+        } else {
+            sTestImpl.postDelayedTask(taskTraits, task, delay);
         }
     }
 }

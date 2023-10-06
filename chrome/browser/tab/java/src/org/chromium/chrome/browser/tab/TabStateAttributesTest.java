@@ -9,7 +9,6 @@ import static org.mockito.Mockito.doNothing;
 import android.os.Handler;
 import android.os.Looper;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -61,11 +60,8 @@ public class TabStateAttributesTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
-            @Override
-            public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
-                new Handler(Looper.getMainLooper()).postDelayed(task, delay);
-            }
+        ShadowPostTask.setTestImpl((@TaskTraits int taskTraits, Runnable task, long delay) -> {
+            new Handler(Looper.getMainLooper()).postDelayed(task, delay);
         });
 
         mTab = new MockTab(0, false) {
@@ -80,11 +76,6 @@ public class TabStateAttributesTest {
             }
         };
         doNothing().when(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
-    }
-
-    @After
-    public void tearDown() {
-        ShadowPostTask.reset();
     }
 
     @Test

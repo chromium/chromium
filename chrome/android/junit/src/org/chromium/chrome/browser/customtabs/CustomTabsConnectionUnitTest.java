@@ -117,7 +117,6 @@ public class CustomTabsConnectionUnitTest {
     public void tearDown() {
         ChromeApplicationImpl.getComponent().resolveSessionDataHolder().removeActiveHandler(
                 mSessionHandler);
-        ShadowPostTask.reset();
     }
     @Test
     public void areExperimentsSupported_NullInputs() {

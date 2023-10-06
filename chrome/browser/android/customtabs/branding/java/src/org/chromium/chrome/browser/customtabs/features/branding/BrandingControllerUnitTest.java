@@ -93,7 +93,6 @@ public class BrandingControllerUnitTest {
     public void tearDown() {
         mFakeTimeTestRule.resetTimes();
         SharedPreferencesBrandingTimeStorage.getInstance().resetSharedPref();
-        ShadowPostTask.reset();
         ShadowSystemClock.reset();
         ShadowToast.reset();
         ToastManager.resetForTesting();
