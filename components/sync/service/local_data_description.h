@@ -26,10 +26,6 @@ struct LocalDataDescription {
   int domain_count = 0;
 
   LocalDataDescription();
-  LocalDataDescription(ModelType type,
-                       int item_count,
-                       const std::vector<std::string>& domains,
-                       int domain_count);
   LocalDataDescription(const LocalDataDescription&);
   LocalDataDescription& operator=(const LocalDataDescription&);
   LocalDataDescription(LocalDataDescription&&);

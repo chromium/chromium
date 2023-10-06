@@ -41,6 +41,19 @@ password_manager::PasswordForm CreateTestPassword(
   return form;
 }
 
+syncer::LocalDataDescription CreateLocalDataDescription(
+    syncer::ModelType type,
+    int item_count,
+    const std::vector<std::string>& domains,
+    int domain_count) {
+  syncer::LocalDataDescription desc;
+  desc.type = type;
+  desc.item_count = item_count;
+  desc.domains = domains;
+  desc.domain_count = domain_count;
+  return desc;
+}
+
 class LocalDataQueryHelperTest : public testing::Test {
  public:
   LocalDataQueryHelperTest() {
@@ -109,8 +122,8 @@ TEST_F(LocalDataQueryHelperTest, ShouldReturnLocalPasswordsViaCallback) {
 
   std::map<syncer::ModelType, syncer::LocalDataDescription> expected = {
       {syncer::PASSWORDS,
-       syncer::LocalDataDescription(syncer::PASSWORDS, 2,
-                                    {"amazon.de", "facebook.com"}, 2)}};
+       CreateLocalDataDescription(syncer::PASSWORDS, 2,
+                                  {"amazon.de", "facebook.com"}, 2)}};
 
   EXPECT_CALL(callback, Run(expected));
 
@@ -135,7 +148,7 @@ TEST_F(LocalDataQueryHelperTest, ShouldReturnCountOfDistinctDomains) {
       callback;
 
   std::map<syncer::ModelType, syncer::LocalDataDescription> expected = {
-      {syncer::PASSWORDS, syncer::LocalDataDescription(
+      {syncer::PASSWORDS, CreateLocalDataDescription(
                               syncer::PASSWORDS,
                               // Total passwords = 3.
                               /*item_count=*/3, {"amazon.de", "facebook.com"},
@@ -167,8 +180,8 @@ TEST_F(LocalDataQueryHelperTest, ShouldHandleMultipleRequests) {
 
   std::map<syncer::ModelType, syncer::LocalDataDescription> expected = {
       {syncer::PASSWORDS,
-       syncer::LocalDataDescription(syncer::PASSWORDS, 2,
-                                    {"amazon.de", "facebook.com"}, 2)}};
+       CreateLocalDataDescription(syncer::PASSWORDS, 2,
+                                  {"amazon.de", "facebook.com"}, 2)}};
 
   // Request #1.
   EXPECT_CALL(callback1, Run(expected));
@@ -218,8 +231,8 @@ TEST_F(LocalDataQueryHelperTest, ShouldReturnLocalBookmarksViaCallback) {
 
   std::map<syncer::ModelType, syncer::LocalDataDescription> expected = {
       {syncer::BOOKMARKS,
-       syncer::LocalDataDescription(syncer::BOOKMARKS, 3,
-                                    {"amazon.de", "facebook.com"}, 2)}};
+       CreateLocalDataDescription(syncer::BOOKMARKS, 3,
+                                  {"amazon.de", "facebook.com"}, 2)}};
 
   EXPECT_CALL(callback, Run(expected));
 
@@ -255,7 +268,7 @@ TEST_F(LocalDataQueryHelperTest, ShouldIgnoreManagedBookmarks) {
 
   std::map<syncer::ModelType, syncer::LocalDataDescription> expected = {
       {syncer::BOOKMARKS,
-       syncer::LocalDataDescription(syncer::BOOKMARKS, 1, {"amazon.de"}, 1)}};
+       CreateLocalDataDescription(syncer::BOOKMARKS, 1, {"amazon.de"}, 1)}};
 
   EXPECT_CALL(callback, Run(expected));
 
@@ -281,9 +294,9 @@ TEST_F(LocalDataQueryHelperTest,
 
   std::map<syncer::ModelType, syncer::LocalDataDescription> expected = {
       {syncer::PASSWORDS,
-       syncer::LocalDataDescription(syncer::PASSWORDS, 1, {"amazon.de"}, 1)},
+       CreateLocalDataDescription(syncer::PASSWORDS, 1, {"amazon.de"}, 1)},
       {syncer::BOOKMARKS,
-       syncer::LocalDataDescription(syncer::BOOKMARKS, 1, {"facebook.com"}, 1)},
+       CreateLocalDataDescription(syncer::BOOKMARKS, 1, {"facebook.com"}, 1)},
   };
 
   EXPECT_CALL(callback, Run(expected));
@@ -310,7 +323,7 @@ TEST_F(LocalDataQueryHelperTest,
       callback1;
   std::map<syncer::ModelType, syncer::LocalDataDescription> expected1 = {
       {syncer::PASSWORDS,
-       syncer::LocalDataDescription(syncer::PASSWORDS, 1, {"amazon.de"}, 1)},
+       CreateLocalDataDescription(syncer::PASSWORDS, 1, {"amazon.de"}, 1)},
   };
   EXPECT_CALL(callback1, Run(expected1));
 
@@ -320,7 +333,7 @@ TEST_F(LocalDataQueryHelperTest,
       callback2;
   std::map<syncer::ModelType, syncer::LocalDataDescription> expected2 = {
       {syncer::BOOKMARKS,
-       syncer::LocalDataDescription(syncer::BOOKMARKS, 1, {"facebook.com"}, 1)},
+       CreateLocalDataDescription(syncer::BOOKMARKS, 1, {"facebook.com"}, 1)},
   };
   EXPECT_CALL(callback2, Run(expected2));
 
@@ -355,8 +368,8 @@ TEST_F(LocalDataQueryHelperTest, ShouldReturnLocalReadingListViaCallback) {
 
   std::map<syncer::ModelType, syncer::LocalDataDescription> expected = {
       {syncer::READING_LIST,
-       syncer::LocalDataDescription(syncer::READING_LIST, 3,
-                                    {"amazon.de", "facebook.com"}, 2)}};
+       CreateLocalDataDescription(syncer::READING_LIST, 3,
+                                  {"amazon.de", "facebook.com"}, 2)}};
 
   EXPECT_CALL(callback, Run(expected));
 
@@ -378,8 +391,8 @@ TEST_F(LocalDataQueryHelperTest, ShouldWorkForUrlsWithNoTLD) {
 
   std::map<syncer::ModelType, syncer::LocalDataDescription> expected = {
       {syncer::PASSWORDS,
-       syncer::LocalDataDescription(syncer::PASSWORDS, 2,
-                                    {"chrome://flags", "test"}, 2)}};
+       CreateLocalDataDescription(syncer::PASSWORDS, 2,
+                                  {"chrome://flags", "test"}, 2)}};
 
   EXPECT_CALL(callback, Run(expected));
 
