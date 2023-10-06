@@ -120,6 +120,34 @@ export class SettingsClearBrowsingDataDialogElement extends
         ],
       },
 
+      enableCbdTimeframeRequired_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableCbdTimeframeRequired');
+        },
+      },
+
+      /**
+       * When CBDTimeframeRequired feature/flag is on, this will be the list
+       * of options for the dropdown menu. V2 additionally contains the "Last 15
+       * minutes" option.
+       */
+      clearFromOptionsV2_: {
+        readOnly: true,
+        type: Array,
+        value: [
+          // The value of 15min is 6 to match the value written in the backend,
+          // Also, it comes first in the list to keep the list in ascending
+          // order.
+          {value: 6, name: loadTimeData.getString('clearPeriod15Minutes')},
+          {value: 0, name: loadTimeData.getString('clearPeriodHour')},
+          {value: 1, name: loadTimeData.getString('clearPeriod24Hours')},
+          {value: 2, name: loadTimeData.getString('clearPeriod7Days')},
+          {value: 3, name: loadTimeData.getString('clearPeriod4Weeks')},
+          {value: 4, name: loadTimeData.getString('clearPeriodEverything')},
+        ],
+      },
+
       clearingInProgress_: {
         type: Boolean,
         value: false,
@@ -215,6 +243,8 @@ export class SettingsClearBrowsingDataDialogElement extends
   syncStatus: SyncStatus|undefined;
   private counters_: {[k: string]: string};
   private clearFromOptions_: DropdownMenuOptionList;
+  private clearFromOptionsV2_: DropdownMenuOptionList;
+  private enableCbdTimeframeRequired_: boolean;
   private clearingInProgress_: boolean;
   private clearingDataAlertString_: string;
   private clearButtonDisabled_: boolean;

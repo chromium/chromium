@@ -158,12 +158,22 @@
               <span class="time-range-label" aria-hidden="true">
                 $i18n{clearTimeRange}
               </span>
-              <settings-dropdown-menu id="clearFromBasic"
-                  class="time-range-select"
-                  label="$i18n{clearTimeRange}"
-                  pref="{{prefs.browser.clear_data.time_period_basic}}"
-                  menu-options="[[clearFromOptions_]]">
-              </settings-dropdown-menu>
+              <template is="dom-if" if="[[!enableCbdTimeframeRequired_]]">
+                <settings-dropdown-menu id="clearFromBasic"
+                    class="time-range-select"
+                    label="$i18n{clearTimeRange}"
+                    pref="{{prefs.browser.clear_data.time_period_basic}}"
+                    menu-options="[[clearFromOptions_]]">
+                </settings-dropdown-menu>
+              </template>
+              <template is="dom-if" if="[[enableCbdTimeframeRequired_]]">
+                <settings-dropdown-menu id="clearFromBasic"
+                    class="time-range-select"
+                    label="$i18n{clearTimeRange}"
+                    pref="{{prefs.browser.clear_data.time_period_v2_basic}}"
+                    menu-options="[[clearFromOptionsV2_]]">
+                </settings-dropdown-menu>
+              </template>
             </div>
             <!-- Note: whether these checkboxes are checked are ignored if
                  deleting history is disabled (i.e. supervised users, policy),
@@ -224,12 +234,22 @@
               <span class="time-range-label" aria-hidden="true">
                 $i18n{clearTimeRange}
               </span>
-              <settings-dropdown-menu id="clearFrom"
-                  class="time-range-select"
-                  label="$i18n{clearTimeRange}"
-                  pref="{{prefs.browser.clear_data.time_period}}"
-                  menu-options="[[clearFromOptions_]]">
-              </settings-dropdown-menu>
+              <template is="dom-if" if="[[!enableCbdTimeframeRequired_]]">
+                <settings-dropdown-menu id="clearFrom"
+                    class="time-range-select"
+                    label="$i18n{clearTimeRange}"
+                    pref="{{prefs.browser.clear_data.time_period}}"
+                    menu-options="[[clearFromOptions_]]">
+                </settings-dropdown-menu>
+              </template>
+              <template is="dom-if" if="[[enableCbdTimeframeRequired_]]">
+                <settings-dropdown-menu id="clearFrom"
+                    class="time-range-select"
+                    label="$i18n{clearTimeRange}"
+                    pref="{{prefs.browser.clear_data.time_period_v2}}"
+                    menu-options="[[clearFromOptionsV2_]]">
+                </settings-dropdown-menu>
+              </template>
             </div>
             <settings-checkbox id="browsingCheckbox"
                 pref="{{prefs.browser.clear_data.browsing_history}}"
