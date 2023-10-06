@@ -90654,6 +90654,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Delayed and Crashed"/>
 </enum>
 
+<enum name="ProfileEligibilityMismatch">
+  <int value="0" label="kEligibleProfileInExperiment"/>
+  <int value="1" label="kIneligibleProfileNotInExperiment"/>
+  <int value="2" label="kIneligibleProfileInExperiment"/>
+  <int value="3" label="kEligibleProfileNotInExperiment"/>
+</enum>
+
 <enum name="ProfileErrorType">
   <int value="0" label="History error"/>
   <int value="1" label="Preferences error"/>
