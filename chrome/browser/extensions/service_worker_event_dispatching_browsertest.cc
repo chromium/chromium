@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api_helpers.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -52,13 +50,10 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
   TestWorkerStatusObserver(const TestWorkerStatusObserver&) = delete;
   TestWorkerStatusObserver& operator=(const TestWorkerStatusObserver&) = delete;
 
+  void WaitForWorkerStarting() { starting_worker_run_loop_.Run(); }
   void WaitForWorkerStarted() { started_worker_run_loop_.Run(); }
   void WaitForWorkerStopping() { stopping_worker_run_loop_.Run(); }
   void WaitForWorkerStopped() { stopped_worker_run_loop_.Run(); }
-
-  void SetOnStartingCallback(base::OnceCallback<void(int64_t)> callback) {
-    on_starting_callback_ = std::move(callback);
-  }
 
   int64_t test_worker_version_id = blink::mojom::kInvalidServiceWorkerVersionId;
 
@@ -66,17 +61,11 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
 
   // Called when a worker has entered the
   // `blink::EmbeddedWorkerStatus::kStarting` status. Used to indicate when our
-  // test extension is beginning to start. If `on_starting_callback_` has been
-  // set it'll be run.
+  // test extension is beginning to start.
   void OnVersionStartingRunning(int64_t version_id) override {
     test_worker_version_id = version_id;
 
-    ASSERT_TRUE(content::CheckServiceWorkerIsStarting(sw_context_,
-                                                      test_worker_version_id));
-
-    if (!on_starting_callback_.is_null()) {
-      std::move(on_starting_callback_).Run(test_worker_version_id);
-    }
+    starting_worker_run_loop_.Quit();
   }
 
   // Called when a worker has entered the
@@ -123,7 +112,6 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
   const raw_ptr<content::BrowserContext> browser_context_;
   const GURL extension_url_;
   const raw_ptr<content::ServiceWorkerContext> sw_context_;
-  base::OnceCallback<void(int64_t)> on_starting_callback_;
   base::ScopedObservation<content::ServiceWorkerContext,
                           content::ServiceWorkerContextObserver>
       scoped_observation_{this};
@@ -159,15 +147,6 @@ class ServiceWorkerEventDispatchingBrowserTest
 
   content::WebContents* web_contents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  void CheckWorkerStartingAndDispatchTestEvent(int64_t test_worker_version_id) {
-    if (!content::CheckServiceWorkerIsStarting(sw_context_,
-                                               test_worker_version_id)) {
-      FAIL() << "The service worker was not detected as starting when it "
-                "should have been during test event dispatch.";
-    }
-    DispatchWebNavigationEvent(profile(), web_contents());
   }
 
  protected:
@@ -290,26 +269,22 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
       start_worker_observer.test_worker_version_id));
 
   TestWorkerStatusObserver test_event_observer(profile(), kTestExtensionId);
-  test_event_observer.SetOnStartingCallback(
-      base::BindOnce(&ServiceWorkerEventDispatchingBrowserTest::
-                         CheckWorkerStartingAndDispatchTestEvent,
-                     base::Unretained(this)));
-
-  // Fire the test event with the worker in kStarting status.
-  base::HistogramTester histogram_tester;
-  ExtensionTestMessageListener extension_event_listener_fired("listener fired");
-  // Start the worker but do not wait for starting.
+  // Start the worker and wait until the worker is kStarting.
   sw_context_->StartWorkerForScope(/*scope=*/extension->url(),
                                    /*key=*/
                                    blink::StorageKey::CreateFirstParty(
                                        url::Origin::Create(extension->url())),
                                    /*info_callback=*/base::DoNothing(),
                                    /*failure_callback=*/base::DoNothing());
+  test_event_observer.WaitForWorkerStarting();
+  ASSERT_TRUE(content::CheckServiceWorkerIsStarting(
+      GetServiceWorkerContext(profile()),
+      test_event_observer.test_worker_version_id));
 
-  // During this start we catch the transient kStarting status with
-  // TestWorkerStatusObserver::OnVersionStartingRunning() then synchronously
-  // confirm the worker is kStarting and dispatch the test event we listen to
-  // below via CheckWorkerStartingAndDispatchTestEvent().
+  // Fire the test event with the worker in kStarting status.
+  base::HistogramTester histogram_tester;
+  ExtensionTestMessageListener extension_event_listener_fired("listener fired");
+  DispatchWebNavigationEvent(profile(), web_contents());
 
   // The histogram expect checks that we get an ack from the renderer to the
   // browser for the event. The wait confirms that extension worker listener

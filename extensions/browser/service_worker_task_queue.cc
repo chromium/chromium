@@ -422,18 +422,8 @@ void ServiceWorkerTaskQueue::DispatchTaskBasedOnRunningStatus(
   bool pending_tasks = !tasks.empty();
   tasks.push_back(std::move(task));
 
-  content::ServiceWorkerContext* context =
-      GetServiceWorkerContext(lazy_context_id.extension_id());
-
-  // We can't CHECK(worker_state->worker_id_) here because sometimes this method
-  // is called before a worker has been started (so `worker_id_` is null).
-  if (worker_state->worker_id_ && context->IsLiveStartingServiceWorker(
-                                      worker_state->worker_id_->version_id)) {
-    // ServiceWorkerTaskQueue::DidStartServiceWorkerContext() or
-    // ServiceWorkerTaskQueue::DidStartWorkerForScope(), whichever runs first,
-    // will run the task when the worker finishes starting.
-    return;
-  }
+  bool worker_ready_to_run_tasks = CanWorkerImmediatelyRunTasks(
+      worker_state, GetServiceWorkerContext(lazy_context_id.extension_id()));
 
   if (worker_state->registration_state_ != RegistrationState::kRegistered ||
       pending_tasks) {
@@ -444,7 +434,7 @@ void ServiceWorkerTaskQueue::DispatchTaskBasedOnRunningStatus(
     return;
   }
 
-  if (!CanWorkerImmediatelyRunTasks(worker_state, context)) {
+  if (!worker_ready_to_run_tasks) {
     RunTasksAfterStartWorker(context_id);
   } else {
     // When the worker is already running then immediately dispatch to avoid us
