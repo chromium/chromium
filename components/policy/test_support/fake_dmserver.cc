@@ -369,16 +369,16 @@ void FakeDMServer::OnWaitRemoteCommandAckDone(
   waiters_.erase(it);
 
   if (!wait_success) {
-    reactor->Write(grpc::Status(
-        grpc::StatusCode::CANCELLED,
-        "Timeout waiting for remote command result took more than 10 seconds"));
+    reactor->Write(grpc::Status(grpc::StatusCode::CANCELLED,
+                                "Timeout waiting for remote command "
+                                "acknowledgement took more than 10 seconds"));
     return;
   }
   bool command_acked =
       remote_commands_state()->IsRemoteCommandAcked(command_id);
   CHECK(command_acked);
-  reactor->Write(grpc::Status(grpc::StatusCode::OK,
-                              "The remote command was acknowledged"));
+  remote_commands::WaitRemoteCommandAckedResponse resp;
+  reactor->Write(std::move(resp));
 }
 
 void FakeDMServer::HandleWaitRemoteCommandAcked(
@@ -402,8 +402,8 @@ void FakeDMServer::HandleWaitRemoteCommandAcked(
     return;
   }
   LOG(INFO) << "Remote command is acknowledged. Resolving the grpc call.";
-  reactor->Write(grpc::Status(grpc::StatusCode::OK,
-                              "The remote command was acknowledged"));
+  remote_commands::WaitRemoteCommandAckedResponse resp;
+  reactor->Write(std::move(resp));
 }
 
 bool FakeDMServer::StartFakeServer() {
