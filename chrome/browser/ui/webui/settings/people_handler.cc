@@ -175,10 +175,10 @@ std::string GetSyncErrorAction(SyncStatusActionType action_type) {
 // accounts list.
 base::Value::Dict GetAccountValue(const AccountInfo& account) {
   DCHECK(!account.IsEmpty());
-  base::Value::Dict dict;
-  dict.Set("email", account.email);
-  dict.Set("fullName", account.full_name);
-  dict.Set("givenName", account.given_name);
+  auto dict = base::Value::Dict()
+                  .Set("email", account.email)
+                  .Set("fullName", account.full_name)
+                  .Set("givenName", account.given_name);
   if (!account.account_image.IsEmpty()) {
     dict.Set("avatarImage",
              webui::GetBitmapDataUrl(account.account_image.AsBitmap()));

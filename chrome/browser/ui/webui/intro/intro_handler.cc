@@ -237,7 +237,6 @@ std::string GetLacrosIntroManagementDisclaimer(
 }
 
 base::Value::Dict GetProfileInfoValue(content::WebUI& web_ui) {
-  base::Value::Dict dict;
   auto* profile = Profile::FromWebUI(&web_ui);
 
   const auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -248,18 +247,17 @@ base::Value::Dict GetProfileInfoValue(content::WebUI& web_ui) {
           core_account_info.account_id);
 
   if (account_info.email.empty()) {
-    return dict;
+    return base::Value::Dict();
   }
-  dict.Set("pictureUrl", GetPictureUrl(web_ui, account_info));
 
-  dict.Set("managementDisclaimer", GetLacrosIntroManagementDisclaimer(
-                                       *profile, account_info.hosted_domain));
-
-  dict.Set("title", GetLacrosIntroWelcomeTitle(account_info));
-  dict.Set("subtitle",
+  return base::Value::Dict()
+      .Set("pictureUrl", GetPictureUrl(web_ui, account_info))
+      .Set("managementDisclaimer", GetLacrosIntroManagementDisclaimer(
+                                       *profile, account_info.hosted_domain))
+      .Set("title", GetLacrosIntroWelcomeTitle(account_info))
+      .Set("subtitle",
            l10n_util::GetStringFUTF8(IDS_PRIMARY_PROFILE_FIRST_RUN_SUBTITLE,
                                      base::UTF8ToUTF16(account_info.email)));
-  return dict;
 }
 #endif
 }  // namespace

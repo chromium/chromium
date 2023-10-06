@@ -141,17 +141,18 @@ std::pair<Value::List, Value::Dict> GetGCacheContents(
     const bool is_symbolic_link = base::IsLink(info.GetName());
     const base::Time last_modified = info.GetLastModifiedTime();
 
-    Value::Dict entry;
-    entry.Set("path", current.value());
-    // Use double instead of integer for large files.
-    entry.Set("size", static_cast<double>(size));
-    entry.Set("is_directory", is_directory);
-    entry.Set("is_symbolic_link", is_symbolic_link);
-    entry.Set("last_modified",
-              google_apis::util::FormatTimeAsStringLocaltime(last_modified));
-    // Print lower 9 bits in octal format.
-    entry.Set("permission",
-              base::StringPrintf("%03o", info.stat().st_mode & 0x1ff));
+    auto entry =
+        Value::Dict()
+            .Set("path", current.value())
+            // Use double instead of integer for large files.
+            .Set("size", static_cast<double>(size))
+            .Set("is_directory", is_directory)
+            .Set("is_symbolic_link", is_symbolic_link)
+            .Set("last_modified",
+                 google_apis::util::FormatTimeAsStringLocaltime(last_modified))
+            // Print lower 9 bits in octal format.
+            .Set("permission",
+                 base::StringPrintf("%03o", info.stat().st_mode & 0x1ff));
     files[current] = std::move(entry);
 
     total_size += size;
@@ -172,9 +173,13 @@ void AppendKeyValue(Value::List& list,
                     std::string key,
                     std::string value,
                     std::string clazz = std::string()) {
-  Value::Dict dict;
-  dict.Set(kKey, std::move(key));
-  dict.Set(kValue, std::move(value));
+  // clang-format off
+  auto dict =
+      Value::Dict()
+          .Set(kKey, std::move(key))
+          .Set(kValue, std::move(value));
+  // clang-format on
+
   if (!clazz.empty()) {
     dict.Set(kClass, std::move(clazz));
   }
@@ -601,37 +606,40 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override {
     using drivefs::pinning::HumanReadableSize;
 
-    Value::Dict d;
-    d.Set("enabled", GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled));
-    d.Set("stage", drivefs::pinning::ToString(progress.stage));
-    d.Set("free_space", ToString(HumanReadableSize(progress.free_space)));
-    d.Set("required_space",
-          ToString(HumanReadableSize(progress.required_space)));
-    d.Set("bytes_to_pin", ToString(HumanReadableSize(progress.bytes_to_pin)));
-    d.Set("pinned_bytes", ToString(HumanReadableSize(progress.pinned_bytes)));
-    d.Set("pinned_bytes_percent",
-          ToPercent(progress.pinned_bytes, progress.bytes_to_pin));
-    d.Set("files_to_pin", ToString(progress.files_to_pin));
-    d.Set("pinned_files", ToString(progress.pinned_files));
-    d.Set("pinned_files_percent",
-          ToPercent(progress.pinned_files, progress.files_to_pin));
-    d.Set("failed_files", ToString(progress.failed_files));
-    d.Set("syncing_files", ToString(progress.syncing_files));
-    d.Set("skipped_items", ToString(progress.skipped_items));
-    d.Set("listed_items", ToString(progress.listed_items));
-    d.Set("listed_dirs", ToString(progress.listed_dirs));
-    d.Set("listed_files", ToString(progress.listed_files));
-    d.Set("listed_docs", ToString(progress.listed_docs));
-    d.Set("listed_shortcuts", ToString(progress.listed_shortcuts));
-    d.Set("active_queries", ToString(progress.active_queries));
-    d.Set("max_active_queries", ToString(progress.max_active_queries));
-    d.Set("time_spent_listing_items",
-          drivefs::pinning::ToString(progress.time_spent_listing_items));
-    d.Set("time_spent_pinning_files",
-          drivefs::pinning::ToString(progress.time_spent_pinning_files));
-    d.Set("remaining_time",
-          drivefs::pinning::ToString(progress.remaining_time));
-    MaybeCallJavascript("onBulkPinningProgress", Value(std::move(d)));
+    auto dict =
+        Value::Dict()
+            .Set("enabled", GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled))
+            .Set("stage", drivefs::pinning::ToString(progress.stage))
+            .Set("free_space", ToString(HumanReadableSize(progress.free_space)))
+            .Set("required_space",
+                 ToString(HumanReadableSize(progress.required_space)))
+            .Set("bytes_to_pin",
+                 ToString(HumanReadableSize(progress.bytes_to_pin)))
+            .Set("pinned_bytes",
+                 ToString(HumanReadableSize(progress.pinned_bytes)))
+            .Set("pinned_bytes_percent",
+                 ToPercent(progress.pinned_bytes, progress.bytes_to_pin))
+            .Set("files_to_pin", ToString(progress.files_to_pin))
+            .Set("pinned_files", ToString(progress.pinned_files))
+            .Set("pinned_files_percent",
+                 ToPercent(progress.pinned_files, progress.files_to_pin))
+            .Set("failed_files", ToString(progress.failed_files))
+            .Set("syncing_files", ToString(progress.syncing_files))
+            .Set("skipped_items", ToString(progress.skipped_items))
+            .Set("listed_items", ToString(progress.listed_items))
+            .Set("listed_dirs", ToString(progress.listed_dirs))
+            .Set("listed_files", ToString(progress.listed_files))
+            .Set("listed_docs", ToString(progress.listed_docs))
+            .Set("listed_shortcuts", ToString(progress.listed_shortcuts))
+            .Set("active_queries", ToString(progress.active_queries))
+            .Set("max_active_queries", ToString(progress.max_active_queries))
+            .Set("time_spent_listing_items",
+                 drivefs::pinning::ToString(progress.time_spent_listing_items))
+            .Set("time_spent_pinning_files",
+                 drivefs::pinning::ToString(progress.time_spent_pinning_files))
+            .Set("remaining_time",
+                 drivefs::pinning::ToString(progress.remaining_time));
+    MaybeCallJavascript("onBulkPinningProgress", Value(std::move(dict)));
   }
 
   // Called when GetDeveloperMode() is complete.

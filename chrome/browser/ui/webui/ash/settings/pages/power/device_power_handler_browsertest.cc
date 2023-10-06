@@ -145,7 +145,26 @@ class PowerHandlerTest : public InProcessBrowserTest {
   // Returns a string for the given |settings|. Used to verify expected
   // settings are sent to the UI.
   std::string ToString(const DevicePowerSettings& settings) {
-    base::Value::Dict dict;
+    auto dict =
+        base::Value::Dict()
+            .Set(PowerHandler::kCurrentAcIdleBehaviorKey,
+                 static_cast<int>(settings.current_ac_behavior))
+            .Set(PowerHandler::kCurrentBatteryIdleBehaviorKey,
+                 static_cast<int>(settings.current_battery_behavior))
+            .Set(PowerHandler::kAcIdleManagedKey, settings.ac_idle_managed)
+            .Set(PowerHandler::kBatteryIdleManagedKey,
+                 settings.battery_idle_managed)
+            .Set(PowerHandler::kLidClosedBehaviorKey,
+                 settings.lid_closed_behavior)
+            .Set(PowerHandler::kLidClosedControlledKey,
+                 settings.lid_closed_controlled)
+            .Set(PowerHandler::kHasLidKey, settings.has_lid)
+            .Set(PowerHandler::kAdaptiveChargingKey, settings.adaptive_charging)
+            .Set(PowerHandler::kAdaptiveChargingManagedKey,
+                 settings.adaptive_charging_managed)
+            .Set(PowerHandler::kBatterySaverFeatureEnabledKey,
+                 settings.battery_saver_feature_enabled);
+
     base::Value::List* list =
         dict.EnsureList(PowerHandler::kPossibleAcIdleBehaviorsKey);
     for (auto idle_behavior : settings.possible_ac_behaviors) {
@@ -157,22 +176,6 @@ class PowerHandlerTest : public InProcessBrowserTest {
       list->Append(static_cast<int>(idle_behavior));
     }
 
-    dict.Set(PowerHandler::kCurrentAcIdleBehaviorKey,
-             static_cast<int>(settings.current_ac_behavior));
-    dict.Set(PowerHandler::kCurrentBatteryIdleBehaviorKey,
-             static_cast<int>(settings.current_battery_behavior));
-    dict.Set(PowerHandler::kAcIdleManagedKey, settings.ac_idle_managed);
-    dict.Set(PowerHandler::kBatteryIdleManagedKey,
-             settings.battery_idle_managed);
-    dict.Set(PowerHandler::kLidClosedBehaviorKey, settings.lid_closed_behavior);
-    dict.Set(PowerHandler::kLidClosedControlledKey,
-             settings.lid_closed_controlled);
-    dict.Set(PowerHandler::kHasLidKey, settings.has_lid);
-    dict.Set(PowerHandler::kAdaptiveChargingKey, settings.adaptive_charging);
-    dict.Set(PowerHandler::kAdaptiveChargingManagedKey,
-             settings.adaptive_charging_managed);
-    dict.Set(PowerHandler::kBatterySaverFeatureEnabledKey,
-             settings.battery_saver_feature_enabled);
     std::string out;
     EXPECT_TRUE(base::JSONWriter::Write(dict, &out));
     return out;

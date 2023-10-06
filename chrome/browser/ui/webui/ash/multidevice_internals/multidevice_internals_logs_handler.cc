@@ -24,19 +24,18 @@ const char kLogMessageSeverityKey[] = "severity";
 // JavaScript functions.
 base::Value::Dict LogMessageToDictionary(
     const LogBuffer::LogMessage& log_message) {
-  base::Value::Dict dictionary;
-  dictionary.Set(kLogMessageTextKey, log_message.text);
-  dictionary.Set(kLogMessageTimeKey,
-                 base::TimeFormatTimeOfDayWithMilliseconds(log_message.time));
-  dictionary.Set(kLogMessageFileKey, log_message.file);
-  dictionary.Set(kLogMessageLineKey, log_message.line);
-  dictionary.Set(kLogMessageSeverityKey, log_message.severity);
-  return dictionary;
+  return base::Value::Dict()
+      .Set(kLogMessageTextKey, log_message.text)
+      .Set(kLogMessageTimeKey,
+           base::TimeFormatTimeOfDayWithMilliseconds(log_message.time))
+      .Set(kLogMessageFileKey, log_message.file)
+      .Set(kLogMessageLineKey, log_message.line)
+      .Set(kLogMessageSeverityKey, log_message.severity);
 }
 
 }  // namespace
 
-MultideviceLogsHandler::MultideviceLogsHandler() {}
+MultideviceLogsHandler::MultideviceLogsHandler() = default;
 
 MultideviceLogsHandler::~MultideviceLogsHandler() = default;
 

@@ -165,10 +165,12 @@ void NaClDomHandler::OnJavascriptDisallowed() {
 void AddPair(base::Value::List* list,
              const std::u16string& key,
              const std::u16string& value) {
-  base::Value::Dict results;
-  results.Set("key", key);
-  results.Set("value", value);
-  list->Append(std::move(results));
+  // clang-format off
+  list->Append(
+      base::Value::Dict()
+          .Set("key", key)
+          .Set("value", value));
+  // clang-format on
 }
 
 // Generate an empty data-pair which acts as a line break.
@@ -332,9 +334,7 @@ base::Value::Dict NaClDomHandler::GetPageInformation() {
   // Display information relevant to NaCl (non-portable.
   AddNaClInfo(&list);
   // naclInfo will take ownership of list, and clean it up on destruction.
-  base::Value::Dict dict;
-  dict.Set("naclInfo", std::move(list));
-  return dict;
+  return base::Value::Dict().Set("naclInfo", std::move(list));
 }
 
 void NaClDomHandler::DidCheckPathAndVersion(const std::string* version,

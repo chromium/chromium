@@ -40,11 +40,10 @@ const char kSavedDeviceAccountKeyKey[] = "accountKey";
 base::Value::Dict SavedDeviceToDictionary(const std::string& device_name,
                                           const std::string& image_url,
                                           const std::string account_key) {
-  base::Value::Dict dictionary;
-  dictionary.Set(kSavedDeviceNameKey, device_name);
-  dictionary.Set(kSavedDeviceImageUrlKey, image_url);
-  dictionary.Set(kSavedDeviceAccountKeyKey, EncodeKey(account_key));
-  return dictionary;
+  return base::Value::Dict()
+      .Set(kSavedDeviceNameKey, device_name)
+      .Set(kSavedDeviceImageUrlKey, image_url)
+      .Set(kSavedDeviceAccountKeyKey, EncodeKey(account_key));
 }
 
 }  // namespace
