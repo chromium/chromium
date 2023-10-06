@@ -675,6 +675,19 @@ below:
         Pretty-print
       </message>
 
+      <message name="IDS_PERMISSION_REQUEST_CAMERA" desc="Label for a permission element that will trigger a camera request">
+        Allow camera
+      </message>
+      <message name="IDS_PERMISSION_REQUEST_MICROPHONE" desc="Label for a permission element that will trigger a microphone request">
+        Allow microphone
+      </message>
+      <message name="IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE" desc="Label for a permission element that will trigger a camera and microphone request">
+        Allow microphone and camera
+      </message>
+      <message name="IDS_PERMISSION_REQUEST_GEOLOCATION" desc="Label for a permission element that will trigger a geolocation request">
+        Share location
+      </message>
+
 <!-- The following IDS_FORM_VALIDATION_* messages were taken from Mozilla's dom.properties file.
 
 # ***** BEGIN LICENSE BLOCK *****

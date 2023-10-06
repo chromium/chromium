@@ -936,6 +936,10 @@ html element param
     property type
     property value
     property valueType
+html element permission
+    property ondismissed
+    property onresolved
+    property type
 html element picture
 html element plaintext
 html element pre

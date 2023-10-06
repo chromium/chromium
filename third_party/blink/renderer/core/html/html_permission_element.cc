@@ -6,6 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -18,6 +20,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
 
@@ -63,6 +66,11 @@ Vector<PermissionDescriptorPtr> ParsePermissionDescriptorsFromString(
       return Vector<PermissionDescriptorPtr>();
     }
   }
+
+  // TODO(crbug.com/1462930): the list of permission descriptors needs to be
+  // validated to remove duplicates, and ensure that it's either a list of
+  // descriptors that can be grouped together (mic + camera) or just a single
+  // descriptor.
 
   return permission_descriptors;
 }
@@ -128,6 +136,12 @@ void HTMLPermissionElement::AttributeChanged(
     }
 
     type_ = params.new_value;
+
+    DCHECK(permission_descriptors_.empty());
+
+    permission_descriptors_ = ParsePermissionDescriptorsFromString(GetType());
+
+    UpdateText();
   }
 
   HTMLElement::AttributeChanged(params);
@@ -141,7 +155,6 @@ void HTMLPermissionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   root.AppendChild(inner_element_);
 
   permission_text_ = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
-  // TODO(crbug.com/1462930): Set string based on permission type
   permission_text_->SetShadowPseudoId(
       AtomicString("-internal-permission-text"));
   inner_element_->AppendChild(permission_text_);
@@ -163,8 +176,7 @@ void HTMLPermissionElement::DefaultEventHandler(Event& event) {
 }
 
 void HTMLPermissionElement::RequestPageEmbededPermissions() {
-  auto permission_descriptors = ParsePermissionDescriptorsFromString(GetType());
-  if (permission_descriptors.empty()) {
+  if (permission_descriptors_.empty()) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kError,
@@ -178,7 +190,7 @@ void HTMLPermissionElement::RequestPageEmbededPermissions() {
   // TODO(crbug.com/1462930): Send element position to browser and use the
   // rect to calculate expected prompt position in screen coordinates.
   descriptor->element_position = gfx::Rect(0, 0, 0, 0);
-  descriptor->permissions = std::move(permission_descriptors);
+  descriptor->permissions = mojo::Clone(permission_descriptors_);
   GetPermissionService()->RequestPageEmbeddedPermission(
       std::move(descriptor),
       WTF::BindOnce(&HTMLPermissionElement::OnEmbededPermissionsDecided,
@@ -258,6 +270,37 @@ void HTMLPermissionElement::DisableClickingTemporarily(
 
 void HTMLPermissionElement::EnableClicking(DisableReason reason) {
   clicking_disabled_reasons_.erase(reason);
+}
+
+void HTMLPermissionElement::UpdateText() {
+  // TODO(crbug.com/1462930): The message_id needs to be different based on the
+  // permission status.
+  int message_id = 0;
+
+  CHECK_LE(permission_descriptors_.size(), 2u);
+
+  if (permission_descriptors_.size() == 2) {
+    if ((permission_descriptors_[0]->name == PermissionName::VIDEO_CAPTURE &&
+         permission_descriptors_[1]->name == PermissionName::AUDIO_CAPTURE) ||
+        (permission_descriptors_[0]->name == PermissionName::AUDIO_CAPTURE &&
+         permission_descriptors_[1]->name == PermissionName::VIDEO_CAPTURE)) {
+      message_id = IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE;
+    }
+  } else if (permission_descriptors_.size() == 1) {
+    if (permission_descriptors_[0]->name == PermissionName::VIDEO_CAPTURE) {
+      message_id = IDS_PERMISSION_REQUEST_CAMERA;
+    } else if (permission_descriptors_[0]->name ==
+               PermissionName::AUDIO_CAPTURE) {
+      message_id = IDS_PERMISSION_REQUEST_MICROPHONE;
+    } else if (permission_descriptors_[0]->name ==
+               PermissionName::GEOLOCATION) {
+      message_id = IDS_PERMISSION_REQUEST_GEOLOCATION;
+    }
+  }
+
+  if (message_id) {
+    permission_text_->setInnerText(GetLocale().QueryString(message_id));
+  }
 }
 
 }  // namespace blink

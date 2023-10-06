@@ -4621,6 +4621,15 @@ interface HTMLParamElement : HTMLElement
     setter type
     setter value
     setter valueType
+interface HTMLPermissionElement : HTMLElement
+    attribute @@toStringTag
+    getter ondismissed
+    getter onresolved
+    getter type
+    method constructor
+    setter ondismissed
+    setter onresolved
+    setter type
 interface HTMLPictureElement : HTMLElement
     attribute @@toStringTag
     method constructor
