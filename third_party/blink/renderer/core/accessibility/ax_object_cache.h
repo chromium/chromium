@@ -121,6 +121,9 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void NodeIsConnected(Node*) = 0;
   // Called when a node is attached to the layout tree.
   virtual void NodeIsAttached(Node*) = 0;
+  // Called when a subtree is attached to the layout tree because of
+  // content-visibility or previously display:none content gaining layout.
+  virtual void SubtreeIsAttached(Node*) = 0;
 
   // Called to process queued subtree removals when flat tree traversal is safe.
   virtual void ProcessSubtreeRemovals() = 0;

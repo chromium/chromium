@@ -119,7 +119,12 @@ ul { list-style-type: none;}
     // to notify they were showing also fire events notifying they were closed.
     () => hideMenubar(),
 
-    // There should be no menu-related events here.
+    // Unusual case. The file and new menu are still hidden because of the
+    // menubar parent, despite the fact that they are marked display:block.
+    // Here we mark the entire thing visible, which will make the menubar,
+    // file menu and new menu visible all at once. It's debatable whether
+    // menu events should be fired for the newly visible file and new menu.
+    // Previously we did not fire these events, and now we do.
     () => showMenubar(),
   ];
 

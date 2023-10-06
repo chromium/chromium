@@ -203,11 +203,14 @@ class MODULES_EXPORT AXObjectCacheImpl
   // To remove only included nodes, use RemoveIncludedSubtree(), which can be
   // called at any time.
   // If |remove_root|, remove the root of the subtree, otherwise only
-  // descendants are removed. If |notify_parent|, call ChildrenChanged() on the
-  // parent.
+  // descendants are removed.
+  // If |notify_parent|, call ChildrenChanged() on the parent.
+  // If |only_layout_objects|, will only remove nodes in the subtree that
+  // corresponded with an AXLayoutObject (useful for subtrees that lose layout).
   void RemoveSubtreeWithFlatTraversal(const Node*,
                                       bool remove_root = true,
-                                      bool notify_parent = true);
+                                      bool notify_parent = true,
+                                      bool only_layout_objects = false);
   void RemoveSubtreeWhenSafe(Node*, bool remove_root = true) override;
 
   // Remove the cached subtree of included AXObjects. If |remove_root| is false,
@@ -240,6 +243,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   void NodeIsConnected(Node*) override;
   // Called when a node is attached to the layout tree.
   void NodeIsAttached(Node*) override;
+  // Called when a subtree is attached to the layout tree because of
+  // content-visibility or previously display:none content gaining layout.
+  void SubtreeIsAttached(Node*) override;
 
   void HandleAttributeChanged(const QualifiedName& attr_name,
                               Element*) override;
@@ -332,29 +338,17 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* Get(AccessibleNode*);
   AXObject* Get(NGAbstractInlineTextBox*);
 
-  // Get an AXObject* backed by the passed-in DOM node or the node's layout
-  // object, whichever is available.
-  // If it no longer the correct type of AXObject (AXNodeObject/AXLayoutObject),
-  // will Invalidate() the AXObject so that it is refreshed with a new object
-  // when safe to do so.
+  // Get an AXObject* backed by the passed-in DOM node.
   AXObject* Get(const Node*);
   // Get an AXObject* backed by the passed-in LayoutObject, or the
-  // LayoutObject's DOM node, whiever is available.
+  // LayoutObject's DOM node, if that is available.
   // If |parent_for_repair| is provided, and the object had been detached from
   // its parent, it will be set as the new parent.
   AXObject* Get(const LayoutObject*, AXObject* parent_for_repair = nullptr);
 
-  // Get an AXObject* in a way that is safe for the current calling context:
-  // - No calls into layout during an unclean layout phase
-  // - Does not walk the flat tree during slot reassignment.
-  // - Will not do invalidations from display locking changes, unless the
-  //   caller passes in true for allow_display_locking_invalidation.
-  //   This is generally safe to do, but may not be desirable e.g. when
-  //   simply writing a DCHECK, where a pure get is optimal so as to avoid
-  //   changing behavior.
-  AXObject* SafeGet(const Node* node,
-                    bool allow_display_locking_invalidation = false,
-                    bool allow_layout_object_relevance_check = false);
+  // Get an AXObject* for a node.
+  // TODO(accessibility) This is the same as Get(Node*), and should be removed.
+  AXObject* SafeGet(const Node* node);
 
   // Return true if the object is still part of the tree, meaning that ancestors
   // exist or can be repaired all the way to the root.
@@ -585,12 +579,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   BlinkAXEventIntentsSet& ActiveEventIntents() override {
     return active_event_intents_;
   }
-
-  // Mark object as invalid and needing to be refreshed when layout is clean.
-  // Will result in a new object with the same AXID, and will also call
-  // ChildrenChanged() on the parent of invalidated objects. Automatically
-  // de-dupes extra object refreshes and ChildrenChanged() calls.
-  void Invalidate(Document&, AXID);
 
  private:
   struct AXDirtyObject : public GarbageCollected<AXDirtyObject> {
@@ -866,11 +854,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // and have names like FooBarredWithCleanLayout().
   void ProcessCleanLayoutCallbacks(Document&);
 
-  // Destroy and recreate any objects which are no longer valid, for example
-  // they used to be an AXNodeObject and now must be an AXLayoutObject, or
-  // vice-versa. Also fires children changed on the parent of these nodes.
-  void ProcessInvalidatedObjects(Document&);
-
   // Send events to RenderAccessibilityImpl, which serializes them and then
   // sends the serialized events and dirty objects to the browser process.
   void PostNotifications(Document&);
@@ -988,9 +971,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // document stored in |document_|.
   bool IsPopup(Document& document) const;
 
-  // Get the invalidated objects for the passed-in document.
-  HashSet<AXID>& GetInvalidatedIds(Document& document);
-
   // Get the queued tree update callbacks for the passed-in document
   TreeUpdateCallbackQueue& GetTreeUpdateCallbackQueue(Document& document);
 
@@ -1064,10 +1044,6 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // A set of aria notifications that have yet to be added to ax_tree_data.
   HeapVector<Member<AriaNotification>> aria_notifications_;
-
-  // Set of ID's of current AXObjects that need to be destroyed and recreated.
-  HashSet<AXID> invalidated_ids_main_;
-  HashSet<AXID> invalidated_ids_popup_;
 
   // If false, exposes the internal accessibility tree of a select pop-up
   // instead.

@@ -3507,14 +3507,7 @@ static bool LayoutViewCanHaveChildren(Element& element) {
 
 void Element::NotifyAXOfAttachedSubtree() {
   if (auto* ax_cache = GetDocument().ExistingAXObjectCache()) {
-    // NodeIsAttached is normally called when a node becomes connected, but if
-    // this subtree is display:none or content-visibility:hidden/auto, there's
-    // no guarantee that AttachLayoutTree will be called.
-    Node* node = this;
-    do {
-      ax_cache->NodeIsAttached(node);
-      node = FlatTreeTraversal::Next(*node, this);
-    } while (node);
+    ax_cache->SubtreeIsAttached(this);
   }
 }
 
