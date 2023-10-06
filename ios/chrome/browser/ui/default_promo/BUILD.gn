@@ -120,6 +120,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands:commands",
     "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",

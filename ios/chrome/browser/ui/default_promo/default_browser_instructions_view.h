@@ -9,6 +9,14 @@
 
 @protocol ConfirmationAlertActionHandler;
 
+// The accessibility identifier of the default browser instructions view
+// animation id.
+extern NSString* const kDefaultBrowserInstructionsViewAnimationViewId;
+
+// The accessibility identifier of the default browser instructions view dark
+// animation id.
+extern NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId;
+
 // View for the displaying default browser instructions.
 @interface DefaultBrowserInstructionsView : UIView
 
