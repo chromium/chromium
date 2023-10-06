@@ -27,6 +27,7 @@ class BLINK_EXPORT WebAXContext {
   ~WebAXContext();
 
   bool HasActiveDocument() const;
+  bool HasAXObjectCache() const;
 
   const ui::AXMode& GetAXMode() const;
 

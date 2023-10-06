@@ -557,6 +557,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.AXTreeSnapshotter.Snapshot.Error"
+    enum="AXTreeSnapshotErrorReason" expires_after="2024-09-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The number of times that an AXTreeSnapshot request was not properly
+    fulfilled, split by error reason. Each individual snapshot request can only
+    report one failure reason. A page with multiple render frames can have some
+    snapshots succeed, and others fail. On repeat calls for snapshots, a
+    previously succeeding call may fail, or vice versa.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.AXTreeSnapshotter.Snapshot.Request"
+    enum="BooleanSent" expires_after="2024-09-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The number of times that an AXTreeSnapshot has been requested by any client.
+    Each request is per render frame, so this can be counted multiple times on a
+    page, and a snapshot can be requested multiple times per page.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Bundle" enum="AccessibilityModeBundleEnum"
     expires_after="2024-02-01">
   <owner>kevers@chromium.org</owner>

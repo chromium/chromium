@@ -10090,6 +10090,13 @@ Called by update_autofill_enums.py.-->
   <int value="58" label="WindowVisibilityChanged"/>
 </enum>
 
+<enum name="AXTreeSnapshotErrorReason">
+  <int value="0" label="Generic Serialization error"/>
+  <int value="1" label="No WebFrame in RenderFrame"/>
+  <int value="2" label="No active Document in WebAXContext"/>
+  <int value="3" label="No existing AXObjectCache in WebAXContext"/>
+</enum>
+
 <enum name="BackForwardCacheBrowsingInstanceNotSwappedReason">
   <int value="0" label="Swapped"/>
   <int value="1" label="Proactive swap disabled"/>
