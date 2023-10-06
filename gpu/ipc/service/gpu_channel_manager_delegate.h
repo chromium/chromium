@@ -80,14 +80,6 @@ class GpuChannelManagerDelegate {
   // Returns GPU Scheduler
   virtual gpu::Scheduler* GetGpuScheduler() = 0;
 
-  // Tells a delegate to collect GPUInfo and notify all listeners once it has
-  // been updated.
-  virtual void UpdateGPUInfo() = 0;
-
-  // Tells a delegate to collect GPUInfo from GL calls on the current context
-  // and notify all listeners once it has been updated.
-  virtual void UpdateGPUInfoGL(gl::GLDisplay* display) = 0;
-
  protected:
   virtual ~GpuChannelManagerDelegate() = default;
 };

@@ -315,7 +315,6 @@ const kSections = {
   dawnInfo: ['DAWN Info', 'ul'],
   clientInfo: ['Version Information', 'div'],
   basicInfo: ['Driver Information', 'div'],
-  devices: ['Device Information', 'div'],
   compositorInfo: ['Compositor Information', 'div'],
   gpuMemoryBufferInfo: ['GpuMemoryBuffers Status', 'div'],
   displayInfo: ['Display(s) Information', 'div'],
@@ -573,11 +572,6 @@ export class InfoViewElement extends CustomElement {
       }
 
       this.setTable_(sections.basicInfo, gpuInfo.basicInfo);
-      sections.devices.list.textContent = '';
-      gpuInfo.devices.forEach(entry => {
-        sections.devices.list.appendChild(createInfoTable(entry));
-        sections.devices.list.appendChild(createElem('br'));
-      });
       this.setTable_(sections.compositorInfo, gpuInfo.compositorInfo);
       this.setTable_(sections.gpuMemoryBufferInfo, gpuInfo.gpuMemoryBufferInfo);
       this.setTable_(sections.displayInfo, gpuInfo.displayInfo);

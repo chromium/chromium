@@ -16,8 +16,6 @@ base::Value BuildGpuInfoEntry(base::StringPiece description,
                               base::StringPiece value);
 base::Value::Dict BuildGpuInfoEntry(base::StringPiece description,
                                     base::Value value);
-base::Value::Dict BuildGpuInfoEntry(base::StringPiece description,
-                                    base::Value::List value);
 
 }  // namespace display
 

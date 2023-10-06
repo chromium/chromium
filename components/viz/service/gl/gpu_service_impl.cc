@@ -564,9 +564,9 @@ void GpuServiceImpl::UpdateGPUInfo() {
       TRACE_ID_LOCAL(this), now);
 }
 
-void GpuServiceImpl::UpdateGPUInfoGL(gl::GLDisplay* display) {
+void GpuServiceImpl::UpdateGPUInfoGL() {
   DCHECK(main_runner_->BelongsToCurrentThread());
-  gpu::CollectGraphicsInfoGL(&gpu_info_, display);
+  gpu::CollectGraphicsInfoGL(&gpu_info_, GetContextState()->display());
   gpu_host_->DidUpdateGPUInfo(gpu_info_);
 }
 
@@ -1269,7 +1269,7 @@ void GpuServiceImpl::GpuSwitched(gl::GpuPreference active_gpu_heuristic) {
     ui::GpuSwitchingManager::GetInstance()->NotifyGpuSwitched(
         active_gpu_heuristic);
   }
-  GpuServiceImpl::UpdateGPUInfoGL(GetContextState()->display());
+  GpuServiceImpl::UpdateGPUInfoGL();
 }
 
 void GpuServiceImpl::DisplayAdded() {
@@ -1371,7 +1371,7 @@ void GpuServiceImpl::OnBackgroundedOnMainThread() {
     visibility_changed_callback_.Run(false);
     if (gpu_preferences_.enable_gpu_benchmarking_extension) {
       ++gpu_info_.visibility_callback_call_count;
-      UpdateGPUInfoGL(GetContextState()->display());
+      UpdateGPUInfoGL();
     }
   }
 }
@@ -1393,7 +1393,7 @@ void GpuServiceImpl::OnForegroundedOnMainThread() {
     visibility_changed_callback_.Run(true);
     if (gpu_preferences_.enable_gpu_benchmarking_extension) {
       ++gpu_info_.visibility_callback_call_count;
-      UpdateGPUInfoGL(GetContextState()->display());
+      UpdateGPUInfoGL();
     }
   }
   gpu_channel_manager_->OnApplicationForegounded();
