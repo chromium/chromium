@@ -107,7 +107,6 @@ public final class BackupSigninProcessor {
                                 @Override
                                 public void onSignInAborted() {
                                     // If sign-in failed, give up and mark as complete.
-                                    // TODO(crbug.com/1371130): Measure how often this happens.
                                     setBackupFlowSigninComplete();
                                 }
                             });
