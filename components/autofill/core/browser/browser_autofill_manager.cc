@@ -3856,9 +3856,13 @@ absl::optional<Suggestion> BrowserAutofillManager::MaybeGetComposeSuggestion(
           AutofillComposeDelegate::UiEntryPoint::kAutofillPopup, field)) {
     return absl::nullopt;
   }
-  // Suggestion texts for compose suggestions are set during view creation.
-  return Suggestion(/*main_text=*/"", /*label=*/"",
-                    /*icon=*/"", PopupItemId::kCompose);
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_MAIN_TEXT));
+  suggestion.labels = {{Suggestion::Text(
+      l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_LABEL))}};
+  suggestion.popup_item_id = PopupItemId::kCompose;
+  suggestion.icon = "keyIcon";
+  return suggestion;
 }
 
 void BrowserAutofillManager::LogEventCountsUMAMetric(

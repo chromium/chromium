@@ -4,4 +4,7 @@
   <message name="IDS_COMPOSE_SUGGESTION_MAIN_TEXT" desc="The main text displayed in the Autofill suggestion that a user sees after interacting with a supported text element." translateable="false">
   Autofill text
   </message>
+  <message name="IDS_COMPOSE_SUGGESTION_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees adter interacting with a supported text element." translateable="false">
+  Powered by Google
+  </message>
 </grit-part>
