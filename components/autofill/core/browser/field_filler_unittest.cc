@@ -311,27 +311,27 @@ TEST_F(AutofillFieldFillerTest, FieldSignatureAsStr) {
   AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
       prediction;
   ASSERT_EQ(std::u16string(), field.name);
-  ASSERT_EQ(FormControlType::kEmpty, field.form_control_type);
+  ASSERT_EQ(FormControlType::kInputText, field.form_control_type);
 
   // Signature is empty.
-  EXPECT_EQ("2085434232", field.FieldSignatureAsStr());
+  EXPECT_EQ("1318412689", field.FieldSignatureAsStr());
 
   // Field name is set.
   field.name = u"Name";
-  EXPECT_EQ("1606968241", field.FieldSignatureAsStr());
+  EXPECT_EQ("502192749", field.FieldSignatureAsStr());
 
   // Field form control type is set.
-  field.form_control_type = FormControlType::kInputText;
-  EXPECT_EQ("502192749", field.FieldSignatureAsStr());
+  field.form_control_type = FormControlType::kSelectOne;
+  EXPECT_EQ("448081278", field.FieldSignatureAsStr());
 
   // Heuristic type does not affect FieldSignature.
   field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
-  EXPECT_EQ("502192749", field.FieldSignatureAsStr());
+  EXPECT_EQ("448081278", field.FieldSignatureAsStr());
 
   // Server type does not affect FieldSignature.
   prediction.set_type(NAME_LAST);
   field.set_server_predictions({prediction});
-  EXPECT_EQ("502192749", field.FieldSignatureAsStr());
+  EXPECT_EQ("448081278", field.FieldSignatureAsStr());
 }
 
 TEST_F(AutofillFieldFillerTest, IsFieldFillable) {

@@ -13,13 +13,6 @@ import "url/mojom/url.mojom";
 
 // A subset of the WebFormControlElement::Type constants supported by Autofill.
 enum FormControlType {
-  // TODO(crbug.com/1482526): Remove kEmpty. Autofill's browser code currently
-  // assumes there's an empty or unknown form control type, which is not
-  // necessary:
-  // https://html.spec.whatwg.org/multipage/input.html#attr-input-type
-  // https://html.spec.whatwg.org/multipage/form-elements.html#dom-select-type
-  // https://html.spec.whatwg.org/multipage/form-elements.html#dom-textarea-type
-  kEmpty,
   kInputCheckbox,
   kInputEmail,
   kInputMonth,

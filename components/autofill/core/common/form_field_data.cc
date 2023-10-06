@@ -441,8 +441,6 @@ std::string_view FormControlTypeToString(FormControlType type) {
       return "selectlist";
     case FormControlType::kTextArea:
       return "textarea";
-    case FormControlType::kEmpty:
-      return "";
   }
   NOTREACHED_NORETURN();
 }

@@ -271,7 +271,7 @@ struct FormFieldData {
   // substring of `value`.
   uint32_t selection_start = 0;
   uint32_t selection_end = 0;
-  FormControlType form_control_type = FormControlType::kEmpty;
+  FormControlType form_control_type = FormControlType::kInputText;
   std::string autocomplete_attribute;
   absl::optional<AutocompleteParsingResult> parsed_autocomplete;
   std::u16string placeholder;

@@ -599,8 +599,6 @@ DeprecatedFormControlType AutofillField::FormControlType() const {
     return DeprecatedFormControlType::kSelectOne;
   } else if (form_control_type == FormControlType::kSelectList) {
     return DeprecatedFormControlType::kSelectlist;
-  } else if (form_control_type == FormControlType::kEmpty) {
-    return DeprecatedFormControlType::kEmpty;
   } else {
     return DeprecatedFormControlType::kOther;
   }

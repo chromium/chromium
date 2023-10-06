@@ -3092,16 +3092,17 @@ TEST_F(FormStructureTestImpl,
   FormData form;
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
-  form.fields = {CreateTestFormField("First Name", "firstname", "",
-                                     FormControlType::kEmpty, "given-name"),
-                 CreateTestFormField("Last Name", "lastname", "",
-                                     FormControlType::kEmpty, "family-name"),
-                 CreateTestFormField("Email", "email", "",
-                                     FormControlType::kInputEmail, "email"),
-                 CreateTestFormField("username", "username", "",
-                                     FormControlType::kInputText, "email"),
-                 CreateTestFormField("password", "password", "",
-                                     FormControlType::kInputPassword, "email")};
+  form.fields = {
+      CreateTestFormField("First Name", "firstname", "",
+                          FormControlType::kInputText, "given-name"),
+      CreateTestFormField("Last Name", "lastname", "",
+                          FormControlType::kInputText, "family-name"),
+      CreateTestFormField("Email", "email", "", FormControlType::kInputEmail,
+                          "email"),
+      CreateTestFormField("username", "username", "",
+                          FormControlType::kInputText, "email"),
+      CreateTestFormField("password", "password", "",
+                          FormControlType::kInputPassword, "email")};
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST});
   test::InitializePossibleTypesAndValidities(
@@ -3164,12 +3165,12 @@ TEST_F(FormStructureTestImpl,
   AutofillUploadContents::Field* upload_firstname_field = upload.add_field();
   test::FillUploadField(upload_firstname_field,
                         *form_structure->field(0)->GetFieldSignature(),
-                        "firstname", "", "given-name", 3U);
+                        "firstname", "text", "given-name", 3U);
 
   AutofillUploadContents::Field* upload_lastname_field = upload.add_field();
   test::FillUploadField(upload_lastname_field,
                         *form_structure->field(1)->GetFieldSignature(),
-                        "lastname", "", "family-name", 5U);
+                        "lastname", "text", "family-name", 5U);
 
   AutofillUploadContents::Field* upload_email_field = upload.add_field();
   test::FillUploadField(upload_email_field,
@@ -4534,15 +4535,10 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_RichMetadata) {
                                          RandomizedEncoder::FIELD_NAME,
                                          field.name_attribute));
     }
-    if (field.form_control_type == FormControlType::kEmpty) {
-      EXPECT_FALSE(metadata.has_type());
-    } else {
-      EXPECT_EQ(
-          metadata.type().encoded_bits(),
-          encoder.Encode(form_signature, field_signature,
-                         RandomizedEncoder::FIELD_CONTROL_TYPE,
-                         FormControlTypeToString(field.form_control_type)));
-    }
+    EXPECT_EQ(metadata.type().encoded_bits(),
+              encoder.Encode(form_signature, field_signature,
+                             RandomizedEncoder::FIELD_CONTROL_TYPE,
+                             FormControlTypeToString(field.form_control_type)));
     if (field.label.empty()) {
       EXPECT_FALSE(metadata.has_label());
     } else {
