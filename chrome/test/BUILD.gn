@@ -5287,10 +5287,10 @@ if (is_chromeos_lacros) {
     ]
   }
 
-  # This test target is intended for lacros chrome specific tests that depend on
-  # crosapi, for generic tests, please use 'browser_tests' target instead. These
-  # tests are run in parallel. Most crosapi tests need to run in series. Use
-  # lacros_chrome_browsertests_run_in_series instead.
+  # TODO(crbug/1474709): Merge lacros_chrome_browsertests with
+  # lacros_chrome_browsertests_run_in_series.
+  # We are in progress with the migration. Please do NOT add any new tests
+  # in lacros_chrome_browsertests.
   test("lacros_chrome_browsertests") {
     use_xvfb = use_xvfb_in_this_config
 
@@ -5301,14 +5301,6 @@ if (is_chromeos_lacros) {
     ]
 
     sources = [
-      "../browser/lacros/file_manager_lacros_browsertest.cc",
-      "../browser/lacros/multitask_menu_nudge_delegate_lacros_browsertest.cc",
-      "../browser/policy/policy_extension_controlling_proxy_browsertest.cc",
-      "../browser/sync/test/lacros/sync_apps_toggle_sharing_lacros_browsertest.cc",
-      "../browser/sync/test/lacros/sync_custom_passphrase_sharing_lacros_browsertest.cc",
-
-      # ScreenCapturer should work for lacros with crosapi.
-      "base/save_desktop_snapshot_browsertest.cc",
     ]
 
     deps = [
@@ -5391,6 +5383,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/download_status_updater_lacros_browsertest.cc",
       "../browser/lacros/embedded_a11y_manager_lacros_browsertest.cc",
       "../browser/lacros/field_trial_service_lacros_browsertest.cc",
+      "../browser/lacros/file_manager_lacros_browsertest.cc",
       "../browser/lacros/geolocation/system_geolocation_source_lacros_browsertest.cc",
       "../browser/lacros/holding_space_service_lacros_browsertest.cc",
       "../browser/lacros/idle_service_lacros_browsertest.cc",
@@ -5404,6 +5397,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/message_center_lacros_browsertest.cc",
       "../browser/lacros/metrics_lacros_browsertest.cc",
       "../browser/lacros/metrics_reporting_lacros_browsertest.cc",
+      "../browser/lacros/multitask_menu_nudge_delegate_lacros_browsertest.cc",
       "../browser/lacros/net/lacros_extension_proxy_tracker_browsertest.cc",
       "../browser/lacros/net/proxy_config_service_lacros_browsertest.cc",
       "../browser/lacros/networking_attributes_lacros_browsertest.cc",
@@ -5427,7 +5421,10 @@ if (is_chromeos_lacros) {
       "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
       "../browser/metrics/structured/lacros_structured_metrics_recorder_browsertest.cc",
       "../browser/payments/webapps/payment_request_lacros_browsertest.cc",
+      "../browser/policy/policy_extension_controlling_proxy_browsertest.cc",
       "../browser/speech/extension_api/tts_extension_api_lacros_browsertest.cc",
+      "../browser/sync/test/lacros/sync_apps_toggle_sharing_lacros_browsertest.cc",
+      "../browser/sync/test/lacros/sync_custom_passphrase_sharing_lacros_browsertest.cc",
       "../browser/ui/autofill/autofill_context_menu_manager_lacros_browsertest.cc",
       "../browser/ui/browser_navigator_browsertest.cc",
       "../browser/ui/browser_navigator_browsertest.h",
@@ -5453,11 +5450,15 @@ if (is_chromeos_lacros) {
 
       # dlp_content_manager_lacros_browsertest.cc should become a unit test.
       "../browser/chromeos/policy/dlp/dlp_content_manager_lacros_browsertest.cc",
+
+      # ScreenCapturer should work for lacros with crosapi.
+      "base/save_desktop_snapshot_browsertest.cc",
     ]
 
     deps = [
       ":browser_tests_runner",
       ":lacros_test_support_ui",
+      ":sync_integration_test_support",
       ":test_support",
       ":test_support_ui",
       ":webrtc_browser_tests_base",

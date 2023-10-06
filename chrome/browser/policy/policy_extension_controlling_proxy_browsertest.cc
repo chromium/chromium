@@ -89,6 +89,16 @@ class PolicyExtensionControllingProxyTest
     extensions::ChromeContentVerifierDelegate::SetDefaultModeForTesting(
         extensions::ChromeContentVerifierDelegate::VerifyInfo::Mode::
             ENFORCE_STRICT);
+
+    // This test modifies ash state without restoring to the default. It will
+    // fail many other tests if it runs with shared Ash. Run it with unique Ash
+    // before the issue is fixed.
+    StartUniqueAshChrome(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{},
+        /*additional_cmdline_switches=*/{},
+        "crbug.com/1489718 Switch to shared ash when the issue is fixed");
+
     extensions::MixinBasedExtensionApiTest::SetUp();
   }
 
