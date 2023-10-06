@@ -277,6 +277,10 @@ class MockGeolocationInternalsObserver
               OnDiagnosticsChanged,
               (mojom::GeolocationDiagnosticsPtr),
               (override));
+  void OnNetworkLocationRequested(
+      std::vector<mojom::AccessPointDataPtr> request) override {}
+  void OnNetworkLocationReceived(
+      mojom::NetworkLocationResponsePtr response) override {}
 
   void Bind(
       mojo::PendingReceiver<mojom::GeolocationInternalsObserver> receiver) {

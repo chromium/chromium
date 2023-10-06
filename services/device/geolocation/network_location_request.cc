@@ -6,11 +6,13 @@
 
 #include <stdint.h>
 
+#include <iterator>
 #include <limits>
 #include <set>
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -18,15 +20,19 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/device_event_log/device_event_log.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/location_arbitrator.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -45,6 +51,14 @@ const char kLocationString[] = "location";
 const char kLatitudeString[] = "lat";
 const char kLongitudeString[] = "lng";
 const char kAccuracyString[] = "accuracy";
+
+// Keys for the network request.
+constexpr base::StringPiece kAgeKey = "age";
+constexpr base::StringPiece kChannelKey = "channel";
+constexpr base::StringPiece kMacAddressKey = "macAddress";
+constexpr base::StringPiece kSignalStrengthKey = "signalStrength";
+constexpr base::StringPiece kSignalToNoiseRatioKey = "signalToNoiseRatio";
+constexpr base::StringPiece kWifiAccessPointsKey = "wifiAccessPoints";
 
 enum NetworkLocationRequestEvent {
   // NOTE: Do not renumber these as that would confuse interpretation of
@@ -96,26 +110,78 @@ void RecordUmaRequestInterval(base::TimeDelta time_delta) {
 // string parameter.
 GURL FormRequestURL(const std::string& api_key);
 
-void FormUploadData(const WifiData& wifi_data,
-                    const base::Time& wifi_timestamp,
-                    std::string* upload_data);
+base::Value::Dict FormUploadData(const WifiData& wifi_data,
+                                 const base::Time& wifi_timestamp);
 
 // Attempts to extract a position from the response. Detects and indicates
 // various failure cases.
 mojom::GeopositionResultPtr CreateGeopositionResultFromResponse(
-    int net_error,
-    int status_code,
-    std::unique_ptr<std::string> response_body,
+    const base::Value::Dict& response_body,
     const base::Time& wifi_timestamp,
     const GURL& server_url);
 
-// Parses the server response body. Returns true if parsing was successful.
-// Returns a `mojom::GeopositionPtr` or `nullptr` if no valid fix was received.
-mojom::GeopositionPtr ParseServerResponse(const std::string& response_body,
-                                          const base::Time& wifi_timestamp);
+mojom::GeopositionResultPtr CreateGeopositionErrorResult(
+    const GURL& server_url,
+    const std::string& error_message,
+    const std::string& error_technical);
+
+// Returns a `mojom::GeopositionPtr` containing the position estimate in
+// `response_body`, or `nullptr` if no valid fix was received. The timestamp
+// for the returned estimate is set to `wifi_timestamp`.
+mojom::GeopositionPtr CreateGeoposition(const base::Value::Dict& response_body,
+                                        const base::Time& wifi_timestamp);
 void AddWifiData(const WifiData& wifi_data,
                  int age_milliseconds,
                  base::Value::Dict& request);
+
+std::vector<mojom::AccessPointDataPtr> RequestToMojom(
+    const base::Value::Dict& request_dict,
+    const base::Time& wifi_timestamp) {
+  const auto* access_points_list = request_dict.FindList(kWifiAccessPointsKey);
+  if (!access_points_list) {
+    return {};
+  }
+  std::vector<mojom::AccessPointDataPtr> request;
+  base::ranges::transform(
+      *access_points_list, std::back_inserter(request),
+      [&wifi_timestamp](const base::Value& ap_value) {
+        const auto& ap_dict = ap_value.GetDict();
+        // kMacAddressKey is required, all other keys are optional.
+        const auto* mac_address = ap_dict.FindString(kMacAddressKey);
+        CHECK(mac_address);
+        auto result = mojom::AccessPointData::New();
+        result->mac_address = *mac_address;
+        if (auto age = ap_dict.FindInt(kAgeKey)) {
+          result->timestamp = wifi_timestamp - base::Milliseconds(*age);
+        }
+        if (auto signal_strength = ap_dict.FindInt(kSignalStrengthKey)) {
+          result->radio_signal_strength = *signal_strength;
+        }
+        if (auto channel = ap_dict.FindInt(kChannelKey)) {
+          result->channel = *channel;
+        }
+        if (auto snr = ap_dict.FindInt(kSignalToNoiseRatioKey)) {
+          result->signal_to_noise = *snr;
+        }
+        return result;
+      });
+  return request;
+}
+
+mojom::NetworkLocationResponsePtr ResponseToMojom(
+    const base::Value::Dict& response_dict) {
+  const auto* location_dict = response_dict.FindDict(kLocationString);
+  if (location_dict) {
+    auto latitude = location_dict->FindDouble(kLatitudeString);
+    auto longitude = location_dict->FindDouble(kLongitudeString);
+    if (latitude && longitude) {
+      return mojom::NetworkLocationResponse::New(
+          *latitude, *longitude, response_dict.FindDouble(kAccuracyString));
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 NetworkLocationRequest::NetworkLocationRequest(
@@ -128,7 +194,7 @@ NetworkLocationRequest::NetworkLocationRequest(
 
 NetworkLocationRequest::~NetworkLocationRequest() = default;
 
-bool NetworkLocationRequest::MakeRequest(
+void NetworkLocationRequest::MakeRequest(
     const WifiData& wifi_data,
     const base::Time& wifi_timestamp,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
@@ -181,8 +247,9 @@ bool NetworkLocationRequest::MakeRequest(
                                                  traffic_annotation);
   url_loader_->SetAllowHttpErrorResults(true);
 
+  request_data_ = FormUploadData(wifi_data, wifi_timestamp);
   std::string upload_data;
-  FormUploadData(wifi_data, wifi_timestamp, &upload_data);
+  base::JSONWriter::Write(request_data_, &upload_data);
   url_loader_->AttachStringForUpload(upload_data, "application/json");
 
   url_loader_->DownloadToString(
@@ -190,13 +257,10 @@ bool NetworkLocationRequest::MakeRequest(
       base::BindOnce(&NetworkLocationRequest::OnRequestComplete,
                      base::Unretained(this)),
       1024 * 1024 /* 1 MiB */);
-  return true;
 }
 
 void NetworkLocationRequest::OnRequestComplete(
     std::unique_ptr<std::string> data) {
-  int net_error = url_loader_->NetError();
-
   int response_code = 0;
   if (url_loader_->ResponseInfo())
     response_code = url_loader_->ResponseInfo()->headers->response_code();
@@ -204,17 +268,70 @@ void NetworkLocationRequest::OnRequestComplete(
   GEOLOCATION_LOG(DEBUG) << "Got network location response: response_code="
                          << response_code;
 
-  auto result = CreateGeopositionResultFromResponse(
-      net_error, response_code, std::move(data), wifi_timestamp_,
-      url_loader_->GetFinalURL());
+  // HttpPost can fail for a number of reasons. Most likely this is because
+  // we're offline, or there was no response.
+  mojom::GeopositionResultPtr result;
+  mojom::NetworkLocationResponsePtr response;
+  const int net_error = url_loader_->NetError();
+  if (net_error != net::OK) {
+    RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_EMPTY);
+    result =
+        CreateGeopositionErrorResult(url_loader_->GetFinalURL(),
+                                     "Network error. Check "
+                                     "DevTools console for more information.",
+                                     net::ErrorToShortString(net_error));
+  } else if (response_code != net::HTTP_OK) {
+    RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_NOT_OK);
+    result = CreateGeopositionErrorResult(
+        url_loader_->GetFinalURL(),
+        "Failed to query location from network service. Check "
+        "the DevTools console for more information.",
+        base::StringPrintf("Returned error code %d", response_code));
+  } else {
+    CHECK(data);
+    DVLOG(1) << "NetworkLocationRequest::OnRequestComplete() : "
+                "Parsing response "
+             << *data;
+    auto response_result = base::JSONReader::ReadAndReturnValueWithError(*data);
+    if (!response_result.has_value()) {
+      LOG(WARNING) << "NetworkLocationRequest::OnRequestComplete() : "
+                      "JSONReader failed : "
+                   << response_result.error().message;
+    } else if (!response_result->is_dict()) {
+      LOG(WARNING) << "NetworkLocationRequest::OnRequestComplete() : "
+                      "Unexpected response type "
+                   << response_result->type();
+    } else {
+      base::Value::Dict response_data = std::move(*response_result).TakeDict();
+      result = CreateGeopositionResultFromResponse(
+          response_data, wifi_timestamp_, url_loader_->GetFinalURL());
+      if (base::FeatureList::IsEnabled(
+              features::kGeolocationDiagnosticsObserver)) {
+        response = ResponseToMojom(response_data);
+      }
+    }
+    if (!result) {
+      // We failed to parse the response.
+      RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
+      result = CreateGeopositionErrorResult(url_loader_->GetFinalURL(),
+                                            "Response was malformed",
+                                            /*error_technical=*/"");
+    }
+  }
 
   bool server_error =
       net_error != net::OK || (response_code >= 500 && response_code < 600);
 
   url_loader_.reset();
 
-  DVLOG(1) << "NetworkLocationRequest::OnURLFetchComplete() : run callback.";
-  location_response_callback_.Run(std::move(result), server_error, wifi_data_);
+  DVLOG(1) << "NetworkLocationRequest::OnRequestComplete() : run callback.";
+  location_response_callback_.Run(std::move(result), server_error, wifi_data_,
+                                  std::move(response));
+}
+
+std::vector<mojom::AccessPointDataPtr>
+NetworkLocationRequest::GetRequestDataForDiagnostics() const {
+  return RequestToMojom(request_data_, wifi_timestamp_);
 }
 
 // Local functions.
@@ -241,9 +358,8 @@ GURL FormRequestURL(const std::string& api_key) {
   return url;
 }
 
-void FormUploadData(const WifiData& wifi_data,
-                    const base::Time& wifi_timestamp,
-                    std::string* upload_data) {
+base::Value::Dict FormUploadData(const WifiData& wifi_data,
+                                 const base::Time& wifi_timestamp) {
   int age = std::numeric_limits<int32_t>::min();  // Invalid so AddInteger()
                                                   // will ignore.
   if (!wifi_timestamp.is_null()) {
@@ -255,17 +371,17 @@ void FormUploadData(const WifiData& wifi_data,
 
   base::Value::Dict request;
   AddWifiData(wifi_data, age, request);
-  base::JSONWriter::Write(request, upload_data);
+  return request;
 }
 
-void AddString(const std::string& property_name,
+void AddString(base::StringPiece property_name,
                const std::string& value,
                base::Value::Dict& dict) {
   if (!value.empty())
     dict.Set(property_name, value);
 }
 
-void AddInteger(const std::string& property_name,
+void AddInteger(base::StringPiece property_name,
                 int value,
                 base::Value::Dict& dict) {
   if (value != std::numeric_limits<int32_t>::min())
@@ -291,15 +407,15 @@ void AddWifiData(const WifiData& wifi_data,
       continue;
     }
     base::Value::Dict wifi_dict;
-    AddString("macAddress", ap_data->mac_address, wifi_dict);
-    AddInteger("signalStrength", ap_data->radio_signal_strength, wifi_dict);
-    AddInteger("age", age_milliseconds, wifi_dict);
-    AddInteger("channel", ap_data->channel, wifi_dict);
-    AddInteger("signalToNoiseRatio", ap_data->signal_to_noise, wifi_dict);
+    AddString(kMacAddressKey, ap_data->mac_address, wifi_dict);
+    AddInteger(kSignalStrengthKey, ap_data->radio_signal_strength, wifi_dict);
+    AddInteger(kAgeKey, age_milliseconds, wifi_dict);
+    AddInteger(kChannelKey, ap_data->channel, wifi_dict);
+    AddInteger(kSignalToNoiseRatioKey, ap_data->signal_to_noise, wifi_dict);
     wifi_access_point_list.Append(std::move(wifi_dict));
   }
   if (!wifi_access_point_list.empty())
-    request.Set("wifiAccessPoints", std::move(wifi_access_point_list));
+    request.Set(kWifiAccessPointsKey, std::move(wifi_access_point_list));
 }
 
 mojom::GeopositionResultPtr CreateGeopositionErrorResult(
@@ -324,38 +440,13 @@ mojom::GeopositionResultPtr CreateGeopositionErrorResult(
 }
 
 mojom::GeopositionResultPtr CreateGeopositionResultFromResponse(
-    int net_error,
-    int status_code,
-    std::unique_ptr<std::string> response_body,
+    const base::Value::Dict& response_body,
     const base::Time& wifi_timestamp,
     const GURL& server_url) {
-  // HttpPost can fail for a number of reasons. Most likely this is because
-  // we're offline, or there was no response.
-  if (net_error != net::OK) {
-    RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_EMPTY);
-    return CreateGeopositionErrorResult(
-        server_url,
-        "Network error. Check "
-        "DevTools console for more information.",
-        net::ErrorToShortString(net_error));
-  }
-
-  if (status_code != 200) {  // HTTP OK.
-    std::string message = "Returned error code ";
-    message += base::NumberToString(status_code);
-    RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_NOT_OK);
-    return CreateGeopositionErrorResult(
-        server_url,
-        "Failed to query location from network service. Check "
-        "the DevTools console for more information.",
-        message);
-  }
-
   // We use the timestamp from the wifi data that was used to generate
   // this position fix.
-  DCHECK(response_body);
   mojom::GeopositionPtr position =
-      ParseServerResponse(*response_body, wifi_timestamp);
+      CreateGeoposition(response_body, wifi_timestamp);
   if (!position) {
     // We failed to parse the response.
     RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
@@ -376,37 +467,19 @@ mojom::GeopositionResultPtr CreateGeopositionResultFromResponse(
   return mojom::GeopositionResult::NewPosition(std::move(position));
 }
 
-mojom::GeopositionPtr ParseServerResponse(const std::string& response_body,
-                                          const base::Time& wifi_timestamp) {
+mojom::GeopositionPtr CreateGeoposition(const base::Value::Dict& response_body,
+                                        const base::Time& wifi_timestamp) {
   DCHECK(!wifi_timestamp.is_null());
 
   if (response_body.empty()) {
-    LOG(WARNING) << "ParseServerResponse() : Response was empty.";
-    return nullptr;
-  }
-  DVLOG(1) << "ParseServerResponse() : Parsing response " << response_body;
-
-  // Parse the response, ignoring comments.
-  ASSIGN_OR_RETURN(base::Value response_value,
-                   base::JSONReader::ReadAndReturnValueWithError(response_body),
-                   [](base::JSONReader::Error error) -> mojom::GeopositionPtr {
-                     LOG(WARNING)
-                         << "ParseServerResponse() : JSONReader failed : "
-                         << std::move(error).message;
-                     return nullptr;
-                   });
-
-  const base::Value::Dict* response_object = response_value.GetIfDict();
-  if (!response_object) {
-    VLOG(1) << "ParseServerResponse() : Unexpected response type "
-            << response_value.type();
+    LOG(WARNING) << "CreateGeoposition() : Response was empty.";
     return nullptr;
   }
 
   // Get the location
-  const base::Value* location_value = response_object->Find(kLocationString);
+  const base::Value* location_value = response_body.Find(kLocationString);
   if (!location_value) {
-    VLOG(1) << "ParseServerResponse() : Missing location attribute.";
+    VLOG(1) << "CreateGeoposition() : Missing location attribute.";
     // GLS returns a response with no location property to represent
     // no fix available; return an invalid geoposition to indicate successful
     // parse.
@@ -418,7 +491,7 @@ mojom::GeopositionPtr ParseServerResponse(const std::string& response_body,
   const base::Value::Dict* location_object = location_value->GetIfDict();
   if (!location_object) {
     if (!location_value->is_none()) {
-      VLOG(1) << "ParseServerResponse() : Unexpected location type "
+      VLOG(1) << "CreateGeoposition() : Unexpected location type "
               << location_value->type();
       // If the network provider was unable to provide a position fix, it should
       // return a HTTP 200, with "location" : null. Otherwise it's an error.
@@ -436,7 +509,7 @@ mojom::GeopositionPtr ParseServerResponse(const std::string& response_body,
   absl::optional<double> longitude =
       location_object->FindDouble(kLongitudeString);
   if (!latitude || !longitude) {
-    VLOG(1) << "ParseServerResponse() : location lacks lat and/or long.";
+    VLOG(1) << "CreateGeoposition() : location lacks lat and/or long.";
     return nullptr;
   }
   // All error paths covered.
@@ -446,8 +519,7 @@ mojom::GeopositionPtr ParseServerResponse(const std::string& response_body,
   position->timestamp = wifi_timestamp;
 
   // Other fields are optional.
-  absl::optional<double> accuracy =
-      response_object->FindDouble(kAccuracyString);
+  absl::optional<double> accuracy = response_body.FindDouble(kAccuracyString);
   if (accuracy) {
     position->accuracy = *accuracy;
   }

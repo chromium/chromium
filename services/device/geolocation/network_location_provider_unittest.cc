@@ -20,6 +20,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -29,6 +32,7 @@
 #include "services/device/geolocation/location_arbitrator.h"
 #include "services/device/geolocation/mock_wifi_data_provider.h"
 #include "services/device/geolocation/wifi_data_provider.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -36,6 +40,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
@@ -43,7 +48,9 @@
 
 namespace device {
 
+using ::base::test::RunClosure;
 using ::base::test::TestFuture;
+using ::testing::NiceMock;
 
 mojom::NetworkLocationDiagnosticsPtr GetNetworkLocationDiagnostics(
     LocationProvider& provider) {
@@ -91,7 +98,8 @@ class GeolocationNetworkProviderTest : public testing::Test {
         test_url_loader_factory_.GetSafeWeakWrapper(),
         fake_geolocation_manager_.get(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), api_key,
-        &position_cache_, /*internals_updated_closure=*/base::DoNothing());
+        &position_cache_, /*internals_updated_closure=*/base::DoNothing(),
+        network_request_callback_.Get(), network_response_callback_.Get());
     // For macOS we must simulate the granting of location permission
     if (grant_system_permission_by_default_) {
       fake_geolocation_manager_->SetSystemPermission(
@@ -103,7 +111,8 @@ class GeolocationNetworkProviderTest : public testing::Test {
         test_url_loader_factory_.GetSafeWeakWrapper(),
         /*geolocation_system_permission_manager=*/nullptr,
         base::SingleThreadTaskRunner::GetCurrentDefault(), api_key,
-        &position_cache_, /*internals_updated_closure=*/base::DoNothing());
+        &position_cache_, /*internals_updated_closure=*/base::DoNothing(),
+        network_request_callback_.Get(), network_response_callback_.Get());
 #endif
     if (set_permission_granted) {
       provider->OnPermissionGranted();
@@ -113,6 +122,10 @@ class GeolocationNetworkProviderTest : public testing::Test {
   }
 
   bool grant_system_permission_by_default_ = true;
+  NiceMock<base::MockCallback<NetworkLocationProvider::NetworkRequestCallback>>
+      network_request_callback_;
+  NiceMock<base::MockCallback<NetworkLocationProvider::NetworkResponseCallback>>
+      network_response_callback_;
 
 #if BUILDFLAG(IS_APPLE)
   std::unique_ptr<FakeGeolocationManager> fake_geolocation_manager_;
@@ -152,6 +165,18 @@ class GeolocationNetworkProviderTest : public testing::Test {
       ap.radio_signal_strength = ap_count - i;
       ap.channel = IndexToChannel(i);
       ap.signal_to_noise = i + 42;
+      data.access_point_data.insert(ap);
+    }
+    return data;
+  }
+
+  // Creates Wi-Fi data containing the specified number of access points with
+  // optional access point properties omitted.
+  static WifiData CreateReferenceWifiScanDataWithOnlyMacAddress(int ap_count) {
+    WifiData data;
+    for (int i = 0; i < ap_count; ++i) {
+      mojom::AccessPointData ap;
+      ap.mac_address = base::StringPrintf("%02d-34-56-78-54-32", i);
       data.access_point_data.insert(ap);
     }
     return data;
@@ -264,6 +289,7 @@ class GeolocationNetworkProviderTest : public testing::Test {
       base::Value::List wifi_aps_json;
       ASSERT_TRUE(
           JsonGetList("wifiAccessPoints", request_json, &wifi_aps_json));
+      EXPECT_EQ(expected_wifi_aps_json.size(), wifi_aps_json.size());
       for (size_t i = 0; i < expected_wifi_aps_json.size(); ++i) {
         const base::Value& expected_json_value = expected_wifi_aps_json[i];
         ASSERT_TRUE(expected_json_value.is_dict());
@@ -331,27 +357,6 @@ TEST_F(GeolocationNetworkProviderTest, StartProvider) {
   provider->StartProvider(false);
 
   CheckRequestIsValid(0, 0);
-}
-
-// Tests that, with a very large number of access points, the set of access
-// points represented in the request is truncated to fit within 2048 characters.
-TEST_F(GeolocationNetworkProviderTest, StartProviderLongRequest) {
-  std::unique_ptr<LocationProvider> provider(CreateProvider(true));
-  provider->StartProvider(false);
-  // Create Wifi scan data with too many access points.
-  const int kFirstScanAps = 20;
-  wifi_data_provider_->SetData(CreateReferenceWifiScanData(kFirstScanAps));
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
-  const std::string& request_url =
-      test_url_loader_factory_.pending_requests()->back().request.url.spec();
-  // The request url should have been shortened to less than 2048 characters
-  // in length by not including access points with the lowest signal strength
-  // in the request.
-  EXPECT_LT(request_url.size(), size_t(2048));
-  // Expect only 16 out of 20 original access points.
-  CheckRequestIsValid(16, 4);
 }
 
 TEST_F(GeolocationNetworkProviderTest, StartProviderNoMacAddress) {
@@ -987,16 +992,203 @@ TEST_F(GeolocationNetworkProviderTest, DiagnosticsAccessPointData) {
   provider->StartProvider(/*high_accuracy=*/false);
 
   // A Wi-Fi scan completes after finding access points.
+  base::RunLoop loop;
+  EXPECT_CALL(network_request_callback_, Run)
+      .WillOnce(RunClosure(loop.QuitClosure()));
   constexpr size_t kApCount = 6;
   wifi_data_provider_->SetData(CreateReferenceWifiScanData(kApCount));
   const auto wifi_time = base::Time::Now();
-  base::RunLoop().RunUntilIdle();
+  loop.Run();
 
   auto diagnostics = GetNetworkLocationDiagnostics(*provider);
   ASSERT_TRUE(diagnostics);
   EXPECT_EQ(kApCount, diagnostics->access_point_data.size());
   ASSERT_TRUE(diagnostics->wifi_timestamp);
   EXPECT_EQ(wifi_time, *diagnostics->wifi_timestamp);
+}
+
+TEST_F(GeolocationNetworkProviderTest, DiagnosticsAccessPointDataMissingKeys) {
+  wifi_data_provider_->set_got_data(false);  // No initial Wi-Fi data.
+  auto provider = CreateProvider(/*set_permission_granted=*/true);
+  provider->StartProvider(/*high_accuracy=*/false);
+
+  // A Wi-Fi scan completes after finding access points.
+  base::RunLoop loop;
+  EXPECT_CALL(network_request_callback_, Run)
+      .WillOnce(RunClosure(loop.QuitClosure()));
+  constexpr size_t kApCount = 6;
+  wifi_data_provider_->SetData(
+      CreateReferenceWifiScanDataWithOnlyMacAddress(kApCount));
+  const auto wifi_time = base::Time::Now();
+  loop.Run();
+
+  auto diagnostics = GetNetworkLocationDiagnostics(*provider);
+  ASSERT_TRUE(diagnostics);
+  EXPECT_EQ(kApCount, diagnostics->access_point_data.size());
+  ASSERT_TRUE(diagnostics->wifi_timestamp);
+  EXPECT_EQ(wifi_time, *diagnostics->wifi_timestamp);
+}
+
+TEST_F(GeolocationNetworkProviderTest, DiagnosticsNetworkRequestResponse) {
+  wifi_data_provider_->set_got_data(false);  // No initial Wi-Fi data.
+  auto provider = CreateProvider(/*set_permission_granted=*/true);
+  provider->StartProvider(/*high_accuracy=*/false);
+
+  // Updating `wifi_data_provider_` with new data causes a network request to
+  // be created. Check that the diagnostics callback is called.
+  TestFuture<std::vector<mojom::AccessPointDataPtr>> request_future;
+  EXPECT_CALL(network_request_callback_, Run).WillOnce([&](auto request) {
+    request_future.SetValue(std::move(request));
+  });
+  constexpr size_t kApCount = 6;
+  wifi_data_provider_->SetData(CreateReferenceWifiScanData(kApCount));
+  EXPECT_EQ(request_future.Get().size(), kApCount);
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+
+  // Simulate a network response and check that the diagnostics callback is
+  // called.
+  TestFuture<mojom::NetworkLocationResponsePtr> response_future;
+  EXPECT_CALL(network_response_callback_, Run).WillOnce([&](auto response) {
+    response_future.SetValue(std::move(response));
+  });
+  constexpr char kReferenceNetworkResponse[] =
+      "{"
+      "  \"accuracy\": 1200.4,"
+      "  \"location\": {"
+      "    \"lat\": 51.0,"
+      "    \"lng\": -0.1"
+      "  }"
+      "}";
+  test_url_loader_factory_.AddResponse(
+      test_url_loader_factory_.pending_requests()->back().request.url.spec(),
+      kReferenceNetworkResponse);
+  ASSERT_TRUE(response_future.Get());
+  EXPECT_DOUBLE_EQ(response_future.Get()->latitude, 51.0);
+  EXPECT_DOUBLE_EQ(response_future.Get()->longitude, -0.1);
+  ASSERT_TRUE(response_future.Get()->accuracy.has_value());
+  EXPECT_DOUBLE_EQ(response_future.Get()->accuracy.value(), 1200.4);
+}
+
+TEST_F(GeolocationNetworkProviderTest, DiagnosticsEmptyNetworkRequest) {
+  wifi_data_provider_->set_got_data(false);  // No initial Wi-Fi data.
+  auto provider = CreateProvider(/*set_permission_granted=*/true);
+  provider->StartProvider(/*high_accuracy=*/false);
+
+  // First simulate a non-empty Wi-Fi update. The WifiDataProvider will only
+  // notify the NetworkLocationProvider if the updated access point list is
+  // significantly different from the previous list, so we want to start from
+  // a non-empty list.
+  base::RunLoop loop;
+  EXPECT_CALL(network_request_callback_, Run)
+      .WillOnce(RunClosure(loop.QuitClosure()));
+  wifi_data_provider_->SetData(CreateReferenceWifiScanData(/*ap_count=*/6));
+  loop.Run();
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+
+  // Simulate an empty Wi-Fi data update. This can happen if Wi-Fi is
+  // unavailable or there are no nearby access points. Check that no access
+  // point data is included in the request.
+  TestFuture<std::vector<mojom::AccessPointDataPtr>> request_future;
+  EXPECT_CALL(network_request_callback_, Run).WillOnce([&](auto request) {
+    request_future.SetValue(std::move(request));
+  });
+  wifi_data_provider_->SetData({});
+  EXPECT_TRUE(request_future.Get().empty());
+}
+
+TEST_F(GeolocationNetworkProviderTest, DiagnosticsNoAccuracyInNetworkResponse) {
+  wifi_data_provider_->set_got_data(false);  // No initial Wi-Fi data.
+  auto provider = CreateProvider(/*set_permission_granted=*/true);
+  provider->StartProvider(/*high_accuracy=*/false);
+
+  // Simulate a Wi-Fi data update so a network request is created.
+  base::RunLoop loop;
+  EXPECT_CALL(network_request_callback_, Run)
+      .WillOnce(RunClosure(loop.QuitClosure()));
+  wifi_data_provider_->SetData(CreateReferenceWifiScanData(/*ap_count=*/6));
+  loop.Run();
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+
+  // Simulate a network response containing a location but no accuracy. Check
+  // that the response includes the location and the accuracy is nullopt.
+  TestFuture<mojom::NetworkLocationResponsePtr> response_future;
+  EXPECT_CALL(network_response_callback_, Run).WillOnce([&](auto response) {
+    response_future.SetValue(std::move(response));
+  });
+  constexpr char kNoAccuracyNetworkResponse[] =
+      "{"
+      "  \"location\": {"
+      "    \"lat\": 51.0,"
+      "    \"lng\": -0.1"
+      "  }"
+      "}";
+  test_url_loader_factory_.AddResponse(
+      test_url_loader_factory_.pending_requests()->back().request.url.spec(),
+      kNoAccuracyNetworkResponse);
+  ASSERT_TRUE(response_future.Get());
+  EXPECT_DOUBLE_EQ(response_future.Get()->latitude, 51.0);
+  EXPECT_DOUBLE_EQ(response_future.Get()->longitude, -0.1);
+  EXPECT_FALSE(response_future.Get()->accuracy.has_value());
+}
+
+TEST_F(GeolocationNetworkProviderTest, DiagnosticsNoLocationInNetworkResponse) {
+  wifi_data_provider_->set_got_data(false);  // No initial Wi-Fi data.
+  auto provider = CreateProvider(/*set_permission_granted=*/true);
+  provider->StartProvider(/*high_accuracy=*/false);
+
+  // Simulate a Wi-Fi data update so a network request is created.
+  base::RunLoop loop;
+  EXPECT_CALL(network_request_callback_, Run)
+      .WillOnce(RunClosure(loop.QuitClosure()));
+  wifi_data_provider_->SetData(CreateReferenceWifiScanData(/*ap_count=*/6));
+  loop.Run();
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+
+  // Simulate an invalid network response. The diagnostics callback is called
+  // with nullptr.
+  TestFuture<mojom::NetworkLocationResponsePtr> response_future;
+  EXPECT_CALL(network_response_callback_, Run).WillOnce([&](auto response) {
+    response_future.SetValue(std::move(response));
+  });
+  constexpr char kBadNetworkResponse[] = "{ \"bad\": 123 }";
+  test_url_loader_factory_.AddResponse(
+      test_url_loader_factory_.pending_requests()->back().request.url.spec(),
+      kBadNetworkResponse);
+  EXPECT_FALSE(response_future.Get());
+}
+
+TEST_F(GeolocationNetworkProviderTest, DiagnosticsObserverDisabled) {
+  // Disable the diagnostics observer feature.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kGeolocationDiagnosticsObserver});
+
+  wifi_data_provider_->set_got_data(false);  // No initial Wi-Fi data.
+  auto provider = CreateProvider(/*set_permission_granted=*/true);
+  provider->StartProvider(/*high_accuracy=*/false);
+
+  // Simulate a Wi-Fi data update so a network request is created. The
+  // diagnostics callback is not called.
+  EXPECT_CALL(network_request_callback_, Run).Times(0);
+  wifi_data_provider_->SetData(CreateReferenceWifiScanData(/*ap_count=*/6));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+
+  // Simulate a network response. The diagnostics callback is not called.
+  EXPECT_CALL(network_response_callback_, Run).Times(0);
+  constexpr char kReferenceNetworkResponse[] =
+      "{"
+      "  \"accuracy\": 1200.4,"
+      "  \"location\": {"
+      "    \"lat\": 51.0,"
+      "    \"lng\": -0.1"
+      "  }"
+      "}";
+  test_url_loader_factory_.AddResponse(
+      test_url_loader_factory_.pending_requests()->back().request.url.spec(),
+      kReferenceNetworkResponse);
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace device

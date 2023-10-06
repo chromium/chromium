@@ -9,7 +9,7 @@ import {Time, TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojo
 
 import {DiagnoseInfoTableElement} from './diagnose_info_table.js';
 import {getTemplate} from './diagnose_info_view.html.js';
-import {GeolocationDiagnostics, INVALID_CHANNEL, INVALID_RADIO_SIGNAL_STRENGTH, INVALID_SIGNAL_TO_NOISE, NetworkLocationDiagnostics, PositionCacheDiagnostics, WifiPollingPolicyDiagnostics} from './geolocation_internals.mojom-webui.js';
+import {AccessPointData, GeolocationDiagnostics, INVALID_CHANNEL, INVALID_RADIO_SIGNAL_STRENGTH, INVALID_SIGNAL_TO_NOISE, NetworkLocationDiagnostics, NetworkLocationResponse, PositionCacheDiagnostics, WifiPollingPolicyDiagnostics} from './geolocation_internals.mojom-webui.js';
 import {BAD_ACCURACY, BAD_ALTITUDE, BAD_HEADING, BAD_LATITUDE_LONGITUDE, BAD_SPEED, GeopositionResult} from './geoposition.mojom-webui.js';
 
 export const PROVIDER_STATE_TABLE_ID = 'provider-state-table';
@@ -23,6 +23,8 @@ export const WATCH_TABLE_ID = 'watch-position-table';
 export const WIFI_DATA_TABLE_ID = 'wifi-data-table';
 export const POSITION_CACHE_TABLE_ID = 'position-cache-table';
 export const WIFI_POLLING_POLICY_TABLE_ID = 'wifi-polling-policy-table';
+export const LAST_NETWORK_REQUEST_TABLE_ID = 'last-network-request-table';
+export const LAST_NETWORK_RESPONSE_TABLE_ID = 'last-network-response-table';
 
 // Converts `mojoTime` from `mojom_base.mojom.Time` to `Date`.
 function mojoTimeToDate(mojoTime: Time) {
@@ -134,6 +136,8 @@ export class DiagnoseInfoViewElement extends CustomElement {
   private positionCacheTable_: DiagnoseInfoTableElement;
   private watchPositionTable_: DiagnoseInfoTableElement;
   private wifiPollingPolicyTable_: DiagnoseInfoTableElement;
+  private lastNetworkRequestTable_: DiagnoseInfoTableElement;
+  private lastNetworkResponseTable_: DiagnoseInfoTableElement;
 
   constructor() {
     super();
@@ -150,6 +154,12 @@ export class DiagnoseInfoViewElement extends CustomElement {
     this.wifiPollingPolicyTable_ =
         this.getRequiredElement<DiagnoseInfoTableElement>(
             `#${WIFI_POLLING_POLICY_TABLE_ID}`);
+    this.lastNetworkRequestTable_ =
+        this.getRequiredElement<DiagnoseInfoTableElement>(
+            `#${LAST_NETWORK_REQUEST_TABLE_ID}`);
+    this.lastNetworkResponseTable_ =
+        this.getRequiredElement<DiagnoseInfoTableElement>(
+            `#${LAST_NETWORK_RESPONSE_TABLE_ID}`);
   }
 
   updateDiagnosticsTables(data: GeolocationDiagnostics) {
@@ -157,6 +167,14 @@ export class DiagnoseInfoViewElement extends CustomElement {
     this.updateNetworkLocationDiagnostics(data.networkLocationDiagnostics);
     this.updatePositionCacheDiagnostics(data.positionCacheDiagnostics);
     this.updateWifiPollingPolicyTable(data.wifiPollingPolicyDiagnostics);
+  }
+
+  updateLastNetworkRequestTable(request: AccessPointData[]) {
+    this.updateLastNetworkRequest(request);
+  }
+
+  updateLastNetworkResponseTable(response: NetworkLocationResponse|null) {
+    this.updateLastNetworkResponse(response);
   }
 
   updateProviderState(providerState: number) {
@@ -168,51 +186,56 @@ export class DiagnoseInfoViewElement extends CustomElement {
         PROVIDER_STATE_TABLE_ID, [{'Provider State': providerStateString}]);
   }
 
+  accessPointDataToRecordArray(data: AccessPointData[]) {
+    const tableData: Array<Record<string, string>> = [];
+    for (const accessPointData of data) {
+      const row: Record<string, string> = {};
+      row['MAC address'] = accessPointData.macAddress;
+      if (accessPointData.radioSignalStrength ===
+          INVALID_RADIO_SIGNAL_STRENGTH) {
+        row['Signal strength'] = 'N/A';
+      } else {
+        row['Signal strength'] = `${accessPointData.radioSignalStrength} dBm`;
+      }
+      if (accessPointData.channel === INVALID_CHANNEL) {
+        row['Channel'] = 'N/A';
+      } else {
+        row['Channel'] = accessPointData.channel.toString();
+      }
+      if (accessPointData.signalToNoise === INVALID_SIGNAL_TO_NOISE) {
+        row['Signal to Noise Ratio'] = 'N/A';
+      } else {
+        row['Signal to Noise Ratio'] = `${accessPointData.signalToNoise} dB`;
+      }
+      if (accessPointData.timestamp) {
+        row['Timestamp'] = stringifyMojoTime(accessPointData.timestamp);
+      } else {
+        row['Timestamp'] = 'N/A';
+      }
+      tableData.push(row);
+    }
+    if (tableData.length === 0) {
+      const row: Record<string, string> = {};
+      row['MAC address'] = 'No access point data';
+      row['Signal strength'] = '';
+      row['Channel'] = '';
+      row['Signal to Noise Ratio'] = '';
+      row['Timestamp'] = '';
+      tableData.push(row);
+    }
+    return tableData;
+  }
+
   updateNetworkLocationDiagnostics(networkLocationDiagnostics?:
                                        NetworkLocationDiagnostics) {
     if (!networkLocationDiagnostics) {
       this.wifiDataTable_.hideTable();
       return;
     }
-    const wifiData: Array<Record<string, string>> = [];
+    let wifiData: Array<Record<string, string>> = [];
     if (networkLocationDiagnostics.accessPointData !== null) {
-      for (const accessPointData of
-               networkLocationDiagnostics.accessPointData) {
-        const row: Record<string, string> = {};
-        row['MAC address'] = accessPointData.macAddress;
-        if (accessPointData.radioSignalStrength ===
-            INVALID_RADIO_SIGNAL_STRENGTH) {
-          row['Signal strength'] = 'N/A';
-        } else {
-          row['Signal strength'] = `${accessPointData.radioSignalStrength} dBm`;
-        }
-        if (accessPointData.channel === INVALID_CHANNEL) {
-          row['Channel'] = 'N/A';
-        } else {
-          row['Channel'] = accessPointData.channel.toString();
-        }
-        if (accessPointData.signalToNoise === INVALID_SIGNAL_TO_NOISE) {
-          row['Signal to Noise Ratio'] = 'N/A';
-        } else {
-          row['Signal to Noise Ratio'] = `${accessPointData.signalToNoise} dB`;
-        }
-        if (accessPointData.timestamp) {
-          row['Timestamp'] = stringifyMojoTime(accessPointData.timestamp);
-        } else {
-          row['Timestamp'] = 'N/A';
-        }
-        wifiData.push(row);
-      }
-      if (wifiData.length === 0) {
-        // TODO: Hide the table when there is no access point data.
-        const row: Record<string, string> = {};
-        row['MAC address'] = 'No access point data';
-        row['Signal strength'] = '';
-        row['Channel'] = '';
-        row['Signal to Noise Ratio'] = '';
-        row['Timestamp'] = '';
-        wifiData.push(row);
-      }
+      wifiData = this.accessPointDataToRecordArray(
+          networkLocationDiagnostics.accessPointData);
     }
     let footerMessage;
     if (networkLocationDiagnostics.wifiTimestamp === null) {
@@ -272,6 +295,33 @@ export class DiagnoseInfoViewElement extends CustomElement {
         stringifyMojoTimeDelta(data.noWifiInterval);
     this.wifiPollingPolicyTable_.updateTable(
         WIFI_POLLING_POLICY_TABLE_ID, [row]);
+  }
+
+  updateLastNetworkRequest(request: AccessPointData[]) {
+    const tableData = this.accessPointDataToRecordArray(request);
+    const footerMessage = `Request sent at ${new Date().toLocaleString()}`;
+    this.lastNetworkRequestTable_.updateTable(
+        LAST_NETWORK_REQUEST_TABLE_ID, tableData, footerMessage);
+  }
+
+  updateLastNetworkResponse(response: NetworkLocationResponse|null) {
+    let positionEstimate;
+    let footerMessage = `Response received at ${new Date().toLocaleString()}`;
+    if (response) {
+      positionEstimate = `${response.latitude}°, ${response.longitude}°`;
+      if (response.accuracy) {
+        positionEstimate += ` ±${response.accuracy} m`;
+      }
+    } else {
+      positionEstimate = 'None';
+      footerMessage += ' with no position estimate';
+    }
+    const row: Record<string, string> = {};
+    row['Position estimate'] = positionEstimate;
+    const tableData: Array<Record<string, string>> = [];
+    tableData.push(row);
+    this.lastNetworkResponseTable_.updateTable(
+        LAST_NETWORK_RESPONSE_TABLE_ID, tableData, footerMessage);
   }
 
   outputTables(): Record<string, any> {

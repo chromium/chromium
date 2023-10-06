@@ -150,11 +150,32 @@ class GeolocationProviderImpl : public GeolocationProvider,
   // called on the main thread.
   void NotifyInternalsUpdated(mojom::GeolocationDiagnosticsPtr diagnostics);
 
+  // Notifies internals observers that a request was sent to the location
+  // service.
+  void NotifyNetworkLocationRequested(
+      std::vector<mojom::AccessPointDataPtr> request);
+
+  // Notifies internals observers that a response was received from the location
+  // service.
+  void NotifyNetworkLocationReceived(
+      mojom::NetworkLocationResponsePtr response);
+
   // Called on the main thread when an internals observer disconnects.
   void OnInternalsObserverDisconnected(mojo::RemoteSetElementId element_id);
 
   // Called on the geolocation thread when new diagnostic data is available.
   void OnInternalsUpdated();
+
+  // Called on the geolocation thread when a request is sent to the location
+  // service. `request` contains the information about nearby access points
+  // sent to the service.
+  void OnNetworkLocationRequested(
+      std::vector<mojom::AccessPointDataPtr> request);
+
+  // Called on the geolocation thread when a response is received from the
+  // location service. `response` is the received location estimate, or nullptr
+  // if no location estimate was received.
+  void OnNetworkLocationReceived(mojom::NetworkLocationResponsePtr response);
 
   // Enables geolocation diagnostics and returns the most recent diagnostic
   // data. Must be called on the geolocation thread.

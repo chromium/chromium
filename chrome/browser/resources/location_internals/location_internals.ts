@@ -7,7 +7,7 @@ import './diagnose_info_view.js';
 import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {DiagnoseInfoViewElement} from './diagnose_info_view.js';
-import {GeolocationDiagnostics, GeolocationInternalsObserverInterface, GeolocationInternalsObserverReceiver, GeolocationInternalsRemote} from './geolocation_internals.mojom-webui.js';
+import {AccessPointData, GeolocationDiagnostics, GeolocationInternalsObserverInterface, GeolocationInternalsObserverReceiver, GeolocationInternalsRemote, NetworkLocationResponse} from './geolocation_internals.mojom-webui.js';
 import {LocationInternalsHandler} from './location_internals.mojom-webui.js';
 
 export const WATCH_BUTTON_ID = 'watch-btn';
@@ -31,6 +31,12 @@ class GeolocationInternalsObserver implements
     GeolocationInternalsObserverInterface {
   onDiagnosticsChanged(diagnostics: GeolocationDiagnostics) {
     handleDiagnosticsChanged(diagnostics);
+  }
+  onNetworkLocationRequested(request: AccessPointData[]) {
+    handleNetworkLocationRequested(request);
+  }
+  onNetworkLocationReceived(response: NetworkLocationResponse|null) {
+    handleNetworkLocationReceived(response);
   }
 }
 
@@ -85,6 +91,16 @@ function handleDiagnosticsChanged(diagnostics: GeolocationDiagnostics|null) {
   } else {
     refreshStatus.textContent = REFRESH_STATUS_UNINITIALIZED;
   }
+  window.dispatchEvent(new CustomEvent(REFRESH_FINISH_EVENT));
+}
+
+function handleNetworkLocationRequested(request: AccessPointData[]) {
+  diagnoseInfoView.updateLastNetworkRequestTable(request);
+  window.dispatchEvent(new CustomEvent(REFRESH_FINISH_EVENT));
+}
+
+function handleNetworkLocationReceived(response: NetworkLocationResponse|null) {
+  diagnoseInfoView.updateLastNetworkResponseTable(response);
   window.dispatchEvent(new CustomEvent(REFRESH_FINISH_EVENT));
 }
 

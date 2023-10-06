@@ -33,14 +33,18 @@ LocationArbitrator::LocationArbitrator(
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     const std::string& api_key,
     std::unique_ptr<PositionCache> position_cache,
-    base::RepeatingClosure internals_updated_closure)
+    base::RepeatingClosure internals_updated_closure,
+    NetworkLocationProvider::NetworkRequestCallback network_request_callback,
+    NetworkLocationProvider::NetworkResponseCallback network_response_callback)
     : custom_location_provider_getter_(custom_location_provider_getter),
       geolocation_manager_(geolocation_manager),
       main_task_runner_(main_task_runner),
       url_loader_factory_(url_loader_factory),
       api_key_(api_key),
       position_cache_(std::move(position_cache)),
-      internals_updated_closure_(std::move(internals_updated_closure)) {}
+      internals_updated_closure_(std::move(internals_updated_closure)),
+      network_request_callback_(std::move(network_request_callback)),
+      network_response_callback_(std::move(network_response_callback)) {}
 
 LocationArbitrator::~LocationArbitrator() {
   // Release the global wifi polling policy state.
@@ -182,7 +186,8 @@ LocationArbitrator::NewNetworkLocationProvider(
 #else
   return std::make_unique<NetworkLocationProvider>(
       std::move(url_loader_factory), geolocation_manager_, main_task_runner_,
-      api_key, position_cache_.get(), internals_updated_closure_);
+      api_key, position_cache_.get(), internals_updated_closure_,
+      network_request_callback_, network_response_callback_);
 #endif
 }
 

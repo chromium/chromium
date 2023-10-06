@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {POSITION_CACHE_TABLE_ID, WIFI_DATA_TABLE_ID, WIFI_POLLING_POLICY_TABLE_ID} from 'chrome://location-internals/diagnose_info_view.js';
-import {GeolocationDiagnostics, GeolocationInternalsInterface, GeolocationInternalsObserverRemote, GeolocationInternalsPendingReceiver, GeolocationInternalsReceiver, INVALID_CHANNEL, INVALID_RADIO_SIGNAL_STRENGTH, INVALID_SIGNAL_TO_NOISE} from 'chrome://location-internals/geolocation_internals.mojom-webui.js';
+import {LAST_NETWORK_REQUEST_TABLE_ID, LAST_NETWORK_RESPONSE_TABLE_ID, POSITION_CACHE_TABLE_ID, WIFI_DATA_TABLE_ID, WIFI_POLLING_POLICY_TABLE_ID} from 'chrome://location-internals/diagnose_info_view.js';
+import {AccessPointData, GeolocationDiagnostics, GeolocationInternalsInterface, GeolocationInternalsObserverRemote, GeolocationInternalsPendingReceiver, GeolocationInternalsReceiver, INVALID_CHANNEL, INVALID_RADIO_SIGNAL_STRENGTH, INVALID_SIGNAL_TO_NOISE, NetworkLocationResponse} from 'chrome://location-internals/geolocation_internals.mojom-webui.js';
 import {BAD_ACCURACY, BAD_ALTITUDE, BAD_HEADING, BAD_LATITUDE_LONGITUDE, BAD_SPEED} from 'chrome://location-internals/geoposition.mojom-webui.js';
 import {DIAGNOSE_INFO_VIEW_ID, initializeMojo, REFRESH_FINISH_EVENT, REFRESH_STATUS_ID, REFRESH_STATUS_SUCCESS, REFRESH_STATUS_UNINITIALIZED, WATCH_BUTTON_ID} from 'chrome://location-internals/location_internals.js';
 import {LocationInternalsHandler, LocationInternalsHandlerInterface, LocationInternalsHandlerReceiver} from 'chrome://location-internals/location_internals.mojom-webui.js';
@@ -20,6 +20,19 @@ let geolocationInternalsRemote: FakeGeolocationInternalsRemote|null = null;
 function simulateDiagnosticsUpdate(diagnostics: GeolocationDiagnostics) {
   const promise = eventToPromise(REFRESH_FINISH_EVENT, window);
   geolocationInternalsRemote!.installDiagnostics(diagnostics);
+  return promise;
+}
+
+function simulateNetworkLocationRequest(request: AccessPointData[]) {
+  const promise = eventToPromise(REFRESH_FINISH_EVENT, window);
+  geolocationInternalsRemote!.simulateNetworkLocationRequest(request);
+  return promise;
+}
+
+function simulateNetworkLocationResponse(response: NetworkLocationResponse|
+                                         null) {
+  const promise = eventToPromise(REFRESH_FINISH_EVENT, window);
+  geolocationInternalsRemote!.simulateNetworkLocationResponse(response);
   return promise;
 }
 
@@ -161,6 +174,18 @@ class FakeGeolocationInternalsRemote extends TestBrowserProxy implements
     this.diagnostics_ = diagnostics;
     if (this.observer_ !== null) {
       this.observer_.onDiagnosticsChanged(this.diagnostics_);
+    }
+  }
+
+  simulateNetworkLocationRequest(request: AccessPointData[]) {
+    if (this.observer_ !== null) {
+      this.observer_.onNetworkLocationRequested(request);
+    }
+  }
+
+  simulateNetworkLocationResponse(request: NetworkLocationResponse|null) {
+    if (this.observer_ !== null) {
+      this.observer_.onNetworkLocationReceived(request);
     }
   }
 }
@@ -532,5 +557,125 @@ suite('LocationInternalsUITest', function() {
           '600',
           '20',
         ]]);
+  });
+
+  test('NetworkLocationRequestHidden', async function() {
+    // The network request table remains hidden until the first request is
+    // created.
+    checkTableHidden(LAST_NETWORK_REQUEST_TABLE_ID);
+
+    // Updating diagnostics does not display the network request table.
+    await simulateDiagnosticsUpdate({providerState: 0});
+    checkTableHidden(LAST_NETWORK_REQUEST_TABLE_ID);
+  });
+
+  test('NetworkLocationRequestEmpty', async function() {
+    // Simulate an empty update. The table is displayed with a message
+    // indicating no access points were sent.
+    await simulateNetworkLocationRequest([]);
+    checkTableContents(
+        LAST_NETWORK_REQUEST_TABLE_ID, LAST_NETWORK_REQUEST_TABLE_ID,
+        [
+          'MAC address',
+          'Signal strength',
+          'Channel',
+          'Signal to Noise Ratio',
+          'Timestamp',
+        ],
+        [[
+          'No access point data',
+          '',
+          '',
+          '',
+          '',
+        ]],
+        'Request sent at ');
+  });
+
+  test('NetworkLocationRequestPopulated', async function() {
+    // Simulate an update with one access point.
+    await simulateNetworkLocationRequest([{
+      macAddress: 'aa-bb-cc-dd-ee-ff',
+      radioSignalStrength: -42,
+      channel: 2,
+      signalToNoise: 15,
+      timestamp: dateToMojoTime(new Date('2020-01-12T22:26:00')),
+    }]);
+    checkTableContents(
+        LAST_NETWORK_REQUEST_TABLE_ID, LAST_NETWORK_REQUEST_TABLE_ID,
+        [
+          'MAC address',
+          'Signal strength',
+          'Channel',
+          'Signal to Noise Ratio',
+          'Timestamp',
+        ],
+        [[
+          'aa-bb-cc-dd-ee-ff',
+          '-42 dBm',
+          '2',
+          '15 dB',
+          '1/12/2020, 10:26:00 PM',
+        ]],
+        'Request sent at ');
+  });
+
+  test('NetworkLocationResponseHidden', async function() {
+    // The network response table remains hidden until the first response is
+    // received.
+    checkTableHidden(LAST_NETWORK_RESPONSE_TABLE_ID);
+
+    // Updating diagnostics does not display the network response table.
+    await simulateDiagnosticsUpdate({providerState: 0});
+    checkTableHidden(LAST_NETWORK_RESPONSE_TABLE_ID);
+  });
+
+  test('NetworkLocationResponseInvalid', async function() {
+    // Set the response to null to simulate an invalid response.
+    await simulateNetworkLocationResponse(null);
+    checkTableContents(
+        LAST_NETWORK_RESPONSE_TABLE_ID, LAST_NETWORK_RESPONSE_TABLE_ID,
+        [
+          'Position estimate',
+        ],
+        [[
+          'None',
+        ]],
+        'Response received at ');
+  });
+
+  test('NetworkLocationResponsePopulated', async function() {
+    // Simulate an update with all fields populated.
+    await simulateNetworkLocationResponse({
+      latitude: 37.0,
+      longitude: -112.0,
+      accuracy: 5.0,
+    });
+    checkTableContents(
+        LAST_NETWORK_RESPONSE_TABLE_ID, LAST_NETWORK_RESPONSE_TABLE_ID,
+        [
+          'Position estimate',
+        ],
+        [[
+          '37°, -112° ±5 m',
+        ]],
+        'Response received at ');
+  });
+
+  test('NetworkLocationResponseNoAccuracy', async function() {
+    // Simulate an update without the optional accuracy field.
+    await simulateNetworkLocationResponse({
+      latitude: 37.0,
+      longitude: -112.0,
+    });
+    checkTableContents(
+        LAST_NETWORK_RESPONSE_TABLE_ID, LAST_NETWORK_RESPONSE_TABLE_ID,
+        [
+          'Position estimate',
+        ],
+        [[
+          '37°, -112°',
+        ]],
+        'Response received at ');
   });
 });
