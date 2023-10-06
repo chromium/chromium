@@ -780,13 +780,6 @@ const char kOmniboxNewImplementationName[] =
 const char kOmniboxNewImplementationDescription[] =
     "Uses a textfield implementation that doesn't use UILabels internally";
 
-const char kOmniboxFocusTriggersContextualWebZeroSuggestName[] =
-    "Omnibox on-focus suggestions for the contextual Web";
-const char kOmniboxFocusTriggersContextualWebZeroSuggestDescription[] =
-    "Enables on-focus suggestions on the Open Web, that are contextual to the "
-    "current URL. Will only work if user is signed-in and syncing, or is "
-    "otherwise eligible to send the current page URL to the suggest server.";
-
 const char kOmniboxFocusTriggersSRPZeroSuggestName[] =
     "Allow Omnibox contextual web on-focus suggestions on the SRP";
 const char kOmniboxFocusTriggersSRPZeroSuggestDescription[] =

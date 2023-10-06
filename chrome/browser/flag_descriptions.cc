@@ -2499,13 +2499,6 @@ const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[] =
     "Enables local history zero-prefix suggestions in every context in which "
     "the remote zero-prefix suggestions are enabled.";
 
-const char kOmniboxFocusTriggersContextualWebZeroSuggestName[] =
-    "Omnibox on-focus suggestions for the contextual Web";
-const char kOmniboxFocusTriggersContextualWebZeroSuggestDescription[] =
-    "Enables on-focus suggestions on the Open Web, that are contextual to the "
-    "current URL. Will only work if user is signed-in and syncing, or is "
-    "otherwise eligible to send the current page URL to the suggest server.";
-
 const char kOmniboxMlLogUrlScoringSignalsName[] =
     "Log Omnibox URL Scoring Signals";
 const char kOmniboxMlLogUrlScoringSignalsDescription[] =

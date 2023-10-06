@@ -858,12 +858,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxNewImplementationName,
      flag_descriptions::kOmniboxNewImplementationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSNewOmniboxImplementation)},
-    {"omnibox-on-focus-suggestions-contextual-web",
-     flag_descriptions::kOmniboxFocusTriggersContextualWebZeroSuggestName,
-     flag_descriptions::
-         kOmniboxFocusTriggersContextualWebZeroSuggestDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(omnibox::kFocusTriggersContextualWebZeroSuggest)},
     {"omnibox-report-assisted-query-stats",
      flag_descriptions::kOmniboxReportAssistedQueryStatsName,
      flag_descriptions::kOmniboxReportAssistedQueryStatsDescription,

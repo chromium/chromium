@@ -342,8 +342,7 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
   if (omnibox::IsOtherWebPage(page_class)) {
     if (focus_type_input_type ==
             std::make_pair(OFT::INTERACTION_FOCUS, OIT::URL) &&
-        base::FeatureList::IsEnabled(
-            omnibox::kFocusTriggersContextualWebZeroSuggest)) {
+        (is_ios || is_android)) {
       return ResultType::kRemoteSendURL;
     }
     if (focus_type_input_type ==

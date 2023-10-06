@@ -6193,13 +6193,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxOnClobberFocusTypeOnContentDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxOnClobberFocusTypeOnContent)},
 
-    {"omnibox-on-focus-suggestions-contextual-web",
-     flag_descriptions::kOmniboxFocusTriggersContextualWebZeroSuggestName,
-     flag_descriptions::
-         kOmniboxFocusTriggersContextualWebZeroSuggestDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kFocusTriggersContextualWebZeroSuggest)},
-
     {"omnibox-fuzzy-url-suggestions",
      flag_descriptions::kOmniboxFuzzyUrlSuggestionsName,
      flag_descriptions::kOmniboxFuzzyUrlSuggestionsDescription, kOsAll,

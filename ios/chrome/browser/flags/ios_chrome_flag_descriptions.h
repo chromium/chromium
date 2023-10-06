@@ -622,11 +622,6 @@ extern const char kNTPViewHierarchyRepairName[];
 extern const char kNTPViewHierarchyRepairDescription[];
 
 // Title and description for the flag to fetch contextual zero-prefix
-// suggestions related to current page (on normal web pages).
-extern const char kOmniboxFocusTriggersContextualWebZeroSuggestName[];
-extern const char kOmniboxFocusTriggersContextualWebZeroSuggestDescription[];
-
-// Title and description for the flag to fetch contextual zero-prefix
 // suggestions on search results page.
 extern const char kOmniboxFocusTriggersSRPZeroSuggestName[];
 extern const char kOmniboxFocusTriggersSRPZeroSuggestDescription[];

@@ -6281,11 +6281,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-on-focus-suggestions-contextual-web",
-    "owners": [ "ender", "stkhapugin", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "omnibox-pref-based-data-collection-consent-helper",
     "owners": [ "mfacey", "mahmadi", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 125
