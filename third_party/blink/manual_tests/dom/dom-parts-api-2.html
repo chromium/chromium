@@ -32,7 +32,7 @@ function template(tplStr) {
   return tplEl;
 }
 const tbodyEl = document.querySelector('tbody');
-const rowTplBaseline = template(`<tr><td class="col-md-1"> </td><td class="col-md-4"><a href="#"> </a></td><td class="col-md-1"><a href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`);
+const rowTplBaseline = template(`<tr><td class="col-md-1"><?fake-part?> </td><td class="col-md-4"><a href="#"> </a></td><td class="col-md-1"><a href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`);
 // The space at the front of this template works around crbug.com/1490375, and can be removed once that's fixed:
 const rowTplParts = template(` <tr {{}}><td class="col-md-1"><?node-part?> </td><td class="col-md-4"><a {{}} href="#"> </a></td><td class="col-md-1"><a {{}} href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`);
 const partRoot = rowTplParts.content.getPartRoot();

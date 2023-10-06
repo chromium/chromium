@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_move_scope.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
@@ -139,20 +140,16 @@ void ChildNodePart::replaceChildren(
     return;
   }
   ContainerNode* parent = parentNode();
-  if (!parent) {
-    return;
-  }
-  if (previous_sibling_ == parent->firstChild() &&
-      next_sibling_ == parent->lastChild()) {
-    parent->replaceChildren(nodes, exception_state);
-    return;
-  }
+  DCHECK(parent) << "Should be guaranteed by IsValid";
   // Remove existing children, leaving endpoints.
   Node* node = previous_sibling_->nextSibling();
   while (node != next_sibling_) {
-    Node* remove = node;
+    Node* to_remove = node;
     node = node->nextSibling();
-    remove->remove();
+    parent->RemoveChild(to_remove, exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
   }
   // Insert new contents.
   Node* nodes_as_node = Node::ConvertNodeUnionsIntoNode(
