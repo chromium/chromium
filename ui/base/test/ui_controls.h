@@ -181,6 +181,15 @@ bool SendTouchEventsNotifyWhenDone(int action,
                                    base::OnceClosure task);
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+// Forces the platform implementation to use screen coordinates, even if they're
+// not really available, the next time that ui_controls::SendMouseMove() or
+// ui_controls::SendMouseMoveNotifyWhenDone() is called, or some other method
+// using these methods internally, e.g. ui_test_utils::SendMouseMoveSync(). All
+// following calls will behave normally (unless this method is called again).
+void ForceUseScreenCoordinatesOnce();
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 class UIControlsAura;
 void InstallUIControlsAura(UIControlsAura* instance);

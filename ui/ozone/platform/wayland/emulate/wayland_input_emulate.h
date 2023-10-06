@@ -61,6 +61,10 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
                     int touch_id,
                     uint32_t request_id);
 
+#if BUILDFLAG(IS_LINUX)
+  void ForceUseScreenCoordinatesOnce();
+#endif
+
  private:
   enum PendingRequestType {
     KeyPress,
@@ -175,6 +179,14 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   base::circular_deque<std::unique_ptr<PendingRequest>> pending_requests_;
 
   base::RepeatingCallback<void(uint32_t)> request_processed_callback_;
+
+  // If true, the next `EmulatePointerMotion` call will use global screen
+  // coordinates, i.e. send zcr_ui_controls_v1.mouse_move with the `surface`
+  // parameter set to NULL.
+  // Note: this does not affect whether `EmulatePointerMotion` uses the
+  // coordinates from its `mouse_surface_location` or `mouse_screen_location`
+  // parameter. See the comment in that method's definition for more details.
+  bool force_use_screen_coordinates_once_ = false;
 
   // Owned raw pointers. wl::Object is not used because the component this
   // class belongs to cannot depend on the "wayland" target in the

@@ -121,6 +121,7 @@
 #define DESKTOP_BROWSER_FRAME_AURA DesktopBrowserFrameLacros
 #elif BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
+#include "ui/ozone/public/ozone_platform.h"
 #define DESKTOP_BROWSER_FRAME_AURA DesktopBrowserFrameAuraLinux
 #else
 #define DESKTOP_BROWSER_FRAME_AURA DesktopBrowserFrameAura
@@ -241,6 +242,72 @@ TabDragController* GetTabDragController(TabStrip* tab_strip) {
   return tab_strip->GetDragContext()->GetDragController();
 }
 
+// Resizes the given browser to the specified bounds by using ui_test_utils to
+// generate mouse movements, similar to how a regular user would resize the
+// window. This is used instead of BrowserWindow::SetBounds() on platforms where
+// clients don't have complete control over window bounds (i.e., Wayland).
+void ResizeUsingMouseEmulation(Browser* browser,
+                               const gfx::Rect& target_bounds) {
+#if BUILDFLAG(IS_LINUX)
+  auto* window = browser->window()->GetNativeWindow();
+  auto width_difference = window->bounds().width() - target_bounds.width();
+  auto height_difference = window->bounds().height() - target_bounds.height();
+
+  // Resize the window, if needed.
+  if (width_difference != 0 || height_difference != 0) {
+    // We use the container bounds because they don't include window
+    // decorations.
+    auto bottom_right = browser->tab_strip_model()
+                            ->GetActiveWebContents()
+                            ->GetContainerBounds()
+                            .bottom_right();
+    auto resize_target = gfx::Point(bottom_right.x() - width_difference,
+                                    bottom_right.y() - height_difference);
+    ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(bottom_right, window));
+    ASSERT_TRUE(ui_test_utils::SendMouseEventsSync(
+        ui_controls::MouseButton::LEFT, ui_controls::MouseButtonState::DOWN,
+        window));
+    ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(resize_target, window));
+    ASSERT_TRUE(ui_test_utils::SendMouseEventsSync(
+        ui_controls::MouseButton::LEFT, ui_controls::MouseButtonState::UP,
+        window));
+  }
+
+  // Move the window.
+  auto* grab_handle_space = BrowserView::GetBrowserViewForBrowser(browser)
+                                ->tab_strip_region_view()
+                                ->reserved_grab_handle_space_for_testing();
+  auto grab_coordinates =
+      ui_test_utils::GetCenterInScreenCoordinates(grab_handle_space);
+  gfx::Vector2d grab_offset = {grab_coordinates.x(), grab_coordinates.y()};
+  auto move_target = target_bounds.origin() + grab_offset;
+  ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(grab_coordinates, window));
+  ASSERT_TRUE(ui_test_utils::SendMouseEventsSync(
+      ui_controls::MouseButton::LEFT, ui_controls::MouseButtonState::DOWN,
+      window));
+
+  // `move_target` is in screen coordinates.
+  ui_controls::ForceUseScreenCoordinatesOnce();
+  ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(move_target, window));
+
+  ASSERT_TRUE(ui_test_utils::SendMouseEventsSync(
+      ui_controls::MouseButton::LEFT, ui_controls::MouseButtonState::UP,
+      window));
+#endif  // BUILDFLAG(IS_LINUX)
+}
+
+// If this returns false, we must use ResizeUsingMouseEmulation() instead of
+// BrowserWindow::SetBounds().
+bool CanUseSetBounds() {
+#if BUILDFLAG(IS_LINUX)
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .supports_global_screen_coordinates;
+#else
+  return true;
+#endif  // BUILDFLAG(IS_LINUX)
+}
+
 }  // namespace test
 
 using test::GetTabDragController;
@@ -280,22 +347,46 @@ void TabDragControllerTest::AddTabsAndResetBrowser(Browser* browser,
 }
 
 Browser* TabDragControllerTest::CreateAnotherBrowserAndResize() {
-  Browser* browser2 = CreateBrowser(browser()->profile());
-  ResetIDs(browser2->tab_strip_model(), 100);
-  Resize(browser(), browser2);
-  return browser2;
-}
-
-void TabDragControllerTest::Resize(Browser* browser1, Browser* browser2) {
   // Resize the two windows so they're right next to each other.
-  const gfx::NativeWindow window = browser1->window()->GetNativeWindow();
+
+  // If we're using test::ResizeUsingMouseEmulation(), it's important we resize
+  // the first browser before creating the second one, else the second browser
+  // might occlude the first browser's bottom right corner or tab strip grab
+  // handle space, preventing us from resizing or moving it.
+  const gfx::NativeWindow window = browser()->window()->GetNativeWindow();
   gfx::Rect work_area =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
   const gfx::Size size(work_area.width() / 3, work_area.height() / 2);
-  gfx::Rect browser_rect(work_area.origin(), size);
-  browser1->window()->SetBounds(browser_rect);
-  browser_rect.set_x(browser_rect.right());
-  browser2->window()->SetBounds(browser_rect);
+  gfx::Rect browser_rect(work_area.origin() + gfx::Vector2d(50, 50), size);
+
+  if (test::CanUseSetBounds()) {
+    browser()->window()->SetBounds(browser_rect);
+    browser_rect.set_x(browser_rect.right());
+  } else {
+    test::ResizeUsingMouseEmulation(browser(), browser_rect);
+
+    // `container_bounds` doesn't include window decorations, so we can use it
+    // to calculate the window decorations' width by comparing its offset from
+    // the browser window's bounds.
+    auto container_bounds = browser()
+                                ->tab_strip_model()
+                                ->GetActiveWebContents()
+                                ->GetContainerBounds();
+    auto window_decoration_width =
+        container_bounds.x() - browser()->window()->GetBounds().x();
+    // We need to correct for the decorations drawn to the right of the first
+    // window and to the left of the second window.
+    browser_rect.set_x(browser_rect.right() - 2 * window_decoration_width);
+  }
+
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  ResetIDs(browser2->tab_strip_model(), 100);
+  if (test::CanUseSetBounds()) {
+    browser2->window()->SetBounds(browser_rect);
+  } else {
+    test::ResizeUsingMouseEmulation(browser2, browser_rect);
+  }
+  return browser2;
 }
 
 void TabDragControllerTest::SetWindowFinderForTabStrip(
@@ -515,17 +606,31 @@ class DetachToBrowserTabDragControllerTest
 
   // The following methods update one of the mouse or touch input depending upon
   // the InputSource.
-  bool PressInput(const gfx::Point& location, int id = 0) {
+  bool PressInput(
+      const gfx::Point& location,
+      int id = 0,
+      const gfx::NativeWindow window_hint = ui_controls::kNoWindowHint) {
     if (input_source() == INPUT_SOURCE_MOUSE) {
-      return ui_test_utils::SendMouseMoveSync(location) &&
-          ui_test_utils::SendMouseEventsSync(
-              ui_controls::LEFT, ui_controls::DOWN);
+      return ui_test_utils::SendMouseMoveSync(location, window_hint) &&
+             ui_test_utils::SendMouseEventsSync(ui_controls::LEFT,
+                                                ui_controls::DOWN, window_hint);
     }
 #if BUILDFLAG(IS_CHROMEOS)
     return SendTouchEventsSync(ui_controls::kTouchPress, id, location);
 #else
     NOTREACHED_NORETURN();
 #endif
+  }
+
+  // Like PressInput() used together with GetCenterInScreenCoordinates(), but
+  // also automatically passes a window hint to the ui_test_utils functions
+  // used. This is sometimes needed on Wayland to ensure the mouse events are
+  // sent to the correct location.
+  bool PressInputAtCenter(const views::View* view, int id = 0) {
+    gfx::NativeWindow window_hint = view->GetWidget()
+                                        ? view->GetWidget()->GetNativeWindow()
+                                        : ui_controls::kNoWindowHint;
+    return PressInput(GetCenterInScreenCoordinates(view), id, window_hint);
   }
 
   bool DragInputTo(const gfx::Point& location) {
@@ -538,15 +643,27 @@ class DetachToBrowserTabDragControllerTest
 #endif
   }
 
-  bool DragInputToAsync(const gfx::Point& location) {
+  bool DragInputToAsync(
+      const gfx::Point& location,
+      const gfx::NativeWindow window_hint = ui_controls::kNoWindowHint) {
     if (input_source() == INPUT_SOURCE_MOUSE)
-      return ui_controls::SendMouseMove(location.x(), location.y());
+      return ui_controls::SendMouseMove(location.x(), location.y(),
+                                        window_hint);
 #if BUILDFLAG(IS_CHROMEOS)
     return ui_controls::SendTouchEvents(ui_controls::kTouchMove, 0,
                                         location.x(), location.y());
 #else
     NOTREACHED_NORETURN();
 #endif
+  }
+
+  // Like PressInputAtCenter(), but for DragInputToAsync() instead of
+  // PressInput().
+  bool DragInputToCenterAsync(const views::View* view) {
+    gfx::NativeWindow window_hint = view->GetWidget()
+                                        ? view->GetWidget()->GetNativeWindow()
+                                        : ui_controls::kNoWindowHint;
+    return DragInputToAsync(GetCenterInScreenCoordinates(view), window_hint);
   }
 
   bool DragInputToNotifyWhenDone(const gfx::Point& location,
@@ -583,24 +700,29 @@ class DetachToBrowserTabDragControllerTest
   }
 
   void ReleaseInputAfterWindowDetached(int first_dragged_tab_width) {
-    // On macOS, we want to avoid generating the input event [which requires an
-    // associated window] until the window has been detached. Failure to do so
-    // causes odd behavior [e.g. on macOS 10.10, the mouse-up will reactivate
-    // the first window].
-    if (browser_list->size() != 2u) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&DetachToBrowserTabDragControllerTest::
-                             ReleaseInputAfterWindowDetached,
-                         base::Unretained(this), first_dragged_tab_width),
-          base::Milliseconds(1));
-      return;
-    }
+    // If we are using a system DnD session for window dragging, no detached
+    // second browser will be created.
+    if (!TabDragController::IsSystemDragAndDropSessionRunning()) {
+      // On macOS, we want to avoid generating the input event [which requires
+      // an associated window] until the window has been detached. Failure to do
+      // so causes odd behavior [e.g. on macOS 10.10, the mouse-up will
+      // reactivate the first window].
+      if (browser_list->size() != 2u) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&DetachToBrowserTabDragControllerTest::
+                               ReleaseInputAfterWindowDetached,
+                           base::Unretained(this), first_dragged_tab_width),
+            base::Milliseconds(1));
+        return;
+      }
 
-    // The tab getting dragged into the new browser should have the same width
-    // as before it was dragged.
-    EXPECT_EQ(first_dragged_tab_width,
-              GetTabStripForBrowser(browser_list->get(1))->tab_at(0)->width());
+      // The tab getting dragged into the new browser should have the same width
+      // as before it was dragged.
+      EXPECT_EQ(
+          first_dragged_tab_width,
+          GetTabStripForBrowser(browser_list->get(1))->tab_at(0)->width());
+    }
 
     // Windows hangs if you use a sync mouse event here.
     ASSERT_TRUE(ReleaseInput(0, true));
@@ -2404,8 +2526,7 @@ void DragAllToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
 
   // Drag to target_tab_strip. This should stop the nested loop from dragging
   // the window.
-  ASSERT_TRUE(
-      test->DragInputToAsync(GetCenterInScreenCoordinates(target_tab_strip)));
+  ASSERT_TRUE(test->DragInputToCenterAsync(target_tab_strip));
 }
 
 }  // namespace
@@ -2489,7 +2610,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   // Click the first tab and select the second tab so they are the only ones
   // selected.
-  ASSERT_TRUE(PressInput(GetCenterInScreenCoordinates(tab_strip->tab_at(0))));
+  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
   ASSERT_TRUE(ReleaseInput());
   browser()->tab_strip_model()->ToggleSelectionAt(1);
 
@@ -3814,7 +3935,16 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
   Browser* app_browser2 = LaunchWebAppBrowser(tabbed_app_id);
   ASSERT_EQ(3u, browser_list->size());
   ResetIDs(app_browser2->tab_strip_model(), 100);
-  Resize(app_browser1, app_browser2);
+
+  gfx::Rect work_area =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(app_browser1->window()->GetNativeWindow())
+          .work_area();
+  const gfx::Size size(work_area.width() / 3, work_area.height() / 2);
+  gfx::Rect browser_rect(work_area.origin(), size);
+  app_browser1->window()->SetBounds(browser_rect);
+  browser_rect.set_x(browser_rect.right());
+  app_browser2->window()->SetBounds(browser_rect);
 
   // Close normal browser since other code expects only 1 browser to start.
   CloseBrowserSynchronously(browser());

@@ -280,4 +280,11 @@ bool SendTouchEventsNotifyWhenDone(int action,
 }
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+// static
+void ForceUseScreenCoordinatesOnce() {
+  g_ozone_ui_controls_test_helper->ForceUseScreenCoordinatesOnce();
+}
+#endif
+
 }  // namespace ui_controls

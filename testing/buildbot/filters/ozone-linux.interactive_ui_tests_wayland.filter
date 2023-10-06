@@ -7,6 +7,10 @@
 # is fixed.
 -BookmarkBarViewTest2.HideOnDesktopClick
 
+# TODO(crbug.com/1474921): Requires an additional custom "set bounds using mouse emulation"
+# implementation similar to what was introduced in https://crrev.com/c/4738688.
+-TabDragging/DetachToBrowserTabDragControllerTest.DragDirectlyToSecondWindow/*
+
 # Failing interactive ui tests
 -BookmarkBarViewTest12.CloseWithModalDialog
 -BookmarkBarViewTest13.ClickOnContextMenuSeparator
@@ -32,7 +36,6 @@
 -PopupBlockerBrowserTest.ModalPopUnder
 -SameSiteSubframe/DragAndDropBrowserTest.CrossTabDrag/0
 -StartupBrowserCreatorTest.LastUsedProfileActivated
--TabDragging/DetachToBrowserTabDragControllerTest*
 -WebAppProfileSwitcherBrowserTest.SwitchWebAppProfileActivateWindowOnly
 -WidgetInputMethodInteractiveTest.Activation
 -WidgetInputMethodInteractiveTest.OneWindow
@@ -59,3 +62,8 @@
 # but doesn't pass with Weston 12.)
 -FullscreenControlViewTest.MouseAndTouchInteraction_NoInterference
 -FullscreenControlViewTest.MouseExitFullscreen_TimeoutAndRetrigger
+
+# These cannot work because they rely on receiving key events during a DnD session, which isn't
+# possible on Linux Wayland.
+-TabDragging/DetachToBrowserTabDragControllerTest.KeyPressShouldEndDragTest/*
+-TabDragging/DetachToBrowserTabDragControllerTest.Revert*

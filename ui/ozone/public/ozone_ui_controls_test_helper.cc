@@ -4,11 +4,18 @@
 
 #include "ui/ozone/public/ozone_ui_controls_test_helper.h"
 
+#include "base/notreached.h"
 #include "ui/ozone/platform_object.h"
 
 #include "base/logging.h"
 
 namespace ui {
+
+#if BUILDFLAG(IS_LINUX)
+void OzoneUIControlsTestHelper::ForceUseScreenCoordinatesOnce() {
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 std::unique_ptr<OzoneUIControlsTestHelper> CreateOzoneUIControlsTestHelper() {
   return PlatformObject<OzoneUIControlsTestHelper>::Create();

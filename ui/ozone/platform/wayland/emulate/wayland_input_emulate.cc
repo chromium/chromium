@@ -146,14 +146,30 @@ void WaylandInputEmulate::EmulatePointerMotion(
                         ->xdg_surface();
     }
     bool screen_coordinates = window->IsScreenCoordinatesEnabled();
+    if (force_use_screen_coordinates_once_) {
+      screen_coordinates = true;
+      force_use_screen_coordinates_once_ = false;
+    }
 
     // If we can't use screen coordinates, we must have a surface so we can use
     // surface-local coordinates.
     DCHECK(screen_coordinates || xdg_surface);
 
     target_surface = screen_coordinates ? nullptr : xdg_surface;
-    target_location =
-        screen_coordinates ? mouse_screen_location : mouse_surface_location;
+    // Ignore `force_use_screen_coordinates_once_` for selecting which
+    // coordinates to use. This is because the only difference between
+    // `mouse_screen_location` and `mouse_surface_location` is that the former
+    // is offset by the window's origin, while the latter isn't. If screen
+    // coordinates aren't enabled, the window's origin should always be (0, 0),
+    // and thus it shouldn't matter if we use `mouse_screen_location` or
+    // `mouse_surface_location`. But as described in https://crbug.com/1454427,
+    // the origin isn't actually (0, 0) until the first `xdg_toplevel.configure`
+    // event with non-zero width and height is received, so we must use
+    // `mouse_surface_location` even if `force_use_screen_coordinates_once_` is
+    // true.
+    target_location = window->IsScreenCoordinatesEnabled()
+                          ? mouse_screen_location
+                          : mouse_surface_location;
   }
 
   VLOG(1) << "Requesting pointer motion: location="
@@ -213,6 +229,12 @@ void WaylandInputEmulate::EmulateTouch(int action,
   auto* wayland_proxy = wl::WaylandProxy::GetInstance();
   wayland_proxy->FlushForTesting();
 }
+
+#if BUILDFLAG(IS_LINUX)
+void WaylandInputEmulate::ForceUseScreenCoordinatesOnce() {
+  force_use_screen_coordinates_once_ = true;
+}
+#endif
 
 void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget,
                                              bool is_configured) {

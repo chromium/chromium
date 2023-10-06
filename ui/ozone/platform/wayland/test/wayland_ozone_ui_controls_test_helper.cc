@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/test/wayland_ozone_ui_controls_test_helper.h"
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/base/test/ui_controls.h"
@@ -123,6 +123,12 @@ void WaylandOzoneUIControlsTestHelper::RunClosureAfterAllPendingUIEvents(
 bool WaylandOzoneUIControlsTestHelper::MustUseUiControlsForMoveCursorTo() {
   return true;
 }
+
+#if BUILDFLAG(IS_LINUX)
+void WaylandOzoneUIControlsTestHelper::ForceUseScreenCoordinatesOnce() {
+  input_emulate_->ForceUseScreenCoordinatesOnce();
+}
+#endif
 
 void WaylandOzoneUIControlsTestHelper::RequestProcessed(uint32_t request_id) {
   // The Wayland base protocol does not map cleanly onto ui_controls semantics.

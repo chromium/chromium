@@ -55,6 +55,9 @@ class WaylandOzoneUIControlsTestHelper : public ui::OzoneUIControlsTestHelper {
 #endif
   void RunClosureAfterAllPendingUIEvents(base::OnceClosure closure) override;
   bool MustUseUiControlsForMoveCursorTo() override;
+#if BUILDFLAG(IS_LINUX)
+  void ForceUseScreenCoordinatesOnce() override;
+#endif
 
  private:
   void RequestProcessed(uint32_t request_id);
