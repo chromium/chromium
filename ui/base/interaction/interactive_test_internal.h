@@ -448,6 +448,19 @@ struct MaybeBindTypeHelper<decltype(base::DoNothing())> {
   using ReturnType = void;
 };
 
+// Optionally converts `function` to something that is compatible with a
+// base::RepeatingCallback, or returns it as-is if it's already a callback.
+template <typename F>
+base::RepeatingCallback<typename MaybeBindTypeHelper<F>::Signature>
+MaybeBindRepeating(F&& function) {
+  if constexpr (IsCallableValue<F> && std::is_empty_v<F> &&
+                std::is_copy_constructible_v<std::remove_cvref_t<F>>) {
+    return base::BindRepeating(std::forward<F>(function));
+  } else {
+    return MaybeBindHelper<F>::MaybeBind(std::forward<F>(function));
+  }
+}
+
 template <typename T>
 struct ArgsExtractor;
 
@@ -541,7 +554,12 @@ struct MatcherTypeHelper<const char*> {
 };
 
 template <>
-struct MatcherTypeHelper<const char[]> {
+struct MatcherTypeHelper<char[]> {
+  using ActualType = std::string;
+};
+
+template <size_t N>
+struct MatcherTypeHelper<char[N]> {
   using ActualType = std::string;
 };
 
@@ -551,12 +569,28 @@ struct MatcherTypeHelper<const char16_t*> {
 };
 
 template <>
-struct MatcherTypeHelper<const char16_t[]> {
+struct MatcherTypeHelper<char16_t[]> {
   using ActualType = std::u16string;
 };
 
+template <size_t N>
+struct MatcherTypeHelper<char16_t[N]> {
+  using ActualType = std::u16string;
+};
+
+// Gets the appropriate matchable type for `T`. This affects string-like types
+// (e.g. `const char*`) as the corresponding `Matcher` should match a
+// `std::string` or `std::u16string`.
 template <typename T>
 using MatcherTypeFor = MatcherTypeHelper<std::remove_cvref_t<T>>::ActualType;
+
+// Determines if `T` is a valid type to be used in a matcher. This precludes
+// string-like types (const char*, constexpr char16_t[], etc.) in favor of
+// `std::string` and `std::u16string`.
+template <typename T>
+constexpr bool IsValidMatcherType = std::is_same_v<T, MatcherTypeFor<T>>;
+template <typename T>
+using RequireValidMatcherType = std::enable_if_t<IsValidMatcherType<T>>;
 
 template <typename T>
 class IsMatcherHelper {

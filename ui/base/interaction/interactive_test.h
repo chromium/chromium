@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/rectify_callback.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +25,7 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/base/interaction/polling_state_observer.h"
 #include "ui/base/interaction/state_observer.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -317,9 +319,8 @@ class InteractiveTestApi {
   // Note: Some types are unavailable; for any UTF-8 string type, use
   // std::string. For any UTF-16 type, use std::u16string.
   template <typename Observer,
-            typename = std::enable_if<std::is_same_v<
-                typename Observer::ValueType,
-                internal::MatcherTypeFor<typename Observer::ValueType>>>>
+            typename =
+                internal::RequireValidMatcherType<typename Observer::ValueType>>
   [[nodiscard]] StepBuilder ObserveState(
       StateIdentifier<Observer> id,
       std::unique_ptr<Observer> state_observer);
@@ -340,11 +341,47 @@ class InteractiveTestApi {
   // std::string. For any UTF-16 type, use std::u16string.
   template <typename Observer,
             typename... Args,
-            typename = std::enable_if<std::is_same_v<
-                typename Observer::ValueType,
-                internal::MatcherTypeFor<typename Observer::ValueType>>>>
+            typename =
+                internal::RequireValidMatcherType<typename Observer::ValueType>>
   [[nodiscard]] StepBuilder ObserveState(StateIdentifier<Observer> id,
                                          Args&&... args);
+
+  // Polls a state using a polling state observer with `id` and value callback
+  // `callback`. See `PollingStateObserver` and
+  // `DECLARE_POLLING_STATE_IDENTIFIER_VALUE()` for more info.
+  //
+  // Use WaitForState() to check the polled state. Note that unlike
+  // `ObserveState()`, transient states may be missed, so prefer using a custom
+  // event or `ObserveState()` when possible.
+  template <typename T,
+            typename C,
+            typename = internal::RequireValidMatcherType<T>>
+  [[nodiscard]] StepBuilder PollState(
+      StateIdentifier<PollingStateObserver<T>> id,
+      C&& callback,
+      base::TimeDelta polling_interval =
+          PollingStateObserver<T>::kDefaultPollingInterval);
+
+  // Polls an element using a polling element with `element_identifier` in the
+  // current context using state observer with `id` and value callback
+  // `callback`. See `PollingElementStateObserver` and
+  // `DECLARE_POLLING_ELEMENT_STATE_IDENTIFIER_VALUE()` for more info.
+  //
+  // Note that the actual value type is not T, but `absl::optional<T>`, as the
+  // state will have the value absl::nullopt if the element is not present.
+  //
+  // Use WaitForState() to check the polled state. Note that unlike
+  // `ObserveState()`, transient states may be missed, so prefer using a custom
+  // event or `ObserveState()` when possible.
+  template <typename T,
+            typename C,
+            typename = internal::RequireValidMatcherType<T>>
+  [[nodiscard]] StepBuilder PollElement(
+      StateIdentifier<PollingElementStateObserver<T>> id,
+      ui::ElementIdentifier element_identifier,
+      C&& callback,
+      base::TimeDelta polling_interval =
+          PollingStateObserver<T>::kDefaultPollingInterval);
 
   // Waits for the state of state observer `id` (bound with `ObserveState()` in
   // the current context) to match `value`. If `value` is a function, callback,
@@ -863,13 +900,67 @@ InteractionSequence::StepBuilder InteractiveTestApi::ObserveState(
   return step;
 }
 
+template <typename T, typename C, typename>
+InteractionSequence::StepBuilder InteractiveTestApi::PollState(
+    StateIdentifier<PollingStateObserver<T>> id,
+    C&& callback,
+    base::TimeDelta polling_interval) {
+  using Cb = PollingStateObserver<T>::PollCallback;
+  auto step = WithElement(
+      internal::kInteractiveTestPivotElementId,
+      base::BindOnce(
+          [](InteractiveTestApi* api, ElementIdentifier id, Cb callback,
+             base::TimeDelta polling_interval, TrackedElement* el) {
+            api->private_test_impl().AddStateObserver(
+                id, el->context(),
+                std::make_unique<PollingStateObserver<T>>(std::move(callback),
+                                                          polling_interval));
+          },
+          base::Unretained(this), id.identifier(),
+          internal::MaybeBindRepeating(std::forward<C>(callback)),
+          polling_interval));
+  step.SetDescription("PollState()");
+  return step;
+}
+
+template <typename T, typename C, typename>
+InteractionSequence::StepBuilder InteractiveTestApi::PollElement(
+    StateIdentifier<PollingElementStateObserver<T>> id,
+    ui::ElementIdentifier element_identifier,
+    C&& callback,
+    base::TimeDelta polling_interval) {
+  using Cb = PollingElementStateObserver<T>::PollElementCallback;
+  auto step = WithElement(
+      internal::kInteractiveTestPivotElementId,
+      base::BindOnce(
+          [](InteractiveTestApi* api, ElementIdentifier id,
+             ElementIdentifier element_id, Cb callback,
+             base::TimeDelta polling_interval, InteractionSequence* seq,
+             TrackedElement* el) {
+            api->private_test_impl().AddStateObserver(
+                id, el->context(),
+                std::make_unique<PollingElementStateObserver<T>>(
+                    element_id,
+                    seq->IsCurrentStepInAnyContextForTesting()
+                        ? absl::nullopt
+                        : absl::make_optional(el->context()),
+                    std::move(callback), polling_interval));
+          },
+          base::Unretained(this), id.identifier(), element_identifier,
+          internal::MaybeBindRepeating(std::forward<C>(callback)),
+          polling_interval));
+  step.SetDescription(base::StringPrintf("PollElementState(%s)",
+                                         element_identifier.GetName().c_str()));
+  return step;
+}
+
 // static
 template <typename O, typename V>
 InteractiveTestApi::MultiStep InteractiveTestApi::WaitForState(
     StateIdentifier<O> id,
     V&& value) {
   using T = typename O::ValueType;
-  using U = std::remove_cvref_t<V>;
+  using U = internal::MatcherTypeFor<V>;
   auto wait_callback = base::BindOnce(
       [](ElementIdentifier id, U value, InteractionSequence* seq,
          TrackedElement* el) {
@@ -896,7 +987,7 @@ InteractiveTestApi::MultiStep InteractiveTestApi::WaitForState(
               testing::Matcher<T>(T(INTERACTIVE_TEST_UNWRAP_IMPL(value, U))));
         }
       },
-      id.identifier(), std::move(value));
+      id.identifier(), U(std::forward<V>(value)));
   auto result = Steps(WithElement(internal::kInteractiveTestPivotElementId,
                                   std::move(wait_callback)),
                       WaitForShow(id.identifier()));

@@ -17,6 +17,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
+#include "ui/views/interaction/polling_view_observer.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/test/widget_test.h"
@@ -205,6 +206,28 @@ TEST_F(InteractiveViewsTestTest, WaitForViewProperty_BecomesTrue) {
   button1_->SetEnabled(false);
   DoPost(base::BindLambdaForTesting([this]() { button1_->SetEnabled(true); }));
   RunTestSequence(WaitForViewProperty(kButton1Id, View, Enabled, true));
+}
+
+TEST_F(InteractiveViewsTestTest, PollView) {
+  using Observer = PollingViewObserver<std::u16string, LabelButton>;
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(Observer, kButtonTextState);
+  DoPost(base::BindLambdaForTesting(
+      [this]() { button1_->SetText(kButton2Caption); }));
+  RunTestSequence(PollView(kButtonTextState, kButton1Id,
+                           [](const LabelButton* b) -> std::u16string {
+                             return b->GetText();
+                           }),
+                  WaitForState(kButtonTextState, kButton2Caption));
+}
+
+TEST_F(InteractiveViewsTestTest, PollViewProperty) {
+  using Observer = PollingViewPropertyObserver<std::u16string, LabelButton>;
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(Observer, kButtonTextState);
+  DoPost(base::BindLambdaForTesting(
+      [this]() { button1_->SetText(kButton2Caption); }));
+  RunTestSequence(
+      PollViewProperty(kButtonTextState, kButton1Id, &LabelButton::GetText),
+      WaitForState(kButtonTextState, kButton2Caption));
 }
 
 TEST_F(InteractiveViewsTestTest, WaitForViewPropertyFails) {

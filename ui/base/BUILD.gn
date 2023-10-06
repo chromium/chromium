@@ -778,6 +778,7 @@ static_library("test_support") {
     "interaction/interactive_test.h",
     "interaction/interactive_test_internal.cc",
     "interaction/interactive_test_internal.h",
+    "interaction/polling_state_observer.h",
     "interaction/state_observer.h",
     "resource/mock_resource_bundle_delegate.cc",
     "resource/mock_resource_bundle_delegate.h",

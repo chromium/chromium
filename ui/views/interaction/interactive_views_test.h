@@ -17,6 +17,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -27,6 +28,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/interactive_views_test_internal.h"
+#include "ui/views/interaction/polling_view_observer.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -239,6 +241,52 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
           ui::metadata::PropertyChangedCallback),
       M&& matcher,
       ui::CustomElementEventType event);
+
+  // Creates a state observer with `id` which polls the view in the current
+  // context with `view_id`. If the view is present, uses `callback` to update
+  // the state value; otherwise the value is `absl::nullopt` (the actual state
+  // value is of type `absl::optional<T>`).
+  //
+  // The element, if present, must resolve to a View of the correct type, or the
+  // test will fail.
+  //
+  // See `PollState()` and `PollElement()` for usage details and caveats.
+  // Specifically be aware that polling may miss a transient state; prefer to
+  // send a custom event or use `WaitForViewPropertyCallback()` if possible.
+  template <typename T,
+            typename V,
+            typename C,
+            typename = std::enable_if_t<
+                std::is_base_of_v<View, V> &&
+                ui::test::internal::HasSignature<C, T(const V*)>>>
+  [[nodiscard]] StepBuilder PollView(
+      ui::test::StateIdentifier<PollingViewObserver<T, V>> id,
+      ui::ElementIdentifier view_id,
+      C&& callback,
+      base::TimeDelta polling_interval = ui::test::PollingStateObserver<
+          absl::optional<T>>::kDefaultPollingInterval);
+
+  // Creates a state observer with `id` which polls `property` on the view in
+  // the current context with `view_id`. If the view is not present, the state
+  // value will be set to `absl::nullopt` (the actual state value is of type
+  // `absl::optional<T>`).
+  //
+  // The element, if present, must resolve to a View of the correct type, or the
+  // test will fail.
+  //
+  // See `PollState()` and `PollElement()` for usage details and caveats.
+  // Specifically be aware that polling may miss a transient state; prefer to
+  // send a custom event or use `WaitForViewPropertyCallback()` if possible.
+  template <typename R,
+            typename V,
+            typename T = std::remove_cvref_t<R>,
+            typename = std::enable_if_t<std::is_base_of_v<View, V>>>
+  [[nodiscard]] StepBuilder PollViewProperty(
+      ui::test::StateIdentifier<PollingViewPropertyObserver<T, V>> id,
+      ui::ElementIdentifier view_id,
+      R (V::*property)() const,
+      base::TimeDelta polling_interval = ui::test::PollingStateObserver<
+          absl::optional<T>>::kDefaultPollingInterval);
 
   // Scrolls `view` into the visible viewport if it is currently scrolled
   // outside its container. The view must be otherwise present and visible.
@@ -779,6 +827,66 @@ InteractiveViewsTestApi::WaitForViewPropertyCallback(
                                        &Class::Add##Property##ChangedCallback, \
                                        (matcher), kWaitFor##Property##Event);  \
   }()
+
+template <typename T, typename V, typename C, typename>
+ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::PollView(
+    ui::test::StateIdentifier<PollingViewObserver<T, V>> id,
+    ui::ElementIdentifier view_id,
+    C&& callback,
+    base::TimeDelta polling_interval) {
+  using Cb = PollingViewObserver<T, V>::PollViewCallback;
+  Cb cb = ui::test::internal::MaybeBindRepeating(std::forward<C>(callback));
+  auto step =
+      WithElement(ui::test::internal::kInteractiveTestPivotElementId,
+                  base::BindOnce(
+                      [](InteractiveViewsTestApi* api, ui::ElementIdentifier id,
+                         ui::ElementIdentifier view_id, Cb callback,
+                         base::TimeDelta polling_interval,
+                         ui::InteractionSequence* seq, ui::TrackedElement* el) {
+                        api->test_impl().AddStateObserver(
+                            id, el->context(),
+                            std::make_unique<PollingViewObserver<T, V>>(
+                                view_id,
+                                seq->IsCurrentStepInAnyContextForTesting()
+                                    ? absl::nullopt
+                                    : absl::make_optional(el->context()),
+                                std::move(callback), polling_interval));
+                      },
+                      base::Unretained(this), id.identifier(), view_id, cb,
+                      polling_interval));
+  step.SetDescription(
+      base::StringPrintf("PollView(%s)", view_id.GetName().c_str()));
+  return step;
+}
+
+template <typename R, typename V, typename T, typename>
+ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::PollViewProperty(
+    ui::test::StateIdentifier<PollingViewPropertyObserver<T, V>> id,
+    ui::ElementIdentifier view_id,
+    R (V::*property)() const,
+    base::TimeDelta polling_interval) {
+  auto step = WithElement(
+      ui::test::internal::kInteractiveTestPivotElementId,
+      base::BindOnce(
+          [](InteractiveViewsTestApi* api, ui::ElementIdentifier id,
+             ui::ElementIdentifier view_id, R (V::*property)() const,
+             base::TimeDelta polling_interval, ui::InteractionSequence* seq,
+             ui::TrackedElement* el) {
+            api->test_impl().AddStateObserver(
+                id, el->context(),
+                std::make_unique<PollingViewPropertyObserver<T, V>>(
+                    view_id,
+                    seq->IsCurrentStepInAnyContextForTesting()
+                        ? absl::nullopt
+                        : absl::make_optional(el->context()),
+                    property, polling_interval));
+          },
+          base::Unretained(this), id.identifier(), view_id, property,
+          polling_interval));
+  step.SetDescription(
+      base::StringPrintf("PollViewProperty(%s)", view_id.GetName().c_str()));
+  return step;
+}
 
 }  // namespace views::test
 
