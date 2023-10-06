@@ -24,6 +24,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -384,6 +385,7 @@ void WebUIInfoSingleton::ClearReportingEvents() {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 void WebUIInfoSingleton::AddToDeepScanRequests(
     bool per_profile_request,
+    const std::string& access_token,
     const enterprise_connectors::ContentAnalysisRequest& request) {
   if (!HasListener())
     return;
@@ -395,9 +397,19 @@ void WebUIInfoSingleton::AddToDeepScanRequests(
         base::Time::Now();
   }
 
-  deep_scan_requests_[request.request_token()].per_profile_request =
-      per_profile_request;
-  deep_scan_requests_[request.request_token()].request = request;
+  auto& deep_scan_request = deep_scan_requests_[request.request_token()];
+  deep_scan_request.per_profile_request = per_profile_request;
+  deep_scan_request.request = request;
+
+  if (access_token.empty()) {
+    deep_scan_request.access_token_truncated = "NONE";
+  } else {
+    // Only show the first few bytes of `access_token` as it's sensitive.
+    deep_scan_request.access_token_truncated =
+        base::StrCat({access_token.substr(0, std::min(access_token.size(),
+                                                      static_cast<size_t>(6))),
+                      "..."});
+  }
 
   for (auto* webui_listener : webui_instances_)
     webui_listener->NotifyDeepScanJsListener(
@@ -2501,6 +2513,7 @@ base::Value::Dict SerializeReportingEvent(const base::Value::Dict& event) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 std::string SerializeContentAnalysisRequest(
     bool per_profile_request,
+    const std::string& access_token_truncated,
     const enterprise_connectors::ContentAnalysisRequest& request) {
   base::Value::Dict request_dict;
 
@@ -2614,6 +2627,7 @@ std::string SerializeContentAnalysisRequest(
     tags.Append(tag);
   request_dict.Set("tags", std::move(tags));
   request_dict.Set("request_token", request.request_token());
+  request_dict.Set("access_token", access_token_truncated);
 
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
@@ -2691,8 +2705,10 @@ base::Value::Dict SerializeDeepScanDebugData(const std::string& token,
   }
 
   if (data.request.has_value()) {
-    value.Set("request", SerializeContentAnalysisRequest(
-                             data.per_profile_request, data.request.value()));
+    value.Set("request",
+              SerializeContentAnalysisRequest(data.per_profile_request,
+                                              data.access_token_truncated,
+                                              data.request.value()));
   }
 
   if (!data.response_time.is_null()) {
