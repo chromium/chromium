@@ -1487,15 +1487,12 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
     const std::u16string& cvc) {
   is_authentication_in_progress_ = true;
 
-  CreditCard::RecordType record_type = card->record_type();
-  CHECK(record_type == CreditCard::RecordType::kLocalCard ||
-        record_type == CreditCard::RecordType::kVirtualCard);
   payments::MandatoryReauthAuthenticationMethod authentication_method =
       client_->GetOrCreatePaymentsMandatoryReauthManager()
           ->GetAuthenticationMethod();
 
   autofill_metrics::LogMandatoryReauthCheckoutFlowUsageEvent(
-      record_type, authentication_method,
+      card->record_type(), authentication_method,
       autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
   // TODO(crbug.com/1427216): Add the iOS branching logic as well.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
