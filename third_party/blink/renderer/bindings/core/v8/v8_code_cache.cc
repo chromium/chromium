@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
@@ -33,8 +34,10 @@ BASE_FEATURE(kConfigurableV8CodeCacheHotHours,
              "ConfigurableV8CodeCacheHotHours",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<int>
-    kV8CodeCacheHotHours(&kConfigurableV8CodeCacheHotHours, "HotHours", 72);
+MIRACLE_PARAMETER_FOR_INT(GetV8CodeCacheHotHours,
+                          kConfigurableV8CodeCacheHotHours,
+                          "HotHours",
+                          72)
 
 enum CacheTagKind { kCacheTagCode = 0, kCacheTagTimeStamp = 1, kCacheTagLast };
 
@@ -58,7 +61,7 @@ uint32_t CacheTag(CacheTagKind kind, const String& encoding) {
 
 // Check previously stored timestamp.
 bool IsResourceHotForCaching(const CachedMetadataHandler* cache_handler) {
-  const base::TimeDelta kHotHours = base::Hours(kV8CodeCacheHotHours.Get());
+  const base::TimeDelta kHotHours = base::Hours(GetV8CodeCacheHotHours());
   scoped_refptr<CachedMetadata> cached_metadata =
       cache_handler->GetCachedMetadata(
           V8CodeCache::TagForTimeStamp(cache_handler));
