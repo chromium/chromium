@@ -465,8 +465,9 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserPromiseAppTest,
   ASSERT_TRUE(item);
   EXPECT_EQ(item->progress(), 0);
   EXPECT_EQ(item->app_status(), ash::AppStatus::kPending);
-  ASSERT_EQ(item->name(), ShelfControllerHelper::GetLabelForPromiseStatus(
-                              apps::PromiseStatus::kPending));
+  ASSERT_EQ(item->name(),
+            base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
+                apps::PromiseStatus::kPending)));
 
   // Update the promise app in the promise app registry cache.
   apps::PromiseAppPtr update =
@@ -478,8 +479,9 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserPromiseAppTest,
   // Promise app item should have updated fields.
   EXPECT_EQ(item->progress(), 0.3f);
   EXPECT_EQ(item->app_status(), ash::AppStatus::kInstalling);
-  EXPECT_EQ(item->name(), ShelfControllerHelper::GetLabelForPromiseStatus(
-                              apps::PromiseStatus::kInstalling));
+  EXPECT_EQ(item->name(),
+            base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
+                apps::PromiseStatus::kInstalling)));
 }
 
 // Test that OpenSearchResult that dismisses app list runs fine without

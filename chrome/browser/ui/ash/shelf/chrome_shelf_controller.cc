@@ -1078,8 +1078,8 @@ void ChromeShelfController::OnPromiseAppUpdate(
   if (update.StatusChanged()) {
     item.app_status =
         ShelfControllerHelper::ConvertPromiseStatusToAppStatus(update.Status());
-    item.title = base::UTF8ToUTF16(
-        ShelfControllerHelper::GetLabelForPromiseStatus(update.Status()));
+    item.title =
+        ShelfControllerHelper::GetLabelForPromiseStatus(update.Status());
   }
   model_->Set(index, item);
 }

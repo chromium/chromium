@@ -6284,9 +6284,8 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, PromiseAppUpdatesShelfItem) {
   EXPECT_TRUE(model_->IsAppPinned(package_id.ToString()));
   ash::ShelfID id(package_id.ToString());
   const ash::ShelfItem* item = shelf_controller_->GetItem(id);
-  EXPECT_EQ(item->title,
-            base::UTF8ToUTF16(ShelfControllerHelper::GetLabelForPromiseStatus(
-                apps::PromiseStatus::kPending)));
+  EXPECT_EQ(item->title, ShelfControllerHelper::GetLabelForPromiseStatus(
+                             apps::PromiseStatus::kPending));
   EXPECT_EQ(item->progress, 0);
   EXPECT_EQ(item->app_status, ash::AppStatus::kPending);
 
@@ -6297,9 +6296,8 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, PromiseAppUpdatesShelfItem) {
   cache()->OnPromiseApp(std::move(update));
 
   // Verify that the shelf item has updated details.
-  EXPECT_EQ(item->title,
-            base::UTF8ToUTF16(ShelfControllerHelper::GetLabelForPromiseStatus(
-                apps::PromiseStatus::kInstalling)));
+  EXPECT_EQ(item->title, ShelfControllerHelper::GetLabelForPromiseStatus(
+                             apps::PromiseStatus::kInstalling));
   EXPECT_EQ(item->progress, 0.3f);
   EXPECT_EQ(item->app_status, ash::AppStatus::kInstalling);
 }

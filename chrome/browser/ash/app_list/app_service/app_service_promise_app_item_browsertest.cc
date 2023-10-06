@@ -144,8 +144,9 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   // Promise app item should exist in the model.
   ChromeAppListItem* item = GetChromeAppListItem(kTestPackageId);
   ASSERT_TRUE(item);
-  ASSERT_EQ(item->name(), ShelfControllerHelper::GetLabelForPromiseStatus(
-                              apps::PromiseStatus::kPending));
+  ASSERT_EQ(item->name(),
+            base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
+                apps::PromiseStatus::kPending)));
 
   // Retrieve the context menu.
   base::RunLoop run_loop;
@@ -225,8 +226,9 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   ASSERT_TRUE(item);
   EXPECT_EQ(item->progress(), 0);
   EXPECT_EQ(item->app_status(), ash::AppStatus::kPending);
-  ASSERT_EQ(item->name(), ShelfControllerHelper::GetLabelForPromiseStatus(
-                              apps::PromiseStatus::kPending));
+  ASSERT_EQ(item->name(),
+            base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
+                apps::PromiseStatus::kPending)));
 
   // Update the promise app in the promise app registry cache.
   apps::PromiseAppPtr update = std::make_unique<PromiseApp>(kTestPackageId);
@@ -237,8 +239,9 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   // Promise app item should have updated fields.
   EXPECT_EQ(item->progress(), 0.3f);
   EXPECT_EQ(item->app_status(), ash::AppStatus::kInstalling);
-  EXPECT_EQ(item->name(), ShelfControllerHelper::GetLabelForPromiseStatus(
-                              apps::PromiseStatus::kInstalling));
+  EXPECT_EQ(item->name(),
+            base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
+                apps::PromiseStatus::kInstalling)));
 }
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, SetToSyncPosition) {
@@ -282,8 +285,9 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   ChromeAppListItem* item = GetChromeAppListItem(kTestPackageId);
   ASSERT_TRUE(item);
   ASSERT_EQ(item->app_status(), ash::AppStatus::kPending);
-  ASSERT_EQ(item->name(), ShelfControllerHelper::GetLabelForPromiseStatus(
-                              PromiseStatus::kPending));
+  ASSERT_EQ(item->name(),
+            base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
+                PromiseStatus::kPending)));
 
   // Push a status update to the promise app.
   PromiseAppPtr update = std::make_unique<PromiseApp>(kTestPackageId);
@@ -293,8 +297,9 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   // Item should now reflect the new status and name.
   EXPECT_TRUE(item);
   EXPECT_EQ(item->app_status(), ash::AppStatus::kInstalling);
-  EXPECT_EQ(item->name(), ShelfControllerHelper::GetLabelForPromiseStatus(
-                              PromiseStatus::kInstalling));
+  EXPECT_EQ(item->name(),
+            base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
+                PromiseStatus::kInstalling)));
 }
 
 }  // namespace apps

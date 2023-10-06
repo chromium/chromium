@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
@@ -45,12 +46,9 @@
 #include "extensions/browser/extension_util.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-// TODO(b/297453039): Replace with correct UXW when available.
-constexpr char kPendingString[] = "Waiting...";
-constexpr char kInstallingString[] = "Installing...";
 
 constexpr float kProgressNone = 0;
 constexpr float kProgressNotApplicable = -1;
@@ -73,16 +71,16 @@ ShelfControllerHelper::ShelfControllerHelper(Profile* profile)
 
 ShelfControllerHelper::~ShelfControllerHelper() {}
 
-std::string ShelfControllerHelper::GetLabelForPromiseStatus(
+std::u16string ShelfControllerHelper::GetLabelForPromiseStatus(
     apps::PromiseStatus status) {
   switch (status) {
     case apps::PromiseStatus::kUnknown:
     case apps::PromiseStatus::kPending:
-      return kPendingString;
+      return l10n_util::GetStringUTF16(IDS_PROMISE_STATUS_WAITING);
     case apps::PromiseStatus::kInstalling:
     case apps::PromiseStatus::kSuccess:
     case apps::PromiseStatus::kCancelled:
-      return kInstallingString;
+      return l10n_util::GetStringUTF16(IDS_PROMISE_STATUS_INSTALLING);
   }
 }
 
@@ -201,7 +199,7 @@ std::u16string ShelfControllerHelper::GetPromiseAppTitle(
     return std::u16string();
   }
 
-  return base::UTF8ToUTF16(GetLabelForPromiseStatus(promise_app->status));
+  return GetLabelForPromiseStatus(promise_app->status);
 }
 
 // static
