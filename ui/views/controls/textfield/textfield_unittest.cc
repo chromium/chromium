@@ -5096,4 +5096,21 @@ TEST_F(TextfieldTest, ScrollCommands) {
       ui::TextEditCommand::SCROLL_TO_END_OF_DOCUMENT));
 #endif
 }
+
+TEST_F(TextfieldTest, AccessibleTextDirectionRTL) {
+  InitTextfield();
+  textfield_->SetText(u"abc");
+
+  ui::AXNodeData node_data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextDirection),
+            static_cast<int32_t>(ax::mojom::WritingDirection::kLtr));
+
+  textfield_->SetText(u"اللغة العربيي");
+
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextDirection),
+            static_cast<int32_t>(ax::mojom::WritingDirection::kRtl));
+}
+
 }  // namespace views::test

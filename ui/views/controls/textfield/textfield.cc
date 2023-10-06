@@ -1034,6 +1034,11 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     if (GetReadOnly())
       node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
   }
+  node_data->AddIntAttribute(
+      ax::mojom::IntAttribute::kTextDirection,
+      static_cast<int32_t>(GetTextDirection() == base::i18n::RIGHT_TO_LEFT
+                               ? ax::mojom::WritingDirection::kRtl
+                               : ax::mojom::WritingDirection::kLtr));
   if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
     node_data->AddState(ax::mojom::State::kProtected);
     node_data->SetValue(std::u16string(
