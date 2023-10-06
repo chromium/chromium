@@ -97,7 +97,7 @@ suite('SiteDetails', function() {
               ContentSettingsTypes.BACKGROUND_SYNC,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
-              ContentSettingsTypes.MIDI,
+              ContentSettingsTypes.MIDI_DEVICES,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.PROTECTED_CONTENT,
@@ -554,7 +554,6 @@ suite('SiteDetailsPrivacySandboxSettings4Disabled', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxSettings4: false,
-      blockMidiByDefault: true,
     });
   });
 

@@ -140,11 +140,6 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         },
       },
 
-      blockMidiByDefault_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('blockMidiByDefault'),
-      },
-
       contentSettingsTypesEnum_: {
         type: Object,
         value: ContentSettingsTypes,
@@ -167,7 +162,6 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private autoPictureInPictureEnabled_: boolean;
-  private blockMidiByDefault_: boolean;
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =
       WebsiteUsageBrowserProxyImpl.getInstance();
 
