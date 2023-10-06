@@ -34,6 +34,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
@@ -197,6 +198,107 @@ class EditPasswordRow : public views::FlexLayoutView {
 
 BEGIN_METADATA(EditPasswordRow, views::FlexLayoutView)
 END_METADATA
+
+// Creates row with Password Manager key icon and title for the
+// `kPasswordGenerationExperiment` with `kNudgePassword` variation.
+std::unique_ptr<views::View> CreatePasswordLabelWithIcon() {
+  auto view = std::make_unique<views::View>();
+  view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
+
+  view->AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          GooglePasswordManagerVectorIcon(), ui::kColorIcon, kIconSize)));
+
+  AddSpacerWithSize(autofill::PopupBaseView::GetHorizontalPadding(),
+                    /*resize=*/false, view.get());
+
+  auto* label = view->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_NUDGE_TITLE),
+      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetMultiLine(true);
+  label->SetMaximumWidth(kPasswordGenerationMaxWidth);
+
+  return view;
+}
+
+// Creates row with two buttons aligned to the right. First button is a cancel
+// button that dismisses the generation flow and the second one is an accept
+// button that fills the password suggestion and dismisses the popup.
+class NudgePasswordButtons : public views::View {
+ public:
+  METADATA_HEADER(NudgePasswordButtons);
+  explicit NudgePasswordButtons(
+      base::WeakPtr<PasswordGenerationPopupController> controller)
+      : controller_(controller) {
+    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal));
+    layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
+
+    AddChildView(std::make_unique<views::MdTextButton>(
+        base::BindRepeating(&NudgePasswordButtons::CancelButtonPressed,
+                            base::Unretained(this)),
+        l10n_util::GetStringUTF16(
+            IDS_PASSWORD_GENERATION_NUDGE_CANCEL_BUTTON)));
+
+    AddSpacerWithSize(autofill::PopupBaseView::GetHorizontalPadding(),
+                      /*resize=*/false, this);
+
+    auto* accept_button = AddChildView(std::make_unique<views::MdTextButton>(
+        base::BindRepeating(&NudgePasswordButtons::AcceptButtonPressed,
+                            base::Unretained(this)),
+        l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM)));
+    accept_button->SetStyle(ui::ButtonStyle::kProminent);
+  }
+
+ private:
+  void CancelButtonPressed() {
+    if (controller_) {
+      controller_->Hide(autofill::PopupHidingReason::kUserAborted);
+    }
+  }
+  void AcceptButtonPressed() {
+    if (controller_) {
+      controller_->PasswordAccepted();
+    }
+  }
+
+  base::WeakPtr<PasswordGenerationPopupController> controller_ = nullptr;
+};
+
+BEGIN_METADATA(NudgePasswordButtons, views::View)
+END_METADATA
+
+// Creates custom password generation view with key icon, title and two buttons
+// for `kNudgePassword` variant of `kPasswordGenerationExperiment`.
+std::unique_ptr<views::View> CreateNudgePasswordView(
+    base::WeakPtr<PasswordGenerationPopupController> controller,
+    base::RepeatingClosure open_password_manager_closure) {
+  auto nudge_password_view = std::make_unique<views::View>();
+
+  auto* layout =
+      nudge_password_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  layout->set_between_child_spacing(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE));
+
+  nudge_password_view->AddChildView(CreatePasswordLabelWithIcon());
+
+  views::StyledLabel* help_label =
+      nudge_password_view->AddChildView(CreateGooglePasswordManagerLabel(
+          GetHelpTextMessageId(),
+          /*link_message_id=*/
+          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
+          controller->GetPrimaryAccountEmail(), open_password_manager_closure));
+  help_label->SetDisplayedOnBackgroundColor(ui::kColorBubbleFooterBackground);
+
+  nudge_password_view->AddChildView(
+      std::make_unique<NudgePasswordButtons>(controller));
+
+  return nudge_password_view;
+}
 
 }  // namespace
 
@@ -417,6 +519,27 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
   const int kHorizontalMargin =
       provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
 
+  base::RepeatingClosure open_password_manager_closure = base::BindRepeating(
+      [](PasswordGenerationPopupViewViews* view) {
+        if (!view->controller_) {
+          return;
+        }
+        view->controller_->OnGooglePasswordManagerLinkClicked();
+      },
+      base::Unretained(this));
+
+  if (controller_->state() ==
+          PasswordGenerationPopupController::kOfferGeneration &&
+      password_manager::features::kPasswordGenerationExperimentVariationParam
+              .Get() == PasswordGenerationVariation::kNudgePassword) {
+    auto* nudge_password_view = AddChildView(
+        CreateNudgePasswordView(controller_, open_password_manager_closure));
+    nudge_password_view->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
+    AddChildView(std::move(nudge_password_view));
+    return;
+  }
+
   auto password_view = std::make_unique<GeneratedPasswordBox>();
   password_view->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
@@ -443,14 +566,6 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
                    .SetOrientation(views::Separator::Orientation::kHorizontal)
                    .SetColorId(ui::kColorMenuSeparator)
                    .Build());
-
-  base::RepeatingClosure open_password_manager_closure = base::BindRepeating(
-      [](PasswordGenerationPopupViewViews* view) {
-        if (!view->controller_)
-          return;
-        view->controller_->OnGooglePasswordManagerLinkClicked();
-      },
-      base::Unretained(this));
 
   if (password_manager::features::kPasswordGenerationExperimentVariationParam
           .Get() == PasswordGenerationVariation::kCrossDevice) {
@@ -491,6 +606,13 @@ void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
 }
 
 gfx::Size PasswordGenerationPopupViewViews::CalculatePreferredSize() const {
+  if (password_manager::features::kPasswordGenerationExperimentVariationParam
+          .Get() == PasswordGenerationVariation::kNudgePassword) {
+    int width = std::min(views::View::CalculatePreferredSize().width(),
+                         kPasswordGenerationMaxWidth);
+    return gfx::Size(width, GetHeightForWidth(width));
+  }
+
   int width =
       std::max(password_view_->GetPreferredSize().width(),
                gfx::ToEnclosingRect(controller_->element_bounds()).width());

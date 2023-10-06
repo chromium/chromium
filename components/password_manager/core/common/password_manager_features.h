@@ -85,6 +85,8 @@ enum class PasswordGenerationVariation {
   kEditPassword = 6,
   // Adds chunking generated passwords into smaller readable parts.
   kChunkPassword = 7,
+  // Removes strong password row and adds nudge passwords buttons instead.
+  kNudgePassword = 8,
 };
 
 inline constexpr base::FeatureParam<PasswordGenerationVariation>::Option
@@ -96,6 +98,7 @@ inline constexpr base::FeatureParam<PasswordGenerationVariation>::Option
         {PasswordGenerationVariation::kCrossDevice, "cross_device"},
         {PasswordGenerationVariation::kEditPassword, "edit_password"},
         {PasswordGenerationVariation::kChunkPassword, "chunk_password"},
+        {PasswordGenerationVariation::kNudgePassword, "nudge_password"},
 };
 
 inline constexpr base::FeatureParam<PasswordGenerationVariation>
