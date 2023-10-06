@@ -3749,9 +3749,6 @@ Some features are limited to increase battery life.
       <message name="IDS_SHORTCUT_TASK_MANAGER_OLD" desc="the old deprecated shortcut to open the task manager.">
         Shift+Esc
       </message>
-      <message name="IDS_SHORTCUT_TASK_MANAGER_NEW" desc="the new shortcut to open the task manager.">
-        search+esc
-      </message>
       <message name="IDS_SHORTCUT_IME_BUBBLE_OLD" desc="the old deprecated shortcut to show the input options menu bubble in the shelf.">
         Alt+Shift+K
       </message>
@@ -3760,10 +3757,6 @@ Some features are limited to increase battery life.
       </message>
       <message name="IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW" desc="the new shortcut to open the shortcut viewer app.">
         ctrl+search+s
-      </message>
-      <message name="IDS_DEPRECATED_SHOW_TASK_MANAGER_MSG"
-               desc="Notification message to tell users about the deprecation of Shift+ESC shortcut to show the task manager.">
-        Open Task Manager app with "<ph name="NEW_SHORTCUT">$1<ex>Search+Esc</ex></ph>".
       </message>
       <message name="IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG"
                desc="Notification message to tell users about the deprecation of Ctrl+Alt+/ shortcut to show the shortcut viewer app.">

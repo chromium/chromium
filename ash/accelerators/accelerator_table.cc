@@ -34,8 +34,6 @@ namespace ash {
 // 5- Don't forget to update the keyboard_shortcut_viewer_metadata.cc and
 //    shortcut_viewer_strings.grdp.
 const AcceleratorData kDeprecatedAccelerators[] = {
-    {true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kShowTaskManager},
     {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
      AcceleratorAction::kShowShortcutViewer},
     {true, ui::VKEY_OEM_2,
@@ -48,12 +46,6 @@ const size_t kNumDeprecatedAcceleratorsDuplicate = 1u;
 const size_t kDeprecatedAcceleratorsLength = std::size(kDeprecatedAccelerators);
 
 const DeprecatedAcceleratorData kDeprecatedAcceleratorsData[] = {
-    // The action for the old shortcut was stopped in M92. Delete
-    // completely in M94.
-    {AcceleratorAction::kShowTaskManager,
-     "Ash.Accelerators.Deprecated.ShowTaskManager",
-     IDS_DEPRECATED_SHOW_TASK_MANAGER_MSG, IDS_SHORTCUT_TASK_MANAGER_NEW,
-     false},
     {AcceleratorAction::kShowShortcutViewer,
      "Ash.Accelerators.Deprecated.ShowShortcutViewer",
      IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG,

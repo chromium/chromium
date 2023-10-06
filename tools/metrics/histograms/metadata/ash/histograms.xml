@@ -284,17 +284,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Accelerators.Deprecated.ShowTaskManager"
-    enum="DeprecatedAcceleratorUsage" expires_after="2022-01-23">
-  <owner>zentaro@chromium.org</owner>
-  <owner>cros-peripherals@chromium.org</owner>
-  <summary>
-    Opening the task manager has two accelerators: - Shift+Esc which is
-    deprecated. - Search+Esc which is new. This histogram shows the number of
-    times each accelerator (deprecated and new) is used.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Accelerators.Deprecated.ToggleHighContrast"
     enum="DeprecatedAcceleratorUsage" expires_after="M77">
   <owner>afakhry@chromium.org</owner>
