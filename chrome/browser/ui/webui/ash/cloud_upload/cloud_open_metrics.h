@@ -37,18 +37,37 @@ class CloudOpenMetrics {
   base::WeakPtr<CloudOpenMetrics> GetWeakPtr();
 
  private:
+  enum class MetricState {
+    // Not logged and it shouldn’t have been.
+    kCorrectlyNotLogged,
+    // Logged when it should have been.
+    kCorrectlyLogged,
+    // Not logged when it should have been.
+    kIncorrectlyNotLogged,
+    // Logged when it shouldn’t have been.
+    kIncorrectlyLogged,
+    // Logged more than once.
+    kIncorrectlyLoggedMultipleTimes,
+    // An unexpected value was logged.
+    kWrongValueLogged,
+  };
+
   // Represents a metric identified by `metric_name_` that logs value of type
-  // `MetricType`. Log the metric through this class and get metric metadata
-  // from this class.
+  // `MetricType`. Log the metric through this class. Keeps track of the value
+  // logged and the `MetricState` of the metric.
   template <typename MetricType>
   class Metric {
    public:
     explicit Metric(std::string metric_name);
     ~Metric() = default;
 
-    // Logs a metric with `metric_name_`. Saves the `value_` logged.
+    // Logs a `value` to the metric with `metric_name_` and saves that `value`.
+    // Update the state and log an error for the latter case:
+    //   kCorrectlyNotLogged  -> kCorrectlyLogged
+    //   !kCorrectlyNotLogged -> kIncorrectlyLoggedMultipleTimes
     void Log(MetricType value);
 
+    MetricState state_ = MetricState::kCorrectlyNotLogged;
     MetricType value_;
 
    private:

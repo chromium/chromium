@@ -38,6 +38,15 @@ CloudOpenMetrics::Metric<MetricType>::Metric(std::string metric_name)
 template <class MetricType>
 void CloudOpenMetrics::Metric<MetricType>::Log(MetricType value) {
   base::UmaHistogramEnumeration(metric_name_, value);
+  if (state_ == MetricState::kCorrectlyNotLogged) {
+    state_ = MetricState::kCorrectlyLogged;
+  } else {
+    state_ = MetricState::kIncorrectlyLoggedMultipleTimes;
+    LOG(ERROR) << metric_name_ << " being logged with "
+               << static_cast<std::underlying_type<MetricType>::type>(value)
+               << " when it was already logged with "
+               << static_cast<std::underlying_type<MetricType>::type>(value_);
+  }
   value_ = value;
 }
 
