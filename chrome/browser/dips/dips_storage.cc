@@ -22,16 +22,6 @@
 
 namespace {
 
-inline void UmaHistogramTimeToInteraction(base::TimeDelta sample,
-                                          DIPSCookieMode mode) {
-  const std::string name = base::StrCat(
-      {"Privacy.DIPS.TimeFromStorageToInteraction", GetHistogramSuffix(mode)});
-
-  base::UmaHistogramCustomTimes(name, sample,
-                                /*min=*/base::TimeDelta(),
-                                /*max=*/base::Days(7), 100);
-}
-
 // The number of sites to process in each call to DIPSStorage::Prepopulate().
 // Intended to be constant; settable only for testing.
 size_t g_prepopulate_chunk_size = 100;
@@ -193,14 +183,6 @@ void DIPSStorage::RecordInteraction(const GURL& url,
   DCHECK(db_);
 
   DIPSState state = Read(url);
-  if (!state.user_interaction_times().has_value() &&
-      state.site_storage_times().has_value()) {
-    // Site previously wrote to storage. Record metric for the time delay
-    // between first storage and interaction.
-    UmaHistogramTimeToInteraction(time - state.site_storage_times()->first,
-                                  mode);
-  }
-
   state.update_user_interaction_time(time);
 }
 
@@ -211,14 +193,6 @@ void DIPSStorage::RecordWebAuthnAssertion(const GURL& url,
   DCHECK(db_);
 
   DIPSState state = Read(url);
-  if (!state.web_authn_assertion_times().has_value() &&
-      state.site_storage_times().has_value()) {
-    // Site previously wrote to storage. Record metric for the time delay
-    // between first storage and interaction.
-    UmaHistogramTimeToInteraction(time - state.site_storage_times()->first,
-                                  mode);
-  }
-
   state.update_web_authn_assertion_time(time);
 }
 

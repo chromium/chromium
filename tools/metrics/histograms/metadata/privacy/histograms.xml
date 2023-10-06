@@ -397,24 +397,6 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Privacy.DIPS.TimeFromStorageToInteraction{DIPSCookieMode}"
-    units="ms" expires_after="2023-11-01">
-  <owner>jdh@chromium.org</owner>
-  <owner>rtarpine@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
-  <summary>
-    The amount of time after a site persists state (e.g. cookies) until the user
-    interacts with the site, {DIPSCookieMode} (where site = eTLD+1). Not
-    recorded if interaction takes place before state is written (see analogous
-    histogram above).
-
-    In M-109, the DIPS Service was updated to explicitly not collect metrics for
-    non-user profiles, such as system profiles and ChromeOS Signin, LockScreen,
-    and LockScreenApp profiles.
-  </summary>
-  <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
-</histogram>
-
 <histogram name="Privacy.DoNotTrackSetting" enum="BooleanEnabled"
     expires_after="never">
   <obsolete>
