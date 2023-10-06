@@ -8,6 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/default_clock.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -1064,4 +1065,37 @@ TEST_F(OverflowMenuMediatorTest, DestinationHideShowsActionSubtitle) {
   EXPECT_NE(addToBookmarksAction, nil);
   EXPECT_TRUE(addToBookmarksAction.highlighted);
   EXPECT_NE(addToBookmarksAction.subtitle, nil);
+}
+
+// Tests that when the the right metric is recorder when the Password Manager
+// item is tapped.
+TEST_F(OverflowMenuMediatorTest, OpenPasswordsMetricLogged) {
+  CreateMediator(/*is_incognito=*/NO);
+
+  mediator_.model = model_;
+
+  // Find the Password Manager destination.
+  OverflowMenuDestination* passwordsDestination;
+  for (OverflowMenuDestination* destination in mediator_.model.destinations) {
+    if (destination.accessibilityIdentifier == kToolsMenuPasswordsId) {
+      passwordsDestination = destination;
+      break;
+    }
+  }
+  EXPECT_NSNE(nil, passwordsDestination);
+
+  base::HistogramTester histogram_tester;
+
+  // Verify that bucker count is zero.
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kChromeMenuItem, 0);
+
+  // Call Password Manager destination's handler.
+  passwordsDestination.handler();
+
+  // Bucket count should now be one.
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kChromeMenuItem, 1);
 }
